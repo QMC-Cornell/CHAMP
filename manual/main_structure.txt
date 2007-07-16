@@ -1,0 +1,25 @@
+STRUCTURE OF THE PROGRAM:
+-------------------------
+
+program main_vmc1 (main_vmc1.f)
+  call opt_wf (opt_wf.f)
+   
+!   Read input files
+    read_input (read_input.f)
+   
+!   Initialize MC configurations
+    mc_configs_read (mc_configs.f)
+
+!   Initialize xnew
+    ....
+
+    call vmc (vmc.f)
+     
+     zerest (acuest.f)
+
+     loop on MC iteractions
+       metropX (metro_....f)
+       acuest (acuest.f)
+     end_loop
+     finwrt (finwrt.f)
+     mc_configs_write (mc_configs.f)

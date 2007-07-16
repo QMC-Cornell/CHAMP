@@ -1,0 +1,14 @@
+Devrim Guclu's program for converting complex orbital determinants
+to real orbital determinants, written for Cyrus Umrigar.
+Works for both 2d and 3d systems.
+In 2d, the l value is irrelevant, since l=|m|.
+
+To run type
+comp2real <input_file_name>
+(Do not use input redirection and leave out subscript .in)>
+e.g.
+comp2real n2l0s0
+
+Better to use script "run", e.g.,
+../../run *.in
+will run all inputs.

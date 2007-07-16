@@ -1,0 +1,38 @@
+CHAMP
+
+Compilation:
+-----------
+
+In the directory qmc_julien.
+
+1) Setup environment variables for compilation.
+
+Edit the file "makefile.inc" and look if you have to change the paths, compilers, compilers' options, etc...
+
+
+2) Compilation.
+
+There are only two executables. For the serial version, type
+>make clean
+>make
+to create the executable "champ.exe".
+
+For the MPI version, type
+>make clean
+>make mpi
+to create the executable "champ_mpi.exe".
+
+
+Execution:
+---------
+
+For the serial version, vmc or dmc calculations are launched by typing
+
+>champ.exe -m vmc_mov1 <input >output
+>champ.exe -m dmc_mov1 <input >output
+
+For the MPI version, vmc and dmc calculations are launched by typing
+>mpirun -np 2 champ_mpi.exe -m vmc_mov1_mpi -i input >output
+>mpirun -np 2 champ_mpi.exe -m dmc_mov1_mpi1 -i input >output
+
+Notice that for the MPI version, the input file has to be given in the command line as an option '-i input'.

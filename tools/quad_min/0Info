@@ -1,0 +1,5 @@
+Contains routines used to do the new optimization.
+Some of these routines were used with an earlier
+version of vmc/dmc that did the wf. parameter prediction
+outside of vmc/dmc.  analyse.f is used to analyse various
+pieces of the Hessian.

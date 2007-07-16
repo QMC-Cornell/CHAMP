@@ -1,0 +1,178 @@
+------------------------------------------------------------------
+INPUT
+------------------------------------------------------------------
+
+numr=-1: program generate the basis fns. in the order of gamess2qmc, i.e. all s's, then all p's etc.
+
+
+-------------------------------------------------------------------
+Line 1:
+job name and random seed
+
+Line 2:
+iperiodic: 0  finite system
+           >0 periodic system
+
+ibasis   : 1 localized Slater or gaussian or numerical basis
+           2 planewave basis, also for extended orbitals on grid
+
+
+Line 3:
+hb     : h bar = 0.5
+etrial : trial energy for population control in DMC
+eunit  : 'Hartree'
+
+Line 4:
+nstep,nblk,nblkeq,nconf,nconf_new
+
+Line 5:
+idump,irstar,isite,ipr
+
+Line 6:
+metro delta,deltar,deltat fbias
+
+Line 7:
+idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+
+Line 8:
+nfprod,tau
+
+Line 9:
+nloc,numr,nforce,nefp
+
+Line 10:
+nelec,nup
+
+
+
+-------------------------------------------------------------------
+'*Jastrow section'
+
+Line 1:
+ianalyt_lap :  analytic laplacian or not
+
+Line 2:
+ijas :  form of Jastrow. (between 1 and 6, mostly we use 4)
+isc  :  form of scaling function for ri,rj,rij in Jastrow (between 1 and 7, mostly use 2,4,6,7)
+        2  [1-exp(scalek*r)]/scalek
+        3  [1-exp{-scalek*r-(scalek*r)**2/2}]/scalek
+        4  r/(1+scalek*r)
+        5  r/{1+(scalek*r)**2}**.5
+        6  Short-range version of 2 (range given by cutjas)
+        7  Short-range version of 4 (range given by cutjas)
+
+nspin1:  first spin index of sets of a, b and c (always 1)
+nspin2:  last spin index of sets of a, b and c
+         nspin2=1,2,3,-1,-2, nspin2b=abs(nspin2)
+         nspin2>0: nspin2 sets of a, b, c parms
+                   nocuspb=0  parallel e-e cusp conditions satisfied (b=1/2,1/4)
+         nspin2<0: one set of a b, c parms
+                   -1 nocuspb=1 parallel e-e cusp conditions not satisfied
+(1/2,1/2)
+                   -2 nocuspb=0 parallel e-e cusp conditions satisfied (1/2,1/4)
+
+nord: order of the polynmial
+
+ifock:    0  no Fock's terms
+          1  phi20-like + phi21
+          2  phi20-like + phi21 + phi31-like terms
+          3  phi20-like + phi21 + phi31 + scale3
+          4  phi20-like + phi21 + phi31 + scale3 + phi20 + scale20
+
+
+Line 3:
+norda:   order of the e-n polynmial in Jastrow4
+nordb:   order of the e-e polynmial in Jastrow4
+nordc:   order of the e-e-n polynmial in Jastrow4
+
+Line 4:
+scalek: parameter of scale function (0.5)
+a21:    ????
+
+Lines 5-6-7:
+parameters a
+parameters b
+parameters c
+
+-------------------------------------------------------------------
+'*Optimization section'
+
+Line 1 (for second-order energy minimization only):
+nopt_iter : maximum number of iterations
+nblk_max  : maximum number of blocks if accuracy requested requires to increase the number of blocks
+add_diag(1) : value to be added to the diagonal of the Hessian to stabilize the Newton search.
+p_var : coefficient of variance in mixed energy/variance optimization: energy*(1-pvar) + p_var*variance
+tol_energy: tolerance on the energy (on the three energies calculated by correlated sampling with different value of add_diag)
+
+Lines 2 (for variance minimization with fit only except for nparm):
+ndata : number of walkers for correlated sampling. They will be read from file 'mc_configs'
+nparm : total number of parameters to be optimized
+icusp : <   0  e-N cusp not imposed
+        >=  0  e-N cusp imposed "exactly"
+
+icusp2 : >= 1  fix exactly some parameters of e-e-N Jastrow term so that the contribution to e-e and e-N cusps is zero
+         = 0   do not do it
+         <= -1 do it with a penalty function
+
+nsig   : number of significant digits required in parameters
+ncalls : Max. numbers of function calls to make
+opt    : 0 Do not check for strict downward descent
+         1 Strict downward descent
+
+ipr_opt : <= -2  Minimal print out
+          >= -1  Print cusp monotonicity conditions
+          >=  0  Print configs and errors on 6
+          >=  2  Print out configs and wavefunction on 2
+
+Lines 3 and 4:
+only zero, not used anymore
+
+Line 5 (for variance minimization with fit only):
+(lo(iorb),iorb=1,norb) : angular momentum of orbitals (for cusp conditions)
+
+Line 6:
+nparml: number of orbital parameters to be optimized
+nparma: number of e-N jastrow parameters to be optimized 
+nparmb: number of e-e jastrow parameters to be optimized
+nparmc: number of e-e-N jastrow parameters to be optimized
+nparmf: number of Fock Jastrow coefs to be optimized (not yet implemented for
+Jastrow4)
+nparmcsf: number of CSF coefficients to be optimized
+nparms: number of Jastrow scale factor coefs to be optimized (0 or 1)
+nparmg: so not use this.
+
+Note: number of exponents to be optimized = nparm - (sum of line 6)
+
+Line 7:
+(iworb(iparm),iwbasi(iparm),iparm=1,nlarml): matrix elements (orbital,basis)
+to be optimized
+
+Line 8:
+(iwbase(iparm),iparm=1,nparm-nparml): exponents to be optimzed
+
+Line 9:
+(iwcsf(iparm),iparm=1,nparmcsf): CSF to be optimized
+
+Line 10:
+e-N jastrow parameters to be optimized
+
+Line 11:
+e-e jastrow parameters to be optimized
+
+Line 12:
+e-e-N jastrow parameters to be optimized
+
+Lines 13-14-15: ??????
+0 0       necn,nebase
+          ((ieorb(j,i),iebasi(j,i),j=1,2),i=1,necn)
+          ((iebase(j,i),j=1,2),i=1,nebase)
+
+Line 16:
+reference energy for fit
+
+Lines 17-18: parameter for fit
+1.d-6 5. 1 15 4 pmarquardt,tau,noutput,nstep,ibold
+T F analytic,cholesky
+
+nstep: number of iterations
+

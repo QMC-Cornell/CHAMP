@@ -1,0 +1,71 @@
+#!/usr/bin/perl
+
+use File::Basename;
+use File::Copy;
+
+# Documentation
+if ($#ARGV < 0){
+ print "Usage: ",basename($0)," list_of_champ_output_files\n\n";
+ print "Description: reduce size of champ output files\n";
+ print "by removing printings of iterations bewteen 'BEGINNING OF' and 'END OF'\n";
+exit;
+}
+
+
+# Arguments
+@allfiles=@ARGV;
+
+# loop over all files
+foreach $file (@allfiles){
+ print "examining $file\n";
+
+# get timestamp info 
+
+ $mtime = (stat($file))[9];
+
+
+my $tail=`tail -10 $file`;
+
+ open INP, "<$file";
+
+# temporary files
+ $file_temp = $file.".temp";
+ open OUT, ">$file_temp";
+
+ $i = 0;
+
+ my $skip=0;
+ while (<INP>){
+     if ($_=~/enow/)  { $skip=1; $i=0;     }
+     if ($_=~/End       of accumulation/)  
+     {
+	 print OUT "............ lines cut ............\n";
+	 $skip=1; $i=-1000000; 
+     }
+     $i++;
+     if ($skip && $i > 4) {next;}
+     print OUT $_;
+
+ }
+
+
+ if (!($tail=~/normally/))
+{
+    print OUT "............ lines cut ............\n";
+    ### print tail anyways in case it did not exit gracefully
+    print OUT $tail;
+}
+ 
+ close INP;
+ close OUT;
+
+# replace original file with new reduced one
+ rename $file_temp, $file;
+
+# reset original timestamp
+ utime $mtime, $mtime, $file or die "Error setting timestamp for $file: $!\n";
+ 
+}
+
+
+ 

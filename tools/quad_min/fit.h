@@ -1,0 +1,4 @@
+      parameter(MDATA=6000, MPARM=200)
+      parameter(MEBASE=MBASIS*MDET, MECN=MORB*MEBASE, ICSFX=MDET)
+c NCTYP3X=max(3,MCTYPE)
+      parameter(ICX=2*ICSFX,NCTYP3X=3)

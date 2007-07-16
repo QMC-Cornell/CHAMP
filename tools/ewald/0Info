@@ -1,0 +1,13 @@
+NaCl 1.747565   fcc with 2 atom basis, (0 0 0), (1/2 1/2 1/2) 
+CsCl 1.762675   sc with 2 atom basis,  (0 0 0), (1/2 1/2 1/2)
+ZnS  1.6381     fcc with 2 atom basis, (0 0 0), (1/4 1/4 1/4)
+
+From D. A. Baiko, et al., arxiv.physics (2001):
+See also Brush, Sahlin, Taylor, JCP 45, 2102 (1966).
+bcc -0.895929255682
+fcc -0.895873615195
+hcp -0.895838120459
+
+The Ewald for Jastrow does not seem to improve with increasing
+cutg etc., so there is probably something wrong, but I am not
+using this Ewald at the moment anyway.

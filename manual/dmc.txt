@@ -1,0 +1,11 @@
+DMC algorithm:
+
+- Used to start from walkers in the same node pocket Psi >0, but not used anymore. It is not necessary: the ground-state has two degenerate nodal pockets. But excited states, the wave function has non-equivalent nodal pockets, so...
+- nwalk_eff measure the decrease in efficiency of the algorithm due to fluctuating weights. If weights are fluctuating, then nwalk_eff < nwalk.
+- With this algorithm, it is more efficient to allow number of walkers to vary (rather than doing miniminal stochastic configuration to keep the number of walkers constant).
+- acceptance probability is for one-electron move.
+- To check for persistent configurations, calculate age of walkers = number of iterations that the walker remains at the same position. In practice, age is often 0 since it is very unlikely that none of electrons move during one iteration.
+- Equilibration phase is done in two steps for the (now not used) all-electron move version, because in this version, tau_eff is roughly guessed at the beginning  of the equilibration, and we do not want to use this crude value for long...
+- the average of tau_eff is used in exp[(E_T - E_est)*tau_eff] for Green
+  function. After equilibration, the average of tau is reset to 0, so the
+ the instantenuous energy depend on the length of the equilibration.

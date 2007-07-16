@@ -1,0 +1,241 @@
+      subroutine readps_champ
+c Written by Cyrus Umrigar
+
+c Read CHAMP-formatted Troullier-Martins pseudopotentials.
+c Reads in v in Hartrees and subtracts out local part from all except
+c the lpotp1 component.
+c Also initializes quadrature pts.
+c rmax_coul is the point at which the psp. becomes -Z/r to within eps.
+c rmax_nloc is the point at which the psp. becomes local to within eps.
+c For TM psps. rmax_nloc is considerably smaller than rmax_coul and so
+c considerable computer time can be saved by evaluating the nonlocal
+c components only for r < rmax_nloc rather than r < rmax_coul.
+
+c Can use 3 different grids:
+c igrid_ps=1, linear,              r(i)=r0_ps+(i-1)*h_ps
+c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
+c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
+c The prefered grid is 3.
+
+      implicit real*8(a-h,o-z)
+      include 'vmc.h'
+      include 'pseudo.h'
+      include 'force.h'
+
+      character*20 filename,atomtyp
+      character*80 title
+
+      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+     &,iwctype(MCENT),nctype,ncent
+
+      common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
+     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
+      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+
+      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+
+      dimension r(MPS_GRID),work(MPS_GRID)
+
+      do 200 ict=1,nctype
+
+        if(ict.lt.10) then
+          write(atomtyp,'(i1)') ict
+         elseif(ict.lt.100) then
+          write(atomtyp,'(i2)') ict
+         else
+          stop 'readps_tm, nctype>100'
+        endif
+
+        filename='pseudopot'//atomtyp(1:index(atomtyp,' ')-1)
+        open(1,file=filename,status='old',form='formatted',err=999)
+        write(6,'(''Reading CHAMP format pseudopotential file '',a20)') filename
+
+c position file to skip comments
+        title(1:1)='#'
+        do while(title(1:1).eq.'#')
+          read(1,'(a80)') title
+        enddo
+
+c The TM psp. format has npotd and npotu for down and up, but we just use one of them
+c They are the number of different l components of the psp.
+
+        write(6,'(''Reading psp in champ format'')')
+        read(title,*) npotd(ict),zion,r_asymp
+        write(6,'(''ict,npotd(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,npotd(ict),zion,r_asymp
+        if(npotd(ict).le.0 .or. npotd(ict).gt.MPS_L) stop 'npotd must be > 0 and <= MPS_L'
+
+        if(lpotp1(ict).gt.npotd(ict)) then
+          write(6,'(''lpotp1(ict),npotd(ict)='',2i3)') lpotp1(ict),npotd(ict)
+          stop 'Cannot choose local psp. to be > number of l components, lpotp1(ict) > npotd(ict)'
+        endif
+        if(npotd(ict).gt.MPS_L) stop 'npotd(ict).gt.MPS_L'
+
+c If the local pseudopot component is not set in input, set it here
+        if(lpotp1(ict).le.0) then
+          lpotp1(ict)=npotd(ict)
+          write(6,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpotp1(ict)
+        endif
+
+        write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
+     &  ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
+
+        if(znuc(ict).ne.zion) then
+          write(6,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
+          stop 'znuc(ict) != zion in readps_tm'
+        endif
+
+        read(1,*) igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
+        nr=nr_ps(ict)
+        write(6,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
+     &  igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
+        exp_h_ps(ict)=exp(h_ps)
+
+        if(igrid_ps(ict).lt.1 .or. igrid_ps(ict).gt.3) stop 'igrid_ps(ict) must be 1 or 2 or 3'
+        if(igrid_ps(ict).lt.1 .and. r0_ps(ict).ne.0.d0) stop 'if igrid_ps(ict)=1 r0_ps(ict) must be 0'
+
+        if(nr.lt.100) then
+          write(6,'(''nr in psp grid too small'',2i6)') nr
+          stop 'nr in psp grid too small'
+        endif
+        if(nr.gt.MPS_GRID .or. igrid_ps(ict).eq.2.and.nr.gt.MPS_GRID-1) then
+          write(6,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
+          stop 'nr > MPS_GRID'
+        endif
+
+        if(igrid_ps(ict).eq.1 .or. igrid_ps(ict).eq.3) then
+          nr=nr_ps(ict)
+          do 10 ir=1,nr_ps(ict)
+   10       read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,npotd(ict))
+          if(r(1).ne.0.d0) stop 'if igrid_ps is 1 or 3, r(1) must be 0'
+         else
+          nr_ps(ict)=nr_ps(ict)+1
+          nr=nr_ps(ict)
+          nrm1=nr-1
+          do 20 ir=2,nr_ps(ict)
+   20       read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,npotd(ict))
+          r(1)=0
+          if(r0_ps(ict).le.0.d0 .or. h_ps.le.0.d0) then
+            r0_ps(ict)=r(2)
+            exp_h_ps(ict)=r(3)/r(2)
+            h_ps=dlog(exp_h_ps(ict))
+            write(6,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,exp_h_ps(ict)='',9f10.5)')
+     &      r0_ps(ict),h_ps,exp_h_ps(ict)
+          endif
+          do 30 i=1,npotd(ict)
+            call intpol(r(2),vpseudo(2,ict,i),nrm1,r(1),vpseudo(1,ict,i),1,3)
+   30       write(6,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+        endif
+
+        if(r0_ps(ict).lt.0.d0 .or. r0_ps(ict).gt.1.d-2) stop 'r0_ps in psp grid is not reasonable'
+        if(h_ps.le.0.d0 .or. h_ps.gt.1.d-1) stop 'h_ps in psp grid is not reasonable'
+
+        close(1)
+
+c Find the point beyond which r*v differs from zion by no more than .5*d-6.
+c irmax_coul is used for the endpoint of the spline where it is assumed that
+c the derivative of the local component is zion/r(irmax_coul)**2 and that of 
+c the local component is 0.  Also, rmax_coul is used in splfit_ps when it is
+c called in a calculation of a periodic system.
+        rmax_coul(ict)=0.d0
+        irmax_coul=0
+        do 50 ir=nr,1,-1
+          do 50 i=1,npotd(ict)
+            if(dabs(r(ir)*vpseudo(ir,ict,i)+zion).gt..5d-6) then
+              rmax_coul(ict)=max(rmax_coul(ict),r(ir))
+              irmax_coul=ir
+              goto 60
+            endif
+   50   continue
+   60   irmax_coul=min(irmax_coul+5,nr)
+
+c Find the point beyond which the various v components differ from each other by no more than .5*d-6
+        rmax_nloc(ict)=0.d0
+        irmax_nloc=0
+        do 70 ir=nr,1,-1
+          do 70 i=2,npotd(ict)
+            do 70 j=1,i-1
+              if(dabs(vpseudo(ir,ict,i)-vpseudo(ir,ict,j)).gt..5d-6) then
+                rmax_nloc(ict)=max(rmax_nloc(ict),r(ir))
+                irmax_nloc=ir
+                goto 80
+              endif
+   70   continue
+   80   irmax_nloc=irmax_nloc+1
+        rmax_nloc(ict)=r(irmax_nloc)
+
+c rmax_nloc is used in getvps_champ to decide whether to calculate calculate nonloc part of psp
+c or to set it to zero.  irmax_coul is used to decide how far out to spline the psp. components
+c so irmax_coul must be >= irmax_nloc.
+        irmax_coul=max(irmax_coul,irmax_nloc)
+        rmax_coul(ict)=r(irmax_coul)
+
+        write(6,'(''center '',i3,'' pseudopot rmax_coul,irmax_coul,rmax_nloc,irmax_nloc= '',2(f6.2,i5))')
+     &  ict,rmax_coul(ict),irmax_coul,rmax_nloc(ict),irmax_nloc
+
+        if(ipr.ge.1) then
+          write(38,'(''r(j)  (vpseudo(j,ict,i),i=1,npotd(ict))  -znuc(ict)/r(j)'')')
+          do 104 j=2,nr
+            if(r(j).gt.0.d0) then
+              write(38,'(1pd12.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict)),-znuc(ict)/r(j)
+             else
+              write(38,'(1pd12.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict))
+            endif
+  104     continue
+        endif
+
+        do 110 i=1,npotd(ict)
+          if(i.ne.lpotp1(ict)) then
+            do 105 j=1,nr
+  105         vpseudo(j,ict,i)=vpseudo(j,ict,i)-vpseudo(j,ict,lpotp1(ict))
+          endif
+
+  110   continue
+
+        if(rmax_coul(ict).eq.0.d0) goto 200
+
+        do 190 i=1,npotd(ict)
+
+c Construct the spline
+
+c Warning: the next line is correct only for pseudopotentials that have zero derivative at the origin.
+c At present this routine is only used for such pseudopotentials, since for the Dolg pseudopotentials
+c we call readps_gauss.f
+          dpot1=0.d0
+
+c Set derivative at end point equal to 0 for nonlocal components and Z/r^2 for local
+          dpotn=0.d0
+          if(i.eq.lpotp1(ict)) dpotn=zion/r(irmax_coul)**2
+c         if(i.eq.lpotp1(ict)) call deriv_intpol(r,vpseudo(1,ict,i),nr,r(irmax_coul),dpotn,irmax_coul,3)
+
+          write(6,'(''dpot1,dpotn'',1p2e15.5)') dpot1,dpotn
+
+c get second derivative for spline fit
+          call spline2(r,vpseudo(1,ict,i),irmax_coul,dpot1,dpotn,d2pot(1,ict,i),work)
+
+          do 190 j=1,nr
+            if(ipr.ge.2) then
+              if(i.eq.1) write(35,'(1p5d14.6)') r(j),vpseudo(j,ict,i),d2pot(j,ict,i),-znuc(ict)/r(j),-2*znuc(ict)/r(j)**3
+              if(i.eq.2) write(36,'(1p5d14.6)') r(j),vpseudo(j,ict,i),d2pot(j,ict,i),-znuc(ict)/r(j),-2*znuc(ict)/r(j)**3
+              if(i.eq.3) write(37,'(1p5d14.6)') r(j),vpseudo(j,ict,i),d2pot(j,ict,i),-znuc(ict)/r(j),-2*znuc(ict)/r(j)**3
+            endif
+  190   continue
+
+  200 continue
+
+c     call gesqua(nquad,xq0,yq0,zq0,wq)
+c     call gesqua(nquad,xq0,yq0,zq0,wq)
+c     call gesqua(nquad,xq,yq,zq,wq)
+
+c     write(6,'(''quadrature points'')')
+c     do 210 i=1,nquad
+c 210   write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+
+      return
+
+  999 write(6,'(''Error: Pseudopot. file '',a20,'' is missing'')') filename
+      stop 'Pseudopot. file is missing'
+
+      end

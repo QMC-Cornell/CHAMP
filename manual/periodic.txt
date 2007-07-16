@@ -1,0 +1,2 @@
+At the moment, only one point k in the simulation cell (corresponding to several points k in the primitive cell)
+The only one point k is chosen so that one can use real orbitals.

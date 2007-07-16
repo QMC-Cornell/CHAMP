@@ -1,0 +1,437 @@
+  test: quench1
+
+Quench: local least-squares optimizer. Authors: Peter Nightingale & Cyrus Umrigar
+istep,chisqmin,err:    43 0.478725253E-17 0.893238726E-09
+acceptance,marquardt parm 0.883721   0.22E-16
+parm -.140606E-05 -.441727E-05
+
+
+  test: quench
+
+Quench: local least-squares optimizer. Authors: Peter Nightingale & Cyrus Umrigar
+istep=        1
+pold  1.00000      2.00000    
+pdif -.548881     -.282553    
+efo,efn,efo-efn 0.3686E+11 0.49E+10 0.32E+11 0.32E+11
+mar.par. acceptance av_mov_acc accptd  0.10D-04  1.0000  0.8894  1
+drift,grad  0.6173D+00  0.1210D+12
+change -0.7371D+11
+cosold cos_on  0.9865D+00  0.0000D+00
+
+istep=        3
+pold 0.238801     0.885940    
+pdif -.101899     -.438370    
+efo,efn,efo-efn 0.3871E+09 0.88E+07 0.38E+09 0.38E+09
+mar.par. acceptance av_mov_acc accptd  0.15D-07  1.0000  0.9329  3
+drift,grad  0.4501D+00  0.9411D+10
+change -0.7742D+09
+cosold cos_on  0.1828D+00  0.9998D+00
+
+istep=        5
+pold -.319506E-02 -.159676E-01
+pdif 0.682775E-03 0.807511E-02
+efo,efn,efo-efn 0.3200E+06 0.23E-03 0.32E+06 0.32E+06
+mar.par. acceptance av_mov_acc accptd  0.14D-11  1.0000  0.8487  5
+drift,grad  0.8104D-02  0.3558D+09
+change -0.6399D+06
+cosold cos_on  0.2219D+00 -0.9782D+00
+
+istep=        7
+pold -.130876E-02 -.411164E-02
+pdif 0.140661E-02 0.441909E-02
+efo,efn,efo-efn 0.4158E-05 0.13E-04-0.86E-05
+mar.par. acceptance av_mov_acc accptd  0.35D-13  1.0000  0.7976  0
+drift,grad  0.4638D-02  0.4828D+03
+change -0.1790D-04
+cosold cos_on  0.7994D-05  0.1000D+01
+
+istep=        9
+pold 0.978517E-04 0.307447E-03
+pdif -.195328E-04 -.614015E-04
+efo,efn,efo-efn 0.1274E-04 0.47E-10 0.13E-04 0.42E-05
+mar.par. acceptance av_mov_acc accptd  0.72D-13  0.8889  0.5944  1
+drift,grad  0.6443D-04  0.2245D+04
+change -0.2547D-04
+cosold cos_on  0.1761D-03 -0.1000D+01
+
+istep=       11
+pold 0.492116E-04 0.154603E-03
+pdif -.125847E-04 -.395359E-04
+efo,efn,efo-efn 0.7669E-11 0.24E-11 0.53E-11 0.53E-11
+mar.par. acceptance av_mov_acc accptd  0.12D-13  0.9091  0.7540  3
+drift,grad  0.4149D-04  0.4597D+00
+change -0.8366D-11
+cosold cos_on  0.4387D-06  0.1000D+01
+
+istep=       13
+pold 0.236924E-04 0.744319E-04
+pdif -.103554E-04 -.325326E-04
+efo,efn,efo-efn 0.5786E-12 0.12E-12 0.46E-12 0.46E-12
+mar.par. acceptance av_mov_acc accptd  0.41D-15  0.9231  0.8508  5
+drift,grad  0.3414D-04  0.2779D+00
+change -0.1061D-11
+cosold cos_on  0.1118D-06  0.1000D+01
+
+istep=       15
+pold 0.707855E-05 0.222379E-04
+pdif -.687221E-05 -.215897E-04
+efo,efn,efo-efn 0.1351E-13 0.11E-15 0.13E-13 0.13E-13
+mar.par. acceptance av_mov_acc accptd  0.11D-16  0.9333  0.9095  7
+drift,grad  0.2266D-04  0.6433D-01
+change -0.5576D-13
+cosold cos_on  0.3825D-07  0.1000D+01
+
+istep,chisqmin,err:    15 0.111344658E-15 0.430783507E-08
+acceptance,marquardt parm 0.933333   0.11E-16
+parm 0.206341E-06 0.648240E-06
+
+test:  LU-mode: minimum at: 
+   0.0000002063   0.0000006482
+
+  test: quench
+
+Quench: local least-squares optimizer. Authors: Peter Nightingale & Cyrus Umrigar
+svd_gaus: amins,amaxs  0.46D+03 0.45D+06
+sing. val. ratios:  1.0     0.10E-02
+istep=        1
+pold  1.00000      2.00000    
+pdif -.548881     -.282553    
+efo,efn,efo-efn 0.3686E+11 0.49E+10 0.32E+11 0.32E+11
+mar.par. acceptance av_mov_acc accptd  0.10D-04  1.0000  0.8894  1
+drift,grad  0.6173D+00  0.1210D+12
+change -0.7371D+11
+cosold cos_on  0.9865D+00  0.0000D+00
+
+svd_gaus: amins,amaxs  0.33D+03 0.15D+06
+sing. val. ratios:  1.0     0.22E-02
+svd_gaus: amins,amaxs  0.26D+03 0.34D+06
+sing. val. ratios:  1.0     0.77E-03
+istep=        3
+pold 0.238802     0.885941    
+pdif -.101900     -.438370    
+efo,efn,efo-efn 0.3871E+09 0.88E+07 0.38E+09 0.38E+09
+mar.par. acceptance av_mov_acc accptd  0.15D-07  1.0000  0.9329  3
+drift,grad  0.4501D+00  0.9411D+10
+change -0.7742D+09
+cosold cos_on  0.1828D+00  0.9998D+00
+
+svd_gaus: amins,amaxs  0.13D+03 0.41D+06
+sing. val. ratios:  1.0     0.33E-03
+svd_gaus: amins,amaxs  0.46D+01 0.44D+06
+sing. val. ratios:  1.0     0.10E-04
+istep=        5
+pold -.319484E-02 -.159675E-01
+pdif 0.682574E-03 0.807507E-02
+efo,efn,efo-efn 0.3200E+06 0.23E-03 0.32E+06 0.32E+06
+mar.par. acceptance av_mov_acc accptd  0.14D-11  1.0000  0.8487  5
+drift,grad  0.8104D-02  0.3558D+09
+change -0.6400D+06
+cosold cos_on  0.2220D+00 -0.9782D+00
+
+svd_gaus: amins,amaxs  0.24D+01 0.44D+06
+sing. val. ratios:  1.0     0.53E-05
+svd_gaus: amins,amaxs  0.12D+01 0.44D+06
+sing. val. ratios:  1.0     0.28E-05
+istep=        7
+pold -.130876E-02 -.411162E-02
+pdif 0.140663E-02 0.441912E-02
+efo,efn,efo-efn 0.4158E-05 0.13E-04-0.86E-05
+mar.par. acceptance av_mov_acc accptd  0.35D-13  1.0000  0.7976  0
+drift,grad  0.4638D-02  0.4828D+03
+change -0.1790D-04
+cosold cos_on  0.7994D-05  0.1000D+01
+
+svd_gaus: amins,amaxs  0.93D-01 0.44D+06
+sing. val. ratios:  1.0     0.21E-06
+svd_gaus: amins,amaxs  0.93D-01 0.44D+06
+sing. val. ratios:  1.0     0.21E-06
+istep=        9
+pold 0.978700E-04 0.307505E-03
+pdif -.195369E-04 -.614144E-04
+efo,efn,efo-efn 0.1274E-04 0.47E-10 0.13E-04 0.42E-05
+mar.par. acceptance av_mov_acc accptd  0.72D-13  0.8889  0.5944  1
+drift,grad  0.6445D-04  0.2245D+04
+change -0.2547D-04
+cosold cos_on  0.1761D-03 -0.1000D+01
+
+svd_gaus: amins,amaxs  0.74D-01 0.44D+06
+sing. val. ratios:  1.0     0.17E-06
+svd_gaus: amins,amaxs  0.47D-01 0.44D+06
+sing. val. ratios:  1.0     0.10E-06
+istep=       11
+pold 0.491927E-04 0.154543E-03
+pdif -.125878E-04 -.395458E-04
+efo,efn,efo-efn 0.7662E-11 0.24E-11 0.53E-11 0.53E-11
+mar.par. acceptance av_mov_acc accptd  0.12D-13  0.9091  0.7540  3
+drift,grad  0.4150D-04  0.4616D+00
+change -0.8369D-11
+cosold cos_on  0.4368D-06  0.1000D+01
+
+svd_gaus: amins,amaxs  0.35D-01 0.44D+06
+sing. val. ratios:  1.0     0.78E-07
+svd_gaus: amins,amaxs  0.22D-01 0.44D+06
+sing. val. ratios:  1.0     0.50E-07
+istep=       13
+pold 0.236898E-04 0.744238E-04
+pdif -.103329E-04 -.324619E-04
+efo,efn,efo-efn 0.5772E-12 0.12E-12 0.46E-12 0.46E-12
+mar.par. acceptance av_mov_acc accptd  0.41D-15  0.9231  0.8508  5
+drift,grad  0.3407D-04  0.2771D+00
+change -0.1057D-11
+cosold cos_on  0.1119D-06  0.1000D+01
+
+svd_gaus: amins,amaxs  0.13D-01 0.44D+06
+sing. val. ratios:  1.0     0.28E-07
+svd_gaus: amins,amaxs  0.66D-02 0.44D+06
+sing. val. ratios:  1.0     0.15E-07
+istep=       15
+pold 0.694253E-05 0.218106E-04
+pdif -.742632E-05 -.233305E-04
+efo,efn,efo-efn 0.1437E-13 0.36E-15 0.14E-13 0.14E-13
+mar.par. acceptance av_mov_acc accptd  0.91D-18  0.9333  0.9095  7
+drift,grad  0.2448D-04  0.6758D-01
+change -0.6191D-13
+cosold cos_on  0.3742D-07  0.1000D+01
+
+istep,chisqmin,err:    15 0.363101863E-15 0.777926585E-08
+acceptance,marquardt parm 0.933333   0.91E-18
+parm -.483791E-06 -.151987E-05
+
+test:  SVD-mode: minimum at: 
+  -0.0000004838  -0.0000015199
+
+  test: anneal
+
+Anneal: global least-squares optimizer. Authors: Peter Nightingale and Cyrus Umrigar
+itemp,temp    1  0.3631D-13  0.3631D-13
+temp,istep=  0.3631D-13        1
+pold -.483791E-06 -.151987E-05
+pdif -.146521E-10 -.457265E-10
+efo,efn,n_to_o,o_to_n,r 0.36D-15 0.23D-14 0.49D+02 0.49D+02 0.18D-19
+acceptance mar.par. accptd     1.0000  0.10D-04  1
+
+temp,istep=  0.3631D-13        3
+pold -.483813E-06 -.151994E-05
+pdif 0.649007E-10 0.203649E-09
+efo,efn,n_to_o,o_to_n,r 0.80D-14 0.44D-14 0.48D+02 0.48D+02-0.23D-19
+acceptance mar.par. accptd     1.0000  0.70D-05  1
+
+temp,istep=  0.3631D-13        5
+pold -.483744E-06 -.151973E-05
+pdif -.112558E-09 -.354872E-09
+efo,efn,n_to_o,o_to_n,r 0.78D-14 0.10D-14 0.47D+02 0.48D+02-0.22D-19
+acceptance mar.par. accptd     1.0000  0.36D-05  1
+
+temp,istep=  0.3631D-13        7
+pold -.483929E-06 -.152031E-05
+pdif 0.890185E-10 0.281689E-09
+efo,efn,n_to_o,o_to_n,r 0.16D-13 0.46D-14 0.48D+02 0.48D+02-0.15D-19
+acceptance mar.par. accptd     1.0000  0.15D-05  1
+
+temp,istep=  0.3631D-13        9
+pold -.483829E-06 -.151999E-05
+pdif -.681753E-10 -.216311E-09
+efo,efn,n_to_o,o_to_n,r 0.35D-14 0.21D-13 0.48D+02 0.47D+02 0.95D-20
+acceptance mar.par. accptd     1.0000  0.58D-06  1
+
+
+T,Emin,E,E/T,C,acc.,marq.:  1 0.36E-13 0.363102E-15 0.15955E-13 0.43942       0.50541  1.0000  0.34E-06
+chisqmin 0.363102D-15
+parm -.483791E-06 -.151987E-05
+
+itemp,temp    2  0.3631D-13  0.3631D-14
+temp,istep=  0.3631D-14        1
+pold -.483927E-06 -.152030E-05
+pdif -.123946E-09 -.385879E-09
+efo,efn,n_to_o,o_to_n,r 0.91D-13 0.11D-14 0.24D+02 0.49D+02-0.17D-19
+acceptance mar.par. accptd     1.0000  0.20D-06  1
+
+temp,istep=  0.3631D-14        3
+pold -.483809E-06 -.151993E-05
+pdif 0.217134E-09 0.682830E-09
+efo,efn,n_to_o,o_to_n,r 0.38D-14 0.14D-16 0.47D+02 0.48D+02-0.33D-21
+acceptance mar.par. accptd     1.0000  0.69D-07  1
+
+temp,istep=  0.3631D-14        5
+pold -.483427E-06 -.151873E-05
+pdif -.235152E-09 -.737986E-09
+efo,efn,n_to_o,o_to_n,r 0.11D-16 0.49D-14 0.48D+02 0.47D+02-0.38D-21
+acceptance mar.par. accptd     1.0000  0.23D-07  1
+
+temp,istep=  0.3631D-14        7
+pold -.483684E-06 -.151954E-05
+pdif 0.279347E-09 0.877080E-09
+efo,efn,n_to_o,o_to_n,r 0.45D-15 0.78D-15 0.48D+02 0.48D+02-0.42D-21
+acceptance mar.par. accptd     1.0000  0.73D-08  1
+
+temp,istep=  0.3631D-14        9
+pold -.482943E-06 -.151721E-05
+pdif -.103184E-08 -.324036E-08
+efo,efn,n_to_o,o_to_n,r 0.96D-14 0.53D-15 0.44D+02 0.47D+02-0.44D-21
+acceptance mar.par. accptd     1.0000  0.23D-08  1
+
+
+T,Emin,E,E/T,C,acc.,marq.:  2 0.36E-14 0.112470E-16 0.22155E-14 0.61016       0.63498  1.0000  0.13E-08
+chisqmin 0.112470D-16
+parm -.483427E-06 -.151873E-05
+
+test:  LU-mode: minimum at: 
+  -0.0000004827  -0.0000015164
+
+  test: anneal
+
+Anneal: global least-squares optimizer. Authors: Peter Nightingale and Cyrus Umrigar
+itemp,temp    1  0.3631D-13  0.3631D-13
+svd_gaus: amins,amaxs  0.45D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.45D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-13        1
+pold -.482700E-06 -.151645E-05
+pdif 0.480952E-10 0.150753E-09
+efo,efn,n_to_o,o_to_n,r 0.11D-14 0.43D-14 0.18D+02 0.18D+02 0.29D-19
+acceptance mar.par. accptd     1.0000  0.10D-04  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-13        3
+pold -.482652E-06 -.151630E-05
+pdif -.297105E-11 -.830565E-11
+efo,efn,n_to_o,o_to_n,r 0.38D-14 0.26D-13 0.18D+02 0.17D+02 0.14D-18
+acceptance mar.par. accptd     1.0000  0.70D-05  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-13        5
+pold -.482661E-06 -.151633E-05
+pdif 0.727791E-10 0.226751E-09
+efo,efn,n_to_o,o_to_n,r 0.32D-15 0.26D-13 0.17D+02 0.17D+02 0.85D-19
+acceptance mar.par. accptd     1.0000  0.36D-05  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-13        7
+pold -.482647E-06 -.151628E-05
+pdif -.174659E-09 -.548243E-09
+efo,efn,n_to_o,o_to_n,r 0.45D-14 0.52D-15 0.16D+02 0.16D+02-0.53D-20
+acceptance mar.par. accptd     1.0000  0.15D-05  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-13        9
+pold -.482789E-06 -.151673E-05
+pdif -.228029E-09 -.714290E-09
+efo,efn,n_to_o,o_to_n,r 0.30D-14 0.64D-13 0.16D+02 0.14D+02 0.30D-19
+acceptance mar.par. accptd     1.0000  0.58D-06  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+
+T,Emin,E,E/T,C,acc.,marq.:  1 0.36E-13 0.319303E-15 0.15741E-13 0.43352       0.27985  1.0000  0.34E-06
+chisqmin 0.319303D-15
+parm -.482661E-06 -.151633E-05
+
+itemp,temp    2  0.3631D-13  0.3631D-14
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-14        1
+pold -.482788E-06 -.151672E-05
+pdif -.883433E-10 -.279805E-09
+efo,efn,n_to_o,o_to_n,r 0.24D-13 0.36D-14 0.92D+01 0.15D+02-0.36D-20
+acceptance mar.par. accptd     1.0000  0.20D-06  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-14        3
+pold -.482703E-06 -.151646E-05
+pdif 0.206425E-09 0.648314E-09
+efo,efn,n_to_o,o_to_n,r 0.51D-15 0.16D-14 0.15D+02 0.15D+02-0.34D-21
+acceptance mar.par. accptd     1.0000  0.69D-07  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-14        5
+pold -.482131E-06 -.151466E-05
+pdif 0.473533E-09 0.148764E-08
+efo,efn,n_to_o,o_to_n,r 0.11D-15 0.89D-16 0.14D+02 0.14D+02-0.11D-21
+acceptance mar.par. accptd     1.0000  0.23D-07  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-14        7
+pold -.481987E-06 -.151421E-05
+pdif 0.356253E-09 0.111895E-08
+efo,efn,n_to_o,o_to_n,r 0.73D-14 0.37D-14 0.13D+02 0.13D+02 0.53D-21
+acceptance mar.par. accptd     1.0000  0.73D-08  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+temp,istep=  0.3631D-14        9
+pold -.482654E-06 -.151630E-05
+pdif -.454622E-09 -.142889E-08
+efo,efn,n_to_o,o_to_n,r 0.30D-15 0.20D-14 0.14D+02 0.14D+02 0.10D-20
+acceptance mar.par. accptd     1.0000  0.23D-08  1
+
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+svd_gaus: amins,amaxs  0.46D-03 0.44D+06
+sing. val. ratios:  1.0     0.10E-08
+
+T,Emin,E,E/T,C,acc.,marq.:  2 0.36E-14 0.892249E-16 0.21065E-14 0.58013       0.34590  1.0000  0.13E-08
+chisqmin 0.892249D-16
+parm -.481657E-06 -.151317E-05
+
+test:  SVD-mode: minimum at: 
+  -0.0000004819  -0.0000015139

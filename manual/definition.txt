@@ -1,0 +1,87 @@
+BASIS QUANTITIES:
+----------------
+
+- Local energy:
+
+ Eloc(i)
+
+
+- Standard deviation of the local energy:
+
+sigma = sqrt[V(Eloc)]
+      = sqrt[E(Eloc^2) - E(Eloc)^2]
+      = sqrt[(1/N) Sum_{i=1..N} Eloc(i)^2 - [(1/N) Sum_{i=1..N} Eloc(i)]^2]
+
+where N is the total number of iterations ('passes').
+
+In practice, sigma is computed via the intermediate quantity
+
+eerr1 = sqrt[V(Eloc)/N]
+      = sqrt[(E(Eloc^2) - E(Eloc)^2)/N]
+      = sqrt[((1/N^2) Sum_{i=1..N} Eloc(i)^2 - [(1/N) Sum_{i=1..N} Eloc(i)]^2)/N]
+
+leading to
+
+sigma = eerr1 * sqrt(N)
+
+
+- Average of local energy on blocks:
+
+Eav(j) = (1/Ns) Sum_{i=1..Ns} Eloc(i)
+
+where Ns is the number of step per block.
+
+In CHAMP, Eav is called 'enow'.
+
+
+- Standard deviation of average of the local energy on blocks
+
+sigmab(j) = sqrt[V(Eav(j))]
+          = sqrt[E(Eav(j)^2) - E(Eav(j))^2]
+          = sqrt[(1/Ns) Sum_{i=1..Ns} Eloc(i)^2 - [(1/Ns) Sum_{i=1..Ns} Eloc(i)]^2]
+
+
+- Cummulative average of the local energy:
+
+E = (1/Nb) Sum_{j=1..Nb} Eav(j)
+
+where Nb is the number of blocks.
+
+In practice, E is computed directly as
+
+E = (1/N) Sum_{i=1..N} Eloc(i)
+
+- Standard deviation of average of the local energy (statistical error)
+
+rms error = sqrt[V(E)]
+          = sqrt[V( (1/Nb Sum_{j=1..Nb} Eav(j) )]
+          = sqrt[V(Eav(j))/Nb]        (since Eav(j) are independent)
+          = sigmab/sqrt(Nb)
+
+
+and we define in addition the following quantity
+
+rms = (rms error) * sqrt(N)
+
+
+- Autocorrelation time:
+
+Tc = Ns * (sigmab/sigma)^2
+
+In practice Tc is computed as
+
+Tc = (rms/sigma)^2
+   = N (rms error/sigma)^2
+   = (N/Nb) (sigmab/sigma)^2
+   = Ns (sigmab/sigma)^2
+
+Tc is in units of MC iterations. It should be >> Ns for the calculation of the
+rms error to be reliable.
+
+
+
+
+
+
+
+

@@ -1,0 +1,8 @@
+for file in cut.m pa*
+do
+  file_old=../../quench_anneal.old3/$file
+  echo $file_old $file
+  diff $file_old $file
+  echo ""
+done
+

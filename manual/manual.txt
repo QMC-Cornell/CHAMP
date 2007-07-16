@@ -1,0 +1,78 @@
+
+
+1) Preparation of the input from Gamess.
+
+Use gamess2qmc in the present directory with the option -J. 
+This option adds at the end of the usual champ input the symmetry (= the index of the irreducible representation) of each occupied and virtual orbital retained in the champ input in the same order than the orbitals coefficients have been written in the input.
+
+For example:
+
+orbitals
+ symmetry
+   1 2 1 2 3 3 1 4 4 2 3 3 1 1 4 4 2 2 3 3 1 2 4 4 1 2 1 2 3 3 1 4 4 2 1 2
+ end
+end
+
+means than the first orbitals is of symmetry "1", the second is of symmetry "2", the third is of the symmetry "1", etc...
+
+Note that you must include all/some virtual orbitals from gamess to optimize the occupied orbitals.
+
+The option -J also writes a minimal optimizatiom menu:
+
+optimization
+ jastrow
+ linear end
+end
+
+which means that the jastrow parameters will be optimized with the "linear method". The linear method is the default method. If you want to optimize also the CSF coefficients, write
+
+optimization
+ jastrow csfs
+ linear end
+end
+
+If you optimize also the orbitals, write
+
+optimization
+ jastrow csfs orbitals
+ linear end
+end
+
+or any other combinations.
+
+Note that you need to provide also all the information that you are familiar with for the Jastrow and CSF optimization: nparm, nparma,nparmb,nparmc, nparmcsf, iwcsf, iwjasa,iwjasb, iwjasc  in the usual part of the input. For the orbital optimization, we do not need to provide more information than that. The number of orbitals parameters to optimized is internally calculated.
+
+There is a brief help online for the menus in the input. The command
+
+help
+
+will print this help. Then, you can print the help for each menu, for example
+
+optimization
+ help
+end
+
+for the optimization help.
+
+
+2) Running the optimization.
+
+The accuracy of the optimization is controlled by the variable "tol_energy" in the usual input. The first optimization step is performed with the number of nlocks given in the input. By default, at each optimization step, the number of blocks is then increased so as to decrease the statistical error on the energy by a factor 2, until the statistical error reaches tol_energy/2. So, for example, if tol_energy=1.d-3, then the optimization will stop when the energy is converged up to 1.d-3 with a statistical error of 0.5d-3. This usually converges in < 10 iterations. At the end of the optimization, you really know that the energy is converged up to tol_energy. There is no need to do an additional VMC.
+
+You can follow the optimization with
+
+>grep OPT output
+
+For example, for a Jatrow+orbitals optimization with tol_energy=1.d-2
+
+OPT: iter    energy         error      diff    nxt err        sigma                grad norm       nxt stab
+OPT:  1   -75.2635736 +-  0.0205073   0.00000  0.01025  2.03149 +-  0.01716 168.11377 +-  4.61705  1.0D-04
+OPT:  2   -75.7461203 +-  0.0099583  -0.48255  0.00513  1.15038 +-  0.01091  10.84814 +-  2.87887  1.0D-05
+OPT:  3   -75.8015509 +-  0.0051255  -0.05543  0.00500  1.16573 +-  0.02089   3.90054 +-  1.18682  1.0D-05
+OPT:  4   -75.8104097 +-  0.0049896  -0.00886           1.10583 +-  0.01206   3.06204 +-  1.01643 converged
+
+where "diff" in the energy difference between two steps, "nxt err" is the target statistical error for the next step, "grad norm" is the energy gradient norm, and "nxt stab" is the predicted value of adiag for the next step.
+
+The predicted new wave function is printed after each step.
+
+

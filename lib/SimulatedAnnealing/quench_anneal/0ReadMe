@@ -1,0 +1,486 @@
+$Log: 0ReadMe,v $
+Revision 1.1.1.1  2006/10/08 19:38:15  toulouse
+champ
+
+Revision 1.8  2003/07/14 17:41:26  nigh
+Migrated from IRIX to Linux
+
+Revision 1.7  2002/12/20 18:59:56  nigh
+Cyrus's changes: some exact derivatives
+
+Revision 1.6  2002/06/11 17:01:45  nigh
+Introduced separate linpack, lapack and blas object libraries
+
+Revision 1.5  2002/01/21 20:00:28  nigh
+*** empty log message ***
+
+Revision 1.4  2002/01/21 19:16:27  nigh
+changed ndata to ndata_proc wherever appropriate
+
+Revision 1.3  2002/01/18 18:40:03  nigh
+introduced two-dimensional diff in func_mpi and derivs
+
+
+This README file describes how to use the non-linear least-squares
+optimization package written by Peter Nightingale and Cyrus J. Umrigar.
+
+The expression to be optimized takes the form:
+
+   func = sum_{i=1}^N ( f_i( parm ) )^2
+
+where the value of f_i depends on the nparm parameters stored in the
+array parm.  These parameters are to be adjusted to minimize func.  In a
+typical function-fitting example, f_i( parm ) = y_i - y(x_i, parm),
+where (x_i, y_i) is a measured data point and y(x, parm) is the function
+to be fitted to the data.  The number of terms in the sum of squares is
+then the number of data points, and we will refer to it as such below.
+Note, however, that the quench-anneal program is more general than this
+example; the functions f_i need not all be the same and need not depend
+on some independent variable x_i.
+
+This version of quench-anneal can be used both in sequential mode and in
+parallel mpi mode.  The modifications required to be compatible with the
+older sequential mode are restricted to the user supplied routine func,
+the description of which is given below.
+
+There are four sections in this ReadMe file:
+I.   USAGE
+II.  INSTALLATION AND VERIFICATION
+III. PARALLEL USAGE
+IV.  CAVEATS and MORE CONTROL
+
+I. USAGE
+
+You can do the optimization either by annealing or by quenching.  Anneal
+attempts to do a global optimization by a technique that marries
+simulated annealing and Levenberg-Marquardt, whereas quench does local
+optimization using a modified Levenberg-Marquardt method.  Although
+quench is a local optimizer, it can often find better local minima than
+those found by other optimization packages, including other
+Levenberg-Marquardt packages.  At present quench has been tested
+extensively while anneal has undergone only a few tests.  Consequently,
+this file only contains directions for using quench.  There are two
+possible calling sequences, 'quench', and an abbreviated version, called
+'quench1', that sets various defaults.  New users are advised to start
+by using quench1, the source code of which contains reasonable default
+parameters.  Reproduced below is the quench1 subroutine declaration.
+
+      subroutine quench1(func,jacobian,nanalytic,pold,nstep,
+     &  ndata,nparm,diff,efo,epsg,epsp,converg,mesg,ibold)
+
+The full quench subroutine declaration and the definitions of its
+parameters are as follows.
+
+      subroutine quench(func,jacobian,nanalytic,pold,pmarquardt,tau,
+     &  noutput,nstep,ndata,nparm,ipr,diff,efo,epsg,epsp,epsch2,converg,
+     &  mesg,ibold,cholesky,rot_wt,eps_diff)
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+func          = func(ndata_proc,nparm,parm,diff,ioffset)
+                User-supplied function that returns the value of the sum
+                of squares to be optimized.  For details and an example
+                see below (search for "x_average").  Make sure that you
+                understand the discussion about parallel usage before
+                writing your own version of func. NOTE: ndata_proc=ndata in
+                sequential mode only; details for parallel mode follow.
+jacobian      = if nanalytic>0 jacobian evaluates jacobian
+                function jacobian(ndata,nparm,nanalytic,parm,ajac)
+nanalytic     = number of parameters for which analytic derivatives provided by jacobian
+                The first nparm-nanalytic derivatives are worked out by
+                quench-anneal using finite differences followed by nanalytic derivatives
+                from jacobian
+pold          = initial parameter estimates
+pmarquardt    = initial value of the Marquardt parameter
+tau           = sets time scale of changes of the Marquardt parameter
+noutput       = produce output every this many steps
+nstep         = maximum number of minimization steps performed
+ndata         = number of data to be fitted
+nparm         = number of adjustable parameters
+ipr           = print flag: ipr.lt.0 no output, except fatal errors
+                            ipr.eq.0 almost no output
+                            ipr.eq.1 parameters and object function for
+                                     interation steps determined by noutput
+                            ipr.eq.2 full diagnostic output at those times
+diff          = errors at each data point (residuals)
+efo           = sum of squares after minimization
+epsg,epsp,epsch2,converg,mesg = see subr. step
+epsg          = convergence if gnorm < epsg, where gnorm is the one-norm
+                of the scaled gradient with components B(i)/A(i,i)
+epsp          = convergence if, for all i:
+                   abs(pdif(i)) <= epsp max( 1, |p(i)| )
+epsch2        = convergence if max_number of sum-of-square values
+                have relative differences less than epsch2.
+                max_number=4 by default. see common/chi2_min/
+converg       = .true. if convergence has occurred
+mesg          = "gradient", "parameter", "both" depending on convergence
+                criterion met
+ibold         = boldness level of moves.
+                0 = no uphill moves accepted
+                abs(ibold)=1-4 uphill moves accepted with increasing boldness.
+                Usually a non-zero value of ibold gives faster convergence
+                but it can occasionally lead to oscillations.
+                if ibold>0, ibold is adjusted dynamically.
+                although it seems like a good idea, tests show that dynamic ibold
+                makes convergence slower, so it is better to use negative ibolds
+cholesky      = .true. use LU decomposition; .false. use singular
+                value decomposition
+rot_wt        = interpolate between shifted Gauss-Newton (1) and
+                unshifted Gauss-Newton (0).
+eps_diff      = relative numerical accuracy of residues; used if greater
+                than dbl_epsilon for increments in numerical differentiation
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+After the call to quench you could print out something like:
+
+      if(converg) then
+        write(6,'(''chisq='',d12.6,i5,'' func evals, convergence: '',
+     &    a10)') err2,icalls,mesg
+      else
+        write(6,'(''chisq='',d12.6,i5,'' func evals, no convergence''
+     &    )') err2,icalls
+      endif
+
+assuming that you have
+
+      common / fcn_calls / icalls
+
+both in func and in the routine that calls quench, where icalls is
+initialized to zero before the optimization and is increased by one at
+every evaluation of func.
+
+Note that func has to be declared a function, whereas in some other
+packages it is a subroutine.  So you may have to change func from
+subroutine to function and include lines in func such as:
+
+      do 130 i=1,ndata_proc
+ 130    func=func+diff(i)**2
+
+You also need the following declarations in the calling program:
+
+      character*10 mesg
+      logical converg,cholesky
+      external func
+
+To allow both sequential and parallel modes, the user-supplied function
+func is called twice by each processor, first with ioffset non-negative
+and then with ioffset negative.  On the first call, each processor is
+supposed to process only a chunk of the full data.  The number of data
+in the chunk, provided via the integer argument ndata_proc, is
+therefore LESS than the full data length (unless there is only one
+processor).  The chunk to be processed starts at offset ioffset + 1 and
+finishes at offset ioffset + ndata_proc, inclusive.
+
+The true func and diff values only have to be computed on the second
+call, when ioffset is < 0 and ndata_proc is the full data length.  Note
+that each processor handles all the data this time, so the amount of
+computation required on the second call should be kept as small as
+possible.
+
+The rationale behind this scheme is that in parallel mode each processor
+only computes a chunk of the array diff, while the ultimate value of
+diff might depend on results for all data.  For example, suppose diff(i)
+= x(i) - x_average, i=1,...,N, where x_average= (1/N) \sum_{i=1}^N x(i).
+Then, on the first iteration, each processor would compute
+
+      do i=1,ndata_proc
+        diff(i) = x(i+ioffset)
+      enddo
+
+for its chunk of data, with ndata_proc the number of data processed on that
+processor (the chunk size).  Note that func must always fill in the
+first ndata_proc elements of the diff array provided to it, even if the
+chunk it is processing does not correspond to ioffset=0.
+
+After the first call, the quench-anneal package gathers the chunks of
+the diff array calculated by each processor and puts them into the full
+diff array, appropriately shifted so that the chunks are effectively
+concatenated.  At this stage (before the second call) the complete diff
+array is available on every processor.  The quench-anneal package then
+calls func again, this time with ioffset < 0 and the value of ndata_proc set
+equal to the full data length N.  On this iteration, func would
+calculate:
+
+      x_average=0
+      do i=1,ndata_proc
+        x_average=x_average+diff(i)
+      enddo
+      x_average = x_average/ndata_proc
+      do i=1,ndata_proc
+        diff(i)=diff(i)-x_average
+      enddo
+
+ADDITIONAL FEATURE:
+
+Sometimes computational efficiency requires that the subroutine func
+calculate several arrays, not just the array x in the previous example.
+These arrays subsequently have to be shared among the different
+processes.  For instance, suppose that a weighted average is to be
+computed with weights that depend on the parameters to be optimized. In
+that case, in addition to the variable x to be averaged, the weights
+have to computed and shared.  This can be done by using a
+two-dimensional array diff, with diff(.,1)=x(.) as defined as above,
+where diff(.,2) contains the weights, different ones of which are
+computed in parallel during the first call to func, while their
+totality is used by each process in the computation in the second call
+of func.  The default for the second dimension of diff is unity, but it
+can be changed in common/quenchsim_diff/ndim1_diff,ndim2_diff by
+setting ndim2_diff to the desired value; ndim1_diff is automatically
+set to ndata, as defined in the call to subroutines quench and
+quench1.
+
+An example of func is:
+
+      function sumslat(ndata_proc,nparm,parm,diff,ioffset)
+c ndata_proc = number of data (sequential mode)
+c              number of data in current chunk (parallel mode)
+c nparm      = number of parameters
+c diff       = quantities the sum of squares of which is to be minimized
+c ioffset    = negative, final call, diff and function value have to be returned
+c              non-negative, first call
+c Residues of sum of Slater fns. in diff and chi^2 in sumslat
+      implicit real*8(a-h,o-z)
+      include '../dimen.h'
+      common/depvar/y(MDATA)
+      common /fcn_calls/icalls
+      dimension parm(nparm),diff(ndata_proc)
+c the previous line can in principle be changed to the following two:
+c     common/quenchsim_diff/ndim1_diff,ndim2_diff by
+c     dimension parm(nparm),diff(ndim1_diff,ndim2_diff)
+      if(ioffset.ge.0) then       ! this is the first call
+        icalls=icalls+1
+c residues of model function
+        do i=1,ndata_proc
+          diff(i)=slat(parm,nparm,i+ioffset)-y(i+ioffset)
+          sumslat=sumslat+diff(i)**2 ! in parallel mode this lacks meaning
+        enddo
+       else                       ! this is the final call
+c residues of model function
+        sumslat=0
+        do i=1,ndata_proc
+          sumslat=sumslat+diff(i)**2
+        enddo
+      endif
+      return
+      end
+
+Note that in this example two calls to func would not have been
+required.
+
+You can run Quench in either LU mode or SVD mode.  SVD mode is more
+informative and is possibly preferable if one is very close to a linear
+dependency in the parameter space, but LU mode is faster:
+
+  LU : cholesky=.true.
+  SVD: cholesky=.false.
+
+When you exceed the maximum number of parameters or data points, you
+have to edit the appropriate parameters of the include file dimen.h:
+MPARM and MDATA.  Subsequently the library should be recompiled; the
+simplest procedure is to restart from scratch as explained below.
+
+
+II. INSTALLATION AND VERIFICATION
+
+The quench-anneal library consists of three archive (.a) files.  These
+are: ./libquench.a, which contains sequential (i.e. MPI-independent)
+object files used by both the sequential and MPI versions of the
+library; ./libquench_seq.a, which contains object files used only by the
+sequential version of the library; and ./libquench_mpi.a, which contains
+object files used only by the MPI version of the library.
+
+Before you can start building these archives, you have to set various
+machine parameters in the file ./include/parameters.h.  If you run IRIX,
+Solaris, AIX, or Linux you will find suitable parameters.h files in the
+./parameters subdirectory; simply copy the appropriate file to
+./include/parameters.h.  Otherwise, you will have to create a new
+parameters.h file for your machine.  The parameters to be adjusted are:
+DBL_MAX, DBL_MIN, DBL_EPSILON, and the derived quantities CUTHI and
+CUTLO, which can be computed from DBL_MAX, DBL_MIN and DBL_EPSILON using
+the mathematica script ./parameters/cut.m.  Usually, the appropriate
+values of DBL_MAX, DBL_MIN, and DBL_EPSILON can be found in
+/usr/include/float.h, where they have the same names.  The values of
+CUTHI and CUTLO are defined by:
+
+     CUTHI=sqrt(DBL_MAX/DBL_EPSILON)
+     CUTLO=sqrt(DBL_MIN)
+
+Currently, the differences in the DBL-variables are minute; in the
+CUT-variables (truncated to four or five sig. figs. because of the
+square root) they are non-existent.
+
+The next step is to read the beginning of the Makefile (as far as the
+point where it says that you need not read any further) and make the changes
+indicated there.  In fact if you are running under IRIX, or AIX or Linux
+you may not need to make any changes at all.  Then use gmake to make the
+libraries.  There are 3 libraries:
+./lib/libquench.a contains routines that are used both for sequential and parallel runs,
+./lib/libquench_seq.a contains routines that are used for sequential runs, and
+./lib/libquench_mpi.a contains routines that are used for parallel runs.
+To make both the sequential and the mpi libraries all you should then have to do is
+type "gmake" or "make all" (which is a synonym).  To make the sequential version only
+type "gmake seq" and to make the parallel version only type "gmake mpi".
+(Of course, you can only make the parallel verion if MPI is installed on your system).
+At present the parallel version will not be made if the compiler you use does not
+support pointers.
+On most systems, running "gmake", "gmake seq", or "gmake mpi" does not leave any
+unwanted object or other intermediate files hanging around, but "gmake
+clean" will get rid of any there are and "gmake clean_all" will get rid of
+the libraries too.
+
+The directory ./lib_standard contains subdirectories blas, lapack and
+linpack that contain some standard basic linear algebra, LINPACK,
+LAPACK, and BLAS routines that may already be available on your
+system.  They are only included to make the package complete.  If you
+wish, you can remove the corresponding object libraries (lib/lib*.a)
+once you have you have gmade successfully.  With the libraries removed,
+a subsequent gmake will fail unless you modify the tests/Makefile so
+that your libraries are included.  Finally, of the two, LINPACK and
+LAPACK, you only need one: LAPACK if math/svd_gaus_test.F defines
+LAPACK (look for "#define LAPACK"); LINPACK if not.
+
+NOTE: if you are using the Intel compiler ifc, your code may be IO
+incompatible with precompiled blas and Lapack libraries.  A load
+error will result. You have to recompile xerbla and dlamch.
+Use:
+ifc -c xerbla.f (error handler optimization irrelevant)
+ifc -O0 -c dlamch.f (HANGS with anything but -O0)
+ar rv <library> xerbla.o dlamch.o.
+
+After installation is complete, test it by going to subdirectory tests,
+running the test therein and comparing the output to one of the standard outputs
+provided.  At present the test is done only for nanalytic=0.
+We also have a more extensive set of tests, but these are not included
+in the package since they are used to test the performance of the package as
+opposed to whether the package has been correctly installed.  These longer
+tests require some MINPACK routines.
+
+III.  PARALLEL USAGE
+
+In the simplest cases the parallel version of the library can be used by
+loading the ./libquench.a and ./libquench_mpi.a libraries using the
+normal -L and -l compiler/loader options.  You may also have to specify
+the paths to the system MPI libraries.  (If your MPI installation has an
+mpif77 command or something similar, it should locate the MPI libraries
+automatically.)
+
+Input and output files are read from a file called file_names0.  (This
+is a little clumsy, and we intend to change this.)  The format of this
+file is as follows:
+
+line 1: name of standard input file
+line 2: name of standard output file
+line 3: a number n: standard output of all processes with number > n
+        will be written to /dev/null.  Note that the process numbers
+        are 0,1,2,..., through number of processes minus one.
+
+If anything goes wrong opening these files an error message will appear
+in a file called stop_file.<process number>.  In particular, if the
+specified output file already exists, the program will stop with an
+error message.
+
+The file ./main/IO_stop.F contains routines to open IO files and stop
+all processes from within any individual one.  On one of the systems
+(IRIX) on which this package was developed the ordinary FORTRAN stop
+creates a mess; the subroutine stop contained in the above file will
+avoid this.  The files created by subroutine open1 will have tags that
+identify the processes.  The routine has the option of connecting IO
+units of processes to /dev/null, which eliminates the output without
+changing the source code.  This helps to keep constructs required for
+parallelism localized to a very small portion of the code.
+
+The first call to func is used to time the real time behavior of the
+various processes.  Subsequent chunks are proportional to the efficiency
+of each process.  The user should avoid synchronizing the processes
+during this first call, since this will throw off the load balance.
+
+Before the first call to quench/anneal something like the following code
+should be executed:
+
+  initialize=.true. ! to start mpi; .false. will suppress this.
+  show_load_chunks=.true. ! to print (much) output showing the load balance
+  call start_mpi(initialize,iproc,nproc,show_load_chunks)
+
+upon return:
+
+  iproc is the number of the calling parallel process
+  nproc is the total number of parallel processes 1 <= iproc < nproc
+
+Multiples of chunks of length iatom of the diff array (the sum of the
+squares of the elements of which is the object of our minimization) are
+farmed out to the parallel processes.  Usually, iatom=1.
+
+      call init_atom_mpi(iatom)
+
+At the end insert in your code:
+
+      finalize=.true. ! .false. if mpi is not to be terminated.
+      call stop_mpi(finalize)
+
+The program has the capability to run efficiently in parallel when one
+has two sets of residues, one of which takes negligible computational
+time.  An example of this is the residues coming from imposing
+penalties.  One needs to make a call to init_more_data
+
+      call init_more_data(more_data_qa1)
+
+to tell the program hnow many additional residues there are.  These are
+presently set to be the first elements of the array diff and are
+computed by the first processor only.  See routine chunks_mpi in
+func_mpi.F for details.
+
+The present parallel version requires compilers that support pointers
+(see Makefile for more details) but that could easily be remedied.
+
+IV.  CAVEATS and MORE CONTROL
+
+If no routine is supplied to compute analytic derivatives with respect
+to the parameters, the program computes these derivatives numerically,
+with a finite difference scheme.  For this purpose function evaluations
+are done at modified values of the parameters.  For a parameter of
+magnitude greater than one, the size of the modification is relative,
+but if the magnitude of the parameter is less than one, the change is
+absolute.  This approach will cause problems for parameters whose
+optimal scale is considerably less than one.  It is the user's
+responsibility to scale each variable so that its scale exceeds one.
+
+The finite differences are computed at points chosen on the basis of the
+assumption that derivatives of various orders are of the same order of
+magnitude and that the function values are computed to machine
+accuracy. The variable eps_diff (see above and below) should be used to
+change this default behavior.
+
+The program uses a two-point forward difference approximant until it is
+close to convergence.  Then it switches to a three-point central
+difference approximant.  This default behavior can be modified by
+setting the common-block variables:
+
+      logical central_derivs_qs
+      integer num_deriv_points_qs
+      common / quenchsim_derivs / central_derivs_qs, num_deriv_points_qs
+
+Set:
+  1. central_derivs_qs = .true. to use central differences throughout.
+  2. num_deriv_points_qs = 3 for three-point scheme.
+  3. num_deriv_points_qs = 5 for five-point scheme.
+
+Note: the three- and five-point approximants do not use the central
+point, but the central point is computed for other reasons anyway.  Also
+note that for the n-point scheme, the differences between the points are
+max(eps_diff,DBL_EPSILON)**(1./n), so that higher-order schemes suffer
+less from numerical cancelation.
+
+The logical variable called_by_qa in
+
+   common / quenchsim_pr / ipr_com, called_by_qa
+
+can be used to determine whether func is being called by the routine
+computing the derivatives or by the routines checking the value of the
+sum of squares.  In the latter case called_by_qa=.true.  This feature
+may be used to print information from func without too much unnecessary
+chatter.
+
+V. ACKNOWLEDGEMENTS
+
+We thank Matthew Foulkes for his contributions to the Makefile.

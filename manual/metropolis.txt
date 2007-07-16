@@ -1,0 +1,16 @@
+ACCELERATED METROPOLIS AGORITHM (metrop6)
+--------------------------------
+
+One step of metropolis:
+
+loop over electrons
+  propose one electron move
+  calculate new wave function with hpsie
+  accept or reject the move
+end loop over electrons
+
+calcule psi with hpsi
+
+
+
+

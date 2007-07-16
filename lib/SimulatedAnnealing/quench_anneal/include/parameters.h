@@ -1,0 +1,34 @@
+c Date of last modification: Mon Dec 11 18:11:23 EST 2000
+      double precision ZERO, ONE, TWO, THREE, FOUR, FIVE,
+     &  SIX, SEVEN, EIGHT, NINE, TEN,
+     &  HALF, THIRD, TENTH, TWO_THIRDS, CONSTMAR, EXPMAR,
+     &  REALMIN, REALMAX, PRECISION,
+     &  DBL_MAX, DBL_MIN, DBL_EPSILON, CUTHI, CUTLO
+      parameter( ZERO=0.d0,
+     &           ONE=1.0d0,
+     &           TWO=2.0d0,
+     &           THREE=3.0d0,
+     &           FOUR=4.0d0,
+     &           FIVE=5.0d0,
+     &           SIX=6.0d0,
+     &           SEVEN=7.0d0,
+     &           EIGHT=8.0d0,
+     &           NINE=9.0d0,
+     &           TEN=10.0d0 )
+      parameter( HALF=ONE/TWO,
+     &           THIRD=ONE/THREE,
+     &           FIFTH=ONE/FIVE,
+     &           TENTH=ONE/TEN )
+      parameter( TWO_THIRDS=2*THIRD )
+      parameter( CONSTMAR=TEN, EXPMAR=-THREE )
+      parameter( REALMIN=1.0d-100, REALMAX=1.0d100,
+     &           PRECISION=1.0d-15)
+c (Red Hat Linux 6.0: DBL_MAX, DBL_MIN, DBL_EPSILON found in
+c  /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h)
+      parameter( DBL_MAX=1.7976931348623157d+308,
+     &           DBL_MIN=2.2250738585072014d-308,
+     &           DBL_EPSILON=2.2204460492503131d-16 )
+c machine parameters used in blas:
+c		CUTHI=sqrt(DBL_MAX/DBL_EPSILON) (chopped)
+c		CUTLO=sqrt(DBL_MIN) (chopped)
+      parameter( CUTHI=8.9978d+161, CUTLO=1.4917d-154 )

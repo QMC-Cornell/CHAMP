@@ -1,0 +1,20 @@
+ENERGY/VARIANCE OPTIMIZATION ALGORITHM:
+---------------------------------------
+
+1) Calculate VMC energy and sigma with the current set of parameters.
+2) Construct linear combinaison of energy and variance: energy_variance = (1-p)*energy+p*sigma^2.
+3) If wave function get too worse (energy or sigma increase too much), go back to step 1.
+4) Save energy, energy_error, sigma and energy_variance.
+5) If (energy + energy_error + p*sigma) is the lower so far, this is the best wave function. Save it.
+
+6) Calculate gradient and Hessian with 3 values of add_diag, and the corresponding 3 new sets of parameters.
+7) If the parameters in any sets are varied too much, increase add_diag and go back to step 6.
+8) Perform 3 small calculations (numbers of blocks divided by 10 in comparison to step 1) in correlated sampling of energy and sigma with the 3 sets of parameters. The first calculation is for add_diag, the second for add_diag*0.1 and the third for add_diag*10
+9) If energies and/or sigma's 1 or 3 increase too much, increase add_diag and go back to step 6.
+10) Find an optimized add_diag minimizing the energy by parabolic interpolation.If minimum is outside the range of 3 add_diag stay on the boundary.
+11) Calculation the new set of parameter for the optimized add_diag
+12) Increase number of blocks by factor 2 up to maximum number each two optimization iterations
+13) If the maximal difference between the 3 energies is lower than tolerance (possible convergence), increase the number of blocks according to the ratio (error/tolerance)^2 
+14) If the maximal difference between the 3 energies is greater than the chosen tolerance or errors on differences larger than tolerance, go back to step 1.
+15) Last VMC calculation with the final set of parameters.
+

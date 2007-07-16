@@ -1,0 +1,341 @@
+      subroutine dmc
+c Written by Cyrus Umrigar with major contributions by Claudia Filippi.
+c Uses the diffusion Monte Carlo algorithm described in:
+c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
+c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
+
+      use dmc_mod
+      implicit real*8(a-h,o-z)
+
+      character*16 mode
+      character*27 fmt
+      integer fflag
+      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Z
+     &,rlobx, rloby, rloby2
+
+      common /dim/ ndim
+      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+     &,ifock,i3body,irewgt,iaver,istrch
+     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+      common /contrl_opt2/ igradhess,iadd_diag_opt
+
+      common /fflags/ fflag
+      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+     &   xm1,xm2,xm12,xms,xma,Z
+      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
+      common /forcepar/ deltot(MFORCE),nforce,istrech
+      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+      common /force_dmc/ itausec,nwprod
+
+      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl_per/ iperiodic,ibasis
+      common /contr3/ mode
+      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+      common /iterat/ ipass,iblk
+      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
+     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
+      common /estcum_dmc/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
+     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
+     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
+     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
+     &ricum,taucum(MFORCE)
+      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+     &,iwctype(MCENT),nctype,ncent
+      common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
+     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
+     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
+     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+      common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
+      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+      common /bparm/ nspin2b,nocuspb
+      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
+     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+
+      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+
+c common block variables:
+
+c   /const/
+c      nelec    = number of electrons
+c      pi       = 3.14159...
+c      hb       = hbar**2/(2m)
+c      delta    = side of box in which metropolis steps are made
+c      deltai   = 1/delta
+c      fbias    = force bias parameter
+c   /contrl/
+c      nstep    = number of metropolis steps/block
+c      nblk     = number of blocks od nstep steps after the
+c                 equilibrium steps
+c      nblkeq   = number of equilibrium blocks
+c      nconf    = initial and target number of dmc configurations
+c      nconf_new= number of new configurations saved per processor
+c      idump    =  1 dump out stuff for a restart
+c      irstar   =  1 pick up stuff for a restart
+c   /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+c          ,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+c      tau      = time-step
+c      nfprod   = number of f's used for removing finite popul. bias
+c Control variables are:
+c idmc         < 0     VMC
+c              > 0     DMC
+c abs(idmc)    = 1 **  simple kernel using dmc.brock.f
+c              = 2     good kernel using dmc_good or dmc_good_inhom
+c ipq         <= 0 *   do not use expected averages
+c             >= 1     use expected averages (mostly in all-electron move algorithm)
+c itau_eff    <=-1 *   always use tau in branching (not implemented)
+c              = 0     use 0 / tau for acc /acc_int moves in branching
+c             >= 1     use tau_eff (calcul in equilibration runs) for all moves
+c iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
+c              = 0 **  use weights rather than accept/reject
+c             >= 1     use accept/reject
+c icross      <=-1 **  kill walkers that cross nodes (not implemented)
+c              = 0     reject walkers that cross nodes
+c             >= 1     allow walkers to cross nodes
+c                      (OK since crossing prob. goes as tau^(3/2))
+c icuspg      <= 0     approximate cusp in Green function
+c             >= 1     impose correct cusp condition on Green function
+c idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
+c              = 1     use homog. div_v to modify diffusion in good kernel
+c             >= 2     use inhomog. div_v to modify diffusion in good kernel
+c icut_br     <= 0     do not limit branching
+c             >= 1 *   use smooth formulae to limit branching to (1/2,2)
+c                      (bad because it makes energies depend on E_trial)
+c icut_e      <= 0     do not limit energy
+c             >= 1 *   use smooth formulae to limit energy (not implemented)
+
+c *  => bad option, modest deterioration in efficiency or time-step error
+c ** => very bad option, big deterioration in efficiency or time-step error
+c So, idmc=6,66 correspond to the foll. two:
+c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+c Another reasonable choice is:
+c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+
+c   /config_dmc/
+c        xoldw  = current position of the electrons
+c        xnew   = new position after a trial move
+c        voldw  = grad(psi)/psi at current position
+c        vnew   = same after trial move
+c        psi2o  = psi**2 at current position
+c        psi2n  = same after trial move
+c        eoldw  = local energy at current position
+c        enew   = same after trial move
+c        peow   = local potential at current position
+c        pen    = same after trial move
+c        peiow  = local interaction potential at current position
+c        pein   = same after trial move
+c        tjfo   = Jackson Feenberg kinetic energy at current position
+c        tjfn   = same after trial move
+c        psio   = psi
+c   /coefs/
+c        coef   = read in coefficients of the basis functions
+c                 to get the molecular orbitals used in determinant
+c        nbasis = number of basis functions read in
+c   /basis/
+c        ncent  = number of centers
+c        zex    = screening constants for each basis function
+c        cent   = positions of each center
+c        pecent = potential energy of the centers
+c        znuc   = charge of the nuclei (centers)
+c        n1s    = number of 1s functions at each center
+c        n2s    = number of 2s functions at each center
+c        n2p    = number of 2p functions of each type at each center
+c        n3s    = number of 3s functions at each center
+c        n3p    = number of 3p functions of each type at each center
+c        n3dzr  = number of z**2-r**2 d functions at each center
+c        n3dx2  = number of x**2-y**2 d functions at each center
+c        n3dxy  = number of xy d functions at each center
+c        n3dxz  = number of xz d functions at each center
+c        n3dyz  = number of yz d functions at each center
+c        n4s    = number of 4s functions at each center
+c        n4p    = number of 4p functions of each type at each center
+c   /dets/
+c        cdet   = coefficients of the determinants
+c        ndet   = number of determinants of molecular orbitals
+c                 used
+c        nup    = number of up spin electrons
+c        ndn    = number of down spin electrons
+c   /jaspar/
+c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij))
+
+c   Other variables main program
+c        title  = title of run
+c        date   = date of run
+c        eunit  = energy units
+c        sitsca = scaling factor to set up initial configuration of
+c                 electrons on sites
+c        nsite  = number of electrons to put on each site initially
+c        isite  = flag if 1 then take initial configuration from
+c                 sites routine
+c        cjasa  = simple Jastrow a (should be .5 or .25)
+c        cjasb  = simple Jastrow b
+c        ijas   = form of wavefunction
+c        isc    = form of scaled variables
+c        nspin12= If (11) Parallel-spin a's = 1/2 antipar-spin a's
+c                         Parallel-spin b's = antipar-spin b's
+c                    (12) a's and b's for par and antipar are indep.
+c                 The above applies to good psi.
+
+      stop 'this routine dmc is not used anymore'
+      call my_second(0,'begin ')
+
+      pi=four*datan(one)
+
+c initialize sums and averages
+      if(irstar.ne.1) then
+        call my_second(1,'zeres0')
+        call zeres0_dmc
+      endif
+
+c forces implemented only for certain dmc control options
+      if(nforce.gt.1) write(6,'(''Possible Warning: force implemented for certain dmc control options'')')
+
+c If nconf_new > 0 then we want to dump configurations for a future
+c optimization or dmc calculation. So figure out how often we need to write a
+c configuration to produce nconf_new configurations. If nconf_new = 0
+c then set up so no configurations are written.
+      if(nconf_new.eq.0) then
+        ngfmc=2*nstep*nblk
+       else
+        ngfmc=max(1,(nstep*nblk)*nconf/nconf_new)
+c       open(7,form='formatted',file='mc_configs_new')
+c       rewind 7
+      endif
+
+c get initial value of cpu time
+      call my_second(1,'equilb')
+      call flush(6)
+
+c     loops for dmc calculation
+      do 360 i=1,nblk+2*nblkeq
+        if((i.eq.nblkeq+1.or.i.eq.2*nblkeq+1).and.irstar.ne.1) then
+          call my_second(2,'equilb')
+          call zerest_dmc
+        endif
+c       if(i.eq.2*nblkeq+1.and.ipr.gt.-2)
+c    &  write(11,'(4i5,f11.5,f7.4,f10.7,
+c    &  '' nstep,nblk,nblkeq,nconf,etrial,tau,taueff'')')
+c    &  nstep,nblk,nblkeq,nconf,etrial,tau,taueff(1)
+
+        do 355 j=1,nstep
+          ipass=ipass+1
+          if(nloc.gt.0) call rotqua
+          if(iabs(idmc).eq.1) then
+            call dmc_brock
+           elseif(iabs(idmc).eq.2) then
+            if(abs(nloc).gt.0) then
+              call dmc_good_ps
+             elseif(idiv_v.le.1) then
+              call dmc_good
+             else
+              call dmc_good_inhom
+            endif
+           else
+            stop 'iabs(idmc) must be 1 or 2'
+          endif
+
+          call acues1_dmc
+          call splitj
+c Write out configuration for optimization/dmc/gfmc here
+c We would like to:
+c Reduce each electron to central simulation cell before writing position.
+c Warning: This may result in the sign of the wavefunction being wrong depending
+c on the k-pt and the number of cells moved.  Test done in si_cub_.5.0.0 shows this
+c gives wrong energies and moves, possibly because the velocity is no longer consistent
+c with the move, though I would have thought the velocity would be OK since both the
+c wavfn and its gradients would change sign simultaneously.  May be I need to move
+c in only even multiples of the sim. lattice.
+          if(nconf_new.gt.0 .and. i.gt.2*nblkeq .and. (mod(ipass,ngfmc).eq.1 .or. ngfmc.eq.1)) then
+            if(ndim*nelec.lt.10) then
+              write(fmt,'(a1,i1,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+             elseif(ndim*nelec.lt.100) then
+              write(fmt,'(a1,i2,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+             elseif(ndim*nelec.lt.1000) then
+              write(fmt,'(a1,i3,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+             elseif(ndim*nelec.lt.10000) then
+              write(fmt,'(a1,i4,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+             else
+              stop 'fmt not defined for ndim*nelec>10000'
+            endif
+
+            do 352 iwalk=1,nwalk
+              if(iperiodic.ne.0) then
+                do 351 jj=1,nelec
+c 351             call reduce_sim_cell(xoldw(1,jj,iwalk,1),rlatt_sim,rlatt_sim_inv)
+  351             call reduce_sim_cell(xoldw(1,jj,iwalk,1))
+              endif
+  352         write(7,fmt) ((xoldw(k,jj,iwalk,1),k=1,ndim),jj=1,nelec),
+     &        int(sign(1.d0,psidow(iwalk,1))),log(dabs(psidow(iwalk,1)))+psijow(iwalk,1),eoldw(iwalk,1)
+          endif
+
+  355   continue
+  360   call acuest_dmc
+
+      passes=dble(iblk)*dble(nstep)
+c     efin=ecum1/passes
+      efin=egcum(1)/wgcum(1)
+
+c     if(igradhess.ge.1) call grad_hess_jas_fin(passes,efin)
+      if(igradhess.ge.1) call grad_hess_jas_fin(wgcum,efin)
+      write(6,'(''passes,wgcum='',9d12.4)') passes,(wgcum(i),i=1,nforce)
+
+      call finwrt_dmc
+      call my_second(2,'all   ')
+
+      if(idump.eq.1) then
+        if(idmc.lt.0) then
+          if(index(mode,'mov1').ne.0) then
+            open(10,file='restart_dmcvmc_mov1',status='unknown',form='unformatted')
+           else
+            open(10,file='restart_dmcvmc',status='unknown',form='unformatted')
+          endif
+         else
+          if(index(mode,'mov1').ne.0) then
+            open(10,file='restart_dmc_mov1',status='unknown',form='unformatted')
+           else
+            open(10,file='restart_dmc',status='unknown',form='unformatted')
+          endif
+        endif
+        rewind 10
+        call dumper_dmc
+        close (unit=10)
+      endif
+      close (unit=9)
+c     close (unit=5)
+c     close (unit=6)
+c     if(nconf_new.ne.0) close (unit=7)
+c     if(ipr.gt.-2) close (unit=11) ! walkalize
+
+      end

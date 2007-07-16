@@ -1,0 +1,7 @@
+      integer MELEC,MORB,MBASIS,MDET,MCENT,MCTYPE,NSPLIN,nrad,MORDJ,
+     &MORDJ1,MMAT_DIM,MMAT_DIM2
+      real*8 radmax,delri
+      parameter(MELEC=70,MORB=150,MBASIS=450,MDET=10,MCENT=25,MCTYPE=3,
+     &NSPLIN=1001,MORDJ=7,radmax=8.d0,nrad=801,
+     &MMAT_DIM=(MELEC*MELEC)/4,MMAT_DIM2=(MELEC*(MELEC-1))/2,
+     &MORDJ1=MORDJ+1,delri=(nrad-1)/radmax)

@@ -1,0 +1,30 @@
+VARIANCE MINIMIZATION WITH FIT
+
+* exponents :
+number of exponents to optimized = number of total parametrs (nparm) - sum of specified numbers of parameters (nparml + nparma + nparmb + nparmc + ...)
+
+* orbitals :
+
+How many free parameters?
+If we don't take into account the symmetry, the number of free orbital parameters is n_occ*n_vir where n_occ=n is the number of occupied orbitals and n_vir=m-n is the number of virtual orbitals (m is the number of basis functions). In fit module of Champ, the non-redundant orbital coefficient parameters can be determined in the following way :
+
+- start from the n*m coefficients
+- remove one coefficient for each occupied orbitals to take into the arbitriness of normalization ( n coefficients are removed)
+- pivot each orbital using the other ones, i.e. add columns in the determinant so as to keep it unchanged but to make some coefficients zero and remove  these coefficients from the parameters to be optimized [ n*(n-1) coefficients are removed]
+We end up with n*m - n - n*(n-1) = n*m free parameters!
+
+
+things to do:
+- needs the full set of orbitals (occupied and virtual orbitals)
+- optimize only occupied orbitals!
+- don't optimize, e.g., first coef of each occupied orbital (normalization)
+Can we keep fixed any coefs for normalization, or care has to taken for the pivoting operation?
+- enforce n-e cusp condition (=> specify angular momentum lo for each orbital)
+- specify pivoting of occupied orbitals:
+    -> first symmetry group: 1 = orbital to pivot and to be used for pivoting other orbitals of the same group
+                            -1 = orbital to pivot but not to be used for pivoting other orbitals (because it does not appear in all determinants)
+    -> second symmetry group: 2, -2
+    -> third symmetry group:  3, -3
+
+* Remarks
+At the end of fit, a test is performed to check if E_ref is close enough to E_ave. If not, E_ref has to adjusted.

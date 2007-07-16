@@ -1,0 +1,190 @@
+##########################################################################
+# MACHINE-DEPENDENT COMPILATION OPTIONS FOR CHAMP
+##########################################################################
+
+system := $(shell uname)
+hostname := $(shell uname -n)
+
+####################### DEFAULTS ########################################
+
+# Libraries --------------------------------------------------------------
+
+LIBHOME=../lib
+
+QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
+CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
+
+LINPACK=-L$(LIBHOME)/lib2/linpack -llinpack
+#LINPACK=-L/usr/lib -llinpack
+
+LAPACK=-L$(LIBHOME)/lib2/lapack -llapack
+#LAPACK=-L/usr/lib/ -llapack
+
+BLAS=-L$(LIBHOME)/lib2/blas -lblas
+#BLAS=-L/usr/lib/ -lblas
+
+PSPLINE=-L$(LIBHOME)/lib2/pspline/pspline -lpspline
+
+CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
+
+
+# C compilation ------------------------------------------------------------
+
+CHAMP_C=gcc
+CHAMP_MPIC=gcc
+
+CHAMP_C_FAST=-O3 -DUNDERSCORE
+CHAMP_C_MPI=-O3 -DUNDERSCORE
+CHAMP_C_DEBUG=-DUNDERSCORE
+CHAMP_C_PROF=-O3 -DUNDERSCORE -pg
+CHAMP_C_FLAGS=$(CHAMP_C_FAST)
+
+# Fortran compilation ------------------------------------------------------
+
+CHAMP_F95=ifort
+CHAMP_F77=ifort
+CHAMP_MPIF95=mpif77
+CHAMP_MPIF77=mpif77
+
+CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
+CHAMP_F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
+CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -debug extended -debug-parameters all -g -error_limit 1 -fpp -DDEBUG
+CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
+CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
+CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -debug extended -debug-parameters all -g -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+
+CHAMP_F95_FAST=-O3 -ip -static -align all -fpp
+CHAMP_F95_IPO=-O3 -ipo -static -align all -fast -fpp
+CHAMP_F95_DEBUG=-check all -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+CHAMP_F95_PROF=-O3 -pg -fpp
+CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI
+CHAMP_F95_MPIDEBUG=-check all -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+
+# Linking  ------------------------------------------------------------------
+
+CHAMP_LD=ifort
+CHAMP_LD_MPI=mpif77
+
+CHAMP_LD_FAST=-O3 -static -align all
+CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
+CHAMP_LD_DEBUG=
+CHAMP_LD_PROF=-O3 -pg
+CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+
+CHAMP_LD_END=
+#CHAMP_LD_END_MPI=-lpmi -lpthread
+CHAMP_LD_END_MPI=
+
+# Executables -------------------------------------------------------------
+
+CHAMP_EXE=champ.exe
+CHAMP_MPI_EXE=champ_mpi.exe
+CHAMP_DEBUG_EXE=champ_debug.exe
+CHAMP_DEBUG_EXE=champ.exe
+
+####################### MACHINES ########################################
+
+# Theory Center's linux cluster
+ifeq ($(hostname),linuxlogin1.tc.cornell.edu)
+ CHAMP_MPIF77=mpif90
+ CHAMP_MPIF95=mpif90
+ CHAMP_LD_MPI=mpif90
+endif
+
+ifeq ($(hostname),linuxlogin2.tc.cornell.edu)
+ CHAMP_MPIF77=mpif90
+ CHAMP_MPIF95=mpif90
+ CHAMP_LD_MPI=mpif90
+endif
+
+# OSC Itanium cluster, requires Intel compiler >9.0
+ifeq ($(hostname),ipf-login1)
+  CHAMP_MPIF95=mpif90
+  LAPACK=-L/usr/local/mkl-7.0.1.6/mkl701/lib/64 -lmkl_lapack -lmkl_ipf -lguide -lpthread
+  BLAS=-L/usr/local/mkl-7.0.1.6/mkl701/lib/64 -lmkl_ipf -lguide -lpthread
+endif
+
+# OSC Pentium IV cluster, requires Intel compiler >9.0
+ifeq ($(hostname),piv-login1)
+  CHAMP_MPIF95=mpif90
+  LAPACK=-L/usr/local/mkl-7.0.17/mkl70/lib/32 -lmkl_lapack -lmkl_ia32 -lguide -lpthread -Vaxlib
+  BLAS=-L/usr/local/mkl-7.0.17/mkl70/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+
+# Richard's Cornell machine
+ifeq ($(hostname),kyra.ccmr.cornell.edu)
+ LAPACK=-L/opt/intel/mkl_serial_8.1/lib/32/ -lmkl_lapack
+ BLAS=-L/opt/intel/mkl_serial_8.1/lib/32/ -lmkl_ia32 -lguide -lpthread
+endif
+
+# Machines at OSU
+ifeq ($(hostname),devon)
+ LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+ifeq ($(hostname),kunoy)
+ LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+ifeq ($(hostname),banks)
+ LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+ifeq ($(hostname),pico)
+ LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+ifeq ($(hostname),vega)
+ LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+ifeq ($(hostname),naxos)
+ LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+endif
+ifeq ($(hostname),samos)
+ LAPACK=-L${MKL_HOME}/mkl701/lib/64 -lmkl_lapack
+ BLAS=-L${MKL_HOME}/mkl701/lib/64 -lmkl_ia64 -lguide -lpthread
+endif
+
+# Argonne Blue-Gene BG/L, login1
+ifeq ($(hostname),login1)
+
+# serial
+  CHAMP_F77 = xlf
+  CHAMP_F77_FAST = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95 = xlf95
+  CHAMP_F95_FAST = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90 -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_C = xlc
+  CHAMP_C_FAST = -O5
+  CHAMP_LD = xlf95
+  CHAMP_LD_FAST =
+
+# serial debug
+  CHAMP_F77_DEBUG = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f -WF,-DDEBUG,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_DEBUG = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f90 -WF,-DDEBUG -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_C_DEBUG = 
+  CHAMP_LD_DEBUG =
+
+# MPI debug
+  CHAMP_MPIF77 = mpif90.ibm
+  CHAMP_MPIF95 = mpif90.ibm
+  CHAMP_F77_MPI = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_MPI = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_MPIC = mpicc.ibm
+  CHAMP_C_MPI =  -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide
+  CHAMP_LD_MPI = mpif90.ibm
+
+# MPI
+  CHAMP_MPIF77 = mpif90.ibm
+  CHAMP_MPIF95 = mpif90.ibm
+  CHAMP_F77_MPI = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_MPI = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_MPIC = mpicc.ibm
+  CHAMP_C_MPI = -O5
+  CHAMP_LD_MPI = mpif90.ibm
+
+
+endif
