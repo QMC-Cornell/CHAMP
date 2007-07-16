@@ -113,13 +113,14 @@ c write out last configuration to unit mc_configs_start
         call MPI_Wait(irequest,istatus,ierr)
        else
         close(9)
-        open(9,status='unknown',file='mc_configs_start')
-        write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
-        do 450 id=1,nproc-1
-          call mpi_recv(xnew,3*nelec,mpi_double_precision,id
-     &    ,1,MPI_COMM_WORLD,istatus,ierr)
-  450     write(9,*) ((xnew(k,i),k=1,ndim),i=1,nelec)
-        close(9)
+!JT comment this out to avoid different jobs writing in the same file
+!JT        open(9,status='unknown',file='mc_configs_start')
+!JT        write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
+!JT        do 450 id=1,nproc-1
+!JT          call mpi_recv(xnew,3*nelec,mpi_double_precision,id
+!JT     &    ,1,MPI_COMM_WORLD,istatus,ierr)
+!JT  450     write(9,*) ((xnew(k,i),k=1,ndim),i=1,nelec)
+!JT        close(9)
       endif
 
 # endif
