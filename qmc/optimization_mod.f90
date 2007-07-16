@@ -923,7 +923,6 @@ module optimization_mod
 
   endif ! l_opt_orb 
 
-
 ! check if really correct to call after each update
   call set_scale_dist(ipr,iwf)
 
