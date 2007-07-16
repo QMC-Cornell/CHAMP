@@ -923,8 +923,11 @@ module optimization_mod
 
   endif ! l_opt_orb 
 
+! check if correct
+  call set_scale_dist(ipr,iwf)
+
 ! print new parameters
-!  call wf_write
+  call wf_write
 
 ! Check move:
   is_bad_move = 0     
@@ -1090,6 +1093,9 @@ module optimization_mod
   nwftype=3
   call wf_copy2
   call wf_copy
+! initialize asymptotic values related to scalek(2) and scalek(3)
+  call set_scale_dist(ipr,2)
+  call set_scale_dist(ipr,3)
 
 ! make sure that diag_stab is not tiny compared to the smallest eigenvalue of Hessian
   if (l_opt_nwt) then
