@@ -23,7 +23,7 @@
 !JT      parameter(DBLMIN=1.d-300,DBLMAX=1.d+300)
       parameter(DBLMIN=1.d-30,DBLMAX=1.d+30)
 
-      parameter(MCENT=2,MCTYPE=2,MELEC=20,MELECUD=18,MORB=88,MORB_OCC=18)
+      parameter(MCENT=2,MCTYPE=2,MELEC=20,MELECUD=20,MORB=88,MORB_OCC=18)
       parameter(MBASIS=88,MBASIS_CTYPE=50)
       parameter(MDET=660,MDETUD=190,MCSF=165,MDET_CSF=80)
       parameter(MOTYPE=5,MPARMD=770)
