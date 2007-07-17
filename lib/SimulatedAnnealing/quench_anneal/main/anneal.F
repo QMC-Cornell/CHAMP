@@ -1,4 +1,8 @@
 c $Log: anneal.F,v $
+c Revision 1.2  2007/07/12 15:39:21  toulouse
+c updating Makefile for Argonne bluegene
+c J. Toulouse
+c
 c Revision 1.1.1.1  2006/10/08 19:38:17  toulouse
 c champ
 c
@@ -1036,7 +1040,7 @@ c common /quenchsim_pr/ to communicate amount of output
         write(6,'(''changeo,changen'',9d12.4)') changeo,changen
       endif
       write(6,*)
-      call flush(6)
+!      call systemflush(6) !JT
       return
       end
 c-----------------------------------------------------------------------
@@ -1079,7 +1083,7 @@ c common /quenchsim_pr/ to communicate amount of output
         write(6,'(''cosold cos_on'',9d12.4)') cosold,cos_on
       endif
       write(6,*)
-      call flush(6)
+!      call systemflush(6) !JT
       return
       end
 c-----------------------------------------------------------------------

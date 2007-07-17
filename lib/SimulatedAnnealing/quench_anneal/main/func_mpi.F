@@ -1,4 +1,8 @@
 c $Log: func_mpi.F,v $
+c Revision 1.2  2007/07/12 15:39:21  toulouse
+c updating Makefile for Argonne bluegene
+c J. Toulouse
+c
 c Revision 1.1.1.1  2006/10/08 19:38:17  toulouse
 c champ
 c
@@ -402,7 +406,7 @@ c set default so that chunks are static
 
       subroutine set_static_chunks(logical)
       include '../include/IO_stop.h'
-      logical logical
+      logical logical, static_chunks
       static_chunks=logical
       return
       end
