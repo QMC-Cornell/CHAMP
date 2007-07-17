@@ -30,7 +30,7 @@ and make the relevant executables available, e.g., by creating links in your bin
 
 where 'your_username' is your username that has been given in the svn configuration. Ask it to the people in charge of the svn repository (by default, this is your last name). You will also be asked for a password on the first use of the svn that the same people will give you.
 
-You have a now a directory call 'champ' containing only the source files. You need to compile the libraries and the source code. See manual/install.txt
+You have a now a directory call 'champ' containing only the source files. You need to compile the libraries and the source code. See documentation/install.txt
 
 
 3) Everyday use of the svn.

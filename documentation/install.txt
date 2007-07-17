@@ -22,6 +22,14 @@ For the MPI version, type
 >make mpi
 to create the executable "champ_mpi.exe".
 
+Do not mix mpi and serial objects! If you are unsure, do a 'make clean'.
+
+There is also a debug version:
+>make clean
+>make debug
+
+Note that if you add or delete files, or modify the module dependancies, you need to generate a new Makefile by:
+>make make
 
 Execution:
 ---------
@@ -48,3 +56,5 @@ and dmc calculations by
 >mpirun -np 2 champ_mpi.exe -m dmc_mov1_mpi3 -i input >output
 
 Notice that for the MPI version, the input file has to be given in the command line as an option '-i input'.
+
+There 
