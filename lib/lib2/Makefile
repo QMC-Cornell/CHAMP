@@ -173,6 +173,32 @@ ifeq ($(hostname),mck-login1)
   LDFLAGS_MPI = -Vaxlib -L/usr/local/mkl-6.0-beta/lib -lmkl_vml_itp
   BLAS = $(MKL) -L$(HOME)/QMC/qmc/lib -laux
 endif
+
+# Argonne Blue-Gene
+ifeq ($(hostname),login1)
+# for debug front-end
+  FC = xlf
+  FFLAGS = -C -g -qlinedebug -qsigtrap -qfixed=132
+
+# for nodes
+  FC = blrts_xlf
+  FFLAGS = -O5 -qarch=440 -qtune=440  -qfixed=132
+# FFLAGS = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+# FFLAGS = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+# FFLAGS = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+# FFLAGS = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+  LDFLAGS =
+# FC_MPI = mpxlf
+  FC_MPI = mpif90.ibm
+# FC_MPI = blrts_xlf
+# FFLAGS_MPI = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+  FFLAGS_MPI = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+# FFLAGS_MPI = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+# FFLAGS_MPI = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+  LDFLAGS_MPI =
+
+endif
+
 URI_CLUSTER = false
 ifeq ($(hostname),mi)
   URI_CLUSTER = true
