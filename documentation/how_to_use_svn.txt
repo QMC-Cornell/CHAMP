@@ -52,7 +52,7 @@ IMPORTANT ADVICE FOR PROPER USE OF SVN (you have write access):
 
 - ALWAYS UPDATE from the repository your local code BEFORE COMMITING new changes to the repository. This way, if there are conflicts unresolved by svn, they will be only in your local directory, and it is YOUR RESPONSABILITY TO RESOLVE CONFLICTS by hand before commiting to the repository.
 
-- MAKE SURE THE CODE COMPILES AND WORKS BEFORE COMITTING. In particular, remember that you need to use 'svn add ...' or 'svn delete ..' if you add or delete a file. Ideally, one should systematically run a test suite before commiting.
+- MAKE SURE THE CODE COMPILES AND WORKS BEFORE COMMITING. In particular, remember that you need to use 'svn add ...' or 'svn delete ..' if you add or delete a file. Ideally, one should systematically run a test suite before commiting.
 
 - DO NOT POLLUTE THE REPOSITORY: no object files, no executable, etc...
 
@@ -64,4 +64,5 @@ IMPORTANT ADVICE FOR PROPER USE OF SVN (you have write access):
 
 - DO SHARE your unquestionable improvements, useful tool scripts, documentation, etc ... by commiting to the repository.
 
-- For important or delicate modifications, ask to the main developers before.
+If you have write access, take it seriously! Remember that as soon as you commit a change to the repository, about 10 people will be notified, and some of them will immediately look at your changes, update their code, and recompile.
+
