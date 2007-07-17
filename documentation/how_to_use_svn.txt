@@ -35,19 +35,20 @@ You have a now a directory call 'champ' containing only the source files. You ne
 
 3) Everyday use of the svn.
 
-There 2 survival commands that you need to know:
+By default, you have only read access to the repository. If you need write access, ask Cyrus Umrigar.
 
-To update your local code after some changes have been commited to the repositoty, type:
+If you have only read access, the most important commant that you need to know is
 > cvs update
+in order to update your local code after some changes have been commited to the repositoty. You should receive automatic emails each time that the repository has been changed. Make sure you receive these emails.
 
-To commit your modifications to the repository, type:
+If you have also write access, you can commit your modifications to the repository by typing
 > cvs ci
-and write an informative log message. This log message will be sent by email to all the svn users. Make sure you receive these emails. Note that not all svn users may have the permission to commmit changes to the repository. See with the people in charge for the permissions.
+and write an informative log message. This log message will be sent by email to all the svn users. 
 
 See all the other useful commands in the help pages for svn.
 
 
-IMPORTANT ADVICE FOR PROPER USE OF SVN:
+IMPORTANT ADVICE FOR PROPER USE OF SVN (you have write access):
 
 - ALWAYS UPDATE from the repository your local code BEFORE COMMITING new changes to the repository. This way, if there are conflicts unresolved by svn, they will be only in your local directory, and it is YOUR RESPONSABILITY TO RESOLVE CONFLICTS by hand before commiting to the repository.
 
