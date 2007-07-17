@@ -1,0 +1,66 @@
+CHAMP: HOW TO USE THE SVN
+
+Presently, the svn repository for champ is located in Paris, on the machine hydrogene.lct.jussieu.fr. We expect to move it to Cornell when possible.
+
+1) Installing svn.
+
+If svn is not already installed on your machine, you can install it as a standard user by compiling the source.
+Go to http://subversion.tigris.org/, download and untar the lastest source, e.g.:
+>tar zxvf subversion-1.4.4.tar.gz
+>tar zxvf subversion-deps-1.4.4.tar.gz
+
+Then, compile it:
+>cd subversion-1.4.4
+>./configure
+>make
+
+and make the relevant executables available, e.g., by creating links in your bin directory:
+>cd bin
+>ln -s subversion-1.4.4/subversion/svn/svn
+>ln -s subversion/svnserve/svnserve
+>ln -s subversion/svnadmin/svnadmin
+>ln -s subversion/svnlook/svnlook
+>ln -s subversion/svnsync/svnsync
+>ln -s subversion/svndumpfilter/svndumpfilter
+
+
+2) Checking out (retrieving) champ from the repository for the first time.
+
+> svn co --username your_username svn://hydrogene.lct.jussieu.fr/champ
+
+where 'your_username' is your username that has been given in the svn configuration. Ask it to the people in charge of the svn repository (by default, this is your last name). You will also be asked for a password on the first use of the svn that the same people will give you.
+
+You have a now a directory call 'champ' containing only the source files. You need to compile the libraries and the source code. See manual/install.txt
+
+
+3) Everyday use of the svn.
+
+There 2 survival commands that you need to know:
+
+To update your local code after some changes have been commited to the repositoty, type:
+> cvs update
+
+To commit your modifications to the repository, type:
+> cvs ci
+and write an informative log message. This log message will be sent by email to all the svn users. Make sure you receive these emails. Note that not all svn users may have the permission to commmit changes to the repository. See with the people in charge for the permissions.
+
+See all the other useful commands in the help pages for svn.
+
+
+IMPORTANT ADVICE FOR PROPER USE OF SVN:
+
+- ALWAYS UPDATE from the repository your local code BEFORE COMMITING new changes to the repository. This way, if there are conflicts unresolved by svn, they will be only in your local directory, and it is YOUR RESPONSABILITY TO RESOLVE CONFLICTS by hand before commiting to the repository.
+
+- MAKE SURE THE CODE COMPILES AND WORKS BEFORE COMITTING. In particular, remember that you need to use 'svn add ...' or 'svn delete ..' if you add or delete a file. Ideally, one should systematically run a test suite before commiting.
+
+- DO NOT POLLUTE THE REPOSITORY: no object files, no executable, etc...
+
+- WRITE INFORMATIVE LOG MESSAGES when commiting changes to the repository.
+
+- UPDATE FREQUENTLY: try to update from the repository each time that you see that a change has been commited (you will receive an email). Indeed, if you are modifying the code, the more you wait before updating, the more likely a conflict with your modifications will happen.
+
+- When you modify the code, DO NOT WAIT TOO LONG BEFORE COMMITING to the repository, even if your new added feature is not really working yet, provided it does not interfere with the normal use of the code of course! This will make conflicts less likely. Yes, it is OK to commit an one-line change. In general, try to change the code ADIABATICALLY, meaning by small amounts at a time, easily revertible.
+
+- DO SHARE your unquestionable improvements, useful tool scripts, documentation, etc ... by commiting to the repository.
+
+- For important or delicate modifications, ask to the main developers before.

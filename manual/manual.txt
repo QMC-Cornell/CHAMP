@@ -20,22 +20,22 @@ Note that you must include all/some virtual orbitals from gamess to optimize the
 The option -J also writes a minimal optimizatiom menu:
 
 optimization
- jastrow
- linear end
+ parameters jastrow end
+ method = linear
 end
 
 which means that the jastrow parameters will be optimized with the "linear method". The linear method is the default method. If you want to optimize also the CSF coefficients, write
 
 optimization
- jastrow csfs
- linear end
+ parameters jastrow csfs end
+ method = linear
 end
 
 If you optimize also the orbitals, write
 
 optimization
- jastrow csfs orbitals
- linear end
+ parameters jastrow csfs orbitals end
+ method = linear
 end
 
 or any other combinations.
