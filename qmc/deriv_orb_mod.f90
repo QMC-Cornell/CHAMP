@@ -1476,6 +1476,7 @@ module deriv_orb_mod
 !       spin-down excited determinants:
 
 !       current excited determinant is zero
+
         if (ex_dn_is_zero (ex_i, det_unq_dn_i)) then
          det_ex_dn (ex_i, det_i) = 0.d0
 

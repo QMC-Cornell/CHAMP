@@ -5,13 +5,6 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
-!JT      include 'numbas.h'
-!JT      include 'force.h'
-!JT      include '../fit/fit.h'
-
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 c    &,iwctype(MCENT),nctype,ncent
@@ -21,6 +14,7 @@ c    &,iwctype(MCENT),nctype,ncent
      &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
+      
       ndetup=0
       ndetdn=0
       if(nup.ge.1) then
@@ -84,6 +78,12 @@ c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
       write(6,'(''dn-spin determinants have orbitals:'')')
       do 95 idetdn=1,ndetdn
    95   write(6,'(i3,2x,(100i4))') idetdn,(iworbddn(idn,idetdn),idn=1,ndn)
+
+!     JT: warning: quick and dirty fix for dealing with the case ndn = 0
+      if (ndetdn .eq. 0) then
+        ndetdn = 1 
+        write(6,'(a,i1)') 'Warning: no spin-down determinants, but ndetdn is set to ',ndetdn
+      endif
 
       call object_modified ('ndetup')
       call object_modified ('ndetdn')
