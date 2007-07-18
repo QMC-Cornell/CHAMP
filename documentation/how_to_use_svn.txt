@@ -2,6 +2,7 @@ CHAMP: HOW TO USE THE SVN
 
 Presently, the svn repository for champ is located in Paris, on the machine hydrogene.lct.jussieu.fr. We expect to move it to Cornell when possible.
 
+
 1) Installing svn.
 
 If svn is not already installed on your machine, you can install it as a standard user by compiling the source.
