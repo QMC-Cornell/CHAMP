@@ -1298,7 +1298,7 @@ c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
       read(5,*) ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
       write(6,'(/,''ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt=''
      &,6i4,i6,20i4)') ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
-      if(ndata.gt.MDATA) stop 'ndata > MDATA'
+      if(index(mode, 'fit') /=0 .and. ndata.gt.MDATA) stop 'ndata > MDATA'
       if(nparm.gt.MPARM) stop 'nparm > MPARM'
 
 c initialize saved configuration indice iconfg (necessary for some compilers)

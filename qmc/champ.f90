@@ -1,6 +1,6 @@
 program champ
 
-! modules used
+! modules use
   use all_tools_mod
   use f2kcli
   use main_menu_mod

@@ -79,10 +79,12 @@ c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
       do 95 idetdn=1,ndetdn
    95   write(6,'(i3,2x,(100i4))') idetdn,(iworbddn(idn,idetdn),idn=1,ndn)
 
-!     JT: warning: quick and dirty fix for dealing with the case ndn = 0
+!     JT: warning: quick (and dirty) fix for dealing with the case ndn = 0
+!     ndetdn is reset to 1, and the corresponding determinants will just have the value 1
+!     this is useful for orbital optimization
       if (ndetdn .eq. 0) then
         ndetdn = 1 
-        write(6,'(a,i1)') 'Warning: no spin-down determinants, but ndetdn is set to ',ndetdn
+        write(6,'(a,i1)') 'Warning: no spin-down determinants, but ndetdn is reset to ',ndetdn
       endif
 
       call object_modified ('ndetup')
