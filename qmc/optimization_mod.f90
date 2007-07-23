@@ -74,7 +74,11 @@ module optimization_mod
   integer param_type_i
 
 ! begin
+
+! initialization
   l_opt = .true.
+  l_stab = .true.
+  target_state = 0
 
 ! temporary error messages
   if (nopt_iter <= 0) then
@@ -103,6 +107,7 @@ module optimization_mod
    write(6,'(a)') '              = overlap: add multiple of overlap matrix to Hamiltonian (only for linear method)'
    write(6,'(a)') ' adiag_max = [real] : maximum allowed value of adiag (default=1.d10)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
+   write(6,'(a)') ' iter_opt_max_nb = [integer] : maximun number of optimization iterations (default=nopt_iter)'
    write(6,'(a)') ' increase_accuracy = [logical] : default=true, increase statistical accuracy at each step?'
    write(6,'(a)') ' decrease_error = [logical] : default=true, decrease statistical error at each step?'
    write(6,'(a)') ' decrease_error_adaptative = [logical] : default=true, decrease statistical error according to energy difference'
@@ -140,6 +145,9 @@ module optimization_mod
 
   case ('iter_opt_min_nb')
    call get_next_value (iter_opt_min_nb)
+
+  case ('iter_opt_max_nb')
+   call get_next_value (iter_opt_max_nb)
 
   case ('stabilize')
    call get_next_value (l_stab)
@@ -248,6 +256,10 @@ module optimization_mod
   end select
 
 ! parameters to optimize
+  l_opt_jas = .false.
+  l_opt_csf = .false.
+  l_opt_orb = .false.
+  l_opt_exp = .false.
   do param_type_i = 1, parameter_type_nb
    select case(trim(parameter_type(param_type_i)))
    case ('jastrow')
@@ -264,6 +276,8 @@ module optimization_mod
   enddo
 
 ! set numbers of Jastrow and/or CSF parameters to zero if necessary
+  nparmj = nparmj_input
+  nparmcsf = nparmcsf_input
   if (.not. l_opt_jas) then
     nparmj=0
     call object_modified ('nparmj')
@@ -408,7 +422,7 @@ module optimization_mod
   endif
 
 ! Start optimization loop ------------------------------------------------------------------------
-  do iter = 1, nopt_iter
+  do iter = 1, iter_opt_max_nb
    write(6,'()')
    write(6,'(a,i3)') 'Beginning optimization iteration # ',iter
 
@@ -717,7 +731,7 @@ module optimization_mod
    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,eloc_av,' +-',eerr, d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
   else
    write(6,'(a)') 'Warning: Convergence not reached.'
-   write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  nopt_iter,' reached.'
+   write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  iter_opt_max_nb,' reached.'
   endif
 
 ! write final wave function

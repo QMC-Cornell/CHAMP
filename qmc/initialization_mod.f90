@@ -67,6 +67,13 @@ module initialization_mod
   call object_modified ('nwalk')
   write(6,'(a,i)') 'Number of walkers initialized to', nwalk
 
+! maximal number of optimization iterations
+  iter_opt_max_nb = nopt_iter
+
+! save number of Jastrow and CSF parameters in the input
+  nparmj_input = nparmj
+  nparmcsf_input = nparmcsf
+
  end subroutine initialization
 
 end module initialization_mod

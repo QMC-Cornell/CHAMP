@@ -524,7 +524,6 @@ module average_mod
   
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
   
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
@@ -556,11 +555,11 @@ module average_mod
     dim1 = objects(object_ind)%dimensions(1)
     dim_av1 = objects(object_av_ind)%dimensions(1)
 
-    if ( dim1 /= dim_av1) then
-     write(6,*) trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
-     write(6,*) trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
-     write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+    if (dim1 /= dim_av1) then
+     write(6,'(4a,i)') trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
+     write(6,'(4a,i)') trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
+     write(6,'(2a)') trim(lhere),': they should be identical'
+     call die (lhere)
     endif
 
 !  initialization

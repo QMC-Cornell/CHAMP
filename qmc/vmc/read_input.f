@@ -1426,9 +1426,12 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
         endif
       endif
 
-      if(nparmcsf.ge.ncsf) then
-        write(6,'(''Because normalization of wavefn. is arbitrary, nparmcsf must be <= ncsf-1, ncsf,nparmcsf='',2i5)') ncsf,nparmcsf
-        stop 'Because normalization of wavefn. is arbitrary, nparmcsf must be <= ncsf-1'
+      if(nparmcsf.gt.ncsf) then
+        write(6,'(a,i5,a,i5)') 'nparmcsf=',nparmcsf,' must be <= ncsf=',ncsf
+        stop 'nparmcsf must be <= ncsf'
+      endif
+      if(nparmcsf.eq.ncsf) then
+        write(6,'(a,i5,a,i5)') 'Warning: because normalization of wavefn. is arbitrary nparmcsf=',nparmcsf,' should be <= ncsf-1=',ncsf-1
       endif
 
       if(ijas.ge.4.and.ijas.le.6) then
@@ -1507,10 +1510,10 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
      &stop 'nparm? must be >= 0'
       if(nparms.gt.1) stop 'nparms must be 0 or 1'
       if(nparmj+nparms.gt.MPARMJ) stop 'nparmj+nparms > MPARMJ'
-      if(nparmcsf.ge.ncsf) then
-        write(6,'(''Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'')')
-        stop 'Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'
-      endif
+!JT      if(nparmcsf.ge.ncsf) then
+!JT        write(6,'(''Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'')')
+!JT        stop 'Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'
+!JT      endif
 
       do it=1,notype
         read(5,*) (iwo(iparm,it),iparm=1,nparmo(it))

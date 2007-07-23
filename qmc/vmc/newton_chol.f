@@ -884,12 +884,12 @@ c update parameters
       do 60 ict=1,nctype
         do 60 i=1,nparma(ict)
           iparm=iparm+1
-          if(iwjasa(i,ict).eq.2 .and. a4(iwjasa(i,ict),ict,iadd_diag).gt.AMAX_NONLIN) stop 'probably do not want a(2) > AMAX_NONLIN'
+!JT          if(iwjasa(i,ict).eq.2 .and. a4(iwjasa(i,ict),ict,iadd_diag).gt.AMAX_NONLIN) stop 'probably do not want a(2) > AMAX_NONLIN'
    60     a4(iwjasa(i,ict),ict,iadd_diag)=a4(iwjasa(i,ict),ict,1)+dparm(iparm)
       do 65 isp=nspin1,nspin2b
         do 65 i=1,nparmb(isp)
           iparm=iparm+1
-          if(iwjasb(i,1).eq.2 .and. b(iwjasb(i,1),isp,1).gt.AMAX_NONLIN) stop 'probably do not want b(2) > AMAX_NONLIN'
+!JT          if(iwjasb(i,1).eq.2 .and. b(iwjasb(i,1),isp,1).gt.AMAX_NONLIN) stop 'probably do not want b(2) > AMAX_NONLIN'
    65     b(iwjasb(i,1),isp,iadd_diag)=b(iwjasb(i,1),isp,1)+dparm(iparm)
       do 70 ict=1,nctype
         do 70 i=1,nparmc(ict)

@@ -32,6 +32,7 @@ module opt_lin_mod
   real(dp)                        :: psi_lin_var_norm = 0.d0
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
 
+  integer                         :: target_state = 0
 
   contains
   
@@ -68,6 +69,7 @@ module opt_lin_mod
    write(6,'(a)') '   approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
    write(6,'(a)') '   approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
    write(6,'(a)') '   renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
+   write(6,'(a)') '   target_state = [integer] : index of target state to optimize (default is ground-state)'
    write(6,'(a)') ' end'
  
   case ('update_nonlinear')
@@ -90,6 +92,10 @@ module opt_lin_mod
 
   case ('renormalize')
    call get_next_value (l_renormalize)
+
+  case ('target_state')
+   call get_next_value (target_state)
+   call require ('target_state >= 0', target_state >= 0)
 
   case ('end')
    exit
@@ -583,6 +589,9 @@ module opt_lin_mod
   real(dp), allocatable :: work (:)
   real(dp) eigvec_1st_component_max, eigval_r_min, eigvec_first_coef
   integer eig_ind, eig_ind_2(1)
+  integer, allocatable :: eigval_srt_ind_to_eigval_ind (:), eigval_ind_to_eigval_srt_ind (:)
+  integer temp
+  logical target_state_found
 
 
 ! header
@@ -646,11 +655,31 @@ module opt_lin_mod
     eigval_i (i) = eigval_i (i) / eigval_denom (i)
   enddo
 
-! print eigenvalues
-  write(6,'(a)') 'Complex eigenvalues:'
+! Sorting out eigenvalues
+! eigval_srt_ind_to_eigval_ind is the map from sorted eigenvalues to original eigenvalues
+  call alloc ('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind, param_aug_nb)
   do i = 1, param_aug_nb
-    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'eigenvalue #',i,': ',eigval_r (i), ' +', eigval_i (i),' i'
-!    write(6,'(a,i5,a,f,a,f,a)') 'eigenvalue #',i,': ',eigval_r (i), ' +', eigval_i (i),' i'
+    eigval_srt_ind_to_eigval_ind (i) = i
+  enddo
+  do i = 1, param_aug_nb
+    do j = i+1, param_aug_nb
+      if (eigval_r (eigval_srt_ind_to_eigval_ind (j)) < eigval_r (eigval_srt_ind_to_eigval_ind (i))) then
+        temp = eigval_srt_ind_to_eigval_ind (i)
+        eigval_srt_ind_to_eigval_ind (i) = eigval_srt_ind_to_eigval_ind (j)
+        eigval_srt_ind_to_eigval_ind (j) = temp
+      endif
+    enddo
+  enddo
+! eigval_ind_to_eigval_srt_ind is the map from original eigenvalues to sorted eigenvalues
+  call alloc ('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, param_aug_nb)
+  do i = 1, param_aug_nb
+   eigval_ind_to_eigval_srt_ind (eigval_srt_ind_to_eigval_ind (i)) = i
+  enddo
+
+! print eigenvalues
+  write(6,'(a)') 'Sorted (complex) eigenvalues:'
+  do i = 1, param_aug_nb
+    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'eigenvalue #',i,': ',eigval_r (eigval_srt_ind_to_eigval_ind (i)), ' +', eigval_i (eigval_srt_ind_to_eigval_ind (i)),' i'
   enddo
 
 ! print eigenvectors
@@ -660,23 +689,34 @@ module opt_lin_mod
 !    write(6,'(a,i3,a,100f)') 'eigenvector # ', j,' :', (eigvec (i,j), i = 1, param_aug_nb)
 !  enddo
 
-! find eigenvector with  1) largest first component 2) lowest eigenvalue
-  eigvec_1st_component_max = dabs(eigvec (1,1))
-  eig_ind = 1
-  do i = 1, param_aug_nb
-    if (dabs(eigvec (1,i)) > eigvec_1st_component_max ) then
-      eigvec_1st_component_max = dabs(eigvec (1,i))
-      eig_ind = i
-    endif
-    if (dabs(eigvec (1,i)) == eigvec_1st_component_max ) then
-      if (eigval_r (i) < eigval_r (eig_ind)) then
-       eigvec_1st_component_max = dabs(eigvec (1,i))
-       eig_ind = i
+! if target_state = 0, find eigenvector with  1) largest first component 2) lowest eigenvalue
+  if (target_state == 0) then
+    eigvec_1st_component_max = dabs(eigvec (1,1))
+    eig_ind = 1
+    do i = 1, param_aug_nb
+      if (dabs(eigvec (1,i)) > eigvec_1st_component_max ) then
+        eigvec_1st_component_max = dabs(eigvec (1,i))
+        eig_ind = i
       endif
-    endif
-  enddo
+      if (dabs(eigvec (1,i)) == eigvec_1st_component_max ) then
+        if (eigval_r (i) < eigval_r (eig_ind)) then
+         eigvec_1st_component_max = dabs(eigvec (1,i))
+         eig_ind = i
+        endif
+      endif
+    enddo
 
-  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'Selected eigenvector #',eig_ind, ': ',eigval_r (eig_ind), ' +', eigval_i (eig_ind),' i'
+! if target_state >= 1, simply select the corresponding the wanted target state
+  else
+
+    if (target_state > param_aug_nb) then
+     call die (lhere, 'target_state='+target_state+' > param_aug_nb='+param_aug_nb)
+    endif
+    eig_ind = eigval_srt_ind_to_eigval_ind (target_state)
+
+  endif
+
+  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'Selected (sorted) eigenvector #',eigval_ind_to_eigval_srt_ind (eig_ind), ': ',eigval_r (eig_ind), ' +', eigval_i (eig_ind),' i'
 !  write(6,'(2a,100f12.7)') trim(lhere),': parameters variations =', eigvec_lin (:)
 
 ! undo renormalization

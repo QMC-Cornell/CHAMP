@@ -85,6 +85,12 @@ module variables_mod
 ! print out orbitals for periodic systems?
   logical :: l_print_orbitals_pw = .false.
 
+  integer :: iter_opt_max_nb = 100
+
+! number of Jastrow and CSF parameters given in input
+  integer :: nparmj_input = 0
+  integer :: nparmcsf_input = 0
+
 ! function
   real(dp), external     :: erf_spline
   real(dp), external     :: ei2
