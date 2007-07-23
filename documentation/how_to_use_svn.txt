@@ -39,11 +39,11 @@ You have now a directory called 'champ' containing only the source files. You ne
 By default, you have only read access to the repository. If you need write access, ask Cyrus Umrigar.
 
 If you have only read access, the most important commant that you need to know is
-> cvs update
+> svn update
 in order to update your local code after some changes have been commited to the repositoty. You should receive automatic emails each time that the repository has been changed. Make sure you receive these emails.
 
 If you have also write access, you can commit your modifications to the repository by typing
-> cvs ci
+> svn ci
 and write an informative log message. This log message will be sent by email to all the svn users. 
 
 See all the other useful commands in the help pages for svn.
