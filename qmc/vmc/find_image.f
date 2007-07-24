@@ -6,7 +6,11 @@ c Mathew Foulkes suggested to find the image particle (if any) that lies in the
 c inscribing sphere of the nearest Wigner Seitz cell.  Also set cutjas_en/cutjas_ee
 c to 1/2 the shortest primitive/simulation cell lattice vector (inscribing sphere radius.
 c If the input cutjas is smaller, it will be reset to the smaller value in read_input.
-c Also return rlenmin to set cutr to 1/2 the shortest lattice vector.
+c Also calculate rlenmin to set cutr to 1/2 the shortest lattice vector.
+c If it finds one or more shorter lattice vector it stops.  The user should then
+c replace in the input the longest lattice vector by the shortest found.  If it finds
+c more than one shorter lattice vector the user should do the replacement one at a time
+c otherwise one can end up with a linearly dependent set and a zero volume.
 
       implicit real*8(a-h,o-z)
 
