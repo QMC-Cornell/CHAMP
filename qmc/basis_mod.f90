@@ -526,11 +526,11 @@ module basis_mod
     enddo ! bas_j
   enddo ! bas_i
 
-  do bas_i = 1, nbasis
-    do bas_j = 1, nbasis
-     write(6,'(a,a,i,a,i,a,f)') trim(here),': bas_i=',bas_i,' bas_j=',bas_j,' basis_ovlp=',basis_ovlp (bas_i, bas_j)
-    enddo ! bas_j
-  enddo ! bas_i
+!  do bas_i = 1, nbasis
+!    do bas_j = 1, nbasis
+!     write(6,'(a,a,i,a,i,a,f)') trim(here),': bas_i=',bas_i,' bas_j=',bas_j,' basis_ovlp=',basis_ovlp (bas_i, bas_j)
+!    enddo ! bas_j
+!  enddo ! bas_i
 
   end subroutine basis_ovlp_bld
 

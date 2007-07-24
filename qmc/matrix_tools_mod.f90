@@ -37,8 +37,7 @@ module matrix_tools_mod
   integer info
 
 ! begin
-!  lhere = 'inverse_by_svd'
-!  write(6,*) trim(lhere),': entering'
+  if (dim == 0) return
   
 ! temporary arrays for SVD
   call alloc ('mat_u', mat_u, dim, dim)
@@ -147,13 +146,15 @@ module matrix_tools_mod
   integer lwork, info, i, j, k
 
 ! begin
+  if (dim == 0) return
+
   lwork = 10 * dim
   call alloc ('mat_a', mat_a, dim, dim)
   call alloc ('work', work, lwork)
 
   mat_a (:,:) = matrix (:,:)
 
-  call dsyev('V','U',dim, mat_a, dim, eigenvalues, work, lwork, info)
+  call dsyev ('V','U',dim, mat_a, dim, eigenvalues, work, lwork, info)
   if (info /= 0) then
    call die (lhere, 'exiting dsyev with info='+info+' /= 0.')
   endif

@@ -10,7 +10,8 @@ module orbitals_mod
   logical                             :: l_cusp_en_occ = .false.
   logical                             :: l_cusp_en_opt = .false.
   logical                             :: l_approx_orb_rot = .false.
-  logical                             :: l_orthonormalize = .false.
+  logical                             :: l_ortho_orb_now = .false.
+  logical                             :: l_ortho_orb_opt = .false.
                                      
   integer, allocatable                :: det_unq_orb_lab_srt_up (:,:)
   integer, allocatable                :: det_unq_orb_lab_srt_dn (:,:)
@@ -55,15 +56,20 @@ module orbitals_mod
   character(len=max_string_len), allocatable  :: orb_sym_lab (:)
   real(dp), allocatable               :: orb_energies (:)
   real(dp), allocatable               :: orb_ovlp (:,:)
-  real(dp), allocatable               :: orb_occ_ovlp (:,:)
-  real(dp), allocatable               :: orb_occ_ovlp_inv (:,:)
   real(dp), allocatable               :: orb_cls_ovlp (:,:)
+  real(dp), allocatable               :: orb_occ_ovlp (:,:)
+  real(dp), allocatable               :: orb_act_ovlp (:,:)
   real(dp), allocatable               :: orb_vir_ovlp (:,:)
+  real(dp), allocatable               :: orb_cls_ovlp_inv (:,:)
+  real(dp), allocatable               :: orb_occ_ovlp_inv (:,:)
   real(dp), allocatable               :: orb_cls_ovlp_eigvec (:,:)
+  real(dp), allocatable               :: orb_act_ovlp_eigvec (:,:)
   real(dp), allocatable               :: orb_vir_ovlp_eigvec (:,:)
   real(dp), allocatable               :: orb_cls_ovlp_eigval (:)
+  real(dp), allocatable               :: orb_act_ovlp_eigval (:)
   real(dp), allocatable               :: orb_vir_ovlp_eigval (:)
   real(dp), allocatable               :: orb_cls_ovlp_m12 (:,:)
+  real(dp), allocatable               :: orb_act_ovlp_m12 (:,:)
   real(dp), allocatable               :: orb_vir_ovlp_m12 (:,:)
   real(dp), allocatable               :: coef_orb_on_norm_basis (:,:,:)
   real(dp), allocatable               :: coef_orb_on_ortho_basis (:,:,:)
@@ -107,7 +113,7 @@ module orbitals_mod
    write(6,'(a)') ' orbitals'
    write(6,'(a)') '  energies -2.4 -0.2 0.44 7.4 end: orbital energies for perturbative optimization method'
    write(6,'(a)') '  symmetry A1G A2U EG EU end: symmetry labels for orbitals, default: no symmetry'
-   write(6,'(a)') '  orthonormalize = [bool] orthonormalize initial orbitals? (default=false)'
+   write(6,'(a)') '  orthonormalize = [bool] orthonormalize orbitals once of current wave function? (default=false)'
    write(6,'(a)') '  opt 1 2 3 4 end : which (occupied and virtual) orbitals to consider in the optimization, default: all orbitals'
    write(6,'(a)') '  orb_opt_nb = [integer] : total number of orbitals to consider in the optimization, default: total number of orbitals'
    write(6,'(a)') '  excitations_forbidden  6 7   10 23 end : list of forbidden orbital excitations for orbital optimization'
@@ -127,7 +133,7 @@ module orbitals_mod
    call orb_sym_lab_rd
 
   case ('orthonormalize')
-   call get_next_value (l_orthonormalize)
+   call get_next_value (l_ortho_orb_now)
 
   case ('cusp')
    call orb_cusp_menu 
@@ -166,13 +172,10 @@ module orbitals_mod
 
   enddo ! end loop over menu lines
 
-! orthonormalize orbitals
-  if (l_orthonormalize) then
-   write (6,'(a)') 'orthonormalizing orbitals.'
-   call ortho_orb_cls
-   call ortho_orb_vir_to_orb_occ
-   call ortho_orb_vir
-  endif 
+! energy-invariant orthonormalization the orbitals 
+  if (l_ortho_orb_now) then
+    call ortho_orb
+  endif
 
   end subroutine orbitals_menu
   
@@ -695,6 +698,66 @@ module orbitals_mod
   end subroutine orb_ovlp_bld
 
 ! ==============================================================================
+  subroutine orb_cls_ovlp_bld
+! ------------------------------------------------------------------------------
+! Description   : overlap matrix of closed orbitals
+!
+! Created       : J. Toulouse, 01 Jun 2007
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer orb_i, orb_j, orb_cls_in_wf_i, orb_cls_in_wf_j, bas_i, bas_j
+
+! header
+  if (header_exe) then
+
+   call object_create ('orb_cls_ovlp')
+
+   call object_needed ('orb_cls_in_wf_nb')
+   call object_needed ('orb_cls_in_wf_lab')
+   call object_needed ('nbasis')
+   call object_needed ('coef')
+   call object_needed ('basis_ovlp')
+
+   return
+
+  endif
+
+! begin
+
+! requirements
+  if (inum_orb /= 0 ) then
+   call die (here, 'implemented only for analytical orbitals, i.e inum_orb=0')
+  endif
+! end requirements
+
+! allocations
+  call object_alloc ('orb_cls_ovlp', orb_cls_ovlp, orb_cls_in_wf_nb, orb_cls_in_wf_nb)
+
+  do orb_cls_in_wf_i = 1, orb_cls_in_wf_nb
+     orb_i = orb_cls_in_wf_lab (orb_cls_in_wf_i)
+
+    do orb_cls_in_wf_j = orb_cls_in_wf_i, orb_cls_in_wf_nb
+       orb_j = orb_cls_in_wf_lab (orb_cls_in_wf_j)
+
+       orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j) = 0.d0
+
+       do bas_i = 1, nbasis
+        do bas_j = 1, nbasis
+          orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j) = orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j) + coef (bas_i, orb_i, 1) * coef (bas_j, orb_j, 1) * basis_ovlp (bas_i, bas_j)
+         enddo ! bas_j
+       enddo ! bas_i
+
+       orb_cls_ovlp (orb_cls_in_wf_j, orb_cls_in_wf_i) = orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j)
+
+    enddo ! orb_cls_in_wf_j
+  enddo ! orb_cls_in_wf_i
+
+  end subroutine orb_cls_ovlp_bld
+
+! ==============================================================================
   subroutine orb_occ_ovlp_bld
 ! ------------------------------------------------------------------------------
 ! Description   : overlap matrix of occupied orbitals
@@ -755,57 +818,25 @@ module orbitals_mod
   end subroutine orb_occ_ovlp_bld
 
 ! ==============================================================================
-  subroutine orb_occ_ovlp_inv_bld
+  subroutine orb_act_ovlp_bld
 ! ------------------------------------------------------------------------------
-! Description   : inverse of overlap matrix of occupied orbitals
+! Description   : overlap matrix of active orbitals
 !
-! Created       : J. Toulouse, 22 May 2007
-! ------------------------------------------------------------------------------
-  implicit none
-
-! local
-  real(dp) :: threshold
-
-! header
-  if (header_exe) then
-
-   call object_create ('orb_occ_ovlp_inv')
-
-   call object_needed ('orb_occ_ovlp')
-   call object_needed ('orb_occ_in_wf_nb')
-
-   return
-
-  endif
-
-! allocations
-  call object_alloc ('orb_occ_ovlp_inv', orb_occ_ovlp_inv, orb_occ_in_wf_nb, orb_occ_in_wf_nb)
-
-  threshold = 1.d-10
-  call inverse_by_svd (orb_occ_ovlp, orb_occ_ovlp_inv, orb_occ_in_wf_nb, threshold)
-
-  end subroutine orb_occ_ovlp_inv_bld
-
-! ==============================================================================
-  subroutine orb_cls_ovlp_bld
-! ------------------------------------------------------------------------------
-! Description   : overlap matrix of closed orbitals
-!
-! Created       : J. Toulouse, 01 Jun 2007
+! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
 ! local
-  integer orb_i, orb_j, orb_cls_in_wf_i, orb_cls_in_wf_j, bas_i, bas_j
+  integer orb_i, orb_j, orb_act_in_wf_i, orb_act_in_wf_j, bas_i, bas_j
 
 ! header
   if (header_exe) then
 
-   call object_create ('orb_cls_ovlp')
+   call object_create ('orb_act_ovlp')
 
-   call object_needed ('orb_cls_in_wf_nb')
-   call object_needed ('orb_cls_in_wf_lab')
+   call object_needed ('orb_act_in_wf_nb')
+   call object_needed ('orb_act_in_wf_lab')
    call object_needed ('nbasis')
    call object_needed ('coef')
    call object_needed ('basis_ovlp')
@@ -823,28 +854,28 @@ module orbitals_mod
 ! end requirements
 
 ! allocations
-  call object_alloc ('orb_cls_ovlp', orb_cls_ovlp, orb_cls_in_wf_nb, orb_cls_in_wf_nb)
+  call object_alloc ('orb_act_ovlp', orb_act_ovlp, orb_act_in_wf_nb, orb_act_in_wf_nb)
 
-  do orb_cls_in_wf_i = 1, orb_cls_in_wf_nb
-     orb_i = orb_cls_in_wf_lab (orb_cls_in_wf_i)
+  do orb_act_in_wf_i = 1, orb_act_in_wf_nb
+     orb_i = orb_act_in_wf_lab (orb_act_in_wf_i)
 
-    do orb_cls_in_wf_j = orb_cls_in_wf_i, orb_cls_in_wf_nb
-       orb_j = orb_cls_in_wf_lab (orb_cls_in_wf_j)
+    do orb_act_in_wf_j = orb_act_in_wf_i, orb_act_in_wf_nb
+       orb_j = orb_act_in_wf_lab (orb_act_in_wf_j)
 
-       orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j) = 0.d0
+       orb_act_ovlp (orb_act_in_wf_i, orb_act_in_wf_j) = 0.d0
 
        do bas_i = 1, nbasis
         do bas_j = 1, nbasis
-          orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j) = orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j) + coef (bas_i, orb_i, 1) * coef (bas_j, orb_j, 1) * basis_ovlp (bas_i, bas_j)
+          orb_act_ovlp (orb_act_in_wf_i, orb_act_in_wf_j) = orb_act_ovlp (orb_act_in_wf_i, orb_act_in_wf_j) + coef (bas_i, orb_i, 1) * coef (bas_j, orb_j, 1) * basis_ovlp (bas_i, bas_j)
          enddo ! bas_j
        enddo ! bas_i
 
-       orb_cls_ovlp (orb_cls_in_wf_j, orb_cls_in_wf_i) = orb_cls_ovlp (orb_cls_in_wf_i, orb_cls_in_wf_j)
+       orb_act_ovlp (orb_act_in_wf_j, orb_act_in_wf_i) = orb_act_ovlp (orb_act_in_wf_i, orb_act_in_wf_j)
 
-    enddo ! orb_cls_in_wf_j
-  enddo ! orb_cls_in_wf_i
+    enddo ! orb_act_in_wf_j
+  enddo ! orb_act_in_wf_i
 
-  end subroutine orb_cls_ovlp_bld
+  end subroutine orb_act_ovlp_bld
 
 ! ==============================================================================
   subroutine orb_vir_ovlp_bld
@@ -907,6 +938,70 @@ module orbitals_mod
   end subroutine orb_vir_ovlp_bld
 
 ! ==============================================================================
+  subroutine orb_cls_ovlp_inv_bld
+! ------------------------------------------------------------------------------
+! Description   : inverse of overlap matrix of closed orbitals
+!
+! Created       : J. Toulouse, 23 July 2007
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  real(dp) :: threshold
+
+! header
+  if (header_exe) then
+
+   call object_create ('orb_cls_ovlp_inv')
+
+   call object_needed ('orb_cls_ovlp')
+   call object_needed ('orb_cls_in_wf_nb')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('orb_cls_ovlp_inv', orb_cls_ovlp_inv, orb_cls_in_wf_nb, orb_cls_in_wf_nb)
+
+  threshold = 1.d-10
+  call inverse_by_svd (orb_cls_ovlp, orb_cls_ovlp_inv, orb_cls_in_wf_nb, threshold)
+
+  end subroutine orb_cls_ovlp_inv_bld
+
+! ==============================================================================
+  subroutine orb_occ_ovlp_inv_bld
+! ------------------------------------------------------------------------------
+! Description   : inverse of overlap matrix of occupied orbitals
+!
+! Created       : J. Toulouse, 22 May 2007
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  real(dp) :: threshold
+
+! header
+  if (header_exe) then
+
+   call object_create ('orb_occ_ovlp_inv')
+
+   call object_needed ('orb_occ_ovlp')
+   call object_needed ('orb_occ_in_wf_nb')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('orb_occ_ovlp_inv', orb_occ_ovlp_inv, orb_occ_in_wf_nb, orb_occ_in_wf_nb)
+
+  threshold = 1.d-10
+  call inverse_by_svd (orb_occ_ovlp, orb_occ_ovlp_inv, orb_occ_in_wf_nb, threshold)
+
+  end subroutine orb_occ_ovlp_inv_bld
+
+! ==============================================================================
   subroutine orb_cls_ovlp_eig_bld
 ! ------------------------------------------------------------------------------
 ! Description   : Eigensystem of closed orbital overlap matrix
@@ -938,17 +1033,19 @@ module orbitals_mod
   call object_alloc ('orb_cls_ovlp_eigvec', orb_cls_ovlp_eigvec, orb_cls_in_wf_nb, orb_cls_in_wf_nb)
   call object_alloc ('orb_cls_ovlp_eigval', orb_cls_ovlp_eigval, orb_cls_in_wf_nb)
   
+  if (orb_cls_in_wf_nb == 0) return
+  
 ! diagonalization
   call eigensystem (orb_cls_ovlp, orb_cls_ovlp_eigvec, orb_cls_ovlp_eigval, orb_cls_in_wf_nb)
 
-  write(6,'(a)') 'Eigenvalues of overlap matrix of closed orbitals:'
-  do orb_i = 1, orb_cls_in_wf_nb
-     write(6,'(a,i3,a,e)') 'eigenvalue # ',orb_i,' : ', orb_cls_ovlp_eigval (orb_i)
-  enddo ! bas_i
-  write(6,'(a)') 'Eigenvectors:'
-  do orb_i = 1, orb_cls_in_wf_nb
-     write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', orb_i,' :', (orb_cls_ovlp_eigvec (orb_i, orb_j), orb_j = 1, orb_cls_in_wf_nb)
-  enddo ! bas_i
+!  write(6,'(a)') 'Eigenvalues of overlap matrix of closed orbitals:'
+!  do orb_i = 1, orb_cls_in_wf_nb
+!     write(6,'(a,i3,a,e)') 'eigenvalue # ',orb_i,' : ', orb_cls_ovlp_eigval (orb_i)
+!  enddo ! bas_i
+!  write(6,'(a)') 'Eigenvectors:'
+!  do orb_i = 1, orb_cls_in_wf_nb
+!     write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', orb_i,' :', (orb_cls_ovlp_eigvec (orb_i, orb_j), orb_j = 1, orb_cls_in_wf_nb)
+!  enddo ! bas_i
 
 ! check linear dependancies
   lin_dep_thres = 1.d-12
@@ -959,10 +1056,70 @@ module orbitals_mod
      endif
   enddo ! orb_i
   if (lin_dep_nb > 0) then
-   write(6,'(a,i3,a,e)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres
+   write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the closed orbitals.'
   endif
 
   end subroutine orb_cls_ovlp_eig_bld
+
+! ==============================================================================
+  subroutine orb_act_ovlp_eig_bld
+! ------------------------------------------------------------------------------
+! Description   : Eigensystem of active orbital overlap matrix
+!
+! Created       : J. Toulouse, 23 Jul 2007
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer orb_i, orb_j, lin_dep_nb
+  real(dp) lin_dep_thres
+
+! header
+  if (header_exe) then
+
+   call object_create ('orb_act_ovlp_eigvec')
+   call object_create ('orb_act_ovlp_eigval')
+
+   call object_needed ('orb_act_in_wf_nb')
+   call object_needed ('orb_act_ovlp')
+
+   return
+
+  endif
+
+! begin
+
+! allocation
+  call object_alloc ('orb_act_ovlp_eigvec', orb_act_ovlp_eigvec, orb_act_in_wf_nb, orb_act_in_wf_nb)
+  call object_alloc ('orb_act_ovlp_eigval', orb_act_ovlp_eigval, orb_act_in_wf_nb)
+  
+  if (orb_act_in_wf_nb == 0) return
+  
+! diagonalization
+  call eigensystem (orb_act_ovlp, orb_act_ovlp_eigvec, orb_act_ovlp_eigval, orb_act_in_wf_nb)
+
+!  write(6,'(a)') 'Eigenvalues of overlap matrix of active orbitals:'
+!  do orb_i = 1, orb_act_in_wf_nb
+!     write(6,'(a,i3,a,e)') 'eigenvalue # ',orb_i,' : ', orb_act_ovlp_eigval (orb_i)
+!  enddo ! bas_i
+!  write(6,'(a)') 'Eigenvectors:'
+!  do orb_i = 1, orb_act_in_wf_nb
+!     write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', orb_i,' :', (orb_act_ovlp_eigvec (orb_i, orb_j), orb_j = 1, orb_act_in_wf_nb)
+!  enddo ! bas_i
+
+! check linear dependancies
+  lin_dep_thres = 1.d-12
+  lin_dep_nb = 0
+  do orb_i = 1, orb_act_in_wf_nb
+     if (orb_act_ovlp_eigval (orb_i) < lin_dep_thres) then
+       lin_dep_nb = lin_dep_nb + 1
+     endif
+  enddo ! orb_i
+  if (lin_dep_nb > 0) then
+   write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the active orbitals.'
+  endif
+
+  end subroutine orb_act_ovlp_eig_bld
 
 ! ==============================================================================
   subroutine orb_vir_ovlp_eig_bld
@@ -995,18 +1152,20 @@ module orbitals_mod
 ! allocation
   call object_alloc ('orb_vir_ovlp_eigvec', orb_vir_ovlp_eigvec, orb_vir_in_wf_nb, orb_vir_in_wf_nb)
   call object_alloc ('orb_vir_ovlp_eigval', orb_vir_ovlp_eigval, orb_vir_in_wf_nb)
+
+  if (orb_vir_in_wf_nb == 0) return
   
 ! diagonalization
   call eigensystem (orb_vir_ovlp, orb_vir_ovlp_eigvec, orb_vir_ovlp_eigval, orb_vir_in_wf_nb)
 
-  write(6,'(a)') 'Eigenvalues of overlap matrix of closed orbitals:'
-  do orb_i = 1, orb_vir_in_wf_nb
-     write(6,'(a,i3,a,e)') 'eigenvalue # ',orb_i,' : ', orb_vir_ovlp_eigval (orb_i)
-  enddo ! bas_i
-  write(6,'(a)') 'Eigenvectors:'
-  do orb_i = 1, orb_vir_in_wf_nb
-     write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', orb_i,' :', (orb_vir_ovlp_eigvec (orb_i, orb_j), orb_j = 1, orb_vir_in_wf_nb)
-  enddo ! bas_i
+!  write(6,'(a)') 'Eigenvalues of overlap matrix of virtual orbitals:'
+!  do orb_i = 1, orb_vir_in_wf_nb
+!     write(6,'(a,i3,a,e)') 'eigenvalue # ',orb_i,' : ', orb_vir_ovlp_eigval (orb_i)
+!  enddo ! bas_i
+!  write(6,'(a)') 'Eigenvectors:'
+!  do orb_i = 1, orb_vir_in_wf_nb
+!     write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', orb_i,' :', (orb_vir_ovlp_eigvec (orb_i, orb_j), orb_j = 1, orb_vir_in_wf_nb)
+!  enddo ! bas_i
 
 ! check linear dependancies
   lin_dep_thres = 1.d-12
@@ -1017,7 +1176,7 @@ module orbitals_mod
      endif
   enddo ! orb_i
   if (lin_dep_nb > 0) then
-   write(6,'(a,i3,a,e)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres
+   write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the virtual orbitals.'
   endif
 
   end subroutine orb_vir_ovlp_eig_bld
@@ -1063,6 +1222,48 @@ module orbitals_mod
   enddo ! orb_i
 
   end subroutine orb_cls_ovlp_m12_bld
+
+! ==============================================================================
+  subroutine orb_act_ovlp_m12_bld
+! ------------------------------------------------------------------------------
+! Description   : active orbital overlap matrix to the power -1/2 for symmetric orthonormalization
+!
+! Created       : J. Toulouse, 23 Jul 2007
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer orb_i, orb_j, orb_k
+
+! header
+  if (header_exe) then
+
+   call object_create ('orb_act_ovlp_m12')
+
+   call object_needed ('orb_act_in_wf_nb')
+   call object_needed ('orb_act_ovlp_eigvec')
+   call object_needed ('orb_act_ovlp_eigval')
+
+   return
+
+  endif
+
+! begin
+
+! allocation
+  call object_alloc ('orb_act_ovlp_m12', orb_act_ovlp_m12, orb_act_in_wf_nb, orb_act_in_wf_nb)
+  
+  do orb_i = 1, orb_act_in_wf_nb
+   do orb_j = 1, orb_act_in_wf_nb
+     orb_act_ovlp_m12 (orb_i, orb_j) = 0.d0
+     do orb_k = 1, orb_act_in_wf_nb
+      orb_act_ovlp_m12 (orb_i, orb_j) = orb_act_ovlp_m12 (orb_i, orb_j) + orb_act_ovlp_eigvec (orb_i, orb_k) * (1.d0/dsqrt(orb_act_ovlp_eigval (orb_k))) * orb_act_ovlp_eigvec (orb_j, orb_k)
+     enddo ! orb_k
+   enddo ! orb_j
+  enddo ! orb_i
+
+  end subroutine orb_act_ovlp_m12_bld
 
 ! ==============================================================================
   subroutine orb_vir_ovlp_m12_bld
@@ -1145,9 +1346,131 @@ module orbitals_mod
   enddo ! orb_cls_in_wf_i
 
   call object_modified ('coef')
-  write (6,*) 'coef=',coef
 
   end subroutine ortho_orb_cls
+
+! ==============================================================================
+  subroutine ortho_orb_act_to_orb_cls
+! ------------------------------------------------------------------------------
+! Description   : orthogonalize active (or open) orbitals to closed orbitals
+!
+! Created       : J. Toulouse, 23 July 2007
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer orb_act_in_wf_i, orb_act_i
+  integer orb_cls_in_wf_i, orb_cls_i
+  integer orb_cls_in_wf_j, orb_cls_j
+
+! begin
+  call object_provide ('orb_cls_in_wf_nb')
+  call object_provide ('orb_cls_in_wf_lab')
+  call object_provide ('orb_act_in_wf_nb')
+  call object_provide ('orb_act_in_wf_lab')
+  call object_provide ('orb_cls_ovlp_inv')
+  call object_provide ('orb_ovlp')
+  call object_provide ('nbasis')
+  call object_provide ('coef')
+
+  do orb_act_in_wf_i = 1, orb_act_in_wf_nb
+     orb_act_i = orb_act_in_wf_lab (orb_act_in_wf_i)
+     do orb_cls_in_wf_i = 1, orb_cls_in_wf_nb
+        orb_cls_i = orb_cls_in_wf_lab (orb_cls_in_wf_i)
+        do orb_cls_in_wf_j = 1, orb_cls_in_wf_nb
+           orb_cls_j = orb_cls_in_wf_lab (orb_cls_in_wf_j)
+            coef (1:nbasis, orb_act_i, 1) = coef (1:nbasis, orb_act_i, 1) - orb_cls_ovlp_inv (orb_cls_in_wf_i, orb_cls_in_wf_j) * orb_ovlp (orb_cls_j, orb_act_i) * coef (1:nbasis, orb_cls_i, 1)
+        enddo ! orb_cls_in_wf_j
+     enddo ! orb_cls_in_wf_i
+  enddo ! orb_act_in_wf_i
+
+  call object_modified ('coef')
+
+  end subroutine ortho_orb_act_to_orb_cls
+
+! ==============================================================================
+  subroutine ortho_orb_act
+! ------------------------------------------------------------------------------
+! Description   : orthonormalize active (or open) orbitals
+! Description   : This is energy invariant only for single-determinant or CASSCF wave function
+!
+! Created       : J. Toulouse, 23 Jul 2007
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer orb_act_in_wf_i, orb_act_i
+  integer orb_act_in_wf_j, orb_act_j
+  real(dp), allocatable :: coef_new (:,:)
+
+! begin
+  call object_provide ('orb_act_in_wf_nb')
+  call object_provide ('orb_act_in_wf_lab')
+  call object_provide ('orb_act_ovlp_m12')
+  call object_provide ('nbasis')
+  call object_provide ('coef')
+
+  call alloc ('coef_new', coef_new, nbasis, orb_act_in_wf_nb)
+  coef_new (:,:) = 0.d0
+
+  do orb_act_in_wf_i = 1, orb_act_in_wf_nb
+     orb_act_i = orb_act_in_wf_lab (orb_act_in_wf_i)
+     do orb_act_in_wf_j = 1, orb_act_in_wf_nb
+        orb_act_j = orb_act_in_wf_lab (orb_act_in_wf_j)
+         coef_new (1:nbasis, orb_act_in_wf_i) = coef_new (1:nbasis, orb_act_in_wf_i) + orb_act_ovlp_m12 (orb_act_in_wf_i, orb_act_in_wf_j) * coef (1:nbasis, orb_act_j, 1)
+     enddo ! orb_act_in_wf_j
+  enddo ! orb_act_in_wf_i
+
+  do orb_act_in_wf_i = 1, orb_act_in_wf_nb
+     orb_act_i = orb_act_in_wf_lab (orb_act_in_wf_i)
+     coef (1:nbasis, orb_act_i, 1) = coef_new (1:nbasis, orb_act_in_wf_i)
+  enddo ! orb_act_in_wf_i
+
+  call object_modified ('coef')
+
+  end subroutine ortho_orb_act
+
+! ==============================================================================
+  subroutine ortho_orb_vir_to_orb_occ
+! ------------------------------------------------------------------------------
+! Description   : orthogonalize virtual orbitals to occupied orbitals
+!
+! Created       : J. Toulouse, 22 May 2007
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer orb_vir_in_wf_i, orb_vir_i
+  integer orb_occ_in_wf_i, orb_occ_i
+  integer orb_occ_in_wf_j, orb_occ_j
+
+! begin
+  call object_provide ('orb_occ_in_wf_nb')
+  call object_provide ('orb_occ_in_wf_lab')
+  call object_provide ('orb_vir_in_wf_nb')
+  call object_provide ('orb_vir_in_wf_lab')
+  call object_provide ('orb_occ_ovlp_inv')
+  call object_provide ('orb_ovlp')
+  call object_provide ('nbasis')
+  call object_provide ('coef')
+
+  do orb_vir_in_wf_i = 1, orb_vir_in_wf_nb
+     orb_vir_i = orb_vir_in_wf_lab (orb_vir_in_wf_i)
+     do orb_occ_in_wf_i = 1, orb_occ_in_wf_nb
+        orb_occ_i = orb_occ_in_wf_lab (orb_occ_in_wf_i)
+        do orb_occ_in_wf_j = 1, orb_occ_in_wf_nb
+           orb_occ_j = orb_occ_in_wf_lab (orb_occ_in_wf_j)
+            coef (1:nbasis, orb_vir_i, 1) = coef (1:nbasis, orb_vir_i, 1) - orb_occ_ovlp_inv (orb_occ_in_wf_i, orb_occ_in_wf_j) * orb_ovlp (orb_occ_j, orb_vir_i) * coef (1:nbasis, orb_occ_i, 1)
+        enddo ! orb_occ_in_wf_j
+     enddo ! orb_occ_in_wf_i
+  enddo ! orb_vir_in_wf_i
+
+  call object_modified ('coef')
+
+  end subroutine ortho_orb_vir_to_orb_occ
 
 ! ==============================================================================
   subroutine ortho_orb_vir
@@ -1188,50 +1511,36 @@ module orbitals_mod
   enddo ! orb_vir_in_wf_i
 
   call object_modified ('coef')
-  write(6,*) 'coef=', coef
 
   end subroutine ortho_orb_vir
 
 ! ==============================================================================
-  subroutine ortho_orb_vir_to_orb_occ
+  subroutine ortho_orb
 ! ------------------------------------------------------------------------------
-! Description   : orthogonalize virtual orbitals to occupied orbitals
+! Description   : orthonormalize orbitals
+! Description   : This seems to break the optimization when optimizing the exponents?
 !
-! Created       : J. Toulouse, 22 May 2007
+! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
-! local
-  integer orb_vir_in_wf_i, orb_vir_i
-  integer orb_occ_in_wf_i, orb_occ_i
-  integer orb_occ_in_wf_j, orb_occ_j
+! orthonormalize orbitals
+  write (6,'(a)') 'Orthonormalizing orbitals.'
+  call ortho_orb_cls
+  call ortho_orb_act_to_orb_cls
+  if (ndet == 1 .or. l_casscf) then
+   call ortho_orb_act
+  endif
+  call ortho_orb_vir_to_orb_occ
+  call ortho_orb_vir 
 
-! begin
-  call object_provide ('orb_occ_in_wf_nb')
-  call object_provide ('orb_occ_in_wf_lab')
-  call object_provide ('orb_vir_in_wf_nb')
-  call object_provide ('orb_vir_in_wf_lab')
-  call object_provide ('orb_occ_ovlp_inv')
-  call object_provide ('orb_ovlp')
-  call object_provide ('nbasis')
-  call object_provide ('coef')
+  call coef_orb_on_norm_basis_from_coef (1)
+  if (trim(basis_functions_varied) == 'unnormalized') then
+   call coef_orb_on_ortho_basis_from_coef (1)
+  endif
 
-  do orb_vir_in_wf_i = 1, orb_vir_in_wf_nb
-     orb_vir_i = orb_vir_in_wf_lab (orb_vir_in_wf_i)
-     do orb_occ_in_wf_i = 1, orb_occ_in_wf_nb
-        orb_occ_i = orb_occ_in_wf_lab (orb_occ_in_wf_i)
-        do orb_occ_in_wf_j = 1, orb_occ_in_wf_nb
-           orb_occ_j = orb_occ_in_wf_lab (orb_occ_in_wf_j)
-            coef (1:nbasis, orb_vir_i, 1) = coef (1:nbasis, orb_vir_i, 1) - orb_occ_ovlp_inv (orb_occ_in_wf_i, orb_occ_in_wf_j) * orb_ovlp (orb_occ_j, orb_vir_i) * coef (1:nbasis, orb_occ_i, 1)
-        enddo ! orb_occ_in_wf_j
-     enddo ! orb_occ_in_wf_i
-  enddo ! orb_vir_in_wf_i
-
-  call object_modified ('coef')
-  write (6,*) 'coef=', coef
-
-  end subroutine ortho_orb_vir_to_orb_occ
+  end subroutine ortho_orb
 
 ! ==============================================================================
   subroutine coef_orb_on_norm_basis_from_coef (iwf_from)

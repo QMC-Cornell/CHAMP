@@ -133,7 +133,7 @@ program champ
   
 ! Open input file if given by '-i ...'
   if (trim(input_file_name) /= '') then
-     write(6,'(2a)') 'Opening input file >',trim(input_file_name),'<.'
+     write(6,'(3a)') 'Opening input file >',trim(input_file_name),'<.'
      open(5, file=trim(input_file_name), status='old', iostat=iostat)
      if (iostat /= 0) then
        call die (lhere, 'error on opening file >'+trim(input_file_name)+'<')

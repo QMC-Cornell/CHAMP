@@ -685,8 +685,7 @@ module opt_lin_mod
 ! print eigenvectors
 !  write(6,'(a)') 'Eigenvectors:'
 !  do j = 1, param_aug_nb
-!    write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :', (eigvec (i,j), i = 1, param_aug_nb)
-!    write(6,'(a,i3,a,100f)') 'eigenvector # ', j,' :', (eigvec (i,j), i = 1, param_aug_nb)
+!    write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :', (eigvec (i, eigval_srt_ind_to_eigval_ind (j)), i = 1, param_aug_nb)
 !  enddo
 
 ! if target_state = 0, find eigenvector with  1) largest first component 2) lowest eigenvalue

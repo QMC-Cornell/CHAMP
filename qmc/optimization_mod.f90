@@ -125,6 +125,7 @@ module optimization_mod
    write(6,'(a)') ' delta_param_norm_max = [real] : maximum parameter variation norm allowed (default=10)'
    write(6,'(a)') ' hessian_variance = [linear|levenberg_marquardt|levenberg_marquardt_cov] : choice of variance hessian (default=linear)'
    write(6,'(a)') ' decrease_p_var= [bool] : decrease progressively proportion of variance (default=false)'
+   write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') 'end'
  
@@ -220,6 +221,9 @@ module optimization_mod
 
   case ('decrease_p_var')
    call get_next_value (l_decrease_p_var)
+
+  case ('orthonormalize_orbitals')
+   call get_next_value (l_ortho_orb_opt)
 
   case ('ortho_orb_vir_to_orb_occ')
    call get_next_value (l_ortho_orb_vir_to_orb_occ)
@@ -358,9 +362,8 @@ module optimization_mod
   real(dp) error_sigma_sav
 
 ! begin
-  write(6,'()')
+  write(6,*)
   write(6,'(a)') '************************* WAVE FUNCTION OPTIMIZATION *************************'
-  write(6,'()') 
 
 ! Initializations
   call vmc_init
@@ -369,7 +372,13 @@ module optimization_mod
   l_convergence_reached = .false.
   convergence_reached_nb  = 0
 
+! energy-invariant orthonormalization the orbitals 
+  if (l_ortho_orb_opt) then
+    call ortho_orb
+  endif
+
 ! Optimization method
+  write(6,*) 
   write(6,'(3a)') 'Optimization will be done with the ',trim(opt_method),' method.'
 
 ! Orbital optimization
@@ -946,7 +955,6 @@ module optimization_mod
 ! Check move:
   is_bad_move = 0     
 
-
 ! test norm of csf coefficient variations
   if (l_opt_csf) then
     call object_provide ('delta_csf_norm')
@@ -1043,8 +1051,7 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'wf_update_and_check_and_stab'
-  integer is_bad_move
-  integer loop
+  integer is_bad_move, loop
 
 ! begin
 
@@ -1071,6 +1078,11 @@ module optimization_mod
    endif
  
   enddo ! end loop
+
+! energy-invariant orthonormalization the orbitals
+  if (l_ortho_orb_opt) then
+    call ortho_orb
+  endif
 
   end subroutine wf_update_and_check_and_stab
 
