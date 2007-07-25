@@ -34,11 +34,11 @@ module determinants_mod
   integer, allocatable              :: sgn_adet_unq_dn (:,:)
 
   contains
-  
+
 !! ==============================================================================
 !  subroutine det_orb_lab_srt_bld
 !! ------------------------------------------------------------------------------
-!! Description   : determinants represented as list of orbital labels sorted 
+!! Description   : determinants represented as list of orbital labels sorted
 !! Description   : plus associated sign
 !!
 !! Created       : J. Toulouse, 28 Oct 2005
@@ -102,7 +102,7 @@ module determinants_mod
 !! ==============================================================================
 !  subroutine det_unq_orb_lab_srt_bld
 !! ------------------------------------------------------------------------------
-!! Description   : unique determinants represented as list of orbital labels sorted 
+!! Description   : unique determinants represented as list of orbital labels sorted
 !! Description   : plus associated sign
 !!
 !! Created       : J. Toulouse, 14 Dec 2006
@@ -162,7 +162,7 @@ module determinants_mod
 !    det_unq_cur_up = 0
 !    do det_unq_up_k = 1, det_unq_up_nb
 !      if (arrays_equal (det_orb_lab_srt_up (:, det_i), det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
-!         det_unq_cur_up = det_unq_up_k 
+!         det_unq_cur_up = det_unq_up_k
 !         det_unq_sgn_cur_up = det_orb_lab_srt_sgn_up (det_i) * det_unq_orb_lab_srt_sgn_up (det_unq_up_k)
 !         exit
 !      endif
@@ -194,7 +194,7 @@ module determinants_mod
 !    det_unq_cur_dn = 0
 !    do det_unq_dn_k = 1, det_unq_dn_nb
 !      if (arrays_equal (det_orb_lab_srt_dn (:, det_i), det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
-!         det_unq_cur_dn = det_unq_dn_k 
+!         det_unq_cur_dn = det_unq_dn_k
 !         det_unq_sgn_cur_dn = det_orb_lab_srt_sgn_dn (det_i) * det_unq_orb_lab_srt_sgn_dn (det_unq_dn_k)
 !         exit
 !      endif
@@ -286,7 +286,7 @@ module determinants_mod
     do orb_i = 1, nup
       do elec_up_i = 1, nup
         mat_i = mat_i + 1
-        slater_mat_trans_inv_up (orb_i, elec_up_i, det_unq_up_i) = slmui (mat_i, det_unq_up_i) 
+        slater_mat_trans_inv_up (orb_i, elec_up_i, det_unq_up_i) = slmui (mat_i, det_unq_up_i)
       enddo
     enddo
   enddo
@@ -297,7 +297,7 @@ module determinants_mod
     do orb_i = 1, ndn
       do elec_dn_i = 1, ndn
         mat_i = mat_i + 1
-        slater_mat_trans_inv_dn (orb_i, elec_dn_i, det_unq_dn_i) = slmdi (mat_i, det_unq_dn_i) 
+        slater_mat_trans_inv_dn (orb_i, elec_dn_i, det_unq_dn_i) = slmdi (mat_i, det_unq_dn_i)
       enddo
     enddo
   enddo
@@ -307,7 +307,7 @@ module determinants_mod
 ! ==============================================================================
   subroutine orb_occ_in_adet_unq_bld
 ! ------------------------------------------------------------------------------
-! Description   : orbital occupations in unique determinants where the orbital i 
+! Description   : orbital occupations in unique determinants where the orbital i
 ! Description   : was been anihilated a_i | det >
 !
 ! Created       : J. Toulouse, 29 Nov 2005

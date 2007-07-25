@@ -66,7 +66,7 @@ c Note: d2edeti_deti(MELEC,MDET) need not be in common
      &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
-     common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT 
+     common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),ddet_det(3,*),div_vd(MELEC)
       dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
@@ -293,7 +293,7 @@ c Derivatives with respect to orbital parameters (not orbital coefficients!).
             enddo
           enddo
         endif
-     
+
 ! JT beg : deti_det for first csf (needed for unitary parametrization)
 !          icsf=1
 !          det1_det=0
@@ -302,7 +302,7 @@ c Derivatives with respect to orbital parameters (not orbital coefficients!).
 !            term=detu(idet)*detd(idet)*cdet_in_csf(idet_in_csf,icsf)*detinv
 !            det1_det=det1_det+term
 !          enddo
-!          call object_modified_by_index (det1_det_index) 
+!          call object_modified_by_index (det1_det_index)
 ! JT end
 
         if(nparmot.gt.0) call deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
@@ -317,7 +317,7 @@ c Written by A.D.Guclu, Apr 2006
 c Calculates derivatives wrt orbital parameters for optimization
 
 c explanations on local variables:
-c
+
 c detui(iparm,idet)  = derivative wrt the parameter iparm in up determ. idet
 c detuij(jparm,idet) = derivative wrt the parameter jparm, of the current detui, in up determ. idet
 c                       in other words, second derivatives wrt iparm&jparm, but iparm is not stored.
@@ -419,7 +419,7 @@ c more initializations
             enddo
           enddo
 
-c start the big loop on determinants          
+c start the big loop on determinants
 c look in the det if it contains the orbitals (is there a better way?)::
 c UP ELECTRONS:
           do idet=1,ndetup
@@ -430,11 +430,11 @@ c            if(nup.gt.0) then
               jopt=jopt+1
               if(iworbdup(jopt,idet).eq.iwo(ip,it)) found=.true.
             enddo
-c jopt is the orbital to optimize.           
+c jopt is the orbital to optimize.
 c calculate the inverse of the parameter derivative matrix using sherman-morrison:
 c (using formulea 2.7.5 in numerical recipes)
 c first calculate vector z
-            if(found) then 
+            if(found) then
               do iz=1,nup
                 zvec(iz)=0
                 do ie=1,nup
@@ -456,9 +456,9 @@ c get the new inverse matrix:
                 enddo
               enddo
 
-c use sherman-morrison second time (but this time applied to determinants only) 
+c use sherman-morrison second time (but this time applied to determinants only)
 c to get the coord. derivatives:
-              do ie=1,nup 
+              do ie=1,nup
                 do j=1,nup
                   if(j.eq.jopt) then
                     do idim=1,ndim
@@ -479,8 +479,8 @@ c to get the coord. derivatives:
                 enddo
               enddo
 
-c now get the second derivatives wrt optimization parameters 
-c if we are doing newton optimization                
+c now get the second derivatives wrt optimization parameters
+c if we are doing newton optimization
               if(iopt.eq.2) then
                 jparm0=0
                 do jt=1,notype
@@ -524,11 +524,11 @@ c DOWN ELECTRONS
               jopt=jopt+1
               if(iworbddn(jopt,idet).eq.iwo(ip,it)) found=.true.
             enddo
-c jopt is jopt'th down orbital to optimize.           
+c jopt is jopt'th down orbital to optimize.
 c calculate the inverse of the parameter derivative matrix using sherman-morrison:
 c (using formulea 2.7.5 in numerical recipes)
 c first calculate vector z
-            if(found) then 
+            if(found) then
               do iz=1,ndn
                 zvec(iz)=0
                 do ie=1,ndn
@@ -550,9 +550,9 @@ c get the new inverse matrix:
                   anewi(i,j)=slmdi(i+jk,idet)-zvec(i)*slmdi(jopt+jk,idet)*betai
                 enddo
               enddo
-c use sherman-morrison second time (but this time applied to determinants only) 
+c use sherman-morrison second time (but this time applied to determinants only)
 c to get the coord. derivatives:
-              do ie=1,ndn 
+              do ie=1,ndn
                 do j=1,ndn
                   if(j.eq.jopt) then
                     do idim=1,ndim
@@ -572,10 +572,10 @@ c to get the coord. derivatives:
                 enddo
               enddo
 c              write(*,*) 'd2detdi(iparm0,idet)=',d2detdi(iparm0,idet)
-c              write(*,*) 'detdi(iparm0,idet)=',detdi(iparm0,idet)              
+c              write(*,*) 'detdi(iparm0,idet)=',detdi(iparm0,idet)
 
-c now get the second derivatives wrt optimization parameters 
-c if we are doing newton optimization                
+c now get the second derivatives wrt optimization parameters
+c if we are doing newton optimization
               if(iopt.eq.2) then
                 jparm0=0
                 do jt=1,notype
@@ -653,7 +653,7 @@ c              term=detu(idet)*detd(idet)*csf_coef(icsf,iwf)*cdet_in_csf(idet_in
               if(iopt.eq.2) then
                 do jparm0=1,iparm0
                   jparm=jparm0+nparmcsf
-                  if(ndn.ge.1) then 
+                  if(ndn.ge.1) then
                     detij_det(iparm,jparm)=detij_det(iparm,jparm)
      &                   +term*(detuij(jparm0,iwdetup(idet))+detdij(jparm0,iwdetdn(idet))
      &                   +detui(jparm0,iwdetup(idet))*detdi(iparm0,iwdetdn(idet))
@@ -672,6 +672,6 @@ c              term=detu(idet)*detd(idet)*csf_coef(icsf,iwf)*cdet_in_csf(idet_in
         enddo                   ! loop on ip
       enddo                     ! loop on it
 
- 
+
       return
       end

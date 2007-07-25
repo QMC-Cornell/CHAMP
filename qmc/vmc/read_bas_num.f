@@ -162,7 +162,7 @@ c       xm=0.5d0*(x(nr(ic))+x(nr(ic)-1))
         wfm=0.5d0*(rwf(nr(ic),irb,ic,iwf)+rwf(nr(ic)-1,irb,ic,iwf))
         dwfm=(rwf(nr(ic),irb,ic,iwf)-rwf(nr(ic)-1,irb,ic,iwf))/
      &  (x(nr(ic))-x(nr(ic)-1))
-        if(ndim.eq.3) then 
+        if(ndim.eq.3) then
           if(dabs(wfm).gt.1.d-99) then
             ae(2,irb,ic,iwf)=-dwfm/wfm
             ae(1,irb,ic,iwf)=rwf(nr(ic),irb,ic,iwf)*
@@ -198,7 +198,7 @@ c            ae(2,irb,ic,iwf)=we/2   !  correct expression for parabolic confine
         do 40 ir=1,10
           if(ndim.eq.3) then
             val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir))
-          elseif(ndim.eq.2) then 
+          elseif(ndim.eq.2) then
             val=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*x(nr(ic)-ir)*x(nr(ic)-ir))
           else
             stop 'ndim must be 2 or 3 in read_bas_num'

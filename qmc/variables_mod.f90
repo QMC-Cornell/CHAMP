@@ -17,7 +17,7 @@ module variables_mod
 
 ! general common variables
   integer                         :: nstep_input
-  integer                         :: nstep_total  
+  integer                         :: nstep_total
   integer                         :: walk_nb = 1
   logical                         :: equilibration  = .false.
   logical                         :: l_end_of_block = .false.

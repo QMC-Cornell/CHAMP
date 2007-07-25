@@ -1,6 +1,6 @@
       subroutine systemflush (int)
       integer int
-#     if defined (UNDERSCORE)          
+#     if defined (UNDERSCORE)
       call flush_ (int)
 #     else
       call flush (int)

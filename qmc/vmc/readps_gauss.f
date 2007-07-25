@@ -2,15 +2,15 @@
 c Written by Claudia Filippi (or Friedemann Schautz?)
 c read 'Quantum-chemist' gauss pseudopotentials
 c file format: one text file with basename gauss_ecp.dat
-c              for each atom type 
+c              for each atom type
 c first line : arbitrary label (written to log-file)
 c second line: number of projectors + 1 (i.e. total number of components)
 c remaining lines: components in the order (local,L=0,L=1 ...)
 c     repeated for each component
-c        number terms 
-c        repeated for each term in this component 
-c          coefficient, power, exponent 
-c
+c        number terms
+c        repeated for each term in this component
+c          coefficient, power, exponent
+
 c NOTE: as usual power n means r**(n-2)
 
       implicit real*8(a-h,o-z)
@@ -48,7 +48,7 @@ c NOTE: as usual power n means r**(n-2)
         open(1,file=filename,status='old',form='formatted',err=999)
         write(6,'(''Reading gaussian pseudopotential file '',a)') filename
 
-c label 
+c label
         read(1,'(a100)',err=1000,end=1001) label
         write(6,'(''ECP for center type'',i4,'' label= '',a80)') ic,label
 
@@ -63,7 +63,7 @@ c If the local pseudopot component is not set in input, set it here
 
         write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
      &  ,i2,'' is chosen to be local'')') ic,npotd(ic),lpotp1(ic)
- 
+
         if(lpotp1(ic).gt.npotd(ic)) then
           write(6,'(''lpotp1(ic),npotd(ic)='',2i3)') lpotp1(ic),npotd(ic)
           stop 'Cannot choose local psp. to be > number of l components, lpotp1(ic) > npotd(ic)'

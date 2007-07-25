@@ -8,7 +8,7 @@ c    C.J. Umrigar, in {\it Quantum Monte Carlo Methods in Physics and Chemistry}
 c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-   
+
       use all_tools_mod ! JT
       use montecarlo_mod ! JT
       use opt_lin_mod ! JT
@@ -549,7 +549,7 @@ c primary configuration
 !      if (l_deloc_exp_num) then
 !      iexp=1
 !      dzex = 0.001
-!      eloc1 = eold(1)    
+!      eloc1 = eold(1)
 !      call move_zex (iexp, dzex)
 !      call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,eold(1),denergy,1)
 !      call object_modified_by_index (eold_index)  !JT
@@ -558,7 +558,7 @@ c primary configuration
 !      call object_modified_by_index (denergy_index) !JT
 !      call object_modified_by_index (vold_index) !JT
 !      call object_modified_by_index (div_vo_index) !JT
-!      eloc2 = eold(1)     
+!      eloc2 = eold(1)
 !      call move_zex (iexp, -dzex)
 !      call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,eold(1),denergy,1)
 !      call object_modified_by_index (eold_index)  !JT

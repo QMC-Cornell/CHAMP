@@ -4,12 +4,12 @@ module files_tools_mod
   use strings_tools_mod
   use constants_mod
   use objects_mod
- 
+
 ! Declaration of global variables and default values
   integer                                     :: files_nb = 0
   character (len=max_string_len), allocatable :: file_names (:)
   integer, allocatable                        :: file_units (:)
-  
+
   contains
 
 !===========================================================================
@@ -49,7 +49,7 @@ module files_tools_mod
   enddo
 
 !  check if file unit is already catalogued
-   if (file_unit > 0) then 
+   if (file_unit > 0) then
     do file_i = 1, files_nb
      if (file_unit == file_units (file_i) .and. trim(filename) /= trim(file_names (file_i))) then
       write(6,'(4a,i3)') trim(lhere),': the file ',trim(filename),' is asked to be catalgued with file unit ',file_unit
@@ -62,11 +62,11 @@ module files_tools_mod
 ! add new file name
   files_nb = files_nb + 1
   call object_alloc ('file_names', file_names, files_nb)
-  file_names (files_nb) = filename 
+  file_names (files_nb) = filename
 
 ! if needed, attribute a unique file unit to the new file (file units start at 40)
   if (file_unit <= 0) then
-   file_unit = max_element (file_units) + 1 
+   file_unit = max_element (file_units) + 1
    file_unit = max(40,file_unit)
    if (file_unit > 99)  then
       call die (lhere, ' largest possible file unit 99 reached')
@@ -78,7 +78,7 @@ module files_tools_mod
 !  write(6,'(3a,i3)') 'Catalog new file ',trim(filename),' with file unit ',file_unit
 
   end subroutine catalog_file
-  
+
 !===========================================================================
   subroutine open_file_or_die (filename, file_unit)
 !---------------------------------------------------------------------------
@@ -107,7 +107,7 @@ module files_tools_mod
 !  call file_exist_or_die (filename)
   call file_not_opened_or_die (filename)
   call require ('file_unit > 0', file_unit > 0)
-  
+
 ! open file
   open (file=trim(filename), unit=file_unit, iostat=iostat)
   if (iostat /= 0) then
@@ -135,7 +135,7 @@ module files_tools_mod
 ! begin
 
   inquire(file=trim(filename), opened=opened)
-  
+
   if (opened) then
    call die (lhere, 'try to open the file '+trim(filename)+' that is already opened.')
   endif
@@ -161,7 +161,7 @@ module files_tools_mod
 ! begin
 
   inquire(file=trim(filename), exist=exist)
-  
+
   end function file_exist
 
 !===========================================================================
@@ -196,8 +196,8 @@ module files_tools_mod
 ! Created     : J. Toulouse, 21 Mar 2007
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   integer, intent(in)  :: file_unit
 
 ! output
@@ -207,22 +207,22 @@ module files_tools_mod
   character(len=max_string_len_rout), save :: lhere = 'lines_number_in_file'
   character(len=max_string_len) record
   integer iostat
-  
+
 ! initilization
   iostat = 0
   lines_number = 0
 
 ! rewind file
   rewind file_unit
-  
+
 ! loop over file's lines
   do
 
 !  read current line
    read(file_unit,'(a)',iostat=iostat) record
-  
+
    if (iostat < 0) exit
-  
+
    lines_number = lines_number + 1
 
   enddo

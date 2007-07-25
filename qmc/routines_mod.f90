@@ -27,7 +27,7 @@ module routines_mod
   real(dp), allocatable           :: routines_cpu_duration_sort (:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine catalog_one_routine (routine_name, routine, routine_ind)
 ! ------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ module routines_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in)  :: routine_name
   external                      :: routine
 
@@ -77,7 +77,7 @@ module routines_mod
 
   routines_nb = routines_nb + 1
   rout_ind = routines_nb
-  
+
   routines(rout_ind)%name = routine_name
   routines(rout_ind)%address = address(routine)
 
@@ -98,7 +98,7 @@ module routines_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: routine_name
 
 ! output
@@ -108,7 +108,7 @@ module routines_mod
   integer rtn_i
   integer length, half
   character(len=max_string_len_obj) current_routine_name
-  
+
 ! begin
   length = len_trim(routine_name)
   half   = max(1,length/2)
@@ -133,7 +133,7 @@ module routines_mod
 ! if object not found
   result = 0
 
-  return 
+  return
 
  end function routine_index
 
@@ -146,7 +146,7 @@ module routines_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: routine_name
 
 ! local
@@ -172,7 +172,7 @@ module routines_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: routine_name
 
 ! output
@@ -215,7 +215,7 @@ module routines_mod
     call routine_add (routine_name)
     routine_ind = routines_nb
    endif
-  
+
   routines(routine_ind)%calls_nb = routines(routine_ind)%calls_nb + 1
 
 ! if we have already entered in this routine
@@ -254,7 +254,7 @@ module routines_mod
       write(6,*) trim(here),': exiting routine ', trim(routine_name),' that not catalogued'
       call die(here)
    endif
- 
+
    if (routines(routine_ind)%skip > 0) then
     routines(routine_ind)%skip = routines(routine_ind)%skip - 1
    else
@@ -303,7 +303,7 @@ module routines_mod
 ! initialize recursion level
   if (routines(routine_ind)%recursion_level == 0) then
     routines(routine_ind)%recursion_level = 1
-  endif 
+  endif
 
 ! if we have already entered in this routine but not exited, increase the recursivity level
   if (routines(routine_ind)%inside) then
@@ -359,8 +359,8 @@ module routines_mod
    if (routine_ind == 0) then
       call die (lhere, 'exiting routine >'+trim(routine_name)+'< that is not catalogued.')
    endif
- 
-! if we have not entered this routine previously 
+
+! if we have not entered this routine previously
    if (.not. routines(routine_ind)%inside) then
       call die (lhere, 'exiting routine >'+trim(routine_name)+'< but entering has not been notified.')
    endif
@@ -416,12 +416,12 @@ module routines_mod
   call alloc ('routines_indexes_sort', routines_indexes_sort, routines_nb)
   call alloc ('routines_cpu_duration_sort', routines_cpu_duration_sort, routines_nb)
   call alloc ('routines_calls_nb_sort', routines_calls_nb_sort, routines_nb)
- 
+
   do rn_i = 1, routines_nb
    routines_indexes_sort (rn_i) = rn_i
    routines_cpu_duration_sort (rn_i) = routines(rn_i)%cpu_duration
    routines_calls_nb_sort (rn_i) = routines(rn_i)%calls_nb
-  enddo 
+  enddo
 
   do rn_i = 1, routines_nb
    do rn_j = rn_i+1, routines_nb
@@ -452,8 +452,8 @@ module routines_mod
    endif
    endif
 
-  enddo 
-  enddo 
+  enddo
+  enddo
 
     write(6,'(a)') '----------------------------------------------------------------------'
     write(6,'(a)') '                     ROUTINE STATISTICS'

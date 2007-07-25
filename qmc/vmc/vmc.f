@@ -171,9 +171,9 @@ c                 sites routine
 
 
 !      initial printing
-       write(6,*) 
+       write(6,*)
        write(6,'(a)') '*********** START VMC CALCULATION  ***********'
-       write(6,*) 
+       write(6,*)
 
 !     define error on sigma
 !      call object_average_request ('e_loc_av') !JT
@@ -183,7 +183,7 @@ c                 sites routine
       call object_error_request ('error_sigma') !JT
 
       call print_list_of_averages_and_errors
-      
+
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
       nparmc_read=nterms4(nordc)

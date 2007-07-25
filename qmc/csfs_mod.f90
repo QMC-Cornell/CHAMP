@@ -19,7 +19,7 @@ module csfs_mod
   real(dp), allocatable     :: csfs_wfdet_ovlp (:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine det_unq_in_csf_bld
 ! ------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ module csfs_mod
   call object_alloc ('det_unq_dn_in_csf', det_unq_dn_in_csf, ncsf)
   call object_alloc ('cdet_unq_in_csf', cdet_unq_in_csf, ncsf)
   call object_alloc ('csf_prefac', csf_prefac, ncsf)
-   
+
   do csf_i = 1, ncsf
 
    do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -80,7 +80,7 @@ module csfs_mod
      call append (det_unq_up_in_csf (csf_i)%row, det_unq_up_cur)
      call append (det_unq_dn_in_csf (csf_i)%row, det_unq_dn_cur)
      call append (cdet_unq_in_csf (csf_i)%row, cdet_unq_cur)
-    
+
    enddo ! det_in_csf_i
 
 !  sort determinants in csf
@@ -157,7 +157,7 @@ module csfs_mod
        det_j = iwdet_in_csf (det_in_csf_j, csf_j)
        det_unq_up_j = det_to_det_unq_up (det_j)
        det_unq_dn_j = det_to_det_unq_dn (det_j)
-  
+
         if (arrays_equal (orb_occ_in_det_unq_up (:, det_unq_up_i), orb_occ_in_det_unq_up (:, det_unq_up_j)) .and. &
             arrays_equal (orb_occ_in_det_unq_dn (:, det_unq_dn_i), orb_occ_in_det_unq_dn (:, det_unq_dn_j))) then
 
@@ -226,7 +226,7 @@ module csfs_mod
        det_j = iwdet_in_csf (det_in_csf_j, csf_j)
        det_unq_up_j = det_to_det_unq_up (det_j)
        det_unq_dn_j = det_to_det_unq_dn (det_j)
-  
+
         if (arrays_equal (orb_occ_in_det_unq_up (:, det_unq_up_i), orb_occ_in_det_unq_up (:, det_unq_up_j)) .and. &
             arrays_equal (orb_occ_in_det_unq_dn (:, det_unq_dn_i), orb_occ_in_det_unq_dn (:, det_unq_dn_j))) then
 
@@ -320,7 +320,7 @@ module csfs_mod
   wfdet_ovlp = 0.d0
 
   do csf_i = 1, ncsf
-      wfdet_ovlp = wfdet_ovlp + csf_coef (csf_i, 1) * csfs_wfdet_ovlp (csf_i) 
+      wfdet_ovlp = wfdet_ovlp + csf_coef (csf_i, 1) * csfs_wfdet_ovlp (csf_i)
   enddo ! csf_i
 
   end subroutine wfdet_ovlp_bld
@@ -398,7 +398,7 @@ module csfs_mod
        det_j = iwdet_in_csf (det_in_csf_j, csf_j)
        det_unq_up_j = det_to_det_unq_up (det_j)
        det_unq_dn_j = det_to_det_unq_dn (det_j)
-  
+
 !       spin-up contribution
         if (arrays_equal (orb_occ_in_adet_unq_up (:, orb_i, det_unq_up_i), orb_occ_in_adet_unq_up (:, orb_j, det_unq_up_j)) .and. &
             arrays_equal (orb_occ_in_det_unq_dn (:, det_unq_dn_i), orb_occ_in_det_unq_dn (:, det_unq_dn_j))) then
@@ -437,8 +437,8 @@ module csfs_mod
 
 !  check trace up
    dens_mat_wfdet_up_trace = 0.d0
-   do orb_i = 1, orb_tot_nb 
-    dens_mat_wfdet_up_trace = dens_mat_wfdet_up_trace + dens_mat_wfdet_up (orb_i, orb_i) 
+   do orb_i = 1, orb_tot_nb
+    dens_mat_wfdet_up_trace = dens_mat_wfdet_up_trace + dens_mat_wfdet_up (orb_i, orb_i)
    enddo
    write(6,*) trim(here),': dens_mat_wfdet_up_trace=',dens_mat_wfdet_up_trace
 
@@ -449,8 +449,8 @@ module csfs_mod
 
 !  check trace down
    dens_mat_wfdet_dn_trace = 0.d0
-   do orb_i = 1, orb_tot_nb 
-    dens_mat_wfdet_dn_trace = dens_mat_wfdet_dn_trace + dens_mat_wfdet_dn (orb_i, orb_i) 
+   do orb_i = 1, orb_tot_nb
+    dens_mat_wfdet_dn_trace = dens_mat_wfdet_dn_trace + dens_mat_wfdet_dn (orb_i, orb_i)
    enddo
    write(6,*) trim(here),': dens_mat_wfdet_dn_trace=',dens_mat_wfdet_dn_trace
 
@@ -461,8 +461,8 @@ module csfs_mod
 
 !  check trace
    dens_mat_wfdet_trace = 0.d0
-   do orb_i = 1, orb_tot_nb 
-    dens_mat_wfdet_trace = dens_mat_wfdet_trace + dens_mat_wfdet (orb_i, orb_i) 
+   do orb_i = 1, orb_tot_nb
+    dens_mat_wfdet_trace = dens_mat_wfdet_trace + dens_mat_wfdet (orb_i, orb_i)
    enddo
    write(6,*) trim(here),': dens_mat_wfdet_trace=',dens_mat_wfdet_trace
 

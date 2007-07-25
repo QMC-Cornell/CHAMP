@@ -23,7 +23,7 @@ module psi_mod
   real(dp), allocatable          :: div_grd_psi_over_psi_wlk (:,:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine grd_det_unq_bld
 ! ------------------------------------------------------------------------------
@@ -63,7 +63,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_det_unq_up', grd_det_unq_up, ndim, nup, ndetup)
   call object_alloc ('grd_det_unq_dn', grd_det_unq_dn, ndim, ndn, ndetdn)
@@ -78,12 +78,12 @@ module psi_mod
        do j= 1, nup
         grd_det_unq_up (dim_i, i, det_unq_up_i) = grd_det_unq_up (dim_i, i, det_unq_up_i)  +  &
           slater_mat_trans_inv_up (i, j, det_unq_up_i) * dorb (dim_i, i, det_unq_orb_lab_srt_up (j, det_unq_up_i))
-       enddo 
+       enddo
        grd_det_unq_up (dim_i, i, det_unq_up_i) = grd_det_unq_up (dim_i, i, det_unq_up_i) * detu (det_unq_up_i)
       enddo
      enddo ! dim_i
   enddo ! det_unq_up_i
-      
+
 ! loop over unique spin-down determinants
   do det_unq_dn_i = 1, ndetdn
      do dim_i = 1, ndim
@@ -136,7 +136,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_det_unq_up', lap_det_unq_up, nup, ndetup)
   call object_alloc ('lap_det_unq_dn', lap_det_unq_dn, ndn, ndetdn)
@@ -150,9 +150,9 @@ module psi_mod
        do j = 1, nup
         lap_det_unq_up (i, det_unq_up_i) = lap_det_unq_up (i, det_unq_up_i)  +  &
           slater_mat_trans_inv_up (i, j, det_unq_up_i) * ddorb (i, det_unq_orb_lab_srt_up (j, det_unq_up_i))
-       enddo 
+       enddo
         lap_det_unq_up (i, det_unq_up_i) = lap_det_unq_up (i, det_unq_up_i) * detu (det_unq_up_i)
-      enddo 
+      enddo
   enddo ! det_unq_up_i
 
 ! loop over unique spin-down determinants
@@ -161,9 +161,9 @@ module psi_mod
        do j = 1, ndn
         lap_det_unq_dn (i, det_unq_dn_i) = lap_det_unq_dn (i, det_unq_dn_i)  +  &
           slater_mat_trans_inv_dn (i, j, det_unq_dn_i) * ddorb (nup + i, det_unq_orb_lab_srt_dn (j, det_unq_dn_i))
-       enddo 
+       enddo
         lap_det_unq_dn (i, det_unq_dn_i) = lap_det_unq_dn (i, det_unq_dn_i) * detd (det_unq_dn_i)
-      enddo 
+      enddo
   enddo ! det_unq_dn_i
 
   end subroutine lap_det_unq_bld
@@ -215,7 +215,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_psid_over_psid', grd_psid_over_psid, ndim, nelec)
 
@@ -228,10 +228,10 @@ module psi_mod
     det_unq_up_i = det_to_det_unq_up (det_i)
     det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-    coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) 
+    coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
 
     do dim_i = 1, ndim
-    
+
     elec_i = 0
     do elec_up_i = 1, nup
      elec_i = elec_i + 1
@@ -242,13 +242,13 @@ module psi_mod
      elec_i = elec_i + 1
      grd_psid_over_psid (dim_i, elec_i) = grd_psid_over_psid (dim_i, elec_i) + coefficient * detu (det_unq_up_i) * grd_det_unq_dn (dim_i, elec_dn_i, det_unq_dn_i)
     enddo
-    
+
     enddo ! dim_i
-        
+
    enddo ! det_in_csf_i
   enddo ! csf_i
 
-  grd_psid_over_psid = grd_psid_over_psid / psido 
+  grd_psid_over_psid = grd_psid_over_psid / psido
 
  end subroutine grd_psid_over_psid_bld
 
@@ -296,7 +296,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_psid_over_psid', lap_psid_over_psid, nelec)
 
@@ -309,7 +309,7 @@ module psi_mod
     det_unq_up_i = det_to_det_unq_up (det_i)
     det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-    coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) 
+    coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
 
     elec_i = 0
     do elec_up_i = 1, nup
@@ -321,8 +321,8 @@ module psi_mod
      elec_i = elec_i + 1
      lap_psid_over_psid (elec_i) = lap_psid_over_psid (elec_i) + coefficient * detu (det_unq_up_i) * lap_det_unq_dn (elec_dn_i, det_unq_dn_i)
     enddo
-    
-        
+
+
    enddo ! det_in_csf_i
   enddo ! csf_i
 
@@ -360,7 +360,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_lnpsid', lap_lnpsid, nelec)
 
@@ -400,7 +400,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_associate ('sum_lap_lnpsid', sum_lap_lnpsid)
 
@@ -441,7 +441,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_psi_over_psi_old', grd_psi_over_psi_old, ndim, nelec)
 
@@ -450,7 +450,7 @@ module psi_mod
       grd_psi_over_psi_old (dim_i, elec_i) = grd_psid_over_psid (dim_i, elec_i) + vj (dim_i, elec_i)
     enddo
   enddo
-   
+
  end subroutine grd_psi_over_psi_old_bld
 
 ! ==============================================================================
@@ -482,14 +482,14 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_psi_over_psi_wlk', grd_psi_over_psi_wlk, ndim, nelec, nwalk)
 
   if (index(mode, 'vmc') /= 0) then
    call object_provide_in_node_by_index (grd_psi_over_psi_wlk_bld_index, vold_index)
    grd_psi_over_psi_wlk (:,:,1) = vold (1:ndim, 1:nelec)
-   
+
   elseif (index(mode, 'dmc') /= 0) then
    call object_provide_in_node_by_index (grd_psi_over_psi_wlk_bld_index, voldw_index)
    grd_psi_over_psi_wlk (:,:,:) = voldw (1:ndim, 1:nelec, 1:nwalk, 1)
@@ -534,7 +534,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_psi_over_psi_sq_wlk', grd_psi_over_psi_sq_wlk, nelec, nwalk)
 
@@ -573,7 +573,7 @@ module psi_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_associate ('sum_lap_lnpsi', sum_lap_lnpsi)
 
@@ -611,7 +611,7 @@ module psi_mod
   if (index(mode, 'vmc') /= 0) then
    call object_provide_in_node_by_index (div_grd_psi_over_psi_wlk_bld_index, div_vo_index)
    div_grd_psi_over_psi_wlk (:,1) = div_vo (1:nelec)
-   
+
   elseif (index(mode, 'dmc') /= 0) then
    call object_provide_in_node_by_index (div_grd_psi_over_psi_wlk_bld_index, div_vow_index)
    div_grd_psi_over_psi_wlk (:,:) = div_vow (1:nelec, 1:nwalk)

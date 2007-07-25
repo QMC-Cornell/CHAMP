@@ -115,7 +115,7 @@ c Read in psp and divide by 2 to convert from Ryd. to H.
 
 c Find the point beyond which r*v differs from zion by no more than .5*d-6.
 c irmax_coul is used for the endpoint of the spline where it is assumed that
-c the derivative of the local component is zion/r(irmax_coul)**2 and that of 
+c the derivative of the local component is zion/r(irmax_coul)**2 and that of
 c the local component is 0.  Also, rmax_coul is used in splfit_ps when it is
 c called in a calculation of a periodic system.
         rmax_coul(ict)=0.d0
@@ -284,7 +284,7 @@ c 210   write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
 
 c Temporary check of splining
 c     write(6,'(''r vpot(ict=2) '')')
-c     rr=1.d-6 
+c     rr=1.d-6
 c     ict=2
 c     do 230 i=1,4000
 c       do 220 l=1,2

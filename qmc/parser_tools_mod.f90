@@ -3,13 +3,13 @@ module parser_tools_mod
   use basic_tools_mod
   use constants_mod
   use objects_mod
- 
+
   character(len=5000)                       :: current_line = ''
   integer                                   :: position_in_current_line = 0
   integer                                   :: unit_input = 5
   character(len=max_string_len)             :: word
   logical                                   :: l_echo = .true.
-  
+
 !---------------------------------------------------------------------------
   interface get_next_value
 !---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ module parser_tools_mod
   end interface
 
   contains
-  
+
 !---------------------------------------------------------------------------
   subroutine read_next_line (iostat)
 !---------------------------------------------------------------------------
@@ -39,21 +39,21 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   integer, intent(out) :: iostat
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'read_next_line'
-  
+
 ! begin
   iostat = 0
   position_in_current_line = 0
-  
+
 
 ! read current line
   read(unit_input,'(a)',iostat=iostat) current_line
-  
+
 ! no next line found
   if(iostat < 0) return
 
@@ -76,7 +76,7 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   character(len=max_string_len), intent(out) :: word
 
@@ -87,7 +87,7 @@ module parser_tools_mod
   character (len=1) current_char
   integer first_char_in_word_index, last_char_in_word_index
   logical first_char_in_word_found, last_char_in_word_found
-  
+
 ! begin
 
 ! find first character of word
@@ -112,7 +112,7 @@ module parser_tools_mod
      first_char_in_word_index = position_in_current_line
      first_char_in_word_found = .true.
      exit
- 
+
     enddo
 
     if (first_char_in_word_found) exit
@@ -122,14 +122,14 @@ module parser_tools_mod
      word = 'exit'
      return
     endif
-  
+
   enddo
 
 ! find last character of word
   last_char_in_word_found = .false.
 
 !  loop over characters in current line
-    do while (position_in_current_line < current_line_length) 
+    do while (position_in_current_line < current_line_length)
 
      position_in_current_line = position_in_current_line + 1
 
@@ -146,7 +146,7 @@ module parser_tools_mod
       last_char_in_word_found = .true.
       exit
      endif
- 
+
     enddo
 
 !  word
@@ -161,7 +161,7 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   character(len=max_string_len), intent(out) :: word
 
@@ -172,7 +172,7 @@ module parser_tools_mod
   character(len=1) current_char
   integer first_char_in_word_index, last_char_in_word_index
   logical first_char_in_word_found, last_char_in_word_found
-  
+
 ! begin
 
 ! find first character of word
@@ -202,7 +202,7 @@ module parser_tools_mod
      first_char_in_word_index = position_in_current_line
      first_char_in_word_found = .true.
      exit
- 
+
     enddo
 
     if (first_char_in_word_found) exit
@@ -211,7 +211,7 @@ module parser_tools_mod
     if(iostat < 0) then
      call die(lhere,'unexpected end of file')
     endif
-  
+
   enddo
 
 ! find last character of word
@@ -219,7 +219,7 @@ module parser_tools_mod
   last_char_in_word_index = first_char_in_word_index
 
 !  loop over characters in current line
-    do while (position_in_current_line < current_line_length) 
+    do while (position_in_current_line < current_line_length)
 
      position_in_current_line = position_in_current_line + 1
 
@@ -236,7 +236,7 @@ module parser_tools_mod
       last_char_in_word_found = .true.
       exit
      endif
- 
+
     enddo
 
 !  word
@@ -254,14 +254,14 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 5 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   character(len=max_string_len), intent(out) :: value
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_string'
   character(len=max_string_len) value_string
-  
+
 ! begin
   call get_next_word (value_string)
   value = value_string
@@ -276,14 +276,14 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 5 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   integer, intent(out) :: value
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_integer'
   character(len=max_string_len) value_string
-  
+
 ! begin
   call get_next_word (value_string)
   call cnvint(value_string, value)
@@ -298,14 +298,14 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 5 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   real(dp), intent(out) :: value
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_double'
   character(len=max_string_len) value_string
-  
+
 ! begin
   call get_next_word (value_string)
   call cnvdbl(value_string, value)
@@ -320,14 +320,14 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 22 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! output
   logical, intent(out) :: value
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_logical'
   character(len=max_string_len) value_string
-  
+
 ! begin
   call get_next_word (value_string)
 
@@ -349,7 +349,7 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   character(len=*), intent (in)              :: value_list_name
 
@@ -360,13 +360,13 @@ module parser_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_list_string'
   character(len=max_string_len) value_string
-  
+
 ! begin
   value_string = ''
   value_list_nb = 0
-  
+
 ! loop over succesive words until 'end' is found
-  do 
+  do
 
     call get_next_word (value_string)
 
@@ -392,7 +392,7 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 25 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   character (len=*), intent(in) :: value_list_name
 
@@ -404,7 +404,7 @@ module parser_tools_mod
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_list_integer'
   character(len=max_string_len),allocatable :: value_list_string (:)
   integer i
-  
+
 ! begin
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
@@ -424,7 +424,7 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   character(len=*), intent(in) :: value_list_name
 
@@ -436,7 +436,7 @@ module parser_tools_mod
   character (len=max_string_len_rout), save :: lhere= 'get_next_value_list_double'
   character (len=max_string_len),allocatable :: value_list_string (:)
   integer i
-  
+
 ! begin
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
@@ -457,7 +457,7 @@ module parser_tools_mod
 ! Created     : J. Toulouse, 5 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'read_up_to_end'
   character(len=max_string_len) string, lowstring
@@ -465,17 +465,17 @@ module parser_tools_mod
 
   l_echo = .false.
 
-  do 
+  do
 
 ! read current line
 !  read(5,'(a)',iostat=iostat) string
-  
+
   call get_next_command (string)
 
 ! no end found
 !  if(iostat < 0) then
 !   write(6,*) trim(lhere),': no "end" keyword found in input file'
-!   call die(here, 'no "end" keyword found in input file') 
+!   call die(here, 'no "end" keyword found in input file')
 !   exit
 !  endif
 
@@ -485,11 +485,11 @@ module parser_tools_mod
 
   if(trim(string) == 'end') then
    write(6,'(2a)') 'input> ',trim(string)
-   exit 
+   exit
   endif
 
   if(trim(string) == 'exit') then
-   exit 
+   exit
   endif
 
   enddo

@@ -42,7 +42,7 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-      
+
       use all_tools_mod
       use average_mod
 
@@ -73,7 +73,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
      &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
      &ricum,taucum(MFORCE)
-      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),     
+      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -543,7 +543,7 @@ c Primary configuration
               if(nforce.gt.1)
      &        call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
-              
+
               call object_modified_by_index (voldw_index) !JT
               call object_modified_by_index (div_vow_index) !JT
 

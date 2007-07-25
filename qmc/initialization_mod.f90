@@ -20,7 +20,7 @@ module initialization_mod
   integer bas_i
 
   write(6,'(a)') 'Initialization:'
- 
+
 ! mode
   if (index(mode, 'mpi') /= 0)           l_mode_mpi = .true.
   if (index(mode, 'fit') /= 0)           l_mode_fit = .true.
@@ -60,7 +60,7 @@ module initialization_mod
 
 ! number of walkers
   if (index(mode,'vmc') /= 0) then
-   nwalk = 1 
+   nwalk = 1
   elseif (index(mode,'dmc') /= 0) then
    nwalk = nconf
   endif

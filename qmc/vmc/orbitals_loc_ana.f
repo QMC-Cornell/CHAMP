@@ -30,7 +30,7 @@ c get basis functions
         call basis_fns(iel,rvec_en,r_en)
        elseif(ndim.eq.2) then
          if(ibasis.eq.1) then
-           call basis_fns_2d(iel,rvec_en,r_en)           
+           call basis_fns_2d(iel,rvec_en,r_en)
          elseif(ibasis.eq.4) then
            call basis_fns_2dgauss(iel,rvec_en,r_en)
          elseif(ibasis.eq.5) then
@@ -104,7 +104,7 @@ c---------------------------------------------------------------------------
      &          ,ddporb,d2dporb)
 c Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
 c Calculate localized orbitals, coo. and parameter derivatives for all electrons
-c 
+
 
       implicit real*8(a-h,o-z)
       include 'vmc.h'
@@ -186,7 +186,7 @@ c     &,ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)
             enddo
           enddo
         enddo
-        
+
 c        write(*,*) 'iorb,orb(ie,iorb)=',(orb(ie,iorb),ie=1,nelec)
 c        write(*,*) 'phin(m,ie)=',(phin(iorb,ie),ie=1,nelec)
 

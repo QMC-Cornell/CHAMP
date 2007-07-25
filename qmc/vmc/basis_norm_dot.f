@@ -39,7 +39,7 @@ c also see basis_norm.dot for real wfs
         endif
         if(idot.eq.3) then
 c we need this to be consistent with G.S.Jeon&J.Jain's convention:
-          anorm(ib)=(-1.d0)**n_cf(ib)   
+          anorm(ib)=(-1.d0)**n_cf(ib)
         else
           anorm(ib)=dsqrt((zex(ib,iwf)*we)**(mabs+1)/pi/fac)
         endif

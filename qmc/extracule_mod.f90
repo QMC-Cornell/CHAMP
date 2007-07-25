@@ -35,7 +35,7 @@ module extracule_mod
   real(dp), allocatable     :: extracule_zv1_av_err (:)
 
   contains
-  
+
 !===========================================================================
   subroutine extracule_menu
 !---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ module extracule_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -82,7 +82,7 @@ module extracule_mod
    call die(here)
 
   endif
-  
+
   enddo ! end loop over menu lines
 
 
@@ -291,7 +291,7 @@ module extracule_mod
   integer                       :: grid_i
   real(dp)              :: volume_elt
 
-  
+
 ! begin
 
 ! header
@@ -354,7 +354,7 @@ module extracule_mod
   write(unit,'(a,i20)')      'number of steps per block =',nstep
   write(unit,'(a,i20)')      'number of blocks          =',block_iterations_nb
   write(unit,'(a,3e25.15)')  'distance step             =',dist_step
-  write(unit,'(a,3e25.15)')  'max distance              =',dist_max  
+  write(unit,'(a,3e25.15)')  'max distance              =',dist_max
   write(unit,'(a,i25)')     'number of grid points     =',grid_extra_nb
 
   write(unit,*) ''

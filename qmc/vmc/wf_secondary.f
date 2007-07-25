@@ -2,8 +2,8 @@
 c Written by Claudia Filippi and Cyrus Umrigar
 c Read parameters for secondary wavefns.
 
-      use orbitals_mod 
-      use mpi_mod 
+      use orbitals_mod
+      use mpi_mod
 
       implicit real*8(a-h,o-z)
 
@@ -244,7 +244,7 @@ c-----------------------------------------------------------------------
       subroutine wf_copy
 c Written by Cyrus Umrigar
 c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
-      use orbitals_mod 
+      use orbitals_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
@@ -464,7 +464,7 @@ c Jastrow
        call object_modified ('coef_orb_on_ortho_basis_sav')
       endif
 
-!     save exponents 
+!     save exponents
       call object_provide ('nctype')
       call object_alloc ('zex_sav', zex_sav, nbasis)
       call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)

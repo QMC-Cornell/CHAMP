@@ -2,9 +2,9 @@
 c Same as walksav_det, adapted to complex orbitals
 c by A.D.Guclu, Feb2004.
 
-      use basic_tools_mod 
-      use cslater_mod 
-      use cslaterw_mod 
+      use basic_tools_mod
+      use cslater_mod
+      use cslaterw_mod
 
       implicit real*8(a-h,o-z)
 

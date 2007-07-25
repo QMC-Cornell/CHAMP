@@ -19,11 +19,11 @@ module catalog_averages_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'define_averages_and_errors'
-  
+
 ! begin
-  call object_average_define ('e_loc','e_loc_av') 
-  call object_error_define ('e_loc_av','e_loc_av_err') 
-  call object_average_define ('eloc_sq','eloc_sq_av') 
+  call object_average_define ('e_loc','e_loc_av')
+  call object_error_define ('e_loc_av','e_loc_av_err')
+  call object_average_define ('eloc_sq','eloc_sq_av')
   call object_error_define ('sigma', 'error_sigma')
 
 ! general derivatives
@@ -53,7 +53,7 @@ module catalog_averages_mod
   call object_error_define ('e_ex','e_ex_err')
   call object_error_define ('e_ex_2','e_ex_2_err')
   call object_average_define ('dpsi_orb_deloc_orb','dpsi_orb_deloc_orb_av')
-  call object_error_define   ('dpsi_orb_deloc_orb_av','dpsi_orb_deloc_orb_av_err') 
+  call object_error_define   ('dpsi_orb_deloc_orb_av','dpsi_orb_deloc_orb_av_err')
   call object_error_define ('dpsi_orb_sq_eloc_av','dpsi_orb_sq_eloc_av_err')
   call object_error_define ('grad_orb_norm','grad_orb_norm_err')
   call object_error_define ('grad_orb', 'grad_orb_err')

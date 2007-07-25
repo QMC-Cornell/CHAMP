@@ -46,7 +46,7 @@ module vmc_mod
 
 ! default: no gradient nor Hessian
   igradhess=0
-  
+
   end subroutine vmc_init
 
 ! ==============================================================================

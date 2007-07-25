@@ -257,14 +257,14 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
         go(i,j,iparm)=go(i,j,iparm)+gee
         gvalue(iparm)=gvalue(iparm)+gee
-        
+
         g(1,i,iparm)=g(1,i,iparm) + geeu*rvec_ee(1,ij)
         g(2,i,iparm)=g(2,i,iparm) + geeu*rvec_ee(2,ij)
         g(3,i,iparm)=g(3,i,iparm) + geeu*rvec_ee(3,ij)
         g(1,j,iparm)=g(1,j,iparm) - geeu*rvec_ee(1,ij)
         g(2,j,iparm)=g(2,j,iparm) - geeu*rvec_ee(2,ij)
         g(3,j,iparm)=g(3,j,iparm) - geeu*rvec_ee(3,ij)
-        
+
         d2g(iparm)=d2g(iparm) + two*(geeuu+ndim1*geeu)
 
       endif
@@ -702,20 +702,20 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
             iparm=1
             call deriv_scale(ri,dk,dk2,dr,dr2,1,1)
-            
+
             gen=feni*dk-dasymp_jasa(it,iwf)*dasymp_r_en(iwf)
             geni=(fenii*dk*dd7+feni*dr)/ri
             genii=fenii*dk*dd9+(feniii*dk*dd7+2*fenii*dr)*dd7+feni*dr2
-            
+
             go(i,i,iparm)=go(i,i,iparm)+gen
             gvalue(iparm)=gvalue(iparm)+gen
-            
+
             g(1,i,iparm)=g(1,i,iparm) + geni*rvec_en(1,i,ic)
             g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic)
             g(3,i,iparm)=g(3,i,iparm) + geni*rvec_en(3,i,ic)
-            
+
             d2g(iparm)=d2g(iparm) + genii+ndim1*geni
-            
+
           endif
 
    80     continue

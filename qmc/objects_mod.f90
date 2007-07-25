@@ -178,7 +178,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! output
@@ -188,7 +188,7 @@ module objects_mod
   integer obj_i, obj_1, obj_2
   integer obj_ind_i, obj_ind_1, obj_ind_2
   character(len=max_string_len_obj) current_object_name
-  
+
 ! begin
   if (objects_nb == 0) then
     result = 0
@@ -217,7 +217,7 @@ module objects_mod
 ! loop over object indexes
     do
     obj_i = int((obj_1 + obj_2)/2.d0)
-    
+
     if (obj_i == obj_1 .or.  obj_i == obj_2 ) then
      result = 0
      return
@@ -238,7 +238,7 @@ module objects_mod
 
     enddo ! end loop
 
-  return 
+  return
   end function object_index
 
 ! ==============================================================================
@@ -250,7 +250,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! output
@@ -258,7 +258,7 @@ module objects_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_index_or_die'
-  
+
 ! begin
 
 ! index of object
@@ -275,7 +275,7 @@ module objects_mod
       call die (lhere)
   endif
 
-  return 
+  return
   end function object_index_or_die
 
 ! ==============================================================================
@@ -287,7 +287,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
@@ -319,7 +319,7 @@ module objects_mod
       objects_sort_index (obj_i) = objects_sort_index (obj_i-1)
   enddo
   objects_sort_index (object_sort_pos) = objects_nb
-   
+
   end subroutine object_add
 
 ! ==============================================================================
@@ -331,12 +331,12 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! output
   integer, intent(out) :: object_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_add_once_and_index'
 
@@ -350,7 +350,7 @@ module objects_mod
     call object_add (object_name)
     object_ind = objects_nb
   endif
-  
+
   end subroutine object_add_once_and_index
 
 ! ==============================================================================
@@ -362,7 +362,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! output
@@ -436,7 +436,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
@@ -479,7 +479,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! output
@@ -506,11 +506,11 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! output
-  logical object_valid_by_index 
+  logical object_valid_by_index
 
 ! begin
   object_valid_by_index = objects(object_index)%valid
@@ -526,12 +526,12 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_valid_or_die'
-  
+
 ! begin
   if (.not. object_valid (object_name)) then
    call die (lhere, 'object >'+trim(object_name)+'< is not marked as valid.')
@@ -548,12 +548,12 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
-  integer, intent(in) ::  object_ind           
+! input
+  integer, intent(in) ::  object_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_associated_or_die_by_index'
-  
+
 ! begin
   if (.not. objects(object_ind)%associated) then
    call die (lhere, 'object >'+trim(objects(object_ind)%name)+'< is not associated.')
@@ -570,7 +570,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
@@ -596,7 +596,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: node_name, object_name
 
 ! local
@@ -605,7 +605,7 @@ module objects_mod
 
 ! begin
 !  write(6,*) trim(lhere),': node: ',trim(node_name),', object: ',trim(object_name)
-  
+
 ! index of object
   object_ind = object_index_or_die (object_name)
 
@@ -620,11 +620,11 @@ module objects_mod
   if (node_ind == 0) then
      call die(lhere, 'node >'+trim(node_name)+'< not catalogued.')
   endif
-  
+
 ! the current node depends on the current object
   call append_once(objects(object_ind)%nodes_depend_index, node_ind)
 
-! add also the reverse dependency for object_depend_valid to work properly, but it can be problemic... 
+! add also the reverse dependency for object_depend_valid to work properly, but it can be problemic...
 ! the current object is needed by the current node
   call append_once(nodes(node_ind)%objects_needed_index, object_ind)
 
@@ -639,7 +639,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -658,7 +658,7 @@ module objects_mod
     write(6,'(2a)') trim(lhere),': Check that this object is declared as created in a node and that this node is catalogued in catalog_routines_mod.f90.'
     call die (lhere)
   endif
-  
+
 ! execute create node of object
   call node_exe_by_index (objects(object_index)%node_create_index)
 
@@ -673,7 +673,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: node_ind, object_ind
 
 ! local
@@ -696,7 +696,7 @@ module objects_mod
   if (node_ind == 0) then
       call die(lhere, 'node index ='+node_ind)
   endif
-  
+
 ! the current node depends on the current object
   call append_once(objects(object_ind)%nodes_depend_index, node_ind)
 
@@ -715,7 +715,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
   character(len=*), intent(in)   :: node_name
 
@@ -735,7 +735,7 @@ module objects_mod
     write(6,'(2a)') trim(lhere),': Check that this object is declared as created in a node and that this node is catalogued in catalog_routines_mod.f90'
     call die (lhere)
   endif
-  
+
 ! execute create node of object
   call node_exe_by_index (objects(object_index)%node_create_index)
 
@@ -750,7 +750,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: node_name
 
 ! local
@@ -778,7 +778,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: node_index
 
 ! local
@@ -786,7 +786,7 @@ module objects_mod
   integer node_i
   integer obj_i
   real(dp) cpu1, cpu2
-   
+
 ! begin
 ! if the current node is valid, do nothing
   if (nodes(node_index)%valid) return
@@ -800,7 +800,7 @@ module objects_mod
 # if defined (DEBUG)
     if (l_trace) then
       write(6,'(a,i3,2a)') 'trace: execute node # ',node_index,': ', trim(nodes(node_index)%routine_name)
-    endif 
+    endif
 # endif
 
 ! set name of routine
@@ -810,12 +810,12 @@ module objects_mod
   call cpu_time(cpu1)
   call exe_by_address_0 (nodes(node_index)%routine_address)
   call cpu_time(cpu2)
-  
+
 ! reset name of routine
   here = 'undefined'
 
   nodes(node_index)%calls_nb = nodes(node_index)%calls_nb + 1
-  nodes(node_index)%cpu_duration =  nodes(node_index)%cpu_duration + cpu2 - cpu1 
+  nodes(node_index)%cpu_duration =  nodes(node_index)%cpu_duration + cpu2 - cpu1
 
 ! validate the current node
   nodes(node_index)%valid = .true.
@@ -829,17 +829,17 @@ module objects_mod
 # if defined (DEBUG)
   if (l_print_all_objects) then
    do obj_i = 1, size(nodes(node_index)%objects_create_index)
-    call object_write_by_index (nodes(node_index)%objects_create_index(obj_i)) 
+    call object_write_by_index (nodes(node_index)%objects_create_index(obj_i))
    enddo
   endif
 # endif
-  
+
   end subroutine node_exe_by_index
 
 ! ==============================================================================
   subroutine object_modified (object_name)
 ! ------------------------------------------------------------------------------
-! Description   : when an object has been modified, validate it and 
+! Description   : when an object has been modified, validate it and
 ! Description   : invalidate all objects depending on it
 ! Description   : also catalog object if necessary
 !
@@ -847,16 +847,16 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in)             :: object_name
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_modified'
   integer                                  :: object_ind
-  
+
 ! begin
 !  write(6,*) trim(lhere),': modify object by name ', trim(object_name)
-  
+
 ! index of object, and catalog it if necessary
   call object_add_once_and_index (object_name, object_ind)
 
@@ -874,7 +874,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -907,7 +907,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
 ! Description   : when an object has been modified, invalidate all objects depending on it
 ! Description   : using the index of the object
-! Description   : and mark that the current object has been validated for the objects 
+! Description   : and mark that the current object has been validated for the objects
 ! Description   : on which the current object depends
 ! Description   : This routine is more general and safe than object_modified_by_index
 ! Description   : but it is (a bit?) more costly, so it is not yet used everywhere
@@ -916,7 +916,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -945,20 +945,20 @@ module objects_mod
      call object_depend_valid_by_index (nodes(objects(object_index)%node_create_index)%objects_needed_index (obj_i))
    enddo
   endif
-  
+
   end subroutine object_modified2_by_index
 
 ! ==============================================================================
   recursive subroutine object_depend_valid_by_index (object_index)
 ! ------------------------------------------------------------------------------
-! Description   : record that an object depending on the current object 
+! Description   : record that an object depending on the current object
 ! Description   : has been valididated, in order to properley invalidate it later on
 !
 ! Created       : J. Toulouse, 13 Apr 2007
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -975,7 +975,7 @@ module objects_mod
      call object_depend_valid_by_index (nodes(objects(object_index)%node_create_index)%objects_needed_index (obj_i))
    enddo
   endif
-  
+
   end subroutine object_depend_valid_by_index
 
 ! ==============================================================================
@@ -987,7 +987,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
@@ -1012,7 +1012,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -1031,7 +1031,7 @@ module objects_mod
 
 !  write (6,'(3a)') 'invalidate object >',trim(objects(object_index)%name),'<.'
 
-! if object has been asked to be freezed, leave the object valid and return 
+! if object has been asked to be freezed, leave the object valid and return
   if (objects(object_index)%freezed) return
 
 ! invalidate current object unless the object has been asked to be freezed
@@ -1061,7 +1061,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, target, intent(in)         :: object
@@ -1095,7 +1095,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, target, intent(in)         :: object (:)
@@ -1133,7 +1133,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)       :: object_name
   integer, target, intent(in)        :: object (:,:)
@@ -1150,7 +1150,7 @@ module objects_mod
 
 ! if object already associated, return
   if (objects(object_ind)%associated) return
-  
+
 ! store type
   objects(object_ind)%type = 'integer_2'
 
@@ -1172,7 +1172,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, target, intent(in)         :: object (:,:,:)
@@ -1212,7 +1212,7 @@ module objects_mod
 ! Created     : J. Toulouse, 15 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)                   :: object_name
   type (type_integer_row), intent(in), target    :: object (:)
@@ -1250,7 +1250,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)            :: object_name
   real(dp), target, intent(in)            :: object
@@ -1284,7 +1284,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   real(dp), target, intent(in)        :: object (:)
@@ -1322,7 +1322,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   real(dp), target, intent(in)        :: object (:,:)
@@ -1361,7 +1361,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   real(dp), target, intent(in)        :: object (:,:,:)
@@ -1401,7 +1401,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   real(dp), target, intent(in)        :: object (:,:,:,:)
@@ -1442,7 +1442,7 @@ module objects_mod
 ! Created     : J. Toulouse, 26 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   real(dp), target, intent(in)        :: object (:,:,:,:,:)
@@ -1484,7 +1484,7 @@ module objects_mod
 ! Created     : J. Toulouse, 15 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)               :: object_name
   type (type_real_row), target, intent(in)   :: object (:)
@@ -1522,7 +1522,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   logical, target, intent(in)         :: object (:)
@@ -1560,7 +1560,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)   :: object_name
   logical, target, intent(in)    :: object (:,:)
@@ -1577,7 +1577,7 @@ module objects_mod
 
 ! if object already associated, return
   if (objects(object_ind)%associated) return
-  
+
 ! store type
   objects(object_ind)%type = 'logical_2'
 
@@ -1599,7 +1599,7 @@ module objects_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)           :: object_name
   logical, target, intent(in)            :: object (:,:,:)
@@ -1639,7 +1639,7 @@ module objects_mod
 ! Created     : J. Toulouse, 31 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)                         :: object_name
   character(len=max_string_len), target, intent(in)    :: object (:)
@@ -1677,7 +1677,7 @@ module objects_mod
 ! Created     : J. Toulouse, 01 Dec 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)                       :: object_name
 
@@ -1705,7 +1705,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -1757,7 +1757,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1, dim2
@@ -1812,7 +1812,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1, dim2, dim3
@@ -1871,7 +1871,7 @@ module objects_mod
 ! Created     : J. Toulouse, 15 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -1930,7 +1930,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)         :: object_name
   integer, intent(in)                  :: dim1
@@ -1986,7 +1986,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)         :: object_name
   integer, intent(in)                  :: dim1, dim2
@@ -2050,7 +2050,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)         :: object_name
   integer, intent(in)                  :: dim1, dim2, dim3
@@ -2114,7 +2114,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1, dim2, dim3, dim4
@@ -2175,7 +2175,7 @@ module objects_mod
 ! Created     : J. Toulouse, 26 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)         :: object_name
   integer, intent(in)                  :: dim1, dim2, dim3, dim4, dim5
@@ -2239,7 +2239,7 @@ module objects_mod
 ! Created     : J. Toulouse, 15 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -2290,7 +2290,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -2342,7 +2342,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1, dim2
@@ -2397,7 +2397,7 @@ module objects_mod
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1, dim2, dim3
@@ -2455,7 +2455,7 @@ module objects_mod
 ! Created     : J. Toulouse, 31 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -2800,9 +2800,9 @@ module objects_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*) routine_name, object_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_write'
   character(len=max_string_len_type) :: object_type
@@ -2811,7 +2811,7 @@ module objects_mod
   integer i, j
 
 ! begin
-  
+
 ! index of object
   object_ind = object_index_or_die (object_name)
 
@@ -2845,7 +2845,7 @@ module objects_mod
    case default
      call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
   end select
-   
+
   end subroutine object_write
 
 ! ===================================================================================
@@ -2857,20 +2857,20 @@ module objects_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_write_no_routine_name'
   integer object_ind
 
 ! begin
-  
+
 ! index of object
   object_ind = object_index_or_die (object_name)
 
   call object_write_by_index (object_ind)
-   
+
   end subroutine object_write_no_routine_name
 
 ! ===================================================================================
@@ -2882,9 +2882,9 @@ module objects_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*) object_name1, object_name2
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_write_2_no_routine_name'
   character(len=max_string_len_type) :: object_type1, object_type2
@@ -2892,9 +2892,9 @@ module objects_mod
   integer dim11, dim21, dim31
   integer dim12, dim22, dim32
   integer i, j, k
-  
+
 ! begin
-  
+
 ! index of object
   object_ind1 = object_index (object_name1)
   if (object_ind1 == 0) then
@@ -3003,7 +3003,7 @@ module objects_mod
    case default
      call die (lhere, 'object type >'+trim(object_type1)+'< not handled.')
    end select
-   
+
   end subroutine object_write_2_no_routine_name
 
 ! ===================================================================================
@@ -3015,12 +3015,12 @@ module objects_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) ::  object_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_write_by_index'
-  character(len=max_string_len_obj) :: object_name 
+  character(len=max_string_len_obj) :: object_name
   character(len=max_string_len_type) :: object_type
   integer i, j, k, l, m
 
@@ -3141,13 +3141,13 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_save'
   integer object_ind
-  
+
 ! begin
 
 ! index of object
@@ -3166,7 +3166,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -3196,20 +3196,20 @@ module objects_mod
   case ('double_1')
     dim1 = objects(object_index)%dimensions(1)
     call alloc ('objects(object_index)%save_double_1', objects(object_index)%save_double_1, dim1)
-    objects(object_index)%save_double_1 (:) = objects(object_index)%pointer_double_1 (:)  
+    objects(object_index)%save_double_1 (:) = objects(object_index)%pointer_double_1 (:)
 
   case ('double_2')
     dim1 = objects(object_index)%dimensions(1)
     dim2 = objects(object_index)%dimensions(2)
     call alloc ('objects(object_index)%save_double_2', objects(object_index)%save_double_2, dim1, dim2)
-    objects(object_index)%save_double_2 (:,:) = objects(object_index)%pointer_double_2 (:,:)  
+    objects(object_index)%save_double_2 (:,:) = objects(object_index)%pointer_double_2 (:,:)
 
   case ('double_3')
     dim1 = objects(object_index)%dimensions(1)
     dim2 = objects(object_index)%dimensions(2)
     dim3 = objects(object_index)%dimensions(3)
     call alloc ('objects(object_index)%save_double_3', objects(object_index)%save_double_3, dim1, dim2, dim3)
-    objects(object_index)%save_double_3 (:,:,:) = objects(object_index)%pointer_double_3 (:,:,:)  
+    objects(object_index)%save_double_3 (:,:,:) = objects(object_index)%pointer_double_3 (:,:,:)
 
   case default
      call die (lhere, 'type >'+trim(object_type)+'< of object >'+trim(objects(object_index)%name)+'< is unknown.')
@@ -3219,7 +3219,7 @@ module objects_mod
   objects(object_index)%saved = .true.
 
 ! save all the created objects by needed nodes
-!  if (objects(object_index)%node_create_index > 0) then 
+!  if (objects(object_index)%node_create_index > 0) then
 !  do obj_i = 1, size(nodes(objects(object_index)%node_create_index)%objects_needed_index)
 !   if (objects(nodes(objects(object_index)%node_create_index)%objects_needed_index(obj_i))%node_create_index > 0 ) then
 !   do obj_j = 1, size(nodes(objects(nodes(objects(object_index)%node_create_index)%objects_needed_index(obj_i))%node_create_index)%objects_create_index)
@@ -3240,13 +3240,13 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_restore'
   integer object_ind
-  
+
 ! begin
 
 ! index of object
@@ -3261,12 +3261,12 @@ module objects_mod
 ! ------------------------------------------------------------------------------
 ! Description   : restore previously-saved value of an object by its index
 ! Description   : and all the needed objects
-! 
+!
 ! Created       : J. Toulouse, 17 Feb 2005
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   integer, intent(in) :: object_index
 
 ! local
@@ -3330,7 +3330,7 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
@@ -3355,14 +3355,14 @@ module objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_zero'
   character(len=max_string_len_type) :: object_type
   integer object_ind
-  
+
 ! begin
 
 ! index of object
@@ -3407,7 +3407,7 @@ module objects_mod
 !! ------------------------------------------------------------------------------
 !  implicit none
 !
-!! input 
+!! input
 !  integer, intent(in) :: object_index
 !
 !! local
@@ -3429,11 +3429,11 @@ module objects_mod
 !  case ('integer_1')
 !    where (objects(object_index)%pointer_integer_1 == 'NaN')
 !!     write (6,'(a)') 'debug: object >'+objects(object_index)%name+'< is NaN.'
-!     l=.true. 
+!     l=.true.
 !    endwhere
 !
 !  case ('integer_2')
-!    where (objects(object_index)%pointer_integer_2 == 'NaN') 
+!    where (objects(object_index)%pointer_integer_2 == 'NaN')
 !     write (6,'(a)') 'debug: object >'+objects(object_index)%name+'< is NaN.'
 !    endwhere
 !
@@ -3448,7 +3448,7 @@ module objects_mod
 !    endwhere
 !
 !  case ('double_2')
-!    where (objects(object_index)%pointer_double_2 == 'NaN') 
+!    where (objects(object_index)%pointer_double_2 == 'NaN')
 !     write (6,'(a)') 'debug: object >'+objects(object_index)%name+'< is NaN.'
 !    endwhere
 !

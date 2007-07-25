@@ -186,7 +186,7 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
 
           endif
   100 continue
-      
+
       call object_modified_by_index (vpsp_ex_index) ! JT
 
 c     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)

@@ -700,7 +700,7 @@ c    &    sign(one,dfloat(iedet(j,i)))*cdet(iabs(iedet(j,i)),1)
 
 c If the exponents of the basis functions are optimized, recompute normalizations
        if(nparme.gt.0) then
-         if(ibasis.eq.3) then 
+         if(ibasis.eq.3) then
            call basis_norm_dot(0)
          else
            call basis_norm(1,0)
@@ -867,7 +867,7 @@ c             write(fmt,'(''(''i2,''f16.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'
               write(fmt,'(''(''i2,''f16.8,a28)'')') nparma_read
              else
 c             write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
-              write(fmt,'(''(a28)'')') 
+              write(fmt,'(''(a28)'')')
             endif
   267       write(6,fmt) (a4(i,it,1),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
           nparm_read=2+max(0,nordb-1)
@@ -881,7 +881,7 @@ c           write(fmt,'(''(''i2,''f16.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')
             write(fmt,'(''(''i2,''f16.8,a28)'')') nparm_read
            else
 c           write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
-            write(fmt,'(''(a28)'')') 
+            write(fmt,'(''(a28)'')')
           endif
   270     write(6,fmt) (b(i,isp,1),i=1,nparm_read),' (b(iparmj),iparmj=1,nparmb)'
 

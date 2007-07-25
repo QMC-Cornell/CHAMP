@@ -6,7 +6,7 @@ module debug_mod
   integer                                     :: debug_routines_list_nb = 0
   character(len=max_string_len), allocatable  :: debug_routines_list (:)
   logical                                     :: l_track_NaN = .false.
-  
+
   contains
 
 !===========================================================================
@@ -34,8 +34,8 @@ module debug_mod
 
   select case (trim(word))
 
-  case ('help') 
-   write(6,*) 
+  case ('help')
+   write(6,*)
    write(6,'(a)') 'HELP for debug menu:'
    write(6,'(a)') 'debug'
    write(6,'(a)') ' trace = [boolean] active tracing of nodes and routines (default=false)'

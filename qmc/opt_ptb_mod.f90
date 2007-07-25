@@ -11,7 +11,7 @@ module opt_ptb_mod
   real(dp), allocatable          :: delta_e_ptb (:)
 
   contains
-  
+
 !===========================================================================
   subroutine opt_ptb_menu
 !---------------------------------------------------------------------------
@@ -28,19 +28,19 @@ module opt_ptb_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
   case ('help')
    write(6,'(a)')  ' HELP for perturbative menu:'
-   write(6,'(a)')  ' perturbative' 
+   write(6,'(a)')  ' perturbative'
    write(6,'(a)')  '   use_orbital_eigenvalues = [logical] : use orbital eigenvalues for energy denominators? (default=false)'
    write(6,'(a)')  '   diagonal_overlap = [logical] : approximate overlap matrix of derivatives by its diagonal? (default=false)'
    write(6,'(a)')  '   lambda = [real] : scaling factor for correction of MCSCF orbital eigenvalues (default=0.3)'
 !   write(6,'(a)')  ':   delta_e_ptb 0.1 3. 5. end : read energy denominators'
    write(6,'(a)')  ': end'
- 
+
   case ('use_orbital_eigenvalues')
    call get_next_value (l_opt_orb_eig)
 
@@ -62,7 +62,7 @@ module opt_ptb_mod
 
   enddo ! end loop over menu lines
 
-  end subroutine opt_ptb_menu  
+  end subroutine opt_ptb_menu
 
 ! ==============================================================================
   subroutine e_ptb_bld
@@ -160,7 +160,7 @@ module opt_ptb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('delta_e_ptb', delta_e_ptb, param_nb)
 
@@ -183,7 +183,7 @@ module opt_ptb_mod
 ! ==============================================================================
   subroutine delta_ptb_bld
 ! ------------------------------------------------------------------------------
-! Description   : find variation of parameters for perturbative method 
+! Description   : find variation of parameters for perturbative method
 !
 ! Created       : J. Toulouse, 04 Feb 2006
 ! ------------------------------------------------------------------------------
@@ -211,7 +211,7 @@ module opt_ptb_mod
 ! begin
 ! allocations
   call object_alloc ('delta_ptb', delta_ptb, param_nb)
- 
+
   delta_ptb (:) = 0.d0
 
 ! with only diagonal of overlap
@@ -225,7 +225,7 @@ module opt_ptb_mod
      delta_ptb (parm_i) = - (1.d0/(dpsi_sq_c_av (parm_i) * (delta_e_ptb (parm_i) + diag_stab))) * gradient (parm_i)/2.d0
    enddo
 
-! with full overlap 
+! with full overlap
   else
 
    call object_provide_in_node (lhere, 'dpsi_dpsi_c_av_inv')

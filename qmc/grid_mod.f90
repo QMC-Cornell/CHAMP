@@ -6,21 +6,21 @@ module grid_mod
 ! Declaration of global variables and default values
 
 ! grid r
-  real(dp)                  :: grid_r_step  
+  real(dp)                  :: grid_r_step
   real(dp)                  :: grid_r_max
   integer                           :: grid_r_nb = 0.d0
   real(dp), allocatable     :: grid_r (:)
 
 ! grid xyz
-  real(dp)                  :: grid_x_step  
+  real(dp)                  :: grid_x_step
   real(dp)                  :: grid_x_max
   real(dp)                  :: grid_x_min
   integer                           :: grid_x_nb = 0.d0
-  real(dp)                  :: grid_y_step  
+  real(dp)                  :: grid_y_step
   real(dp)                  :: grid_y_max
   real(dp)                  :: grid_y_min
   integer                           :: grid_y_nb = 0.d0
-  real(dp)                  :: grid_z_step  
+  real(dp)                  :: grid_z_step
   real(dp)                  :: grid_z_max
   real(dp)                  :: grid_z_min
   integer                           :: grid_z_nb = 0.d0
@@ -37,7 +37,7 @@ module grid_mod
   real(dp), allocatable     :: orb_on_x (:,:)
 
   contains
-  
+
 !===========================================================================
   subroutine grid_menu
 !---------------------------------------------------------------------------
@@ -53,7 +53,7 @@ module grid_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -78,7 +78,7 @@ module grid_mod
    call die(here)
 
   endif
-  
+
   enddo ! end loop over menu lines
 
   end subroutine grid_menu
@@ -98,7 +98,7 @@ module grid_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -123,7 +123,7 @@ module grid_mod
    call die(here)
 
   endif
-  
+
   enddo ! end loop over menu lines
 
 
@@ -160,7 +160,7 @@ module grid_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -207,7 +207,7 @@ module grid_mod
    call die(here)
 
   endif
-  
+
   enddo ! end loop over menu lines
 
 
@@ -356,7 +356,7 @@ module grid_mod
 !===========================================================================
   subroutine grid_orb_menu
 !---------------------------------------------------------------------------
-! Description : menu for grid 
+! Description : menu for grid
 !
 ! Created     : J. Toulouse, 05 Jan 2005
 !---------------------------------------------------------------------------
@@ -371,7 +371,7 @@ module grid_mod
   here = 'grid_orb_menu'
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -403,7 +403,7 @@ module grid_mod
    call die(here)
 
   endif
-  
+
   enddo ! end loop over menu lines
 
   end subroutine grid_orb_menu
@@ -451,7 +451,7 @@ module grid_mod
 
 ! allocations
   call object_alloc ('grid_on_x', grid_on_x, grid_on_x_nb)
-  
+
   do i = 1, grid_on_x_nb
      grid_on_x (i) = grid_step * (i-1)
   enddo
@@ -517,7 +517,7 @@ module grid_mod
 
 ! allocations
   call alloc ('orb_on_x', orb_on_x, orb_tot_nb, grid_on_x_nb)
-  
+
   iel = 1
   rvec_en = 0.d0
   r_en = 0.d0

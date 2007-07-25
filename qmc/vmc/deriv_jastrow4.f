@@ -70,7 +70,7 @@ c     common /jasnonloc/ fso(MELEC,MELEC),fsumo
       ndim1=ndim-1
 
       fsum=0
-      
+
       do 2 iparm=1,nparmj+nparms
         gvalue(iparm)=0
         d2g(iparm)=0
@@ -243,7 +243,7 @@ c         geeuu=geeuu/bot
             geeu=geeu/scalek(iwf)
             geeuu=geeuu/scalek(iwf)
           endif
-          
+
           if(igradhess.gt.0 .and. nparms.eq.1) then
             if(isc.eq.8 .or. isc.eq.10) then
               stop 'scalek opt not fully implemented for isc=8,10'
@@ -351,14 +351,14 @@ c        call deriv_scale(rij,dk,dk2,dr,dr2,2,iderivk)
 
         go(i,j,iparm)=go(i,j,iparm)+gee
         gvalue(iparm)=gvalue(iparm)+gee
-        
+
         g(1,i,iparm)=g(1,i,iparm) + geeu*rvec_ee(1,ij)
         g(2,i,iparm)=g(2,i,iparm) + geeu*rvec_ee(2,ij)
         g(3,i,iparm)=g(3,i,iparm) + geeu*rvec_ee(3,ij)
         g(1,j,iparm)=g(1,j,iparm) - geeu*rvec_ee(1,ij)
         g(2,j,iparm)=g(2,j,iparm) - geeu*rvec_ee(2,ij)
         g(3,j,iparm)=g(3,j,iparm) - geeu*rvec_ee(3,ij)
-        
+
         d2g(iparm)=d2g(iparm) + two*(geeuu+ndim1*geeu)
 
         if(igradhess.gt.0) then
@@ -397,7 +397,7 @@ c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
           call switch_scale2(rrj(1),dd8,dd10,3)
         endif
 
-        if(nparms.eq.1) then 
+        if(nparms.eq.1) then
           call deriv_scale(rij,dkij,dk2ij,drij,dr2ij,4,iderivk)
           call deriv_scale(ri,dki,dk2i,dri,dr2i,3,iderivk)
           call deriv_scale(rj,dkj,dk2j,drj,dr2j,3,iderivk)
@@ -920,25 +920,25 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
             iparm=1
 c            call deriv_scale(ri,dk,dk2,dr,dr2,1,iderivk)
-            
+
             gen=feni*dk-dasymp_jasa(it,iwf)*dasymp_r_en(iwf)
             geni=(fenii*dk*dd7+feni*dr)/ri
             genii=fenii*dk*dd9+(feniii*dk*dd7+2*fenii*dr)*dd7+feni*dr2
-            
+
             go(i,i,iparm)=go(i,i,iparm)+gen
             gvalue(iparm)=gvalue(iparm)+gen
-            
+
             g(1,i,iparm)=g(1,i,iparm) + geni*rvec_en(1,i,ic)
             g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic)
             g(3,i,iparm)=g(3,i,iparm) + geni*rvec_en(3,i,ic)
-            
+
             d2g(iparm)=d2g(iparm) + genii+ndim1*geni
 
             if(igradhess.gt.0) then
               didk(1)=didk(1)+fenii*dk*dk+feni*dk2
      &-d2asymp_jasa(it,iwf)*dasymp_r_en(iwf)*dasymp_r_en(iwf)-dasymp_jasa(it,iwf)*d2asymp_r_en(iwf)
             endif
-            
+
           endif
 
    80     continue

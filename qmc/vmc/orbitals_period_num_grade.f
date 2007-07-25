@@ -44,7 +44,7 @@ c    &MGRID_ORB_PER-1,MORB_OCC)
       dimension x(3),orb(*),dorb(3,*),ddorb(*)
       dimension r_basis(3),ict(10),orb_splines_tmp(10),
      &ddorb_splines_tmp(3)
-  
+
       dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),
      &     ddorb_blip_tmp(MORB_OCC,MDET)
 
@@ -76,7 +76,7 @@ c r_basis in line 20 is always between 0 and 1
               isgn=isgn*(-1)**(int(r_basis(k))+1)
             endif
           endif
-          r_basis(k)=r_basis(k)-int(r_basis(k))  
+          r_basis(k)=r_basis(k)-int(r_basis(k))
    20     if(r_basis(k).lt.0.d0) r_basis(k)=r_basis(k)+1
 
 
@@ -112,7 +112,7 @@ cwparker Get the values from the PSPLINE library
 !
 !cwparker for a given point, r_basis(k), calculate the value of the
 !c        splines at the point as well as selected derivatives
-!         
+!
 !         do iorb=1,norb
 !            call r8evtricub(r_basis(1),r_basis(2),r_basis(3),
 !     &                       grid_orbx,ngrid_orbx,grid_orby,
@@ -120,7 +120,7 @@ cwparker Get the values from the PSPLINE library
 !     &                       ,1,1,1,orb_splines(1,0,0,0,iorb),
 !     &                       ngrid_orby,ngrid_orbz,
 !     &                       ict,orb_splines_tmp,ier)
-! 
+!
 !            if(ier.ne.0) stop 'error in r8evtricub'
 !cwparker Explicit splines
 !c                     call r8tcspeval(r_basis(1),r_basis(2),r_basis(3),
@@ -197,7 +197,7 @@ cwparker Get the values from the PSPLINE library
 !
 !            ddorb(iorb) = isgn*(ddorb_splines_tmp(1)+
 !     &                     ddorb_splines_tmp(2)+ddorb_splines_tmp(3))
-!            
+!
 !        enddo
 !
 !      endif
@@ -209,7 +209,7 @@ cwparker Get the values from the PSPLINE library
          do iorb=1,norb
               orb(iorb)=orb_blip_tmp(iorb,1)
               dorb(:,iorb)=dorb_blip_tmp(:,iorb,1)
-              ddorb(iorb)=ddorb_blip_tmp(iorb,1) 
+              ddorb(iorb)=ddorb_blip_tmp(iorb,1)
          enddo
       endif
 

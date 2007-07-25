@@ -67,7 +67,7 @@ module basic_tools_mod
    interface flatten
 !---------------------------------------------------------------
    module procedure flatten_integer_2   , &
-                    flatten_double_2   
+                    flatten_double_2
 
    end interface flatten
 
@@ -75,7 +75,7 @@ module basic_tools_mod
    interface unflatten
 !---------------------------------------------------------------
    module procedure unflatten_integer_2   , &
-                    unflatten_double_2   
+                    unflatten_double_2
 
    end interface unflatten
 
@@ -196,7 +196,7 @@ module basic_tools_mod
 !===============================================================
   interface last_element
 !---------------------------------------------------------------
-   module procedure last_element_integer 
+   module procedure last_element_integer
   end interface last_element
 
 !===============================================================
@@ -224,8 +224,8 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'die_basic'
-  
-  write(6,*) 
+
+  write(6,*)
   write(6,'(a)') 'The program died.'
   stop 'The program died.'
 
@@ -247,7 +247,7 @@ module basic_tools_mod
   character(len=max_string_len_rout), save :: lhere = 'die_nomessage'
   integer ierr
 
-  write(6,*) 
+  write(6,*)
 !  write(6,'(a,i3)') 'idtask=',idtask
   write(6,'(3a)') 'The program died because of a fatal error in routine ',trim(routine_name),'.'
 
@@ -257,7 +257,7 @@ module basic_tools_mod
 !   if (ierr /= 0) then
 !    write (6,'(2a)') trim(lhere),': error in mpi_finalize'
 !   endif
-!# endif 
+!# endif
 ! MPI end -------------------------------------------------------------------
 
   stop 'The program died.'
@@ -272,11 +272,11 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   character(len=*), intent (in) :: routine_name, message
 
-  write(6,*) 
+  write(6,*)
   write(6,'(3a)') trim(routine_name),': ', trim(message)
   write(6,'(3a)') 'The program died because of a fatal error in routine ',trim(routine_name),'.'
   stop 'The program died.'
@@ -290,8 +290,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   character (len=*), allocatable :: array(:)
   character (len=*) string
 
@@ -301,7 +301,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout) lhere
   integer i
-  
+
 ! begin
   lhere = 'locate_string_in_array'
 
@@ -326,7 +326,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 05 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1
@@ -362,7 +362,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
     do i = 1, dim_min
@@ -388,12 +388,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_integer_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1
@@ -421,8 +421,8 @@ module basic_tools_mod
    endif
 
 !  initialize array to 0
-   object(:) = 0 
-   
+   object(:) = 0
+
    else
 
 ! resize object if already allocated with different dimension
@@ -431,7 +431,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
     do i = 1, dim_min
@@ -457,12 +457,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_integer_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2
@@ -491,7 +491,7 @@ module basic_tools_mod
    endif
 
 !  initialize array to 0
-   object(:,:) = 0 
+   object(:,:) = 0
 
    else
 
@@ -503,7 +503,7 @@ module basic_tools_mod
 
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
 
 
@@ -534,12 +534,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_integer_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3
@@ -569,7 +569,7 @@ module basic_tools_mod
    endif
 
 !  initialize array to 0
-   object(:,:,:) = 0 
+   object(:,:,:) = 0
 
    else
 
@@ -583,7 +583,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
 
     do i = 1, dim_min1
@@ -617,12 +617,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_integer_row_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 15 Dec 2004
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -657,7 +657,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
     do i = 1, dim_min
@@ -683,12 +683,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_double_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1
@@ -726,7 +726,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
 
@@ -753,12 +753,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_double_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2
@@ -799,7 +799,7 @@ module basic_tools_mod
 
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
 
 
@@ -830,12 +830,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_double_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3
@@ -879,7 +879,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
 
     do i = 1, dim_min1
@@ -913,12 +913,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_double_4 (object_name, object, dim1, dim2, dim3, dim4)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3, dim4
@@ -965,7 +965,7 @@ module basic_tools_mod
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
     dim_min4 =  min(object_dim4, dim4)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4)
 
     do i = 1, dim_min1
@@ -1003,12 +1003,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_double_5 (object_name, object, dim1, dim2, dim3, dim4, dim5)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 26 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3, dim4, dim5
@@ -1058,7 +1058,7 @@ module basic_tools_mod
     dim_min3 =  min(object_dim3, dim3)
     dim_min4 =  min(object_dim4, dim4)
     dim_min5 =  min(object_dim5, dim5)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4, dim_min5)
 
     do i = 1, dim_min1
@@ -1100,12 +1100,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_double_row_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 15 Dec 2004
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*), intent(in)        :: object_name
   integer, intent(in)                 :: dim1
@@ -1140,7 +1140,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
     do i = 1, dim_min
@@ -1166,12 +1166,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_complex_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1
@@ -1206,7 +1206,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
 
@@ -1233,12 +1233,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_complex_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2
@@ -1276,7 +1276,7 @@ module basic_tools_mod
 
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
 
 
@@ -1307,12 +1307,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_complex_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3
@@ -1354,7 +1354,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
 
     do i = 1, dim_min1
@@ -1388,12 +1388,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_complex_4 (object_name, object, dim1, dim2, dim3, dim4)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3, dim4
@@ -1437,7 +1437,7 @@ module basic_tools_mod
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
     dim_min4 =  min(object_dim4, dim4)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4)
 
     do i = 1, dim_min1
@@ -1475,12 +1475,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_logical_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1
@@ -1515,7 +1515,7 @@ module basic_tools_mod
    if(object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
-     
+
     call alloc ('object_temp', object_temp, dim_min)
 
 
@@ -1542,12 +1542,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_logical_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2
@@ -1585,7 +1585,7 @@ module basic_tools_mod
 
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
 
 
@@ -1616,12 +1616,12 @@ module basic_tools_mod
 !===========================================================================
   recursive subroutine alloc_logical_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
-! Description : allocate a object 
+! Description : allocate a object
 !
 ! Created     : J. Toulouse, 19 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-   
+
 ! input
   character(len=*)                    :: object_name
   integer                             :: dim1, dim2, dim3
@@ -1662,7 +1662,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
-     
+
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
 
     do i = 1, dim_min1
@@ -2272,7 +2272,7 @@ module basic_tools_mod
      object_1(ind) = object_2(i,j)
     enddo
   enddo
-   
+
   end subroutine flatten_integer_2
 
 !===========================================================================
@@ -2351,7 +2351,7 @@ module basic_tools_mod
     enddo
   enddo
 
-   
+
   end subroutine unflatten_integer_2
 
 !===========================================================================
@@ -2390,7 +2390,7 @@ module basic_tools_mod
     enddo
   enddo
 
-   
+
   end subroutine unflatten_double_2
 
 !===========================================================================
@@ -2401,8 +2401,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 16 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   integer, allocatable, intent(in) :: array1 (:)
 
 ! input/output
@@ -2410,7 +2410,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'copy_integer_1'
-  
+
 ! begin
   call alloc ('array2', array2, mysize(array1))
   array2 (:) = array1 (:)
@@ -2425,8 +2425,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 16 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   real(dp), allocatable, intent(in) :: array1 (:)
 
 ! input/output
@@ -2434,7 +2434,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'copy_double_1'
-  
+
 ! begin
   call alloc ('array2', array2, mysize(array1))
   array2 (:) = array1 (:)
@@ -2449,8 +2449,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 18 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   integer, intent(in) :: intg
 
 ! input/output
@@ -2459,7 +2459,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'append_integer_0_to_1'
   integer array_nb
-  
+
 ! begin
   array_nb = mysize(array)
   array_nb = array_nb + 1
@@ -2476,8 +2476,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 13 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   real(dp), intent(in) :: double
 
 ! input/output
@@ -2486,7 +2486,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'append_double_0_to_1'
   integer array_nb
-  
+
 ! begin
   array_nb = mysize(array)
   array_nb = array_nb + 1
@@ -2503,8 +2503,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 13 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   integer, allocatable, intent(in) :: array2 (:)
 
 ! input/output
@@ -2513,7 +2513,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'append_integer_1_to_1'
   integer i
-  
+
 ! begin
   do i = 1, mysize(array2)
     call append (array1, array2(i))
@@ -2529,8 +2529,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 13 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   real(dp), allocatable, intent(in) :: array2 (:)
 
 ! input/output
@@ -2539,7 +2539,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'append_double_1_to_1'
   integer i
-  
+
 ! begin
   do i = 1, mysize(array2)
     call append (array1, array2(i))
@@ -2555,8 +2555,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   character(len=*) string
 
 ! input/output
@@ -2565,7 +2565,7 @@ module basic_tools_mod
 ! local
 !  character(len=max_string_len_rout) lhere
   integer i, array_nb
-  
+
 ! begin
 !  lhere = 'append_once_string'
 
@@ -2600,8 +2600,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
-! input 
+
+! input
   integer, intent(in) :: intg
 
 ! input/output
@@ -2610,7 +2610,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere =  'append_once_integer'
   integer i, array_nb
-  
+
 ! begin
 
   if (.not. allocated(array)) then
@@ -2644,7 +2644,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   integer, allocatable, intent(in) :: array (:)
 
@@ -2654,7 +2654,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'last_integer'
   integer array_nb
-  
+
 ! begin
   array_nb = mysize (array)
 
@@ -2675,14 +2675,14 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 12 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   integer, intent(inout) :: integer1, integer2
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'swap_integer'
   integer temp
-  
+
 ! begin
   temp = integer1
   integer1 = integer2
@@ -2698,14 +2698,14 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 12 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   real(dp), intent(inout) :: double1, double2
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'swap_double'
   real(dp) temp
-  
+
 ! begin
   temp = double1
   double1 = double2
@@ -2721,7 +2721,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 30 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   real(dp), intent(inout) :: double1 (:), double2 (:)
 
@@ -2729,7 +2729,7 @@ module basic_tools_mod
   character(len=max_string_len_rout), save :: lhere = 'swap_double1'
   real(dp), allocatable :: temp (:)
   integer array1_nb, array2_nb
-  
+
 ! begin
   array1_nb = size (double1)
   array2_nb = size (double2)
@@ -2749,19 +2749,19 @@ module basic_tools_mod
 !===========================================================================
   subroutine sort_integer1 (array)
 !---------------------------------------------------------------------------
-! Description : sort in increasing order an array of integer 
+! Description : sort in increasing order an array of integer
 !
 ! Created     : J. Toulouse, 28 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   integer, intent(inout), allocatable :: array(:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'sort_integer1'
   integer i, j, array_nb
-  
+
 ! begin
   array_nb = size(array)
 
@@ -2783,7 +2783,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 12 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   integer, intent(inout) :: array1 (:)
   integer, intent(inout) :: array2 (:)
@@ -2791,7 +2791,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'sort_integer1_integer1'
   integer i, j, array1_nb, array2_nb
-  
+
 ! begin
   array1_nb = size(array1)
   array2_nb = size(array2)
@@ -2812,7 +2812,7 @@ module basic_tools_mod
 
 !       if array1(j) == array1(i), order using array2
        if (array1(j) == array1(i)) then
-         if (array2(j) < array2(i)) then 
+         if (array2(j) < array2(i)) then
            call swap (array1(i), array1(j))
            call swap (array2(i), array2(j))
          endif
@@ -2831,7 +2831,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 12 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   integer, intent(inout) :: array1 (:)
   integer, intent(inout) :: array2 (:)
@@ -2840,7 +2840,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'sort_integer1_integer1_double1'
   integer i, j, array1_nb, array2_nb, array3_nb
-  
+
 ! begin
   array1_nb = size(array1)
   array2_nb = size(array2)
@@ -2863,7 +2863,7 @@ module basic_tools_mod
 
 !       if array1(j) == array1(i), order using array2
        if (array1(j) == array1(i)) then
-         if (array2(j) < array2(i)) then 
+         if (array2(j) < array2(i)) then
            call swap (array1(i), array1(j))
            call swap (array2(i), array2(j))
            call swap (array3(i), array3(j))
@@ -2871,7 +2871,7 @@ module basic_tools_mod
 
 !        if array2(j) == array2(i), order using array3
          if (array2(j) == array2(i)) then
-         if (array3(j) < array3(i)) then 
+         if (array3(j) < array3(i)) then
            call swap (array1(i), array1(j))
            call swap (array2(i), array2(j))
            call swap (array3(i), array3(j))
@@ -2892,7 +2892,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 30 Jan 2007
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   real(dp), intent(inout) :: array1 (:)
   real(dp), intent(inout) :: array2 (:)
@@ -2901,7 +2901,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'sort_double1_double1_double2'
   integer i, j, array1_nb, array2_nb, array3_nb
-  
+
 ! begin
   array1_nb = size(array1)
   array2_nb = size(array2)
@@ -2924,7 +2924,7 @@ module basic_tools_mod
 
 !       if array1(j) == array1(i), order using array2
        if (array1(j) == array1(i)) then
-         if (array2(j) < array2(i)) then 
+         if (array2(j) < array2(i)) then
            call swap (array1(i), array1(j))
            call swap (array2(i), array2(j))
            call swap (array3(:,i), array3(:,j))
@@ -2945,7 +2945,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 04 Jul 2007
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   integer, intent(inout) :: array(:)
   logical is_sorted_integer1
@@ -2953,7 +2953,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'is_sorted_integer1'
   integer i, j, array_nb
-  
+
 ! begin
   is_sorted_integer1 = .true.
 
@@ -2972,18 +2972,18 @@ module basic_tools_mod
 !===========================================================================
   subroutine sort_first_dim_integer (array)
 !---------------------------------------------------------------------------
-! Description : sort in increasing order the first dim of an array of integer 
+! Description : sort in increasing order the first dim of an array of integer
 !
 ! Created     : J. Toulouse, 29 Nov 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input/output
   integer         , allocatable :: array(:,:)
 
 ! local
   integer i, j, k, dim1, dim2, temp
-  
+
 ! begin
 
   dim1 = size(array,1)
@@ -3013,7 +3013,7 @@ module basic_tools_mod
   implicit none
 
 ! input/output
-  integer array (:)  
+  integer array (:)
 
 ! output
   integer sign
@@ -3025,7 +3025,7 @@ module basic_tools_mod
   array_nb = size(array)
   sign = 1
 
-  
+
   do i = 1, array_nb
     do j = i+1, array_nb
 
@@ -3055,7 +3055,7 @@ module basic_tools_mod
   integer, intent(in) :: elt_position
 
 ! input/output
-  integer, allocatable, intent(inout) :: array (:) 
+  integer, allocatable, intent(inout) :: array (:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'remove_elt_in_array_integer'
@@ -3063,7 +3063,7 @@ module basic_tools_mod
 
 ! begin
   array_nb = mysize(array)
-  
+
   if (array_nb == 0) then
    write(6,'(2a)') trim(lhere),': size(array) = 0'
    call die (lhere)
@@ -3082,7 +3082,7 @@ module basic_tools_mod
   array (elt_position:array_nb) = eoshift (array(elt_position:array_nb), shift = 1)
 
   call alloc ('array', array, array_nb-1)
- 
+
   end subroutine remove_elt_in_array_integer
 
 ! ==============================================================================
@@ -3098,7 +3098,7 @@ module basic_tools_mod
   integer, intent(in) :: elt_position
 
 ! input/output
-  real(dp), allocatable, intent(inout) :: array (:) 
+  real(dp), allocatable, intent(inout) :: array (:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'remove_elt_in_array_double_1'
@@ -3106,7 +3106,7 @@ module basic_tools_mod
 
 ! begin
   array_nb = mysize(array)
-  
+
   if (array_nb == 0) then
    write(6,'(2a)') trim(lhere),': size(array) = 0'
    call die (lhere)
@@ -3125,7 +3125,7 @@ module basic_tools_mod
   array (elt_position:array_nb) = eoshift (array(elt_position:array_nb), shift = 1)
 
   call alloc ('array', array, array_nb-1)
- 
+
   end subroutine remove_elt_in_array_double_1
 
 ! ==================================================================================
@@ -3141,7 +3141,7 @@ module basic_tools_mod
   integer, intent(in) :: elt_position
 
 ! input/output
-  real(dp), allocatable, intent(inout) :: array (:,:,:) 
+  real(dp), allocatable, intent(inout) :: array (:,:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'remove_elt_in_array_double_3'
@@ -3151,7 +3151,7 @@ module basic_tools_mod
   array_nb1 = size (array,1)
   array_nb2 = size (array,2)
   array_nb3 = size (array,3)
-  
+
   if (array_nb3 == 0) then
    write(6,'(2a)') trim(lhere),': size (array,3) = 0'
    call die (lhere)
@@ -3169,7 +3169,7 @@ module basic_tools_mod
 
   array (:,:,elt_position:array_nb3) = eoshift (array(:,:,elt_position:array_nb3), shift = 1, dim = 3)
   call alloc ('array', array, array_nb1, array_nb2, array_nb3-1)
- 
+
   end subroutine remove_elt_in_array_double_3
 
 ! ==============================================================================
@@ -3183,7 +3183,7 @@ module basic_tools_mod
   implicit none
 
 ! input
-  integer array (:) 
+  integer array (:)
   integer elt_old, elt_new
 
 ! local
@@ -3198,12 +3198,12 @@ module basic_tools_mod
   change_nb = 0
 
   do i = 1, array_nb
-    
+
    if (array (i) == elt_old) then
      array (i) = elt_new
      change_nb = change_nb + 1
    endif
-   
+
   enddo
 
   if (change_nb /= 1) then
@@ -3222,17 +3222,17 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 16 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  real(dp), intent(in)  :: array (:) 
+  real(dp), intent(in)  :: array (:)
 
 ! output
-  logical :: result 
+  logical :: result
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'array_is_zero_double'
   integer i
-  
+
 ! begin
 
   do i = 1, size(array)
@@ -3254,17 +3254,17 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 29 Nov 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  integer, intent(in)  :: array1(:), array2(:) 
+  integer, intent(in)  :: array1(:), array2(:)
 
 ! output
-  logical :: result 
+  logical :: result
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'arrays_equal_integer'
   integer i, array1_nb, array2_nb
-  
+
 ! begin
   array1_nb = size(array1)
   array2_nb = size(array2)
@@ -3294,18 +3294,18 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 12 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  real(dp), intent(in)  :: array1(:) 
+  real(dp), intent(in)  :: array1(:)
   real(dp), intent(in)  :: array2(:)
 
 ! output
-  logical :: result 
+  logical :: result
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'arrays_equal_double_1'
   integer i, array1_nb, array2_nb
-  
+
 ! begin
   array1_nb = size(array1)
   array2_nb = size(array2)
@@ -3335,19 +3335,19 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 12 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  real(dp), intent(in)  :: array1(:,:) 
+  real(dp), intent(in)  :: array1(:,:)
   real(dp), intent(in)  :: array2(:,:)
 
 ! output
-  logical :: result 
+  logical :: result
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'arrays_equal_double_2'
   integer i, array1_nb1, array2_nb1
   integer j, array1_nb2, array2_nb2
-  
+
 ! begin
   array1_nb1 = size(array1,1)
   array1_nb2 = size(array1,2)
@@ -3381,18 +3381,18 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 29 Nov 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  logical, intent(in)  :: array1(:) 
+  logical, intent(in)  :: array1(:)
   logical, intent(in)  :: array2(:)
 
 ! output
-  logical  :: result 
+  logical  :: result
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'arrays_equal'
   integer i, array1_nb, array2_nb
-  
+
 ! begin
   array1_nb = size(array1)
   array2_nb = size(array2)
@@ -3422,18 +3422,18 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Dec 2006
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  integer, intent(in)  :: array (:) 
+  integer, intent(in)  :: array (:)
   integer, intent(in)  :: intg
 
 ! output
-  logical  :: result 
+  logical  :: result
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'elt_in_array_integer'
   integer i
-  
+
 ! begin
   do i = 1, size (array)
    if (array (i) == intg) then
@@ -3448,14 +3448,14 @@ module basic_tools_mod
   end function elt_in_array_integer
 
 !===========================================================================
-  subroutine is_equal_or_die_double_1 (array1, array2, tol, print_message) 
+  subroutine is_equal_or_die_double_1 (array1, array2, tol, print_message)
 !---------------------------------------------------------------------------
 ! Description : test if two arrays are equal within a tolerance
 !
 ! Created     : J. Toulouse, 29 Nov 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   real(dp), intent(in)  :: array1(:), array2(:)
   real(dp), intent(in)  :: tol
@@ -3464,7 +3464,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'is_equal_or_die_double_1'
   integer i, array1_nb, array2_nb
-  
+
 ! begin
   if (present(print_message)) then
    if (print_message) then
@@ -3492,16 +3492,16 @@ module basic_tools_mod
   end subroutine is_equal_or_die_double_1
 
 !===========================================================================
-  subroutine is_equal_or_die_double_2 (array1, array2, tol, print_message) 
+  subroutine is_equal_or_die_double_2 (array1, array2, tol, print_message)
 !---------------------------------------------------------------------------
 ! Description : test if two arrays are equal within a tolerance
 !
 ! Created     : J. Toulouse, 29 Nov 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  real(dp)  :: array1(:,:) 
+  real(dp)  :: array1(:,:)
   real(dp)  :: array2(:,:)
   real(dp)  :: tol
   logical, optional :: print_message
@@ -3510,7 +3510,7 @@ module basic_tools_mod
   character(len=max_string_len_rout), save :: lhere = 'is_equal_or_die_double_2'
   integer i, array1_dim1, array2_dim1
   integer j, array1_dim2, array2_dim2
-  
+
 ! begin
   if (present(print_message)) then
    if (print_message) then
@@ -3546,16 +3546,16 @@ module basic_tools_mod
   end subroutine is_equal_or_die_double_2
 
 !===========================================================================
-  subroutine is_equal_or_die_double_3 (array1, array2, tol, print_message) 
+  subroutine is_equal_or_die_double_3 (array1, array2, tol, print_message)
 !---------------------------------------------------------------------------
 ! Description : test if two arrays are equal within a tolerance
 !
 ! Created     : J. Toulouse, 29 Nov 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
-  real(dp)  :: array1(:,:,:) 
+  real(dp)  :: array1(:,:,:)
   real(dp)  :: array2(:,:,:)
   real(dp)  :: tol
   logical, optional :: print_message
@@ -3565,7 +3565,7 @@ module basic_tools_mod
   integer i, array1_dim1, array2_dim1
   integer j, array1_dim2, array2_dim2
   integer k, array1_dim3, array2_dim3
-  
+
 ! begin
   if (present(print_message)) then
    if (print_message) then
@@ -3609,22 +3609,22 @@ module basic_tools_mod
   end subroutine is_equal_or_die_double_3
 
 !===========================================================================
-  subroutine write_array_double_1 (array_name, array) 
+  subroutine write_array_double_1 (array_name, array)
 !---------------------------------------------------------------------------
 ! Description : write array
 !
 ! Created     : J. Toulouse, 06 Dec 2005
 !---------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   character(len=*) array_name
-  real(dp)  :: array(:) 
+  real(dp)  :: array(:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'wirte_array_double_1'
   integer i, array_nb
-  
+
 ! begin
 
   array_nb = size(array)
@@ -3748,7 +3748,7 @@ module basic_tools_mod
   character (len=*), intent(out) :: date_nice
 
 ! local:
-  character (len=max_string_len) :: date, time, zone 
+  character (len=max_string_len) :: date, time, zone
 
 ! begin
   call date_and_time (date, time, zone)
@@ -3759,7 +3759,7 @@ module basic_tools_mod
 ! ================================================================================
   subroutine require (string, bool)
 ! --------------------------------------------------------------------------------
-! Description :  die if bool = false 
+! Description :  die if bool = false
 !
 ! Created     : J. Toulouse, 17 Feb 2006
 ! --------------------------------------------------------------------------------
@@ -3815,7 +3815,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 24 Dec 2006
 ! --------------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   integer, allocatable, intent(in) :: array (:)
 
@@ -3824,7 +3824,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'mysize_integer_1'
-  
+
 ! begin
 
   if (.not. allocated (array)) then
@@ -3845,7 +3845,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 24 Dec 2006
 ! --------------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   real(dp), allocatable, intent(in) :: array (:)
 
@@ -3854,7 +3854,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'mysize_double_1'
-  
+
 ! begin
 
   if (.not. allocated (array)) then
@@ -3874,7 +3874,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 22 Mar 2007
 ! --------------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   integer, allocatable, intent(in) :: array (:)
 
@@ -3883,7 +3883,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'last_element_integer'
-  
+
 ! begin
   if (.not. allocated (array)) then
    result = 0
@@ -3902,7 +3902,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 22 Mar 2007
 ! --------------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   integer, allocatable, intent(in) :: array (:)
 
@@ -3911,7 +3911,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'max_element_integer'
-  
+
 ! begin
   if (.not. allocated (array)) then
    result = 0
@@ -3930,7 +3930,7 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 25 Mar 2007
 ! --------------------------------------------------------------------------------
   implicit none
-  
+
 ! input
   real(dp), allocatable, intent(in) :: array (:)
 
@@ -3940,7 +3940,7 @@ module basic_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'array_norm_double_1'
   integer i
-  
+
 ! begin
   result = 0.d0
 

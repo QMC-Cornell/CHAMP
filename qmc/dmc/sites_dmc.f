@@ -40,7 +40,7 @@ c atoms then the up-spins have an additional electron.
       do 10 ispin=1,2
         do 10 i=1,ncent
           ju=(nsite(i)+2-ispin)/2
-          if(znuc(iwctype(i)).eq.0.d0) stop 'znuc should not be 0 in sites' 
+          if(znuc(iwctype(i)).eq.0.d0) stop 'znuc should not be 0 in sites'
           do 10 j=1,ju
             l=l+1
             if(l.gt.nelec) return
@@ -58,11 +58,11 @@ c atoms then the up-spins have an additional electron.
              site=-dlog(rannyu(0))
              site=sign(site,(rannyu(0)-0.5d0))
    10        xoldw(k,l,iconf,1)=sitsca*site+cent(k,i)
-       
+
       write(6,'(i4,a,i3,a)') nconf,' configurations for',l,' electrons have been randomly generated.'
       write(6,'()')
 
-       
+
       open(9,file='mc_configs_sites',status='unknown')
 !write(fmt,'(a1,i2,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
 

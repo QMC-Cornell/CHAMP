@@ -37,12 +37,12 @@ module optimization_mod
   real(dp)                :: energy_err_sav
   real(dp)                :: energy_sigma_sav
   real(dp)                :: error_sigma_sav
-  real(dp)                :: ene_var_sav     
+  real(dp)                :: ene_var_sav
 
-  real(dp)                :: delta_param_norm     
-  real(dp)                :: delta_csf_norm     
-  real(dp)                :: delta_jas_norm     
-  real(dp)                :: delta_param_norm_max = 10.d0     
+  real(dp)                :: delta_param_norm
+  real(dp)                :: delta_csf_norm
+  real(dp)                :: delta_jas_norm
+  real(dp)                :: delta_param_norm_max = 10.d0
   real(dp), allocatable   :: delta_param (:)
   real(dp), allocatable   :: delta_csf (:)
   real(dp), allocatable   :: delta_csf_rot (:)
@@ -58,7 +58,7 @@ module optimization_mod
   real(dp)                :: adiag_max  = 1.d10
 
   contains
-  
+
 !===========================================================================
   subroutine optimization_menu
 !---------------------------------------------------------------------------
@@ -86,7 +86,7 @@ module optimization_mod
   endif
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
@@ -128,7 +128,7 @@ module optimization_mod
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') 'end'
- 
+
   case ('parameters')
    call get_next_value_list ('parameter_type', parameter_type, parameter_type_nb)
 
@@ -315,8 +315,8 @@ module optimization_mod
   l_opt_orb_energy = l_opt_orb .and. .not. l_opt_orb_eig
 
 ! compute or not 2nd derivatives of Jastrow
-  if (l_opt_jas .and. l_opt_nwt) then 
-    l_opt_jas_2nd_deriv = .true. 
+  if (l_opt_jas .and. l_opt_nwt) then
+    l_opt_jas_2nd_deriv = .true.
   endif
 
 ! choice of stabilization
@@ -335,7 +335,7 @@ module optimization_mod
    write (6,'(3a)') trim(lhere),': unknown stabilization choice:',trim(stabilization)
    call die (lhere)
   end select
-  
+
   call optimization
   run_done = .true.
 
@@ -356,7 +356,7 @@ module optimization_mod
   integer iter, parm_i, parm_j, param_i
   real(dp) eloc_av_previous
   real(dp) d_eloc_av
-  logical  l_convergence_reached 
+  logical  l_convergence_reached
   integer convergence_reached_nb
   integer is_bad_move
   real(dp) error_sigma_sav
@@ -372,13 +372,13 @@ module optimization_mod
   l_convergence_reached = .false.
   convergence_reached_nb  = 0
 
-! energy-invariant orthonormalization the orbitals 
+! energy-invariant orthonormalization the orbitals
   if (l_ortho_orb_opt) then
     call ortho_orb
   endif
 
 ! Optimization method
-  write(6,*) 
+  write(6,*)
   write(6,'(3a)') 'Optimization will be done with the ',trim(opt_method),' method.'
 
 ! Orbital optimization
@@ -402,8 +402,8 @@ module optimization_mod
     call coef_orb_on_ortho_basis_from_coef (1)
    endif
   endif ! l_opt_exp
-  
-! Print number of parameters to optimized 
+
+! Print number of parameters to optimized
   call object_provide ('nparmj')
   call object_provide ('nparmcsf')
   call object_provide ('param_orb_nb')
@@ -415,7 +415,7 @@ module optimization_mod
   write(6,'(a,i3)') 'Number of orbital parameters:   ', param_orb_nb
   write(6,'(a,i3)') 'Number of exponent parameters:  ', param_exp_nb
   write(6,'(a,i3)') 'Total number of parameters:     ', param_nb
-  write(6,*) 
+  write(6,*)
 
 ! Nice printing
   write(6,'(a,i5,a,i5,a,i7,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital and', param_exp_nb, ' exponent parameters with ',trim(opt_method),' method:'
@@ -538,7 +538,7 @@ module optimization_mod
   enddo
   write(6,'(a,f,a,f)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
   write(6,*)
-  
+
 ! check vanishing components or linear dependencies in gradient
   do parm_i = 1, param_nb
      if (abs(gradient (parm_i)) < 1.d-10) then
@@ -570,7 +570,7 @@ module optimization_mod
     write(6,'(a,i5,a,f)') 'eigenvalue # ',param_i,' : ', hess_nwt_eigval (param_i)
    enddo
   endif
-  
+
 ! variation of energy
   if (iter > 1) then
    d_eloc_av = energy(1) - eloc_av_previous
@@ -646,7 +646,7 @@ module optimization_mod
      write(6,'(a,1pd9.1)') 'Wave function got worse, increase adiag up to ',diag_stab
      call wf_update_and_check_and_stab
 !    just in case mc config is in crazy place, reset mc_configs by calling sites
-     isite = 1; call mc_configs_read  
+     isite = 1; call mc_configs_read
      if (l_decrease_error) then
       write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy(1),' +-', &
       energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
@@ -687,13 +687,13 @@ module optimization_mod
   endif
 
 ! adjust diag_stab
-  if (l_stab) then 
+  if (l_stab) then
     call adjust_diag_stab
   endif
 
 ! update parameters
   call wf_update_and_check_and_stab
-  
+
 ! pretty printing
   write(6,*) ''
   call object_provide ('sigma')
@@ -747,7 +747,7 @@ module optimization_mod
   write(6,*) ''
   write(6,'(a)') 'Final wave function:'
   call wf_write
-  
+
   end subroutine optimization
 
 !===========================================================================
@@ -791,7 +791,7 @@ module optimization_mod
 
 ! Jastrow parameters
   if (l_opt_jas) then
-   
+
     call object_provide ('nctype')
     call object_provide ('nparma')
     call object_provide ('nparmb')
@@ -811,7 +811,7 @@ module optimization_mod
        do i=1,nparma(ict)
           iparm=iparm+1
           a4(iwjasa(i,ict),ict,iwf)=a4(iwjasa(i,ict),ict,1) + delta_jas (iparm)
-! warning: remove this stop. 
+! warning: remove this stop.
 !          if(iwjasa(i,ict) == 2 .and. a4(iwjasa(i,ict),ict,iwf) > AMAX_NONLIN) then
 !           call die (lhere, 'probably do not want a(2) > AMAX_NONLIN')
 !          endif
@@ -824,7 +824,7 @@ module optimization_mod
           iparm=iparm+1
           b(iwjasb(i,1),isp,iwf)=b(iwjasb(i,1),isp,1) + delta_jas (iparm)
 ! warning: remove this stop. Is it good?
-!          if(iwjasb(i,1) == 2 .and. b(iwjasb(i,1),isp,1) > AMAX_NONLIN) then 
+!          if(iwjasb(i,1) == 2 .and. b(iwjasb(i,1),isp,1) > AMAX_NONLIN) then
 !            call die (lhere, 'probably do not want b(2) > AMAX_NONLIN')
 !          endif
         enddo
@@ -842,7 +842,7 @@ module optimization_mod
 !     to e-e and e-N cusps
       if(ijas == 4 .and. isc <= 9) call cuspexact4(1,iwf)
 
-  endif ! l_opt_jas 
+  endif ! l_opt_jas
 
 ! Exponent parameters
   if (l_opt_exp) then
@@ -890,7 +890,7 @@ module optimization_mod
 
 !  non-periodic case
    if (iperiodic == 0) then
-   
+
      if (l_opt_exp) then
      select case (trim(basis_functions_varied))
      case ('unnormalized')
@@ -944,7 +944,7 @@ module optimization_mod
 
    endif ! if iperiodic == 0
 
-  endif ! l_opt_orb 
+  endif ! l_opt_orb
 
 ! check if really correct to call after each update
   call set_scale_dist(ipr,iwf)
@@ -953,13 +953,13 @@ module optimization_mod
   call wf_write
 
 ! Check move:
-  is_bad_move = 0     
+  is_bad_move = 0
 
 ! test norm of csf coefficient variations
   if (l_opt_csf) then
     call object_provide ('delta_csf_norm')
     if (delta_csf_norm > 1.d0) then
-      is_bad_move = 1    
+      is_bad_move = 1
       write (6,'(a,f,a)') 'This is a bad move because the norm of the csf coefficient variations is too large: delta_csf_norm=',delta_csf_norm,' > 1.'
     endif
   endif
@@ -968,7 +968,7 @@ module optimization_mod
   if (l_opt_jas) then
     call object_provide ('delta_jas_norm')
     if (delta_jas_norm > max(10.d0,1.d0/(5.d0*scalek(iwf)))) then
-      is_bad_move = 1    
+      is_bad_move = 1
       write (6,'(a,f,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 10 or 1/5*scalek'
     endif
   endif
@@ -982,22 +982,22 @@ module optimization_mod
    endif
   do ict = 1, nctype
     if (a4(2,ict,iwf) < parm2min) then
-     is_bad_move = 1    
+     is_bad_move = 1
      write (6,'(a,f,a,f)') 'This is a bad move because a2=',a4(2,ict,iwf),' < parm2min=',parm2min
     endif
     if (a4(2,ict,iwf) > AMAX_NONLIN) then
-     is_bad_move = 1    
+     is_bad_move = 1
      write (6,'(a,f,a,f)') 'This is a bad move because a2=',a4(2,ict,iwf),' > AMAX_NONLIN=',AMAX_NONLIN
     endif
   enddo
 
   do isp = nspin1, nspin2b
    if (b(2,isp,iwf) < parm2min) then
-     is_bad_move = 1    
+     is_bad_move = 1
      write (6,'(a,f,a,f)') 'This is a bad move because b2=',b(2,isp,iwf),' < parm2min=',parm2min
    endif
    if (b(2,isp,iwf) > AMAX_NONLIN) then
-     is_bad_move = 1    
+     is_bad_move = 1
      write (6,'(a,f,a,f)') 'This is a bad move because b2=',b(2,isp,iwf),' > AMAX_NONLIN=',AMAX_NONLIN
    endif
   enddo
@@ -1010,12 +1010,12 @@ module optimization_mod
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
         bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
         if (zex (bas_i, iwf) < 0.d0) then
-          is_bad_move = 1    
+          is_bad_move = 1
           exponent_negative_nb = exponent_negative_nb + 1
         endif
       enddo ! dexp_to_bas_i
     enddo ! dexp_i
-    if (exponent_negative_nb > 0) then 
+    if (exponent_negative_nb > 0) then
        write (6,'(a,i3,a)') 'This is a bad move because ',exponent_negative_nb,' exponents are negative.'
     endif
   endif ! l_opt_exp
@@ -1023,14 +1023,14 @@ module optimization_mod
 ! check total parameter variations norm
   call object_provide ('delta_param_norm')
   if (delta_param_norm > delta_param_norm_max) then
-    is_bad_move = 1    
+    is_bad_move = 1
     write (6,'(a,f,a,f)') 'This is a bad move because the norm of the parameter variations is too large: delta_param_norm=',delta_param_norm,' > ',delta_param_norm_max
   endif
 
 ! test norm of linear wave function variation
   if (l_opt_lin) then
    if (psi_lin_var_norm > psi_lin_var_norm_max) then
-    is_bad_move = 1    
+    is_bad_move = 1
     write (6,'(a,f,a,f)') 'This is a bad move because the norm of the linear wave function variation is too large: psi_lin_var_norm=',psi_lin_var_norm,' > ',psi_lin_var_norm_max
    endif
   endif
@@ -1057,7 +1057,7 @@ module optimization_mod
 
 ! loop over updates of wave function
   loop = 0
-  do 
+  do
    loop = loop + 1
    if (loop >= 50) then
     call die (lhere, 'move is still rejected after increasing adiag 50 times!')
@@ -1076,7 +1076,7 @@ module optimization_mod
    else
      exit
    endif
- 
+
   enddo ! end loop
 
 ! energy-invariant orthonormalization the orbitals
@@ -1108,7 +1108,7 @@ module optimization_mod
   integer :: calculation_reliable_nb
 
 ! begin
-  write(6,*) 
+  write(6,*)
   write(6,'(a)') 'Searching for optimal stabilizing adiag...'
 
 ! smaller value of number of blocks
@@ -1131,10 +1131,10 @@ module optimization_mod
   endif
 
   add_diag (1) = diag_stab
-  
+
 ! Compute 3 optimized wavefunctions with different values of diag_stab
   loop = 0
-  do 
+  do
 
    loop = loop + 1
 
@@ -1213,13 +1213,13 @@ module optimization_mod
 !  For variance minimization we allow it to be at most 6 std dev. worse
 !  For energy   minimization we allow it to be at most 3 std dev. worse
 
-!   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     & 
+!   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
 !      energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.      &
 !      energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2)) .or.                &
 !      energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2))) then
 
 !  check only central calculation
-   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     & 
+   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
       energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
 
     add_diag (1) = add_diag (1) * 100.d0
@@ -1252,7 +1252,7 @@ module optimization_mod
    endif
 
    exit
-  enddo 
+  enddo
 
 !  if correlated calculations # 2 or 3 not reliable, but correlated calculation # 1 is reliable, then accept the current value of adiag
 !  this may be dangerous, maybe need to be modified
@@ -1310,7 +1310,7 @@ module optimization_mod
   integer orb_i
   integer bas_i
   integer i, ict, isp
-  character(len=30) fmt 
+  character(len=30) fmt
 
 ! begin
 
@@ -1324,7 +1324,7 @@ module optimization_mod
 
 ! print Jastrow parameters
   if (l_opt_jas) then
-   
+
     call object_provide ('nctype')
     call object_provide ('a4')
     call object_provide ('b')
@@ -1358,7 +1358,7 @@ module optimization_mod
         write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
       enddo
 
-  endif ! l_opt_jas 
+  endif ! l_opt_jas
 
 ! print orbitals coefficients
   if (l_opt_orb .or. (l_opt_exp .and. trim(basis_functions_varied) /= 'normalized')) then
@@ -1378,7 +1378,7 @@ module optimization_mod
     write(6,'(3a)') 'Orbital coefficients written in file >',trim(file_orbitals_pw_out),'<'
   endif
 
-  endif ! l_opt_orb 
+  endif ! l_opt_orb
 
 ! print basis exponents
   if (l_opt_exp) then
@@ -1433,13 +1433,13 @@ module optimization_mod
 ! parameter variations from one optimization method
   if (l_opt_nwt) then
       call object_provide_in_node (lhere, 'delta_nwt')
-      delta_param (:) = delta_nwt (:) 
+      delta_param (:) = delta_nwt (:)
   elseif (l_opt_lin) then
       call object_provide_in_node (lhere, 'delta_lin')
-      delta_param (:) = delta_lin (:) 
+      delta_param (:) = delta_lin (:)
   elseif (l_opt_ptb) then
       call object_provide_in_node (lhere, 'delta_ptb')
-      delta_param (:) = delta_ptb (:) 
+      delta_param (:) = delta_ptb (:)
   else
       call die (lhere, 'No parameter variations available.')
   endif
@@ -1524,7 +1524,7 @@ module optimization_mod
   d = dsqrt(d)
   cosd = dcos(d)
   sindoverd = dsin(d)/d
-   
+
   delta_csf_rot(1) = (cosd - 1.d0) * csf_coef(1,1)
 
   do i = 1, nparmcsf
@@ -1584,7 +1584,7 @@ module optimization_mod
   enddo
 
   sindoverd = dsin(d)/d
-   
+
   do iparmcsf=1,nparmcsf
      delta_csf_rot(iparmcsf)= (dcos(d) - sindoverd * sum_temp - 1.d0) * csf_coef(iwcsf(iparmcsf),1)  &
                                  + sindoverd * delta_csf (iparmcsf)
@@ -1643,7 +1643,7 @@ module optimization_mod
   enddo
 
   sindoverd = dsin(d)/d
-   
+
   do iparmcsf=1,nparmcsf
      delta_csf_rot(iparmcsf)= (dcos(d) - sindoverd * sum_temp - 1.d0) * csf_coef(iwcsf(iparmcsf),1)  &
                                  + sindoverd * delta_csf (iparmcsf)
@@ -1759,7 +1759,7 @@ module optimization_mod
 ! set up unitary matrix of eigenvectors
   call alloc ('mat_u', mat_u, orb_tot_nb, orb_tot_nb)
   eig = 0
-  do 
+  do
    eig = eig + 1
    if (eig > orb_tot_nb) exit
    mat_u (:,eig) = dcmplx(mat_vr(:,eig), 0.d0)
@@ -1789,7 +1789,7 @@ module optimization_mod
 !   enddo
 !  enddo
 
-! check the recovering of kappa 
+! check the recovering of kappa
   call alloc ('kappa_check', kappa_check, orb_tot_nb, orb_tot_nb)
   kappa_check (:,:) = 0.d0
   do i = 1,orb_tot_nb
@@ -1839,7 +1839,7 @@ module optimization_mod
       endif
    enddo
   enddo
-  
+
   call alloc ('mat_rot_real', mat_rot_real, orb_tot_nb, orb_tot_nb)
   mat_rot_real = real(mat_rot)
 
@@ -2067,7 +2067,7 @@ module optimization_mod
   delta_c_im (:,:) = 0.d0
 
   do orb_i = 1, param_orb_nb
-    
+
     ex_i = ex_orb_ind (orb_i)
     orb_1st = ex_orb_1st_lab (ex_i)
     orb_2nd = ex_orb_2nd_lab (ex_i)

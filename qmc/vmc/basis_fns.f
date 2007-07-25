@@ -1,9 +1,9 @@
 !**RM(6)
-!******************* 
+!*******************
       MODULE real_spherical_harmonics
 !*******************
 !
-!     Ryo MAEZONO / C.J. Umrigar 
+!     Ryo MAEZONO / C.J. Umrigar
 !
 !     //* Revisions   *//
 !     - 29/Dec./05 ; Start coding.
@@ -21,13 +21,13 @@ c     integer,parameter   :: lmax=3
 
       integer,allocatable :: large_q(:,:),sq_coef_a_num(:),sq_coef_a_denum(:),
      &                       sq_coef_r_denum(:,:)
-      real(dp)            :: large_p(0:lmax,-lmax:lmax),d_large_p(1:3,0:lmax,-lmax:lmax), 
-     &                       r_inv_power_minus(0:lmax),x_power_of(0:lmax),  
+      real(dp)            :: large_p(0:lmax,-lmax:lmax),d_large_p(1:3,0:lmax,-lmax:lmax),
+     &                       r_inv_power_minus(0:lmax),x_power_of(0:lmax),
      &                       y_power_of(0:lmax),z_power_of(0:lmax),
      &                       coef_ylm(0:lmax,0:lmax)=1.d0
 
       END MODULE real_spherical_harmonics
-!**EndRM(6)     
+!**EndRM(6)
 
       subroutine basis_fns(iel,rvec_en,r_en)
 
@@ -44,7 +44,7 @@ c Here:
 c n_bas2(irb,ict) > 0 : Slater basis
 c                 < 0 : Gaussian basis
 c                 = 0 : asymptotic basis
- 
+
       use all_tools_mod !JT
 
 !**RM(1)
@@ -53,7 +53,7 @@ c                 = 0 : asymptotic basis
       real(dp) :: aux1
       integer :: itemp1
       common /contr_ylm/ irecursion_ylm
-!**EndRM(1) 
+!**EndRM(1)
 
 
       common /dim/ ndim
@@ -304,12 +304,12 @@ c    &   ylm*zhat*wfv(2,irb)+(                    dth(3,l,mabs)*ph(m))*wfv(1,irb
 c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !**RM(5)
       enddo
-      else  
-!******************* 
+      else
+!*******************
 !     New version for recursion construction of Ylm.
 !*******************
 !
-!     Ryo MAEZONO / C.J. Umrigar 
+!     Ryo MAEZONO / C.J. Umrigar
 !
 !     //* Revisions   *//
 !     - 29/Dec./05 ; Start coding.
@@ -319,10 +319,10 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !     - Ylm is constructed in the form of
 !       Ylm = (1/r^l)*[\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}]*coef_ylm(l,m)
 !
-!     - The recursion formula is based on 
+!     - The recursion formula is based on
 !          Y(l,l-1) ~ Y(l-l,l-1)*z       ! increment of 'l'
 !          Y(l,m+1) ~ l_{+}*Y(l,m)  etc. ! increment of 'm'
-!  
+!
 !       where l_{+} = -i*(jx) + (jy), and
 !             (jx)  = y*dz - z*dy     etc.
 !
@@ -338,7 +338,7 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !         'main_mov1.f -->  call setup_spherical_harmonics'
 !
 !     - The normalization coefficient coef_ylm(l,m) is also
-!       stored as module variable at the beginning of the run by 
+!       stored as module variable at the beginning of the run by
 !       the subroutine
 !         'main_mov1.f -->  call setup_coefficients_ylm'
 !
@@ -350,7 +350,7 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !
 !     - Before calling 'calculate_spherical_harmonics',
 !       powers of x,y,z, and 1/r is stored as module variables
-!       x_power_of(N) etc. 
+!       x_power_of(N) etc.
 !---------------
 
 !---------
@@ -369,7 +369,7 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
             y_power_of(itemp1) = y_power_of(itemp1-1)*xc(2)
             z_power_of(itemp1) = z_power_of(itemp1-1)*xc(3)
          enddo
-      
+
 !----------
 !* P_lm(x,y,z), dP_lm/dx, dP_lm/dy, and dP_lm/dz is calculated and stored.
 !----------
@@ -593,22 +593,22 @@ c-------------------------------------------------------------------------
 
       subroutine basis_fns_2dgauss(iel,rvec_en,r_en)
 
-c Written by A.D.Guclu, Apr 2006 
+c Written by A.D.Guclu, Apr 2006
 c 2-dimensional localized gaussian basis set.
 c Main purpose is the study 2d wigner crystal.
-c
+
 c arguments: iel=0 -> all electron
 c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus 
+c            rvec_en=vector electron-nucleus
 c                    (or electron-dot center in this context)
-c
+
 c output: phin,dphin, and d2phin are calculated
-c
+
 c Wave functions are given by (except the normalization sqrt(we/pi)):
 c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
 c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
 c normalization is taken care in (..)
-c
+
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -649,9 +649,9 @@ c      write(*,*) 'in basis_fns'
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
           rrel2=x1rel2+x2rel2
-          
+
           phin(ib,ie)=dsqrt(wez)*dexp(-0.5d0*wez*rrel2)
-          
+
 c          write(*,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
 
           dphin(1,ib,ie)=-wez*x1rel*phin(ib,ie)
@@ -668,23 +668,23 @@ c--------------------------------------------------------------------------
 
       subroutine deriv_2dgauss(rvec_en,r_en)
 
-c Written by A.D.Guclu, Apr 2006 
+c Written by A.D.Guclu, Apr 2006
 c 2-dimensional localized gaussian basis set,
 c and his derivatives wrt parameters.
 c Main purpose is the study of 2d wigner crystal.
-c
-c arguments: 
-c            rvec_en=vector electron-nucleus 
+
+c arguments:
+c            rvec_en=vector electron-nucleus
 c                    (or electron-dot center in this context)
-c
-c output: phin,dphin,d2phin  = wfs and coo. derivatives 
+
+c output: phin,dphin,d2phin  = wfs and coo. derivatives
 c         dparam, d2param  = parameter derivatives
-c
+
 c Wave functions are given by (except the normalization sqrt(1/pi)):
 c phi=dsqrt(we*xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
 c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
 c normalization is taken care in (..)
-c
+
 c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
 
       implicit real*8(a-h,o-z)
@@ -715,8 +715,8 @@ c      write(*,*) 'in deriv_2dgauss'
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c in the following we are losing some efficiency by calculating all the 
-c gaussians for each electron. Because up and down electrons do not share 
+c in the following we are losing some efficiency by calculating all the
+c gaussians for each electron. Because up and down electrons do not share
 c the same gaussian in crystals we could restrict the calculations...
 c I will however keep it this way in case we are interested in other
 c application than crystals.
@@ -732,7 +732,7 @@ c application than crystals.
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
           rrel2=x1rel2+x2rel2
-          
+
 c wfs and coo. derivatives:
           phin(ib,ie)=dsqrt(wez)*dexp(-0.5d0*wez*rrel2)
 
@@ -761,7 +761,7 @@ c parameter derivatives:
 c coo. derivatives of parameter derivatives:
           ddparam(1,1,ib,ie)=-d2param(1,1,ib,ie)                             ! wrt x1,xg1
           ddparam(2,1,ib,ie)=-d2param(2,1,ib,ie)                             ! wrt x2,xg1
-          
+
           ddparam(1,2,ib,ie)=ddparam(2,1,ib,ie)                            ! wrt x1,xg2
           ddparam(2,2,ib,ie)=-d2param(2,2,ib,ie)                             ! wrt x2,xg2
 
@@ -790,24 +790,24 @@ c Written by A.D.Guclu, Jan 2007
 c 2-dimensional localized gaussian basis set in polar coordinates
 c Main purpose is the study quasi-1D wigner crystal. It can
 c also be applied to 2d wigner crystals.
-c
+
 c arguments: iel=0 -> all electron
 c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus 
+c            rvec_en=vector electron-nucleus
 c                    (or electron-dot center in this context)
-c
+
 c output: phin,dphin, and d2phin are calculated
-c
+
 c Wave functions are given by (except the normalization csnt)
-c
+
 c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
-c
+
 c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
-c
+
 c where  xr=r and xt=\theta  are polar coordinates of electrons
 c        xg1 and xg2 are polar coordinates of gaussians
 c        xg3 and xg4 are gaussian width parameters.
-c
+
 c Here, we do not normalize the wfs
 
 
@@ -865,7 +865,7 @@ c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
           xtrel=xt-xg2
           cxtrel=dcos(xtrel)
           sxtrel=dsin(xtrel)
-          
+
           phir=dsqrt(we)*dexp(-0.5d0*wez*xrrel2)
           phit=dexp(xg4*cxtrel)
           phin(ib,ie)=phir*phit
@@ -873,7 +873,7 @@ c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
 c          write(*,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
 c          write(*,*) 'xg1,xg2,xg3,xg4,wez,wez2,',
 c     &'xrrel,xrrel2,xtrel,cxtrel,sxtrel=',
-c     &xg1,xg2,xg3,xg4,wez,wez2,xrrel,xrrel2,xtrel,cxtrel,sxtrel 
+c     &xg1,xg2,xg3,xg4,wez,wez2,xrrel,xrrel2,xtrel,cxtrel,sxtrel
 c          write(*,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           dpdxr=-wez*xrrel
@@ -899,25 +899,25 @@ c Written by A.D.Guclu, Jan 2007
 c 2-dimensional localized gaussian basis set in polar coordinates
 c Main purpose is the study quasi-1D wigner crystal. It can
 c also be applied to 2d wigner crystals.
-c
+
 c arguments: iel=0 -> all electron
 c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus 
+c            rvec_en=vector electron-nucleus
 c                    (or electron-dot center in this context)
-c
+
 c output: phin,dphin, and d2phin are calculated
 c         dparam, d2param  = parameter derivatives
-c
+
 c Wave functions are given by (except the normalization csnt)
-c
+
 c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
-c
+
 c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
-c
+
 c where  xr=r and xt=\theta  are polar coordinates of electrons
 c        xg1 and xg2 are polar coordinates of gaussians
 c        xg3 and xg4 are gaussian width parameters.
-c
+
 c Here, we do not normalize the wfs
 
 
@@ -975,11 +975,11 @@ c jacobian:
           dxtdx1=-x2*xri2
           dxtdx2=x1*xri2
 
-c wfs and coo. derivatives:          
+c wfs and coo. derivatives:
           phir=dsqrt(we)*dexp(-0.5d0*wez*xrrel2)
           phit=dexp(xg4*cxtrel)
           phin(ib,ie)=phir*phit
-          
+
 c          write(*,*) 'phir,phit=',phir,phit
 
           tempr1=-wez*xrrel
@@ -1081,7 +1081,7 @@ c--------------------------------------------------------------------------
 !
 !     //* Description *//
 !     - P_lm(x,y,z), dP_lm/dx, dP_lm/dy, and dP_lm/dz is calculated.
-!       where, Y_lm = P_lm(x,y,z)/(r^l). 
+!       where, Y_lm = P_lm(x,y,z)/(r^l).
 !
 !     - Inputs (x,y,z) are already stored as module variables
 !       x_power_of(N) etc. by subroutine basis_fns.
@@ -1095,7 +1095,7 @@ c--------------------------------------------------------------------------
 !             s = 1 : s_max,
 !                     s_max =  (L+1)(L+2)/2
 !
-!         These quantities (coefficient and exponents) are already stored 
+!         These quantities (coefficient and exponents) are already stored
 !         as module variables large_q(N_lms,1:4)
 !
 !                large_q(N_LMs,1) = a_s
@@ -1104,11 +1104,11 @@ c--------------------------------------------------------------------------
 !                large_q(N_LMs,4) = n_s
 !
 !         These quantities are already stored as module variables
-!         large_q(N_lms,1:4) by subroutine setup_spherical_harmonics. 
+!         large_q(N_lms,1:4) by subroutine setup_spherical_harmonics.
 !
 !         The convention of the index N_lms is the followings:
 !
-!            N_LMs     L     M     s   
+!            N_LMs     L     M     s
 !              1       0     0     1
 !
 !              2       1    -1     1
@@ -1123,13 +1123,13 @@ c--------------------------------------------------------------------------
 !              9       1    +1     2
 !             10       1    +1     3
 !             ...    ...   ...   ...
-!             Nmax  lmax  lmax  smax(lmax)  
+!             Nmax  lmax  lmax  smax(lmax)
 !
-!             --> Nmax = (lmax + 1)*(3*lmax^3 + 17*lmax^2 + 28*lmax + 12)/12 
+!             --> Nmax = (lmax + 1)*(3*lmax^3 + 17*lmax^2 + 28*lmax + 12)/12
 !
 !     - Results are stored as module variables
 !
-!           large_p  (l,m) = P_lm(x,y,z) 
+!           large_p  (l,m) = P_lm(x,y,z)
 !         d_large_p(1,l,m) = dP_lm(x,y,z)/dx      etc.
 !-------------------------------------------------
       use real_spherical_harmonics
@@ -1150,29 +1150,29 @@ c--------------------------------------------------------------------------
 
       do itemp1 = 1, nmax
 
-         large_p(lcount,-lcount+mcount-1) = large_p(lcount,-lcount+mcount-1) 
+         large_p(lcount,-lcount+mcount-1) = large_p(lcount,-lcount+mcount-1)
      &        + dble(large_q(itemp1,1))*x_power_of(large_q(itemp1,2))
      &                                 *y_power_of(large_q(itemp1,3))
      &                                 *z_power_of(large_q(itemp1,4))
 
-         d_large_p(1,lcount,-lcount+mcount-1) = d_large_p(1,lcount,-lcount+mcount-1) 
+         d_large_p(1,lcount,-lcount+mcount-1) = d_large_p(1,lcount,-lcount+mcount-1)
      &        + dble(large_q(itemp1,1)*large_q(itemp1,2))
      &                                *x_power_of(large_q(itemp1,2)-1)
-     &                                *y_power_of(large_q(itemp1,3))  
+     &                                *y_power_of(large_q(itemp1,3))
      &                                *z_power_of(large_q(itemp1,4))
 
-         d_large_p(2,lcount,-lcount+mcount-1) = d_large_p(2,lcount,-lcount+mcount-1) 
+         d_large_p(2,lcount,-lcount+mcount-1) = d_large_p(2,lcount,-lcount+mcount-1)
      &        + dble(large_q(itemp1,1)*large_q(itemp1,3))
      &                                *x_power_of(large_q(itemp1,2))
-     &                                *y_power_of(large_q(itemp1,3)-1)  
+     &                                *y_power_of(large_q(itemp1,3)-1)
      &                                *z_power_of(large_q(itemp1,4))
 
-         d_large_p(3,lcount,-lcount+mcount-1) = d_large_p(3,lcount,-lcount+mcount-1) 
+         d_large_p(3,lcount,-lcount+mcount-1) = d_large_p(3,lcount,-lcount+mcount-1)
      &        + dble(large_q(itemp1,1)*large_q(itemp1,4))
      &                                *x_power_of(large_q(itemp1,2))
-     &                                *y_power_of(large_q(itemp1,3)) 
+     &                                *y_power_of(large_q(itemp1,3))
      &                                *z_power_of(large_q(itemp1,4)-1)
-  
+
          if(scount==s_tempmax)then
             scount = 0
             if(mcount==m_tempmax)then
@@ -1193,7 +1193,7 @@ c--------------------------------------------------------------------------
       Subroutine setup_coefficients_ylm
 !**************************************
 !
-!     Ryo MAEZONO / C.J. Umrigar 
+!     Ryo MAEZONO / C.J. Umrigar
 !
 !     //* Revisions   *//
 !     - 29/Dec./05 ; Start coding.
@@ -1207,7 +1207,7 @@ c--------------------------------------------------------------------------
 !       Here coef_ylm(l,m) is beyond the factor sqrt((2*l+1)/(4*pi)), then
 !
 !         coef_ylm(0,    0) = 1        ,
-!         coef_ylm(1,\pm 1) = 1        , 
+!         coef_ylm(1,\pm 1) = 1        ,
 !         coef_ylm(1,    0) = 1        ,
 !         coef_ylm(2,\pm 2) = sqrt(3)/2,
 !         coef_ylm(2,\pm 1) = sqrt(3)  ,
@@ -1288,7 +1288,7 @@ c--------------------------------------------------------------------------
 !       so this is constructed under the
 !       'call recursion_body'
 !----------------
-      use real_spherical_harmonics 
+      use real_spherical_harmonics
 
       implicit none
       integer :: ialloc,icount1,icount2
@@ -1321,22 +1321,22 @@ c--------------------------------------------------------------------------
       large_q(8,1) = 1 ; large_q(8,2) = 1 ; large_q(8,3) = 0 ;large_q(8,4) = 0 ! P(+1)
       large_q(9:10,:) = 0
 
-      l_alreadyset = 1 
+      l_alreadyset = 1
 
 ! * recursion generation
       do itemp1 = 2,lmax
-         n_alreadyset = (l_alreadyset + 1)*(3*l_alreadyset**3 + 17*l_alreadyset**2 + 
+         n_alreadyset = (l_alreadyset + 1)*(3*l_alreadyset**3 + 17*l_alreadyset**2 +
      &                   28*l_alreadyset + 12)/12
          s_alreadyset = (l_alreadyset+1)*(l_alreadyset+2)/2
 
          pos_fin  = n_alreadyset
          pos_init = pos_fin  - s_alreadyset + 1
          neg_init = pos_init - s_alreadyset*(2*l_alreadyset)
-         Neg_fin  = neg_init + s_alreadyset - 1 
+         Neg_fin  = neg_init + s_alreadyset - 1
 
          !* Q_pos := Q(L-1,L-1) is included as large_q(s=pos_init:pos_fin)
-         !* Q_neg := Q(L-1,1-L)                large_q(s=neg_init:neg_fin) 
-     
+         !* Q_neg := Q(L-1,1-L)                large_q(s=neg_init:neg_fin)
+
 ! * For given L, the size of Q is determined.
          l=l_alreadyset +1 ; smax = (l+1)*(l+2)/2
 
@@ -1382,7 +1382,7 @@ c--------------------------------------------------------------------------
 !       subroutine with specifying,
 !
 !             l_alreadyset = (L-1)
-!             theta_pos    = Q(L-1,L-1) 
+!             theta_pos    = Q(L-1,L-1)
 !             theta_neg    = Q(L-1,1-L)
 !
 !     - See also the description of calculate_spherical_harmonics
@@ -1415,7 +1415,7 @@ c--------------------------------------------------------------------------
       integer :: ninit,nfin
       integer :: mcount,sign
 
-! * For given L, 
+! * For given L,
 !   Y(L,M) = [\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}]/r^L
 !   q(M,1:smax,...) = [\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}]
 !   smax is determined as smax =  (L+1)(L+2)/2
@@ -1462,15 +1462,15 @@ c--------------------------------------------------------------------------
          endif
       enddo
 
-! * Squared coefficients regarding to up/dn operation is stored. 
+! * Squared coefficients regarding to up/dn operation is stored.
       sq_coef_r_denum(l,mcount+1) = sq_coef_r_denum(l,mcount)
      &                             *(l-mcount)*(l+mcount+1)
       sq_coef_r_denum(l,mcount-1) = sq_coef_r_denum(l,mcount)
      &                             *(l+mcount)*(l-mcount+1)
-         
-      if(mcount==1)  !* This factor is required for 'real' sperical 
+
+      if(mcount==1)  !* This factor is required for 'real' sperical
                      !  harmonics taking into account the multiplicity
-                     !  +0 and -0. 
+                     !  +0 and -0.
      & sq_coef_r_denum(l,mcount-1)=sq_coef_r_denum(l,mcount-1)*2
 
 
@@ -1479,7 +1479,7 @@ c--------------------------------------------------------------------------
 !    Q(L,-(M+1)) = A(L)*R(L,M,+)*[(jx)*Q(L,+M) - (jy)*Q(L,-M)]
 
       qtemp1(:,:)=0 ; qtemp2(:,:)=0 ; qtemp3(:,:)=0 ; qtemp4(:,:)=0
-      call jxq(q(+mcount,:,:),smax,qtemp1)     != (jx)*Q(L,+M) 
+      call jxq(q(+mcount,:,:),smax,qtemp1)     != (jx)*Q(L,+M)
       call jyq(q(-mcount,:,:),smax,qtemp2)     != (jy)*Q(L,-M)
       call sum_q(qtemp1,qtemp2,+1,smax,qtemp3) != (jx)*Q(L,+M)+(jy)*Q(L,-M)
       call sum_q(qtemp1,qtemp2,-1,smax,qtemp4) != (jx)*Q(L,+M)-(jy)*Q(L,-M)
@@ -1517,7 +1517,7 @@ c--------------------------------------------------------------------------
          call jxq(q(+itemp1,:,:),smax,qtemp1)
          call jyq(q(-itemp1,:,:),smax,qtemp2)
          call sum_q(qtemp1,qtemp2,+1,smax,qtemp4)
-!        call sum_q(qtemp1,qtemp2,+1,smax,qtemp3) !<-- for Debug 
+!        call sum_q(qtemp1,qtemp2,+1,smax,qtemp3) !<-- for Debug
                                                  ! to check if the identity
                                                 ! (M=-0) = 0 is realized.
          icount1 = 1 ; icount2 = 1
@@ -1539,11 +1539,11 @@ c--------------------------------------------------------------------------
          sq_coef_r_denum(l,itemp1-1) = sq_coef_r_denum(l,itemp1)
      &                                 *(l+itemp1)*(l-itemp1+1)
 
-         if(itemp1==1)  !* Taking care of M= +0 and -0. 
+         if(itemp1==1)  !* Taking care of M= +0 and -0.
      &     sq_coef_r_denum(l,itemp1-1)=sq_coef_r_denum(l,itemp1-1)*2
-        
+
       enddo
-      
+
       ninit = n_alreadyset
 
 !* Store results into mother Q-array
@@ -1570,7 +1570,7 @@ c--------------------------------------------------------------------------
 !
 !     //* Description *//
 !     - Do the summation or subtraction of q-array in the convention of
-!       q(s,1) = a_s ; q(s,2) = l_s ; q(s,3) = m_s ; q(s,4) = n_s 
+!       q(s,1) = a_s ; q(s,2) = l_s ; q(s,3) = m_s ; q(s,4) = n_s
 !       representing q(:,:) == [\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}].
 !
 !     - When sign = +1 is specified, the output qtemp is given as
@@ -1676,7 +1676,7 @@ c--------------------------------------------------------------------------
 !       q(s,1) = a_s ; q(s,2) = l_s ; q(s,3) = m_s ; q(s,4) = n_s
 !       representing q(:,:) == [\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}].
 !       where, (jx) := y*dz - z*dy etc.,
-!       and then, in term of q-array structure of (A,L,M,N), 
+!       and then, in term of q-array structure of (A,L,M,N),
 !       the operation corresponds to
 !            (jx) --> (A*N,L,M+1,N-1) - (A*M,L,M-1,N+1)
 !
@@ -1725,27 +1725,27 @@ c--------------------------------------------------------------------------
 !     - n_mask = 0 : all components are written
 !     - n_mask = 1 : only non zero components are written.
 !-------------------------
-      USE real_spherical_harmonics 
+      USE real_spherical_harmonics
 
       implicit none
 
       integer :: l_show_max,n_show_max,n_mask
       integer :: itemp1,itemp2
       integer :: scount,mcount,lcount,m_tempmax,s_tempmax
-      
+
       lcount = 0
       n_show_max = (l_show_max + 1)*(3*l_show_max**3 + 17*l_show_max**2
      &              + 28*l_show_max + 12)/12
       m_tempmax = 2*lcount + 1
       s_tempmax = (lcount+1)*(lcount+2)/2
       scount = 1 ; mcount = 1
-      
+
       do itemp1 = 1, n_show_max
          if(scount==1) write(6,*) '** N,',itemp1,'L=',lcount,'M=',-lcount+mcount-1
          if(large_q(itemp1,1)/=0.or.(n_mask==0))then
             write(6,*) large_q(itemp1,:)
          endif
-      
+
          if(scount==s_tempmax)then
             scount = 0
             if(mcount==m_tempmax)then
@@ -1759,5 +1759,5 @@ c--------------------------------------------------------------------------
          scount = scount + 1
       enddo
       END SUBROUTINE show_large_q
-      
+
 !**EndRM(3)

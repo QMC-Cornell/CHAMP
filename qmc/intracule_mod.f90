@@ -110,7 +110,7 @@
   real(dp), allocatable     :: intra_3d_err (:)
 
   contains
-  
+
 !===========================================================================
   subroutine intra_menu
 !---------------------------------------------------------------------------
@@ -126,7 +126,7 @@
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case (trim(word))
@@ -156,7 +156,7 @@
    call die (lhere, 'unknown keyword')
 
   end select
-  
+
   enddo ! end loop over menu lines
 
 
@@ -187,19 +187,19 @@
 
    case ('zv3')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zv3'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
    call object_average_request ('intra_sp_zv3_av')
    call object_error_request ('intra_sp_zv3_av_err')
 
    case ('zv4')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zv4'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
    call object_average_request ('intra_sp_zv4_av')
    call object_error_request ('intra_sp_zv4_av_err')
 
    case ('zv5')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zv5'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
    call object_average_request ('intra_sp_zv5_av')
    call object_error_request ('intra_sp_zv5_av_err')
 
@@ -213,25 +213,25 @@
 
    case ('zvzb3')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zvzb3'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
    call object_average_request ('intra_sp_zvzb3_av')
    call object_error_request ('intra_sp_zvzb3_av_err')
 
    case ('zvzb4')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zvzb4'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
    call object_average_request ('intra_sp_zvzb4_av')
    call object_error_request ('intra_sp_zvzb4_av_err')
 
    case ('zv1zb3')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zv1zb3'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
    call object_average_request ('intra_sp_zv1zb3_av')
    call object_error_request ('intra_sp_zv1zb3_av_err')
 
    case ('zvzb5')
    write (6,*) trim(lhere),': intracule will be calculated with estimator zvzb5'
-   write (6,*) trim(lhere),': exponent=',intra_exp 
+   write (6,*) trim(lhere),': exponent=',intra_exp
 !   call object_average_request ('intra_sp_zv5_av')
 !   call object_average_request ('intra_sp_q5_av')
 !   call object_average_request ('intra_sp_q5_eloc_av')
@@ -261,7 +261,7 @@
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -286,7 +286,7 @@
    call die(here)
 
   endif
-  
+
   enddo ! end loop over menu lines
 
 
@@ -425,7 +425,7 @@
       dij = dist_ee_wlk (elec_i, elec_j, 1)
 
       grid_i = floor(dij/grid_r_step - 0.5d0) + 2
- 
+
       if (grid_i <= grid_r_nb) then
        d4pir2 = 4.d0*pi*grid_r(grid_i)**2
        intra_sp_histo (spin, grid_i) = intra_sp_histo (spin, grid_i) + 1.d0/(d4pir2 * grid_r_step)
@@ -662,7 +662,7 @@
 
         rpu = r + u
         rpu2 = rpu * rpu
-        
+
         rmu   = r - u
         rmu2   = rmu * rmu
         abs_rmu = dabs(rmu)
@@ -671,7 +671,7 @@
 
         exp_mcrpu2 = dexp(-cc*rpu2)
         exp_mcrmu2 = dexp(-cc*rmu2)
-       
+
         intra_temp1 = 0.5d0 * (exp_mcrpu2 - sign(1.d0,rmu) * exp_mcrmu2)
         intra_temp2 = 0.5d0 * (exp_mcrpu2 - (abs_rmu/rpu)* exp_mcrmu2)
         intra_temp3 = sqrtpi_c * (erf_spline(sqrtc*rpu) - erf_spline(sqrtc*abs_rmu))/(4.d0*ru)
@@ -858,12 +858,12 @@
 
         exp_mcabsrmu = dexp(mcabsrmu)
         exp_mcrpu = dexp(mcrpu)
-       
+
         intra_temp1 = (exp_mcabsrmu - exp_mcrpu)/(2.d0*cc*ru)
         intra_temp2 = 0.5d0 * (sign(1.d0,rmu) * exp_mcabsrmu - exp_mcrpu)
 
         intra_sp_zv5 (spin, grid_i, walk_i) = intra_sp_zv5 (spin, grid_i, walk_i) -          &
-            oneover4pi*((dotproduct/r2)*(intra_temp1 + intra_temp2/u)  & 
+            oneover4pi*((dotproduct/r2)*(intra_temp1 + intra_temp2/u)  &
             - 0.5d0*cc2*intra_temp1)
 
      enddo !grid_i
@@ -1109,7 +1109,7 @@
 
         exp_mcabsrmu = dexp(mcabsrmu)
         exp_mcrpu = dexp(mcrpu)
-       
+
         intra_sp_q5_wlk (spin, grid_i, walk_i) = intra_sp_q5_wlk (spin, grid_i, walk_i) + (exp_mcabsrmu - exp_mcrpu)/(2.d0*intra_exp*ru)
 
      end do !grid_i
@@ -1394,7 +1394,7 @@
 
         rpu = r + u
         rpu2 = rpu * rpu
-        
+
         rmu   = r - u
         rmu2   = rmu * rmu
         abs_rmu = dabs(rmu)
@@ -1403,7 +1403,7 @@
 
         exp_mcrpu2 = dexp(-cc*rpu2)
         exp_mcrmu2 = dexp(-cc*rmu2)
-       
+
         intra_temp1 = 0.5d0 * (exp_mcrpu2 - sign(1.d0,rmu) * exp_mcrmu2)
         intra_temp2 = 0.5d0 * (exp_mcrpu2 - (abs_rmu/rpu)* exp_mcrmu2)
         intra_temp3 = sqrtpi_c * (erf_spline(sqrtc*rpu) - erf_spline(sqrtc*abs_rmu))/(4.d0*ru)
@@ -1692,12 +1692,12 @@
 
         exp_mcabsrmu = dexp(mcabsrmu)
         exp_mcrpu = dexp(mcrpu)
-       
+
         intra_temp1 = (exp_mcabsrmu - exp_mcrpu)/(2.d0*cc*ru)
         intra_temp2 = 0.5d0 * (sign(1.d0,rmu) * exp_mcabsrmu - exp_mcrpu)
 
         intra_sp_zvzb5 (spin, grid_i, walk_i) = intra_sp_zvzb5 (spin, grid_i, walk_i) -          &
-            oneover4pi*((dotproduct/r2)*(intra_temp1 + intra_temp2/u)  & 
+            oneover4pi*((dotproduct/r2)*(intra_temp1 + intra_temp2/u)  &
             - 0.5d0*cc2*intra_temp1 + zbfac*intra_temp1)
 
      end do !grid_i
@@ -1826,7 +1826,7 @@
   integer                       :: grid_i
   real(dp)              :: volume_elt
 
-  
+
 ! begin
 
 ! header
@@ -1896,7 +1896,7 @@
 !  intra_err (:) = sum(intra_sp_err (spin,:), spin = 1, spin_nb)
 
   do spin = 1, spin_nb
-   intra (:) = intra (:) + intra_sp (spin,:) 
+   intra (:) = intra (:) + intra_sp (spin,:)
    intra_err (:) = intra_err (:) + intra_sp_err (spin,:)
   enddo
 
@@ -1915,7 +1915,7 @@
   integer                       :: grid_i
   real(dp)              :: volume_elt
 
-  
+
 ! begin
 
 ! header
@@ -2011,7 +2011,7 @@
       if (grid_y_i < 1 .or. grid_y_i > grid_y_nb) cycle
       if (grid_z_i < 1 .or. grid_z_i > grid_z_nb) cycle
 
- 
+
       grid_i = grid_xyz_index (grid_x_i, grid_y_i, grid_z_i)
 
       intra_3d_histo (grid_i) = intra_3d_histo (grid_i) + 0.5d0/(grid_x_step*grid_y_step*grid_z_step)
@@ -2232,7 +2232,7 @@
   real(dp)              :: dij, dij2, r
   real(dp)              :: dotproduct, intra_temp
 
-  
+
 ! begin
   here = 'intra_zv1_step_vmc'
 !  write(6,*) trim(here),': entering'
@@ -2306,7 +2306,7 @@
   real(dp)              :: dotproduct, intra_temp
   real(dp)              :: weight
 
-  
+
 ! begin
   here = 'intra_zv1_step_dmc'
 !  write(6,*) trim(here),': entering'
@@ -2416,18 +2416,18 @@
 
 ! intracule normalized to N(N-1)/2
   intra_imp_norm = intra_imp_num/intra_imp_nb
-   
+
 ! sums over the blocks of intra_imp_norm and square of intra_imp_norm
   sum_intra_imp_norm = sum_intra_imp_norm + intra_imp_norm
   sum_intra_imp_norm_square = sum_intra_imp_norm_square + intra_imp_norm**2
 
-! average of intra_imp_norm = average of intracule f(r) 
+! average of intra_imp_norm = average of intracule f(r)
    intra_imp_f_av =  sum_intra_imp_norm/intra_block_nb
 
-! variance of the average of intracule f(r) 
+! variance of the average of intracule f(r)
   intra_imp_f_var = sum_intra_imp_norm_square/intra_block_nb - intra_imp_f_av**2
 
-! statistical error on the average of intracule f(r) 
+! statistical error on the average of intracule f(r)
    if (intra_block_nb == 1 ) then
     intra_imp_f_av_err = 0.d0
    else
@@ -2498,19 +2498,19 @@
 ! divide by the sum of weigths * number of steps
 !   write(6,*) trim(here), ': wgsum=',wgsum(1)
    intra_imp_norm = intra_imp_num/wgsum(1)
-   
+
 ! sums over the blocks of intra_imp_norm and square of intra_imp_norm
   sum_intra_imp_norm = sum_intra_imp_norm + intra_imp_norm
   sum_intra_imp_norm_square = sum_intra_imp_norm_square + intra_imp_norm**2
 
-! average of intra_imp_norm = average of intracule f(r) 
+! average of intra_imp_norm = average of intracule f(r)
    sum_intra_imp_num = sum_intra_imp_num + intra_imp_num
    intra_imp_f_av =  sum_intra_imp_num/wgcum(1)
 
-! variance of the average of intracule f(r) 
+! variance of the average of intracule f(r)
   intra_imp_f_var = sum_intra_imp_norm_square/intra_block_nb - (sum_intra_imp_norm/intra_block_nb)**2
 
-! statistical error on the average of intracule f(r) 
+! statistical error on the average of intracule f(r)
    if (intra_block_nb == 1 ) then
     intra_imp_f_av_err = 0.d0
    else
@@ -2566,7 +2566,7 @@
   write(unit,'(a,i20)')      'number of steps per block =',nstep
   write(unit,'(a,i20)')      'number of blocks          =',intra_block_nb
   write(unit,'(a,3e25.15)') 'ee distance step          =',grid_r_step
-  write(unit,'(a,3e25.15)') 'ee max distance           =',grid_r_max  
+  write(unit,'(a,3e25.15)') 'ee max distance           =',grid_r_max
   write(unit,'(a,i25)')     'number of grid points     =',grid_r_nb
 
   write(unit,*) ''
@@ -2634,7 +2634,7 @@
   write(unit,'(a,i25)')     'number of steps per block     =',nstep_total
   write(unit,'(a,i25)')     'number of blocks              =',block_iterations_nb
   write(unit,'(a,3e25.15)') 'grid_r_step                   =',grid_r_step
-  write(unit,'(a,3e25.15)') 'grid_r_max                    =',grid_r_max  
+  write(unit,'(a,3e25.15)') 'grid_r_max                    =',grid_r_max
   write(unit,'(a,i25)')     'grid_r_nb                     =',grid_r_nb
   write(unit,'(a,f)')       'dist_ee_min                   =',dist_ee_min
   write(unit,'(a,f)')       'dist_ee_max                   =',dist_ee_max
@@ -2687,14 +2687,14 @@
   write(unit,'(a,i5)')      'number of electrons       =',nelec
   write(unit,'(a,i20)')     'number of steps per block =',nstep_total
   write(unit,'(a,i20)')     'number of blocks          =',block_iterations_nb
-  write(unit,'(a,3e25.15)') 'grid_x_max                =',grid_x_max  
-  write(unit,'(a,3e25.15)') 'grid_x_min                =',grid_x_min  
+  write(unit,'(a,3e25.15)') 'grid_x_max                =',grid_x_max
+  write(unit,'(a,3e25.15)') 'grid_x_min                =',grid_x_min
   write(unit,'(a,3e25.15)') 'grid_x_step               =',grid_x_step
-  write(unit,'(a,3e25.15)') 'grid_y_max                =',grid_y_max  
-  write(unit,'(a,3e25.15)') 'grid_y_min                =',grid_y_min  
+  write(unit,'(a,3e25.15)') 'grid_y_max                =',grid_y_max
+  write(unit,'(a,3e25.15)') 'grid_y_min                =',grid_y_min
   write(unit,'(a,3e25.15)') 'grid_x_step               =',grid_y_step
-  write(unit,'(a,3e25.15)') 'grid_z_max                =',grid_z_max  
-  write(unit,'(a,3e25.15)') 'grid_z_min                =',grid_z_min  
+  write(unit,'(a,3e25.15)') 'grid_z_max                =',grid_z_max
+  write(unit,'(a,3e25.15)') 'grid_z_min                =',grid_z_min
   write(unit,'(a,3e25.15)') 'grid_z_step               =',grid_z_step
   write(unit,'(a,i25)')     'grid_xyz_nb               =',grid_xyz_nb
 

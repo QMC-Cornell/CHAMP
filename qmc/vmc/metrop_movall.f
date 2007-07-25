@@ -71,7 +71,7 @@ c           if velocity was negative then dx has opposite sign
             endif
             fxop=fxop*(one+fx*dx(k,i))
             xnew(k,i)=xold(k,i)+dx(k,i)
- 5       continue  
+ 5       continue
         else
           do 7 k=1,ndim
             dx(k,i)=0.d0
@@ -191,8 +191,8 @@ c note that ix can be negative or positive. nint is a better choice...
 
    28 continue
       if(ifixe.le.-2) call pairden2d(p,q,xold,xnew)  ! full pair-density
-      if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)  
-      if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)  
+      if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)
+      if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)
 
 c accept new move with probability p
 

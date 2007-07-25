@@ -34,7 +34,7 @@ module walkers_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case (trim(word))
@@ -58,7 +58,7 @@ module walkers_mod
 
   case ('check_initial_walkers')
    call get_next_value (l_check_initial_walkers)
-   
+
   case ('elec_nb_closest_to_atom')
    call get_next_value_list ('elec_nb_closest_to_atom_input', elec_nb_closest_to_atom_input, elec_nb_closest_to_atom_input_nb)
    call object_provide ('ncent')
@@ -118,7 +118,7 @@ module walkers_mod
 
 ! begin
   write(6,*)
-  write(6,'(a)') 'Initial walkers:' 
+  write(6,'(a)') 'Initial walkers:'
 
 ! walkers from restart file
   if (irstar.eq.1) then
@@ -152,13 +152,13 @@ module walkers_mod
      else
        call die ('No walker read in file >'+trim(file_mc_configs_in)+'<.')
      endif ! if idmc <0
-    
+
     endif ! if not ok
 
 
 ! if walker file does not exist
   else
-  
+
      if (idmc < 0) then
        nconf=1
        write(6,'(a)') 'Warning: walker file does not exist. Generate randomly one walker.'
@@ -166,8 +166,8 @@ module walkers_mod
      else
        call die (lhere, 'Walker file does not exist >'+trim(file_mc_configs_in)+'<. First run in vmc mode to generate it.')
      endif ! if idmc <0
-    
-  endif 
+
+  endif
 
 ! mark as valid object xoldw
   call object_modified ('xoldw')
@@ -189,7 +189,7 @@ module walkers_mod
      enddo ! elec_i
    enddo ! walk_i
 
-  write(6,*) 
+  write(6,*)
 
   end subroutine get_initial_walkers
 
@@ -251,7 +251,7 @@ module walkers_mod
 
 ! loop over lines in file
   do
-    
+
    read(file_unit,fmt=*,iostat=iostat) ((coord_elec_read (dim_i, elec_i), dim_i=1,ndim), elec_i=1,nelec)
 
    if (iostat /= 0) exit
@@ -259,7 +259,7 @@ module walkers_mod
    nconf_read = nconf_read + 1
    call alloc ('coord_elec_wlk_read', coord_elec_wlk_read, ndim, nelec, nconf_read)
    coord_elec_wlk_read (:,:,nconf_read) = coord_elec_read (:,:)
-   
+
    if (nconf_read >= nconf_total) exit
 
   enddo ! end of loop over lines
@@ -294,10 +294,10 @@ module walkers_mod
   if (nconf_unique /= nconf_read) then
     write(6,'(a,i5,a)') 'Warning: there are only ',nconf_unique,' unique walkers.'
   endif
- 
+
 ! Check electron-electron distances
   call alloc ('dist_ee_wlk_read', dist_ee_wlk_read, nelec, nelec, nconf_read)
-  dist_ee_wlk_read (:,:,:) = 0.d0 
+  dist_ee_wlk_read (:,:,:) = 0.d0
   do walk_i = 1, nconf_read
     do elec_i = 1, nelec
       do elec_j = elec_i+1, nelec
@@ -321,7 +321,7 @@ module walkers_mod
   call object_provide ('ncent')
   call object_provide ('cent')
   call alloc ('dist_en_wlk_read', dist_en_wlk_read, nelec, ncent, nconf_read)
-  dist_en_wlk_read (:,:,:) = 0.d0 
+  dist_en_wlk_read (:,:,:) = 0.d0
   do walk_i = 1, nconf_read
    do cent_i = 1, ncent
      do elec_i = 1, nelec
@@ -339,7 +339,7 @@ module walkers_mod
    enddo ! cent_i
   enddo ! walk_i
 
-! Check number of electrons closest to each atoms  
+! Check number of electrons closest to each atoms
   if (l_check_initial_walkers) then
   call alloc ('elec_nb_closest_to_atom_wlk_read', elec_nb_closest_to_atom_wlk_read, ncent, nconf_read)
   call alloc ('elec_up_nb_closest_to_atom_wlk_read', elec_up_nb_closest_to_atom_wlk_read, ncent, nconf_read)
@@ -378,7 +378,7 @@ module walkers_mod
   elec_nb_closest_to_atom_wlk_read_nb (elec_nb_closest_to_atom_read_nb) = 1
   elec_up_nb_closest_to_atom_wlk_read_nb (elec_up_nb_closest_to_atom_read_nb) = 1
   elec_dn_nb_closest_to_atom_wlk_read_nb (elec_dn_nb_closest_to_atom_read_nb) = 1
-  
+
   do walk_i = 2, nconf_read
     found = .false.
     do elec_nb_closest_to_atom_read_i = 1, elec_nb_closest_to_atom_read_nb
@@ -389,7 +389,7 @@ module walkers_mod
       endif
     enddo
    if (.not. found) then
-     elec_nb_closest_to_atom_read_nb = elec_nb_closest_to_atom_read_nb + 1 
+     elec_nb_closest_to_atom_read_nb = elec_nb_closest_to_atom_read_nb + 1
      call alloc ('elec_nb_closest_to_atom_read', elec_nb_closest_to_atom_read, ncent, elec_nb_closest_to_atom_read_nb)
      call alloc ('elec_nb_closest_to_atom_wlk_read_nb', elec_nb_closest_to_atom_wlk_read_nb, elec_nb_closest_to_atom_read_nb)
      elec_nb_closest_to_atom_read (:, elec_nb_closest_to_atom_read_nb) = elec_nb_closest_to_atom_wlk_read (:, walk_i)
@@ -407,7 +407,7 @@ module walkers_mod
       endif
     enddo
    if (.not. found) then
-     elec_up_nb_closest_to_atom_read_nb = elec_up_nb_closest_to_atom_read_nb + 1 
+     elec_up_nb_closest_to_atom_read_nb = elec_up_nb_closest_to_atom_read_nb + 1
      call alloc ('elec_up_nb_closest_to_atom_read', elec_up_nb_closest_to_atom_read, ncent, elec_up_nb_closest_to_atom_read_nb)
      call alloc ('elec_up_nb_closest_to_atom_wlk_read_nb', elec_up_nb_closest_to_atom_wlk_read_nb, elec_up_nb_closest_to_atom_read_nb)
      elec_up_nb_closest_to_atom_read (:, elec_up_nb_closest_to_atom_read_nb) = elec_up_nb_closest_to_atom_wlk_read (:, walk_i)
@@ -425,7 +425,7 @@ module walkers_mod
       endif
     enddo
    if (.not. found) then
-     elec_dn_nb_closest_to_atom_read_nb = elec_dn_nb_closest_to_atom_read_nb + 1 
+     elec_dn_nb_closest_to_atom_read_nb = elec_dn_nb_closest_to_atom_read_nb + 1
      call alloc ('elec_dn_nb_closest_to_atom_read', elec_dn_nb_closest_to_atom_read, ncent, elec_dn_nb_closest_to_atom_read_nb)
      call alloc ('elec_dn_nb_closest_to_atom_wlk_read_nb', elec_dn_nb_closest_to_atom_wlk_read_nb, elec_dn_nb_closest_to_atom_read_nb)
      elec_dn_nb_closest_to_atom_read (:, elec_dn_nb_closest_to_atom_read_nb) = elec_dn_nb_closest_to_atom_wlk_read (:, walk_i)
@@ -481,7 +481,7 @@ module walkers_mod
 ! Save walkers (and duplicate walkers if necessary):
   do walk_i = 1, nconf
    walk_mod_i = mod(walk_i + idtask*nconf, nconf_read)
-   if (walk_mod_i == 0) walk_mod_i = nconf_read 
+   if (walk_mod_i == 0) walk_mod_i = nconf_read
    xoldw (1:ndim,1:nelec,walk_i,1) = coord_elec_wlk_read (:,:,walk_mod_i)
   enddo
   if (nconf_total > nconf_read) then

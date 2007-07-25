@@ -29,7 +29,7 @@ module deriv_csf_mod
   real(dp), allocatable          :: delta_e_csf (:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine csf_pairs_bld
 ! ------------------------------------------------------------------------------
@@ -73,8 +73,8 @@ module deriv_csf_mod
 ! ==============================================================================
   subroutine dpsi_csf_bld
 ! ------------------------------------------------------------------------------
-! Description   :  Logarithmic derivatives of Psi with respect to 
-! Description   :  csftrow parameters 
+! Description   :  Logarithmic derivatives of Psi with respect to
+! Description   :  csftrow parameters
 ! Description   :  d ln Psi / d j = (1/Psi) * d Psi / d j
 !
 ! Created       : J. Toulouse, 15 Jan 2006
@@ -103,9 +103,9 @@ module deriv_csf_mod
 ! begin
   call object_alloc ('dpsi_csf', dpsi_csf, nparmcsf)
   call object_alloc ('dpsi_csf_av', dpsi_csf_av, nparmcsf)
-  
+
   do i = 1, nparmcsf
-    dpsi_csf (i) = deti_det (i) 
+    dpsi_csf (i) = deti_det (i)
 
 ! rotation
 !    dpsi_csf (i) = deti_det (i+1) -  csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (1.d0 + deti_det(1))
@@ -116,9 +116,9 @@ module deriv_csf_mod
 ! ==============================================================================
   subroutine deloc_csf_bld
 ! ------------------------------------------------------------------------------
-! Description   :  derivative of local energy Psi with respect to 
+! Description   :  derivative of local energy Psi with respect to
 ! Description   :  csf  parameters to optimize
-! Description   :  d eloc / d c 
+! Description   :  d eloc / d c
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ module deriv_csf_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('dpsi_csf_eloc', dpsi_csf_eloc, nparmj)
   call object_alloc ('dpsi_csf_eloc_av', dpsi_csf_eloc_av, nparmj)
@@ -322,7 +322,7 @@ module deriv_csf_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('dpsi_csf_sq_eloc', dpsi_csf_sq_eloc, nparmcsf)
   call object_alloc ('dpsi_csf_sq_eloc_av', dpsi_csf_sq_eloc_av, nparmcsf)
@@ -388,7 +388,7 @@ module deriv_csf_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('e_csf', e_csf, nparmcsf)
 
@@ -421,7 +421,7 @@ module deriv_csf_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('delta_e_csf', delta_e_csf, nparmcsf)
 

@@ -3,17 +3,17 @@
 c Written by A.D.Guclu aug2006.
 c Calculates the power spectrum estimator in polar coo., defined as:
 c     FT=abs( sum_i Fourier[Delta^2(r_i-r)])^2
-c taking the absolute value before the data accumulation is essential to get the 
-c "internal structure" of the density. 
-c
-c Notes: 
+c taking the absolute value before the data accumulation is essential to get the
+c "internal structure" of the density.
+
+c Notes:
 c Delta^2(ri-r)=Delta(ri_r) Delta(thetai-theta) / r
 c We consider only angular FT here.
 c Fourier[Delta]=cos + i sin
-c
+
 c In practice, there is a uninteresting constant term that we substract:
 c FT(renormalized)= r^2 FT - N(r)   where N(r) is number of electrons at r.
-c 
+
 c During the print out we divide everything by r^2 to get the final result.
 c FT(r,k=0)= electronic density
 
@@ -88,10 +88,10 @@ c reset temporary arrays:
             fsin_dn(irn)=fsin_dn(irn)+dsin(fk*thetan)
             nr_do(iro)=nr_do(iro)+1
             nr_dn(irn)=nr_dn(irn)+1
-          endif          
+          endif
 
         enddo
-     
+
         do ir=1,NAX
           fourierrk_u(ir,ik)=fourierrk_u(ir,ik)+(fcos_uo(ir)*fcos_uo(ir)+fsin_uo(ir)*fsin_uo(ir))*q
           fourierrk_d(ir,ik)=fourierrk_d(ir,ik)+(fcos_do(ir)*fcos_do(ir)+fsin_do(ir)*fsin_do(ir))*q
@@ -123,15 +123,15 @@ c-------------------------------------------------------------------------------
 c Written by A.D.Guclu aug2006.
 c Calculates the "internal fourier transform" estimator in polar coo., defined as:
 c     FT=abs( sum_i Fourier[Delta^2(r_i-r)])
-c taking the absolute value before the data accumlation is essential to get the 
+c taking the absolute value before the data accumlation is essential to get the
 c "internal structure" of the density. We are indeed calculation the following
 c quantity:
 c     <FT>=<Psi| abs( Fourier[rho(r)] ) |Psi>
-c Notes: 
+c Notes:
 c Delta^2(ri-r)=Delta(ri_r) Delta(thetai-theta) / r
 c We consider only angular FT here.
 c Fourier[Delta]=cos + i sin
-c
+
 c FT(r,k=0)= electronic density
 
 
@@ -191,7 +191,7 @@ c reset temporary arrays:
           thetan=datan2(xnew(2,ie),xnew(1,ie))
           iro=min(int(delxi*rold)+1,NAX)
           irn=min(int(delxi*rnew)+1,NAX)
-          
+
           if(ie.le.nup) then
             fcos_uo(iro)=fcos_uo(iro)+dcos(fk*thetao)
             fsin_uo(iro)=fsin_uo(iro)+dsin(fk*thetao)
@@ -202,10 +202,10 @@ c reset temporary arrays:
             fsin_do(iro)=fsin_do(iro)+dsin(fk*thetao)
             fcos_dn(irn)=fcos_dn(irn)+dcos(fk*thetan)
             fsin_dn(irn)=fsin_dn(irn)+dsin(fk*thetan)
-          endif          
+          endif
 
         enddo
-     
+
         do ir=1,NAX
           fourierrk_u(ir,ik)=fourierrk_u(ir,ik)+dsqrt(fcos_uo(ir)*fcos_uo(ir)+fsin_uo(ir)*fsin_uo(ir))*q
           fourierrk_d(ir,ik)=fourierrk_d(ir,ik)+dsqrt(fcos_do(ir)*fcos_do(ir)+fsin_do(ir)*fsin_do(ir))*q
@@ -229,12 +229,12 @@ c-------------------------------------------------------------------------------
 c Written by A.D.Guclu aug2006.
 c Calculates the "internal fourier transform" estimator in cartesian coo., defined as:
 c     FT=abs( sum_i Fourier[Delta^2(r_i-r)])
-c taking the absolute value before the data accumlation is essential to get the 
+c taking the absolute value before the data accumlation is essential to get the
 c "internal structure" of the density. We are indeed calculation the following
 c quantity:
 c     <FT>=<Psi| abs( Fourier[rho(r)] ) |Psi>
-c Notes: 
-c Delta^2(ri-r)=Delta(xi-x) Delta(yi-y) 
+c Notes:
+c Delta^2(ri-r)=Delta(xi-x) Delta(yi-y)
 c Fourier[Delta]=cos + i sin
 
       implicit real*8(a-h,o-z)
@@ -265,11 +265,11 @@ c first, for old x values:
           sumi_t=0.d0
           do ie=1,nup
             sumr_u=sumr_u+dcos(twopi*(fkx*xold(1,ie)+fky*xold(2,ie)))
-            sumi_u=sumi_u+dsin(twopi*(fkx*xold(1,ie)+fky*xold(2,ie)))  
+            sumi_u=sumi_u+dsin(twopi*(fkx*xold(1,ie)+fky*xold(2,ie)))
           enddo
           do ie=nup+1,nelec
             sumr_d=sumr_d+dcos(twopi*(fkx*xold(1,ie)+fky*xold(2,ie)))
-            sumi_d=sumi_d+dsin(twopi*(fkx*xold(1,ie)+fky*xold(2,ie)))  
+            sumi_d=sumi_d+dsin(twopi*(fkx*xold(1,ie)+fky*xold(2,ie)))
           enddo
           sumr_t=sumr_d+sumr_u
           sumi_t=sumi_d+sumi_u
@@ -286,11 +286,11 @@ c now repeat above for new x values:
           sumi_t=0.d0
           do ie=1,nup
             sumr_u=sumr_u+dcos(twopi*(fkx*xnew(1,ie)+fky*xnew(2,ie)))
-            sumi_u=sumi_u+dsin(twopi*(fkx*xnew(1,ie)+fky*xnew(2,ie)))  
+            sumi_u=sumi_u+dsin(twopi*(fkx*xnew(1,ie)+fky*xnew(2,ie)))
           enddo
           do ie=nup+1,nelec
             sumr_d=sumr_d+dcos(twopi*(fkx*xnew(1,ie)+fky*xnew(2,ie)))
-            sumi_d=sumi_d+dsin(twopi*(fkx*xnew(1,ie)+fky*xnew(2,ie)))  
+            sumi_d=sumi_d+dsin(twopi*(fkx*xnew(1,ie)+fky*xnew(2,ie)))
           enddo
           sumr_t=sumr_d+sumr_u
           sumi_t=sumi_d+sumi_u

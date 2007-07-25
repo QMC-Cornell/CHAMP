@@ -25,7 +25,7 @@ module constants_mod
   real(dp), parameter   :: sqrt_pi    = 1.772453850905516d0
   real(dp), parameter   :: oneover2pi = 0.15915494309189535d0
   real(dp), parameter   :: oneover4pi = 0.07957747154594767d0
- 
+
 ! maximun numbers of nodes
   integer, parameter    ::  max_nodes_nb = 500
 

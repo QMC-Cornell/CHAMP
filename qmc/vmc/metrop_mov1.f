@@ -164,7 +164,7 @@ c for general ndim
           vgreater=.false.
           do 150 idim=1,ndim
   150       if(dabs(vold(idim,i)).gt.deltfi) vgreater=.true.
-          if(vgreater) trunfb(itryo)=trunfb(itryo)+1  
+          if(vgreater) trunfb(itryo)=trunfb(itryo)+1
           if(i.le.nup) then
             rprobup(itryo)=rprobup(itryo)+q
             rprobup(itryn)=rprobup(itryn)+p
@@ -181,8 +181,8 @@ c for general ndim
 
 c calculate 2d-density related functions
           if(ifixe.le.-2) call pairden2d(p,q,xold,xnew)
-          if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)  
-          if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)  
+          if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)
+          if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)
 c          if(ifourier.eq.1) call fourier2d(1.d0,0.d0,xold,xnew)
           if(ifixe.ne.0 .and. ifixe.ne.-2) then   !  2d density (ifixe=-1,-3) or fixed electron pair density (ifixe>0)
             do 170 idim=1,ndim

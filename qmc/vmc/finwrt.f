@@ -123,7 +123,7 @@ c separate "magnetic energy" for quantum dots:
         pefin=pefin-tmfin-emag
 c       peerr=peerr+tmerr                          ! is this correct?
 c note that temp is always smaller than 1
-        peerr=peerr*(1-temp)+peierr*temp 
+        peerr=peerr*(1-temp)+peierr*temp
       endif
 
 c save energy, energy_sigma and energy_err for optimization

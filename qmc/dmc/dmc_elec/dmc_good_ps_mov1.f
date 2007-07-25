@@ -73,7 +73,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
      &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
      &ricum,taucum(MFORCE)
-      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),    
+      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -293,7 +293,7 @@ c Calculate density and moments of r for primary walk
           itryn(i)=min(int(delri*rminn)+1,NRAD)
 
 c for pair-density calculation we will need full old/new positions:
-          if(ifixe.lt.0 .or. ifourier.ne.0) then     
+          if(ifixe.lt.0 .or. ifourier.ne.0) then
             do 167 k=1,ndim
               do 167 j=1,nelec
                 xoci(k,j,i)=xoldw(k,j,iw,1)
@@ -515,7 +515,7 @@ c           wt(iw)=wt(iw)*dwt
 c             r2sum=r2sum+wtg*(unacp(i)*r2o+(one-unacp(i)*r2n)
 c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
 
-              if(ifixe.le.-2 .or. ifourier.ne.0) then 
+              if(ifixe.le.-2 .or. ifourier.ne.0) then
                 do 263 j=1,nelec
                   do 263 idim=1,ndim
 c note that xoci and xnci represent the old/new positions of all electrons-j when an
@@ -528,7 +528,7 @@ c electron-i is being moved
                 if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
               endif
 
-              if(ifixe.eq.-1 .or. ifixe.eq.-3) then 
+              if(ifixe.eq.-1 .or. ifixe.eq.-3) then
                 do 265 idim=1,ndim
                   ixo(idim)=nint(delxi*xoci(idim,i,i))
   265             ixn(idim)=nint(delxi*xnci(idim,i,i))

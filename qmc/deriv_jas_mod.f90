@@ -30,7 +30,7 @@ module deriv_jas_mod
   real(dp), allocatable          :: delta_e_jas (:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine jas_pairs_bld
 ! ------------------------------------------------------------------------------
@@ -74,8 +74,8 @@ module deriv_jas_mod
 ! ==============================================================================
   subroutine dpsi_jas_bld
 ! ------------------------------------------------------------------------------
-! Description   :  Logarithmic derivatives of Psi with respect to 
-! Description   :  jastrow parameters 
+! Description   :  Logarithmic derivatives of Psi with respect to
+! Description   :  jastrow parameters
 ! Description   :  d ln Psi / d j = (1/Psi) * d Psi / d j
 !
 ! Created       : J. Toulouse, 15 Jan 2006
@@ -101,7 +101,7 @@ module deriv_jas_mod
 ! begin
   call object_alloc ('dpsi_jas', dpsi_jas, nparmj)
   call object_alloc ('dpsi_jas_av', dpsi_jas_av, nparmj)
-  
+
   do i = 1, nparmj
    dpsi_jas (i) = gvalue (i)
   enddo
@@ -151,7 +151,7 @@ module deriv_jas_mod
   call object_alloc ('d2psi_jas_av', d2psi_jas_av, jas_pairs_nb)
   call object_alloc ('d2gvalue', d2gvalue, nparmj, nparmj)
   call object_alloc ('d2gvalue_av', d2gvalue_av, nparmj, nparmj)
-  
+
   d2gvalue = 0.d0
 
   nparm0 = 0
@@ -195,7 +195,7 @@ module deriv_jas_mod
       endif
      enddo ! i
     enddo ! isb
-  
+
 ! gvalue (i,j) with i<j correct
 ! but gvalue (i,j) with i>j incorrect!
 
@@ -212,9 +212,9 @@ module deriv_jas_mod
 ! ==============================================================================
   subroutine deloc_jas_bld
 ! ------------------------------------------------------------------------------
-! Description   :  derivative of local energy Psi with respect to 
+! Description   :  derivative of local energy Psi with respect to
 ! Description   :  Jastrow  parameters to optimize
-! Description   :  d eloc / d c 
+! Description   :  d eloc / d c
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
@@ -251,7 +251,7 @@ module deriv_jas_mod
 ! ==============================================================================
   subroutine d2eloc_jas_bld
 ! ------------------------------------------------------------------------------
-! Description   :  second-order derivative of local energy Psi with respect to 
+! Description   :  second-order derivative of local energy Psi with respect to
 ! Description   :  Jastrow  parameters to optimize
 ! Description   :  d^2 eloc / d c^2
 !
@@ -362,7 +362,7 @@ module deriv_jas_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('dpsi_jas_eloc', dpsi_jas_eloc, nparmj)
   call object_alloc ('dpsi_jas_eloc_av', dpsi_jas_eloc_av, nparmj)
@@ -395,7 +395,7 @@ module deriv_jas_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('dpsi_jas_sq_eloc', dpsi_jas_sq_eloc, nparmj)
   call object_alloc ('dpsi_jas_sq_eloc_av', dpsi_jas_sq_eloc_av, nparmj)
@@ -467,7 +467,7 @@ module deriv_jas_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('e_jas', e_jas, nparmj)
 
@@ -505,7 +505,7 @@ module deriv_jas_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('delta_e_jas', delta_e_jas, nparmj)
 

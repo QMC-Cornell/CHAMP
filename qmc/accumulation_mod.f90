@@ -1,10 +1,10 @@
 module accumulation_mod
 
   use all_tools_mod
-  use control_mod    
-  use montecarlo_mod  
-  use average_mod      
-  use print_mod      
+  use control_mod
+  use montecarlo_mod
+  use average_mod
+  use print_mod
 
 ! Declaration of global variables and default values
 
@@ -16,7 +16,7 @@ module accumulation_mod
 ! Description   : Initialize various quantities at beginning of run
 ! Description   : the initial values of energy psi etc. are calculated here
 !
-! Created       : 
+! Created       :
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -33,7 +33,7 @@ module accumulation_mod
 
   eigv=one
   eest=etrial
-  nwalk=nconf 
+  nwalk=nconf
   wdsumo=nconf
   wgdsumo=nconf
   fprod=one
@@ -84,7 +84,7 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
 ! Description   : zero out all averages etc. after equilibration runs
 !
-! Created       : 
+! Created       :
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -197,9 +197,9 @@ module accumulation_mod
 ! ==============================================================================
   subroutine acues1_dmc_clean
 ! ------------------------------------------------------------------------------
-! Description   : 
+! Description   :
 !
-! Created       : 
+! Created       :
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -210,7 +210,7 @@ module accumulation_mod
   real(dp) wgdsum1, nfpro
 
 ! begin
-  
+
 ! statistical fluctuations without blocking
   wdsum1=wdsumo
   wgdsum1=wgdsumo
@@ -256,7 +256,7 @@ module accumulation_mod
         eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)
        else
 
-# if defined (MPI) 
+# if defined (MPI)
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
         eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/(wgcum(1)+wgsum(1)))
 # else
@@ -289,7 +289,7 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
 ! Description   : routine to accumulate estimators for energy etc.
 !
-! Created       : 
+! Created       :
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -335,7 +335,7 @@ module accumulation_mod
 ! xerr = current error of x
 
       iblk=iblk+1
-      iblk_proc=iblk_proc+nproc 
+      iblk_proc=iblk_proc+nproc
       npass=iblk_proc*nstep
 
 !     wnow=wsum/nstep
@@ -526,7 +526,7 @@ module accumulation_mod
           endif
         endif
 
-# if !defined (MPI) 
+# if !defined (MPI)
         taucum(ifr)=taucum(ifr)+tausum(ifr)
 # endif
 
@@ -573,7 +573,7 @@ module accumulation_mod
    15 continue
 # endif
 
-       
+
       eloc_av = egave                                 !JT
       call object_modified_by_index (eloc_av_index)   !JT
 
@@ -610,7 +610,7 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
 ! Description   : routine to print out final results
 !
-! Created       : 
+! Created       :
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -632,7 +632,7 @@ module accumulation_mod
   real (dp) :: werr, wferr, werr1, wferr1
   real (dp) :: eerr, eferr, eerr1, eferr1, ei1err, ei2err, ei3err
   real (dp) :: e1err, e2err, e3err
-  real (dp) :: r2err, rierr 
+  real (dp) :: r2err, rierr
   real (dp) :: wgave, wgerr, wgerr1
   real (dp) :: egave, egerr1
   real (dp) :: peave, tpbave, tjfave
@@ -790,7 +790,7 @@ module accumulation_mod
             write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eoldw(i,1),((xoldw(k,j,i,1),k=1,ndim),j=1,nelec)
             write(6,'(99f8.4)') ((voldw(k,j,i,1),k=1,ndim),j=1,nelec)
           endif
-        enddo 
+        enddo
   endif
 
 ! Diffusion analysis
@@ -900,7 +900,7 @@ module accumulation_mod
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
         tcor_g = (egerr/egerr1)**2
         write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_proc_eff1,egerr1*rtevalg_proc_eff1,tcor_g
-      enddo        
+      enddo
 
 # if !defined (MPI)
       if(idmc.ge.0) then
@@ -932,7 +932,7 @@ module accumulation_mod
         write(6,'(''total energy diff'',i2,t24,f12.7,'' +-'',f11.7,1x,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_proc_eff1
   50  continue
 
-# if !defined (MPI) 
+# if !defined (MPI)
 !     These are not being collected at the moment
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(6,'(''<r2>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
@@ -951,7 +951,7 @@ module accumulation_mod
     write(6,'(a,i6,a,f8.2)') 'Warning: number of step per block =',nstep,' is less than 10 times the autocorrelation time =',tcor_g
     write(6,'(a)') 'Warning: the errors are underestimated. Increase nstep.'
   endif
-  
+
   end subroutine finwrt_dmc_clean
 
 end module accumulation_mod

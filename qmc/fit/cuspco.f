@@ -9,8 +9,8 @@ c:::  If icusp.ge.0 then this just serves to confirm that we imposed :::
 c:::  the cusp exactly.                                              :::
 c:::  The number of these cusp conditions is ncent*norb              :::
 !
-! J. Toulouse - 06 Jan 05: 
-!  l_cusp_en_occ = true : impose cusp conditions only on occupied orbitals 
+! J. Toulouse - 06 Jan 05:
+!  l_cusp_en_occ = true : impose cusp conditions only on occupied orbitals
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
 !                        : change a(i,j,1) -> a(i,j,iwf)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -61,7 +61,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !      data half,d1b4/0.5d0,.25d0/
       data d1b4/.25d0/
 
-c     write(6,'(''n_bas,l_bas='',30(2i2,2x))') (n_bas(i),l_bas(i),i=1,nbasis) 
+c     write(6,'(''n_bas,l_bas='',30(2i2,2x))') (n_bas(i),l_bas(i),i=1,nbasis)
 c The shifting is done in the calling routine, so do not shift here
       ishft=0
 
@@ -147,11 +147,11 @@ c     write(6,'(''ibas,imnbas(icent),imxbas'',9i5)') ibas,imnbas(icent),imxbas
          call cusorb_equiv(icent,orb2)
          do 35 iorb=1,norb
 ! JT beg: skip non-occupied orbitals
-           if(l_cusp_en_occ) then              
+           if(l_cusp_en_occ) then
             call object_provide ('orb_occ_in_wf')
             if(.not. orb_occ_in_wf(iorb)) cycle
-           endif                          
-! JT end 
+           endif
+! JT end
            if(lo(iorb).eq.0) then
              if(imxbas.eq.ibas) then
 	       if(n_bas(ibas).eq.0) then
@@ -195,7 +195,7 @@ c           write(6,'(''zex(ibas,iwf),znuc(iwctype(icent)),aa1,term2'',9f9.5)') 
 	         coef(ibas,iorb,iwf)=
      &           (term+(znuc(iwctype(icent))+aa1)*other_atom_ineqv_bas)
      &           /(zex(ibas,iwf)-(znuc(iwctype(icent))+aa1)*(1+term2))
-c           write(6,'(''coef(ibas,iorb,iwf)2'',9f9.5)') coef(ibas,iorb,iwf) 
+c           write(6,'(''coef(ibas,iorb,iwf)2'',9f9.5)') coef(ibas,iorb,iwf)
              endif
 c            write(6,'(''other_atom'',3i2,9d12.5)') icent,iorb,ibas,
 c    &       coef(ibas,iorb,iwf),other_atom,orb(iorb),orb2(iorb),

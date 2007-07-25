@@ -253,7 +253,7 @@ c            if file orbitals_num exists, read from it, else write to it
 c        =-4 numerical orbitals using 4-pt interpolation in each direction
 c            if file orbitals_num exists, read from it, but do not write to it
 cWP       =+-6 numerical orbitals using 4-pt B-spline approximation in each direction
-c iorb_used =1 compute only occupied orbitals 
+c iorb_used =1 compute only occupied orbitals
 c           =0 compute all occupied and virtual orbitals if necessary (for orbital optimization)
 c iorb_format 'tm' for orbitals file orbitals_pw_tm generated from Jose-Luis Martins' program
 c             'pwscf' for orbitals file orbitals_pw_tm generated from PWSCF.
@@ -395,7 +395,7 @@ c             <= -2  Minimal print out
 c             >= -1  Print cusp monotonicity conditions
 c             >=  0  Print configs and errors on 6
 c             >=  2  Print out configs and wavefunction on 2
-c
+
 c 7  0 0 0 0  2 0 0  nparml, nparma,nparmb,nparmc,nparmf, nparmd,nparms,nparmg
 c nparml      Number of LCAO coefs to be optimized
 c nparma      Number of en  Jastrow coefs to be optimized
@@ -410,7 +410,7 @@ c nparms      Number of Jastrow scale factor coefs to be optimized (0 or 1)
 c nparmo(i)   Number of Orbital parameters of type i.  At present this is used for floating
 c             gaussians and there are 3 types (x,y positions and width).
 c nparmg      Do not use this.
-c
+
 c For each of the nparms's we now
 c To be completed!
 
@@ -593,7 +593,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       call object_modified ('nloc') ! JT
       call object_modified ('numr') ! JT
       call object_modified ('nforce') ! JT
-     
+
       if(nforce.gt.MFORCE) stop 'nforce > MFORCE'
       if(nloc.ge.2 .and. nquad.gt.MPS_QUAD) stop 'nquad > MPS_QUAD'
 
@@ -904,10 +904,10 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
       read(5,*) ncsf
       write(6,'(/,''ncsf='',i5)') ncsf
 
-      if(ncsf.gt.MCSF) then 
+      if(ncsf.gt.MCSF) then
        write(6,*) trim(lhere),': ncsf =', ncsf, ' > MCSF=', MCSF !JT
        stop 'ncsf > MCSF'
-      endif 
+      endif
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
       read(5,*) (ndet_in_csf(icsf),icsf=1,ncsf)

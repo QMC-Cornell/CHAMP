@@ -136,7 +136,7 @@ c If the local pseudopot component is not set in input, set it here
 
 c Find the point beyond which r*v differs from zion by no more than .5*d-6.
 c irmax_coul is used for the endpoint of the spline where it is assumed that
-c the derivative of the local component is zion/r(irmax_coul)**2 and that of 
+c the derivative of the local component is zion/r(irmax_coul)**2 and that of
 c the local component is 0.  Also, rmax_coul is used in splfit_ps when it is
 c called in a calculation of a periodic system.
         rmax_coul(ict)=0.d0

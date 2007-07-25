@@ -30,7 +30,7 @@ module density_mod
   real(dp), allocatable     :: dens_3d_err (:)
 
   contains
-  
+
 !===========================================================================
   subroutine dens_menu
 !---------------------------------------------------------------------------
@@ -45,7 +45,7 @@ module density_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
@@ -56,13 +56,13 @@ module density_mod
    write(6,'(2a)') trim(lhere),':  file    = [string] file in which density will be written'
    write(6,'(2a)') trim(lhere),': end'
 
-  case ('file') 
+  case ('file')
    call get_next_value (dens_file_out)
 
-  case ('estimator') 
+  case ('estimator')
    call get_next_value (dens_estimator)
 
-  case ('end') 
+  case ('end')
    exit
 
   case default
@@ -117,7 +117,7 @@ module density_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
@@ -128,20 +128,20 @@ module density_mod
    write(6,'(2a)') trim(lhere),':  file    = [string] file in which density will be written'
    write(6,'(2a)') trim(lhere),': end'
 
-  case ('file') 
+  case ('file')
    call get_next_value (dens_3d_file_out)
 
-  case ('estimator') 
+  case ('estimator')
    call get_next_value (dens_3d_estimator)
 
-  case ('end') 
+  case ('end')
    exit
 
   case default
    write(6,'(3a)') trim(lhere),': unknown keyword = ',trim(word)
    call die (lhere)
   end select
-  
+
   enddo ! end loop over menu lines
 
 
@@ -219,7 +219,7 @@ module density_mod
   do elec_i = 1, nelec
 
 !     distance |r_i|
-      di = dist_e (elec_i) 
+      di = dist_e (elec_i)
 
 !     dot product: drift_i . r_i
       dotproduct = 0.d0
@@ -619,14 +619,14 @@ module density_mod
   write(unit,'(a,i5)')      'number of electrons       =',nelec
   write(unit,'(a,i20)')     'number of steps per block =',nstep_total
   write(unit,'(a,i20)')     'number of blocks          =',block_iterations_nb
-  write(unit,'(a,3e25.15)') 'grid_x_max                =',grid_x_max  
-  write(unit,'(a,3e25.15)') 'grid_x_min                =',grid_x_min  
+  write(unit,'(a,3e25.15)') 'grid_x_max                =',grid_x_max
+  write(unit,'(a,3e25.15)') 'grid_x_min                =',grid_x_min
   write(unit,'(a,3e25.15)') 'grid_x_step               =',grid_x_step
-  write(unit,'(a,3e25.15)') 'grid_y_max                =',grid_y_max  
-  write(unit,'(a,3e25.15)') 'grid_y_min                =',grid_y_min  
+  write(unit,'(a,3e25.15)') 'grid_y_max                =',grid_y_max
+  write(unit,'(a,3e25.15)') 'grid_y_min                =',grid_y_min
   write(unit,'(a,3e25.15)') 'grid_x_step               =',grid_y_step
-  write(unit,'(a,3e25.15)') 'grid_z_max                =',grid_z_max  
-  write(unit,'(a,3e25.15)') 'grid_z_min                =',grid_z_min  
+  write(unit,'(a,3e25.15)') 'grid_z_max                =',grid_z_max
+  write(unit,'(a,3e25.15)') 'grid_z_min                =',grid_z_min
   write(unit,'(a,3e25.15)') 'grid_z_step               =',grid_z_step
   write(unit,'(a,i25)')     'grid_xyz_nb               =',grid_xyz_nb
 

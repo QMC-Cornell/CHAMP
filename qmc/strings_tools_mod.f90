@@ -2,7 +2,7 @@ module strings_tools_mod
 
   use basic_tools_mod
   use constants_mod
- 
+
 !===============================================================
   interface string
 !---------------------------------------------------------------
@@ -27,7 +27,7 @@ module strings_tools_mod
   end interface
 
   contains
-  
+
 ! ==================================================================================
   function string_string_cat (string_1, string_2) result(string)
 ! ----------------------------------------------------------------------------------

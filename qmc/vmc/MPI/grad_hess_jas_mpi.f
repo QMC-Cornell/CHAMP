@@ -41,7 +41,7 @@ c Note, to do: error is not collected
 
       call mpi_allreduce(dj,collect,nparm
      &     ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-   
+
       do 10 i=1,nparm
   10    dj(i)=collect(i)
 
@@ -123,7 +123,7 @@ c Note that if we use mpi_reduce rather than mpi_allreduce we need a '0,' before
      &     ,mpi_integer,mpi_sum,MPI_COMM_WORLD,ierr)
 
         ngrad_jas_bcum=ngrad_jas_collect
-      
+
         call mpi_allreduce(grad_jas_bcum,collect,nparmj
      &     ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
@@ -139,7 +139,7 @@ c Note that if we use mpi_reduce rather than mpi_allreduce we need a '0,' before
       endif
 
 c these averages should be set to zero on the slaves but grad_hess_jas_allreduce
-c is only called at the end of run (differently than prop_allreduce) and 
+c is only called at the end of run (differently than prop_allreduce) and
 c only the master writes to output and dumper
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)

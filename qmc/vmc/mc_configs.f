@@ -33,7 +33,7 @@ c If isite<=0 reads initial MC configuration from mc_configs_start
 c         >=1 gets initial MC configuration by calling subroutine sites
 c Write mc_configs_new at end of run to provide configurations for fit optimization
 
-      use walkers_mod 
+      use walkers_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim

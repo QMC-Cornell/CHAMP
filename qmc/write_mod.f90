@@ -22,14 +22,14 @@ module write_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: routine_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'routine_write'
   integer routine_ind
   integer rtn_i
-  
+
 
 ! begin
 ! index of routine
@@ -42,7 +42,7 @@ module write_mod
 ! if routine already defined as write routine, do nothing
   do rtn_i = 1, write_routines_nb
    if (routine_ind == write_routines_index (rtn_i) ) then
-       return 
+       return
    endif
   enddo
 
@@ -55,7 +55,7 @@ module write_mod
  end subroutine routine_write
 
 ! ===================================================================================
-  subroutine writing_routines 
+  subroutine writing_routines
 ! -----------------------------------------------------------------------------------
 ! Description   : call writing routines at each block
 !
@@ -67,7 +67,7 @@ module write_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'writing_routines'
   integer rtn_i
-  
+
 ! begin
 # if defined (DEBUG)
    call routine_enter (lhere)

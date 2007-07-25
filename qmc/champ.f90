@@ -53,14 +53,14 @@ program champ
    open(6,file='/dev/null')
 !   open(6,file='slave.out')
   endif
-# endif 
+# endif
 
   call get_date (date)
   write(6,'(2a)') 'PROGRAM CHAMP run on ',date
 
 # if defined (MPI)
   write(6,'(a,i4,a)') 'MPI version running on ', nproc, ' processors.'
-# endif 
+# endif
 
   call object_modified ('nproc')
 
@@ -82,11 +82,11 @@ program champ
 
 ! loop over arguments on command line
   iarg = 0
-  do 
+  do
    iarg = iarg + 1
    if (iarg > narg) exit
    call get_command_argument (iarg, argument)
-   
+
 !  use parser for input
    if (trim(argument) == '-p' .or. trim(argument) == '-parser') then
     use_parser = .true.
@@ -115,7 +115,7 @@ program champ
   end do ! end loop over arguments
 
   write(6,'(2a)') 'The mode is ',trim(mode)
-  write(6,*) 
+  write(6,*)
 
 # if defined (MPI)
 !  check mode
@@ -130,7 +130,7 @@ program champ
      call die (lhere, 'input file name must be given in the command line by "-i{nput} filename"')
    endif
 # endif
-  
+
 ! Open input file if given by '-i ...'
   if (trim(input_file_name) /= '') then
      write(6,'(3a)') 'Opening input file >',trim(input_file_name),'<.'
@@ -140,7 +140,7 @@ program champ
      endif
   endif
 
-! Build production tree 
+! Build production tree
   call build_tree
 
 ! pre-catalog some objects for speed
@@ -157,7 +157,7 @@ program champ
     call main_menu
   else
     call read_input
-    if (index(mode,'fit') /= 0) then 
+    if (index(mode,'fit') /= 0) then
       call fit
       run_done = .true.
     else
@@ -175,7 +175,7 @@ program champ
 
   endif
 
-   write(6,*) 
+   write(6,*)
    call print_cpu_time
    write(6,'(a)') 'The program ended normally.'
 
@@ -184,7 +184,7 @@ program champ
    if (ierr /= 0) then
     call die (lhere, 'error in mpi_finalize.')
    endif
-# endif 
+# endif
 
 end program champ
 
@@ -199,7 +199,7 @@ end program champ
 
   implicit none
   include 'commons.h'
-  
+
 ! local
   character(len=max_string_len_rout), save  :: lhere = 'run'
 

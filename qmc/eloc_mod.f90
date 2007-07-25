@@ -19,7 +19,7 @@ module eloc_mod
   real(dp)                       :: eloc_pot_ee_av
 
   contains
-  
+
 ! ==============================================================================
   subroutine eloc_kin_bld
 ! ------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ module eloc_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_associate ('eloc_kin', eloc_kin)
   call object_associate ('eloc_kin_av', eloc_kin_av)
@@ -91,7 +91,7 @@ module eloc_mod
 
 ! begin
 !  write(6,*) trim(here),': entering'
-  
+
 ! allocations
   call object_associate ('eloc', eloc)
 !  call object_associate ('eloc_av', eloc_av)
@@ -126,7 +126,7 @@ module eloc_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_associate ('eloc_pot_en', eloc_pot_en)
   call object_associate ('eloc_pot_en_av', eloc_pot_en_av)
@@ -158,7 +158,7 @@ module eloc_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_associate ('eloc_pot_ee', eloc_pot_ee)
   call object_associate ('eloc_pot_ee_av', eloc_pot_ee_av)

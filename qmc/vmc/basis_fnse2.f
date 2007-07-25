@@ -13,13 +13,13 @@ c                 < 0 : Gaussian basis
 
       use all_tools_mod !JT
 
-!**RM(7) 
+!**RM(7)
       use real_spherical_harmonics
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
       common /contr_ylm/ irecursion_ylm
-!**EndRM(7)                                                                                                                
+!**EndRM(7)
 
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -171,11 +171,11 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
 !**RM(9)
        enddo
       else
-!******************* 
+!*******************
 !     New version for recursion construction of Ylm.
 !*******************
 !
-!     Ryo MAEZONO / C.J. Umrigar 
+!     Ryo MAEZONO / C.J. Umrigar
 !
 !     //* Revisions   *//
 !     - 01/Feb./06 ; First completed.
@@ -184,10 +184,10 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
 !     - Ylm is constructed in the form of
 !       Ylm = (1/r^l)*[\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}]*coef_ylm(l,m)
 !
-!     - The recursion formula is based on 
+!     - The recursion formula is based on
 !          Y(l,l-1) ~ Y(l-l,l-1)*z       ! increment of 'l'
 !          Y(l,m+1) ~ l_{+}*Y(l,m)  etc. ! increment of 'm'
-!  
+!
 !       where l_{+} = -i*(jx) + (jy), and
 !             (jx)  = y*dz - z*dy     etc.
 !
@@ -203,7 +203,7 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
 !         'main_mov1.f -->  call setup_spherical_harmonics'
 !
 !     - The normalization coefficient coef_ylm(l,m) is also
-!       stored as module variable at the beginning of the run by 
+!       stored as module variable at the beginning of the run by
 !       the subroutine
 !         'read_input.f -->  call setup_coefficients_ylm'
 !
@@ -215,7 +215,7 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
 !
 !     - Before calling 'calculate_spherical_harmonics',
 !       powers of x,y,z, and 1/r is stored as module variables
-!       x_power_of(N) etc. 
+!       x_power_of(N) etc.
 !---------------
 
 !* construct power of (x,y,z,1/r)

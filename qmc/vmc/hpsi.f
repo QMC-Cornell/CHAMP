@@ -102,7 +102,7 @@ c   first check if we need to call determinant()/cdeterminant()
         if(isaved.eq.1) idodet=0
       endif
 
-      if(ibasis.eq.3) then 
+      if(ibasis.eq.3) then
 c note:
 c d2psi = real(lap(psi)) - dabs(cv)**2 = jackson feenberg kin.en.
 c velocity = real(cv)
@@ -191,12 +191,12 @@ c calculate velocity
             velocity(k,i)=dreal(cvelocity(k,i))
             velocity2=velocity2+dreal(cvelocity(k,i))**2+dimag(cvelocity(k,i))**2
    14   continue
-        
+
         if(ipr.ge.2) write(6,'(''coord'',9d12.5)') ((coord(k,ielec),k=1,ndim),ielec=1,nelec)
         if(ipr.ge.2) write(6,'(''rvec_en'',9d12.5)') ((rvec_en(k,ie,1),k=1,ndim),ie=1,nelec)
         if(ipr.ge.2) write(6,'(''ifr,psid,psij'',i2,9d12.5)') ifr,psid,psij
         if(ipr.ge.2) write(6,'(''ifr,d2d,d2j'',i2,9d12.5)') ifr,d2d,d2j
-        if(ipr.ge.2) write(6,'(''pe,velocity2,d2psi,emaglz,emagsz'',9d12.5)') 
+        if(ipr.ge.2) write(6,'(''pe,velocity2,d2psi,emaglz,emagsz'',9d12.5)')
      &                     pe,pei,velocity2,d2psi,emaglz,emagsz
 
 c calculate local energy. for convenience "magnetic energy" is included in pe.
@@ -303,7 +303,7 @@ c calculate parameter-derivatives of csf_coefs for optimization
               denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)
 c             write(*,*) 'd2deti_det,deti_det,denergy,iparm=' ,d2deti_det(iparm),deti_det(iparm),denergy(iparm),iparm
             else
-              if(nparmot.gt.0) stop 'orbital optimization not possible with nonlocal pseudopotentials yet' 
+              if(nparmot.gt.0) stop 'orbital optimization not possible with nonlocal pseudopotentials yet'
               denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)+dpe(iparm)
 c             write(6,'(''dpe(iparm)='',9d12.5)') dpe(iparm)
             endif

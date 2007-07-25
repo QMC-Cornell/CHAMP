@@ -99,11 +99,11 @@ module deriv_exp_mod
   endif
 
 ! begin
- 
+
 ! allocation
   call alloc ('bas_to_dexp', bas_to_dexp, nbasis)
   call alloc ('is_basis_func_attributed', is_basis_func_attributed, nbasis)
-  
+
   bas_to_dexp (:) = 0
   is_basis_func_attributed (:)= .false.
 
@@ -113,20 +113,20 @@ module deriv_exp_mod
 
 ! to improve
   param_exp_nb = 0
-  
+
   do exp_opt_lab_i = 1, exp_opt_lab_nb
 
     bas_i = exp_opt_lab (exp_opt_lab_i)
-        
+
     if (is_basis_func_attributed (bas_i)) cycle
 
     param_exp_nb = param_exp_nb + 1
     call object_alloc ('dexp_to_bas_nb', dexp_to_bas_nb, param_exp_nb)
     call object_alloc ('dexp_to_bas', dexp_to_bas, param_exp_nb)
     dexp_to_bas_nb (param_exp_nb) = 0
-    
+
     do exp_opt_lab_j = exp_opt_lab_i, exp_opt_lab_nb
-       
+
       bas_j = exp_opt_lab (exp_opt_lab_j)
 
       if (zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
@@ -186,7 +186,7 @@ module deriv_exp_mod
         exp_opt_lab_nb = exp_opt_lab_nb + 1
         call object_alloc ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
         exp_opt_lab (exp_opt_lab_nb) = bas_i
-        exit 
+        exit
       endif
    enddo ! orb_i
   enddo ! bas_i
@@ -346,7 +346,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('dbasis_ovlp_dz', dbasis_ovlp_dz, nbasis, nbasis, param_exp_nb)
-  
+
   dbasis_ovlp_dz (:,:,:) = 0.d0
 
   do bas_i = 1, nbasis
@@ -372,7 +372,7 @@ module deriv_exp_mod
       if (dexp_j /= 0) then
        dbasis_ovlp_dz (bas_i, bas_j, dexp_j) = dbasis_ovlp_dz (bas_i, bas_j, dexp_j) - slater_ovlp (n_i, l_i, m_i, exp_i, n_j+1, l_j, m_j, exp_j)
       endif
-                               
+
     enddo ! bas_j
   enddo ! bas_i
 
@@ -410,7 +410,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('dbasis_ovlp_dz_in_eig_basis', dbasis_ovlp_dz_in_eig_basis, nbasis, nbasis, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
    do bas_i = 1, nbasis
     do bas_j = 1, nbasis
@@ -460,7 +460,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('dbasis_ovlp_m12_dz', dbasis_ovlp_m12_dz, nbasis, nbasis, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
   do bas_i = 1, nbasis
    do bas_j = 1, nbasis
@@ -517,7 +517,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('dphin_dz', dphin_dz, nelec, nbasis)
-  
+
   do dexp_i = 1, param_exp_nb
     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
       bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
@@ -564,7 +564,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('dphin_norm_dz', dphin_norm_dz, nelec, nbasis)
-  
+
   do dexp_i = 1, param_exp_nb
     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
       bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
@@ -609,7 +609,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('dphin_ortho_dz', dphin_ortho_dz, nelec, nbasis, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
      do bas_i = 1, nbasis
       dphin_ortho_dz (1:nelec, bas_i, dexp_i) = 0.d0
@@ -667,7 +667,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('grd_dphin_dz', grd_dphin_dz, ndim, nelec, nbasis)
-  
+
   do dexp_i = 1, param_exp_nb
     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
       bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
@@ -720,7 +720,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('grd_dphin_norm_dz', grd_dphin_norm_dz, ndim, nelec, nbasis)
-  
+
   do dexp_i = 1, param_exp_nb
     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
       bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
@@ -770,12 +770,12 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('grd_dphin_ortho_dz', grd_dphin_ortho_dz, ndim, nelec, nbasis, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
      do bas_i = 1, nbasis
       do elec_i = 1, nelec
         do dim_i = 1, ndim
-          grd_dphin_ortho_dz (dim_i, elec_i, bas_i, dexp_i) = 0.d0 
+          grd_dphin_ortho_dz (dim_i, elec_i, bas_i, dexp_i) = 0.d0
           do bas_k = 1, nbasis
            if (bas_to_dexp (bas_k) == dexp_i) then
            grd_dphin_ortho_dz (dim_i, elec_i, bas_i, dexp_i) =  grd_dphin_ortho_dz (dim_i, elec_i, bas_i, dexp_i) + basis_ovlp_m12 (bas_i, bas_k) * grd_dphin_dz (dim_i, elec_i, bas_k)
@@ -836,7 +836,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('lap_dphin_dz', lap_dphin_dz, nelec, nbasis)
-  
+
   do dexp_i = 1, param_exp_nb
     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
       bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
@@ -848,10 +848,10 @@ module deriv_exp_mod
       do dim_i = 1, ndim
         dotproduct = dotproduct + grd_dist_en (dim_i, elec_i, cent_i) * dphin (dim_i, bas_i, elec_i)
       enddo ! dim_i
-     
+
       lap_dphin_dz (elec_i, bas_i) = - lap_dist_en (elec_i, cent_i) * phin (bas_i, elec_i)          &
                                      - 2.d0 * dotproduct                                            &
-                                     - r_en (elec_i, cent_i) * d2phin (bas_i, elec_i)   
+                                     - r_en (elec_i, cent_i) * d2phin (bas_i, elec_i)
      enddo ! elec_i
 
     enddo ! dexp_to_bas_i
@@ -895,7 +895,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('lap_dphin_norm_dz', lap_dphin_norm_dz, nelec, nbasis)
-  
+
   do dexp_i = 1, param_exp_nb
     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
       bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
@@ -942,7 +942,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('lap_dphin_ortho_dz', lap_dphin_ortho_dz, nelec, nbasis, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
     do bas_i = 1, nbasis
       do elec_i = 1, nelec
@@ -1033,7 +1033,7 @@ module deriv_exp_mod
      enddo ! bas_i
    enddo ! orb_i
   enddo ! dexp_i
-  
+
   case default
    call die (here, 'unknown case >'+trim(basis_functions_varied)+'< for basis_functions_varied.')
   end select
@@ -1075,7 +1075,7 @@ module deriv_exp_mod
 
 ! allocation
   call object_alloc ('grd_dorb_dexp', grd_dorb_dexp, ndim, nelec, orb_occ_last_in_wf_lab, param_exp_nb)
-  
+
   grd_dorb_dexp (:,:,:,:) = 0.d0
 
   select case (trim(basis_functions_varied))
@@ -1202,7 +1202,7 @@ module deriv_exp_mod
   case default
    call die (here, 'unknown case >'+trim(basis_functions_varied)+'< for basis_functions_varied.')
   end select
- 
+
   end subroutine lap_dorb_dexp_bld
 
 ! ==============================================================================
@@ -1250,7 +1250,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('ddet_dexp_unq_up', ddet_dexp_unq_up, ndetup, param_exp_nb)
   call object_alloc ('ddet_dexp_unq_dn', ddet_dexp_unq_dn, ndetdn, param_exp_nb)
@@ -1274,7 +1274,7 @@ module deriv_exp_mod
        factor_up = 0.d0
        do i = 1, nup
         factor_up = factor_up + slater_mat_trans_inv_up (i, col_i, det_unq_up_i) * dorb_dexp (i, orb_i, dexp_i)
-       enddo 
+       enddo
 
        ddet_dexp_col_unq_up (col_i, det_unq_up_i, dexp_i) = factor_up * detu (det_unq_up_i)
        ddet_dexp_unq_up (det_unq_up_i, dexp_i) = ddet_dexp_unq_up (det_unq_up_i, dexp_i) + ddet_dexp_col_unq_up (col_i, det_unq_up_i, dexp_i)
@@ -1293,11 +1293,11 @@ module deriv_exp_mod
 
        orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
        if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
-       
+
        factor_dn = 0.d0
        do i = 1, ndn
         factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_i, det_unq_dn_i) * dorb_dexp (nup + i, orb_i, dexp_i)
-       enddo 
+       enddo
 
        ddet_dexp_col_unq_dn (col_i, det_unq_dn_i, dexp_i) = factor_dn * detd (det_unq_dn_i)
        ddet_dexp_unq_dn (det_unq_dn_i, dexp_i) = ddet_dexp_unq_dn (det_unq_dn_i, dexp_i) + ddet_dexp_col_unq_dn (col_i, det_unq_dn_i, dexp_i)
@@ -1350,11 +1350,11 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('dpsid_exp', dpsid_exp, param_exp_nb)
   call object_alloc ('dpsi_exp', dpsi_exp, param_exp_nb)
-  
+
   dpsid_exp (:) = 0.d0
 
 ! loop over optimized exponents
@@ -1412,10 +1412,10 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('dpsi_lnexp', dpsi_lnexp, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
      bas_i = dexp_to_bas (dexp_i)%row (1)
      dpsi_lnexp (dexp_i) = dpsi_exp (dexp_i) * zex (bas_i, iwf)
@@ -1463,7 +1463,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('slater_mat_exp_trans_inv_up', slater_mat_exp_trans_inv_up, nup, nup, nup, ndetup, param_exp_nb)
   call object_alloc ('slater_mat_exp_trans_inv_dn', slater_mat_exp_trans_inv_dn, ndn, ndn, ndn, ndetdn, param_exp_nb)
@@ -1579,7 +1579,7 @@ module deriv_exp_mod
 !  endif
 !
 !! begin
-!  
+!
 !! allocations
 !  call object_alloc ('slater_mat_exp_trans_inv_up_2', slater_mat_exp_trans_inv_up_2, nup, nup, nup, ndetup, param_exp_nb)
 !  call object_alloc ('slater_mat_exp_trans_inv_dn_2', slater_mat_exp_trans_inv_dn_2, ndn, ndn, ndn, ndetdn, param_exp_nb)
@@ -1619,7 +1619,7 @@ module deriv_exp_mod
 !       call flatten (mat_flat_up (:,:, col_i, det_unq_up_i, dexp_i), slater_mat_exp_trans_up (:,:,col_i, det_unq_up_i, dexp_i), nup, nup)
 !       call matinv (mat_flat_up (:,:, col_i, det_unq_up_i, dexp_i), nup, det)
 !       call unflatten (mat_flat_up (:,:, col_i, det_unq_up_i, dexp_i), slater_mat_exp_trans_inv_up_2 (:,:,col_i, det_unq_up_i, dexp_i), nup, nup)
-!        
+!
 !     enddo ! col_i
 !
 !   enddo ! det_unq_up_i
@@ -1699,7 +1699,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_ddet_dexp_unq_up', grd_ddet_dexp_unq_up, ndim, nup, ndetup, param_exp_nb)
   call object_alloc ('grd_ddet_dexp_unq_dn', grd_ddet_dexp_unq_dn, ndim, ndn, ndetdn, param_exp_nb)
@@ -1712,7 +1712,7 @@ module deriv_exp_mod
 
 !  loop over unique spin-up determinants
    do det_unq_up_i = 1, ndetup
- 
+
 !   loop over dimensions
     do dim_i = 1, ndim
 
@@ -1749,7 +1749,7 @@ module deriv_exp_mod
 
 !  loop over unique spin-dn determinants
    do det_unq_dn_i = 1, ndetdn
- 
+
 !   loop over dimensions
     do dim_i = 1, ndim
 
@@ -1834,7 +1834,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_ddet_dexp_unq_up', lap_ddet_dexp_unq_up, nup, ndetup, param_exp_nb)
   call object_alloc ('lap_ddet_dexp_unq_dn', lap_ddet_dexp_unq_dn, ndn, ndetdn, param_exp_nb)
@@ -1847,7 +1847,7 @@ module deriv_exp_mod
 
 !  loop over unique spin-up determinants
    do det_unq_up_i = 1, ndetup
- 
+
 !    loop over spin-up electrons
      do elec_up_i = 1, nup
 
@@ -1880,7 +1880,7 @@ module deriv_exp_mod
 
 !  loop over unique spin-dn determinants
    do det_unq_dn_i = 1, ndetdn
- 
+
 !    loop over ndn
      do elec_dn_i = 1, ndn
 
@@ -1933,7 +1933,7 @@ module deriv_exp_mod
   integer dim_i
   integer elec_i, elec_up_i, elec_dn_i
   real(dp) coefficient
-   
+
 
 ! header
   if (header_exe) then
@@ -1967,10 +1967,10 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_dpsid_exp_over_dpsid_exp', grd_dpsid_exp_over_dpsid_exp, ndim, nelec, param_exp_nb)
-  
+
   grd_dpsid_exp_over_dpsid_exp (:,:,:) = 0.d0
 
 ! loop over optimized exponents
@@ -2044,7 +2044,7 @@ module deriv_exp_mod
   integer det_unq_up_i, det_unq_dn_i
   integer elec_i, elec_up_i, elec_dn_i
   real(dp) coefficient
-   
+
 
 ! header
   if (header_exe) then
@@ -2077,10 +2077,10 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_dpsid_exp_over_dpsid_exp', lap_dpsid_exp_over_dpsid_exp, nelec, param_exp_nb)
-  
+
   lap_dpsid_exp_over_dpsid_exp (:,:) = 0.d0
 
 ! loop over optimized exponents
@@ -2159,7 +2159,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_ln_dpsid_exp', lap_ln_dpsid_exp, nelec, param_exp_nb)
 
@@ -2202,7 +2202,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('sum_lap_ln_dpsid_exp', sum_lap_ln_dpsid_exp, param_exp_nb)
 
@@ -2245,7 +2245,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_dpsi_exp_over_dpsi_exp', grd_dpsi_exp_over_dpsi_exp, ndim, nelec, param_exp_nb)
 
@@ -2279,7 +2279,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('sum_lap_ln_dpsi_exp', sum_lap_ln_dpsi_exp, param_exp_nb)
 
@@ -2317,7 +2317,7 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('eloc_kin_exp', eloc_kin_exp, param_exp_nb)
 
@@ -2417,11 +2417,11 @@ module deriv_exp_mod
 !  write(6,'(a,100f12.6)') 'dpsi_exp=',dpsi_exp
 !  write(6,'(a,100f12.6)') 'eloc_exp=',eloc_exp
 ! write(6,'(a,100f12.6)') 'deloc_exp=',deloc_exp
-  
+
 !  zex (bas_i, iwf) = zex (bas_i, 1) + 0.0001
 !  call object_modified ('zex')
 !  call distinct_radial_bas
-!  call 
+!  call
 
   end subroutine deloc_exp_bld
 
@@ -2495,10 +2495,10 @@ module deriv_exp_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('deloc_lnexp', deloc_lnexp, param_exp_nb)
-  
+
   do dexp_i = 1, param_exp_nb
      bas_i = dexp_to_bas (dexp_i)%row (1)
      deloc_lnexp (dexp_i) = deloc_exp (dexp_i) * zex (bas_i, iwf)

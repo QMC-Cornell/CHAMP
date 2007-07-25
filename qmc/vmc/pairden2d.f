@@ -1,11 +1,11 @@
       subroutine pairden2d(p,q,xold,xnew)
 
 c Written by A.D.Guclu jun2005.
-c Calculates the full pair-densities reducing the dimensionality 
+c Calculates the full pair-densities reducing the dimensionality
 c by 1 due to circular symmetry (2+1d instead of 2+2d).
 c For the moment does not distinguish between all and 1 electron calculation.
 c The reason is that even when only 1 electron is moved, several of
-c the relative distances changes, making it diffcult to 
+c the relative distances changes, making it diffcult to
 c keep track of all the rotated-relative distances.
 c (not impossible, can be optimized)
 
@@ -55,7 +55,7 @@ c  -old config
             if(iro.le.NAX .and. abs(ix1roto).le.NAX .and. abs(ix2roto).le.NAX) then
               if(ier.le.nup) then
                 xx0probut(iro,ix1roto,ix2roto)=xx0probut(iro,ix1roto,ix2roto)+q
-                if(ie2.le.nup) then 
+                if(ie2.le.nup) then
                   xx0probuu(iro,ix1roto,ix2roto)=xx0probuu(iro,ix1roto,ix2roto)+q
                 else
                   xx0probud(iro,ix1roto,ix2roto)=xx0probud(iro,ix1roto,ix2roto)+q
@@ -102,11 +102,11 @@ c-------------------------------------------------------------------------------
 c rotates (x1,x2) by theta. Result is (xrot1,xrot2)
 
       implicit real*8(a-h,o-z)
-      
+
       thetarot=datan2(x2,x1)-theta
       r=dsqrt(x1*x1+x2*x2)
       xrot1=r*dcos(thetarot)
       xrot2=r*dsin(thetarot)
-      
+
       return
       end

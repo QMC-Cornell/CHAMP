@@ -22,7 +22,7 @@ module main_menu_mod
   integer                             :: position_in_current_line_save
 
   contains
-  
+
 !===========================================================================
   subroutine main_menu
 !---------------------------------------------------------------------------
@@ -32,15 +32,15 @@ module main_menu_mod
 !---------------------------------------------------------------------------
   implicit none
   include 'commons.h'
-  
+
 ! local
   character(len=max_string_len_rout), save  :: lhere = 'main_menu'
   character(len=max_string_len)  :: command
 
 ! begin
-  
+
 ! main menu
-  do 
+  do
 
   call get_next_command (command)
 
@@ -65,7 +65,7 @@ module main_menu_mod
    write(6,'(a)') ' debug ... end: menu for debugging'
    write(6,'(a)') ' statistics ... end: menu for printing timing statistics'
    write(6,*)
-  
+
   case ('test')              ; call testing
   case ('include')           ; call include_menu
   case ('mode')              ; call mode_menu
@@ -238,9 +238,9 @@ module main_menu_mod
     close(unit_input)
     unit_input = 5
   endif
-  
+
   in_include_file = .false.
-  
+
   end subroutine close_include
 
 !===========================================================================
@@ -377,7 +377,7 @@ module main_menu_mod
 !===============================================================================
   subroutine node_info (node_name)
 ! ------------------------------------------------------------------------------
-! Description   : 
+! Description   :
 !
 ! Created       : J. Toulouse, 14 Oct 2005
 ! ------------------------------------------------------------------------------
@@ -397,7 +397,7 @@ module main_menu_mod
       write(6,*) trim(lhere),': entering node ', trim(node_name),' that not catalogued'
       call die (lhere)
    endif
-  
+
    write(6,'(a,a,i3,a,a)') trim(lhere),': node # ', node_ind,': ', trim(node_name)
 
    do obj_i = 1, size(nodes(node_ind)%objects_create_index (:))
@@ -409,14 +409,14 @@ module main_menu_mod
    do obj_i = 1, size(nodes(node_ind)%objects_needed_index (:))
     write(6,'(3a)') trim(lhere),': needed object ', objects (nodes(node_ind)%objects_needed_index (obj_i))%name
    enddo
-   
+
    write(6,*)
 
    write(6,'(a,a,i3)') trim(lhere),': number of calls =',nodes(node_ind)%calls_nb
 
-   
+
    write(6,'(a,a,f)') trim(lhere),': cpu duration =',nodes(node_ind)%cpu_duration
-   
+
    write(6,*) trim(lhere),': cpu duration =', trim(cpu_to_string( nodes(node_ind)%cpu_duration))
 
 

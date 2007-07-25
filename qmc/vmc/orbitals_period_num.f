@@ -76,9 +76,9 @@ c r_basis in line 20 is always between 0 and 1
    10       r_basis(k)=r_basis(k)+rlatt_sim_inv(k,i)*x(i,iel)
           if(rkvec_shift_latt(k).ne.0.d0) then
             if(r_basis(k).ge.0.d0) then
-              isgn=isgn*(-1)**int(r_basis(k)) 
+              isgn=isgn*(-1)**int(r_basis(k))
              else
-              isgn=isgn*(-1)**(int(r_basis(k))+1) 
+              isgn=isgn*(-1)**(int(r_basis(k))+1)
             endif
           endif
           r_basis(k)=r_basis(k)-int(r_basis(k))
@@ -108,11 +108,11 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
             endif
           enddo
         endif
- 
+
 !        if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
 !          do iorb=1,norb
 !
-!cwparker for a given point, r_basis(k), calculate the value of the 
+!cwparker for a given point, r_basis(k), calculate the value of the
 !c	 splines at the point as well as selected derivatives
 !cwparker Compact representation of splines
 !             call r8evtricub(r_basis(1),r_basis(2),r_basis(3),
@@ -120,7 +120,7 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
 !     &                       ngrid_orby,grid_orbz,ngrid_orbz,1,1,1,
 !     &                       orb_splines(1,0,0,0,iorb),ngrid_orby,
 !     &                       ngrid_orbz,ict,orb_splines_tmp,ier)
-! 
+!
 !             if(ier.ne.0) stop 'error in r8evtricub'
 !cwparker Explicit splines
 !c                     call r8tcspeval(r_basis(1),r_basis(2),r_basis(3),
@@ -133,14 +133,14 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
 !
 !c            if(ier.ne.0) stop 'error in r8tcspeval'
 !
-!cwparker the first index of the output array, orb_splines_tmp(1), returns 
+!cwparker the first index of the output array, orb_splines_tmp(1), returns
 !c        the value of the splines at the input point
 !
 !             orb_tmp(iorb)    = orb_splines_tmp(1)
 !
 !cwparker the second, third and fourth indices of the output array,
 !c	 orb_splines_tmp(2), orb_splines_tmp(3), etc. return the
-!c	 x, y and z derivatives, respectively, of the splines at the 
+!c	 x, y and z derivatives, respectively, of the splines at the
 !c	 input point; they must be scaled by the reciprocal simulation
 !c        lattice vectors
 !
@@ -158,7 +158,7 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
 !
 !
 !cwparker the fifth, sixth and seventh indices of the output array,
-!c	 orb_splines_tmp(5), etc. return the second x, y and z 
+!c	 orb_splines_tmp(5), etc. return the second x, y and z
 !c	 derivatives, respectively of the splines at the input point
 !c	 the eighth, ninth and tenth indices of the output array
 !c	 return the mixed derivatives, d2f/dxdy, d2f/dxdz, d2f/dydz
@@ -208,7 +208,7 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
 !c             write(6,'(''r_basis='',3f9.4)')r_basis(1),r_basis(2),
 !c    &                                       r_basis(3)
 !c             write(6,*)'ddorb_splines=',ddorb(iel,iorb)
-!c            endif             
+!c            endif
 !
 !
 !cwparker End of do loop over the orbitals
@@ -222,14 +222,14 @@ cwparker If statment for blips
 
          if(ndet.gt.1) stop 'blip implementation can only handle one det
      &erminant'
-        
+
 cwparker Use x since bwfdet_main converts to crystal lattice units for us
 c	 Pass 1 for iw because we need the wavefunction here
 c	 Pass 1 for igl because we need the gradient and Laplacian here
 c	 Pass 1 for spin because we don't differentiate between spins yet
 
 cwparker Loop over orbitals and set temporary arrays equal to permanent ones
- 
+
              call bwfdet_main(x(:,iel),1,1,1,orb_blip_tmp,dorb_blip_tmp
      &                   ,ddorb_blip_tmp)
 
@@ -247,7 +247,7 @@ cwparker End of if statement for blips
 
 cwparker End of loop over the electrons
       enddo
-      
+
 cwp   write(6,*)'End of orbitals_period_num'
 
       return
@@ -297,7 +297,7 @@ c    &MGRID_ORB_PER-1,MORB_OCC)
 
       dimension x(3),orb(*)
       dimension r_basis(3),ict(10),orb_splines_tmp(10)
- 
+
       dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),
      &     ddorb_blip_tmp(MORB_OCC,MDET)
 
@@ -306,7 +306,7 @@ c Find vector in basis coordinates
 c Note we add 1 to r_basis because interpol_orb expects a positive input
 c r_basis in the line after 10 is between  0 and 1 if r_basis in line 10 is > 0
 c                             but between -1 and 0 if r_basis in line 10 is < 0
-c r_basis in line 20 is always between 0 and 1       
+c r_basis in line 20 is always between 0 and 1
         isgn=1
         do 20 k=1,ndim
           r_basis(k)=0
@@ -319,7 +319,7 @@ c r_basis in line 20 is always between 0 and 1
               isgn=isgn*(-1)**(int(r_basis(k))+1)
             endif
           endif
-          r_basis(k)=r_basis(k)-int(r_basis(k))  
+          r_basis(k)=r_basis(k)-int(r_basis(k))
    20     if(r_basis(k).lt.0.d0) r_basis(k)=r_basis(k)+1
 
       xi=r_basis(1)*ngrid_orbx
@@ -357,7 +357,7 @@ c     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
 !     &                       ,1,1,1,orb_splines(1,0,0,0,iorb),
 !     &                       ngrid_orby,ngrid_orbz,
 !     &                       ict,orb_splines_tmp,ier)
-! 
+!
 !             if(ier.ne.0) stop 'error in r8evtricub'
 !cwparker Explicit representation of splines
 !c                     call r8tcspeval(r_basis(1),r_basis(2),r_basis(3),

@@ -137,7 +137,7 @@ c         endif
    10 continue
 
 c second derivatives involving scalek parameter:
-      if(nparms.eq.1) then 
+      if(nparms.eq.1) then
         iparm=nparmcsf+nparmot+1
         do 12 j=1,nparmj+nparms
           jparm=nparmcsf+nparmot+j
@@ -200,7 +200,7 @@ c swap next 2 lines
    15       continue
           endif
    20 continue
-            
+
       nparm0=nparmcsf+nparmot+npointa(nctype)+nparma(nctype)+nparms
       do 30 isb=1,nspin2b
         if(isb.eq.2) nparm0=nparm0+nparmb(1)
@@ -225,10 +225,10 @@ c swap next 2 lines
    25       continue
           endif
    30 continue
-      
+
 c      do i=1,nparmot
 c        write(*,*) 'i,d2j(i,j,)=',i,(d2j(i,j),j=1,nparmot)
-c      enddo      
+c      enddo
 
 
       return
@@ -266,7 +266,7 @@ c-----------------------------------------------------------------------
       do 10 i=1,nparmj+nparms
         dj_e_b(i)=dj_e(i)-dj_e_save(i)
    10   dj_b(i)=dj(i)-dj_save(i)
- 
+
       e_bsum=e_bsum+enow
       do 20 i=1,nparmj+nparms
         dj_e_bsum(i)=dj_e_bsum(i)+dj_e_b(i)/wsum

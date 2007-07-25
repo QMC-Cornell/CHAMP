@@ -80,7 +80,7 @@ module deriv_orb_mod
   real(dp), allocatable                  :: det_ex_up (:,:)
   real(dp), allocatable                  :: det_ex_dn (:,:)
   real(dp), allocatable                  :: det_ex (:,:)
-  real(dp), allocatable                  :: psid_ex (:) 
+  real(dp), allocatable                  :: psid_ex (:)
   real(dp), allocatable                  :: slater_mat_ex_trans_up (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_dn (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up (:, :, :)
@@ -89,8 +89,8 @@ module deriv_orb_mod
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_2 (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up_3 (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_3 (:,:,:)
-  real(dp), allocatable                  :: mat_flat_up (:,:) 
-  real(dp), allocatable                  :: mat_flat_dn (:,:) 
+  real(dp), allocatable                  :: mat_flat_up (:,:)
+  real(dp), allocatable                  :: mat_flat_dn (:,:)
   real(dp), allocatable                  :: grd_det_ex_unq_dn (:,:,:)
   real(dp), allocatable                  :: grd_det_ex_unq_up (:,:,:)
   real(dp), allocatable                  :: lap_det_ex_unq_dn (:,:)
@@ -114,16 +114,16 @@ module deriv_orb_mod
   real(dp), allocatable                  :: vpsp_ex (:)
   real(dp), allocatable                  :: psid_ex_in_x (:)
   integer                                :: electron
-                                     
+
   real(dp), allocatable                  :: dpsi_orb(:)
   real(dp), allocatable                  :: dpsi_orb_test(:)
-                                     
+
   real(dp), allocatable                  :: deloc_orb (:)
-                                     
+
   real(dp), allocatable                  :: delta_eps (:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine single_ex_wf_bld
 ! ------------------------------------------------------------------------------
@@ -175,12 +175,12 @@ module deriv_orb_mod
 
 ! begin
   write(6,'(a)') 'Constructing list of single orbital excitations based on orbital occupancies alone...'
-  
+
   single_ex_nb = 0
   param_orb_nb = 0
 
 ! single-determinant wave function
-  if (ndet == 1) then 
+  if (ndet == 1) then
 
 ! closed -> open
   do orb_opt_cls_i = 1, orb_opt_cls_nb
@@ -194,7 +194,7 @@ module deriv_orb_mod
        call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
        call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
        call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb             
+       ex_orb_ind (param_orb_nb) = single_ex_nb
        ex_orb_ind_rev (param_orb_nb) = 0
        ex_orb_1st_lab (single_ex_nb) = orb_opt_cls
        ex_orb_2nd_lab (single_ex_nb) = orb_opt_opn
@@ -337,7 +337,7 @@ module deriv_orb_mod
        endif
      enddo ! orb_opt_act_i
   enddo ! orb_opt_act_i
-    
+
   endif
 
   write(6,'(a,i10)') 'Number of single orbital excitations = ', single_ex_nb
@@ -359,7 +359,7 @@ module deriv_orb_mod
 
 ! temporary: call new routine checking for redundancies
   call node_exe ('single_ex_wf_bld_2')
-  
+
   endif
 
  end subroutine single_ex_wf_bld
@@ -432,7 +432,7 @@ module deriv_orb_mod
 ! tenp
    integer ex_j, orb_1st, orb_2nd
    logical ex_found
-   
+
 ! header
   if (header_exe) then
 
@@ -509,7 +509,7 @@ module deriv_orb_mod
   call alloc ('det_ex_cur_orb_lab_srt_up', det_ex_cur_orb_lab_srt_up, nup)
   call alloc ('det_ex_cur_orb_lab_dn', det_ex_cur_orb_lab_dn, ndn)
   call alloc ('det_ex_cur_orb_lab_srt_dn', det_ex_cur_orb_lab_srt_dn, ndn)
-  
+
 ! initializations
   single_ex_nb = 0
   param_orb_nb = 0
@@ -517,10 +517,10 @@ module deriv_orb_mod
 
 ! loops over orbitals
   do orb_opt_i = 1, orb_opt_nb
-   orb_opt_lab_i = orb_opt_lab (orb_opt_i) 
+   orb_opt_lab_i = orb_opt_lab (orb_opt_i)
 
    do orb_opt_j = orb_opt_i+1, orb_opt_nb
-    orb_opt_lab_j = orb_opt_lab (orb_opt_j) 
+    orb_opt_lab_j = orb_opt_lab (orb_opt_j)
 
 !    write(6,'(2a,i4,a,i4)') trim(here),': considering orbital excitation ', orb_opt_lab_i, ' -> ', orb_opt_lab_j
     dpsi_orb_is_zero = .true.
@@ -538,22 +538,22 @@ module deriv_orb_mod
 !   skip obvious redundancies:
 !   skip closed -> closed excitations
     if (orb_cls_in_wf (orb_opt_lab_i) .and. orb_cls_in_wf (orb_opt_lab_j)) then
-      cycle 
+      cycle
     endif
 
 !   skip virtual -> virtual excitations
     if (orb_vir_in_wf (orb_opt_lab_i) .and. orb_vir_in_wf (orb_opt_lab_j)) then
-      cycle 
+      cycle
     endif
 
 !   skip open -> open excitations for single-determinant wave functions
     if (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) then
-      cycle 
+      cycle
     endif
 
 !   skip active -> active excitations for CASSCF wave functions
     if (l_casscf .and. (orb_act_in_wf (orb_opt_lab_i) .and. orb_act_in_wf (orb_opt_lab_j))) then
-      cycle 
+      cycle
     endif
 
 !   loop over the direct excitation i->j and the reverse excitation j->i
@@ -584,7 +584,7 @@ module deriv_orb_mod
 !    write(6,'(2a)') trim(here),': --------------------------------------------------------------------------------------'
 !    write(6,'(2a,i4,a,i4)') trim(here),': considering orbital excitation ', orb_opt_lab_i, ' -> ', orb_opt_lab_j
 
-    
+
 !   construct excitations from ground-state wave-function
     do csf_i = 1, ncsf
 
@@ -600,7 +600,7 @@ module deriv_orb_mod
 
 !      spin-up excited determinants:
 !      if orb_opt_lab_i is occupied in this deterninant and orb_opt_lab_j is not occupied
-       if (elt_in_array (det_unq_orb_lab_srt_up (:, det_unq_up_i), orb_opt_lab_i) .and.  & 
+       if (elt_in_array (det_unq_orb_lab_srt_up (:, det_unq_up_i), orb_opt_lab_i) .and.  &
            .not. elt_in_array (det_unq_orb_lab_srt_up (:, det_unq_up_i), orb_opt_lab_j)) then
 
         csf_ex_unq_is_zero = .false.
@@ -663,7 +663,7 @@ module deriv_orb_mod
 
 !      spin-dn excited determinants:
 !      if orb_opt_lab_i is occupied in this deterninant and orb_opt_lab_j is not occupied
-       if (elt_in_array (det_unq_orb_lab_srt_dn (:, det_unq_dn_i), orb_opt_lab_i) .and.  & 
+       if (elt_in_array (det_unq_orb_lab_srt_dn (:, det_unq_dn_i), orb_opt_lab_i) .and.  &
            .not. elt_in_array (det_unq_orb_lab_srt_dn (:, det_unq_dn_i), orb_opt_lab_j)) then
 
         csf_ex_unq_is_zero = .false.
@@ -743,7 +743,7 @@ module deriv_orb_mod
       call release ('det_unq_up_in_csf_ex_cur', det_unq_up_in_csf_ex_cur)
       call release ('det_unq_dn_in_csf_ex_cur', det_unq_dn_in_csf_ex_cur)
       call release ('cdet_unq_in_csf_ex_cur', cdet_unq_in_csf_ex_cur)
-      
+
       det_unq_in_csf_ex_cur_nb = 1
       call append (det_unq_up_in_csf_ex_cur, det_unq_up_in_csf_ex_cur_temp (1))
       call append (det_unq_dn_in_csf_ex_cur, det_unq_dn_in_csf_ex_cur_temp (1))
@@ -761,7 +761,7 @@ module deriv_orb_mod
          call append (cdet_unq_in_csf_ex_cur, cdet_unq_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i))
         endif
       enddo
-      
+
 
 !     prefactor of csf = coefficient of first determinant
       csf_ex_cur_prefac = cdet_unq_in_csf_ex_cur (1)
@@ -773,7 +773,7 @@ module deriv_orb_mod
 !      write(6,'(2a,100i4)') trim(here),': det_unq_up_in_csf_ex_cur=',det_unq_up_in_csf_ex_cur (:)
 !      write(6,'(2a,100i4)') trim(here),': det_unq_dn_in_csf_ex_cur=',det_unq_dn_in_csf_ex_cur (:)
 !      write(6,'(2a,100f7.3)')  trim(here),': cdet_unq_in_csf_ex_cur=', cdet_unq_in_csf_ex_cur (:)
-      
+
 !     check if current excited csf is a csf in the ground-state wave function
       csf_cur = 0
       do csf_k = 1, ncsf
@@ -799,7 +799,7 @@ module deriv_orb_mod
 !            write(6,'(2a)') trim(here),': excited csf is excited csf already encountered'
          endif
        enddo ! csf_ex_unq_i
-      endif 
+      endif
 
 
 !    if current excited csf is a new excited csf, add it to the list of unique excited csf
@@ -834,7 +834,7 @@ module deriv_orb_mod
      call append (csf_unq_prefac_in_wf_ex_cur, csf_ex_cur_prefac)
      csf_unq_in_wf_ex_cur_nb = mysize (csf_unq_in_wf_ex_cur)
 
-     endif ! if (.not. csf_ex_unq_is_zero) 
+     endif ! if (.not. csf_ex_unq_is_zero)
 
     enddo ! ncsf
 
@@ -853,7 +853,7 @@ module deriv_orb_mod
      ex_cur = 0
      do ex_i = 1, single_ex_nb
       if (arrays_equal (csf_unq_in_wf_ex_cur (:), csf_unq_in_wf_ex (ex_i)%row (:)) .and.            &
-          arrays_equal (csf_unq_ref_in_wf_ex_cur (:), csf_unq_ref_in_wf_ex (ex_i)%row (:)) .and.    & 
+          arrays_equal (csf_unq_ref_in_wf_ex_cur (:), csf_unq_ref_in_wf_ex (ex_i)%row (:)) .and.    &
           arrays_equal (csf_unq_prefac_in_wf_ex_cur (:), csf_unq_prefac_in_wf_ex (ex_i)%row (:))) then
          ex_cur = ex_i
  !        write(6,'(2a)') trim(here), ': singly-excited wave function is a singly-excited wave function already encountered'
@@ -905,7 +905,7 @@ module deriv_orb_mod
         call append (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_wf_ex_cur)
         call append (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_wf_ex_cur)
         csf_unq_in_dpsi_orb_cur_nb = mysize (csf_unq_in_dpsi_orb_cur)
-        
+
         ex_orb_ind_rev_cur = ex_cur
 
       endif ! if (ex_dir_rev == 1)
@@ -918,7 +918,7 @@ module deriv_orb_mod
     endif ! if (.not. ex_is_zero) then
 
     enddo ! ex_dir_rev
-    
+
 
     if (.not. dpsi_orb_is_zero) then
 
@@ -935,7 +935,7 @@ module deriv_orb_mod
     call release ('csf_unq_in_dpsi_orb_cur', csf_unq_in_dpsi_orb_cur)
     call release ('csf_unq_ref_in_dpsi_orb_cur', csf_unq_ref_in_dpsi_orb_cur)
     call release ('csf_unq_prefac_in_dpsi_orb_cur', csf_unq_prefac_in_dpsi_orb_cur)
-    
+
     csf_unq_in_dpsi_orb_cur_nb = 1
     call append (csf_unq_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_temp (1))
     call append (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_dpsi_orb_cur_temp (1))
@@ -953,7 +953,7 @@ module deriv_orb_mod
        call append (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i))
       endif
     enddo
-   
+
 !    write(6,'(2a)') trim(here), ': construct orbital derivative:'
 !    write(6,'(2a,100i4)') trim(here),': csf_unq_in_dpsi_orb_cur=',csf_unq_in_dpsi_orb_cur (:)
 !    write(6,'(2a,100i4)') trim(here),': csf_unq_ref_in_dpsi_orb_cur=',csf_unq_ref_in_dpsi_orb_cur (:)
@@ -974,25 +974,25 @@ module deriv_orb_mod
 
 !   if all csf prefactors of current orbital derivative are zero, this orbital derivative is redundant
     if (csf_unq_in_dpsi_orb_cur_nb == 0.d0) then
-        dpsi_orb_is_redundant = .true. 
+        dpsi_orb_is_redundant = .true.
 !        write(6, '(2a)') trim(here),': orbital derivative is redundant (zero)'
     endif
 
 !   if current orbital derivative is a linear combinaison of optimized ground-state csfs, then
-!   this orbital derivative is redundant. 
+!   this orbital derivative is redundant.
 !   (Even if not optimized, the first csf is also considered as part of the optimization space.
 !   This is necessary so that for a CASSCF wave function all active->active excitations are redundant.
 !   I am sure if one should not include also the first csf is the optimization for this to be really correct,
 !   as for instance danish MCSCF people do).
     if (.not. dpsi_orb_is_redundant .and. l_opt_csf) then
-      dpsi_orb_is_redundant = .true. 
+      dpsi_orb_is_redundant = .true.
       do csf_unq_in_dpsi_orb_cur_i = 1, csf_unq_in_dpsi_orb_cur_nb
         if (.not. (elt_in_array (iwcsf (1:nparmcsf), csf_unq_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_i)) .or. &
-                  csf_unq_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_i) == 1)) then 
+                  csf_unq_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_i) == 1)) then
             dpsi_orb_is_redundant = .false.
             exit
         endif
-      enddo 
+      enddo
       if (dpsi_orb_is_redundant) then
 !        write(6, '(2a)') trim(here),': orbital derivative is redundant with linear combinaison of optimized ground-state csfs'
       endif
@@ -1005,12 +1005,12 @@ module deriv_orb_mod
           (csf_unq_in_dpsi_orb_cur_nb == 1 .or.                                                           &
           (arrays_equal (csf_unq_ref_in_dpsi_orb_cur (:), csf_unq_ref_in_dpsi_orb (dpsi_orb_i)%row (:)) .and.   &
           arrays_equal (csf_unq_prefac_in_dpsi_orb_cur (:), csf_unq_prefac_in_dpsi_orb (dpsi_orb_i)%row (:))))) then
-         dpsi_orb_is_redundant = .true. 
+         dpsi_orb_is_redundant = .true.
 !         write(6, '(2a)') trim(here),': orbital derivative is redundant with another orbital derivative'
       endif
      enddo ! dpsi_orb_i
     endif
-     
+
 !   if current orbital derivative is redundant, remove added unique singly-excited wave functions
     if (dpsi_orb_is_redundant) then
       single_ex_nb = single_ex_nb - single_ex_added_nb
@@ -1089,7 +1089,7 @@ module deriv_orb_mod
 !    endif
 !   enddo
 !   if (.not. ex_found) then
-!    write(6,'(2a,i4,a,i4,a)') trim(here),': excitation ',orb_1st, ' ->', orb_2nd, ' is no longer present'  
+!    write(6,'(2a,i4,a,i4,a)') trim(here),': excitation ',orb_1st, ' ->', orb_2nd, ' is no longer present'
 !   endif
 !  enddo
 
@@ -1155,7 +1155,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('ex_up_is_zero', ex_up_is_zero, single_ex_nb, ndetup)
   call object_alloc ('ex_dn_is_zero', ex_dn_is_zero, single_ex_nb, ndetdn)
@@ -1238,7 +1238,7 @@ module deriv_orb_mod
          det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_1st, det_unq_up_i)
          det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_2nd
        endif
-        
+
      endif
 
      enddo ! det_unq_up_i
@@ -1290,7 +1290,7 @@ module deriv_orb_mod
          det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_1st, det_unq_dn_i)
          det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_2nd
        endif
-        
+
      endif
 
      enddo ! det_unq_dn_i
@@ -1352,7 +1352,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('det_ex_unq_up', det_ex_unq_up, det_ex_unq_up_nb)
   call object_alloc ('det_ex_unq_dn', det_ex_unq_dn, det_ex_unq_dn_nb)
@@ -1363,11 +1363,11 @@ module deriv_orb_mod
       col_up  = det_ex_unq_up_orb_1st_pos (det_ex_unq_up_i)
       orb_up  = det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_i)
       det_unq_ref_up = iwdet_ex_ref_up (det_ex_unq_up_i)
-  
+
       factor_up = 0.d0
       do i = 1, nup
        factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_unq_ref_up) * orb (i, orb_up)
-      enddo 
+      enddo
 
       det_ex_unq_up (det_ex_unq_up_i) = factor_up * detu (det_unq_ref_up)
 
@@ -1383,7 +1383,7 @@ module deriv_orb_mod
       factor_dn = 0.d0
       do i = 1, ndn
        factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_unq_ref_dn) * orb (nup + i, orb_dn)
-      enddo 
+      enddo
 
       det_ex_unq_dn (det_ex_unq_dn_i) = factor_dn * detd (det_unq_ref_dn)
 
@@ -1437,12 +1437,12 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('det_ex_up', det_ex_up, single_ex_nb, ndet)
   call object_alloc ('det_ex_dn', det_ex_dn, single_ex_nb, ndet)
   call object_alloc ('det_ex', det_ex, single_ex_nb, ndet)
-  
+
 ! loop over single orbital excitations
   do ex_i = 1, single_ex_nb
 
@@ -1462,7 +1462,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif (.not. is_det_ex_up (ex_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)       
+         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
          sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
          det_ex_up (ex_i, det_i) = sgn * detu (iwdet)
 
@@ -1482,7 +1482,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif ( .not. is_det_ex_dn (ex_i, det_unq_dn_i) ) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)       
+         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
          sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
          det_ex_dn (ex_i, det_i) = sgn * detu (iwdet)
 
@@ -1544,11 +1544,11 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('psid_ex', psid_ex, param_orb_nb)
   call object_alloc ('dpsi_orb', dpsi_orb, param_orb_nb)
-  
+
   psid_ex = 0.d0
 
   do dorb_i = 1, param_orb_nb
@@ -1563,7 +1563,7 @@ module deriv_orb_mod
         det_i = iwdet_in_csf (det_in_csf_i, csf_i)
 
         det = det_ex (ex_i, det_i)
- 
+
 !       reverse excitation for non casscf wave function
         if (.not. l_casscf .and. ex_rev_i /= 0) then
 !          (Eij-Eji) Det
@@ -1608,7 +1608,7 @@ module deriv_orb_mod
 !     write(6,*) trim(here),': ---------------------------------------------'
 !    stop
 
-!  write(6,*) trim(here),': exiting' 
+!  write(6,*) trim(here),': exiting'
 !  call object_provide ('dpsi_orb_test')
 !  dpsi_orb = dpsi_orb_test !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  call is_equal_or_die (dpsi_orb, dpsi_orb_test, 1.d-8)
@@ -1650,7 +1650,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('slater_mat_ex_trans_up', slater_mat_ex_trans_up, nup, nup, det_ex_unq_up_nb)
   call object_alloc ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn, ndn, ndn, det_ex_unq_dn_nb)
@@ -1698,7 +1698,7 @@ module deriv_orb_mod
 ! tests!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !   call object_provide ('slater_mat_ex_trans_inv_up_2')
 !   call object_provide ('slater_mat_ex_trans_inv_dn_2')
-!   
+!
 !   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_2')
 !   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_2')
 !   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_2, 1.d-5)
@@ -1706,7 +1706,7 @@ module deriv_orb_mod
 !
 !   call object_provide ('slater_mat_ex_trans_inv_up_3')
 !   call object_provide ('slater_mat_ex_trans_inv_dn_3')
-!   
+!
 !   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_3')
 !   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_3')
 !   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_3, 1.d-5)
@@ -1761,22 +1761,22 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('slater_mat_ex_trans_inv_up_2', slater_mat_ex_trans_inv_up_2, nup, nup, det_ex_unq_up_nb)
   call object_alloc ('slater_mat_ex_trans_inv_dn_2', slater_mat_ex_trans_inv_dn_2, ndn, ndn, det_ex_unq_dn_nb)
 
-! spin up 
+! spin up
   do det_up_i = 1, det_ex_unq_up_nb
 
       col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
       orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
       det_ref_up = iwdet_ex_ref_up (det_up_i)
-  
+
       factor_up = 0.d0
       do i = 1, nup
        factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_ref_up) * orb (i, orb_up)
-      enddo 
+      enddo
 
       i = col_up
 
@@ -1800,17 +1800,17 @@ module deriv_orb_mod
 
    enddo ! det_up_i
 
-! spin down 
+! spin down
   do det_dn_i = 1, det_ex_unq_dn_nb
 
       col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
       orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
       det_ref_dn = iwdet_ex_ref_dn (det_dn_i)
-  
+
       factor_dn = 0.d0
       do i = 1, ndn
        factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_ref_dn) * orb (nup + i, orb_dn)
-      enddo 
+      enddo
 
       i = col_dn
 
@@ -1838,7 +1838,7 @@ module deriv_orb_mod
 !  Post-conditions
 !   call object_provide ('slater_mat_ex_trans_inv_up')
 !   call object_provide ('slater_mat_ex_trans_inv_dn')
-   
+
 !   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_2')
 !   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_2')
 !!!   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_2, 1.d-8)
@@ -1891,20 +1891,20 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('slater_mat_ex_trans_inv_up', slater_mat_ex_trans_inv_up, nup, nup, det_ex_unq_up_nb)
   call object_alloc ('slater_mat_ex_trans_inv_dn', slater_mat_ex_trans_inv_dn, ndn, ndn, det_ex_unq_dn_nb)
   call alloc ('ratio_up', ratio_up, nup)
   call alloc ('ratio_dn', ratio_dn, ndn)
 
-! spin up 
+! spin up
   do det_up_i = 1, det_ex_unq_up_nb
 
       col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
       orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
       det_ref_up = iwdet_ex_ref_up (det_up_i)
-  
+
       do l = 1, nup
        ratio_up (l) = 0.d0
        do i = 1, nup
@@ -1924,13 +1924,13 @@ module deriv_orb_mod
 
    enddo ! det_up_i
 
-! spin dn 
+! spin dn
   do det_dn_i = 1, det_ex_unq_dn_nb
 
       col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
       orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
       det_ref_dn = iwdet_ex_ref_dn (det_dn_i)
-  
+
       do l = 1, ndn
        ratio_dn (l) = 0.d0
        do i = 1, ndn
@@ -1953,7 +1953,7 @@ module deriv_orb_mod
 !  Post-conditions
 !   call object_provide ('slater_mat_ex_trans_inv_up')
 !   call object_provide ('slater_mat_ex_trans_inv_dn')
-   
+
 !   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_2')
 !   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_2')
 !!!   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_2, 1.d-8)
@@ -1998,7 +1998,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_det_ex_unq_up', grd_det_ex_unq_up, ndim, nup, det_ex_unq_up_nb)
   call object_alloc ('grd_det_ex_unq_dn', grd_det_ex_unq_dn, ndim, ndn, det_ex_unq_dn_nb)
@@ -2013,7 +2013,7 @@ module deriv_orb_mod
      do j = 1, nup
       grd_det_ex_unq_up (dim_i, i, det_i) = grd_det_ex_unq_up (dim_i, i, det_i)  +  &
         slater_mat_ex_trans_inv_up (i, j, det_i) * dorb (dim_i, i, det_ex_unq_orb_lab_up (j, det_i))
-     enddo 
+     enddo
         grd_det_ex_unq_up (dim_i, i, det_i) = grd_det_ex_unq_up (dim_i, i, det_i) * det_ex_unq_up (det_i)
     enddo
 
@@ -2027,9 +2027,9 @@ module deriv_orb_mod
      do j = 1, ndn
       grd_det_ex_unq_dn (dim_i, i, det_i) = grd_det_ex_unq_dn (dim_i, i, det_i)  +  &
         slater_mat_ex_trans_inv_dn (i, j, det_i) * dorb (dim_i, nup + i, det_ex_unq_orb_lab_dn (j, det_i))
-     enddo 
+     enddo
         grd_det_ex_unq_dn (dim_i, i, det_i) = grd_det_ex_unq_dn (dim_i, i, det_i) * det_ex_unq_dn (det_i)
-    enddo 
+    enddo
    enddo ! dim_i
   enddo ! det_i
 
@@ -2088,7 +2088,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_det_ex_unq_up', lap_det_ex_unq_up, nup, det_ex_unq_up_nb)
   call object_alloc ('lap_det_ex_unq_dn', lap_det_ex_unq_dn, ndn, det_ex_unq_dn_nb)
@@ -2102,9 +2102,9 @@ module deriv_orb_mod
        do j = 1, nup
         lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i)  +  &
           slater_mat_ex_trans_inv_up (i, j, det_i) * ddorb (i, det_ex_unq_orb_lab_up (j, det_i))
-       enddo 
+       enddo
         lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i)  * det_ex_unq_up (det_i)
-      enddo 
+      enddo
     enddo  ! det_i
 
 ! spin down determinants
@@ -2113,9 +2113,9 @@ module deriv_orb_mod
        do j = 1, ndn
         lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  +  &
           slater_mat_ex_trans_inv_dn (i, j, det_i) * ddorb (nup + i, det_ex_unq_orb_lab_dn (j, det_i))
-       enddo 
+       enddo
         lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  * det_ex_unq_dn (det_i)
-      enddo 
+      enddo
     enddo ! det_i
 
   end subroutine lap_det_ex_unq_bld
@@ -2164,7 +2164,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_det_ex_up', grd_det_ex_up, ndim, nup, single_ex_nb, ndet)
   call object_alloc ('grd_det_ex_dn', grd_det_ex_dn, ndim, ndn, single_ex_nb, ndet)
@@ -2187,7 +2187,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif (.not. is_det_ex_up (ex_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)       
+         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
          sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
          grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_unq_up (:,:,iwdet)
 
@@ -2206,7 +2206,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif (.not. is_det_ex_dn (ex_i, det_unq_dn_i)) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)       
+         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
          sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
          grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_unq_dn (:,:,iwdet)
 
@@ -2264,7 +2264,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_det_ex_up', lap_det_ex_up, nup, single_ex_nb, ndet)
   call object_alloc ('lap_det_ex_dn', lap_det_ex_dn, ndn, single_ex_nb, ndet)
@@ -2287,7 +2287,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif (.not. is_det_ex_up (ex_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)       
+         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
          sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
          lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_unq_up (:,iwdet)
 
@@ -2306,7 +2306,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif (.not. is_det_ex_dn (ex_i, det_unq_dn_i)) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)       
+         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
          sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
          lap_det_ex_dn ( :, ex_i, det_i) = sgn * lap_det_unq_dn (:,iwdet)
 
@@ -2375,14 +2375,14 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_psid_ex_over_psid', grd_psid_ex_over_psid, ndim, nelec, param_orb_nb)
 
   grd_psid_ex_over_psid = 0.d0
 
   do dorb_i = 1, param_orb_nb
-   
+
     ex_i = ex_orb_ind (dorb_i)
     ex_rev_i = ex_orb_ind_rev (dorb_i)
 
@@ -2397,7 +2397,7 @@ module deriv_orb_mod
       coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
 
        do dim_i = 1, ndim
-    
+
         elec_i = 0
         do elec_up_i = 1, nup
          elec_i = elec_i + 1
@@ -2432,7 +2432,7 @@ module deriv_orb_mod
 
           grd_psid_ex_over_psid (dim_i, elec_i, dorb_i) = grd_psid_ex_over_psid (dim_i, elec_i, dorb_i) + coefficient * grd_det
         enddo
-    
+
        enddo ! dim_i
 
      enddo ! det_in_csf_i
@@ -2495,7 +2495,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_psid_ex_over_psid', lap_psid_ex_over_psid, nelec, param_orb_nb)
 
@@ -2549,7 +2549,7 @@ module deriv_orb_mod
 
           lap_psid_ex_over_psid (elec_i, dorb_i) = lap_psid_ex_over_psid (elec_i, dorb_i) + coefficient * lap_det
         enddo
-    
+
      enddo ! det_in_csf_i
    enddo ! csf_i
 
@@ -2589,7 +2589,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('lap_lnpsid_ex', lap_lnpsid_ex, nelec, param_orb_nb)
 
@@ -2602,7 +2602,7 @@ module deriv_orb_mod
     lap_lnpsid_ex (elec_i, ex_i) = lap_psid_ex_over_psid (elec_i, ex_i) - sum
    enddo
   enddo
-  
+
  end subroutine lap_lnpsid_ex_bld
 
 ! ==============================================================================
@@ -2632,7 +2632,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('sum_lap_lnpsid_ex', sum_lap_lnpsid_ex, param_orb_nb)
 
@@ -2675,7 +2675,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('grd_psi_ex_over_psi', grd_psi_ex_over_psi, ndim, nelec, param_orb_nb)
 
@@ -2709,7 +2709,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('sum_lap_lnpsi_ex', sum_lap_lnpsi_ex, param_orb_nb)
 
@@ -2747,7 +2747,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('eloc_kin_ex', eloc_kin_ex, param_orb_nb)
 
@@ -2832,14 +2832,14 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('psid_ex_in_x', psid_ex_in_x, param_orb_nb)
 
   psid_ex_in_x = 0.d0
 
   do dorb_i = 1, param_orb_nb
-   
+
    ex_i = ex_orb_ind (dorb_i)
    ex_rev_i = ex_orb_ind_rev (dorb_i)
 
@@ -2864,7 +2864,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif ( .not. is_det_ex_up (ex_i, det_unq_up_i) ) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)       
+         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
          sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
          det_ex_up_in_x = sgn * detn (iwdet)
 
@@ -2917,7 +2917,7 @@ module deriv_orb_mod
                    (det_ex_rev_up_in_x * detd (det_unq_dn_i) + detn(det_unq_up_i) * det_ex_dn (ex_rev_i, det_i))
 
         endif ! if .not. l_cascsf
-   
+
 
 !       electron is spin down
         else
@@ -2930,7 +2930,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif ( .not. is_det_ex_dn (ex_i, det_unq_dn_i) ) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)       
+         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
          sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
          det_ex_dn_in_x = sgn * detn (iwdet)
 
@@ -2960,7 +2960,7 @@ module deriv_orb_mod
 
 !       current excited determinant is a determinant in the ground-state wave function
         elseif ( .not. is_det_ex_dn (ex_rev_i, det_unq_dn_i) ) then
-         iwdet = iwdet_ex_dn (ex_rev_i, det_unq_dn_i)       
+         iwdet = iwdet_ex_dn (ex_rev_i, det_unq_dn_i)
          sgn = det_ex_orb_lab_srt_sgn_dn (ex_rev_i, det_unq_dn_i)
          det_ex_rev_dn_in_x = sgn * detn (iwdet)
 
@@ -3020,7 +3020,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('eloc_pot_nloc_ex', eloc_pot_nloc_ex, param_orb_nb)
 
@@ -3055,7 +3055,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('eloc_pot_ex', eloc_pot_ex, param_orb_nb)
 
@@ -3176,7 +3176,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('delta_eps', delta_eps, param_orb_nb)
 

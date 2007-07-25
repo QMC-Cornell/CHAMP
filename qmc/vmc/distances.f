@@ -52,7 +52,7 @@ c              emag=emag+0.125d0*(bext*r_en(i,ic))**2
 c Contribution from Jellium to the potential energy. A temporary patch which should be more smart? ! RM
             if(nloc.eq.-3) then ! jellium RM
               if(r_en(i,ic).ge.radius_b)then
-                p_bg=-dn_background/r_en(i,ic) 
+                p_bg=-dn_background/r_en(i,ic)
                else
                 p_bg=-0.5d0*(dn_background/radius_b)*(3.d0-(r_en(i,ic)/radius_b)**2)
               endif
@@ -75,7 +75,7 @@ c Calculate e-e inter-particle distances
    29   continue
 
         pe=pe+pe_en+pe_ee !JT
-        pei=pe_ee 
+        pei=pe_ee
 
        else
 
@@ -92,7 +92,7 @@ c     write(6,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,ndim),ij=1,nelec
 
       endif
 
-      eloc_pot_loc = pe 
+      eloc_pot_loc = pe
       call object_modified_by_index (eloc_pot_loc_index)  !JT
       call object_modified_by_index (pe_ee_index)  !JT
       call object_modified_by_index (pe_en_index)  !JT

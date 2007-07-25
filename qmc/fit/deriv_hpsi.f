@@ -80,7 +80,7 @@ c get contribution from jastrow
 c get contribution from determinants
 c   first check if we need to call determinant() or cdeterminant()
       if(isaved.eq.1 .and. nloc.le.0) then
-        idodet=0           
+        idodet=0
        else
         idodet=1
       endif
@@ -190,7 +190,7 @@ c E_L,i = -0.5*(\nabla^2*f_i + 2 grad(f_i).V) + (\hat{V}\psi/psi)_i
 c    &    +g(2,i,iparm)*velocity(2,i)+g(3,i,iparm)*velocity(3,i))
 
       else
-        
+
         if(idodet.eq.1) then
           call determinant(coord,rvec_en,r_en,vd,d2d,div_vd,psid)
          else

@@ -64,7 +64,7 @@ c     character*23 fmt
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /doefp/ nefp
-      common /div_v/ div_vo(MELEC) !!WAS 
+      common /div_v/ div_vo(MELEC) !!WAS
       dimension xstrech(3,MELEC)
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**1.5d0*(two*(one-v*ri)/three+.4d0*v*r2)
@@ -577,8 +577,8 @@ c accept new move with probability p
       if(rannyu(0).lt.p) then
 c move is accepted so update positions etc.
         do 240 i=1,nelec
-!!! 
-         div_vo(i)= div_vn(i)!  WAS 
+!!!
+         div_vo(i)= div_vn(i)!  WAS
 !!!
           rmino(i)=rminn(i)
           nearesto(i)=nearestn(i)
@@ -616,7 +616,7 @@ c       endif
       call object_modified_by_index (denergy_index) !JT
       call object_modified_by_index (vold_index) !JT
       call object_modified_by_index (div_vo_index) !JT
-   
+
       do 380 ifr=1,nforce
         if(ifr.eq.1) then
           esum1s(ifr)=eold(ifr)

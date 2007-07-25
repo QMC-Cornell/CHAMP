@@ -68,7 +68,7 @@ module deriv_mod
   real(dp), allocatable          :: hessian_variance (:,:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine param_nb_bld
 ! ------------------------------------------------------------------------------
@@ -137,13 +137,13 @@ module deriv_mod
 ! Type of each optimized parameter
   call object_alloc ('param_type', param_type, param_nb)
   do param_i = 1, param_nb
-   if (param_i <= nparmcsf) then 
+   if (param_i <= nparmcsf) then
      param_type (param_i) = 'CSF'
-   elseif (param_i <= nparmj) then 
+   elseif (param_i <= nparmj) then
      param_type (param_i) = 'Jastrow'
    elseif (param_i <= param_exp_nb) then
      param_type (param_i) = 'exponent'
-   else 
+   else
      param_type (param_i) = 'orbital'
    endif
   enddo
@@ -153,7 +153,7 @@ module deriv_mod
 ! ==============================================================================
   subroutine dpsi_bld
 ! ------------------------------------------------------------------------------
-! Description   :  Logarithmic derivatives of Psi with respect to 
+! Description   :  Logarithmic derivatives of Psi with respect to
 ! Description   :  all parameters to optimize
 ! Description   :  d ln Psi / d c = (1/Psi) * d Psi / d c
 !
@@ -208,7 +208,7 @@ module deriv_mod
    endif
    shift = shift + param_exp_nb
   endif
-  
+
 ! orbitals contribution
   if (l_opt_orb) then
    call object_provide_by_index (dpsi_bld_index, dpsi_orb_index)
@@ -223,7 +223,7 @@ module deriv_mod
 ! ==============================================================================
   subroutine d2psi_bld
 ! ------------------------------------------------------------------------------
-! Description   :  2nd derivatives of Psi with respect to 
+! Description   :  2nd derivatives of Psi with respect to
 ! Description   :  all parameters to optimize
 ! Description   :  (1/Psi) * d^2 Psi / d c^2
 !
@@ -252,10 +252,10 @@ module deriv_mod
   call object_alloc ('d2psi_av', d2psi_av, param_pairs_nb)
 
   d2psi = 0.d0
-  
+
 ! zero second-order derivatives
   if (.not. l_deriv2nd) then
-   return 
+   return
   endif
 
 
@@ -275,7 +275,7 @@ module deriv_mod
     d2psi (i) = d2psi_jas (iparmj_pair)
    enddo
   endif
-  
+
 ! orbitals contribution
   if (l_opt_exp) then
 !    call die ('d2psi not yet implemented for exponents')
@@ -291,9 +291,9 @@ module deriv_mod
 ! ==============================================================================
   subroutine deloc_bld
 ! ------------------------------------------------------------------------------
-! Description   :  derivative of local energy with respect to 
+! Description   :  derivative of local energy with respect to
 ! Description   :  all parameters to optimize
-! Description   :  d eloc / d c 
+! Description   :  d eloc / d c
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
@@ -482,7 +482,7 @@ module deriv_mod
   endif
 
 ! begin
-  
+
   call object_alloc ('dpsi_dpsi', dpsi_dpsi, param_pairs_nb)
   call object_alloc ('dpsi_dpsi_av', dpsi_dpsi_av, param_pairs_nb)
 
@@ -621,7 +621,7 @@ module deriv_mod
   endif
 
 ! begin
-  
+
   call object_alloc ('dpsi_dpsi_eloc', dpsi_dpsi_eloc, param_pairs_nb)
   call object_alloc ('dpsi_dpsi_eloc_av', dpsi_dpsi_eloc_av, param_pairs_nb)
 
@@ -684,7 +684,7 @@ module deriv_mod
   endif
 
 ! begin
-  
+
   call object_alloc ('dpsi_eloc', dpsi_eloc, param_nb)
   call object_alloc ('dpsi_eloc_av', dpsi_eloc_av, param_nb)
 
@@ -828,7 +828,7 @@ module deriv_mod
   implicit none
   include 'commons.h'
 
-  integer param_i, param_j 
+  integer param_i, param_j
 
 ! header
   if (header_exe) then
@@ -849,8 +849,8 @@ module deriv_mod
   call object_alloc ('deloc_deloc', deloc_deloc, param_pairs_nb)
   call object_alloc ('deloc_deloc_av', deloc_deloc_av, param_pairs_nb)
 
-  do param_i = 1, param_nb 
-   do param_j = param_i, param_nb 
+  do param_i = 1, param_nb
+   do param_j = param_i, param_nb
      deloc_deloc (param_pairs (param_i, param_j)) = deloc (param_i) * deloc (param_j)
    enddo
   enddo
@@ -868,7 +868,7 @@ module deriv_mod
   implicit none
   include 'commons.h'
 
-  integer param_i, param_j 
+  integer param_i, param_j
 
 ! header
   if (header_exe) then
@@ -887,8 +887,8 @@ module deriv_mod
 ! begin
   call object_alloc ('deloc_deloc_c_av', deloc_deloc_c_av, param_nb, param_nb)
 
-  do param_i = 1, param_nb 
-   do param_j = 1, param_nb 
+  do param_i = 1, param_nb
+   do param_j = 1, param_nb
      deloc_deloc_c_av (param_i, param_j) = deloc_deloc_av (param_pairs (param_i, param_j)) - deloc_av (param_i) * deloc_av (param_j)
    enddo
   enddo
@@ -1159,7 +1159,7 @@ module deriv_mod
 
   do param_i = 1, param_nb
     do param_j = 1, param_nb
-      dpsi_deloc_eloc_tc_av (param_i, param_j) =  dpsi_deloc_eloc_av (param_i, param_j) - dpsi_av (param_i) * deloc_eloc_av (param_j) & 
+      dpsi_deloc_eloc_tc_av (param_i, param_j) =  dpsi_deloc_eloc_av (param_i, param_j) - dpsi_av (param_i) * deloc_eloc_av (param_j) &
          - dpsi_eloc_c_av (param_i) * deloc_av (param_j) - dpsi_deloc_c_av (param_i, param_j) * eloc_av
     enddo
   enddo
@@ -1334,7 +1334,7 @@ module deriv_mod
 ! begin
   call object_associate ('gradient_norm', gradient_norm)
   call object_associate ('gradient_norm_err', gradient_norm_err)
-  
+
   gradient_norm = 0.d0
   do i = 1, param_nb
    gradient_norm =  gradient_norm + gradient (i)**2
@@ -1492,13 +1492,13 @@ module deriv_mod
   select case(trim(hessian_variance_type))
    case ('levenberg_marquardt')
     call object_provide_by_index (hessian_variance_bld_index, hessian_variance_lm_index)
-    hessian_variance (:,:) = hessian_variance_lm (:,:) 
+    hessian_variance (:,:) = hessian_variance_lm (:,:)
    case ('levenberg_marquardt_cov')
     call object_provide_by_index (hessian_variance_bld_index, hessian_variance_lmcov_index)
-    hessian_variance (:,:) = hessian_variance_lmcov (:,:) 
+    hessian_variance (:,:) = hessian_variance_lmcov (:,:)
    case ('linear')
     call object_provide_by_index (hessian_variance_bld_index, hessian_variance_lin_index)
-    hessian_variance (:,:) = hessian_variance_lin (:,:) 
+    hessian_variance (:,:) = hessian_variance_lin (:,:)
    case default
     call die (here, 'unknown variance hessian type >'+trim(hessian_variance_type)+'<.')
   end select

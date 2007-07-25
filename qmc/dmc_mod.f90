@@ -1,12 +1,12 @@
 module dmc_mod
 
   use all_tools_mod
-  use control_mod    
-  use montecarlo_mod  
-  use average_mod      
-  use print_mod      
-  use accumulation_mod      
-  use restart_mod      
+  use control_mod
+  use montecarlo_mod
+  use average_mod
+  use print_mod
+  use accumulation_mod
+  use restart_mod
 
 ! Declaration of global variables and default values
 
@@ -128,7 +128,7 @@ module dmc_mod
   real(dp) passes, efin
 
 ! initial printing
-  write(6,*) 
+  write(6,*)
   write(6,'(a)') '*********** START DMC CALCULATION  ***********'
 
 ! initialize sums and averages
@@ -153,7 +153,7 @@ module dmc_mod
   call systemflush(6)
 
 ! Equilibration phase
-  do i = 1, 2*nblkeq      
+  do i = 1, 2*nblkeq
 
      if ((i == nblkeq+1) .and. irstar /= 1) then
         call print_cpu_time_in_seconds ('End        of equilibration')
@@ -179,7 +179,7 @@ module dmc_mod
   enddo ! end of equilibration
 
   call print_cpu_time_in_seconds ('End       of equilibration')
-  write (6,*) 
+  write (6,*)
 
 ! reinitialization of averages
   call zerest_dmc
@@ -190,21 +190,21 @@ module dmc_mod
 
 ! Actual DMC calculation
 ! loop over blocks
-  do i=1,100000000       
-    block_iterations_nb = block_iterations_nb + 1  
+  do i=1,100000000
+    block_iterations_nb = block_iterations_nb + 1
     do j=1,nstep
-      step_iterations_nb = step_iterations_nb + 1   
+      step_iterations_nb = step_iterations_nb + 1
       ipass=ipass+1
       call dmc_algorithm
 
-      call object_modified_by_index (xoldw_index)  
+      call object_modified_by_index (xoldw_index)
 
 !     compute averages
       call acues1_dmc
-      call compute_averages_walk_step 
+      call compute_averages_walk_step
 
 !     walkers reconfiguration
-      call splitj 
+      call splitj
 
 ! Write out configuration for optimization/dmc/gfmc here
 ! We would like to:
@@ -240,31 +240,31 @@ module dmc_mod
          enddo ! j
 
         call acuest_dmc
-        call compute_averages_walk_block 
-        call compute_errors  
+        call compute_averages_walk_block
+        call compute_errors
 
 !       write at each block
         call objects_print_at_each_block
-        call writing_routines 
+        call writing_routines
 
 !        l_end_of_block = .false.
 
 !     exit loop if nblk and threshold on statistical error reached
-      if (i .ge. nblk .and. egerr .gt. 0 .and. egerr .le. error_threshold) then  
-        exit                           
-      endif                           
+      if (i .ge. nblk .and. egerr .gt. 0 .and. egerr .le. error_threshold) then
+        exit
+      endif
 
       enddo ! i
 
       call print_cpu_time_in_seconds ('End       of  accumulation')
-      write (6,*) 
+      write (6,*)
 
 !     reinitilization at the end of MC iterations
       block_nb = block_iterations_nb  !save final block number
-      step_iterations_nb  = 0   
-      block_iterations_nb = 0   
-      call reinit_averages_and_errors 
-      call reinit_writing_routines 
+      step_iterations_nb  = 0
+      block_iterations_nb = 0
+      call reinit_averages_and_errors
+      call reinit_writing_routines
 
       passes=dble(iblk)*dble(nstep)
 !     efin=ecum1/passes

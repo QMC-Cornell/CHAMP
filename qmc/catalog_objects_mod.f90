@@ -7,11 +7,11 @@ module catalog_objects_mod
   use indexes_mod
 
   contains
-  
+
 ! ==============================================================================
   subroutine catalog_objects
 ! ------------------------------------------------------------------------------
-! Description   : pre-catalog some objects often modified to speed up 
+! Description   : pre-catalog some objects often modified to speed up
 !
 ! Created       : J. Toulouse, 05 Feb 2006
 ! ------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ module catalog_objects_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'catalog_objects'
 
-  
+
 ! begin
   call catalog_one_object ('xold', xold_index)
   call catalog_one_object ('xoldw', xoldw_index)
@@ -141,7 +141,7 @@ module catalog_objects_mod
 ! ==============================================================================
   subroutine catalog_one_object (object_name, object_ind)
 ! ------------------------------------------------------------------------------
-! Description   : pre-catalog a object and store its index 
+! Description   : pre-catalog a object and store its index
 !
 ! Created       : J. Toulouse, 05 Feb 2006
 ! ------------------------------------------------------------------------------
@@ -150,7 +150,7 @@ module catalog_objects_mod
 ! i/o
   character(len=*), intent(in) :: object_name
   integer, intent(out) :: object_ind
-  
+
 ! local
   character(len=max_string_len_rout) :: lhere = 'catalog_one_object'
 

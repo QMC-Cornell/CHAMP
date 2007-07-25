@@ -73,7 +73,7 @@ module control_mod
 
 !  case ('nstep_all_cpus')
 !   call get_next_value (l_nstep_all_cpus)
-!   
+!
 !   if (.not. l_nstep_all_cpus) then
 !    nstep = nstep_input
 !    nstep_total = nstep * nproc
@@ -123,7 +123,7 @@ module control_mod
    call get_next_value (proba_hopping_moves)
    call require ('proba_hopping_moves >= 0', proba_hopping_moves >= 0)
    call require ('proba_hopping_moves <= 1', proba_hopping_moves <= 1)
-   if (proba_hopping_moves > 0) then 
+   if (proba_hopping_moves > 0) then
      l_hopping_moves = .true.
      write(6,'(a,f)') 'Hopping moves between atoms will be used in VMC with probability = ',proba_hopping_moves
    endif

@@ -140,7 +140,7 @@ c    &ibcymax,ibczmax
      &       bcymax(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
      &       bczmin(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
      &       bczmax(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB)
- 
+
 c     write(6,*)'rlatt_sim=',((rlatt_sim(k,i),i=1,3),k=1,3)
 c     stop
       write(6,'(/,''Reading in orbitals for periodic system'',/)')
@@ -231,7 +231,7 @@ cwparker Read in Lagrange interpolated numerical orbitals from file
      &status='old',err=10)
           num_orb_exist=1
           read(4) ngrid_orbxf,ngrid_orbyf,ngrid_orbzf
-          if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby 
+          if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby
      &       .or.  ngrid_orbzf.ne.ngrid_orbz) then
             write(6,'(''orbital grids do not match, program, orbitals_nu
      &m:'',3i4,x,3i4)')
@@ -245,7 +245,7 @@ cwparker Read in Lagrange interpolated numerical orbitals from file
      &             ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
 c         read(4) (((((dorb_num(k,iorb,ix,iy,iz),k=1,ndim),iorb=1,norb),
 c    &          ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
-c I break up the loop over k because otherwise the ifort compiler 
+c I break up the loop over k because otherwise the ifort compiler
 c complains that record is too big on reading it back in
           do 9 k=1,3
     9       read(4) ((((dorb_num(k,iorb,ix,iy,iz),iorb=1,norb),ix=0,
@@ -254,7 +254,7 @@ c complains that record is too big on reading it back in
         endif
 
 cwparker Read in spline interpolated numerical orbitals from file
-c
+
 c     if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
 c         open(4,file='orbitals_num.splines',form='unformatted',
 c    &status='old',err=10)
@@ -262,7 +262,7 @@ c         num_orb_exist=1
 c         read(4) ngrid_orbxf,ngrid_orbyf,ngrid_orbzf,norbf
 c         write(6,*) "read in gridsizes,orbitals=",ngrid_orbxf,
 c    &ngrid_orbyf,ngrid_orbzf,norbf
-c         if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby 
+c         if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby
 c    &       .or.  ngrid_orbzf.ne.ngrid_orbz) then
 c           write(6,'(''orbital grid sizes do not match, program, orbita
 c    &ls_num:'',3i4,x,3i4)')
@@ -270,7 +270,7 @@ c    &      ngrid_orbx,ngrid_orby,ngrid_orbz,ngrid_orbxf,ngrid_orbyf,
 c    &      ngrid_orbzf
 c           stop 'orbital grid sizes do not match'
 c         endif
-c         if(norbf.ne.norb) then 
+c         if(norbf.ne.norb) then
 c           write(6,'(''number of orbitals does not match, program, orbi
 c    &tals_num:'',i4,x,i4)')
 c    &      norb,norbf
@@ -286,7 +286,7 @@ c         enddo
 c         do iz=0,ngrid_orbz-1
 c            read(4)grid_orbz(iz)
 c         enddo
-c
+
 !cwparker Read in the values of the grid
 c          do ix=0,ngrid_orbx-1
 c             do iy=0,ngrid_orby-1
@@ -305,12 +305,12 @@ cc    &                                                      iy,iz,iorb)
 cc                           enddo
 cc                        enddo
 cc                     enddo
-c
+
 c                   enddo
 c                enddo
 c             enddo
 c          enddo
-c
+
 c        endif
 
 cwparker Read in B-spline coefficients from file
@@ -450,24 +450,24 @@ cwparker End if block for Lagrange interpolation setup and printout
         endif
 
 cwparker Calculate orbitals on grid points for spline interpolation
-c
+
 c       if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
 c        write(6,*)'Calculating spline coefficients'
 !wparker Set up an evenly spaced grid for the control points in each direction
 !	 with values from 0 to 1
-c
+
 c         do ix=0,ngrid_orbx-1
 c            r_basis(1)=ix/dfloat(ngrid_orbx-1)
 c            grid_orbx(ix)=r_basis(1)
-c
+
 c            do iy=0,ngrid_orby-1
 c               r_basis(2)=iy/dfloat(ngrid_orby-1)
 c               grid_orby(iy)=r_basis(2)
-c
+
 c               do iz=0,ngrid_orbz-1
 c                  r_basis(3)=iz/dfloat(ngrid_orbz-1)
 c                  grid_orbz(iz)=r_basis(3)
-c
+
 !cwparker Convert the current control point, r_basis(i), into Cartesian
 !c        coordinates because the orbitals evaluation routine needs a
 !c        point in Cartesian coordinates
@@ -483,7 +483,7 @@ c                    enddo
 !c        at the current control point
 !
 c                    call orbitals_pw_grade(r,orb,dorb,ddorb)
-c
+
 !cwparker Set the value of the splines function to the values of the
 !c        orbitals at the control point
 !
@@ -493,9 +493,9 @@ c                       orb_splines(1,ix,iy,iz,iorb)=orb(iorb)
 !cwparker Explicit splines
 !c                      orb_splines_explicit(1,1,1,ix,iy,iz,iorb)=
 !c    &                                                         orb(iorb)
- 
+
 !cwparker Set boundary conditions if at a grid point on the boundary
-!c		(i.e. ix = 0 or ngrid_orbx-1, etc.) 
+!c		(i.e. ix = 0 or ngrid_orbx-1, etc.)
 c                      if (ix.eq.0) then
 c                         bcxmin(iy,iz,iorb)=rlatt_sim(1,1)*dorb(1,iorb)
 c    &                                      +rlatt_sim(1,2)*dorb(2,iorb)
@@ -527,7 +527,7 @@ c    &                                      +rlatt_sim(3,2)*dorb(2,iorb)
 c    &                                      +rlatt_sim(3,3)*dorb(3,iorb)
 c                      endif
 c                   enddo
-c
+
 !cwparker End do loops for the grid of control points for the spline
 c               enddo
 c            enddo
@@ -550,7 +550,7 @@ c         enddo
 !
 !cwparker End if block for spline grid setup
 c        endif
-        
+
         if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
           stop 'Blip data must already exist in bwfn.data.'
         endif
@@ -567,7 +567,7 @@ c        ibcimin = 1 are for specified slopes at the boundaries
         elseif(rkvec_shift(1).eq.0.5d0) then
            ibcxmin=1
            ibcxmax=1
-        endif           
+        endif
         if(rkvec_shift(2).eq.0.d0) then
            ibcymin=-1
            ibcymax=0
@@ -592,7 +592,7 @@ c       do i=1,nwk
 c          wk(i)=0.d0
 c       enddo
 c Explicit representation of splines
-c       if(ibczmin.eq.1 .or. ibczmin.eq.2 .or. ibczmax.eq.1 .or. 
+c       if(ibczmin.eq.1 .or. ibczmin.eq.2 .or. ibczmax.eq.1 .or.
 c    &     ibczmax.eq.2) then
 c           nwk=16*ngrid_orbx*ngrid_orby*ngrid_orbz
 c       else
@@ -601,7 +601,7 @@ c    &                                          ngrid_orbz)
 c       endif
 
 c       if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c
+
 !cwparker Make the splines for each orbital, taking the orb_splines array
 !c        made above as the input
 
@@ -646,7 +646,7 @@ c                  write(6,*)'bczmax(0,0,',iorb,'),bczmax(0,n-1,',iorb,'
 c    &)=',bczmax(0,0,iorb),bczmax(0,ngrid_orbz-1,iorb)
 c               endif
 c               write(6,*)'nwk=',nwk
-c
+
 c              call r8mktricubw(grid_orbx,ngrid_orbx,grid_orby,
 c    &                         ngrid_orby,grid_orbz,ngrid_orbz,
 c    &                         orb_splines(1,0,0,0,iorb),
@@ -658,12 +658,12 @@ c    &                         ibcymax,bcymax(0,0,iorb),ngrid_orby,
 c    &                         ibczmin,bczmin(0,0,iorb),
 c    &                         ibczmax,bczmax(0,0,iorb),ngrid_orbz,
 c    &                         wk,nwk,1,1,1,ier)
-c
+
 c              if(ier.ne.0) stop 'error in r8mktricubw'
 c               write(6,*)'orb_splines(1,0,0,0,',iorb,')=',
 c    &orb_splines(1,0,0,0,iorb)
 c               write(6,*)
-c
+
 !cwparker Call for explicit version of splines
 !c             call r8tcspline(grid_orbx,ngrid_orbx,grid_orby,
 !c    &                        ngrid_orby,grid_orbz,ngrid_orbz,
@@ -677,7 +677,7 @@ c
 !c    &                        ibczmax,bczmax(0,0,iorb),ngrid_orbz,
 !c    &                        wk,nwk,1,1,1,ier)
 c         enddo
-c
+
 !cwparker End if block for splines
 c       endif
 
@@ -706,7 +706,7 @@ c       if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
 c         open(4,file='orbitals_num.splines',form='unformatted',
 c    &status='new')
 c         write(4) ngrid_orbx,ngrid_orby,ngrid_orbz,norb
-c
+
 !cwparker Write out the grids
 c         do ix=0,ngrid_orbx-1
 c            write(4)grid_orbx(ix)
@@ -736,12 +736,12 @@ cc    &                                                       iy,iz,iorb)
 cc                           enddo
 cc                        enddo
 cc                     enddo
-c
+
 c                  enddo
 c               enddo
 c            enddo
 c         enddo
-c
+
 c         endif
 
           if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
@@ -1229,7 +1229,7 @@ c combine coefs. of G and -G, whereas QMC code does.
      &,iwctype(MCENT),nctype,ncent
 
       dimension centx(3),gvec_dft(3),gvec_latt(3),rkvec_latt(3)
-     
+
       complex c_complex_tmp
 
 c The current version of PWSCF does not exploit inversion symmetry to make the
@@ -1262,7 +1262,7 @@ c plane wave coefs. are read in, otherwise complex.
 c In orbitals_pw_tm ngvec_dftorb depends on k vector and can be smaller than ngvec_dft.
 c Here it is the same.
       ngvec_dftorb=ngvec_dft
-      
+
       read(30,*)
       do 19 igv=1,ngvec_dft
         read(30,*) (gvec_dft(k),k=1,ndim)
@@ -1803,13 +1803,13 @@ c-----------------------------------------------------------------------
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 c    &,orb_splines(8,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
-c    &MGRID_ORB_PER-1,MORB_OCC) 
+c    &MGRID_ORB_PER-1,MORB_OCC)
 c    &,grid_orbx(0:MGRID_ORB_PER-1),grid_orby(
 c    &0:MGRID_ORB_PER-1),grid_orbz(0:MGRID_ORB_PER-1)
 c    &,orb_splines_explicit(4,4,4,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
 c    &MGRID_ORB_PER-1,MORB_OCC)
 
-      common /periodic2/ rkvec_shift_latt(3) 
+      common /periodic2/ rkvec_shift_latt(3)
 
       dimension r(3),r_basis(3),r_test(3,MGRID_ORB_PER**3)
       dimension orb(MORB_OCC),dorb(3,MORB_OCC),ddorb(MORB_OCC)
@@ -1819,7 +1819,7 @@ c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
       dimension orb_blip_tmp(MORB_OCC,MDET),
      &          dorb_blip_tmp(3,MORB_OCC,MDET),
      &          ddorb_blip_tmp(MORB_OCC,MDET)
-      
+
 
       integer i,k,ix,iy,iz,iorb,ier,isgn,npts,npts_max,xfac,yfac,zfac
 
@@ -1835,17 +1835,17 @@ c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
       npts_max=ngrid_orbx*ngrid_orby*ngrid_orbz
 
       if(npts.gt.npts_max) stop 'npts must be less than MGRID_ORB_PER^3'
-      
+
       if(xfac.ne.0) then
          do i=0,npts-1
             r_test(1,i)=i/dfloat(npts-1)
-            r_test(2,i)=r_test(1,i)*dfloat(yfac)/dfloat(xfac) 
+            r_test(2,i)=r_test(1,i)*dfloat(yfac)/dfloat(xfac)
             r_test(3,i)=r_test(1,i)*dfloat(zfac)/dfloat(xfac)
          enddo
       elseif(yfac.ne.0) then
          do iy=0,npts-1
             r_test(1,i)=0.d0
-            r_test(2,i)=iy/dfloat(npts-1) 
+            r_test(2,i)=iy/dfloat(npts-1)
             r_test(3,i)=r_test(2,i)*dfloat(zfac)/dfloat(yfac)
          enddo
       elseif(zfac.ne.0) then
@@ -1854,7 +1854,7 @@ c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
             r_test(2,i)=0.d0
             r_test(3,i)=i/dfloat(npts-1)
          enddo
-      else 
+      else
          stop '000 is not a valid direction'
       endif
 
@@ -1884,18 +1884,18 @@ c File open
       endif
 
 
- 
+
       do ix=0,npts-1
-         r_basis(1)=r_test(1,ix) 
-         r_basis(2)=r_test(2,ix) 
-         r_basis(3)=r_test(3,ix) 
+         r_basis(1)=r_test(1,ix)
+         r_basis(2)=r_test(2,ix)
+         r_basis(3)=r_test(3,ix)
 
 c        do ix=0,2*(ngrid_orbx)*(ngrid_orbx-1)-2
 c           r_basis(1)=ix/dfloat(2*(ngrid_orbx)*(ngrid_orbx-1)-2)
-c
+
 c           do iy=0,2*(ngrid_orby)*(ngrid_orby-1)-2
 c             r_basis(2)=iy/dfloat(2*(ngrid_orby)*(ngrid_orby-1)-2)
-c
+
 c              do iz=0,2*(ngrid_orbz)*(ngrid_orbz-1)-2
 c                r_basis(3)=iz/dfloat(2*(ngrid_orbz)*(ngrid_orbz-1)-2)
 
@@ -1911,11 +1911,11 @@ c                r_basis(3)=iz/dfloat(2*(ngrid_orbz)*(ngrid_orbz-1)-2)
                  enddo
 
 cwparker Go along the <100> direction
-c                if (iy.eq.0 .and. iz.eq.0) then  
+c                if (iy.eq.0 .and. iz.eq.0) then
 cwparker Go along the <010> direction
-c                if (ix.eq.0 .and. iz.eq.0) then  
+c                if (ix.eq.0 .and. iz.eq.0) then
 cwparker Go along the <001> direction
-c                if (ix.eq.0 .and. iy.eq.0) then  
+c                if (ix.eq.0 .and. iy.eq.0) then
 cwparker Go along the <110> direction
 c                if (ix.eq.iy .and. iz.eq.0) then
 cwparker Go along the <111> direction
@@ -1927,7 +1927,7 @@ c                if (ix.eq.iy .and. iy.eq.iz) then
                           r(k)=r(k)+rlatt_sim(k,i)*r_basis(i)
                        enddo
                     enddo
-   
+
 cwparker Plane wave printout
                  if(inum_orb.eq.0) then
 
@@ -1936,7 +1936,7 @@ cwparker Plane wave printout
                       if(xfac.ne.0) then
 cwparker write statement for xyz directions
                        write(15,'(''r(1),orb('',i2,''),dorb('',i2,''),''
-     &                   ,''ddorb('',i2,'')='',6f14.8)')iorb,iorb,iorb, 
+     &                   ,''ddorb('',i2,'')='',6f14.8)')iorb,iorb,iorb,
      &                   r_basis(1),orb(iorb),dorb(1,iorb),dorb(2,iorb),
      &                   dorb(3,iorb),ddorb(iorb)
                       elseif(yfac.ne.0) then
@@ -1961,9 +1961,9 @@ cwparker Lagrange polynomial printout
                    xi=r_basis(1)*ngrid_orbx
                    yi=r_basis(2)*ngrid_orby
                    zi=r_basis(3)*ngrid_orbz
- 
+
                    call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,
-     &               xi,yi,zi,orb_tmp,dorb_tmp,ddorb_tmp) 
+     &               xi,yi,zi,orb_tmp,dorb_tmp,ddorb_tmp)
 
                    do iorb=1,norb
                       if(xfac.ne.0) then
@@ -2001,7 +2001,7 @@ cwparker Spline printout
 !     &                                ,1,1,1,orb_splines(1,0,0,0,iorb),
 !     &                                ngrid_orby,ngrid_orbz,
 !     &                                ict,orb_splines_tmp,ier)
-! 
+!
 !             if(ier.ne.0) stop 'error in r8evtricub'
 !cwparker Explicit splines
 !c                     call r8tcspeval(r_basis(1),r_basis(2),r_basis(3),
@@ -2011,7 +2011,7 @@ cwparker Spline printout
 !c    &                                orb_splines_explicit(1,1,1,0,0,0,
 !c    &                                                            iorb),
 !c    &                                ngrid_orbx,ngrid_orby,ier)
-!  
+!
 !             if(ier.ne.0) stop 'error in r8tcspeval'
 !
 !             orb_tmp(iorb)    = orb_splines_tmp(1)
@@ -2067,7 +2067,7 @@ cwparker Spline printout
 !                dorb(k,iorb)=dorb_tmp(k,iorb)*isgn
 !             enddo
 !             ddorb(iorb)=ddorb_tmp(iorb)*isgn
-!                   
+!
 !                      if(xfac.ne.0) then
 !cwparker write statement for xyz directions
 !                        write(15,'(''r(1),orb('',i2,''),dorb('',i2,''),
@@ -2131,45 +2131,45 @@ cwparker End of r_test do loop
 
 cwparker End of directional choice (<100>,<010>,<001> or  <110>)
 c              enddo
-c           enddo    
+c           enddo
 c        enddo
 cwparker End of grid do loops
-       
+
 cwparker Close test data file
        close(15)
 
 cwparker Stop with appropriate message
        if(inum_orb.eq.0) then
-         stop 'Done with plane wave printout; see pw_test.data'  
+         stop 'Done with plane wave printout; see pw_test.data'
        endif
        if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
-         stop 'Done with Lagrange printout; see lagrange_test.data'  
+         stop 'Done with Lagrange printout; see lagrange_test.data'
        endif
 c      if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c        stop 'Done with pp-spline prinout; see spline_test.data'  
+c        stop 'Done with pp-spline prinout; see spline_test.data'
 c      endif
        if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
-         stop 'Done with B-spline printout; see blip_test.data'  
+         stop 'Done with B-spline printout; see blip_test.data'
        endif
-         
+
        stop 'No orbital printout made; inum_orb invalid'
- 
+
        return
        end
 
 c-----------------------------------------------------------------------
 c     subroutine energy_test
-c
+
 c     implicit real*8(a-h,o-z)
 c     character*20 fmt
 c     character*16 mode,iorb_format
-c
+
 c     include 'vmc.h'
 c     include 'force.h'
 c     include 'ewald.h'
 c     include 'numorb.h'
 c     parameter(eps=1.d-3)
-c
+
 c     common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 c     common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -2180,7 +2180,7 @@ c     common /contr_names/ iorb_format
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /dorb/ iworbd(MELEC,MDET)
-c
+
 c     common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
 c    &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
 c    &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -2195,17 +2195,17 @@ c    &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 c    &,orb_splines(8,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
 c    &MGRID_ORB_PER-1,MORB_OCC),grid_orbx(0:MGRID_ORB_PER-1),grid_orby(
 c    &0:MGRID_ORB_PER-1),grid_orbz(0:MGRID_ORB_PER-1)
-c
-c     common /periodic2/ rkvec_shift_latt(3) 
-c
+
+c     common /periodic2/ rkvec_shift_latt(3)
+
 c     dimension r(3),r_basis(3)
 c     integer i,k,ix,iy,iz,iorb
-c
-c
+
+
 c     ngrid_orbx=MGRID_ORB_PER
 c     ngrid_orby=MGRID_ORB_PER
 c     ngrid_orbz=MGRID_ORB_PER
-c
+
 c     if(inum_orb.eq.0) then
 c         open(15,file='pw_energy_test.data')
 c     endif
@@ -2218,65 +2218,65 @@ c     endif
 c     if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
 c         open(15,file='blip_energy_test.data')
 c     endif
-c
+
 c        do ix=0,2*(ngrid_orbx)*(ngrid_orbx-1)-2
 c           r_basis(1)=ix/dfloat(2*(ngrid_orbx)*(ngrid_orbx-1)-2)
-c
+
 c           do iy=0,2*(ngrid_orby)*(ngrid_orby-1)-2
 c             r_basis(2)=iy/dfloat(2*(ngrid_orby)*(ngrid_orbx-1)-2)
-c
+
 c              do iz=0,2*(ngrid_orbz)*(ngrid_orbz-1)-2
 c                r_basis(3)=iz/dfloat(2*(ngrid_orbz)*(ngrid_orbz-1)-2)
-c
+
 cwparker Go along the <100> direction
-c                if (iy.eq.0 .and. iz.eq.0) then  
+c                if (iy.eq.0 .and. iz.eq.0) then
 cwparker Go along the <001> direction
-c                if (ix.eq.0 .and. iy.eq.0) then  
+c                if (ix.eq.0 .and. iy.eq.0) then
 cwparker Go along the <110> direction
 c                if (ix.eq.iy .and. iz.eq.0) then
 cwparker Go along the <111> direction
 c                if (ix.eq.iy .and. iy.eq.iz) then
-c
+
 c                   do k=1,ndim
 c                      r(k)=0
 c                      do i=1,ndim
 c                         r(k)=r(k)+rlatt_sim(k,i)*r_basis(i)
 c                      enddo
 c                   enddo
-c  
+
 c                   call hpsi(r,determinant,jastrow,velocity,div_v,
 c    &                        laplacian,potential,eeinteraction,energy,
 c    &                        denergy,ifr)
 c                   write(15,'(''r(1),E,V='',3f9.4)')
 c    &                   r_basis(1),energy,potential
-c
+
 c                endif
 cwparker End of directional choice (<100>,<110> or <100>)
-c
+
 c              enddo
-c           enddo    
+c           enddo
 c        enddo
 cwparker End of grid do loops
-c      
+
 cwparker Close test data file
 c      close(15)
 
 cwparker Stop with appropriate message
 c      if(inum_orb.eq.0) then
-c        stop 'done with plane wave test; see pw_energy_test.data'  
+c        stop 'done with plane wave test; see pw_energy_test.data'
 c      endif
 c      if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
-c        stop 'done with Lagrange test; see lagrange_energy_test.data'  
+c        stop 'done with Lagrange test; see lagrange_energy_test.data'
 c      endif
 c      if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c        stop 'done with spline test; see spline_energy_test.data'  
+c        stop 'done with spline test; see spline_energy_test.data'
 c      endif
 c      if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
-c        stop 'done with blip test; see blip_energy_test.data'  
+c        stop 'done with blip test; see blip_energy_test.data'
 c      endif
-c        
+
 c      stop 'no test done; inum_orb not valid'
-c
+
 c      return
 c      end
 

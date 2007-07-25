@@ -26,7 +26,7 @@ c but take no chance for now
       if(nloc.ne.-1) stop 'nloc must be -1 for quantum dots'
       if(numr.ne.0) stop 'numr must be 0 in read_orb_dot'
       if(inum_orb.ne.0) stop 'inum_orb must be 0 for quantum dots'
-      
+
       if(ibasis.eq.3) then
         call read_orb_dot_fd
       elseif(ibasis.eq.4 .or. ibasis.eq.5) then
@@ -68,7 +68,7 @@ c It serves as a multiplicatif optimization factor for the spring constant.
 
 c read the total number of "quasi-Landau" levels:
       read(5,*) nlandau
-c next nlandau lines to read represent: n #m m1 m2 m3 .... 
+c next nlandau lines to read represent: n #m m1 m2 m3 ....
 c for instance if we want landau levels with in the first LL; m=0,2,3, and
 c in the second LL; m=1,2 then the input file should be:
 c      0 3 0 2 3
@@ -87,7 +87,7 @@ c      1 2 1 2
    10 enddo
       if(icount.ne.nbasis) stop 'nbasis doesnt match the basis set'
       if(ncfmax.gt.MBASIS) stop 'ncfmax.gt.MBASIS. this is a problem in cbasis_fns.f'
-c      if(ncfmax.gt.6 .and. idot.eq.3) 
+c      if(ncfmax.gt.6 .and. idot.eq.3)
       if(ncfmax.gt.6)   ! idot not defined at this point
      &  write(6,'(''WARNING: landau levels 7 and 8 can cause numerical problems in projected cfs'')')
 
@@ -120,7 +120,7 @@ c-----------------------------------------------------------------------
       subroutine read_orb_dot_gauss
 c Written by A.D.Guclu, Apr 2006.
 c Reads in quantum dot orbitals in gaussian basis set
-c the witdh of gaussians is given by zex*we 
+c the witdh of gaussians is given by zex*we
 
       implicit real*8(a-h,o-z)
 
@@ -144,9 +144,9 @@ c the witdh of gaussians is given by zex*we
         endif
       enddo
 
-      if(norb.ne.nbasis) stop 
+      if(norb.ne.nbasis) stop
      &  'norb must be equal to nbasis in read_orb_dot_gauss'
-        
+
 
 c read orbital coefficients
 c      write(6,'(/,(12a10))') (n_fd(j),m_fd(j),j=1,nbasis)
@@ -160,7 +160,7 @@ c      else
         write(6,'(''Assuming basis set=orbitals for 2D-gaussian orbitals'')')
         do 40 iorb=1,norb
           do 30 j=1,nbasis
-            if(iorb.eq.j) then 
+            if(iorb.eq.j) then
               coef(j,iorb,1)=1
             else
               coef(j,iorb,1)=0

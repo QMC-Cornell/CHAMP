@@ -4,15 +4,15 @@ module orbitals_mod
   use basis_mod
 
 ! Declaration of global variables and default values
-  integer                             :: orb_tot_nb 
-                                     
+  integer                             :: orb_tot_nb
+
   logical                             :: l_cusp_en     = .false.
   logical                             :: l_cusp_en_occ = .false.
   logical                             :: l_cusp_en_opt = .false.
   logical                             :: l_approx_orb_rot = .false.
   logical                             :: l_ortho_orb_now = .false.
   logical                             :: l_ortho_orb_opt = .false.
-                                     
+
   integer, allocatable                :: det_unq_orb_lab_srt_up (:,:)
   integer, allocatable                :: det_unq_orb_lab_srt_dn (:,:)
   integer, allocatable                :: det_to_det_unq_up (:)
@@ -23,7 +23,7 @@ module orbitals_mod
   integer                             :: orb_act_in_wf_nb  = 0
   integer                             :: orb_opn_in_wf_nb  = 0
   integer                             :: orb_vir_in_wf_nb  = 0
-                                     
+
   logical, allocatable                :: orb_occ_in_det_unq_up (:,:)
   logical, allocatable                :: orb_occ_in_det_unq_dn (:,:)
   integer, allocatable                :: orb_pos_in_det_unq_up (:,:)
@@ -38,7 +38,7 @@ module orbitals_mod
   integer, allocatable                :: orb_act_in_wf_lab (:)
   integer, allocatable                :: orb_opn_in_wf_lab (:)
   integer, allocatable                :: orb_vir_in_wf_lab (:)
-                                     
+
   integer                             :: orb_opt_nb  = 0
   integer, allocatable                :: orb_opt_lab (:)
   integer                             :: orb_opt_occ_nb  = 0
@@ -87,11 +87,11 @@ module orbitals_mod
   character (len=max_string_len_file) :: file_orbitals_pw_tm_out = 'orbitals_pw_tm.out'
 
   contains
-  
+
 !===========================================================================
   subroutine orbitals_menu
 !---------------------------------------------------------------------------
-! Description : menu for orbitals 
+! Description : menu for orbitals
 !
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
@@ -103,7 +103,7 @@ module orbitals_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
@@ -136,7 +136,7 @@ module orbitals_mod
    call get_next_value (l_ortho_orb_now)
 
   case ('cusp')
-   call orb_cusp_menu 
+   call orb_cusp_menu
 
   case ('opt')
    call orb_opt_lab_rd
@@ -172,17 +172,17 @@ module orbitals_mod
 
   enddo ! end loop over menu lines
 
-! energy-invariant orthonormalization the orbitals 
+! energy-invariant orthonormalization the orbitals
   if (l_ortho_orb_now) then
     call ortho_orb
   endif
 
   end subroutine orbitals_menu
-  
+
 !===========================================================================
   subroutine orb_cusp_menu
 !---------------------------------------------------------------------------
-! Description : menu for e-N cusp on orbitals 
+! Description : menu for e-N cusp on orbitals
 !
 ! Created     : J. Toulouse, 13 Jan 2006
 !---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ module orbitals_mod
   write(6,*) trim(lhere), ': l_cusp_en=', l_cusp_en
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   if(trim(word) == 'help') then
@@ -225,7 +225,7 @@ module orbitals_mod
 
   enddo ! end loop over menu lines
 
-! impose the e-N cusp condition 
+! impose the e-N cusp condition
   write(6,*) trim(lhere), ': call cusp_en_orb'
   call cusp_en_orb
 
@@ -282,7 +282,7 @@ module orbitals_mod
 ! from determinants to unique determinants
   det_to_det_unq_up (1:ndet) = iwdetup (1:ndet)
   det_to_det_unq_dn (1:ndet) = iwdetdn (1:ndet)
-  
+
 ! imposing that the determinants must be given already sorted to avoid taking care of permutations elsewehere
   do det_unq_up_i = 1, ndetup
     if (.not. is_sorted (det_unq_orb_lab_srt_up (:, det_unq_up_i))) then
@@ -532,7 +532,7 @@ module orbitals_mod
   write(6,'(a,i3,a,500i4)') 'There are ', orb_act_in_wf_nb,' active   orbitals of labels:', orb_act_in_wf_lab
   write(6,'(a,i3,a,500i4)') 'There are ', orb_opn_in_wf_nb,' open     orbitals of labels:', orb_opn_in_wf_lab
   write(6,'(a,i3,a,500i4)') 'There are ', orb_vir_in_wf_nb,' virtual  orbitals of labels:', orb_vir_in_wf_lab
-  
+
   if (orb_occ_in_wf_nb <= 0) then
     call die (here, 'number of occupied orbitals ='+ orb_occ_in_wf_nb+' is <= 0')
   endif
@@ -606,7 +606,7 @@ module orbitals_mod
 ! ==============================================================================
   subroutine orb_sym_lab_default_bld
 ! ------------------------------------------------------------------------------
-! Description   : build default orbital symmetry labels (A A A A A A A ...) 
+! Description   : build default orbital symmetry labels (A A A A A A A ...)
 ! Description   : if the actual symmetry labels are not specified in the input
 !
 ! Created       : J. Toulouse, 01 Jan 2006
@@ -634,7 +634,7 @@ module orbitals_mod
 
 ! allocations
   call object_alloc ('orb_sym_lab', orb_sym_lab, orb_tot_nb)
-  
+
   orb_sym_lab (:) = 'A'
 
   write (6,'(2a)') trim(here), ': warning: not using symmetry for orbitals'
@@ -1032,9 +1032,9 @@ module orbitals_mod
 ! allocation
   call object_alloc ('orb_cls_ovlp_eigvec', orb_cls_ovlp_eigvec, orb_cls_in_wf_nb, orb_cls_in_wf_nb)
   call object_alloc ('orb_cls_ovlp_eigval', orb_cls_ovlp_eigval, orb_cls_in_wf_nb)
-  
+
   if (orb_cls_in_wf_nb == 0) return
-  
+
 ! diagonalization
   call eigensystem (orb_cls_ovlp, orb_cls_ovlp_eigvec, orb_cls_ovlp_eigval, orb_cls_in_wf_nb)
 
@@ -1092,9 +1092,9 @@ module orbitals_mod
 ! allocation
   call object_alloc ('orb_act_ovlp_eigvec', orb_act_ovlp_eigvec, orb_act_in_wf_nb, orb_act_in_wf_nb)
   call object_alloc ('orb_act_ovlp_eigval', orb_act_ovlp_eigval, orb_act_in_wf_nb)
-  
+
   if (orb_act_in_wf_nb == 0) return
-  
+
 ! diagonalization
   call eigensystem (orb_act_ovlp, orb_act_ovlp_eigvec, orb_act_ovlp_eigval, orb_act_in_wf_nb)
 
@@ -1154,7 +1154,7 @@ module orbitals_mod
   call object_alloc ('orb_vir_ovlp_eigval', orb_vir_ovlp_eigval, orb_vir_in_wf_nb)
 
   if (orb_vir_in_wf_nb == 0) return
-  
+
 ! diagonalization
   call eigensystem (orb_vir_ovlp, orb_vir_ovlp_eigvec, orb_vir_ovlp_eigval, orb_vir_in_wf_nb)
 
@@ -1211,7 +1211,7 @@ module orbitals_mod
 
 ! allocation
   call object_alloc ('orb_cls_ovlp_m12', orb_cls_ovlp_m12, orb_cls_in_wf_nb, orb_cls_in_wf_nb)
-  
+
   do orb_i = 1, orb_cls_in_wf_nb
    do orb_j = 1, orb_cls_in_wf_nb
      orb_cls_ovlp_m12 (orb_i, orb_j) = 0.d0
@@ -1253,7 +1253,7 @@ module orbitals_mod
 
 ! allocation
   call object_alloc ('orb_act_ovlp_m12', orb_act_ovlp_m12, orb_act_in_wf_nb, orb_act_in_wf_nb)
-  
+
   do orb_i = 1, orb_act_in_wf_nb
    do orb_j = 1, orb_act_in_wf_nb
      orb_act_ovlp_m12 (orb_i, orb_j) = 0.d0
@@ -1295,7 +1295,7 @@ module orbitals_mod
 
 ! allocation
   call object_alloc ('orb_vir_ovlp_m12', orb_vir_ovlp_m12, orb_vir_in_wf_nb, orb_vir_in_wf_nb)
-  
+
   do orb_i = 1, orb_vir_in_wf_nb
    do orb_j = 1, orb_vir_in_wf_nb
      orb_vir_ovlp_m12 (orb_i, orb_j) = 0.d0
@@ -1533,7 +1533,7 @@ module orbitals_mod
    call ortho_orb_act
   endif
   call ortho_orb_vir_to_orb_occ
-  call ortho_orb_vir 
+  call ortho_orb_vir
 
   call coef_orb_on_norm_basis_from_coef (1)
   if (trim(basis_functions_varied) == 'unnormalized') then
@@ -1643,7 +1643,7 @@ module orbitals_mod
   call object_provide ('basis_ovlp_12')
 
   coef_orb_on_ortho_basis (:,:,:) = 0.d0
-  
+
   do orb_i = 1, orb_tot_nb
     do bas_k = 1, nbasis
       do bas_i = 1, nbasis
@@ -1781,7 +1781,7 @@ module orbitals_mod
   endif
 
 ! begin
-  
+
 ! if orb_opt_nb not specified, take all the orbitals
    if (.not. object_valid ('orb_opt_nb')) then
     call object_provide ('orb_tot_nb')
@@ -1796,7 +1796,7 @@ module orbitals_mod
      call die (here)
    endif
 
-!  orbital space for optimization 
+!  orbital space for optimization
    call object_alloc ('orb_opt_lab', orb_opt_lab, orb_opt_nb)
    do orb_i = 1, orb_opt_nb
     orb_opt_lab (orb_i) = orb_i
@@ -1827,7 +1827,7 @@ module orbitals_mod
 ! begin
 
   call get_next_value_list ('orb_ex_forbidden_flat', orb_ex_forbidden_flat, orb_ex_forbidden_flat_nb)
-  
+
   if (mod(orb_ex_forbidden_flat_nb,2) /= 0) then
     write(6,'(2a,i3,a)') trim(lhere),': the card "forbidden_excitations ... end" contains ', orb_ex_forbidden_flat_nb,' elements; it must be even number!'
     call die (lhere)
@@ -1880,7 +1880,7 @@ module orbitals_mod
   endif
 
 ! begin
-  
+
   call object_alloc ('orb_ex_forbidden', orb_ex_forbidden, orb_tot_nb, orb_tot_nb)
 
   orb_ex_forbidden (:,:) = .false.
@@ -2060,7 +2060,7 @@ module orbitals_mod
 
 ! allocations
   call alloc ('is_orb_s', is_orb_s, orb_tot_nb)
-  
+
   call object_provide ('coef')
 
   is_orb_s = .false.
@@ -2198,9 +2198,9 @@ module orbitals_mod
 !
 !! allocations
 !  call object_alloc ('coef_cusp', coef_cusp, nbasis, orb_tot_nb)
-!  
+!
 !  aa1 = a4(1,1,1)
-!  
+!
 !  do orb_i = 1, orb_occ_in_wf_lab_nb
 !
 !   orb_occ = orb_occ_in_wf_lab (orb_i)
@@ -2241,7 +2241,7 @@ module orbitals_mod
   call alloc('diff', diff, ncent*orb_tot_nb)
 
   if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) then
-     if (l_cusp_en) then 
+     if (l_cusp_en) then
        icusp = 1
        if(l_cusp_en_occ) then
         write(6,'(a)') 'imposing e-N cusp conditions on occupied orbitals:'

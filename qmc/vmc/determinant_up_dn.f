@@ -14,7 +14,7 @@ c    &,iwctype(MCENT),nctype,ncent
      &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      
+
       ndetup=0
       ndetdn=0
       if(nup.ge.1) then
@@ -83,7 +83,7 @@ c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !     ndetdn is reset to 1, and the corresponding determinants will just have the value 1
 !     this is useful for orbital optimization
       if (ndetdn .eq. 0) then
-        ndetdn = 1 
+        ndetdn = 1
         write(6,'(a,i1)') 'Warning: no spin-down determinants, but ndetdn is reset to ',ndetdn
       endif
 

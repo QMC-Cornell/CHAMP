@@ -22,7 +22,7 @@ c get basis functions
         call basis_fns(iel,rvec_en,r_en)
        elseif(ndim.eq.2) then
          if(ibasis.eq.1) then
-           call basis_fns_2d(iel,rvec_en,r_en)           
+           call basis_fns_2d(iel,rvec_en,r_en)
          elseif(ibasis.eq.4) then
            call basis_fns_2dgauss(iel,rvec_en,r_en)
          elseif(ibasis.eq.5) then

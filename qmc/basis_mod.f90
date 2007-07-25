@@ -41,7 +41,7 @@ module basis_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
@@ -170,8 +170,8 @@ module basis_mod
      endif
    enddo ! ib
 
-  end subroutine norm_basis_bld    
-  
+  end subroutine norm_basis_bld
+
 ! ==============================================================================
   subroutine phin_norm_bld
 ! ------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ module basis_mod
 
 ! allocation
   call object_alloc ('phin_norm', phin_norm, nelec, nbasis)
-  
+
   do bas_i = 1, nbasis
     phin_norm (1:nelec, bas_i) = norm_basis (bas_i) * phin (bas_i, 1:nelec)
   enddo ! bas_i
@@ -241,7 +241,7 @@ module basis_mod
 
 ! allocation
   call object_alloc ('phin_ortho', phin_ortho, nelec, nbasis)
-  
+
   do bas_i = 1, nbasis
       phin_ortho (1:nelec, bas_i) = 0.d0
     do bas_k = 1, nbasis
@@ -287,7 +287,7 @@ module basis_mod
 
 ! allocation
   call object_alloc ('basis_fns_cent', basis_fns_cent, nbasis)
-  
+
   ib=0
   do ic=1,ncent
      ict=iwctype(ic)
@@ -374,21 +374,21 @@ module basis_mod
        basis_fns_type (bas_i) = trim(basis_fns_type (bas_i))//'g'
      case (5)
        basis_fns_type (bas_i) = trim(basis_fns_type (bas_i))//'h'
-     case default 
+     case default
        call die (here, 'add symbol for angular momentum l_bas ='+l_bas(bas_i)+'.')
      end select
 
 !    add center index
-     if (ncent > 1) then 
+     if (ncent > 1) then
        basis_fns_type (bas_i) = trim(basis_fns_type (bas_i))//'('//trim(string(basis_fns_cent (bas_i)))//')'
      endif
 
   enddo
-  
+
 !  do bas_i = 1, nbasis
 !    write(6,'(a,i3,a,a)') 'bas_i=',bas_i,' basis_fns_type=',trim(basis_fns_type (bas_i))
 !  enddo ! dexp_i
-  
+
   end subroutine basis_fns_type_bld
 
 ! ==============================================================================
@@ -424,7 +424,7 @@ module basis_mod
   do bas_i = 1, nbasis
      basis_fns_name (bas_i) = trim(string2(bas_i))//'_'//trim(basis_fns_type (bas_i))
   enddo
-  
+
   end subroutine basis_fns_name_bld
 
 ! ==============================================================================
@@ -452,7 +452,7 @@ module basis_mod
 ! orthogonality of spherical harmonics
   if (l1 /= l2 .or. m1 /= m2) return
 
-  result = 4.d0 * pi * factorial (n1 + n2) / ( (exp1 + exp2)**(1 + n1 + n2) ) &   ! radial contribution 
+  result = 4.d0 * pi * factorial (n1 + n2) / ( (exp1 + exp2)**(1 + n1 + n2) ) &   ! radial contribution
            * 1.d0 / (sqrt(2.d0 * l1 + 1.d0) * sqrt(2.d0 * l2 + 1.d0))             ! spherical harmonics contribution
 
   return
@@ -506,7 +506,7 @@ module basis_mod
 
 ! allocation
   call object_alloc ('basis_ovlp', basis_ovlp, nbasis, nbasis)
-  
+
   do bas_i = 1, nbasis
     do bas_j = bas_i, nbasis
 
@@ -520,7 +520,7 @@ module basis_mod
       exp_j = zex (bas_j, 1)
 
       basis_ovlp (bas_i, bas_j) = slater_ovlp (n_i, l_i, m_i, exp_i, n_j, l_j, m_j, exp_j)
-                               
+
       basis_ovlp (bas_j, bas_i) = basis_ovlp (bas_i, bas_j)
 
     enddo ! bas_j
@@ -566,7 +566,7 @@ module basis_mod
 ! allocation
   call object_alloc ('basis_ovlp_eigvec', basis_ovlp_eigvec, nbasis, nbasis)
   call object_alloc ('basis_ovlp_eigval', basis_ovlp_eigval, nbasis)
-  
+
   call eigensystem (basis_ovlp, basis_ovlp_eigvec, basis_ovlp_eigval, nbasis)
 
   write(6,'(a)') 'Eigenvalues of overlap matrix of unnormalized basis functions:'
@@ -622,7 +622,7 @@ module basis_mod
 
 ! allocation
   call object_alloc ('basis_ovlp_12', basis_ovlp_12, nbasis, nbasis)
-  
+
   do bas_i = 1, nbasis
    do bas_j = 1, nbasis
      basis_ovlp_12 (bas_i, bas_j) = 0.d0
@@ -664,7 +664,7 @@ module basis_mod
 
 ! allocation
   call object_alloc ('basis_ovlp_m12', basis_ovlp_m12, nbasis, nbasis)
-  
+
   do bas_i = 1, nbasis
    do bas_j = 1, nbasis
      basis_ovlp_m12 (bas_i, bas_j) = 0.d0
@@ -691,7 +691,7 @@ module basis_mod
   if (i < 0) then
     call die ('factorial with negative argument='+i)
   endif
-  
+
   result = 1
 
   do j = 2,i

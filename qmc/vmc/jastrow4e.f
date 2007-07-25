@@ -254,7 +254,7 @@ c       fen=top/bot-asymp_jasa(it,iwf)
 c       feni=topi/bot-boti*top/bot2
         fen=top/bot
         feni=topi/bot2
-          
+
         if(isc.eq.8 .or. isc.eq.10) then
           fen=fen/scalek(iwf)
           feni=feni/scalek(iwf)

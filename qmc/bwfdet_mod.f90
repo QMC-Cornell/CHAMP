@@ -93,7 +93,7 @@ CONTAINS
  read(io,*,end=20,err=30)nbasisbwf                    ; call skip(io,nbasisbwf+9)
  read(io,*,end=20,err=30)nwvec                        ; call skip(io,nwvec+2)
  read(io,*,end=20,err=30)nrbwf(1),nrbwf(2),nrbwf(3)   ; call skip(io,4)
- read(io,*,end=20,err=30)nkvec_bwfdet          
+ read(io,*,end=20,err=30)nkvec_bwfdet
  if(nkvec_bwfdet /= nkvec) then
    write(6,*)'Warning: number of k-vectors in bwfn.data is different than what CHAMP expects'
    write(6,*)'Number of k-points in bwfn.data:',nkvec_bwfdet
@@ -106,8 +106,8 @@ CONTAINS
  num_spins=1 ; if(spin_polarized)num_spins=2
 
  do k=1,nkvec_bwfdet
-  call skip(io,1) 
-  read(io,*,end=20,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2) 
+  call skip(io,1)
+  read(io,*,end=20,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2)
   do ispin=1,num_spins
    do band=1,nband_bwfdet(k,ispin)
     call skip(io,3)
@@ -171,7 +171,7 @@ CONTAINS
 
  gtitle=ltitle ; dtitle=ltitle
 
-! Geometry   
+! Geometry
  read(io,*,err=30)nbasisbwf                                     ; call skip(io,1)
  if(nbasisbwf /= ncent) then
    write(6,*)
@@ -191,9 +191,9 @@ CONTAINS
        call errstop('READBWF','Atom positions differ in input and bwfn.data')
      endif
   enddo
- enddo  
+ enddo
                                                                call skip(io,1)
- read(io,*,err=30)pa1 
+ read(io,*,err=30)pa1
  do j=1,3
     if(rlatt(j,1)-pa1(j) > tolerance) then
       write(6,*)
@@ -205,7 +205,7 @@ CONTAINS
       call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
      endif
  enddo
- read(io,*,err=30)pa2 
+ read(io,*,err=30)pa2
  do j=1,3
     if(rlatt(j,2)-pa2(j) > tolerance) then
       write(6,*)
@@ -232,13 +232,13 @@ CONTAINS
 
 ! G vectors
  read(io,*,err=30)nwvec                                      ; call skip(io,1)
- do ig=1,nwvec            
+ do ig=1,nwvec
   read(io,*,err=30)gvecwf(1,ig),gvecwf(2,ig),gvecwf(3,ig)
  enddo                                                       ; call skip(io,1)
  read(io,*,err=30)nrbwf
                                                                call skip(io,4)
 ! k points, numbers of bands, eigenvalues, orbital coefficients
- read(io,*,err=30)nkvec_bwfdet                                     
+ read(io,*,err=30)nkvec_bwfdet
  do k=1,nkvec_bwfdet
                                                                call skip(io,1)
   read(io,*,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2),kvec_bwfdet(1,k),kvec_bwfdet(2,k),kvec_bwfdet(3,k)
@@ -249,7 +249,7 @@ CONTAINS
       write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rkvec(:,k)
       write(6,'(''K-point in bwfn.data:    '')')
       write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')kvec_bwfdet(:,k)
-   endif 
+   endif
   do ispin=1,num_spins ! 2 if spin_polarized, 1 if not
    do band=1,nband_bwfdet(k,ispin)
                                                                 call skip(io,1)
@@ -274,8 +274,8 @@ CONTAINS
      enddo
     enddo
    enddo ! bands
-  enddo ! spin states     
- enddo ! k 
+  enddo ! spin states
+ enddo ! k
  if(.not.spin_polarized)eigenvalue(:,:,2)=eigenvalue(:,:,1)
  write(6,*)
 
@@ -356,7 +356,7 @@ CONTAINS
   &low2,current2,mean,glatt_sim_inv_squared(3)
  REAL(dp),ALLOCATABLE,DIMENSION(:) :: eigtemp,temp_r,low_array,high_array,d
  REAL(dp),ALLOCATABLE,DIMENSION(:,:) :: pr_lattice,sr_lattice
- COMPLEX(dp),ALLOCATABLE :: sum_orbs(:,:) 
+ COMPLEX(dp),ALLOCATABLE :: sum_orbs(:,:)
  LOGICAL :: metal=.false.
  LOGICAL,ALLOCATABLE :: ltemp(:)
 
@@ -383,9 +383,9 @@ CONTAINS
 
  z=0.d0
  ngpri=1
- glatt_inv_squared(3)=0.d0 
- glatt_inv_squared(2)=0.d0 
- glatt_inv_squared(1)=0.d0 
+ glatt_inv_squared(3)=0.d0
+ glatt_inv_squared(2)=0.d0
+ glatt_inv_squared(1)=0.d0
 
  glatt_inv_squared(3)=sqrt(glatt_inv(1,3)**2+glatt_inv(2,3)**2+ &
                       &glatt_inv(3,3)**2)
@@ -405,8 +405,8 @@ CONTAINS
  r=i/z
  z=r+tolerance
 
-4 i1m=z*glatt_inv_squared(1) 
-  i2m=z*glatt_inv_squared(2) 
+4 i1m=z*glatt_inv_squared(1)
+  i2m=z*glatt_inv_squared(2)
   i3m=z*glatt_inv_squared(3)
  if(((i1m+i1m+1)*(i2m+i2m+1)*(i3m+i3m+1))>=fournum_gp2)goto 5
  i1=i1m ; i2=i2m ; i3=i3m
@@ -435,7 +435,7 @@ CONTAINS
       enddo
    enddo
  enddo
- 
+
  do l=1,n
    d(l)=temp_i(l)
    temp_r(l)=0.d0
@@ -456,15 +456,15 @@ CONTAINS
    d(l)=temp_r(m-2)**2+temp_r(m-1)**2+temp_r(m)**2
  enddo
  jmax=min(n,lsize-1)
- 
+
 !sort the temp_r vectors by their squared length d
  call gvsort(d,vector_index,low_array,high_array,istart_array,&
             &nentry_array,jm,n,jmax,tolerance)
- 
+
  pr_lattice=0.d0
  do m=1,jmax
    j=vector_index(m)
-   n=ngpri+1  
+   n=ngpri+1
    ngpri=ngpri+2
    j=j*3-3
    do i=1,3
@@ -487,9 +487,9 @@ CONTAINS
  if(ialloc/=0)call errstop('READBWF','Lattice array allocation problem')
 
  ngpri=1
- glatt_sim_inv_squared(3)=0.d0 
- glatt_sim_inv_squared(2)=0.d0 
- glatt_sim_inv_squared(1)=0.d0 
+ glatt_sim_inv_squared(3)=0.d0
+ glatt_sim_inv_squared(2)=0.d0
+ glatt_sim_inv_squared(1)=0.d0
 
  glatt_sim_inv_squared(3)=sqrt(glatt_sim_inv(1,3)**2+glatt_sim_inv(2,3)**2+ &
                           &glatt_sim_inv(3,3)**2)
@@ -508,9 +508,9 @@ CONTAINS
  i=(i-1)/2
  r=i/z
  z=r+tolerance
- 
-8 i1m=z*glatt_sim_inv_squared(1) 
-  i2m=z*glatt_sim_inv_squared(2) 
+
+8 i1m=z*glatt_sim_inv_squared(1)
+  i2m=z*glatt_sim_inv_squared(2)
   i3m=z*glatt_sim_inv_squared(3)
  if(((i1m+i1m+1)*(i2m+i2m+1)*(i3m+i3m+1))>=fournum_gp2)goto 9
  i1=i1m ; i2=i2m ; i3=i3m
@@ -539,7 +539,7 @@ CONTAINS
       enddo
    enddo
  enddo
- 
+
 
  do l=1,n
    d(l)=temp_i(l)
@@ -569,7 +569,7 @@ CONTAINS
  sr_lattice=0.d0
  do m=1,jmax
    j=vector_index(m)
-   n=ngpri+1  
+   n=ngpri+1
    ngpri=ngpri+2
    j=j*3-3
    do i=1,3
@@ -609,7 +609,7 @@ CONTAINS
 ! Zero excited state stuff
  iprom_repl_idx=0 ; iadd_idx=0 ; isub_idx=0
 
-! Do we have different orbitals for different spins (num_spins=2) or 
+! Do we have different orbitals for different spins (num_spins=2) or
 ! not (num_spins=1)?
  num_spins=1 ; if(spin_polarized)num_spins=2
 
@@ -619,29 +619,29 @@ CONTAINS
 ! give the right energy when integrated.
 
 ! Conditions:
-! (1) When reduced into the supercell Brillouin zone, the primitive cell 
+! (1) When reduced into the supercell Brillouin zone, the primitive cell
 !     k points map onto a unique single k_s vector which may be (0,0,0) or any
 !     G_s/2 vector.
 ! (2) For non-equivalent k points (i.e. points not separated by a reciprocal
 !     lattice vector) then it is allowed to have data both at +k and -k
-!     in the pwfn.data file. However, one of these will be selected    
+!     in the pwfn.data file. However, one of these will be selected
 !     at random and two states will be created from the real and imaginary
-!     parts of the data for that k point, and its paired k will be ignored. 
+!     parts of the data for that k point, and its paired k will be ignored.
 !     It is therefore encouraged that only 1 k point per pair is present.
 
-! Flag the unnecessary k points we don't need because they are part 
-! of a k=k'+G pair 
+! Flag the unnecessary k points we don't need because they are part
+! of a k=k'+G pair
  lkcalc(:)=.true.
  lkpair(:)=.false.
- do ik=1,nkvec_bwfdet 
+ do ik=1,nkvec_bwfdet
   if(lkcalc(ik))then
-aloop: do jk=ik+1,nkvec_bwfdet 
+aloop: do jk=ik+1,nkvec_bwfdet
     ksum(1:3)=kvec_bwfdet(1:3,ik)+kvec_bwfdet(1:3,jk)
     do ig=1,num_g
      if(abs(ksum(1)-pr_lattice(1,ig))<tolerance.and.&
       &abs(ksum(2)-pr_lattice(2,ig))<tolerance.and.&
       &abs(ksum(3)-pr_lattice(3,ig))<tolerance)then
-      lkcalc(jk)=.false. 
+      lkcalc(jk)=.false.
       lkpair(ik)=.true. ; lkpair(jk)=.true.
       exit aloop
      endif
@@ -657,13 +657,13 @@ aloop: do jk=ik+1,nkvec_bwfdet
 ! Flag the k points where +k and -k are equivalent (i.e. they differ by
 ! a primitive cell reciprocal lattive vector.)
 !
-! These are important because we can only create one state from combining 
+! These are important because we can only create one state from combining
 ! Psi and Psi*, and we may thus choose the real or imaginary part according
 ! to our whim.
 !
 ! An important complication is that such orbitals may be pure real everywhere,
 ! pure imaginary everywhere, or complex (unlike orbitals whose k is not
-! equivalent to its -k, which cannot be pure real or pure imaginary 
+! equivalent to its -k, which cannot be pure real or pure imaginary
 ! everywhere). It is thus important that we don't e.g. take the
 ! real bit if the orbital is pure imaginary (see later)
 !
@@ -675,18 +675,18 @@ aloop: do jk=ik+1,nkvec_bwfdet
     if(abs(ksum(1)-pr_lattice(1,ig))<tolerance.and.&
      &abs(ksum(2)-pr_lattice(2,ig))<tolerance.and.&
      &abs(ksum(3)-pr_lattice(3,ig))<tolerance)then
-     lkedge(ik)=.true. 
+     lkedge(ik)=.true.
      exit
     endif
    enddo ! G
   endif
- enddo ! k 
+ enddo ! k
 
-! Sort out which states to occupy with electrons (i.e. the nele(spin) states 
+! Sort out which states to occupy with electrons (i.e. the nele(spin) states
 ! with the lowest eigenvalues for each spin.)
 
  i=max(sum(nband_bwfdet(:,1)),sum(nband_bwfdet(:,2)))
- allocate(eigtemp(i),kcheck(i),indx(i),stat=ialloc) 
+ allocate(eigtemp(i),kcheck(i),indx(i),stat=ialloc)
  if(ialloc/=0)call errstop('BWFDET_SETUP','EIGTEMP allocation.')
 
 !we have only two possible spins in CHAMP
@@ -698,18 +698,18 @@ aloop: do jk=ik+1,nkvec_bwfdet
 
  do ispin=1,num_spins
   if(nele(ispin)==0)cycle
-  nstates=0 
+  nstates=0
   do ik=1,nkvec_bwfdet
    if(lkcalc(ik))then
     do iband=1,nband_bwfdet(ik,ispin)
      nstates=nstates+1
      eigtemp(nstates)=eigenvalue(iband,ik,ispin)
-     kcheck(nstates)=ik 
+     kcheck(nstates)=ik
     enddo
    endif
   enddo
 
-  call indexx(eigtemp(1:nstates),indx(1:nstates)) ! creates index table in 
+  call indexx(eigtemp(1:nstates),indx(1:nstates)) ! creates index table in
                                                   ! indx array
 
 ! Add up the number of states at each k that are among the nele(spin) lowest
@@ -735,8 +735,8 @@ aloop: do jk=ik+1,nkvec_bwfdet
      &Fermi level. Multideterminant calculation probably advisable.')
    endif
   endif
- 
- enddo ! num_spins 
+
+ enddo ! num_spins
 
  if(.not.spin_polarized)boccband(:,2)=boccband(:,1)
 
@@ -767,12 +767,12 @@ s:do ispin=1,num_spins
     enddo
    else
     write(6,*)'Number of singly-occupied bands filled at each k point : '
-    write(6,*)'UP SPIN'      
+    write(6,*)'UP SPIN'
     write(6,*)'    k    nband_bwfdet'
     do ik=1,nkvec_bwfdet
      write(6,'(1x,a,1x,a)')trim(i2s(ik)),trim(i2s(boccband(ik,1)))
     enddo
-    write(6,*)'DOWN SPIN'      
+    write(6,*)'DOWN SPIN'
     write(6,*)'    k    nband_bwfdet'
     do ik=1,nkvec_bwfdet
      write(6,'(1x,a,1x,a)')trim(i2s(ik)),trim(i2s(boccband(ik,2)))
@@ -797,7 +797,7 @@ s:do ispin=1,num_spins
 ! An important complication with orbitals whose k is on the Brillouin zone
 ! edge is that such orbitals may be pure real everywhere, pure
 ! imaginary everywhere, or complex (unlike orbitals whose k is not
-! equivalent to its -k, which cannot be pure real or pure imaginary 
+! equivalent to its -k, which cannot be pure real or pure imaginary
 ! everywhere). It is thus important that we don't e.g. take the
 ! real bit if the orbital is pure imaginary (see later)
 !
@@ -839,7 +839,7 @@ s:do ispin=1,num_spins
   endif
 
 ! Generate potential k_s vector from each k point in pwfn.data
- kvec2=1.d5      
+ kvec2=1.d5
  ltemp=.true.
  do jk=1,nkvec_bwfdet
 bloop:do ik=1,num_g
@@ -851,19 +851,19 @@ bloop:do ik=1,num_g
     &abs(temp3-anint(temp3))<tolerance)then ! i.e. if projections are integer
     ltemp(jk)=.false.
     kvec2(1:3,jk)=0.5*sr_lattice(1:3,ik)
-    exit bloop   
+    exit bloop
    endif
   enddo bloop
- enddo 
- 
+ enddo
+
  k_s=kvec2(1:3,1)
 
  if(am_master)then
 
-! Complain if no unique k_s 
+! Complain if no unique k_s
   do ik=2,nkvec_bwfdet
    if(abs(k_s(1)-kvec2(1,ik))>tolerance.or.abs(k_s(2)-kvec2(2,ik))>tolerance.or. &
-    &abs(k_s(3)-kvec2(3,ik))>tolerance)then    
+    &abs(k_s(3)-kvec2(3,ik))>tolerance)then
     write(6,*)'Primitive cell reciprocal lattice vectors: (au)'
     write(6,'(a,f16.10,1x,f16.10,1x,f16.10)')'pb1',pb1(1:3)
     write(6,'(a,f16.10,1x,f16.10,1x,f16.10)')'pb2',pb2(1:3)
@@ -922,13 +922,13 @@ bloop:do ik=1,num_g
 ! Check number of orbitals and supposed number of electrons match
 !
 ! eff_nele=0
-! do ispin=1,nspin           
+! do ispin=1,nspin
 !  do ik=1,nkvec_bwfdet
 !   if(lkcalc(ik))then
 !    if(lkedge(ik))then
 !     eff_nele(ispin)=eff_nele(ispin)+boccband(ik,ispin)
 !    else
-!     eff_nele(ispin)=eff_nele(ispin)+boccband(ik,ispin)*2    
+!     eff_nele(ispin)=eff_nele(ispin)+boccband(ik,ispin)*2
 !    endif
 !   endif
 !  enddo ! k
@@ -1072,13 +1072,13 @@ bloop:do ik=1,num_g
    grad(:,:,idet)=grad(:,:,1) ; lap(:,idet)=lap(:,1)
   endif
  enddo ! dets
-       
+
  END SUBROUTINE bwfdet_main
 
 
  SUBROUTINE blip3d(rpsi,lap,grad,r,avc,nrbwf,bg,iw,igl,boccband,nemax,nkvec_bwfdet,      &
   &maxband,use_real_part)
-!---------------------------------------------------------------------------! 
+!---------------------------------------------------------------------------!
 ! This subroutine evaluates the value of a function, its gradient and its   !
 ! Laplacian at a vector point r, using the overlapping of blip functions.   !
 ! The blip grid is defined on a cubic cell, so r should always be given in  !
@@ -1092,7 +1092,7 @@ bloop:do ik=1,num_g
 !  bg(3,3)              the reciprocal lattice vectors (in a.u./tpi)        !
 !                                                                           !
 ! DA 3.2001                                                                 !
-!---------------------------------------------------------------------------! 
+!---------------------------------------------------------------------------!
 
  IMPLICIT NONE
  INTEGER,INTENT(in) :: iw,igl,nemax,nkvec_bwfdet,maxband
@@ -1107,17 +1107,17 @@ bloop:do ik=1,num_g
  COMPLEX(dp) :: avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),d1(16),rdum,  &
   &ldum,gdum(3)
  LOGICAL use_real_part(maxband,nkvec_bwfdet)
- 
+
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
  iy=int(mod(r(2)+abs(int(r(2)))+1,1.d0)*nrbwf(2))
  iz=int(mod(r(3)+abs(int(r(3)))+1,1.d0)*nrbwf(3))
-  
+
  if(ix<0.or.iy<0.or.iz<0)call errstop('BLIP3D','Negative index found.')
 
-! The blips are defined as the product of one-dimensional cubic splines, These 
-! are different from zero only on four adjacent grid points.  It follows that 
-! for any vector r there are only 64 overlapping three-dimensional blips, which 
-! are the product of all possible combinations of the three one-dimensional 
+! The blips are defined as the product of one-dimensional cubic splines, These
+! are different from zero only on four adjacent grid points.  It follows that
+! for any vector r there are only 64 overlapping three-dimensional blips, which
+! are the product of all possible combinations of the three one-dimensional
 ! splines.
 
 ! These are the extra 3 coefficients for each dimension needed
@@ -1137,14 +1137,14 @@ bloop:do ik=1,num_g
 ! Now calculate the 12 monodimensional blip functions
  t=mod(r+abs(int(r))+1,1.d0)*nrbwf
  t=mod(t,dble(nrbwf))
- 
+
  x=t(1)-ix+1.d0
- txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x  
+ txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
  if(igl==1)then
   dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
   d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
  endif
- x=t(1)-ix 
+ x=t(1)-ix
  tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
  if(igl==1)then
   dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
@@ -1162,14 +1162,14 @@ bloop:do ik=1,num_g
   dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
   d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
  endif
- 
+
  y=t(2)-iy+1.d0
- tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y  
+ tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
  if(igl==1)then
   dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
   d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
  endif
- y=t(2)-iy 
+ y=t(2)-iy
  ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
  if(igl==1)then
   dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
@@ -1187,14 +1187,14 @@ bloop:do ik=1,num_g
   dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
   d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
  endif
- 
+
  z=t(3)-iz+1.d0
- tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z  
+ tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
  if(igl==1)then
   dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
   d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
  endif
- z=t(3)-iz 
+ z=t(3)-iz
  tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
  if(igl==1)then
   dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
@@ -1216,49 +1216,49 @@ bloop:do ik=1,num_g
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
  b(3)=(bg(1,3)**2+bg(2,3)**2+bg(3,3)**2)
- b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2)) 
- b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3)) 
- b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1)) 
+ b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2))
+ b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3))
+ b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1))
 
  idum=0
  do ik=1,nkvec_bwfdet
   if(lkcalc(ik))then
-   do ib=1,boccband(ik)   
+   do ib=1,boccband(ik)
     d1(1)=avc(ix,iy,iz,ib,ik)*tz+avc(ix,iy,izp,ib,ik)*tzp+                     &
-         avc(ix,iy,izpp,ib,ik)*tzpp+avc(ix,iy,izm,ib,ik)*tzm 
+         avc(ix,iy,izpp,ib,ik)*tzpp+avc(ix,iy,izm,ib,ik)*tzm
     d1(2)=avc(ix,iyp,iz,ib,ik)*tz+avc(ix,iyp,izp,ib,ik)*tzp+                   &
-         avc(ix,iyp,izpp,ib,ik)*tzpp+avc(ix,iyp,izm,ib,ik)*tzm 
+         avc(ix,iyp,izpp,ib,ik)*tzpp+avc(ix,iyp,izm,ib,ik)*tzm
     d1(3)=avc(ix,iypp,iz,ib,ik)*tz+avc(ix,iypp,izp,ib,ik)*tzp+                 &
-         avc(ix,iypp,izpp,ib,ik)*tzpp+avc(ix,iypp,izm,ib,ik)*tzm 
+         avc(ix,iypp,izpp,ib,ik)*tzpp+avc(ix,iypp,izm,ib,ik)*tzm
     d1(4)=avc(ix,iym,iz,ib,ik)*tz+avc(ix,iym,izp,ib,ik)*tzp+                   &
-         avc(ix,iym,izpp,ib,ik)*tzpp+avc(ix,iym,izm,ib,ik)*tzm 
+         avc(ix,iym,izpp,ib,ik)*tzpp+avc(ix,iym,izm,ib,ik)*tzm
 
     d1(5)=avc(ixp,iy,iz,ib,ik)*tz+avc(ixp,iy,izp,ib,ik)*tzp                    &
-         +avc(ixp,iy,izpp,ib,ik)*tzpp+avc(ixp,iy,izm,ib,ik)*tzm 
+         +avc(ixp,iy,izpp,ib,ik)*tzpp+avc(ixp,iy,izm,ib,ik)*tzm
     d1(6)=avc(ixp,iyp,iz,ib,ik)*tz+avc(ixp,iyp,izp,ib,ik)*tzp                  &
-         +avc(ixp,iyp,izpp,ib,ik)*tzpp+avc(ixp,iyp,izm,ib,ik)*tzm 
+         +avc(ixp,iyp,izpp,ib,ik)*tzpp+avc(ixp,iyp,izm,ib,ik)*tzm
     d1(7)=avc(ixp,iypp,iz,ib,ik)*tz+avc(ixp,iypp,izp,ib,ik)*tzp                &
-         +avc(ixp,iypp,izpp,ib,ik)*tzpp+avc(ixp,iypp,izm,ib,ik)*tzm 
+         +avc(ixp,iypp,izpp,ib,ik)*tzpp+avc(ixp,iypp,izm,ib,ik)*tzm
     d1(8)=avc(ixp,iym,iz,ib,ik)*tz+avc(ixp,iym,izp,ib,ik)*tzp                  &
-         +avc(ixp,iym,izpp,ib,ik)*tzpp+avc(ixp,iym,izm,ib,ik)*tzm 
+         +avc(ixp,iym,izpp,ib,ik)*tzpp+avc(ixp,iym,izm,ib,ik)*tzm
 
     d1(9)=avc(ixpp,iy,iz,ib,ik)*tz+avc(ixpp,iy,izp,ib,ik)*tzp                  &
-         +avc(ixpp,iy,izpp,ib,ik)*tzpp+avc(ixpp,iy,izm,ib,ik)*tzm 
+         +avc(ixpp,iy,izpp,ib,ik)*tzpp+avc(ixpp,iy,izm,ib,ik)*tzm
     d1(10)=avc(ixpp,iyp,iz,ib,ik)*tz+avc(ixpp,iyp,izp,ib,ik)*tzp               &
-         +avc(ixpp,iyp,izpp,ib,ik)*tzpp+avc(ixpp,iyp,izm,ib,ik)*tzm 
+         +avc(ixpp,iyp,izpp,ib,ik)*tzpp+avc(ixpp,iyp,izm,ib,ik)*tzm
     d1(11)=avc(ixpp,iypp,iz,ib,ik)*tz+avc(ixpp,iypp,izp,ib,ik)*tzp             &
-         +avc(ixpp,iypp,izpp,ib,ik)*tzpp+avc(ixpp,iypp,izm,ib,ik)*tzm 
+         +avc(ixpp,iypp,izpp,ib,ik)*tzpp+avc(ixpp,iypp,izm,ib,ik)*tzm
     d1(12)=avc(ixpp,iym,iz,ib,ik)*tz+avc(ixpp,iym,izp,ib,ik)*tzp               &
-         +avc(ixpp,iym,izpp,ib,ik)*tzpp+avc(ixpp,iym,izm,ib,ik)*tzm 
+         +avc(ixpp,iym,izpp,ib,ik)*tzpp+avc(ixpp,iym,izm,ib,ik)*tzm
 
     d1(13)=avc(ixm,iy,iz,ib,ik)*tz+avc(ixm,iy,izp,ib,ik)*tzp                   &
-         +avc(ixm,iy,izpp,ib,ik)*tzpp+avc(ixm,iy,izm,ib,ik)*tzm 
+         +avc(ixm,iy,izpp,ib,ik)*tzpp+avc(ixm,iy,izm,ib,ik)*tzm
     d1(14)=avc(ixm,iyp,iz,ib,ik)*tz+avc(ixm,iyp,izp,ib,ik)*tzp                 &
-         +avc(ixm,iyp,izpp,ib,ik)*tzpp+avc(ixm,iyp,izm,ib,ik)*tzm 
+         +avc(ixm,iyp,izpp,ib,ik)*tzpp+avc(ixm,iyp,izm,ib,ik)*tzm
     d1(15)=avc(ixm,iypp,iz,ib,ik)*tz+avc(ixm,iypp,izp,ib,ik)*tzp               &
-         +avc(ixm,iypp,izpp,ib,ik)*tzpp+avc(ixm,iypp,izm,ib,ik)*tzm 
+         +avc(ixm,iypp,izpp,ib,ik)*tzpp+avc(ixm,iypp,izm,ib,ik)*tzm
     d1(16)=avc(ixm,iym,iz,ib,ik)*tz+avc(ixm,iym,izp,ib,ik)*tzp                 &
-         +avc(ixm,iym,izpp,ib,ik)*tzpp+avc(ixm,iym,izm,ib,ik)*tzm 
+         +avc(ixm,iym,izpp,ib,ik)*tzpp+avc(ixm,iym,izm,ib,ik)*tzm
 
 ! The function
     rdum=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ      &
@@ -1308,40 +1308,40 @@ bloop:do ik=1,num_g
 
 ! And now the third term of the laplacian involving Theta''(z)
      d1(1)=avc(ix,iy,iz,ib,ik)*d2tz+avc(ix,iy,izp,ib,ik)*d2tzp+                &
-          avc(ix,iy,izpp,ib,ik)*d2tzpp+avc(ix,iy,izm,ib,ik)*d2tzm 
+          avc(ix,iy,izpp,ib,ik)*d2tzpp+avc(ix,iy,izm,ib,ik)*d2tzm
      d1(2)=avc(ix,iyp,iz,ib,ik)*d2tz+avc(ix,iyp,izp,ib,ik)*d2tzp+              &
-          avc(ix,iyp,izpp,ib,ik)*d2tzpp+avc(ix,iyp,izm,ib,ik)*d2tzm 
+          avc(ix,iyp,izpp,ib,ik)*d2tzpp+avc(ix,iyp,izm,ib,ik)*d2tzm
      d1(3)=avc(ix,iypp,iz,ib,ik)*d2tz+avc(ix,iypp,izp,ib,ik)*d2tzp+            &
-          avc(ix,iypp,izpp,ib,ik)*d2tzpp+avc(ix,iypp,izm,ib,ik)*d2tzm 
+          avc(ix,iypp,izpp,ib,ik)*d2tzpp+avc(ix,iypp,izm,ib,ik)*d2tzm
      d1(4)=avc(ix,iym,iz,ib,ik)*d2tz+avc(ix,iym,izp,ib,ik)*d2tzp+              &
-          avc(ix,iym,izpp,ib,ik)*d2tzpp+avc(ix,iym,izm,ib,ik)*d2tzm 
+          avc(ix,iym,izpp,ib,ik)*d2tzpp+avc(ix,iym,izm,ib,ik)*d2tzm
 
      d1(5)=avc(ixp,iy,iz,ib,ik)*d2tz+avc(ixp,iy,izp,ib,ik)*d2tzp+              &
-          avc(ixp,iy,izpp,ib,ik)*d2tzpp+avc(ixp,iy,izm,ib,ik)*d2tzm 
+          avc(ixp,iy,izpp,ib,ik)*d2tzpp+avc(ixp,iy,izm,ib,ik)*d2tzm
      d1(6)=avc(ixp,iyp,iz,ib,ik)*d2tz+avc(ixp,iyp,izp,ib,ik)*d2tzp+            &
-          avc(ixp,iyp,izpp,ib,ik)*d2tzpp+avc(ixp,iyp,izm,ib,ik)*d2tzm 
+          avc(ixp,iyp,izpp,ib,ik)*d2tzpp+avc(ixp,iyp,izm,ib,ik)*d2tzm
      d1(7)=avc(ixp,iypp,iz,ib,ik)*d2tz+avc(ixp,iypp,izp,ib,ik)*d2tzp+          &
-          avc(ixp,iypp,izpp,ib,ik)*d2tzpp+avc(ixp, iypp, izm,ib,ik)*d2tzm 
+          avc(ixp,iypp,izpp,ib,ik)*d2tzpp+avc(ixp, iypp, izm,ib,ik)*d2tzm
      d1(8)=avc(ixp,iym,iz,ib,ik)*d2tz+avc(ixp,iym,izp,ib,ik)*d2tzp+            &
-          avc(ixp,iym,izpp,ib,ik)*d2tzpp+avc(ixp,iym,izm,ib,ik)*d2tzm 
+          avc(ixp,iym,izpp,ib,ik)*d2tzpp+avc(ixp,iym,izm,ib,ik)*d2tzm
 
      d1(9)=avc(ixpp,iy,iz,ib,ik)*d2tz+avc(ixpp,iy,izp,ib,ik)*d2tzp+            &
-          avc(ixpp,iy,izpp,ib,ik)*d2tzpp+avc(ixpp,iy,izm,ib,ik)*d2tzm 
+          avc(ixpp,iy,izpp,ib,ik)*d2tzpp+avc(ixpp,iy,izm,ib,ik)*d2tzm
      d1(10)=avc(ixpp,iyp,iz,ib,ik)*d2tz+avc(ixpp,iyp,izp,ib,ik)*d2tzp+         &
-          avc(ixpp,iyp,izpp,ib,ik)*d2tzpp+avc(ixpp,iyp,izm,ib,ik)*d2tzm 
+          avc(ixpp,iyp,izpp,ib,ik)*d2tzpp+avc(ixpp,iyp,izm,ib,ik)*d2tzm
      d1(11)=avc(ixpp,iypp,iz,ib,ik)*d2tz+avc(ixpp,iypp,izp,ib,ik)*d2tzp+       &
-          avc(ixpp,iypp,izpp,ib,ik)*d2tzpp+avc(ixpp,iypp,izm,ib,ik)*d2tzm 
+          avc(ixpp,iypp,izpp,ib,ik)*d2tzpp+avc(ixpp,iypp,izm,ib,ik)*d2tzm
      d1(12)=avc(ixpp,iym,iz,ib,ik)*d2tz+avc(ixpp,iym,izp,ib,ik)*d2tzp+         &
-          avc(ixpp,iym,izpp,ib,ik)*d2tzpp+avc(ixpp,iym,izm,ib,ik)*d2tzm 
+          avc(ixpp,iym,izpp,ib,ik)*d2tzpp+avc(ixpp,iym,izm,ib,ik)*d2tzm
 
      d1(13)=avc(ixm,iy,iz,ib,ik)*d2tz+avc(ixm,iy,izp,ib,ik)*d2tzp+             &
-          avc(ixm,iy,izpp,ib,ik)*d2tzpp+avc(ixm,iy,izm,ib,ik)*d2tzm 
+          avc(ixm,iy,izpp,ib,ik)*d2tzpp+avc(ixm,iy,izm,ib,ik)*d2tzm
      d1(14)=avc(ixm,iyp,iz,ib,ik)*d2tz+avc(ixm,iyp,izp,ib,ik)*d2tzp+           &
-          avc(ixm,iyp,izpp,ib,ik)*d2tzpp+avc(ixm,iyp,izm,ib,ik)*d2tzm 
+          avc(ixm,iyp,izpp,ib,ik)*d2tzpp+avc(ixm,iyp,izm,ib,ik)*d2tzm
      d1(15)=avc(ixm,iypp,iz,ib,ik)*d2tz+avc(ixm,iypp,izp,ib,ik)*d2tzp+         &
-          avc(ixm,iypp,izpp,ib,ik)*d2tzpp+avc(ixm,iypp,izm,ib,ik)*d2tzm 
+          avc(ixm,iypp,izpp,ib,ik)*d2tzpp+avc(ixm,iypp,izm,ib,ik)*d2tzm
      d1(16)=avc(ixm,iym,iz,ib,ik)*d2tz+avc(ixm,iym,izp,ib,ik)*d2tzp+           &
-          avc(ixm,iym,izpp,ib,ik)*d2tzpp+avc(ixm,iym,izm,ib,ik)*d2tzm 
+          avc(ixm,iym,izpp,ib,ik)*d2tzpp+avc(ixm,iym,izm,ib,ik)*d2tzm
 
 ! Theta''(z)
      ldum=ldum+((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*  &
@@ -1351,40 +1351,40 @@ bloop:do ik=1,num_g
 
 ! And the third term of the gradient involving Theta'(z)
      d1(1)=avc(ix,iy,iz,ib,ik)*dtz+avc(ix,iy,izp,ib,ik)*dtzp+                  &
-          avc(ix,iy,izpp,ib,ik)*dtzpp+avc(ix, iy, izm,ib,ik)*dtzm 
+          avc(ix,iy,izpp,ib,ik)*dtzpp+avc(ix, iy, izm,ib,ik)*dtzm
      d1(2)=avc(ix,iyp,iz,ib,ik)*dtz+avc(ix,iyp,izp,ib,ik)*dtzp+                &
-          avc(ix,iyp,izpp,ib,ik)*dtzpp+avc(ix,iyp,izm,ib,ik)*dtzm 
+          avc(ix,iyp,izpp,ib,ik)*dtzpp+avc(ix,iyp,izm,ib,ik)*dtzm
      d1(3)=avc(ix,iypp,iz,ib,ik)*dtz+avc(ix,iypp,izp,ib,ik)*dtzp+              &
-          avc(ix,iypp,izpp,ib,ik)*dtzpp+avc(ix,iypp,izm,ib,ik)*dtzm 
+          avc(ix,iypp,izpp,ib,ik)*dtzpp+avc(ix,iypp,izm,ib,ik)*dtzm
      d1(4)=avc(ix,iym,iz,ib,ik)*dtz+avc(ix,iym,izp,ib,ik)*dtzp+                &
-          avc(ix,iym,izpp,ib,ik)*dtzpp+avc(ix,iym,izm,ib,ik)*dtzm 
+          avc(ix,iym,izpp,ib,ik)*dtzpp+avc(ix,iym,izm,ib,ik)*dtzm
 
      d1(5)=avc(ixp,iy,iz,ib,ik)*dtz+avc(ixp,iy,izp,ib,ik)*dtzp+                &
-          avc(ixp,iy,izpp,ib,ik)*dtzpp+avc(ixp,iy,izm,ib,ik)*dtzm 
+          avc(ixp,iy,izpp,ib,ik)*dtzpp+avc(ixp,iy,izm,ib,ik)*dtzm
      d1(6)=avc(ixp,iyp,iz,ib,ik)*dtz+avc(ixp,iyp,izp,ib,ik)*dtzp+              &
-          avc(ixp,iyp,izpp,ib,ik)*dtzpp+avc(ixp,iyp,izm,ib,ik)*dtzm 
+          avc(ixp,iyp,izpp,ib,ik)*dtzpp+avc(ixp,iyp,izm,ib,ik)*dtzm
      d1(7)=avc(ixp,iypp,iz,ib,ik)*dtz+avc(ixp,iypp,izp,ib,ik)*dtzp+            &
-          avc(ixp,iypp,izpp,ib,ik)*dtzpp+avc(ixp,iypp,izm,ib,ik)*dtzm 
+          avc(ixp,iypp,izpp,ib,ik)*dtzpp+avc(ixp,iypp,izm,ib,ik)*dtzm
      d1(8)=avc(ixp,iym,iz,ib,ik)*dtz+avc(ixp,iym,izp,ib,ik)*dtzp+              &
-          avc(ixp,iym,izpp,ib,ik)*dtzpp+avc(ixp,iym,izm,ib,ik)*dtzm 
+          avc(ixp,iym,izpp,ib,ik)*dtzpp+avc(ixp,iym,izm,ib,ik)*dtzm
 
      d1(9)=avc(ixpp,iy,iz,ib,ik)*dtz+avc(ixpp,iy,izp,ib,ik)*dtzp+              &
-          avc(ixpp,iy,izpp,ib,ik)*dtzpp+avc(ixpp,iy,izm,ib,ik)*dtzm 
+          avc(ixpp,iy,izpp,ib,ik)*dtzpp+avc(ixpp,iy,izm,ib,ik)*dtzm
      d1(10)=avc(ixpp,iyp,iz,ib,ik)*dtz+avc(ixpp,iyp,izp,ib,ik)*dtzp+           &
-          avc(ixpp,iyp,izpp,ib,ik)*dtzpp+avc(ixpp,iyp,izm,ib,ik)*dtzm 
+          avc(ixpp,iyp,izpp,ib,ik)*dtzpp+avc(ixpp,iyp,izm,ib,ik)*dtzm
      d1(11)=avc(ixpp,iypp,iz,ib,ik)*dtz+avc(ixpp,iypp,izp,ib,ik)*dtzp+         &
-          avc(ixpp,iypp,izpp,ib,ik)*dtzpp+avc(ixpp,iypp,izm,ib,ik)*dtzm 
+          avc(ixpp,iypp,izpp,ib,ik)*dtzpp+avc(ixpp,iypp,izm,ib,ik)*dtzm
      d1(12)=avc(ixpp,iym,iz,ib,ik)*dtz+avc(ixpp,iym,izp,ib,ik)*dtzp+           &
-          avc(ixpp,iym,izpp,ib,ik)*dtzpp+avc(ixpp,iym,izm,ib,ik)*dtzm 
+          avc(ixpp,iym,izpp,ib,ik)*dtzpp+avc(ixpp,iym,izm,ib,ik)*dtzm
 
      d1(13)=avc(ixm,iy,iz,ib,ik)*dtz+avc(ixm,iy,izp,ib,ik)*dtzp+               &
-          avc(ixm,iy,izpp,ib,ik)*dtzpp+avc(ixm,iy,izm,ib,ik)*dtzm 
+          avc(ixm,iy,izpp,ib,ik)*dtzpp+avc(ixm,iy,izm,ib,ik)*dtzm
      d1(14)=avc(ixm,iyp,iz,ib,ik)*dtz+avc(ixm,iyp,izp,ib,ik)*dtzp+             &
-          avc(ixm,iyp,izpp,ib,ik)*dtzpp+avc(ixm,iyp,izm,ib,ik)*dtzm 
+          avc(ixm,iyp,izpp,ib,ik)*dtzpp+avc(ixm,iyp,izm,ib,ik)*dtzm
      d1(15)=avc(ixm,iypp,iz,ib,ik)*dtz+avc(ixm,iypp,izp,ib,ik)*dtzp+           &
-          avc(ixm,iypp,izpp,ib,ik)*dtzpp+avc(ixm,iypp,izm,ib,ik)*dtzm 
+          avc(ixm,iypp,izpp,ib,ik)*dtzpp+avc(ixm,iypp,izm,ib,ik)*dtzm
      d1(16)=avc(ixm,iym,iz,ib,ik)*dtz+avc(ixm,iym,izp,ib,ik)*dtzp+             &
-          avc(ixm,iym,izpp,ib,ik)*dtzpp+avc(ixm,iym,izm,ib,ik)*dtzm 
+          avc(ixm,iym,izpp,ib,ik)*dtzpp+avc(ixm,iym,izm,ib,ik)*dtzm
 
 ! The Laplacian: term involving Theta'(x)Theta'(z)
      ldum=ldum+((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*dtx+(d1(5)*ty+       &
@@ -1402,7 +1402,7 @@ bloop:do ik=1,num_g
           typ+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+      &
           d1(12)*tym)*txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
 
-! go to the Cartesian grid  
+! go to the Cartesian grid
      gdum=matmul(bg,gdum)
 
      if(lkedge(ik))then
@@ -1447,7 +1447,7 @@ bloop:do ik=1,num_g
 
  SUBROUTINE blip3dgamma_w(rpsi,lap,grad,r,avc,nrbwf,bg,igl,boccband,nemax,maxband)
 
-!---------------------------------------------------------------------------! 
+!---------------------------------------------------------------------------!
 ! This subroutine evaluates the value of a function                         !
 ! at a vector point r, using the overlapping of blip functions.             !
 ! The blip grid is defined on a cubic cell, so r should always be given in  !
@@ -1463,7 +1463,7 @@ bloop:do ik=1,num_g
 ! GAMMA ONLY                                                                !
 ! DA 3.2001                                                                 !
 ! WP 8.2006                                                                 !
-!---------------------------------------------------------------------------! 
+!---------------------------------------------------------------------------!
 
  IMPLICIT NONE
  INTEGER,INTENT(in) :: igl,boccband,maxband,nemax
@@ -1475,13 +1475,13 @@ bloop:do ik=1,num_g
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
  iy=int(mod(r(2)+abs(int(r(2)))+1,1.d0)*nrbwf(2))
  iz=int(mod(r(3)+abs(int(r(3)))+1,1.d0)*nrbwf(3))
-  
+
  if(ix<0.or.iy<0.or.iz<0)call errstop('BLIP3D','Negative index found.')
 
-! The blips are defined as the product of one-dimensional cubic splines, These 
-! are different from zero only on four adjacent grid points.  It follows that 
-! for any vector r there are only 64 overlapping three-dimensional blips, which 
-! are the product of all possible combinations of the three one-dimensional 
+! The blips are defined as the product of one-dimensional cubic splines, These
+! are different from zero only on four adjacent grid points.  It follows that
+! for any vector r there are only 64 overlapping three-dimensional blips, which
+! are the product of all possible combinations of the three one-dimensional
 ! splines.
 
 ! These are the extra 3 coefficients for each dimension needed
@@ -1503,26 +1503,26 @@ bloop:do ik=1,num_g
  t=mod(t,dble(nrbwf))
 
  x=t(1)-ix+1.d0
- txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x  
- x=t(1)-ix 
+ txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+ x=t(1)-ix
  tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
  x=t(1)-ix-1.d0
  txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
  x=t(1)-ix-2.d0
  txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
- 
+
  y=t(2)-iy+1.d0
- tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y  
- y=t(2)-iy 
+ tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+ y=t(2)-iy
  ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
  y=t(2)-iy-1.d0
  typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
  y=t(2)-iy-2.d0
  typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
- 
+
  z=t(3)-iz+1.d0
- tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z  
- z=t(3)-iz 
+ tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+ z=t(3)-iz
  tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
  z=t(3)-iz-1.d0
  tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
@@ -1532,48 +1532,48 @@ bloop:do ik=1,num_g
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
  b(3)=(bg(1,3)**2+bg(2,3)**2+bg(3,3)**2)
- b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2)) 
- b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3)) 
- b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1)) 
+ b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2))
+ b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3))
+ b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1))
 
  idum=0
  do ib=1,boccband
   idum=idum+1
   d1(1)=avc(ix,iy,iz,ib)*tz+avc(ix,iy,izp,ib)*tzp+                       &
-   &avc(ix,iy,izpp,ib)*tzpp+avc(ix,iy,izm,ib)*tzm 
+   &avc(ix,iy,izpp,ib)*tzpp+avc(ix,iy,izm,ib)*tzm
   d1(2)=avc(ix,iyp,iz,ib)*tz+avc(ix,iyp,izp,ib)*tzp+                     &
-   &avc(ix,iyp,izpp,ib)*tzpp+avc(ix,iyp,izm,ib)*tzm 
+   &avc(ix,iyp,izpp,ib)*tzpp+avc(ix,iyp,izm,ib)*tzm
   d1(3)=avc(ix,iypp,iz,ib)*tz+avc(ix,iypp,izp,ib)*tzp+                   &
-   &avc(ix,iypp,izpp,ib)*tzpp+avc(ix,iypp,izm,ib)*tzm 
+   &avc(ix,iypp,izpp,ib)*tzpp+avc(ix,iypp,izm,ib)*tzm
   d1(4)=avc(ix,iym,iz,ib)*tz+avc(ix,iym,izp,ib)*tzp+                     &
-   &avc(ix,iym,izpp,ib)*tzpp+avc(ix,iym,izm,ib)*tzm 
+   &avc(ix,iym,izpp,ib)*tzpp+avc(ix,iym,izm,ib)*tzm
 
   d1(5)=avc(ixp,iy,iz,ib)*tz+avc(ixp,iy,izp,ib)*tzp                      &
-   &+avc(ixp,iy,izpp,ib)*tzpp+avc(ixp,iy,izm,ib)*tzm 
+   &+avc(ixp,iy,izpp,ib)*tzpp+avc(ixp,iy,izm,ib)*tzm
   d1(6)=avc(ixp,iyp,iz,ib)*tz+avc(ixp,iyp,izp,ib)*tzp                    &
-   &+avc(ixp,iyp,izpp,ib)*tzpp+avc(ixp,iyp,izm,ib)*tzm 
+   &+avc(ixp,iyp,izpp,ib)*tzpp+avc(ixp,iyp,izm,ib)*tzm
   d1(7)=avc(ixp,iypp,iz,ib)*tz+avc(ixp,iypp,izp,ib)*tzp                  &
-   &+avc(ixp,iypp,izpp,ib)*tzpp+avc(ixp,iypp,izm,ib)*tzm 
+   &+avc(ixp,iypp,izpp,ib)*tzpp+avc(ixp,iypp,izm,ib)*tzm
   d1(8)=avc(ixp,iym,iz,ib)*tz+avc(ixp,iym,izp,ib)*tzp                    &
-   &+avc(ixp,iym,izpp,ib)*tzpp+avc(ixp,iym,izm,ib)*tzm 
-  
+   &+avc(ixp,iym,izpp,ib)*tzpp+avc(ixp,iym,izm,ib)*tzm
+
   d1(9)=avc(ixpp,iy,iz,ib)*tz+avc(ixpp,iy,izp,ib)*tzp                    &
-   &+avc(ixpp,iy,izpp,ib)*tzpp+avc(ixpp,iy,izm,ib)*tzm 
+   &+avc(ixpp,iy,izpp,ib)*tzpp+avc(ixpp,iy,izm,ib)*tzm
   d1(10)=avc(ixpp,iyp,iz,ib)*tz+avc(ixpp,iyp,izp,ib)*tzp                 &
-   &+avc(ixpp,iyp,izpp,ib)*tzpp+avc(ixpp,iyp,izm,ib)*tzm 
+   &+avc(ixpp,iyp,izpp,ib)*tzpp+avc(ixpp,iyp,izm,ib)*tzm
   d1(11)=avc(ixpp,iypp,iz,ib)*tz+avc(ixpp,iypp,izp,ib)*tzp               &
-   &+avc(ixpp,iypp,izpp,ib)*tzpp+avc(ixpp,iypp,izm,ib)*tzm 
+   &+avc(ixpp,iypp,izpp,ib)*tzpp+avc(ixpp,iypp,izm,ib)*tzm
   d1(12)=avc(ixpp,iym,iz,ib)*tz+avc(ixpp,iym,izp,ib)*tzp                 &
-   &+avc(ixpp,iym,izpp,ib)*tzpp+avc(ixpp,iym,izm,ib)*tzm 
+   &+avc(ixpp,iym,izpp,ib)*tzpp+avc(ixpp,iym,izm,ib)*tzm
 
   d1(13)=avc(ixm,iy,iz,ib)*tz+avc(ixm,iy,izp,ib)*tzp                     &
-   &+avc(ixm,iy,izpp,ib)*tzpp+avc(ixm,iy,izm,ib)*tzm 
+   &+avc(ixm,iy,izpp,ib)*tzpp+avc(ixm,iy,izm,ib)*tzm
   d1(14)=avc(ixm,iyp,iz,ib)*tz+avc(ixm,iyp,izp,ib)*tzp                   &
-   &+avc(ixm,iyp,izpp,ib)*tzpp+avc(ixm,iyp,izm,ib)*tzm 
+   &+avc(ixm,iyp,izpp,ib)*tzpp+avc(ixm,iyp,izm,ib)*tzm
   d1(15)=avc(ixm,iypp,iz,ib)*tz+avc(ixm,iypp,izp,ib)*tzp                 &
-   &+avc(ixm,iypp,izpp,ib)*tzpp+avc(ixm,iypp,izm,ib)*tzm 
+   &+avc(ixm,iypp,izpp,ib)*tzpp+avc(ixm,iypp,izm,ib)*tzm
   d1(16)=avc(ixm,iym,iz,ib)*tz+avc(ixm,iym,izp,ib)*tzp                   &
-   &+avc(ixm,iym,izpp,ib)*tzpp+avc(ixm,iym,izm,ib)*tzm 
+   &+avc(ixm,iym,izpp,ib)*tzpp+avc(ixm,iym,izm,ib)*tzm
 
 ! The function
   rpsi(idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
@@ -1586,7 +1586,7 @@ bloop:do ik=1,num_g
 
  SUBROUTINE blip3dgamma_gl(rpsi,lap,grad,r,avc,nrbwf,bg,igl,boccband,nemax,maxband)
 
-!---------------------------------------------------------------------------! 
+!---------------------------------------------------------------------------!
 ! This subroutine evaluates the value of a function,its gradient and        !
 ! Laplacian at a vector point r, using the overlapping of blip functions.   !
 ! The blip grid is defined on a cubic cell, so r should always be given in  !
@@ -1602,7 +1602,7 @@ bloop:do ik=1,num_g
 ! GAMMA ONLY                                                                !
 ! DA 3.2001                                                                 !
 ! WP 8.2006                                                                 !
-!---------------------------------------------------------------------------! 
+!---------------------------------------------------------------------------!
 
  IMPLICIT NONE
  INTEGER,INTENT(in) :: igl,boccband,maxband,nemax
@@ -1618,13 +1618,13 @@ bloop:do ik=1,num_g
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
  iy=int(mod(r(2)+abs(int(r(2)))+1,1.d0)*nrbwf(2))
  iz=int(mod(r(3)+abs(int(r(3)))+1,1.d0)*nrbwf(3))
-  
+
  if(ix<0.or.iy<0.or.iz<0)call errstop('BLIP3D','Negative index found.')
 
-! The blips are defined as the product of one-dimensional cubic splines, These 
-! are different from zero only on four adjacent grid points.  It follows that 
-! for any vector r there are only 64 overlapping three-dimensional blips, which 
-! are the product of all possible combinations of the three one-dimensional 
+! The blips are defined as the product of one-dimensional cubic splines, These
+! are different from zero only on four adjacent grid points.  It follows that
+! for any vector r there are only 64 overlapping three-dimensional blips, which
+! are the product of all possible combinations of the three one-dimensional
 ! splines.
 
 ! These are the extra 3 coefficients for each dimension needed
@@ -1646,10 +1646,10 @@ bloop:do ik=1,num_g
  t=mod(t,dble(nrbwf))
 
  x=t(1)-ix+1.d0
- txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x  
+ txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
   dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
   d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
- x=t(1)-ix 
+ x=t(1)-ix
  tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
   dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
   d2tx=(-3.d0+4.5d0*x)*nrbwf(1)*nrbwf(1)
@@ -1661,12 +1661,12 @@ bloop:do ik=1,num_g
  txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
   dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
   d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
- 
+
  y=t(2)-iy+1.d0
- tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y  
+ tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
   dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
   d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
- y=t(2)-iy 
+ y=t(2)-iy
  ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
   dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
   d2ty=(-3.d0+4.5d0*y)*nrbwf(2)*nrbwf(2)
@@ -1678,12 +1678,12 @@ bloop:do ik=1,num_g
  typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
   dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
   d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
- 
+
  z=t(3)-iz+1.d0
- tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z  
+ tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
   dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
   d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
- z=t(3)-iz 
+ z=t(3)-iz
  tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
   dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
   d2tz=(-3.d0+4.5d0*z)*nrbwf(3)*nrbwf(3)
@@ -1699,48 +1699,48 @@ bloop:do ik=1,num_g
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
  b(3)=(bg(1,3)**2+bg(2,3)**2+bg(3,3)**2)
- b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2)) 
- b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3)) 
- b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1)) 
+ b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2))
+ b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3))
+ b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1))
 
  idum=0
  do ib=1,boccband
   idum=idum+1
   d1(1)=avc(ix,iy,iz,ib)*tz+avc(ix,iy,izp,ib)*tzp+                       &
-   &avc(ix,iy,izpp,ib)*tzpp+avc(ix,iy,izm,ib)*tzm 
+   &avc(ix,iy,izpp,ib)*tzpp+avc(ix,iy,izm,ib)*tzm
   d1(2)=avc(ix,iyp,iz,ib)*tz+avc(ix,iyp,izp,ib)*tzp+                     &
-   &avc(ix,iyp,izpp,ib)*tzpp+avc(ix,iyp,izm,ib)*tzm 
+   &avc(ix,iyp,izpp,ib)*tzpp+avc(ix,iyp,izm,ib)*tzm
   d1(3)=avc(ix,iypp,iz,ib)*tz+avc(ix,iypp,izp,ib)*tzp+                   &
-   &avc(ix,iypp,izpp,ib)*tzpp+avc(ix,iypp,izm,ib)*tzm 
+   &avc(ix,iypp,izpp,ib)*tzpp+avc(ix,iypp,izm,ib)*tzm
   d1(4)=avc(ix,iym,iz,ib)*tz+avc(ix,iym,izp,ib)*tzp+                     &
-   &avc(ix,iym,izpp,ib)*tzpp+avc(ix,iym,izm,ib)*tzm 
+   &avc(ix,iym,izpp,ib)*tzpp+avc(ix,iym,izm,ib)*tzm
 
   d1(5)=avc(ixp,iy,iz,ib)*tz+avc(ixp,iy,izp,ib)*tzp                      &
-   &+avc(ixp,iy,izpp,ib)*tzpp+avc(ixp,iy,izm,ib)*tzm 
+   &+avc(ixp,iy,izpp,ib)*tzpp+avc(ixp,iy,izm,ib)*tzm
   d1(6)=avc(ixp,iyp,iz,ib)*tz+avc(ixp,iyp,izp,ib)*tzp                    &
-   &+avc(ixp,iyp,izpp,ib)*tzpp+avc(ixp,iyp,izm,ib)*tzm 
+   &+avc(ixp,iyp,izpp,ib)*tzpp+avc(ixp,iyp,izm,ib)*tzm
   d1(7)=avc(ixp,iypp,iz,ib)*tz+avc(ixp,iypp,izp,ib)*tzp                  &
-   &+avc(ixp,iypp,izpp,ib)*tzpp+avc(ixp,iypp,izm,ib)*tzm 
+   &+avc(ixp,iypp,izpp,ib)*tzpp+avc(ixp,iypp,izm,ib)*tzm
   d1(8)=avc(ixp,iym,iz,ib)*tz+avc(ixp,iym,izp,ib)*tzp                    &
-   &+avc(ixp,iym,izpp,ib)*tzpp+avc(ixp,iym,izm,ib)*tzm 
-  
+   &+avc(ixp,iym,izpp,ib)*tzpp+avc(ixp,iym,izm,ib)*tzm
+
   d1(9)=avc(ixpp,iy,iz,ib)*tz+avc(ixpp,iy,izp,ib)*tzp                    &
-   &+avc(ixpp,iy,izpp,ib)*tzpp+avc(ixpp,iy,izm,ib)*tzm 
+   &+avc(ixpp,iy,izpp,ib)*tzpp+avc(ixpp,iy,izm,ib)*tzm
   d1(10)=avc(ixpp,iyp,iz,ib)*tz+avc(ixpp,iyp,izp,ib)*tzp                 &
-   &+avc(ixpp,iyp,izpp,ib)*tzpp+avc(ixpp,iyp,izm,ib)*tzm 
+   &+avc(ixpp,iyp,izpp,ib)*tzpp+avc(ixpp,iyp,izm,ib)*tzm
   d1(11)=avc(ixpp,iypp,iz,ib)*tz+avc(ixpp,iypp,izp,ib)*tzp               &
-   &+avc(ixpp,iypp,izpp,ib)*tzpp+avc(ixpp,iypp,izm,ib)*tzm 
+   &+avc(ixpp,iypp,izpp,ib)*tzpp+avc(ixpp,iypp,izm,ib)*tzm
   d1(12)=avc(ixpp,iym,iz,ib)*tz+avc(ixpp,iym,izp,ib)*tzp                 &
-   &+avc(ixpp,iym,izpp,ib)*tzpp+avc(ixpp,iym,izm,ib)*tzm 
+   &+avc(ixpp,iym,izpp,ib)*tzpp+avc(ixpp,iym,izm,ib)*tzm
 
   d1(13)=avc(ixm,iy,iz,ib)*tz+avc(ixm,iy,izp,ib)*tzp                     &
-   &+avc(ixm,iy,izpp,ib)*tzpp+avc(ixm,iy,izm,ib)*tzm 
+   &+avc(ixm,iy,izpp,ib)*tzpp+avc(ixm,iy,izm,ib)*tzm
   d1(14)=avc(ixm,iyp,iz,ib)*tz+avc(ixm,iyp,izp,ib)*tzp                   &
-   &+avc(ixm,iyp,izpp,ib)*tzpp+avc(ixm,iyp,izm,ib)*tzm 
+   &+avc(ixm,iyp,izpp,ib)*tzpp+avc(ixm,iyp,izm,ib)*tzm
   d1(15)=avc(ixm,iypp,iz,ib)*tz+avc(ixm,iypp,izp,ib)*tzp                 &
-   &+avc(ixm,iypp,izpp,ib)*tzpp+avc(ixm,iypp,izm,ib)*tzm 
+   &+avc(ixm,iypp,izpp,ib)*tzpp+avc(ixm,iypp,izm,ib)*tzm
   d1(16)=avc(ixm,iym,iz,ib)*tz+avc(ixm,iym,izp,ib)*tzp                   &
-   &+avc(ixm,iym,izpp,ib)*tzpp+avc(ixm,iym,izm,ib)*tzm 
+   &+avc(ixm,iym,izpp,ib)*tzpp+avc(ixm,iym,izm,ib)*tzm
 
 ! The function
   rpsi(idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
@@ -1778,40 +1778,40 @@ bloop:do ik=1,num_g
 
 ! And now the third term of the laplacian involving Theta''(z)
    d1(1)=avc(ix,iy,iz,ib)*d2tz+avc(ix,iy,izp,ib)*d2tzp+                  &
-    &avc(ix,iy,izpp,ib)*d2tzpp+avc(ix,iy,izm,ib)*d2tzm 
+    &avc(ix,iy,izpp,ib)*d2tzpp+avc(ix,iy,izm,ib)*d2tzm
    d1(2)=avc(ix,iyp,iz,ib)*d2tz+avc(ix,iyp,izp,ib)*d2tzp+                &
-    &avc(ix,iyp,izpp,ib)*d2tzpp+avc(ix,iyp,izm,ib)*d2tzm 
+    &avc(ix,iyp,izpp,ib)*d2tzpp+avc(ix,iyp,izm,ib)*d2tzm
    d1(3)=avc(ix,iypp,iz,ib)*d2tz+avc(ix,iypp,izp,ib)*d2tzp+              &
-    &avc(ix,iypp,izpp,ib)*d2tzpp+avc(ix,iypp,izm,ib)*d2tzm 
+    &avc(ix,iypp,izpp,ib)*d2tzpp+avc(ix,iypp,izm,ib)*d2tzm
    d1(4)=avc(ix,iym,iz,ib)*d2tz+avc(ix,iym,izp,ib)*d2tzp+                &
-    &avc(ix,iym,izpp,ib)*d2tzpp+avc(ix,iym,izm,ib)*d2tzm 
+    &avc(ix,iym,izpp,ib)*d2tzpp+avc(ix,iym,izm,ib)*d2tzm
 
    d1(5)=avc(ixp,iy,iz,ib)*d2tz+avc(ixp,iy,izp,ib)*d2tzp+                &
-    &avc(ixp,iy,izpp,ib)*d2tzpp+avc(ixp,iy,izm,ib)*d2tzm 
+    &avc(ixp,iy,izpp,ib)*d2tzpp+avc(ixp,iy,izm,ib)*d2tzm
    d1(6)=avc(ixp,iyp,iz,ib)*d2tz+avc(ixp,iyp,izp,ib)*d2tzp+              &
-    &avc(ixp,iyp,izpp,ib)*d2tzpp+avc(ixp,iyp,izm,ib)*d2tzm 
+    &avc(ixp,iyp,izpp,ib)*d2tzpp+avc(ixp,iyp,izm,ib)*d2tzm
    d1(7)=avc(ixp,iypp,iz,ib)*d2tz+avc(ixp,iypp,izp,ib)*d2tzp+            &
-    &avc(ixp,iypp,izpp,ib)*d2tzpp+avc(ixp, iypp, izm,ib)*d2tzm 
+    &avc(ixp,iypp,izpp,ib)*d2tzpp+avc(ixp, iypp, izm,ib)*d2tzm
    d1(8)=avc(ixp,iym,iz,ib)*d2tz+avc(ixp,iym,izp,ib)*d2tzp+              &
-    &avc(ixp,iym,izpp,ib)*d2tzpp+avc(ixp,iym,izm,ib)*d2tzm 
+    &avc(ixp,iym,izpp,ib)*d2tzpp+avc(ixp,iym,izm,ib)*d2tzm
 
    d1(9)=avc(ixpp,iy,iz,ib)*d2tz+avc(ixpp,iy,izp,ib)*d2tzp+              &
-    &avc(ixpp,iy,izpp,ib)*d2tzpp+avc(ixpp,iy,izm,ib)*d2tzm 
+    &avc(ixpp,iy,izpp,ib)*d2tzpp+avc(ixpp,iy,izm,ib)*d2tzm
    d1(10)=avc(ixpp,iyp,iz,ib)*d2tz+avc(ixpp,iyp,izp,ib)*d2tzp+           &
-    &avc(ixpp,iyp,izpp,ib)*d2tzpp+avc(ixpp,iyp,izm,ib)*d2tzm 
+    &avc(ixpp,iyp,izpp,ib)*d2tzpp+avc(ixpp,iyp,izm,ib)*d2tzm
    d1(11)=avc(ixpp,iypp,iz,ib)*d2tz+avc(ixpp,iypp,izp,ib)*d2tzp+         &
-    &avc(ixpp,iypp,izpp,ib)*d2tzpp+avc(ixpp,iypp,izm,ib)*d2tzm 
+    &avc(ixpp,iypp,izpp,ib)*d2tzpp+avc(ixpp,iypp,izm,ib)*d2tzm
    d1(12)=avc(ixpp,iym,iz,ib)*d2tz+avc(ixpp,iym,izp,ib)*d2tzp+           &
-    &avc(ixpp,iym,izpp,ib)*d2tzpp+avc(ixpp,iym,izm,ib)*d2tzm 
+    &avc(ixpp,iym,izpp,ib)*d2tzpp+avc(ixpp,iym,izm,ib)*d2tzm
 
    d1(13)=avc(ixm,iy,iz,ib)*d2tz+avc(ixm,iy,izp,ib)*d2tzp+               &
-    &avc(ixm,iy,izpp,ib)*d2tzpp+avc(ixm,iy,izm,ib)*d2tzm 
+    &avc(ixm,iy,izpp,ib)*d2tzpp+avc(ixm,iy,izm,ib)*d2tzm
    d1(14)=avc(ixm,iyp,iz,ib)*d2tz+avc(ixm,iyp,izp,ib)*d2tzp+             &
-    &avc(ixm,iyp,izpp,ib)*d2tzpp+avc(ixm,iyp,izm,ib)*d2tzm 
+    &avc(ixm,iyp,izpp,ib)*d2tzpp+avc(ixm,iyp,izm,ib)*d2tzm
    d1(15)=avc(ixm,iypp,iz,ib)*d2tz+avc(ixm,iypp,izp,ib)*d2tzp+           &
-    &avc(ixm,iypp,izpp,ib)*d2tzpp+avc(ixm,iypp,izm,ib)*d2tzm 
+    &avc(ixm,iypp,izpp,ib)*d2tzpp+avc(ixm,iypp,izm,ib)*d2tzm
    d1(16)=avc(ixm,iym,iz,ib)*d2tz+avc(ixm,iym,izp,ib)*d2tzp+             &
-    &avc(ixm,iym,izpp,ib)*d2tzpp+avc(ixm,iym,izm,ib)*d2tzm 
+    &avc(ixm,iym,izpp,ib)*d2tzpp+avc(ixm,iym,izm,ib)*d2tzm
 
 ! Theta''(z)
    lap(idum)=lap(idum)+((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+&
@@ -1820,40 +1820,40 @@ bloop:do ik=1,num_g
 
 ! And the third term of the gradient involving Theta'(z)
    d1(1)=avc(ix,iy,iz,ib)*dtz+avc(ix,iy,izp,ib)*dtzp+                    &
-    &avc(ix,iy,izpp,ib)*dtzpp+avc(ix,iy,izm,ib)*dtzm 
+    &avc(ix,iy,izpp,ib)*dtzpp+avc(ix,iy,izm,ib)*dtzm
    d1(2)=avc(ix,iyp,iz,ib)*dtz+avc(ix,iyp,izp,ib)*dtzp+                  &
-    &avc(ix,iyp,izpp,ib)*dtzpp+avc(ix,iyp,izm,ib)*dtzm 
+    &avc(ix,iyp,izpp,ib)*dtzpp+avc(ix,iyp,izm,ib)*dtzm
    d1(3)=avc(ix,iypp,iz,ib)*dtz+avc(ix,iypp,izp,ib)*dtzp+                &
-    &avc(ix,iypp,izpp,ib)*dtzpp+avc(ix,iypp,izm,ib)*dtzm 
+    &avc(ix,iypp,izpp,ib)*dtzpp+avc(ix,iypp,izm,ib)*dtzm
    d1(4)=avc(ix,iym,iz,ib)*dtz+avc(ix,iym,izp,ib)*dtzp+                  &
-    &avc(ix,iym,izpp,ib)*dtzpp+avc(ix,iym,izm,ib)*dtzm 
+    &avc(ix,iym,izpp,ib)*dtzpp+avc(ix,iym,izm,ib)*dtzm
 
    d1(5)=avc(ixp,iy,iz,ib)*dtz+avc(ixp,iy,izp,ib)*dtzp+                  &
-    &avc(ixp,iy,izpp,ib)*dtzpp+avc(ixp,iy,izm,ib)*dtzm 
+    &avc(ixp,iy,izpp,ib)*dtzpp+avc(ixp,iy,izm,ib)*dtzm
    d1(6)=avc(ixp,iyp,iz,ib)*dtz+avc(ixp,iyp,izp,ib)*dtzp+                &
-    &avc(ixp,iyp,izpp,ib)*dtzpp+avc(ixp,iyp,izm,ib)*dtzm 
+    &avc(ixp,iyp,izpp,ib)*dtzpp+avc(ixp,iyp,izm,ib)*dtzm
    d1(7)=avc(ixp,iypp,iz,ib)*dtz+avc(ixp,iypp,izp,ib)*dtzp+              &
-    &avc(ixp,iypp,izpp,ib)*dtzpp+avc(ixp,iypp,izm,ib)*dtzm 
+    &avc(ixp,iypp,izpp,ib)*dtzpp+avc(ixp,iypp,izm,ib)*dtzm
    d1(8)=avc(ixp,iym,iz,ib)*dtz+avc(ixp,iym,izp,ib)*dtzp+                &
-    &avc(ixp,iym,izpp,ib)*dtzpp+avc(ixp,iym,izm,ib)*dtzm 
+    &avc(ixp,iym,izpp,ib)*dtzpp+avc(ixp,iym,izm,ib)*dtzm
 
    d1(9)=avc(ixpp,iy,iz,ib)*dtz+avc(ixpp,iy,izp,ib)*dtzp+                &
-    &avc(ixpp,iy,izpp,ib)*dtzpp+avc(ixpp,iy,izm,ib)*dtzm 
+    &avc(ixpp,iy,izpp,ib)*dtzpp+avc(ixpp,iy,izm,ib)*dtzm
    d1(10)=avc(ixpp,iyp,iz,ib)*dtz+avc(ixpp,iyp,izp,ib)*dtzp+             &
-    &avc(ixpp,iyp,izpp,ib)*dtzpp+avc(ixpp,iyp,izm,ib)*dtzm 
+    &avc(ixpp,iyp,izpp,ib)*dtzpp+avc(ixpp,iyp,izm,ib)*dtzm
    d1(11)=avc(ixpp,iypp,iz,ib)*dtz+avc(ixpp,iypp,izp,ib)*dtzp+           &
-    &avc(ixpp,iypp,izpp,ib)*dtzpp+avc(ixpp,iypp,izm,ib)*dtzm 
+    &avc(ixpp,iypp,izpp,ib)*dtzpp+avc(ixpp,iypp,izm,ib)*dtzm
    d1(12)=avc(ixpp,iym,iz,ib)*dtz+avc(ixpp,iym,izp,ib)*dtzp+             &
-    &avc(ixpp,iym,izpp,ib)*dtzpp+avc(ixpp,iym,izm,ib)*dtzm 
+    &avc(ixpp,iym,izpp,ib)*dtzpp+avc(ixpp,iym,izm,ib)*dtzm
 
    d1(13)=avc(ixm,iy,iz,ib)*dtz+avc(ixm,iy,izp,ib)*dtzp+                 &
-    &avc(ixm,iy,izpp,ib)*dtzpp+avc(ixm,iy,izm,ib)*dtzm 
+    &avc(ixm,iy,izpp,ib)*dtzpp+avc(ixm,iy,izm,ib)*dtzm
    d1(14)=avc(ixm,iyp,iz,ib)*dtz+avc(ixm,iyp,izp,ib)*dtzp+               &
-    &avc(ixm,iyp,izpp,ib)*dtzpp+avc(ixm,iyp,izm,ib)*dtzm 
+    &avc(ixm,iyp,izpp,ib)*dtzpp+avc(ixm,iyp,izm,ib)*dtzm
    d1(15)=avc(ixm,iypp,iz,ib)*dtz+avc(ixm,iypp,izp,ib)*dtzp+             &
-    &avc(ixm,iypp,izpp,ib)*dtzpp+avc(ixm,iypp,izm,ib)*dtzm 
+    &avc(ixm,iypp,izpp,ib)*dtzpp+avc(ixm,iypp,izm,ib)*dtzm
    d1(16)=avc(ixm,iym,iz,ib)*dtz+avc(ixm,iym,izp,ib)*dtzp+               &
-    &avc(ixm,iym,izpp,ib)*dtzpp+avc(ixm,iym,izm,ib)*dtzm 
+    &avc(ixm,iym,izpp,ib)*dtzpp+avc(ixm,iym,izm,ib)*dtzm
 
 ! The Laplacian: term involving Theta'(x)Theta'(z)
    lap(idum)=lap(idum)+((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*dtx+(d1(5)*ty&
@@ -1870,7 +1870,7 @@ bloop:do ik=1,num_g
     &typ+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)* &
     &tym)*txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
 
-! Go to the Cartesian grid  
+! Go to the Cartesian grid
    grad(:,idum)=matmul(bg,grad(:,idum))
 
   endif
@@ -1889,13 +1889,13 @@ bloop:do ik=1,num_g
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
  iy=int(mod(r(2)+abs(int(r(2)))+1,1.d0)*nrbwf(2))
  iz=int(mod(r(3)+abs(int(r(3)))+1,1.d0)*nrbwf(3))
-  
+
  if(ix<0.or.iy<0.or.iz<0)call errstop('BLIP3D','Negative index found.')
 
-! The blips are defined as the product of one-dimensional cubic splines, These 
-! are different from zero only on four adjacent grid points.  It follows that 
-! for any vector r there are only 64 overlapping three-dimensional blips, which 
-! are the product of all possible combinations of the three one-dimensional 
+! The blips are defined as the product of one-dimensional cubic splines, These
+! are different from zero only on four adjacent grid points.  It follows that
+! for any vector r there are only 64 overlapping three-dimensional blips, which
+! are the product of all possible combinations of the three one-dimensional
 ! splines.
 
 ! These are the extra 3 coefficients for each dimension needed
@@ -1917,26 +1917,26 @@ bloop:do ik=1,num_g
  t=mod(t,dble(nrbwf))
 
  x=t(1)-ix+1.d0
- txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x  
- x=t(1)-ix 
+ txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+ x=t(1)-ix
  tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
  x=t(1)-ix-1.d0
  txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
  x=t(1)-ix-2.d0
  txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
- 
+
  y=t(2)-iy+1.d0
- tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y  
- y=t(2)-iy 
+ tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+ y=t(2)-iy
  ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
  y=t(2)-iy-1.d0
  typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
  y=t(2)-iy-2.d0
  typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
- 
+
  z=t(3)-iz+1.d0
- tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z  
- z=t(3)-iz 
+ tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+ z=t(3)-iz
  tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
  z=t(3)-iz-1.d0
  tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
@@ -1946,46 +1946,46 @@ bloop:do ik=1,num_g
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
  b(3)=(bg(1,3)**2+bg(2,3)**2+bg(3,3)**2)
- b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2)) 
- b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3)) 
- b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1)) 
+ b(4)=2*(bg(1,1)*bg(1,2)+bg(2,1)*bg(2,2)+bg(3,1)*bg(3,2))
+ b(5)=2*(bg(1,2)*bg(1,3)+bg(2,2)*bg(2,3)+bg(3,2)*bg(3,3))
+ b(6)=2*(bg(1,3)*bg(1,1)+bg(2,3)*bg(2,1)+bg(3,3)*bg(3,1))
 
-   
+
  d1(1)=avc(ix,iy,iz)*tz+avc(ix,iy,izp)*tzp+                     &
-      avc(ix,iy,izpp)*tzpp+avc(ix,iy,izm)*tzm 
+      avc(ix,iy,izpp)*tzpp+avc(ix,iy,izm)*tzm
  d1(2)=avc(ix,iyp,iz)*tz+avc(ix,iyp,izp)*tzp+                   &
-      avc(ix,iyp,izpp)*tzpp+avc(ix,iyp,izm)*tzm 
+      avc(ix,iyp,izpp)*tzpp+avc(ix,iyp,izm)*tzm
  d1(3)=avc(ix,iypp,iz)*tz+avc(ix,iypp,izp)*tzp+                 &
-      avc(ix,iypp,izpp)*tzpp+avc(ix,iypp,izm)*tzm 
+      avc(ix,iypp,izpp)*tzpp+avc(ix,iypp,izm)*tzm
  d1(4)=avc(ix,iym,iz)*tz+avc(ix,iym,izp)*tzp+                   &
-      avc(ix,iym,izpp)*tzpp+avc(ix,iym,izm)*tzm 
- 
+      avc(ix,iym,izpp)*tzpp+avc(ix,iym,izm)*tzm
+
  d1(5)=avc(ixp,iy,iz)*tz+avc(ixp,iy,izp)*tzp                    &
-      +avc(ixp,iy,izpp)*tzpp+avc(ixp,iy,izm)*tzm 
+      +avc(ixp,iy,izpp)*tzpp+avc(ixp,iy,izm)*tzm
  d1(6)=avc(ixp,iyp,iz)*tz+avc(ixp,iyp,izp)*tzp                  &
-      +avc(ixp,iyp,izpp)*tzpp+avc(ixp,iyp,izm)*tzm 
+      +avc(ixp,iyp,izpp)*tzpp+avc(ixp,iyp,izm)*tzm
  d1(7)=avc(ixp,iypp,iz)*tz+avc(ixp,iypp,izp)*tzp                &
-      +avc(ixp,iypp,izpp)*tzpp+avc(ixp,iypp,izm)*tzm 
+      +avc(ixp,iypp,izpp)*tzpp+avc(ixp,iypp,izm)*tzm
  d1(8)=avc(ixp,iym,iz)*tz+avc(ixp,iym,izp)*tzp                  &
-      +avc(ixp,iym,izpp)*tzpp+avc(ixp,iym,izm)*tzm 
- 
+      +avc(ixp,iym,izpp)*tzpp+avc(ixp,iym,izm)*tzm
+
  d1(9)=avc(ixpp,iy,iz)*tz+avc(ixpp,iy,izp)*tzp                  &
-      +avc(ixpp,iy,izpp)*tzpp+avc(ixpp,iy,izm)*tzm 
+      +avc(ixpp,iy,izpp)*tzpp+avc(ixpp,iy,izm)*tzm
  d1(10)=avc(ixpp,iyp,iz)*tz+avc(ixpp,iyp,izp)*tzp               &
-      +avc(ixpp,iyp,izpp)*tzpp+avc(ixpp,iyp,izm)*tzm 
+      +avc(ixpp,iyp,izpp)*tzpp+avc(ixpp,iyp,izm)*tzm
  d1(11)=avc(ixpp,iypp,iz)*tz+avc(ixpp,iypp,izp)*tzp             &
-      +avc(ixpp,iypp,izpp)*tzpp+avc(ixpp,iypp,izm)*tzm 
+      +avc(ixpp,iypp,izpp)*tzpp+avc(ixpp,iypp,izm)*tzm
  d1(12)=avc(ixpp,iym,iz)*tz+avc(ixpp,iym,izp)*tzp               &
-      +avc(ixpp,iym,izpp)*tzpp+avc(ixpp,iym,izm)*tzm 
+      +avc(ixpp,iym,izpp)*tzpp+avc(ixpp,iym,izm)*tzm
 
  d1(13)=avc(ixm,iy,iz)*tz+avc(ixm,iy,izp)*tzp                   &
-      +avc(ixm,iy,izpp)*tzpp+avc(ixm,iy,izm)*tzm 
+      +avc(ixm,iy,izpp)*tzpp+avc(ixm,iy,izm)*tzm
  d1(14)=avc(ixm,iyp,iz)*tz+avc(ixm,iyp,izp)*tzp                 &
-      +avc(ixm,iyp,izpp)*tzpp+avc(ixm,iyp,izm)*tzm 
+      +avc(ixm,iyp,izpp)*tzpp+avc(ixm,iyp,izm)*tzm
  d1(15)=avc(ixm,iypp,iz)*tz+avc(ixm,iypp,izp)*tzp               &
-      +avc(ixm,iypp,izpp)*tzpp+avc(ixm,iypp,izm)*tzm 
+      +avc(ixm,iypp,izpp)*tzpp+avc(ixm,iypp,izm)*tzm
  d1(16)=avc(ixm,iym,iz)*tz+avc(ixm,iym,izp)*tzp                 &
-    +avc(ixm,iym,izpp)*tzpp+avc(ixm,iym,izm)*tzm 
+    +avc(ixm,iym,izpp)*tzpp+avc(ixm,iym,izm)*tzm
 
 ! The function
  rpsi=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
@@ -1994,7 +1994,7 @@ bloop:do ik=1,num_g
 
  END SUBROUTINE blip_one_band
 
-     
+
  SUBROUTINE sum_orbs_over_grid_with_blips(r,sum_orbs,ispin)
 ! This routine called repeatedly by bwfdet_setup to accumulate the squared
 ! real and imaginary parts of all orbitals summed over points on a grid.
@@ -2037,7 +2037,7 @@ bloop:do ik=1,num_g
  IMPLICIT NONE
  INTEGER igl,iw,ispin
  REAL(dp) grad(3,nemax,ndet_bwfdet),lap(nemax,ndet_bwfdet),rpsi(nemax,ndet_bwfdet),rvec(3)
- call bwfdet_main(rvec,iw,igl,ispin,rpsi,grad,lap)      
+ call bwfdet_main(rvec,iw,igl,ispin,rpsi,grad,lap)
  END SUBROUTINE bwfdet_wrapper
 
  SUBROUTINE indexx(arr,index)
@@ -2219,7 +2219,7 @@ bloop:do ik=1,num_g
  END SUBROUTINE errwarn
 
  SUBROUTINE skip(iunit,nskip)
-!---------------------------------------! 
+!---------------------------------------!
 ! Skip records in a free format file.   !
 !---------------------------------------!
  IMPLICIT NONE
@@ -2253,7 +2253,7 @@ bloop:do ik=1,num_g
 ! INTEGER i                                                             !
 ! i=12                                                                  !
 ! write(6,*)'Integer number ',trim(i2s(i)),' with words at the end.'    !
-!-----------------------------------------------------------------------!  
+!-----------------------------------------------------------------------!
   INTEGER i,j,n
   CHARACTER tmp,sign
 

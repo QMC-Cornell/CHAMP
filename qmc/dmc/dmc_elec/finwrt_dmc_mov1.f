@@ -294,7 +294,7 @@ c         peerr=peerr+tmerr     ! is this correct?
      &    f11.7,f9.5)') tmave,tmerr,tmerr*rtevalg_eff1
           write(6,'(''orbital mag. energy ='',t22,f14.7)') emaglz+emagv
           write(6,'(''Zeeman energy ='',t22,f14.7)') emagsz
-        endif  
+        endif
 
   40  continue
       do 50 ifr=2,nforce

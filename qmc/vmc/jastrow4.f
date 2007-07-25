@@ -320,7 +320,7 @@ c simpler expressions are :
           fen=top/bot
           feni=topi/bot2
           fenii=-2*feni*boti/bot
-          
+
           if(isc.eq.8 .or. isc.eq.10) then
             fen=fen/scalek(iwf)
             feni=feni/scalek(iwf)

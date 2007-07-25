@@ -17,9 +17,9 @@ module indexes_mod
   integer     :: orb_index
   integer     :: dorb_index
   integer     :: ddorb_index
-  integer     :: deti_det_index 
-  integer     :: psido_index 
-  integer     :: eloc_index 
+  integer     :: deti_det_index
+  integer     :: psido_index
+  integer     :: eloc_index
   integer     :: slmui_index
   integer     :: slmdi_index
   integer     :: detu_index
@@ -28,7 +28,7 @@ module indexes_mod
   integer     :: vpsp_ex_index
   integer     :: orbe_index
   integer     :: detn_index
-  integer     :: eloc_av_index     
+  integer     :: eloc_av_index
   integer     :: eloc_pot_nloc_index
   integer     :: vold_index
   integer     :: voldw_index
@@ -43,10 +43,10 @@ module indexes_mod
   integer     :: deloc_csf_index
   integer     :: deloc_jas_index
   integer     :: deloc_orb_index
-  integer     :: eloc_pot_index    
+  integer     :: eloc_pot_index
   integer     :: eloc_pot_loc_index
   integer     :: eloc_pot_nloc_ex_index
-  integer     :: jas_pairs_nb_index    
+  integer     :: jas_pairs_nb_index
   integer     :: d2psi_jas_index
   integer     :: d2eloc_jas_index
   integer     :: opt_nwt_nb_index

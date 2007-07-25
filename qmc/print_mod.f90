@@ -28,7 +28,7 @@ module print_mod
   integer objects_to_print_block_nb
   character(len=max_string_len), allocatable :: objects_to_print_block (:)
   integer obj_i
-  
+
 ! begin
   objects_to_print_now_nb = 0
   objects_to_print_block_nb = 0
@@ -87,13 +87,13 @@ module print_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_print_at_each_block_request'
   integer object_ind
-  
+
 
 ! begin
   call object_add_once_and_index (object_name, object_ind)
@@ -117,7 +117,7 @@ module print_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'objects_print_at_each_block'
   integer obj_i
-  
+
 ! begin
 
   do obj_i = 1, objects_print_at_each_block_nb

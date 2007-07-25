@@ -115,7 +115,7 @@ c------------------------------------------------------------------------------
 c------------------------------------------------------------------------------
 
       subroutine deriv_isc4(r,dk,dk2,dr,dr2,sk,id)
-      
+
       implicit real*8(a-h,o-z)
 
       rk=sk*r
@@ -144,7 +144,7 @@ c------------------------------------------------------------------------------
       parameter (third=1.d0/3.d0)
 
       if(r.lt.cutjas) then
-        
+
         rbyrc=r*cutjasi
         rbyrc2=rbyrc*rbyrc
         f=r*(1-rbyrc+third*rbyrc2)
@@ -164,8 +164,8 @@ c------------------------------------------------------------------------------
         endif
 
 c perhaps following is redundant?
-      else   
-        
+      else
+
         rckby3=sk*cutjas*third
         exp=dexp(-rckby3)
 
@@ -189,7 +189,7 @@ c------------------------------------------------------------------------------
       parameter (third=1.d0/3.d0)
 
       if(r.lt.cutjas) then
-        
+
         rbyrc=r*cutjasi
         rbyrc2=rbyrc*rbyrc
         f=r*(1-rbyrc+third*rbyrc2)
@@ -211,7 +211,7 @@ c------------------------------------------------------------------------------
         endif
 
       else
-        
+
         f=third*cutjas
         term=1+sk*f
 
@@ -254,7 +254,7 @@ c------------------------------------------------------------------------------
 c------------------------------------------------------------------------------
 
       subroutine deriv_isc10(r,dk,dk2,dr,dr2,sk,id)
-      
+
       implicit real*8(a-h,o-z)
 
       stop 'deriv_isc10 not yet available'
@@ -307,7 +307,7 @@ c this function can be optimized little more
 c------------------------------------------------------------------------------
 
       subroutine deriv_isc14(r,dk,dk2,dr,dr2,sk,id)
-c this function can be optimized little more 
+c this function can be optimized little more
 
       implicit real*8(a-h,o-z)
 
@@ -340,7 +340,7 @@ c------------------------------------------------------------------------------
       parameter (half=0.5d0,d4b3=4.d0/3.d0,third=1.d0/3.d0)
 
       if(r.lt.cutjas) then
-        
+
         rbyrc=r*cutjasi
         rbyrc2=rbyrc*rbyrc
         f=r*r*(1-d4b3*rbyrc+half*rbyrc2)
@@ -360,7 +360,7 @@ c------------------------------------------------------------------------------
         endif
 
       else
-        
+
 c using isc=6 asymptotic value:
         rckby3=sk*cutjas*third
         exp=dexp(-rckby3)
@@ -384,7 +384,7 @@ c------------------------------------------------------------------------------
       parameter (half=0.5d0,d4b3=4.d0/3.d0,third=1.d0/3.d0)
 
       if(r.lt.cutjas) then
-        
+
         rbyrc=r*cutjasi
         rbyrc2=rbyrc*rbyrc
         f=r*r*(1-d4b3*rbyrc+half*rbyrc2)
@@ -402,11 +402,11 @@ c------------------------------------------------------------------------------
           dr2=2*((2*fk-1)*fp*fp-f*fpp*term)/term4
           if(id.eq.2) then
             dk2=-2*f/term*dk
-          endif          
+          endif
         endif
 
       else
-        
+
         f=third*cutjas
         term=1+sk*f
 
@@ -453,7 +453,7 @@ c that appropriate for C terms, for d/dk(R) and 1st two derivs.
         dasymp=dasymp_r_ee(iwf)
         d2asymp=d2asymp_r_ee(iwf)
       endif
-      
+
       dk=((1-rr)*dasymp-dk)*asympi
       if(id.ge.1) then
         dr=-(dd1*dasymp+dr)*asympi

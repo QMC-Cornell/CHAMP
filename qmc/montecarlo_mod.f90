@@ -11,7 +11,7 @@ module montecarlo_mod
 
 ! local energy over walkers
   real(dp), allocatable   :: eloc_wlk (:)
-  real(dp)                :: eloc_av 
+  real(dp)                :: eloc_av
   real(dp)                :: eloc_av_err
 
 ! local energy for tests
@@ -40,7 +40,7 @@ module montecarlo_mod
 ! autocorrelation time on energy
   real(dp)    :: eloc_tc (MFORCE)
 
-!  real(dp)                  :: e2_eloc_av 
+!  real(dp)                  :: e2_eloc_av
 
   contains
 
@@ -83,7 +83,7 @@ module montecarlo_mod
   endif
 
   end subroutine eloc_wlk_bld
-  
+
 ! ==============================================================================
   subroutine eloc_wlk_test_bld
 ! ------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ module montecarlo_mod
    call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
 
   endif
-  
+
    eloc_wlk_test (2,:) = -eloc_wlk_test (1,:)
    eloc_wlk_test (3,:) = 2.d0*eloc_wlk_test (1,:)
 
@@ -186,7 +186,7 @@ module montecarlo_mod
    call die (here)
 
   endif
-  
+
    eloc_wlk_test2 (1,2,:) = -eloc_wlk_test2 (1,1,:)
    eloc_wlk_test2 (1,3,:) = 2.d0*eloc_wlk_test2 (1,1,:)
    eloc_wlk_test2 (2,1,:) = -2.d0*eloc_wlk_test2 (1,1,:)
@@ -221,7 +221,7 @@ module montecarlo_mod
 ! allocations
   call object_associate ('eloc_sq', eloc_sq)
   call object_associate ('eloc_sq_av', eloc_sq_av)
-  
+
   eloc_sq = eloc**2
 
   end subroutine eloc_sq_bld
@@ -229,7 +229,7 @@ module montecarlo_mod
 ! ==============================================================================
   subroutine eloc_var_bld
 ! ------------------------------------------------------------------------------
-! Description   : variance of local energy 
+! Description   : variance of local energy
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
@@ -252,7 +252,7 @@ module montecarlo_mod
 
 ! allocations
   call object_associate ('eloc_var', eloc_var)
-  
+
   eloc_var = eloc_sq_av - eloc_av**2
 
   end subroutine eloc_var_bld
@@ -260,7 +260,7 @@ module montecarlo_mod
 ! ==============================================================================
   subroutine sigma_bld
 ! ------------------------------------------------------------------------------
-! Description   : standard deviation of local energy 
+! Description   : standard deviation of local energy
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
@@ -282,7 +282,7 @@ module montecarlo_mod
 
 ! allocations
   call object_associate ('sigma', sigma)
-  
+
   sigma = dsqrt(eloc_var)
 
   end subroutine sigma_bld
@@ -325,7 +325,7 @@ module montecarlo_mod
    call object_provide_in_node_by_index (walker_weights_bld_index, fprod_index) ! fprod is the finite population correction
    do walk_i = 1, nwalk
     walker_weights (walk_i) = wt (walk_i) * fprod
-   enddo   
+   enddo
 
   else
    write(6,'(4a)') trim(here),': mode=',trim(mode),' should contain either vmc or dmc.'

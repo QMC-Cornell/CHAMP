@@ -104,7 +104,7 @@ c used for J_en and J_ee when isc=16,17.
      &       cutjas_ee,c1_jas6_ee(iw),c2_jas6_ee(iw)
 
        elseif(isc.eq.8 .or. isc.eq.10) then
-         
+
         cutjas_en=1.d99
         val_cutjas_en=0
         cutjasi_en=0
@@ -857,7 +857,7 @@ c that appropriate for C terms, for dist.
        elseif(iflag.eq.2.or.iflag.eq.4) then
         c1_jas6=c1_jas6_ee(iwf)
       endif
-      
+
       if(isc.eq.8 .or. isc.eq.10) then
         rr=1-c1_jas6*rr
       else

@@ -32,7 +32,7 @@ module nodes_mod
   real(dp), allocatable           :: nodes_cpu_duration_sort (:)
 
   contains
-  
+
 ! ==============================================================================
   subroutine catalog_one_node (routine_name, routine, node_ind)
 ! ------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ module nodes_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent (in) :: routine_name
   external routine
 
@@ -82,7 +82,7 @@ module nodes_mod
 
 ! get routine's adress
   rout_address = address(routine)
- 
+
 ! if a previously catalogued node has the same address, die
   do node_i = 1, nodes_nb
    if (rout_address == nodes(node_i)%routine_address) then
@@ -132,7 +132,7 @@ module nodes_mod
   node_current_index = 0
 
  end subroutine execute_node_headers
-  
+
 ! ==============================================================================
   function node_index (node_name) result(result)
 ! ------------------------------------------------------------------------------
@@ -142,7 +142,7 @@ module nodes_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: node_name
 
 ! output
@@ -152,9 +152,9 @@ module nodes_mod
   integer nod_i
   integer length, half
   character(len=max_string_len_obj) current_node_name
-  
+
 ! begin
-  
+
   length = len_trim(node_name)
   half   = max(1,length/2)
 
@@ -178,7 +178,7 @@ module nodes_mod
 ! if object not found
   result = 0
 
-  return 
+  return
 
  end function node_index
 
@@ -191,7 +191,7 @@ module nodes_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: node_name
 
 ! local
@@ -213,7 +213,7 @@ module nodes_mod
 !===============================================================================
   subroutine node_enter (node_name)
 ! ------------------------------------------------------------------------------
-! Description   : 
+! Description   :
 !
 ! Created       : J. Toulouse, 14 Oct 2005
 ! ------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ module nodes_mod
    if (node_ind == 0) then
       call die(lhere, 'entering node >'+trim(node_name)+'< that not catalogued.')
    endif
-  
+
 ! die if we were already entered in this node but not exited
    if (nodes(node_ind)%entered) then
       call die(lhere, 'entering a second time node >'+trim(node_name)+'< but first exiting has not been notified.')
@@ -249,7 +249,7 @@ module nodes_mod
 !===============================================================================
   subroutine node_exit (node_name)
 ! ------------------------------------------------------------------------------
-! Description   : 
+! Description   :
 !
 ! Created       : J. Toulouse, 14 Oct 2005
 ! ------------------------------------------------------------------------------
@@ -276,8 +276,8 @@ module nodes_mod
       write(6,*) trim(here),': exiting node ', trim(node_name),' that not catalogued'
       call die(here)
    endif
- 
-! if we have not entered this node previously 
+
+! if we have not entered this node previously
    if (.not. nodes(node_ind)%entered) then
       write(6,*) trim(here),': exiting node ', trim(node_name),' but entering has not been notified.'
       call die(here)
@@ -318,12 +318,12 @@ module nodes_mod
   call alloc ('nodes_indexes_sort', nodes_indexes_sort, nodes_nb)
   call alloc ('nodes_cpu_duration_sort', nodes_cpu_duration_sort, nodes_nb)
   call alloc ('nodes_calls_nb_sort', nodes_calls_nb_sort, nodes_nb)
- 
+
   do nod_i = 1, nodes_nb
    nodes_indexes_sort (nod_i) = nod_i
    nodes_cpu_duration_sort (nod_i) = nodes(nod_i)%cpu_duration
    nodes_calls_nb_sort (nod_i) = nodes(nod_i)%calls_nb
-  enddo 
+  enddo
 
   do nod_i = 1, nodes_nb
    do nod_j = nod_i+1, nodes_nb
@@ -354,8 +354,8 @@ module nodes_mod
    endif
    endif
 
-  enddo 
-  enddo 
+  enddo
+  enddo
 
     write(6,'(a)') '----------------------------------------------------------------------'
     write(6,'(a)') '                        NODE STATISTICS'

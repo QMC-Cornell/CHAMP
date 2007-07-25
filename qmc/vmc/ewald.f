@@ -1,6 +1,6 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
-      use all_tools_mod 
+      use all_tools_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
@@ -878,7 +878,7 @@ c related by primitive cell reciprocal lattice vectors to inverses of
 c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
-      use all_tools_mod 
+      use all_tools_mod
 
       implicit real*8(a-h,o-z)
 
@@ -1094,7 +1094,7 @@ c     parameter(NPX=6)
 c                      693           1155            693           495
 c Out[24]= {{t[1] -> -(---), t[2] -> ----, t[3] -> -(---), t[4] -> ---,
 c                      256           256             128           128
-c 
+
 c                 385           63
 c       t[5] -> -(---), t[6] -> ---}}
 c                 256           256

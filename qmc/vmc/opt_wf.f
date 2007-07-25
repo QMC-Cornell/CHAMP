@@ -38,7 +38,7 @@ c Also, one or all electrons can be moved at once.
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap  !JT
      &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt 
+     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 
       dimension ene_var(3)

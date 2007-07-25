@@ -34,7 +34,7 @@ module opt_nwt_mod
 
 
   contains
-  
+
 !===========================================================================
   subroutine opt_nwt_menu
 !---------------------------------------------------------------------------
@@ -50,13 +50,13 @@ module opt_nwt_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case (trim(word))
   case ('help')
    write(6,'(a)') 'HELP for Newton optimization menu:'
-   write(6,'(a)') 'newton'      
+   write(6,'(a)') 'newton'
    write(6,'(a)') ' hessian = lzr|uf|tu|linear|sorella'
    write(6,'(a)') ' beta = [real] beta parameter for Sorella Hessian'
    write(6,'(a)') 'end'
@@ -89,8 +89,8 @@ module opt_nwt_mod
    case default
     call die (lhere, 'unknown hessian type >'+trim(hessian_type)+'<.')
   end select
-   
-  end subroutine opt_nwt_menu  
+
+  end subroutine opt_nwt_menu
 
 ! ==============================================================================
   subroutine sh_sor_bld
@@ -122,7 +122,7 @@ module opt_nwt_mod
   do i = 1, param_nb
     do j = i, param_nb
 
-      sh_sor (i,j) = dpsi_deloc_c_av (i,j) + dpsi_deloc_c_av (j,i) 
+      sh_sor (i,j) = dpsi_deloc_c_av (i,j) + dpsi_deloc_c_av (j,i)
 
        if (i /= j) then
          sh_sor (j,i) = sh_sor (i,j)
@@ -257,7 +257,7 @@ module opt_nwt_mod
   do i = 1, param_nb
     do j = i, param_nb
 
-       hess_lzr (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   & 
+       hess_lzr (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
              + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
              - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i)                                          &
              + dpsi_deloc_av (i,j) )
@@ -311,13 +311,13 @@ module opt_nwt_mod
   do i = 1, param_nb
     do j = i, param_nb
 
-       hess_uf (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   & 
+       hess_uf (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
              + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
              - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i))     &
              +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
 
 ! alternative expression Hessian
-!       hess_nwt (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   & 
+!       hess_nwt (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
 !             + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
 !             - 2.d0 *dpsi_av (i) * dpsi_nwt_eloc_c_av (j) - 2.d0 * dpsi_av (j) * dpsi_nwt_eloc_c_av (i)      &
 !             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)  )   &
@@ -375,11 +375,11 @@ module opt_nwt_mod
    do i = 1, param_nb
     do j = i, param_nb
        if (i > nparmcsf .and. i <= nparmj .and. j > nparmcsf .and. j <= nparmj) then
-        sumD = sumD + dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i) 
- 
+        sumD = sumD + dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
+
         sumBpD = sumBpD + 2.d0 * (2.d0 * (dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av )  &
                 - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i))     &
-                +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i) 
+                +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
         endif
     enddo
    enddo
@@ -390,15 +390,15 @@ module opt_nwt_mod
     do j = i, param_nb
 
        if (i > nparmcsf .and. i <= nparmj .and. j > nparmcsf .and. j <= nparmj) then
-        hess_tu (i,j) = 2.d0 * (d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   & 
-             - (dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av) )  & 
+        hess_tu (i,j) = 2.d0 * (d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
+             - (dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av) )  &
              + sumBpD_over_sumD * (   &
-             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i) ) 
+             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i) )
        else
-         hess_tu (i,j) = 2.d0 * (d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   & 
+         hess_tu (i,j) = 2.d0 * (d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
              + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
              - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i))     &
-             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i) 
+             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
        endif
 
        if (i /= j) then
@@ -455,7 +455,7 @@ module opt_nwt_mod
 ! ==============================================================================
   subroutine hess_nwt_energy_bld
 ! ------------------------------------------------------------------------------
-! Description   : Hessian of energy 
+! Description   : Hessian of energy
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
@@ -477,19 +477,19 @@ module opt_nwt_mod
   select case(trim(hessian_type))
    case ('lzr')
     call object_provide_by_index (hess_nwt_energy_bld_index, hess_lzr_index)
-    hess_nwt_energy (:,:) = hess_lzr (:,:) 
+    hess_nwt_energy (:,:) = hess_lzr (:,:)
    case ('uf')
     call object_provide_by_index (hess_nwt_energy_bld_index, hess_uf_index)
-    hess_nwt_energy (:,:) = hess_uf (:,:) 
+    hess_nwt_energy (:,:) = hess_uf (:,:)
    case ('tu')
     call object_provide_by_index (hess_nwt_energy_bld_index, hess_tu_index)
-    hess_nwt_energy (:,:) = hess_tu (:,:) 
+    hess_nwt_energy (:,:) = hess_tu (:,:)
    case ('linear')
     call object_provide_by_index (hess_nwt_energy_bld_index, hess_lin_index)
-    hess_nwt_energy (:,:) = hess_lin (:,:) 
+    hess_nwt_energy (:,:) = hess_lin (:,:)
    case ('sorella')
     call object_provide_by_index (hess_nwt_energy_bld_index, hess_sor_index)
-    hess_nwt_energy (:,:) = hess_sor (:,:) 
+    hess_nwt_energy (:,:) = hess_sor (:,:)
    case default
     call die (here, 'unknown hessian type >'+trim(hessian_type)+'<.')
   end select
@@ -521,7 +521,7 @@ module opt_nwt_mod
 ! begin
   call object_alloc ('hess_nwt', hess_nwt, param_nb, param_nb)
   call object_alloc ('hess_nwt_err', hess_nwt_err, param_nb, param_nb)
-  
+
   if (p_var /= 0.d0) then
     call object_provide_by_index (hess_nwt_bld_index, hessian_variance_index)
     hess_nwt = (1.d0 - p_var) * hess_nwt_energy + p_var * hessian_variance
@@ -581,7 +581,7 @@ module opt_nwt_mod
 ! ==============================================================================
   subroutine hess_nwt_stab_bld
 ! ------------------------------------------------------------------------------
-! Description   : stabilized hess_nwt 
+! Description   : stabilized hess_nwt
 !
 ! Created       : J. Toulouse, 21 Jan 2006
 ! ------------------------------------------------------------------------------
@@ -612,7 +612,7 @@ module opt_nwt_mod
   if (l_stab) then
    do i = 1, param_nb
     hess_nwt_stab (i,i) = hess_nwt (i,i) + max(-hess_nwt_eigval_min,0.d0) + diag_stab
-   enddo 
+   enddo
   endif
 
   end subroutine hess_nwt_stab_bld
@@ -683,7 +683,7 @@ module opt_nwt_mod
 ! ==============================================================================
   subroutine delta_nwt_bld
 ! ------------------------------------------------------------------------------
-! Description   :  variation of parameters for newton method 
+! Description   :  variation of parameters for newton method
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------

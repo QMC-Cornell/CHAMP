@@ -362,7 +362,7 @@ c  15 continue
 c e-e terms
         call scale_dist(rij,u,2)
         if(nparms.eq.1) call deriv_scale(rij,dk,dk2,dr,dr2,2,0)
-        
+
         gns=0
         iparm0=ipara+nparms
         if(isb.eq.2) iparm0=iparm0+nparmb(1)

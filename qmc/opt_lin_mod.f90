@@ -27,7 +27,7 @@ module opt_lin_mod
   real(dp), allocatable           :: ham_ovlp_lin_eigvec (:,:)
   real(dp), allocatable           :: ham_ovlp_lin_eigval (:)
   real(dp), allocatable           :: ovlp_lin_inv (:,:)
-                                
+
   real(dp), allocatable           :: delta_lin (:)
   real(dp)                        :: psi_lin_var_norm = 0.d0
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
@@ -35,7 +35,7 @@ module opt_lin_mod
   integer                         :: target_state = 0
 
   contains
-  
+
 !===========================================================================
   subroutine opt_lin_menu
 !---------------------------------------------------------------------------
@@ -52,16 +52,16 @@ module opt_lin_mod
 ! begin
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
   case ('help')
    write(6,'(a)') 'HELP for linear optimization menu'
-   write(6,'(a)') ' linear'      
-   write(6,'(a)') '  update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'      
-   write(6,'(a)') '  xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 + (1-xi) Psi_lin'      
-   write(6,'(a)') '               - xi=1: orthogonalization to Psi_0 (default)'      
+   write(6,'(a)') ' linear'
+   write(6,'(a)') '  update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'
+   write(6,'(a)') '  xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 + (1-xi) Psi_lin'
+   write(6,'(a)') '               - xi=1: orthogonalization to Psi_0 (default)'
    write(6,'(a)') '               - xi=0: orthogonalization to Psi_lin, ensures min |Psi_lin-Psi_0|'
    write(6,'(a)') '               - xi=0.5: orthogonalization to Psi_0 + Psi_lin, ensures |Psi_0|=|Psi_lin|'
    write(6,'(a)') '   use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues? (default=false)'
@@ -71,7 +71,7 @@ module opt_lin_mod
    write(6,'(a)') '   renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
    write(6,'(a)') '   target_state = [integer] : index of target state to optimize (default is ground-state)'
    write(6,'(a)') ' end'
- 
+
   case ('update_nonlinear')
    call get_next_value (update_nonlinear)
 
@@ -107,14 +107,14 @@ module opt_lin_mod
   enddo ! end loop over menu lines
 
   if (trim(update_nonlinear) == 'original') then
-   write(6,'(2a)') trim(lhere),': update of nonlinear parameters in linear optimization method will be done using the original derivatives' 
+   write(6,'(2a)') trim(lhere),': update of nonlinear parameters in linear optimization method will be done using the original derivatives'
    write(6,'(2a)') trim(lhere),': WARNING: this is very bad for the Jastrow parameters!'
   else
-   write(6,'(2a)') trim(lhere),': update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives' 
+   write(6,'(2a)') trim(lhere),': update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives'
    write(6,'(2a,f)') trim(lhere),': the derivatives will be orthogonalized to [xi Psi_0 + (1-xi) Psi_lin], with xi=',xi
   endif
 
-  end subroutine opt_lin_menu  
+  end subroutine opt_lin_menu
 
 ! ==============================================================================
   subroutine ovlp_lin_bld
@@ -148,14 +148,14 @@ module opt_lin_mod
   endif
 
 ! begin
-  
+
 ! allocations
   param_aug_nb = param_nb + 1
   call object_alloc ('ovlp_lin', ovlp_lin, param_aug_nb, param_aug_nb)
 
 ! first element
   ovlp_lin (1,1) = 1.d0
-  
+
 ! first row and first column
   do i = 1, param_nb
    ovlp_lin (1,i+1) = 0.d0
@@ -170,7 +170,7 @@ module opt_lin_mod
     if (l_opt_orb_orb_diag .and. i > nparmcsf+nparmj .and. j > nparmcsf+nparmj .and. i /= j) then
 
      ovlp_lin (i+1,j+1) = 0.d0
- 
+
 !   normal overlap
     else
 
@@ -184,7 +184,7 @@ module opt_lin_mod
 
    enddo
   enddo
- 
+
 !  do i = 1, param_nb
 !    write(6,'(2a,100f12.4)') trim(here),': ovlp_lin=',(ovlp_lin(i,j),j=1,param_nb)
 !  enddo
@@ -232,7 +232,7 @@ module opt_lin_mod
   endif
 
 ! begin
-  
+
 ! allocations
   call object_alloc ('renorm_vector', renorm_vector, param_aug_nb)
   call object_alloc ('ovlp_lin_renorm', ovlp_lin_renorm, param_aug_nb, param_aug_nb)
@@ -296,7 +296,7 @@ module opt_lin_mod
    call object_provide (lhere, 'ovlp_lin')
    call object_provide (lhere, 'delta_eps')
   endif
- 
+
 ! allocations
   call object_alloc ('ham_lin_energy', ham_lin_energy, param_aug_nb, param_aug_nb)
 
@@ -306,12 +306,12 @@ module opt_lin_mod
 ! first row and first column
   do i = 1, param_nb
     ham_lin_energy (i+1,1) = dpsi_eloc_c_av (i)
-    
+
 !   approximate Hamiltonian for orbitals
     if (l_opt_orb_eig .and. i > nparmcsf+nparmj) then
 !     ham_lin_energy (1,i+1) = ovlp_lin(1,i+1) * (eloc_av + delta_eps (i-nparmcsf-nparmj))
      ham_lin_energy (1,i+1) = ham_lin_energy (i+1,1)  ! symmetric for orbitals
-     
+
 !   normal Hamiltoniam
     else
      ham_lin_energy (1,i+1) = dpsi_eloc_c_av (i) + deloc_av (i)
@@ -324,7 +324,7 @@ module opt_lin_mod
   do j = 1, param_nb
    do i = 1, param_nb
      pair = param_pairs (i,j)
-   
+
 !   approximate Hamiltonian for Jastrow-orbital, CSF-orbital mixed terms (swap i and j)
     if (l_opt_orb_eig .and. i <= nparmcsf+nparmj .and. j > nparmcsf+nparmj) then
      ham_lin_energy (i+1,j+1) =  ham_lin_energy (j+1,i+1)
@@ -340,11 +340,11 @@ module opt_lin_mod
 
 !   normal Hamiltoniam
     else
-     
+
      ham_lin_energy (i+1,j+1) = dpsi_deloc_c_av (i, j) + dpsi_dpsi_eloc_av (pair)     &
                        - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
-                       + dpsi_av (i) * dpsi_av (j) * eloc_av        
-    endif 
+                       + dpsi_av (i) * dpsi_av (j) * eloc_av
+    endif
 
 !   if (i /= j) then
 !
@@ -364,7 +364,7 @@ module opt_lin_mod
 
    enddo
   enddo
- 
+
 ! symmetrize Hamiltonian
   if (l_sym_ham) then
    ham_lin_energy = (ham_lin_energy + transpose(ham_lin_energy))/2.d0
@@ -432,7 +432,7 @@ module opt_lin_mod
      ham_lin_variance (i+1,j+1) = hessian_variance (i,j)/2.d0 + eloc_var * dpsi_dpsi_c_av (i, j)
    enddo
   enddo
- 
+
   end subroutine ham_lin_variance_bld
 
 ! ==============================================================================
@@ -562,7 +562,7 @@ module opt_lin_mod
 ! stabilization by adding identity matrix
   else
   do i = 1, param_nb
-    ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab 
+    ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab
   enddo
   endif
 
@@ -571,7 +571,7 @@ module opt_lin_mod
 ! ==============================================================================
   subroutine delta_lin_bld
 ! ------------------------------------------------------------------------------
-! Description   : variation of parameters for linear method 
+! Description   : variation of parameters for linear method
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
@@ -639,7 +639,7 @@ module opt_lin_mod
   call alloc ('work', work, lwork)
 
 ! solve generalized eigenvalue problem A*x = lambda*B*x
-  write(6,*) 
+  write(6,*)
   write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation of linear method with a_diag =', diag_stab
   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)

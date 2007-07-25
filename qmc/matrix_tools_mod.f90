@@ -38,7 +38,7 @@ module matrix_tools_mod
 
 ! begin
   if (dim == 0) return
-  
+
 ! temporary arrays for SVD
   call alloc ('mat_u', mat_u, dim, dim)
   call alloc ('mat_v', mat_v, dim, dim)
@@ -54,7 +54,7 @@ module matrix_tools_mod
 ! SVD from numerical recipes
 !  mat_u = matrix ! matrix to be inverted
 !  call svdcmp (mat_u, dim, dim, dim, dim, mat_w, mat_v)
-!    
+!
 !  write(6,*) trim(lhere),': SVD from numerical recipes:'
 !  write(6,*) trim(lhere),': mat_u=',mat_u
 !  write(6,*) trim(lhere),': mat_v=',mat_v
@@ -80,7 +80,7 @@ module matrix_tools_mod
 ! Singular values
 !JT  do i = 1, dim
 !JT   write(6,*) trim(lhere), ': i=',i,' mat_w=',mat_w(i)
-!JT  enddo 
+!JT  enddo
 
 ! Inverse singular values  (drop small singular values)
 !JT  write(6,*) trim(lhere), ': threshold on singular values: ',threshold
@@ -97,7 +97,7 @@ module matrix_tools_mod
 
 ! calculate inverse matrix
   matrix_inv = 0.d0
-  
+
    do i = 1, dim
      do j = 1, dim
        do k = 1, dim
@@ -105,9 +105,9 @@ module matrix_tools_mod
        enddo
      enddo
    enddo
- 
+
 !  write(6,*) trim(lhere), ': matrix_inv=',matrix_inv
-  
+
 ! release arrays for SVD
   call release ('mat_u', mat_u)
   call release ('mat_v', mat_v)
@@ -186,7 +186,7 @@ module matrix_tools_mod
 ! ==============================================================================
   real(dp) function trace (matrix)
 ! ------------------------------------------------------------------------------
-! Description   : returns trace of a square matrix 
+! Description   : returns trace of a square matrix
 !
 ! Created       : J. Toulouse, 20 Jan 2006
 ! ------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ module matrix_tools_mod
 ! begin
   dim1 = size(matrix,1)
   dim2 = size(matrix,2)
-  
+
   if (dim1 /= dim2) then
    write(6,*) trim(lhere),': in routine', trim(here),' trace requested of a non-square matrix!'
    write(6,*) trim(lhere),': dim1=',dim1,' /= dim2=',dim2
@@ -212,7 +212,7 @@ module matrix_tools_mod
 
   trace = 0.d0
   do i = 1, dim1
-   trace = trace + matrix (i,i) 
+   trace = trace + matrix (i,i)
   enddo
 
   end function trace
@@ -234,7 +234,7 @@ module matrix_tools_mod
    kronecker_delta = 1
   else
    kronecker_delta = 0
-  endif 
+  endif
 
   end function kronecker_delta
 

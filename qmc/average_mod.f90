@@ -53,13 +53,13 @@ module average_mod
   integer averages_list_nb, errors_list_nb, obj_i
   character (len=max_string_len), allocatable :: averages_list (:)
   character (len=max_string_len), allocatable :: errors_list (:)
-  
+
 ! begin
   averages_list_nb = 0
   errors_list_nb = 0
 
 ! loop over menu lines
-  do 
+  do
   call get_next_word (word)
 
   select case(trim(word))
@@ -102,22 +102,22 @@ module average_mod
 ! ===================================================================================
   subroutine routine_average (routine_name)
 ! -----------------------------------------------------------------------------------
-! Description   : define routine computing the average of an object 
+! Description   : define routine computing the average of an object
 ! Description   : store index of routine
 !
 ! Created       : J. Toulouse, 20 Dec 2005
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: routine_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'routine_average'
   integer routine_ind, rtn_i
 
 ! begin
-  
+
 ! index of routine
   routine_ind = routine_index (routine_name)
   if (routine_ind == 0) then
@@ -127,7 +127,7 @@ module average_mod
 ! if routine already defined as average routine, do nothing
   do rtn_i = 1, average_routines_nb
    if (routine_ind == average_routines_index (rtn_i) ) then
-       return 
+       return
    endif
   enddo
 
@@ -142,21 +142,21 @@ module average_mod
 ! ===================================================================================
   subroutine object_average_define (object_name, object_av_name)
 ! -----------------------------------------------------------------------------------
-! Description   : define couple (object, average of object) 
+! Description   : define couple (object, average of object)
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name, object_av_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_define_average'
   integer object_ind, object_av_ind, obj_i
 
 ! begin
-  
+
 ! index of object, catalogue object if necessary
   call object_add_once_and_index (object_name, object_ind)
 
@@ -201,9 +201,9 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_name, object_av_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_define'
   integer object_ind, object_av_ind
@@ -225,16 +225,16 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_av_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_request'
   integer object_ind, object_av_ind, obj_i
   logical object_found
-  
+
 ! begin
-  
+
 ! index of average
   object_av_ind = object_index (object_av_name)
   if (object_av_ind == 0) then
@@ -267,7 +267,7 @@ module average_mod
   enddo
 
 ! add average to the list of averages
-  if (.not. objects(object_ind)%walkers) then 
+  if (.not. objects(object_ind)%walkers) then
    averages_nb = averages_nb + 1
    call alloc ('averages_object_index', averages_object_index, averages_nb)
    call alloc ('averages_object_av_index', averages_object_av_index, averages_nb)
@@ -296,16 +296,16 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_av_name, object_err_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_define'
   integer object_av_ind, object_err_ind
   integer obj_i
 
 ! begin
-  
+
 ! index of object, catalogue object if necessary
   object_av_ind = object_index (object_av_name)
   if (object_av_ind == 0) then
@@ -350,9 +350,9 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! input 
+! input
   character(len=*), intent(in) :: object_err_name
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_request'
   integer object_av_ind, object_err_ind
@@ -360,7 +360,7 @@ module average_mod
   logical object_found
 
 ! begin
-  
+
 ! index of error
   object_err_ind = object_index (object_err_name)
   if (object_err_ind == 0) then
@@ -411,20 +411,20 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_0'
   character(len=max_string_len_type)   :: object_type, object_av_type
   integer dim1, dim_av1
   integer ierr
   real(dp) collect
-  
+
 
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -461,7 +461,7 @@ module average_mod
   endif
 
 ! at each step:
- 
+
 ! for one-electron move version
 !  if (index (trim(mode), 'mov1') /= 0) then
   objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + objects(object_ind)%pointer_double_0
@@ -486,7 +486,7 @@ module average_mod
 !    sum values from all processes
      call mpi_allreduce(objects(object_ind)%sum_double_0,collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
-        call die (lhere, 'error in mpi_allreduce') 
+        call die (lhere, 'error in mpi_allreduce')
      endif
      objects(object_ind)%sum_double_0 = collect
 # endif
@@ -512,19 +512,19 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_1'
   character(len=max_string_len_type)   :: object_type, object_av_type
   integer dim1, dim_av1
   real(dp), allocatable :: collect(:)
   integer ierr
-  
+
 
 ! begin
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -592,7 +592,7 @@ module average_mod
 !   objects(object_ind)%previous_double_1 = objects(object_ind)%pointer_double_1
 !
 !  endif
-  
+
 !  at the end of each block
    if (mod(step_iterations_nb , nstep) == 0) then
 
@@ -607,7 +607,7 @@ module average_mod
      call alloc ('collect', collect, objects(object_ind)%dimensions(1))
      call mpi_allreduce(objects(object_ind)%sum_double_1,collect,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
-        call die (lhere, 'error in mpi_allreduce') 
+        call die (lhere, 'error in mpi_allreduce')
      endif
      objects(object_ind)%sum_double_1 (:) = collect (:)
 # endif
@@ -633,19 +633,19 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_2'
   character(len=max_string_len_type)   :: object_type, object_av_type
   integer dim1, dim_av1, dim2, dim_av2
   real(dp), allocatable :: collect(:,:)
   integer ierr
-  
+
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -715,7 +715,7 @@ module average_mod
 !   objects(object_ind)%previous_double_2 = objects(object_ind)%pointer_double_2
 !
 !  endif
-  
+
 !  at the end of each block
    if (mod(step_iterations_nb , nstep) == 0) then
 
@@ -730,12 +730,12 @@ module average_mod
      call alloc ('collect', collect,  objects(object_ind)%dimensions(1),  objects(object_ind)%dimensions(2))
      call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
-        call die (lhere, 'error in mpi_allreduce') 
+        call die (lhere, 'error in mpi_allreduce')
      endif
      objects(object_ind)%sum_double_2 (:,:) = collect (:,:)
 # endif
 
-     objects(object_ind)%sum_blk_double_2 = objects(object_ind)%sum_blk_double_2 + objects(object_ind)%sum_double_2/nstep_total  
+     objects(object_ind)%sum_blk_double_2 = objects(object_ind)%sum_blk_double_2 + objects(object_ind)%sum_double_2/nstep_total
 
 !    calculate average
       objects(object_av_ind)%pointer_double_2 = objects(object_ind)%sum_blk_double_2 / block_iterations_nb
@@ -756,18 +756,18 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer object_av_ind, object_err_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_0'
   character(len=max_string_len_type) object_av_type, object_err_type
   integer dim_av1, dim_err1
-  
+
 
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -835,20 +835,20 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer object_av_ind, object_err_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_1'
 !!  real(dp), allocatable :: object_av(:)
 !!  real(dp), allocatable :: object_err(:)
   character(len=max_string_len_type) object_av_type, object_err_type
   integer dim_av1, dim_err1
-  
+
 
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -940,20 +940,20 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer object_av_ind, object_err_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_2'
 !!  real(dp), allocatable :: object_av(:,:)
 !!  real(dp), allocatable :: object_err(:,:)
   character(len=max_string_len_type) object_av_type, object_err_type
   integer dim_av1, dim_err1, dim_av2, dim_err2
-  
+
 
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -1047,15 +1047,15 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer, intent(in) :: object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_0'
   integer walk_i
 
 ! begin
-  
+
 ! only for first iteration
   if (step_iterations_nb == 1) then
 
@@ -1079,7 +1079,7 @@ module average_mod
   do walk_i = 1, nwalk
    objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + objects(object_ind)%pointer_double_1(walk_i) * walker_weights(walk_i)
   enddo
-  
+
  end subroutine object_average_walk_step_by_index_double_0
 
 ! ===================================================================================
@@ -1093,15 +1093,15 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer, intent(in) :: object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_1'
   integer walk_i
-  
+
 ! begin
-  
+
 ! only for first iteration
   if (step_iterations_nb == 1) then
 
@@ -1127,7 +1127,7 @@ module average_mod
   do walk_i = 1, nwalk
    objects(object_ind)%sum_double_1 (:) = objects(object_ind)%sum_double_1 (:) + objects(object_ind)%pointer_double_2 (:,walk_i) * walker_weights(walk_i)
   enddo
-  
+
  end subroutine object_average_walk_step_by_index_double_1
 
 ! ===================================================================================
@@ -1141,15 +1141,15 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer, intent(in) :: object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_2'
   integer walk_i
 
 ! begin
-  
+
 ! only for first iteration
   if (step_iterations_nb == 1) then
 
@@ -1177,7 +1177,7 @@ module average_mod
    objects(object_ind)%sum_double_2 (:,:) = objects(object_ind)%sum_double_2 (:,:) + objects(object_ind)%pointer_double_3 (:,:,walk_i) * walker_weights(walk_i)
   enddo
 
-  
+
  end subroutine object_average_walk_step_by_index_double_2
 
 ! ===================================================================================
@@ -1190,14 +1190,14 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer, intent(in) :: object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_0'
   integer ierr, walk_i
   real(dp) collect
-  
+
 ! begin
 
 !  initialization for first block
@@ -1209,7 +1209,7 @@ module average_mod
 ! sum values from all processes
   call mpi_allreduce(objects(object_ind)%sum_double_0,collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
    if (ierr /= 0) then
-      call die (lhere, 'error in mpi_allreduce') 
+      call die (lhere, 'error in mpi_allreduce')
    endif
   objects(object_ind)%sum_double_0 = collect
 # endif
@@ -1235,14 +1235,14 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer, intent(in) :: object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_1'
   integer ierr
   real(dp), allocatable :: collect (:)
-  
+
 ! begin
 
 ! initialization for first block
@@ -1256,7 +1256,7 @@ module average_mod
     call alloc ('collect', collect, objects(object_ind)%dimensions(1))
     call mpi_allreduce(objects(object_ind)%sum_double_1,collect,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
     if (ierr /= 0) then
-       call die (lhere, 'error in mpi_allreduce') 
+       call die (lhere, 'error in mpi_allreduce')
     endif
     objects(object_ind)%sum_double_1 (:) = collect (:)
 # endif
@@ -1282,14 +1282,14 @@ module average_mod
   implicit none
   include 'commons.h'
 
-! input 
+! input
   integer, intent(in) :: object_ind, object_av_ind
-  
+
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_2'
   integer ierr
   real(dp), allocatable :: collect (:,:)
-  
+
 ! begin
 
 !  initialization for first block
@@ -1303,7 +1303,7 @@ module average_mod
     call alloc ('collect', collect, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
     call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
-        call die (lhere, 'error in mpi_allreduce') 
+        call die (lhere, 'error in mpi_allreduce')
      endif
      objects(object_ind)%sum_double_2 (:,:) = collect (:,:)
 # endif
@@ -1331,24 +1331,24 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'print_list_of_averages_and_errors'
   integer ind
-  
+
 ! begin
   write(6,'(a)') 'The following averages will be calculated:'
   do ind = 1, averages_nb
    write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
   enddo
 
-  write(6,*) 
+  write(6,*)
   write(6,'(a)') 'The following statistical errors will be calculated:'
   do ind = 1, errors_nb
    write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error of ', trim(objects(errors_object_av_index (ind))%name)
   enddo
-  write(6,*) 
+  write(6,*)
 
  end subroutine print_list_of_averages_and_errors
 
 ! ===================================================================================
-  subroutine compute_averages 
+  subroutine compute_averages
 ! -----------------------------------------------------------------------------------
 ! Description   : compute averages in MC iterations
 !
@@ -1361,10 +1361,10 @@ module average_mod
   integer ind, rtn_i
   integer object_ind, object_av_ind
   character(len=max_string_len_type) object_type
-  
+
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -1433,12 +1433,12 @@ module average_mod
   integer ind
   integer object_av_ind, object_err_ind
   character(len=max_string_len_type) object_av_type
-  
-  
+
+
 
 ! begin
 !  write(6,*) trim(lhere),': entering'
-  
+
 ! this routine must be called in the course of the MC iterations
 !  if (step_iterations_nb <= 0) then
 !    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
@@ -1516,7 +1516,7 @@ module average_mod
 
 ! weights of walkers
   call object_provide_by_index (walker_weights_index)
-   
+
 ! averages defined by objects
   do ind = 1, averages_walk_nb
 
@@ -1586,7 +1586,7 @@ module average_mod
 
 ! sum of weights of walkers
   call object_provide_by_index (walker_weights_sum_index)
-  
+
 ! averages defined by objects
   do ind = 1, averages_walk_nb
 

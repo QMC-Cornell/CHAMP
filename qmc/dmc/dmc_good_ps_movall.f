@@ -450,7 +450,7 @@ c Collect density only for primary walk
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
 c calculate 2density related functions:
-              if(ifixe.eq.-1 .or. ifixe.ne.-3) then 
+              if(ifixe.eq.-1 .or. ifixe.ne.-3) then
                 do 247 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
                   ixo(idim)=nint(delxi*xoldw(idim,i,iw,ifr))
@@ -480,7 +480,7 @@ c note that ix can be negative or positive. nint is a better choice.
                 do 255 i=1,nelec
                   xnc(k,i)=xnew(k,i,ifr)
   255             xoc(k,i)=xoldw(k,i,iw,ifr)
-              if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc) 
+              if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc)
               if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
               if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
 c             if(ifourier.eq.1) call fourier2d(wtgp,wtgq,xoc,xnc)

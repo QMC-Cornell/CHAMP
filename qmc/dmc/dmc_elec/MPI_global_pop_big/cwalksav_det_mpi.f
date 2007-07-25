@@ -5,8 +5,8 @@ c by A.D.Guclu, Oct2005.
 # if defined (MPI)
 
       use all_tools_mod
-      use cslater_mod 
-      use cslaterw_mod 
+      use cslater_mod
+      use cslaterw_mod
 
       implicit real*8(a-h,o-z)
 

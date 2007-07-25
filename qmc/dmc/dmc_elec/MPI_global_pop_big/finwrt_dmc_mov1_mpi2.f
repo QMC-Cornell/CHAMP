@@ -134,7 +134,7 @@ c Collect radial charge density for atoms
     4     rprobdn(i)=rprobcollect(i)
       endif
 
-      if(ifixe.ne.0) then 
+      if(ifixe.ne.0) then
         naxt=(NAX+1)*(2*NAX+1)*(2*NAX+1)
         call mpi_reduce(xx0probut,xx0probt,naxt,mpi_double_precision
      &,mpi_sum,0,MPI_COMM_WORLD,ierr)

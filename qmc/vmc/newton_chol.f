@@ -571,11 +571,11 @@ c     endif
 
 c First check that MWORK is large enough
 c     call dgeev('N','V',nparmp1,product,MPARM,eigv,eigvi,scratch, MPARM,
-c    &            coef, MPARM, work, -1,info) 
+c    &            coef, MPARM, work, -1,info)
 c     write(6,'(''optimal MWORK='',f8.1)') work(1)
 c     if(work(1).gt.MWORK) stop 'work(1).gt.MWORK'
 c     call dgeev('N','V',nparmp1,product,MPARM,eigv,eigvi,scratch, MPARM,
-c    &            coef, MPARM, work, MWORK,info) 
+c    &            coef, MPARM, work, MWORK,info)
 c     if(info.ne.0) write(6,*) 'Warning dgeev: info =', info
 
       write(6,'(''eigenvalue_denominators in dggev='',20d10.2)') (eig_denom(i),i=1,nparmp1)
@@ -905,31 +905,31 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
 c csf parameters:
       iparm=0
       iflag=0
-      if(nparmcsf.gt.0) then 
+      if(nparmcsf.gt.0) then
         dparm_norm=0
         do i=1,nparmcsf
           iparm=iparm+1
           dparm_norm=dparm_norm+dparm(iparm)**2
         enddo
         dparm_norm=sqrt(dparm_norm/nparmcsf)
-        if(dparm_norm.gt.1.d0) then 
+        if(dparm_norm.gt.1.d0) then
           iflag=1
           write(6,'(''iadd_diag,dparm_norm=''
      &  ,i1,f9.2,'' iflag=1 because dparm_norm>1 for csf params'')') iadd_diag,dparm_norm
         endif
       endif
 c orbital parameters (type 1,2,3 and 4)
-      if(nparmo(1).gt.0) then 
+      if(nparmo(1).gt.0) then
         dparm_norm=0
         do i=1,nparmo(1)
           iparm=iparm+1
           dparm_norm=dparm_norm+dparm(iparm)**2
         enddo
         dparm_norm=sqrt(dparm_norm/nparmo(1))
-        if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then 
+        if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
           iflag=1
           write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &'' iflag=1 because dparm_norm>1/3scalek for otype 1 params'')') 
+     &'' iflag=1 because dparm_norm>1/3scalek for otype 1 params'')')
      &  iadd_diag,dparm_norm
         endif
       endif
@@ -941,13 +941,13 @@ c orbital parameters (type 1,2,3 and 4)
         enddo
         dparm_norm=sqrt(dparm_norm/nparmo(2))
         if(ibasis.eq.4) then
-          if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then 
+          if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
             iflag=1
             write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
      &'' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
           endif
         elseif(ibasis.eq.5) then
-          if(dparm_norm.gt..2d0) then 
+          if(dparm_norm.gt..2d0) then
             iflag=1
             write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
      &'' iflag=1 because dparm_norm>0.2 for otype 2 params'')') iadd_diag,dparm_norm
@@ -961,7 +961,7 @@ c orbital parameters (type 1,2,3 and 4)
           dparm_norm=dparm_norm+dparm(iparm)**2
         enddo
         dparm_norm=sqrt(dparm_norm/nparmo(3))
-        if(dparm_norm.gt.2.d0) then 
+        if(dparm_norm.gt.2.d0) then
           iflag=1
           write(6,'(''iadd_diag,dparm_norm=''
      &,i1,f9.2,'' iflag=1 because dparm_norm>2 for otype 3 params'')') iadd_diag,dparm_norm
@@ -975,7 +975,7 @@ c orbital parameters (type 1,2,3 and 4)
 c          write(*,*) 'test: dparm(iparm)=',dparm(iparm)
         enddo
         dparm_norm=sqrt(dparm_norm/nparmo(4))
-        if(dparm_norm.gt.3.d0) then 
+        if(dparm_norm.gt.3.d0) then
           iflag=1
           write(6,'(''iadd_diag,dparm_norm=''
      &,i1,f9.2,'' iflag=1 because dparm_norm>1 for otype 4 params'')') iadd_diag,dparm_norm
@@ -983,24 +983,24 @@ c          write(*,*) 'test: dparm(iparm)=',dparm(iparm)
       endif
 c scalek
       dparm_norm=0
-      if(nparms.gt.0) then 
+      if(nparms.gt.0) then
         iparm=iparm+1
         dparm_norm=dabs(dparm(iparm))
-        if(dparm_norm.gt..1d0) then 
+        if(dparm_norm.gt..1d0) then
           iflag=1
           write(6,'(''iadd_diag,dparm_norm=''
      &  ,i1,f9.2,'' iflag=1 because dparm_norm>0.1 for scalek '')') iadd_diag,dparm_norm
         endif
       endif
 c jastrow parameters
-      if(nparmj.gt.0) then 
+      if(nparmj.gt.0) then
         dparm_norm=0
         do i=1,nparmj
           iparm=iparm+1
           dparm_norm=dparm_norm+dparm(iparm)**2
         enddo
         dparm_norm=sqrt(dparm_norm/nparmj)
-        if(dparm_norm.gt.max(10.d0,1.d0/(5*scalek(iadd_diag)))) then 
+        if(dparm_norm.gt.max(10.d0,1.d0/(5*scalek(iadd_diag)))) then
           iflag=1
           write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
      &'' iflag=1 because dparm_norm > 10 or 1/5*scalek for jastrow params'')') iadd_diag,dparm_norm
@@ -1027,7 +1027,7 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
       if(nparmo(3).gt.0) then
         do ib=1,nbasis
           if(oparm(3,ib,iadd_diag).le.0.d0) then
-            write(6,'(''iadd_diag='',i1, 
+            write(6,'(''iadd_diag='',i1,
      &         '' iflag=1 because oparm(3,..) < 0'')') iadd_diag
             iflag=1
           endif
@@ -1037,7 +1037,7 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
       if(nparmo(4).gt.0) then
         do ib=1,nbasis
           if(oparm(4,ib,iadd_diag).le.0.d0) then
-            write(6,'(''iadd_diag='',i1, 
+            write(6,'(''iadd_diag='',i1,
      &         '' iflag=1 because oparm(4,..) < 0'')') iadd_diag
             iflag=1
           endif
