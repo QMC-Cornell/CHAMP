@@ -32,6 +32,8 @@ module opt_lin_mod
   real(dp)                        :: psi_lin_var_norm = 0.d0
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
 
+  logical                         :: l_select_eigvec_lowest = .true.
+  logical                         :: l_select_eigvec_largest_1st_coef = .false.
   integer                         :: target_state = 0
 
   contains
@@ -69,6 +71,8 @@ module opt_lin_mod
    write(6,'(a)') '   approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
    write(6,'(a)') '   approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
    write(6,'(a)') '   renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
+   write(6,'(a)') '   select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization (default=true)'
+   write(6,'(a)') '   select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization (default=false)'
    write(6,'(a)') '   target_state = [integer] : index of target state to optimize (default is ground-state)'
    write(6,'(a)') ' end'
 
@@ -92,6 +96,14 @@ module opt_lin_mod
 
   case ('renormalize')
    call get_next_value (l_renormalize)
+
+  case ('select_eigvec_lowest')
+   call get_next_value (l_select_eigvec_lowest)
+   l_select_eigvec_largest_1st_coef = .false.
+
+  case ('select_eigvec_largest_1st_coef')
+   call get_next_value (l_select_eigvec_largest_1st_coef)
+   l_select_eigvec_lowest = .false.
 
   case ('target_state')
    call get_next_value (target_state)
@@ -587,8 +599,8 @@ module opt_lin_mod
   real(dp), allocatable :: eigvec (:,:)
   real(dp), allocatable :: eigval_r (:), eigval_i (:), eigval_denom (:)
   real(dp), allocatable :: work (:)
-  real(dp) eigvec_1st_component_max, eigval_r_min, eigvec_first_coef
-  integer eig_ind, eig_ind_2(1)
+  real(dp) eigvec_1st_component_max, eigval_r_min, eigvec_first_coef, eigval_lowest
+  integer eig_ind, eig_1st_component_max_ind, eigval_lowest_ind
   integer, allocatable :: eigval_srt_ind_to_eigval_ind (:), eigval_ind_to_eigval_srt_ind (:)
   integer temp
   logical target_state_found
@@ -688,22 +700,51 @@ module opt_lin_mod
 !    write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :', (eigvec (i, eigval_srt_ind_to_eigval_ind (j)), i = 1, param_aug_nb)
 !  enddo
 
-! if target_state = 0, find eigenvector with  1) largest first component 2) lowest eigenvalue
+! Find eigenvector with largest first coefficient
+  eigvec_1st_component_max = dabs(eigvec (1,1))
+  eig_1st_component_max_ind = 1
+  do i = 1, param_aug_nb
+    if (dabs(eigvec (1,i)) > eigvec_1st_component_max) then
+      eigvec_1st_component_max = dabs(eigvec (1,i))
+      eig_1st_component_max_ind = i
+    endif
+    if (dabs(eigvec (1,i)) == eigvec_1st_component_max) then
+      if (eigval_r (i) < eigval_r (eig_1st_component_max_ind)) then
+       eigvec_1st_component_max = dabs(eigvec (1,i))
+       eig_1st_component_max_ind = i
+      endif
+    endif
+  enddo
+  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind (eig_1st_component_max_ind), ': ',eigval_r (eig_1st_component_max_ind), ' +', eigval_i (eig_1st_component_max_ind),' i'
+
+! Find eigenvector with lowest eigenvalue that is not crazy
+  eigval_lowest = 9.d99
+  eigval_lowest_ind = 0
+  do i = 1, param_aug_nb
+    if (eigval_r (i) < eigval_lowest .and. dabs(eigval_r (i)-etrial) < 10.d0) then
+      eigval_lowest = eigval_r (i)
+      eigval_lowest_ind = i
+    endif
+    if (eigval_r (i) == eigval_lowest) then
+      if (dabs(eigvec (1,i)) > dabs(eigvec (1, eigval_lowest_ind))) then
+        eigval_lowest = eigval_r (i)
+        eigval_lowest_ind = i
+      endif
+    endif
+  enddo
+  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+
+
+! if target_state = 0, select eigenvector with lowest reasonable eigenvalue
   if (target_state == 0) then
-    eigvec_1st_component_max = dabs(eigvec (1,1))
-    eig_ind = 1
-    do i = 1, param_aug_nb
-      if (dabs(eigvec (1,i)) > eigvec_1st_component_max ) then
-        eigvec_1st_component_max = dabs(eigvec (1,i))
-        eig_ind = i
-      endif
-      if (dabs(eigvec (1,i)) == eigvec_1st_component_max ) then
-        if (eigval_r (i) < eigval_r (eig_ind)) then
-         eigvec_1st_component_max = dabs(eigvec (1,i))
-         eig_ind = i
-        endif
-      endif
-    enddo
+
+   if (l_select_eigvec_lowest) then
+     eig_ind = eigval_lowest_ind
+   elseif (l_select_eigvec_largest_1st_coef) then
+     eig_ind = eig_1st_component_max_ind
+   else
+     call die (lhere, 'Both select_eigvec_lowest and select_eigvec_largest_1st_coef are false.')
+   endif
 
 ! if target_state >= 1, simply select the corresponding the wanted target state
   else
@@ -715,7 +756,7 @@ module opt_lin_mod
 
   endif
 
-  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'Selected (sorted) eigenvector #',eigval_ind_to_eigval_srt_ind (eig_ind), ': ',eigval_r (eig_ind), ' +', eigval_i (eig_ind),' i'
+  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind (eig_ind), ': ',eigval_r (eig_ind), ' +', eigval_i (eig_ind),' i'
 !  write(6,'(2a,100f12.7)') trim(lhere),': parameters variations =', eigvec_lin (:)
 
 ! undo renormalization
