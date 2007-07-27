@@ -88,10 +88,10 @@ c write out header first time
      &    ,t100,''fave'',t106,''(ferr)''
      &    ,t117,''accave'',t128,''iter'')')
          else
-       write(6,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
-     &,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
-     &,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t89,''(ferr)''
-     &,t100,''accave'',t111,''iter'',t120,''sigma'')') !JT
+          write(6,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
+     &   ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
+     &   ,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t89,''(ferr)''
+     &   ,t100,''accave'',t111,''iter'',t120,''sigma'')') !JT
         endif
       endif
 

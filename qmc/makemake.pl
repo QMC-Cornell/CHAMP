@@ -49,6 +49,12 @@ print MAKEFILE "\t\$(CHAMP_LD) \$(CHAMP_LD_FLAGS) -o \$@ \$(OBJS) \$(CHAMP_LIBS)
 print MAKEFILE "clean:\n";
 print MAKEFILE "\trm -f \$(OBJS) *.o *.dif *.lst *.sav *.mod\n\n";
 #
+# make cleanall
+#
+print MAKEFILE "cleanall:\n";
+print MAKEFILE "\tmake clean\n";
+print MAKEFILE "\trm -f *exe\n\n";
+#
 # make cleanlocal
 #
 print MAKEFILE "cleanlocal:\n";

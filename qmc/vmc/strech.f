@@ -13,7 +13,7 @@ c returns secondary geom. nuclear positions, stretched electron positions and
 c jacobian of the transformation
 
       implicit real*8(a-h,o-z)
-      character*20 filename
+      character*64 filename
       character*16 mode
 
       include 'vmc.h'
@@ -68,9 +68,15 @@ c initialize volume change matrix
           do 10 k=1,ndim
    10       dist2=dist2+(x(k,i)-centsav(k,icent))**2
             dist=dsqrt(dist2)
-            if(istrech.eq.1) wt(icent)=dexp(-alfstr*dist)
-            if(istrech.eq.2) wt(icent)=one/dist**alfstr
-            if(istrech.eq.3) wt(icent)=dexp(alfstr/dist)
+            if(istrech.eq.1) then 
+              wt(icent)=dexp(-alfstr*dist)
+            elseif(istrech.eq.2) then 
+              wt(icent)=one/dist**alfstr
+            elseif(istrech.eq.3) then
+              wt(icent)=dexp(alfstr/dist)
+            else
+              stop 'istrech must be 1, 2 or 3.'
+            endif
             wtsm=wtsm+wt(icent)
             do 20 k=1,ndim
               if(istrech.eq.1) dwt(k,icent)=-alfstr*dexp(-alfstr*dist)*

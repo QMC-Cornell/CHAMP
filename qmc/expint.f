@@ -1,7 +1,7 @@
       recursive FUNCTION expint(n,x)
       INTEGER n,MAXIT
       REAL*8 expint,x,EPS,FPMIN,EULER
-      PARAMETER (MAXIT=100,EPS=1.d-7,FPMIN=1.d-30,EULER=.5772156649d0)
+      PARAMETER (MAXIT=100,EPS=1.d-7,FPMIN=1.d-30,EULER=.5772156649015328d0)
       INTEGER i,ii,nm1
       REAL*8 a,b,c,d,del,fact,h,psi
       nm1=n-1

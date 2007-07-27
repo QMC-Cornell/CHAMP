@@ -168,6 +168,10 @@ $(PROG): $(OBJS)
 clean:
 	rm -f $(OBJS) *.o *.dif *.lst *.sav *.mod
 
+cleanall:
+	make clean
+	rm -f *exe
+
 cleanlocal:
 	rm -f *.o *.dif *.lst *.sav *.mod
 
