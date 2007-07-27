@@ -409,9 +409,15 @@ c save energy, energy_sigma and energy_err for optimization
         energy(ifr)=egave
         energy_sigma(ifr)=egerr1*rtevalg_proc_eff1
         energy_err(ifr)=egerr
-        write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',
-     &  f11.7,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_proc_eff1,
-     &  egerr1*rtevalg_proc_eff1,(egerr/egerr1)**2
+        if(nforce.eq.1) then
+          write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',
+     &    f11.7,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_eff1,
+     &    egerr1*rtevalg_eff1,(egerr/egerr1)**2
+         else
+          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',
+     &    f11.7,2f9.5,f8.2)') nfprod,ifr,egave,egerr,egerr*rtevalg_eff1,
+     &    egerr1*rtevalg_eff1,(egerr/egerr1)**2
+        endif
   30  continue
 c     write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,
 c    &f9.5)') e1ave,e1err,e1err*rteval
