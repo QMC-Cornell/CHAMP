@@ -33,8 +33,8 @@ c routine to accumulate estimators for energy etc.
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /estsum/ esum1,eaverage(MFORCE+6)
-      common /estcum/ ecum1,ecum(MFORCE),pecum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,tpbcm2,tjfcm2,r2cm2
+      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
+      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD), !JT
      &ekin(NRAD),ekin2(NRAD)
