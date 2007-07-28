@@ -89,9 +89,9 @@ c write out header first time
      &    ,t117,''accave'',t128,''iter'')')
          else
           write(6,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
-     &   ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
-     &   ,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t89,''(ferr)''
-     &   ,t100,''accave'',t111,''iter'',t120,''sigma'')') !JT
+     &    ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
+     &    ,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t89,''(ferr)''
+     &    ,t100,''accave'',t111,''iter'',t120,''sigma'')') !JT
         endif
       endif
 
@@ -222,6 +222,7 @@ c    &    stop 'Low acceptance. Are you sure you are running the mov1 version an
           fcum(ifr)=fcum(ifr)+wsum(1)*(enow-esum(1)/wsum(1))
           fcm2(ifr)=fcm2(ifr)+wsum(1)*(enow-esum(1)/wsum(1))**2
           fave=(ecum(1)/wcum(1)-ecum(ifr)/wcum(ifr))
+          ferr=err(fcum(ifr),fcm2(ifr),1)
           if(deltot(ifr).ne.0.d0) then
             fave=fave/abs(deltot(ifr))
             ferr=ferr/abs(deltot(ifr))
