@@ -10,6 +10,7 @@ c If igrid(ic).eq.2 .and. (r0_bas(ic).le.0.d0 .or. exp_h_bas(ic).le.0.d0) then g
       include 'force.h'
 
       character*20 filename,wforce,atomtyp
+      character*80 title
 c     character*20 lcent
 
       parameter(NCOEF=5)
@@ -60,7 +61,16 @@ c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
      &  filename=filename(1:index(filename,' ')-1)//'.'//wforce
         open(21,file=filename,status='old',err=999)
 
-        read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
+c position file to skip comments
+        write(6,'(''Reading numerical basis function file'')')
+        title(1:1)='#'
+        do while(title(1:1).eq.'#')
+          read(21,'(a80)') title
+c         write(6,'(a80)') title
+        enddo
+
+c       read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
+        read(title,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
         write(6,'(''ic,nrbas,igrid,nr,exp_h_bas,r0_bas,icusp=''i3,3i5,2f10.6,i3)')
      &  ic,nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
 
