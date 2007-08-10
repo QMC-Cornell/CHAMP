@@ -1523,6 +1523,7 @@
   real(dp)              :: zbfac
   integer                       :: spin
   real(dp)              :: sqrtpi_c, sqrtc, delta_erf
+  real(dp), external    :: derf
 
 ! begin
 
