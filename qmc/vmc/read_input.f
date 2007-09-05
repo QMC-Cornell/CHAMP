@@ -18,7 +18,7 @@ c Written by Cyrus Umrigar
       character*24 date
       character*10 eunit
       character*16 mode,iorb_format
-      character*1000 input_line
+      character*80000 input_line
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
