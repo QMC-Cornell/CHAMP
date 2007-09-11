@@ -732,10 +732,30 @@ module opt_lin_mod
       endif
     endif
   enddo
-  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
 
+  if (eigval_lowest_ind /= 0) then
+    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+  else
+!   if no reasonable lowest eigenvalue found, then just take the lowest one
+    eigval_lowest = 9.d99
+    eigval_lowest_ind = 0
+    do i = 1, param_aug_nb
+      if (eigval_r (i) < eigval_lowest) then
+        eigval_lowest = eigval_r (i)
+        eigval_lowest_ind = i
+      endif
+      if (eigval_r (i) == eigval_lowest) then
+        if (dabs(eigvec (1,i)) > dabs(eigvec (1, eigval_lowest_ind))) then
+          eigval_lowest = eigval_r (i)
+          eigval_lowest_ind = i
+        endif
+      endif
+    enddo
+    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+    write(6,'(a)') 'Warning: all the eigenvalues are outside the resonable energy windows!'
+  endif
 
-! if target_state = 0, select eigenvector with lowest reasonable eigenvalue
+! if target_state = 0, select eigenvector with lowest reasonable eigenvalue or largest 1st components
   if (target_state == 0) then
 
    if (l_select_eigvec_lowest) then
