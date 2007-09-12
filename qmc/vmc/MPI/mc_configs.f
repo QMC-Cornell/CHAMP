@@ -33,7 +33,7 @@ c     dimension irn(4)
       dimension nsite(MCENT)
       dimension istatus(MPI_STATUS_SIZE)
 
-      character*20 filename
+      character*30 filename
 
 c set the random number seed differently on each processor
 c call to setrn is in read_input since irn is local there
@@ -62,7 +62,7 @@ c if isite=1 then get initial configuration from sites routine
   394       continue
           if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
           call sites(xold,nelec,nsite)
-!JT          write(6,'(/,''initial configuration from sites'')')
+          write(6,'(/,''initial configuration from sites'')')
   395 continue
 
 c fix the position of electron i=ifixe for pair-density calculation:
@@ -83,6 +83,7 @@ c optimization or dmc calculation. So figure out how often we need to write a
 c configuration to produce nconf_new configurations. If nconf_new = 0
 c then set up so no configurations are written.
       if(nconf_new.ne.0) then
+        write(6,'(''idtask,nconf_new'',9i5)') idtask,nconf_new
         if(idtask.lt.10) then
           write(filename,'(i1)') idtask
          elseif(idtask.lt.100) then
@@ -92,9 +93,12 @@ c then set up so no configurations are written.
          else
           write(filename,'(i4)') idtask
         endif
-        filename=file_mc_configs_out//filename(1:index(filename,' ')-1)
-!JT        open(7,form='formatted',file=filename)
-        open(7,form='formatted',file=file_mc_configs_out)
+c The next line put in by Julien fails to put the numeric subscript on the filename.
+c So temporarily go back to the hard-coded name we had before.
+c       filename=file_mc_configs_out//filename(1:index(filename,' ')-1)
+        filename='mc_configs_new'//filename(1:index(filename,' ')-1)
+        open(7,form='formatted',file=filename)
+!CU     open(7,form='formatted',file=file_mc_configs_out)
         rewind 7
 c       write(7,'(i5)') nconf_new
       endif
@@ -113,14 +117,13 @@ c write out last configuration to unit mc_configs_start
         call MPI_Wait(irequest,istatus,ierr)
        else
         close(9)
-!JT comment this out to avoid different jobs writing in the same file
-!JT        open(9,status='unknown',file='mc_configs_start')
-!JT        write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
-!JT        do 450 id=1,nproc-1
-!JT          call mpi_recv(xnew,3*nelec,mpi_double_precision,id
-!JT     &    ,1,MPI_COMM_WORLD,istatus,ierr)
-!JT  450     write(9,*) ((xnew(k,i),k=1,ndim),i=1,nelec)
-!JT        close(9)
+        open(9,status='unknown',file='mc_configs_start')
+        write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
+        do 450 id=1,nproc-1
+          call mpi_recv(xnew,3*nelec,mpi_double_precision,id
+     &    ,1,MPI_COMM_WORLD,istatus,ierr)
+  450     write(9,*) ((xnew(k,i),k=1,ndim),i=1,nelec)
+        close(9)
       endif
 
 # endif
