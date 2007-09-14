@@ -113,6 +113,46 @@ ifeq ($(hostname),piv-login1)
   BLAS=-L/usr/local/mkl-7.0.17/mkl70/lib/32 -lmkl_ia32 -lguide -lpthread
 endif
 
+# OSC Opteron cluster
+ifeq ($(hostname),opt-login01.osc.edu)
+# Serial (Intel compiler), requires ACML for Intel module
+# module load acml-intel
+
+# Parallel (Intel compiler), requires ACML & MPI for Intel 
+# module load acml-intel
+# module swap mpi mvapich-0.9.8-intel
+
+  CHAMP_MPIF77 = mpif77 -fc=ifort
+  CHAMP_MPIF95 = mpif77 -fc=ifort
+  CHAMP_MPIC = mpicc -cc=icc
+  CHAMP_LD_MPI = mpif77 -fc=ifort
+  CHAMP_LD_FAST=-O3 -align all
+
+# Serial (Portland compiler), requires ACML module
+# module load acml
+# CHAMP_F77 = pgf95
+# CHAMP_F95 = pgf95
+# CHAMP_C = pgcc
+# CHAMP_LD = pgf95
+# CHAMP_F77_FAST = -Mpreprocess -Mextend -O2 -tp amd64e
+# CHAMP_F95_FAST = -Mpreprocess -O2 -tp amd64 -DPGI
+# CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
+# CHAMP_LD_FAST = -O2 -tp amd64e
+
+# Parallel (Portland compiler), requires ACML module
+# module load acml
+# CHAMP_MPIF77 = mpif90
+# CHAMP_MPIF95 = mpif90
+# CHAMP_MPIC = mpicc
+# CHAMP_LD_MPI = mpif90
+# CHAMP_F77_MPI = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
+# CHAMP_F95_MPI = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
+# CHAMP_C_MPI = -DMPI -DUNDERSCORE -O2 -tp amd64e
+  
+  LAPACK=${ACML}
+  BLAS=${ACML}
+endif
+
 # Richard's Cornell machine
 ifeq ($(hostname),kyra.ccmr.cornell.edu)
  LAPACK=-L/opt/intel/mkl_serial_8.1/lib/32/ -lmkl_lapack
