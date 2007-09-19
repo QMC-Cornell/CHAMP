@@ -58,6 +58,7 @@ module objects_mod
    real(dp), allocatable             :: sum_blk_double_2(:,:)
    real(dp), allocatable             :: sum_blk_square_double_2(:,:)
    real(dp), allocatable             :: previous_double_2(:,:)
+   real(dp)                          :: variance_double_0
 
   end type type_object
 
@@ -296,8 +297,7 @@ module objects_mod
 
 ! begin
   if (objects_nb == max_objects_nb) then
-   write(6,'(2a,i6,a)') trim(lhere),': maximun number of objects max_objects_nb=',max_objects_nb,' reached.'
-   call die (lhere)
+   call die (lhere, 'maximun number of objects max_objects_nb='+max_objects_nb+' reached.')
   endif
 
   objects_nb = objects_nb + 1
@@ -321,6 +321,59 @@ module objects_mod
   objects_sort_index (object_sort_pos) = objects_nb
 
   end subroutine object_add
+
+! ==============================================================================
+  subroutine object_alloc_by_index_double_0 (object_ind)
+! ------------------------------------------------------------------------------
+! Description   : allocate pointer of an object
+!
+! Created       : J. Toulouse, 06 Sep 2007
+! ------------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in) :: object_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_alloc_by_index_double_0'
+  integer all_err
+
+! begin
+  allocate (objects(object_ind)%pointer_double_0, stat = all_err)
+  if (all_err /= 0) then
+   call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+  endif
+  objects(object_ind)%pointer_double_0 = 0.d0
+
+  end subroutine object_alloc_by_index_double_0
+
+! ==============================================================================
+  subroutine object_add_and_index (object_ind)
+! ------------------------------------------------------------------------------
+! Description   : catalogue a new object (with no name) and return its index
+!
+! Created       : J. Toulouse, 06 Sep 2007
+! ------------------------------------------------------------------------------
+  implicit none
+
+! output
+  integer, intent(out) :: object_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_add_and_index'
+  character(len=max_string_len_obj) object_name
+  integer object_number 
+
+! begin
+
+! choose a default name
+  object_number = objects_nb+1
+  object_name = 'object'+object_number
+
+! add object and return index
+  call object_add_once_and_index (object_name, object_ind)
+  
+  end subroutine object_add_and_index
 
 ! ==============================================================================
   subroutine object_add_once_and_index (object_name, object_ind)
@@ -1242,6 +1295,7 @@ module objects_mod
 
   end subroutine object_associate_integer_row_1
 
+
 !===========================================================================
   subroutine object_associate_double_0 (object_name, object)
 !---------------------------------------------------------------------------
@@ -1670,6 +1724,115 @@ module objects_mod
   end subroutine object_associate_string_1
 
 !===========================================================================
+  subroutine object_associate_by_index_double_0 (object_ind)
+!---------------------------------------------------------------------------
+! Description : associate pointer of object by its index
+!
+! Created     : J. Toulouse, 06 Sep 2007
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in)  :: object_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_associate_by_index_double_0'
+  integer all_err
+
+! begin
+
+! if object already associated, return
+  if (objects(object_ind)%associated) return
+
+! store type
+  objects(object_ind)%type = 'double_0'
+
+! associate (allocate) pointer
+  allocate (objects(object_ind)%pointer_double_0, stat = all_err)
+  if (all_err /= 0) then
+   call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+  endif
+  objects(object_ind)%pointer_double_0 = 0.d0
+  objects(object_ind)%associated = .true.
+
+  end subroutine object_associate_by_index_double_0
+
+!===========================================================================
+  subroutine object_associate_by_index_double_1 (object_ind, dim1)
+!---------------------------------------------------------------------------
+! Description : associate pointer of object by its index
+!
+! Created     : J. Toulouse, 07 Sep 2007
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in)  :: object_ind, dim1
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_associate_by_index_double_1'
+  integer all_err
+
+! begin
+
+! if object already associated, return
+  if (objects(object_ind)%associated) return
+
+! store type
+  objects(object_ind)%type = 'double_1'
+
+! store dimensions
+  call append(objects(object_ind)%dimensions, dim1)
+
+! associate (allocate) pointer
+  allocate (objects(object_ind)%pointer_double_1(dim1), stat = all_err)
+  if (all_err /= 0) then
+   call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+  endif
+  objects(object_ind)%pointer_double_1 = 0.d0
+  objects(object_ind)%associated = .true.
+
+  end subroutine object_associate_by_index_double_1
+
+!===========================================================================
+  subroutine object_associate_by_index_double_2 (object_ind, dim1, dim2)
+!---------------------------------------------------------------------------
+! Description : associate pointer of object by its index
+!
+! Created     : J. Toulouse, 07 Sep 2007
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in)  :: object_ind, dim1, dim2
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_associate_by_index_double_2'
+  integer all_err
+
+! begin
+
+! if object already associated, return
+  if (objects(object_ind)%associated) return
+
+! store type
+  objects(object_ind)%type = 'double_2'
+
+! store dimensions
+  call append(objects(object_ind)%dimensions, dim1)
+  call append(objects(object_ind)%dimensions, dim2)
+
+! associate (allocate) pointer
+  allocate (objects(object_ind)%pointer_double_2(dim1, dim2), stat = all_err)
+  if (all_err /= 0) then
+   call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+  endif
+  objects(object_ind)%pointer_double_2 = 0.d0
+  objects(object_ind)%associated = .true.
+
+  end subroutine object_associate_by_index_double_2
+
+!===========================================================================
   subroutine object_deassociate (object_name)
 !---------------------------------------------------------------------------
 ! Description : deassociate object
@@ -1697,7 +1860,8 @@ module objects_mod
   end subroutine object_deassociate
 
 !===========================================================================
-  recursive subroutine object_alloc_integer_1 (object_name, object, dim1)
+!  recursive subroutine object_alloc_integer_1 (object_name, object, dim1) !old
+  subroutine object_alloc_integer_1 (object_name, object, dim1) !new
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -1739,7 +1903,10 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min)
     object_temp(:) = object(1:dim_min)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1)
+!    call object_alloc (object_name, object, dim1) ! old
+    allocate (object(dim1)) !new
+    object(:) = 0 ! new
+    call object_associate (object_name, object, dim1) ! new
     object(1:dim_min) = object_temp(:)
     call release ('object_temp', object_temp)
    endif
@@ -1749,7 +1916,7 @@ module objects_mod
   end subroutine object_alloc_integer_1
 
 !===========================================================================
-  recursive subroutine object_alloc_integer_2 (object_name, object, dim1, dim2)
+  subroutine object_alloc_integer_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -1794,7 +1961,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
     object_temp(:,:) = object(1:dim_min1,1:dim_min2)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2)
+    allocate (object(dim1,dim2))
+    object(:,:) = 0
+    call object_associate (object_name, object, dim1, dim2)
     object(1:dim_min1,1:dim_min2) = object_temp(:,:)
     call release ('object_temp', object_temp)
    endif
@@ -1804,7 +1973,7 @@ module objects_mod
   end subroutine object_alloc_integer_2
 
 !===========================================================================
-  recursive subroutine object_alloc_integer_3 (object_name, object, dim1, dim2, dim3)
+  subroutine object_alloc_integer_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -1853,7 +2022,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
     object_temp(:,:,:) = object(1:dim_min1,1:dim_min2,1:dim_min3)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object(dim1,dim2,dim3))
+    object(:,:,:) = 0
+    call object_associate (object_name, object, dim1, dim2, dim3)
     object(1:dim_min1,1:dim_min2,1:dim_min3) = object_temp(:,:,:)
     call release ('object_temp', object_temp)
    endif
@@ -1863,7 +2034,7 @@ module objects_mod
   end subroutine object_alloc_integer_3
 
 !===========================================================================
-  recursive subroutine object_alloc_integer_row_1 (object_name, object, dim1)
+  subroutine object_alloc_integer_row_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -1908,7 +2079,8 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min)
     object_temp(:) = object(1:dim_min)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1)
+    allocate (object(dim1))
+    call object_associate (object_name, object, dim1)
     object(1:dim_min) = object_temp(:)
     call release ('object_temp', object_temp)
    endif
@@ -1922,7 +2094,7 @@ module objects_mod
   end subroutine object_alloc_integer_row_1
 
 !===========================================================================
-  recursive subroutine object_alloc_double_1 (object_name, object, dim1)
+  subroutine object_alloc_double_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -1963,7 +2135,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min)
     object_temp(:) = object(1:dim_min)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1)
+    allocate (object(dim1))
+    object(:) = 0.d0
+    call object_associate (object_name, object, dim1)
     object(1:dim_min) = object_temp(:)
     call release ('object_temp', object_temp)
 !   resize also the corresponding objects for averages and errors
@@ -1978,7 +2152,7 @@ module objects_mod
   end subroutine object_alloc_double_1
 
 !===========================================================================
-  recursive subroutine object_alloc_double_2 (object_name, object, dim1, dim2)
+  subroutine object_alloc_double_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2024,7 +2198,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
     object_temp(:,:) = object(1:dim_min1,1:dim_min2)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2)
+    allocate (object(dim1,dim2))
+    object(:,:) = 0.d0
+    call object_associate (object_name, object, dim1, dim2)
     object(1:dim_min1,1:dim_min2) = object_temp(:,:)
     call release ('object_temp', object_temp)
 !   resize also the corresponding objects for averages and errors
@@ -2042,7 +2218,7 @@ module objects_mod
   end subroutine object_alloc_double_2
 
 !===========================================================================
-  recursive subroutine object_alloc_double_3 (object_name, object, dim1, dim2, dim3)
+  subroutine object_alloc_double_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2091,7 +2267,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
     object_temp(:,:,:) = object(1:dim_min1,1:dim_min2,1:dim_min3)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object(dim1,dim2,dim3))
+    object(:,:,:) = 0.d0
+    call object_associate (object_name, object, dim1, dim2, dim3)
     object(1:dim_min1,1:dim_min2,1:dim_min3) = object_temp(:,:,:)
     call release ('object_temp', object_temp)
 !   resize also the corresponding objects for averages and errors
@@ -2106,7 +2284,7 @@ module objects_mod
   end subroutine object_alloc_double_3
 
 !===========================================================================
-  recursive subroutine object_alloc_double_4 (object_name, object, dim1, dim2, dim3, dim4)
+  subroutine object_alloc_double_4 (object_name, object, dim1, dim2, dim3, dim4)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2157,7 +2335,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4)
     object_temp(:,:,:,:) = object(1:dim_min1,1:dim_min2,1:dim_min3,1:dim_min4)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2, dim3, dim4)
+    allocate (object(dim1,dim2,dim3,dim4))
+    object(:,:,:,:) = 0.d0
+    call object_associate (object_name, object, dim1, dim2, dim3, dim4)
     object(1:dim_min1,1:dim_min2,1:dim_min3,1:dim_min4) = object_temp(:,:,:,:)
     call release ('object_temp', object_temp)
    endif
@@ -2167,7 +2347,7 @@ module objects_mod
   end subroutine object_alloc_double_4
 
 !===========================================================================
-  recursive subroutine object_alloc_double_5 (object_name, object, dim1, dim2, dim3, dim4, dim5)
+  subroutine object_alloc_double_5 (object_name, object, dim1, dim2, dim3, dim4, dim5)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2221,7 +2401,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4, dim_min5)
     object_temp(:,:,:,:,:) = object(1:dim_min1,1:dim_min2,1:dim_min3,1:dim_min4,1:dim_min5)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2, dim3, dim4, dim5)
+    allocate (object(dim1,dim2,dim3,dim4,dim5))
+    object(:,:,:,:,:) = 0.d0
+    call object_associate (object_name, object, dim1, dim2, dim3, dim4, dim5)
     object(1:dim_min1,1:dim_min2,1:dim_min3,1:dim_min4,1:dim_min5) = object_temp(:,:,:,:,:)
     call release ('object_temp', object_temp)
    endif
@@ -2231,7 +2413,7 @@ module objects_mod
   end subroutine object_alloc_double_5
 
 !===========================================================================
-  recursive subroutine object_alloc_double_row_1 (object_name, object, dim1)
+  subroutine object_alloc_double_row_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2272,7 +2454,8 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min)
     object_temp(:) = object(1:dim_min)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1)
+    allocate (object(dim1))
+    call object_associate (object_name, object, dim1)
     object(1:dim_min) = object_temp(:)
     call release ('object_temp', object_temp)
    endif
@@ -2282,7 +2465,7 @@ module objects_mod
   end subroutine object_alloc_double_row_1
 
 !===========================================================================
-  recursive subroutine object_alloc_logical_1 (object_name, object, dim1)
+  subroutine object_alloc_logical_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2324,7 +2507,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min)
     object_temp(:) = object(1:dim_min)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1)
+    allocate (object(dim1))
+    object(:) = .false.
+    call object_associate (object_name, object, dim1)
     object(1:dim_min) = object_temp(:)
     call release ('object_temp', object_temp)
    endif
@@ -2334,7 +2519,7 @@ module objects_mod
   end subroutine object_alloc_logical_1
 
 !===========================================================================
-  recursive subroutine object_alloc_logical_2 (object_name, object, dim1, dim2)
+  subroutine object_alloc_logical_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2379,7 +2564,9 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
     object_temp(:,:) = object(1:dim_min1,1:dim_min2)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2)
+    allocate (object(dim1,dim2))
+    object(:,:) = .false.
+    call object_associate (object_name, object, dim1, dim2)
     object(1:dim_min1,1:dim_min2) = object_temp(:,:)
     call release ('object_temp', object_temp)
    endif
@@ -2389,7 +2576,7 @@ module objects_mod
   end subroutine object_alloc_logical_2
 
 !===========================================================================
-  recursive subroutine object_alloc_logical_3 (object_name, object, dim1, dim2, dim3)
+  subroutine object_alloc_logical_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2437,7 +2624,8 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
     object_temp(:,:,:) = object(1:dim_min1,1:dim_min2,1:dim_min3)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object(dim1,dim2,dim3))
+    call object_associate (object_name, object, dim1, dim2, dim3)
     object(1:dim_min1,1:dim_min2,1:dim_min3) = object_temp(:,:,:)
     call release ('object_temp', object_temp)
    endif
@@ -2447,7 +2635,7 @@ module objects_mod
   end subroutine object_alloc_logical_3
 
 !===========================================================================
-  recursive subroutine object_alloc_string_1 (object_name, object, dim1)
+  subroutine object_alloc_string_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
 ! Description : or resize it if already allocated
@@ -2488,7 +2676,8 @@ module objects_mod
     call alloc ('object_temp', object_temp, dim_min)
     object_temp(:) = object(1:dim_min)
     call object_release (object_name, object)
-    call object_alloc (object_name, object, dim1)
+    allocate (object(dim1))
+    call object_associate (object_name, object, dim1)
     object(1:dim_min) = object_temp(:)
     call release ('object_temp', object_temp)
    endif

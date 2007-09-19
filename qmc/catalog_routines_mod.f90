@@ -18,6 +18,8 @@ module catalog_routines_mod
   use density_mod
   use intracule_mod
   use extracule_mod
+  use nuclei_mod
+  use forces_mod
 
   contains
 
@@ -78,6 +80,7 @@ module catalog_routines_mod
   call catalog_one_node ('elec_spin_nb_closest_to_atom_encountered_bld', elec_spin_nb_closest_to_atom_encountered_bld)
   call catalog_one_node ('eloc_pot_en_bld', eloc_pot_en_bld)
   call catalog_one_node ('eloc_pot_ee_bld', eloc_pot_ee_bld)
+  call catalog_one_node ('dist_nn_bld', dist_nn_bld)
 
 ! basis
   call catalog_one_node ('basis_ovlp_bld', basis_ovlp_bld)
@@ -376,6 +379,15 @@ module catalog_routines_mod
   call catalog_one_node ('extracule_bld', extracule_bld)
   call catalog_one_node ('extracule_4pir2_bld', extracule_4pir2_bld)
   call catalog_one_node ('extracule_zv1_bld', extracule_zv1_bld)
+
+! forces
+  call catalog_one_node ('forces_nn_bld', forces_nn_bld)
+  call catalog_one_node ('forces_bare_bld', forces_bare_bld)
+  call catalog_one_node ('forces_zv_bld', forces_zv_bld)
+  call catalog_one_node ('forces_zvzb_av_bld', forces_zvzb_av_bld)
+  call catalog_one_node ('forces_q_bld', forces_q_bld)
+  call catalog_one_node ('forces_eloc_q_bld', forces_eloc_q_bld)
+  call catalog_one_node ('forces_zvzb_av_err_bld', forces_zvzb_av_err_bld)
 
 ! average routines (not nodes!)
 !  call catalog_one_routine ('dpsi_orb_av_bld', dpsi_orb_av_bld)

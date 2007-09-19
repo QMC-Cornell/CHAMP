@@ -25,11 +25,29 @@ module average_mod
   integer, allocatable         :: averages_walk_object_index (:)
   integer, allocatable         :: averages_walk_object_av_index (:)
 
+  integer                      :: variances_defined_nb = 0
+  integer, allocatable         :: variances_defined_object_av_index (:)
+  integer, allocatable         :: variances_defined_object_var_index (:)
+  integer                      :: variances_nb = 0
+  integer, allocatable         :: variances_object_av_index (:)
+  integer, allocatable         :: variances_object_var_index (:)
+
+  integer                      :: covariances_defined_nb = 0
+  integer, allocatable         :: covariances_defined_object_av1_index (:)
+  integer, allocatable         :: covariances_defined_object_av2_index (:)
+  integer, allocatable         :: covariances_defined_object_covar_index (:)
+  integer                      :: covariances_nb = 0
+  integer, allocatable         :: covariances_object_av1_index (:)
+  integer, allocatable         :: covariances_object_av2_index (:)
+  integer, allocatable         :: covariances_object_covar_index (:)
+
   integer                      :: errors_defined_nb = 0
   integer, allocatable         :: errors_defined_object_av_index (:)
+  integer, allocatable         :: errors_defined_object_var_index (:)
   integer, allocatable         :: errors_defined_object_err_index (:)
   integer                      :: errors_nb = 0
   integer, allocatable         :: errors_object_av_index (:)
+  integer, allocatable         :: errors_object_var_index (:)
   integer, allocatable         :: errors_object_err_index (:)
   integer                      :: errors_walk_nb = 0
   integer, allocatable         :: errors_walk_object_av_index (:)
@@ -171,13 +189,7 @@ module average_mod
 ! test if average not already defined
   do obj_i = 1, averages_defined_nb
    if (object_av_ind == averages_defined_object_av_index (obj_i) ) then
-
-!     if (object_ind == averages_defined_object_index (obj_i) ) then
-!       return  ! couple (object, average) already defined, do nothing
-!     endif
-
     call die (lhere, 'object average >'+trim(objects(object_av_ind)%name)+'< defined more than once.')
-
    endif
   enddo
 
@@ -236,10 +248,7 @@ module average_mod
 ! begin
 
 ! index of average
-  object_av_ind = object_index (object_av_name)
-  if (object_av_ind == 0) then
-    call die (lhere, 'object >'+trim(object_av_name)+'< is not catalogued.')
-  endif
+  object_av_ind = object_index_or_die (object_av_name)
 
 ! test if object is a defined average object
   object_found = .false.
@@ -287,6 +296,239 @@ module average_mod
  end subroutine object_average_request
 
 ! ===================================================================================
+  subroutine object_variance_define (object_av_name, object_var_name)
+! -----------------------------------------------------------------------------------
+! Description   : define variance of averaged object to be computed in MC iterations
+! Description   : store indexes of couple (average, variance)
+!
+! Created       : J. Toulouse, 04 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_av_name, object_var_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_define'
+  integer object_av_ind, object_var_ind
+  integer obj_i
+
+! begin
+
+! get index of average, catalogue average if necessary
+  call object_add_once_and_index (object_av_name, object_av_ind)
+
+! test if variance has already been defined through an statistical error
+  do obj_i = 1, errors_defined_nb
+   if (object_av_ind == errors_defined_object_av_index (obj_i)) then
+     write(6,'(6a)') lhere, ': variance >'+object_var_name+'< of average >'+object_av_name+'< has already been automatically defined though the corresponding statistical error.'
+     write(6,'(2a)') lhere, ': To define the variance, object_variance_define has to be placed before object_error_define.'
+     call die (lhere)
+   endif
+  enddo
+
+! get index of variance, catalogue average if necessary
+  call object_add_once_and_index (object_var_name, object_var_ind)
+
+! test if average and its variance are different
+  if (object_av_ind == object_var_ind) then
+    call die (lhere, 'object >'+trim(objects(object_var_ind)%name)+'< is defined as its own variance object!')
+  endif
+
+! test if variance not already defined
+  do obj_i = 1, variances_defined_nb
+   if (object_var_ind == variances_defined_object_var_index (obj_i) ) then
+    call die (lhere, 'variance object >'+trim(objects(object_var_ind)%name)+'< defined more than once.')
+   endif
+  enddo
+
+  variances_defined_nb = variances_defined_nb + 1
+  call alloc ('variances_defined_object_av_index', variances_defined_object_av_index, variances_defined_nb)
+  call alloc ('variances_defined_object_var_index', variances_defined_object_var_index, variances_defined_nb)
+  variances_defined_object_av_index (variances_defined_nb) = object_av_ind
+  variances_defined_object_var_index (variances_defined_nb) = object_var_ind
+
+ end subroutine object_variance_define
+
+! ===================================================================================
+  subroutine object_variance_request (object_var_name)
+! -----------------------------------------------------------------------------------
+! Description   : request for calculation of variance object 'object_var_name' over MC iterations
+!
+! Created       : J. Toulouse, 04 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_var_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_request'
+  integer object_var_ind
+
+! begin
+
+! index of error
+  object_var_ind = object_index_or_die (object_var_name)
+
+  call object_variance_request_by_index (object_var_ind)
+
+ end subroutine object_variance_request
+
+! ===================================================================================
+  subroutine object_variance_request_by_index (object_var_ind)
+! -----------------------------------------------------------------------------------
+! Description   : request calculation of variance object by its index
+!
+! Created       : J. Toulouse, 06 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in) :: object_var_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_request_by_index'
+  integer object_av_ind
+  integer obj_i
+  logical object_found
+
+! begin
+
+! test if object is a defined variance object
+  object_found = .false.
+  do obj_i = 1, variances_defined_nb
+   if (object_var_ind == variances_defined_object_var_index (obj_i)) then
+    object_found = .true.
+    object_av_ind = variances_defined_object_av_index (obj_i)
+    exit
+   endif
+  enddo
+  if (.not. object_found) then
+    call die (lhere, ': object >'+trim(objects(object_var_ind)%name)+'< has never been defined as a variance.')
+  endif
+
+! do nothing if object already recorded for variance
+  do obj_i = 1, variances_nb
+   if (object_var_ind == variances_object_var_index (obj_i)) then
+     return
+   endif
+  enddo
+
+! add error to the list of variances
+  variances_nb = variances_nb + 1
+  call alloc ('variances_object_av_index', variances_object_av_index, variances_nb)
+  call alloc ('variances_object_var_index', variances_object_var_index, variances_nb)
+  variances_object_av_index (variances_nb) = object_av_ind
+  variances_object_var_index (variances_nb) = object_var_ind
+
+! invalidate variance
+  call object_invalidate_by_index (object_var_ind)
+
+ end subroutine object_variance_request_by_index
+
+! ===================================================================================
+  subroutine object_covariance_define (object_av1_name, object_av2_name, object_covar_name)
+! -----------------------------------------------------------------------------------
+! Description   : define covariance of two averaged objects to be computed in MC iterations
+!
+! Created       : J. Toulouse, 07 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_av1_name, object_av2_name, object_covar_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_define'
+  integer object_av1_ind, object_av2_ind, object_covar_ind
+  integer obj_i
+
+! begin
+
+! get index of average, catalogue average if necessary
+  call object_add_once_and_index (object_av1_name, object_av1_ind)
+  call object_add_once_and_index (object_av2_name, object_av2_ind)
+
+! get index of variance, catalogue average if necessary
+  call object_add_once_and_index (object_covar_name, object_covar_ind)
+
+! test if covariance not already defined
+  do obj_i = 1, covariances_defined_nb
+   if (object_covar_ind == covariances_defined_object_covar_index (obj_i) ) then
+    call die (lhere, 'covariance object >'+trim(objects(object_covar_ind)%name)+'< defined more than once.')
+   endif
+  enddo
+
+  covariances_defined_nb = covariances_defined_nb + 1
+  call alloc ('covariances_defined_object_av1_index', covariances_defined_object_av1_index, covariances_defined_nb)
+  call alloc ('covariances_defined_object_av2_index', covariances_defined_object_av2_index, covariances_defined_nb)
+  call alloc ('covariances_defined_object_covar_index', covariances_defined_object_covar_index, covariances_defined_nb)
+  covariances_defined_object_av1_index (covariances_defined_nb) = object_av1_ind
+  covariances_defined_object_av2_index (covariances_defined_nb) = object_av2_ind
+  covariances_defined_object_covar_index (covariances_defined_nb) = object_covar_ind
+
+ end subroutine object_covariance_define
+
+! ===================================================================================
+  subroutine object_covariance_request (object_covar_name)
+! -----------------------------------------------------------------------------------
+! Description   : request for calculation of covariance object over MC iterations
+!
+! Created       : J. Toulouse, 17 Jul 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_covar_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_error_request'
+  integer object_av1_ind, object_av2_ind, object_covar_ind
+  integer obj_i
+  logical object_found
+
+! begin
+
+! index of covariance
+  object_covar_ind = object_index_or_die (object_covar_name)
+
+! test if object is a defined covariance
+  object_found = .false.
+  do obj_i = 1, errors_defined_nb
+   if (object_covar_ind == covariances_defined_object_covar_index (obj_i)) then
+    object_found = .true.
+    object_av1_ind = covariances_defined_object_av1_index (obj_i)
+    object_av2_ind = covariances_defined_object_av2_index (obj_i)
+    exit
+   endif
+  enddo
+  if (.not. object_found) then
+    call die (lhere, ': object >'+trim(objects(object_covar_ind)%name)+'< has never been defined as a covariance.')
+  endif
+
+! do nothing if object already recorded for covariance
+  do obj_i = 1, covariances_nb
+   if (object_covar_ind == covariances_object_covar_index (obj_i) ) then
+     return
+   endif
+  enddo
+
+! add covariance to the list of covariances
+  covariances_nb = covariances_nb + 1
+  call alloc ('covariances_object_av1_index', covariances_object_av1_index, covariances_nb)
+  call alloc ('covariances_object_av2_index', covariances_object_av2_index, covariances_nb)
+  call alloc ('covariances_object_covar_index', covariances_object_covar_index, covariances_nb)
+  covariances_object_av1_index (covariances_nb) = object_av1_ind
+  covariances_object_av2_index (covariances_nb) = object_av2_ind
+  covariances_object_covar_index (covariances_nb) = object_covar_ind
+
+! invalidate covariance
+  call object_invalidate_by_index (object_covar_ind)
+
+ end subroutine object_covariance_request
+
+! ===================================================================================
   subroutine object_error_define (object_av_name, object_err_name)
 ! -----------------------------------------------------------------------------------
 ! Description   : define statistical error of averaged object to be computed in MC iterations
@@ -301,25 +543,17 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_define'
-  integer object_av_ind, object_err_ind
+  integer object_av_ind, object_var_ind, object_err_ind
   integer obj_i
+  logical variance_found
 
 ! begin
 
 ! index of object, catalogue object if necessary
-  object_av_ind = object_index (object_av_name)
-  if (object_av_ind == 0) then
-    call object_add (object_av_name)
-    object_av_ind = objects_nb
-  endif
-
+  call object_add_once_and_index (object_av_name, object_av_ind)
 
 ! index of average, catalogue object if necessary
-  object_err_ind = object_index (object_err_name)
-  if (object_err_ind == 0) then
-    call object_add (object_err_name)
-    object_err_ind = objects_nb
-  endif
+  call object_add_once_and_index (object_err_name, object_err_ind)
 
 ! test if object and its average are different
   if (object_av_ind == object_err_ind) then
@@ -333,10 +567,28 @@ module average_mod
    endif
   enddo
 
+! test if a corresponding variance is defined
+  variance_found = .false.
+  do obj_i = 1, variances_defined_nb
+   if (object_av_ind == variances_defined_object_av_index (obj_i)) then
+     variance_found = .true.
+     object_var_ind = variances_defined_object_var_index (obj_i)
+     exit
+   endif
+  enddo
+
+! if corresponding variance not found, add it as a new object and define as a variance
+  if (.not. variance_found) then
+   call object_add_and_index (object_var_ind)  
+   call object_variance_define (object_av_name, objects(object_var_ind)%name)
+  endif
+
   errors_defined_nb = errors_defined_nb + 1
   call alloc ('errors_defined_object_av_index', errors_defined_object_av_index, errors_defined_nb)
+  call alloc ('errors_defined_object_var_index', errors_defined_object_var_index, errors_defined_nb)
   call alloc ('errors_defined_object_err_index', errors_defined_object_err_index, errors_defined_nb)
   errors_defined_object_av_index (errors_defined_nb) = object_av_ind
+  errors_defined_object_var_index (errors_defined_nb) = object_var_ind
   errors_defined_object_err_index (errors_defined_nb) = object_err_ind
 
  end subroutine object_error_define
@@ -355,24 +607,22 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_request'
-  integer object_av_ind, object_err_ind
+  integer object_av_ind, object_var_ind, object_err_ind
   integer obj_i
   logical object_found
 
 ! begin
 
 ! index of error
-  object_err_ind = object_index (object_err_name)
-  if (object_err_ind == 0) then
-    call die (lhere, 'object >'+trim(object_err_name)+'< is not catalogued.')
-  endif
+  object_err_ind = object_index_or_die (object_err_name)
 
-! test if object is a defined average object
+! test if object is a defined statistical error
   object_found = .false.
   do obj_i = 1, errors_defined_nb
    if (object_err_ind == errors_defined_object_err_index (obj_i)) then
     object_found = .true.
     object_av_ind = errors_defined_object_av_index (obj_i)
+    object_var_ind = errors_defined_object_var_index (obj_i)
     exit
    endif
   enddo
@@ -387,15 +637,21 @@ module average_mod
    endif
   enddo
 
+  
 ! add error to the list of erros
   errors_nb = errors_nb + 1
   call alloc ('errors_object_av_index', errors_object_av_index, errors_nb)
+  call alloc ('errors_object_var_index', errors_object_var_index, errors_nb)
   call alloc ('errors_object_err_index', errors_object_err_index, errors_nb)
   errors_object_av_index (errors_nb) = object_av_ind
+  errors_object_var_index (errors_nb) = object_var_ind
   errors_object_err_index (errors_nb) = object_err_ind
 
 ! invalidate error
   call object_invalidate_by_index (object_err_ind)
+
+! request corresponding variance
+  call object_variance_request_by_index (object_var_ind)
 
  end subroutine object_error_request
 
@@ -423,14 +679,6 @@ module average_mod
 
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': object_average must be called in the MC iterations'
-!    call die (lhere)
-!  endif
 
 ! only for first iteration
   if (step_iterations_nb == 1) then
@@ -522,16 +770,7 @@ module average_mod
   real(dp), allocatable :: collect(:)
   integer ierr
 
-
 ! begin
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': object_average must be called in the MC iterations'
-!    call die (lhere)
-!  endif
-
 
 ! only for first iteration
   if (step_iterations_nb == 1) then
@@ -644,15 +883,6 @@ module average_mod
   integer ierr
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': object_average must be called in the MC iterations'
-!    call die (lhere)
-!  endif
-
 
 ! only for first iteration
   if (step_iterations_nb == 1) then
@@ -746,293 +976,610 @@ module average_mod
  end subroutine object_average_by_index_double_2
 
 ! ===================================================================================
-  subroutine object_error_by_index_double_0 (object_av_ind, object_err_ind)
+  subroutine object_variance_by_index_double_0 (object_av_ind, object_var_ind)
 ! -----------------------------------------------------------------------------------
-! Description   : calculate statistical error on the object averaged over MC iterations
+! Description   : calculate variance of an average object over MC iterations
 !
-! Created       : J. Toulouse, 19 Oct 2005
-! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
+! Created       : J. Toulouse, 05 Sep 2007
 ! -----------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
 ! input
-  integer object_av_ind, object_err_ind
+  integer, intent(in) :: object_av_ind, object_var_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_0'
-  character(len=max_string_len_type) object_av_type, object_err_type
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_by_index_double_0'
+  character(len=max_string_len_type) object_av_type, object_var_type
   integer dim_av1, dim_err1
 
-
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': object_average must be called in the MC iterations'
-!    call die (lhere)
-!  endif
-
-! if not at the end of a block, do nothing
-!  if (mod(step_iterations_nb, nstep) /= 0) then
-!    return
-!  endif
 
 ! only for first block
   if (block_iterations_nb == 1) then
 
 !   test association
     call object_associated_or_die_by_index (object_av_ind)
-    call object_associated_or_die_by_index (object_err_ind)
+    call object_associated_or_die_by_index (object_var_ind)
 
 !   test on type
     object_av_type = objects(object_av_ind)%type
-    object_err_type = objects(object_err_ind)%type
+    object_var_type = objects(object_var_ind)%type
 
-    if ( object_av_type /= object_err_type) then
+    if (object_av_type /= object_var_type) then
      write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !   intermediate objects
-    objects(object_av_ind)%sum_blk_square_double_0 = 0.d0
+    objects(object_var_ind)%sum_blk_square_double_0 = 0.d0
     objects(object_av_ind)%previous_double_0 = 0.d0
 
    endif ! first block
 
-
 !  calculate sum of square of averages over blocks
-   objects(object_av_ind)%sum_blk_square_double_0 = objects(object_av_ind)%sum_blk_square_double_0   &
-       + ( objects(object_av_ind)%pointer_double_0 * block_iterations_nb - objects(object_av_ind)%previous_double_0 * (block_iterations_nb - 1 ) )**2
+   objects(object_var_ind)%sum_blk_square_double_0 = objects(object_var_ind)%sum_blk_square_double_0   &
+       + (objects(object_av_ind)%pointer_double_0 * block_iterations_nb - objects(object_av_ind)%previous_double_0 * (block_iterations_nb - 1))**2
 
-!  calculate error
-   if (block_iterations_nb == 1) then
-    objects(object_err_ind)%pointer_double_0 = 0.d0
-   else
-    objects(object_err_ind)%pointer_double_0 = dsqrt( (objects(object_av_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av_ind)%pointer_double_0**2)  &
-                          /(block_iterations_nb-1) )
-   endif
-
-   call object_modified_by_index (object_err_ind)
+!  calculate variance
+   objects(object_var_ind)%pointer_double_0 = objects(object_var_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av_ind)%pointer_double_0**2
+   call object_modified_by_index (object_var_ind)
 
 !  save current average value for next iteration
-   objects(object_av_ind)%previous_double_0 =  objects(object_av_ind)%pointer_double_0
+   objects(object_av_ind)%previous_double_0 = objects(object_av_ind)%pointer_double_0
 
- end subroutine object_error_by_index_double_0
+ end subroutine object_variance_by_index_double_0
 
 ! ===================================================================================
-  subroutine object_error_by_index_double_1 (object_av_ind, object_err_ind)
+  subroutine object_variance_by_index_double_1 (object_av_ind, object_var_ind)
 ! -----------------------------------------------------------------------------------
-! Description   : calculate statistical error on the object averaged over MC iterations
+! Description   : calculate variance of an average object over MC iterations
 !
-! Created       : J. Toulouse, 19 Oct 2005
-! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
+! Created       : J. Toulouse, 07 Sep 2007
 ! -----------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
 ! input
-  integer object_av_ind, object_err_ind
+  integer, intent(in) :: object_av_ind, object_var_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_1'
-!!  real(dp), allocatable :: object_av(:)
-!!  real(dp), allocatable :: object_err(:)
-  character(len=max_string_len_type) object_av_type, object_err_type
-  integer dim_av1, dim_err1
-
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_by_index_double_1'
+  character(len=max_string_len_type) object_av_type, object_var_type
+  integer dim_av1, dim_var1
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': object_average must be called in the MC iterations'
-!    call die (lhere)
-!  endif
-
-! if not at the end of a block, do nothing
-!  if (mod(step_iterations_nb, nstep) /= 0) then
-!    return
-!  endif
-
-! get objects
-!!  call object_index_to_target (object_av_ind, object_av)
-!!  call object_index_to_target (object_err_ind, object_err)
 
 ! only for first block
   if (block_iterations_nb == 1) then
 
 !   test association
     call object_associated_or_die_by_index (object_av_ind)
-    call object_associated_or_die_by_index (object_err_ind)
+    call object_associated_or_die_by_index (object_var_ind)
 
 !   test on type
     object_av_type = objects(object_av_ind)%type
-    object_err_type = objects(object_err_ind)%type
+    object_var_type = objects(object_var_ind)%type
 
-    if ( object_av_type /= object_err_type) then
+    if (object_av_type /= object_var_type) then
      write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !   test on dimensions
     dim_av1 = objects(object_av_ind)%dimensions(1)
-    dim_err1 = objects(object_err_ind)%dimensions(1)
+    dim_var1 = objects(object_var_ind)%dimensions(1)
 
-    if ( dim_av1 /= dim_err1) then
+    if (dim_av1 /= dim_var1) then
      write(6,*) trim(lhere),': dimension of object', trim(objects(object_av_ind)%name),' is ', dim_av1
-     write(6,*) trim(lhere),': dimension of object ',trim(objects(object_err_ind)%name),' is ', dim_err1
+     write(6,*) trim(lhere),': dimension of object ',trim(objects(object_var_ind)%name),' is ', dim_var1
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !   intermediate objects
-    call alloc ('objects(object_av_ind)%sum_blk_square_double_1', objects(object_av_ind)%sum_blk_square_double_1, dim_av1)
+    call alloc ('objects(object_var_ind)%sum_blk_square_double_1', objects(object_var_ind)%sum_blk_square_double_1, dim_var1)
     call alloc('objects(object_av_ind)%previous_double_1', objects(object_av_ind)%previous_double_1, dim_av1)
-    objects(object_av_ind)%sum_blk_square_double_1 = 0.d0
+    objects(object_var_ind)%sum_blk_square_double_1 = 0.d0
     objects(object_av_ind)%previous_double_1 = 0.d0
 
    endif ! first block
 
 
 !  calculate sum of square of averages over blocks
-!!   objects(object_av_ind)%sum_blk_square_double_1 = objects(object_av_ind)%sum_blk_square_double_1   &
-!!       + ( object_av * block_iterations_nb - objects(object_av_ind)%previous_double_1 * (block_iterations_nb - 1 ) )**2
-   objects(object_av_ind)%sum_blk_square_double_1 = objects(object_av_ind)%sum_blk_square_double_1   &
-       + (  objects(object_av_ind)%pointer_double_1 * block_iterations_nb - objects(object_av_ind)%previous_double_1 * (block_iterations_nb - 1 ) )**2
+   objects(object_var_ind)%sum_blk_square_double_1 = objects(object_var_ind)%sum_blk_square_double_1   &
+       + (objects(object_av_ind)%pointer_double_1 * block_iterations_nb - objects(object_av_ind)%previous_double_1 * (block_iterations_nb - 1 ))**2
 
-!  calculate error
-   if (block_iterations_nb == 1) then
-!!    object_err = 0.d0
-    objects(object_err_ind)%pointer_double_1 = 0.d0
-   else
-!!    object_err = dsqrt( (objects(object_av_ind)%sum_blk_square_double_1/block_iterations_nb - object_av**2)  &
-!!                          /(block_iterations_nb-1) )
-    objects(object_err_ind)%pointer_double_1 = dsqrt( (objects(object_av_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av_ind)%pointer_double_1**2)  &
-                          /(block_iterations_nb-1) )
-   endif
-
-!!   call object_write_in_address_by_index (object_err_ind, object_err)
-   call object_modified_by_index (object_err_ind)
+!  calculate variance
+   objects(object_var_ind)%pointer_double_1 = objects(object_var_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av_ind)%pointer_double_1**2
+   call object_modified_by_index (object_var_ind)
 
 !  save current average value for next iteration
-!!   objects(object_av_ind)%previous_double_1 = object_av
    objects(object_av_ind)%previous_double_1 = objects(object_av_ind)%pointer_double_1
 
- end subroutine object_error_by_index_double_1
+ end subroutine object_variance_by_index_double_1
 
 ! ===================================================================================
-  subroutine object_error_by_index_double_2 (object_av_ind, object_err_ind)
+  subroutine object_variance_by_index_double_2 (object_av_ind, object_var_ind)
 ! -----------------------------------------------------------------------------------
-! Description   : calculate statistical error on the object averaged over MC iterations
+! Description   : calculate variance of an average object over MC iterations
 !
-! Created       : J. Toulouse, 19 Oct 2005
-! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
+! Created       : J. Toulouse, 07 Sep 2007
 ! -----------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
 ! input
-  integer object_av_ind, object_err_ind
+  integer, intent(in) :: object_av_ind, object_var_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_2'
-!!  real(dp), allocatable :: object_av(:,:)
-!!  real(dp), allocatable :: object_err(:,:)
-  character(len=max_string_len_type) object_av_type, object_err_type
-  integer dim_av1, dim_err1, dim_av2, dim_err2
-
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_by_index_double_2'
+  character(len=max_string_len_type) object_av_type, object_var_type
+  integer dim_av1, dim_var1, dim_av2, dim_var2
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': object_average must be called in the MC iterations'
-!    call die (lhere)
-!  endif
-
-! if not at the end of a block, do nothing
-!  if (mod(step_iterations_nb, nstep) /= 0) then
-!    return
-!  endif
-
-! get objects
-!! call object_index_to_target (object_av_ind, object_av)
-!!  call object_index_to_target (object_err_ind, object_err)
 
 ! only for first block
   if (block_iterations_nb == 1) then
 
 !   test association
     call object_associated_or_die_by_index (object_av_ind)
-    call object_associated_or_die_by_index (object_err_ind)
+    call object_associated_or_die_by_index (object_var_ind)
 
 !   test on type
     object_av_type = objects(object_av_ind)%type
+    object_var_type = objects(object_var_ind)%type
+
+    if (object_av_type /= object_var_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_av1 = objects(object_av_ind)%dimensions(1)
+    dim_var1 = objects(object_var_ind)%dimensions(1)
+    dim_av2 = objects(object_av_ind)%dimensions(2)
+    dim_var2 = objects(object_var_ind)%dimensions(2)
+
+    if (dim_av1 /= dim_var1 .or. dim_av2 /= dim_var2) then
+     write(6,*) trim(lhere),': dimensions of object', trim(objects(object_av_ind)%name),' are ', dim_av1, dim_av2
+     write(6,*) trim(lhere),': dimensions of object ',trim(objects(object_var_ind)%name),' are ', dim_var1, dim_var2
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    call alloc ('objects(object_var_ind)%sum_blk_square_double_2', objects(object_var_ind)%sum_blk_square_double_2, dim_var1, dim_var2)
+    call alloc('objects(object_av_ind)%previous_double_2', objects(object_av_ind)%previous_double_2, dim_av1, dim_av2)
+    objects(object_var_ind)%sum_blk_square_double_2 = 0.d0
+    objects(object_av_ind)%previous_double_2 = 0.d0
+
+   endif ! first block
+
+!  calculate sum of square of averages over blocks
+   objects(object_var_ind)%sum_blk_square_double_2 = objects(object_var_ind)%sum_blk_square_double_2   &
+       + ( objects(object_av_ind)%pointer_double_2 * block_iterations_nb - objects(object_av_ind)%previous_double_2 * (block_iterations_nb - 1 ) )**2
+
+!  calculate variance
+    objects(object_var_ind)%pointer_double_2 = objects(object_var_ind)%sum_blk_square_double_2/block_iterations_nb - objects(object_av_ind)%pointer_double_2**2
+   call object_modified_by_index (object_var_ind)
+
+!  save current average value for next iteration
+   objects(object_av_ind)%previous_double_2 =  objects(object_av_ind)%pointer_double_2
+
+ end subroutine object_variance_by_index_double_2
+
+! ===================================================================================
+  subroutine object_covariance_by_index_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate covariance of two averaged objects
+!
+! Created       : J. Toulouse, 17 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_0'
+  character(len=max_string_len_type) object_av1_type, object_av2_type, object_covar_type
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_av1_ind)
+    call object_associated_or_die_by_index (object_av2_ind)
+    call object_associated_or_die_by_index (object_covar_ind)
+
+!   test on type
+    object_av1_type = objects(object_av1_ind)%type
+    object_av2_type = objects(object_av2_ind)%type
+    object_covar_type = objects(object_covar_ind)%type
+
+    if (object_av1_type /= object_covar_type .or. object_av2_type /= object_covar_type .or. object_av1_type /= object_av2_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is ', object_av1_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is ', object_av2_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_covar_ind)%name),' is ', object_covar_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    objects(object_covar_ind)%sum_blk_square_double_0 = 0.d0
+    objects(object_av1_ind)%previous_double_0 = 0.d0
+    objects(object_av2_ind)%previous_double_0 = 0.d0
+
+   endif ! first block
+
+!  calculate sum of product of averages over blocks
+   objects(object_covar_ind)%sum_blk_square_double_0 = objects(object_covar_ind)%sum_blk_square_double_0   &
+       + (objects(object_av1_ind)%pointer_double_0 * block_iterations_nb - objects(object_av1_ind)%previous_double_0 * (block_iterations_nb - 1)) &
+       * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - objects(object_av2_ind)%previous_double_0 * (block_iterations_nb - 1))
+
+!  calculate covariance
+   objects(object_covar_ind)%pointer_double_0 = objects(object_covar_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_0
+   call object_modified_by_index (object_covar_ind)
+
+!  save current average value for next iteration
+   objects(object_av1_ind)%previous_double_0 = objects(object_av1_ind)%pointer_double_0
+   objects(object_av2_ind)%previous_double_0 = objects(object_av2_ind)%pointer_double_0
+
+ end subroutine object_covariance_by_index_double_0
+
+! ===================================================================================
+  subroutine object_covariance_by_index_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate covariance of two averaged objects
+!
+! Created       : J. Toulouse, 19 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1'
+  character(len=max_string_len_type) object_av1_type, object_av2_type, object_covar_type
+  integer dim_av11, dim_av21, dim_covar1
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_av1_ind)
+    call object_associated_or_die_by_index (object_av2_ind)
+    call object_associated_or_die_by_index (object_covar_ind)
+
+!   test on type
+    object_av1_type = objects(object_av1_ind)%type
+    object_av2_type = objects(object_av2_ind)%type
+    object_covar_type = objects(object_covar_ind)%type
+
+    if (object_av1_type /= object_covar_type .or. object_av2_type /= object_covar_type .or. object_av1_type /= object_av2_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is ', object_av1_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is ', object_av2_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_covar_ind)%name),' is ', object_covar_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_av11 = objects(object_av1_ind)%dimensions(1)
+    dim_av21 = objects(object_av2_ind)%dimensions(1)
+    dim_covar1 = objects(object_covar_ind)%dimensions(1)
+
+    if (dim_av11 /= dim_covar1 .or. dim_av21 /= dim_covar1 .or. dim_av11 /= dim_av21) then
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
+    call alloc ('objects(object_av1_ind)%previous_double_1', objects(object_av1_ind)%previous_double_1, dim_av11)
+    call alloc ('objects(object_av2_ind)%previous_double_1', objects(object_av2_ind)%previous_double_1, dim_av21)
+    objects(object_covar_ind)%sum_blk_square_double_1 = 0.d0
+    objects(object_av1_ind)%previous_double_1 = 0.d0
+    objects(object_av2_ind)%previous_double_1 = 0.d0
+
+   endif ! first block
+
+!  calculate sum of product of averages over blocks
+   objects(object_covar_ind)%sum_blk_square_double_1 = objects(object_covar_ind)%sum_blk_square_double_1   &
+       + (objects(object_av1_ind)%pointer_double_1 * block_iterations_nb - objects(object_av1_ind)%previous_double_1 * (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_1 * block_iterations_nb - objects(object_av2_ind)%previous_double_1 * (block_iterations_nb - 1 ))
+
+!  calculate covariance
+   objects(object_covar_ind)%pointer_double_1 = objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_1*objects(object_av2_ind)%pointer_double_1
+   call object_modified_by_index (object_covar_ind)
+
+!  save current average value for next iteration
+   objects(object_av1_ind)%previous_double_1 = objects(object_av1_ind)%pointer_double_1
+   objects(object_av2_ind)%previous_double_1 = objects(object_av2_ind)%pointer_double_1
+
+ end subroutine object_covariance_by_index_double_1
+
+! ===================================================================================
+  subroutine object_covariance_by_index_double_2 (object_av1_ind, object_av2_ind, object_covar_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate covariance of two averaged objects
+!
+! Created       : J. Toulouse, 19 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_2'
+  character(len=max_string_len_type) object_av1_type, object_av2_type, object_covar_type
+  integer dim_av11, dim_av21, dim_covar1
+  integer dim_av12, dim_av22, dim_covar2
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_av1_ind)
+    call object_associated_or_die_by_index (object_av2_ind)
+    call object_associated_or_die_by_index (object_covar_ind)
+
+!   test on type
+    object_av1_type = objects(object_av1_ind)%type
+    object_av2_type = objects(object_av2_ind)%type
+    object_covar_type = objects(object_covar_ind)%type
+
+    if (object_av1_type /= object_covar_type .or. object_av2_type /= object_covar_type .or. object_av1_type /= object_av2_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is ', object_av1_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is ', object_av2_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_covar_ind)%name),' is ', object_covar_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_av11 = objects(object_av1_ind)%dimensions(1)
+    dim_av21 = objects(object_av2_ind)%dimensions(1)
+    dim_covar1 = objects(object_covar_ind)%dimensions(1)
+    dim_av12 = objects(object_av1_ind)%dimensions(2)
+    dim_av22 = objects(object_av2_ind)%dimensions(2)
+    dim_covar2 = objects(object_covar_ind)%dimensions(2)
+
+    if (dim_av11 /= dim_covar1 .or. dim_av21 /= dim_covar1 .or. dim_av11 /= dim_av21 .or. &
+        dim_av12 /= dim_covar2 .or. dim_av22 /= dim_covar2 .or. dim_av12 /= dim_av22      ) then
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< are ', dim_av11, dim_av12
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21, dim_av22
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1, dim_covar2
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_2', objects(object_covar_ind)%sum_blk_square_double_2, dim_covar1, dim_covar2)
+    call alloc ('objects(object_av1_ind)%previous_double_2', objects(object_av1_ind)%previous_double_2, dim_av11, dim_av12)
+    call alloc ('objects(object_av2_ind)%previous_double_2', objects(object_av2_ind)%previous_double_2, dim_av21, dim_av22)
+    objects(object_covar_ind)%sum_blk_square_double_2 = 0.d0
+    objects(object_av1_ind)%previous_double_2 = 0.d0
+    objects(object_av2_ind)%previous_double_2 = 0.d0
+
+   endif ! first block
+
+!  calculate sum of product of averages over blocks
+   objects(object_covar_ind)%sum_blk_square_double_2 = objects(object_covar_ind)%sum_blk_square_double_2   &
+       + (objects(object_av1_ind)%pointer_double_2 * block_iterations_nb - objects(object_av1_ind)%previous_double_2 * (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_2 * block_iterations_nb - objects(object_av2_ind)%previous_double_2 * (block_iterations_nb - 1 ))
+
+!  calculate covariance
+   objects(object_covar_ind)%pointer_double_2 = objects(object_covar_ind)%sum_blk_square_double_2/block_iterations_nb - objects(object_av1_ind)%pointer_double_2*objects(object_av2_ind)%pointer_double_2
+   call object_modified_by_index (object_covar_ind)
+
+!  save current average value for next iteration
+   objects(object_av1_ind)%previous_double_2 = objects(object_av1_ind)%pointer_double_2
+   objects(object_av2_ind)%previous_double_2 = objects(object_av2_ind)%pointer_double_2
+
+ end subroutine object_covariance_by_index_double_2
+
+! ===================================================================================
+  subroutine object_error_by_index_double_0 (object_var_ind, object_err_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate statistical error corresponding to a variance
+!
+! Created       : J. Toulouse, 19 Oct 2005
+! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
+! Modified      : J. Toulouse, 06 Sep 2007: statistical error calculated from variance
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_var_ind, object_err_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_0'
+  character(len=max_string_len_type) object_var_type, object_err_type
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+!
+!   test association
+    call object_associated_or_die_by_index (object_var_ind)
+    call object_associated_or_die_by_index (object_err_ind)
+
+!   test on type
+    object_var_type = objects(object_var_ind)%type
     object_err_type = objects(object_err_ind)%type
 
-    if ( object_av_type /= object_err_type) then
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+    if (object_var_type /= object_err_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+   endif ! first block
+
+!  calculate error
+   if (block_iterations_nb == 1) then
+    objects(object_err_ind)%pointer_double_0 = 0.d0
+   else
+    objects(object_err_ind)%pointer_double_0 = dsqrt(objects(object_var_ind)%pointer_double_0/(block_iterations_nb-1))
+   endif
+
+   call object_modified_by_index (object_err_ind)
+
+ end subroutine object_error_by_index_double_0
+
+! ===================================================================================
+  subroutine object_error_by_index_double_1 (object_var_ind, object_err_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate statistical error corresponding to a variance
+!
+! Created       : J. Toulouse, 19 Oct 2005
+! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
+! Modified      : J. Toulouse, 07 Sep 2007: statistical error calculated from variance
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_var_ind, object_err_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_1'
+  character(len=max_string_len_type) object_var_type, object_err_type
+  integer dim_var1, dim_err1
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_var_ind)
+    call object_associated_or_die_by_index (object_err_ind)
+
+!   test on type
+    object_var_type = objects(object_var_ind)%type
+    object_err_type = objects(object_err_ind)%type
+
+    if (object_var_type /= object_err_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_var1 = objects(object_var_ind)%dimensions(1)
+    dim_err1 = objects(object_err_ind)%dimensions(1)
+
+    if (dim_var1 /= dim_err1) then
+     write(6,*) trim(lhere),': dimension of object', trim(objects(object_var_ind)%name),' is ', dim_var1
+     write(6,*) trim(lhere),': dimension of object ',trim(objects(object_err_ind)%name),' is ', dim_err1
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+   endif ! first block
+
+
+!  calculate error
+   if (block_iterations_nb == 1) then
+    objects(object_err_ind)%pointer_double_1 = 0.d0
+   else
+    objects(object_err_ind)%pointer_double_1 = dsqrt(objects(object_var_ind)%pointer_double_1/(block_iterations_nb-1))
+   endif
+
+   call object_modified_by_index (object_err_ind)
+
+ end subroutine object_error_by_index_double_1
+
+! ===================================================================================
+  subroutine object_error_by_index_double_2 (object_var_ind, object_err_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate statistical error corresponding to a variance
+!
+! Created       : J. Toulouse, 19 Oct 2005
+! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
+! Modified      : J. Toulouse, 07 Sep 2007: statistical error calculated from variance
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_var_ind, object_err_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_double_2'
+  character(len=max_string_len_type) object_var_type, object_err_type
+  integer dim_var1, dim_err1, dim_var2, dim_err2
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_var_ind)
+    call object_associated_or_die_by_index (object_err_ind)
+
+!   test on type
+    object_var_type = objects(object_var_ind)%type
+    object_err_type = objects(object_err_ind)%type
+
+    if (object_var_type /= object_err_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
      write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
      write(6,*) trim(lhere),': they should be identical'
      call die(lhere)
     endif
 
 !   test on dimensions
-    dim_av1 = objects(object_av_ind)%dimensions(1)
+    dim_var1 = objects(object_var_ind)%dimensions(1)
     dim_err1 = objects(object_err_ind)%dimensions(1)
-    dim_av2 = objects(object_av_ind)%dimensions(2)
+    dim_var2 = objects(object_var_ind)%dimensions(2)
     dim_err2 = objects(object_err_ind)%dimensions(2)
 
-    if ( dim_av1 /= dim_err1 .or. dim_av2 /= dim_err2) then
-     write(6,*) trim(lhere),': dimensions of object', trim(objects(object_av_ind)%name),' are ', dim_av1, dim_av2
+    if (dim_var1 /= dim_err1 .or. dim_var2 /= dim_err2) then
+     write(6,*) trim(lhere),': dimensions of object', trim(objects(object_var_ind)%name),' are ', dim_var1, dim_var2
      write(6,*) trim(lhere),': dimensions of object ',trim(objects(object_err_ind)%name),' are ', dim_err1, dim_err2
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
-
-!   intermediate objects
-    call alloc ('objects(object_av_ind)%sum_blk_square_double_2', objects(object_av_ind)%sum_blk_square_double_2, dim_av1, dim_av2)
-    call alloc('objects(object_av_ind)%previous_double_2', objects(object_av_ind)%previous_double_2, dim_av1, dim_av2)
-    objects(object_av_ind)%sum_blk_square_double_2 = 0.d0
-    objects(object_av_ind)%previous_double_2 = 0.d0
 
    endif ! first block
 
-
-!  calculate sum of square of averages over blocks
-!!   objects(object_av_ind)%sum_blk_square_double_2 = objects(object_av_ind)%sum_blk_square_double_2   &
-!!       + ( object_av * block_iterations_nb - objects(object_av_ind)%previous_double_2 * (block_iterations_nb - 1 ) )**2
-   objects(object_av_ind)%sum_blk_square_double_2 = objects(object_av_ind)%sum_blk_square_double_2   &
-       + ( objects(object_av_ind)%pointer_double_2 * block_iterations_nb - objects(object_av_ind)%previous_double_2 * (block_iterations_nb - 1 ) )**2
-
 !  calculate error
    if (block_iterations_nb == 1) then
-!!    object_err = 0.d0
     objects(object_err_ind)%pointer_double_2 = 0.d0
    else
-!!    object_err = dsqrt( (objects(object_av_ind)%sum_blk_square_double_2/block_iterations_nb - object_av**2)  &
-!!                          /(block_iterations_nb-1) )
-    objects(object_err_ind)%pointer_double_2 = dsqrt( (objects(object_av_ind)%sum_blk_square_double_2/block_iterations_nb - objects(object_av_ind)%pointer_double_2**2)  &
-                          /(block_iterations_nb-1) )
+    objects(object_err_ind)%pointer_double_2 = dsqrt(objects(object_var_ind)%pointer_double_2 /(block_iterations_nb-1))
    endif
 
-!!   call object_write_in_address_by_index (object_err_ind, object_err)
    call object_modified_by_index (object_err_ind)
-
-!  save current average value for next iteration
-!!   objects(object_av_ind)%previous_double_2 = object_av
-   objects(object_av_ind)%previous_double_2 =  objects(object_av_ind)%pointer_double_2
 
  end subroutine object_error_by_index_double_2
 
@@ -1419,42 +1966,26 @@ module average_mod
  end subroutine compute_averages
 
 ! ===================================================================================
-  subroutine compute_errors
+  subroutine compute_variances
 ! -----------------------------------------------------------------------------------
-! Description   : compute statitical errors in MC iterations
+! Description   : compute variances in MC iterations
 !
-! Created       : J. Toulouse, 20 Oct 2005
+! Created       : J. Toulouse, 06 Sep 2007
 ! -----------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'compute_errors'
+  character(len=max_string_len_rout), save :: lhere = 'compute_variances'
   integer ind
-  integer object_av_ind, object_err_ind
+  integer object_av_ind, object_var_ind
   character(len=max_string_len_type) object_av_type
 
-
-
 ! begin
-!  write(6,*) trim(lhere),': entering'
+  do ind = 1, variances_nb
 
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': this routine must be called in the MC iterations'
-!    call die (lhere)
-!  endif
-
-! if not at the end of a block, do nothing
-!  if (mod(step_iterations_nb, nstep) /= 0) then
-!    return
-!  endif
-
-  do ind = 1, errors_nb
-
-    object_av_ind = errors_object_av_index (ind)
-    object_err_ind = errors_object_err_index (ind)
+    object_av_ind = variances_object_av_index (ind)
+    object_var_ind = variances_object_var_index (ind)
 
     call object_provide_by_index (object_av_ind)
 
@@ -1469,20 +2000,132 @@ module average_mod
 
     if (trim(object_av_type) == 'double_0') then
 
-      call object_error_by_index_double_0 (object_av_ind, object_err_ind)
+      call object_associate_by_index_double_0 (object_var_ind)
+      call object_variance_by_index_double_0 (object_av_ind, object_var_ind)
 
     elseif (trim(object_av_type) == 'double_1') then
 
-      call object_error_by_index_double_1 (object_av_ind, object_err_ind)
+      call object_associate_by_index_double_1 (object_var_ind, objects(object_av_ind)%dimensions(1))
+      call object_variance_by_index_double_1 (object_av_ind, object_var_ind)
 
     elseif (trim(object_av_type) == 'double_2') then
 
-      call object_error_by_index_double_2 (object_av_ind, object_err_ind)
+      call object_associate_by_index_double_2 (object_var_ind, objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
+      call object_variance_by_index_double_2 (object_av_ind, object_var_ind)
+
+    else
+     call die (lhere, 'object type >'+trim(object_av_type)+'< not handled.')
+    endif
+
+  enddo ! ind
+
+ end subroutine compute_variances
+
+! ===================================================================================
+  subroutine compute_covariances
+! -----------------------------------------------------------------------------------
+! Description   : compute covariances
+!
+! Created       : J. Toulouse, 19 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'compute_covariances'
+  integer ind
+  integer object_av1_ind, object_av2_ind, object_covar_ind
+  character(len=max_string_len_type) object_av1_type
+
+! begin
+  do ind = 1, covariances_nb
+
+    object_av1_ind = covariances_object_av1_index (ind)
+    object_av2_ind = covariances_object_av2_index (ind)
+    object_covar_ind = covariances_object_covar_index (ind)
+
+    call object_provide_by_index (object_av1_ind)
+    call object_provide_by_index (object_av2_ind)
+
+    object_av1_type = objects(object_av1_ind)%type
+
+    if (trim(object_av1_type) == '') then
+      write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      call die (lhere)
+    endif
+
+    if (trim(object_av1_type) == 'double_0') then
+
+      call object_covariance_by_index_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
+
+    elseif (trim(object_av1_type) == 'double_1') then
+
+      call object_covariance_by_index_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+
+    elseif (trim(object_av1_type) == 'double_2') then
+
+      call object_covariance_by_index_double_2 (object_av1_ind, object_av2_ind, object_covar_ind)
+
+    else
+     call die (lhere, 'object type >'+trim(object_av1_type)+'< not handled.')
+    endif
+
+  enddo ! ind
+
+ end subroutine compute_covariances
+
+! ===================================================================================
+  subroutine compute_errors
+! -----------------------------------------------------------------------------------
+! Description   : compute statitical errors in MC iterations
+!
+! Created       : J. Toulouse, 20 Oct 2005
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'compute_errors'
+  integer ind
+  integer object_av_ind, object_var_ind, object_err_ind
+  character(len=max_string_len_type) object_var_type
+
+
+! begin
+  do ind = 1, errors_nb
+
+    object_av_ind = errors_object_av_index (ind)
+    object_var_ind = errors_object_var_index (ind)
+    object_err_ind = errors_object_err_index (ind)
+
+    call object_provide_by_index (object_var_ind)
+
+    object_var_type = objects(object_var_ind)%type
+
+    if (trim(object_var_type) == '') then
+      write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      call die (lhere)
+    endif
+
+    if (trim(object_var_type) == 'double_0') then
+
+      call object_error_by_index_double_0 (object_var_ind, object_err_ind)
+
+    elseif (trim(object_var_type) == 'double_1') then
+
+      call object_error_by_index_double_1 (object_var_ind, object_err_ind)
+
+    elseif (trim(object_var_type) == 'double_2') then
+
+      call object_error_by_index_double_2 (object_var_ind, object_err_ind)
 
     else
 
-     write(6,*) trim(lhere),': object type ',trim(object_av_type),' not handled'
-     call die (lhere)
+     call die (lhere, 'object type >'+trim(object_var_type)+'< not handled.')
 
     endif
 
@@ -1644,8 +2287,18 @@ module average_mod
   call release ('averages_object_index', averages_object_index)
   call release ('averages_object_av_index', averages_object_av_index)
 
+  variances_nb = 0
+  call release ('variances_object_av_index', variances_object_av_index)
+  call release ('variances_object_var_index', variances_object_var_index)
+
+  covariances_nb = 0
+  call release ('covariances_object_av1_index', covariances_object_av1_index)
+  call release ('covariances_object_av2_index', covariances_object_av2_index)
+  call release ('covariances_object_covar_index', covariances_object_covar_index)
+
   errors_nb = 0
   call release ('errors_object_av_index', errors_object_av_index)
+  call release ('errors_object_var_index', errors_object_var_index)
   call release ('errors_object_err_index', errors_object_err_index)
 
 ! reinitialize average routines

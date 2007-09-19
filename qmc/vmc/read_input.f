@@ -691,6 +691,7 @@ c Determine the number of centers of each type
 
       read(5,*) (znuc(i),i=1,nctype)
       write(6,'(''znuc='',t31,10f5.1,(10f5.1))') (znuc(i),i=1,nctype)
+      call object_modified ('znuc') !JT
 
       if(nloc.eq.-3) then ! Jellium RM
 c       dn_background = nelec - znuc(1)

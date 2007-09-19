@@ -9,6 +9,7 @@ module main_menu_mod
   use density_mod
   use intracule_mod
   use extracule_mod
+  use forces_mod
   use print_mod
   use testing_mod
   use dmc_mod
@@ -62,6 +63,7 @@ module main_menu_mod
    write(6,'(a)') ' intracule ... end: menu for calculation of 1D intracules'
    write(6,'(a)') ' intracule3d ... end: menu for calculation of 3D intracules'
    write(6,'(a)') ' extracule ... end: menu for calculation of 1D extracules'
+   write(6,'(a)') ' forces    ... end: menu for calculation of forces'
    write(6,'(a)') ' debug ... end: menu for debugging'
    write(6,'(a)') ' statistics ... end: menu for printing timing statistics'
    write(6,*)
@@ -83,6 +85,7 @@ module main_menu_mod
   case ('intracule')         ; call intra_menu
   case ('intracule_3d')      ; call intra_3d_menu
   case ('extracule')         ; call extracule_menu
+  case ('forces')            ; call forces_menu
   case ('grid')              ; call grid_menu
   case ('node')              ; call node_menu
   case ('debug')             ; call debug_menu
@@ -91,7 +94,7 @@ module main_menu_mod
   case ('run')               ; call run
   case ('exit')              ; write(6,'(a)') 'Exit of menu.'; exit
   case default
-   call die (lhere,'unknown keyword >'+trim(command)+'<')
+   call die (lhere,'unknown command >'+trim(command)+'<')
   end select
 
   enddo

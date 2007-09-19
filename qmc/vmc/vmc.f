@@ -305,6 +305,8 @@ c   write out configuration for optimization/dmc/gfmc here
 !     compute averages and statitical errors
       call acuest
       call compute_averages_walk_block   !JT
+      call compute_variances  !JT
+      call compute_covariances  !JT
       call compute_errors  !JT
 
 !     write at each block

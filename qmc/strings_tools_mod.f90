@@ -212,5 +212,27 @@ module strings_tools_mod
 
   end function string2_integer
 
+! ==================================================================================
+  function string_to_integer (string)
+! ----------------------------------------------------------------------------------
+! Description : convert a string into an integer
+!
+! Created     : J. Toulouse, 26 Jul 2007
+! ----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)  :: string
+
+! output
+  integer string_to_integer
+
+! local
+  character(len=max_string_len_rout),save :: lhere = 'string_to_integer'
+
+! begin
+  call cnvint (string, string_to_integer)
+
+  end function string_to_integer
 
 end module strings_tools_mod

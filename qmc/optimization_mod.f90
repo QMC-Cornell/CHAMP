@@ -93,7 +93,7 @@ module optimization_mod
   case ('help')
    write(6,'(a)') 'HELP for optimization menu:'
    write(6,'(a)') 'optimization'
-   write(6,'(a)') ' parameters jastrow csfs orbitals exponents end : list of parameter types to optimized'
+   write(6,'(a)') ' parameters jastrow csfs orbitals exponents geometry end : list of parameter types to optimized'
    write(6,'(a)') ' method                    : energy optimization method'
    write(6,'(a)') '        = linear (default) : linear energy optimization method'
    write(6,'(a)') '        = newton           : Newton energy optimization method'
@@ -264,6 +264,7 @@ module optimization_mod
   l_opt_csf = .false.
   l_opt_orb = .false.
   l_opt_exp = .false.
+  l_opt_geo = .false.
   do param_type_i = 1, parameter_type_nb
    select case(trim(parameter_type(param_type_i)))
    case ('jastrow')
@@ -274,6 +275,8 @@ module optimization_mod
     l_opt_orb = .true.
    case ('exponents')
     l_opt_exp = .true.
+   case ('geometry')
+    l_opt_geo = .true.
    case default
     call die (lhere, 'unknown parameter type >'+trim(parameter_type(param_type_i))+'<.')
    end select
@@ -297,6 +300,10 @@ module optimization_mod
   if (.not. l_opt_exp) then
     param_exp_nb  = 0
     call object_modified ('param_exp_nb')
+  endif
+  if (.not. l_opt_geo) then
+    param_geo_nb  = 0
+    call object_modified ('param_geo_nb')
   endif
 
 ! check consistency of options
@@ -372,7 +379,7 @@ module optimization_mod
   l_convergence_reached = .false.
   convergence_reached_nb  = 0
 
-! energy-invariant orthonormalization the orbitals
+! orthonormalization the orbitals
   if (l_ortho_orb_opt) then
     call ortho_orb
   endif
@@ -408,17 +415,19 @@ module optimization_mod
   call object_provide ('nparmcsf')
   call object_provide ('param_orb_nb')
   call object_provide ('param_exp_nb')
+  call object_provide ('param_geo_nb')
   call object_provide ('param_nb')
   write(6,*)
   write(6,'(a,i3)') 'Number of Jastrow parameters:   ', nparmj
   write(6,'(a,i3)') 'Number of CSF parameters:       ', nparmcsf
   write(6,'(a,i3)') 'Number of orbital parameters:   ', param_orb_nb
   write(6,'(a,i3)') 'Number of exponent parameters:  ', param_exp_nb
+  write(6,'(a,i3)') 'Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i3)') 'Total number of parameters:     ', param_nb
   write(6,*)
 
 ! Nice printing
-  write(6,'(a,i5,a,i5,a,i7,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital and', param_exp_nb, ' exponent parameters with ',trim(opt_method),' method:'
+  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent and',param_geo_nb,' geometry parameters with ',trim(opt_method),' method:'
 
 ! Warnings for pertubative method
   if (l_opt_ptb) then
@@ -1079,7 +1088,7 @@ module optimization_mod
 
   enddo ! end loop
 
-! energy-invariant orthonormalization the orbitals
+! orthonormalization the orbitals
   if (l_ortho_orb_opt) then
     call ortho_orb
   endif

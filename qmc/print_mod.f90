@@ -48,15 +48,24 @@ module print_mod
    write(6,'(a)') 'end'
    write(6,*)
 
-
   case ('now')
    call get_next_value_list ('objects_to_print_now', objects_to_print_now, objects_to_print_now_nb)
 
-!  provide and print objects now
+!  provide objects
    do obj_i = 1, objects_to_print_now_nb
     call object_provide (objects_to_print_now (obj_i))
-    call object_write (objects_to_print_now (obj_i))
    enddo
+
+!  if only two objects, write objects on the same column
+   if (objects_to_print_now_nb == 2) then
+    call object_write_2 (objects_to_print_now (1), objects_to_print_now (2))
+
+!  otherwise, write objects on separate lines
+   else
+    do obj_i = 1, objects_to_print_now_nb
+     call object_write (objects_to_print_now (obj_i))
+    enddo
+   endif
 
   case ('block')
    call get_next_value_list ('objects_to_print_block', objects_to_print_block, objects_to_print_block_nb)
@@ -70,8 +79,7 @@ module print_mod
    exit
 
   case default
-   write(6,'(3a)') trim(lhere),': unknown keyword = ',trim(word)
-   call die (lhere)
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
   end select
 
   enddo ! end loop over menu lines
@@ -119,7 +127,6 @@ module print_mod
   integer obj_i
 
 ! begin
-
   do obj_i = 1, objects_print_at_each_block_nb
     call object_provide_by_index (objects_print_at_each_block_index (obj_i))
     call object_write_by_index (objects_print_at_each_block_index (obj_i))

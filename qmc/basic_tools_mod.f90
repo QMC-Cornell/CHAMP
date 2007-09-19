@@ -319,7 +319,7 @@ module basic_tools_mod
   end function locate_string_in_array
 
 !===========================================================================
-  recursive subroutine alloc_string_1 (object_name, object, dim1)
+  subroutine alloc_string_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : Allocation or resize a array of string of 1 dimension
 !
@@ -363,7 +363,7 @@ module basic_tools_mod
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
+    allocate (object_temp (dim_min))
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -371,13 +371,14 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
+    allocate (object (dim1))
+    object(:) = ''
 
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -386,7 +387,8 @@ module basic_tools_mod
   end subroutine alloc_string_1
 
 !===========================================================================
-  recursive subroutine alloc_integer_1 (object_name, object, dim1)
+  subroutine alloc_integer_1 (object_name, object, dim1) ! new
+!  recursive subroutine alloc_integer_1 (object_name, object, dim1) ! old
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -410,7 +412,7 @@ module basic_tools_mod
 ! begin
 
 ! allocate object if not already allocated
-  if(.not. allocated(object)) then
+  if (.not. allocated(object)) then
 
    allocate (object(dim1), stat = all_err)
 
@@ -428,11 +430,12 @@ module basic_tools_mod
 ! resize object if already allocated with different dimension
    object_dim = size(object)
 
-   if(object_dim /= dim1) then
+   if (object_dim /= dim1) then
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
+!    call alloc ('object_temp', object_temp, dim_min) ! old
+    allocate (object_temp(dim_min)) ! new
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -440,13 +443,22 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
+!    call alloc (object_name, object, dim1) ! old
+    allocate (object(dim1)) ! new
+    object(:) = 0 !new
 
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+!    call release ('object_temp', object_temp) ! old
+    deallocate (object_temp) ! new
+
+! this below does not work because reshape cannot reallocate an array with a larger size
+!    object = reshape (object, (/ dim1 /))
+!    if (object_dim < dim1) then
+!      object (object_dim+1:dim1) = 0
+!   endif
 
    endif
 
@@ -455,7 +467,7 @@ module basic_tools_mod
   end subroutine alloc_integer_1
 
 !===========================================================================
-  recursive subroutine alloc_integer_2 (object_name, object, dim1, dim2)
+  subroutine alloc_integer_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -499,13 +511,12 @@ module basic_tools_mod
    object_dim1 = size(object,1)
    object_dim2 = size(object,2)
 
-   if(object_dim1 /= dim1 .or. object_dim2 /= dim2) then
+   if (object_dim1 /= dim1 .or. object_dim2 /= dim2) then
 
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2)
-
+    allocate (object_temp(dim_min1, dim_min2))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -515,7 +526,8 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2)
+    allocate (object(dim1, dim2))
+    object(:,:) = 0
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -523,7 +535,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -532,7 +544,7 @@ module basic_tools_mod
   end subroutine alloc_integer_2
 
 !===========================================================================
-  recursive subroutine alloc_integer_3 (object_name, object, dim1, dim2, dim3)
+  subroutine alloc_integer_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -584,7 +596,7 @@ module basic_tools_mod
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
+    allocate (object_temp(dim_min1, dim_min2, dim_min3))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -596,7 +608,8 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object(dim1, dim2, dim3))
+    object(:,:,:) = 0
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -606,7 +619,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate(object_temp)
 
    endif
 
@@ -615,7 +628,7 @@ module basic_tools_mod
   end subroutine alloc_integer_3
 
 !===========================================================================
-  recursive subroutine alloc_integer_row_1 (object_name, object, dim1)
+  subroutine alloc_integer_row_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -658,7 +671,7 @@ module basic_tools_mod
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
+    allocate (object_temp(dim_min))
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -666,13 +679,13 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
+    allocate (object(dim1))
 
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -681,7 +694,7 @@ module basic_tools_mod
   end subroutine alloc_integer_row_1
 
 !===========================================================================
-  recursive subroutine alloc_double_1 (object_name, object, dim1)
+  subroutine alloc_double_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -727,8 +740,7 @@ module basic_tools_mod
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
-
+    allocate (object_temp (dim_min))
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -736,13 +748,14 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
+    allocate (object(dim1))
+    object(:) = 0.d0
 
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -751,7 +764,7 @@ module basic_tools_mod
   end subroutine alloc_double_1
 
 !===========================================================================
-  recursive subroutine alloc_double_2 (object_name, object, dim1, dim2)
+  subroutine alloc_double_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -800,8 +813,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2)
-
+    allocate (object_temp (dim_min1, dim_min2))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -811,7 +823,8 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2)
+    allocate (object (dim1, dim2))
+    object(:,:) = 0.d0
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -819,7 +832,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -828,7 +841,7 @@ module basic_tools_mod
   end subroutine alloc_double_2
 
 !===========================================================================
-  recursive subroutine alloc_double_3 (object_name, object, dim1, dim2, dim3)
+  subroutine alloc_double_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -880,7 +893,7 @@ module basic_tools_mod
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
+    allocate (object_temp (dim_min1, dim_min2, dim_min3))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -892,7 +905,8 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object (dim1, dim2, dim3))
+    object(:,:,:) = 0.d0
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -902,7 +916,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -911,7 +925,7 @@ module basic_tools_mod
   end subroutine alloc_double_3
 
 !===========================================================================
-  recursive subroutine alloc_double_4 (object_name, object, dim1, dim2, dim3, dim4)
+  subroutine alloc_double_4 (object_name, object, dim1, dim2, dim3, dim4)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -966,7 +980,7 @@ module basic_tools_mod
     dim_min3 =  min(object_dim3, dim3)
     dim_min4 =  min(object_dim4, dim4)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4)
+    allocate (object_temp (dim_min1, dim_min2, dim_min3, dim_min4))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -980,7 +994,8 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3, dim4)
+    allocate (object (dim1, dim2, dim3, dim4))
+    object(:,:,:,:) = 0.d0
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -992,7 +1007,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1001,7 +1016,7 @@ module basic_tools_mod
   end subroutine alloc_double_4
 
 !===========================================================================
-  recursive subroutine alloc_double_5 (object_name, object, dim1, dim2, dim3, dim4, dim5)
+  subroutine alloc_double_5 (object_name, object, dim1, dim2, dim3, dim4, dim5)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1059,7 +1074,7 @@ module basic_tools_mod
     dim_min4 =  min(object_dim4, dim4)
     dim_min5 =  min(object_dim5, dim5)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4, dim_min5)
+    allocate (object_temp (dim_min1, dim_min2, dim_min3, dim_min4, dim_min5))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1075,7 +1090,8 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3, dim4, dim5)
+    allocate (object (dim1, dim2, dim3, dim4, dim5))
+    object(:,:,:,:,:) = 0.d0
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1089,7 +1105,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1098,7 +1114,7 @@ module basic_tools_mod
   end subroutine alloc_double_5
 
 !===========================================================================
-  recursive subroutine alloc_double_row_1 (object_name, object, dim1)
+  subroutine alloc_double_row_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1141,7 +1157,7 @@ module basic_tools_mod
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
+    allocate (object_temp (dim_min))
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -1149,13 +1165,13 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
+    allocate (object (dim1))
 
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1164,7 +1180,7 @@ module basic_tools_mod
   end subroutine alloc_double_row_1
 
 !===========================================================================
-  recursive subroutine alloc_complex_1 (object_name, object, dim1)
+  subroutine alloc_complex_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1207,8 +1223,7 @@ module basic_tools_mod
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
-
+    allocate (object_temp (dim_min))
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -1216,13 +1231,13 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
-
+    allocate (object (dim1))
+    
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1231,7 +1246,7 @@ module basic_tools_mod
   end subroutine alloc_complex_1
 
 !===========================================================================
-  recursive subroutine alloc_complex_2 (object_name, object, dim1, dim2)
+  subroutine alloc_complex_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1277,8 +1292,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2)
-
+    allocate (object_temp (dim_min1, dim_min2))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1288,7 +1302,7 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2)
+    allocate (object (dim1, dim2))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1296,7 +1310,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1305,7 +1319,7 @@ module basic_tools_mod
   end subroutine alloc_complex_2
 
 !===========================================================================
-  recursive subroutine alloc_complex_3 (object_name, object, dim1, dim2, dim3)
+  subroutine alloc_complex_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1343,7 +1357,6 @@ module basic_tools_mod
 
    else
 
-
 ! resize object if already allocated with different dimension
    object_dim1 = size(object,1)
    object_dim2 = size(object,2)
@@ -1355,7 +1368,7 @@ module basic_tools_mod
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
+    allocate (object_temp (dim_min1, dim_min2, dim_min3))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1367,7 +1380,7 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object (dim1, dim2, dim3))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1377,7 +1390,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1386,7 +1399,7 @@ module basic_tools_mod
   end subroutine alloc_complex_3
 
 !===========================================================================
-  recursive subroutine alloc_complex_4 (object_name, object, dim1, dim2, dim3, dim4)
+  subroutine alloc_complex_4 (object_name, object, dim1, dim2, dim3, dim4)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1438,7 +1451,7 @@ module basic_tools_mod
     dim_min3 =  min(object_dim3, dim3)
     dim_min4 =  min(object_dim4, dim4)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3, dim_min4)
+    allocate (object_temp (dim_min1, dim_min2, dim_min3, dim_min4))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1452,7 +1465,7 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3, dim4)
+    allocate (object (dim1, dim2, dim3, dim4))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1464,7 +1477,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1473,7 +1486,7 @@ module basic_tools_mod
   end subroutine alloc_complex_4
 
 !===========================================================================
-  recursive subroutine alloc_logical_1 (object_name, object, dim1)
+  subroutine alloc_logical_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1516,8 +1529,7 @@ module basic_tools_mod
 
     dim_min =  min(object_dim, dim1)
 
-    call alloc ('object_temp', object_temp, dim_min)
-
+    allocate (object_temp (dim_min))
 
     do i = 1, dim_min
      object_temp(i) = object(i)
@@ -1525,13 +1537,13 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1)
+    allocate (object (dim1))
 
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1540,7 +1552,7 @@ module basic_tools_mod
   end subroutine alloc_logical_1
 
 !===========================================================================
-  recursive subroutine alloc_logical_2 (object_name, object, dim1, dim2)
+  subroutine alloc_logical_2 (object_name, object, dim1, dim2)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1586,8 +1598,7 @@ module basic_tools_mod
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2)
-
+    allocate (object_temp (dim_min1, dim_min2))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1597,7 +1608,7 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2)
+    allocate (object (dim1, dim2))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1605,7 +1616,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 
@@ -1614,7 +1625,7 @@ module basic_tools_mod
   end subroutine alloc_logical_2
 
 !===========================================================================
-  recursive subroutine alloc_logical_3 (object_name, object, dim1, dim2, dim3)
+  subroutine alloc_logical_3 (object_name, object, dim1, dim2, dim3)
 !---------------------------------------------------------------------------
 ! Description : allocate a object
 !
@@ -1663,7 +1674,7 @@ module basic_tools_mod
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
 
-    call alloc ('object_temp', object_temp, dim_min1, dim_min2, dim_min3)
+    allocate (object_temp (dim_min1, dim_min2, dim_min3))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1675,7 +1686,7 @@ module basic_tools_mod
 
     call release (object_name, object)
 
-    call alloc (object_name, object, dim1, dim2, dim3)
+    allocate (object (dim1, dim2, dim3))
 
     do i = 1, dim_min1
      do j = 1, dim_min2
@@ -1685,7 +1696,7 @@ module basic_tools_mod
      enddo
     enddo
 
-    call release ('object_temp', object_temp)
+    deallocate (object_temp)
 
    endif
 

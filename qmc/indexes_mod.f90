@@ -172,5 +172,6 @@ module indexes_mod
   integer     :: dorb_dexp_bld_index
   integer     :: grd_dorb_dexp_bld_index
   integer     :: lap_dorb_dexp_bld_index
+  integer     :: param_geo_nb_index
 
 end module indexes_mod

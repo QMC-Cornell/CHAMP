@@ -82,6 +82,13 @@ c     mode='vmc_mov1    '
 
       deltri=one/deltar
 
+!JT: check local energy
+!      call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+!      psi2o(1)=2*(dlog(dabs(psido))+psijo)
+!      write(6,*) 'xold=',xold
+!      write(6,*) 'eold=',eold(1)
+!JT
+
       do 300 i=1,nelec
         fxop=one
         nearo=nearesto(i)

@@ -5,6 +5,7 @@ module deriv_mod
   use deriv_csf_mod
   use deriv_orb_mod
   use deriv_exp_mod
+  use deriv_geo_mod
 
 ! Declaration of global variables and default values
   integer                        :: param_pairs_nb
@@ -122,6 +123,11 @@ module deriv_mod
    param_nb = param_nb + param_orb_nb
   endif
 
+  if (l_opt_geo) then
+   call object_provide_by_index (param_nb_bld_index, param_geo_nb_index)
+   param_nb = param_nb + param_geo_nb
+  endif
+
   param_pairs_nb = param_nb * (param_nb + 1 ) / 2
 
   call object_alloc ('param_pairs', param_pairs, param_nb, param_nb)
@@ -139,12 +145,14 @@ module deriv_mod
   do param_i = 1, param_nb
    if (param_i <= nparmcsf) then
      param_type (param_i) = 'CSF'
-   elseif (param_i <= nparmj) then
+   elseif (param_i <= nparmcsf+nparmj) then
      param_type (param_i) = 'Jastrow'
-   elseif (param_i <= param_exp_nb) then
+   elseif (param_i <= nparmcsf+nparmj+param_exp_nb) then
      param_type (param_i) = 'exponent'
-   else
+   elseif (param_i <= nparmcsf+nparmj+param_exp_nb+param_orb_nb) then
      param_type (param_i) = 'orbital'
+   else
+     param_type (param_i) = 'geometry'
    endif
   enddo
 

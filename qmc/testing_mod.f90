@@ -18,6 +18,11 @@ subroutine testing
   aa(1)=3.d0
   aa(2)=1.d0
   aa(3)=2.d0
+  write(6,*) trim(lhere),': aa=',aa
+
+  write(6,*) trim(lhere),': reshape(aa,(/2/))=', reshape(aa,(/2/))
+  write(6,*) trim(lhere),': reshape(aa,(/4/))=', reshape(aa,(/4/))
+  stop
 
   aa(1:0) =  -55555555555555555555555553.d0
   write(6,*) trim(lhere),': aa(1:0)=',aa(1:0)
@@ -45,7 +50,7 @@ subroutine testing
 end subroutine testing
 
 !===========================================================================
-  recursive subroutine alloc_test (object_name, object, dim1)
+  subroutine alloc_test (object_name, object, dim1)
 !---------------------------------------------------------------------------
 !  Description : Allocate a object
 !

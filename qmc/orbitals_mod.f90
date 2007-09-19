@@ -172,7 +172,7 @@ module orbitals_mod
 
   enddo ! end loop over menu lines
 
-! energy-invariant orthonormalization the orbitals
+! orthonormalization the orbitals
   if (l_ortho_orb_now) then
     call ortho_orb
   endif
@@ -1393,7 +1393,7 @@ module orbitals_mod
   subroutine ortho_orb_act
 ! ------------------------------------------------------------------------------
 ! Description   : orthonormalize active (or open) orbitals
-! Description   : This is energy invariant only for single-determinant or CASSCF wave function
+! Description   : This is not really energy invariant....
 !
 ! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
