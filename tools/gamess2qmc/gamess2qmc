@@ -3597,6 +3597,7 @@ sub check_for_symmetry_in_orbitals{
 # check and impose additional symmetry on the orbitals
 # 
 # For homonuclear diatomic molecules in D4h symmetry, EU -> EUX,EUY and EG -> EGX,EGY
+# For heteronuclear diatomic molecules in C4h symmetry, E -> EX,EY
 #
 # J. Toulouse - 31 Jan 2007
 ###############################################################
@@ -3668,6 +3669,32 @@ sub check_for_symmetry_in_orbitals{
     if ($symmetry_is_EGX == 0 && $symmetry_is_EGY == 1){$irrep_strings[$i]='EGY';}
 
    } # end symmetry EG
+
+
+#  Resolve X and Y components of E symmetry
+   if ($irrep_strings[$i] eq 'E'){
+
+    $symmetry_is_EX=1;
+    $symmetry_is_EY=1;
+
+#   Loop over basis functions
+#    print "$here: coefficients: ";
+    for($k=0; $k < $nbasis; $k++){
+
+#     print "\n$lcao_bflabel[$k] ${$lcao[$i]}[$k]\n";
+
+     if ($lcao_bflabel[$k] eq 'X' && ${$lcao[$i]}[$k] != 0){$symmetry_is_EY=0;}
+     if ($lcao_bflabel[$k] eq 'XZ' && ${$lcao[$i]}[$k] != 0){$symmetry_is_EY=0;}
+     if ($lcao_bflabel[$k] eq 'Y' && ${$lcao[$i]}[$k] != 0){$symmetry_is_EX=0;}
+     if ($lcao_bflabel[$k] eq 'YZ' && ${$lcao[$i]}[$k] != 0){$symmetry_is_EX=0;}
+
+    }
+
+#    print "symmetry_is_EX=$symmetry_is_EX symmetry_is_EY=$symmetry_is_EY\n";
+    if ($symmetry_is_EX == 1 && $symmetry_is_EY == 0){$irrep_strings[$i]='EX';}
+    if ($symmetry_is_EX == 0 && $symmetry_is_EY == 1){$irrep_strings[$i]='EY';}
+
+   } # end symmetry E
 
   }
 
