@@ -555,6 +555,12 @@ module density_mod
   integer                                    :: grid_i
 
 ! begin
+
+! return if not main node
+# if defined (MPI)
+   if (idtask /= 0) return
+# endif
+
   call object_provide ('grid_r_nb')
   call object_provide ('grid_r')
   call object_provide ('dens')
