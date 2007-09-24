@@ -415,7 +415,7 @@ module average_mod
    endif
   enddo
 
-! add error to the list of variances
+! add variance to the list of variances
   variances_nb = variances_nb + 1
   call alloc ('variances_object_av_index', variances_object_av_index, variances_nb)
   call alloc ('variances_object_var_index', variances_object_var_index, variances_nb)
@@ -594,6 +594,54 @@ module average_mod
  end subroutine object_error_define
 
 ! ===================================================================================
+  subroutine object_error_define_from_variance (object_var_name, object_err_name)
+! -----------------------------------------------------------------------------------
+! Description   : define statistical error associated to a variance 
+!
+! Created       : J. Toulouse, 20 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_var_name, object_err_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_error_define_from_variance'
+  integer  object_var_ind, object_err_ind
+  integer obj_i
+  logical variance_found
+
+! begin
+
+! index of variance, catalogue object if necessary
+  call object_add_once_and_index (object_var_name, object_var_ind)
+
+! index of error, catalogue object if necessary
+  call object_add_once_and_index (object_err_name, object_err_ind)
+
+! test if variance and error are different
+  if (object_var_ind == object_err_ind) then
+    call die (lhere, 'variance >'+trim(objects(object_var_ind)%name)+'< is identical to its associated statistical error!')
+  endif
+
+! test if error not already defined
+  do obj_i = 1, errors_defined_nb
+   if (object_err_ind == errors_defined_object_err_index (obj_i) ) then
+    call die (lhere, 'statistical error object >'+trim(objects(object_err_ind)%name)+'< defined more than once.')
+   endif
+  enddo
+
+  errors_defined_nb = errors_defined_nb + 1
+  call alloc ('errors_defined_object_av_index', errors_defined_object_av_index, errors_defined_nb)
+  call alloc ('errors_defined_object_var_index', errors_defined_object_var_index, errors_defined_nb)
+  call alloc ('errors_defined_object_err_index', errors_defined_object_err_index, errors_defined_nb)
+  errors_defined_object_av_index (errors_defined_nb) = 0 ! no average object
+  errors_defined_object_var_index (errors_defined_nb) = object_var_ind
+  errors_defined_object_err_index (errors_defined_nb) = object_err_ind
+
+ end subroutine object_error_define_from_variance
+
+! ===================================================================================
   subroutine object_error_request (object_err_name)
 ! -----------------------------------------------------------------------------------
 ! Description   : request for calculation of statistical error object 'object_err_name' over MC iterations
@@ -650,8 +698,10 @@ module average_mod
 ! invalidate error
   call object_invalidate_by_index (object_err_ind)
 
-! request corresponding variance
-  call object_variance_request_by_index (object_var_ind)
+! request corresponding variance, except if variance is an independent object
+  if (object_av_ind /= 0) then
+   call object_variance_request_by_index (object_var_ind)
+  endif
 
  end subroutine object_error_request
 
@@ -1888,7 +1938,11 @@ module average_mod
   write(6,*)
   write(6,'(a)') 'The following statistical errors will be calculated:'
   do ind = 1, errors_nb
-   write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error of ', trim(objects(errors_object_av_index (ind))%name)
+   if (errors_object_av_index (ind) /= 0) then
+    write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error of average ', trim(objects(errors_object_av_index (ind))%name)
+   else
+    write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error associated to variance ', trim(objects(errors_object_var_index (ind))%name)
+   endif
   enddo
   write(6,*)
 

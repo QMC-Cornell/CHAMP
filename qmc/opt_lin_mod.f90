@@ -415,7 +415,7 @@ module opt_lin_mod
 
    call object_needed ('param_nb')
    call object_needed ('param_aug_nb')
-   call object_needed ('eloc_var')
+   call object_needed ('eloc_av_var')
    call object_needed ('gradient_variance')
    call object_needed ('hessian_variance')
    call object_needed ('dpsi_dpsi_c_av')
@@ -430,7 +430,7 @@ module opt_lin_mod
   call object_alloc ('ham_lin_variance', ham_lin_variance, param_aug_nb, param_aug_nb)
 
 ! first element
-  ham_lin_variance (1,1) = eloc_var
+  ham_lin_variance (1,1) = eloc_av_var
 
 ! first row and first column
   do i = 1, param_nb
@@ -441,7 +441,7 @@ module opt_lin_mod
 ! derivative-derivative part
   do j = 1, param_nb
    do i = 1, param_nb
-     ham_lin_variance (i+1,j+1) = hessian_variance (i,j)/2.d0 + eloc_var * dpsi_dpsi_c_av (i, j)
+     ham_lin_variance (i+1,j+1) = hessian_variance (i,j)/2.d0 + eloc_av_var * dpsi_dpsi_c_av (i, j)
    enddo
   enddo
 
