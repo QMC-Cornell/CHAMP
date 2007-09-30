@@ -171,7 +171,7 @@ module matrix_tools_mod
      do k = 1, dim
       matrix_check = matrix_check + eigenvectors (i, k) * eigenvalues (k) * eigenvectors (j, k)
      enddo ! k
-     if (abs(matrix_check-matrix(i,j)) > 1.d-8) then
+     if (abs(matrix_check-matrix(i,j)) > 1.d-7) then
         call die (lhere, 'low accuracy in diagonalization; the error on a matrix element is '+abs(matrix_check-matrix(i,j)))
      endif
    enddo ! j
