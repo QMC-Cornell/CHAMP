@@ -55,7 +55,7 @@ module optimization_mod
   real(dp), allocatable   :: delta_c_rm (:,:)
   real(dp), allocatable   :: delta_c_ip (:,:)
   real(dp), allocatable   :: delta_c_im (:,:)
-  real(dp)                :: adiag_max  = 1.d10
+  real(dp)                :: add_diag_max  = 1.d10
 
   contains
 
@@ -105,7 +105,7 @@ module optimization_mod
    write(6,'(a)') ' stabilization : choice of stabilization of the minimization'
    write(6,'(a)') '              = identity: add multiple of identity matrix to Hessian or Hamiltonian (default)'
    write(6,'(a)') '              = overlap: add multiple of overlap matrix to Hamiltonian (only for linear method)'
-   write(6,'(a)') ' adiag_max = [real] : maximum allowed value of adiag (default=1.d10)'
+   write(6,'(a)') ' add_diag_max = [real] : maximum allowed value of add_diag (default=1.d10)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
    write(6,'(a)') ' iter_opt_max_nb = [integer] : maximun number of optimization iterations (default=nopt_iter)'
    write(6,'(a)') ' increase_accuracy = [logical] : default=true, increase statistical accuracy at each step?'
@@ -156,8 +156,8 @@ module optimization_mod
   case ('stabilization')
    call get_next_value (stabilization)
 
-  case ('adiag_max')
-   call get_next_value (adiag_max)
+  case ('add_diag_max')
+   call get_next_value (add_diag_max)
 
   case ('increase_accuracy')
    call get_next_value (l_increase_accuracy)
@@ -650,9 +650,9 @@ module optimization_mod
      endif
 !        call object_restore ('delta_e_ptb') !!
      endif
-     diag_stab = min(100.d0 * diag_stab, adiag_max)
+     diag_stab = min(100.d0 * diag_stab, add_diag_max)
      call object_modified ('diag_stab')
-     write(6,'(a,1pd9.1)') 'Wave function got worse, increase adiag up to ',diag_stab
+     write(6,'(a,1pd9.1)') 'Wave function got worse, increase add_diag up to ',diag_stab
      call wf_update_and_check_and_stab
 !    just in case mc config is in crazy place, reset mc_configs by calling sites
      isite = 1; call mc_configs_read
@@ -1069,18 +1069,18 @@ module optimization_mod
   do
    loop = loop + 1
    if (loop >= 50) then
-    call die (lhere, 'move is still rejected after increasing adiag 50 times!')
+    call die (lhere, 'move is still rejected after increasing add_diag 50 times!')
    endif
 
 !  update and check wave function
    call wf_update_and_check (is_bad_move)
 
-!  if the move is bad, increase adiag and retry
+!  if the move is bad, increase add_diag and retry
    if (l_stab .and. is_bad_move /= 0) then
      call wf_restore
-     diag_stab = min(diag_stab * 10.d0, adiag_max)
+     diag_stab = min(diag_stab * 10.d0, add_diag_max)
      call object_modified ('diag_stab')
-     write(6,'(2a,1pd9.1)') trim(lhere),': increase adiag up to ', diag_stab
+     write(6,'(2a,1pd9.1)') trim(lhere),': increase add_diag up to ', diag_stab
      cycle
    else
      exit
@@ -1118,7 +1118,7 @@ module optimization_mod
 
 ! begin
   write(6,*)
-  write(6,'(a)') 'Searching for optimal stabilizing adiag...'
+  write(6,'(a)') 'Searching for optimal stabilizing add_diag...'
 
 ! smaller value of number of blocks
   nblk_small=min(nblk_max,max(10,block_nb/10))
@@ -1135,7 +1135,7 @@ module optimization_mod
 ! make sure that diag_stab is not tiny compared to the smallest eigenvalue of Hessian
   if (l_opt_nwt) then
     call object_provide ('hess_nwt_eigval_min')
-    diag_stab = min(max(diag_stab,1.d-1*hess_nwt_eigval_min),adiag_max)
+    diag_stab = min(max(diag_stab,1.d-1*hess_nwt_eigval_min),add_diag_max)
     call object_modified ('diag_stab')
   endif
 
@@ -1148,7 +1148,7 @@ module optimization_mod
    loop = loop + 1
 
    if (loop >= 10) then
-    call die (lhere, 'adiag has been increased 10 times but moves are still too bad')
+    call die (lhere, 'add_diag has been increased 10 times but moves are still too bad')
    endif
 
    iwf = 2
@@ -1156,7 +1156,7 @@ module optimization_mod
    diag_stab = add_diag (2)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,1pd9.1)') 'Trying adiag=', diag_stab
+   write(6,'(a,1pd9.1)') 'Trying add_diag=', diag_stab
    call wf_update_and_check (is_bad_move_2)
 
    iwf = 3
@@ -1164,21 +1164,21 @@ module optimization_mod
    diag_stab = add_diag (3)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,1pd9.1)') 'Trying adiag=', diag_stab
+   write(6,'(a,1pd9.1)') 'Trying add_diag=', diag_stab
    call wf_update_and_check (is_bad_move_3)
 
    iwf = 1
    diag_stab =  add_diag (1)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,1pd9.1)') 'Trying adiag=', diag_stab
+   write(6,'(a,1pd9.1)') 'Trying add_diag=', diag_stab
    call wf_update_and_check (is_bad_move_1)
 
 !  if move too large, restore wave function and increase diag_stab_ref, otherwise exit loop
    if (is_bad_move_1 /= 0 .or. is_bad_move_2 /= 0 .or. is_bad_move_3 /= 0) then
     call wf_restore
     add_diag (1) = add_diag (1) * 10**(is_bad_move_1 + is_bad_move_2 + is_bad_move_3)
-    write(6,'(a,1pd9.1)') 'Increasing adiag to ',add_diag (1)
+    write(6,'(a,1pd9.1)') 'Increasing add_diag to ',add_diag (1)
     cycle
    endif
 
@@ -1205,10 +1205,10 @@ module optimization_mod
     endif
    enddo
 
-!  if the central calculation is not reliable, increase adiag and cycle
+!  if the central calculation is not reliable, increase add_diag and cycle
    if (.not. calculation_reliable (1)) then
     add_diag (1) =add_diag (1) * 10.d0
-    write(6,'(a,1pd9.1)') 'Correlated calculation # 1 is not reliable, increase adiag to ',add_diag (1)
+    write(6,'(a,1pd9.1)') 'Correlated calculation # 1 is not reliable, increase add_diag to ',add_diag (1)
 !   just in case mc config is in crazy place, reset mc_configs by calling sites
     isite=1; call mc_configs_read
     cycle
@@ -1232,7 +1232,7 @@ module optimization_mod
       energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
 
     add_diag (1) = add_diag (1) * 100.d0
-    write(6,'(a,1pd9.1)') 'Energy or sigma of correlation calculation # 1 went up too much, increase adiag to ',add_diag (1)
+    write(6,'(a,1pd9.1)') 'Energy or sigma of correlation calculation # 1 went up too much, increase add_diag to ',add_diag (1)
 
     call wf_restore
     call object_restore ('gradient')
@@ -1263,17 +1263,17 @@ module optimization_mod
    exit
   enddo
 
-!  if correlated calculations # 2 or 3 not reliable, but correlated calculation # 1 is reliable, then accept the current value of adiag
+!  if correlated calculations # 2 or 3 not reliable, but correlated calculation # 1 is reliable, then accept the current value of add_diag
 !  this may be dangerous, maybe need to be modified
 
-!  if the 3 correlated calculations are reliable, find optimal adiag by parabolic interpolation
+!  if the 3 correlated calculations are reliable, find optimal add_diag by parabolic interpolation
    if (calculation_reliable_nb == 3) then
 !   This is the objective function being optimized
     do iadd_diag=1,3
      ene_var(iadd_diag)=(1.d0-p_var)*energy(iadd_diag)+p_var*energy_sigma(iadd_diag)**2
     enddo
 
-!   Find optimal adiag
+!   Find optimal add_diag
 !    call quad_min(energy_sav,energy_err_sav,energy,energy_err,force,force_err,ene_var,add_diag,3,0.d0,0.d0,p_var)
     call quad_min(ene_var,3)
    endif
@@ -1299,7 +1299,7 @@ module optimization_mod
      endif
 !      call object_restore ('delta_e_ptb') !!
   endif
-  diag_stab = min(add_diag (1), adiag_max)
+  diag_stab = min(add_diag (1), add_diag_max)
   call object_modified ('diag_stab')
 
   end subroutine adjust_diag_stab
@@ -1328,7 +1328,7 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('csf_coef')
    write(6,'(a)') 'CSFs coefficients:'
-   write(6,'(200f15.8)') csf_coef(1:ncsf,iwf)
+   write(6,'(<ncsf>f15.8,'' (csf_coef(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -1379,7 +1379,11 @@ module optimization_mod
 
    write(6,'(a)') 'Orbital coefficients (coef(i,j),j=1,nbasis):'
    do orb_i = 1, orb_tot_nb
-    write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+    if(orb_i==1) then
+     write(6,'(<nbasis>e16.8,'' (coef(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+    else
+     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+    endif
    enddo
 
   else
@@ -1394,7 +1398,7 @@ module optimization_mod
    call object_provide ('nbasis')
    call object_provide ('zex')
    write(6,'(a)') 'Basis exponents (zex(i),i=1,nbasis):'
-   write(6,'(1000f10.6)') zex (1:nbasis, iwf)
+   write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
   endif ! l_opt_exp
 
   write(6,*)
