@@ -540,6 +540,7 @@ module opt_lin_mod
 ! Created       : J. Toulouse, 24 Jan 2006
 ! ------------------------------------------------------------------------------
   implicit none
+  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: here = 'ham_lin_renorm_stab_bld'
