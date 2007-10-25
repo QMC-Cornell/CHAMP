@@ -35,7 +35,7 @@ module opt_lin_mod
   logical                         :: l_select_eigvec_lowest = .true.
   logical                         :: l_select_eigvec_largest_1st_coef = .false.
   integer                         :: target_state = 0
-  real(dp)                        :: add_diag_mult_expon = 1.d0
+  real(dp)                        :: add_diag_mult_exp = 1.d0
 
   contains
 
@@ -555,6 +555,7 @@ module opt_lin_mod
    call object_needed ('param_aug_nb')
    call object_needed ('ham_lin_renorm')
    call object_needed ('diag_stab')
+   call object_needed ('add_diag_mult_exp')
 
    return
 
@@ -577,7 +578,7 @@ module opt_lin_mod
   else
   do i = 1, param_nb
     if (i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
-      ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab * add_diag_mult_expon ! multiplicative factor for exponent parameters
+      ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab * add_diag_mult_exp ! multiplicative factor for exponent parameters
     else
       ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab
     endif

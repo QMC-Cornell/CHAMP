@@ -136,6 +136,7 @@ module indexes_mod
   integer     :: coef_orb_on_norm_basis_index
   integer     :: coef_orb_on_ortho_basis_index
   integer     :: psid_ex_in_x_index
+  integer     :: add_diag_mult_exp_index
 
 ! indexes of nodes
   integer     :: dpsi_bld_index

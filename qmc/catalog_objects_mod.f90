@@ -135,6 +135,7 @@ module catalog_objects_mod
   call catalog_one_object ('coef', coef_index)
   call catalog_one_object ('coef_orb_on_norm_basis', coef_orb_on_norm_basis_index)
   call catalog_one_object ('coef_orb_on_ortho_basis', coef_orb_on_ortho_basis_index)
+  call catalog_one_object ('add_diag_mult_exp', add_diag_mult_exp_index)
 
  end subroutine catalog_objects
 

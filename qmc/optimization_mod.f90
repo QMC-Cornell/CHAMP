@@ -56,6 +56,7 @@ module optimization_mod
   real(dp), allocatable   :: delta_c_ip (:,:)
   real(dp), allocatable   :: delta_c_im (:,:)
   real(dp)                :: add_diag_max  = 1.d10
+  logical                 :: do_add_diag_mult_exp = .false.
 
   contains
 
@@ -228,6 +229,9 @@ module optimization_mod
   case ('ortho_orb_vir_to_orb_occ')
    call get_next_value (l_ortho_orb_vir_to_orb_occ)
 
+  case ('do_add_diag_mult_exp')
+   call get_next_value (do_add_diag_mult_exp)
+
   case ('end')
    exit
 
@@ -378,6 +382,8 @@ module optimization_mod
   d_eloc_av = 0.d0
   l_convergence_reached = .false.
   convergence_reached_nb  = 0
+  add_diag_mult_exp = 1.d0
+  call object_modified ('add_diag_mult_exp')
 
 ! orthonormalization the orbitals
   if (l_ortho_orb_opt) then
@@ -760,7 +766,7 @@ module optimization_mod
   end subroutine optimization
 
 !===========================================================================
-  subroutine wf_update_and_check (is_bad_move)
+  subroutine wf_update_and_check (is_bad_move, is_bad_move_exp, exp_move_big)
 !---------------------------------------------------------------------------
 ! Description : update and check parameters of wave function
 !
@@ -772,7 +778,8 @@ module optimization_mod
   include 'commons.h'
 
 ! output
-  integer, intent(out) :: is_bad_move
+  integer, intent(out) :: is_bad_move, is_bad_move_exp
+  logical, intent(out) :: exp_move_big
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'wf_update_and_check'
@@ -963,6 +970,8 @@ module optimization_mod
 
 ! Check move:
   is_bad_move = 0
+  is_bad_move_exp = 0 
+  exp_move_big = .false. 
 
 ! test norm of csf coefficient variations
   if (l_opt_csf) then
@@ -1022,6 +1031,16 @@ module optimization_mod
           is_bad_move = 1
           exponent_negative_nb = exponent_negative_nb + 1
         endif
+        if (do_add_diag_mult_exp) then 
+           if (abs (delta_exp (dexp_i)) > 0.05 * zex (bas_i, 1)) then 
+              exp_move_big = .true. 
+           endif
+           if (abs (delta_exp (dexp_i)) > 0.2 * zex (bas_i, 1)) then 
+              is_bad_move_exp = 1
+              write(6,'(a,F10.6,a,I4,a,F10.6,a)') "This is a bad move because change in exponent ", zex (bas_i, 1), & 
+                   &  " of basis ", bas_i , " is ", 100 * abs (delta_exp (dexp_i))/ zex (bas_i, 1), " percent"
+           endif
+        endif ! do_add_diag_mult_exp
       enddo ! dexp_to_bas_i
     enddo ! dexp_i
     if (exponent_negative_nb > 0) then
@@ -1061,6 +1080,8 @@ module optimization_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'wf_update_and_check_and_stab'
   integer is_bad_move, loop
+  integer is_bad_move_exp
+  logical exp_move_big
 
 ! begin
 
@@ -1073,18 +1094,37 @@ module optimization_mod
    endif
 
 !  update and check wave function
-   call wf_update_and_check (is_bad_move)
+   call wf_update_and_check (is_bad_move, is_bad_move_exp, exp_move_big)
+
+!  if move for the exponents was not big, decrease add_diag_mult_exp
+   if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. .not. exp_move_big) then 
+       if (add_diag_mult_exp  > 1.0_dp) then 
+         add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp/10.d0)
+         write(6,'(a,F10.6)') "add_diag_mult_exp is decreased to (redundant)", add_diag_mult_exp
+         call object_modified ('add_diag_mult_exp')
+       endif
+   endif
 
 !  if the move is bad, increase add_diag and retry
-   if (l_stab .and. is_bad_move /= 0) then
+   if (l_stab .and. is_bad_move == 1) then
      call wf_restore
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
      call object_modified ('diag_stab')
-     write(6,'(2a,1pd9.1)') trim(lhere),': increase add_diag up to ', diag_stab
+     write(6,'(2a,1pd9.1)') 'increasing add_diag up to (redundant)', diag_stab
      cycle
-   else
-     exit
    endif
+
+!  if move is bad only for the exponents, increase add_diag_mult_exp and retry
+   if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. is_bad_move_exp == 1) then 
+       call wf_restore
+       add_diag_mult_exp = add_diag_mult_exp * 10
+       write(6,'(a,F10.6)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
+       call object_modified ('add_diag_mult_exp')
+     cycle
+    endif
+
+!   if the move was good, exit loop
+    exit
 
   enddo ! end loop
 
@@ -1115,6 +1155,8 @@ module optimization_mod
   integer nblk_sav, nblk_small
   logical :: calculation_reliable (3)
   integer :: calculation_reliable_nb
+  integer :: is_bad_move_exp1, is_bad_move_exp2, is_bad_move_exp3
+  logical :: exp_move_big1, exp_move_big2, exp_move_big3
 
 ! begin
   write(6,*)
@@ -1156,23 +1198,23 @@ module optimization_mod
    diag_stab = add_diag (2)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,1pd9.1)') 'Trying add_diag=', diag_stab
-   call wf_update_and_check (is_bad_move_2)
+   write(6,'(a,I1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   call wf_update_and_check (is_bad_move_2, is_bad_move_exp2, exp_move_big2)
 
    iwf = 3
    add_diag (3) = 10.d0 * add_diag (1)
    diag_stab = add_diag (3)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,1pd9.1)') 'Trying add_diag=', diag_stab
-   call wf_update_and_check (is_bad_move_3)
+   write(6,'(a,I1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   call wf_update_and_check (is_bad_move_3, is_bad_move_exp3, exp_move_big3)
 
    iwf = 1
    diag_stab =  add_diag (1)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,1pd9.1)') 'Trying add_diag=', diag_stab
-   call wf_update_and_check (is_bad_move_1)
+   write(6,'(a,I1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   call wf_update_and_check (is_bad_move_1, is_bad_move_exp1, exp_move_big1)
 
 !  if move too large, restore wave function and increase diag_stab_ref, otherwise exit loop
    if (is_bad_move_1 /= 0 .or. is_bad_move_2 /= 0 .or. is_bad_move_3 /= 0) then
@@ -1181,6 +1223,26 @@ module optimization_mod
     write(6,'(a,1pd9.1)') 'Increasing add_diag to ',add_diag (1)
     cycle
    endif
+
+   if (l_opt_exp .and. do_add_diag_mult_exp) then
+
+      if (.not. exp_move_big1 .and. .not. exp_move_big2  .and.  .not. exp_move_big3) then 
+         if (add_diag_mult_exp  > 1.0_dp) then 
+            add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp /10.d0)
+            write(6,'(a,F10.6)') "add_diag_mult_exp is decreased to ", add_diag_mult_exp
+            call object_modified ('add_diag_mult_exp')
+         endif
+      endif
+      
+      if (is_bad_move_exp1 == 1 .or. is_bad_move_exp2 == 1 .or. is_bad_move_exp3 == 1) then 
+         call wf_restore
+         add_diag_mult_exp = add_diag_mult_exp * 10
+         write(6,'(a,F10.6)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
+         call object_modified ('add_diag_mult_exp')
+         cycle
+      endif
+
+  endif ! l_opt_exp .and. do_add_diag_mult_exp
 
 !  3 small correlated sampling without computing gradient
 !   igradhess=0
