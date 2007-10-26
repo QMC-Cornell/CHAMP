@@ -1037,7 +1037,7 @@ module optimization_mod
            endif
            if (abs (delta_exp (dexp_i)) > 0.2 * zex (bas_i, 1)) then 
               is_bad_move_exp = 1
-              write(6,'(a,F10.6,a,I4,a,F10.6,a)') "This is a bad move because change in exponent ", zex (bas_i, 1), & 
+              write(6,'(a,f10.3,a,I4,a,f10.1,a)') "This is a bad move because change in exponent ", zex (bas_i, 1), & 
                    &  " of basis ", bas_i , " is ", 100 * abs (delta_exp (dexp_i))/ zex (bas_i, 1), " percent"
            endif
         endif ! do_add_diag_mult_exp
@@ -1100,7 +1100,7 @@ module optimization_mod
    if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. .not. exp_move_big) then 
        if (add_diag_mult_exp  > 1.0_dp) then 
          add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp/10.d0)
-         write(6,'(a,F10.6)') "add_diag_mult_exp is decreased to (redundant)", add_diag_mult_exp
+         write(6,'(a,f10.1)') "add_diag_mult_exp is decreased to (redundant)", add_diag_mult_exp
          call object_modified ('add_diag_mult_exp')
        endif
    endif
@@ -1118,7 +1118,7 @@ module optimization_mod
    if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. is_bad_move_exp == 1) then 
        call wf_restore
        add_diag_mult_exp = add_diag_mult_exp * 10
-       write(6,'(a,F10.6)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
+       write(6,'(a,f10.1)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
        call object_modified ('add_diag_mult_exp')
      cycle
     endif
@@ -1229,7 +1229,7 @@ module optimization_mod
       if (.not. exp_move_big1 .and. .not. exp_move_big2  .and.  .not. exp_move_big3) then 
          if (add_diag_mult_exp  > 1.0_dp) then 
             add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp /10.d0)
-            write(6,'(a,F10.6)') "add_diag_mult_exp is decreased to ", add_diag_mult_exp
+            write(6,'(a,f10.1)') "add_diag_mult_exp is decreased to ", add_diag_mult_exp
             call object_modified ('add_diag_mult_exp')
          endif
       endif
@@ -1237,7 +1237,7 @@ module optimization_mod
       if (is_bad_move_exp1 == 1 .or. is_bad_move_exp2 == 1 .or. is_bad_move_exp3 == 1) then 
          call wf_restore
          add_diag_mult_exp = add_diag_mult_exp * 10
-         write(6,'(a,F10.6)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
+         write(6,'(a,f10.1)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
          call object_modified ('add_diag_mult_exp')
          cycle
       endif

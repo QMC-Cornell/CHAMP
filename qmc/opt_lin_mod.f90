@@ -760,7 +760,7 @@ module opt_lin_mod
       endif
     enddo
     write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
-    write(6,'(a)') 'Warning: all the eigenvalues are outside the resonable energy windows!'
+    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows!'
   endif
 
 ! if target_state = 0, select eigenvector with lowest reasonable eigenvalue or largest 1st components
