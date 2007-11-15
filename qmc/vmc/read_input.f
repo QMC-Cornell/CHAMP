@@ -898,10 +898,6 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
 !        norb=norb_used
 !      endif
 
-      call object_modified ('iworbd')  !JT
-      write(6,'(''Determine unique up and dn determinants'')')
-      call determinant_up_dn
-
       read(5,*) ncsf
       write(6,'(/,''ncsf='',i5)') ncsf
 
@@ -953,6 +949,12 @@ c First calculate normalization and adjust csf_coef to correspond to that.
 c Check if all the determinants are used in CSFs
       do 90 idet=1,ndet
    90   if(iflag(idet).eq.0) write(6,'(''Warning: determinant'',i3,'' is unused'')') idet
+
+      call sort_iworbd
+
+      call object_modified ('iworbd')  !JT
+      write(6,'(''Determine unique up and dn determinants'')')
+      call determinant_up_dn
 
       call object_modified ('ncsf')         !JT
       call object_modified ('csf_coef')     !JT
@@ -1593,6 +1595,50 @@ c    &(iwdet(iparm),iparm=1,nparmd)
       call object_modified ('iwjasc') !JT
       call object_modified ('nparmj') !JT
       call object_modified ('nparmcsf') !JT
+
+      return
+      end
+c-----------------------------------------------------------------------
+
+      subroutine sort_iworbd
+c Written by Cyrus Umrigar
+c Order iworbd for each determinant to be monotonically increasing for up and dn electrons separately
+c and change signs of cdet_in_csf accordingly.  This is needed for orbital optimization.
+
+      implicit real*8(a-h,o-z)
+
+      include 'vmc.h'
+      include 'force.h'
+
+      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+      dimension iodd_permut(MDET)
+
+      do 20 i=1,ndet
+        iodd_permut(i)=1
+        do 10 j=1,nup
+          do 10 k=j+1,nup
+            if(iworbd(k,i).lt.iworbd(j,i)) then
+              itmp=iworbd(j,i)
+              iworbd(j,i)=iworbd(k,i)
+              iworbd(k,i)=itmp
+              iodd_permut(i)=-iodd_permut(i)
+            endif
+   10 continue
+        do 20 j=nup+1,nup+ndn
+          do 20 k=j+1,nup+ndn
+            if(iworbd(k,i).lt.iworbd(j,i)) then
+              itmp=iworbd(j,i)
+              iworbd(j,i)=iworbd(k,i)
+              iworbd(k,i)=itmp
+              iodd_permut(i)=-iodd_permut(i)
+            endif
+   20 continue
+
+      do 30 icsf=1,ncsf
+        do 30 idet_in_csf=1,ndet_in_csf(icsf)
+   30     cdet_in_csf(idet_in_csf,icsf)=iodd_permut(iwdet_in_csf(idet_in_csf,icsf))*cdet_in_csf(idet_in_csf,icsf)
 
       return
       end
