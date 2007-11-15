@@ -743,7 +743,7 @@ c Pivot to make some coefs. zero
   200   continue
 
 c Make the largest in absolute magnitude coef be 1.  This renormalizes the
-c determinant, so adjust cdet to compensate.
+c determinant, so adjust cdet (in old code) or csf_coef (in new code) to compensate.
         do 230 iorb=1,norb
           comax=zero
           do 210 ibas=1,nbasis
@@ -757,10 +757,15 @@ c 220         if(iworbd(j,idet).eq.iorb) cdet(idet,1)=cdet(idet,1)*comax
 c Warning: I am not sure if the foll. is always correct.  It assumes that if there
 c are several determinants that make up a CSF, then each determinant has the
 c same orbitals (though of course divided differently among up and down determinants).
+c For example if we consider for the N atom the CSF that comes from exciting
+c (a p->d for up-spin and a s->p for dn-spin) then the determinants that make up the
+c CSF do not all have the same orbitals.  However, they have the same number of p and d
+c orbitals and so if the same renormalization is applied to all the p's and all the d's
+c then it is correct I think.
           do 220 icsf=1,ncsf
             idet=iwdet_in_csf(1,icsf)
             do 220 j=1,nelec
-  220         if(iworbd(j,idet).eq.iorb) csf_coef(idet,1)=csf_coef(idet,1)*comax
+  220         if(iworbd(j,idet).eq.iorb) csf_coef(icsf,1)=csf_coef(icsf,1)*comax
             do 230 ibas=1,nbasis
   230         coef(ibas,iorb,1)=coef(ibas,iorb,1)/comax
       endif

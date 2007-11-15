@@ -1110,7 +1110,7 @@ module optimization_mod
      call wf_restore
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
      call object_modified ('diag_stab')
-     write(6,'(2a,1pd9.1)') 'increasing add_diag up to (redundant)', diag_stab
+     write(6,'(a,1pd9.1)') 'increasing add_diag up to (redundant)', diag_stab
      cycle
    endif
 
