@@ -56,6 +56,8 @@ module optimization_mod
   real(dp), allocatable   :: delta_c_ip (:,:)
   real(dp), allocatable   :: delta_c_im (:,:)
   real(dp)                :: add_diag_max  = 1.d10
+  logical                 :: l_reset_add_diag = .false.
+  real(dp)                :: add_diag_reset  = 1.d-8
   logical                 :: do_add_diag_mult_exp = .false.
 
   contains
@@ -80,6 +82,7 @@ module optimization_mod
   l_opt = .true.
   l_stab = .true.
   target_state = 0
+  l_reset_add_diag = .false.
 
 ! temporary error messages
   if (nopt_iter <= 0) then
@@ -153,6 +156,10 @@ module optimization_mod
 
   case ('stabilize')
    call get_next_value (l_stab)
+
+  case ('add_diag_reset')
+   call get_next_value (add_diag_reset)
+   l_reset_add_diag = .true.
 
   case ('stabilization')
    call get_next_value (stabilization)
@@ -1161,6 +1168,13 @@ module optimization_mod
 ! begin
   write(6,*)
   write(6,'(a)') 'Searching for optimal stabilizing add_diag...'
+
+! reset add_diag to (small) fixed value, so that the found optimal add_diag will tend to be closer to this (small) fixed value
+  if (l_reset_add_diag) then
+    diag_stab = add_diag_reset
+    call object_modified ('diag_stab')
+    write(6,'(a,1pd9.1)') 'Reset add_diag to add_diag_reset = ',diag_stab
+  endif
 
 ! smaller value of number of blocks
   nblk_small=min(nblk_max,max(10,block_nb/10))

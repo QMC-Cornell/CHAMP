@@ -483,7 +483,7 @@ module average_mod
   character(len=*), intent(in) :: object_covar_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_error_request'
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_request'
   integer object_av1_ind, object_av2_ind, object_covar_ind
   integer obj_i
   logical object_found
@@ -726,7 +726,6 @@ module average_mod
   integer dim1, dim_av1
   integer ierr
   real(dp) collect
-
 
 ! begin
 
@@ -1226,7 +1225,7 @@ module average_mod
  end subroutine object_variance_by_index_double_2
 
 ! ===================================================================================
-  subroutine object_covariance_by_index_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
+  subroutine object_covariance_by_index_double_0_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate covariance of two averaged objects
 !
@@ -1239,7 +1238,7 @@ module average_mod
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_0'
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_0_double_0'
   character(len=max_string_len_type) object_av1_type, object_av2_type, object_covar_type
 
 ! begin
@@ -1253,15 +1252,9 @@ module average_mod
     call object_associated_or_die_by_index (object_covar_ind)
 
 !   test on type
-    object_av1_type = objects(object_av1_ind)%type
-    object_av2_type = objects(object_av2_ind)%type
     object_covar_type = objects(object_covar_ind)%type
-
-    if (object_av1_type /= object_covar_type .or. object_av2_type /= object_covar_type .or. object_av1_type /= object_av2_type) then
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is ', object_av1_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is ', object_av2_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_covar_ind)%name),' is ', object_covar_type
-     write(6,*) trim(lhere),': they should be identical'
+    if (object_covar_type /= 'double_0') then
+     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', trim(object_covar_type),' /= double_0'
      call die (lhere)
     endif
 
@@ -1285,10 +1278,10 @@ module average_mod
    objects(object_av1_ind)%previous_double_0 = objects(object_av1_ind)%pointer_double_0
    objects(object_av2_ind)%previous_double_0 = objects(object_av2_ind)%pointer_double_0
 
- end subroutine object_covariance_by_index_double_0
+ end subroutine object_covariance_by_index_double_0_double_0
 
 ! ===================================================================================
-  subroutine object_covariance_by_index_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+  subroutine object_covariance_by_index_double_1_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate covariance of two averaged objects
 !
@@ -1301,9 +1294,9 @@ module average_mod
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1'
-  character(len=max_string_len_type) object_av1_type, object_av2_type, object_covar_type
-  integer dim_av11, dim_av21, dim_covar1
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1_double_0'
+  character(len=max_string_len_type) object_covar_type
+  integer dim_av11, dim_covar1
 
 ! begin
 
@@ -1316,26 +1309,19 @@ module average_mod
     call object_associated_or_die_by_index (object_covar_ind)
 
 !   test on type
-    object_av1_type = objects(object_av1_ind)%type
-    object_av2_type = objects(object_av2_ind)%type
     object_covar_type = objects(object_covar_ind)%type
 
-    if (object_av1_type /= object_covar_type .or. object_av2_type /= object_covar_type .or. object_av1_type /= object_av2_type) then
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is ', object_av1_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is ', object_av2_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_covar_ind)%name),' is ', object_covar_type
-     write(6,*) trim(lhere),': they should be identical'
+    if (object_covar_type /= 'double_1') then
+     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_1'
      call die (lhere)
     endif
 
 !   test on dimensions
     dim_av11 = objects(object_av1_ind)%dimensions(1)
-    dim_av21 = objects(object_av2_ind)%dimensions(1)
     dim_covar1 = objects(object_covar_ind)%dimensions(1)
 
-    if (dim_av11 /= dim_covar1 .or. dim_av21 /= dim_covar1 .or. dim_av11 /= dim_av21) then
+    if (dim_av11 /= dim_covar1) then
      write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
      write(6,*) trim(lhere),': dimension of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1
      write(6,*) trim(lhere),': they should be identical'
      call die (lhere)
@@ -1344,27 +1330,181 @@ module average_mod
 !   intermediate objects
     call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
     call alloc ('objects(object_av1_ind)%previous_double_1', objects(object_av1_ind)%previous_double_1, dim_av11)
-    call alloc ('objects(object_av2_ind)%previous_double_1', objects(object_av2_ind)%previous_double_1, dim_av21)
     objects(object_covar_ind)%sum_blk_square_double_1 = 0.d0
     objects(object_av1_ind)%previous_double_1 = 0.d0
-    objects(object_av2_ind)%previous_double_1 = 0.d0
+    objects(object_av2_ind)%previous_double_0 = 0.d0
 
    endif ! first block
 
 !  calculate sum of product of averages over blocks
    objects(object_covar_ind)%sum_blk_square_double_1 = objects(object_covar_ind)%sum_blk_square_double_1   &
        + (objects(object_av1_ind)%pointer_double_1 * block_iterations_nb - objects(object_av1_ind)%previous_double_1 * (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - objects(object_av2_ind)%previous_double_0 * (block_iterations_nb - 1 ))
+
+!  calculate covariance
+   objects(object_covar_ind)%pointer_double_1 = objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_1*objects(object_av2_ind)%pointer_double_0
+   call object_modified_by_index (object_covar_ind)
+
+!  save current average value for next iteration
+   objects(object_av1_ind)%previous_double_1 = objects(object_av1_ind)%pointer_double_1
+   objects(object_av2_ind)%previous_double_0 = objects(object_av2_ind)%pointer_double_0
+
+ end subroutine object_covariance_by_index_double_1_double_0
+
+! ===================================================================================
+  subroutine object_covariance_by_index_double_0_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate covariance of two averaged objects
+!
+! Created       : J. Toulouse, 19 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_0_double_1'
+  character(len=max_string_len_type) object_covar_type
+  integer dim_av21, dim_covar1
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_av1_ind)
+    call object_associated_or_die_by_index (object_av2_ind)
+    call object_associated_or_die_by_index (object_covar_ind)
+
+!   test on type
+    object_covar_type = objects(object_covar_ind)%type
+
+    if (object_covar_type /= 'double_1') then
+     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_1'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_av21 = objects(object_av2_ind)%dimensions(1)
+    dim_covar1 = objects(object_covar_ind)%dimensions(1)
+
+    if (dim_av21 /= dim_covar1) then
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
+    call alloc ('objects(object_av2_ind)%previous_double_1', objects(object_av2_ind)%previous_double_1, dim_av21)
+    objects(object_covar_ind)%sum_blk_square_double_1 = 0.d0
+    objects(object_av1_ind)%previous_double_0 = 0.d0
+    objects(object_av2_ind)%previous_double_1 = 0.d0
+
+   endif ! first block
+
+!  calculate sum of product of averages over blocks
+   objects(object_covar_ind)%sum_blk_square_double_1 = objects(object_covar_ind)%sum_blk_square_double_1   &
+       + (objects(object_av1_ind)%pointer_double_0 * block_iterations_nb - objects(object_av1_ind)%previous_double_0 * (block_iterations_nb - 1 )) &
        * (objects(object_av2_ind)%pointer_double_1 * block_iterations_nb - objects(object_av2_ind)%previous_double_1 * (block_iterations_nb - 1 ))
 
 !  calculate covariance
-   objects(object_covar_ind)%pointer_double_1 = objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_1*objects(object_av2_ind)%pointer_double_1
+   objects(object_covar_ind)%pointer_double_1 = objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_1
+   call object_modified_by_index (object_covar_ind)
+
+!  save current average value for next iteration
+   objects(object_av1_ind)%previous_double_0 = objects(object_av1_ind)%pointer_double_0
+   objects(object_av2_ind)%previous_double_1 = objects(object_av2_ind)%pointer_double_1
+
+ end subroutine object_covariance_by_index_double_0_double_1
+
+! ===================================================================================
+  subroutine object_covariance_by_index_double_1_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate covariance of two averaged objects
+!
+! Created       : J. Toulouse, 19 Sep 2007
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1_double_1'
+  character(len=max_string_len_type) object_covar_type
+  integer dim_av11, dim_av21, dim_covar1, dim_covar2
+  integer i,j 
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_av1_ind)
+    call object_associated_or_die_by_index (object_av2_ind)
+    call object_associated_or_die_by_index (object_covar_ind)
+
+!   test on type
+    object_covar_type = objects(object_covar_ind)%type
+
+    if (object_covar_type /= 'double_2') then
+     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_2'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_av11 = objects(object_av1_ind)%dimensions(1)
+    dim_av21 = objects(object_av2_ind)%dimensions(1)
+    dim_covar1 = objects(object_covar_ind)%dimensions(1)
+    dim_covar2 = objects(object_covar_ind)%dimensions(2)
+
+    if (dim_av11 /= dim_covar1 .or. dim_av21 /= dim_covar2) then
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
+     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
+     write(6,*) trim(lhere),': dimensions of object >',trim(objects(object_covar_ind)%name),'< are ', dim_covar1, dim_covar2
+     write(6,*) trim(lhere),': they should match'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_2', objects(object_covar_ind)%sum_blk_square_double_2, dim_covar1, dim_covar2)
+    call alloc ('objects(object_av1_ind)%previous_double_1', objects(object_av1_ind)%previous_double_1, dim_av11)
+    call alloc ('objects(object_av2_ind)%previous_double_1', objects(object_av2_ind)%previous_double_1, dim_av21)
+    objects(object_covar_ind)%sum_blk_square_double_2 = 0.d0
+    objects(object_av1_ind)%previous_double_1 = 0.d0
+    objects(object_av2_ind)%previous_double_1 = 0.d0
+
+   endif ! first block
+
+!  calculate sum of product of averages over blocks
+   do i = 1, dim_covar1
+    do j = 1, dim_covar2
+    objects(object_covar_ind)%sum_blk_square_double_2 (i,j) = objects(object_covar_ind)%sum_blk_square_double_2 (i,j)  &
+       + (objects(object_av1_ind)%pointer_double_1 (i) * block_iterations_nb - objects(object_av1_ind)%previous_double_1 (i) * (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_1 (j) * block_iterations_nb - objects(object_av2_ind)%previous_double_1 (j) * (block_iterations_nb - 1 ))
+    enddo
+  enddo
+
+!  calculate covariance
+   do i = 1, dim_covar1
+    do j = 1, dim_covar2
+    objects(object_covar_ind)%pointer_double_2 (i,j) = objects(object_covar_ind)%sum_blk_square_double_2 (i,j)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (i) * objects(object_av2_ind)%pointer_double_1 (j)
+    enddo
+   enddo
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
    objects(object_av1_ind)%previous_double_1 = objects(object_av1_ind)%pointer_double_1
    objects(object_av2_ind)%previous_double_1 = objects(object_av2_ind)%pointer_double_1
 
- end subroutine object_covariance_by_index_double_1
+ end subroutine object_covariance_by_index_double_1_double_1
 
 ! ===================================================================================
   subroutine object_covariance_by_index_double_2 (object_av1_ind, object_av2_ind, object_covar_ind)
@@ -2040,6 +2180,7 @@ module average_mod
 
     object_av_ind = variances_object_av_index (ind)
     object_var_ind = variances_object_var_index (ind)
+!    write(6,'(4a)') 'computing variance >',trim(objects(object_var_ind)%name),'< of average >',trim(objects(object_av_ind)%name),'<'
 
     call object_provide_by_index (object_av_ind)
 
@@ -2089,7 +2230,7 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'compute_covariances'
   integer ind
   integer object_av1_ind, object_av2_ind, object_covar_ind
-  character(len=max_string_len_type) object_av1_type
+  character(len=max_string_len_type) object_av1_type, object_av2_type
 
 ! begin
   do ind = 1, covariances_nb
@@ -2097,11 +2238,13 @@ module average_mod
     object_av1_ind = covariances_object_av1_index (ind)
     object_av2_ind = covariances_object_av2_index (ind)
     object_covar_ind = covariances_object_covar_index (ind)
+!    write(6,'(6a)') 'computing covariance >',trim(objects(object_covar_ind)%name),'< of averages >',trim(objects(object_av1_ind)%name),'< and >',trim(objects(object_av2_ind)%name),'<'
 
     call object_provide_by_index (object_av1_ind)
     call object_provide_by_index (object_av2_ind)
 
     object_av1_type = objects(object_av1_ind)%type
+    object_av2_type = objects(object_av2_ind)%type
 
     if (trim(object_av1_type) == '') then
       write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is unknown'
@@ -2109,21 +2252,30 @@ module average_mod
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
     endif
+    if (trim(object_av2_type) == '') then
+      write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      call die (lhere)
+    endif
 
-    if (trim(object_av1_type) == 'double_0') then
+    if (trim(object_av1_type) == 'double_0' .and. trim(object_av2_type) == 'double_0') then
+      call object_covariance_by_index_double_0_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
 
-      call object_covariance_by_index_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
+    elseif (trim(object_av1_type) == 'double_1' .and. trim(object_av2_type) == 'double_0') then
+      call object_covariance_by_index_double_1_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
 
-    elseif (trim(object_av1_type) == 'double_1') then
+    elseif (trim(object_av1_type) == 'double_0' .and. trim(object_av2_type) == 'double_1') then
+      call object_covariance_by_index_double_0_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
 
-      call object_covariance_by_index_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+    elseif (trim(object_av1_type) == 'double_1' .and. trim(object_av2_type) == 'double_1') then
+      call object_covariance_by_index_double_1_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
 
-    elseif (trim(object_av1_type) == 'double_2') then
-
-      call object_covariance_by_index_double_2 (object_av1_ind, object_av2_ind, object_covar_ind)
+!    elseif (trim(object_av1_type) == 'double_2') then
+!      call object_covariance_by_index_double_2 (object_av1_ind, object_av2_ind, object_covar_ind)
 
     else
-     call die (lhere, 'object type >'+trim(object_av1_type)+'< not handled.')
+     call die (lhere, 'objects types >'+trim(object_av1_type)+'< and >'+trim(object_av2_type)+'< not handled.')
     endif
 
   enddo ! ind
@@ -2133,7 +2285,7 @@ module average_mod
 ! ===================================================================================
   subroutine compute_errors
 ! -----------------------------------------------------------------------------------
-! Description   : compute statitical errors in MC iterations
+! Description   : compute statistical errors in MC iterations
 !
 ! Created       : J. Toulouse, 20 Oct 2005
 ! -----------------------------------------------------------------------------------
@@ -2145,7 +2297,6 @@ module average_mod
   integer ind
   integer object_av_ind, object_var_ind, object_err_ind
   character(len=max_string_len_type) object_var_type
-
 
 ! begin
   do ind = 1, errors_nb

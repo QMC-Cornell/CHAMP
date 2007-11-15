@@ -109,6 +109,7 @@ c       wnow=wsum(ifr)/nstep
         ecm2(ifr)=ecm2(ifr)+esum(ifr)*enow
         eave=ecum(ifr)/wcum(ifr)
 
+        call object_associate ('eloc_av', eloc_av)
         eloc_av = eave
         call object_modified_by_index (eloc_av_index)   !JT
 

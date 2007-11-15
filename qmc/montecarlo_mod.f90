@@ -227,6 +227,33 @@ module montecarlo_mod
   end subroutine eloc_sq_bld
 
 ! ==============================================================================
+!  subroutine eloc_av_bld
+! ------------------------------------------------------------------------------
+! Description   : Average of local energy
+!
+! Created       : J. Toulouse, 24 Sep 2007
+! ------------------------------------------------------------------------------
+!  implicit none
+!  include 'commons.h'
+!
+!! header
+!  if (header_exe) then
+!
+!   call object_create ('eloc_av')
+!   call object_variance_define ('eloc_av', 'eloc_av_var')
+!
+!   call object_needed ('eloc')
+!
+!   return
+!
+!  endif
+!
+!! begin
+!
+!
+!  end subroutine eloc_av_bld
+
+! ==============================================================================
   subroutine eloc_av_var_bld
 ! ------------------------------------------------------------------------------
 ! Description   : variance of local energy
