@@ -353,7 +353,7 @@ c if dump flag is on then dump out data for a restart
       close(unit=9)
 c     close(unit=5)
 c     close(unit=6)
-!JT      if(nconf_new.ne.0) close(unit=7)
+      if(nconf_new.ne.0) close(unit=7)
 
       return
       end
