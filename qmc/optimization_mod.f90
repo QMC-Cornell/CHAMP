@@ -59,6 +59,14 @@ module optimization_mod
   logical                 :: l_reset_add_diag = .true.
   real(dp)                :: add_diag_reset_value  = 1.d-8
   logical                 :: do_add_diag_mult_exp = .false.
+  logical                 :: l_last_run = .true.
+
+! best parameters to be dynamically allocatable
+  real(dp)                :: csf_coef_best(MCSF)
+  real(dp)                :: a4_best(MORDJ1,MCTYPE)
+  real(dp)                :: b_best(MORDJ1,2)
+  real(dp)                :: c_best(MPARMJ,MCTYPE)
+  real(dp)                :: scalek_best
 
   contains
 
@@ -113,6 +121,7 @@ module optimization_mod
    write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-8)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
    write(6,'(a)') ' iter_opt_max_nb = [integer] : maximun number of optimization iterations (default=nopt_iter)'
+   write(6,'(a)') ' last_run = [logical] : perform a last run with the last predicted parameters? (default=true)'
    write(6,'(a)') ' increase_accuracy = [logical] : default=true, increase statistical accuracy at each step?'
    write(6,'(a)') ' decrease_error = [logical] : default=true, decrease statistical error at each step?'
    write(6,'(a)') ' decrease_error_adaptative = [logical] : default=true, decrease statistical error according to energy difference'
@@ -154,6 +163,9 @@ module optimization_mod
 
   case ('iter_opt_max_nb')
    call get_next_value (iter_opt_max_nb)
+
+  case ('last_run')
+   call get_next_value (l_last_run)
 
   case ('stabilize')
    call get_next_value (l_stab)
@@ -374,13 +386,14 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'optimization'
-  integer iter, parm_i, parm_j, param_i
+  integer iter, parm_i, parm_j, param_i, iter_best
   real(dp) eloc_av_previous
   real(dp) d_eloc_av
   logical  l_convergence_reached
   integer convergence_reached_nb
   integer is_bad_move
   real(dp) error_sigma_sav
+  real(dp) energy_plus_err, energy_plus_err_best
 
 ! begin
   write(6,*)
@@ -388,6 +401,7 @@ module optimization_mod
 
 ! Initializations
   call vmc_init
+  energy_plus_err_best=1.d99
   eloc_av_previous =  0.d0
   d_eloc_av = 0.d0
   l_convergence_reached = .false.
@@ -607,6 +621,17 @@ module optimization_mod
 ! initial error
   call object_provide ('eerr')
 
+! If this is the best yet, save it.  Since we are primarily interested in the energy we always use
+! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
+! has a smaller error, either because of a reduction in sigma and Tcorr or because nblk is increasing.
+! If p_var!=0 then we add that to the criterion too.
+  energy_plus_err=energy(1)+3*energy_err(1)+p_var*energy_sigma(1)
+  if(energy_plus_err.lt.energy_plus_err_best) then
+   iter_best = iter
+   energy_plus_err_best=energy_plus_err
+   call wf_best_save
+  endif
+
 ! check convergence
   if (l_check_convergence .and. iter > 1 .and. iter >= iter_opt_min_nb) then
 
@@ -690,6 +715,7 @@ module optimization_mod
   error_sigma_sav = error_sigma
   ene_var_sav=(1-p_var)*energy(1)+p_var*energy_sigma(1)**2
 
+
 ! save wavefunction, gradient, Hamiltonian and overlap
   call wf_save
   call object_save ('gradient')
@@ -753,7 +779,6 @@ module optimization_mod
 
  enddo ! end optimization loop
 
-
 ! final printing
   write(6,*) ''
   write(6,'(a,i3,a)') 'Optimization ended after ',iter,' iterations.'
@@ -769,9 +794,36 @@ module optimization_mod
   endif
 
 ! write final wave function
-  write(6,*) ''
+  write(6,*)
   write(6,'(a)') 'Final wave function:'
   call wf_write
+
+! do a last vmc with the last predicted parameters without calculating the derivatives
+  if (l_last_run) then
+  write(6,*)
+  write(6,'(a)') 'Performing last vmc run'
+  call vmc
+  d_eloc_av = energy(1) - eloc_av_previous
+  write(6,*)
+  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter+1,eloc_av,' +-',eerr, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
+
+! If this is the best yet, save it.  Since we are primarily interested in the energy we use
+! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
+! has a smaller error, either because of a reduction in sigma and Tcorr or because nblk is increasing.
+! If p_var!=0 then we add that to the criterion too.
+  energy_plus_err=energy(1)+3*energy_err(1)+p_var*energy_sigma(1)
+  if(energy_plus_err.lt.energy_plus_err_best) then
+    iter_best = iter
+    energy_plus_err_best=energy_plus_err
+    call wf_best_save
+  endif
+  endif !l_last_run
+
+  write(6,*)
+  write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
+  write(6,*)
+  write(6,'(a,i3,a,f12.6,a)') 'The best wave function was found at iteration # ',iter_best, ' (energy_plus_err_best = ',energy_plus_err_best,')'
+  call wf_best_write
 
   end subroutine optimization
 
@@ -1456,7 +1508,7 @@ module optimization_mod
    call object_provide ('orb_tot_nb')
    call object_provide ('coef_orb_on_norm_basis')
 
-   write(6,'(a)') 'Orbital coefficients (coef(i,j),j=1,nbasis):'
+   write(6,'(a)') 'Orbital coefficients:'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
      write(6,'(<nbasis>e16.8,'' (coef(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
@@ -1476,13 +1528,114 @@ module optimization_mod
   if (l_opt_exp) then
    call object_provide ('nbasis')
    call object_provide ('zex')
-   write(6,'(a)') 'Basis exponents (zex(i),i=1,nbasis):'
+   write(6,'(a)') 'Basis exponents:'
    write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
   endif ! l_opt_exp
 
   write(6,*)
 
   end subroutine wf_write
+
+!===========================================================================
+  subroutine wf_best_write
+!---------------------------------------------------------------------------
+! Description : write parameters of best wave function
+!
+! Created     : J. Toulouse, 20 Nov 2007
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'wf_best_write'
+  integer orb_i
+  integer bas_i
+  integer i, ict, isp
+  character(len=30) fmt
+
+! begin
+
+! print CSFs coefficients
+  if (l_opt_csf) then
+   call object_provide ('ncsf')
+   call object_provide ('csf_coef_best')
+   write(6,'(a)') 'CSFs coefficients:'
+   write(6,'(<ncsf>f15.8,'' (csf_coef_best(icsf),icsf=1,ncsf)'')') csf_coef_best(1:ncsf)
+  endif ! l_opt_csf
+
+! print Jastrow parameters
+  if (l_opt_jas) then
+
+    call object_provide ('nctype')
+    call object_provide ('a4_best')
+    call object_provide ('b_best')
+    call object_provide ('c_best')
+
+      write(6,'(a)') 'Jastrow parameters:'
+      if (nparma_read > 0) then
+        write(fmt,'(''(''i2,''f15.8,a)'')') nparma_read
+       else
+        write(fmt,'(''(a)'')')
+      endif
+      do ict=1,nctype
+        write(6,fmt) (a4_best(i,ict),i=1,nparma_read),' (a_best(iparmj),iparmj=1,nparma)'
+      enddo
+
+      if(nparmb_read > 0) then
+        write(fmt,'(''(''i2,''f15.8,a)'')') nparmb_read
+       else
+        write(fmt,'(''(a)'')')
+      endif
+      do isp=nspin1,nspin2b
+        write(6,fmt) (b_best(i,isp),i=1,nparmb_read),' (b_best(iparmj),iparmj=1,nparmb)'
+      enddo
+
+      if(nparmc_read > 0) then
+        write(fmt,'(''(''i2,''f15.8,a)'')') nparmc_read
+       else
+        write(fmt,'(''(a)'')')
+      endif
+      do ict=1,nctype
+        write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
+      enddo
+
+  endif ! l_opt_jas
+
+! print orbitals coefficients
+  if (l_opt_orb .or. (l_opt_exp .and. trim(basis_functions_varied) /= 'normalized')) then
+
+   if (iperiodic == 0) then
+   call object_provide ('nbasis')
+   call object_provide ('orb_tot_nb')
+   call object_provide ('coef_orb_on_norm_basis_best')
+
+   write(6,'(a)') 'Orbital coefficients:'
+   do orb_i = 1, orb_tot_nb
+    if(orb_i==1) then
+     write(6,'(<nbasis>e16.8,'' (coef_best(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+    else
+     write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+    endif
+   enddo
+
+  else
+    call write_orbitals_pw_real
+    write(6,'(3a)') 'Best orbital coefficients written in file >',trim(file_orbitals_pw_out),'<'
+  endif
+
+  endif ! l_opt_orb
+
+! print basis exponents
+  if (l_opt_exp) then
+   call object_provide ('nbasis')
+   call object_provide ('zex_best')
+   write(6,'(a)') 'Basis exponents:'
+   write(6,'(<nbasis>f10.6,'' (zex_best(i),i=1,nbasis)'')') zex_best (1:nbasis)
+  endif ! l_opt_exp
+
+  write(6,*)
+
+  end subroutine wf_best_write
 
 ! ==============================================================================
   subroutine delta_param_bld

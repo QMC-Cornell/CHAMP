@@ -528,6 +528,7 @@ c-----------------------------------------------------------------------
 
       use all_tools_mod !JT
       use orbitals_mod  !JT
+      use basis_mod  !JT
       use optimization_mod !JT
 
 c Written by Cyrus Umrigar
@@ -560,9 +561,9 @@ c     common /contrl_per/ iperiodic,ibasis
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /forcepar/ deltot(MFORCE),nforce,istrech
 
-      dimension csf_coef_best(MCSF),a4_best(MORDJ1,MCTYPE),b_best(MORDJ1,2),c_best(MPARMJ,MCTYPE)
+!JT      dimension csf_coef_best(MCSF),a4_best(MORDJ1,MCTYPE),b_best(MORDJ1,2),c_best(MPARMJ,MCTYPE)
       dimension oparm_best(MOTYPE,MBASIS)
-      save csf_coef_best,scalek_best,a4_best,b_best,c_best,nparma_read,nparmb_read,nparmc_read
+!JT      save csf_coef_best,scalek_best,a4_best,b_best,c_best,nparma_read,nparmb_read,nparmc_read
       save oparm_best
 
       nparma_read=2+max(0,norda-1)
@@ -588,6 +589,8 @@ c  40 cdet(i,iadd_diag)=cdet(i,1)
       do 50 i=1,ncsf
    50   csf_coef_best(i)=csf_coef(i,1)
 
+      call object_modified ('csf_coef_best')
+
       do 51 it=1,notype
         do 51 ip=1,nbasis
    51     oparm_best(it,ip)=oparm(it,ip,1)
@@ -603,6 +606,24 @@ c Jastrow
       do 56 ict=1,nctype
         do 56 i=1,nparmc_read
    56     c_best(i,ict)=c(i,ict,1)
+
+      call object_modified ('a4_best')
+      call object_modified ('b_best')
+      call object_modified ('c_best')
+
+!     save orbital coefficients
+      call object_provide ('nbasis')
+      call object_provide ('orb_tot_nb')
+      call object_provide ('coef_orb_on_norm_basis')
+      call object_alloc ('coef_orb_on_norm_basis_best', coef_orb_on_norm_basis_best, nbasis, orb_tot_nb)
+      coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
+      call object_modified ('coef_orb_on_norm_basis_best')
+
+!     save exponents
+      call object_provide ('nctype')
+      call object_alloc ('zex_best', zex_best, nbasis)
+      zex_best (1:nbasis) = zex (1:nbasis,1)
+      call object_modified ('zex_best')
 
       return
 c-----------------------------------------------------------------------

@@ -76,6 +76,7 @@ module orbitals_mod
   real(dp), allocatable               :: coef_sav (:,:)
   real(dp), allocatable               :: coef_orb_on_norm_basis_sav (:,:)
   real(dp), allocatable               :: coef_orb_on_ortho_basis_sav (:,:)
+  real(dp), allocatable               :: coef_orb_on_norm_basis_best (:,:)
   logical, allocatable                :: is_orb_s (:)
 
   logical, allocatable                :: orb_ex_forbidden (:,:)
