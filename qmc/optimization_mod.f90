@@ -56,8 +56,8 @@ module optimization_mod
   real(dp), allocatable   :: delta_c_ip (:,:)
   real(dp), allocatable   :: delta_c_im (:,:)
   real(dp)                :: add_diag_max  = 1.d10
-  logical                 :: l_reset_add_diag = .false.
-  real(dp)                :: add_diag_reset  = 1.d-8
+  logical                 :: l_reset_add_diag = .true.
+  real(dp)                :: add_diag_reset_value  = 1.d-8
   logical                 :: do_add_diag_mult_exp = .false.
 
   contains
@@ -82,7 +82,6 @@ module optimization_mod
   l_opt = .true.
   l_stab = .true.
   target_state = 0
-  l_reset_add_diag = .false.
 
 ! temporary error messages
   if (nopt_iter <= 0) then
@@ -110,6 +109,8 @@ module optimization_mod
    write(6,'(a)') '              = identity: add multiple of identity matrix to Hessian or Hamiltonian (default)'
    write(6,'(a)') '              = overlap: add multiple of overlap matrix to Hamiltonian (only for linear method)'
    write(6,'(a)') ' add_diag_max = [real] : maximum allowed value of add_diag (default=1.d10)'
+   write(6,'(a)') ' reset_add_diag = [bool] : reset add_diag to add_diag_reset_value at each step before adjustment (default=true)'
+   write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-8)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
    write(6,'(a)') ' iter_opt_max_nb = [integer] : maximun number of optimization iterations (default=nopt_iter)'
    write(6,'(a)') ' increase_accuracy = [logical] : default=true, increase statistical accuracy at each step?'
@@ -157,9 +158,11 @@ module optimization_mod
   case ('stabilize')
    call get_next_value (l_stab)
 
-  case ('add_diag_reset')
-   call get_next_value (add_diag_reset)
-   l_reset_add_diag = .true.
+  case ('reset_add_diag')
+   call get_next_value (l_reset_add_diag)
+
+  case ('add_diag_reset_value')
+   call get_next_value (add_diag_reset_value)
 
   case ('stabilization')
    call get_next_value (stabilization)
@@ -1171,9 +1174,9 @@ module optimization_mod
 
 ! reset add_diag to (small) fixed value, so that the found optimal add_diag will tend to be closer to this (small) fixed value
   if (l_reset_add_diag) then
-    diag_stab = add_diag_reset
+    diag_stab = add_diag_reset_value
     call object_modified ('diag_stab')
-    write(6,'(a,1pd9.1)') 'Reset add_diag to add_diag_reset = ',diag_stab
+    write(6,'(a,1pd9.1)') 'Resetting add_diag to add_diag_reset_value = ',diag_stab
   endif
 
 ! smaller value of number of blocks
