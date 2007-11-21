@@ -314,7 +314,7 @@ c   write out configuration for optimization/dmc/gfmc here
       call writing_routines !JT
 
 !     exit loop if nblk and threshold on statistical error reached
-      if (block_iterations_nb .ge. nblk .and. eerr .gt. 0 .and. eerr .le. error_threshold) then    !JT
+      if (block_iterations_nb .ge. nblk .and. eloc_av_err .gt. 0 .and. e_loc_av_err .le. error_threshold) then    !JT
         exit                              !JT
       endif                               !JT
 

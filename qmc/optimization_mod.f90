@@ -619,7 +619,7 @@ module optimization_mod
   eloc_av_previous = energy(1)
 
 ! initial error
-  call object_provide ('eerr')
+  call object_provide ('eloc_av_err')
 
 ! If this is the best yet, save it.  Since we are primarily interested in the energy we always use
 ! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
@@ -636,7 +636,7 @@ module optimization_mod
   if (l_check_convergence .and. iter > 1 .and. iter >= iter_opt_min_nb) then
 
 !   convergence reached?
-    if (dabs(d_eloc_av) <= energy_threshold .and. eerr <= energy_threshold/2.d0) then
+    if (dabs(d_eloc_av) <= energy_threshold .and. eloc_av_err <= energy_threshold/2.d0) then
       convergence_reached_nb = convergence_reached_nb + 1
     else
       convergence_reached_nb = 0
@@ -654,12 +654,12 @@ module optimization_mod
    if (l_decrease_error) then
      if(l_decrease_error_adaptative) then
       if (d_eloc_av /= 0.d0) then
-       error_threshold = min(eerr,max(dabs(d_eloc_av)/decrease_error_factor,eerr/decrease_error_factor,decrease_error_limit))
+       error_threshold = min(eloc_av_err,max(dabs(d_eloc_av)/decrease_error_factor,eloc_av_err/decrease_error_factor,decrease_error_limit))
        else
-       error_threshold = eerr
+       error_threshold = eloc_av_err
       endif
      else
-      error_threshold = max(eerr/decrease_error_factor,decrease_error_limit)
+      error_threshold = max(eloc_av_err/decrease_error_factor,decrease_error_limit)
      endif
    endif
    if (l_increase_blocks) then
@@ -787,7 +787,7 @@ module optimization_mod
    write(6,'(a)') 'Convergence reached.'
    write(6,'(a,f12.7,a,i2,a)') 'Threshold on energy ', energy_threshold,' reached for ', check_convergence_nb,' consecutive steps.'
    write(6,*) ''
-   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,eloc_av,' +-',eerr, d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
   else
    write(6,'(a)') 'Warning: Convergence not reached.'
    write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  iter_opt_max_nb,' reached.'
@@ -805,7 +805,7 @@ module optimization_mod
   call vmc
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
-  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter+1,eloc_av,' +-',eerr, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
+  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter+1,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
 
 ! If this is the best yet, save it.  Since we are primarily interested in the energy we use
 ! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy

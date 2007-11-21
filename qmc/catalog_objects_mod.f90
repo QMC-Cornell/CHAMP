@@ -50,6 +50,7 @@ module catalog_objects_mod
   call catalog_one_object ('orbe', orbe_index)
   call catalog_one_object ('detn', detn_index)
   call catalog_one_object ('eloc_av', eloc_av_index)
+  call catalog_one_object ('eloc_av_err', eloc_av_err_index)
   call catalog_one_object ('eloc_pot_nloc', eloc_pot_nloc_index)
   call catalog_one_object ('vold', vold_index)
   call catalog_one_object ('voldw', voldw_index)

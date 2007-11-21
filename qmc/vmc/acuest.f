@@ -109,15 +109,20 @@ c       wnow=wsum(ifr)/nstep
         ecm2(ifr)=ecm2(ifr)+esum(ifr)*enow
         eave=ecum(ifr)/wcum(ifr)
 
-        call object_associate ('eloc_av', eloc_av)
-        eloc_av = eave
-        call object_modified_by_index (eloc_av_index)   !JT
-
         if(iblk.eq.1) then
           eerr=0
          else
           eerr=err(ecum(ifr),ecm2(ifr),ifr)
         endif
+
+        if (ifr.eq.1) then                                 !JT
+         call object_associate ('eloc_av', eloc_av)        !JT
+         eloc_av = ecum(1)/wcum(1)                         !JT
+         call object_modified_by_index (eloc_av_index)     !JT
+         eloc_av_err = eerr                                !JT
+         call object_modified_by_index (eloc_av_err_index) !JT
+        endif                                              !JT
+
         if(ndim.eq.2) then
           ieerr=nint(10000000*eerr)
          else
