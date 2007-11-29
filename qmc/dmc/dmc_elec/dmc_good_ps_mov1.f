@@ -474,7 +474,8 @@ c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
 c Temporarily hard-wire the damping of wts to .9
-            rlambda_tau=0.9d0
+c           rlambda_tau=0.9d0
+            rlambda_tau=1.0d0
 c           wt(iw)=wt(iw)*dwt
             wt(iw)=(wt(iw)**rlambda_tau)*dwt
             do 266 iparm=1,nparm
