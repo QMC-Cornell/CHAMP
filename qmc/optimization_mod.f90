@@ -775,7 +775,7 @@ module optimization_mod
 ! write new wave function
   write(6,'(a)') ''
   write(6,'(a)') 'New wave function:'
-  call wf_write
+  call wf_new_write
 
  enddo ! end optimization loop
 
@@ -788,6 +788,7 @@ module optimization_mod
    write(6,'(a,f12.7,a,i2,a)') 'Threshold on energy ', energy_threshold,' reached for ', check_convergence_nb,' consecutive steps.'
    write(6,*) ''
    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+   iter = iter + 1
   else
    write(6,'(a)') 'Warning: Convergence not reached.'
    write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  iter_opt_max_nb,' reached.'
@@ -796,16 +797,18 @@ module optimization_mod
 ! write final wave function
   write(6,*)
   write(6,'(a)') 'Final wave function:'
-  call wf_write
+  call wf_new_write
 
 ! do a last vmc with the last predicted parameters without calculating the derivatives
   if (l_last_run) then
   write(6,*)
   write(6,'(a)') 'Performing last vmc run'
+  nforce=1
+  nwftype=1
   call vmc
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
-  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter+1,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
+  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
 
 ! If this is the best yet, save it.  Since we are primarily interested in the energy we use
 ! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
@@ -1535,6 +1538,108 @@ module optimization_mod
   write(6,*)
 
   end subroutine wf_write
+
+!===========================================================================
+  subroutine wf_new_write
+!---------------------------------------------------------------------------
+! Description : write optimized parameters of new wave function (at each optimization step)
+! Description : at each optimization step
+!
+! Created     : J. Toulouse, 04 Dec 2007
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'wf_new_write'
+  integer orb_i
+  integer bas_i
+  integer i, ict, isp
+  character(len=30) fmt
+
+! begin
+
+! print CSFs coefficients
+  if (l_opt_csf) then
+   call object_provide ('ncsf')
+   call object_provide ('csf_coef')
+   write(6,'(a)') 'CSFs coefficients:'
+   write(6,'(<ncsf>f15.8,'' (csf_coef_new(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+  endif ! l_opt_csf
+
+! print Jastrow parameters
+  if (l_opt_jas) then
+
+    call object_provide ('nctype')
+    call object_provide ('a4')
+    call object_provide ('b')
+    call object_provide ('c')
+
+      write(6,'(a)') 'Jastrow parameters:'
+      if (nparma_read > 0) then
+        write(fmt,'(''(''i2,''f15.8,a)'')') nparma_read
+       else
+        write(fmt,'(''(a)'')')
+      endif
+      do ict=1,nctype
+        write(6,fmt) (a4(i,ict,iwf),i=1,nparma_read),' (a_new(iparmj),iparmj=1,nparma)'
+      enddo
+
+      if(nparmb_read > 0) then
+        write(fmt,'(''(''i2,''f15.8,a)'')') nparmb_read
+       else
+        write(fmt,'(''(a)'')')
+      endif
+      do isp=nspin1,nspin2b
+        write(6,fmt) (b(i,isp,iwf),i=1,nparmb_read),' (b_new(iparmj),iparmj=1,nparmb)'
+      enddo
+
+      if(nparmc_read > 0) then
+        write(fmt,'(''(''i2,''f15.8,a)'')') nparmc_read
+       else
+        write(fmt,'(''(a)'')')
+      endif
+      do ict=1,nctype
+        write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
+      enddo
+
+  endif ! l_opt_jas
+
+! print orbitals coefficients
+  if (l_opt_orb .or. (l_opt_exp .and. trim(basis_functions_varied) /= 'normalized')) then
+
+   if (iperiodic == 0) then
+   call object_provide ('nbasis')
+   call object_provide ('orb_tot_nb')
+   call object_provide ('coef_orb_on_norm_basis')
+
+   write(6,'(a)') 'Orbital coefficients:'
+   do orb_i = 1, orb_tot_nb
+    if(orb_i==1) then
+     write(6,'(<nbasis>e16.8,'' (coef_new(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+    else
+     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+    endif
+   enddo
+
+  else
+    call write_orbitals_pw_real
+    write(6,'(3a)') 'Orbital coefficients written in file >',trim(file_orbitals_pw_out),'<'
+  endif
+
+  endif ! l_opt_orb
+
+! print basis exponents
+  if (l_opt_exp) then
+   call object_provide ('nbasis')
+   call object_provide ('zex')
+   write(6,'(a)') 'Basis exponents:'
+   write(6,'(<nbasis>f10.6,'' (zex_new(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+  endif ! l_opt_exp
+
+  write(6,*)
+
+  end subroutine wf_new_write
 
 !===========================================================================
   subroutine wf_best_write
