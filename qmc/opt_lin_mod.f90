@@ -626,6 +626,7 @@ module opt_lin_mod
    call object_needed ('dpsi_av')
    call object_needed ('ovlp_lin_renorm')
    call object_needed ('renorm_vector')
+   call object_needed ('p_var')
 
    return
 
@@ -729,7 +730,8 @@ module opt_lin_mod
   eigval_lowest = 9.d99
   eigval_lowest_ind = 0
   do i = 1, param_aug_nb
-    if (eigval_r (i) < eigval_lowest .and. dabs(eigval_r (i)-etrial) < 10.d0) then
+    if ((p_var < 1.d0 .and. eigval_r (i) < eigval_lowest .and. dabs(eigval_r (i)-(1-p_var)*etrial) < 10.d0) .or. &
+        (p_var == 1.d0 .and. eigval_r (i) < eigval_lowest .and. eigval_r (i) > 0.d0)) then
       eigval_lowest = eigval_r (i)
       eigval_lowest_ind = i
     endif
@@ -741,27 +743,37 @@ module opt_lin_mod
     endif
   enddo
 
+!  if (eigval_lowest_ind /= 0) then
+!    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+!  else
+!!   if no reasonable lowest eigenvalue found, then just take the lowest one
+!    eigval_lowest = 9.d99
+!    eigval_lowest_ind = 0
+!    do i = 1, param_aug_nb
+!      if (eigval_r (i) < eigval_lowest) then
+!        eigval_lowest = eigval_r (i)
+!        eigval_lowest_ind = i
+!      endif
+!      if (eigval_r (i) == eigval_lowest) then
+!        if (dabs(eigvec (1,i)) > dabs(eigvec (1, eigval_lowest_ind))) then
+!          eigval_lowest = eigval_r (i)
+!          eigval_lowest_ind = i
+!        endif
+!      endif
+!    enddo
+!    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+!    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows!'
+!  endif
+
   if (eigval_lowest_ind /= 0) then
     write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
   else
-!   if no reasonable lowest eigenvalue found, then just take the lowest one
-    eigval_lowest = 9.d99
-    eigval_lowest_ind = 0
-    do i = 1, param_aug_nb
-      if (eigval_r (i) < eigval_lowest) then
-        eigval_lowest = eigval_r (i)
-        eigval_lowest_ind = i
-      endif
-      if (eigval_r (i) == eigval_lowest) then
-        if (dabs(eigvec (1,i)) > dabs(eigvec (1, eigval_lowest_ind))) then
-          eigval_lowest = eigval_r (i)
-          eigval_lowest_ind = i
-        endif
-      endif
-    enddo
-    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
-    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows!'
+!   if no reasonable lowest eigenvalue found, then take the one with the largest 1st component
+    l_select_eigvec_lowest = .false.
+    l_select_eigvec_largest_1st_coef = .true.
+    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows so select eigenvector with largest 1st component!'
   endif
+
 
 ! if target_state = 0, select eigenvector with lowest reasonable eigenvalue or largest 1st components
   if (target_state == 0) then
