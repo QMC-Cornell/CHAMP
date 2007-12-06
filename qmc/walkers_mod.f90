@@ -12,6 +12,10 @@ module walkers_mod
 !  real(dp), allocatable                 :: elec_spin_nb_closest_to_atom_input (:)
   real(dp), allocatable                 :: elec_up_nb_closest_to_atom_input (:)
   real(dp), allocatable                 :: elec_dn_nb_closest_to_atom_input (:)
+  character (len=max_string_len_file)   :: file_walkers_out = ''
+  logical :: l_write_walkers = .false.
+  integer :: write_walkers_step = 1
+  integer :: file_walkers_out_unit
 
   contains
 
@@ -47,6 +51,9 @@ module walkers_mod
    write(6,'(a)') '  check_initial_walkers = [string] : check electrons distribution on atoms in initial walkers (default=false).'
    write(6,'(a)') '  elec_nb_closest_to_atom 6 2 5 end : keep only walkers with these electron numbers closest to each atom.'
    write(6,'(a)') '  keep_only_walkers_with_elec_nb_closest_to_atom_input = [bool] : default = false.'
+   write(6,'(a)') '  file_walkers_out  = [string] : output file for walkers in Scemama format'
+   write(6,'(a)') '  write_walkers = [logical] write walkers in Scemama format (default=false)'
+   write(6,'(a)') '  write_walkers_step = [integer] write walkers in Scemama format every X step? (default=1)'
    write(6,'(a)') ' end'
    write(6,*)
 
@@ -88,6 +95,16 @@ module walkers_mod
 
   case ('keep_only_walkers_with_elec_nb_closest_to_atom_input')
    call get_next_value (l_keep_only_walkers_with_elec_nb_closest_to_atom_input)
+
+  case ('file_walkers_out')
+   call get_next_value (file_walkers_out)
+   call open_file_or_die (file_walkers_out, file_walkers_out_unit)
+
+  case ('write_walkers')
+   call get_next_value (l_write_walkers)
+
+  case ('write_walkers_step')
+   call get_next_value (write_walkers_step)
 
   case ('end')
    exit

@@ -28,7 +28,8 @@ c polarized calculations were attempted.
       use average_mod          !JT
       use control_mod          !JT
       use print_mod            !JT
-      use deriv_exp_mod       !JT
+      use deriv_exp_mod        !JT
+      use walkers_mod          !JT
 
       implicit real*8(a-h,o-z)
       integer fflag
@@ -287,9 +288,9 @@ c now do averaging steps
         call compute_averages        !JT
         call compute_averages_walk_step   !JT
 
-c   write out configuration for optimization/dmc/gfmc here
+c       write out configuration for optimization/dmc/gfmc here
         if (nconf_new /= 0) then
-        if(mod(l,ngfmc).eq.1 .or. ngfmc.eq.1) then
+         if(mod(l,ngfmc).eq.1 .or. ngfmc.eq.1) then
           if(ndim*nelec.lt.100) then
            write(fmt,'(a1,i2,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
           else
@@ -297,7 +298,17 @@ c   write out configuration for optimization/dmc/gfmc here
           endif
           write(7,fmt) ((xold(k,jj),k=1,ndim),jj=1,nelec),
      &    int(sign(1.d0,psido)),log(dabs(psido))+psijo,eold(1)
+         endif
         endif
+
+!       write out configurations in Scemama's format
+        if (l_write_walkers) then
+         if(mod(l,write_walkers_step) == 0) then
+          do jj = 1, nelec
+           write(file_walkers_out_unit,'(3f)') (xold(k,jj),k=1,ndim)
+          enddo
+           write(file_walkers_out_unit,'(f)') dexp(psijo)*psido
+         endif
         endif
 
   430   continue
