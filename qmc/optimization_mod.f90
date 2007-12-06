@@ -392,7 +392,8 @@ module optimization_mod
   logical  l_convergence_reached
   integer convergence_reached_nb
   integer is_bad_move
-  real(dp) error_sigma_sav
+  integer :: move_rejected = 0
+! real(dp) error_sigma_sav
   real(dp) energy_plus_err, energy_plus_err_best
 
 ! begin
@@ -515,162 +516,190 @@ module optimization_mod
    endif
 
 ! perturbative method
-  if (l_opt_ptb) then
+   if (l_opt_ptb) then
 
-!  compute full overlap or just diagonal?
-   if (l_diagonal_overlap) then
-    call object_average_request ('dpsi_sq_av')
-   else
-    call object_average_request ('dpsi_dpsi_av')
-   endif
-
-!  compute energy denominators in QMC?
-   if (iter == 1 .and. .not. l_opt_orb_eig) then
-     call object_average_request ('deloc_av')
-     call object_average_request ('dpsi_eloc_av')
-     call object_average_request ('dpsi_deloc_av')
-     call object_average_request ('dpsi_sq_eloc_av')
-   else
-     l_opt_orb_energy = .false.
-   endif
-
-  endif
-
-! set norb
-  if (l_opt_orb) then
-   call object_provide ('orb_opt_last_lab')
-   norb = orb_opt_last_lab
-   write(6,'(a,i)') 'Warning: norb reset to=', norb
-
-!  orbital overlap
-   if (l_ortho_orb_vir_to_orb_occ) then
-    call ortho_orb_vir_to_orb_occ
-    call object_provide ('orb_ovlp')
-    call object_write ('orb_ovlp')
-   endif
-!    call object_provide ('orb_ovlp')
-!    call object_write ('orb_ovlp')
-
-  endif
-
-! VMC run
-  nforce=1
-  nwftype=1
-  call vmc
-
-! set back norb
-  if (l_opt_orb) then
-   call object_provide ('orb_occ_last_in_wf_lab')
-   norb = orb_occ_last_in_wf_lab
-   write(6,'(a,i)') 'Warning: norb reset to=', norb
-  endif
-
-! Calculate and print gradient
-  call object_provide ('gradient')
-  call object_provide ('gradient_norm')
-  call object_provide ('gradient_norm_err')
-  call object_provide ('param_type')
-  write(6,*)
-  write(6,'(a)') 'Gradient with respect to the parameters:'
-  do param_i = 1, param_nb
-    write(6,'(a,i5,a,f,3a)') 'gradient component # ',param_i,' : ', gradient (param_i), ' (',trim(param_type (param_i)),')'
-  enddo
-  write(6,'(a,f,a,f)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
-  write(6,*)
-
-! check vanishing components or linear dependencies in gradient
-  do parm_i = 1, param_nb
-     if (abs(gradient (parm_i)) < 1.d-10) then
-      write(6,'(a)') 'Warning: zero or very small gradient component:'
-      write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
-      cycle
-     endif
-    do parm_j = parm_i+1, param_nb
-     if (abs(gradient (parm_i) - gradient (parm_j)) < 1.d-10) then
-      write(6,'(a)') 'Warning: possible linear dependency:'
-      write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
-     endif
-    enddo
-  enddo
-
-! calculate and print deloc_av_norm
-  if (l_opt_lin .or. l_opt_nwt) then
-   call object_provide ('deloc_av_abs_max')
-   write(6,*)
-   write(6,'(a,f,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise)'
-  endif
-
-! calculate and print hessian
-  if (l_opt_nwt) then
-   call object_provide ('hess_nwt_eigval')
-   write(6,*)
-   write(6,'(a)') 'Hessian eigenvalues:'
-   do param_i = 1, param_nb
-    write(6,'(a,i5,a,f)') 'eigenvalue # ',param_i,' : ', hess_nwt_eigval (param_i)
-   enddo
-  endif
-
-! variation of energy
-  if (iter > 1) then
-   d_eloc_av = energy(1) - eloc_av_previous
-  endif
-
-! save current energy
-  eloc_av_previous = energy(1)
-
-! initial error
-  call object_provide ('eloc_av_err')
-
-! If this is the best yet, save it.  Since we are primarily interested in the energy we always use
-! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
-! has a smaller error, either because of a reduction in sigma and Tcorr or because nblk is increasing.
-! If p_var!=0 then we add that to the criterion too.
-  energy_plus_err=energy(1)+3*energy_err(1)+p_var*energy_sigma(1)
-  if(energy_plus_err.lt.energy_plus_err_best) then
-   iter_best = iter
-   energy_plus_err_best=energy_plus_err
-   call wf_best_save
-  endif
-
-! check convergence
-  if (l_check_convergence .and. iter > 1 .and. iter >= iter_opt_min_nb) then
-
-!   convergence reached?
-    if (dabs(d_eloc_av) <= energy_threshold .and. eloc_av_err <= energy_threshold/2.d0) then
-      convergence_reached_nb = convergence_reached_nb + 1
+!   compute full overlap or just diagonal?
+    if (l_diagonal_overlap) then
+     call object_average_request ('dpsi_sq_av')
     else
-      convergence_reached_nb = 0
+     call object_average_request ('dpsi_dpsi_av')
     endif
 
-    if (convergence_reached_nb == check_convergence_nb) then
-      l_convergence_reached = .true.
-      exit
+!   compute energy denominators in QMC?
+    if (iter == 1 .and. .not. l_opt_orb_eig) then
+      call object_average_request ('deloc_av')
+      call object_average_request ('dpsi_eloc_av')
+      call object_average_request ('dpsi_deloc_av')
+      call object_average_request ('dpsi_sq_eloc_av')
+    else
+      l_opt_orb_energy = .false.
     endif
 
-  endif ! convergence
+   endif
 
-! decrease error threshold
-  if (l_increase_accuracy) then
-   if (l_decrease_error) then
-     if(l_decrease_error_adaptative) then
-      if (d_eloc_av /= 0.d0) then
-       error_threshold = min(eloc_av_err,max(dabs(d_eloc_av)/decrease_error_factor,eloc_av_err/decrease_error_factor,decrease_error_limit))
-       else
-       error_threshold = eloc_av_err
+!  set norb
+   if (l_opt_orb) then
+    call object_provide ('orb_opt_last_lab')
+    norb = orb_opt_last_lab
+    write(6,'(a,i)') 'Warning: norb reset to=', norb
+
+!   orbital overlap
+    if (l_ortho_orb_vir_to_orb_occ) then
+     call ortho_orb_vir_to_orb_occ
+     call object_provide ('orb_ovlp')
+     call object_write ('orb_ovlp')
+    endif
+!     call object_provide ('orb_ovlp')
+!     call object_write ('orb_ovlp')
+
+   endif
+
+!  VMC run
+   nforce=1
+   nwftype=1
+   call vmc
+
+!  set back norb
+   if (l_opt_orb) then
+    call object_provide ('orb_occ_last_in_wf_lab')
+    norb = orb_occ_last_in_wf_lab
+    write(6,'(a,i)') 'Warning: norb reset to=', norb
+   endif
+
+!  Calculate and print gradient
+   call object_provide ('gradient')
+   call object_provide ('gradient_norm')
+   call object_provide ('gradient_norm_err')
+   call object_provide ('param_type')
+   write(6,*)
+   write(6,'(a)') 'Gradient with respect to the parameters:'
+   do param_i = 1, param_nb
+     write(6,'(a,i5,a,f,3a)') 'gradient component # ',param_i,' : ', gradient (param_i), ' (',trim(param_type (param_i)),')'
+   enddo
+   write(6,'(a,f,a,f)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
+   write(6,*)
+
+!  check vanishing components or linear dependencies in gradient
+   do parm_i = 1, param_nb
+      if (abs(gradient (parm_i)) < 1.d-10) then
+       write(6,'(a)') 'Warning: zero or very small gradient component:'
+       write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
+       cycle
       endif
+     do parm_j = parm_i+1, param_nb
+      if (abs(gradient (parm_i) - gradient (parm_j)) < 1.d-10) then
+       write(6,'(a)') 'Warning: possible linear dependency:'
+       write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
+      endif
+     enddo
+   enddo
+
+!  calculate and print deloc_av_norm
+   if (l_opt_lin .or. l_opt_nwt) then
+    call object_provide ('deloc_av_abs_max')
+    write(6,*)
+    write(6,'(a,f,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise)'
+   endif
+
+!  calculate and print hessian
+   if (l_opt_nwt) then
+    call object_provide ('hess_nwt_eigval')
+    write(6,*)
+    write(6,'(a)') 'Hessian eigenvalues:'
+    do param_i = 1, param_nb
+     write(6,'(a,i5,a,f)') 'eigenvalue # ',param_i,' : ', hess_nwt_eigval (param_i)
+    enddo
+   endif
+
+!  variation of energy
+   if (iter > 1) then
+    d_eloc_av = energy(1) - eloc_av_previous
+   endif
+
+!  save current energy
+   eloc_av_previous = energy(1)
+
+!  initial error
+   call object_provide ('eloc_av_err')
+
+!  If this is the best yet, save it.  Since we are primarily interested in the energy we always use
+!  that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
+!  has a smaller error, either because of a reduction in sigma and Tcorr or because nblk is increasing.
+!  If p_var!=0 then we add that to the criterion too.
+   energy_plus_err=energy(1)+3*energy_err(1)+p_var*energy_sigma(1)
+   if(energy_plus_err.lt.energy_plus_err_best) then
+    iter_best = iter
+    energy_plus_err_best=energy_plus_err
+    call wf_best_save
+   endif
+
+!  check convergence
+   if (l_check_convergence .and. iter > 1 .and. iter >= iter_opt_min_nb) then
+
+!    convergence reached?
+     if (dabs(d_eloc_av) <= energy_threshold .and. eloc_av_err <= energy_threshold/2.d0) then
+       convergence_reached_nb = convergence_reached_nb + 1
      else
-      error_threshold = max(eloc_av_err/decrease_error_factor,decrease_error_limit)
+       convergence_reached_nb = 0
+     endif
+
+     if (convergence_reached_nb == check_convergence_nb) then
+       l_convergence_reached = .true.
+       exit
+     endif
+
+   endif ! convergence
+
+!  decrease error threshold provided previous move was not rejected
+   if(move_rejected == 0) then
+     if (l_increase_accuracy) then
+       if (l_decrease_error) then
+         if(l_decrease_error_adaptative) then
+           if (d_eloc_av /= 0.d0) then
+             error_threshold = min(eloc_av_err,max(dabs(d_eloc_av)/decrease_error_factor,eloc_av_err/decrease_error_factor,decrease_error_limit))
+           else
+             error_threshold = eloc_av_err
+           endif
+         else
+           error_threshold = max(eloc_av_err/decrease_error_factor,decrease_error_limit)
+         endif
+       endif
+       if (l_increase_blocks) then
+         nblk = min(nblk*increase_blocks_factor,increase_blocks_limit)
+       endif
      endif
    endif
-   if (l_increase_blocks) then
-     nblk = min(nblk*increase_blocks_factor,increase_blocks_limit)
-   endif
-  endif
 
-! if wave function got significantly worse, go back to previous wave function and increase diag_stab
-  if (l_stab .and. iter > 1) then
-   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.  &
+!  If wave function got significantly worse, go back to previous wave function and increase diag_stab.
+!  Unlike the criterion for selecting the best wavefn., during the optim. we want to reject the move only if it got much worse.
+!  I have tried 2 criteria.  In both of them large increases in energy are penalized even if p_var=1.
+!  The reason is that otherwise with variance minimization one can optimize to a very diffuse state
+!  that may be an approximation to an excited state.  A possible solution to this is to optimize about
+!  a fixed guessed energy, close to the ground-state energy, rather than about the sample average,
+!  which is what is done in fit.
+!  In the 1st criterion we penalize sigma even if p_var=0.
+!  The 1st criterion has separate conditions for the energy and sigma, the 2nd criterion combines them.
+!  In the first criterion:
+!  For variance minimization we allow sigma to be at most 1.5 times worse
+!  For energy   minimization we allow sigma to be at most 2.5 times worse
+!  and
+!  For variance minimization we allow the energy to be at most 6 std dev. worse
+!  For energy   minimization we allow the energy to be at most 3 std dev. worse
+!  The 2nd criterion is a bit closer to the objective function being optimized.
+!  Since we we want to reject the move only if it got much worse, for the proposed move we
+!  add 3*err and for the saved move 6*err and 10*err.  We add 10*error_sigma_sav because sigma
+!  and particularly the error in sigma have large uncertainty, if the cusp is not imposed.
+!  Since the 2nd criterion does not seem decisively better than the 1st, I am still using the
+!  1st criterion, but leave the 2nd in the code, commented out.
+   if(l_stab .and. iter > 1) then
+!  1st criterion
+   if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.  &
      energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2 + energy_err_sav**2))) then
+!  2nd criterion
+!  if((2-p_var)*(energy(1) +3*energy_err(1)) +p_var*(energy_sigma(1) +3*error_sigma)**2 > &
+!     (2-p_var)*(energy_sav+6*energy_err_sav)+p_var*(energy_sigma_sav+10*error_sigma_sav)**2) then
+
+     move_rejected=move_rejected+1
 
      call wf_restore
      call object_restore ('gradient')
@@ -692,6 +721,7 @@ module optimization_mod
 !        call object_restore ('delta_e_ptb') !!
      endif
      diag_stab = min(100.d0 * diag_stab, add_diag_max)
+     if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
      call object_modified ('diag_stab')
      write(6,'(a,1pd9.1)') 'Wave function got worse, increase add_diag up to ',diag_stab
      call wf_update_and_check_and_stab
@@ -708,76 +738,79 @@ module optimization_mod
     endif
    endif
 
-! wave function got better or at least not significantly worse so save various quantities
-  energy_sav=energy(1)
-  energy_sigma_sav=energy_sigma(1)
-  energy_err_sav=energy_err(1)
-  error_sigma_sav = error_sigma
-  ene_var_sav=(1-p_var)*energy(1)+p_var*energy_sigma(1)**2
+   move_rejected=0
+
+!  wave function got better or at least not significantly worse so save various quantities
+   energy_sav=energy(1)
+   energy_sigma_sav=energy_sigma(1)
+   energy_err_sav=energy_err(1)
+   error_sigma_sav = error_sigma
+   ene_var_sav=(1-p_var)*energy(1)+p_var*energy_sigma(1)**2
+     write(6,'(''error_sigma_sav='',9f9.4)') error_sigma_sav
 
 
-! save wavefunction, gradient, Hamiltonian and overlap
-  call wf_save
-  call object_save ('gradient')
-  if(l_opt_nwt) then
-   call object_save ('hess_nwt')
-  endif
-  if(l_opt_lin) then
-     call object_save ('ham_lin')
-     call object_save ('ovlp_lin')
-     call object_save ('renorm_vector')
-!     call object_save ('dpsi_av')
-  endif
-  if(l_opt_ptb) then
-     if (l_diagonal_overlap) then
-      call object_save ('dpsi_sq_c_av')
-     else
-      call object_save ('dpsi_dpsi_c_av_inv')
-     endif
-!     call object_save ('delta_e_ptb')  !
-  endif
-
-! adjust diag_stab
-  if (l_stab) then
-    call adjust_diag_stab
-  endif
-
-! update parameters
-  call wf_update_and_check_and_stab
-
-! pretty printing
-  write(6,*) ''
-  call object_provide ('sigma')
-  call object_provide ('gradient_norm')
-  call object_provide ('gradient_norm_err')
-  if (iter == 1) then
-   if (l_decrease_error) then
-    write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt err  nxt stab'
-   else
-    write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt nblk nxt stab'
+!  save wavefunction, gradient, Hamiltonian and overlap
+   call wf_save
+   call object_save ('gradient')
+   if(l_opt_nwt) then
+    call object_save ('hess_nwt')
    endif
-  endif
-  if (l_decrease_error) then
-   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-   energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
-  else
-   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-   energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
-  endif
+   if(l_opt_lin) then
+      call object_save ('ham_lin')
+      call object_save ('ovlp_lin')
+      call object_save ('renorm_vector')
+!      call object_save ('dpsi_av')
+   endif
+   if(l_opt_ptb) then
+      if (l_diagonal_overlap) then
+       call object_save ('dpsi_sq_c_av')
+      else
+       call object_save ('dpsi_dpsi_c_av_inv')
+      endif
+!      call object_save ('delta_e_ptb')  !
+   endif
 
-! decrease p_var
-  if (l_decrease_p_var) then
-    p_var = p_var/2.d0
-    if (p_var < 0.01d0) p_var = 0.d0
-    call object_modified ('p_var')
-  endif
+!  adjust diag_stab
+   if (l_stab) then
+     call adjust_diag_stab
+   endif
 
-! write new wave function
-  write(6,'(a)') ''
-  write(6,'(a)') 'New wave function:'
-  call wf_new_write
+!  update parameters
+   call wf_update_and_check_and_stab
 
- enddo ! end optimization loop
+!  pretty printing
+   write(6,*) ''
+   call object_provide ('sigma')
+   call object_provide ('gradient_norm')
+   call object_provide ('gradient_norm_err')
+   if (iter == 1) then
+    if (l_decrease_error) then
+     write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt err  nxt stab'
+    else
+     write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt nblk nxt stab'
+    endif
+   endif
+   if (l_decrease_error) then
+    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+    energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
+   else
+    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+    energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
+   endif
+
+!  decrease p_var
+   if (l_decrease_p_var) then
+     p_var = p_var/2.d0
+     if (p_var < 0.01d0) p_var = 0.d0
+     call object_modified ('p_var')
+   endif
+
+!  write new wave function
+   write(6,'(a)') ''
+   write(6,'(a)') 'New wave function:'
+   call wf_new_write
+
+  enddo ! end optimization loop
 
 ! final printing
   write(6,*) ''
@@ -1165,7 +1198,7 @@ module optimization_mod
    if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. .not. exp_move_big) then 
        if (add_diag_mult_exp  > 1.0_dp) then 
          add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp/10.d0)
-         write(6,'(a,f10.1)') "add_diag_mult_exp is decreased to (redundant)", add_diag_mult_exp
+         write(6,'(a,f10.1)') "add_diag_mult_exp is decreased to", add_diag_mult_exp
          call object_modified ('add_diag_mult_exp')
        endif
    endif
@@ -1174,8 +1207,9 @@ module optimization_mod
    if (l_stab .and. is_bad_move == 1) then
      call wf_restore
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
+     if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
      call object_modified ('diag_stab')
-     write(6,'(a,1pd9.1)') 'increasing add_diag up to (redundant)', diag_stab
+     write(6,'(a,1pd9.1)') 'increasing add_diag up to', diag_stab
      cycle
    endif
 
@@ -1250,6 +1284,7 @@ module optimization_mod
   if (l_opt_nwt) then
     call object_provide ('hess_nwt_eigval_min')
     diag_stab = min(max(diag_stab,1.d-1*hess_nwt_eigval_min),add_diag_max)
+    if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
     call object_modified ('diag_stab')
   endif
 
@@ -1314,7 +1349,7 @@ module optimization_mod
          cycle
       endif
 
-  endif ! l_opt_exp .and. do_add_diag_mult_exp
+   endif ! l_opt_exp .and. do_add_diag_mult_exp
 
 !  3 small correlated sampling without computing gradient
 !   igradhess=0
@@ -1348,22 +1383,43 @@ module optimization_mod
     cycle
    endif
 
-!  If ene_sigma(1) or energy_sigma(3) is much worse than before increase add_diag and loop back
-!  For variance minimization we allow it to be at most 1.5 times worse
-!  For energy   minimization we allow it to be at most 2.5 times worse
-!  and
-!  If energy(1) or energy(3) is much worse than before increase add_diag and loop back
-!  For variance minimization we allow it to be at most 6 std dev. worse
-!  For energy   minimization we allow it to be at most 3 std dev. worse
+! If wave function got significantly worse, go back to previous wave function and increase diag_stab.
+! Unlike the criterion for selecting the best wavefn., during the optim. we want to reject the move only if it got much worse.
+! I have tried 2 criteria.  In both of them large increases in energy are penalized even if p_var=1.
+! The reason is that otherwise with variance minimization one can optimize to a very diffuse state
+! that may be an approximation to an excited state.  A possible solution to this is to optimize about
+! a fixed guessed energy, close to the ground-state energy, rather than about the sample average,
+! which is what is done in fit.
+! In the 1st criterion we penalize sigma even if p_var=0.
+! The 1st criterion has separate conditions for the energy and sigma, the 2nd criterion combines them.
+! In the first criterion:
+! For variance minimization we allow sigma to be at most 1.5 times worse
+! For energy   minimization we allow sigma to be at most 2.5 times worse
+! and
+! For variance minimization we allow the energy to be at most 6 std dev. worse
+! For energy   minimization we allow the energy to be at most 3 std dev. worse
+! The 2nd criterion is a bit closer to the objective function being optimized.
+! Since we we want to reject the move only if it got much worse, for the proposed move we
+! add 3*err and for the saved move 6*err and 10*err.  We add 10*error_sigma_sav because sigma
+! and particularly the error in sigma have large uncertainty, if the cusp is not imposed.
+! Since the correlated sampling runs are 10 times shorter than the others, include an extra factor of 3.3
+! Since the 2nd criterion does not seem decisively better than the 1st, I am still using the
+! 1st criterion, but leave the 2nd in the code, commented out.
+! I used to penalize both the central calculation (1) and the one with larger add_diag (3) but now we penalize only (1).
 
-!   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
-!      energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.      &
-!      energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2)) .or.                &
-!      energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2))) then
+! 1st criterion
+!  if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+!     energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+!     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2)) .or.                &
+!     energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2))) then
 
+! 1st criterion
 !  check only central calculation
-   if (energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
-      energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
+   if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
+! 2nd criterion
+!  if((2-p_var)*(energy(1) +3*energy_err(1))     +p_var*(energy_sigma(1) +3*error_sigma)**2 > &
+!     (2-p_var)*(energy_sav+6*3.3*energy_err_sav)+p_var*(energy_sigma_sav+10*3.3*error_sigma_sav)**2) then
 
     add_diag (1) = add_diag (1) * 100.d0
     write(6,'(a,1pd9.1)') 'Energy or sigma of correlation calculation # 1 went up too much, increase add_diag to ',add_diag (1)
@@ -1397,20 +1453,20 @@ module optimization_mod
    exit
   enddo
 
-!  if correlated calculations # 2 or 3 not reliable, but correlated calculation # 1 is reliable, then accept the current value of add_diag
-!  this may be dangerous, maybe need to be modified
+! if correlated calculations # 2 or 3 not reliable, but correlated calculation # 1 is reliable, then accept the current value of add_diag
+! this may be dangerous, maybe need to be modified
 
-!  if the 3 correlated calculations are reliable, find optimal add_diag by parabolic interpolation
-   if (calculation_reliable_nb == 3) then
-!   This is the objective function being optimized
-    do iadd_diag=1,3
+! if the 3 correlated calculations are reliable, find optimal add_diag by parabolic interpolation
+  if (calculation_reliable_nb == 3) then
+!  This is the objective function being optimized
+   do iadd_diag=1,3
      ene_var(iadd_diag)=(1.d0-p_var)*energy(iadd_diag)+p_var*energy_sigma(iadd_diag)**2
-    enddo
+   enddo
 
-!   Find optimal add_diag
-!    call quad_min(energy_sav,energy_err_sav,energy,energy_err,force,force_err,ene_var,add_diag,3,0.d0,0.d0,p_var)
-    call quad_min(ene_var,3)
-   endif
+!  Find optimal add_diag
+!  call quad_min(energy_sav,energy_err_sav,energy,energy_err,force,force_err,ene_var,add_diag,3,0.d0,0.d0,p_var)
+   call quad_min(ene_var,3)
+  endif
 
 ! final value of diag_stab
   iwf = 1
@@ -1423,7 +1479,7 @@ module optimization_mod
      call object_restore ('ham_lin')
      call object_restore ('ovlp_lin')
      call object_restore ('renorm_vector')
-!     call object_restore ('dpsi_av')
+!    call object_restore ('dpsi_av')
   endif
   if(l_opt_ptb) then
      if (l_diagonal_overlap) then
@@ -1431,9 +1487,10 @@ module optimization_mod
      else
       call object_restore ('dpsi_dpsi_c_av_inv')
      endif
-!      call object_restore ('delta_e_ptb') !!
+!     call object_restore ('delta_e_ptb') !!
   endif
   diag_stab = min(add_diag (1), add_diag_max)
+  if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
   call object_modified ('diag_stab')
 
   end subroutine adjust_diag_stab

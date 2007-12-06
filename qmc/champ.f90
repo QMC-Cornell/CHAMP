@@ -112,7 +112,7 @@ program champ
     input_file_name  = argument
    endif
 
-  end do ! end loop over arguments
+  enddo ! end loop over arguments
 
   write(6,'(2a)') 'The mode is ',trim(mode)
   write(6,*)

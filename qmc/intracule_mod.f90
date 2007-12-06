@@ -431,8 +431,8 @@
        intra_sp_histo (spin, grid_i) = intra_sp_histo (spin, grid_i) + 1.d0/(d4pir2 * grid_r_step)
       endif
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_histo_bld
 
@@ -495,7 +495,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
       intra_temp = - oneover4pi * dotproduct / dij**3
 
@@ -506,10 +506,10 @@
         if ( dij >= r ) then
            intra_sp_zv1 (spin, grid_i) = intra_sp_zv1 (spin, grid_i) + intra_temp
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zv1_bld
 
@@ -577,10 +577,10 @@
         else
            intra_sp_zv2 (spin, grid_i) = intra_sp_zv2 (spin, grid_i) + intra_temp / r
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zv2_bld
 
@@ -652,7 +652,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
 
 !     loop over grid points
@@ -679,10 +679,10 @@
         intra_sp_zv3 (spin, grid_i) = intra_sp_zv3 (spin, grid_i) +          &
             oneover4pi*((dotproduct/r)*(intra_temp1 - u*intra_temp3) - cc*rpu*intra_temp2)/ru
 
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zv3_bld
 
@@ -748,7 +748,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
       do grid_i = 1, grid_r_nb
         u = grid_r(grid_i)
@@ -761,10 +761,10 @@
            intra_sp_zv4 (spin, grid_i) = intra_sp_zv4 (spin, grid_i) - oneover4pi * cc*                      &
                                 (1.d0 + 2.d0*rmu/r - 2.d0*cc*rmu2 + 2.d0*dotproduct*rmu/r) * dexp(-cc*rmu2)
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zv4_bld
 
@@ -840,7 +840,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk  (dim_i, elec_j, walk_i) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, walk_i)
-      end do
+      enddo
 
 
 !     loop over grid points
@@ -933,10 +933,10 @@
          else
            intra_sp_q1 (spin, grid_i) = intra_sp_q1 (spin, grid_i) + (1.d0/r)
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_q1_bld
 
@@ -1112,11 +1112,11 @@
 
         intra_sp_q5_wlk (spin, grid_i, walk_i) = intra_sp_q5_wlk (spin, grid_i, walk_i) + (exp_mcabsrmu - exp_mcrpu)/(2.d0*intra_exp*ru)
 
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-   end do !elec_i
-  end do !walk_i
+    enddo !elec_j
+   enddo !elec_i
+  enddo !walk_i
 
   end subroutine intra_sp_q5_wlk_bld
 
@@ -1291,7 +1291,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
       intra_temp = - oneover4pi * dotproduct / dij**3
 
@@ -1303,10 +1303,10 @@
          else
            intra_sp_zvzb1 (spin, grid_i) = intra_sp_zvzb1 (spin, grid_i) + zbfac*(1.d0/r)
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zvzb1_bld
 
@@ -1384,7 +1384,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
 
 !     loop over grid points
@@ -1411,10 +1411,10 @@
         intra_sp_zvzb3 (spin, grid_i) = intra_sp_zvzb3 (spin, grid_i) +          &
             oneover4pi*(((dotproduct/r)*(intra_temp1 - u*intra_temp3) - cc*rpu*intra_temp2)/ru + zbfac*intra_temp3)
 
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zvzb3_bld
 
@@ -1485,7 +1485,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
       do grid_i = 1, grid_r_nb
         u = grid_r(grid_i)
@@ -1498,10 +1498,10 @@
            intra_sp_zvzb4 (spin, grid_i) = intra_sp_zvzb4 (spin, grid_i) - oneover4pi * (cc*                      &
                                 (1.d0 + 2.d0*rmu/r - 2.d0*cc*rmu2 + 2.d0*dotproduct*rmu/r) + deloc/u) * dexp(-cc*rmu2)
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zvzb4_bld
 
@@ -1577,7 +1577,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
-      end do
+      enddo
 
       intra_temp = - oneover4pi * dotproduct / r**3
 
@@ -1592,10 +1592,10 @@
          else
            intra_sp_zv1zb3 (spin, grid_i) = intra_sp_zv1zb3 (spin, grid_i) + zbfac*delta_erf
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_sp_zv1zb3_bld
 
@@ -1678,7 +1678,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, walk_i) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, walk_i)
-      end do
+      enddo
 
 
 !     loop over grid points
@@ -1704,11 +1704,11 @@
             oneover4pi*((dotproduct/r2)*(intra_temp1 + intra_temp2/u)  &
             - 0.5d0*cc2*intra_temp1 + zbfac*intra_temp1)
 
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-   end do !elec_i
-  end do !walk_i
+    enddo !elec_j
+   enddo !elec_i
+  enddo !walk_i
 
   end subroutine intra_sp_zvzb5_bld
 
@@ -2020,8 +2020,8 @@
 
       intra_3d_histo (grid_i) = intra_3d_histo (grid_i) + 0.5d0/(grid_x_step*grid_y_step*grid_z_step)
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_3d_histo_bld
 
@@ -2083,16 +2083,16 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  vold(dim_i,elec_j) * (xold(dim_i,elec_j) - xold(dim_i,elec_i) - grid_xyz (dim_i, grid_i))
-      end do
+      enddo
 
       intra_temp = - oneover4pi * dotproduct / dij**3
 
       intra_3d_zv1 (grid_i) = intra_3d_zv1 (grid_i) + intra_temp
 
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_3d_zv1_bld
 
@@ -2155,10 +2155,10 @@
 
       intra_3d_zv2 (grid_i) = intra_3d_zv2 (grid_i) + intra_temp
 
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_3d_zv2_bld
 
@@ -2275,7 +2275,7 @@
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  vold(dim_i,elec_j) * (xold(dim_i,elec_j) - xold(dim_i,elec_i))
-      end do
+      enddo
 
       intra_temp = oneover4pi * dotproduct / dij**3
 
@@ -2284,10 +2284,10 @@
          if ( dij >= r ) then
            intra_imp_num(grid_i) = intra_imp_num(grid_i) - intra_temp
          endif
-      end do !grid_i
+      enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine intra_zv1_step_vmc
 
@@ -2356,7 +2356,7 @@
       do dim_i = 1, ndim
         dotproduct = dotproduct +   &
             voldw(dim_i,elec_j,walk_i,1) * (xoldw(dim_i,elec_j,walk_i,1) - xoldw(dim_i,elec_i,walk_i,1))
-      end do
+      enddo
 
       intra_temp = oneover4pi * dotproduct / dij**3
 
@@ -2365,12 +2365,12 @@
          if ( dij >= r ) then
            intra_imp_num(grid_i) = intra_imp_num(grid_i) - intra_temp * weight
          endif
-      end do !grid_i
+      enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
- end do ! walk_i
+ enddo ! walk_i
 
   end subroutine intra_zv1_step_dmc
 

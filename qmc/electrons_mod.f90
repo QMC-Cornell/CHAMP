@@ -141,7 +141,7 @@ module electrons_mod
         dist_e_max = dist_e (elec_i)
       endif
 
-  end do !elec_i
+  enddo !elec_i
 
   end subroutine dist_e_bld
 
@@ -393,8 +393,8 @@ module electrons_mod
       do dim_i = 1, ndim
         grd_dist_en (dim_i, elec_i, cent_i) = rvec_en (dim_i, elec_i, cent_i) / r_en (elec_i, cent_i)
       enddo ! dim_i
-   end do ! elec_i
-  end do ! cent_i
+   enddo ! elec_i
+  enddo ! cent_i
 
   end subroutine grd_dist_en_bld
 
@@ -437,8 +437,8 @@ module electrons_mod
       do dim_i = 1, ndim
         lap_dist_en (elec_i, cent_i) = lap_dist_en (elec_i, cent_i) + (1.d0 - grd_dist_en (dim_i, elec_i, cent_i)**2) / r_en (elec_i, cent_i)
       enddo ! dim_i
-   end do ! elec_i
-  end do ! cent_i
+   enddo ! elec_i
+  enddo ! cent_i
 
 !  write(6,*) trim(here),': lap_dist_en=',lap_dist_en
 

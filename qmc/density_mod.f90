@@ -225,7 +225,7 @@ module density_mod
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_i, 1) * xold (dim_i, elec_i)
-      end do
+      enddo
 
       dens_temp = - oneover2pi * dotproduct / di**3
 
@@ -236,9 +236,9 @@ module density_mod
            dens_zv1 (grid_i) = dens_zv1 (grid_i) + dens_temp
         endif
 
-     end do !grid_i
+     enddo !grid_i
 
-  end do !elec_i
+  enddo !elec_i
 
   end subroutine dens_zv1_bld
 
@@ -353,7 +353,7 @@ module density_mod
 
       dens_3d_histo (grid_i) = dens_3d_histo (grid_i) + 1.d0/(grid_x_step*grid_y_step*grid_z_step)
 
-  end do !elec_i
+  enddo !elec_i
 
   end subroutine dens_3d_histo_bld
 
@@ -412,13 +412,13 @@ module density_mod
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_i, 1) * (xold(dim_i,elec_i) - grid_xyz (dim_i, grid_i))
-      end do
+      enddo
 
       dens_3d_zv1 (grid_i) = dens_3d_zv1 (grid_i) - oneover2pi * dotproduct / di**3
 
-     end do !grid_i
+     enddo !grid_i
 
-  end do !elec_i
+  enddo !elec_i
 
   end subroutine dens_3d_zv1_bld
 
@@ -476,9 +476,9 @@ module density_mod
 
       dens_3d_zv2 (grid_i) = dens_3d_zv2 (grid_i)  - oneover2pi * (lap_psi_over_psi_wlk (elec_i, 1) + grd_psi_over_psi_sq_wlk (elec_i, 1)) / di
 
-     end do !grid_i
+     enddo !grid_i
 
-  end do !elec_i
+  enddo !elec_i
 
   end subroutine dens_3d_zv2_bld
 

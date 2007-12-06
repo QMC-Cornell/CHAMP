@@ -727,6 +727,7 @@ module opt_lin_mod
   write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind (eig_1st_component_max_ind), ': ',eigval_r (eig_1st_component_max_ind), ' +', eigval_i (eig_1st_component_max_ind),' i'
 
 ! Find eigenvector with lowest eigenvalue that is not crazy
+! If eigenvec with lowest eigenvalue is degenerate, choose the one with largest first coef
   eigval_lowest = 9.d99
   eigval_lowest_ind = 0
   do i = 1, param_aug_nb

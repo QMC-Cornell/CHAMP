@@ -2140,7 +2140,7 @@ bloop:do ik=1,num_g
   else
    do k=2,npar2_arth
     arth(k)=arth(k-1)+increment
-   end do
+   enddo
    temp=increment*npar2_arth
    k=npar2_arth
    do

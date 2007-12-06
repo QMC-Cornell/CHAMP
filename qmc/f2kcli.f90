@@ -72,7 +72,7 @@
                 LENARG = LEN_TRIM(ARGSTR)
                 IPOS   = LENARG + 2
                 IF (IPOS > LEN(ARGSTR)) EXIT
-              END DO
+              ENDDO
           ELSE
               ARGSTR = ' '
               LENARG = 0

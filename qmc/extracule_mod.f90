@@ -228,7 +228,7 @@ module extracule_mod
       dotproduct = 0.d0
       do dim_i = 1, ndim
         dotproduct = dotproduct +  vold(dim_i,elec_j) * (xold(dim_i,elec_j) + xold(dim_i,elec_i))/2.d0
-      end do
+      enddo
 
       extracule_temp = - oneover2pi * dotproduct / rijcm**3
 
@@ -237,10 +237,10 @@ module extracule_mod
         if ( rijcm >= r ) then
            extracule_zv1 (grid_i) = extracule_zv1 (grid_i) + extracule_temp
         endif
-     end do !grid_i
+     enddo !grid_i
 
-    end do !elec_j
-  end do !elec_i
+    enddo !elec_j
+  enddo !elec_i
 
   end subroutine extracule_zv1_bld
 
