@@ -808,7 +808,7 @@ module optimization_mod
 !  write new wave function
    write(6,'(a)') ''
    write(6,'(a)') 'New wave function:'
-   call wf_new_write
+   call write_wf_new
 
   enddo ! end optimization loop
 
@@ -830,7 +830,7 @@ module optimization_mod
 ! write final wave function
   write(6,*)
   write(6,'(a)') 'Final wave function:'
-  call wf_new_write
+  call write_wf_new
 
 ! do a last vmc with the last predicted parameters without calculating the derivatives
   if (l_last_run) then
@@ -860,7 +860,7 @@ module optimization_mod
   write(6,'(a)') 'Best wave function:'
   write(6,*)
   write(6,'(a,i3,a,f12.6,a)') 'The best wave function was found at iteration # ',iter_best, ' (energy_plus_err_best = ',energy_plus_err_best,')'
-  call wf_best_write
+  call write_wf_best
 
   end subroutine optimization
 
@@ -1065,7 +1065,7 @@ module optimization_mod
   call set_scale_dist(ipr,iwf)
 
 ! print new parameters
-  call wf_write
+  call write_wf
 
 ! Check move:
   is_bad_move = 0
@@ -1162,7 +1162,7 @@ module optimization_mod
    endif
   endif
 
-!  call wf_write
+!  call write_wf
 
   end subroutine wf_update_and_check
 
@@ -1497,7 +1497,7 @@ module optimization_mod
   end subroutine adjust_diag_stab
 
 !===========================================================================
-  subroutine wf_write
+  subroutine write_wf
 !---------------------------------------------------------------------------
 ! Description : write optimized parameters of current wave function
 !
@@ -1507,7 +1507,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'wf_write'
+  character(len=max_string_len_rout), save :: lhere = 'write_wf'
   integer orb_i
   integer bas_i
   integer i, ict, isp
@@ -1595,10 +1595,10 @@ module optimization_mod
 
   write(6,*)
 
-  end subroutine wf_write
+  end subroutine write_wf
 
 !===========================================================================
-  subroutine wf_new_write
+  subroutine write_wf_new
 !---------------------------------------------------------------------------
 ! Description : write optimized parameters of new wave function (at each optimization step)
 ! Description : at each optimization step
@@ -1609,7 +1609,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'wf_new_write'
+  character(len=max_string_len_rout), save :: lhere = 'write_wf_new'
   integer orb_i
   integer bas_i
   integer i, ict, isp
@@ -1697,10 +1697,10 @@ module optimization_mod
 
   write(6,*)
 
-  end subroutine wf_new_write
+  end subroutine write_wf_new
 
 !===========================================================================
-  subroutine wf_best_write
+  subroutine write_wf_best
 !---------------------------------------------------------------------------
 ! Description : write parameters of best wave function
 !
@@ -1710,7 +1710,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'wf_best_write'
+  character(len=max_string_len_rout), save :: lhere = 'write_wf_best'
   integer orb_i
   integer bas_i
   integer i, ict, isp
@@ -1798,7 +1798,7 @@ module optimization_mod
 
   write(6,*)
 
-  end subroutine wf_best_write
+  end subroutine write_wf_best
 
 ! ==============================================================================
   subroutine delta_param_bld

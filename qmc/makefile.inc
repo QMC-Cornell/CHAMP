@@ -225,6 +225,33 @@ ifeq ($(hostname),login1)
   CHAMP_MPIC = mpicc.ibm
   CHAMP_C_MPI = -O5
   CHAMP_LD_MPI = mpif90.ibm
-
-
 endif
+
+
+# Jaguar at NCCS Oak Ridge
+ifeq ($(hostname),jaguar2)
+# Serial (Portland compiler), requires ACML module?
+# module load acml
+ CHAMP_F77 = pgf95
+ CHAMP_F95 = pgf95
+ CHAMP_C = pgcc
+ CHAMP_LD = pgf95
+ CHAMP_F77_FAST = -Mpreprocess -Mextend -O2 -tp amd64e
+ CHAMP_F95_FAST = -Mpreprocess -O2 -tp amd64 -DPGI
+ CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
+ CHAMP_LD_FAST = -O2 -tp amd64e
+
+# Parallel (Portland compiler), requires ACML module
+# module load acml
+# CHAMP_MPIF77 = mpif90
+# CHAMP_MPIF95 = mpif90
+# CHAMP_MPIC = mpicc
+# CHAMP_LD_MPI = mpif90
+# CHAMP_F77_MPI = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
+# CHAMP_F95_MPI = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
+# CHAMP_C_MPI = -DMPI -DUNDERSCORE -O2 -tp amd64e
+
+#  LAPACK=${ACML}
+#  BLAS=${ACML}
+endif
+

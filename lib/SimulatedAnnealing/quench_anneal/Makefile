@@ -369,6 +369,14 @@ ifeq ($(system),CYGWIN_NT-5.0)
 # -L/cygdrive/c/progra~1/mifd68~1/Lib mkl_c.lib mkl_p3.lib
 endif
 
+# Jaguar at NCCS Oak Ridge
+ifeq ($(hostname),jaguar2)
+  FC    = pgf95
+  FFLAGS = -fast -r8 -Mextend -Mdalign -Msave
+  FC_MPI = mpif77.pgf
+  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
+endif
+
 # The Intel compiler ifc causes trouble in dlamch unless the latter is
 # compiled with -O0
 # ifneq ($(FC),ifc)
