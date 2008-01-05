@@ -12,6 +12,7 @@ module montecarlo_mod
 ! local energy over walkers
   real(dp), allocatable   :: eloc_wlk (:)
   real(dp)                :: eloc_av
+  real(dp)                :: eloc_av_var
   real(dp)                :: eloc_av_err
 
 ! local energy for tests
@@ -26,10 +27,10 @@ module montecarlo_mod
   real(dp)    :: eerr
   real(dp)    :: egerr
 
-! eloc_av_var of local energy
+! for sigma
   real(dp)    :: eloc_sq
   real(dp)    :: eloc_sq_av
-  real(dp)    :: eloc_av_var
+  real(dp)    :: eloc_var
 
 ! standard deviation of local energy
   real(dp)    :: sigma
@@ -240,7 +241,7 @@ module montecarlo_mod
 !  if (header_exe) then
 !
 !   call object_create ('eloc_av')
-!   call object_variance_define ('eloc_av', 'eloc_av_var')
+!   call object_variance_define ('eloc_av', 'eloc_var')
 !
 !   call object_needed ('eloc')
 !
@@ -254,7 +255,7 @@ module montecarlo_mod
 !  end subroutine eloc_av_bld
 
 ! ==============================================================================
-  subroutine eloc_av_var_bld
+  subroutine eloc_var_bld
 ! ------------------------------------------------------------------------------
 ! Description   : variance of local energy
 !
@@ -266,7 +267,7 @@ module montecarlo_mod
 ! header
   if (header_exe) then
 
-   call object_create ('eloc_av_var')
+   call object_create ('eloc_var')
 
    call object_needed ('eloc_sq_av')
    call object_needed ('eloc_av')
@@ -278,11 +279,11 @@ module montecarlo_mod
 ! begin
 
 ! allocations
-  call object_associate ('eloc_av_var', eloc_av_var)
+  call object_associate ('eloc_var', eloc_var)
 
-  eloc_av_var = eloc_sq_av - eloc_av**2
+  eloc_var = eloc_sq_av - eloc_av**2
 
-  end subroutine eloc_av_var_bld
+  end subroutine eloc_var_bld
 
 ! ==============================================================================
   subroutine sigma_bld
@@ -299,7 +300,7 @@ module montecarlo_mod
 
    call object_create ('sigma')
 
-   call object_needed ('eloc_av_var')
+   call object_needed ('eloc_var')
 
    return
 
@@ -310,7 +311,7 @@ module montecarlo_mod
 ! allocations
   call object_associate ('sigma', sigma)
 
-  sigma = dsqrt(eloc_av_var)
+  sigma = dsqrt(eloc_var)
 
   end subroutine sigma_bld
 

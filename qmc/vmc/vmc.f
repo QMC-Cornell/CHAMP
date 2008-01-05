@@ -176,12 +176,15 @@ c                 sites routine
        write(6,'(a)') '*********** START VMC CALCULATION  ***********'
        write(6,*)
 
-!     define error on sigma
-!      call object_average_request ('e_loc_av') !JT
-!      call object_error_request ('e_loc_av_err') !JT
+!     sigma
       call object_associate ('error_sigma', error_sigma) !JT
       call object_average_request ('eloc_sq_av') !JT
       call object_error_request ('error_sigma') !JT
+!     variance on averaged local energy
+      call object_associate ('eloc_av', eloc_av) !JT
+      call object_associate ('eloc_av_var', eloc_av_var) !JT
+      call object_variance_define ('eloc_av', 'eloc_av_var')
+      call object_variance_request ('eloc_av_var')
 
       call print_list_of_averages_and_errors
 

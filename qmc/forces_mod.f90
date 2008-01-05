@@ -5,6 +5,7 @@
   use electrons_mod
   use nuclei_mod
   use psi_mod
+  use montecarlo_mod
 
 ! Declaration of global variables and default values
   integer                                     :: forces_nb = 0
@@ -22,19 +23,20 @@
   real(dp), allocatable                       :: forces_q_av (:)
   real(dp), allocatable                       :: forces_q_av_var (:)
   real(dp), allocatable                       :: forces_q_av_err (:)
-  real(dp), allocatable                       :: forces_eloc_q (:)
-  real(dp), allocatable                       :: forces_eloc_q_av (:)
-  real(dp), allocatable                       :: forces_eloc_q_av_var (:)
-  real(dp), allocatable                       :: forces_eloc_q_av_err (:)
+  real(dp), allocatable                       :: forces_q_eloc (:)
+  real(dp), allocatable                       :: forces_q_eloc_av (:)
+  real(dp), allocatable                       :: forces_q_eloc_av_var (:)
+  real(dp), allocatable                       :: forces_q_eloc_av_err (:)
   real(dp), allocatable                       :: forces_zvzb (:)
   real(dp), allocatable                       :: forces_zvzb_av (:)
   real(dp), allocatable                       :: forces_zvzb_av_var (:)
   real(dp), allocatable                       :: forces_zvzb_av_err (:)
   real(dp), allocatable                       :: forces_zv_av_eloc_av_covar (:)
-  real(dp), allocatable                       :: forces_zv_av_eloc_q_av_covar (:,:)
-  real(dp), allocatable                       :: forces_zv_av_q_av_covar (:,:)
-  real(dp), allocatable                       :: forces_eloc_q_av_eloc_av_covar (:)
-  real(dp), allocatable                       :: forces_eloc_q_av_q_av_covar (:,:)
+  real(dp), allocatable                       :: forces_zv_av_q_eloc_av_covar (:)
+  real(dp), allocatable                       :: forces_zv_av_q_av_covar (:)
+  real(dp), allocatable                       :: forces_q_eloc_av_eloc_av_covar (:)
+  real(dp), allocatable                       :: forces_q_eloc_av_q_av_covar (:)
+  real(dp), allocatable                       :: forces_q_av_eloc_av_covar (:)
 
   logical                                     :: l_eloc_av_fixed = .false.
   logical                                     :: l_forces_q_av_fixed = .false.
@@ -117,18 +119,22 @@
 
   call object_average_request ('forces_bare_av')
   call object_error_request ('forces_bare_av_err')
+
   call object_average_request ('forces_zv_av')
   call object_error_request ('forces_zv_av_err')
+
   call object_average_request ('forces_q_av')
-  call object_average_request ('forces_eloc_q_av')
-!  call object_average_request ('forces_zvzb_av')
+  call object_average_request ('forces_q_eloc_av')
+  call object_variance_request ('forces_q_eloc_av_var')
+
   call object_error_request ('forces_zvzb_av_err')
 
   call object_covariance_request ('forces_zv_av_eloc_av_covar')
-  call object_covariance_request ('forces_zv_av_eloc_q_av_covar')
+  call object_covariance_request ('forces_zv_av_q_eloc_av_covar')
   call object_covariance_request ('forces_zv_av_q_av_covar')
-  call object_covariance_request ('forces_eloc_q_av_eloc_av_covar')
-  call object_covariance_request ('forces_eloc_q_av_q_av_covar')
+  call object_covariance_request ('forces_q_eloc_av_eloc_av_covar')
+  call object_covariance_request ('forces_q_eloc_av_q_av_covar')
+  call object_covariance_request ('forces_q_av_eloc_av_covar')
 
   end subroutine forces_menu
 
@@ -282,8 +288,8 @@
   call object_alloc ('forces_zv_av_var', forces_zv_av_var, forces_nb)
   call object_alloc ('forces_zv_av_err', forces_zv_av_err, forces_nb)
   call object_alloc ('forces_zv_av_eloc_av_covar', forces_zv_av_eloc_av_covar, forces_nb)
-  call object_alloc ('forces_zv_av_eloc_q_av_covar', forces_zv_av_eloc_q_av_covar, forces_nb, forces_nb)
-  call object_alloc ('forces_zv_av_q_av_covar', forces_zv_av_q_av_covar, forces_nb, forces_nb)
+  call object_alloc ('forces_zv_av_q_eloc_av_covar', forces_zv_av_q_eloc_av_covar, forces_nb)
+  call object_alloc ('forces_zv_av_q_av_covar', forces_zv_av_q_av_covar, forces_nb)
 
   do force_i = 1, forces_nb
    cent_i = forces_cent (force_i)
@@ -347,6 +353,7 @@
   call object_alloc ('forces_q_av', forces_q_av, forces_nb)
   call object_alloc ('forces_q_av_var', forces_q_av_var, forces_nb)
   call object_alloc ('forces_q_av_err', forces_q_av_err, forces_nb)
+  call object_alloc ('forces_q_av_eloc_av_covar', forces_q_av_eloc_av_covar, forces_nb)
 
   do force_i = 1, forces_nb
    cent_i = forces_cent (force_i)
@@ -364,7 +371,7 @@
   end subroutine forces_q_bld
 
 ! ==============================================================================
-  subroutine forces_eloc_q_bld
+  subroutine forces_q_eloc_bld
 ! ------------------------------------------------------------------------------
 ! Description   : Simple Q E_L term for forces
 ! Description   : Assaraf and Caffarel, J. Chem. Phys. (2003)
@@ -378,30 +385,30 @@
 ! header
   if (header_exe) then
 
-   call object_create ('forces_eloc_q')
-   call object_average_define ('forces_eloc_q', 'forces_eloc_q_av')
-   call object_variance_define ('forces_eloc_q_av', 'forces_eloc_q_av_var')
-   call object_error_define ('forces_eloc_q_av', 'forces_eloc_q_av_err')
+   call object_create ('forces_q_eloc')
+   call object_average_define ('forces_q_eloc', 'forces_q_eloc_av')
+   call object_variance_define ('forces_q_eloc_av', 'forces_q_eloc_av_var')
+   call object_error_define ('forces_q_eloc_av', 'forces_q_eloc_av_err')
 
    call object_needed ('forces_nb')
-   call object_needed ('eloc')
    call object_needed ('forces_q')
+   call object_needed ('eloc')
 
    return
 
   endif
 
 ! allocations
-  call object_alloc ('forces_eloc_q', forces_eloc_q, forces_nb)
-  call object_alloc ('forces_eloc_q_av', forces_eloc_q_av, forces_nb)
-  call object_alloc ('forces_eloc_q_av_var', forces_eloc_q_av_var, forces_nb)
-  call object_alloc ('forces_eloc_q_av_err', forces_eloc_q_av_err, forces_nb)
-  call object_alloc ('forces_eloc_q_av_eloc_av_covar', forces_eloc_q_av_eloc_av_covar, forces_nb)
-  call object_alloc ('forces_eloc_q_av_q_av_covar', forces_eloc_q_av_q_av_covar, forces_nb, forces_nb)
+  call object_alloc ('forces_q_eloc', forces_q_eloc, forces_nb)
+  call object_alloc ('forces_q_eloc_av', forces_q_eloc_av, forces_nb)
+  call object_alloc ('forces_q_eloc_av_var', forces_q_eloc_av_var, forces_nb)
+  call object_alloc ('forces_q_eloc_av_err', forces_q_eloc_av_err, forces_nb)
+  call object_alloc ('forces_q_eloc_av_eloc_av_covar', forces_q_eloc_av_eloc_av_covar, forces_nb)
+  call object_alloc ('forces_q_eloc_av_q_av_covar', forces_q_eloc_av_q_av_covar, forces_nb)
 
-  forces_eloc_q (:) = eloc * forces_q (:)
+  forces_q_eloc (:) = forces_q (:) * eloc
 
-  end subroutine forces_eloc_q_bld
+  end subroutine forces_q_eloc_bld
 
 ! ==============================================================================
   subroutine forces_zvzb_av_bld
@@ -423,7 +430,7 @@
 
    call object_needed ('forces_nb')
    call object_needed ('forces_zv_av')
-   call object_needed ('forces_eloc_q_av')
+   call object_needed ('forces_q_eloc_av')
    call object_needed ('forces_q_av')
    call object_needed ('eloc_av')
 
@@ -434,7 +441,7 @@
 ! allocations
   call object_alloc ('forces_zvzb_av', forces_zvzb_av, forces_nb)
 
-  forces_zvzb_av (:) = forces_zv_av (:) + 2.d0 * (forces_eloc_q_av (:) - eloc_av * forces_q_av (:))
+  forces_zvzb_av (:) = forces_zv_av (:) + 2.d0 * (forces_q_eloc_av (:) - eloc_av * forces_q_av (:))
 
   end subroutine forces_zvzb_av_bld
 
@@ -455,23 +462,25 @@
    call object_create ('forces_zvzb_av_var')
    call object_error_define_from_variance ('forces_zvzb_av_var', 'forces_zvzb_av_err')
    call object_covariance_define ('forces_zv_av', 'eloc_av', 'forces_zv_av_eloc_av_covar')
-   call object_covariance_define ('forces_zv_av', 'forces_eloc_q_av', 'forces_zv_av_eloc_q_av_covar')
+   call object_covariance_define ('forces_zv_av', 'forces_q_eloc_av', 'forces_zv_av_q_eloc_av_covar')
    call object_covariance_define ('forces_zv_av', 'forces_q_av', 'forces_zv_av_q_av_covar')
-   call object_covariance_define ('forces_eloc_q_av', 'eloc_av', 'forces_eloc_q_av_eloc_av_covar')
-   call object_covariance_define ('forces_eloc_q_av', 'forces_q_av', 'forces_eloc_q_av_q_av_covar')
+   call object_covariance_define ('forces_q_eloc_av', 'forces_q_av', 'forces_q_eloc_av_q_av_covar')
+   call object_covariance_define ('forces_q_eloc_av', 'eloc_av', 'forces_q_eloc_av_eloc_av_covar')
+   call object_covariance_define ('forces_q_av', 'eloc_av', 'forces_q_av_eloc_av_covar')
 
    call object_needed ('forces_nb')
    call object_needed ('forces_zv_av_var')
-   call object_needed ('forces_eloc_q_av_var')
+   call object_needed ('forces_q_eloc_av_var')
    call object_needed ('forces_q_av')
    call object_needed ('forces_q_av_var')
    call object_needed ('eloc_av')
    call object_needed ('eloc_av_var')
-   call object_needed ('forces_zv_av_eloc_av_covar')
-   call object_needed ('forces_zv_av_eloc_q_av_covar')
+   call object_needed ('forces_zv_av_q_eloc_av_covar')
    call object_needed ('forces_zv_av_q_av_covar')
-   call object_needed ('forces_eloc_q_av_eloc_av_covar')
-   call object_needed ('forces_eloc_q_av_q_av_covar')
+   call object_needed ('forces_zv_av_eloc_av_covar')
+   call object_needed ('forces_q_eloc_av_q_av_covar')
+   call object_needed ('forces_q_eloc_av_eloc_av_covar')
+   call object_needed ('forces_q_av_eloc_av_covar')
 
    return
 
@@ -481,11 +490,13 @@
   call object_alloc ('forces_zvzb_av_var', forces_zvzb_av_var, forces_nb)
   call object_alloc ('forces_zvzb_av_err', forces_zvzb_av_err, forces_nb)
 
-!  forces_zvzb_av_var (:) = forces_zv_av_var (:) + 2.d0 * forces_eloc_q_av_var (:)  +                               &
-!                          + 4.d0 * (forces_q_av (:)**2) * eloc_av_var  + 4.d0 * (eloc_av**2) * forces_q_av_var (:) &
-!                          + 4.d0 * forces_zv_av_eloc_q_av_covar (:,:) - 4.d0 * forces_q_av (:) * forces_zv_av_eloc_av_covar (:) &
-!                          - 4.d0 * eloc_av * forces_zv_av_q_av_covar (:) - 8.d0 * forces_q_av (:) * forces_eloc_q_av_eloc_av_covar (:) &
-!                          - 8.d0 * eloc_av * forces_eloc_q_av_q_av_covar (:) + 8.d0 * eloc_av * forces_q_av (:) * forces_zv_av_q_av_covar (:)
+  forces_zvzb_av_var (:) = forces_zv_av_var (:) + 4.d0 * forces_q_eloc_av_var (:)                                  &
+                          + 4.d0 * (eloc_av**2) * forces_q_av_var (:) + 2.d0 * (forces_q_av (:)**2) * eloc_av_var  &
+                          + 4.d0 * forces_zv_av_q_eloc_av_covar (:) - 4.d0 * eloc_av * forces_zv_av_q_av_covar (:) &
+                          - 4.d0 * forces_q_av (:) * forces_zv_av_eloc_av_covar (:)                                &  
+                          - 8.d0 * eloc_av * forces_q_eloc_av_q_av_covar (:)                                       &
+                          - 8.d0 * forces_q_av (:) * forces_q_eloc_av_eloc_av_covar (:)                            & 
+                          + 8.d0 * forces_q_av (:) * eloc_av * forces_q_av_eloc_av_covar (:)
   
   end subroutine forces_zvzb_av_var_bld
 

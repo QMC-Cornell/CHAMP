@@ -116,7 +116,6 @@ c       wnow=wsum(ifr)/nstep
         endif
 
         if (ifr.eq.1) then                                 !JT
-         call object_associate ('eloc_av', eloc_av)        !JT
          eloc_av = ecum(1)/wcum(1)                         !JT
          call object_modified_by_index (eloc_av_index)     !JT
          eloc_av_err = eerr                                !JT

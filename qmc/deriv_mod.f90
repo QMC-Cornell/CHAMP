@@ -1454,7 +1454,7 @@ module deriv_mod
    call object_needed ('dpsi_deloc_eloc_tc_av')
    call object_needed ('dpsi_dpsi_eloc_eloc_qc_av')
    call object_needed ('dpsi_eloc_c_av')
-   call object_needed ('eloc_av_var')
+   call object_needed ('eloc_var')
    call object_needed ('dpsi_dpsi_c_av')
 
    return
@@ -1469,7 +1469,7 @@ module deriv_mod
     hessian_variance_lin (param_i, param_j) = 2.d0 * (deloc_deloc_c_av (param_i, param_j)  &
          + dpsi_deloc_eloc_tc_av (param_i, param_j) + dpsi_deloc_eloc_tc_av (param_j, param_i) &
          + dpsi_dpsi_eloc_eloc_qc_av (param_i, param_j) - 4.d0 * dpsi_eloc_c_av (param_i) * dpsi_eloc_c_av (param_j) &
-         - eloc_av_var * dpsi_dpsi_c_av (param_i, param_j) )
+         - eloc_var * dpsi_dpsi_c_av (param_i, param_j) )
    enddo ! param_j
   enddo ! param_i
 

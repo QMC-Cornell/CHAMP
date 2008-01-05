@@ -49,15 +49,18 @@ module objects_mod
    real(dp)                          :: sum_double_0
    real(dp)                          :: sum_blk_double_0
    real(dp)                          :: sum_blk_square_double_0
-   real(dp)                          :: previous_double_0
-   real(dp), allocatable             :: sum_double_1(:)
-   real(dp), allocatable             :: sum_blk_double_1(:)
-   real(dp), allocatable             :: sum_blk_square_double_1(:)
-   real(dp), allocatable             :: previous_double_1(:)
-   real(dp), allocatable             :: sum_double_2(:,:)
-   real(dp), allocatable             :: sum_blk_double_2(:,:)
-   real(dp), allocatable             :: sum_blk_square_double_2(:,:)
-   real(dp), allocatable             :: previous_double_2(:,:)
+   real(dp)                          :: previous_av1_double_0
+   real(dp)                          :: previous_av2_double_0
+   real(dp), allocatable             :: sum_double_1 (:)
+   real(dp), allocatable             :: sum_blk_double_1 (:)
+   real(dp), allocatable             :: sum_blk_square_double_1 (:)
+   real(dp), allocatable             :: previous_av1_double_1 (:)
+   real(dp), allocatable             :: previous_av2_double_1 (:)
+   real(dp), allocatable             :: sum_double_2 (:,:)
+   real(dp), allocatable             :: sum_blk_double_2 (:,:)
+   real(dp), allocatable             :: sum_blk_square_double_2 (:,:)
+   real(dp), allocatable             :: previous_av1_double_2 (:,:)
+   real(dp), allocatable             :: previous_av2_double_2 (:,:)
    real(dp)                          :: variance_double_0
 
   end type type_object
@@ -2144,7 +2147,7 @@ module objects_mod
     object_ind = object_index (object_name)
     call alloc ('objects(object_ind)%sum_double_1',objects(object_ind)%sum_double_1, dim1)
     call alloc ('objects(object_ind)%sum_blk_double_1',objects(object_ind)%sum_blk_double_1, dim1)
-    call alloc ('objects(object_ind)%previous_double_1',objects(object_ind)%previous_double_1, dim1)
+!    call alloc ('objects(object_ind)%previous_double_1',objects(object_ind)%previous_double_1, dim1)
    endif
 
   endif
@@ -2207,10 +2210,10 @@ module objects_mod
     object_ind = object_index (object_name)
     call alloc ('objects(object_ind)%sum_double_1',objects(object_ind)%sum_double_1, dim1)
     call alloc ('objects(object_ind)%sum_blk_double_1',objects(object_ind)%sum_blk_double_1, dim1)
-    call alloc ('objects(object_ind)%previous_double_1',objects(object_ind)%previous_double_1, dim1)
+!    call alloc ('objects(object_ind)%previous_double_1',objects(object_ind)%previous_double_1, dim1)
     call alloc ('objects(object_ind)%sum_double_2',objects(object_ind)%sum_double_2, dim1, dim2)
     call alloc ('objects(object_ind)%sum_blk_double_2',objects(object_ind)%sum_blk_double_2, dim1, dim2)
-    call alloc ('objects(object_ind)%previous_double_2',objects(object_ind)%previous_double_2, dim1, dim2)
+!    call alloc ('objects(object_ind)%previous_double_2',objects(object_ind)%previous_double_2, dim1, dim2)
    endif
 
   endif
@@ -2276,7 +2279,7 @@ module objects_mod
     object_ind = object_index (object_name)
     call alloc ('objects(object_ind)%sum_double_2',objects(object_ind)%sum_double_2, dim1, dim2)
     call alloc ('objects(object_ind)%sum_blk_double_2',objects(object_ind)%sum_blk_double_2, dim1, dim2)
-    call alloc ('objects(object_ind)%previous_double_2',objects(object_ind)%previous_double_2, dim1, dim2)
+!    call alloc ('objects(object_ind)%previous_double_2',objects(object_ind)%previous_double_2, dim1, dim2)
    endif
 
   endif

@@ -61,7 +61,7 @@ module catalog_routines_mod
   call catalog_one_node ('eloc_wlk_test_bld', eloc_wlk_test_bld, eloc_wlk_test_bld_index)
   call catalog_one_node ('eloc_wlk_test2_bld', eloc_wlk_test2_bld, eloc_wlk_test2_bld_index)
   call catalog_one_node ('sigma_bld', sigma_bld)
-  call catalog_one_node ('eloc_av_var_bld', eloc_av_var_bld)
+  call catalog_one_node ('eloc_var_bld', eloc_var_bld)
   call catalog_one_node ('eloc_sq_bld', eloc_sq_bld)
   call catalog_one_node ('dist_e_bld', dist_e_bld)
   call catalog_one_node ('vec_ee_xyz_wlk_bld', vec_ee_xyz_wlk_bld)
@@ -386,7 +386,7 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_bld', forces_zv_bld)
   call catalog_one_node ('forces_zvzb_av_bld', forces_zvzb_av_bld)
   call catalog_one_node ('forces_q_bld', forces_q_bld)
-  call catalog_one_node ('forces_eloc_q_bld', forces_eloc_q_bld)
+  call catalog_one_node ('forces_q_eloc_bld', forces_q_eloc_bld)
   call catalog_one_node ('forces_zvzb_av_var_bld', forces_zvzb_av_var_bld)
 
 ! average routines (not nodes!)
