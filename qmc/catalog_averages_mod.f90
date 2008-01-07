@@ -25,6 +25,7 @@ module catalog_averages_mod
   call object_error_define ('e_loc_av','e_loc_av_err')
   call object_average_define ('eloc_sq','eloc_sq_av')
   call object_error_define ('sigma', 'error_sigma')
+  call object_variance_define ('eloc_av', 'eloc_av_var')
 
 ! general derivatives
   call object_average_define ('dpsi', 'dpsi_av')

@@ -183,7 +183,6 @@ c                 sites routine
 !     variance on averaged local energy
       call object_associate ('eloc_av', eloc_av) !JT
       call object_associate ('eloc_av_var', eloc_av_var) !JT
-      call object_variance_define ('eloc_av', 'eloc_av_var')
       call object_variance_request ('eloc_av_var')
 
       call print_list_of_averages_and_errors

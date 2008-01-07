@@ -645,7 +645,7 @@ module optimization_mod
 
      if (convergence_reached_nb == check_convergence_nb) then
        l_convergence_reached = .true.
-       exit
+       if (.not. l_last_run) exit
      endif
 
    endif ! convergence
@@ -791,11 +791,21 @@ module optimization_mod
     endif
    endif
    if (l_decrease_error) then
-    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-    energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
+    if (.not. l_convergence_reached) then
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
+    else
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab,' converged'
+    endif
    else
-    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-    energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
+    if(.not. l_convergence_reached) then
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
+    else
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab,' converged'
+    endif
    endif
 
 !  decrease p_var
@@ -810,6 +820,8 @@ module optimization_mod
    write(6,'(a)') 'New wave function:'
    call write_wf_new
 
+   if (l_convergence_reached) exit
+
   enddo ! end optimization loop
 
 ! final printing
@@ -819,18 +831,23 @@ module optimization_mod
   if (l_convergence_reached) then
    write(6,'(a)') 'Convergence reached.'
    write(6,'(a,f12.7,a,i2,a)') 'Threshold on energy ', energy_threshold,' reached for ', check_convergence_nb,' consecutive steps.'
-   write(6,*) ''
+   if (.not. l_last_run) then
+   write(6,*)
    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+   endif
    iter = iter + 1
   else
    write(6,'(a)') 'Warning: Convergence not reached.'
    write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  iter_opt_max_nb,' reached.'
   endif
 
+
 ! write final wave function
-  write(6,*)
-  write(6,'(a)') 'Final wave function:'
-  call write_wf_new
+  if (.not. l_last_run) then
+   write(6,*)
+   write(6,'(a)') 'Final wave function:'
+   call write_wf_new
+  endif
 
 ! do a last vmc with the last predicted parameters without calculating the derivatives
   if (l_last_run) then
@@ -855,6 +872,7 @@ module optimization_mod
   endif
   endif !l_last_run
 
+! Print best wave function
   write(6,*)
   write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
   write(6,'(a)') 'Best wave function:'
