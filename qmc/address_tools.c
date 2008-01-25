@@ -31,75 +31,79 @@ void exe(void  (**f)(), args)
 #ifdef UNDERSCORE
 void exe_by_address_0_(void(**f)())
 #else
+#ifdef UNDERSCORE2
+void exe_by_address_0__(void(**f)()) // for pathscale compiler in serial
+#else
 void exe_by_address_0(void (**f)())
+#endif
 #endif
 {   (**f)();
 }
 
-#ifdef UNDERSCORE
-void exe_by_address_1_(void(**f)(), args_address)
-#else
-void exe_by_address_1(void (**f)(), args_address)
-#endif
-{   (**f)(i[0]);
-}
+//#ifdef UNDERSCORE
+//void exe_by_address_1_(void(**f)(), args_address)
+//#else
+//void exe_by_address_1(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0]);
+//}
 
-#ifdef UNDERSCORE
-void exe_by_address_2_(void(**f)(), args_address)
-#else
-void exe_by_address_2(void (**f)(), args_address)
-#endif
- 
-{  (**f)(i[0],i[1]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_2_(void(**f)(), args_address)
+//#else
+//void exe_by_address_2(void (**f)(), args_address)
+//#endif
+// 
+//{  (**f)(i[0],i[1]);
+//     }
 
-#ifdef UNDERSCORE
-void exe_by_address_3_(void(**f)(), args_address)
-#else
-void exe_by_address3(void (**f)(), args_address)
-#endif
-{   (**f)(i[0],i[1],i[2]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_3_(void(**f)(), args_address)
+//#else
+//void exe_by_address3(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0],i[1],i[2]);
+//      }
 
-#ifdef UNDERSCORE
-void exe_by_address_4_(void(**f)(), args_address)
-#else
-void exe_by_address_4(void (**f)(), args_address)
-#endif
-{   (**f)(i[0],i[1],i[2],i[3]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_4_(void(**f)(), args_address)
+//#else
+//void exe_by_address_4(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0],i[1],i[2],i[3]);
+//      }
 
-#ifdef UNDERSCORE
-void exe_by_address_5_(void(**f)(), args_address)
-#else
-void exe_by_address_5(void (**f)(), args_address)
-#endif
-{   (**f)(i[0],i[1],i[2],i[3],i[4]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_5_(void(**f)(), args_address)
+//#else
+//void exe_by_address_5(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0],i[1],i[2],i[3],i[4]);
+//      }
 
-#ifdef UNDERSCORE
-void exe_by_address_6_(void(**f)(), args_address)
-#else
-void exe_by_address_6(void (**f)(), args_address)
-#endif
-{   (**f)(i[0],i[1],i[2],i[3],i[4],i[5]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_6_(void(**f)(), args_address)
+//#else
+//void exe_by_address_6(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0],i[1],i[2],i[3],i[4],i[5]);
+//      }
 
-#ifdef UNDERSCORE
-void exe_by_address_7_(void(**f)(), args_address)
-#else
-void exe_by_address_7(void (**f)(), args_address)
-#endif
-{   (**f)(i[0],i[1],i[2],i[3],i[4],i[5],i[6]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_7_(void(**f)(), args_address)
+//#else
+//void exe_by_address_7(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0],i[1],i[2],i[3],i[4],i[5],i[6]);
+//      }
 
-#ifdef UNDERSCORE
-void exe_by_address_8_(void(**f)(), args_address)
-#else
-void exe_by_address_8(void (**f)(), args_address)
-#endif
-{   (**f)(i[0],i[1],i[2],i[3],i[4],i[5],i[6],i[7]);
-      }
+//#ifdef UNDERSCORE
+//void exe_by_address_8_(void(**f)(), args_address)
+//#else
+//void exe_by_address_8(void (**f)(), args_address)
+//#endif
+//{   (**f)(i[0],i[1],i[2],i[3],i[4],i[5],i[6],i[7]);
+//      }
 
 // address to target
 #ifdef UNDERSCORE

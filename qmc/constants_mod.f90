@@ -9,6 +9,9 @@ module constants_mod
   integer, parameter    ::  max_string_len_rout = 50
   integer, parameter    ::  max_string_len_file = 200
 
+! max length of string arrays
+  integer, parameter    ::  max_string_array_len = 1000 ! added for pathscale compiler
+
 ! numbers
   real(dp), parameter   :: zero    = 0.d0
   real(dp), parameter   :: third   = 1.d0/3.d0

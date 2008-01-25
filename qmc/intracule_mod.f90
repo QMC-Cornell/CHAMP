@@ -2645,7 +2645,7 @@
 
   write(unit,*) ''
   write(unit,'(a)') '             r                   4 pi r2 I(r)               error                    I(r)                     error           4 pi r2 I(r) same spins&
-          error               I(r) same spins               error          4 pi r2 I(r) opposite spins       error              I(r) opposite spins            error'
+&          error               I(r) same spins               error          4 pi r2 I(r) opposite spins       error              I(r) opposite spins            error'
 
   do grid_i = 1, grid_r_nb
 

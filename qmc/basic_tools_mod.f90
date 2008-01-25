@@ -100,8 +100,8 @@ module basic_tools_mod
 !===============================================================
   interface append_once
 !---------------------------------------------------------------
-   module procedure append_once_string,  &
-                    append_once_integer
+   module procedure append_once_integer
+!                    append_once_string ! commented out for pathscale compiler
   end interface append_once
 
 !===============================================================
@@ -284,39 +284,39 @@ module basic_tools_mod
   end subroutine die_message
 
 !===========================================================================
-  function locate_string_in_array (array, string) result(result)
+!  function locate_string_in_array (array, string) result(result) ! commented out for pathscale compiler
 !---------------------------------------------------------------------------
 ! Description : return index of string in array
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
-  implicit none
-
-! input
-  character (len=*), allocatable :: array(:)
-  character (len=*) string
-
-! output
-  integer result
-
-! local
-  character(len=max_string_len_rout) lhere
-  integer i
-
-! begin
-  lhere = 'locate_string_in_array'
-
-  do i = 1, size(array)
-    if (string == array(i) ) then
-       result = i
-       return
-    endif
-   enddo
-
-  write(6,*) trim(lhere),': string not found in array'
-  call die(lhere)
-
-  return
-  end function locate_string_in_array
+!  implicit none
+!
+!! input
+!  character (len=*), allocatable :: array(:)
+!  character (len=*) string
+!
+!! output
+!  integer result
+!
+!! local
+!  character(len=max_string_len_rout) lhere
+!  integer i
+!
+!! begin
+!  lhere = 'locate_string_in_array'
+!
+!  do i = 1, size(array)
+!    if (string == array(i) ) then
+!       result = i
+!       return
+!    endif
+!   enddo
+!
+!  write(6,*) trim(lhere),': string not found in array'
+!  call die(lhere)
+!
+!  return
+!  end function locate_string_in_array
 
 !===========================================================================
   subroutine alloc_string_1 (object_name, object, dim1)
@@ -2558,50 +2558,50 @@ module basic_tools_mod
 
   end subroutine append_double_1_to_1
 
-!===========================================================================
-  subroutine append_once_string (array, string)
+!!===========================================================================
+!  subroutine append_once_string (array, string) ! commented out for pathscale compiler
+!!---------------------------------------------------------------------------
+!! Description : append only once a string to an array
+!!
+!! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
-! Description : append only once a string to an array
+!  implicit none
 !
-! Created     : J. Toulouse, 15 Oct 2005
-!---------------------------------------------------------------------------
-  implicit none
-
-! input
-  character(len=*) string
-
-! input/output
-  character(len=*), allocatable :: array(:)
-
-! local
-!  character(len=max_string_len_rout) lhere
-  integer i, array_nb
-
-! begin
-!  lhere = 'append_once_string'
-
-! this is needed since size(array) is not 0 if array is not allocated but has been previously allocated
-  if (.not. allocated(array)) then
-   array_nb = 0
-  else
-   array_nb = size(array)
-  endif
-
-! if string is already in array, do nothing
-  if (array_nb /= 0 ) then
-   do i = 1, array_nb
-    if (string == array(i) ) then
-       return
-    endif
-   enddo
-  endif
-
-! add string to array
-  array_nb = array_nb + 1
-  call alloc ('array', array, array_nb)
-  array (array_nb) = string
-
-  end subroutine append_once_string
+!! input
+!  character(len=*) string
+!
+!! input/output
+!  character(len=*), allocatable :: array(:)
+!
+!! local
+!!  character(len=max_string_len_rout) lhere
+!  integer i, array_nb
+!
+!! begin
+!!  lhere = 'append_once_string'
+!
+!! this is needed since size(array) is not 0 if array is not allocated but has been previously allocated
+!  if (.not. allocated(array)) then
+!   array_nb = 0
+!  else
+!   array_nb = size(array)
+!  endif
+!
+!! if string is already in array, do nothing
+!  if (array_nb /= 0 ) then
+!   do i = 1, array_nb
+!    if (string == array(i) ) then
+!       return
+!    endif
+!   enddo
+!  endif
+!
+!! add string to array
+!  array_nb = array_nb + 1
+!  call alloc ('array', array, array_nb)
+!  array (array_nb) = string
+!
+!  end subroutine append_once_string
 
 !===========================================================================
   subroutine append_once_integer (array, intg)

@@ -354,7 +354,11 @@ module parser_tools_mod
   character(len=*), intent (in)              :: value_list_name
 
 ! output
-  character(len=*), allocatable, intent(out) :: value_list (:)
+# if defined (PATHSCALE)
+   character(len=*), intent(out) :: value_list (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=*), allocatable, intent(out) :: value_list (:)
+# endif
   integer, intent(out)                       :: value_list_nb
 
 ! local
@@ -373,7 +377,9 @@ module parser_tools_mod
     if (value_string == 'end') exit
 
     value_list_nb = value_list_nb + 1
-    call alloc (value_list_name, value_list, value_list_nb)
+# if !defined (PATHSCALE)
+   call alloc (value_list_name, value_list, value_list_nb) ! commented out for pathscale compiler
+# endif
     value_list (value_list_nb) = value_string
 
   enddo ! end loop

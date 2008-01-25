@@ -23,10 +23,14 @@ module print_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'print_menu'
-  integer objects_to_print_now_nb
-  character(len=max_string_len), allocatable :: objects_to_print_now (:)
-  integer objects_to_print_block_nb
-  character(len=max_string_len), allocatable :: objects_to_print_block (:)
+  integer objects_to_print_now_nb, objects_to_print_block_nb
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: objects_to_print_now (max_string_array_len) ! for pathscale compiler
+   character(len=max_string_len) :: objects_to_print_block (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: objects_to_print_now (:)
+   character(len=max_string_len), allocatable :: objects_to_print_block (:)
+# endif
   integer obj_i
 
 ! begin
@@ -49,7 +53,11 @@ module print_mod
    write(6,*)
 
   case ('now')
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('objects_to_print_now', objects_to_print_now, objects_to_print_now_nb) ! for pathscale compiler
+# else
    call get_next_value_list ('objects_to_print_now', objects_to_print_now, objects_to_print_now_nb)
+# endif
 
 !  provide objects
    do obj_i = 1, objects_to_print_now_nb
@@ -68,7 +76,11 @@ module print_mod
    endif
 
   case ('block')
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('objects_to_print_block', objects_to_print_block, objects_to_print_block_nb) ! for pathscale compiler
+# else
    call get_next_value_list ('objects_to_print_block', objects_to_print_block, objects_to_print_block_nb)
+# endif
 
 !  request printing of objects at each block
    do obj_i = 1, objects_to_print_block_nb

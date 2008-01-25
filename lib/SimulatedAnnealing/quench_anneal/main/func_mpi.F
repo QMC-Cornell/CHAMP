@@ -130,6 +130,8 @@ c time_g        = wall clock time of the processes/unit work
 c ndata         = number to be partitioned in chunks
 c iatom         = chunks should be multiples of iatom
       include '../include/IO_stop.h'
+      common/chunk/static_chunks !JT
+      logical static_chunks      !JT
       dimension ibegins(MXPROCS),time_g(MXPROCS)
       ndata_chunks=ndata/iatom
       if(first_call) then

@@ -371,10 +371,41 @@ endif
 
 # Jaguar at NCCS Oak Ridge
 ifeq ($(hostname),jaguar2)
-  FC    = pgf95
-  FFLAGS = -fast -r8 -Mextend -Mdalign -Msave
-  FC_MPI = mpif77.pgf
-  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar3)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar4)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar11)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar12)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar13)
+hostname=jaguar
+endif
+
+ifeq ($(hostname),jaguar)
+
+# Portland compiler
+#  FC    = pgf95
+#  FFLAGS = -fast -r8 -Mextend -Mdalign -Msave
+#  FC_MPI = mpif77.pgf
+#  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
+
+# Pathscale compiler serial
+  FC    = pathf95
+  FFLAGS = -Ofast -r8 -extend_source -zerouv
+  LDFLAGS = -Ofast -r8 -extend-source -zerouv
+
+# Pathscale compiler MPI
+  FC_MPI = ftn 
+  FLINKER_MPI = ftn
+  FFLAGS_MPI = -Ofast -r8 -DCLOBBER -DMPI  -extend-source -zerouv
 endif
 
 # The Intel compiler ifc causes trouble in dlamch unless the latter is

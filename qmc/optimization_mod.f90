@@ -14,7 +14,11 @@ module optimization_mod
   character(len=max_string_len)   :: opt_method = 'linear'
 
   integer                 :: parameter_type_nb = 0
-  character(len=max_string_len), allocatable :: parameter_type (:)
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: parameter_type (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: parameter_type (:)
+# endif
 
   integer                 :: iter_opt_min_nb = 0
   logical                 :: l_check_convergence = .true.
@@ -144,7 +148,11 @@ module optimization_mod
    write(6,'(a)') 'end'
 
   case ('parameters')
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('parameter_type', parameter_type, parameter_type_nb) ! for pathscale compiler
+# else
    call get_next_value_list ('parameter_type', parameter_type, parameter_type_nb)
+# endif
 
   case ('method')
    call get_next_value (opt_method)
@@ -840,7 +848,6 @@ module optimization_mod
    write(6,'(a)') 'Warning: Convergence not reached.'
    write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  iter_opt_max_nb,' reached.'
   endif
-
 
 ! write final wave function
   if (.not. l_last_run) then
@@ -1538,7 +1545,11 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('csf_coef')
    write(6,'(a)') 'CSFs coefficients:'
+# if defined (PATHSCALE)
+   write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+# else
    write(6,'(<ncsf>f15.8,'' (csf_coef(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+# endif
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -1590,7 +1601,11 @@ module optimization_mod
    write(6,'(a)') 'Orbital coefficients:'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
+# if defined (PATHSCALE)
+     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
+# else
      write(6,'(<nbasis>e16.8,'' (coef(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+# endif
     else
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
     endif
@@ -1608,7 +1623,11 @@ module optimization_mod
    call object_provide ('nbasis')
    call object_provide ('zex')
    write(6,'(a)') 'Basis exponents:'
+# if defined (PATHSCALE)
+   write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
+# else
    write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+# endif
   endif ! l_opt_exp
 
   write(6,*)
@@ -1640,7 +1659,11 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('csf_coef')
    write(6,'(a)') 'CSFs coefficients:'
+# if defined (PATHSCALE)
+   write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+# else
    write(6,'(<ncsf>f15.8,'' (csf_coef_new(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+# endif
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -1692,7 +1715,11 @@ module optimization_mod
    write(6,'(a)') 'Orbital coefficients:'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
+# if defined (PATHSCALE)
+     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
+# else
      write(6,'(<nbasis>e16.8,'' (coef_new(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+# endif
     else
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
     endif
@@ -1710,7 +1737,11 @@ module optimization_mod
    call object_provide ('nbasis')
    call object_provide ('zex')
    write(6,'(a)') 'Basis exponents:'
+# if defined (PATHSCALE)
+   write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
+# else
    write(6,'(<nbasis>f10.6,'' (zex_new(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+# endif
   endif ! l_opt_exp
 
   write(6,*)
@@ -1741,7 +1772,11 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('csf_coef_best')
    write(6,'(a)') 'CSFs coefficients:'
+# if defined (PATHSCALE)
+   write(6,'(1000f15.8)') csf_coef_best(1:ncsf) ! for pathscale compiler
+# else
    write(6,'(<ncsf>f15.8,'' (csf_coef_best(icsf),icsf=1,ncsf)'')') csf_coef_best(1:ncsf)
+# endif
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -1793,7 +1828,11 @@ module optimization_mod
    write(6,'(a)') 'Orbital coefficients:'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
+# if defined (PATHSCALE)
+     write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i) ! for pathscale compiler
+# else
      write(6,'(<nbasis>e16.8,'' (coef_best(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+# endif
     else
      write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
     endif
@@ -1811,7 +1850,11 @@ module optimization_mod
    call object_provide ('nbasis')
    call object_provide ('zex_best')
    write(6,'(a)') 'Basis exponents:'
+# if defined (PATHSCALE)
+   write(6,'(1000f10.6)') zex_best (1:nbasis) ! for pathscale compiler
+# else
    write(6,'(<nbasis>f10.6,'' (zex_best(i),i=1,nbasis)'')') zex_best (1:nbasis)
+# endif
   endif ! l_opt_exp
 
   write(6,*)

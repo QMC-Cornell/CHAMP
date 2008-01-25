@@ -1,5 +1,7 @@
 module objects_mod
 
+! size -> mysize for pathscale compiler 
+
   use basic_tools_mod
   use constants_mod
   use nodes_mod
@@ -461,7 +463,7 @@ module objects_mod
   call object_add_once_and_index (object_name, object_ind_local)
 
 ! check if the current created object is not as the same time a needed object of the same node!
-  do obj_i = 1, size(nodes(node_current_index)%objects_needed_index)
+  do obj_i = 1, mysize(nodes(node_current_index)%objects_needed_index)
     if (object_ind_local == nodes(node_current_index)%objects_needed_index (obj_i) ) then
       write(6,'(5a)') trim(lhere),': object ', trim(object_name),' is needed and created by the same node ', trim(nodes(node_current_index)%routine_name)
       call die (lhere)
@@ -512,7 +514,7 @@ module objects_mod
   call object_add_once_and_index (object_name, object_ind)
 
 ! check if the current needed object is not as the same time a created object of the same node!
-  do obj_i = 1, size(nodes(node_current_index)%objects_create_index)
+  do obj_i = 1, mysize(nodes(node_current_index)%objects_create_index)
     if (object_ind == nodes(node_current_index)%objects_create_index (obj_i) ) then
       call die (lhere, 'object >'+trim(object_name)+'< is needed and created by the same node >'+trim(nodes(node_current_index)%routine_name)+'<.')
     endif
@@ -849,7 +851,7 @@ module objects_mod
 
 ! provide all the needed objects of the current nodes (we cannot simply execute the needed nodes
 ! since some objects may not have a creating node)
-  do obj_i = 1, size(nodes(node_index)%objects_needed_index)
+  do obj_i = 1, mysize(nodes(node_index)%objects_needed_index)
    call object_provide_from_node_by_index (nodes(node_index)%routine_name, nodes(node_index)%objects_needed_index(obj_i))
   enddo
 
@@ -877,14 +879,14 @@ module objects_mod
   nodes(node_index)%valid = .true.
 
 ! validate objects created by the current node
-  do obj_i = 1, size(nodes(node_index)%objects_create_index)
+  do obj_i = 1, mysize(nodes(node_index)%objects_create_index)
    objects(nodes(node_index)%objects_create_index(obj_i))%valid = .true.
   enddo
 
 ! print all objects
 # if defined (DEBUG)
   if (l_print_all_objects) then
-   do obj_i = 1, size(nodes(node_index)%objects_create_index)
+   do obj_i = 1, mysize(nodes(node_index)%objects_create_index)
     call object_write_by_index (nodes(node_index)%objects_create_index(obj_i))
    enddo
   endif
@@ -950,8 +952,8 @@ module objects_mod
 
 ! invalidate objects created by the nodes depending of the current object
 ! (if there is no nodes depending on this object then nodes_depend_nb = 0)
-  do node_i = 1, size(objects(object_index)%nodes_depend_index)
-   do obj_i = 1, size(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index)
+  do node_i = 1, mysize(objects(object_index)%nodes_depend_index)
+   do obj_i = 1, mysize(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index)
      call object_invalidate_by_index (nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index(obj_i))
    enddo
   enddo
@@ -988,8 +990,8 @@ module objects_mod
 
 ! invalidate objects created by the nodes depending of the current object
 ! (if there is no nodes depending on this object then nodes_depend_nb = 0)
-  do node_i = 1, size(objects(object_index)%nodes_depend_index)
-   do obj_i = 1, size(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index)
+  do node_i = 1, mysize(objects(object_index)%nodes_depend_index)
+   do obj_i = 1, mysize(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index)
      call object_invalidate_by_index (nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index(obj_i))
    enddo
   enddo
@@ -997,7 +999,7 @@ module objects_mod
 ! mark that the current object has been validated for the objects on which the current object depends
 ! (in order to invalidate properly this object later on)
   if (objects(object_index)%node_create_index /= 0) then
-   do obj_i = 1, size(nodes(objects(object_index)%node_create_index)%objects_needed_index)
+   do obj_i = 1, mysize(nodes(objects(object_index)%node_create_index)%objects_needed_index)
      call object_depend_valid_by_index (nodes(objects(object_index)%node_create_index)%objects_needed_index (obj_i))
    enddo
   endif
@@ -1027,7 +1029,7 @@ module objects_mod
 
 ! recusrive call to objects on which the current object depends
   if (objects(object_index)%node_create_index /= 0) then
-   do obj_i = 1, size(nodes(objects(object_index)%node_create_index)%objects_needed_index)
+   do obj_i = 1, mysize(nodes(objects(object_index)%node_create_index)%objects_needed_index)
      call object_depend_valid_by_index (nodes(objects(object_index)%node_create_index)%objects_needed_index (obj_i))
    enddo
   endif
@@ -1101,8 +1103,8 @@ module objects_mod
 
 ! invalidate objects created by the nodes depending of the current object
 ! (if there are no nodes depending on this object then nodes_depend_nb = 0)
-  do node_i = 1, size(objects(object_index)%nodes_depend_index)
-   do obj_i = 1, size(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index)
+  do node_i = 1, mysize(objects(object_index)%nodes_depend_index)
+   do obj_i = 1, mysize(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index)
      call object_invalidate_by_index(nodes(objects(object_index)%nodes_depend_index(node_i))%objects_create_index(obj_i))
    enddo
   enddo

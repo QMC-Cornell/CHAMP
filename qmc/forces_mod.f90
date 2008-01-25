@@ -57,7 +57,11 @@
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'forces_menu'
-  character(len=max_string_len), allocatable  :: forces_list (:)
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: forces_list (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable  :: forces_list (:)
+# endif
   integer force_i
 
 ! begin
@@ -76,7 +80,11 @@
     write(6,'(a)') ': end'
 
    case ('components')
+# if defined (PATHSCALE)
+    call get_next_value_list_string ('forces_list', forces_list, forces_nb) ! for pathscale compiler
+# else
     call get_next_value_list ('forces_list', forces_list, forces_nb)
+# endif
     call object_modified ('forces_nb')
 
    case ('eloc_av_fixed')

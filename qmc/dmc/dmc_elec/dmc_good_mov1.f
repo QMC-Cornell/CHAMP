@@ -108,6 +108,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
 
+
       if(icuspg.ge.1) stop 'exact cusp in G not implemented yet in 1-el
      &ectron move algorithm'
       if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move
@@ -170,6 +171,7 @@ c Find the nearest nucleus
     3           voldr=voldr+voldw(k,i,iw,ifr)*rvmino(k)
               voldr=voldr/rmino
 
+
 c Tau secondary in drift is one (first time around)
               tratio=one
 
@@ -193,6 +195,7 @@ c Tau secondary in drift is one (first time around)
     7     continue
         ncall=ncall+1
       endif
+
 
       ioldest=0
       do 300 iw=1,nwalk
@@ -358,6 +361,7 @@ c Check for node crossings
             endif
           endif
 
+
 c Calculate Green function for the reverse move
 
 c Find the nearest nucleus & vector from that nucleus to electron
@@ -458,6 +462,7 @@ c Convert back to original coordinate system
      &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psidow(iw,1),
      &    psijn,psijow(iw,1),dfus2o,dfus2n,fnormo,fnormn
 
+
 c The following is one reasonable way to cure persistent configurations
 c Not needed if itau_eff <=0 and in practice we have never needed it even
 c otherwise
@@ -495,6 +500,7 @@ c If we are using weights rather than accept/reject
             q=zero
           endif
 
+
           if(rannyu(0).lt.p) then
             iaccept=1
             acc_int=acc_int+1
@@ -527,6 +533,7 @@ c Calculate moments of r and save rejection probability for primary walk
           unacp(i)=q
 
   200   continue
+
 
 c Effective tau for branching
         tauprim=tau*dfus2ac/dfus2un
@@ -629,6 +636,7 @@ c Use more accurate formula for the drift
             enew=eoldw(iw,ifr)
           endif
 
+
           taunow=tauprim*drifdifr
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
@@ -636,9 +644,11 @@ c Use more accurate formula for the drift
           ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
           ewtn=eest-(eest-enew)*fration
 
+
           do 262 iparm=1,nparm
             dewto(iparm)=denergy_old_dmc(iparm,iw)*fratio(iw,ifr)
   262       dewtn(iparm)=denergy(iparm)*fration
+
 
           if(idmc.gt.0) then
             expon=(etrial-half*(ewto+ewtn))*taunow
@@ -671,6 +681,7 @@ c A better solution would be to employ a better way of treating nonlocal psps. i
             endif
             dwt=1+5*tau
           endif
+
 
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
@@ -801,6 +812,7 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
 !JT      call splitj ! moved outside the routine
       if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5)') ipass,ffn,
      &wsum1(1),esum1(1)/wsum1(1),nwalk
+
 
       return
       end

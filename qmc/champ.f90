@@ -14,7 +14,7 @@ program champ
 ! local
   character(len=max_string_len_rout), save :: lhere = 'champ'
   character (len=max_string_len) :: date = ''
-  character*16                             :: mode  = 'vmc_mov1'
+  character*16                             :: mode
   integer            :: narg, iarg
   character(len=256) :: command_line_arguments
   character(len=256) :: executable_name
@@ -24,6 +24,9 @@ program champ
 
   integer ierr
   common /contr3/ mode
+
+! initialization
+  mode = 'vmc_mov1'
 
 # if defined (MPI)
   call mpi_init (ierr)

@@ -227,19 +227,39 @@ ifeq ($(hostname),login1)
   CHAMP_LD_MPI = mpif90.ibm
 endif
 
-
 # Jaguar at NCCS Oak Ridge
 ifeq ($(hostname),jaguar2)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar3)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar4)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar11)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar12)
+hostname=jaguar
+endif
+ifeq ($(hostname),jaguar13)
+hostname=jaguar
+endif
+
+ifeq ($(hostname),jaguar)
+
 # Serial (Portland compiler), requires ACML module?
-# module load acml
- CHAMP_F77 = pgf95
- CHAMP_F95 = pgf95
- CHAMP_C = pgcc
- CHAMP_LD = pgf95
- CHAMP_F77_FAST = -Mpreprocess -Mextend -O2 -tp amd64e
- CHAMP_F95_FAST = -Mpreprocess -O2 -tp amd64 -DPGI
- CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
- CHAMP_LD_FAST = -O2 -tp amd64e
+## module load acml
+# the following configuration compiles but the code segm. faults
+# CHAMP_F77 = pgf95
+# CHAMP_F95 = pgf95
+# CHAMP_C = pgcc
+# CHAMP_LD = pgf95
+# CHAMP_F77_FAST = -Mpreprocess -Mextend -O2 -tp amd64e
+# CHAMP_F95_FAST = -Mpreprocess -O2 -tp amd64 -DPGI
+# CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
+# CHAMP_LD_FAST = -O2 -tp amd64e
 
 # Parallel (Portland compiler), requires ACML module
 # module load acml
@@ -253,5 +273,34 @@ ifeq ($(hostname),jaguar2)
 
 #  LAPACK=${ACML}
 #  BLAS=${ACML}
-endif
 
+# Pathscale compiler
+
+# must unload pgi and load pathscale first:
+# module unload PrgEnv-pgi
+# module load PrgEnv-pathscale
+
+# Note that "-O3" instead of "-Ofast" leads to a linking error!
+
+# Serial compilation (does not work I think)
+ CHAMP_F77 = pathf95
+ CHAMP_F95 = pathf95
+ CHAMP_C = pathcc
+ CHAMP_F77_FAST = -cpp -DPATHSCALE -Ofast -r8 -extend-source
+ CHAMP_F95_FAST = -cpp -DPATHSCALE -Ofast -r8
+ CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -Ofast
+ CHAMP_LD = pathf95
+ CHAMP_LD_FAST = -Ofast
+
+# MPI compilation (it works!)
+ CHAMP_MPIF77 = ftn -target=linux
+ CHAMP_MPIF95 = ftn -target=linux
+ CHAMP_MPIC = cc -target=linux
+ CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -Ofast -r8 -extend-source -zerouv
+ CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -Ofast -r8 -zerouv
+ CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -Ofast
+ CHAMP_LD_MPI = ftn -target=linux
+ LAPACK=
+ BLAS=
+
+endif

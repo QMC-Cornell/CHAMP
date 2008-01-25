@@ -53,7 +53,11 @@ module orbitals_mod
   integer, allocatable                :: orb_opt_vir_lab (:)
   integer                             :: orb_opt_last_lab
 
-  character(len=max_string_len), allocatable  :: orb_sym_lab (:)
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: orb_sym_lab (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable  :: orb_sym_lab (:)
+# endif
   real(dp), allocatable               :: orb_energies (:)
   real(dp), allocatable               :: orb_ovlp (:,:)
   real(dp), allocatable               :: orb_cls_ovlp (:,:)
@@ -593,7 +597,11 @@ module orbitals_mod
 
 ! begin
   orb_sym_lab_nb  = 0
-  call get_next_value_list ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb)
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb) ! for pathscale compiler
+# else
+   call get_next_value_list ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb)
+# endif
 
   call object_provide ('orb_tot_nb')
   if (orb_sym_lab_nb /= orb_tot_nb) then
@@ -634,9 +642,11 @@ module orbitals_mod
   endif
 
 ! allocations
-  call object_alloc ('orb_sym_lab', orb_sym_lab, orb_tot_nb)
+# if !defined (PATHSCALE)
+   call object_alloc ('orb_sym_lab', orb_sym_lab, orb_tot_nb)
+# endif
 
-  orb_sym_lab (:) = 'A'
+  orb_sym_lab (1:orb_tot_nb) = 'A'
 
   write (6,'(2a)') trim(here), ': warning: not using symmetry for orbitals'
 

@@ -168,14 +168,16 @@ c Warning temp fix
       call object_modified_by_index (walker_weights_sum_index) !JT
 
 
+
       call mpi_allreduce(pesum,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(peisum,peicollect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tpbsum,tpbcollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjfsum,tjfcollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+
 
       call mpi_allreduce(wg2sum,wg2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -184,16 +186,18 @@ c Warning temp fix
       call mpi_allreduce(pe2sum,pe2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(pei2sum,pei2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tpb2sum,tpb2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjf2sum,tjf2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
+
       call mpi_allreduce(fsum,fcollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(f2sum,f2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+
 
       call mpi_allreduce(esum,ecollect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -204,6 +208,7 @@ c Warning temp fix
       call mpi_allreduce(wfsum,wfcollect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
+
       call mpi_allreduce(e2sum,e2collect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(w2sum,w2collect,1
@@ -212,6 +217,7 @@ c Warning temp fix
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(wf2sum,wf2collect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+
 
 !JT      if(.not.wid) goto 17
 

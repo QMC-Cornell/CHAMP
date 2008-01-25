@@ -69,8 +69,13 @@ module average_mod
 ! local
   character (len=max_string_len_rout), save :: lhere = 'average_menu'
   integer averages_list_nb, errors_list_nb, obj_i
-  character (len=max_string_len), allocatable :: averages_list (:)
-  character (len=max_string_len), allocatable :: errors_list (:)
+# if defined (PATHSCALE)
+   character (len=max_string_len) :: averages_list (max_string_array_len) ! for pathscale compiler
+   character (len=max_string_len) :: errors_list (max_string_array_len) ! for pathscale compiler
+# else
+   character (len=max_string_len), allocatable :: averages_list (:)
+   character (len=max_string_len), allocatable :: errors_list (:)
+# endif
 
 ! begin
   averages_list_nb = 0
@@ -91,10 +96,18 @@ module average_mod
    write(6,*)
 
   case ('averages')
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('averages_list', averages_list, averages_list_nb) ! for pathscale compiler
+# else
    call get_next_value_list ('averages_list', averages_list, averages_list_nb)
+# endif
 
   case ('errors')
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('errors_list', errors_list, errors_list_nb) ! for pathscale compiler
+# else
    call get_next_value_list ('errors_list', errors_list, errors_list_nb)
+# endif
 
   case ('end')
    exit
@@ -1464,7 +1477,7 @@ module average_mod
     dim_av21 = objects(object_av2_ind)%dimensions(1)
     dim_covar1 = objects(object_covar_ind)%dimensions(1)
 
-    if (dim_av11 /= dim_av21 .or. dim_av21 .or. dim_covar1) then
+    if (dim_av11 /= dim_av21 .or. dim_av21 /= dim_covar1) then
      write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
      write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
      write(6,*) trim(lhere),': dimensions of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1
