@@ -6,6 +6,7 @@ module main_menu_mod
   use orbitals_mod
   use optimization_mod
   use grid_mod
+  use dipole_moment_mod
   use density_mod
   use intracule_mod
   use extracule_mod
@@ -60,6 +61,7 @@ module main_menu_mod
    write(6,'(a)') ' print ... end: menu for printing objects'
    write(6,'(a)') ' average ... end: menu for calculating MC averages'
    write(6,'(a)') ' grid ... end: menu for settinp up spatial grid'
+   write(6,'(a)') ' dipole_moment ... end: menu for calculation of dipole moment'
    write(6,'(a)') ' intracule ... end: menu for calculation of 1D intracules'
    write(6,'(a)') ' intracule3d ... end: menu for calculation of 3D intracules'
    write(6,'(a)') ' extracule ... end: menu for calculation of 1D extracules'
@@ -79,6 +81,7 @@ module main_menu_mod
   case ('optimization')      ; call optimization_menu
   case ('print')             ; call print_menu
   case ('average')           ; call average_menu
+  case ('dipole_moment')     ; call dipole_moment_menu
   case ('radial_probability'); call radial_probability_menu
   case ('density')           ; call dens_menu
   case ('density_3d')        ; call dens_3d_menu

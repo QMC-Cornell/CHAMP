@@ -20,6 +20,7 @@ module catalog_routines_mod
   use extracule_mod
   use nuclei_mod
   use forces_mod
+  use dipole_moment_mod
 
   contains
 
@@ -81,6 +82,9 @@ module catalog_routines_mod
   call catalog_one_node ('eloc_pot_en_bld', eloc_pot_en_bld)
   call catalog_one_node ('eloc_pot_ee_bld', eloc_pot_ee_bld)
   call catalog_one_node ('dist_nn_bld', dist_nn_bld)
+  call catalog_one_node ('mass_nucl_bld', mass_nucl_bld)
+  call catalog_one_node ('mass_nucl_total_bld', mass_nucl_total_bld)
+  call catalog_one_node ('mass_nucl_center_bld', mass_nucl_center_bld)
 
 ! basis
   call catalog_one_node ('basis_ovlp_bld', basis_ovlp_bld)
@@ -329,6 +333,11 @@ module catalog_routines_mod
   call catalog_one_node ('deloc_exp_bld', deloc_exp_bld)
   call catalog_one_node ('deloc_lnexp_bld', deloc_lnexp_bld)
   call catalog_one_node ('slater_mat_exp_trans_inv_bld', slater_mat_exp_trans_inv_bld)
+
+! dipole moment
+  call catalog_one_node ('dipole_moment_origin_bld', dipole_moment_origin_bld)
+  call catalog_one_node ('dipole_moment_nucl_bld', dipole_moment_nucl_bld)
+  call catalog_one_node ('dipole_moment_bld', dipole_moment_bld)
 
 ! grids
   call catalog_one_node ('grid_r_bld', grid_r_bld)

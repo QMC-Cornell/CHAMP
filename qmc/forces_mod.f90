@@ -170,6 +170,7 @@
    call object_needed ('forces_cent')
    call object_needed ('forces_direct')
    call object_needed ('ncent')
+   call object_needed ('cent')
    call object_needed ('dist_nn')
    call object_needed ('iwctype')
    call object_needed ('znuc')

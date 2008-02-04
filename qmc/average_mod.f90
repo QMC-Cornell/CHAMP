@@ -1995,6 +1995,9 @@ module average_mod
   do ind = 1, averages_nb
    write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
   enddo
+  do ind = 1, averages_walk_nb
+   write(6,'(4a)') '- ', objects(averages_walk_object_av_index (ind))%name,' = average of ', trim(objects(averages_walk_object_index (ind))%name)
+  enddo
 
   write(6,*)
   write(6,'(a)') 'The following variances will be calculated:'

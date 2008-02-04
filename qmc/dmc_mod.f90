@@ -241,6 +241,8 @@ module dmc_mod
 
         call acuest_dmc
         call compute_averages_walk_block
+        call compute_covariances
+        call compute_variances
         call compute_errors
 
 !       write at each block
