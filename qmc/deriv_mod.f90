@@ -50,7 +50,9 @@ module deriv_mod
   real(dp), allocatable          :: deloc_eloc_c_av (:)
   real(dp), allocatable          :: deloc_deloc (:)
   real(dp), allocatable          :: deloc_deloc_av (:)
+  real(dp), allocatable          :: deloc_av_deloc_av_covar (:,:)
   real(dp), allocatable          :: deloc_deloc_c_av (:,:)
+  real(dp), allocatable          :: deloc_deloc_c_av_inv (:,:)
   real(dp), allocatable          :: d2psi (:)
   real(dp), allocatable          :: d2psi_av (:)
   real(dp), allocatable          :: d2psi_eloc (:)
@@ -882,6 +884,8 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('deloc_deloc_c_av')
+   call object_covariance_define ('deloc_av', 'deloc_av', 'deloc_av_deloc_av_covar')
+
 
    call object_needed ('param_nb')
    call object_needed ('param_pairs')
@@ -894,6 +898,7 @@ module deriv_mod
 
 ! begin
   call object_alloc ('deloc_deloc_c_av', deloc_deloc_c_av, param_nb, param_nb)
+  call object_alloc ('deloc_av_deloc_av_covar', deloc_av_deloc_av_covar, param_nb, param_nb)
 
   do param_i = 1, param_nb
    do param_j = 1, param_nb
@@ -902,6 +907,39 @@ module deriv_mod
   enddo
 
   end subroutine deloc_deloc_c_av_bld
+
+! ==============================================================================
+  subroutine deloc_deloc_c_av_inv_bld
+! ------------------------------------------------------------------------------
+! Description   : inverse of deloc_deloc_c_av
+!
+! Created       : J. Toulouse, 12 Feb 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  real(dp) threshold
+
+! header
+  if (header_exe) then
+
+   call object_create ('deloc_deloc_c_av_inv')
+
+   call object_needed ('param_nb')
+   call object_needed ('deloc_deloc_c_av')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('deloc_deloc_c_av_inv', deloc_deloc_c_av_inv, param_nb, param_nb)
+
+  threshold = 1.d-10
+  call inverse_by_svd (deloc_deloc_c_av, deloc_deloc_c_av_inv, param_nb, threshold)
+
+  end subroutine deloc_deloc_c_av_inv_bld
 
 ! ==============================================================================
   subroutine dpsi_deloc_bld

@@ -171,12 +171,17 @@ program champ
       call main_menu
     endif
 
-!   do run is not already done
+!   do default run is not already done
     if(.not. run_done) then
-      call run
+      call run_default
     endif
 
   endif
+
+   if (l_warning) then
+    write(6,*)
+    write(6,'(a)') 'Some warnings were encountered.'
+   endif
 
    write(6,*)
    call print_cpu_time
@@ -211,7 +216,7 @@ end program champ
    call fit
 
   elseif (l_mode_vmc) then
-   call opt_wf
+   call vmc_run
 
   elseif (l_mode_dmc .and. .not. l_mode_mpi) then
    call maindmc
@@ -228,3 +233,41 @@ end program champ
   run_done = .true.
 
   end subroutine run
+
+!---------------------------------------------------------------------------
+  subroutine run_default
+!---------------------------------------------------------------------------
+! Description : default montecarlo run
+!
+! Created     : J. Toulouse, 12 Feb 2008
+!---------------------------------------------------------------------------
+  use main_menu_mod
+
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save  :: lhere = 'run'
+
+! begin
+  if (l_mode_fit) then
+   call fit
+
+  elseif (l_mode_vmc) then
+   call opt_wf
+
+  elseif (l_mode_dmc .and. .not. l_mode_mpi) then
+   call maindmc
+!   call dmc_mov1_clean
+!   call dmc_mov1
+
+  elseif (l_mode_dmc_mov1_mpi1 .or. l_mode_dmc_mov1_mpi2 .or. l_mode_dmc_mov1_mpi3) then
+   call maindmc_mov1_mpi
+
+  else
+   call die (lhere, 'unknown mode >'+trim(mode)+'<')
+  endif
+
+  run_done = .true.
+
+  end subroutine run_default

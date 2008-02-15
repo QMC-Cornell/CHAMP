@@ -19,7 +19,8 @@ module initialization_mod
   character(len=max_string_len_rout), save :: lhere = 'initialization'
   integer bas_i
 
-  write(6,'(a)') 'Initialization:'
+  write(6,*)
+  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
 
 ! mode
   if (index(mode, 'mpi') /= 0)           l_mode_mpi = .true.
@@ -49,7 +50,7 @@ module initialization_mod
 ! number of orbitals to compute
   call object_provide ('orb_occ_last_in_wf_lab')
   norb = orb_occ_last_in_wf_lab
-  write(6,'(a,i)') 'Number of orbitals initialized to the index of the highest occupied one =', norb
+  write(6,'(a,i)') ' Number of computed orbitals initialized to ', norb
   call object_modified ('norb')
 
 ! orbital coefficients on normalized and orthonormalized basis functions
@@ -65,7 +66,8 @@ module initialization_mod
    nwalk = nconf
   endif
   call object_modified ('nwalk')
-  write(6,'(a,i)') 'Number of walkers initialized to ', nwalk
+  write(6,*) 
+  write(6,'(a,i)') ' Number of walkers initialized to ', nwalk
 
 ! maximal number of optimization iterations
   iter_opt_max_nb = nopt_iter
@@ -74,6 +76,7 @@ module initialization_mod
   nparmj_input = nparmj
   nparmcsf_input = nparmcsf
 
+  write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
 
  end subroutine initialization
 

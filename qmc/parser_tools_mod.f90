@@ -8,7 +8,7 @@ module parser_tools_mod
   integer                                   :: position_in_current_line = 0
   integer                                   :: unit_input = 5
   character(len=max_string_len)             :: word
-  logical                                   :: l_echo = .true.
+  logical                                   :: l_echo = .false.
 
 !---------------------------------------------------------------------------
   interface get_next_value
@@ -468,7 +468,9 @@ module parser_tools_mod
   character(len=max_string_len_rout), save :: lhere = 'read_up_to_end'
   character(len=max_string_len) string, lowstring
   integer iostat
+  logical l_echo_save
 
+  l_echo_save = l_echo
   l_echo = .false.
 
   do
@@ -490,7 +492,9 @@ module parser_tools_mod
 !  call upplow (lowstring)
 
   if(trim(string) == 'end') then
-   write(6,'(2a)') 'input> ',trim(string)
+   if (l_echo_save) then
+    write(6,'(2a)') 'input> ',trim(string)
+   endif
    exit
   endif
 
@@ -500,7 +504,7 @@ module parser_tools_mod
 
   enddo
 
-  l_echo = .true.
+  l_echo = l_echo_save
 
   end subroutine read_up_to_end
 

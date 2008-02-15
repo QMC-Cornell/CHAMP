@@ -530,23 +530,23 @@ module orbitals_mod
   endif
 
   write(6,*)
-  write(6,'(a)') 'Orbital occupation information:'
-  write(6,'(a,i3,a      )') 'There are ',       orb_tot_nb,' total    orbitals'
-  write(6,'(a,i3,a,500i4)') 'There are ', orb_occ_in_wf_nb,' occupied orbitals of labels:', orb_occ_in_wf_lab
-  write(6,'(a,i3,a,500i4)') 'There are ', orb_cls_in_wf_nb,' closed   orbitals of labels:', orb_cls_in_wf_lab
-  write(6,'(a,i3,a,500i4)') 'There are ', orb_act_in_wf_nb,' active   orbitals of labels:', orb_act_in_wf_lab
-  write(6,'(a,i3,a,500i4)') 'There are ', orb_opn_in_wf_nb,' open     orbitals of labels:', orb_opn_in_wf_lab
-  write(6,'(a,i3,a,500i4)') 'There are ', orb_vir_in_wf_nb,' virtual  orbitals of labels:', orb_vir_in_wf_lab
+  write(6,'(a)') ' Orbital occupation information:'
+  write(6,'(a,i3,a      )') ' There are ',       orb_tot_nb,' total    orbitals'
+  write(6,'(a,i3,a,500i4)') ' There are ', orb_occ_in_wf_nb,' occupied orbitals of indexes:', orb_occ_in_wf_lab
+  write(6,'(a,i3,a,500i4)') ' There are ', orb_cls_in_wf_nb,' closed   orbitals of indexes:', orb_cls_in_wf_lab
+  write(6,'(a,i3,a,500i4)') ' There are ', orb_act_in_wf_nb,' active   orbitals of indexes:', orb_act_in_wf_lab
+  write(6,'(a,i3,a,500i4)') ' There are ', orb_opn_in_wf_nb,' open     orbitals of indexes:', orb_opn_in_wf_lab
+  write(6,'(a,i3,a,500i4)') ' There are ', orb_vir_in_wf_nb,' virtual  orbitals of indexes:', orb_vir_in_wf_lab
 
   if (orb_occ_in_wf_nb <= 0) then
     call die (here, 'number of occupied orbitals ='+ orb_occ_in_wf_nb+' is <= 0')
   endif
 
 ! label of last occupied orbital
-  write(6,'(a,i3)') 'Index of last occupied orbital: ', orb_occ_last_in_wf_lab
+  write(6,'(a,i3)') ' Last occupied orbital has index ', orb_occ_last_in_wf_lab
 
   if (orb_occ_last_in_wf_lab <= 0) then
-    call die (here, 'label of last occupied orbital ='+ orb_occ_last_in_wf_lab+' is <= 0')
+    call die (here, 'Index of last occupied orbital ='+ orb_occ_last_in_wf_lab+' is <= 0')
   endif
 
   end subroutine orb_occupations_bld
@@ -1067,6 +1067,7 @@ module orbitals_mod
      endif
   enddo ! orb_i
   if (lin_dep_nb > 0) then
+   l_warning = .true.
    write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the closed orbitals.'
   endif
 
@@ -1127,6 +1128,7 @@ module orbitals_mod
      endif
   enddo ! orb_i
   if (lin_dep_nb > 0) then
+   l_warning = .true.
    write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the active orbitals.'
   endif
 
@@ -1187,6 +1189,7 @@ module orbitals_mod
      endif
   enddo ! orb_i
   if (lin_dep_nb > 0) then
+   l_warning = .true.
    write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the virtual orbitals.'
   endif
 
@@ -2030,7 +2033,7 @@ module orbitals_mod
     call die (here, 'orb_opt_vir_i='+orb_opt_vir_i+' /= orb_opt_vir_nb='+orb_opt_vir_nb)
   endif
 
-  write(6,'(a,i3,a,1000i3)') 'There are ',orb_opt_nb,' orbitals in the optimization space of labels:', orb_opt_lab
+  write(6,'(a,i3,a,1000i3)') ' There are ',orb_opt_nb,' orbitals in the optimization space of indexes:', orb_opt_lab
 
  end subroutine orb_optimized_bld
 

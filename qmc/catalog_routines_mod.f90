@@ -230,6 +230,7 @@ module catalog_routines_mod
   call catalog_one_node ('deloc_eloc_c_av_bld', deloc_eloc_c_av_bld)
   call catalog_one_node ('deloc_deloc_bld', deloc_deloc_bld)
   call catalog_one_node ('deloc_deloc_c_av_bld', deloc_deloc_c_av_bld)
+  call catalog_one_node ('deloc_deloc_c_av_inv_bld', deloc_deloc_c_av_inv_bld)
   call catalog_one_node ('dpsi_dpsi_eloc_bld', dpsi_dpsi_eloc_bld)
   call catalog_one_node ('dpsi_dpsi_c_eloc_av_bld', dpsi_dpsi_c_eloc_av_bld)
   call catalog_one_node ('dpsi_eloc_bld', dpsi_eloc_bld)
@@ -338,6 +339,12 @@ module catalog_routines_mod
   call catalog_one_node ('dipole_moment_origin_bld', dipole_moment_origin_bld)
   call catalog_one_node ('dipole_moment_nucl_bld', dipole_moment_nucl_bld)
   call catalog_one_node ('dipole_moment_bld', dipole_moment_bld)
+  call catalog_one_node ('dipole_moment_deloc_bld', dipole_moment_deloc_bld)
+  call catalog_one_node ('dipole_moment_deloc_covar_bld', dipole_moment_deloc_covar_bld)
+  call catalog_one_node ('dipole_moment_zv_coef_bld', dipole_moment_zv_coef_bld)
+  call catalog_one_node ('dipole_moment_zv_av_bld', dipole_moment_zv_av_bld)
+  call catalog_one_node ('dipole_moment_zv_av_var_bld', dipole_moment_zv_av_var_bld)
+  call catalog_one_node ('dipole_moment_zvzb_av_bld', dipole_moment_zvzb_av_bld)
 
 ! grids
   call catalog_one_node ('grid_r_bld', grid_r_bld)

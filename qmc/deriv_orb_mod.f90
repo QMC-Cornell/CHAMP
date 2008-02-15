@@ -174,7 +174,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  write(6,'(a)') 'Constructing list of single orbital excitations based on orbital occupancies alone...'
+  write(6,'(a)') ' Constructing list of single orbital excitations based on orbital occupancies alone...'
 
   single_ex_nb = 0
   param_orb_nb = 0
@@ -340,8 +340,8 @@ module deriv_orb_mod
 
   endif
 
-  write(6,'(a,i10)') 'Number of single orbital excitations = ', single_ex_nb
-  write(6,'(a,i10)') 'Number of orbital derivatives        = ', param_orb_nb
+  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
+  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
 
 ! excitation pairs number
   deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
@@ -502,7 +502,7 @@ module deriv_orb_mod
   endif
 
 ! begin
-  write(6,'(a)') 'Constructing list of single orbital excitations checking for additional redundancies...'
+  write(6,'(a)') ' Constructing list of single orbital excitations checking for additional redundancies...'
 
 ! allocations
   call alloc ('det_ex_cur_orb_lab_up', det_ex_cur_orb_lab_up, nup)
@@ -1068,8 +1068,8 @@ module deriv_orb_mod
 
   enddo ! orb_opt_i
 
-  write(6,'(a,i10)') 'Number of single excitations = ', single_ex_nb
-  write(6,'(a,i10)') 'Number of orbital derivatives = ', param_orb_nb
+  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
+  write(6,'(a,i10)') ' Number of orbital derivatives = ', param_orb_nb
 
 ! excitation pairs number
   deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
@@ -1297,8 +1297,8 @@ module deriv_orb_mod
 
   enddo ! ex_i
 
-  write(6,'(a,i10)') 'Number of unique spin-up   excited determinants = ',det_ex_unq_up_nb
-  write(6,'(a,i10)') 'Number of unique spin-down excited determinants = ',det_ex_unq_dn_nb
+  write(6,'(a,i10)') ' Number of unique spin-up   excited determinants = ',det_ex_unq_up_nb
+  write(6,'(a,i10)') ' Number of unique spin-down excited determinants = ',det_ex_unq_dn_nb
 
  end subroutine single_ex_det_bld
 

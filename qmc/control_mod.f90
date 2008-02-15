@@ -26,6 +26,8 @@ module control_mod
   character(len=max_string_len_rout), save :: lhere= 'control_menu'
 
 ! begin
+  write(6,*) 
+  write(6,'(a)') 'Beginning of control menu --------------------------------------------------------------------------------'
 
 ! loop over menu lines
   do
@@ -47,26 +49,27 @@ module control_mod
 
   case ('error_threshold')
    call get_next_value (error_threshold)
+   write (6,'(a,f)') ' setting target statistical error on the energy to ', error_threshold
 
   case ('nstep_total')
    call get_next_value (nstep_total)
    nstep = max(1,int(nstep_total/nproc))
    nstep_total = nstep * nproc
-   write(6,'(2a,i)') trim(lhere),': nstep total =', nstep_total
-   write(6,'(2a,i)') trim(lhere),': nstep per CPU =', nstep
+   write(6,'(a,i)') ' nstep total =', nstep_total
+   write(6,'(a,i)') ' nstep per CPU =', nstep
 
   case ('print_orbitals_pw')
    call get_next_value (l_print_orbitals_pw)
    if (l_print_orbitals_pw) then
       select case (inum_orb)
       case(0)
-          write(6,'(2a)') trim(lhere),': Printing out plane wave orbitals'
+          write(6,'(a)') ' Printing out plane wave orbitals'
       case(4)
-          write(6,'(2a)') trim(lhere),': Printing out Lagrange polynomial orbitals'
+          write(6,'(a)') ' Printing out Lagrange polynomial orbitals'
       case(5)
-          write(6,'(2a)') trim(lhere),': Printing out pp-spline orbitals'
+          write(6,'(a)') ' Printing out pp-spline orbitals'
       case(6)
-          write(6,'(2a)') trim(lhere),': Printing out B-spline orbitals'
+          write(6,'(a)') ' Printing out B-spline orbitals'
       end select
       call print_orbitals_pw
    endif
@@ -88,6 +91,8 @@ module control_mod
   end select
 
   enddo ! end loop over menu lines
+
+  write(6,'(a)') 'End of control menu --------------------------------------------------------------------------------------'
 
   end subroutine control_menu
 

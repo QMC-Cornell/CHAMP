@@ -6,6 +6,7 @@ c routine to print out final results
       use montecarlo_mod !JT
       use main_menu_mod  !JT
       use mpi_mod !JT
+      use dipole_moment_mod
 
       implicit real*8(a-h,o-z)
       character*16 mode
@@ -227,6 +228,10 @@ c force and force_err are really the energy difference and the error in the ener
       endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(passes)
+
+      if (l_dipole_moment) then
+        call print_dipole_moment
+      endif
 
       return
       end

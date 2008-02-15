@@ -23,6 +23,7 @@ module variables_mod
   logical                         :: l_end_of_block = .false.
   integer                         :: spin_nb = 2
   logical                         :: debug = .false.
+  logical                         :: l_warning = .false.
 
 ! label of last occupied orbital
   integer                         :: orb_occ_last_in_wf_lab

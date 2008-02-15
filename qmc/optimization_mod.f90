@@ -87,10 +87,14 @@ module optimization_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'optimization_menu'
   integer param_type_i
+  logical l_launch_opt
 
 ! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of optimization menu ---------------------------------------------------------------------------'
 
 ! initialization
+  l_launch_opt = .true.
   l_opt = .true.
   l_stab = .true.
   target_state = 0
@@ -108,6 +112,7 @@ module optimization_mod
   case ('help')
    write(6,'(a)') 'HELP for optimization menu:'
    write(6,'(a)') 'optimization'
+   write(6,'(a)') ' optimize = [logical] : launch wave function optimization? (default=true)'
    write(6,'(a)') ' parameters jastrow csfs orbitals exponents geometry end : list of parameter types to optimized'
    write(6,'(a)') ' method                    : energy optimization method'
    write(6,'(a)') '        = linear (default) : linear energy optimization method'
@@ -146,6 +151,9 @@ module optimization_mod
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') 'end'
+
+  case ('optimize')
+   call get_next_value (l_launch_opt)
 
   case ('parameters')
 # if defined (PATHSCALE)
@@ -294,6 +302,7 @@ module optimization_mod
   end select
 
 ! parameters to optimize
+  write(6,'(a,10a10)') ' Requested parameter types: ',parameter_type(:)
   l_opt_jas = .false.
   l_opt_csf = .false.
   l_opt_orb = .false.
@@ -360,25 +369,56 @@ module optimization_mod
     l_opt_jas_2nd_deriv = .true.
   endif
 
-! choice of stabilization
-  select case (trim(stabilization))
-   case ('identity')
-   write (6,'(2a)') trim(lhere),': optimization will be stabilized by adding multiple of identity matrix'
+! Orbital optimization
+  if (l_opt_orb) then
+!  print information for orbital optimization
+   write(6,*)
+   write(6,'(3a)') ' Orbital optimization information:'
+   call object_provide ('param_orb_nb')
+   call object_provide ('det_ex_unq_up_nb')
 
-   case ('overlap')
-   write (6,'(2a)') trim(lhere),': optimization will be stabilized by adding multiple of overlap matrix'
-   if (.not. l_opt_lin) then
-    write (6,'(3a)') trim(lhere),': stabilization = overlap is only implemented for the linear optimization method'
-    call die (lhere)
+   call object_provide ('orb_opt_last_lab')
+   norb = orb_opt_last_lab
+   write(6,'(a,i)') ' Number of computed orbitals will be ', norb
+  endif
+
+! Exponent optimization
+  if (l_opt_exp) then
+!  print information for exponent optimization
+   write(6,*)
+   write(6,'(3a)') ' Exponent optimization information:'
+   call object_provide ('param_exp_nb')
+
+!  compute orbital coefficients on orthonormalized basis functions
+   if (trim(basis_functions_varied) == 'orthonormalized') then
+    call coef_orb_on_ortho_basis_from_coef (1)
    endif
+  endif ! l_opt_exp
 
-   case default
-   write (6,'(3a)') trim(lhere),': unknown stabilization choice:',trim(stabilization)
-   call die (lhere)
-  end select
+! Print number of parameters to optimized
+  call object_provide ('nparmj')
+  call object_provide ('nparmcsf')
+  call object_provide ('param_orb_nb')
+  call object_provide ('param_exp_nb')
+  call object_provide ('param_geo_nb')
+  call object_provide ('param_nb')
+  write(6,*)
+  write(6,'(a,i3)') ' Number of Jastrow parameters:   ', nparmj
+  write(6,'(a,i3)') ' Number of CSF parameters:       ', nparmcsf
+  write(6,'(a,i3)') ' Number of orbital parameters:   ', param_orb_nb
+  write(6,'(a,i3)') ' Number of exponent parameters:  ', param_exp_nb
+  write(6,'(a,i3)') ' Number of geometry parameters:  ', param_geo_nb
+  write(6,'(a,i3)') ' Total number of parameters:     ', param_nb
+  write(6,*)
 
-  call optimization
-  run_done = .true.
+  write(6,'(a)') 'End of optimization menu ---------------------------------------------------------------------------------'
+
+
+! launch optimization
+  if (l_launch_opt) then
+   call optimization
+   run_done = .true.
+  endif
 
   end subroutine optimization_menu
 
@@ -427,43 +467,21 @@ module optimization_mod
   write(6,*)
   write(6,'(3a)') 'Optimization will be done with the ',trim(opt_method),' method.'
 
-! Orbital optimization
-  if (l_opt_orb) then
-!  print information for orbital optimization
-   write(6,*)
-   write(6,'(3a)') 'Orbital optimization information:'
-   call object_provide ('param_orb_nb')
-   call object_provide ('det_ex_unq_up_nb')
-  endif
-
-! Exponent optimization
-  if (l_opt_exp) then
-!  print information for exponent optimization
-   write(6,*)
-   write(6,'(3a)') 'Exponent optimization information:'
-   call object_provide ('param_exp_nb')
-
-!  compute orbital coefficients on orthonormalized basis functions
-   if (trim(basis_functions_varied) == 'orthonormalized') then
-    call coef_orb_on_ortho_basis_from_coef (1)
+! choice of stabilization
+  select case (trim(stabilization))
+   case ('identity')
+   write (6,'(a)') 'optimization will be stabilized by adding multiple of identity matrix'
+   case ('overlap')
+   write (6,'(a)') 'optimization will be stabilized by adding multiple of overlap matrix'
+   if (.not. l_opt_lin) then
+    write (6,'(a)') 'stabilization = overlap is only implemented for the linear optimization method'
+    call die (lhere)
    endif
-  endif ! l_opt_exp
+   case default
+   write (6,'(2a)') 'unknown stabilization choice:',trim(stabilization)
+   call die (lhere)
+  end select
 
-! Print number of parameters to optimized
-  call object_provide ('nparmj')
-  call object_provide ('nparmcsf')
-  call object_provide ('param_orb_nb')
-  call object_provide ('param_exp_nb')
-  call object_provide ('param_geo_nb')
-  call object_provide ('param_nb')
-  write(6,*)
-  write(6,'(a,i3)') 'Number of Jastrow parameters:   ', nparmj
-  write(6,'(a,i3)') 'Number of CSF parameters:       ', nparmcsf
-  write(6,'(a,i3)') 'Number of orbital parameters:   ', param_orb_nb
-  write(6,'(a,i3)') 'Number of exponent parameters:  ', param_exp_nb
-  write(6,'(a,i3)') 'Number of geometry parameters:  ', param_geo_nb
-  write(6,'(a,i3)') 'Total number of parameters:     ', param_nb
-  write(6,*)
 
 ! Nice printing
   write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent and',param_geo_nb,' geometry parameters with ',trim(opt_method),' method:'
@@ -472,9 +490,11 @@ module optimization_mod
   if (l_opt_ptb) then
     if(l_opt_jas) then
       write(6,'(a)') 'Warning: the perturbative method is usually very bad for optimizing the Jastrow parameters.'
+      l_warning = .true.
     endif
     if (l_opt_csf) then
       write(6,'(a)') 'Warning: the perturbative method is usally not very good for optimizing of the CSF parameters.'
+      l_warning = .true.
     endif
   endif
 
@@ -549,7 +569,7 @@ module optimization_mod
    if (l_opt_orb) then
     call object_provide ('orb_opt_last_lab')
     norb = orb_opt_last_lab
-    write(6,'(a,i)') 'Warning: norb reset to=', norb
+!    write(6,'(a,i)') 'Warning: norb reset to=', norb
 
 !   orbital overlap
     if (l_ortho_orb_vir_to_orb_occ) then
@@ -571,7 +591,7 @@ module optimization_mod
    if (l_opt_orb) then
     call object_provide ('orb_occ_last_in_wf_lab')
     norb = orb_occ_last_in_wf_lab
-    write(6,'(a,i)') 'Warning: norb reset to=', norb
+!    write(6,'(a,i)') 'Warning: norb reset to=', norb
    endif
 
 !  Calculate and print gradient
@@ -590,12 +610,14 @@ module optimization_mod
 !  check vanishing components or linear dependencies in gradient
    do parm_i = 1, param_nb
       if (abs(gradient (parm_i)) < 1.d-10) then
+       l_warning = .true.
        write(6,'(a)') 'Warning: zero or very small gradient component:'
        write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
        cycle
       endif
      do parm_j = parm_i+1, param_nb
       if (abs(gradient (parm_i) - gradient (parm_j)) < 1.d-10) then
+       l_warning = .true.
        write(6,'(a)') 'Warning: possible linear dependency:'
        write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
       endif
@@ -845,6 +867,7 @@ module optimization_mod
    endif
    iter = iter + 1
   else
+   l_warning = .true.
    write(6,'(a)') 'Warning: Convergence not reached.'
    write(6,'(2a,i3,a)') trim(lhere),': Maximun number of iterations ',  iter_opt_max_nb,' reached.'
   endif
@@ -1396,6 +1419,7 @@ module optimization_mod
     if (eloc_tc (iadd_diag) >= 50.d0) then
      calculation_reliable_nb = calculation_reliable_nb - 1
      calculation_reliable (iadd_diag) = .false.
+     l_warning = .true.
      write (6,'(a,i1,a)') 'Warning: correlated calculation # ',iadd_diag,' has Tc > 50 and thus will be ignored.'
     endif
    enddo

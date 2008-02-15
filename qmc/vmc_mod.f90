@@ -50,6 +50,23 @@ module vmc_mod
   end subroutine vmc_init
 
 ! ==============================================================================
+  subroutine vmc_run
+! ------------------------------------------------------------------------------
+! Description   : launch a vmc run
+!
+! Created       : J. Toulouse, 12 Feb 2007
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  character (len=max_string_len_rout), save :: lhere = 'vmc_run'
+
+  call vmc_init
+  call vmc
+
+  end subroutine vmc_run
+
+! ==============================================================================
   subroutine metrop(l)
 ! ------------------------------------------------------------------------------
 ! Description   : Choice of metrop routine

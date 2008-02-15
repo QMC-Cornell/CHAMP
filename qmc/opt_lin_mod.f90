@@ -32,7 +32,7 @@ module opt_lin_mod
   real(dp)                        :: psi_lin_var_norm = 0.d0
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
 
-  logical                         :: l_select_eigvec_lowest = .true.
+  logical                         :: l_select_eigvec_lowest = .true. ! default
   logical                         :: l_select_eigvec_largest_1st_coef = .false.
   integer                         :: target_state = 0
   real(dp)                        :: add_diag_mult_exp = 1.d0
@@ -795,6 +795,11 @@ module opt_lin_mod
     endif
     eig_ind = eigval_srt_ind_to_eigval_ind (target_state)
 
+  endif
+
+  if (eig_1st_component_max_ind /= eigval_lowest_ind) then
+   write(6,'(a)') 'Warning: the eigenvector with largest first coefficient and the eigenvector with lowest reasonable eigenvalue are different.'
+   l_warning = .true.
   endif
 
   write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind (eig_ind), ': ',eigval_r (eig_ind), ' +', eigval_i (eig_ind),' i'
