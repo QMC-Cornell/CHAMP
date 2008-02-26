@@ -157,7 +157,8 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
       if(index(mode,'mpi').eq.0) then
         write(6,'(a,f12.0,a,i6,a,i6,a)') 'Final results after ',passes,' passes (nstep = ',nstep,', nblk = ',iblk,')'
        else
-        write(6,'(a,f12.0,a,i6,a,i6,a,i6,a)') 'Final results after ',passes,' passes (nstep = ',nstep,', nproc = ',nproc,', nblk = ',iblk,')'
+        write(6,'(a,f12.0,a,i6,a,i6,a,i6,a)') 'Final results after ',passes,' passes (nstep = ',nstep,', nproc = ',nproc,', nblk = '
+     &  ,iblk,')'
       endif
       write(6,'(''physical variable'',t20,''average'',t34,''rms error''
      &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
@@ -169,8 +170,10 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
      &   efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq !JT
        else
         ifr=1
-        write(6,'(''total E'',i3,'' ='',t17,f12.7,'' +-'',f11.7,3f9.5,t82,f8.2)') !JT
-     &  ifr,efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,tcsq*tcsq
+!       write(6,'(''total E'',i3,'' ='',t17,f12.7,'' +-'',f11.7,3f9.5,t82,f8.2)') !JT
+!    &  ifr,efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,tcsq*tcsq
+        write(6,'(''total E'',i3,'' ='',t17,f12.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
+     &  ifr,efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq
       endif
 
       wcum(1)=passes
