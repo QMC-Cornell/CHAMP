@@ -398,14 +398,25 @@ ifeq ($(hostname),jaguar)
 #  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 
 # Pathscale compiler serial
-  FC    = pathf95
-  FFLAGS = -Ofast -r8 -extend_source -zerouv
-  LDFLAGS = -Ofast -r8 -extend-source -zerouv
+#  FC    = pathf95
+#  FFLAGS = -Ofast -r8 -extend_source -zerouv
+#  LDFLAGS = -Ofast -r8 -extend-source -zerouv
 
 # Pathscale compiler MPI
-  FC_MPI = ftn 
-  FLINKER_MPI = ftn
-  FFLAGS_MPI = -Ofast -r8 -DCLOBBER -DMPI  -extend-source -zerouv
+#  FC_MPI = ftn 
+#  FLINKER_MPI = ftn
+#  FFLAGS_MPI = -Ofast -r8 -DCLOBBER -DMPI  -extend-source -zerouv
+
+# Pathscale compiler serial
+  FC    = ftn -target=linux
+  FFLAGS = -O3 -r8 -extend_source -zerouv  -fno-second-underscore
+  LDFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
+
+# Pathscale compiler MPI
+  FC_MPI = ftn -target=linux
+  FLINKER_MPI = ftn -target=linux
+  FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI  -extend-source -zerouv -fno-second-underscore
+
 endif
 
 # The Intel compiler ifc causes trouble in dlamch unless the latter is

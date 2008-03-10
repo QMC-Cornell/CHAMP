@@ -283,23 +283,44 @@ ifeq ($(hostname),jaguar)
 # Note that "-O3" instead of "-Ofast" leads to a linking error!
 
 # Serial compilation (does not work I think)
- CHAMP_F77 = pathf95
- CHAMP_F95 = pathf95
- CHAMP_C = pathcc
- CHAMP_F77_FAST = -cpp -DPATHSCALE -Ofast -r8 -extend-source
- CHAMP_F95_FAST = -cpp -DPATHSCALE -Ofast -r8
- CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -Ofast
- CHAMP_LD = pathf95
- CHAMP_LD_FAST = -Ofast
+# CHAMP_F77 = pathf95
+# CHAMP_F95 = pathf95
+# CHAMP_C = pathcc
+# CHAMP_F77_FAST = -cpp -DPATHSCALE -Ofast -r8 -extend-source
+# CHAMP_F95_FAST = -cpp -DPATHSCALE -Ofast -r8
+# CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -Ofast
+# CHAMP_LD = pathf95
+# CHAMP_LD_FAST = -Ofast
 
-# MPI compilation (it works!)
+# MPI compilation (does not work)
+# CHAMP_MPIF77 = ftn -target=linux
+# CHAMP_MPIF95 = ftn -target=linux
+# CHAMP_MPIC = cc -target=linux
+# CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -Ofast -r8 -extend-source -zerouv
+# CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -Ofast -r8 -zerouv
+# CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -Ofast
+# CHAMP_LD_MPI = ftn -target=linux
+# LAPACK=
+# BLAS=
+
+# Serial compilation
+ CHAMP_F77 = ftn -target=linux
+ CHAMP_F95 = ftn -target=linux
+ CHAMP_C = cc -target=linux
+ CHAMP_F77_FAST = -cpp -DPATHSCALE -O3 -r8 -extend-source -zerouv
+ CHAMP_F95_FAST = -cpp -DPATHSCALE -O3 -r8 -zerouv
+ CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O3
+ CHAMP_LD = ftn -target=linux
+ CHAMP_LD_FAST = -O3
+
+# MPI compilation
  CHAMP_MPIF77 = ftn -target=linux
  CHAMP_MPIF95 = ftn -target=linux
  CHAMP_MPIC = cc -target=linux
- CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -Ofast -r8 -extend-source -zerouv
- CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -Ofast -r8 -zerouv
- CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -Ofast
- CHAMP_LD_MPI = ftn -target=linux
+ CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O3 -r8 -extend-source -zerouv
+ CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O3 -r8 -zerouv
+ CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O3
+ CHAMP_LD_MPI = ftn -target=linux -O3 -Wl,-z,muldefs
  LAPACK=
  BLAS=
 

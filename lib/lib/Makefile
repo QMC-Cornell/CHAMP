@@ -320,13 +320,21 @@ ifeq ($(hostname),jaguar)
 #  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 
 # Pathscale compiler serial
-  FC    = pathf95
-  FC    = ftn 
-  FFLAGS = -Ofast -r8 -extend-source -zerouv
+#  FC    = pathf95
+#  FC    = ftn 
+#  FFLAGS = -Ofast -r8 -extend-source -zerouv
 
 # Pathscale compiler MPI
-  FC_MPI = ftn 
-  FFLAGS_MPI = -Ofast -r8 -extend-source -zerouv
+#  FC_MPI = ftn 
+#  FFLAGS_MPI = -Ofast -r8 -extend-source -zerouv
+
+# Pathscale compiler serial
+  FC = ftn -target=linux
+  FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
+
+# Pathscale compiler MPI
+  FC_MPI = ftn -target=linux
+  FFLAGS_MPI = -O3 -r8 -extend-source -zerouv -fno-second-underscore
 
 endif
 
