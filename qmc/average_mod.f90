@@ -736,8 +736,7 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_0'
   character(len=max_string_len_type)   :: object_type, object_av_type
-  integer dim1, dim_av1
-  integer ierr
+  integer dim1, dim_av1, ierr
   real(dp) collect
 
 ! begin
@@ -754,10 +753,10 @@ module average_mod
     object_av_type = objects(object_av_ind)%type
 
     if (object_type /= object_av_type) then
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
-     write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     write(6,'(5a)') trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
+     write(6,'(5a)') trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+     write(6,'(2a)') trim(lhere),': they should be identical'
+     call die (lhere)
     endif
 
   endif ! first iteration
@@ -1086,7 +1085,11 @@ module average_mod
        + (objects(object_av_ind)%pointer_double_0 * block_iterations_nb - objects(object_var_ind)%previous_av1_double_0 * (block_iterations_nb - 1))**2
 
 !  calculate variance
-   objects(object_var_ind)%pointer_double_0 = objects(object_var_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av_ind)%pointer_double_0**2
+   if (block_iterations_nb == 1) then
+    objects(object_var_ind)%pointer_double_0 = 0.d0
+   else
+    objects(object_var_ind)%pointer_double_0 = (objects(object_var_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av_ind)%pointer_double_0**2)/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_var_ind)
 
 !  save current average value for next iteration
@@ -1157,7 +1160,11 @@ module average_mod
        + (objects(object_av_ind)%pointer_double_1 * block_iterations_nb - objects(object_var_ind)%previous_av1_double_1 * (block_iterations_nb - 1 ))**2
 
 !  calculate variance
-   objects(object_var_ind)%pointer_double_1 = objects(object_var_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av_ind)%pointer_double_1**2
+   if (block_iterations_nb == 1) then
+    objects(object_var_ind)%pointer_double_1 = 0.d0
+   else
+    objects(object_var_ind)%pointer_double_1 = (objects(object_var_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av_ind)%pointer_double_1**2)/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_var_ind)
 
 !  save current average value for next iteration
@@ -1229,7 +1236,11 @@ module average_mod
        + ( objects(object_av_ind)%pointer_double_2 * block_iterations_nb - objects(object_var_ind)%previous_av1_double_2 * (block_iterations_nb - 1 ) )**2
 
 !  calculate variance
-    objects(object_var_ind)%pointer_double_2 = objects(object_var_ind)%sum_blk_square_double_2/block_iterations_nb - objects(object_av_ind)%pointer_double_2**2
+   if (block_iterations_nb == 1) then
+    objects(object_var_ind)%pointer_double_2 = 0.d0
+   else
+    objects(object_var_ind)%pointer_double_2 = (objects(object_var_ind)%sum_blk_square_double_2/block_iterations_nb - objects(object_av_ind)%pointer_double_2**2)/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_var_ind)
 
 !  save current average value for next iteration
@@ -1284,7 +1295,11 @@ module average_mod
        * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_0 * (block_iterations_nb - 1))
 
 !  calculate covariance
-   objects(object_covar_ind)%pointer_double_0 = objects(object_covar_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_0
+   if (block_iterations_nb == 1) then
+    objects(object_covar_ind)%pointer_double_0 = 0.d0
+   else
+    objects(object_covar_ind)%pointer_double_0 = (objects(object_covar_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_0)/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
@@ -1355,7 +1370,11 @@ module average_mod
        * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_0 * (block_iterations_nb - 1 ))
 
 !  calculate covariance
-   objects(object_covar_ind)%pointer_double_1 = objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_1*objects(object_av2_ind)%pointer_double_0
+   if (block_iterations_nb == 1) then
+    objects(object_covar_ind)%pointer_double_1 = 0.d0
+   else
+    objects(object_covar_ind)%pointer_double_1 = (objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_1*objects(object_av2_ind)%pointer_double_0)/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
@@ -1426,7 +1445,11 @@ module average_mod
        * (objects(object_av2_ind)%pointer_double_1 * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_1 * (block_iterations_nb - 1 ))
 
 !  calculate covariance
-   objects(object_covar_ind)%pointer_double_1 = objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_1
+   if (block_iterations_nb == 1) then
+    objects(object_covar_ind)%pointer_double_1 = 0.d0
+   else
+    objects(object_covar_ind)%pointer_double_1 = (objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_1)/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
@@ -1501,7 +1524,11 @@ module average_mod
        * (objects(object_av2_ind)%pointer_double_1 (:) * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_1 (:) * (block_iterations_nb - 1 ))
 
 !  calculate covariance
-   objects(object_covar_ind)%pointer_double_1 (:) = objects(object_covar_ind)%sum_blk_square_double_1 (:)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (:) * objects(object_av2_ind)%pointer_double_1 (:)
+   if (block_iterations_nb == 1) then
+    objects(object_covar_ind)%pointer_double_1 (:) = 0.d0
+   else
+    objects(object_covar_ind)%pointer_double_1 (:) = (objects(object_covar_ind)%sum_blk_square_double_1 (:)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (:) * objects(object_av2_ind)%pointer_double_1 (:))/(block_iterations_nb-1)
+   endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
@@ -1530,6 +1557,8 @@ module average_mod
   integer i,j 
 
 ! begin
+  dim_covar1 = objects(object_covar_ind)%dimensions(1)
+  dim_covar2 = objects(object_covar_ind)%dimensions(2)
 
 ! only for first block
   if (block_iterations_nb == 1) then
@@ -1550,8 +1579,6 @@ module average_mod
 !   test on dimensions
     dim_av11 = objects(object_av1_ind)%dimensions(1)
     dim_av21 = objects(object_av2_ind)%dimensions(1)
-    dim_covar1 = objects(object_covar_ind)%dimensions(1)
-    dim_covar2 = objects(object_covar_ind)%dimensions(2)
 
     if (dim_av11 /= dim_covar1 .or. dim_av21 /= dim_covar2) then
      write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
@@ -1581,11 +1608,15 @@ module average_mod
    enddo
 
 !  calculate covariance
-   do i = 1, dim_covar1
-    do j = 1, dim_covar2
-     objects(object_covar_ind)%pointer_double_2 (i,j) = objects(object_covar_ind)%sum_blk_square_double_2 (i,j)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (i) * objects(object_av2_ind)%pointer_double_1 (j)
+   if (block_iterations_nb == 1) then
+    objects(object_covar_ind)%pointer_double_2 (:,:) = 0.d0
+   else
+    do i = 1, dim_covar1
+     do j = 1, dim_covar2
+      objects(object_covar_ind)%pointer_double_2 (i,j) = (objects(object_covar_ind)%sum_blk_square_double_2 (i,j)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (i) * objects(object_av2_ind)%pointer_double_1 (j))/(block_iterations_nb-1)
+     enddo
     enddo
-   enddo
+   endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
@@ -1636,12 +1667,7 @@ module average_mod
    endif ! first block
 
 !  calculate error
-   if (block_iterations_nb == 1) then
-    objects(object_err_ind)%pointer_double_0 = 0.d0
-   else
-    objects(object_err_ind)%pointer_double_0 = dsqrt(objects(object_var_ind)%pointer_double_0/(block_iterations_nb-1))
-   endif
-
+   objects(object_err_ind)%pointer_double_0 = dsqrt(objects(object_var_ind)%pointer_double_0)
    call object_modified_by_index (object_err_ind)
 
  end subroutine object_error_by_index_double_0
@@ -1701,12 +1727,8 @@ module average_mod
 
 
 !  calculate error
-   if (block_iterations_nb == 1) then
-    objects(object_err_ind)%pointer_double_1 = 0.d0
-   else
-    objects(object_err_ind)%pointer_double_1 = dsqrt(objects(object_var_ind)%pointer_double_1/(block_iterations_nb-1))
-   endif
-
+!   write (6,*) 'objects(object_var_ind)%pointer_double_1=',objects(object_var_ind)%pointer_double_1
+   objects(object_err_ind)%pointer_double_1 = dsqrt(objects(object_var_ind)%pointer_double_1)
    call object_modified_by_index (object_err_ind)
 
  end subroutine object_error_by_index_double_1
@@ -1767,12 +1789,7 @@ module average_mod
    endif ! first block
 
 !  calculate error
-   if (block_iterations_nb == 1) then
-    objects(object_err_ind)%pointer_double_2 = 0.d0
-   else
-    objects(object_err_ind)%pointer_double_2 = dsqrt(objects(object_var_ind)%pointer_double_2 /(block_iterations_nb-1))
-   endif
-
+   objects(object_err_ind)%pointer_double_2 = dsqrt(objects(object_var_ind)%pointer_double_2)
    call object_modified_by_index (object_err_ind)
 
  end subroutine object_error_by_index_double_2

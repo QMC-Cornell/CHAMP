@@ -110,7 +110,7 @@ module opt_nwt_mod
    call object_create ('sh_sor')
 
    call object_needed ('param_nb')
-   call object_needed ('dpsi_deloc_c_av')
+   call object_needed ('dpsi_deloc_covar')
 
    return
 
@@ -122,7 +122,7 @@ module opt_nwt_mod
   do i = 1, param_nb
     do j = i, param_nb
 
-      sh_sor (i,j) = dpsi_deloc_c_av (i,j) + dpsi_deloc_c_av (j,i)
+      sh_sor (i,j) = dpsi_deloc_covar (i,j) + dpsi_deloc_covar (j,i)
 
        if (i /= j) then
          sh_sor (j,i) = sh_sor (i,j)
@@ -297,8 +297,8 @@ module opt_nwt_mod
    call object_needed ('eloc_av')
    call object_needed ('dpsi_av')
    call object_needed ('gradient')
-   call object_needed ('dpsi_deloc_c_av')
-!   call object_needed ('dpsi_nwt_eloc_c_av')  !instead of gradient
+   call object_needed ('dpsi_deloc_covar')
+!   call object_needed ('dpsi_nwt_eloc_covar')  !instead of gradient
 !   call object_needed ('d2eloc_nwt_av') !
 
    return
@@ -314,13 +314,13 @@ module opt_nwt_mod
        hess_uf (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
              + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
              - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i))     &
-             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
+             +  dpsi_deloc_covar (i,j) +  dpsi_deloc_covar (j,i)
 
 ! alternative expression Hessian
 !       hess_nwt (i,j) = 2.d0 * ( d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
 !             + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
-!             - 2.d0 *dpsi_av (i) * dpsi_nwt_eloc_c_av (j) - 2.d0 * dpsi_av (j) * dpsi_nwt_eloc_c_av (i)      &
-!             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)  )   &
+!             - 2.d0 *dpsi_av (i) * dpsi_nwt_eloc_covar (j) - 2.d0 * dpsi_av (j) * dpsi_nwt_eloc_covar (i)      &
+!             +  dpsi_deloc_covar (i,j) +  dpsi_deloc_covar (j,i)  )   &
 !             + d2eloc_nwt_av (param_pairs(i,j)) !!!!!!!!!!!!!!!
 
        if (i /= j) then
@@ -360,7 +360,7 @@ module opt_nwt_mod
    call object_needed ('eloc_av')
    call object_needed ('dpsi_av')
    call object_needed ('gradient')
-   call object_needed ('dpsi_deloc_c_av')
+   call object_needed ('dpsi_deloc_covar')
 
    return
 
@@ -375,11 +375,11 @@ module opt_nwt_mod
    do i = 1, param_nb
     do j = i, param_nb
        if (i > nparmcsf .and. i <= nparmj .and. j > nparmcsf .and. j <= nparmj) then
-        sumD = sumD + dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
+        sumD = sumD + dpsi_deloc_covar (i,j) +  dpsi_deloc_covar (j,i)
 
         sumBpD = sumBpD + 2.d0 * (2.d0 * (dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av )  &
                 - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i))     &
-                +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
+                +  dpsi_deloc_covar (i,j) +  dpsi_deloc_covar (j,i)
         endif
     enddo
    enddo
@@ -393,12 +393,12 @@ module opt_nwt_mod
         hess_tu (i,j) = 2.d0 * (d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
              - (dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av) )  &
              + sumBpD_over_sumD * (   &
-             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i) )
+             +  dpsi_deloc_covar (i,j) +  dpsi_deloc_covar (j,i) )
        else
          hess_tu (i,j) = 2.d0 * (d2psi_eloc_av (param_pairs(i,j)) - d2psi_av (param_pairs(i,j)) * eloc_av   &
              + dpsi_dpsi_eloc_av (param_pairs(i,j)) -  dpsi_dpsi_av (param_pairs(i,j)) * eloc_av    &
              - dpsi_av (i) * gradient (j) - dpsi_av (j) * gradient (i))     &
-             +  dpsi_deloc_c_av (i,j) +  dpsi_deloc_c_av (j,i)
+             +  dpsi_deloc_covar (i,j) +  dpsi_deloc_covar (j,i)
        endif
 
        if (i /= j) then

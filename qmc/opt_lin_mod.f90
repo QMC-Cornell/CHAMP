@@ -154,7 +154,7 @@ module opt_lin_mod
 
    call object_needed ('param_nb')
    call object_needed ('dpsi_av')
-   call object_needed ('dpsi_dpsi_c_av')
+   call object_needed ('dpsi_dpsi_covar')
 
    return
 
@@ -187,7 +187,7 @@ module opt_lin_mod
 !   normal overlap
     else
 
-     ovlp_lin (i+1,j+1) = dpsi_dpsi_c_av (i,j)
+     ovlp_lin (i+1,j+1) = dpsi_dpsi_covar (i,j)
 
     endif
 
@@ -293,8 +293,8 @@ module opt_lin_mod
    call object_needed ('eloc_av')
    call object_needed ('deloc_av')
    call object_needed ('dpsi_eloc_av')
-   call object_needed ('dpsi_eloc_c_av')
-   call object_needed ('dpsi_deloc_c_av')
+   call object_needed ('dpsi_eloc_covar')
+   call object_needed ('dpsi_deloc_covar')
    call object_needed ('dpsi_dpsi_eloc_av')
    call object_needed ('dpsi_av')
 
@@ -318,7 +318,7 @@ module opt_lin_mod
 
 ! first row and first column
   do i = 1, param_nb
-    ham_lin_energy (i+1,1) = dpsi_eloc_c_av (i)
+    ham_lin_energy (i+1,1) = dpsi_eloc_covar (i)
 
 !   approximate Hamiltonian for orbitals
     if (l_opt_orb_eig .and. i > nparmcsf+nparmj) then
@@ -327,7 +327,7 @@ module opt_lin_mod
 
 !   normal Hamiltoniam
     else
-     ham_lin_energy (1,i+1) = dpsi_eloc_c_av (i) + deloc_av (i)
+     ham_lin_energy (1,i+1) = dpsi_eloc_covar (i) + deloc_av (i)
     endif
 
   enddo
@@ -354,7 +354,7 @@ module opt_lin_mod
 !   normal Hamiltoniam
     else
 
-     ham_lin_energy (i+1,j+1) = dpsi_deloc_c_av (i, j) + dpsi_dpsi_eloc_av (pair)     &
+     ham_lin_energy (i+1,j+1) = dpsi_deloc_covar (i, j) + dpsi_dpsi_eloc_av (pair)     &
                        - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
                        + dpsi_av (i) * dpsi_av (j) * eloc_av
     endif
@@ -367,7 +367,7 @@ module opt_lin_mod
 !
 !!   normal Hamiltoniam
 !    else
-!     ham_lin_energy (j+1,i+1) = dpsi_deloc_c_av (j, i) + dpsi_dpsi_eloc_av (pair)     &
+!     ham_lin_energy (j+1,i+1) = dpsi_deloc_covar (j, i) + dpsi_dpsi_eloc_av (pair)     &
 !                       - dpsi_av (i) * dpsi_eloc_av (j)                     &
 !                       - dpsi_av (j) * ( dpsi_eloc_av (i)) &
 !                       + dpsi_av (i) * dpsi_av (j) * eloc_av
@@ -419,7 +419,7 @@ module opt_lin_mod
    call object_needed ('eloc_var')
    call object_needed ('gradient_variance')
    call object_needed ('hessian_variance')
-   call object_needed ('dpsi_dpsi_c_av')
+   call object_needed ('dpsi_dpsi_covar')
 
    return
 
@@ -442,7 +442,7 @@ module opt_lin_mod
 ! derivative-derivative part
   do j = 1, param_nb
    do i = 1, param_nb
-     ham_lin_variance (i+1,j+1) = hessian_variance (i,j)/2.d0 + eloc_var * dpsi_dpsi_c_av (i, j)
+     ham_lin_variance (i+1,j+1) = hessian_variance (i,j)/2.d0 + eloc_var * dpsi_dpsi_covar (i, j)
    enddo
   enddo
 

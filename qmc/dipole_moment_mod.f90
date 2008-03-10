@@ -26,6 +26,7 @@
   real(dp), allocatable                       :: dipole_moment_zv_coef (:,:)
   real(dp), allocatable                       :: dipole_moment_zv_av (:)
   real(dp), allocatable                       :: dipole_moment_zv_av_var (:)
+  real(dp), allocatable                       :: dipole_moment_zv_av_err (:)
   real(dp), allocatable                       :: dipole_moment_zvzb_av (:)
 
   contains
@@ -63,7 +64,7 @@
     write(6,'(a)') 'HELP for menu dipole_moment'
     write(6,'(a)') 'dipole_moment'
     write(6,'(a)') ' units = {debye,ua}: units for printing dipole moment (default=debye)'
-    write(6,'(a)') ' origin real  real  real end : origin with respect to which dipole moment is calculated (default = mass center)'
+    write(6,'(a)') ' origin real real real end : origin with respect to which dipole moment is calculated (default = center of mass)'
     write(6,'(a)') ' estimator = {hf,zv,zvzb}: estimator to use (default=hf)'
     write(6,'(a)') 'end'
 
@@ -71,7 +72,7 @@
     call get_next_value (units)
     select case (units)
      case ('debye');   l_dipole_moment_debye = .true.
-     case ('ua');   l_dipole_moment_debye = .false.
+     case ('ua');      l_dipole_moment_debye = .false.
      case default; call die (lhere, 'unknown keyword >'+trim(word)+'<.')
     end select
 
@@ -130,6 +131,7 @@
    call object_average_request ('dipole_moment_deloc_av')
    call object_covariance_request ('dipole_moment_av_deloc_av_covar')
    call object_covariance_request ('deloc_av_deloc_av_covar')
+   call object_error_request ('dipole_moment_zv_av_err')
   endif
   if (l_dipole_moment_zvzb) then
    call object_average_request ('dpsi_av')
@@ -371,7 +373,7 @@
    call object_needed ('ndim')
    call object_needed ('param_nb')
    call object_needed ('dipole_moment_deloc_covar')
-   call object_needed ('deloc_deloc_c_av_inv')
+   call object_needed ('deloc_deloc_covar_inv')
 
    return
 
@@ -384,7 +386,7 @@
    do param_i = 1, param_nb
     dipole_moment_zv_coef (dim_i, param_i) = 0.d0
     do param_j = 1, param_nb
-     dipole_moment_zv_coef (dim_i, param_i) = dipole_moment_zv_coef (dim_i, param_i) - deloc_deloc_c_av_inv (param_i, param_j) * dipole_moment_deloc_covar (dim_i, param_j)
+     dipole_moment_zv_coef (dim_i, param_i) = dipole_moment_zv_coef (dim_i, param_i) - deloc_deloc_covar_inv (param_i, param_j) * dipole_moment_deloc_covar (dim_i, param_j)
     enddo ! param_j
    enddo ! param_i
   enddo ! dim_i
@@ -452,6 +454,7 @@
   if (header_exe) then
 
    call object_create ('dipole_moment_zv_av_var')
+   call object_error_define_from_variance ('dipole_moment_zv_av_var', 'dipole_moment_zv_av_err')
 
    call object_needed ('ndim')
    call object_needed ('param_nb')
@@ -466,13 +469,18 @@
 
 ! allocations
   call object_alloc ('dipole_moment_zv_av_var', dipole_moment_zv_av_var, ndim)
+  call object_alloc ('dipole_moment_zv_av_err', dipole_moment_zv_av_err, ndim)
+
+  call object_write ('dipole_moment_zv_coef')
+  call object_write ('dipole_moment_av_deloc_av_covar')
 
   do dim_i = 1, ndim
-   dipole_moment_zv_av_var (dim_i) = dipole_moment_av_var (dim_i)
+!   dipole_moment_zv_av_var (dim_i) = dipole_moment_av_var (dim_i)
+   dipole_moment_zv_av_var (dim_i) = 0.d0
    do param_i = 1, param_nb
     dipole_moment_zv_av_var (dim_i) = dipole_moment_zv_av_var (dim_i) + 2.d0 * dipole_moment_zv_coef (dim_i, param_i) * dipole_moment_av_deloc_av_covar (dim_i, param_i)
      do param_j = 1, param_nb
-      dipole_moment_zv_av_var (dim_i) = dipole_moment_zv_av_var (dim_i) + deloc_av_deloc_av_covar (param_i, param_j)
+      dipole_moment_zv_av_var (dim_i) = dipole_moment_zv_av_var (dim_i) + dipole_moment_zv_coef (dim_i, param_i) * dipole_moment_zv_coef (dim_i, param_j) * deloc_av_deloc_av_covar (param_i, param_j)
      enddo ! param_j
    enddo ! param_i
   enddo ! dim_i
@@ -555,14 +563,15 @@
    call object_provide ('dipole_moment_av_err')
    write(6,'(a)') 'Total dipole moment using Hellmann-Feynman estimator:'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_av (dim_i), ' +-', dipole_moment_units *dipole_moment_av_err (dim_i)
+    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_av (dim_i), ' +-', dipole_moment_units * dipole_moment_av_err (dim_i)
    enddo
   endif
   if (l_dipole_moment_zv) then
    call object_provide ('dipole_moment_zv_av')
+   call object_provide ('dipole_moment_zv_av_err')
    write(6,'(a)') 'Total dipole moment using zero-variance estimator:'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_av (dim_i)
+    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_av_err (dim_i)
    enddo
   endif
   if (l_dipole_moment_zvzb) then

@@ -744,9 +744,9 @@ module optimization_mod
      endif
      if(l_opt_ptb) then
      if (l_diagonal_overlap) then
-      call object_restore ('dpsi_sq_c_av')
+      call object_restore ('dpsi_sq_covar')
      else
-      call object_restore ('dpsi_dpsi_c_av_inv')
+      call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !        call object_restore ('delta_e_ptb') !!
      endif
@@ -793,9 +793,9 @@ module optimization_mod
    endif
    if(l_opt_ptb) then
       if (l_diagonal_overlap) then
-       call object_save ('dpsi_sq_c_av')
+       call object_save ('dpsi_sq_covar')
       else
-       call object_save ('dpsi_dpsi_c_av_inv')
+       call object_save ('dpsi_dpsi_covar_inv')
       endif
 !      call object_save ('delta_e_ptb')  !
    endif
@@ -1487,9 +1487,9 @@ module optimization_mod
     endif
     if(l_opt_ptb) then
      if (l_diagonal_overlap) then
-      call object_restore ('dpsi_sq_c_av')
+      call object_restore ('dpsi_sq_covar')
      else
-      call object_restore ('dpsi_dpsi_c_av_inv')
+      call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !       call object_restore ('delta_e_ptb')  !
     endif
@@ -1533,9 +1533,9 @@ module optimization_mod
   endif
   if(l_opt_ptb) then
      if (l_diagonal_overlap) then
-      call object_restore ('dpsi_sq_c_av')
+      call object_restore ('dpsi_sq_covar')
      else
-      call object_restore ('dpsi_dpsi_c_av_inv')
+      call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !     call object_restore ('delta_e_ptb') !!
   endif
@@ -2112,7 +2112,7 @@ module optimization_mod
    call object_needed ('delta_csf')
    call object_needed ('csf_coef')
    call object_needed ('dpsi_csf_av')
-   call object_needed ('dpsi_csf_dpsi_csf_c_av')
+   call object_needed ('dpsi_csf_dpsi_csf_covar')
 
    return
 
@@ -2125,7 +2125,7 @@ module optimization_mod
   d = 0.d0
   do iparmcsf = 1, nparmcsf
    do jparmcsf = 1, nparmcsf
-      d = d  + delta_csf (iparmcsf) * delta_csf (jparmcsf) * dpsi_csf_dpsi_csf_c_av (iparmcsf, jparmcsf)
+      d = d  + delta_csf (iparmcsf) * delta_csf (jparmcsf) * dpsi_csf_dpsi_csf_covar (iparmcsf, jparmcsf)
    enddo
   enddo
   d = dsqrt(d)

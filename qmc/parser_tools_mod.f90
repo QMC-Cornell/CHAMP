@@ -446,12 +446,13 @@ module parser_tools_mod
 ! begin
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
-!  call alloc (value_list_name, value_list, value_list_nb)
   call object_alloc (value_list_name, value_list, value_list_nb)
 
   do i = 1, value_list_nb
     call cnvdbl (value_list_string(i), value_list(i))
   enddo
+
+  call object_modified (value_list_name)
 
   end subroutine get_next_value_list_double
 

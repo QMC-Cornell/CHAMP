@@ -86,9 +86,9 @@ module opt_ptb_mod
    call object_needed ('param_pairs')
    call object_needed ('dpsi_av')
    call object_needed ('dpsi_eloc_av')
-   call object_needed ('dpsi_deloc_c_av')
+   call object_needed ('dpsi_deloc_covar')
    call object_needed ('dpsi_sq_eloc_av')
-   call object_needed ('dpsi_dpsi_c_av')
+   call object_needed ('dpsi_dpsi_covar')
    call object_needed ('eloc_av')
 
    return
@@ -99,9 +99,9 @@ module opt_ptb_mod
   call object_alloc ('e_ptb', e_ptb, param_nb)
 
   do i = 1, param_nb
-    e_ptb (i) = (dpsi_deloc_c_av (i, i) + dpsi_sq_eloc_av (i)                  &
+    e_ptb (i) = (dpsi_deloc_covar (i, i) + dpsi_sq_eloc_av (i)                  &
                        - dpsi_av (i) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (i) &
-                       + dpsi_av (i) * dpsi_av (i) * eloc_av ) / dpsi_dpsi_c_av (i,i)
+                       + dpsi_av (i) * dpsi_av (i) * eloc_av ) / dpsi_dpsi_covar (i,i)
   enddo
 
   end subroutine e_ptb_bld
@@ -220,18 +220,18 @@ module opt_ptb_mod
    if (param_nb /= param_orb_nb) then
      call die (here, 'param_nb='+param_nb+' /=  param_orb_nb='+param_orb_nb)
    endif
-   call object_provide_in_node (lhere, 'dpsi_sq_c_av')
+   call object_provide_in_node (lhere, 'dpsi_sq_covar')
    do parm_i = 1, param_nb
-     delta_ptb (parm_i) = - (1.d0/(dpsi_sq_c_av (parm_i) * (delta_e_ptb (parm_i) + diag_stab))) * gradient (parm_i)/2.d0
+     delta_ptb (parm_i) = - (1.d0/(dpsi_sq_covar (parm_i) * (delta_e_ptb (parm_i) + diag_stab))) * gradient (parm_i)/2.d0
    enddo
 
 ! with full overlap
   else
 
-   call object_provide_in_node (lhere, 'dpsi_dpsi_c_av_inv')
+   call object_provide_in_node (lhere, 'dpsi_dpsi_covar_inv')
    do parm_i = 1, param_nb
     do parm_j = 1, param_nb
-     delta_ptb (parm_i) = delta_ptb (parm_i) - (dpsi_dpsi_c_av_inv (parm_i, parm_j)/(delta_e_ptb (parm_i) + diag_stab)) * gradient (parm_j)/2.d0
+     delta_ptb (parm_i) = delta_ptb (parm_i) - (dpsi_dpsi_covar_inv (parm_i, parm_j)/(delta_e_ptb (parm_i) + diag_stab)) * gradient (parm_j)/2.d0
     enddo
    enddo
 

@@ -14,7 +14,7 @@ module deriv_csf_mod
 
   real(dp), allocatable          :: dpsi_csf_dpsi_csf (:)
   real(dp), allocatable          :: dpsi_csf_dpsi_csf_av (:)
-  real(dp), allocatable          :: dpsi_csf_dpsi_csf_c_av (:,:)
+  real(dp), allocatable          :: dpsi_csf_dpsi_csf_covar (:,:)
   real(dp), allocatable          :: dpsi_csf_sq (:)
   real(dp), allocatable          :: dpsi_csf_sq_av (:)
   real(dp), allocatable          :: dpsi_csf_eloc (:)
@@ -228,7 +228,7 @@ module deriv_csf_mod
   end subroutine dpsi_csf_dpsi_csf_bld
 
 ! ==============================================================================
-  subroutine dpsi_csf_dpsi_csf_c_av_bld
+  subroutine dpsi_csf_dpsi_csf_covar_bld
 ! ------------------------------------------------------------------------------
 ! Description   :  < dpsi_csf (i) * dpsi_csf (j) > - <dpsi_csf (i)> <dpsi_csf (j)>
 !
@@ -243,7 +243,7 @@ module deriv_csf_mod
 ! header
   if (header_exe) then
 
-   call object_create ('dpsi_csf_dpsi_csf_c_av')
+   call object_create ('dpsi_csf_dpsi_csf_covar')
 
    call object_needed ('nparmcsf')
    call object_needed ('csf_pairs')
@@ -255,15 +255,15 @@ module deriv_csf_mod
   endif
 
 ! begin
-  call object_alloc ('dpsi_csf_dpsi_csf_c_av', dpsi_csf_dpsi_csf_c_av, nparmcsf, nparmcsf)
+  call object_alloc ('dpsi_csf_dpsi_csf_covar', dpsi_csf_dpsi_csf_covar, nparmcsf, nparmcsf)
 
   do i = 1, nparmcsf
    do j = 1, nparmcsf
-    dpsi_csf_dpsi_csf_c_av (i,j)= dpsi_csf_dpsi_csf_av (csf_pairs(i,j)) - dpsi_csf_av (i) * dpsi_csf_av (j)
+    dpsi_csf_dpsi_csf_covar (i,j)= dpsi_csf_dpsi_csf_av (csf_pairs(i,j)) - dpsi_csf_av (i) * dpsi_csf_av (j)
    enddo
   enddo
 
-  end subroutine dpsi_csf_dpsi_csf_c_av_bld
+  end subroutine dpsi_csf_dpsi_csf_covar_bld
 
 ! ==============================================================================
   subroutine dpsi_csf_eloc_bld
