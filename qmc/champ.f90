@@ -60,7 +60,7 @@ program champ
 
   call get_date (date)
   write(6,'(2a)') 'PROGRAM CHAMP run on ',date
-  write(6,'(2a)') 'SVN version $ $Rev$ $ on $ $Date$ $'
+  write(6,'(2a)') 'SVN VERSION $Rev$ on $Date$'
 
 # if defined (MPI)
   write(6,'(a,i4,a)') 'MPI version running on ', nproc, ' processors.'
