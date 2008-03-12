@@ -16,11 +16,22 @@ c also see basis_norm.dot for real wfs
       include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring

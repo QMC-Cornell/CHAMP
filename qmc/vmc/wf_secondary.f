@@ -22,11 +22,22 @@ c Read parameters for secondary wavefns.
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
@@ -253,12 +264,25 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!**MS(jellium03-1;6Mar08)
+! Declare arrays upto o-orbitals (l=12)
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!**EndMS(jellium03-1)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
@@ -379,12 +403,26 @@ c     common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!**MS(jellium03-1;6Mar08)
+! The number of arrays for electron configurations depends on a angular momentum
+! is increased up to l=12, o-orbital.
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!**EndMS(jellium03-1)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
@@ -541,12 +579,26 @@ c     common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!**MS(jellium03-1;6Mar08)
+! The number of arrays for electron configurations depends on a angular momentum
+! is increased up to l=12, o-orbital.
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!**EndMS(jellium03-1)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)

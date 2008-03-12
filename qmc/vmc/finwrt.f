@@ -54,6 +54,11 @@ c routine to print out final results
      &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
      &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
+!MS Jellium sphere
+      common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
+      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+
       err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
       err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
 c     err1s(x,x2,i)=dsqrt(dabs(x2/wcum1(i)-(x/wcum1(i))**2)/passes)
@@ -164,10 +169,28 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
      &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
 
       if(nforce.eq.1) then
-!JT        write(6,'(a,f12.7,a,f11.7,a,f9.5,a,f9.5,a,f8.2)') 'Total energy        ='
-!JT     & ,efin,' +-',eerr,', sigma =',sigma,' +-',error_sigma,', Tcor =',tcsq*tcsq
-        write(6,'(''total E ='',t17,f12.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
-     &   efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq !JT
+!MS Jellium sphere
+        if(nloc.eq.-3) then
+          write(6,'(''total E ='',t14,f15.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
+     &    efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq
+         else
+!JT       write(6,'(a,f12.7,a,f11.7,a,f9.5,a,f9.5,a,f8.2)') 'Total energy        ='
+!JT  &    ,efin,' +-',eerr,', sigma =',sigma,' +-',error_sigma,', Tcor =',tcsq*tcsq
+          write(6,'(''total E ='',t17,f12.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
+     &    efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq
+        endif
+
+!MS Jellium sphere
+! eb_slf = Self-energy of the background charge
+! ebz    = Interaction between background and central charges
+        if(nloc.eq.-3) then
+          eb_slf=3.d0/5.d0*(dn_background)**(5.d0/3.d0)/rs_jel
+          ebz   =3.d0/2.d0*(dn_background)**(2.d0/3.d0)*znuc(1)/rs_jel
+          write(6,'(''background self E   ='',f15.7)') eb_slf
+          write(6,'(''z-background    E   ='',f15.7)') ebz
+          write(6,'(''total E+eb_self+ebz ='',f15.7)') efin+eb_slf+ebz
+        endif
+       
        else
         ifr=1
 !       write(6,'(''total E'',i3,'' ='',t17,f12.7,'' +-'',f11.7,3f9.5,t82,f8.2)') !JT

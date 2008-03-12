@@ -87,11 +87,16 @@ c write out header first time
      &    ,t66,''tjfave'',t72,''(tjferr'',t83,''emave'',t89,''(emave)''
      &    ,t100,''fave'',t106,''(ferr)''
      &    ,t117,''accave'',t128,''iter'')')
+         elseif(nloc.eq.-3) then !MS Jellium
+          write(6,'(t9,''enow'',t21,''eave'',t25,''(eerr )''
+     &    ,t39,''peave'',t44,''(peerr)'',t57,''tpbave'',t63,''(tpberr''
+     &    ,t76,''tjfave'',t82,''(tjferr'',t93,''fave'',t99,''(ferr)''
+     &    ,t110,''accave'',t122,''iter'',t131,''sigma'')')
          else
           write(6,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
      &    ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr''
      &    ,t66,''tjfave'',t72,''(tjferr'',t83,''fave'',t89,''(ferr)''
-     &    ,t100,''accave'',t111,''iter'',t120,''sigma'')') !JT
+     &    ,t100,''accave'',t111,''iter'',t120,''sigma'')')
         endif
       endif
 
@@ -210,10 +215,14 @@ c           ipeerr=ipeerr+iemerr
             write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,f10.5,i10)')
      &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,
      &      accave,it
+           elseif(nloc.eq.-3) then !MS Jellium
+            write(6,'(f12.5,4(f12.5,''('',i5,'')''),17x,f10.5,i10,f10.5,''('',i5,'')'')')
+     &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+     &      accave,it,sigma,ierror_sigma
            else
-            write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,f10.5,i10,f10.5,''('',i5,'')'')')  !JT
-     &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer, !JT
-     &      accave,it,sigma,ierror_sigma                                           !JT
+            write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,f10.5,i10,f10.5,''('',i5,'')'')')
+     &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+     &      accave,it,sigma,ierror_sigma
           endif
 
 c         if(it.ge.1000 .and. accave.lt.0.3d0)

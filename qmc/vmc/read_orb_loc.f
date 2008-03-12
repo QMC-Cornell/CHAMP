@@ -143,11 +143,22 @@ c i.e. the order in which we were reading in the p functions.
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
@@ -359,6 +370,34 @@ c single dot (ncent=nctype=1) and set nbasis_ctype=nbasis.
           do 45 m=-5,5
             if(n6h(m,ict).ne.0 .and. ML_BAS.lt.5) stop 'ML_BAS in vmc.h too small'
    45       nbas=nbas+ iabs(n6h(m,ict))
+          do m=-6,6
+            if(n7i(m,ict).ne.0 .and. ML_BAS.lt.6) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n7i(m,ict))
+          enddo
+          do m=-7,7
+            if(n8j(m,ict).ne.0 .and. ML_BAS.lt.7) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n8j(m,ict))
+          enddo
+          do m=-8,8
+            if(n9k(m,ict).ne.0 .and. ML_BAS.lt.8) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n9k(m,ict))
+          enddo
+          do m=-9,9
+            if(n10l(m,ict).ne.0 .and. ML_BAS.lt.9) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n10l(m,ict))
+          enddo
+          do m=-10,10
+            if(n11m(m,ict).ne.0 .and. ML_BAS.lt.10) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n11m(m,ict))
+          enddo
+          do m=-11,11
+            if(n12n(m,ict).ne.0 .and. ML_BAS.lt.11) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n12n(m,ict))
+          enddo
+          do m=-12,12
+            if(n13o(m,ict).ne.0 .and. ML_BAS.lt.12) stop 'ML_BAS in vmc.h too small'
+            nbas=nbas+ iabs(n13o(m,ict))
+          enddo
           if(nbas.gt.MBASIS_CTYPE) stop 'nbas > MBASIS_CTYPE'
           nbasis_ctype(ict)=nbas
 
@@ -525,11 +564,22 @@ c i.e. the order in which we were reading in the p functions.
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
@@ -941,11 +991,22 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
@@ -1416,11 +1477,22 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)

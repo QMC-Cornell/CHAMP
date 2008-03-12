@@ -15,11 +15,14 @@
 !       real spherical harmonics.
 !---------------
       use all_tools_mod !JT
-c     integer,parameter   :: lmax=3
-      integer,parameter   :: lmax=6
+!     integer,parameter   :: lmax=3
+!     integer,parameter   :: lmax=6
+!MS Jellium sphere
+      integer,parameter   :: lmax=12
       integer             :: nmax
-
-      integer,allocatable :: large_q(:,:),sq_coef_a_num(:),sq_coef_a_denum(:),
+      integer,allocatable :: large_q(:,:)
+!MS Jellium sphere
+      real(dp),allocatable:: sq_coef_a_num(:),sq_coef_a_denum(:),
      &                       sq_coef_r_denum(:,:)
       real(dp)            :: large_p(0:lmax,-lmax:lmax),d_large_p(1:3,0:lmax,-lmax:lmax),
      &                       r_inv_power_minus(0:lmax),x_power_of(0:lmax),
@@ -47,24 +50,33 @@ c                 = 0 : asymptotic basis
 
       use all_tools_mod !JT
 
-!**RM(1)
+!RM(1)
       use real_spherical_harmonics
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
       common /contr_ylm/ irecursion_ylm
-!**EndRM(1)
-
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
@@ -446,11 +458,22 @@ c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE),n2s(MCTYPE),n2p(-1:1,MCTYPE),n3s(MCTYPE),n3p(-1:1,MCTYPE)
-     &,n3d(-2:2,MCTYPE),n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE)
-     &,n4f(-3:3,MCTYPE),n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE)
-     &,n5f(-3:3,MCTYPE),n5g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
+       common /basis/ zex(MBASIS,MWF),betaq
+     &,n1s(MCTYPE) 
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+     &,n5g(-4:4,MCTYPE)
+     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+     &,n9k(-8:8,MCTYPE)
+     &,n10l(-9:9,MCTYPE)
+     &,n11m(-10:10,MCTYPE)
+     &,n12n(-11:11,MCTYPE)
+     &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
@@ -1227,11 +1250,11 @@ c--------------------------------------------------------------------------
 !-------------
 
       use real_spherical_harmonics
-
+!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       do l = 0,lmax
          do m = 0,l
             coef_ylm(l,m) = sqrt(dble(sq_coef_a_num(l))
-     &             /dble(sq_coef_a_denum(l)*sq_coef_r_denum(l,m)))
+     &             /(sq_coef_a_denum(l)*sq_coef_r_denum(l,m)))
 !* For debug:
 !           coef_ylm(l,m) = sqrt(1.d0/dble(sq_coef_r_denum(l,m)))
 !           !* ^^ This should be 1.d0 for (l,m) = (l,l-1).
@@ -1239,7 +1262,7 @@ c--------------------------------------------------------------------------
          enddo
       enddo
 
-      coef_ylm(1,0) = 1.d0       !* Only the exception...
+      coef_ylm(1,0) = 1.d0       !* The only exception...
                                  !  This should be substituted
                                  !  after the recursion generation is performed.
       end subroutine setup_coefficients_ylm

@@ -80,6 +80,9 @@ c    &-r1**1.5d0*(two*(one-v*ri)/three+.4d0*v*r1)))
         nearo=nearesto(i)
         if(nloc.eq.0) then
           zcusp=znuc(iwctype(nearo))
+!MS Jellium sphere
+         else if(nloc.eq.-3) then
+          zcusp=znuc(iwctype(nearo)) 
          else
           zcusp=zero
         endif

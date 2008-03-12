@@ -42,8 +42,8 @@ c Calculate e-N inter-particle distances
             if(nloc.eq.0) pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
 c           if(nloc.eq.-1) pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
             if(nloc.eq.-1) then
-c              pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
-c              emag=emag+0.125d0*(bext*r_en(i,ic))**2
+c             pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
+c             emag=emag+0.125d0*(bext*r_en(i,ic))**2
               pe_en=pe_en+0.5d0*(we*(r_en(i,ic)-rring))**2
             endif
             if(nloc.eq.-2) pe_en=pe_en+p1*rvec_en(1,i,ic)**4+p2*rvec_en(2,i,ic)**4
@@ -57,6 +57,8 @@ c Contribution from Jellium to the potential energy. A temporary patch which sho
                 p_bg=-0.5d0*(dn_background/radius_b)*(3.d0-(r_en(i,ic)/radius_b)**2)
               endif
               pe=pe+p_bg
+! MS The potential energy between Z and e
+              pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
             endif
    26   continue
 

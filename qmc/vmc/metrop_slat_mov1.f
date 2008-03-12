@@ -94,6 +94,9 @@ c     mode='vmc_mov1    '
         nearo=nearesto(i)
         if(nloc.eq.0) then
           zcusp=znuc(iwctype(nearo)) ! RM (watch out here for future extension)
+!MS Jellium sphere
+         else if(nloc.eq.-3) then
+          zcusp=znuc(iwctype(nearo)) 
          else
           zcusp=zero
         endif

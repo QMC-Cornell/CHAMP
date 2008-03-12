@@ -215,7 +215,7 @@ c Calculate asymptotic value of A and B terms
    30       asymp_jasb(i,iw)=asymp_jasb(i,iw)+b(iord+1,isp,iw)*asymp_r_ee(iw)**iord
    35     asymp_jasb(i,iw)=sspinn*asymp_jasb(i,iw)
       endif
-      if((ijas.eq.4.or.ijas.eq.5).and.ipr.ge.-1) then
+      if((ijas.eq.4.or.ijas.eq.5).and.ipr.ge.0) then
         write(6,'(''ifr,asymp_r_en,asymp_r_ee='',i2,2f10.6)') iw,asymp_r_en(iw),asymp_r_ee(iw)
         write(6,'(''ifr,asympa='',i2,10f10.6)') iw,(asymp_jasa(it,iw),it=1,nctype)
         write(6,'(''ifr,asympb='',i2,10f10.6)') iw,(asymp_jasb(i,iw),i=1,2)

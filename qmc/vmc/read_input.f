@@ -184,6 +184,7 @@ c nfprod     number of products to undo for estimating population control bias i
 c tau        time-step in dmc
 c nloc       external potential (a positive value => nonlocal pseudopotential)
 c            -9 numerical dot potential read in from potential_num (not yet implemented)
+c            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
 c            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
 c            -1 quadratic dot potential .5*w0*r^2
 c            0  local, -Z/r
@@ -694,13 +695,13 @@ c Determine the number of centers of each type
       call object_modified ('znuc') !JT
 
       if(nloc.eq.-3) then ! Jellium RM
-c       dn_background = nelec - znuc(1)
-        dn_background = nelec
+!MS Jellium sphere plus charge at center
+        dn_background = nelec - znuc(1)
         rs_jel = 1.d0
         radius_b = (dn_background*(rs_jel)**3)**(1.d0/3.d0)
-        zconst = 20               !* 27Aug06
+        zconst = 20 !* 27Aug06
        else
-        zconst = 0 ! normal case
+        zconst = 0  ! normal case
       endif
 
 c Read in which is the local component of the potential
@@ -843,6 +844,8 @@ c irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
 c irecursion_ylm=1 use Ryo' spherical harmonics (any L)
         irecursion_ylm=0
 c       irecursion_ylm=1
+!MS Jellium sphere
+        if(nloc.eq.-3) irecursion_ylm=1
         if(irecursion_ylm.eq.0)then
           write(6,*) 'Not using recursion for Ylm'
          elseif(irecursion_ylm.eq.1) then
@@ -1220,7 +1223,7 @@ c composite fermions:
       emagv=0.d0
       if(idot.lt.0 .or. idot.gt.3) stop 'idot must be 0,1,2 or 3'
       if(idot.gt.0) then
-	if(numr.ne.0) write(*,*) 'numerical orbitals not tested with comp fermions'
+	if(numr.ne.0) write(6,*) 'numerical orbitals not tested with comp fermions'
         if(nv.lt.0) stop 'nv must be zero or positive'
         if(idot.eq.2) then
           write(6,'(''Ignoring determinantal part for Laughlin wave functions'')')
@@ -1233,7 +1236,7 @@ c composite fermions:
         if(ibasis.ne.3) stop 'ibasis must be 3 for composite fermions. set nv to zero if not
      &                        dealing with composite fermions.'
         if(ndim.ne.2) stop 'ndim must be 2 for composite fermions'
-        write(*,*) 'mode=',mode
+        write(6,*) 'mode=',mode
         if(index(mode,'mov1').ne.0) stop '1 electron move not yet implemented for composite fermions'
         write(6,'(''vortices angular momentum, lv ='',t31,i10)') lv
         write(6,'(''vortices angular mom. magnetic energy ='',t31,f10.5)') emagv

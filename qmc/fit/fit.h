@@ -1,5 +1,5 @@
 !     parameter(MDATA=20000, MPARMJ=70, MPARM=70)
-      parameter(MDATA=2000, MPARM=200)
+      parameter(MDATA=4000, MPARM=200)
       parameter(MEBASE=MBASIS*MDET, MECN=MORB*MEBASE, ICSFX=MDET)
 ! NCTYP3X=max(3,MCTYPE)
 !     parameter(ICX=2*ICSFX,NCTYP3X=max(3,MCTYPE))
