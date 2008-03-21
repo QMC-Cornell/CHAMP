@@ -338,6 +338,12 @@ ifeq ($(hostname),jaguar)
 
 endif
 
+# clastos in Paris
+ifeq ($(hostname),clastos)
+  FC = /usr/local/bin/mpif90
+  FC_MPI = /usr/local/bin/mpif90
+endif
+
 # OBJS = my_second.o ranf.o shellnn.o intpol.o intpol_monot.o grater.o \
 # hartre.o deriv.o deriv2.o divergence.o lapla3.o laplac.o fderiv.o simson.o bode.o \
 # hartre_grid2.o deriv_grid2.o deriv2_grid2.o divergence_grid2.o laplac_grid2.o fderiv_grid2.o \

@@ -325,3 +325,14 @@ ifeq ($(hostname),jaguar)
  BLAS=
 
 endif
+
+# Clastos in Paris
+# gcc is incompatible with ifort 10.1 on clastos, must use icc
+ifeq ($(hostname),clastos)
+ CHAMP_C=icc
+ CHAMP_MPIC=mpicc
+
+ CHAMP_MPIF95=/usr/local/bin/mpif90
+ CHAMP_MPIF77=/usr/local/bin/mpif90
+ CHAMP_LD_MPI=/usr/local/bin/mpif90
+endif

@@ -360,6 +360,12 @@ ifeq ($(hostname),jaguar)
 
 endif
 
+# clastos in Paris
+ifeq ($(hostname),clastos)
+  FC = /usr/local/bin/mpif90
+  FC_MPI = /usr/local/bin/mpif90
+endif
+
 ###################################
 # Targets, Dependencies and Rules #
 ###################################
