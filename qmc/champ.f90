@@ -21,7 +21,7 @@ program champ
   character(len=256) :: executable_name
   character(len=256) :: argument
   character(len=max_string_len_file)       :: input_file_name = ''
-  integer iostat
+  integer iostat, mode_i
 
   integer ierr
   common /contr3/ mode
@@ -119,8 +119,16 @@ program champ
 
   enddo ! end loop over arguments
 
-  write(6,'(2a)') 'The mode is ',trim(mode)
-  write(6,*)
+! check mode
+  write(6,'(3a)') 'The mode is >',trim(mode),'<.'
+  if (.not. elt_in_array (modes, mode)) then
+   write(6,'(3a)') 'This mode is unknown.'
+   write(6,'(20a)') 'The available modes are:'
+   do mode_i = 1, modes_nb
+     write(6,'(2x,a)') trim(modes (mode_i))
+   enddo
+   call die (lhere)
+  endif
 
 # if defined (MPI)
 !  check mode
@@ -137,6 +145,7 @@ program champ
 # endif
 
 ! Open input file if given by '-i ...'
+  write(6,*)
   if (trim(input_file_name) /= '') then
      write(6,'(3a)') 'Opening input file >',trim(input_file_name),'<.'
      open(5, file=trim(input_file_name), status='old', iostat=iostat)

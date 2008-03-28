@@ -175,7 +175,8 @@ module basic_tools_mod
 !===============================================================
   interface elt_in_array
 !---------------------------------------------------------------
-   module procedure elt_in_array_integer
+   module procedure elt_in_array_integer, &
+                    elt_in_array_string
 
   end interface elt_in_array
 
@@ -3457,6 +3458,39 @@ module basic_tools_mod
   return
 
   end function elt_in_array_integer
+
+!===========================================================================
+  function elt_in_array_string (array, stg) result(result)
+!---------------------------------------------------------------------------
+! Description : test if stg is in array
+!
+! Created     : J. Toulouse, 28 Mar 2008
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=max_string_len), intent(in)  :: array (:)
+  character(len=*), intent(in)  :: stg
+
+! output
+  logical  :: result
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'elt_in_array_string'
+  integer i
+
+! begin
+  do i = 1, size (array)
+   if (trim(array (i)) == trim(stg)) then
+    result = .true.
+    return
+   endif
+  enddo
+
+  result = .false.
+  return
+
+  end function elt_in_array_string
 
 !===========================================================================
   subroutine is_equal_or_die_double_1 (array1, array2, tol, print_message)
