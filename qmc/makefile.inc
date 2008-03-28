@@ -334,9 +334,14 @@ ifeq ($(hostname),clastos)
  CHAMP_F95=/usr/local/bin/mpif90
  CHAMP_F77=/usr/local/bin/mpif90
  CHAMP_LD=/usr/local/bin/mpif90
+ CHAMP_F77_FAST=-zero -extend_source -diag-disable vec -w -r8 -O3 -pad -ip -fpp
+ CHAMP_F95_FAST=-O3 -diag-disable vec -ip -static -align all -fpp
 
  CHAMP_MPIC=mpicc
  CHAMP_MPIF95=/usr/local/bin/mpif90
  CHAMP_MPIF77=/usr/local/bin/mpif90
  CHAMP_LD_MPI=/usr/local/bin/mpif90
+ CHAMP_F77_MPI=-zero -extend_source -diag-disable vec -w -r8 -O3 -pad -ip -fpp -DMPI
+ CHAMP_F95_MPI=-O3 -diag-disable vec -ip -static -align all -fpp -DMPI
+
 endif
