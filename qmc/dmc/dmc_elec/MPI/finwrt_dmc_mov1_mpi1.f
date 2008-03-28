@@ -4,6 +4,7 @@ c routine to print out final results
 
 # if defined (MPI)
 
+      use main_menu_mod
       use mpi_mod
 
       implicit real*8(a-h,o-z)
@@ -482,6 +483,10 @@ c    &   ,f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
 c      endif
 
       if(ifixe.ne.0) call den2dwrt(wgcum(1))
+
+      if (l_dipole_moment) then
+        call print_dipole_moment
+      endif
 # endif
 
       return
