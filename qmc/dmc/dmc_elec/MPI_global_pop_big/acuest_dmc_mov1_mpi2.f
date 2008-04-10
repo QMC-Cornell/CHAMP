@@ -585,7 +585,9 @@ c zero out estimators
 
       call grad_hess_jas_init
 
-      do 85 ifr=1,nforce
+c Do it for MFORCE rather than nforce because in optimization at the start nforce=1 but later nforce=3
+c     do 85 ifr=1,nforce
+      do 85 ifr=1,MFORCE
         tausum(ifr)=zero
         taucum(ifr)=zero
         wgcum1(ifr)=zero

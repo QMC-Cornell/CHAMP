@@ -268,7 +268,7 @@ c E_L,i = -0.5*(\nabla^2*f_i + 2 grad(f_i).V) + (\hat{V}\psi/psi)_i
 c get pseudo-potential contribution
 c nonloc_pot must be called after determinant because psid is needed in nonloc_pot
 c This call computes the entire pot_en if iperiodic=0 but only the nonlocal contrib. otherwise.
-        if(ipr.ge.3) write(6,'(''pe before nonloc_pot'',9f12.5)') pe
+        if(ipr.ge.3) write(6,'(''hpsi: pe before nonloc_pot'',9f12.5)') pe
         if(nloc.gt.0) then
 c         if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
           if((igradhess.eq.0 .or. ifr.gt.1) .and. .not. l_opt) then
@@ -278,7 +278,7 @@ c         if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
           endif
         endif
 
-        if(ipr.ge.3) write(6,'(''pe after nonloc_pot'',9f12.5)') pe
+        if(ipr.ge.3) write(6,'(''hpsi: pe after nonloc_pot'',9f12.5)') pe
 
       eloc_pot = pe
       call object_modified_by_index (eloc_pot_index) !JT

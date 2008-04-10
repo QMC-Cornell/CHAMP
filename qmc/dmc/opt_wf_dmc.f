@@ -59,7 +59,7 @@ c increase_nblk is the number of consecutive optim. iterations for which nblk ha
         energy_plus_err_best=1.d99
         do 430 iopt_iter=1,nopt_iter
 
-c Do vmc computing gradient and hessian but no correlated sampling
+c Do dmc computing gradient and hessian but no correlated sampling
           igradhess=1
           nforce=1
           nwftype=1

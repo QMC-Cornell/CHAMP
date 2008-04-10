@@ -294,7 +294,7 @@ module walkers_mod
 
 ! Analyse walker population:
 
-! Check unicity of walkers
+! Check uniqueness of walkers
   nconf_unique = nconf_read
   do walk_i = 1, nconf_read
     walker_not_unique = .false.

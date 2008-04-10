@@ -147,7 +147,9 @@ c Also put derivatives in fpu and fppu.
 c loop through number of determinants calculating the inverse
 c transpose matrices and their determinants
       do 40 idet=1,ndetup
+c       write(6,'(''before matinv 40'',i2,9d14.6)') idet,slmui(1,idet),slmui(2,idet),slmui(3,idet),slmui(4,idet)
    40   call matinv(slmui(1,idet),nup,detu(idet))
+c  40   write(6,'(''after matinv 40'',i2,9d14.6)') idet,slmui(1,idet),slmui(2,idet),slmui(3,idet),slmui(4,idet)
 
       call object_modified_by_index (slmui_index) !JT
       call object_modified_by_index (detu_index)  !JT

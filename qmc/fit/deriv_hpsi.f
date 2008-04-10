@@ -218,7 +218,7 @@ c         div_v(i)=div_vj(i)+div_vd(i)
 c get pseudo-potential contribution
 c nonloc_pot must be called after determinant because psid is needed in nonloc_pot
 c This call computes the entire pot_en if iperiodic=0 but only the nonlocal contrib. otherwise.
-        if(ipr.ge.3) write(6,'(''pe before nonloc_pot'',9f12.5)') pe
+        if(ipr.ge.3) write(6,'(''deriv_hpsi: pe before nonloc_pot'',9f12.5)') pe
         if(nloc.gt.0) then
           call deriv_nonloc_pot(coord,rshift,rvec_en,r_en,detu,detd,deti_det,slmui,slmdi,vpsp,psid,pe,dpe,ifr)
         else

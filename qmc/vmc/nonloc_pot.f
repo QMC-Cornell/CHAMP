@@ -36,12 +36,12 @@ c and store in vps
 
 c local component
       if(iperiodic.eq.0) then
-        if(ipr.ge.4) write(6,'(''pe before local psp'',f9.5)') pe
+        if(ipr.ge.4) write(6,'(''nonloc_pot: pe before local psp'',f9.5)') pe
         do 30 ic=1,ncent
           do 30 i=1,nelec
             if(ipr.ge.4) write(6,'(''i,ic,vps,pe'',2i3,9f9.5)')i,ic,vps(i,ic,lpotp1(iwctype(ic))),pe+vps(i,ic,lpotp1(iwctype(ic)))
    30       pe=pe+vps(i,ic,lpotp1(iwctype(ic)))
-        if(ipr.ge.4) write(6,'(''pe after local psp'',f12.5)') pe
+        if(ipr.ge.4) write(6,'(''nonloc_pot: pe after local psp'',f12.5)') pe
       endif
 
 !     Total ee and local en potential
