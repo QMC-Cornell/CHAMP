@@ -52,7 +52,7 @@ program champ
   wid=(idtask.eq.0)
 
 ! Close standard output if not the master
-  if (.not. wid) then
+  if (.not.wid) then
    close(6)
    open(6,file='/dev/null')
 !   open(6,file='slave.out')

@@ -118,7 +118,7 @@ ifeq ($(hostname),opt-login01.osc.edu)
 # Serial (Intel compiler), requires ACML for Intel module
 # module load acml-intel
 
-# Parallel (Intel compiler), requires ACML & MPI for Intel 
+# Parallel (Intel compiler), requires ACML & MPI for Intel
 # module load acml-intel
 # module swap mpi mvapich-0.9.8-intel
 
@@ -148,7 +148,7 @@ ifeq ($(hostname),opt-login01.osc.edu)
 # CHAMP_F77_MPI = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
 # CHAMP_F95_MPI = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
 # CHAMP_C_MPI = -DMPI -DUNDERSCORE -O2 -tp amd64e
-  
+
   LAPACK=${ACML}
   BLAS=${ACML}
 endif
@@ -205,7 +205,7 @@ ifeq ($(hostname),login1)
 # serial debug
   CHAMP_F77_DEBUG = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f -WF,-DDEBUG,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_F95_DEBUG = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f90 -WF,-DDEBUG -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_C_DEBUG = 
+  CHAMP_C_DEBUG =
   CHAMP_LD_DEBUG =
 
 # MPI debug
@@ -345,3 +345,13 @@ ifeq ($(hostname),clastos)
  CHAMP_F95_MPI=-O3 -diag-disable vec -ip -static -align all -fpp -DMPI
 
 endif
+
+# NASA Ames Columbia Itanium cluster
+ifeq ($(hostname),cfe1)
+  CHAMP_MPIF95=ifort
+  CHAMP_MPIF77=ifort
+  CHAMP_LD_MPI=ifort
+  CHAMP_LD_FAST=-O3 -align all
+  CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
+endif
+
