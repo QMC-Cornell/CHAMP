@@ -75,7 +75,7 @@ module variables_mod
   real(dp)                       :: lambda = 0.3d0
 
 ! total number of configurations (walkers)
-  real(dp)   :: nconf_total = 1
+  integer   :: nconf_total = 1
 
 ! weight of walkers
   real(dp), allocatable   :: walker_weights (:)

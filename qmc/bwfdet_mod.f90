@@ -60,6 +60,7 @@ CONTAINS
 ! =============                                                           !
 ! NDD  1.2005  Read bwfn.data on each node rather than on master & bcast. !
 ! William Parker Nov. 2005 - 2006    Modified for CHAMP                   !
+! Richard Hennig  4.2008 Read bwfn.data on master & bcast.                !
 !-------------------------------------------------------------------------!
  USE mpi_mod
  IMPLICIT NONE
@@ -73,6 +74,36 @@ CONTAINS
  REAL(dp),DIMENSION(:,:),ALLOCATABLE :: gvecwf,basisbwf
  CHARACTER(80)sline,ltitle,gtitle,dtitle,code,method,functional,pseudo_type,tmpr
 
+#ifdef MPI
+ INTEGER, DIMENSION(3) :: blen, indices, types
+ INTEGER MPI_bwfsizetype, mpi_err
+
+ TYPE bwfsize_type
+    sequence
+    logical spin_polarized, pwreal
+    integer nbasisbwf, nwvec, nrbwf(3), nkvec_bwfdet
+ END TYPE bwfsize_type
+
+ TYPE(bwfsize_type) :: bwf
+! Define the MPI type
+!  spin_polarized
+ blen(1)    = 2;
+ indices(1) = 0;
+ types(1)   = MPI_LOGICAL;
+!  nbasisbwf, nwvec, nrbwf(3), nkvec_bwfdet
+ blen(2)    = 6;
+ indices(2) = 2*sizeof(MPI_LOGICAL);
+ types(2)   = MPI_INTEGER;
+!  upper bound
+ blen(3)    = 1;
+ indices(3) = 2*sizeof(MPI_LOGICAL) +  6*sizeof(MPI_INTEGER);
+ types(3)   = MPI_UB;
+
+ CALL MPI_Type_struct(3, blen, indices, types, MPI_bwfsizetype, ierr);
+ if(ierr/=0)call errstop('READBWF','Error in MPI_TYPE_STRUCT')
+ CALL MPI_TYPE_COMMIT(MPI_bwfsizetype, ierr)
+ if(ierr/=0)call errstop('READBWF','Error in MPI_TYPE_COMMIT')
+#endif
 
  if(nproc==1) then
    am_master=.true.
@@ -80,245 +111,294 @@ CONTAINS
    am_master=wid
  endif
 
- ialloc=0
+ if (am_master) then
+    ialloc=0
 
- call open_units(io,ierr)
- if(ierr/=0)call errstop('READBWF','Unable to find free i/o unit')
+    call open_units(io,ierr)
+    if(ierr/=0)call errstop('READBWF','Unable to find free i/o unit')
 
- open(io,file='bwfn.data',status='old',err=10)
+    open(io,file='bwfn.data',status='old',err=10)
 
 ! Rapid scan of file to get relevant array dimensions. Allocate arrays.
- call skip(io,15)
- read(io,*,end=20,err=30)spin_polarized               ; call skip(io,18)
- read(io,*,end=20,err=30)nbasisbwf                    ; call skip(io,nbasisbwf+9)
- read(io,*,end=20,err=30)nwvec                        ; call skip(io,nwvec+2)
- read(io,*,end=20,err=30)nrbwf(1),nrbwf(2),nrbwf(3)   ; call skip(io,4)
- read(io,*,end=20,err=30)nkvec_bwfdet
- if(nkvec_bwfdet /= nkvec) then
-   write(6,*)'Warning: number of k-vectors in bwfn.data is different than what CHAMP expects'
-   write(6,*)'Number of k-points in bwfn.data:',nkvec_bwfdet
-   write(6,*)'Number of k-points CHAMP expects:',nkvec
-   if(nkvec_bwfdet < nkvec) call errstop('READBWF','Not enough k-points in bwfn.data')
- endif
- allocate(atno(nbasisbwf),basisbwf(3,nbasisbwf),gvecwf(3,nwvec),kvec_bwfdet(3,nkvec_bwfdet),&
-  &nband_bwfdet(nkvec_bwfdet,2),boccband(nkvec_bwfdet,2),stat=ialloc)
- if(ialloc/=0)call errstop('READBWF','Allocation problem.')
- num_spins=1 ; if(spin_polarized)num_spins=2
-
- do k=1,nkvec_bwfdet
-  call skip(io,1)
-  read(io,*,end=20,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2)
-  do ispin=1,num_spins
-   do band=1,nband_bwfdet(k,ispin)
-    call skip(io,3)
-    if(k==1.and.band==1)then
-     read(io,fmt='(a)',end=20,err=30)sline
-     if(scan(sline,",")/=0)then
-      pwreal=.false. ! No inversion symmetry --> complex PW coefficients
-     else
-      pwreal=.true.  ! Inversion symmetry --> real PW coefficients
-     endif
-     backspace(io)
+    call skip(io,15)
+    read(io,*,end=20,err=30)spin_polarized               ; call skip(io,18)
+    read(io,*,end=20,err=30)nbasisbwf                    ; call skip(io,nbasisbwf+9)
+    read(io,*,end=20,err=30)nwvec                        ; call skip(io,nwvec+2)
+    read(io,*,end=20,err=30)nrbwf(1),nrbwf(2),nrbwf(3)   ; call skip(io,4)
+    read(io,*,end=20,err=30)nkvec_bwfdet
+    if(nkvec_bwfdet /= nkvec) then
+       write(6,*)'Warning: number of k-vectors in bwfn.data is different than what CHAMP expects'
+       write(6,*)'Number of k-points in bwfn.data:',nkvec_bwfdet
+       write(6,*)'Number of k-points CHAMP expects:',nkvec
+       if(nkvec_bwfdet < nkvec) call errstop('READBWF','Not enough k-points in bwfn.data')
     endif
-    call skip(io,nrbwf(1)*nrbwf(2)*nrbwf(3))
-   enddo ! bands
-  enddo ! spins
- enddo ! k
+
+    allocate(atno(nbasisbwf),basisbwf(3,nbasisbwf),gvecwf(3,nwvec),kvec_bwfdet(3,nkvec_bwfdet),&
+         &nband_bwfdet(nkvec_bwfdet,2),boccband(nkvec_bwfdet,2),stat=ialloc)
+    if(ialloc/=0)call errstop('READBWF','Allocation problem.')
+    num_spins=1 ; if(spin_polarized)num_spins=2
+
+    do k=1,nkvec_bwfdet
+       call skip(io,1)
+       read(io,*,end=20,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2)
+       do ispin=1,num_spins
+          do band=1,nband_bwfdet(k,ispin)
+             call skip(io,3)
+             if(k==1.and.band==1)then
+                read(io,fmt='(a)',end=20,err=30)sline
+                if(scan(sline,",")/=0)then
+                   pwreal=.false. ! No inversion symmetry --> complex PW coefficients
+                else
+                   pwreal=.true.  ! Inversion symmetry --> real PW coefficients
+                endif
+                backspace(io)
+             endif
+             call skip(io,nrbwf(1)*nrbwf(2)*nrbwf(3))
+          enddo ! bands
+       enddo ! spins
+    enddo ! k
+ endif
+
+#ifdef MPI
+! Broadcast array dimensions so other processors start allocating
+ if (am_master) then
+    bwf = bwfsize_type(spin_polarized,  pwreal, nbasisbwf, nwvec, nrbwf(3), nkvec_bwfdet)
+ endif
+ CALL MPI_BCAST(bwf, 1, MPI_bwfsizetype, 0, MPI_COMM_WORLD,ierr)
+ if(ierr/=0)call errstop('READBWF','Error in MPI_BCAST')
+
+ if (.NOT.am_master) then
+    spin_polarized = bwf%spin_polarized
+    pwreal         = bwf%pwreal
+    nbasisbwf      = bwf%nbasisbwf
+    nwvec          = bwf%nwvec
+    nrbwf          = bwf%nrbwf
+    nkvec_bwfdet   = bwf%nkvec_bwfdet
+    allocate(kvec_bwfdet(3,nkvec_bwfdet), nband_bwfdet(nkvec_bwfdet,2),boccband(nkvec_bwfdet,2),stat=ialloc)
+    if(ialloc/=0)call errstop('READBWF','Allocation problem.')
+    num_spins=1 ; if(spin_polarized)num_spins=2
+ endif
+
+! Broadcast nband_bwfdet
+ CALL MPI_BCAST(nband_bwfdet, nkvec_bwfdet*2, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+ if(ierr/=0)call errstop('READBWF','Error in MPI_BCAST')
+#endif
 
  maxband=maxval(nband_bwfdet(:,:))
  allocate(eigenvalue(maxband,nkvec_bwfdet,2),stat=ialloc)
  if(ialloc/=0)call errstop('READBWF','Eigenvalue allocation problem.')
 
  if(pwreal)then
-  allocate(avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
-  if(ialloc/=0)call errstop('READBWF','AVC allocation problem 1.')
-  avc=0.d0
-  if(spin_polarized)then
-   allocate(avc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
-   if(ialloc/=0)call errstop('READBWF','AVC allocation problem 2.')
-   avc2=0.d0
-  endif
+    allocate(avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+    if(ialloc/=0)call errstop('READBWF','AVC allocation problem 1.')
+    avc=0.d0
+    if(spin_polarized)then
+       allocate(avc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+       if(ialloc/=0)call errstop('READBWF','AVC allocation problem 2.')
+       avc2=0.d0
+    endif
  else
-  allocate(cavc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
-  if(ialloc/=0)call errstop('READBWF','AVC allocation problem 3.')
-  cavc=0.d0
-  if(spin_polarized)then
-   allocate(cavc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
-   if(ialloc/=0)call errstop('READBWF','AVC allocation problem 4.')
-   cavc2=0.d0
-  endif
+    allocate(cavc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+    if(ialloc/=0)call errstop('READBWF','AVC allocation problem 3.')
+    cavc=0.d0
+    if(spin_polarized)then
+       allocate(cavc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+       if(ialloc/=0)call errstop('READBWF','AVC allocation problem 4.')
+       cavc2=0.d0
+    endif
  endif
 
- rewind(io)
+ if (am_master) then
+    rewind(io)
 
 ! Detailed read of bwfn.data:
 
 ! Title and basic info about plane-wave DFT calc
- read(io,'(a)',err=30,end=30)ltitle                           ; call skip(io,4)
- read(io,'(a)',err=30,end=30)code                            ; call skip(io,1)
- read(io,'(a)',err=30,end=30)method                          ; call skip(io,1)
- read(io,'(a)',err=30,end=30)functional                      ; call skip(io,1)
- read(io,'(a)',err=30,end=30)pseudo_type                     ; call skip(io,1)
- read(io,*,err=30,end=30)plane_wave_cutoff                   ; call skip(io,1)
- read(io,*,err=30,end=30)spin_polarized                      ; call skip(io,1)
- read(io,*,err=30,end=30)total_energy                        ; call skip(io,1)
- read(io,*,err=30,end=30)kinetic_energy                      ; call skip(io,1)
- read(io,*,err=30,end=30)local_potential_energy              ; call skip(io,1)
- read(io,*,err=30,end=30)non_local_potential_energy          ; call skip(io,1)
- read(io,*,err=30,end=30)electron_electron_energy            ; call skip(io,1)
- read(io,*,err=30,end=30)teionion                            ; call skip(io,1)
- read(io,*,err=30,end=30)num_electrons                       ; call skip(io,4)
+    read(io,'(a)',err=30,end=30)ltitle                           ; call skip(io,4)
+    read(io,'(a)',err=30,end=30)code                            ; call skip(io,1)
+    read(io,'(a)',err=30,end=30)method                          ; call skip(io,1)
+    read(io,'(a)',err=30,end=30)functional                      ; call skip(io,1)
+    read(io,'(a)',err=30,end=30)pseudo_type                     ; call skip(io,1)
+    read(io,*,err=30,end=30)plane_wave_cutoff                   ; call skip(io,1)
+    read(io,*,err=30,end=30)spin_polarized                      ; call skip(io,1)
+    read(io,*,err=30,end=30)total_energy                        ; call skip(io,1)
+    read(io,*,err=30,end=30)kinetic_energy                      ; call skip(io,1)
+    read(io,*,err=30,end=30)local_potential_energy              ; call skip(io,1)
+    read(io,*,err=30,end=30)non_local_potential_energy          ; call skip(io,1)
+    read(io,*,err=30,end=30)electron_electron_energy            ; call skip(io,1)
+    read(io,*,err=30,end=30)teionion                            ; call skip(io,1)
+    read(io,*,err=30,end=30)num_electrons                       ; call skip(io,4)
 
- gtitle=ltitle ; dtitle=ltitle
+    gtitle=ltitle ; dtitle=ltitle
 
 ! Geometry
- read(io,*,err=30)nbasisbwf                                     ; call skip(io,1)
- if(nbasisbwf /= ncent) then
-   write(6,*)
-   write(6,'(''Number of atoms from input:            '',      i10)')ncent
-   write(6,'(''Number of atoms from bwfn.data:        '',      i10)')nbasisbwf
-   call errstop('READBWF','Number of atoms differs in input and bwfn.data')
- endif
- do i=1,nbasisbwf
-  read(io,*,err=30)atno(i),(basisbwf(j,i),j=1,3)
-  do j=1,3
-     if(cent(j,i)-basisbwf(j,i) > tolerance) then
+    read(io,*,err=30)nbasisbwf                                     ; call skip(io,1)
+    if(nbasisbwf /= ncent) then
        write(6,*)
-       write(6,'(''Coordinates of atom '',i10,'' in  input:    '')')i
-       write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')cent(:,i)
-       write(6,'(''Coordinates of atom '',i10,'' in  bwfn.data:'')')i
-       write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')basisbwf(:,i)
-       call errstop('READBWF','Atom positions differ in input and bwfn.data')
-     endif
-  enddo
- enddo
-                                                               call skip(io,1)
- read(io,*,err=30)pa1
- do j=1,3
-    if(rlatt(j,1)-pa1(j) > tolerance) then
-      write(6,*)
-      write(6,'(''First primitive lattice vector in bwfn.data different from input'')')
-      write(6,'(''Primitive lattice vector in  input:    '')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rlatt(:,1)
-      write(6,'(''Primitive lattice vector in  bwfn.data:'')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')pa1
-      call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
-     endif
- enddo
- read(io,*,err=30)pa2
- do j=1,3
-    if(rlatt(j,2)-pa2(j) > tolerance) then
-      write(6,*)
-      write(6,'(''Second primitive lattice vector in bwfn.data different from input'')')
-      write(6,'(''Primitive lattice vector in  input:    '')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rlatt(:,2)
-      write(6,'(''Primitive lattice vector in  bwfn.data:'')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')pa2
-      call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
-     endif
- enddo
- read(io,*,err=30)pa3                                        ; call skip(io,4)
- do j=1,3
-    if(rlatt(j,3)-pa3(j) > tolerance) then
-      write(6,*)
-      write(6,'(''Third primitive lattice vector in bwfn.data different from input'')')
-      write(6,'(''Primitive lattice vector in  input:    '')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rlatt(:,3)
-      write(6,'(''Primitive lattice vector in  bwfn.data:'')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')pa3
-      call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
-     endif
- enddo
+       write(6,'(''Number of atoms from input:            '',      i10)')ncent
+       write(6,'(''Number of atoms from bwfn.data:        '',      i10)')nbasisbwf
+       call errstop('READBWF','Number of atoms differs in input and bwfn.data')
+    endif
+    do i=1,nbasisbwf
+       read(io,*,err=30)atno(i),(basisbwf(j,i),j=1,3)
+       do j=1,3
+          if(cent(j,i)-basisbwf(j,i) > tolerance) then
+             write(6,*)
+             write(6,'(''Coordinates of atom '',i10,'' in  input:    '')')i
+             write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')cent(:,i)
+             write(6,'(''Coordinates of atom '',i10,'' in  bwfn.data:'')')i
+             write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')basisbwf(:,i)
+             call errstop('READBWF','Atom positions differ in input and bwfn.data')
+          endif
+       enddo
+    enddo
+    call skip(io,1)
+    read(io,*,err=30)pa1
+    do j=1,3
+       if(rlatt(j,1)-pa1(j) > tolerance) then
+          write(6,*)
+          write(6,'(''First primitive lattice vector in bwfn.data different from input'')')
+          write(6,'(''Primitive lattice vector in  input:    '')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rlatt(:,1)
+          write(6,'(''Primitive lattice vector in  bwfn.data:'')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')pa1
+          call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
+       endif
+    enddo
+    read(io,*,err=30)pa2
+    do j=1,3
+       if(rlatt(j,2)-pa2(j) > tolerance) then
+          write(6,*)
+          write(6,'(''Second primitive lattice vector in bwfn.data different from input'')')
+          write(6,'(''Primitive lattice vector in  input:    '')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rlatt(:,2)
+          write(6,'(''Primitive lattice vector in  bwfn.data:'')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')pa2
+          call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
+       endif
+    enddo
+    read(io,*,err=30)pa3                                        ; call skip(io,4)
+    do j=1,3
+       if(rlatt(j,3)-pa3(j) > tolerance) then
+          write(6,*)
+          write(6,'(''Third primitive lattice vector in bwfn.data different from input'')')
+          write(6,'(''Primitive lattice vector in  input:    '')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rlatt(:,3)
+          write(6,'(''Primitive lattice vector in  bwfn.data:'')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')pa3
+          call errstop('READBWF','Lattice vectors differ in input and bwfn.data')
+       endif
+    enddo
 
 ! G vectors
- read(io,*,err=30)nwvec                                      ; call skip(io,1)
- do ig=1,nwvec
-  read(io,*,err=30)gvecwf(1,ig),gvecwf(2,ig),gvecwf(3,ig)
- enddo                                                       ; call skip(io,1)
- read(io,*,err=30)nrbwf
-                                                               call skip(io,4)
+    read(io,*,err=30)nwvec                                      ; call skip(io,1)
+    do ig=1,nwvec
+       read(io,*,err=30)gvecwf(1,ig),gvecwf(2,ig),gvecwf(3,ig)
+    enddo; call skip(io,1)
+    read(io,*,err=30)nrbwf
+ endif
+
+ if (am_master) then
+    call skip(io,4)
 ! k points, numbers of bands, eigenvalues, orbital coefficients
- read(io,*,err=30)nkvec_bwfdet
- do k=1,nkvec_bwfdet
-                                                               call skip(io,1)
-  read(io,*,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2),kvec_bwfdet(1,k),kvec_bwfdet(2,k),kvec_bwfdet(3,k)
-  if(kvec_bwfdet(1,k)-rkvec(1,k) > tolerance .or. kvec_bwfdet(2,k)-rkvec(2,k) > tolerance .or. kvec_bwfdet(3,k)-rkvec(3,k) > tolerance) then
-      write(6,*)
-      write(6,'(''K-point '',i,'' in bwfn.data different from what CHAMP expects'')')k
-      write(6,'(''K-point CHAMP expects:   '')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rkvec(:,k)
-      write(6,'(''K-point in bwfn.data:    '')')
-      write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')kvec_bwfdet(:,k)
-   endif
-  do ispin=1,num_spins ! 2 if spin_polarized, 1 if not
-   do band=1,nband_bwfdet(k,ispin)
-                                                                call skip(io,1)
-    read(io,*)i,j,eigenvalue(band,k,ispin)                    ; call skip(io,1)
-    do n1=0,nrbwf(1)-1
-     do n2=0,nrbwf(2)-1
-      do n3=0,nrbwf(3)-1
-       if(pwreal)then
-        if(ispin==1)then
-         read(io,*,end=20,err=30)avc(n1,n2,n3,band)
-        else
-         read(io,*,end=20,err=30)avc2(n1,n2,n3,band)
-        endif
-       else
-        if(ispin==1)then
-         read(io,*,end=20,err=30)cavc(n1,n2,n3,band,k)
-        else
-         read(io,*,end=20,err=30)cavc2(n1,n2,n3,band,k)
-        endif
+    read(io,*,err=30)nkvec_bwfdet
+    do k=1,nkvec_bwfdet
+       call skip(io,1)
+       read(io,*,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2),kvec_bwfdet(1,k),kvec_bwfdet(2,k),kvec_bwfdet(3,k)
+       if(kvec_bwfdet(1,k)-rkvec(1,k) > tolerance .or. kvec_bwfdet(2,k)-rkvec(2,k) > tolerance .or. kvec_bwfdet(3,k)-rkvec(3,k) > tolerance) then
+          write(6,*)
+          write(6,'(''K-point '',i,'' in bwfn.data different from what CHAMP expects'')')k
+          write(6,'(''K-point CHAMP expects:   '')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rkvec(:,k)
+          write(6,'(''K-point in bwfn.data:    '')')
+          write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')kvec_bwfdet(:,k)
        endif
-      enddo
-     enddo
-    enddo
-   enddo ! bands
-  enddo ! spin states
- enddo ! k
- if(.not.spin_polarized)eigenvalue(:,:,2)=eigenvalue(:,:,1)
- write(6,*)
+       do ispin=1,num_spins ! 2 if spin_polarized, 1 if not
+          do band=1,nband_bwfdet(k,ispin)
+             call skip(io,1)
+             read(io,*)i,j,eigenvalue(band,k,ispin)                    ; call skip(io,1)
+             do n1=0,nrbwf(1)-1
+                do n2=0,nrbwf(2)-1
+                   do n3=0,nrbwf(3)-1
+                      if(pwreal)then
+                         if(ispin==1)then
+                            read(io,*,end=20,err=30)avc(n1,n2,n3,band)
+                         else
+                            read(io,*,end=20,err=30)avc2(n1,n2,n3,band)
+                         endif
+                      else
+                         if(ispin==1)then
+                            read(io,*,end=20,err=30)cavc(n1,n2,n3,band,k)
+                         else
+                            read(io,*,end=20,err=30)cavc2(n1,n2,n3,band,k)
+                         endif
+                      endif
+                   enddo
+                enddo
+             enddo
+          enddo ! bands
+       enddo ! spin states
+    enddo ! k
+    if(.not.spin_polarized)eigenvalue(:,:,2)=eigenvalue(:,:,1)
+    write(6,*)
+    close(io) ; open_unit(io)=.false.
 
- close(io) ; open_unit(io)=.false.
+    write(6,'(t2,''Title: '',a)')trim(ltitle)
+    write(6,'(t2,''Generating code                           : '',a)')trim(code)
+    write(6,'(t2,''Method                                    : '',a)')trim(method)
+    write(6,'(t2,''DFT functional                            : '',a)') &
+         &trim(functional)
+    write(6,'(t2,''Pseudopotential type                      : '',a)') &
+         &trim(pseudo_type)
+    tmpr=r2s(plane_wave_cutoff,'(f12.3)')
+    write(6,'(t2,''Plane-wave cutoff (au)                    : '',a)') &
+         &trim(tmpr)
+    write(6,*)
+    write(6,*)'Number of k points                        : ',trim(i2s(nkvec_bwfdet))
+    write(6,*)'Max # bands per k point                   : ',trim(i2s(maxband))
+    write(6,*)'Number of G vectors                       : ',trim(i2s(nwvec))
+    write(6,*)
+    write(6,*)'DFT ENERGY AND COMPONENTS (au per primitive cell):'
+    tmpr=r2s(total_energy,'(f16.10)')
+    write(6,'(t2,''Total energy                              : '',a)')trim(tmpr)
+    tmpr=r2s(kinetic_energy,'(f16.10)')
+    write(6,'(t2,''Kinetic energy                            : '',a)')trim(tmpr)
+    tmpr=r2s(local_potential_energy,'(f16.10)')
+    write(6,'(t2,''Local potential energy                    : '',a)')trim(tmpr)
+    tmpr=r2s(non_local_potential_energy,'(f16.10)')
+    write(6,'(t2,''Non-local potential energy                : '',a)')trim(tmpr)
+    tmpr=r2s(electron_electron_energy,'(f16.10)')
+    write(6,'(t2,''Electron-electron energy                  : '',a)')trim(tmpr)
+    tmpr=r2s(teionion,'(f16.10)')
+    write(6,'(t2,''Ion-ion energy                            : '',a)')trim(tmpr)
+    write(6,*)
+    if(pwreal)then
+       write(6,*)'Real blip coefficients ==> GAMMA calculation'
+    else
+       write(6,*)'Complex blip coefficients ==> calculation with K-POINTS'
+    endif
+    eionion=teionion
+ endif
 
- if(am_master)then
-  write(6,'(t2,''Title: '',a)')trim(ltitle)
-  write(6,'(t2,''Generating code                           : '',a)')trim(code)
-  write(6,'(t2,''Method                                    : '',a)')trim(method)
-  write(6,'(t2,''DFT functional                            : '',a)') &
-   &trim(functional)
-  write(6,'(t2,''Pseudopotential type                      : '',a)') &
-   &trim(pseudo_type)
-  tmpr=r2s(plane_wave_cutoff,'(f12.3)')
-  write(6,'(t2,''Plane-wave cutoff (au)                    : '',a)') &
-   &trim(tmpr)
-  write(6,*)
-  write(6,*)'Number of k points                        : ',trim(i2s(nkvec_bwfdet))
-  write(6,*)'Max # bands per k point                   : ',trim(i2s(maxband))
-  write(6,*)'Number of G vectors                       : ',trim(i2s(nwvec))
-  write(6,*)
-  write(6,*)'DFT ENERGY AND COMPONENTS (au per primitive cell):'
-  tmpr=r2s(total_energy,'(f16.10)')
-  write(6,'(t2,''Total energy                              : '',a)')trim(tmpr)
-  tmpr=r2s(kinetic_energy,'(f16.10)')
-  write(6,'(t2,''Kinetic energy                            : '',a)')trim(tmpr)
-  tmpr=r2s(local_potential_energy,'(f16.10)')
-  write(6,'(t2,''Local potential energy                    : '',a)')trim(tmpr)
-  tmpr=r2s(non_local_potential_energy,'(f16.10)')
-  write(6,'(t2,''Non-local potential energy                : '',a)')trim(tmpr)
-  tmpr=r2s(electron_electron_energy,'(f16.10)')
-  write(6,'(t2,''Electron-electron energy                  : '',a)')trim(tmpr)
-  tmpr=r2s(teionion,'(f16.10)')
-  write(6,'(t2,''Ion-ion energy                            : '',a)')trim(tmpr)
-  write(6,*)
-  if(pwreal)then
-   write(6,*)'Real blip coefficients ==> GAMMA calculation'
-  else
-   write(6,*)'Complex blip coefficients ==> calculation with K-POINTS'
-  endif
- endif ! am_master
+#ifdef MPI
+ CALL MPI_BCAST(eigenvalue, maxband*nkvec_bwfdet*2, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+ CALL MPI_BCAST(kvec_bwfdet, 3*nkvec_bwfdet, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+! Not needed, read from input later
+! CALL MPI_BCAST(eionion, 1, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
 
- eionion=teionion
+! Broadcast coefficients
+ if(pwreal)then
+    CALL MPI_BCAST(avc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+    if (spin_polarized) then
+       CALL MPI_BCAST(avc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+    endif
+ else
+    CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+    if (spin_polarized) then
+       CALL MPI_BCAST(cavc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+    endif
+ endif
+#endif
 
  return
 
@@ -1086,8 +1166,8 @@ bloop:do ik=1,num_g
 !                                                                           !
 ! Input:                                                                    !
 !  r(3)                 position in units of lattice vectors                !
-!  avc(0:nrbwf,0:nrbwf,0:nrbwf,boccband,nkvec_bwfdet)       blip coefficients               !
-!  nrbwf(3)                num of divisions for each side of the box           !
+!  avc(0:nrbwf,0:nrbwf,0:nrbwf,boccband,nkvec_bwfdet) blip coefficients     !
+!  nrbwf(3)                num of divisions for each side of the box        !
 !                       (defines the blip grid)                             !
 !  bg(3,3)              the reciprocal lattice vectors (in a.u./tpi)        !
 !                                                                           !

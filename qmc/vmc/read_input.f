@@ -670,7 +670,7 @@ c read k-shift for generating k-vector lattice
       endif
 
       read(5,*) nctype,ncent
-      write(6,'(/,''nctype,ncent ='',t31,2i5)') nctype,ncent
+      write(6,'(/,''nctype,ncent ='',t31,i3,i5)') nctype,ncent
       if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
       if(ncent.gt.MCENT) stop 'ncent > MCENT'
 
@@ -802,7 +802,7 @@ c Determinantal section
       write(6,'(/,a30,/)') section
 
       read(5,*) inum_orb,iorb_used,iorb_format !JT
-      write(6,'(''inum_orb,iorb_format ='',t31,i10,1x,a16)') inum_orb,iorb_format
+      write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
       if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.(abs(inum_orb).ne.4.and.abs(inum_orb).ne.6))) then
          stop 'abs(inum_orb) must be 0, 4 or 6'
       endif

@@ -394,7 +394,7 @@ c Compute streched electronic positions for all nucleus displacement
                 drifdifr=drifdifs/drifdif
               endif
               call hpsi(xoldw(1,1,iw,ifr),psidn,psijn,voldw(1,1,iw,ifr),div_vow(1,iw),d2n,pen,pein,enew,denergy,ifr)
-c Temporary test to see how well correlated sampling works for excieted states
+c Temporary test to see how well correlated sampling works for excited states
 c Limit outliers such that tau->0 limit is unchanged
 c Warning: I should calculate sigma_est
 c             sigma_est=0.2d0

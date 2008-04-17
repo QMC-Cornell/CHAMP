@@ -216,12 +216,16 @@ module walkers_mod
 ! Description   : read initial walkers for DMC
 !
 ! Created       : J. Toulouse, 01 Apr 2007
+! Modified      : R. G. Hennig, April 2008, Read walkers on master node & bcast
 ! ------------------------------------------------------------------------------
+  USE mpi_mod
   implicit none
   include 'commons.h'
 
+
+
 ! output
-  logical ok
+  logical ok, am_master
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'read_initial_walkers'
@@ -243,7 +247,7 @@ module walkers_mod
   integer               :: elec_dn_nb_closest_to_atom_read_nb, elec_dn_nb_closest_to_atom_read_i
   integer :: dim_i, elec_i, elec_j, walk_i, walk_mod_i, cent_closest_i, walk_j, cent_i
   integer nconf_read, nconf_missing, nconf_dropped, nconf_unique
-  integer file_unit, iostat
+  integer file_unit, iostat, ierr
   logical found, walker_not_unique
 
 ! begin
@@ -256,41 +260,59 @@ module walkers_mod
   call object_provide ('ncent')
   call object_provide ('nconf')
 
+#ifdef MPI
+ if(nproc==1) then
+   am_master=.true.
+ else
+   am_master=wid
+ endif
+
+ if (am_master) then
+#endif
+
 ! check file exists
-  call file_exist_or_die (file_mc_configs_in)
+     call file_exist_or_die (file_mc_configs_in)
 
 ! open file
-  file_unit = 0
-  call open_file_or_die (file_mc_configs_in, file_unit)
+     file_unit = 0
+     call open_file_or_die (file_mc_configs_in, file_unit)
 
 ! allocation
-  call alloc ('coord_elec_read', coord_elec_read, ndim, nelec)
+     call alloc ('coord_elec_read', coord_elec_read, ndim, nelec)
 
 ! loop over lines in file
-  do
-
-   read(file_unit,fmt=*,iostat=iostat) ((coord_elec_read (dim_i, elec_i), dim_i=1,ndim), elec_i=1,nelec)
-
-   if (iostat /= 0) exit
-
-   nconf_read = nconf_read + 1
-   call alloc ('coord_elec_wlk_read', coord_elec_wlk_read, ndim, nelec, nconf_read)
-   coord_elec_wlk_read (:,:,nconf_read) = coord_elec_read (:,:)
-
-   if (nconf_read >= nconf_total) exit
-
-  enddo ! end of loop over lines
+     call alloc ('coord_elec_wlk_read', coord_elec_wlk_read, ndim, nelec, nconf_total)
+     do
+        read(file_unit,fmt=*,iostat=iostat) ((coord_elec_read (dim_i, elec_i), dim_i=1,ndim), elec_i=1,nelec)
+        if (iostat /= 0) exit
+        nconf_read = nconf_read + 1
+        coord_elec_wlk_read (:,:,nconf_read) = coord_elec_read (:,:)
+        if (nconf_read >= nconf_total) exit
+     enddo ! end of loop over lines
 
 ! close file
-  close(file_unit)
+     close(file_unit)
 
-  write(6,'(i5,3a)') nconf_read,' walkers read from file >',trim(file_mc_configs_in),'<'
+     write(6,'(i5,3a)') nconf_read,' walkers read from file >',trim(file_mc_configs_in),'<'
 
 ! if no walkers read, return
-  if (nconf_read <= 0) then
-   ok = .false.
-   return
+     if (nconf_read <= 0) then
+        ok = .false.
+        return
+     endif
+
+#ifdef MPI
   endif
+
+  CALL MPI_BCAST(nconf_read, 1, MPI_INTEGER, 0, MPI_COMM_WORLD,ierr)
+
+  if (.not.am_master) then
+     call alloc ('coord_elec_wlk_read', coord_elec_wlk_read, ndim, nelec, nconf_total)
+  endif
+
+  CALL MPI_BCAST(coord_elec_wlk_read, ndim*nelec*nconf_total, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+
+#endif
 
 ! Analyse walker population:
 
