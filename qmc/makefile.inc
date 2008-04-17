@@ -259,7 +259,6 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
 # Jaguar at NCCS Oak Ridge using the Pathscale compiler
 # must unload pgi and load pathscale first:
 # module swap PrgEnv-pgi PrgEnv-pathscale && module load acml
-ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
 # Serial compilation
  CHAMP_F77 = ftn -target=linux
