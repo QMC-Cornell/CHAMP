@@ -155,6 +155,14 @@ c Use Slater approx for radial fn
 c Determine the maximum value of radial function for rejection sampling
         root=dsqrt((d3b2*co-zeta)**2+two*zeta*co)
         rmax1=(d3b2*co-zeta+root)/(two*zeta*co)
+! JT: add test on co for special case such as H atom for which co=0 and rmax1=infinity.
+! rmax1 was being limited to the interval [rbot,rtop] in the next lines but may be the compiler does not like comparing +-infinity.
+        if(co.ne.0d0) then ! JT
+          rmax1=(d3b2*co-zeta+root)/(two*zeta*co)
+         else              ! JT
+          rmax1=rtop       ! JT
+        endif              ! JT
+
         if(rmax1.lt.rbot) rmax1=rbot
         if(rmax1.gt.rtop) rmax1=rtop
         fmax=sqrt(rmax1)*abs(one+co*rmax1)*dexp(-zeta*rmax1)

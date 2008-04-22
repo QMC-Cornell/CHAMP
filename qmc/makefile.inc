@@ -25,9 +25,6 @@ BLAS=-L$(LIBHOME)/lib2/blas -lblas
 
 PSPLINE=-L$(LIBHOME)/lib2/pspline/pspline -lpspline
 
-CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
-
-
 # C compilation ------------------------------------------------------------
 
 CHAMP_C=gcc
@@ -230,8 +227,10 @@ endif
 # Jaguar at NCCS Oak Ridge
 ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
-# Serial (Portland compiler), requires ACML module?
+# Portland compiler (requires ACML module?)
 ## module load acml
+
+# Serial compilation
 # the following configuration compiles but the code segm. faults
 # CHAMP_F77 = pgf95
 # CHAMP_F95 = pgf95
@@ -242,8 +241,7 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
 # CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
 # CHAMP_LD_FAST = -O2 -tp amd64e
 
-# Parallel (Portland compiler), requires ACML module
-# module load acml
+# MPI compilation
 # CHAMP_MPIF77 = mpif90
 # CHAMP_MPIF95 = mpif90
 # CHAMP_MPIC = mpicc
@@ -256,9 +254,9 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
 #  BLAS=${ACML}
 
 # Pathscale compiler
-# Jaguar at NCCS Oak Ridge using the Pathscale compiler
-# must unload pgi and load pathscale first:
+# must unload pgi and load pathscale and acml first:
 # module swap PrgEnv-pgi PrgEnv-pathscale && module load acml
+# The "-Wl,-z,muldefs" tells it to not stop if it encounters multiple definitions of e.g. __exp
 
 # Serial compilation
  CHAMP_F77 = ftn -target=linux
@@ -279,7 +277,8 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
  CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
  CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
 
- LAPACK=
+# acml has both the LAPACK and the BLAS
+ LAPACK=-lacml
  BLAS=
 
 endif
@@ -313,3 +312,4 @@ ifeq ($(hostname),cfe1)
   CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
 endif
 
+CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)

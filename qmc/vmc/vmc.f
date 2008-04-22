@@ -220,7 +220,7 @@ c xnew, since only the first electron gets initialized in metrop
   400       xnew(k,i)=xold(k,i)
       endif
 
-c If nconf_new > 0 then we want to dump configurations for a future
+c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
 c optimization or dmc calculation. So figure out how often we need to write a
 c configuration to produce nconf_new configurations. If nconf_new = 0
 c then set up so no configurations are written.

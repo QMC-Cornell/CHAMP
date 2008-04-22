@@ -9,10 +9,10 @@ c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
-      use all_tools_mod ! JT
-      use montecarlo_mod ! JT
-      use opt_lin_mod ! JT
-      use opt_ptb_mod ! JT
+      use all_tools_mod
+      use montecarlo_mod
+      use opt_lin_mod
+      use opt_ptb_mod
       use deriv_exp_mod
 
       implicit real*8(a-h,o-z)
@@ -169,7 +169,14 @@ c    &  (one+co*rmino(i))
 c Use Slater approx for radial fn
 c Determine the maximum value of radial function for rejection sampling
         root=dsqrt((d3b2*co-zeta)**2+two*zeta*co)
-        rmax1=(d3b2*co-zeta+root)/(two*zeta*co)
+! JT: add test on co for special case such as H atom for which co=0 and rmax1=infinity
+! rmax1 was being limited to the interval [rbot,rtop] in the next lines but may be the compiler does not like comparing +-infinity.
+        if(co.ne.0d0) then ! JT
+          rmax1=(d3b2*co-zeta+root)/(two*zeta*co)
+         else              ! JT
+          rmax1=rtop       ! JT
+        endif              ! JT
+  
         if(rmax1.lt.rbot) rmax1=rbot
         if(rmax1.gt.rtop) rmax1=rtop
         fmax=sqrt(rmax1)*abs(one+co*rmax1)*dexp(-zeta*rmax1)
@@ -547,12 +554,12 @@ c primary configuration
       call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
 
-      eloc = eold(1)                 !JT
-      call object_modified_by_index (eold_index)  !JT
-      call object_modified_by_index (eloc_index)  !JT
-      call object_modified_by_index (psido_index) !JT
-      call object_modified_by_index (denergy_index) !JT
-      call object_modified_by_index (vold_index) !JT
+      eloc = eold(1)                               !JT
+      call object_modified_by_index (eold_index)   !JT
+      call object_modified_by_index (eloc_index)   !JT
+      call object_modified_by_index (psido_index)  !JT
+      call object_modified_by_index (denergy_index)!JT
+      call object_modified_by_index (vold_index)   !JT
       call object_modified_by_index (div_vo_index) !JT
 
 ! check deloc_exp !!!!!!!!!!!!!!!!!!!!!!!!!
