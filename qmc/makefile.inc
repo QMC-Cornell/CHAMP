@@ -312,4 +312,4 @@ ifeq ($(hostname),cfe1)
   CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
 endif
 
-CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
+CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)

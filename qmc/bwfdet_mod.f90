@@ -111,7 +111,7 @@ CONTAINS
    am_master=wid
  endif
 
- if (am_master) then
+ if(am_master) then
     ialloc=0
 
     call open_units(io,ierr)
@@ -161,7 +161,7 @@ CONTAINS
 
 #ifdef MPI
 ! Broadcast array dimensions so other processors start allocating
- if (am_master) then
+ if(am_master) then
     bwf = bwfsize_type(spin_polarized,  pwreal, nbasisbwf, nwvec, nrbwf(3), nkvec_bwfdet)
  endif
  CALL MPI_BCAST(bwf, 1, MPI_bwfsizetype, 0, MPI_COMM_WORLD,ierr)
@@ -208,7 +208,7 @@ CONTAINS
     endif
  endif
 
- if (am_master) then
+ if(am_master) then
     rewind(io)
 
 ! Detailed read of bwfn.data:
@@ -298,7 +298,7 @@ CONTAINS
     read(io,*,err=30)nrbwf
  endif
 
- if (am_master) then
+ if(am_master) then
     call skip(io,4)
 ! k points, numbers of bands, eigenvalues, orbital coefficients
     read(io,*,err=30)nkvec_bwfdet

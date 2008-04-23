@@ -15,6 +15,9 @@ c Reads in either analytic or localized orbitals
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
       common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
@@ -22,7 +25,7 @@ c Reads in either analytic or localized orbitals
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
+      common /contr_ylm/ irecursion_ylm
 
       dimension orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),r(2)
 
@@ -49,6 +52,14 @@ c Do not confuse analytic orbs with analytic basis fns.
         call distinct_radial_bas
         write(6,'(''read in analytical orbitals'')')
       endif
+
+c Check that irecursion_ylm=1 if l of basis function >=4
+      do 20 ibasis=1,nbasis
+        if(l_bas(ibasis).ge.4 .and. irecursion_ylm.eq.0) then
+          write(6,'(''if basis functions with l>=4 are used, set irecursion_ylm=1 in read_input'')')
+          stop 'if basis functions with l>=4 are used, set irecursion_ylm=1 in read_input'
+        endif
+   20 continue
 
       if(inum_orb.ne.0 .and. num_orb_exist.eq.0) then
         read(5,*) ngrid_orbx,ngrid_orby,sizex,sizey

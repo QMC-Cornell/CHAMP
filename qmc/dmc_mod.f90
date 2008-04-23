@@ -139,7 +139,7 @@ module dmc_mod
 ! forces implemented only for certain dmc control options
   if(nforce > 1) write(6,'(''Possible Warning: force implemented for certain dmc control options'')')
 
-c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
+! If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
 ! optimization or dmc calculation. So figure out how often we need to write a
 ! configuration to produce nconf_new configurations. If nconf_new = 0
 ! then set up so no configurations are written.
