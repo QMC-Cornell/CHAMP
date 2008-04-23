@@ -233,7 +233,7 @@ c then set up so no configurations are written.
 c zero out estimators and averages
       if(irstar.ne.1) then
 !JT        call my_second(1,'zerest')
-        call zerest
+         call zerest
       endif
 
 c check if restart flag is on. If so then read input from

@@ -5,6 +5,7 @@ module deriv_mod
   use deriv_csf_mod
   use deriv_orb_mod
   use deriv_exp_mod
+  use periodic_jastrow_mod 
   use deriv_geo_mod
 
 ! Declaration of global variables and default values
@@ -86,6 +87,8 @@ module deriv_mod
   integer i, j, pair
   integer param_i
 
+  integer index_params(10)
+
 ! header
   if (header_exe) then
 
@@ -124,6 +127,11 @@ module deriv_mod
    param_nb = param_nb + param_orb_nb
   endif
 
+  if (l_opt_pjas) then
+   call object_provide_by_index (param_nb_bld_index, param_pjas_nb_index)
+   param_nb = param_nb + param_pjas_nb
+  endif
+
   if (l_opt_geo) then
    call object_provide_by_index (param_nb_bld_index, param_geo_nb_index)
    param_nb = param_nb + param_geo_nb
@@ -143,21 +151,61 @@ module deriv_mod
 
 ! Type of each optimized parameter
   call object_alloc ('param_type', param_type, param_nb)
-  do param_i = 1, param_nb
-   if (param_i <= nparmcsf) then
+
+!!$  do param_i = 1, param_nb
+!!$   if (param_i <= nparmcsf) then
+!!$     param_type (param_i) = 'CSF'
+!!$   elseif (param_i <= nparmj) then
+!!$     param_type (param_i) = 'Jastrow'
+!!$   elseif (param_i <= param_exp_nb) then
+!!$     param_type (param_i) = 'exponent'
+!!$  elseif (param_i <= param_orb_nb) then
+!!$     param_type (param_i) = 'orbital'
+!!$  elseif (param_i <= param_pjas_nb) then
+!!$     param_type (param_i) = 'pjas'
+!!$  else
+!!$!     stop "not defined param in param_nb_bld "
+!!$  endif
+!!$
+!!$  enddo 
+
+!! commented out WAS 
+  index_params (1)= 0
+  index_params (2)= index_params (1) + nparmcsf
+  index_params (3)= index_params (2) + nparmj
+  index_params (4)= index_params (3) + param_exp_nb
+  index_params (5)= index_params (4) + param_orb_nb
+  index_params (6)= index_params (5) + param_pjas_nb
+  index_params (7)= index_params (6) + param_geo_nb
+  
+  do param_i =   index_params (1) +1 , index_params (2)
      param_type (param_i) = 'CSF'
-   elseif (param_i <= nparmcsf+nparmj) then
-     param_type (param_i) = 'Jastrow'
-   elseif (param_i <= nparmcsf+nparmj+param_exp_nb) then
-     param_type (param_i) = 'exponent'
-   elseif (param_i <= nparmcsf+nparmj+param_exp_nb+param_orb_nb) then
-     param_type (param_i) = 'orbital'
-   else
-     param_type (param_i) = 'geometry'
-   endif
   enddo
 
+  do param_i =   index_params (2) +1 , index_params (3)
+     param_type (param_i) = 'Jastrow'
+  enddo
+  
+  do param_i =   index_params (3) +1 , index_params (4)
+     param_type (param_i) = 'exponent'
+  enddo
+
+  do param_i =   index_params (4) +1 , index_params (5)
+     param_type (param_i) = 'orbital'
+  enddo
+  
+  do param_i =   index_params (5) +1 , index_params (6)
+     param_type (param_i) = 'pjas'
+  enddo
+
+  do param_i =   index_params (6) +1 , index_params (7)
+     param_type (param_i) = 'geometry'
+  enddo
+
+
   end subroutine param_nb_bld
+
+
 
 ! ==============================================================================
   subroutine dpsi_bld
@@ -223,6 +271,13 @@ module deriv_mod
    call object_provide_by_index (dpsi_bld_index, dpsi_orb_index)
    dpsi (shift+1:shift+param_orb_nb) = dpsi_orb (:)
    shift = shift + param_orb_nb
+  endif
+
+  ! pjas contribution
+  if (l_opt_pjas) then
+     call object_provide_by_index (dpsi_bld_index, dpsi_pjas_index)
+     dpsi (shift+1:shift+param_pjas_nb) = dpsi_pjas (:)
+     shift = shift + param_pjas_nb
   endif
 
 !  call require ('shift == param_nb', shift == param_nb)
@@ -361,6 +416,13 @@ module deriv_mod
    call object_provide_by_index (deloc_bld_index, deloc_orb_index)
    deloc (shift+1:shift+param_orb_nb) = deloc_orb (:)
    shift = shift + param_orb_nb
+  endif
+
+! pjas contribution
+  if (l_opt_pjas ) then
+   call object_provide_by_index (deloc_bld_index, deloc_pjas_index)
+   deloc (shift+1:shift+param_pjas_nb) = deloc_pjas (:)
+   shift = shift + param_pjas_nb
   endif
 
 !  call require ('shift == param_nb', shift == param_nb)

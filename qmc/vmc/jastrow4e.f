@@ -13,7 +13,10 @@ c Jastrow 6   must be used with one of isc=6,7
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-
+!!! added WAS
+      common /jas_c_cut/ icutjasc, cutjasc
+      common /contrl_per/ iperiodic,ibasis
+!!!
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -106,6 +109,9 @@ c Jastrow 6   must be used with one of isc=6,7
 
       if(rij.gt.cutjas_ee) goto 22
 
+
+
+
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
 c     topuu=0
@@ -152,6 +158,12 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
    25     uu(iord)=uu(1)*uu(iord-1)
       endif
 
+      if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
+         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+     +        dfcuti, dfcutj,d2fcuti,d2fcutj)
+      endif
+      
       do 50 ic=1,ncent
         it=iwctype(ic)
 
@@ -169,6 +181,13 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
           call switch_scale1(rri(1),dd7,3)
           call switch_scale1(rrj(1),dd8,3)
         endif
+
+        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+     +          dfcuti, dfcutj,d2fcuti,d2fcutj)
+        endif
+        
 
         do 30 iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
@@ -206,7 +225,14 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
         fu=fu*dd1/rij
         fi=fi*dd7/ri
         fj=fj*dd8/rj
-
+!!!  een for periodic systems         WAS
+        if(icutjasc .gt.  0 .or. iperiodic .ne. 0) then
+           fi = fi * fcut + (fc * fcutj *  dfcuti)/ri
+           fj = fj * fcut + (fc * fcuti *  dfcutj)/rj
+           fu = fu * fcut
+           fc = fc * fcut
+        endif
+!!! end WAS         
         fsn(i,j)=fsn(i,j) + fc
 
         fijn(1,i,j)=fijn(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)

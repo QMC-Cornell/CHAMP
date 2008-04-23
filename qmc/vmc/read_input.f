@@ -193,6 +193,10 @@ c            2  in Troullier-Martins format (unformatted)
 c            3  in Troullier-Martins format (formatted)
 c            4  in champ format (formatted)
 c            5  chemistry pseudopotentials in GAMESS-like format with 1 extra line (formatted)
+c
+c            6  fhi format (always formatted)       WAS  
+c            7  casino format (always formated)      WAS 
+c            8  siesta format                   WAS 
 c numr     <=0 analytic radial basis functions (Slater, asymptotic, gaussian
 c              specified by n1s, n2s, n2p, ...)
 c            0 analytic radial basis functions with usual normalization
@@ -575,7 +579,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr
       write(6,'(''nforce,nefp ='',t31,4i5)') nforce,nefp
       if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
-      if(nloc.lt.-3 .or. nloc.gt.5) stop 'nloc must be between -3 and 5 inclusive'
+      if(nloc.lt.-3 .or. nloc.gt.8) stop 'nloc must be between -3 and 8 inclusive'
       if(nloc.ge.2) then
         read(5,*) nquad
         write(6,'(''nquad='',t31,i4)') nquad
@@ -752,6 +756,8 @@ c Convert center positions from primitive lattice vector units to cartesian coor
           call readps_champ
          elseif(nloc.eq.5) then
           call readps_gauss
+         elseif(nloc.eq.8) then
+          call readps_siesta
          else
           stop 'nloc > 5'
         endif
@@ -1076,7 +1082,9 @@ c Jastrow section
         if(norda.gt.MORDJ) stop 'norda>MORDJ'
         if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
         if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
-        if(iperiodic.gt.0 .and. nordc.gt.0) stop 'J_een not yet implemented for periodic systems'
+c WAS 
+        if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
+ccWAS 
         if(isc.ge.2) then
           read(5,*) scalek(1),a21
           write(6,'(''scalek(1),a21='',2f10.5)') scalek(1),a21

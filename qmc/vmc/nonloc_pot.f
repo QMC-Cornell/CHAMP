@@ -5,6 +5,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
 
       use deriv_orb_mod !JT
       use eloc_mod !JT
+      use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
 
@@ -27,6 +28,8 @@ c and store in vps
           call getvps_champ(r_en,i)
          elseif(nloc.eq.5) then
           call getvps_gauss(r_en,i)
+         elseif (nloc .ge. 6) then 
+          call getvps_champ(r_en,i)
          else
           stop 'nloc > 5'
         endif

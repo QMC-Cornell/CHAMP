@@ -101,11 +101,11 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
               dorb(k,iel,iorb)=dorb_tmp(k,iorb)*isgn
             enddo
             ddorb(iel,iorb)=ddorb_tmp(iorb)*isgn
-            if((iorb.eq.1).and.(iel.eq.1)) then
-              write(6,'(''r_basis='',3f9.4)')r_basis(1),r_basis(2),
-     &                                       r_basis(3)
-              write(6,*)'ddorb_lagrange=',ddorb(iel,iorb)
-            endif
+c            if((iorb.eq.1).and.(iel.eq.1)) then
+c              write(6,'(''r_basis='',3f9.4)')r_basis(1),r_basis(2),
+c     &                                       r_basis(3)
+c             write(6,*)'ddorb_lagrange=',ddorb(iel,iorb)
+c            endif
           enddo
         endif
 

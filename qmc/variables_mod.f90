@@ -62,6 +62,11 @@ module variables_mod
   logical                         :: l_opt_exp  = .false.
   logical                         :: l_opt_geo  = .false.
 
+!! pjas WAS 
+  logical                         :: l_opt_pjasen  = .false.
+  logical                         :: l_opt_pjasee  = .false.
+  logical                         :: l_opt_pjas  = .false.
+
   logical                         :: l_opt_jas_2nd_deriv = .false.
   logical                         :: l_opt_orb_eig  = .false.
   logical                         :: l_opt_orb_energy  = .false.

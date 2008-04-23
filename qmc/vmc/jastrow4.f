@@ -14,6 +14,11 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
+!!! added WAS
+      common /jas_c_cut/ icutjasc, cutjasc
+      common /contrl_per/ iperiodic,ibasis
+!!!
+
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -183,6 +188,14 @@ c       write(6,'(''rshift(k,i,ic)'',9f9.4)') (rshift(k,i,ic),k=1,ndim),(rshift(
         endif
 c       write(6,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
+        !!WAS
+        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+     +          dfcuti, dfcutj,d2fcuti,d2fcutj)
+        endif
+        !! WAS
+
         s=ri+rj
         t=ri-rj
 c       u2mt2=rij*rij-t*t
@@ -251,6 +264,22 @@ c             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
         fjj=fjj*dd8*dd8+fj*dd10
         fi=fi*dd7/ri
         fj=fj*dd8/rj
+!!!!  een for periodic systems         WAS
+        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+           
+           fuu = fuu * fcut
+           fii = fii * fcut +(2 * fi * ri * dfcuti + fc * d2fcuti)*fcutj 
+           fi = fi * fcut + (fc * fcutj *  dfcuti)/ri
+           fui = fui * fcut + (fu * fcutj *  dfcuti*rij)
+           
+           fjj = fjj * fcut + (2 * fj * dfcutj *rj + fc * d2fcutj)*fcuti
+           fj = fj * fcut + (fc * fcuti *  dfcutj)/rj
+           fuj = fuj * fcut + (fu * fcuti *  dfcutj * rij)
+           fc = fc * fcut
+           fu = fu * fcut
+        endif
+!!!! end WAS 
+
 
         fso(i,j)=fso(i,j) + fc
 

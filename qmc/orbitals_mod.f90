@@ -55,10 +55,14 @@ module orbitals_mod
 
 # if defined (PATHSCALE)
    character(len=max_string_len) :: orb_sym_lab (max_string_array_len) ! for pathscale compiler
+!WAS
+   real(dp)                      :: orb_energies (max_double_array_len)
 # else
    character(len=max_string_len), allocatable  :: orb_sym_lab (:)
+    real(dp), allocatable               :: orb_energies (:)
 # endif
-  real(dp), allocatable               :: orb_energies (:)
+!WAS
+!  real(dp), allocatable               :: orb_energies (:)
   real(dp), allocatable               :: orb_ovlp (:,:)
   real(dp), allocatable               :: orb_cls_ovlp (:,:)
   real(dp), allocatable               :: orb_occ_ovlp (:,:)
@@ -2312,7 +2316,7 @@ module orbitals_mod
       jorb = jorb + 1
       write (file_unit,'(i3,f12.7,a)') iband, 0.d0, ' band, eigenvalue'
       do igv = 1, ngvec_orb
-        write (file_unit,' (4e16.8,a)') c_rp(igv,jorb),c_rm(igv,iband),c_ip(igv,jorb),c_im(igv,jorb), ' c_rp,c_rm,c_ip,c_im'
+        write (file_unit,' (4e16.8,a)') c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb), ' c_rp,c_rm,c_ip,c_im'
       enddo ! igv
     enddo ! iband
   enddo ! ikv

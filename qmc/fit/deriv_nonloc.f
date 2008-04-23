@@ -3,6 +3,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use all_tools_mod  ! JT
       use deriv_orb_mod  ! JT
+      use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
 !JT      parameter (one=1.d0)
@@ -68,6 +69,16 @@ c note: dk2,dr and dr2 are unused variables here
       endif
 ! JT end
 
+! WAS
+      if (l_opt_pjas) then
+       call object_alloc ('dvpot_pjas', dvpot_pjas, MPS_L, param_pjas_nb)
+       call object_alloc ('dvpsp_pjas', dvpsp_pjas, param_pjas_nb)
+       do i=1, param_pjas_nb
+          dvpsp_pjas (i) = 0.d0
+       enddo
+      endif
+! WAS 
+
       vpsp=0
       do 11 iparm=1,nparmcsf+nparmj+nparms
    11   dvpsp(iparm)=0
@@ -97,6 +108,12 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
             if (l_opt_orb_energy) then  !JT
                vpot_ex = 0.d0           !JT
             endif                       !JT
+
+! WAS
+            if (l_opt_pjas) then 
+               dvpot_pjas = 0.d0 
+            endif               
+! WAS
 
             do 28 k=1,ndim
    28         xsav(k)=x(k,i)
@@ -158,8 +175,17 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
               call object_modified_by_index (electron_index) !JT
 
               call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-              call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+c              call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+c WAS
+              call deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+c              
 
+cWAS
+              if (l_opt_pjas) then 
+                 call deriv_nonloc_pjas ( iel, x(:,1:melec), value ) 
+              endif
+cWAS
+              
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
                   ppsi_csf=wq(iq)*yl0(l,costh)*exp(value)
@@ -182,6 +208,14 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
                  enddo
               endif
 ! JT end
+
+!WAS
+              if (l_opt_pjas) then
+                 do iex = 1, param_pjas_nb
+                    dvpot_pjas(l,iex)=dvpot_pjas(l,iex)+ ppsi_jas * gn_pjas (iex)
+                 enddo
+              endif
+!WAS
 
 
                 endif
@@ -221,6 +255,17 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
               endif
 ! JT end
 
+!     WAS           
+!     For periodic jastrow
+              if (l_opt_pjas) then
+                 do iex = 1, param_pjas_nb
+                    dvpsp_pjas(iex)=dvpsp_pjas(iex)+vps(i,ic,l)*dvpot_pjas(l,iex)
+                 enddo
+!     write(87,'(I4,100e10.3)') l,dvpot_pjas(l,1:param_pjas_nb)
+              endif
+!!!
+
+
    80       continue
           if(ipr.ge.4) write(6,'(''dvpsp(iparm)'',40d12.4)') (dvpsp(iparm),iparm=1,nparmcsf+nparmj)
           endif
@@ -230,11 +275,22 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
        call object_modified_by_index (vpsp_ex_index) !JT
       endif
 
+!WAS
+      if (l_opt_pjas) then
+         call object_modified_by_index (dvpsp_pjas_index)
+      endif
+!WAS
+
+
       return
       end
 c-----------------------------------------------------------------------
 
-      subroutine deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+
+!     subroutine deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+!WAS
+      subroutine deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+!
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
@@ -289,6 +345,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,gn(*),fsn(MELEC,MELEC),dx(3)
       dimension dk_en(MELEC,MCENT),dk_en2(MELEC,MCENT)
 
+!WAS
+      dimension r_en(MELEC,MCENT)
+!!
+      
       fsumn=0
       do 5 iparm=1,nparmj+nparms
     5   gn(iparm)=gvalue(iparm)
@@ -386,9 +446,15 @@ c         ri=r_en(i,ic)
 c         rj=r_en(j,ic)
           iparm0=npoint(it)+nparms
    40     fsn(i,j)=fsn(i,j) +
-     &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic)
-     &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
+c     &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic)
+c     &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
 c    &    deriv_psinl(u(jj),rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
+cc WAS
+cc 
+     &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),r_en(i,ic),r_en(j,ic),
+     &         rr_en2(i,ic),rr_en2(j,ic)
+     &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
+CCC
 
         do 42 it=1,nctype
           iparm0=npoint(it)+nparms

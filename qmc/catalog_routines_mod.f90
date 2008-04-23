@@ -18,6 +18,7 @@ module catalog_routines_mod
   use density_mod
   use intracule_mod
   use extracule_mod
+  use periodic_jastrow_mod  !WAS
   use nuclei_mod
   use forces_mod
   use dipole_moment_mod
@@ -418,6 +419,23 @@ module catalog_routines_mod
   call catalog_one_routine ('dens_wrt', dens_wrt)
   call catalog_one_routine ('dens_3d_wrt', dens_3d_wrt)
   call catalog_one_routine ('extracule_wrt', extracule_wrt)
+
+
+!!pjas WAS 
+  call catalog_one_node ('pjas_init_bld', pjas_init_bld)
+  call catalog_one_node ('deloc_pjasen_bld',deloc_pjasen_bld)
+!  call catalog_one_node ('d2psi_pjase_bld',  d2psi_pjase_bld)
+
+
+  call catalog_one_node ('deloc_pjasee_bld',deloc_pjasee_bld)
+
+  call catalog_one_node ('dpsi_pjas_bld',  dpsi_pjas_bld)
+
+  call catalog_one_node ('deloc_pjas_bld',deloc_pjas_bld)
+
+  call catalog_one_node ('deloc_pot_nloc_pjas_bld',deloc_pot_nloc_pjas_bld) 
+
+
 
  end subroutine catalog_all_nodes_and_routines
 

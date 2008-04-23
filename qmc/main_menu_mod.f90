@@ -4,6 +4,7 @@ module main_menu_mod
   use control_mod
   use basis_mod
   use orbitals_mod
+  use periodic_jastrow_mod 
   use optimization_mod
   use grid_mod
   use dipole_moment_mod
@@ -78,6 +79,7 @@ module main_menu_mod
   case ('walkers')           ; call walkers_menu
   case ('basis')             ; call basis_menu
   case ('orbitals')          ; call orbitals_menu
+  case ('periodic_jastrow')  ; call periodic_jastrow_menu
   case ('optimization')      ; call optimization_menu
   case ('print')             ; call print_menu
   case ('average')           ; call average_menu

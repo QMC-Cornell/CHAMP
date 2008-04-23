@@ -12,6 +12,11 @@ c Written by Claudia Filippi by modifying jastrow
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
+!! WAS
+      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+      common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
+!!!
+
       dimension x(3,*),v(3,*)
 
       do 10 i=1,nelec
@@ -26,6 +31,10 @@ c Written by Claudia Filippi by modifying jastrow
        else
         stop 'single-electron move only for jastrow3 and jastrow4'
       endif
-
+!! WAS 
+      if (ido_pjas .eq. 1) then 
+         call pjas_jas_e_interface (iel, x, rvec_ee, v, value)
+      endif
+!!! 
       return
       end

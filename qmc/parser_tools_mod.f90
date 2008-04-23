@@ -402,19 +402,35 @@ module parser_tools_mod
 ! input
   character (len=*), intent(in) :: value_list_name
 
-! output
-  integer, allocatable, intent(out) :: value_list (:)
+! output  WAS
+# if defined (PATHSCALE)
+   integer, intent(out) :: value_list (max_int_array_len) ! for pathscale compiler
+# else
+   integer, allocatable, intent(out) :: value_list (:) 
+# endif
+
+!WAS
+!  integer, allocatable, intent(out) :: value_list (:) 
   integer, intent(out)              :: value_list_nb
 
-! local
+! local !! added for pathscale WAS 
+# if defined (PATHSCALE)
+   character(len=max_string_len):: value_list_string (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: value_list_string (:)
+# endif
   character(len=max_string_len_rout), save :: lhere = 'get_next_value_list_integer'
-  character(len=max_string_len),allocatable :: value_list_string (:)
+!  character(len=max_string_len),allocatable :: value_list_string (:)
   integer i
 
 ! begin
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
+# if defined (PATHSCALE)
+  
+# else
   call alloc (value_list_name, value_list, value_list_nb)
+# endif 
 
   do i = 1, value_list_nb
     call cnvint (value_list_string(i), value_list(i))
@@ -434,19 +450,36 @@ module parser_tools_mod
 ! input
   character(len=*), intent(in) :: value_list_name
 
-! output
-  real(dp),allocatable, intent(out) :: value_list (:)
+! output  WAS
+# if defined (PATHSCALE)
+!   real(dp), intent(out)              :: value_list (max_double_array_len) ! for pathscale compiler
+   double precision, intent(out)              :: value_list (max_double_array_len) ! for pathscale compiler
+# else
+   real(dp), allocatable, intent(out) :: value_list (:)
+# endif
+
+!  real(dp),allocatable, intent(out) :: value_list (:)
   integer, intent(out)              :: value_list_nb
 
 ! local
   character (len=max_string_len_rout), save :: lhere= 'get_next_value_list_double'
-  character (len=max_string_len),allocatable :: value_list_string (:)
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: value_list_string (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: value_list_string (:)
+# endif
+!  character (len=max_string_len),allocatable :: value_list_string (:)
   integer i
 
 ! begin
-  call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
+  call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
+  
+# if defined (PATHSCALE)
+
+# else
   call object_alloc (value_list_name, value_list, value_list_nb)
+# endif
 
   do i = 1, value_list_nb
     call cnvdbl (value_list_string(i), value_list(i))

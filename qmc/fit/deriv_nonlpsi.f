@@ -1,4 +1,4 @@
-      function deriv_psinl(u,dkij,rshifti,rshiftj,rri,rrj,dki,dkj,gn,gns,it)
+      function deriv_psinl(u,dkij,rshifti,rshiftj,ri,rj,rri,rrj,dki,dkj,gn,gns,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 c minor modification by A.D.Guclu to add analytical scalek opt.
 
@@ -7,7 +7,10 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       include '../vmc/vmc.h'
       parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
-
+!!!   added WAS
+      common /jas_c_cut/ icutjasc, cutjasc
+      common /contrl_per/ iperiodic,ibasis
+!!!   
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
@@ -232,6 +235,12 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
         call switch_scale(rrri(1),3)
         call switch_scale(rrrj(1),3)
 
+!!!!  WAS 
+        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+           call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
+        endif
+!!!
+        
         uu(0)=1
         ss(0)=2
         tt(0)=1
@@ -259,6 +268,12 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
               if(2*m.eq.n-k-l) then
                 ll=ll+1
                 p=uu(k)*ss(l)*tt(m)
+
+!!WAS
+                if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+                   p = p *  fcut
+                endif
+!!!
                 deriv_psinl=deriv_psinl+c(ll,it,iwf)*p
 
                 if(nparms.eq.1) then

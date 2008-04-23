@@ -17,7 +17,10 @@ c Jastrow 6   must be used with one of isc=6,7
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-
+!!!   added WAS
+      common /jas_c_cut/ icutjasc, cutjasc
+      common /contrl_per/ iperiodic,ibasis
+!!!
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -146,6 +149,7 @@ c e-e and e-e-n terms
       call scale_dist2(rij,uu(1),dd1,dd2,2)
       if(nparms.eq.1) call deriv_scale(rij,dk,dk2,dr,dr2,2,iderivk)
 
+      
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
       topuu=0
@@ -396,6 +400,14 @@ c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
           call switch_scale2(rri(1),dd7,dd9,3)
           call switch_scale2(rrj(1),dd8,dd10,3)
         endif
+        
+!!!! WAS   
+        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+     +          dfcuti, dfcutj, d2fcuti, d2fcutj)
+        endif
+!!!
 
         if(nparms.eq.1) then
           call deriv_scale(rij,dkij,dk2ij,drij,dr2ij,4,iderivk)
@@ -565,6 +577,23 @@ c        = 2 parameter is an independent parameter that is varied
                   gi=gi*dd7/ri
                   gj=gj*dd8/rj
 
+!!!!  een for periodic systems         WAS
+                  if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+                     
+                     guu = guu * fcut
+                     gii = gii * fcut +(2 * gi * ri * dfcuti + gp * d2fcuti)*fcutj 
+                     gi = gi * fcut + (gp * fcutj *  dfcuti)/ri
+                     gui = gui * fcut + (gu * fcutj *  dfcuti*rij)
+                     
+                     gjj = gjj * fcut + (2 * gj * dfcutj *rj + gp * d2fcutj)*fcuti
+                     gj = gj * fcut + (gp * fcuti *  dfcutj)/rj
+                     guj = guj * fcut + (gu * fcuti *  dfcutj * rij)
+                     gp = gp * fcut
+                     gu = gu * fcut
+                     
+                  endif
+!!! end WAS 
+
                   if(ideriv.eq.1) then
 
                     do 33 id=1,nvdepend(jj,it)
@@ -682,6 +711,24 @@ c derivatives (go,gvalue and g) wrt scalek parameter
         fjj=fjj*dd8*dd8+fj*dd10
         fi=fi*dd7/ri
         fj=fj*dd8/rj
+
+
+!!!!  een for periodic systems         WAS
+       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+           
+           fuu = fuu * fcut
+           fii = fii * fcut +(2 * fi * ri * dfcuti + fc * d2fcuti)*fcutj 
+           fi = fi * fcut + (fc * fcutj *  dfcuti)/ri
+           fui = fui * fcut + (fu * fcutj *  dfcuti*rij)
+           
+           fjj = fjj * fcut + (2 * fj * dfcutj *rj + fc * d2fcutj)*fcuti
+           fj = fj * fcut + (fc * fcuti *  dfcutj)/rj
+           fuj = fuj * fcut + (fu * fcuti *  dfcutj * rij)
+           fc = fc * fcut
+           fu = fu * fcut
+           
+        endif
+!!!! end WAS 
 
         fso(i,j)=fso(i,j) + fc
 

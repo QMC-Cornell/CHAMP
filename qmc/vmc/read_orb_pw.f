@@ -321,6 +321,10 @@ cwparker Read in B-spline coefficients from file
 cwparker pecent is reset later in the read_input subroutine
            call readbwf(pecent)
            call bwfdet_setup(rnorm)
+!     ! WAS
+           ngvec_orb = nwvec !! defined in module bwf
+           call object_modified ("ngvec_orb")
+!     !
 
            write(6,'(''Done with B-spline setup'')')
 
@@ -1250,7 +1254,7 @@ c plane wave coefs. are read in, otherwise complex.
         call systemflush(6)
         read(30,*) iznuc_allelec,(centx(k),k=1,ndim)
         do 14 k=1,ndim
-          if(abs(centx(k)-cent(k,i)).gt.1.d-10) then
+          if(abs(centx(k)-cent(k,i)).gt.1.d-6) then
             write(6,'(''k,i,centx(k),cent(k,i)='',2i5,9f9.5)') k,i,centx(k),cent(k,i)
             stop 'centx(k).ne.cent(k,i) in read_orb_pw_casino'
           endif
@@ -1271,7 +1275,7 @@ c  19   write(6,*) (igvec_dft(k,igv),k=1,ndim)
           gvec_latt(k)=0
           do 17 i=1,ndim
    17       gvec_latt(k)=gvec_latt(k)+glatt_inv(k,i)*gvec_dft(i)
-          if(abs(gvec_latt(k)-nint(gvec_latt(k))).gt.1.d-10) then
+          if(abs(gvec_latt(k)-nint(gvec_latt(k))).gt.1.d-6) then
             write(6,'(''gvec_latt(k),nint(gvec_latt(k))='',f9.5,i5)') gvec_latt(k),nint(gvec_latt(k))
             stop 'gvec_latt(k)-nint(gvec_latt(k)).gt.1.d-10'
           endif

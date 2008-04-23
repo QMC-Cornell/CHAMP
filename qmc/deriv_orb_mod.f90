@@ -1677,11 +1677,30 @@ module deriv_orb_mod
     enddo
   enddo
 
+
+!!! WAS
+!!$  call object_provide ('slater_mat_ex_trans_inv_up_2')
+!!$  call object_provide ('slater_mat_ex_trans_inv_dn_2')
+!!$  slater_mat_ex_trans_up= slater_mat_ex_trans_inv_up_2
+!!$  slater_mat_ex_trans_dn= slater_mat_ex_trans_inv_dn_2
+!!$  return
+!!!!
+
+
+
   call object_alloc ('mat_flat_up', mat_flat_up, nup*nup, det_ex_unq_up_nb)
   call object_alloc ('mat_flat_dn', mat_flat_dn, ndn*ndn, det_ex_unq_dn_nb)
 
+
+  
   do det_i = 1, det_ex_unq_up_nb
    call flatten (mat_flat_up (:,det_i), slater_mat_ex_trans_up (:,:,det_i), nup, nup)
+!debug WAS 
+!!$   write(*,*) "slater_mat_ex_trans_up (:,:,det_i)", slater_mat_ex_trans_up (:,:,det_i)
+!!$   write(*,*) "doing deti ", det_i, det_ex_unq_up_nb
+!!$   write(*,*) "mat_falt_up",  mat_flat_up (:, det_i)
+!!$   write(*,*)  "det_ex_unq_up_nb",  det_ex_unq_up_nb
+!
    call matinv (mat_flat_up (:,det_i), nup, det_ex_unq_up (det_i))
    call unflatten (mat_flat_up (:,det_i), slater_mat_ex_trans_inv_up (:,:,det_i), nup, nup)
   enddo

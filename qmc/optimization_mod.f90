@@ -5,6 +5,7 @@ module optimization_mod
   use opt_lin_mod
   use opt_ptb_mod
   use orbitals_mod
+  use periodic_jastrow_mod 
   use deriv_mod
   use montecarlo_mod
   use control_mod
@@ -54,6 +55,9 @@ module optimization_mod
   real(dp), allocatable   :: delta_coef_ex (:)
   real(dp), allocatable   :: delta_mat_rot_real (:,:)
   real(dp), allocatable   :: delta_exp (:)
+!
+  real(dp), allocatable   :: delta_pjas (:)
+!
 
   real(dp), allocatable   :: delta_c_rp (:,:)
   real(dp), allocatable   :: delta_c_rm (:,:)
@@ -307,6 +311,7 @@ module optimization_mod
   l_opt_csf = .false.
   l_opt_orb = .false.
   l_opt_exp = .false.
+  l_opt_pjas = .false.
   l_opt_geo = .false.
   do param_type_i = 1, parameter_type_nb
    select case(trim(parameter_type(param_type_i)))
@@ -318,12 +323,23 @@ module optimization_mod
     l_opt_orb = .true.
    case ('exponents')
     l_opt_exp = .true.
+   case ('pjasen')
+    l_opt_pjasen = .true.
+   case ('pjasee')
+    l_opt_pjasee = .true.
    case ('geometry')
     l_opt_geo = .true.
    case default
     call die (lhere, 'unknown parameter type >'+trim(parameter_type(param_type_i))+'<.')
    end select
   enddo
+
+  if ( l_opt_pjasen .or. l_opt_pjasee) then 
+     l_opt_pjas = .true.
+     if (.not. l_opt_pjasen) param_pjasen_nb = 0
+     if (.not. l_opt_pjasee) param_pjasee_nb = 0
+     param_pjas_nb = param_pjasee_nb  + param_pjasen_nb 
+  endif
 
 ! set numbers of Jastrow and/or CSF parameters to zero if necessary
   nparmj = nparmj_input
@@ -344,11 +360,14 @@ module optimization_mod
     param_exp_nb  = 0
     call object_modified ('param_exp_nb')
   endif
+  if (.not. l_opt_pjas) then
+     param_pjas_nb  = 0
+     call object_modified ('param_pjas_nb')
+  endif
   if (.not. l_opt_geo) then
     param_geo_nb  = 0
     call object_modified ('param_geo_nb')
   endif
-
 ! check consistency of options
   if (l_opt_ptb) then
    if (l_opt_jas .or. l_opt_csf) then
@@ -360,6 +379,11 @@ module optimization_mod
     endif
    endif
   endif
+!WAS
+  if (l_opt_nwt .and. l_opt_pjas) then 
+     call  die (lhere, 'Optimization of periodic Jastrow parameters is done with linear method only')
+  endif
+!
 
 ! compute or not energies associated to orbitals derivatives
   l_opt_orb_energy = l_opt_orb .and. .not. l_opt_orb_eig
@@ -482,9 +506,27 @@ module optimization_mod
    call die (lhere)
   end select
 
+! Print number of parameters to optimized
+  call object_provide ('nparmj')
+  call object_provide ('nparmcsf')
+  call object_provide ('param_orb_nb')
+  call object_provide ('param_exp_nb')
+  call object_provide ('param_geo_nb')
+  call object_provide ('param_nb')
+  write(6,*)
+  write(6,'(a,i3)') 'Number of Jastrow parameters:   ', nparmj
+  write(6,'(a,i3)') 'Number of CSF parameters:       ', nparmcsf
+  write(6,'(a,i3)') 'Number of orbital parameters:   ', param_orb_nb
+  write(6,'(a,i3)') 'Number of exponent parameters:  ', param_exp_nb
+  write(6,'(a,i3)') 'Number of periodic jastrow parameters: ', param_pjas_nb
+  write(6,'(a,i3)') 'Number of geometry parameters:  ', param_geo_nb
+  write(6,'(a,i3)') 'Total number of parameters:     ', param_nb
+  write(6,*)
 
 ! Nice printing
-  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent and',param_geo_nb,' geometry parameters with ',trim(opt_method),' method:'
+  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent,',param_pjasen_nb, & 
+       &  ' pjasen,',param_pjasee_nb,' pjasee and ',param_geo_nb," geometry parameters with ",trim(opt_method)," method:"
+!  write(6,'(a,i5,a,i5,a,i7,a,i5,3a)') 'OPT: optimization of',param_pjasen_nb, ' pjasen and ', param_pjasee_nb, " pjasee parameters"
 
 ! Warnings for pertubative method
   if (l_opt_ptb) then
@@ -732,6 +774,7 @@ module optimization_mod
      move_rejected=move_rejected+1
 
      call wf_restore
+     if (l_opt_pjas) call restore_pjas
      call object_restore ('gradient')
      if(l_opt_nwt) then
       call object_restore ('hess_nwt')
@@ -776,11 +819,10 @@ module optimization_mod
    energy_err_sav=energy_err(1)
    error_sigma_sav = error_sigma
    ene_var_sav=(1-p_var)*energy(1)+p_var*energy_sigma(1)**2
-     write(6,'(''error_sigma_sav='',9f9.4)') error_sigma_sav
-
 
 !  save wavefunction, gradient, Hamiltonian and overlap
    call wf_save
+   if (do_pjas) call save_pjas  !WAS 
    call object_save ('gradient')
    if(l_opt_nwt) then
     call object_save ('hess_nwt')
@@ -936,6 +978,7 @@ module optimization_mod
   real(dp), parameter :: AMAX_NONLIN = 100.d0
   integer exponent_negative_nb
   real(dp) parm2min
+  integer iparmpjase
 
 ! begin
 
@@ -1081,6 +1124,8 @@ module optimization_mod
 !  periodic case
    else
 
+      write(*,*) "ngvec_orb = ", ngvec_orb 
+      
 !    provide needed objects
      call object_provide ('ngvec_orb')
      call object_provide ('orb_tot_nb')
@@ -1108,6 +1153,18 @@ module optimization_mod
    endif ! if iperiodic == 0
 
   endif ! l_opt_orb
+  
+  ! pjase parameters
+  if (l_opt_pjas) then
+     call object_provide ('delta_pjas')
+     do iparmpjase = 1, param_pjas_nb
+        pjas_parms (iparmpjase,iwf)=pjas_parms (iparmpjase,1) + delta_pjas (iparmpjase)
+     enddo
+     call object_modified ('pjas_parms')
+  endif ! l_opt_pjas
+
+
+
 
 ! check if really correct to call after each update
   call set_scale_dist(ipr,iwf)
@@ -1255,6 +1312,7 @@ module optimization_mod
 !  if the move is bad, increase add_diag and retry
    if (l_stab .and. is_bad_move == 1) then
      call wf_restore
+     if (l_opt_pjas) call restore_pjas
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
      if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
      call object_modified ('diag_stab')
@@ -1265,6 +1323,7 @@ module optimization_mod
 !  if move is bad only for the exponents, increase add_diag_mult_exp and retry
    if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. is_bad_move_exp == 1) then 
        call wf_restore
+       if (l_opt_pjas) call restore_pjas
        add_diag_mult_exp = add_diag_mult_exp * 10
        write(6,'(a,f10.1)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
        call object_modified ('add_diag_mult_exp')
@@ -1325,6 +1384,7 @@ module optimization_mod
   nwftype=3
   call wf_copy2
   call wf_copy
+  if (do_pjas) call copy_pjas  ! WAS 
 ! initialize asymptotic values related to scalek(2) and scalek(3)
   call set_scale_dist(ipr,2)
   call set_scale_dist(ipr,3)
@@ -1375,6 +1435,7 @@ module optimization_mod
 !  if move too large, restore wave function and increase diag_stab_ref, otherwise exit loop
    if (is_bad_move_1 /= 0 .or. is_bad_move_2 /= 0 .or. is_bad_move_3 /= 0) then
     call wf_restore
+    if (l_opt_pjas) call restore_pjas
     add_diag (1) = add_diag (1) * 10**(is_bad_move_1 + is_bad_move_2 + is_bad_move_3)
     write(6,'(a,1pd9.1)') 'Increasing add_diag to ',add_diag (1)
     cycle
@@ -1392,6 +1453,7 @@ module optimization_mod
       
       if (is_bad_move_exp1 == 1 .or. is_bad_move_exp2 == 1 .or. is_bad_move_exp3 == 1) then 
          call wf_restore
+         if (l_opt_pjas) call restore_pjas
          add_diag_mult_exp = add_diag_mult_exp * 10
          write(6,'(a,f10.1)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
          call object_modified ('add_diag_mult_exp')
@@ -1475,6 +1537,7 @@ module optimization_mod
     write(6,'(a,1pd9.1)') 'Energy or sigma of correlation calculation # 1 went up too much, increase add_diag to ',add_diag (1)
 
     call wf_restore
+    if (l_opt_pjas) call restore_pjas
     call object_restore ('gradient')
     if(l_opt_nwt) then
      call object_restore ('hess_nwt')
@@ -1521,6 +1584,7 @@ module optimization_mod
 ! final value of diag_stab
   iwf = 1
   call wf_restore
+  if (l_opt_pjas) call restore_pjas
   call object_restore ('gradient')
   if(l_opt_nwt) then
     call object_restore ('hess_nwt')
@@ -1653,6 +1717,24 @@ module optimization_mod
    write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
 # endif
   endif ! l_opt_exp
+
+
+
+  ! print pjas parameters
+  if (l_opt_pjas) then
+     if ( l_opt_pjasen) then
+        write(6,'(a)') 'periodic Jastrow parameters  (pjas_en_read(i),i=1,):'
+        write(6,'(1000f10.6)') pjas_parms (1:param_pjasen_nb, iwf)
+        if (.not. inversion) then 
+           write(6,'(a,1000f10.6)') "cosine", (pjas_parms (i, iwf), i=1,param_pjasen_nb-1,2)
+           write(6,'(a,1000f10.6)') "sine", (pjas_parms (i+1, iwf), i=1,param_pjasen_nb-1,2)
+        endif
+     endif
+     if (l_opt_pjasee) then
+        write(6,'(a)') 'periodic Jastrow parameters  (pjas_ee_read(i),i=1,):'
+        write(6,'(1000f10.6)') pjas_parms (param_pjasen_nb+1:param_pjas_nb, iwf)
+     endif
+  endif
 
   write(6,*)
 
@@ -1911,6 +1993,7 @@ module optimization_mod
    call object_create ('delta_jas_norm')
    call object_create ('delta_coef_ex')
    call object_create ('delta_exp')
+   call object_create ('delta_pjas') !WAS
 
    call object_needed ('param_nb')
 
@@ -1972,6 +2055,13 @@ module optimization_mod
    delta_coef_ex (:)= delta_param (shift+1: shift+param_orb_nb)
    shift = shift + param_orb_nb
    write(6,'(a,600f12.7)') 'Orbital rotations parameters variations=', delta_coef_ex (:)
+  endif
+
+  if (l_opt_pjas) then
+     call object_alloc ('delta_pjas', delta_pjas, param_pjas_nb)
+     delta_pjas (:)= delta_param (shift+1: shift+param_pjas_nb)
+     shift = shift + param_pjas_nb
+     write(6,'(a,600f12.7)') 'pjas  parameters variations=', delta_pjas (:)
   endif
 
  end subroutine delta_param_bld

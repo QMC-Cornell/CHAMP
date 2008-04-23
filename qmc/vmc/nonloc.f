@@ -2,6 +2,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use deriv_orb_mod ! JT
+      use periodic_jastrow_mod !WAS 
 
       implicit real*8(a-h,o-z)
 !JT      parameter (one=1.d0)
@@ -54,7 +55,6 @@ c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),i
        vpsp_ex = 0.d0
       endif
 ! JT end
-
 
       vpsp=0
       do 100 ic=1,ncent
@@ -130,8 +130,17 @@ c vps was calculated by calling getvps_tm from nonloc_pot
 
               call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
 c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
 
+cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
+              
+              call nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
+
+!WAS
+              if (do_pjas) then 
+                 call nonloc_pjas (iel, x(:,1:melec), value) 
+              endif
+!WAS
+              
               if(ipr.ge.4) then
                 write(6,'(''rr_en,rr_en2'',2d14.6)') rr_en(1,1),rr_en2(1,1)
                 write(6,'(''ic,i,iq,deter,value'',3i3,2d14.6)') ic,i,iq,deter,value
@@ -181,6 +190,7 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
               endif
 ! JT end
 
+
               endif
    80       continue
 
@@ -188,6 +198,7 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
   100 continue
 
       call object_modified_by_index (vpsp_ex_index) ! JT
+
 
 c     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
 c     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)
@@ -347,7 +358,11 @@ c Derivatives wrt to csf_coefs for optimizing them
       end
 c-----------------------------------------------------------------------
 
-      subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
+!      subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
+!WAS
+      subroutine nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
+!
+
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
@@ -383,6 +398,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
      &,fsn(MELEC,MELEC),dx(3)
+
+!WAS
+      dimension r_en(MELEC,MCENT)
+!!
 
       fsumn=0
 
@@ -436,7 +455,12 @@ c     if(isc.ge.12) call scale_dist(rij,u,3)
         do 40 ic=1,ncent
           it=iwctype(ic)
    40     fsn(i,j)=fsn(i,j) +
-     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),it)
+!!
+!!     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),it)
+!WAS
+     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),r_en(i,ic),r_en(j,ic),
+     &         rr_en2(i,ic),rr_en2(j,ic),it)
+!!
 
         fsumn=fsumn+fsn(i,j)-fso(i,j)
 
@@ -449,6 +473,7 @@ c e-n terms
    50   fsn(iel,iel)=fsn(iel,iel)+psianl(rr_en(iel,ic),it)
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)
+
       value=fsumn
 
       return

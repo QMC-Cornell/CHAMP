@@ -174,6 +174,52 @@ module indexes_mod
   integer     :: dorb_dexp_bld_index
   integer     :: grd_dorb_dexp_bld_index
   integer     :: lap_dorb_dexp_bld_index
+  !! pjasen
+  integer    :: param_pjasen_nb_index 
+  integer    :: grad_dpsi_pjasen_index
+  integer    :: lap_dpsi_pjasen_index
+  integer    :: deloc_pjasen_index
+  integer    :: dpsi_pjasen_index
+  integer    :: d2psi_pjasen_index
+!! WAS
+  !! pjasee
+  integer    :: param_pjasee_nb_index 
+  integer    :: grad_dpsi_pjasee_index
+  integer    :: lap_dpsi_pjasee_index
+  integer    :: deloc_pjasee_index
+  integer    :: dpsi_pjasee_index
+  integer    :: d2psi_pjasee_index
+  !! pjas
+  integer    :: param_pjas_nb_index 
+  integer    :: grad_dpsi_pjas_index
+  integer    :: lap_dpsi_pjas_index
+  integer    :: deloc_pjas_index
+  integer    :: dpsi_pjas_index
+  integer    :: d2psi_pjas_index
+  integer    :: vd_index 
+  integer    :: star_en_index 
+  integer    :: cos_star_en_index 
+  integer    :: sin_star_en_index 
+  integer    :: grad_star_en_index 
+  integer    :: grad_cos_star_en_index 
+  integer    :: grad_sin_star_en_index 
+  integer    :: psid_pjas_index 
+  integer    :: star_sum_en_index
+  integer    :: cos_star_ee_index 
+  integer    :: grad_cos_star_ee_index 
+
+  integer    :: sin_star_ee_index 
+  integer    :: grad_sin_star_ee_index 
+  integer    :: sin_star_sum_ee_index
+
+  integer    :: star_ee_index 
+  integer    :: grad_star_ee_index 
+
+  integer    :: dvpsp_pjas_index
+  integer    :: deloc_pot_nloc_pjas_index 
+!!!
   integer     :: param_geo_nb_index
+!! solid orbitals 
+!  integer    :: ngvec_orb_index
 
 end module indexes_mod

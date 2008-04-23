@@ -10,6 +10,7 @@ c wrt the wavefunction parameters.
       use fitdet_mod
       use eloc_mod      ! JT
       use psi_mod       ! JT
+!     use periodic_jastrow_mod  !WAS 
 
       implicit real*8(a-h,o-z)
 
@@ -60,8 +61,10 @@ c    &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDA
 c    &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
       common /vj/ vj(3,MELEC)  !JT
+c      dimension vd(3,MELEC),
+      common /vd/ vd(3,MELEC)   !WAS
       dimension coord(3,*),velocity(3,MELEC)
-      dimension vd(3,MELEC),div_vj(MELEC),div_vk(MELEC),div_vd(MELEC)
+      dimension div_vj(MELEC),div_vk(MELEC),div_vd(MELEC)
      &,div_v(MELEC),dpe(MPARM),denergy(MPARM)
 
       iwf=iwftype(ifr)
@@ -78,11 +81,11 @@ c get contribution from jastrow
       if(ianalyt_lap.eq.1) then
 c       if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
         if((igradhess.eq.0 .or. ifr.gt.1) .and. .not. l_opt_jas) then
-          call jastrow(coord,vj,d2j,div_vj,psij)
-         else
+           call jastrow(coord,vj,d2j,div_vj,psij)
+        else
           call deriv_jastrow(coord,vj,d2j,div_vj,psij)
-        endif
-       else
+       endif
+      else
 c       if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
         if((igradhess.eq.0 .or. ifr.gt.1) .and. .not. l_opt_jas) then
           call jastrow_num(coord,vj,d2j,div_vj,psij)
@@ -238,6 +241,8 @@ c E_L,i = -0.5*(\nabla^2*f_i + 2 grad(f_i).V) + (\hat{V}\psi/psi)_i
       else
         if(idodet.eq.1) then
           call determinant(coord,rvec_en,r_en,vd,d2d,div_vd,psid)
+          call object_modified_by_index (vd_index) !WAS
+
           if(index(mode,'fit').ne.0) then
             d2d_sav(iconfg)=d2d
             psid_sav(iconfg)=psid

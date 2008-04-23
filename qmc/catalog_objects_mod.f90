@@ -138,6 +138,46 @@ module catalog_objects_mod
   call catalog_one_object ('coef_orb_on_ortho_basis', coef_orb_on_ortho_basis_index)
   call catalog_one_object ('add_diag_mult_exp', add_diag_mult_exp_index)
 
+!! pjas WAS 
+  call catalog_one_object ('psid_pjas', psid_pjas_index)
+  call catalog_one_object ('vd', vd_index)
+
+  call catalog_one_object ('cos_star_en', cos_star_en_index)
+  call catalog_one_object ('grad_cos_star_en', grad_cos_star_en_index)
+
+  call catalog_one_object ('sin_star_en', sin_star_en_index)
+  call catalog_one_object ('grad_sin_star_en', grad_sin_star_en_index)
+
+
+  call catalog_one_object ('star_en', star_en_index)
+  call catalog_one_object ('grad_star_en', grad_star_en_index)
+
+  call catalog_one_object ('cos_star_ee', cos_star_ee_index)
+  call catalog_one_object ('grad_cos_star_ee', grad_cos_star_ee_index)
+
+  call catalog_one_object ('sin_star_ee', sin_star_ee_index)
+  call catalog_one_object ('grad_sin_star_ee', grad_sin_star_ee_index)
+  
+  call catalog_one_object ('star_ee', star_ee_index)
+  call catalog_one_object ('grad_star_ee', grad_star_ee_index)
+
+  call catalog_one_object ('dvpsp_pjas', dvpsp_pjas_index)
+
+  call catalog_one_object ('dpsi_pjasee', dpsi_pjasee_index)
+  call catalog_one_object ('grad_dpsi_pjasee',grad_dpsi_pjasee_index)
+  call catalog_one_object ('lap_dpsi_pjasee',lap_dpsi_pjasee_index)
+
+  call catalog_one_object ('dpsi_pjasen', dpsi_pjasen_index)
+  call catalog_one_object ('grad_dpsi_pjasen',grad_dpsi_pjasen_index)
+  call catalog_one_object ('lap_dpsi_pjasen',lap_dpsi_pjasen_index)
+!!!
+!! solid
+!  call catalog_one_object ('ngvec_orb', ngvec_orb_index)
+!!!
+
+
+
+
  end subroutine catalog_objects
 
 ! ==============================================================================
