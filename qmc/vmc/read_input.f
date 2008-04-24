@@ -756,8 +756,6 @@ c Convert center positions from primitive lattice vector units to cartesian coor
           call readps_champ
          elseif(nloc.eq.5) then
           call readps_gauss
-         elseif(nloc.eq.8) then
-          call readps_siesta
          else
           stop 'nloc > 5'
         endif
