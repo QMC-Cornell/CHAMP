@@ -1692,10 +1692,10 @@ module deriv_orb_mod
   call object_alloc ('mat_flat_dn', mat_flat_dn, ndn*ndn, det_ex_unq_dn_nb)
 
 
-  
+
   do det_i = 1, det_ex_unq_up_nb
    call flatten (mat_flat_up (:,det_i), slater_mat_ex_trans_up (:,:,det_i), nup, nup)
-!debug WAS 
+!debug WAS
 !!$   write(*,*) "slater_mat_ex_trans_up (:,:,det_i)", slater_mat_ex_trans_up (:,:,det_i)
 !!$   write(*,*) "doing deti ", det_i, det_ex_unq_up_nb
 !!$   write(*,*) "mat_falt_up",  mat_flat_up (:, det_i)

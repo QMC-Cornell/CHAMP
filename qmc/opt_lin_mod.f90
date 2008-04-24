@@ -582,7 +582,7 @@ module opt_lin_mod
     else
       ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab
     endif
-    
+
   enddo
   endif
 

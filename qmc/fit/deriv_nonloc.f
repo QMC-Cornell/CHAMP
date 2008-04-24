@@ -77,7 +77,7 @@ c note: dk2,dr and dr2 are unused variables here
           dvpsp_pjas (i) = 0.d0
        enddo
       endif
-! WAS 
+! WAS
 
       vpsp=0
       do 11 iparm=1,nparmcsf+nparmj+nparms
@@ -110,9 +110,9 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
             endif                       !JT
 
 ! WAS
-            if (l_opt_pjas) then 
-               dvpot_pjas = 0.d0 
-            endif               
+            if (l_opt_pjas) then
+               dvpot_pjas = 0.d0
+            endif
 ! WAS
 
             do 28 k=1,ndim
@@ -178,14 +178,14 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
 c              call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
 c WAS
               call deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
-c              
+
 
 cWAS
-              if (l_opt_pjas) then 
-                 call deriv_nonloc_pjas ( iel, x(:,1:melec), value ) 
+              if (l_opt_pjas) then
+                 call deriv_nonloc_pjas ( iel, x(:,1:melec), value )
               endif
 cWAS
-              
+
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
                   ppsi_csf=wq(iq)*yl0(l,costh)*exp(value)
@@ -255,7 +255,7 @@ cWAS
               endif
 ! JT end
 
-!     WAS           
+!     WAS
 !     For periodic jastrow
               if (l_opt_pjas) then
                  do iex = 1, param_pjas_nb
@@ -348,7 +348,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !WAS
       dimension r_en(MELEC,MCENT)
 !!
-      
+
       fsumn=0
       do 5 iparm=1,nparmj+nparms
     5   gn(iparm)=gvalue(iparm)
@@ -450,7 +450,7 @@ c     &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,
 c     &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
 c    &    deriv_psinl(u(jj),rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
 cc WAS
-cc 
+cc
      &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),r_en(i,ic),r_en(j,ic),
      &         rr_en2(i,ic),rr_en2(j,ic)
      &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)

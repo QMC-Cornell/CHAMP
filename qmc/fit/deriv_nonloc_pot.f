@@ -46,7 +46,7 @@ c vps  = (V_l-V_L)
           call getvps_champ(r_en,i)
          elseif(nloc.eq.5) then
           call getvps_gauss(r_en,i)
-         elseif (nloc .ge. 6) then 
+         elseif (nloc .ge. 6) then
           call getvps_champ(r_en,i)
          else
           stop "nloc is not implemented in deriv_nonloc_pot.f"
@@ -79,8 +79,8 @@ c non-local component and its derivative (division by the Jastrow already in non
       call object_modified_by_index (eloc_pot_nloc_index)  !JT
 
 !WAS
-      psid_pjas = psid 
-      call object_modified_by_index (psid_pjas_index) 
+      psid_pjas = psid
+      call object_modified_by_index (psid_pjas_index)
 !WAS
 
       if(ipr.ge.4) write(6,'(''pe,vpsp/psid,vpsp,psid,detu(1),detd(1)2='',2f9.4,9d12.4)')

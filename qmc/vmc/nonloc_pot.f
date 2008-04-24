@@ -28,7 +28,7 @@ c and store in vps
           call getvps_champ(r_en,i)
          elseif(nloc.eq.5) then
           call getvps_gauss(r_en,i)
-         elseif (nloc .ge. 6) then 
+         elseif (nloc .ge. 6) then
           call getvps_champ(r_en,i)
          else
           stop 'nloc > 5'

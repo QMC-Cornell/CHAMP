@@ -1,12 +1,12 @@
 module pjasee_mod
 
   use all_tools_mod
-  use crystal_symmetries_mod 
+  use crystal_symmetries_mod
   use eloc_mod
-  use pjasen_mod 
+  use pjasen_mod
 
 
-  implicit none 
+  implicit none
 
   real(dp), allocatable                  :: lap_dpsi_pjasee(:,:)
   real(dp), allocatable                  :: grad_dpsi_pjasee (:,:,:)
@@ -34,9 +34,9 @@ contains
 
   subroutine deloc_pjasee_bld
 !---------------------------------------------------------------------------
-! Description : derivative of local energy wrt periodic jastrow parameters                                                               
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : derivative of local energy wrt periodic jastrow parameters
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     integer                              :: i,k,ieta, ie
@@ -47,11 +47,11 @@ contains
     if (header_exe) then
        call object_create ('deloc_pjasee',deloc_pjasee_index)
        call object_needed ('nelec')
-       call object_needed ('ndim') 
+       call object_needed ('ndim')
        call object_needed ('vd')
        call object_needed ('vj')
        call object_needed ('param_pjasee_nb')
-       call object_needed ('grad_dpsi_pjasee')       
+       call object_needed ('grad_dpsi_pjasee')
        call object_needed ('lap_dpsi_pjasee')
     endif
 
@@ -61,8 +61,8 @@ contains
 
     do ieta=1,param_pjasee_nb
 
-       sum = 0 
-       do ie = 1 , nelec 
+       sum = 0
+       do ie = 1 , nelec
           sum  = sum + lap_dpsi_pjasee (ie, ieta)
 
           do k= 1, ndim_pj
@@ -82,9 +82,9 @@ contains
   subroutine  star_ee_bld  (xvec)
 
 !---------------------------------------------------------------------------
-! Description :   building the arrays related to the ee stars                                                            
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :   building the arrays related to the ee stars
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
 
@@ -100,7 +100,7 @@ contains
     call object_alloc ("cos_star_ee ", cos_star_ee , nelec * (nelec-1)/2,  nstar_ee)
 
 
-    do ist= 1,  nstar_ee 
+    do ist= 1,  nstar_ee
 
        ije = 0
 
@@ -108,7 +108,7 @@ contains
 
           do je = 1, ie-1
 
-             ije = ije +1 
+             ije = ije +1
 
              call star_ee_fac ( ije, ist, cos_star_ee ( ije, ist ),  grad_cos_star_ee (:, ije, ist ))
 
@@ -130,10 +130,10 @@ contains
   subroutine deriv_nonloc_pjas_ee ( iel, xcoord, value1) !, gn_pjas)
 !---------------------------------------------------------------------------
 ! Description : evaluates value1 = sum_{star} c_star rho(star) for electron iel
-!       also creates gn_pjas = d value1/dc_star= rho (s)  for electron iel                    
+!       also creates gn_pjas = d value1/dc_star= rho (s)  for electron iel
 !
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -151,13 +151,13 @@ contains
        gn_pjasee (ist) = dpsi_pjasee (ist)
     end do
 
-    value1 = 0 
+    value1 = 0
 
-    !! find list of cos and sin 
+    !! find list of cos and sin
     call calc_cos_sin_ee_e (iel, xcoord)
 
     !! add only updated electron. The old falue is already subtracted
-    !! through fso 
+    !! through fso
 
     do ist = 1, param_pjasee_nb
 
@@ -179,15 +179,15 @@ contains
 
           !          xvec = find_rvec_ee (xcoord(:,i), xcoord(:,j))
 
-          cosstar= cos_star_sim_fac  (ist, ij) 
+          cosstar= cos_star_sim_fac  (ist, ij)
 
-          temp = pjas_parms(ist_s, iwf) *  cosstar  !! only changed electron 
+          temp = pjas_parms(ist_s, iwf) *  cosstar  !! only changed electron
 
-          value1 = value1 + temp 
+          value1 = value1 + temp
 
-          !          fsn (i,j ) = fsn (i,j) + temp 
+          !          fsn (i,j ) = fsn (i,j) + temp
 
-          gn_pjasee (ist) =  gn_pjasee (ist) + cosstar - peego  ( i, j, ist ) !! subtract the old value 
+          gn_pjasee (ist) =  gn_pjasee (ist) + cosstar - peego  ( i, j, ist ) !! subtract the old value
 
        enddo
     enddo
@@ -196,11 +196,11 @@ contains
 
 
 
-  subroutine nonloc_pjas_ee (iel, xcoord, value1) 
+  subroutine nonloc_pjas_ee (iel, xcoord, value1)
 !---------------------------------------------------------------------------
-! Description :evaluates value1 = sum_{star} c_star rho(star) for electron iel                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :evaluates value1 = sum_{star} c_star rho(star) for electron iel
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -211,10 +211,10 @@ contains
     real(dp)                             :: xvec (3), value1, temp
 
 
-    value1 = 0 
+    value1 = 0
 
 
-    !! find list of cos and sin 
+    !! find list of cos and sin
     call calc_cos_sin_ee_e (iel, xcoord)
 
     do ist = 1, param_pjasee_nb
@@ -237,12 +237,12 @@ contains
 
           !          xvec = find_rvec_ee (xcoord(:,i), xcoord(:,j))
 
-          temp = pjas_parms(ist_s, iwf) *  cos_star_sim_fac  (ist, ij) !! only changed electron 
+          temp = pjas_parms(ist_s, iwf) *  cos_star_sim_fac  (ist, ij) !! only changed electron
 
           !! note: old value is already subtracted with fsno (i,j)
-          value1 = value1 + temp 
+          value1 = value1 + temp
 
-          !          fsn (i, j ) = fsn(i,j) + temp 
+          !          fsn (i, j ) = fsn(i,j) + temp
 
        enddo
 
@@ -255,15 +255,15 @@ contains
 
 !!$  subroutine find_rvec_ee (x, rvecee)
 !---------------------------------------------------------------------------
-! Description :                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
 !!$    implicit  none
 !!$    include "commons.h"
 !!$
 !!$    real (dp)                         :: rvecee(3,melec*(melec-1)/2)
-!!$    
+!!$
 !!$    real(dp)                          :: x(3,melec), norm
 !!$
 !!$    integer ij, i,j, k
@@ -284,9 +284,9 @@ contains
 
   function find_rvec_ee (x1, x2) result(rvecee)
 !---------------------------------------------------------------------------
-! Description : compute the vector difference  between electrons x1 and x2                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : compute the vector difference  between electrons x1 and x2
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit  none
     include "commons.h"
@@ -308,9 +308,9 @@ contains
 
   subroutine star_ee_fac (ije, ist,  c_s_fac, grad_c_s_fac)
 !---------------------------------------------------------------------------
-! Description : building the arrays related to the ee stars                                                                 
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : building the arrays related to the ee stars
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -324,20 +324,20 @@ contains
     !! sum over the first half only
     i1 = istar_sim (ist)
     i2 = fstar_sim (ist)
-    !     i2 = i1+ (mstar_sim (ist))/2 - 1 
+    !     i2 = i1+ (mstar_sim (ist))/2 - 1
 
-    grad_c_s_fac  = 0 
-    c_s_fac = 0 
+    grad_c_s_fac  = 0
+    c_s_fac = 0
 
     do i = i1, i2
 
        cosdot = cos_pjasee (i, ije)
        sindot = sin_pjasee (i, ije)
 
-       c_s_fac =  c_s_fac +  cosdot !! 2 absorbed in def of parms 
+       c_s_fac =  c_s_fac +  cosdot !! 2 absorbed in def of parms
 
-       do k= 1, ndim_pj 
-          grad_c_s_fac (k) = grad_c_s_fac (k) - rkv_sim (k,i)* sindot 
+       do k= 1, ndim_pj
+          grad_c_s_fac (k) = grad_c_s_fac (k) - rkv_sim (k,i)* sindot
        enddo
 
     enddo
@@ -349,8 +349,8 @@ contains
   function cos_star_sim_fac (ist,ij) result (sum)
 !---------------------------------------------------------------------------
 ! Description : evaluates sum_{star_i,k_star} cos(k_star\dot r)
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -364,9 +364,9 @@ contains
     !! sum over the first half only
     i1 = istar_sim (ist)
     i2 = fstar_sim (ist)
-    !     i2 = i1+ (mstar_sim (ist))/2 - 1 
+    !     i2 = i1+ (mstar_sim (ist))/2 - 1
 
-    sum  = 0 
+    sum  = 0
 
     do i = i1, i2
 
@@ -379,9 +379,9 @@ contains
 
   function grad_cos_star_sim_fac (ist, ij) result (sum)
 !---------------------------------------------------------------------------
-! Description : evaluates the gradient and the value fo the cosine terms                                                               
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : evaluates the gradient and the value fo the cosine terms
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -393,13 +393,13 @@ contains
     !! sum over the first half only
     i1 = istar_sim (ist)
     i2 = fstar_sim (ist)
-    !     i2 = i1+ (mstar_sim (ist))/2 - 1 
+    !     i2 = i1+ (mstar_sim (ist))/2 - 1
 
-    sum  = 0 
+    sum  = 0
 
     do i = i1, i2
 
-       do k= 1, ndim_pj 
+       do k= 1, ndim_pj
           sum (k) = sum (k) - rkv_sim(k,i)* sin_pjasee_e (i,ij)
        enddo
 
@@ -412,11 +412,11 @@ contains
 
   subroutine  pjasee_deriv_jas (rvec, pjasv, pjasd2, pjasdiv_vj, pjasfsum)
 !---------------------------------------------------------------------------
-! Description : computes the gradient of the wavefunction with respect to the periodic jastrow 
-!               parameters, and  the graident and laplacian of this quantity which is used in the 
+! Description : computes the gradient of the wavefunction with respect to the periodic jastrow
+!               parameters, and  the graident and laplacian of this quantity which is used in the
 !               computation of the derivates of the local energy with respect to these jastrow parameters
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -427,21 +427,21 @@ contains
     real (dp)                            :: gen, fen, gradl (3), lap2, pgradl (3)
     integer                              :: ist, i, ij , k , j , ist_s
 
-    if( nelec .lt. 2) return 
+    if( nelec .lt. 2) return
 
     dpsi_pjasee = 0
-    grad_dpsi_pjasee  = 0 
-    lap_dpsi_pjasee = 0 
+    grad_dpsi_pjasee  = 0
+    lap_dpsi_pjasee = 0
 
 
-    !! build cosine and sine table 
+    !! build cosine and sine table
     call calc_cos_sin_ee (rvec)
 
     call star_ee_bld (rvec)
 
     ij=0
     do i = 2,nelec
-       do j = 1, i-1 
+       do j = 1, i-1
 
           ij=ij+1
 
@@ -449,11 +449,11 @@ contains
 
              ist_s = ist + param_pjasen_nb
 
-             fen = pjas_parms (ist_s, iwf) * cos_star_ee (ij, ist) 
+             fen = pjas_parms (ist_s, iwf) * cos_star_ee (ij, ist)
 
-             gradl =  grad_cos_star_ee (:, ij, ist ) 
+             gradl =  grad_cos_star_ee (:, ij, ist )
 
-             pjasfso (i,j) = pjasfso(i, j) + fen 
+             pjasfso (i,j) = pjasfso(i, j) + fen
 
              pgradl = pjas_parms (ist_s, iwf) * gradl
 
@@ -461,11 +461,11 @@ contains
 
              pjasfijo(:, j, i) = pjasfijo (: , j, i) - pgradl
 
-             lap2 = - sk3_sim (ist) * cos_star_ee (ij, ist ) 
+             lap2 = - sk3_sim (ist) * cos_star_ee (ij, ist )
 
              pjasd2ijo (i,j) = pjasd2ijo (i,j)  + 2* pjas_parms (ist_s, iwf) * lap2
 
-             gen = cos_star_ee (ij, ist) 
+             gen = cos_star_ee (ij, ist)
 
              peego(i,j,ist) = peego(i,j,ist) + gen
 
@@ -481,7 +481,7 @@ contains
 
           enddo
 
-          pjasfsum = pjasfsum + pjasfso(i,j) 
+          pjasfsum = pjasfsum + pjasfso(i,j)
 
           pjasv(:,i) = pjasv(:,i) + pjasfijo(:,i,j)
 
@@ -506,10 +506,10 @@ contains
 
   subroutine  pjasee_jas (rvec, pjasv, pjasd2, pjasdiv_vj, pjasfsum)
 !---------------------------------------------------------------------------
-! Description :  same as pjasen_deriv_jas  but without the derivatives of the 
-!              \nabla J with respect periodic Jastrow parameters.                                                               
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :  same as pjasen_deriv_jas  but without the derivatives of the
+!              \nabla J with respect periodic Jastrow parameters.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -521,13 +521,13 @@ contains
     integer                              :: ist, i, ij , k , j , ist_s
 
 
-    if( nelec .lt. 2) return 
+    if( nelec .lt. 2) return
 
     do ist = 1, param_pjasee_nb
        dpsi_pjasee(ist)=0
     enddo
 
-    !! build cosine and sine table 
+    !! build cosine and sine table
     call calc_cos_sin_ee (rvec)
 
     call star_ee_bld (rvec)
@@ -535,7 +535,7 @@ contains
 
     ij=0
     do i = 2,nelec
-       do j = 1, i-1 
+       do j = 1, i-1
 
           ij=ij+1
 
@@ -543,31 +543,31 @@ contains
 
              ist_s = ist + param_pjasen_nb
 
-             fen = pjas_parms (ist_s, iwf)* cos_star_ee (ij, ist) 
+             fen = pjas_parms (ist_s, iwf)* cos_star_ee (ij, ist)
 
-             gradl =  grad_cos_star_ee (:, ij, ist ) 
+             gradl =  grad_cos_star_ee (:, ij, ist )
 
-             pjasfso (i,j) = pjasfso(i, j) + fen 
+             pjasfso (i,j) = pjasfso(i, j) + fen
 
              pgradl = pjas_parms (ist_s, iwf) * gradl
 
-             pjasfijo(:, i, j) = pjasfijo (: , i, j) + pgradl  
+             pjasfijo(:, i, j) = pjasfijo (: , i, j) + pgradl
 
-             pjasfijo(:, j, i) = pjasfijo (: , j, i) -  pgradl 
+             pjasfijo(:, j, i) = pjasfijo (: , j, i) -  pgradl
 
-             pjasd2ijo (i,j) = pjasd2ijo (i,j)  -  2* fen * sk3_sim (ist) 
+             pjasd2ijo (i,j) = pjasd2ijo (i,j)  -  2* fen * sk3_sim (ist)
 
-             dpsi_pjasee (ist) = dpsi_pjasee (ist) +  cos_star_ee (ij, ist) 
+             dpsi_pjasee (ist) = dpsi_pjasee (ist) +  cos_star_ee (ij, ist)
 
           enddo
 
-          pjasfsum = pjasfsum + pjasfso(i,j) 
+          pjasfsum = pjasfsum + pjasfso(i,j)
 
           pjasv(:,i) = pjasv(:,i) + pjasfijo(:,i,j)
 
           pjasv(:,j) = pjasv(:,j) + pjasfijo(:,j,i)
 
-          pjasd2 = pjasd2 + pjasd2ijo(i,j) 
+          pjasd2 = pjasd2 + pjasd2ijo(i,j)
 
           pjasdiv_vj (i)= pjasdiv_vj (i) + pjasd2ijo(i,j)/2
 
@@ -577,7 +577,7 @@ contains
 
     end do
 
-    !! needed in nonloc 
+    !! needed in nonloc
     call object_modified_by_index (dpsi_pjasee_index)
 
   end subroutine pjasee_jas
@@ -587,9 +587,9 @@ contains
 
   subroutine  pjasee_jas_e (iel, rvec, fsum)
 !---------------------------------------------------------------------------
-! Description :Same as  pjasee_jas  but when only one electron is modified                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :Same as  pjasee_jas  but when only one electron is modified
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -599,14 +599,14 @@ contains
     real (dp)                            :: gen, fen , fen1(3), temp (3), fsum
     integer                              :: ist, i,j, ij , jj , ist_s
 
-    if( nelec .lt. 2) return 
+    if( nelec .lt. 2) return
 
-    !! build cosine and sine table 
+    !! build cosine and sine table
     call calc_cos_sin_ee_e2 (iel, rvec)
 
     do jj = 1, nelec
 
-       if(jj .eq. iel) cycle 
+       if(jj .eq. iel) cycle
 
        if(jj .lt. iel) then
           i=iel
@@ -618,7 +618,7 @@ contains
 
        ij=((i-1)*(i-2))/2+j
 
-       fen = 0 
+       fen = 0
 
        fen1= 0
 
@@ -626,7 +626,7 @@ contains
 
           ist_s = ist + param_pjasen_nb
 
-          fen = fen + pjas_parms (ist_s, iwf)* cos_star_sim_fac  (ist,ij) 
+          fen = fen + pjas_parms (ist_s, iwf)* cos_star_sim_fac  (ist,ij)
 
           temp = grad_cos_star_sim_fac  (ist, ij)
 
@@ -634,9 +634,9 @@ contains
 
        enddo
 
-       fsn (i,j) = fsn (i, j) + fen 
+       fsn (i,j) = fsn (i, j) + fen
 
-       fijn(:,i,j)=fijn(:,i,j) + fen1 
+       fijn(:,i,j)=fijn(:,i,j) + fen1
 
        fijn(:,j,i)=fijn(:,j,i) - fen1
 
@@ -644,7 +644,7 @@ contains
 
        fjn(:,j)= fjn(:,j) - fen1
 
-       fsum = fsum + fen 
+       fsum = fsum + fen
 
     enddo
 
@@ -654,9 +654,9 @@ contains
 
   subroutine  calc_cos_sin_ee_e (iel, rvec)
 !---------------------------------------------------------------------------
-! Description : calculate the cosine and sine of the star terms when one electron is displaced.                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : calculate the cosine and sine of the star terms when one electron is displaced.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -677,7 +677,7 @@ contains
 
     do jj = 1, nelec
 
-       if(jj .eq. iel) cycle 
+       if(jj .eq. iel) cycle
 
        if(jj .lt. iel) then
           u=iel
@@ -707,10 +707,10 @@ contains
 
           do n=2, kvec_pjasee (i)
 
-             cos_temp(n,i, ij)=cos_temp(n-1,i, ij)*cos_temp(1,i, ij)- & 
+             cos_temp(n,i, ij)=cos_temp(n-1,i, ij)*cos_temp(1,i, ij)- &
                   & sin_temp(n-1,i, ij)*sin_temp(1,i, ij)
 
-             sin_temp(n,i, ij)=sin_temp(n-1,i, ij)*cos_temp(1,i, ij)+ & 
+             sin_temp(n,i, ij)=sin_temp(n-1,i, ij)*cos_temp(1,i, ij)+ &
                   & cos_temp(n-1,i, ij)*sin_temp(1,i, ij)
 
              cos_temp(-n,i, ij)=cos_temp(n,i, ij)
@@ -727,7 +727,7 @@ contains
 
     do jj = 1, nelec
 
-       if(jj .eq. iel) cycle 
+       if(jj .eq. iel) cycle
 
        if(jj .lt. iel) then
           u=iel
@@ -742,16 +742,16 @@ contains
 
        do i = 1 , nbasis_pw_sim
 
-          cos_tmp=cos_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) & 
+          cos_tmp=cos_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) &
                &           -sin_temp(kv_sim(1,i),1, ij)*sin_temp(kv_sim(2,i),2, ij)
 
-          sin_tmp=sin_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) & 
+          sin_tmp=sin_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) &
                &           +cos_temp(kv_sim(1,i),1, ij)*sin_temp(kv_sim(2,i),2, ij)
 
-          cos_pjasee_e (i, ij)= cos_tmp*cos_temp(kv_sim(3,i),3, ij) & 
+          cos_pjasee_e (i, ij)= cos_tmp*cos_temp(kv_sim(3,i),3, ij) &
                &               -sin_tmp*sin_temp(kv_sim(3,i),3, ij)
 
-          sin_pjasee_e (i, ij)= sin_tmp*cos_temp(kv_sim(3,i),3, ij) & 
+          sin_pjasee_e (i, ij)= sin_tmp*cos_temp(kv_sim(3,i),3, ij) &
                &               +cos_tmp*sin_temp(kv_sim(3,i),3, ij)
        enddo
 
@@ -766,10 +766,10 @@ contains
 
   subroutine  calc_cos_sin_ee_e2 ( iel, rvec)
 !---------------------------------------------------------------------------
-! Description :This is the same as calc_cos_sin_ee except that the interpartilce distance is known 
-!               so to gain some efficiency I introduced a new sub to handle this case.                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :This is the same as calc_cos_sin_ee except that the interpartilce distance is known
+!               so to gain some efficiency I introduced a new sub to handle this case.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -791,7 +791,7 @@ contains
 
     do jj = 1, nelec
 
-       if(jj .eq. iel) cycle 
+       if(jj .eq. iel) cycle
 
        if(jj .lt. iel) then
           u=iel
@@ -821,10 +821,10 @@ contains
 
           do n=2, kvec_pjasee (i)
 
-             cos_temp(n,i, ij)=cos_temp(n-1,i, ij)*cos_temp(1,i, ij)- & 
+             cos_temp(n,i, ij)=cos_temp(n-1,i, ij)*cos_temp(1,i, ij)- &
                   & sin_temp(n-1,i, ij)*sin_temp(1,i, ij)
 
-             sin_temp(n,i, ij)=sin_temp(n-1,i, ij)*cos_temp(1,i, ij)+ & 
+             sin_temp(n,i, ij)=sin_temp(n-1,i, ij)*cos_temp(1,i, ij)+ &
                   & cos_temp(n-1,i, ij)*sin_temp(1,i, ij)
 
              cos_temp(-n,i, ij)=cos_temp(n,i, ij)
@@ -841,7 +841,7 @@ contains
 
     do jj = 1, nelec
 
-       if(jj .eq. iel) cycle 
+       if(jj .eq. iel) cycle
 
        if(jj .lt. iel) then
           u=iel
@@ -856,16 +856,16 @@ contains
 
        do i = 1 , nbasis_pw_sim
 
-          cos_tmp=cos_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) & 
+          cos_tmp=cos_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) &
                &           -sin_temp(kv_sim(1,i),1, ij)*sin_temp(kv_sim(2,i),2, ij)
 
-          sin_tmp=sin_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) & 
+          sin_tmp=sin_temp(kv_sim(1,i),1, ij)*cos_temp(kv_sim(2,i),2, ij) &
                &           +cos_temp(kv_sim(1,i),1, ij)*sin_temp(kv_sim(2,i),2, ij)
 
-          cos_pjasee_e (i, ij)= cos_tmp*cos_temp(kv_sim(3,i),3, ij) & 
+          cos_pjasee_e (i, ij)= cos_tmp*cos_temp(kv_sim(3,i),3, ij) &
                &               -sin_tmp*sin_temp(kv_sim(3,i),3, ij)
 
-          sin_pjasee_e (i, ij)= sin_tmp*cos_temp(kv_sim(3,i),3, ij) & 
+          sin_pjasee_e (i, ij)= sin_tmp*cos_temp(kv_sim(3,i),3, ij) &
                &               +cos_tmp*sin_temp(kv_sim(3,i),3, ij)
        enddo
     enddo
@@ -878,9 +878,9 @@ contains
 
   subroutine  calc_cos_sin_ee (xvec)
 !---------------------------------------------------------------------------
-! Description : cosine and sine terms                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : cosine and sine terms
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -902,7 +902,7 @@ contains
 
     do ie = 2, nelec
 
-       do je = 1, ie -1 
+       do je = 1, ie -1
 
           ije = ije + 1
 
@@ -922,10 +922,10 @@ contains
 
              do n=2, kvec_pjasee (i)
 
-                cos_temp(n,i,ije)=cos_temp(n-1,i,ije)*cos_temp(1,i,ije)- & 
+                cos_temp(n,i,ije)=cos_temp(n-1,i,ije)*cos_temp(1,i,ije)- &
                      & sin_temp(n-1,i,ije)*sin_temp(1,i,ije)
 
-                sin_temp(n,i,ije)=sin_temp(n-1,i,ije)*cos_temp(1,i,ije)+ & 
+                sin_temp(n,i,ije)=sin_temp(n-1,i,ije)*cos_temp(1,i,ije)+ &
                      & cos_temp(n-1,i,ije)*sin_temp(1,i,ije)
 
                 cos_temp(-n,i,ije)=cos_temp(n,i,ije)
@@ -947,20 +947,20 @@ contains
 
        do ie = 2, nelec
 
-          do je = 1, ie -1 
+          do je = 1, ie -1
 
              ije = ije + 1
 
-             cos_tmp=cos_temp(kv_sim(1,i),1,ije)*cos_temp(kv_sim(2,i),2,ije) & 
+             cos_tmp=cos_temp(kv_sim(1,i),1,ije)*cos_temp(kv_sim(2,i),2,ije) &
                   &           -sin_temp(kv_sim(1,i),1,ije)*sin_temp(kv_sim(2,i),2,ije)
 
-             sin_tmp=sin_temp(kv_sim(1,i),1,ije)*cos_temp(kv_sim(2,i),2,ije) & 
+             sin_tmp=sin_temp(kv_sim(1,i),1,ije)*cos_temp(kv_sim(2,i),2,ije) &
                   &           +cos_temp(kv_sim(1,i),1,ije)*sin_temp(kv_sim(2,i),2,ije)
 
-             cos_pjasee(i, ije)= cos_tmp*cos_temp(kv_sim(3,i),3,ije) & 
+             cos_pjasee(i, ije)= cos_tmp*cos_temp(kv_sim(3,i),3,ije) &
                   &               -sin_tmp*sin_temp(kv_sim(3,i),3,ije)
 
-             sin_pjasee(i, ije)= sin_tmp*cos_temp(kv_sim(3,i),3,ije) & 
+             sin_pjasee(i, ije)= sin_tmp*cos_temp(kv_sim(3,i),3,ije) &
                   &               +cos_tmp*sin_temp(kv_sim(3,i),3,ije)
 
           enddo

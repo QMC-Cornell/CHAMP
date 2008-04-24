@@ -31,10 +31,10 @@ c Written by Claudia Filippi by modifying jastrow
        else
         stop 'single-electron move only for jastrow3 and jastrow4'
       endif
-!! WAS 
-      if (ido_pjas .eq. 1) then 
+!! WAS
+      if (ido_pjas .eq. 1) then
          call pjas_jas_e_interface (iel, x, rvec_ee, v, value)
       endif
-!!! 
+!!!
       return
       end

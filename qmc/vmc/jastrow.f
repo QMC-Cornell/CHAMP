@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
 !     ! WAS
       common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-!!!   
+!!!
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -35,9 +35,9 @@ c Written by Cyrus Umrigar
         call jastrow4(x,v,d2,div_vj,value)
       endif
 
-!     ! WAS 
+!     ! WAS
 !!!   add contrib due to long range jastrow
-      if (ido_pjas .eq. 1) then 
+      if (ido_pjas .eq. 1) then
          call pjas_jas_interface (x, rvec_ee, v, d2, div_vj, value)
       endif
 

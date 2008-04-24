@@ -139,7 +139,7 @@ module catalog_objects_mod
   call catalog_one_object ('coef_orb_on_ortho_basis', coef_orb_on_ortho_basis_index)
   call catalog_one_object ('add_diag_mult_exp', add_diag_mult_exp_index)
 
-!! pjas WAS 
+!! pjas WAS
   call catalog_one_object ('psid_pjas', psid_pjas_index)
   call catalog_one_object ('vd', vd_index)
 
@@ -158,7 +158,7 @@ module catalog_objects_mod
 
   call catalog_one_object ('sin_star_ee', sin_star_ee_index)
   call catalog_one_object ('grad_sin_star_ee', grad_sin_star_ee_index)
-  
+
   call catalog_one_object ('star_ee', star_ee_index)
   call catalog_one_object ('grad_star_ee', grad_star_ee_index)
 

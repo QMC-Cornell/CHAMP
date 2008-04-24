@@ -66,7 +66,7 @@ module initialization_mod
    nwalk = nconf
   endif
   call object_modified ('nwalk')
-  write(6,*) 
+  write(6,*)
   write(6,'(a,i)') ' Number of walkers initialized to ', nwalk
 
 ! maximal number of optimization iterations

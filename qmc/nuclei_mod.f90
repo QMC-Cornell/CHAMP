@@ -48,7 +48,7 @@ module nuclei_mod
    znuc_int = int(znuc(iwctype(cent_i)))
    if (znuc_int >= 1 .and. znuc_int <= 10) then
     mass_nucl (cent_i) = znuc_to_mass_nucl (znuc_int)
-   else 
+   else
     call die (here, 'atomic mass associated to nuclear charge ='+ znuc_int+' is unknown.')
    endif
   enddo ! cent_i

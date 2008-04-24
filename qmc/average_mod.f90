@@ -805,7 +805,7 @@ module average_mod
 
 ! if corresponding variance not found, add it as a new object and define as a variance
   if (.not. variance_found) then
-   call object_add_and_index (object_var_ind)  
+   call object_add_and_index (object_var_ind)
    call object_variance_define (object_av_name, objects(object_var_ind)%name)
   endif
 
@@ -822,7 +822,7 @@ module average_mod
 ! ===================================================================================
   subroutine object_error_define_from_variance (object_var_name, object_err_name)
 ! -----------------------------------------------------------------------------------
-! Description   : define statistical error associated to a variance 
+! Description   : define statistical error associated to a variance
 !
 ! Created       : J. Toulouse, 20 Sep 2007
 ! -----------------------------------------------------------------------------------
@@ -909,7 +909,7 @@ module average_mod
    endif
   enddo
 
-  
+
 ! add error to the list of erros
   errors_nb = errors_nb + 1
   call alloc ('errors_object_av_index', errors_object_av_index, errors_nb)
@@ -2156,7 +2156,7 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1_double_1_double_1'
   character(len=max_string_len_type) object_covar_type
   integer dim_av11, dim_av21, dim_covar1
-  integer i,j 
+  integer i,j
 
 ! begin
 
@@ -2235,7 +2235,7 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1_double_1_double_2'
   character(len=max_string_len_type) object_covar_type
   integer dim_av11, dim_av21, dim_covar1, dim_covar2
-  integer i,j 
+  integer i,j
 
 ! begin
   dim_covar1 = objects(object_covar_ind)%dimensions(1)

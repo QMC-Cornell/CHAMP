@@ -1,11 +1,11 @@
-Module pjas_setup_mod 
-  use all_tools_mod 
+Module pjas_setup_mod
+  use all_tools_mod
   implicit none
 
   complex (dp)                           :: Z_0= (0._dp,0._dp)
   complex (dp)                           :: Z_i= (0._dp,1._dp)
-  
-  
+
+
   integer                                :: nstar_en=0
   integer                                :: nstar_ee =0
 
@@ -17,7 +17,7 @@ Module pjas_setup_mod
   integer                                :: nsym_crys_sim
   real(dp), allocatable                  :: symrel_sim (:,:,:)
   real(dp), allocatable                  :: tnons_sim (:,:)
-  
+
   integer                                :: nstar , nbasis_pw
   integer                                :: kvec_pjasen (3)
   real(dp),allocatable                   :: rkv(:,:)
@@ -25,14 +25,14 @@ Module pjas_setup_mod
   real(dp), allocatable                  :: sk3(:)
   complex(dp),allocatable                :: phase(:)
   integer,allocatable                    :: mstar(:),istar(:),fstar(:)
-  
+
   integer                                :: kvec_pjasee (3)
   integer                                :: nstar_sim , nbasis_pw_sim
   real(dp), allocatable                  :: rkv_sim (:,:), sk3_sim (:)
   integer,allocatable                    :: kv_sim(:,:)
   integer, allocatable                   :: istar_sim (:), mstar_sim (:), fstar_sim (:)
   complex(dp),allocatable                :: phase_sim(:)
- 
+
   logical                                :: inversion = .true. ! defaul has inversion symm
 
 contains
@@ -46,19 +46,19 @@ contains
 !!!           wsvol                      :: cell volume
 !!!           symrel and tnons: rotational and translational symmetry operators
 !!! output
-!!!          nstar       number of stars 
+!!!          nstar       number of stars
 !!!          nbasis_pw   number of planewaves in nstars
 !!! also     generates
 !!!  sk3: magnitude of each star, phase: phase for each vector, rkv lattice vector
 !!!  mstar number of planewaves in each star, istar: index for the begining of each star
-  
+
   subroutine create_pw_lattice(prim_sim,nstar,nbasis_pw,nsym_crys,ecut,avec,bvec,wsvol,symrel,tnons)
 !---------------------------------------------------------------------------
-! Description : generate the stars.                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : generate the stars.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    implicit none 
+    implicit none
     real(dp),parameter                   :: deltlg =1.0e-12_dp
     integer, parameter                   :: mlignd=2500
     integer                              :: prim_sim
@@ -100,12 +100,12 @@ contains
     !
     !     calculate the metric in reciprocal space:
     !
-    bij= 0 
-    
+    bij= 0
+
     do j=1,3
        do i=1,3
           do  k=1,3
-             bij(i,j)=bvec(k,i)*bvec(k,j)+bij(i,j)  
+             bij(i,j)=bvec(k,i)*bvec(k,j)+bij(i,j)
           enddo
        enddo
     enddo
@@ -116,19 +116,19 @@ contains
 
     nbasis_pw=wsvol*ecut**1.5/(6*pi*pi)
 
-    nbasis_pw= 8 * nbasis_pw 
+    nbasis_pw= 8 * nbasis_pw
     ntstrd=9*Nbasis_pw
     n3d_wis= ntstrd
 
 
-    allocate(sk3_t(n3d_wis)) 
-    allocate(phase_t(ntstrd)) 
+    allocate(sk3_t(n3d_wis))
+    allocate(phase_t(ntstrd))
     allocate(mstar_t(n3d_wis))
     allocate(istar_t(n3d_wis))
-    
+
     allocate (ekin_t(ntstrd),rkv_t(3,ntstrd),kv_t(3,ntstrd))
-    
-    allocate(etagv(nsym_crys)) 
+
+    allocate(etagv(nsym_crys))
     allocate(resultt(3,ntstrd),res2(ntstrd))
     allocate(resmat(3,mlignd))
     allocate(impt(mlignd,nsym_crys))
@@ -143,10 +143,10 @@ contains
     bi=bvec(:,1)
     bj=bvec(:,2)
     bk=bvec(:,3)
-    
+
     mnbmax=ntstrd
 
-    do j=1,3 
+    do j=1,3
        gij(j,j)=one
        do  i=1,3
 	  if (i.ne.j) gij(i,j)=zero
@@ -160,7 +160,7 @@ contains
 
     xli=1.0e-6_dp
     gkmod=g
-   
+
     bijk=bi(1)*(bj(2)*bk(3)-bj(3)*bk(2)) +&
 	 bi(2)*(bj(3)*bk(1)-bj(1)*bk(3)) +&
 	 bi(3)*(bj(1)*bk(2)-bj(2)*bk(1))
@@ -184,7 +184,7 @@ contains
        gv(1)=-gki+i-1
        do j=1,jpas
 	  gv(2)=-gkj+j-1
-	  do k=1,kpas 
+	  do k=1,kpas
 	     gv(3)=-gkk+k-1
 	     gkmod=sqrt(gdot(gv,gv,bij))
              if (not_include_zero .and. gkmod == 0) cycle
@@ -197,13 +197,13 @@ contains
 	     endif
 
              ekin_t(mnm)=gkmod+deltlg*mnm
-             
+
 	     do l=1,3
 		rkv_t(l,mnm)=gv(l)
 	     enddo
-	  enddo 
+	  enddo
        enddo
-    enddo 
+    enddo
     !
     !
     !     construction of stars
@@ -264,7 +264,7 @@ contains
        impr(mn)=.true.
     enddo
 
-    nop = nsym_crys 
+    nop = nsym_crys
 
     do ii=1,nop
 
@@ -292,16 +292,16 @@ contains
 	     lg1=.false.
 	     cx= 0.d0
 	     do j=1,3
-		cx=cx-gkt(j)*tnons (j, ii) 
+		cx=cx-gkt(j)*tnons (j, ii)
 	     enddo
 	     cx=cx*twopi
 	     etagv(ii)=cmplx(cos(cx), sin(cx))
-             !             if ((sin(cx)) > 0.00001) then 
+             !             if ((sin(cx)) > 0.00001) then
              !                stop "complex phase with"
              !             endif
           endif
 
-       enddo !mn align 
+       enddo !mn align
        if(lg1)then
 	  write(6,*)'error in create_pw_lattice: unsymmetric superstar', nstar
           write(6,*) 'Symmetrey operations inconsistent with your lattice'
@@ -316,26 +316,26 @@ contains
        if ( impr(mn) )   mnbr=mnbr - 1
     enddo
 
-    
+
     nstar=nstar + 1
 
     if (nstar.gt.n3d_wis)then
        write(6,'('' n3d_wis too small'')')
        write(6,*) 'n3d_wis too small'
-       stop 
+       stop
     endif
     mstar_t(nstar)=mnbr
     istar_t(nstar)=mntot+1
     ntt=nop/mnbr
 
-    
+
     do mn=mlign,1,-1
        mn2 = mn + low - 1
        if (impr(mn).and. .not.used(mn)) iprot=mn2
-    enddo 
+    enddo
     do mn=1,mlign
        mn2=mn+low-1
-       if (impr(mn)) then 
+       if (impr(mn)) then
           cycle
        endif
        !
@@ -346,12 +346,12 @@ contains
        used(mn)=.true.
        mntot=mntot + 1
        cc=z_0
-       do ii=1,nop 
-	  if(impt(mn,ii)) then 
-             cycle 
+       do ii=1,nop
+	  if(impt(mn,ii)) then
+             cycle
           endif
 	  cc=cc+etagv(ii)
-       enddo 
+       enddo
        cc=cc/real(ntt,dp)
        phase_t(mntot)=cc
        ekin_t(mntot)=res2(mn2)**2
@@ -371,11 +371,11 @@ contains
        enddo
 
     enddo
-    
+
     ntstar=istar_t(nstar)+mstar_t(nstar)-1
 
     if(ntstar.lt.hi)  goto 203
-    
+
     if (hi.lt.mnm)   go to 1001
 
     do i=1,ntstar
@@ -385,20 +385,20 @@ contains
        endif
     enddo
     write(6,*) 'create_pw_lattice: not enough plane waves for q-vector'
-    stop 
+    stop
 9999 continue
 
 !!! For simulation phase, remove  phase
-    if (prim_sim==2) then 
+    if (prim_sim==2) then
        do j= 1, ntstar
-          phase_t(j) = 1 
+          phase_t(j) = 1
        enddo
     endif
 
 
 !!! remove those stars which give zero contribution due to symmetry
-    
-    write(*,*) "nstar ",  nstar 
+
+    write(*,*) "nstar ",  nstar
 
     allocate(mstar_tt(ntstar), istar_tt(ntstar),sk3_tt(ntstar))
     allocate(ekin_tt (ntstar), kv_tt(3,ntstar), phase_tt(ntstar),rkv_tt(3,ntstar))
@@ -412,43 +412,43 @@ contains
 
        do  j=i1,i2
           if (abs(phase_t(j)) > 0.00000001) then
-             phase_zero = 1 
+             phase_zero = 1
              exit
           endif
        enddo
 
 !!$       !! debug
-!!$       write(6,*) i, i1, i2, mstar_t (i), phase_zero 
+!!$       write(6,*) i, i1, i2, mstar_t (i), phase_zero
 !!$       do  j=i1,i2
 !!$          write (6,5) j,ekin_t(j),kv_t(1,j),kv_t(2,j),kv_t(3,j),phase_t(j),&
 !!$               rkv_t(1,j),rkv_t(2,j),rkv_t(3,j)
 !!$       enddo
 !!$       !! debug
 
-       
-       if (phase_zero == 1 ) then 
+
+       if (phase_zero == 1 ) then
           k=k+1
           sk3_tt(k)= sk3_t (i)
           mstar_tt(k) = mstar_t (i)
-          if (k==1) then 
+          if (k==1) then
              rkv_tt(:,1:i2-i1+1)= rkv_t (:,i1:i2)
              kv_tt (:,1:i2-i1+1)= kv_t (:,i1:i2)
-             istar_tt(1)= 1 
+             istar_tt(1)= 1
              phase_tt(1:i2-i1+1)= phase_t (i1:i2)
              ekin_tt(1:i2-i1+1)= ekin_t (i1:i2)
           else
-             j1= istar_tt(k-1)+ mstar_tt (k-1) 
+             j1= istar_tt(k-1)+ mstar_tt (k-1)
              rkv_tt(:,j1:i2-i1+j1)= rkv_t (:,i1:i2)
              kv_tt (:,j1:i2-i1+j1)= kv_t (:,i1:i2)
-             istar_tt(k)= j1 
+             istar_tt(k)= j1
              phase_tt(j1:i2-i1+j1) = phase_t (i1:i2)
              ekin_tt(j1:i2-i1+j1) =  ekin_t (i1:i2)
           endif
        else
 
-          write(6,*) "star is zero by symmetry", i 
+          write(6,*) "star is zero by symmetry", i
           !! debug
-          write(6,*) i, i1, i2, mstar_t (i) 
+          write(6,*) i, i1, i2, mstar_t (i)
           do  j=i1,i2
              write (6,5) j,ekin_t(j),kv_t(1,j),kv_t(2,j),kv_t(3,j),phase_t(j),&
                   rkv_t(1,j),rkv_t(2,j),rkv_t(3,j)
@@ -457,8 +457,8 @@ contains
 
        endif
     enddo
-    nstar=k 
-    
+    nstar=k
+
 !!! pick only stars within this cutoff
     do i=1,ntstar
        if (sk3_tt(i).gt.ecut) then
@@ -467,16 +467,16 @@ contains
        endif
     enddo
 
-    !! note checking is done on the orignal vectors before 
+    !! note checking is done on the orignal vectors before
     !! reducing them by symmetry.
-    !! check that the phases 
+    !! check that the phases
     do i=1,nstar
        i1=istar_tt (i)
-       i2=i1+ (mstar_tt (i))/2 - 1 
+       i2=i1+ (mstar_tt (i))/2 - 1
        i3=i1+mstar_tt (i)-1
        kk=0
        do j=i1,i2
-          if (maxval(real(kv_tt (:,j)+kv_tt(:,i3-kk)))  > 0.0000001) then 
+          if (maxval(real(kv_tt (:,j)+kv_tt(:,i3-kk)))  > 0.0000001) then
              !             write(*,*) "kv_tt1 ",kv_tt(:,j)
              !             write(*,*) "kv_tt2 ",kv_tt(:,i3-kk)
              !             write(*,*) "diff is ", maxval(real(kv_tt (:,j)+kv_tt(:,i3-kk)))
@@ -484,7 +484,7 @@ contains
              write(*,*) "add inversion symmetry to your list of symmetries"
              stop
           endif
-          if (abs(phase_tt(j)-conjg(phase_tt(i3-kk))) > 0.0000001) then 
+          if (abs(phase_tt(j)-conjg(phase_tt(i3-kk))) > 0.0000001) then
              write(*,*) "star kv_tt bar{kv_tt}=", i, kv_tt (:,j), kv_tt (:,i3-kk)
              write(*,*) "phase1 ",phase_tt(j)
              write(*,*) "phase2 ",phase_tt(i3-kk)
@@ -496,15 +496,15 @@ contains
     enddo
 
 
-    if (prim_sim==1 .and. nstar_en > 0) then 
-       if (nstar_en > nstar) nstar_en = nstar 
-       nstar= nstar_en 
+    if (prim_sim==1 .and. nstar_en > 0) then
+       if (nstar_en > nstar) nstar_en = nstar
+       nstar= nstar_en
     endif
 
-    
-    if (prim_sim==2 .and. nstar_ee > 0) then 
-       if (nstar_ee > nstar) nstar_ee = nstar 
-       nstar= nstar_ee 
+
+    if (prim_sim==2 .and. nstar_ee > 0) then
+       if (nstar_ee > nstar) nstar_ee = nstar
+       nstar= nstar_ee
     endif
 
 
@@ -512,15 +512,15 @@ contains
     nbasis_pw_t =istar_tt (i) + mstar_tt (i)-1
 
 
-    !! redimension   
+    !! redimension
     nbasis_pw = nbasis_pw_t
 
-    !!include only one half 
-    nbasis_pw = nbasis_pw/2 
+    !!include only one half
+    nbasis_pw = nbasis_pw/2
 
     !!global variables for primitive cell
-    if (prim_sim==1) then 
-       
+    if (prim_sim==1) then
+
        allocate(rkv(3,nbasis_pw), stat=istat)
        !       allocate(kv(3,nbasis_pw), stat=istat)
        allocate (phase(nbasis_pw),mstar(nstar),istar(nstar))
@@ -536,14 +536,14 @@ contains
              rkv(:,r)= rkv_tt(:,j)
              kv(:,r)= kv_tt(:,j)
              phase (r)= phase_tt (j)
-             ekin_tt (r)= ekin_tt (j) !! destroy ekin_tt 
+             ekin_tt (r)= ekin_tt (j) !! destroy ekin_tt
              r=r+1
           enddo
-          if (i==1) then 
+          if (i==1) then
              istar(1)= 1
              mstar(1)= mstar_tt(1)/2
           else
-             istar(i)= istar(i-1) + mstar(i-1) 
+             istar(i)= istar(i-1) + mstar(i-1)
              mstar(i)= mstar_tt(i)/2
           endif
        enddo
@@ -551,26 +551,26 @@ contains
           kvec_pjasen (k)= int (maxval (abs (real (kv (k,:)))))
        enddo
        write(6,*) " kvec_pjasen = ",  kvec_pjasen
-       
 
-       if (.not. inversion) then 
-          !! double the size of sk3 
+
+       if (.not. inversion) then
+          !! double the size of sk3
           allocate (sk3(2*nstar))
           k=1
           do i=1, nstar
              sk3 (k)= sk3_tt (i)
              sk3 (k+1)= sk3_tt (i)
-             k=k+2 
+             k=k+2
           enddo
        else
           allocate (sk3(nstar))
           sk3= sk3_tt (1:nstar)
        endif
 
-       
-       do ist=1, nstar 
+
+       do ist=1, nstar
           i1 = istar (ist)
-          i2 = i1+ mstar (ist) - 1 
+          i2 = i1+ mstar (ist) - 1
           fstar(ist)= i2
        enddo
 
@@ -592,7 +592,7 @@ contains
        allocate (sk3_sim(nstar),mstar_sim(nstar),istar_sim(nstar))
        allocate (fstar_sim (nstar))
        allocate (kv_sim(3,1:nbasis_pw))
-       
+
 !!! remove the planewaves related by inversion symmetry
        r=1
        do i=1,nstar
@@ -601,15 +601,15 @@ contains
           do j=i1,i2
              rkv_sim(:,r)= rkv_tt(:,j)
              kv_sim(:,r) = kv_tt (:,j)
-             ekin_tt (r)= ekin_tt (j) !! destroy ekin_tt 
-             phase_tt (r)= phase_tt (j) !! destroy phase_tt 
+             ekin_tt (r)= ekin_tt (j) !! destroy ekin_tt
+             phase_tt (r)= phase_tt (j) !! destroy phase_tt
              r=r+1
           enddo
-          if (i==1) then 
+          if (i==1) then
              istar_sim(1)= 1
              mstar_sim(1)= mstar_tt(1)/2
           else
-             istar_sim(i)= istar_sim(i-1) + mstar_sim(i-1) 
+             istar_sim(i)= istar_sim(i-1) + mstar_sim(i-1)
              mstar_sim(i)= mstar_tt(i)/2
           endif
        enddo
@@ -618,16 +618,16 @@ contains
           kvec_pjasee (k)= int (maxval (abs (real (kv_sim (k,:)))))
        enddo
        write(6,*) " kvec_pjasee = ",  kvec_pjasee
-       
+
 
 
        sk3_sim = sk3_tt (1:nstar)
-       do ist=1, nstar_sim 
+       do ist=1, nstar_sim
           i1=istar_sim (ist)
-          i2=i1+ mstar_sim (ist) - 1 
+          i2=i1+ mstar_sim (ist) - 1
           fstar_sim(ist)= i2
        enddo
-       
+
        write(6,'(a,I4,a,I4,a)') " Number of planewaves included in e-e periodic Jastrow= ", nbasis_pw, " in ", nstar, " stars"
 
        do i=1,nstar
@@ -639,10 +639,10 @@ contains
                   rkv_sim(1,j),rkv_sim(2,j),rkv_sim(3,j)
           enddo
        enddo
-       
+
     endif
-    
-    
+
+
 !!$    do i=1,nstar
 !!$       write(6,6) i,mstar_tt(i),istar_tt(i),sk3_tt(i)
 !!$       i1=istar_tt (i)
@@ -659,18 +659,18 @@ contains
 !!$    write(101+prim_sim,*) nstar
 !!$    write(101+prim_sim,'(120I5.2)') (mstar_tt(i),i=1,nstar)
 !!$    write(101+prim_sim,'(120I5.2)') (istar_tt(i),i=1,nstar)
-!!$    
-!!$    do j=1,nbasis_pw 
+!!$
+!!$    do j=1,nbasis_pw
 !!$       write(101+prim_sim,'(12F14.8)') ekin_tt(j), rkv_tt(1,j),rkv_tt(2,j),rkv_tt(3,j), phase_tt(k)
 !!$    enddo
-    
-    
+
+
     deallocate (etagv,resultt,res2,resmat,impt,used,indexx)
     deallocate (sk3_t,phase_t, mstar_t,istar_t,ekin_t,rkv_t,kv_t)
-    
+
 
     deallocate(mstar_tt, istar_tt ,sk3_tt, ekin_tt , kv_tt , phase_tt,rkv_tt)
-    
+
 
 2   format(10x,i7,' plane waves in ',i6,' stars',/,&
 	 10x,'gki gkj gkk = ',3f5.1)
@@ -678,20 +678,20 @@ contains
 6   format(/3i5,5x,f15.8/)
 7   format (3(/4x,3f10.6))
 8   format (8f10.6)
-    
+
   contains
 
-    
+
     function  gdot(a,b,gij)
 !---------------------------------------------------------------------------
-! Description : do                                                             
+! Description : do
 !     *****
 !     *****   dot product of two vectors with metric gij
 !     *****
 !     ***********************************************************
-! Created     : W. A. Al-Saidi, June 2007                          
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-      implicit none 
+      implicit none
       real(dp)                           :: a(3),b(3),gij(3,3),gdot
       integer                            :: i,j
       gdot=zero
@@ -702,14 +702,14 @@ contains
       enddo
     end function gdot
 
-    
+
     subroutine hsort(n,a,ind)
 !---------------------------------------------------------------------------
-! Description : sort an array                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : sort an array
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-      implicit none 
+      implicit none
       integer                            :: n
       real(dp)                           :: a(n),q
       integer                            :: ind(n)
@@ -754,9 +754,9 @@ contains
       goto 10
 
     end subroutine hsort
-   
-  end subroutine create_pw_lattice
-  
 
-  
+  end subroutine create_pw_lattice
+
+
+
 end Module pjas_setup_mod

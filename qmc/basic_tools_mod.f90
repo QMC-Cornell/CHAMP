@@ -1233,7 +1233,7 @@ module basic_tools_mod
     call release (object_name, object)
 
     allocate (object (dim1))
-    
+
     do i = 1, dim_min
      object(i) = object_temp(i)
     enddo

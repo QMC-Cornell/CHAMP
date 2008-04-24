@@ -26,7 +26,7 @@ module control_mod
   character(len=max_string_len_rout), save :: lhere= 'control_menu'
 
 ! begin
-  write(6,*) 
+  write(6,*)
   write(6,'(a)') 'Beginning of control menu --------------------------------------------------------------------------------'
 
 ! loop over menu lines

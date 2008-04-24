@@ -786,8 +786,8 @@ c            = 2 then we print new parameters with _new subscript
       common /bparm/ nspin2b,nocuspb
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)

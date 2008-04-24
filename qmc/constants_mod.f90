@@ -11,7 +11,7 @@ module constants_mod
 
 ! max length of string arrays
   integer, parameter    ::  max_string_array_len = 1000 ! added for pathscale compiler
-!added by WAS for pathscale compiler 
+!added by WAS for pathscale compiler
   integer, parameter    ::  max_int_array_len = 1000 ! added for pathscale compiler
   integer, parameter    ::  max_double_array_len = 1000 ! added for pathscale compiler
 !

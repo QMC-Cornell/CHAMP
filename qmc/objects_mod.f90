@@ -1,6 +1,6 @@
 module objects_mod
 
-! size -> mysize for pathscale compiler 
+! size -> mysize for pathscale compiler
 
   use basic_tools_mod
   use constants_mod
@@ -367,7 +367,7 @@ module objects_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_add_and_index'
   character(len=max_string_len_obj) object_name
-  integer object_number 
+  integer object_number
 
 ! begin
 
@@ -377,7 +377,7 @@ module objects_mod
 
 ! add object and return index
   call object_add_once_and_index (object_name, object_ind)
-  
+
   end subroutine object_add_and_index
 
 ! ==============================================================================

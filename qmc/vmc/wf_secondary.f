@@ -24,8 +24,8 @@ c Read parameters for secondary wavefns.
      &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -267,8 +267,8 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
 !**MS(jellium03-1;6Mar08)
 ! Declare arrays upto o-orbitals (l=12)
        common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -407,8 +407,8 @@ c     common /contrl_per/ iperiodic,ibasis
 ! The number of arrays for electron configurations depends on a angular momentum
 ! is increased up to l=12, o-orbital.
        common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -583,8 +583,8 @@ c     common /contrl_per/ iperiodic,ibasis
 ! The number of arrays for electron configurations depends on a angular momentum
 ! is increased up to l=12, o-orbital.
        common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)

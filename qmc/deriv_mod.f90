@@ -5,7 +5,7 @@ module deriv_mod
   use deriv_csf_mod
   use deriv_orb_mod
   use deriv_exp_mod
-  use periodic_jastrow_mod 
+  use periodic_jastrow_mod
   use deriv_geo_mod
 
 ! Declaration of global variables and default values
@@ -179,9 +179,9 @@ module deriv_mod
 !!$!     stop "not defined param in param_nb_bld "
 !!$  endif
 !!$
-!!$  enddo 
+!!$  enddo
 
-!! commented out WAS 
+!! commented out WAS
   index_params (1)= 0
   index_params (2)= index_params (1) + nparmcsf
   index_params (3)= index_params (2) + nparmj
@@ -189,7 +189,7 @@ module deriv_mod
   index_params (5)= index_params (4) + param_orb_nb
   index_params (6)= index_params (5) + param_pjas_nb
   index_params (7)= index_params (6) + param_geo_nb
-  
+
   do param_i =   index_params (1) +1 , index_params (2)
      param_type (param_i) = 'CSF'
   enddo
@@ -197,7 +197,7 @@ module deriv_mod
   do param_i =   index_params (2) +1 , index_params (3)
      param_type (param_i) = 'Jastrow'
   enddo
-  
+
   do param_i =   index_params (3) +1 , index_params (4)
      param_type (param_i) = 'exponent'
   enddo
@@ -205,7 +205,7 @@ module deriv_mod
   do param_i =   index_params (4) +1 , index_params (5)
      param_type (param_i) = 'orbital'
   enddo
-  
+
   do param_i =   index_params (5) +1 , index_params (6)
      param_type (param_i) = 'pjas'
   enddo

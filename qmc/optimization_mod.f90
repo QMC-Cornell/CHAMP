@@ -5,7 +5,7 @@ module optimization_mod
   use opt_lin_mod
   use opt_ptb_mod
   use orbitals_mod
-  use periodic_jastrow_mod 
+  use periodic_jastrow_mod
   use deriv_mod
   use montecarlo_mod
   use control_mod
@@ -338,11 +338,11 @@ module optimization_mod
    end select
   enddo
 
-  if ( l_opt_pjasen .or. l_opt_pjasee) then 
+  if ( l_opt_pjasen .or. l_opt_pjasee) then
      l_opt_pjas = .true.
      if (.not. l_opt_pjasen) param_pjasen_nb = 0
      if (.not. l_opt_pjasee) param_pjasee_nb = 0
-     param_pjas_nb = param_pjasee_nb  + param_pjasen_nb 
+     param_pjas_nb = param_pjasee_nb  + param_pjasen_nb
   endif
 
 ! set numbers of Jastrow and/or CSF parameters to zero if necessary
@@ -384,7 +384,7 @@ module optimization_mod
    endif
   endif
 !WAS
-  if (l_opt_nwt .and. l_opt_pjas) then 
+  if (l_opt_nwt .and. l_opt_pjas) then
      call  die (lhere, 'Optimization of periodic Jastrow parameters is done with linear method only')
   endif
 !
@@ -513,7 +513,7 @@ module optimization_mod
 
 
 ! Nice printing
-  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent,',param_pjasen_nb, & 
+  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent,',param_pjasen_nb, &
        &  ' pjasen,',param_pjasee_nb,' pjasee and ',param_geo_nb," geometry parameters with ",trim(opt_method)," method:"
 !  write(6,'(a,i5,a,i5,a,i7,a,i5,3a)') 'OPT: optimization of',param_pjasen_nb, ' pjasen and ', param_pjasee_nb, " pjasee parameters"
 
@@ -811,7 +811,7 @@ module optimization_mod
 
 !  save wavefunction, gradient, Hamiltonian and overlap
    call wf_save
-   if (do_pjas) call save_pjas  !WAS 
+   if (do_pjas) call save_pjas  !WAS
    call object_save ('gradient')
    if(l_opt_nwt) then
     call object_save ('hess_nwt')
@@ -1113,8 +1113,8 @@ module optimization_mod
 !  periodic case
    else
 
-      write(*,*) "ngvec_orb = ", ngvec_orb 
-      
+      write(*,*) "ngvec_orb = ", ngvec_orb
+
 !    provide needed objects
      call object_provide ('ngvec_orb')
      call object_provide ('orb_tot_nb')
@@ -1142,7 +1142,7 @@ module optimization_mod
    endif ! if iperiodic == 0
 
   endif ! l_opt_orb
-  
+
   ! pjase parameters
   if (l_opt_pjas) then
      call object_provide ('delta_pjas')
@@ -1163,8 +1163,8 @@ module optimization_mod
 
 ! Check move:
   is_bad_move = 0
-  is_bad_move_exp = 0 
-  exp_move_big = .false. 
+  is_bad_move_exp = 0
+  exp_move_big = .false.
 
 ! test norm of csf coefficient variations
   if (l_opt_csf) then
@@ -1224,13 +1224,13 @@ module optimization_mod
           is_bad_move = 1
           exponent_negative_nb = exponent_negative_nb + 1
         endif
-        if (do_add_diag_mult_exp) then 
-           if (abs (delta_exp (dexp_i)) > 0.05 * zex (bas_i, 1)) then 
-              exp_move_big = .true. 
+        if (do_add_diag_mult_exp) then
+           if (abs (delta_exp (dexp_i)) > 0.05 * zex (bas_i, 1)) then
+              exp_move_big = .true.
            endif
-           if (abs (delta_exp (dexp_i)) > 0.2 * zex (bas_i, 1)) then 
+           if (abs (delta_exp (dexp_i)) > 0.2 * zex (bas_i, 1)) then
               is_bad_move_exp = 1
-              write(6,'(a,f10.3,a,I4,a,f10.1,a)') "This is a bad move because change in exponent ", zex (bas_i, 1), & 
+              write(6,'(a,f10.3,a,I4,a,f10.1,a)') "This is a bad move because change in exponent ", zex (bas_i, 1), &
                    &  " of basis ", bas_i , " is ", 100 * abs (delta_exp (dexp_i))/ zex (bas_i, 1), " percent"
            endif
         endif ! do_add_diag_mult_exp
@@ -1290,8 +1290,8 @@ module optimization_mod
    call wf_update_and_check (is_bad_move, is_bad_move_exp, exp_move_big)
 
 !  if move for the exponents was not big, decrease add_diag_mult_exp
-   if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. .not. exp_move_big) then 
-       if (add_diag_mult_exp  > 1.0_dp) then 
+   if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. .not. exp_move_big) then
+       if (add_diag_mult_exp  > 1.0_dp) then
          add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp/10.d0)
          write(6,'(a,f10.1)') "add_diag_mult_exp is decreased to", add_diag_mult_exp
          call object_modified ('add_diag_mult_exp')
@@ -1310,7 +1310,7 @@ module optimization_mod
    endif
 
 !  if move is bad only for the exponents, increase add_diag_mult_exp and retry
-   if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. is_bad_move_exp == 1) then 
+   if (l_stab .and. l_opt_exp .and. do_add_diag_mult_exp .and. is_bad_move_exp == 1) then
        call wf_restore
        if (l_opt_pjas) call restore_pjas
        add_diag_mult_exp = add_diag_mult_exp * 10
@@ -1373,7 +1373,7 @@ module optimization_mod
   nwftype=3
   call wf_copy2
   call wf_copy
-  if (do_pjas) call copy_pjas  ! WAS 
+  if (do_pjas) call copy_pjas  ! WAS
 ! initialize asymptotic values related to scalek(2) and scalek(3)
   call set_scale_dist(ipr,2)
   call set_scale_dist(ipr,3)
@@ -1432,15 +1432,15 @@ module optimization_mod
 
    if (l_opt_exp .and. do_add_diag_mult_exp) then
 
-      if (.not. exp_move_big1 .and. .not. exp_move_big2  .and.  .not. exp_move_big3) then 
-         if (add_diag_mult_exp  > 1.0_dp) then 
+      if (.not. exp_move_big1 .and. .not. exp_move_big2  .and.  .not. exp_move_big3) then
+         if (add_diag_mult_exp  > 1.0_dp) then
             add_diag_mult_exp = max (1.0_dp, add_diag_mult_exp /10.d0)
             write(6,'(a,f10.1)') "add_diag_mult_exp is decreased to ", add_diag_mult_exp
             call object_modified ('add_diag_mult_exp')
          endif
       endif
-      
-      if (is_bad_move_exp1 == 1 .or. is_bad_move_exp2 == 1 .or. is_bad_move_exp3 == 1) then 
+
+      if (is_bad_move_exp1 == 1 .or. is_bad_move_exp2 == 1 .or. is_bad_move_exp3 == 1) then
          call wf_restore
          if (l_opt_pjas) call restore_pjas
          add_diag_mult_exp = add_diag_mult_exp * 10
@@ -1714,7 +1714,7 @@ module optimization_mod
      if ( l_opt_pjasen) then
         write(6,'(a)') 'periodic Jastrow parameters  (pjas_en_read(i),i=1,):'
         write(6,'(1000f10.6)') pjas_parms (1:param_pjasen_nb, iwf)
-        if (.not. inversion) then 
+        if (.not. inversion) then
            write(6,'(a,1000f10.6)') "cosine", (pjas_parms (i, iwf), i=1,param_pjasen_nb-1,2)
            write(6,'(a,1000f10.6)') "sine", (pjas_parms (i+1, iwf), i=1,param_pjasen_nb-1,2)
         endif

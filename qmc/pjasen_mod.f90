@@ -1,15 +1,15 @@
 module pjasen_mod
 
   use all_tools_mod
-  use crystal_symmetries_mod 
+  use crystal_symmetries_mod
   use eloc_mod
 
-  implicit none 
+  implicit none
 
   real(dp)                               :: shift_cos= 0
   integer                                :: n_inv =  1
   integer                                :: ndim_pj = 3
-  ! non-loc pot 
+  ! non-loc pot
   real(dp)                               :: psid_pjas
   real(dp), allocatable                  :: dvpsp_pjas (:)
   real(dp), allocatable                  :: deloc_pot_nloc_pjas(:)
@@ -37,7 +37,7 @@ module pjasen_mod
   real(dp), allocatable                  :: pjasen_parms (:,:)
 
   real(dp), allocatable                  :: gn_pjasen  (:)
-!!! new 
+!!! new
 
   real (dp) , allocatable                :: pjasfso(:,:), pjasfijo(:,:,:), pjasd2ijo(:,:), pjasfjo(:,:)
   real (dp) , allocatable                :: pjasdiv_vj (:)
@@ -53,9 +53,9 @@ contains
 
   subroutine deloc_pjasen_bld
 !---------------------------------------------------------------------------
-! Description : derivative of local energy wrt periodic jastrow parameters                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : derivative of local energy wrt periodic jastrow parameters
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     integer                              :: ist, ie , k, idim
@@ -66,11 +66,11 @@ contains
     if (header_exe) then
        call object_create ('deloc_pjasen',deloc_pjasen_index)
        call object_needed ('nelec')
-       call object_needed ('ndim') 
+       call object_needed ('ndim')
        call object_needed ('param_pjasen_nb')
        call object_needed ('vd')
        call object_needed ('vj')
-       call object_needed ('grad_dpsi_pjasen')       
+       call object_needed ('grad_dpsi_pjasen')
        call object_needed ('lap_dpsi_pjasen')
        return
     endif
@@ -79,8 +79,8 @@ contains
 
     do ist=1,param_pjasen_nb
 
-       sum = 0 
-       do ie = 1 , nelec 
+       sum = 0
+       do ie = 1 , nelec
           sum  = sum + lap_dpsi_pjasen (ie, ist)
 
           do k= 1, ndim_pj
@@ -99,9 +99,9 @@ contains
 
   subroutine  star_en_bld  (xvec)
 !---------------------------------------------------------------------------
-! Description : building the arrays related to the en stars                                                            
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : building the arrays related to the en stars
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -117,15 +117,15 @@ contains
     !! calculate cos and sin of g.xvec
     call calc_cos_sin_en (xvec)
 
-    if (inversion) then 
+    if (inversion) then
 
        do ist= 1, param_pjasen_nb
 
-          do ie = 1, nelec 
+          do ie = 1, nelec
 
              call star_en_fac (ie, ist, c_s_fac, grad_c_s_fac)
 
-             grad_star_en (:, ie, ist ) = grad_c_s_fac (1,:) 
+             grad_star_en (:, ie, ist ) = grad_c_s_fac (1,:)
 
              star_en ( ie, ist ) = c_s_fac (1)
 
@@ -135,17 +135,17 @@ contains
 
     else
 
-       istt = 1 
+       istt = 1
 
        do ist= 1, param_pjasen_nb, 2
 
-          do ie = 1, nelec 
+          do ie = 1, nelec
 
              call star_en_fac (ie, istt, c_s_fac, grad_c_s_fac)
 
-             grad_star_en (:, ie, ist ) = grad_c_s_fac (1,:) 
+             grad_star_en (:, ie, ist ) = grad_c_s_fac (1,:)
 
-             grad_star_en (:, ie, ist +1 ) = grad_c_s_fac (2,:) 
+             grad_star_en (:, ie, ist +1 ) = grad_c_s_fac (2,:)
 
              star_en ( ie, ist ) = c_s_fac (1)
 
@@ -168,11 +168,11 @@ contains
 
 
 
-  subroutine deriv_nonloc_pjas_en ( iel, xvec, value1) 
+  subroutine deriv_nonloc_pjas_en ( iel, xvec, value1)
 !---------------------------------------------------------------------------
-! Description : derivatives of the potentials terms with respect to the en Jastrow parameters                                                            
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : derivatives of the potentials terms with respect to the en Jastrow parameters
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -188,9 +188,9 @@ contains
     end do
 
     !! add only updated electron. The old falue is already subtracted
-    !! through fso 
+    !! through fso
 
-    value1 = 0 
+    value1 = 0
 
     !!
     call calc_cos_sin_en_e (xvec)
@@ -200,15 +200,15 @@ contains
 
        do ist = 1, param_pjasen_nb
 
-          cosine = cos_star_fac  (ist) !! only changed electron 
+          cosine = cos_star_fac  (ist) !! only changed electron
 
-          temp =  pjas_parms(ist, iwf) * cosine 
+          temp =  pjas_parms(ist, iwf) * cosine
 
-          value1 = value1 + temp 
+          value1 = value1 + temp
 
-!!$          fsn(iel,iel) = fsn(iel,iel) + temp 
+!!$          fsn(iel,iel) = fsn(iel,iel) + temp
 
-          !! update the gradient. 
+          !! update the gradient.
           !! add new value and subtract old value stored in pengo (iel, iel, ist)
           gn_pjasen (ist) =  gn_pjasen (ist) + cosine  - pengo (iel, iel, ist)
 
@@ -220,21 +220,21 @@ contains
 
        do ist = 1, param_pjasen_nb, 2
 
-          cos_sin = cos_sin_star_fac  (istt) !! only changed electron 
+          cos_sin = cos_sin_star_fac  (istt) !! only changed electron
 
-          temp  =  pjas_parms(ist, iwf) * cos_sin (1) +  pjas_parms(ist+1, iwf) * cos_sin (2) 
+          temp  =  pjas_parms(ist, iwf) * cos_sin (1) +  pjas_parms(ist+1, iwf) * cos_sin (2)
 
-          value1 = value1 +  temp 
+          value1 = value1 +  temp
 
-!!$          fsn(iel,iel) = fsn(iel,iel) + temp 
+!!$          fsn(iel,iel) = fsn(iel,iel) + temp
 
-          !! update the gradient. 
+          !! update the gradient.
           !! add new value and subtract old value stored in pengo (iel, iel, ist)
-          gn_pjasen (ist) =  gn_pjasen (ist) + cos_sin (1) - pengo (iel, iel, ist) 
+          gn_pjasen (ist) =  gn_pjasen (ist) + cos_sin (1) - pengo (iel, iel, ist)
 
-          gn_pjasen (ist+1) =  gn_pjasen (ist+1) + cos_sin (2) - pengo (iel, iel, ist+1) 
+          gn_pjasen (ist+1) =  gn_pjasen (ist+1) + cos_sin (2) - pengo (iel, iel, ist+1)
 
-          istt = istt + 1 
+          istt = istt + 1
 
        enddo
 
@@ -245,11 +245,11 @@ contains
 
 
 
-  subroutine nonloc_pjas_en ( iel, xvec, value1) 
+  subroutine nonloc_pjas_en ( iel, xvec, value1)
 !---------------------------------------------------------------------------
-! Description : compute only the non-local contribution                                                           
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : compute only the non-local contribution
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -259,19 +259,19 @@ contains
     value1 = 0
 
     !! add only updated electron. The old falue is already subtracted
-    !! through fso 
+    !! through fso
 
     call calc_cos_sin_en_e (xvec)
 
-    if (inversion) then 
+    if (inversion) then
 
        do ist = 1 , param_pjasen_nb
 
-          temp = pjas_parms(ist, iwf) *  cos_star_fac  (ist) !! only changed electron 
+          temp = pjas_parms(ist, iwf) *  cos_star_fac  (ist) !! only changed electron
 
-          value1 = value1 + temp  
+          value1 = value1 + temp
 
-!!$          fsn(iel,iel) = fsn (iel,iel) + temp 
+!!$          fsn(iel,iel) = fsn (iel,iel) + temp
 
        enddo
 
@@ -281,15 +281,15 @@ contains
 
        do ist = 1 , param_pjasen_nb, 2
 
-          temp1 = cos_sin_star_fac  (istt ) !! only changed electron 
+          temp1 = cos_sin_star_fac  (istt ) !! only changed electron
 
           temp = pjas_parms(ist, iwf) * temp1 (1) + pjas_parms(ist+1, iwf) * temp1 (2)
 
-          value1 = value1 + temp  
+          value1 = value1 + temp
 
 !!$          fsn(iel,iel) = fsn (iel,iel) + temp  !!! update fsn (i, i)
 
-          istt = istt +1 
+          istt = istt +1
 
        enddo
 
@@ -300,9 +300,9 @@ contains
 
   function cos_star_fac (ist) result (sum)
 !---------------------------------------------------------------------------
-! Description : evaluates sum_{star_i,k_star} cos(k_star\dot r)                                                            
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : evaluates sum_{star_i,k_star} cos(k_star\dot r)
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -314,17 +314,17 @@ contains
     !! sum over the first half only
     i1=istar (ist)
     i2=fstar (ist)
-    !    i2=i1+ (mstar (ist))/2 - 1 
+    !    i2=i1+ (mstar (ist))/2 - 1
 
-    sum  = 0 
+    sum  = 0
 
     do i = i1, i2
 
-       phas = phase (i) !! is real for now 
+       phas = phase (i) !! is real for now
 
        cosdot = cos_pjasen_e (i)
 
-       sum = sum + phas * cosdot !! 2 absorbed in def of parms 
+       sum = sum + phas * cosdot !! 2 absorbed in def of parms
 
     enddo
 
@@ -333,9 +333,9 @@ contains
 
   function cos_sin_star_fac (ist) result (sum)
 !---------------------------------------------------------------------------
-! Description :  evaluates the cosine and sine terms                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :  evaluates the cosine and sine terms
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -347,18 +347,18 @@ contains
     !! sum over the first half only
     i1=istar (ist)
     i2=fstar (ist)
-    !    i2=i1+ (mstar (ist))/2 - 1 
+    !    i2=i1+ (mstar (ist))/2 - 1
 
-    sum  = 0 
+    sum  = 0
 
     do i = i1, i2
-       phas = phase (i) !! is real for now 
+       phas = phase (i) !! is real for now
 
        cosdot = cos_pjasen_e (i)
        sindot = sin_pjasen_e (i)
 
-       sum (1) = sum (1) + phas * cosdot !! 2 absorbed in def of parms 
-       sum (2) = sum (2) + phas * sindot !! 2 absorbed in def of parms 
+       sum (1) = sum (1) + phas * cosdot !! 2 absorbed in def of parms
+       sum (2) = sum (2) + phas * sindot !! 2 absorbed in def of parms
     enddo
 
   end function  cos_sin_star_fac
@@ -366,9 +366,9 @@ contains
 
   function grad_cos_star_fac (ist) result (sum)
 !---------------------------------------------------------------------------
-! Description : compute the gradient of the cosine star                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : compute the gradient of the cosine star
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -380,17 +380,17 @@ contains
     !! sum over the first half only
     i1=istar (ist)
     i2=fstar (ist)
-    !    i2=i1+ (mstar (ist))/2 - 1 
+    !    i2=i1+ (mstar (ist))/2 - 1
 
-    sum  = 0 
+    sum  = 0
 
     do i = i1, i2
 
-       phas = phase (i) !! is real for now 
+       phas = phase (i) !! is real for now
 
        sindot = sin_pjasen_e (i)
 
-       do k= 1, ndim_pj 
+       do k= 1, ndim_pj
           sum (k) = sum (k) - rkv (k,i)* phas *  sindot
        enddo
     enddo
@@ -400,9 +400,9 @@ contains
 
   function grad_cos_sin_star_fac (ist) result (sum)
 !---------------------------------------------------------------------------
-! Description : computes the gradient of the cosine and sine terms                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : computes the gradient of the cosine and sine terms
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -414,18 +414,18 @@ contains
     !! sum over the first half only
     i1=istar (ist)
     i2=fstar (ist)
-    !    i2=i1+ (mstar (ist))/2 - 1 
+    !    i2=i1+ (mstar (ist))/2 - 1
 
-    sum  = 0 
+    sum  = 0
 
     do i = i1, i2
 
-       phas = phase (i) !! is real for now 
+       phas = phase (i) !! is real for now
 
        cosdot = cos_pjasen_e (i)
        sindot = sin_pjasen_e (i)
 
-       do k= 1, ndim_pj 
+       do k= 1, ndim_pj
           sum (1,k) = sum (1,k) - rkv (k,i)* phas *  sindot
           sum (2,k) = sum (2,k) + rkv (k,i)* phas *  cosdot
        enddo
@@ -438,9 +438,9 @@ contains
 
   subroutine star_en_fac ( ie, ist, c_s_fac, grad_c_s_fac)
 !---------------------------------------------------------------------------
-! Description : bulid the stars for the en periodic jastrow                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : bulid the stars for the en periodic jastrow
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -454,23 +454,23 @@ contains
     !! sum over the first half only
     i1=istar (ist)
     i2=fstar (ist)
-    !    i2=i1+ (mstar (ist))/2 - 1 
+    !    i2=i1+ (mstar (ist))/2 - 1
 
-    grad_c_s_fac  = 0 
-    c_s_fac = 0 
+    grad_c_s_fac  = 0
+    c_s_fac = 0
 
     if (inversion) then
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now 
+          phas = phase (i) !! is real for now
 
 
           cost = (/ cos_pjasen (i,ie),  sin_pjasen (i,ie) /)
 
-          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms 
+          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms
 
-          do k= 1, ndim_pj 
+          do k= 1, ndim_pj
              grad_c_s_fac (1,k) = grad_c_s_fac (1,k) - rkv (k,i)* phas *  cost (2)
           enddo
        enddo
@@ -479,16 +479,16 @@ contains
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now 
+          phas = phase (i) !! is real for now
 
           cost = (/ cos_pjasen (i,ie),  sin_pjasen (i,ie) /)
 
 
-          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms 
+          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms
 
-          c_s_fac (2)  =  c_s_fac (2) +  phas * cost (2) !! 2 absorbed in def of parms 
+          c_s_fac (2)  =  c_s_fac (2) +  phas * cost (2) !! 2 absorbed in def of parms
 
-          do k= 1, ndim_pj 
+          do k= 1, ndim_pj
              grad_c_s_fac (1,k) = grad_c_s_fac (1,k) - rkv (k,i)* phas *  cost (2)
 
              grad_c_s_fac (2,k) = grad_c_s_fac (2,k) + rkv (k,i)* phas *  cost (1)
@@ -504,9 +504,9 @@ contains
 
   subroutine star_en_fac_e ( ie, ist, c_s_fac, grad_c_s_fac)
 !---------------------------------------------------------------------------
-! Description : Build the stars terms where only one electron is displaced                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : Build the stars terms where only one electron is displaced
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -520,25 +520,25 @@ contains
     !! sum over the first half only
     i1=istar (ist)
     i2=fstar (ist)
-    !    i2=i1+ (mstar (ist))/2 - 1 
+    !    i2=i1+ (mstar (ist))/2 - 1
 
-    grad_c_s_fac  = 0 
-    c_s_fac = 0 
+    grad_c_s_fac  = 0
+    c_s_fac = 0
 
     if (inversion) then
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now 
+          phas = phase (i) !! is real for now
 
 
           cost = (/ cos_pjasen_e (i),  sin_pjasen_e (i) /)
 
           !          write(88,'(4F15.8)') cost (1) , cos_pjasen (i,ie), cost (2) , sin_pjasen (i,ie)
 
-          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms 
+          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms
 
-          do k= 1, ndim_pj 
+          do k= 1, ndim_pj
              grad_c_s_fac (1,k) = grad_c_s_fac (1,k) - rkv (k,i)* phas *  cost (2)
           enddo
        enddo
@@ -547,15 +547,15 @@ contains
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now 
+          phas = phase (i) !! is real for now
 
           cost = (/ cos_pjasen_e (i),  sin_pjasen_e (i) /)
 
-          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms 
+          c_s_fac (1)  =  c_s_fac (1) +  phas * cost (1) !! 2 absorbed in def of parms
 
-          c_s_fac (2)  =  c_s_fac (2) +  phas * cost (2) !! 2 absorbed in def of parms 
+          c_s_fac (2)  =  c_s_fac (2) +  phas * cost (2) !! 2 absorbed in def of parms
 
-          do k= 1, ndim_pj 
+          do k= 1, ndim_pj
              grad_c_s_fac (1,k) = grad_c_s_fac (1,k) - rkv (k,i)* phas *  cost (2)
 
              grad_c_s_fac (2,k) = grad_c_s_fac (2,k) + rkv (k,i)* phas *  cost (1)
@@ -571,11 +571,11 @@ contains
 
   subroutine  pjasen_deriv_jas (xvec, pjasv, pjasd2, pjasdiv_vj,  pjasfsum)
 !---------------------------------------------------------------------------
-! Description : computes the gradient of the wavefunction with respect to the periodic jastrow 
-!               parameters, and  the graident and laplacian of this quantity which is used in the 
+! Description : computes the gradient of the wavefunction with respect to the periodic jastrow
+!               parameters, and  the graident and laplacian of this quantity which is used in the
 !               computation of the derivates of the local energy with respect to these jastrow parameters
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -601,36 +601,36 @@ contains
 
        do ist = 1, param_pjasen_nb
 
-          gen = star_en (i, ist) 
+          gen = star_en (i, ist)
 
-          gradt = grad_star_en (:, i, ist) 
+          gradt = grad_star_en (:, i, ist)
 
-          pjasfso (i,i) = pjasfso(i, i) +  pjas_parms (ist, iwf) * gen 
+          pjasfso (i,i) = pjasfso(i, i) +  pjas_parms (ist, iwf) * gen
 
-          pjasfijo(:, i,i) = pjasfijo (:,i, i) +  & 
-               &    pjas_parms (ist, iwf) * gradt 
+          pjasfijo(:, i,i) = pjasfijo (:,i, i) +  &
+               &    pjas_parms (ist, iwf) * gradt
 
-          pjasd2ijo (i,i) = pjasd2ijo (i,i)  -  & 
-               &    pjas_parms (ist, iwf) *  sk3 (ist) * gen 
+          pjasd2ijo (i,i) = pjasd2ijo (i,i)  -  &
+               &    pjas_parms (ist, iwf) *  sk3 (ist) * gen
 
           pengo(i,i,ist) = pengo(i,i,ist)+ gen
 
-          dpsi_pjasen (ist) = dpsi_pjasen (ist) + gen 
+          dpsi_pjasen (ist) = dpsi_pjasen (ist) + gen
 
           grad_dpsi_pjasen (:,i,ist)  = grad_dpsi_pjasen (:, i, ist) + gradt
 
-          lap_dpsi_pjasen (i, ist) =  lap_dpsi_pjasen (i, ist) - & 
-               & sk3 (ist) * gen 
+          lap_dpsi_pjasen (i, ist) =  lap_dpsi_pjasen (i, ist) - &
+               & sk3 (ist) * gen
 
        enddo
 
-       pjasfsum = pjasfsum + pjasfso(i,i) 
+       pjasfsum = pjasfsum + pjasfso(i,i)
 
        pjasfjo(:,i) = pjasfjo(:,i) + pjasfijo(:,i,i)
 
        pjasdiv_vj (i)= pjasdiv_vj (i) + pjasd2ijo(i,i)
 
-       pjasd2 = pjasd2 + pjasd2ijo(i,i) 
+       pjasd2 = pjasd2 + pjasd2ijo(i,i)
 
     end do
 
@@ -648,10 +648,10 @@ contains
 
   subroutine  pjasen_jas (xvec, pjasv, pjasd2, pjasdiv_vj,  pjasfsum)
 !---------------------------------------------------------------------------
-! Description : same as pjasen_deriv_jas  but without the derivatives of the 
-!               \nabla J with respect periodic Jastrow parameters.   
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : same as pjasen_deriv_jas  but without the derivatives of the
+!               \nabla J with respect periodic Jastrow parameters.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -673,27 +673,27 @@ contains
 
        do ist = 1, param_pjasen_nb
 
-          fen = star_en (i, ist) 
+          fen = star_en (i, ist)
 
-          pjasfso (i,i) = pjasfso(i, i) +  pjas_parms (ist, iwf)* fen 
+          pjasfso (i,i) = pjasfso(i, i) +  pjas_parms (ist, iwf)* fen
 
-          pjasfijo(:, i,i) = pjasfijo (:,i, i) + & 
-               & pjas_parms (ist, iwf) * grad_star_en (:, i, ist) 
+          pjasfijo(:, i,i) = pjasfijo (:,i, i) + &
+               & pjas_parms (ist, iwf) * grad_star_en (:, i, ist)
 
-          pjasd2ijo (i,i)  = pjasd2ijo (i,i)  - & 
-               & pjas_parms (ist, iwf) *  sk3 (ist) * fen 
+          pjasd2ijo (i,i)  = pjasd2ijo (i,i)  - &
+               & pjas_parms (ist, iwf) *  sk3 (ist) * fen
 
-          dpsi_pjasen (ist) = dpsi_pjasen (ist) + fen 
+          dpsi_pjasen (ist) = dpsi_pjasen (ist) + fen
 
        enddo
 
-       pjasfsum = pjasfsum + pjasfso(i,i) 
+       pjasfsum = pjasfsum + pjasfso(i,i)
 
-       pjasfjo(:,i) = pjasfjo(:,i) + pjasfijo(:,i,i) 
+       pjasfjo(:,i) = pjasfjo(:,i) + pjasfijo(:,i,i)
 
        pjasdiv_vj (i)= pjasdiv_vj (i) + pjasd2ijo(i,i)
 
-       pjasd2 = pjasd2 + pjasd2ijo(i,i) 
+       pjasd2 = pjasd2 + pjasd2ijo(i,i)
 
     end do
 
@@ -702,7 +702,7 @@ contains
        pjasv (:, i) = pjasv (:, i) + pjasfjo (:,i)
     enddo
 
-    !! needed in nonloc 
+    !! needed in nonloc
     call object_modified_by_index (dpsi_pjasen_index)
 
   end subroutine pjasen_jas
@@ -711,9 +711,9 @@ contains
 
   subroutine  pjasen_jas_e (iel, xvec, fsum)
 !---------------------------------------------------------------------------
-! Description : Same as  pjasen_jas  but when only one electron is modified                                                           
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : Same as  pjasen_jas  but when only one electron is modified
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -724,12 +724,12 @@ contains
     integer                              :: ist, i , istt
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
 
-    fen = 0 
-    fen1 = 0 
+    fen = 0
+    fen1 = 0
 
     call calc_cos_sin_en_e (xvec(:,iel))
 
-    if (inversion) then 
+    if (inversion) then
 
        do ist = 1, param_pjasen_nb
 
@@ -743,33 +743,33 @@ contains
 
     else
 
-       istt = 1 
+       istt = 1
 
-       do ist = 1, param_pjasen_nb, 2 
+       do ist = 1, param_pjasen_nb, 2
 
           call star_en_fac_e (iel, istt, c_s_fac, grad_c_s_fac)
 
-          fen = fen +  pjas_parms (ist, iwf)* c_s_fac (1) + & 
+          fen = fen +  pjas_parms (ist, iwf)* c_s_fac (1) + &
                & pjas_parms (ist+1, iwf)* c_s_fac (2)
 
           fen1= fen1 + pjas_parms (ist, iwf)* grad_c_s_fac (1,:) + &
                & pjas_parms (ist+1, iwf)* grad_c_s_fac (2,:)
 
-          istt = istt + 1 
+          istt = istt + 1
 
        enddo
     endif
 
     fsn(iel,iel) = fsn (iel,iel) + fen
 
-    fijn(:,iel, iel) = fijn (:,iel, iel) + fen1 
+    fijn(:,iel, iel) = fijn (:,iel, iel) + fen1
 
-!!! add and subtract old 
+!!! add and subtract old
 !!! old is already subtracted with short range jastrow jastrow
-!!! warning: problem if the short range jastrow is removed 
-    fjn(:, iel ) = fjn (:, iel) + fen1 
+!!! warning: problem if the short range jastrow is removed
+    fjn(:, iel ) = fjn (:, iel) + fen1
 
-    fsum = fsum + fen 
+    fsum = fsum + fen
 
   end subroutine pjasen_jas_e
 
@@ -778,9 +778,9 @@ contains
 
   subroutine  calc_cos_sin_en_e (xvec)
 !---------------------------------------------------------------------------
-! Description : calculate the cosine and sine of the star terms when one electron is displaced.                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : calculate the cosine and sine of the star terms when one electron is displaced.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -811,10 +811,10 @@ contains
 
        do n=2, kvec_pjasen (i)
 
-          cos_temp(n,i)=cos_temp(n-1,i)*cos_temp(1,i)- & 
+          cos_temp(n,i)=cos_temp(n-1,i)*cos_temp(1,i)- &
                & sin_temp(n-1,i)*sin_temp(1,i)
 
-          sin_temp(n,i)=sin_temp(n-1,i)*cos_temp(1,i)+ & 
+          sin_temp(n,i)=sin_temp(n-1,i)*cos_temp(1,i)+ &
                & cos_temp(n-1,i)*sin_temp(1,i)
 
           cos_temp(-n,i)=cos_temp(n,i)
@@ -827,16 +827,16 @@ contains
 
     do i = 1 , nbasis_pw
 
-       cos_tmp=cos_temp(kv(1,i),1)*cos_temp(kv(2,i),2) & 
+       cos_tmp=cos_temp(kv(1,i),1)*cos_temp(kv(2,i),2) &
             &           -sin_temp(kv(1,i),1)*sin_temp(kv(2,i),2)
 
-       sin_tmp=sin_temp(kv(1,i),1)*cos_temp(kv(2,i),2) & 
+       sin_tmp=sin_temp(kv(1,i),1)*cos_temp(kv(2,i),2) &
             &           +cos_temp(kv(1,i),1)*sin_temp(kv(2,i),2)
 
-       cos_pjasen_e (i)= cos_tmp*cos_temp(kv(3,i),3) & 
+       cos_pjasen_e (i)= cos_tmp*cos_temp(kv(3,i),3) &
             &               -sin_tmp*sin_temp(kv(3,i),3)
 
-       sin_pjasen_e (i)= sin_tmp*cos_temp(kv(3,i),3) & 
+       sin_pjasen_e (i)= sin_tmp*cos_temp(kv(3,i),3) &
             &               +cos_tmp*sin_temp(kv(3,i),3)
     enddo
 
@@ -849,8 +849,8 @@ contains
   subroutine  calc_cos_sin_en (xvec)
 !---------------------------------------------------------------------------
 ! Description : calculate the cosine and sine of the star terms.
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -886,10 +886,10 @@ contains
 
           do n=2, kvec_pjasen (i)
 
-             cos_temp(n,i,ie)=cos_temp(n-1,i,ie)*cos_temp(1,i,ie)- & 
+             cos_temp(n,i,ie)=cos_temp(n-1,i,ie)*cos_temp(1,i,ie)- &
                   & sin_temp(n-1,i,ie)*sin_temp(1,i,ie)
 
-             sin_temp(n,i,ie)=sin_temp(n-1,i,ie)*cos_temp(1,i,ie)+ & 
+             sin_temp(n,i,ie)=sin_temp(n-1,i,ie)*cos_temp(1,i,ie)+ &
                   & cos_temp(n-1,i,ie)*sin_temp(1,i,ie)
 
              cos_temp(-n,i,ie)=cos_temp(n,i,ie)
@@ -907,16 +907,16 @@ contains
 
        do  ie =1 , nelec
 
-          cos_tmp=cos_temp(kv(1,i),1,ie)*cos_temp(kv(2,i),2,ie) & 
+          cos_tmp=cos_temp(kv(1,i),1,ie)*cos_temp(kv(2,i),2,ie) &
                &           -sin_temp(kv(1,i),1,ie)*sin_temp(kv(2,i),2,ie)
 
-          sin_tmp=sin_temp(kv(1,i),1,ie)*cos_temp(kv(2,i),2,ie) & 
+          sin_tmp=sin_temp(kv(1,i),1,ie)*cos_temp(kv(2,i),2,ie) &
                &           +cos_temp(kv(1,i),1,ie)*sin_temp(kv(2,i),2,ie)
 
-          cos_pjasen(i, ie)= cos_tmp*cos_temp(kv(3,i),3,ie) & 
+          cos_pjasen(i, ie)= cos_tmp*cos_temp(kv(3,i),3,ie) &
                &               -sin_tmp*sin_temp(kv(3,i),3,ie)
 
-          sin_pjasen(i, ie)= sin_tmp*cos_temp(kv(3,i),3,ie) & 
+          sin_pjasen(i, ie)= sin_tmp*cos_temp(kv(3,i),3,ie) &
                &               +cos_tmp*sin_temp(kv(3,i),3,ie)
 
        enddo
@@ -929,26 +929,26 @@ contains
 !!$
 !!$
 !!$
-!!$   subroutine plot_jasen 
+!!$   subroutine plot_jasen
 !---------------------------------------------------------------------------
-! Description :                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description :
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
 !!$     implicit none
 !!$     include 'commons.h'
 !!$     integer                          :: i,k,be,j,npoints
 !!$     real(dp)                         :: r (3) ,dr,maxdis
-!!$     
+!!$
 !!$     logical,save                     :: first=.true.
 !!$     logical,save                     :: first1=.true.
-!!$    
-!!$!!! only main processor will enter 
+!!$
+!!$!!! only main processor will enter
 !!$    if (idtask .ne. 0) return
-!!$    
+!!$
 !!$    write(*,*) "calling plot_phi"
 !!$
-!!$    if (first) then 
+!!$    if (first) then
 !!$       open(181,file="plot_jasen",status="replace")
 !!$       first=.false.
 !!$    endif
@@ -957,70 +957,70 @@ contains
 !!$    r=0.01
 !!$    dr=0.05
 !!$
-!!$    maxdis=cutjas_en 
-!!$    
+!!$    maxdis=cutjas_en
+!!$
 !!$    npoints=maxdis/dr+10
 !!$
-!!$    
-!!$    if (inversion) then 
-!!$       
+!!$
+!!$    if (inversion) then
+!!$
 !!$       do i=1,npoints
-!!$          
+!!$
 !!$          r(1)= i * dr
-!!$          
+!!$
 !!$          r(2)= i * dr
-!!$          
+!!$
 !!$          r(3)= i * dr
-!!$          
-!!$          sum1 = 0 
-!!$          
+!!$
+!!$          sum1 = 0
+!!$
 !!$          do ist = 1,  param_pjasen_nb
-!!$             
+!!$
 !!$             cos  = cos_star_fac  (ist, xvec (1:ndim_pj,ie))
-!!$             
+!!$
 !!$             sum1 = sum1 + pjas_parms (ist, iwf) * cos_sin (1)
-!!$             
+!!$
 !!$             if (inversion) sum2 = sum2 + cos_sin (2)
-!!$             
+!!$
 !!$          enddo
 !!$
-!!$       write(181,*) r, sum1, sum2 
-!!$       
-!!$       
+!!$       write(181,*) r, sum1, sum2
+!!$
+!!$
 !!$    enddo
 !!$
-!!$    else 
+!!$    else
 !!$
 !!$
-!!$       
+!!$
 !!$       do i=1,npoints
-!!$          
+!!$
 !!$          r(1)= i * dr
-!!$          
+!!$
 !!$          r(2)= i * dr
-!!$          
+!!$
 !!$          r(3)= i * dr
-!!$          
-!!$          sum1 = 0 
-!!$          do ist = 1, nstar_en 
-!!$             
-!!$             cos_sin = cos_sin_star_fac (ist, r) 
-!!$             
+!!$
+!!$          sum1 = 0
+!!$          do ist = 1, nstar_en
+!!$
+!!$             cos_sin = cos_sin_star_fac (ist, r)
+!!$
 !!$             sum1 = sum1 + pjas_parms (ist, iwf) * cos_sin (1)
-!!$             
+!!$
 !!$             if (inversion) sum2 = sum2 + cos_sin (2)
-!!$             
+!!$
 !!$          enddo
 !!$
-!!$       write(181,*) r, sum1, sum2 
-!!$       
-!!$       
+!!$       write(181,*) r, sum1, sum2
+!!$
+!!$
 !!$    enddo
 !!$
 !!$
 !!$ endif
 !!$
-!!$   
+!!$
 !!$    write(181,*) "&"
 !!$
 !!$  end subroutine plot_jasen

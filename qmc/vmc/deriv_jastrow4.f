@@ -149,7 +149,7 @@ c e-e and e-e-n terms
       call scale_dist2(rij,uu(1),dd1,dd2,2)
       if(nparms.eq.1) call deriv_scale(rij,dk,dk2,dr,dr2,2,iderivk)
 
-      
+
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
       topuu=0
@@ -400,11 +400,11 @@ c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
           call switch_scale2(rri(1),dd7,dd9,3)
           call switch_scale2(rrj(1),dd8,dd10,3)
         endif
-        
-!!!! WAS   
+
+!!!! WAS
         if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
-           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
      +          dfcuti, dfcutj, d2fcuti, d2fcutj)
         endif
 !!!
@@ -579,20 +579,20 @@ c        = 2 parameter is an independent parameter that is varied
 
 !!!!  een for periodic systems         WAS
                   if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-                     
+
                      guu = guu * fcut
-                     gii = gii * fcut +(2 * gi * ri * dfcuti + gp * d2fcuti)*fcutj 
+                     gii = gii * fcut +(2 * gi * ri * dfcuti + gp * d2fcuti)*fcutj
                      gi = gi * fcut + (gp * fcutj *  dfcuti)/ri
                      gui = gui * fcut + (gu * fcutj *  dfcuti*rij)
-                     
+
                      gjj = gjj * fcut + (2 * gj * dfcutj *rj + gp * d2fcutj)*fcuti
                      gj = gj * fcut + (gp * fcuti *  dfcutj)/rj
                      guj = guj * fcut + (gu * fcuti *  dfcutj * rij)
                      gp = gp * fcut
                      gu = gu * fcut
-                     
+
                   endif
-!!! end WAS 
+!!! end WAS
 
                   if(ideriv.eq.1) then
 
@@ -715,20 +715,20 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
 !!!!  een for periodic systems         WAS
        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-           
+
            fuu = fuu * fcut
-           fii = fii * fcut +(2 * fi * ri * dfcuti + fc * d2fcuti)*fcutj 
+           fii = fii * fcut +(2 * fi * ri * dfcuti + fc * d2fcuti)*fcutj
            fi = fi * fcut + (fc * fcutj *  dfcuti)/ri
            fui = fui * fcut + (fu * fcutj *  dfcuti*rij)
-           
+
            fjj = fjj * fcut + (2 * fj * dfcutj *rj + fc * d2fcutj)*fcuti
            fj = fj * fcut + (fc * fcuti *  dfcutj)/rj
            fuj = fuj * fcut + (fu * fcuti *  dfcutj * rij)
            fc = fc * fcut
            fu = fu * fcut
-           
+
         endif
-!!!! end WAS 
+!!!! end WAS
 
         fso(i,j)=fso(i,j) + fc
 

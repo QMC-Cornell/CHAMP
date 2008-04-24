@@ -6,7 +6,6 @@ c Reads in either analytic or localized orbitals
 
       implicit real*8(a-h,o-z)
 
-
       character*16 mode
 
       common /dim/ ndim
@@ -55,6 +54,10 @@ c Do not confuse analytic orbs with analytic basis fns.
 
 c Check that irecursion_ylm=1 if l of basis function >=4
       do 20 ibasis=1,nbasis
+        if(l_bas(ibasis).gt.ML_BAS) then
+          write(6,'(''(l_bas(ibasis) > ML_BAS'')')
+          stop 'l_bas(ibasis) > ML_BAS'
+        endif
         if(l_bas(ibasis).ge.4 .and. irecursion_ylm.eq.0) then
           write(6,'(''if basis functions with l>=4 are used, set irecursion_ylm=1 in read_input'')')
           stop 'if basis functions with l>=4 are used, set irecursion_ylm=1 in read_input'
@@ -156,8 +159,8 @@ c i.e. the order in which we were reading in the p functions.
      &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -337,9 +340,13 @@ c single dot (ncent=nctype=1) and set nbasis_ctype=nbasis.
           read(5,*) (m_bas(ib),ib=1,nbasis)
           write(6,'(/,''m for basis functions:'',/,100i5)') (m_bas(ib),ib=1,nbasis)
           do 30 ib=1,nbasis
-            if(m_bas(ib).gt.ML_BAS) then
-              write(6,'(''m_bas(ib) > ML_BAS, m_bas(ib),ML_BAS='',9i3)') m_bas(ib),ML_BAS
-              stop 'm_bas(ib) > ML_BAS'
+            if(abs(m_bas(ib)).gt.ML_BAS) then
+              write(6,'(''abs(m_bas(ib)) > ML_BAS, m_bas(ib),ML_BAS='',9i3)') m_bas(ib),ML_BAS
+              stop 'abs(m_bas(ib)) > ML_BAS'
+            endif
+            if(l_bas(ib).gt.ML_BAS) then
+              write(6,'(''l_bas(ib) > ML_BAS, l_bas(ib),ML_BAS='',9i3)') l_bas(ib),ML_BAS
+              stop 'l_bas(ib) > ML_BAS'
             endif
    30     continue
 
@@ -577,8 +584,8 @@ c i.e. the order in which we were reading in the p functions.
      &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
        common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -1004,8 +1011,8 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
      &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
        common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -1490,8 +1497,8 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
      &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
        common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
@@ -1616,7 +1623,7 @@ c At present V_ext that is read in is not used.
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
 c     dimension v_ext(MGRID_ORB,MGRID_ORB)
-   
+
       open(4,file='orbitals_num',form='formatted',status='old')
 
       read(4,*) ngrid_orbx,ngrid_orby,sizex,sizey,norba
@@ -1657,7 +1664,7 @@ c Spline numerical orbitals
       nwk=MWORK*ngrid_orbx*ngrid_orby
 
 c ibc* sets the boundary condition.  If we are reading in orbitals on a grid
-c then nothing is known about derivatives so use "not a knot" b.c. 
+c then nothing is known about derivatives so use "not a knot" b.c.
 c If we are calculating orbitals on a grid calculate 1st derivatives and use them.
       if(num_orb_exist.eq.1) then
         ibcxmin=0

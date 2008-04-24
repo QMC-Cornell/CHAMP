@@ -10,7 +10,7 @@ c wrt the wavefunction parameters.
       use fitdet_mod
       use eloc_mod      ! JT
       use psi_mod       ! JT
-!     use periodic_jastrow_mod  !WAS 
+!     use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
 

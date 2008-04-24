@@ -406,14 +406,14 @@ module parser_tools_mod
 # if defined (PATHSCALE)
    integer, intent(out) :: value_list (max_int_array_len) ! for pathscale compiler
 # else
-   integer, allocatable, intent(out) :: value_list (:) 
+   integer, allocatable, intent(out) :: value_list (:)
 # endif
 
 !WAS
-!  integer, allocatable, intent(out) :: value_list (:) 
+!  integer, allocatable, intent(out) :: value_list (:)
   integer, intent(out)              :: value_list_nb
 
-! local !! added for pathscale WAS 
+! local !! added for pathscale WAS
 # if defined (PATHSCALE)
    character(len=max_string_len):: value_list_string (max_string_array_len) ! for pathscale compiler
 # else
@@ -428,7 +428,7 @@ module parser_tools_mod
 
 # if !defined (PATHSCALE)
   call alloc (value_list_name, value_list, value_list_nb)
-# endif 
+# endif
 
   do i = 1, value_list_nb
     call cnvint (value_list_string(i), value_list(i))
@@ -472,7 +472,7 @@ module parser_tools_mod
 ! begin
 
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
-  
+
 # if !defined (PATHSCALE)
   call object_alloc (value_list_name, value_list, value_list_nb)
 # endif

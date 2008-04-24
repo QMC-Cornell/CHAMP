@@ -60,8 +60,8 @@ c It serves as a multiplicatif optimization factor for the spring constant.
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE) 
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE) 
+     &,n1s(MCTYPE)
+     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
      &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
      &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
      &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)

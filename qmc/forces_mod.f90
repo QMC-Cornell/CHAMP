@@ -186,7 +186,7 @@
 
    cent_i = forces_cent (force_i)
    dim_i = forces_direct (force_i)
-  
+
    forces_nn (force_i) = 0.d0
 
 !  loop over other nuclei
@@ -194,7 +194,7 @@
     if (cent_j == cent_i) cycle
     forces_nn (force_i) = forces_nn (force_i) + znuc(iwctype(cent_i)) * znuc(iwctype(cent_j)) * (cent (dim_i, cent_i) - cent (dim_i, cent_j))/ dist_nn (cent_i, cent_j)**3
    enddo ! cent_j
-   
+
   enddo ! force_i
 
   end subroutine forces_nn_bld
@@ -241,16 +241,16 @@
   do force_i = 1, forces_nb
    cent_i = forces_cent (force_i)
    dim_i = forces_direct (force_i)
-  
+
    forces_bare (force_i) = forces_nn (force_i)
- 
+
 !  loop over electrons
    do elec_i = 1, nelec
     forces_bare (force_i) = forces_bare (force_i) + znuc(iwctype(cent_i)) * vec_en_xyz_wlk (dim_i, elec_i, cent_i, 1) / dist_en_wlk (elec_i, cent_i, 1)**3
    enddo ! elec_i
-   
+
   enddo ! force_i
-  
+
   end subroutine forces_bare_bld
 
 ! ==============================================================================
@@ -303,7 +303,7 @@
   do force_i = 1, forces_nb
    cent_i = forces_cent (force_i)
    dim_i = forces_direct (force_i)
-  
+
    forces_zv (force_i) = forces_nn (force_i)
 
 !  loop over electrons
@@ -311,14 +311,14 @@
 
     dotproduct = 0.d0
     do dim_k = 1, ndim
-     dotproduct = dotproduct + vec_en_xyz_wlk (dim_k, elec_i, cent_i, 1) * grd_psi_over_psi_wlk (dim_k, elec_i, 1) 
+     dotproduct = dotproduct + vec_en_xyz_wlk (dim_k, elec_i, cent_i, 1) * grd_psi_over_psi_wlk (dim_k, elec_i, 1)
     enddo ! dim_k
 
     forces_zv (force_i) = forces_zv (force_i) + znuc(iwctype(cent_i)) * (grd_psi_over_psi_wlk (dim_i, elec_i, 1) / dist_en_wlk (elec_i, cent_i, 1) - vec_en_xyz_wlk (dim_i, elec_i, cent_i, 1) * dotproduct / dist_en_wlk (elec_i, cent_i, 1)**3)
    enddo ! elec_i
-   
+
   enddo ! force_i
-  
+
   end subroutine forces_zv_bld
 
 ! ==============================================================================
@@ -369,14 +369,14 @@
    dim_i = forces_direct (force_i)
 
    forces_q (force_i) = 0.d0
-  
+
 !  loop over electrons
    do elec_i = 1, nelec
     forces_q (force_i) = forces_q (force_i) - znuc(iwctype(cent_i)) * vec_en_xyz_wlk (dim_i, elec_i, cent_i, 1) / dist_en_wlk (elec_i, cent_i, 1)
    enddo ! elec_i
-   
+
   enddo ! force_i
-  
+
   end subroutine forces_q_bld
 
 ! ==============================================================================
@@ -502,11 +502,11 @@
   forces_zvzb_av_var (:) = forces_zv_av_var (:) + 4.d0 * forces_q_eloc_av_var (:)                                  &
                           + 4.d0 * (eloc_av**2) * forces_q_av_var (:) + 2.d0 * (forces_q_av (:)**2) * eloc_av_var  &
                           + 4.d0 * forces_zv_av_q_eloc_av_covar (:) - 4.d0 * eloc_av * forces_zv_av_q_av_covar (:) &
-                          - 4.d0 * forces_q_av (:) * forces_zv_av_eloc_av_covar (:)                                &  
+                          - 4.d0 * forces_q_av (:) * forces_zv_av_eloc_av_covar (:)                                &
                           - 8.d0 * eloc_av * forces_q_eloc_av_q_av_covar (:)                                       &
-                          - 8.d0 * forces_q_av (:) * forces_q_eloc_av_eloc_av_covar (:)                            & 
+                          - 8.d0 * forces_q_av (:) * forces_q_eloc_av_eloc_av_covar (:)                            &
                           + 8.d0 * forces_q_av (:) * eloc_av * forces_q_av_eloc_av_covar (:)
-  
+
   end subroutine forces_zvzb_av_var_bld
 
 ! ==============================================================================
@@ -563,7 +563,7 @@
    dim_i = forces_direct (force_i)
 
    forces_zvzb (force_i) = forces_zv (force_i)
-  
+
    if (l_forces_q_av_fixed) then
     forces_zvzb (force_i) = forces_zvzb (force_i) + 2.d0*eloc_c*(forces_q (force_i) - forces_q_av_fixed (force_i))
    else
@@ -571,7 +571,7 @@
    endif
 
   enddo ! force_i
-  
+
   end subroutine forces_zvzb_old1_bld
 
 ! ==============================================================================
@@ -627,14 +627,14 @@
    dim_i = forces_direct (force_i)
 
    forces_zvzb (force_i) = forces_zv (force_i)
-  
+
 !  loop over electrons
    do elec_i = 1, nelec
     forces_zvzb (force_i) = forces_zvzb (force_i) - 2.d0*eloc_c*znuc(iwctype(cent_i)) * vec_en_xyz_wlk (dim_i, elec_i, cent_i, 1) / dist_en_wlk (elec_i, cent_i, 1)
    enddo ! elec_i
-   
+
   enddo ! force_i
-  
+
   end subroutine forces_zvzb_old2_bld
 
 end module forces_mod

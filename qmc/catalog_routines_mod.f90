@@ -428,7 +428,7 @@ module catalog_routines_mod
   call catalog_one_routine ('extracule_wrt', extracule_wrt)
 
 
-!!pjas WAS 
+!!pjas WAS
   call catalog_one_node ('pjas_init_bld', pjas_init_bld)
   call catalog_one_node ('deloc_pjasen_bld',deloc_pjasen_bld)
 !  call catalog_one_node ('d2psi_pjase_bld',  d2psi_pjase_bld)
@@ -440,7 +440,7 @@ module catalog_routines_mod
 
   call catalog_one_node ('deloc_pjas_bld',deloc_pjas_bld)
 
-  call catalog_one_node ('deloc_pot_nloc_pjas_bld',deloc_pot_nloc_pjas_bld) 
+  call catalog_one_node ('deloc_pot_nloc_pjas_bld',deloc_pot_nloc_pjas_bld)
 
 
 

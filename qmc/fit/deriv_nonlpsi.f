@@ -10,7 +10,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 !!!   added WAS
       common /jas_c_cut/ icutjasc, cutjasc
       common /contrl_per/ iperiodic,ibasis
-!!!   
+!!!
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
@@ -235,12 +235,12 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
         call switch_scale(rrri(1),3)
         call switch_scale(rrrj(1),3)
 
-!!!!  WAS 
+!!!!  WAS
         if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
            call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
         endif
 !!!
-        
+
         uu(0)=1
         ss(0)=2
         tt(0)=1

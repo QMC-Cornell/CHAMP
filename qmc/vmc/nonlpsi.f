@@ -13,7 +13,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !!!   added WAS
       common /jas_c_cut/ icutjasc, cutjasc
       common /contrl_per/ iperiodic,ibasis
-!!!   
+!!!
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
@@ -117,7 +117,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
         call switch_scale(rrri,3)
         call switch_scale(rrrj,3)
 
-!!!!  WAS 
+!!!!  WAS
         if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
            call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
         endif
@@ -150,7 +150,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
                    p = p *  fcut
                 endif
 !!!
-                psinl=psinl+c(ll,it,iwf)* p 
+                psinl=psinl+c(ll,it,iwf)* p
               endif
    50   continue
 

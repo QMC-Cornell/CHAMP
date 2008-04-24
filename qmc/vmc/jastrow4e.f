@@ -159,11 +159,11 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
       endif
 
       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
-         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
+         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
      +        dfcuti, dfcutj,d2fcuti,d2fcutj)
       endif
-      
+
       do 50 ic=1,ncent
         it=iwctype(ic)
 
@@ -183,11 +183,11 @@ c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
         endif
 
         if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,  
-           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,  
+c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
      +          dfcuti, dfcutj,d2fcuti,d2fcutj)
         endif
-        
+
 
         do 30 iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
@@ -232,7 +232,7 @@ c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
            fu = fu * fcut
            fc = fc * fcut
         endif
-!!! end WAS         
+!!! end WAS
         fsn(i,j)=fsn(i,j) + fc
 
         fijn(1,i,j)=fijn(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)

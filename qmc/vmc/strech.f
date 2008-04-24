@@ -68,9 +68,9 @@ c initialize volume change matrix
           do 10 k=1,ndim
    10       dist2=dist2+(x(k,i)-centsav(k,icent))**2
             dist=dsqrt(dist2)
-            if(istrech.eq.1) then 
+            if(istrech.eq.1) then
               wt(icent)=dexp(-alfstr*dist)
-            elseif(istrech.eq.2) then 
+            elseif(istrech.eq.2) then
               wt(icent)=one/dist**alfstr
             elseif(istrech.eq.3) then
               wt(icent)=dexp(alfstr/dist)

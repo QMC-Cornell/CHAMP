@@ -2,7 +2,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use deriv_orb_mod ! JT
-      use periodic_jastrow_mod !WAS 
+      use periodic_jastrow_mod !WAS
 
       implicit real*8(a-h,o-z)
 !JT      parameter (one=1.d0)
@@ -132,15 +132,15 @@ c vps was calculated by calling getvps_tm from nonloc_pot
 c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
 
 cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
-              
+
               call nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
 
 !WAS
-              if (do_pjas) then 
-                 call nonloc_pjas (iel, x(:,1:melec), value) 
+              if (do_pjas) then
+                 call nonloc_pjas (iel, x(:,1:melec), value)
               endif
 !WAS
-              
+
               if(ipr.ge.4) then
                 write(6,'(''rr_en,rr_en2'',2d14.6)') rr_en(1,1),rr_en2(1,1)
                 write(6,'(''ic,i,iq,deter,value'',3i3,2d14.6)') ic,i,iq,deter,value

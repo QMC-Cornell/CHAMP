@@ -96,7 +96,7 @@ c     mode='vmc_mov1    '
           zcusp=znuc(iwctype(nearo)) ! RM (watch out here for future extension)
 !MS Jellium sphere
          else if(nloc.eq.-3) then
-          zcusp=znuc(iwctype(nearo)) 
+          zcusp=znuc(iwctype(nearo))
          else
           zcusp=zero
         endif
@@ -176,7 +176,7 @@ c Determine the maximum value of radial function for rejection sampling
          else              ! JT
           rmax1=rtop       ! JT
         endif              ! JT
-  
+
         if(rmax1.lt.rbot) rmax1=rbot
         if(rmax1.gt.rtop) rmax1=rtop
         fmax=sqrt(rmax1)*abs(one+co*rmax1)*dexp(-zeta*rmax1)

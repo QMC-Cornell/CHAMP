@@ -1,12 +1,12 @@
-Module periodic_jastrow_mod 
+Module periodic_jastrow_mod
 
   use all_tools_mod
-  use crystal_symmetries_mod 
-  use eloc_mod 
+  use crystal_symmetries_mod
+  use eloc_mod
   use pjasen_mod
   use pjasee_mod
 
-  implicit none 
+  implicit none
 
   integer                                :: i_pjas_en_read = 0
   integer                                :: i_pjas_ee_read = 0
@@ -25,11 +25,11 @@ contains
 
 
   !===========================================================================
-  subroutine  periodic_jastrow_menu 
+  subroutine  periodic_jastrow_menu
 !---------------------------------------------------------------------------
-! Description : menu for periodic jastrow                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : menu for periodic jastrow
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -37,14 +37,14 @@ contains
     include 'commons_jaspar6.h'
     integer                              :: icutjasc
     real(dp)                             :: cutjasc
-    common /jas_c_cut/ cutjasc, icutjasc 
+    common /jas_c_cut/ cutjasc, icutjasc
 
 
     icutjasc = 0
     cutjasc= 0.0_dp
 
     ! loop over menu lines
-    do 
+    do
 
        call get_next_word (word)
 
@@ -68,11 +68,11 @@ contains
 
        case ('cutjasc')
           call get_next_value (cutjasc)
-          
-!!! commented for now 
-!!$       case ('sym_file')  
+
+!!! commented for now
+!!$       case ('sym_file')
 !!$          call get_next_value_list ("symmetry_file", symmetry_file, iread_sym_file )
-!!$          read_sym_file = 1 
+!!$          read_sym_file = 1
 !!$          if (iread_sym_file .ne. 2) stop "two symmetry input files needed"
 
        case ('nstar_en')
@@ -88,14 +88,14 @@ contains
        case ('shift_cos')
           call get_next_value (shift_cos)
           shift_cos = 4* atan (1.0) * shift_cos
-          writE(6,*) "shift_cos = ", shift_cos 
+          writE(6,*) "shift_cos = ", shift_cos
 
        case ('do_pjasen')
           call get_next_value (do_pjasen)
 
        case ('do_pjasee')
           call get_next_value (do_pjasee)
-          
+
        case ('ecut_en')
           call get_next_value (ecut_en)
 
@@ -122,25 +122,25 @@ contains
 
 
 
-    ido_pjasen = 0 
-    if (do_pjasen) then 
+    ido_pjasen = 0
+    if (do_pjasen) then
        write(6,*) "e-n periodic jastrow is included "
-       ido_pjasen = 1 
+       ido_pjasen = 1
     else
        nstar_en = 0
     endif
 
 
-    ido_pjasee = 0 
-    if (do_pjasee) then 
+    ido_pjasee = 0
+    if (do_pjasee) then
        write(6,*) "e-e periodic jastrow is included "
-       ido_pjasee = 1 
+       ido_pjasee = 1
     else
        nstar_ee = 0
     endif
- 
-    ido_pjas= 0  !! common block 
-    if (do_pjasen .or. do_pjasee) then 
+
+    ido_pjas= 0  !! common block
+    if (do_pjasen .or. do_pjasee) then
        do_pjas= .true.
        ido_pjas= 1
     endif
@@ -148,7 +148,7 @@ contains
 !!!!!!!!!! although not used they have to be defined
 
     call object_modified_by_index (cos_star_ee_index)
-    
+
     call object_modified_by_index (cos_star_en_index)
 
     call object_modified_by_index (star_en_index)
@@ -166,17 +166,17 @@ contains
     call planewaves_interface
     write(6,*) "done planewave_interface "
 
-    write(6,*) "do_pjasen  = ", do_pjasen 
+    write(6,*) "do_pjasen  = ", do_pjasen
 
-    if (nstar_en > 0) then 
-       if (nstar_en > nstar) nstar_en = nstar 
-       nstar= nstar_en 
-       write(6,*) "Number of e-n stars included = ", nstar 
+    if (nstar_en > 0) then
+       if (nstar_en > nstar) nstar_en = nstar
+       nstar= nstar_en
+       write(6,*) "Number of e-n stars included = ", nstar
     endif
 
 
-    if (nstar_ee > 0) then 
-       if (nstar_ee > nstar) nstar_ee = nstar_sim  
+    if (nstar_ee > 0) then
+       if (nstar_ee > nstar) nstar_ee = nstar_sim
        write(6,*) "Number of e-e stars included = ", nstar_ee
     endif
     call object_provide ('param_pjas_nb')
@@ -188,9 +188,9 @@ contains
 
   subroutine pjas_init_bld
 !---------------------------------------------------------------------------
-! Description : initial subroutine to define arrays and dimensions                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : initial subroutine to define arrays and dimensions
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -206,34 +206,34 @@ contains
        return
     endif
 
-    if (l_opt_pjasen .and. .not. do_pjasen) then 
+    if (l_opt_pjasen .and. .not. do_pjasen) then
        stop "do_pjasen and pjasen inconsistent keywords"
     endif
-    
-    if (l_opt_pjasee .and. .not. do_pjasee) then 
+
+    if (l_opt_pjasee .and. .not. do_pjasee) then
        stop "do_pjasee and pjasee inconsistent keywords"
     endif
 
-    param_pjasen_nb = nstar_en * n_inv 
-    
-    param_pjasee_nb = nstar_ee 
+    param_pjasen_nb = nstar_en * n_inv
+
+    param_pjasee_nb = nstar_ee
 
     param_pjas_nb = param_pjasee_nb + param_pjasen_nb
 
     call object_alloc ("pjas_parms", pjas_parms, param_pjas_nb, mwf )
-    pjas_parms = 0 
-    
-    if (i_pjas_en_read >0) then 
+    pjas_parms = 0
+
+    if (i_pjas_en_read >0) then
        if (i_pjas_en_read > param_pjasen_nb) i_pjas_en_read = param_pjasen_nb
        do i=1, i_pjas_en_read
           pjas_parms(i,1) = pjas_en_read(i)
        enddo
        write(6,'(a,100F10.6)') "Reading pjas_parms_en", pjas_en_read(1:i_pjas_en_read)
     endif
-       
 
- 
-    if (i_pjas_ee_read >0) then 
+
+
+    if (i_pjas_ee_read >0) then
        if (i_pjas_ee_read > param_pjasee_nb) i_pjas_ee_read = param_pjasee_nb
        do i=1, i_pjas_ee_read
           pjas_parms(i+ param_pjasen_nb,1) = pjas_ee_read(i)
@@ -242,28 +242,28 @@ contains
     endif
 
 
-!!! !! this is introduced to fix compiling mpi version 
-    ndim_pj= ndim 
+!!! !! this is introduced to fix compiling mpi version
+    ndim_pj= ndim
 
 
-!!! allocations of global arrays 
+!!! allocations of global arrays
 
     call object_alloc ("cos_star_ee ", cos_star_ee , nelec * (nelec-1)/2,  nstar_ee)
     call object_alloc ("cos_star_en ", cos_star_en , nelec,  nstar_en)
     call object_modified_by_index (cos_star_ee_index)
     call object_modified_by_index (cos_star_en_index)
 
-    if (param_pjasee_nb >0) then 
+    if (param_pjasee_nb >0) then
        call object_alloc ('dpsi_pjasee', dpsi_pjasee, param_pjasee_nb)
-       if (nopt_iter > 0) then 
+       if (nopt_iter > 0) then
           call object_alloc ('lap_dpsi_pjasee', lap_dpsi_pjasee, nelec, param_pjasee_nb)
           call object_alloc ('grad_dpsi_pjasee', grad_dpsi_pjasee, ndim_pj, nelec , param_pjasee_nb)
        endif
     endif
 
-    if (param_pjasen_nb >0) then 
+    if (param_pjasen_nb >0) then
        call object_alloc ('dpsi_pjasen', dpsi_pjasen, param_pjasen_nb)
-       if (nopt_iter > 0) then 
+       if (nopt_iter > 0) then
           call object_alloc ('lap_dpsi_pjasen', lap_dpsi_pjasen, nelec, param_pjasen_nb)
           call object_alloc ('grad_dpsi_pjasen', grad_dpsi_pjasen, ndim_pj, nelec , param_pjasen_nb)
        endif
@@ -277,20 +277,20 @@ contains
     call object_modified_by_index (grad_dpsi_pjasen_index)
     call object_modified_by_index (lap_dpsi_pjasen_index)
 
-    
-    if (index(mode,'fit') /= 0) then 
+
+    if (index(mode,'fit') /= 0) then
        write(6,*) "Long range periodic jastrow is not implemented with fit"
        stop "Long range periodic jastrow is not implemented with fit"
     endif
 
-    !! allocate global variables used in pjas_deriv_jas and pjas_jas 
+    !! allocate global variables used in pjas_deriv_jas and pjas_jas
     call object_alloc ( "pjasfso", pjasfso, nelec, nelec)
     call object_alloc ( "pjasfijo", pjasfijo, ndim, nelec, nelec)
     call object_alloc ( "pjasd2ijo", pjasd2ijo,  nelec, nelec)
     call object_alloc ( "pjasfjo", pjasfjo, ndim, nelec)
-    
+
     !! allocate global variables used in pjas_deriv_jas
-    if (nopt_iter > 0) then 
+    if (nopt_iter > 0) then
        call object_alloc ( "pengo", pengo, nelec, nelec, param_pjasen_nb)
        call object_alloc ( "peego", peego, nelec, nelec, param_pjasee_nb)
     endif
@@ -299,16 +299,16 @@ contains
 
   subroutine deloc_pot_nloc_pjas_bld
 !---------------------------------------------------------------------------
-! Description : derivatives of the potential part of the local energy with respect to the 
-!               periodic Jastrow parameters                                                              
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : derivatives of the potential part of the local energy with respect to the
+!               periodic Jastrow parameters
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
 
     ! local
-    integer ist 
+    integer ist
 
     ! header
     if (header_exe) then
@@ -329,12 +329,12 @@ contains
 
   end subroutine deloc_pot_nloc_pjas_bld
 
-  
+
   subroutine dpsi_pjas_bld
 !---------------------------------------------------------------------------
-! Description : Logarithmic derivatives of the wavefunction with respect to the peridoic Jastrow parameters                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : Logarithmic derivatives of the wavefunction with respect to the peridoic Jastrow parameters
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -352,12 +352,12 @@ contains
 
     call object_alloc ('dpsi_pjas', dpsi_pjas, param_pjas_nb)
 
-    if (l_opt_pjasen) then 
+    if (l_opt_pjasen) then
        call object_provide ('dpsi_pjasen')
        dpsi_pjas (1: param_pjasen_nb)= dpsi_pjasen
     endif
 
-    if (l_opt_pjasee) then 
+    if (l_opt_pjasee) then
        call object_provide ('dpsi_pjasee')
        dpsi_pjas (param_pjasen_nb+ 1: param_pjas_nb)= dpsi_pjasee
     endif
@@ -368,9 +368,9 @@ contains
 
   subroutine deloc_pjas_bld
 !---------------------------------------------------------------------------
-! Description : derivatives of the local energy with respect to the periodic Jastrow parameters.                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : derivatives of the local energy with respect to the periodic Jastrow parameters.
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     integer                              :: ieta
@@ -378,9 +378,9 @@ contains
     ! header
     if (header_exe) then
        call object_create ('deloc_pjas',deloc_pjas_index)
-       call object_needed ('deloc_pot_nloc_pjas') 
+       call object_needed ('deloc_pot_nloc_pjas')
        call object_needed ('nelec')
-       call object_needed ('ndim') 
+       call object_needed ('ndim')
        call object_needed ('param_pjasen_nb')
        call object_needed ('param_pjasee_nb')
        return
@@ -388,21 +388,21 @@ contains
 
     call object_alloc ('deloc_pjas', deloc_pjas, param_pjas_nb)
 
-    if (param_pjasen_nb >0) then 
+    if (param_pjasen_nb >0) then
        call object_provide_by_index (deloc_pjasen_index)
        do ieta=1, param_pjasen_nb
           deloc_pjas (ieta)=  deloc_pjasen (ieta)
        enddo
     endif
 
-    if (param_pjasee_nb >0) then 
+    if (param_pjasee_nb >0) then
        call object_provide_by_index (deloc_pjasee_index)
        do ieta = 1, param_pjasee_nb
           deloc_pjas (ieta + param_pjasen_nb)=  deloc_pjasee (ieta)
        enddo
     endif
 
-    if (nloc >0 ) then 
+    if (nloc >0 ) then
        call object_provide_by_index (deloc_pot_nloc_pjas_index)
        deloc_pjas =  deloc_pjas + deloc_pot_nloc_pjas
     endif
@@ -413,9 +413,9 @@ contains
 
   subroutine copy_pjas
 !---------------------------------------------------------------------------
-! Description : copy pjas_parms  used in opt. step                                                                  
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : copy pjas_parms  used in opt. step
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -431,13 +431,13 @@ contains
 
   subroutine save_pjas
 !---------------------------------------------------------------------------
-! Description : save pjas parms  used in opt. step                                                                  
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : save pjas parms  used in opt. step
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    integer i 
+    integer i
     call object_alloc ('pjas_parms_sav', pjas_parms_sav, param_pjas_nb)
     do i=1, param_pjas_nb
        pjas_parms_sav(i)=  pjas_parms (i,1)
@@ -447,13 +447,13 @@ contains
 
   subroutine restore_pjas
 !---------------------------------------------------------------------------
-! Description : restore pjas parms used in opt. step                                                             
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : restore pjas parms used in opt. step
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    integer i 
+    integer i
 
     do i=1, param_pjas_nb
        pjas_parms(i,1)=  pjas_parms_sav (i)
@@ -463,44 +463,44 @@ contains
 
   subroutine deriv_nonloc_pjas ( iel, rvec, value) !, gn_pjas)
 !---------------------------------------------------------------------------
-! Description : drivers for  deriv_nonloc_pjas_en and     deriv_nonloc_pjas_ee                                                        
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : drivers for  deriv_nonloc_pjas_en and     deriv_nonloc_pjas_ee
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
     include "common_jasn.h"
-    
+
     integer                              :: iel, ist
     real(dp)                             :: rvec (3,melec)
     real(dp)                             :: xvec (3), value1, temp , value2, value
 
     call object_alloc ("gn_pjas", gn_pjas, param_pjas_nb)
 
-    if (do_pjasen) then 
+    if (do_pjasen) then
        xvec = rvec(:,iel)
-       call deriv_nonloc_pjas_en ( iel, xvec, value1) 
-       value = value + value1 
+       call deriv_nonloc_pjas_en ( iel, xvec, value1)
+       value = value + value1
        gn_pjas (1:param_pjasen_nb) =  gn_pjasen (1:param_pjasen_nb)
     endif
 
-    if (do_pjasee) then 
-       call deriv_nonloc_pjas_ee ( iel, rvec, value2) 
-       value = value + value2 
+    if (do_pjasee) then
+       call deriv_nonloc_pjas_ee ( iel, rvec, value2)
+       value = value + value2
        gn_pjas (param_pjasen_nb+1:param_pjas_nb) =  gn_pjasee (1:param_pjasee_nb)
     endif
 
-!!! update  fsumn 
+!!! update  fsumn
     fsumn = fsumn + value
-    
+
   end subroutine deriv_nonloc_pjas
 
 
-  subroutine nonloc_pjas ( iel, rvec, value) 
+  subroutine nonloc_pjas ( iel, rvec, value)
 !---------------------------------------------------------------------------
-! Description : driver for nonloc_pjas_en  and nonloc_pjas_ee 
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : driver for nonloc_pjas_en  and nonloc_pjas_ee
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
@@ -509,31 +509,31 @@ contains
     integer                              :: iel, ist
     real(dp)                             :: xvec (3), value1, temp, value2, value
 
-    if (do_pjasen) then 
+    if (do_pjasen) then
        xvec = rvec(:,iel)
-       call nonloc_pjas_en ( iel, xvec, value1) 
+       call nonloc_pjas_en ( iel, xvec, value1)
        value = value + value1
      endif
 
-     if (do_pjasee) then 
-        call nonloc_pjas_ee ( iel, rvec, value2) 
+     if (do_pjasee) then
+        call nonloc_pjas_ee ( iel, rvec, value2)
         value = value + value2
      endif
 
-     !! update global fsumn 
+     !! update global fsumn
      !! subtract was done with fsuno
-     fsumn = fsumn + value 
-     
+     fsumn = fsumn + value
+
   end subroutine nonloc_pjas
 
 
   subroutine  pjas_jas (xvec, rvec, v, d2, div_vj, fsum)
 !---------------------------------------------------------------------------
-! Description : drivers for pjasen_jas and pjasee_jas                  
+! Description : drivers for pjasen_jas and pjasee_jas
 !!! input are the contributions from the short range jastrow
-!!! add contributions from long range jastrow                                           
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+!!! add contributions from long range jastrow
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -545,29 +545,29 @@ contains
     integer                              :: i
     real(dp)                             :: pjasd2o_l, pjasfsumo_l
 
-!!! common block variables 
+!!! common block variables
     pjasfijo = 0
     pjasfso = 0
     pjasd2ijo = 0
-    pjasfjo = 0 
+    pjasfjo = 0
 
-!!! local variables    
-    pjasd2o_l = 0 
-    pjasfsumo_l = 0 
-    
-    if (do_pjasen) then 
-       
+!!! local variables
+    pjasd2o_l = 0
+    pjasfsumo_l = 0
+
+    if (do_pjasen) then
+
        call pjasen_jas (xvec, v, pjasd2o_l, div_vj, pjasfsumo_l)
-       
-    endif
-    
 
-    if (do_pjasee) then 
-       
-       call pjasee_jas (rvec, v, pjasd2o_l, div_vj, pjasfsumo_l)
-       
     endif
-    
+
+
+    if (do_pjasee) then
+
+       call pjasee_jas (rvec, v, pjasd2o_l, div_vj, pjasfsumo_l)
+
+    endif
+
     pjasd2o = pjasd2o_l
     pjasfsumo = pjasfsumo_l
     fsum = fsum + pjasfsumo_l
@@ -579,9 +579,9 @@ contains
 
   subroutine  pjas_deriv_jas (xvec,rvec, v, d2, div_vj, fsum)
 !---------------------------------------------------------------------------
-! Description : driver for pjas_deriv_jas_en and pjas_deriv_jas_ee                                                            
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : driver for pjas_deriv_jas_en and pjas_deriv_jas_ee
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -592,46 +592,46 @@ contains
     integer                              :: i
     real(dp)                             :: pjasd2o_l, pjasfsumo_l
 
- 
-    pengo = 0 
-    peego = 0 
+
+    pengo = 0
+    peego = 0
     pjasfijo = 0
     pjasfso = 0
     pjasd2ijo = 0
-    pjasfjo = 0 
+    pjasfjo = 0
 
-!!! local variables    
-    pjasd2o_l = 0 
-    pjasfsumo_l = 0 
+!!! local variables
+    pjasd2o_l = 0
+    pjasfsumo_l = 0
 
-    if (do_pjasen) then 
-       
+    if (do_pjasen) then
+
        call pjasen_deriv_jas (xvec, v, pjasd2o_l,  div_vj, pjasfsumo_l )
-       
+
     endif
 
-    if (do_pjasee) then 
-       
+    if (do_pjasee) then
+
        call pjasee_deriv_jas (rvec, v, pjasd2o_l,  div_vj, pjasfsumo_l )
-       
+
     endif
-    
-!!! add to input 
+
+!!! add to input
     pjasd2o = pjasd2o_l
     pjasfsumo = pjasfsumo_l
 
     fsum = fsum + pjasfsumo_l
     d2  = d2 + pjasd2o_l
-    
+
   end subroutine pjas_deriv_jas
 
-  
-  
+
+
   subroutine pjas_jas_e (iel, xvec, rvec,  v, value)
 !---------------------------------------------------------------------------
-! Description : same as  pjas_deriv_jas when one electron move                                                            
-!                                                                           
-! Created     : W. A. Al-Saidi, June 2007                          
+! Description : same as  pjas_deriv_jas when one electron move
+!
+! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
@@ -643,27 +643,27 @@ contains
     real (dp)                            :: fsum, value
     integer                              :: i
 
-    
-    fsum = 0 
-    
-    if (do_pjasen) then 
-       
-       call pjasen_jas_e (iel, xvec, fsum) 
-       
-    endif
-    
 
-    if (do_pjasee) then 
-       
-       call pjasee_jas_e (iel, rvec, fsum)
-       
+    fsum = 0
+
+    if (do_pjasen) then
+
+       call pjasen_jas_e (iel, xvec, fsum)
+
     endif
-    
+
+
+    if (do_pjasee) then
+
+       call pjasee_jas_e (iel, rvec, fsum)
+
+    endif
+
     do i=1,nelec
        v (:, i) = fjn (1:3,i)
     enddo
-    fsumn = fsumn + fsum 
-    value = value + fsum 
+    fsumn = fsumn + fsum
+    value = value + fsum
   end subroutine pjas_jas_e
 
 

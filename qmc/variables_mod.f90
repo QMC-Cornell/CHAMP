@@ -62,7 +62,7 @@ module variables_mod
   logical                         :: l_opt_exp  = .false.
   logical                         :: l_opt_geo  = .false.
 
-!! pjas WAS 
+!! pjas WAS
   logical                         :: l_opt_pjasen  = .false.
   logical                         :: l_opt_pjasee  = .false.
   logical                         :: l_opt_pjas  = .false.

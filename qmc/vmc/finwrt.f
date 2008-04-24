@@ -190,7 +190,7 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
           write(6,'(''z-background    E   ='',f15.7)') ebz
           write(6,'(''total E+eb_self+ebz ='',f15.7)') efin+eb_slf+ebz
         endif
-       
+
        else
         ifr=1
 !       write(6,'(''total E'',i3,'' ='',t17,f12.7,'' +-'',f11.7,3f9.5,t82,f8.2)') !JT
