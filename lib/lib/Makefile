@@ -340,8 +340,8 @@ endif
 
 # clastos in Paris
 ifeq ($(hostname),clastos)
-  FC = /usr/local/bin/mpif90
-  FC_MPI = /usr/local/bin/mpif90
+  FC = /usr/local/bin/mpif90_64
+  FC_MPI = /usr/local/bin/mpif90_64
 endif
 
 # OBJS = my_second.o ranf.o shellnn.o intpol.o intpol_monot.o grater.o \

@@ -76,6 +76,11 @@ module initialization_mod
   nparmj_input = nparmj
   nparmcsf_input = nparmcsf
 
+! correlated sampling
+  iwf = 1
+  nwftype=1
+  iwftype(1)=1
+
   write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
 
  end subroutine initialization

@@ -10,6 +10,7 @@ module deriv_exp_mod
   use eloc_mod
 
 ! Declaration of global variables and default values
+  logical                        :: l_exp_opt_restrict = .true.
   logical                        :: l_deloc_exp_num = .false.
   integer                        :: param_exp_nb = 0
   logical, allocatable           :: orbital_depends_on_optimized_exponent (:,:)
@@ -129,7 +130,15 @@ module deriv_exp_mod
 
       bas_j = exp_opt_lab (exp_opt_lab_j)
 
-      if (zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
+      if (bas_j == bas_i) then
+         dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
+         call append (dexp_to_bas (param_exp_nb)%row, bas_j)
+         bas_to_dexp (bas_j) = param_exp_nb
+         is_basis_func_attributed (bas_j) = .true.
+      endif
+
+!     restriction on exponent parameters
+      if (l_exp_opt_restrict .and. zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
          dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
          call append (dexp_to_bas (param_exp_nb)%row, bas_j)
          bas_to_dexp (bas_j) = param_exp_nb

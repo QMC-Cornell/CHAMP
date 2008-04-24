@@ -85,6 +85,7 @@ module variables_mod
 ! weight of walkers
   real(dp), allocatable   :: walker_weights (:)
   real(dp)                :: walker_weights_sum
+  real(dp)                :: walker_weights_sum_block
 
 ! probability of acceptance and rejection
   real(dp)    :: prob_acc

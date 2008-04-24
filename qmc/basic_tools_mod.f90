@@ -2259,29 +2259,20 @@ module basic_tools_mod
   implicit none
 
 ! input
-  integer                 :: object_2(:,:)
-  integer dim1, dim2
+  integer, intent(in)     :: object_2 (:,:)
+  integer, intent(in)     :: dim1, dim2
 
 ! output
-  integer                 :: object_1(:)
+  integer, intent(out)    :: object_1 (:)
 
 ! local
-!  character(len=max_string_len_rout), save :: lhere = 'flatten_integer_2'
-  integer ind, i, j
-  integer dim
+  character(len=max_string_len_rout), save :: lhere = 'flatten_integer_2'
+  integer i, j
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-  dim = dim1*dim2
-
-!  call alloc ('object_1', object_1, dim)
-
-  ind = 0
   do i = 1, dim1
     do j = 1, dim2
-     ind = ind + 1
-     object_1(ind) = object_2(i,j)
+     object_1 ((i-1)*dim2 + j) = object_2 (i,j)
     enddo
   enddo
 
@@ -2297,33 +2288,22 @@ module basic_tools_mod
   implicit none
 
 ! input
-  real(dp)                 :: object_2(:,:)
-  integer dim1, dim2
+  real(dp), intent(in)        :: object_2 (:,:)
+  integer, intent(in)         :: dim1, dim2
 
 ! output
-  real(dp)                 :: object_1(:)
+  real(dp), intent(out)       :: object_1 (:)
 
 ! local
-!  character(len=max_string_len_rout), save :: lhere = 'flatten_double_2'
-  integer ind, i, j
-  integer dim
+  character(len=max_string_len_rout), save :: lhere = 'flatten_double_2'
+  integer i, j
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-  dim = dim1*dim2
-
-!  call alloc ('object_1', object_1, dim)
-
-  ind = 0
   do i = 1, dim1
     do j = 1, dim2
-     ind = ind + 1
-     object_1(ind) = object_2(i,j)
+     object_1 ((i-1)*dim2 + j) = object_2 (i,j)
     enddo
   enddo
-
-!  write(6,*) trim(lhere),': exiting'
 
   end subroutine flatten_double_2
 
@@ -2337,32 +2317,21 @@ module basic_tools_mod
   implicit none
 
 ! input
-  integer                 :: object_1(:)
-  integer dim1, dim2
+  integer, intent(in)     :: object_1 (:)
+  integer, intent(in)     :: dim1, dim2
 
 ! output
-  integer                 :: object_2(:,:)
+  integer, intent(out)    :: object_2 (:,:)
 
 ! local
-!  character(len=max_string_len_rout), save :: lhere = 'unflatten_integer_2'
-  integer ind, i, j
-  integer dim
+  character(len=max_string_len_rout), save :: lhere = 'unflatten_integer_2'
+  integer i, j
 
-! begin
-!  write(6,*) trim(lhere),': entering'
-
-  dim = dim1*dim2
-
-!  call alloc ('object_2', object_2, dim1, dim2)
-
-  ind = 0
   do i = 1, dim1
     do j = 1, dim2
-     ind = ind + 1
-     object_2(i,j) = object_1(ind)
+     object_2 (i,j) = object_1 ((i-1)*dim2 + j)
     enddo
   enddo
-
 
   end subroutine unflatten_integer_2
 
@@ -2376,32 +2345,22 @@ module basic_tools_mod
   implicit none
 
 ! input
-  real(dp)                 :: object_1(:)
-  integer dim1, dim2
+  real(dp), intent(in)                 :: object_1 (:)
+  integer, intent(in)                  :: dim1, dim2
 
 ! output
-  real(dp)                 :: object_2(:,:)
+  real(dp), intent(out)                :: object_2 (:,:)
 
 ! local
-!  character(len=max_string_len_rout), save :: lhere = 'unflatten_double_2'
-  integer ind, i, j
-  integer dim
+  character(len=max_string_len_rout), save :: lhere = 'unflatten_double_2'
+  integer i, j
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-  dim = dim1*dim2
-
-!  call alloc ('object_2', object_2, dim1, dim2)
-
-  ind = 0
   do i = 1, dim1
     do j = 1, dim2
-     ind = ind + 1
-     object_2(i,j) = object_1(ind)
+     object_2 (i,j) = object_1 ((i-1)*dim2 + j)
     enddo
   enddo
-
 
   end subroutine unflatten_double_2
 

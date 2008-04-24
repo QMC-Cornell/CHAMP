@@ -426,9 +426,7 @@ module parser_tools_mod
 ! begin
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
-# if defined (PATHSCALE)
-  
-# else
+# if !defined (PATHSCALE)
   call alloc (value_list_name, value_list, value_list_nb)
 # endif 
 
@@ -475,9 +473,7 @@ module parser_tools_mod
 
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
   
-# if defined (PATHSCALE)
-
-# else
+# if !defined (PATHSCALE)
   call object_alloc (value_list_name, value_list, value_list_nb)
 # endif
 

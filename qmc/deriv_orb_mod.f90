@@ -1069,7 +1069,7 @@ module deriv_orb_mod
   enddo ! orb_opt_i
 
   write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
-  write(6,'(a,i10)') ' Number of orbital derivatives = ', param_orb_nb
+  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
 
 ! excitation pairs number
   deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2

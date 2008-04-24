@@ -42,17 +42,29 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_deloc_eloc_av (:,:)
   real(dp), allocatable          :: dpsi_deloc_eloc_tc_av (:,:)
   real(dp), allocatable          :: dpsi_dpsi_eloc_eloc_qc_av (:,:)
+  real(dp), allocatable          :: dpsi_eloc_av_dpsi_eloc_av_covar (:,:)
+  real(dp), allocatable          :: dpsi_eloc_av_dpsi_av_covar (:,:)
+  real(dp), allocatable          :: dpsi_eloc_av_eloc_av_covar (:)
+  real(dp), allocatable          :: dpsi_av_dpsi_av_covar (:,:)
+  real(dp), allocatable          :: dpsi_av_eloc_av_covar (:)
   real(dp), allocatable          :: deloc (:)
   real(dp), allocatable          :: deloc_av (:)
+  real(dp), allocatable          :: deloc_bav (:)
   real(dp)                       :: deloc_av_abs_max
   real(dp), allocatable          :: deloc_eloc (:)
   real(dp), allocatable          :: deloc_eloc_av (:)
   real(dp), allocatable          :: deloc_eloc_covar (:)
   real(dp), allocatable          :: deloc_deloc (:)
   real(dp), allocatable          :: deloc_deloc_av (:)
+  real(dp), allocatable          :: deloc_deloc_bav (:)
   real(dp), allocatable          :: deloc_av_deloc_av_covar (:,:)
   real(dp), allocatable          :: deloc_deloc_covar (:,:)
+  real(dp), allocatable          :: deloc_deloc_blk_covar (:,:)
   real(dp), allocatable          :: deloc_deloc_covar_inv (:,:)
+  real(dp), allocatable          :: deloc_deloc_blk_covar_inv (:,:)
+  real(dp), allocatable          :: deloc_av_eloc_av_covar (:)
+  real(dp), allocatable          :: deloc_av_dpsi_eloc_av_covar (:,:)
+  real(dp), allocatable          :: deloc_av_dpsi_av_covar (:,:)
   real(dp), allocatable          :: d2psi (:)
   real(dp), allocatable          :: d2psi_av (:)
   real(dp), allocatable          :: d2psi_eloc (:)
@@ -227,6 +239,8 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi')
+   call object_covariance_define ('dpsi_av', 'dpsi_av', 'dpsi_av_dpsi_av_covar')
+   call object_covariance_define ('dpsi_av', 'eloc_av', 'dpsi_av_eloc_av_covar')
 
    call object_needed ('param_nb')
 
@@ -237,6 +251,8 @@ module deriv_mod
 ! begin
   call object_alloc ('dpsi', dpsi, param_nb)
   call object_alloc ('dpsi_av', dpsi_av, param_nb)
+  call object_alloc ('dpsi_av_dpsi_av_covar', dpsi_av_dpsi_av_covar, param_nb, param_nb)
+  call object_alloc ('dpsi_av_eloc_av_covar', dpsi_av_eloc_av_covar, param_nb)
 
   shift = 0
 
@@ -372,6 +388,11 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('deloc')
+   call object_block_average_define ('deloc', 'deloc_bav')
+   call object_average_define ('deloc', 'deloc_av')
+   call object_covariance_define ('deloc_av', 'eloc_av', 'deloc_av_eloc_av_covar')
+   call object_covariance_define ('deloc_av', 'dpsi_eloc_av', 'deloc_av_dpsi_eloc_av_covar')
+   call object_covariance_define ('deloc_av', 'dpsi_av', 'deloc_av_dpsi_av_covar')
 
    call object_needed ('param_nb')
 
@@ -382,6 +403,10 @@ module deriv_mod
 ! begin
   call object_alloc ('deloc', deloc, param_nb)
   call object_alloc ('deloc_av', deloc_av, param_nb)
+  call object_alloc ('deloc_bav', deloc_bav, param_nb)
+  call object_alloc ('deloc_av_eloc_av_covar', deloc_av_eloc_av_covar, param_nb)
+  call object_alloc ('deloc_av_dpsi_eloc_av_covar', deloc_av_dpsi_eloc_av_covar, param_nb, param_nb)
+  call object_alloc ('deloc_av_dpsi_av_covar', deloc_av_dpsi_av_covar, param_nb, param_nb)
 
   shift = 0
 
@@ -749,6 +774,9 @@ module deriv_mod
    call object_needed ('param_nb')
    call object_needed ('dpsi')
    call object_needed ('eloc')
+   call object_covariance_define ('dpsi_eloc_av', 'dpsi_eloc_av', 'dpsi_eloc_av_dpsi_eloc_av_covar')
+   call object_covariance_define ('dpsi_eloc_av', 'dpsi_av', 'dpsi_eloc_av_dpsi_av_covar')
+   call object_covariance_define ('dpsi_eloc_av', 'eloc_av', 'dpsi_eloc_av_eloc_av_covar')
 
    return
 
@@ -758,6 +786,9 @@ module deriv_mod
 
   call object_alloc ('dpsi_eloc', dpsi_eloc, param_nb)
   call object_alloc ('dpsi_eloc_av', dpsi_eloc_av, param_nb)
+  call object_alloc ('dpsi_eloc_av_dpsi_eloc_av_covar', dpsi_eloc_av_dpsi_eloc_av_covar, param_nb, param_nb)
+  call object_alloc ('dpsi_eloc_av_dpsi_av_covar', dpsi_eloc_av_dpsi_av_covar, param_nb, param_nb)
+  call object_alloc ('dpsi_eloc_av_eloc_av_covar', dpsi_eloc_av_eloc_av_covar, param_nb)
 
   dpsi_eloc = dpsi * eloc
 
@@ -905,6 +936,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('deloc_deloc')
+   call object_block_average_define ('deloc_deloc', 'deloc_deloc_bav')
    call object_average_define ('deloc_deloc', 'deloc_deloc_av')
    call object_covariance_define ('deloc_av', 'deloc_av', 'deloc_av_deloc_av_covar')
 
@@ -920,6 +952,7 @@ module deriv_mod
 ! begin
   call object_alloc ('deloc_deloc', deloc_deloc, param_pairs_nb)
   call object_alloc ('deloc_deloc_av', deloc_deloc_av, param_pairs_nb)
+  call object_alloc ('deloc_deloc_bav', deloc_deloc_bav, param_pairs_nb)
   call object_alloc ('deloc_av_deloc_av_covar', deloc_av_deloc_av_covar, param_nb, param_nb)
 
   do param_i = 1, param_nb
@@ -970,6 +1003,44 @@ module deriv_mod
   end subroutine deloc_deloc_covar_bld
 
 ! ==============================================================================
+  subroutine deloc_deloc_blk_covar_bld
+! ------------------------------------------------------------------------------
+! Description   : deloc_deloc_covar calculated on current block
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+  integer param_i, param_j
+
+! header
+  if (header_exe) then
+
+   call object_create ('deloc_deloc_blk_covar')
+
+
+   call object_needed ('param_nb')
+   call object_needed ('param_pairs')
+   call object_needed ('deloc_deloc_bav')
+   call object_needed ('deloc_bav')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('deloc_deloc_blk_covar', deloc_deloc_blk_covar, param_nb, param_nb)
+
+  do param_i = 1, param_nb
+   do param_j = 1, param_nb
+     deloc_deloc_blk_covar (param_i, param_j) = deloc_deloc_bav (param_pairs (param_i, param_j)) - deloc_bav (param_i) * deloc_bav (param_j)
+   enddo
+  enddo
+
+  end subroutine deloc_deloc_blk_covar_bld
+
+! ==============================================================================
   subroutine deloc_deloc_covar_inv_bld
 ! ------------------------------------------------------------------------------
 ! Description   : inverse of deloc_deloc_covar
@@ -1001,6 +1072,39 @@ module deriv_mod
   call inverse_by_svd (deloc_deloc_covar, deloc_deloc_covar_inv, param_nb, threshold)
 
   end subroutine deloc_deloc_covar_inv_bld
+
+! ==============================================================================
+  subroutine deloc_deloc_blk_covar_inv_bld
+! ------------------------------------------------------------------------------
+! Description   : inverse of deloc_deloc_blk_covar
+!
+! Created       : J. Toulouse, 21 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  real(dp) threshold
+
+! header
+  if (header_exe) then
+
+   call object_create ('deloc_deloc_blk_covar_inv')
+
+   call object_needed ('param_nb')
+   call object_needed ('deloc_deloc_blk_covar')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('deloc_deloc_blk_covar_inv', deloc_deloc_blk_covar_inv, param_nb, param_nb)
+
+  threshold = 1.d-10
+  call inverse_by_svd (deloc_deloc_blk_covar, deloc_deloc_blk_covar_inv, param_nb, threshold)
+
+  end subroutine deloc_deloc_blk_covar_inv_bld
 
 ! ==============================================================================
   subroutine dpsi_deloc_bld

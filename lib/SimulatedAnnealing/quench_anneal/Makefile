@@ -421,9 +421,9 @@ endif
 
 # clastos in Paris
 ifeq ($(hostname),clastos)
-  FC = /usr/local/bin/mpif90
-  FC_MPI = /usr/local/bin/mpif90
-  FLINKER_MPI = /usr/local/bin/mpif90
+  FC = /usr/local/bin/mpif90_64
+  FC_MPI = /usr/local/bin/mpif90_64
+  FLINKER_MPI = /usr/local/bin/mpif90_64
 endif
 
 # The Intel compiler ifc causes trouble in dlamch unless the latter is

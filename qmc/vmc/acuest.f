@@ -103,7 +103,9 @@ c write out header first time
 c write out current values of averages
 
       wsum(1)=nstep*nproc
+      walker_weights_sum_block  = nstep_total
       walker_weights_sum  = nstep_total*block_iterations_nb
+      call object_modified_by_index (walker_weights_sum_block_index)
       call object_modified_by_index (walker_weights_sum_index)
 
       do 10 ifr=1,nforce

@@ -4,6 +4,7 @@ module main_menu_mod
   use control_mod
   use basis_mod
   use orbitals_mod
+  use psi_mod
   use periodic_jastrow_mod 
   use optimization_mod
   use grid_mod
@@ -58,6 +59,7 @@ module main_menu_mod
    write(6,'(a)') ' walkers ... end: menu for walkers'
    write(6,'(a)') ' basis ... end: menu to input information for basis'
    write(6,'(a)') ' orbitals ... end: menu to input information for orbitals'
+   write(6,'(a)') ' wavefunction ... end: menu related to wave function '
    write(6,'(a)') ' optimization ... end: menu for wave function optimization'
    write(6,'(a)') ' print ... end: menu for printing objects'
    write(6,'(a)') ' average ... end: menu for calculating MC averages'
@@ -79,6 +81,7 @@ module main_menu_mod
   case ('walkers')           ; call walkers_menu
   case ('basis')             ; call basis_menu
   case ('orbitals')          ; call orbitals_menu
+  case ('wavefunction')      ; call wavefunction_menu
   case ('periodic_jastrow')  ; call periodic_jastrow_menu
   case ('optimization')      ; call optimization_menu
   case ('print')             ; call print_menu

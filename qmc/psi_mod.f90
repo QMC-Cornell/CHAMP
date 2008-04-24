@@ -6,6 +6,8 @@ module psi_mod
   use determinants_mod
 
 ! Declaration of global variables and default values
+  logical                        :: l_maximize_psi2 = .false.
+  integer                        :: max_psi2_trial_nb = 10
   real(dp), allocatable          :: grd_det_unq_dn (:,:,:)
   real(dp), allocatable          :: grd_det_unq_up (:,:,:)
   real(dp), allocatable          :: lap_det_unq_dn (:,:)
@@ -23,6 +25,95 @@ module psi_mod
   real(dp), allocatable          :: div_grd_psi_over_psi_wlk (:,:)
 
   contains
+
+!===========================================================================
+  subroutine wavefunction_menu
+!---------------------------------------------------------------------------
+! Description : menu for wavefunction
+!
+! Created     : J. Toulouse, 06 Apr 2008
+!---------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'wavefunction_menu'
+
+! begin
+  write(6,*) 
+  write(6,'(a)') 'Beginning of wavefunction menu ---------------------------------------------------------------------------'
+
+
+! loop over menu lines
+  do
+  call get_next_word (word)
+
+  select case(trim(word))
+  case ('help')
+   write(6,*)
+   write(6,'(a)') 'HELP for wavefunction menu:'
+   write(6,'(a)') ' wavefunction'
+   write(6,'(a)') '  maximization ... end: menu for maximimization of wave function square'
+   write(6,'(a)') ' end'
+   write(6,*)
+
+  case ('maximization')
+   call psi2_maximization_menu
+
+  case ('end')
+   exit
+
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<')
+  end select
+
+  enddo ! end loop over menu lines
+  write(6,'(a)') 'End of wavefunction menu ---------------------------------------------------------------------------------'
+
+  end subroutine wavefunction_menu
+
+!===========================================================================
+  subroutine psi2_maximization_menu
+!---------------------------------------------------------------------------
+! Description : menu for maximization of wave function square
+!
+! Created     : J. Toulouse, 06 Apr 2008
+!---------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'psi2_maximization_menu'
+
+! begin
+  l_maximize_psi2 = .true.
+  write(6,'(a)') 'Requesting maximization of wave function square.'
+
+! loop over menu lines
+  do
+  call get_next_word (word)
+
+  select case(trim(word))
+  case ('help')
+   write(6,*)
+   write(6,'(a)') 'HELP for maximization menu:'
+   write(6,'(a)') ' maximization'
+   write(6,'(a)') ' max_psi2_trial_nb = [real] : number of trial of maximization (default=10)'
+   write(6,'(a)') ' end'
+
+  case ('max_psi2_trial_nb')
+   call get_next_value (max_psi2_trial_nb)
+
+  case ('end')
+   exit
+
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<')
+  end select
+
+  enddo ! end loop over menu lines
+
+  call maximize_psi2
+
+  end subroutine psi2_maximization_menu
 
 ! ==============================================================================
   subroutine grd_det_unq_bld
@@ -659,5 +750,161 @@ module psi_mod
 !  call is_equal_or_die (lap_psi_over_psi, lap_psid_over_psid, 10.d-10, .true.) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
  end subroutine lap_psi_over_psi_wlk_bld
+
+! ==============================================================================
+  subroutine maximize_psi2
+! ------------------------------------------------------------------------------
+! Description   : find the maximum of the wave function square psi2
+!
+! Created       : J. Toulouse, 06 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'find_max_of_psi'
+  real(dp) psi2, psi2_tol, psi2_best
+  integer elec_dim_nb, vectex_nb, vertex_i, elec_i, trial_i, trial_best_i
+  integer itmax, iter, iter_all
+  real(dp), allocatable  :: coord_elec_vec (:), coord_elec_vec_best (:)
+  real(dp), allocatable  :: coord_elec_vec_simplex (:,:)
+  real(dp), allocatable  :: psi2_simplex (:)
+  logical converged 
+
+! begin
+  write(6,*) 
+  write(6,'(a)') 'Search for maximum of the wave function...'
+
+! initialization
+  psi2_best = 0.d0
+
+! needed objects
+  call object_provide ('ndim')
+  call object_provide ('nelec')
+
+! allocations
+  elec_dim_nb = ndim * nelec
+  vectex_nb = elec_dim_nb + 1
+  call alloc ('coord_elec_vec', coord_elec_vec, elec_dim_nb)
+  call alloc ('coord_elec_vec_best', coord_elec_vec_best, elec_dim_nb)
+  call alloc ('coord_elec_vec_simplex', coord_elec_vec_simplex, vectex_nb, elec_dim_nb)
+  call alloc ('psi2_simplex', psi2_simplex, vectex_nb)
+
+  write(6,'(a,i5)') 'Number of trial of maximization = ', max_psi2_trial_nb
+  do trial_i = 1, max_psi2_trial_nb
+
+!  initialize simplex
+   write(6,*)
+   write(6,'(a,i3)') 'maximization trial # ', trial_i
+   write(6,'(a)') 'initialize simplex:'
+   do vertex_i = 1, vectex_nb
+     write(6,'(a,i3)') 'vertex # ',vertex_i
+     call mc_configs_read
+     do elec_i = 1, nelec
+       write(6,'(a,i3, 3f)') 'electron # ',elec_i, xold (1:ndim, elec_i)
+     enddo ! elec_i
+     call flatten  (coord_elec_vec, xold, ndim, nelec)
+     coord_elec_vec_simplex (vertex_i, :) = coord_elec_vec (:)
+     psi2_simplex (vertex_i) = psi2_eval (coord_elec_vec)
+     write(6,'(a,f)') 'wave function square = ', psi2_simplex (vertex_i)
+   enddo ! vertex_i
+   
+!  simplex algorithm
+   write(6,*)
+   write(6,'(a)') 'Start maximization by simplex algorithm...'
+   converged  = .false.
+   itmax = 100
+   iter_all = 0
+   psi2_tol = 1.d-8
+   write(6,'(a,f)') 'convergence threshold on wave function square = ',psi2_tol
+   do
+     call amoeba(coord_elec_vec_simplex,psi2_simplex,vectex_nb,elec_dim_nb,elec_dim_nb,psi2_tol,minus_psi2_eval,iter,itmax,converged)
+   
+     iter_all = iter_all + iter
+  
+     write(6,*)
+     write(6,'(a,i10)') 'Iteration # ',iter_all
+   
+     coord_elec_vec = coord_elec_vec_simplex (1,:)
+     call unflatten  (coord_elec_vec, xold, ndim, nelec)
+     do elec_i = 1, nelec
+       write(6,'(a,i3, 3f)') 'electron # ',elec_i, xold (1:ndim, elec_i)
+     enddo ! elec_i
+     psi2 = psi2_eval (coord_elec_vec)
+     write(6,'(a,f)') 'wave function square = ', psi2
+  
+
+     if (converged) exit
+   enddo
+
+   if (psi2 > psi2_best) then
+       trial_best_i = trial_i
+       coord_elec_vec_best (:) = coord_elec_vec (:)
+       psi2_best = psi2
+       write(6,'(a)') 'convergence reached, best so far.'
+   else
+       write(6,'(a)') 'convergence reached.'
+   endif
+
+  enddo ! trial_i
+
+  write(6,*)
+  write(6,'(a)') 'Final results:'
+  write(6,'(a,i10)') 'the best maximum was found at maximization trial # ', trial_best_i
+  call unflatten  (coord_elec_vec_best, xold, ndim, nelec)
+  do elec_i = 1, nelec
+     write(6,'(a,i3, 3f)') 'electron # ',elec_i, xold (1:ndim, elec_i)
+  enddo ! elec_i
+  write(6,'(a,f)') 'wave function square = ', psi2_best
+
+ end subroutine maximize_psi2
+
+! ==============================================================================
+  function psi2_eval (coord_elec_vec)
+! ------------------------------------------------------------------------------
+! Description   : returns value of wave function square  for electron coordinates coord_elec
+!
+! Created       : J. Toulouse, 06 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  real(dp), intent(in) :: coord_elec_vec (ndim*nelec)
+
+! output
+  real(dp) :: psi2_eval
+
+! local
+  real(dp) d2o
+
+! begin
+  call unflatten  (coord_elec_vec, xold, ndim, nelec)
+  call hpsi (xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+  psi2_eval = (dexp(psijo)*psido)**2
+
+!  write(6,*) 'eold=',eold(1)
+
+  end function psi2_eval
+
+! ==============================================================================
+  function minus_psi2_eval (coord_elec_vec)
+! ------------------------------------------------------------------------------
+! Description   : returns  (- psi2) for minimization
+!
+! Created       : J. Toulouse, 08 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  real(dp), intent(in) :: coord_elec_vec (ndim*nelec)
+
+! output
+  real(dp) :: minus_psi2_eval
+
+  minus_psi2_eval = - psi2_eval (coord_elec_vec)
+
+  end function minus_psi2_eval
 
 end module psi_mod

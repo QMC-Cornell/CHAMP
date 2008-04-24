@@ -84,6 +84,9 @@ c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !     this is useful for orbital optimization
       if (ndetdn .eq. 0) then
         ndetdn = 1
+        do idet=1,ndet
+         iwdetdn(idet)=1
+        enddo
         write(6,'(a,i1)') 'Warning: no spin-down determinants, but ndetdn is reset to ',ndetdn
       endif
 

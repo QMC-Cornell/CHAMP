@@ -154,6 +154,7 @@ module optimization_mod
    write(6,'(a)') ' decrease_p_var= [bool] : decrease progressively proportion of variance (default=false)'
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
+   write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
    write(6,'(a)') 'end'
 
   case ('optimize')
@@ -273,6 +274,9 @@ module optimization_mod
 
   case ('do_add_diag_mult_exp')
    call get_next_value (do_add_diag_mult_exp)
+
+  case ('exp_opt_restrict')
+   call get_next_value (l_exp_opt_restrict)
 
   case ('end')
    exit
@@ -431,6 +435,7 @@ module optimization_mod
   write(6,'(a,i3)') ' Number of CSF parameters:       ', nparmcsf
   write(6,'(a,i3)') ' Number of orbital parameters:   ', param_orb_nb
   write(6,'(a,i3)') ' Number of exponent parameters:  ', param_exp_nb
+  write(6,'(a,i3)') 'Number of periodic jastrow parameters: ', param_pjas_nb
   write(6,'(a,i3)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i3)') ' Total number of parameters:     ', param_nb
   write(6,*)
@@ -506,22 +511,6 @@ module optimization_mod
    call die (lhere)
   end select
 
-! Print number of parameters to optimized
-  call object_provide ('nparmj')
-  call object_provide ('nparmcsf')
-  call object_provide ('param_orb_nb')
-  call object_provide ('param_exp_nb')
-  call object_provide ('param_geo_nb')
-  call object_provide ('param_nb')
-  write(6,*)
-  write(6,'(a,i3)') 'Number of Jastrow parameters:   ', nparmj
-  write(6,'(a,i3)') 'Number of CSF parameters:       ', nparmcsf
-  write(6,'(a,i3)') 'Number of orbital parameters:   ', param_orb_nb
-  write(6,'(a,i3)') 'Number of exponent parameters:  ', param_exp_nb
-  write(6,'(a,i3)') 'Number of periodic jastrow parameters: ', param_pjas_nb
-  write(6,'(a,i3)') 'Number of geometry parameters:  ', param_geo_nb
-  write(6,'(a,i3)') 'Total number of parameters:     ', param_nb
-  write(6,*)
 
 ! Nice printing
   write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent,',param_pjasen_nb, & 

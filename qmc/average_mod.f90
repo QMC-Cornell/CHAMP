@@ -15,14 +15,24 @@ module average_mod
   integer                      :: average_routines_nb = 0
   integer, allocatable         :: average_routines_index (:)
 
+  integer                      :: block_averages_defined_nb = 0
+  integer, allocatable         :: block_averages_defined_object_index (:)
+  integer, allocatable         :: block_averages_defined_object_bav_index (:)
+  integer                      :: block_averages_nb = 0
+  integer, allocatable         :: block_averages_object_index (:)
+  integer, allocatable         :: block_averages_object_bav_index (:)
+
   integer                      :: averages_defined_nb = 0
   integer, allocatable         :: averages_defined_object_index (:)
+  integer, allocatable         :: averages_defined_object_bav_index (:)
   integer, allocatable         :: averages_defined_object_av_index (:)
   integer                      :: averages_nb = 0
   integer, allocatable         :: averages_object_index (:)
+  integer, allocatable         :: averages_object_bav_index (:)
   integer, allocatable         :: averages_object_av_index (:)
   integer                      :: averages_walk_nb = 0
   integer, allocatable         :: averages_walk_object_index (:)
+  integer, allocatable         :: averages_walk_object_bav_index (:)
   integer, allocatable         :: averages_walk_object_av_index (:)
 
   integer                      :: variances_defined_nb = 0
@@ -49,9 +59,6 @@ module average_mod
   integer, allocatable         :: errors_object_av_index (:)
   integer, allocatable         :: errors_object_var_index (:)
   integer, allocatable         :: errors_object_err_index (:)
-  integer                      :: errors_walk_nb = 0
-  integer, allocatable         :: errors_walk_object_av_index (:)
-  integer, allocatable         :: errors_walk_object_err_index (:)
 
 ! Interfaces
 
@@ -157,7 +164,7 @@ module average_mod
 
 ! if routine already defined as average routine, do nothing
   do rtn_i = 1, average_routines_nb
-   if (routine_ind == average_routines_index (rtn_i) ) then
+   if (routine_ind == average_routines_index (rtn_i)) then
        return
    endif
   enddo
@@ -169,6 +176,136 @@ module average_mod
   write(6,'(4a)') trim(lhere),': ', trim(routine_name),' defined as average routine'
 
  end subroutine routine_average
+
+! ===================================================================================
+  subroutine object_block_average_define (object_name, object_bav_name)
+! -----------------------------------------------------------------------------------
+! Description   : define block average of object to be computed in MC iterations
+! Description   : store indexes of couple (object, block average)
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_name, object_bav_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_block_average_define'
+  integer object_ind, object_bav_ind, obj_i
+
+! begin
+
+! get index of object, catalogue it if necessary
+  call object_add_once_and_index (object_name, object_ind)
+
+! test if block average has already been defined through a global average
+  do obj_i = 1, averages_defined_nb
+   if (object_ind == averages_defined_object_index (obj_i)) then
+     write(6,'(6a)') trim(lhere), ': block average >'+object_bav_name+'< of object >'+object_name+'< has already been automatically defined though the corresponding global average.'
+     write(6,'(2a)') trim(lhere), ': To define the block average, object_block_average_define has to be placed before object_average_define.'
+     call die (lhere)
+   endif
+  enddo
+
+! get index of block average, catalogue it if necessary
+  call object_add_once_and_index (object_bav_name, object_bav_ind)
+
+! test if object and its block average are different
+  if (object_ind == object_bav_ind) then
+    call die (lhere, 'object >'+trim(objects(object_bav_ind)%name)+'< is defined as its own block average!')
+  endif
+
+! test if block average not already defined
+  do obj_i = 1, block_averages_defined_nb
+   if (object_bav_ind == block_averages_defined_object_bav_index (obj_i)) then
+    call die (lhere, 'block average object >'+trim(objects(object_bav_ind)%name)+'< defined more than once.')
+   endif
+  enddo
+
+  block_averages_defined_nb = block_averages_defined_nb + 1
+  call alloc ('block_averages_defined_object_index', block_averages_defined_object_index, block_averages_defined_nb)
+  call alloc ('block_averages_defined_object_bav_index', block_averages_defined_object_bav_index, block_averages_defined_nb)
+  block_averages_defined_object_index (block_averages_defined_nb) = object_ind
+  block_averages_defined_object_bav_index (block_averages_defined_nb) = object_bav_ind
+
+ end subroutine object_block_average_define
+
+! ===================================================================================
+  subroutine object_block_average_request (object_bav_name)
+! -----------------------------------------------------------------------------------
+! Description   : request calculation of block average object
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_bav_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_block_average_request'
+  integer object_bav_ind
+
+! begin
+
+! index of block average
+  object_bav_ind = object_index_or_die (object_bav_name)
+
+  call object_block_average_request_by_index (object_bav_ind)
+
+ end subroutine object_block_average_request
+
+! ===================================================================================
+  subroutine object_block_average_request_by_index (object_bav_ind)
+! -----------------------------------------------------------------------------------
+! Description   : request calculation of block average object by its index
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in) :: object_bav_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_block_average_request_by_index'
+  integer object_ind, obj_i
+  logical object_found
+
+! begin
+
+! test if object is a defined block average object
+  object_found = .false.
+  do obj_i = 1, block_averages_defined_nb
+   if (object_bav_ind == block_averages_defined_object_bav_index (obj_i)) then
+    object_found = .true.
+    object_ind = block_averages_defined_object_index (obj_i)
+    exit
+   endif
+  enddo
+  if (.not. object_found) then
+    call die (lhere, ': object >'+trim(objects(object_bav_ind)%name)+'< has never been defined as a block average.')
+  endif
+
+! do nothing if object already recorded for block average
+  do obj_i = 1, block_averages_nb
+   if (object_bav_ind == block_averages_object_bav_index (obj_i)) then
+     return
+   endif
+  enddo
+
+! add block average to the list of block averages
+  block_averages_nb = block_averages_nb + 1
+  call alloc ('block_averages_object_index', block_averages_object_index, block_averages_nb)
+  call alloc ('block_averages_object_bav_index', block_averages_object_bav_index, block_averages_nb)
+  block_averages_object_index (block_averages_nb) = object_ind
+  block_averages_object_bav_index (block_averages_nb) = object_bav_ind
+
+! invalidate block average
+  call object_invalidate_by_index (object_bav_ind)
+
+ end subroutine object_block_average_request_by_index
 
 ! ===================================================================================
   subroutine object_average_define (object_name, object_av_name)
@@ -184,14 +321,15 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_define_average'
-  integer object_ind, object_av_ind, obj_i
+  integer object_ind, object_bav_ind, object_av_ind, obj_i
+  logical block_average_found
 
 ! begin
 
-! index of object, catalogue object if necessary
+! index of object, catalogue it if necessary
   call object_add_once_and_index (object_name, object_ind)
 
-! index of average, catalogue object if necessary
+! index of average, catalogue it if necessary
   call object_add_once_and_index (object_av_name, object_av_ind)
 
 ! test if object and its average are different
@@ -201,20 +339,87 @@ module average_mod
 
 ! test if average not already defined
   do obj_i = 1, averages_defined_nb
-   if (object_av_ind == averages_defined_object_av_index (obj_i) ) then
+   if (object_av_ind == averages_defined_object_av_index (obj_i)) then
     call die (lhere, 'object average >'+trim(objects(object_av_ind)%name)+'< defined more than once.')
    endif
   enddo
 
+! block average !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! test if a corresponding block average is defined
+  block_average_found = .false.
+  do obj_i = 1, block_averages_defined_nb
+   if (object_ind == block_averages_defined_object_index (obj_i)) then
+     block_average_found = .true.
+     object_bav_ind = block_averages_defined_object_bav_index (obj_i)
+     exit
+   endif
+  enddo
+
+! if corresponding block average not found, add it as a new object and define as a block average
+  if (.not. block_average_found) then
+   call object_add_and_index (object_bav_ind)  
+   call object_block_average_define (object_name, objects(object_bav_ind)%name)
+  endif
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
   averages_defined_nb = averages_defined_nb + 1
   call alloc ('averages_defined_object_index', averages_defined_object_index, averages_defined_nb)
+  call alloc ('averages_defined_object_bav_index', averages_defined_object_bav_index, averages_defined_nb) ! block average
   call alloc ('averages_defined_object_av_index', averages_defined_object_av_index, averages_defined_nb)
   averages_defined_object_index (averages_defined_nb) = object_ind
+  averages_defined_object_bav_index (averages_defined_nb) = object_bav_ind  ! block average
   averages_defined_object_av_index (averages_defined_nb) = object_av_ind
 
 !  write(6,'(5a)') trim(lhere),': ', trim(objects(object_av_ind)%name),' is average of ',trim(objects(object_ind)%name)
 
   end subroutine object_average_define
+
+! ===================================================================================
+  subroutine object_average_define_from_block_average (object_bav_name, object_av_name)
+! -----------------------------------------------------------------------------------
+! Description   : define global average associated to a block average
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_bav_name, object_av_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_average_define_from_block_average'
+  integer  object_bav_ind, object_av_ind, obj_i
+  logical object_found
+
+! begin
+
+! index of block average, catalogue it if necessary
+  call object_add_once_and_index (object_bav_name, object_bav_ind)
+
+! index of average, catalogue it if necessary
+  call object_add_once_and_index (object_av_name, object_av_ind)
+
+! test if block average and average are different
+  if (object_bav_ind == object_av_ind) then
+    call die (lhere, 'block average >'+trim(objects(object_bav_ind)%name)+'< is identical to its associated global average!')
+  endif
+
+! test if average not already defined
+  do obj_i = 1, averages_defined_nb
+   if (object_av_ind == averages_defined_object_av_index (obj_i)) then
+    call die (lhere, 'average object >'+trim(objects(object_av_ind)%name)+'< defined more than once.')
+   endif
+  enddo
+
+  averages_defined_nb = averages_defined_nb + 1
+  call alloc ('averages_defined_object_index', averages_defined_object_index, averages_defined_nb)
+  call alloc ('averages_defined_object_bav_index', averages_defined_object_bav_index, averages_defined_nb)
+  call alloc ('averages_defined_object_av_index', averages_defined_object_av_index, averages_defined_nb)
+  averages_defined_object_index (averages_defined_nb) = 0 ! no object
+  averages_defined_object_bav_index (averages_defined_nb) = object_bav_ind
+  averages_defined_object_av_index (averages_defined_nb) = object_av_ind
+
+  end subroutine object_average_define_from_block_average
 
 ! ===================================================================================
   subroutine object_average_walk_define (object_name, object_av_name)
@@ -231,8 +436,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_define'
-  integer object_ind, object_av_ind
-  integer obj_i
+  integer object_ind, object_av_ind, obj_i
 
   call object_average_define (object_name, object_av_name)
 
@@ -255,7 +459,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_request'
-  integer object_ind, object_av_ind, obj_i
+  integer object_ind, object_bav_ind, object_av_ind, obj_i
   logical object_found
 
 ! begin
@@ -269,6 +473,7 @@ module average_mod
    if (object_av_ind == averages_defined_object_av_index (obj_i)) then
     object_found = .true.
     object_ind = averages_defined_object_index (obj_i)
+    object_bav_ind = averages_defined_object_bav_index (obj_i) ! block average
     exit
    endif
   enddo
@@ -283,7 +488,7 @@ module average_mod
    endif
   enddo
   do obj_i = 1, averages_walk_nb
-   if (object_av_ind == averages_walk_object_av_index (obj_i) ) then
+   if (object_av_ind == averages_walk_object_av_index (obj_i)) then
      return
    endif
   enddo
@@ -292,19 +497,28 @@ module average_mod
   if (.not. objects(object_ind)%walkers) then
    averages_nb = averages_nb + 1
    call alloc ('averages_object_index', averages_object_index, averages_nb)
+   call alloc ('averages_object_bav_index', averages_object_bav_index, averages_nb) ! block average
    call alloc ('averages_object_av_index', averages_object_av_index, averages_nb)
    averages_object_index (averages_nb) = object_ind
+   averages_object_bav_index (averages_nb) = object_bav_ind ! block average
    averages_object_av_index (averages_nb) = object_av_ind
   else
    averages_walk_nb = averages_walk_nb + 1
    call alloc ('averages_walk_object_index', averages_walk_object_index, averages_walk_nb)
+   call alloc ('averages_walk_object_bav_index', averages_walk_object_bav_index, averages_walk_nb)
    call alloc ('averages_walk_object_av_index', averages_walk_object_av_index, averages_walk_nb)
    averages_walk_object_index (averages_walk_nb) = object_ind
+   averages_walk_object_bav_index (averages_walk_nb) = object_bav_ind ! block average
    averages_walk_object_av_index (averages_walk_nb) = object_av_ind
   endif
 
 ! invalidate average
   call object_invalidate_by_index (object_av_ind)
+
+! request corresponding block average, except if block average is an independent object or walk average
+  if (object_ind /= 0 .and. .not. objects(object_ind)%walkers) then
+   call object_block_average_request_by_index (object_bav_ind)
+  endif
 
  end subroutine object_average_request
 
@@ -402,8 +616,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_variance_request_by_index'
-  integer object_av_ind
-  integer obj_i
+  integer object_av_ind, obj_i
   logical object_found
 
 ! begin
@@ -468,7 +681,7 @@ module average_mod
 
 ! test if covariance not already defined
   do obj_i = 1, covariances_defined_nb
-   if (object_covar_ind == covariances_defined_object_covar_index (obj_i) ) then
+   if (object_covar_ind == covariances_defined_object_covar_index (obj_i)) then
     call die (lhere, 'covariance object >'+trim(objects(object_covar_ind)%name)+'< defined more than once.')
    endif
   enddo
@@ -562,13 +775,13 @@ module average_mod
 
 ! begin
 
-! index of object, catalogue object if necessary
+! index of average, catalogue object if necessary
   call object_add_once_and_index (object_av_name, object_av_ind)
 
-! index of average, catalogue object if necessary
+! index of error, catalogue object if necessary
   call object_add_once_and_index (object_err_name, object_err_ind)
 
-! test if object and its average are different
+! test if average and its error are different
   if (object_av_ind == object_err_ind) then
     call die (lhere, 'object >'+trim(objects(object_av_ind)%name)+'< is defined as its own object error!')
   endif
@@ -604,7 +817,7 @@ module average_mod
   errors_defined_object_var_index (errors_defined_nb) = object_var_ind
   errors_defined_object_err_index (errors_defined_nb) = object_err_ind
 
- end subroutine object_error_define
+  end subroutine object_error_define
 
 ! ===================================================================================
   subroutine object_error_define_from_variance (object_var_name, object_err_name)
@@ -620,8 +833,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_define_from_variance'
-  integer  object_var_ind, object_err_ind
-  integer obj_i
+  integer  object_var_ind, object_err_ind, obj_i
   logical variance_found
 
 ! begin
@@ -668,8 +880,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_request'
-  integer object_av_ind, object_var_ind, object_err_ind
-  integer obj_i
+  integer object_av_ind, object_var_ind, object_err_ind, obj_i
   logical object_found
 
 ! begin
@@ -848,7 +1059,7 @@ module average_mod
      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
      write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !   test on dimensions
@@ -960,7 +1171,7 @@ module average_mod
      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
      write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !   test on dimensions
@@ -973,7 +1184,7 @@ module average_mod
      write(6,*) trim(lhere),': dimensions of object', trim(objects(object_ind)%name),' are ', dim1, dim2
      write(6,*) trim(lhere),': dimensions of object ',trim(objects(object_av_ind)%name),' are ', dim_av1, dim_av2
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !  initialization
@@ -1029,12 +1240,482 @@ module average_mod
      objects(object_ind)%sum_blk_double_2 = objects(object_ind)%sum_blk_double_2 + objects(object_ind)%sum_double_2/nstep_total
 
 !    calculate average
-      objects(object_av_ind)%pointer_double_2 = objects(object_ind)%sum_blk_double_2 / block_iterations_nb
+     objects(object_av_ind)%pointer_double_2 = objects(object_ind)%sum_blk_double_2 / block_iterations_nb
      call object_modified_by_index (object_av_ind)
 
    endif
 
  end subroutine object_average_by_index_double_2
+
+! ===================================================================================
+  subroutine object_block_average_by_index_double_0 (object_ind, object_bav_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate block average of object
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_ind, object_bav_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_block_average_by_index_double_0'
+  character(len=max_string_len_type)   :: object_type, object_bav_type
+  integer ierr
+  real(dp) collect
+
+! begin
+
+! only for first iteration
+  if (step_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_ind)
+    call object_associated_or_die_by_index (object_bav_ind)
+
+!   test on type
+    object_type = objects(object_ind)%type
+    object_bav_type = objects(object_bav_ind)%type
+
+    if (object_type /= object_bav_type) then
+     write(6,'(5a)') trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
+     write(6,'(5a)') trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is ', object_bav_type
+     write(6,'(2a)') trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+  endif ! first iteration
+
+! invalidate by default the block average
+  call object_invalidate_by_index (object_bav_ind)
+
+! reinitialization of sum for each block
+  if (mod(step_iterations_nb - 1, nstep) == 0) then
+     objects(object_ind)%sum_double_0 = 0.d0
+  endif
+
+! at each step:
+
+! for one-electron move version
+!  if (index (trim(mode), 'mov1') /= 0) then
+  objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + objects(object_ind)%pointer_double_0
+
+! for all-electron move version
+!   else
+!   objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + prob_acc*objects(object_ind)%pointer_double_0 + prob_rej*objects(object_ind)%previous_double_0
+!   write(6,*) 'objects(object_ind)%sum_double_0=',objects(object_ind)%sum_double_0
+!   objects(object_ind)%previous_double_0 = objects(object_ind)%pointer_double_0
+
+!  endif
+
+!  at the end of each block
+   if (mod(step_iterations_nb, nstep) == 0) then
+
+# if defined (MPI)
+!    sum values from all processes
+     call mpi_allreduce(objects(object_ind)%sum_double_0,collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     if (ierr /= 0) then
+        call die (lhere, 'error in mpi_allreduce')
+     endif
+     objects(object_ind)%sum_double_0 = collect
+# endif
+
+!    calculate block average
+     objects(object_bav_ind)%pointer_double_0  = objects(object_ind)%sum_double_0 / nstep_total
+     call object_modified_by_index (object_bav_ind)
+
+   endif
+
+ end subroutine object_block_average_by_index_double_0
+
+! ===================================================================================
+  subroutine object_block_average_by_index_double_1 (object_ind, object_bav_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate block average of object
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_ind, object_bav_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_block_average_by_index_double_1'
+  character(len=max_string_len_type)   :: object_type, object_bav_type
+  integer dim1, dim_bav1, ierr
+  real(dp), allocatable :: collect(:)
+
+! begin
+
+! only for first iteration
+  if (step_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_ind)
+    call object_associated_or_die_by_index (object_bav_ind)
+
+!   test on type
+    object_type = objects(object_ind)%type
+    object_bav_type = objects(object_bav_ind)%type
+
+    if (object_type /= object_bav_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is ', object_bav_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim1 = objects(object_ind)%dimensions(1)
+    dim_bav1 = objects(object_bav_ind)%dimensions(1)
+
+    if (dim1 /= dim_bav1) then
+     write(6,'(4a,i)') trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
+     write(6,'(4a,i)') trim(lhere),': dimension of object ',trim(objects(object_bav_ind)%name),' is ', dim_bav1
+     write(6,'(2a)') trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!  initialization
+   call alloc ('objects(object_ind)%sum_double_1', objects(object_ind)%sum_double_1, dim1)
+
+! for all-electron move version
+!   if (index (trim(mode), 'mov1') == 0 ) then
+!       call alloc ('objects(object_ind)%previous_double_1', objects(object_ind)%previous_double_1, dim1)
+!   endif
+
+  endif ! first iteration
+
+! invalidate by default the block average
+  call object_invalidate_by_index (object_bav_ind)
+
+! reinitialization of sum for each block
+  if (mod(step_iterations_nb - 1, nstep) == 0) then
+     objects(object_ind)%sum_double_1 = 0.d0
+  endif
+
+! at each step
+
+! for one-electron move version
+!  if (index (trim(mode), 'mov1') /= 0) then
+  objects(object_ind)%sum_double_1 = objects(object_ind)%sum_double_1 + objects(object_ind)%pointer_double_1
+
+! for all-electron move version
+!   else
+!   objects(object_ind)%sum_double_1 = objects(object_ind)%sum_double_1 + prob_acc*objects(object_ind)%pointer_double_1 + prob_rej*objects(object_ind)%previous_double_1
+!   objects(object_ind)%previous_double_1 = objects(object_ind)%pointer_double_1
+!
+!  endif
+
+!  at the end of each block
+   if (mod(step_iterations_nb, nstep) == 0) then
+
+# if defined (MPI)
+!    sum values from all processes
+     call alloc ('collect', collect, objects(object_ind)%dimensions(1))
+     call mpi_allreduce(objects(object_ind)%sum_double_1,collect,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     if (ierr /= 0) then
+        call die (lhere, 'error in mpi_allreduce')
+     endif
+     objects(object_ind)%sum_double_1 (:) = collect (:)
+# endif
+
+!    calculate block average
+     objects(object_bav_ind)%pointer_double_1 = objects(object_ind)%sum_double_1 / nstep_total
+     call object_modified_by_index (object_bav_ind)
+
+   endif
+
+ end subroutine object_block_average_by_index_double_1
+
+! ===================================================================================
+  subroutine object_block_average_by_index_double_2 (object_ind, object_bav_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate block average of object
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_ind, object_bav_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_block_average_by_index_double_2'
+  character(len=max_string_len_type)   :: object_type, object_bav_type
+  integer dim1, dim_bav1, dim2, dim_bav2, ierr
+  real(dp), allocatable :: collect(:,:)
+
+! begin
+
+! only for first iteration
+  if (step_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_ind)
+    call object_associated_or_die_by_index (object_bav_ind)
+
+!   test on type
+    object_type = objects(object_ind)%type
+    object_bav_type = objects(object_bav_ind)%type
+
+    if (object_type /= object_bav_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is ', object_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is ', object_bav_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim1 = objects(object_ind)%dimensions(1)
+    dim_bav1 = objects(object_bav_ind)%dimensions(1)
+    dim2 = objects(object_ind)%dimensions(2)
+    dim_bav2 = objects(object_bav_ind)%dimensions(2)
+
+    if (dim1 /= dim_bav1 .or. dim2 /= dim_bav2) then
+     write(6,*) trim(lhere),': dimensions of object', trim(objects(object_ind)%name),' are ', dim1, dim2
+     write(6,*) trim(lhere),': dimensions of object ',trim(objects(object_bav_ind)%name),' are ', dim_bav1, dim_bav2
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!  initialization
+   call alloc ('objects(object_ind)%sum_double_2', objects(object_ind)%sum_double_2, dim1, dim2)
+
+! for all-electron move version
+!   if (index (trim(mode), 'mov1') == 0 ) then
+!       call alloc ('objects(object_ind)%previous_double_2', objects(object_ind)%previous_double_2, dim1, dim2)
+!   endif
+
+  endif ! first iteration
+
+! invalidate by default the average
+  call object_invalidate_by_index (object_bav_ind)
+
+! reinitialization of sum for each block
+  if (mod(step_iterations_nb - 1, nstep) == 0) then
+     objects(object_ind)%sum_double_2 = 0.d0
+  endif
+
+! at each step
+
+! for one-electron move version
+!  if (index (trim(mode), 'mov1') /= 0) then
+  objects(object_ind)%sum_double_2 = objects(object_ind)%sum_double_2 + objects(object_ind)%pointer_double_2
+
+! for all-electron move version
+!   else
+!   objects(object_ind)%sum_double_2 = objects(object_ind)%sum_double_2 + prob_acc*objects(object_ind)%pointer_double_2 + prob_rej*objects(object_ind)%previous_double_2
+!   objects(object_ind)%previous_double_2 = objects(object_ind)%pointer_double_2
+!
+!  endif
+
+!  at the end of each block
+   if (mod(step_iterations_nb, nstep) == 0) then
+
+# if defined (MPI)
+!    sum values from all processes
+     call alloc ('collect', collect,  objects(object_ind)%dimensions(1),  objects(object_ind)%dimensions(2))
+     call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     if (ierr /= 0) then
+        call die (lhere, 'error in mpi_allreduce')
+     endif
+     objects(object_ind)%sum_double_2 (:,:) = collect (:,:)
+# endif
+
+!    calculate average
+     objects(object_bav_ind)%pointer_double_2 = objects(object_ind)%sum_double_2 / nstep_total
+     call object_modified_by_index (object_bav_ind)
+
+   endif
+
+ end subroutine object_block_average_by_index_double_2
+
+! ===================================================================================
+  subroutine object_global_average_by_index_double_0 (object_bav_ind, object_av_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate global average of object over all blocks
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_bav_ind, object_av_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_global_average_by_index_double_0'
+  character(len=max_string_len_type)   :: object_bav_type, object_av_type
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1 ) then
+
+!   test association
+    call object_associated_or_die_by_index (object_bav_ind)
+    call object_associated_or_die_by_index (object_av_ind)
+
+!   test on type
+    object_bav_type = objects(object_bav_ind)%type
+    object_av_type = objects(object_av_ind)%type
+
+    if (object_bav_type /= object_av_type) then
+     write(6,'(5a)') trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is ', object_bav_type
+     write(6,'(5a)') trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+     write(6,'(2a)') trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   initialization
+    objects(object_bav_ind)%sum_blk_double_0 = 0.d0
+
+  endif ! first block
+
+! sum over blocks
+  objects(object_bav_ind)%sum_blk_double_0 = objects(object_bav_ind)%sum_blk_double_0 + objects(object_bav_ind)%pointer_double_0
+
+! calculate global average
+  objects(object_av_ind)%pointer_double_0  = objects(object_bav_ind)%sum_blk_double_0 / block_iterations_nb
+  call object_modified_by_index (object_av_ind)
+
+ end subroutine object_global_average_by_index_double_0
+
+! ===================================================================================
+  subroutine object_global_average_by_index_double_1 (object_bav_ind, object_av_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate global average of object over all blocks
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) :: object_bav_ind, object_av_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_global_average_by_index_double_1'
+  character(len=max_string_len_type)   :: object_bav_type, object_av_type
+  integer dim_bav1, dim_av1
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_bav_ind)
+    call object_associated_or_die_by_index (object_av_ind)
+
+!   test on type
+    object_bav_type = objects(object_bav_ind)%type
+    object_av_type = objects(object_av_ind)%type
+
+    if (object_bav_type /= object_av_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is ', object_bav_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_bav1 = objects(object_bav_ind)%dimensions(1)
+    dim_av1 = objects(object_av_ind)%dimensions(1)
+
+    if (dim_bav1 /= dim_av1) then
+     write(6,'(4a,i)') trim(lhere),': dimension of object', trim(objects(object_bav_ind)%name),' is ', dim_bav1
+     write(6,'(4a,i)') trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
+     write(6,'(2a)') trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!  initialization
+   call alloc ('objects(object_bav_ind)%sum_blk_double_1', objects(object_bav_ind)%sum_blk_double_1, objects(object_bav_ind)%dimensions(1))
+   objects(object_bav_ind)%sum_blk_double_1 = 0.d0
+
+  endif ! first block
+
+! sum over blocks
+  objects(object_bav_ind)%sum_blk_double_1 = objects(object_bav_ind)%sum_blk_double_1 + objects(object_bav_ind)%pointer_double_1
+
+! calculate global average
+  objects(object_av_ind)%pointer_double_1 = objects(object_bav_ind)%sum_blk_double_1 / block_iterations_nb
+  call object_modified_by_index (object_av_ind)
+
+ end subroutine object_global_average_by_index_double_1
+
+! ===================================================================================
+  subroutine object_global_average_by_index_double_2 (object_bav_ind, object_av_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate global average of object over all blocks
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! input
+  integer, intent(in) ::  object_bav_ind, object_av_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_global_average_by_index_double_2'
+  character(len=max_string_len_type)   :: object_bav_type, object_av_type
+  integer dim_bav1, dim_av1, dim_bav2, dim_av2
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_bav_ind)
+    call object_associated_or_die_by_index (object_av_ind)
+
+!   test on type
+    object_bav_type = objects(object_bav_ind)%type
+    object_av_type = objects(object_av_ind)%type
+
+    if (object_bav_type /= object_av_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is ', object_bav_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_bav1 = objects(object_bav_ind)%dimensions(1)
+    dim_av1 = objects(object_av_ind)%dimensions(1)
+    dim_bav2 = objects(object_bav_ind)%dimensions(2)
+    dim_av2 = objects(object_av_ind)%dimensions(2)
+
+    if (dim_bav1 /= dim_av1 .or. dim_bav2 /= dim_av2) then
+     write(6,*) trim(lhere),': dimensions of object', trim(objects(object_bav_ind)%name),' are ', dim_bav1, dim_bav2
+     write(6,*) trim(lhere),': dimensions of object ',trim(objects(object_av_ind)%name),' are ', dim_av1, dim_av2
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   initialization
+    call alloc ('objects(object_bav_ind)%sum_blk_double_2', objects(object_bav_ind)%sum_blk_double_2,  objects(object_bav_ind)%dimensions(1), objects(object_bav_ind)%dimensions(2))
+    objects(object_bav_ind)%sum_blk_double_2 = 0.d0
+
+  endif ! first block
+
+! sum over blocks
+  objects(object_bav_ind)%sum_blk_double_2 = objects(object_bav_ind)%sum_blk_double_2 + objects(object_bav_ind)%pointer_double_2
+
+! calculate global average
+  objects(object_av_ind)%pointer_double_2 = objects(object_bav_ind)%sum_blk_double_2 / block_iterations_nb
+  call object_modified_by_index (object_av_ind)
+
+ end subroutine object_global_average_by_index_double_2
 
 ! ===================================================================================
   subroutine object_variance_by_index_double_0 (object_av_ind, object_var_ind)
@@ -1725,9 +2406,7 @@ module average_mod
 
    endif ! first block
 
-
 !  calculate error
-!   write (6,*) 'objects(object_var_ind)%pointer_double_1=',objects(object_var_ind)%pointer_double_1
    objects(object_err_ind)%pointer_double_1 = dsqrt(objects(object_var_ind)%pointer_double_1)
    call object_modified_by_index (object_err_ind)
 
@@ -1770,7 +2449,7 @@ module average_mod
      write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
      write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
      write(6,*) trim(lhere),': they should be identical'
-     call die(lhere)
+     call die (lhere)
     endif
 
 !   test on dimensions
@@ -1795,10 +2474,9 @@ module average_mod
  end subroutine object_error_by_index_double_2
 
 ! ===================================================================================
-  subroutine object_average_walk_step_by_index_double_0 (object_ind, object_av_ind)
+  subroutine object_average_walk_step_by_index_double_0 (object_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate average of object over MC iterations
-! Warning       : matching of types not tested
 !
 ! Created       : J. Toulouse, 12 Nov 2006
 ! -----------------------------------------------------------------------------------
@@ -1806,7 +2484,7 @@ module average_mod
   include 'commons.h'
 
 ! input
-  integer, intent(in) :: object_ind, object_av_ind
+  integer, intent(in) :: object_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_0'
@@ -1816,17 +2494,6 @@ module average_mod
 
 ! only for first iteration
   if (step_iterations_nb == 1) then
-
-!   test association
-    call object_associated_or_die_by_index (object_ind)
-    call object_associated_or_die_by_index (object_av_ind)
-
-!   test dimensions
-    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) ) then
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
-      call die (lhere)
-    endif
 
 !   initialization of sum
     objects(object_ind)%sum_double_0 = 0.d0
@@ -1841,10 +2508,9 @@ module average_mod
  end subroutine object_average_walk_step_by_index_double_0
 
 ! ===================================================================================
-  subroutine object_average_walk_step_by_index_double_1 (object_ind, object_av_ind)
+  subroutine object_average_walk_step_by_index_double_1 (object_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate average of object over MC iterations
-! Warning       : matching of types not tested
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! -----------------------------------------------------------------------------------
@@ -1852,7 +2518,7 @@ module average_mod
   include 'commons.h'
 
 ! input
-  integer, intent(in) :: object_ind, object_av_ind
+  integer, intent(in) :: object_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_1'
@@ -1862,17 +2528,6 @@ module average_mod
 
 ! only for first iteration
   if (step_iterations_nb == 1) then
-
-!   test association
-    call object_associated_or_die_by_index (object_ind)
-    call object_associated_or_die_by_index (object_av_ind)
-
-!   test dimensions
-    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) ) then
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
-      call die (lhere)
-    endif
 
 !   initialization
     call require ('objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
@@ -1889,10 +2544,9 @@ module average_mod
  end subroutine object_average_walk_step_by_index_double_1
 
 ! ===================================================================================
-  subroutine object_average_walk_step_by_index_double_2 (object_ind, object_av_ind)
+  subroutine object_average_walk_step_by_index_double_2 (object_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate average of object over MC iterations
-! Warning       : matching of types not tested
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! -----------------------------------------------------------------------------------
@@ -1900,7 +2554,7 @@ module average_mod
   include 'commons.h'
 
 ! input
-  integer, intent(in) :: object_ind, object_av_ind
+  integer, intent(in) :: object_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_2'
@@ -1910,17 +2564,6 @@ module average_mod
 
 ! only for first iteration
   if (step_iterations_nb == 1) then
-
-!   test association
-    call object_associated_or_die_by_index (object_ind)
-    call object_associated_or_die_by_index (object_av_ind)
-
-!   test dimensions
-    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) ) then
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
-      call die (lhere)
-    endif
 
 !   initialization
     call require ('objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
@@ -1935,11 +2578,10 @@ module average_mod
    objects(object_ind)%sum_double_2 (:,:) = objects(object_ind)%sum_double_2 (:,:) + objects(object_ind)%pointer_double_3 (:,:,walk_i) * walker_weights(walk_i)
   enddo
 
-
  end subroutine object_average_walk_step_by_index_double_2
 
 ! ===================================================================================
-  subroutine object_average_walk_block_by_index_double_0 (object_ind, object_av_ind)
+  subroutine object_average_walk_block_by_index_double_0 (object_ind, object_bav_ind, object_av_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate average of object over MC iterations
 !
@@ -1949,7 +2591,7 @@ module average_mod
   include 'commons.h'
 
 ! input
-  integer, intent(in) :: object_ind, object_av_ind
+  integer, intent(in) :: object_ind, object_bav_ind, object_av_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_0'
@@ -1958,24 +2600,42 @@ module average_mod
 
 ! begin
 
-!  initialization for first block
-   if (block_iterations_nb == 1 ) then
-     objects(object_ind)%sum_blk_double_0 = 0.d0
-   endif
+! for first block
+  if (block_iterations_nb == 1 ) then
+
+!   test association
+    call object_associated_or_die_by_index (object_ind)
+    call object_associated_or_die_by_index (object_bav_ind)
+    call object_associated_or_die_by_index (object_av_ind)
+
+!   test dimensions
+    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) .or. size(objects(object_bav_ind)%dimensions) /= size(objects(object_av_ind)%dimensions)) then
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
+      call die (lhere)
+    endif
+
+!   initialization for first block
+    objects(object_ind)%sum_blk_double_0 = 0.d0
+  endif
 
 # if defined (MPI)
 ! sum values from all processes
   call mpi_allreduce(objects(object_ind)%sum_double_0,collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-   if (ierr /= 0) then
-      call die (lhere, 'error in mpi_allreduce')
-   endif
+  if (ierr /= 0) then
+     call die (lhere, 'error in mpi_allreduce')
+  endif
   objects(object_ind)%sum_double_0 = collect
 # endif
 
-  objects(object_ind)%sum_blk_double_0 = objects(object_ind)%sum_blk_double_0 + objects(object_ind)%sum_double_0
+! calculate block average
+  objects(object_bav_ind)%pointer_double_0 = objects(object_ind)%sum_double_0 / walker_weights_sum_block
+  call object_modified_by_index (object_bav_ind)
 
 ! calculate average
-  objects(object_av_ind)%pointer_double_0 = objects(object_ind)%sum_blk_double_0/walker_weights_sum
+  objects(object_ind)%sum_blk_double_0 = objects(object_ind)%sum_blk_double_0 + objects(object_ind)%sum_double_0
+  objects(object_av_ind)%pointer_double_0 = objects(object_ind)%sum_blk_double_0 / walker_weights_sum
   call object_modified_by_index (object_av_ind)
 
 ! reinitialization of sum for each block
@@ -1984,7 +2644,7 @@ module average_mod
  end subroutine object_average_walk_block_by_index_double_0
 
 ! ===================================================================================
-  subroutine object_average_walk_block_by_index_double_1 (object_ind, object_av_ind)
+  subroutine object_average_walk_block_by_index_double_1 (object_ind, object_bav_ind, object_av_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate average of object over MC iterations
 !
@@ -1994,7 +2654,7 @@ module average_mod
   include 'commons.h'
 
 ! input
-  integer, intent(in) :: object_ind, object_av_ind
+  integer, intent(in) :: object_ind, object_bav_ind, object_av_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_1'
@@ -2003,8 +2663,23 @@ module average_mod
 
 ! begin
 
-! initialization for first block
+! for first block
   if (block_iterations_nb == 1 ) then
+
+!   test association
+    call object_associated_or_die_by_index (object_ind)
+    call object_associated_or_die_by_index (object_bav_ind)
+    call object_associated_or_die_by_index (object_av_ind)
+
+!   test dimensions
+    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) .or. size(objects(object_bav_ind)%dimensions) /= size(objects(object_av_ind)%dimensions)) then
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
+      call die (lhere)
+    endif
+
+!   initialization for first block
     call alloc ('objects(object_ind)%sum_blk_double_1', objects(object_ind)%sum_blk_double_1, objects(object_ind)%dimensions(1))
     objects(object_ind)%sum_blk_double_1 (:) = 0.d0
   endif
@@ -2019,10 +2694,14 @@ module average_mod
     objects(object_ind)%sum_double_1 (:) = collect (:)
 # endif
 
-  objects(object_ind)%sum_blk_double_1 (:) = objects(object_ind)%sum_blk_double_1 (:) + objects(object_ind)%sum_double_1 (:)
+! calculate block average
+  objects(object_bav_ind)%pointer_double_1 = objects(object_ind)%sum_double_1 / walker_weights_sum_block
+  call object_modified_by_index (object_bav_ind)
 
-! calculate average
-  objects(object_av_ind)%pointer_double_1 (:) = objects(object_ind)%sum_blk_double_1 (:)/walker_weights_sum
+
+! calculate global average
+  objects(object_ind)%sum_blk_double_1 (:) = objects(object_ind)%sum_blk_double_1 (:) + objects(object_ind)%sum_double_1 (:)
+  objects(object_av_ind)%pointer_double_1 (:) = objects(object_ind)%sum_blk_double_1 (:) / walker_weights_sum
   call object_modified_by_index (object_av_ind)
 
 ! reinitialization of sum for each block
@@ -2031,7 +2710,7 @@ module average_mod
  end subroutine object_average_walk_block_by_index_double_1
 
 ! ===================================================================================
-  subroutine object_average_walk_block_by_index_double_2 (object_ind, object_av_ind)
+  subroutine object_average_walk_block_by_index_double_2 (object_ind, object_bav_ind, object_av_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate average of object over MC iterations
 !
@@ -2041,7 +2720,7 @@ module average_mod
   include 'commons.h'
 
 ! input
-  integer, intent(in) :: object_ind, object_av_ind
+  integer, intent(in) :: object_ind, object_bav_ind, object_av_ind
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_2'
@@ -2050,14 +2729,28 @@ module average_mod
 
 ! begin
 
-!  initialization for first block
+!  for first block
    if (block_iterations_nb == 1 ) then
+
+!   test association
+    call object_associated_or_die_by_index (object_ind)
+    call object_associated_or_die_by_index (object_av_ind)
+
+!   test dimensions
+    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) .or. size(objects(object_bav_ind)%dimensions) /= size(objects(object_av_ind)%dimensions)) then
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
+      call die (lhere)
+    endif
+
+!  initialization for first block
      call alloc ('objects(object_ind)%sum_blk_double_2', objects(object_ind)%sum_blk_double_2, objects(object_ind)%dimensions(1),objects(object_ind)%dimensions(2))
      objects(object_ind)%sum_blk_double_2 (:,:) = 0.d0
    endif
 
 # if defined (MPI)
-!    sum values from all processes
+!   sum values from all processes
     call alloc ('collect', collect, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
     call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
@@ -2066,10 +2759,13 @@ module average_mod
      objects(object_ind)%sum_double_2 (:,:) = collect (:,:)
 # endif
 
-   objects(object_ind)%sum_blk_double_2 (:,:) = objects(object_ind)%sum_blk_double_2 (:,:) + objects(object_ind)%sum_double_2 (:,:)
+! calculate block average
+  objects(object_bav_ind)%pointer_double_2 = objects(object_ind)%sum_double_2 / walker_weights_sum_block
+  call object_modified_by_index (object_bav_ind)
 
 !  calculate average
-   objects(object_av_ind)%pointer_double_2 (:,:) = objects(object_ind)%sum_blk_double_2 (:,:)/walker_weights_sum
+   objects(object_ind)%sum_blk_double_2 (:,:) = objects(object_ind)%sum_blk_double_2 (:,:) + objects(object_ind)%sum_double_2 (:,:)
+   objects(object_av_ind)%pointer_double_2 (:,:) = objects(object_ind)%sum_blk_double_2 (:,:) / walker_weights_sum
    call object_modified_by_index (object_av_ind)
 
 ! reinitialization of sum for each block
@@ -2095,7 +2791,11 @@ module average_mod
   if (averages_nb > 0 .or. averages_walk_nb > 0) then
    write(6,'(a)') 'The following averages will be calculated:'
    do ind = 1, averages_nb
-    write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
+    if (averages_object_index (ind) /= 0) then
+     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
+    else
+     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average associated with block average ', trim(objects(averages_object_bav_index (ind))%name)
+    endif
    enddo
    do ind = 1, averages_walk_nb
     write(6,'(4a)') '- ', objects(averages_walk_object_av_index (ind))%name,' = average of ', trim(objects(averages_walk_object_index (ind))%name)
@@ -2125,13 +2825,122 @@ module average_mod
     if (errors_object_av_index (ind) /= 0) then
      write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error of average ', trim(objects(errors_object_av_index (ind))%name)
     else
-     write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error associated to variance ', trim(objects(errors_object_var_index (ind))%name)
+     write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error associated with variance ', trim(objects(errors_object_var_index (ind))%name)
     endif
    enddo
   endif
   write(6,*)
 
  end subroutine print_list_of_averages_and_errors
+
+! ===================================================================================
+  subroutine compute_block_averages
+! -----------------------------------------------------------------------------------
+! Description   : compute block averages in MC iterations
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'compute_block_averages'
+  integer ind
+  integer object_ind, object_bav_ind
+  character(len=max_string_len_type) object_type
+
+! begin
+
+! block averages defined by objects
+  do ind = 1, block_averages_nb
+
+    object_ind = block_averages_object_index (ind)
+    object_bav_ind = block_averages_object_bav_index (ind)
+
+    call object_provide_by_index (object_ind)
+
+    if (objects(object_ind)%walkers) then
+      call die (lhere, 'object has been marked as an array over walkers')
+    endif
+
+    object_type = objects(object_ind)%type
+
+    if (trim(object_type) == '') then
+      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      call die (lhere)
+    endif
+
+    if (trim(object_type) == 'double_0') then
+     call object_associate_by_index_double_0 (object_bav_ind)
+     call object_block_average_by_index_double_0 (object_ind, object_bav_ind)
+
+    elseif (trim(object_type) == 'double_1') then
+     call object_associate_by_index_double_1 (object_bav_ind, objects(object_ind)%dimensions(1))
+     call object_block_average_by_index_double_1 (object_ind, object_bav_ind)
+
+    elseif (trim(object_type) == 'double_2') then
+     call object_associate_by_index_double_2 (object_bav_ind, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
+     call object_block_average_by_index_double_2 (object_ind, object_bav_ind)
+
+    else
+     call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
+    endif
+
+  enddo ! ind
+
+ end subroutine compute_block_averages
+
+! ===================================================================================
+  subroutine compute_global_averages
+! -----------------------------------------------------------------------------------
+! Description   : compute global averages over all blocks
+!
+! Created       : J. Toulouse, 19 Apr 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'compute_global_averages'
+  integer ind, object_bav_ind, object_av_ind
+  character(len=max_string_len_type) object_type
+
+! begin
+
+! averages defined by objects
+  do ind = 1, averages_nb
+
+    object_bav_ind = averages_object_bav_index (ind)
+    object_av_ind = averages_object_av_index (ind)
+
+    call object_provide_by_index (object_bav_ind)
+
+    object_type = objects(object_bav_ind)%type
+
+    if (trim(object_type) == '') then
+      write(6,*) trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      call die (lhere)
+    endif
+
+     if (trim(object_type) == 'double_0') then
+      call object_global_average_by_index_double_0 (object_bav_ind, object_av_ind)
+
+     elseif (trim(object_type) == 'double_1') then
+      call object_global_average_by_index_double_1 (object_bav_ind, object_av_ind)
+
+     elseif (trim(object_type) == 'double_2') then
+      call object_global_average_by_index_double_2 (object_bav_ind, object_av_ind)
+
+     else
+      call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
+
+     endif
+
+  enddo ! ind
+
+ end subroutine compute_global_averages
 
 ! ===================================================================================
   subroutine compute_averages
@@ -2149,14 +2958,6 @@ module average_mod
   character(len=max_string_len_type) object_type
 
 ! begin
-!  write(6,*) trim(lhere),': entering'
-
-! this routine must be called in the course of the MC iterations
-!  if (step_iterations_nb <= 0) then
-!    write(6,*) trim(lhere),': step_iterations_nb=',step_iterations_nb,' <= 0'
-!    write(6,*) trim(lhere),': this routine must be called in the MC iterations'
-!    call die (lhere)
-!  endif
 
 ! averages defined by objects
   do ind = 1, averages_nb
@@ -2346,14 +3147,12 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_errors'
-  integer ind
-  integer object_av_ind, object_var_ind, object_err_ind
+  integer ind, object_var_ind, object_err_ind
   character(len=max_string_len_type) object_var_type
 
 ! begin
   do ind = 1, errors_nb
 
-    object_av_ind = errors_object_av_index (ind)
     object_var_ind = errors_object_var_index (ind)
     object_err_ind = errors_object_err_index (ind)
 
@@ -2402,7 +3201,7 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_averages_walk_step'
   integer ind, rtn_i
-  integer object_ind, object_av_ind
+  integer object_ind
   character(len=max_string_len_type) object_type
 
 ! begin
@@ -2421,7 +3220,6 @@ module average_mod
   do ind = 1, averages_walk_nb
 
     object_ind = averages_walk_object_index (ind)
-    object_av_ind = averages_walk_object_av_index (ind)
 
     call object_provide_by_index (object_ind)
 
@@ -2439,17 +3237,16 @@ module average_mod
     endif
 
      if (trim(object_type) == 'double_1') then
-      call object_average_walk_step_by_index_double_0 (object_ind, object_av_ind)
+      call object_average_walk_step_by_index_double_0 (object_ind)
 
      elseif (trim(object_type) == 'double_2') then
-      call object_average_walk_step_by_index_double_1 (object_ind, object_av_ind)
+      call object_average_walk_step_by_index_double_1 (object_ind)
 
      elseif (trim(object_type) == 'double_3') then
-      call object_average_walk_step_by_index_double_2 (object_ind, object_av_ind)
+      call object_average_walk_step_by_index_double_2 (object_ind)
 
      else
-      write(6,*) trim(lhere),': object type ',trim(object_type),' not handled'
-      call die (lhere)
+      call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
      endif
 
   enddo ! ind
@@ -2471,8 +3268,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_averages_walk_block'
-  integer ind, rtn_i
-  integer object_ind, object_av_ind
+  integer object_ind, object_bav_ind, object_av_ind, ind
   character(len=max_string_len_type) object_type
 
 ! begin
@@ -2484,13 +3280,17 @@ module average_mod
    return
   endif
 
-! sum of weights of walkers
+! sum of weights of walkers over current block
+  call object_provide_by_index (walker_weights_sum_block_index)
+
+! sum of weights of walkers over entire run
   call object_provide_by_index (walker_weights_sum_index)
 
 ! averages defined by objects
   do ind = 1, averages_walk_nb
 
     object_ind = averages_walk_object_index (ind)
+    object_bav_ind = averages_walk_object_bav_index (ind) ! block average
     object_av_ind = averages_walk_object_av_index (ind)
 
 !    if (.not. objects(object_ind)%walkers) then
@@ -2507,13 +3307,16 @@ module average_mod
     endif
 
      if (trim(object_type) == 'double_1') then
-      call object_average_walk_block_by_index_double_0 (object_ind, object_av_ind)
+      call object_associate_by_index_double_0 (object_bav_ind)
+      call object_average_walk_block_by_index_double_0 (object_ind, object_bav_ind, object_av_ind)
 
      elseif (trim(object_type) == 'double_2') then
-      call object_average_walk_block_by_index_double_1 (object_ind, object_av_ind)
+      call object_associate_by_index_double_1 (object_bav_ind, objects(object_av_ind)%dimensions(1))
+      call object_average_walk_block_by_index_double_1 (object_ind, object_bav_ind, object_av_ind)
 
      elseif (trim(object_type) == 'double_3') then
-      call object_average_walk_block_by_index_double_2 (object_ind, object_av_ind)
+      call object_associate_by_index_double_2 (object_bav_ind, objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
+      call object_average_walk_block_by_index_double_2 (object_ind, object_bav_ind, object_av_ind)
 
      else
       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
@@ -2540,8 +3343,13 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'reinit_averages_and_errors'
 
 ! begin
+  block_averages_nb = 0
+  call release ('block_averages_object_index', block_averages_object_index)
+  call release ('block_averages_object_bav_index', block_averages_object_bav_index)
+
   averages_nb = 0
   call release ('averages_object_index', averages_object_index)
+  call release ('averages_object_bav_index', averages_object_bav_index)
   call release ('averages_object_av_index', averages_object_av_index)
 
   variances_nb = 0

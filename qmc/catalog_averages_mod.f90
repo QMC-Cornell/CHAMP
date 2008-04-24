@@ -37,7 +37,6 @@ module catalog_averages_mod
   call object_average_define ('dpsi_sq_eloc', 'dpsi_sq_eloc_av')
   call object_average_define ('dpsi_dpsi_eloc', 'dpsi_dpsi_eloc_av')
   call object_average_define ('dpsi_eloc', 'dpsi_eloc_av')
-  call object_average_define ('deloc', 'deloc_av')
   call object_average_define ('d2psi', 'd2psi_av')
   call object_average_define ('d2psi_eloc', 'd2psi_eloc_av')
   call object_average_define ('dpsi_orb', 'dpsi_orb_av')

@@ -298,7 +298,8 @@ c now do averaging steps
         call object_modified_by_index (xold_index)  !JT
 
 !       accumulate data for averages and statitical errors
-        call compute_averages        !JT
+!        call compute_averages        !JT
+        call compute_block_averages        !JT
         call compute_averages_walk_step   !JT
 
 c       write out configuration for optimization/dmc/gfmc here
@@ -329,6 +330,7 @@ c       write out configuration for optimization/dmc/gfmc here
 !     compute averages and statitical errors
       call acuest
       call compute_averages_walk_block   !JT
+      call compute_global_averages   !JT
       call compute_covariances  !JT
       call compute_variances  !JT
       call compute_errors  !JT
@@ -338,7 +340,8 @@ c       write out configuration for optimization/dmc/gfmc here
       call writing_routines !JT
 
 !     exit loop if nblk and threshold on statistical error reached
-      if (block_iterations_nb .ge. nblk .and. eloc_av_err .gt. 0 .and. eloc_av_err .le. error_threshold) then    !JT
+!JT      if (block_iterations_nb .ge. nblk .and. eloc_av_err .gt. 0 .and. eloc_av_err .le. error_threshold) then    !JT
+      if (block_iterations_nb .ge. nblk .and. eloc_av_err .le. error_threshold) then    !JT
         exit                              !JT
       endif                               !JT
 

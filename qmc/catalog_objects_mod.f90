@@ -124,6 +124,7 @@ module catalog_objects_mod
   call catalog_one_object ('wgcum', wgcum_index)
   call catalog_one_object ('eold', eold_index)
   call catalog_one_object ('eoldw', eoldw_index)
+  call catalog_one_object ('walker_weights_sum_block', walker_weights_sum_block_index)
   call catalog_one_object ('walker_weights_sum', walker_weights_sum_index)
   call catalog_one_object ('dist_ee_min', dist_ee_min_index)
   call catalog_one_object ('dist_ee_max', dist_ee_max_index)

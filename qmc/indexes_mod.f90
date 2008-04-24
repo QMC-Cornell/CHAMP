@@ -97,6 +97,7 @@ module indexes_mod
   integer     :: delta_coef_ex_lin_index
   integer     :: delta_coef_ex_ptb_index
   integer     :: walker_weights_index
+  integer     :: walker_weights_sum_block_index
   integer     :: walker_weights_sum_index
   integer     :: wt_index
   integer     :: fprod_index

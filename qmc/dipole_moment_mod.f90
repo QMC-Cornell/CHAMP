@@ -17,17 +17,29 @@
   real(dp), allocatable                       :: dipole_moment_nucl (:)
   real(dp), allocatable                       :: dipole_moment (:,:)
   real(dp), allocatable                       :: dipole_moment_av (:)
+  real(dp), allocatable                       :: dipole_moment_bav (:)
   real(dp), allocatable                       :: dipole_moment_av_var (:)
   real(dp), allocatable                       :: dipole_moment_av_err (:)
   real(dp), allocatable                       :: dipole_moment_deloc (:,:)
   real(dp), allocatable                       :: dipole_moment_deloc_av (:,:)
+  real(dp), allocatable                       :: dipole_moment_deloc_bav (:,:)
   real(dp), allocatable                       :: dipole_moment_deloc_covar (:,:)
+  real(dp), allocatable                       :: dipole_moment_deloc_blk_covar (:,:)
   real(dp), allocatable                       :: dipole_moment_av_deloc_av_covar (:,:)
+  real(dp), allocatable                       :: dipole_moment_av_dpsi_eloc_av_covar (:,:)
+  real(dp), allocatable                       :: dipole_moment_av_dpsi_av_covar (:,:)
+  real(dp), allocatable                       :: dipole_moment_av_eloc_av_covar (:)
   real(dp), allocatable                       :: dipole_moment_zv_coef (:,:)
+  real(dp), allocatable                       :: dipole_moment_zv_coef_blk (:,:)
   real(dp), allocatable                       :: dipole_moment_zv_av (:)
+  real(dp), allocatable                       :: dipole_moment_zv_bav (:)
+  real(dp), allocatable                       :: dipole_moment_zv_bav_sq (:)
+  real(dp), allocatable                       :: dipole_moment_zv_bav_sq_av (:)
   real(dp), allocatable                       :: dipole_moment_zv_av_var (:)
   real(dp), allocatable                       :: dipole_moment_zv_av_err (:)
   real(dp), allocatable                       :: dipole_moment_zvzb_av (:)
+  real(dp), allocatable                       :: dipole_moment_zvzb_av_var (:)
+  real(dp), allocatable                       :: dipole_moment_zvzb_av_err (:)
 
   contains
 
@@ -125,17 +137,37 @@
 ! request averages and statistical errors
   call object_average_request ('dipole_moment_av')
   call object_error_request ('dipole_moment_av_err')
-  if (l_dipole_moment_zv) then
+
+  if (l_dipole_moment_zv .or. l_dipole_moment_zvzb) then
    call object_average_request ('deloc_av')
    call object_average_request ('deloc_deloc_av')
    call object_average_request ('dipole_moment_deloc_av')
    call object_covariance_request ('dipole_moment_av_deloc_av_covar')
    call object_covariance_request ('deloc_av_deloc_av_covar')
+!   call object_average_request ('dipole_moment_zv_bav_sq_av')
+  endif
+
+  if (l_dipole_moment_zv) then
    call object_error_request ('dipole_moment_zv_av_err')
   endif
+
   if (l_dipole_moment_zvzb) then
    call object_average_request ('dpsi_av')
    call object_average_request ('dpsi_eloc_av')
+
+   call object_covariance_request ('dipole_moment_av_dpsi_eloc_av_covar')
+   call object_covariance_request ('dipole_moment_av_dpsi_av_covar')
+   call object_covariance_request ('dipole_moment_av_eloc_av_covar')
+   call object_covariance_request ('deloc_av_dpsi_eloc_av_covar')
+   call object_covariance_request ('deloc_av_dpsi_av_covar')
+   call object_covariance_request ('deloc_av_eloc_av_covar')
+   call object_covariance_request ('dpsi_eloc_av_dpsi_eloc_av_covar')
+   call object_covariance_request ('dpsi_eloc_av_dpsi_av_covar')
+   call object_covariance_request ('dpsi_eloc_av_eloc_av_covar')
+   call object_covariance_request ('dpsi_av_dpsi_av_covar')
+   call object_covariance_request ('dpsi_av_eloc_av_covar')
+
+   call object_error_request ('dipole_moment_zvzb_av_err')
   endif
 
   write(6,'(a)') 'End of dipole_moment menu --------------------------------------------------------------------------------'
@@ -234,6 +266,7 @@
   if (header_exe) then
 
    call object_create ('dipole_moment')
+   call object_block_average_define ('dipole_moment', 'dipole_moment_bav')
    call object_average_walk_define ('dipole_moment', 'dipole_moment_av')
    call object_variance_define ('dipole_moment_av', 'dipole_moment_av_var')
    call object_error_define ('dipole_moment_av', 'dipole_moment_av_err')
@@ -251,6 +284,7 @@
 ! allocations
   call object_alloc ('dipole_moment', dipole_moment, ndim, nwalk)
   call object_alloc ('dipole_moment_av', dipole_moment_av, ndim)
+  call object_alloc ('dipole_moment_bav', dipole_moment_bav, ndim)
   call object_alloc ('dipole_moment_av_var', dipole_moment_av_var, ndim)
   call object_alloc ('dipole_moment_av_err', dipole_moment_av_err, ndim)
 
@@ -284,8 +318,12 @@
   if (header_exe) then
 
    call object_create ('dipole_moment_deloc')
+   call object_block_average_define ('dipole_moment_deloc', 'dipole_moment_deloc_bav')
    call object_average_define ('dipole_moment_deloc', 'dipole_moment_deloc_av')
    call object_covariance_define ('dipole_moment_av', 'deloc_av', 'dipole_moment_av_deloc_av_covar')
+   call object_covariance_define ('dipole_moment_av', 'dpsi_eloc_av', 'dipole_moment_av_dpsi_eloc_av_covar')
+   call object_covariance_define ('dipole_moment_av', 'dpsi_av', 'dipole_moment_av_dpsi_av_covar')
+   call object_covariance_define ('dipole_moment_av', 'eloc_av', 'dipole_moment_av_eloc_av_covar')
 
    call object_needed ('ndim')
    call object_needed ('param_nb')
@@ -299,7 +337,11 @@
 ! allocations
   call object_alloc ('dipole_moment_deloc', dipole_moment_deloc, ndim, param_nb)
   call object_alloc ('dipole_moment_deloc_av', dipole_moment_deloc_av, ndim, param_nb)
+  call object_alloc ('dipole_moment_deloc_bav', dipole_moment_deloc_bav, ndim, param_nb)
   call object_alloc ('dipole_moment_av_deloc_av_covar', dipole_moment_av_deloc_av_covar, ndim, param_nb)
+  call object_alloc ('dipole_moment_av_dpsi_eloc_av_covar', dipole_moment_av_dpsi_eloc_av_covar, ndim, param_nb)
+  call object_alloc ('dipole_moment_av_dpsi_av_covar', dipole_moment_av_dpsi_av_covar, ndim, param_nb)
+  call object_alloc ('dipole_moment_av_eloc_av_covar', dipole_moment_av_eloc_av_covar, ndim)
 
   do dim_i = 1, ndim
    do param_i = 1, param_nb
@@ -351,6 +393,47 @@
   end subroutine dipole_moment_deloc_covar_bld
 
 ! ==============================================================================
+  subroutine dipole_moment_deloc_blk_covar_bld
+! ------------------------------------------------------------------------------
+! Description   : dipole_moment_deloc_covar calculated on current block
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer param_i, dim_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dipole_moment_deloc_blk_covar')
+
+   call object_needed ('ndim')
+   call object_needed ('param_nb')
+   call object_needed ('dipole_moment_deloc_bav')
+   call object_needed ('dipole_moment_bav')
+   call object_needed ('deloc_bav')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_deloc_blk_covar', dipole_moment_deloc_blk_covar, ndim, param_nb)
+
+  do dim_i = 1, ndim
+   do param_i = 1, param_nb
+    dipole_moment_deloc_blk_covar (dim_i, param_i) = dipole_moment_deloc_bav (dim_i, param_i) - dipole_moment_bav (dim_i) * deloc_bav (param_i)
+   enddo ! param_i
+  enddo ! dim_i
+
+  end subroutine dipole_moment_deloc_blk_covar_bld
+
+! ==============================================================================
   subroutine dipole_moment_zv_coef_bld
 ! ------------------------------------------------------------------------------
 ! Description   : coefficient minimizing the variance of zero-variance estimator of total dipole moment
@@ -392,6 +475,50 @@
   enddo ! dim_i
 
   end subroutine dipole_moment_zv_coef_bld
+
+! ==============================================================================
+  subroutine dipole_moment_zv_coef_blk_bld
+! ------------------------------------------------------------------------------
+! Description   : coefficient minimizing the variance of zero-variance estimator of total dipole moment
+! Description   : calculated on current block average
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer dim_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dipole_moment_zv_coef_blk')
+
+   call object_needed ('ndim')
+   call object_needed ('param_nb')
+   call object_needed ('dipole_moment_deloc_blk_covar')
+   call object_needed ('deloc_deloc_blk_covar_inv')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_zv_coef_blk', dipole_moment_zv_coef_blk, ndim, param_nb)
+
+  do dim_i = 1, ndim
+   do param_i = 1, param_nb
+    dipole_moment_zv_coef_blk (dim_i, param_i) = 0.d0
+    do param_j = 1, param_nb
+     dipole_moment_zv_coef_blk (dim_i, param_i) = dipole_moment_zv_coef_blk (dim_i, param_i) - deloc_deloc_blk_covar_inv (param_i, param_j) * dipole_moment_deloc_blk_covar (dim_i, param_j)
+    enddo ! param_j
+   enddo ! param_i
+  enddo ! dim_i
+
+  end subroutine dipole_moment_zv_coef_blk_bld
 
 ! ==============================================================================
   subroutine dipole_moment_zv_av_bld
@@ -436,6 +563,116 @@
   end subroutine dipole_moment_zv_av_bld
 
 ! ==============================================================================
+  subroutine dipole_moment_zv_bav_bld
+! ------------------------------------------------------------------------------
+! Description   : block average of zero-variance estimator total dipole moment
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer dim_i, param_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dipole_moment_zv_bav')
+
+   call object_needed ('ndim')
+   call object_needed ('param_nb')
+   call object_needed ('dipole_moment_zv_coef_blk')
+   call object_needed ('dipole_moment_bav')
+   call object_needed ('deloc_bav')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_zv_bav', dipole_moment_zv_bav, ndim)
+
+  do dim_i = 1, ndim
+   dipole_moment_zv_bav (dim_i) = dipole_moment_bav (dim_i)
+   do param_i = 1, param_nb
+    dipole_moment_zv_bav (dim_i) = dipole_moment_zv_bav (dim_i) + dipole_moment_zv_coef_blk (dim_i, param_i) * deloc_bav (param_i)
+   enddo ! param_i
+  enddo ! dim_i
+
+  end subroutine dipole_moment_zv_bav_bld
+
+! ==============================================================================
+  subroutine dipole_moment_zv_bav_sq_bld
+! ------------------------------------------------------------------------------
+! Description   : square of dipole_moment_zv_bav
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_average_define_from_block_average ('dipole_moment_zv_bav_sq',  'dipole_moment_zv_bav_sq_av')
+   call object_create ('dipole_moment_zv_bav_sq')
+
+   call object_needed ('ndim')
+   call object_needed ('dipole_moment_zv_bav')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_zv_bav_sq', dipole_moment_zv_bav_sq, ndim)
+  call object_alloc ('dipole_moment_zv_bav_sq_av', dipole_moment_zv_bav_sq_av, ndim)
+
+  dipole_moment_zv_bav_sq (:) = dipole_moment_zv_bav (:)**2
+
+  end subroutine dipole_moment_zv_bav_sq_bld
+
+! ==============================================================================
+  subroutine dipole_moment_zv_av_var_2_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of average of zero-variance estimator total dipole moment
+! Description   : to be checked
+!
+! Created       : J. Toulouse, 20 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dipole_moment_zv_av_var')
+   call object_error_define_from_variance ('dipole_moment_zv_av_var', 'dipole_moment_zv_av_err')
+
+   call object_needed ('ndim')
+   call object_needed ('dipole_moment_zv_bav_sq_av')
+   call object_needed ('dipole_moment_zv_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_zv_av_var', dipole_moment_zv_av_var, ndim)
+  call object_alloc ('dipole_moment_zv_av_err', dipole_moment_zv_av_err, ndim)
+
+  dipole_moment_zv_av_var (:) = dipole_moment_zv_bav_sq_av (:)/block_iterations_nb - dipole_moment_zv_av (:)**2
+
+  end subroutine dipole_moment_zv_av_var_2_bld
+
+! ==============================================================================
   subroutine dipole_moment_zv_av_var_bld
 ! ------------------------------------------------------------------------------
 ! Description   : variance of average of zero-variance estimator total dipole moment
@@ -471,12 +708,8 @@
   call object_alloc ('dipole_moment_zv_av_var', dipole_moment_zv_av_var, ndim)
   call object_alloc ('dipole_moment_zv_av_err', dipole_moment_zv_av_err, ndim)
 
-  call object_write ('dipole_moment_zv_coef')
-  call object_write ('dipole_moment_av_deloc_av_covar')
-
   do dim_i = 1, ndim
-!   dipole_moment_zv_av_var (dim_i) = dipole_moment_av_var (dim_i)
-   dipole_moment_zv_av_var (dim_i) = 0.d0
+   dipole_moment_zv_av_var (dim_i) = dipole_moment_av_var (dim_i)
    do param_i = 1, param_nb
     dipole_moment_zv_av_var (dim_i) = dipole_moment_zv_av_var (dim_i) + 2.d0 * dipole_moment_zv_coef (dim_i, param_i) * dipole_moment_av_deloc_av_covar (dim_i, param_i)
      do param_j = 1, param_nb
@@ -521,13 +754,80 @@
   call object_alloc ('dipole_moment_zvzb_av', dipole_moment_zvzb_av, ndim)
 
   do dim_i = 1, ndim
-   dipole_moment_zvzb_av (dim_i) = dipole_moment_av (dim_i)
+   dipole_moment_zvzb_av (dim_i) = dipole_moment_zv_av (dim_i)
    do param_i = 1, param_nb
     dipole_moment_zvzb_av (dim_i) = dipole_moment_zvzb_av (dim_i) + dipole_moment_zv_coef (dim_i, param_i) * gradient_energy (param_i)
    enddo ! param_i
   enddo ! dim_i
 
   end subroutine dipole_moment_zvzb_av_bld
+
+! ==============================================================================
+  subroutine dipole_moment_zvzb_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of average of zero-variance zero-bias estimator total dipole moment
+!
+! Created       : J. Toulouse, 22 Apr 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer dim_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dipole_moment_zvzb_av_var')
+   call object_error_define_from_variance ('dipole_moment_zvzb_av_var', 'dipole_moment_zvzb_av_err')
+
+   call object_needed ('ndim')
+   call object_needed ('param_nb')
+   call object_needed ('dipole_moment_zv_av_var')
+   call object_needed ('dipole_moment_zv_coef')
+   call object_needed ('dipole_moment_av_dpsi_eloc_av_covar')
+   call object_needed ('eloc_av')
+   call object_needed ('dipole_moment_av_dpsi_av_covar')
+   call object_needed ('dipole_moment_av_eloc_av_covar')
+   call object_needed ('deloc_av_dpsi_eloc_av_covar')
+   call object_needed ('deloc_av_dpsi_av_covar')
+   call object_needed ('dpsi_av')
+   call object_needed ('deloc_av_eloc_av_covar')
+   call object_needed ('dpsi_eloc_av_dpsi_eloc_av_covar')
+   call object_needed ('dpsi_eloc_av_dpsi_av_covar')
+   call object_needed ('dpsi_eloc_av_eloc_av_covar')
+   call object_needed ('dpsi_av_dpsi_av_covar')
+   call object_needed ('dpsi_av_eloc_av_covar')
+   call object_needed ('eloc_av_var')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_zvzb_av_var', dipole_moment_zvzb_av_var, ndim)
+  call object_alloc ('dipole_moment_zvzb_av_err', dipole_moment_zvzb_av_err, ndim)
+
+  do dim_i = 1, ndim
+   dipole_moment_zvzb_av_var (dim_i) = dipole_moment_zv_av_var (dim_i)
+   do param_i = 1, param_nb
+    dipole_moment_zvzb_av_var (dim_i) = dipole_moment_zvzb_av_var (dim_i) + 4.d0 * dipole_moment_zv_coef (dim_i, param_i) *  &
+         (dipole_moment_av_dpsi_eloc_av_covar (dim_i, param_i) - eloc_av * dipole_moment_av_dpsi_av_covar (dim_i, param_i)   &
+          - dpsi_av (param_i) * dipole_moment_av_eloc_av_covar (dim_i))
+
+     do param_j = 1, param_nb
+      dipole_moment_zvzb_av_var (dim_i) = dipole_moment_zvzb_av_var (dim_i) + 4.0d0 * dipole_moment_zv_coef (dim_i, param_i) * dipole_moment_zv_coef (dim_i, param_j) *  &
+          (deloc_av_dpsi_eloc_av_covar (param_i, param_j) - eloc_av * deloc_av_dpsi_av_covar (param_i, param_j) - dpsi_av (param_j) * deloc_av_eloc_av_covar (param_i)   &
+           + dpsi_eloc_av_dpsi_eloc_av_covar (param_i, param_j) - 2.d0 * eloc_av * dpsi_eloc_av_dpsi_av_covar (param_i, param_j) - 2.d0 * dpsi_av (param_j) * dpsi_eloc_av_eloc_av_covar (param_i)  &
+           + (eloc_av**2) * dpsi_av_dpsi_av_covar (param_i, param_j) + 2.d0 * eloc_av * dpsi_av (param_j) * dpsi_av_eloc_av_covar (param_i) + dpsi_av (param_i) * dpsi_av (param_j) * eloc_av_var )
+
+     enddo ! param_j
+   enddo ! param_i
+  enddo ! dim_i
+
+  end subroutine dipole_moment_zvzb_av_var_bld
 
 !===========================================================================
   subroutine print_dipole_moment
@@ -576,9 +876,10 @@
   endif
   if (l_dipole_moment_zvzb) then
    call object_provide ('dipole_moment_zvzb_av')
+   call object_provide ('dipole_moment_zvzb_av_err')
    write(6,'(a)') 'Total dipole moment using zero-variance zero-bias estimator:'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zvzb_av (dim_i)
+    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zvzb_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zvzb_av_err (dim_i)
    enddo
   endif
 
