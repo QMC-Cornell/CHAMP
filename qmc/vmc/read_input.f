@@ -842,9 +842,9 @@ c     if(ibasis.eq.3.and.numr.gt.0) stop 'Warning: ibasis.eq.3.and.numr.gt.0 nev
 c irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
 c irecursion_ylm=1 use Ryo' spherical harmonics (any L)
 c Note that at present it takes about 12 times longer with recursion.  Can that be fixed?
-c       irecursion_ylm=0
-        irecursion_ylm=1
-        write(6,'(''Warning temporarily set irecursion_ylm=1'')')
+        irecursion_ylm=0
+c       irecursion_ylm=1
+c       write(6,'(''Warning temporarily set irecursion_ylm=1'')')
         call read_orb_loc
 !MS Jellium sphere
         if(nloc.eq.-3) irecursion_ylm=1
