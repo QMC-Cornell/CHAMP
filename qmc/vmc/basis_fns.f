@@ -15,6 +15,8 @@
 !       real spherical harmonics.
 !---------------
       use all_tools_mod !JT
+c Warning: If you change lmax, you need to recompile not only basis_fns.f but also basis_fns2e.f because
+c module real_spherical_harmonics is used in both
 !     integer,parameter   :: lmax=3
 !     integer,parameter   :: lmax=6
 !MS Jellium sphere
@@ -943,8 +945,6 @@ c        xg3 and xg4 are gaussian width parameters.
 
 c Here, we do not normalize the wfs
 
-
-
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -977,7 +977,7 @@ c     common /dim/ ndim
         xri=1/xr
         xri2=xri*xri
 
-c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
+c       write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
 
         do ib=1,nbasis
 
@@ -1003,7 +1003,7 @@ c wfs and coo. derivatives:
           phit=dexp(xg4*cxtrel)
           phin(ib,ie)=phir*phit
 
-c          write(*,*) 'phir,phit=',phir,phit
+c         write(*,*) 'phir,phit=',phir,phit
 
           tempr1=-wez*xrrel
           tempt1=-xg4*sxtrel
