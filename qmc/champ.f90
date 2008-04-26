@@ -269,8 +269,8 @@ end program champ
 
   elseif (l_mode_dmc .and. .not. l_mode_mpi) then
    call maindmc
-!   call dmc_mov1_clean
-!   call dmc_mov1
+!  call dmc_mov1_clean
+!  call dmc_mov1
 
   elseif (l_mode_dmc_mov1_mpi1 .or. l_mode_dmc_mov1_mpi2 .or. l_mode_dmc_mov1_mpi3) then
    call maindmc_mov1_mpi
