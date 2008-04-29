@@ -17,10 +17,10 @@
       use all_tools_mod !JT
 c Warning: If you change lmax, you need to recompile not only basis_fns.f but also basis_fns2e.f because
 c module real_spherical_harmonics is used in both
-!     integer,parameter   :: lmax=3
+      integer,parameter   :: lmax=3
 !     integer,parameter   :: lmax=6
 !MS Jellium sphere
-      integer,parameter   :: lmax=12
+!     integer,parameter   :: lmax=12
       integer             :: nmax
       integer,allocatable :: large_q(:,:)
 !MS Jellium sphere

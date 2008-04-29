@@ -1,4 +1,4 @@
-c      function psinl(u,rshifti,rshiftj,rri,rrj,it)
+c     function psinl(u,rshifti,rshiftj,rri,rrj,it)
 !WAS
       function psinl(u,rshifti,rshiftj,ri, rj, rri,rrj,it)
 !
@@ -14,7 +14,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /jas_c_cut/ icutjasc, cutjasc
       common /contrl_per/ iperiodic,ibasis
 !!!
-
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
@@ -118,13 +117,10 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
         call switch_scale(rrrj,3)
 
 !!!!  WAS
-        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+        if(icutjasc.gt.0 .or. iperiodic.ne.0) then
            call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
         endif
 !!!
-
-
-
         uu(0)=one
         ss(0)=two
         tt(0)=one
@@ -145,12 +141,13 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
               m=(n-k-l)/2
               if(2*m.eq.n-k-l) then
                 ll=ll+1
+                p=uu(k)*ss(l)*tt(m)
 !!WAS
-                if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-                   p = p *  fcut
+                if(icutjasc.gt.0 .or. iperiodic.ne.0) then
+                   p=p*fcut
                 endif
 !!!
-                psinl=psinl+c(ll,it,iwf)* p
+                psinl=psinl+c(ll,it,iwf)*p
               endif
    50   continue
 

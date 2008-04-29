@@ -841,7 +841,8 @@ c     if(ibasis.eq.3.and.numr.gt.0) stop 'Warning: ibasis.eq.3.and.numr.gt.0 nev
       if(ibasis.eq.1) then
 c irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
 c irecursion_ylm=1 use Ryo' spherical harmonics (any L)
-c Note that at present it takes about 12 times longer with recursion.  Can that be fixed?
+c Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
+c Change it to calculate upto largest l actually used.
         irecursion_ylm=0
 c       irecursion_ylm=1
 c       write(6,'(''Warning temporarily set irecursion_ylm=1'')')

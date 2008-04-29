@@ -236,7 +236,7 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
         call switch_scale(rrrj(1),3)
 
 !!!!  WAS
-        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+        if(icutjasc.gt.0 .or. iperiodic.ne.0) then
            call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
         endif
 !!!
@@ -270,8 +270,8 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
                 p=uu(k)*ss(l)*tt(m)
 
 !!WAS
-                if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-                   p = p *  fcut
+                if(icutjasc.gt.0 .or. iperiodic.ne.0) then
+                   p = p*fcut
                 endif
 !!!
                 deriv_psinl=deriv_psinl+c(ll,it,iwf)*p

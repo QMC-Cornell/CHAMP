@@ -6,7 +6,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
-!JT      parameter (one=1.d0)
+!JT   parameter (one=1.d0)
 
 
       common /dim/ ndim
@@ -175,10 +175,9 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
               call object_modified_by_index (electron_index) !JT
 
               call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-c              call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+c             call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
 c WAS
               call deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
-
 
 cWAS
               if (l_opt_pjas) then
@@ -216,7 +215,6 @@ cWAS
                  enddo
               endif
 !WAS
-
 
                 endif
    50         continue
@@ -265,7 +263,6 @@ cWAS
               endif
 !!!
 
-
    80       continue
           if(ipr.ge.4) write(6,'(''dvpsp(iparm)'',40d12.4)') (dvpsp(iparm),iparm=1,nparmcsf+nparmj)
           endif
@@ -280,7 +277,6 @@ cWAS
          call object_modified_by_index (dvpsp_pjas_index)
       endif
 !WAS
-
 
       return
       end
