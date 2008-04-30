@@ -514,6 +514,7 @@ module deriv_orb_mod
   single_ex_nb = 0
   param_orb_nb = 0
   ex_orb_ind_rev_cur = 0
+  single_ex_added_nb = 0
 
 ! loops over orbitals
   do orb_opt_i = 1, orb_opt_nb

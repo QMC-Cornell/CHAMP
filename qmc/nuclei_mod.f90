@@ -3,6 +3,7 @@ module nuclei_mod
   use all_tools_mod
 
 ! Declaration of global variables and default values
+  logical                   :: l_convert_from_angstrom_to_bohr = .false.
   real(dp), allocatable     :: dist_nn  (:,:)
   real(dp), allocatable     :: mass_nucl  (:)
   real(dp), allocatable     :: mass_nucl_center (:)
@@ -10,6 +11,73 @@ module nuclei_mod
 
   contains
 
+!===========================================================================
+  subroutine nuclei_menu
+!---------------------------------------------------------------------------
+! Description : menu for nuclei
+!
+! Created     : J. Toulouse, 30 Apr 2008
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'nuclei_menu'
+  integer cent_i
+
+! initialization
+  l_convert_from_angstrom_to_bohr = .false.
+
+  write(6,*)
+  write(6,'(a)') 'Beginning of nuclei menu ---------------------------------------------------------------------------------'
+
+! loop over menu lines
+  do
+  call get_next_word (word)
+
+  select case(trim(word))
+  case ('help')
+   write(6,*)
+   write(6,'(a)') ' HELP for nuclei menu:'
+   write(6,'(a)') '  nuclei'
+   write(6,'(a)') '   convert_from_angstrom_to_bohr = [logical] : convert nuclear coordinates from Angstrom to Bohr units (default=false)'
+   write(6,'(a)') '  end'
+   write(6,*)
+
+  case ('convert_from_angstrom_to_bohr')
+   call get_next_value (l_convert_from_angstrom_to_bohr)
+
+  case ('end')
+   exit
+
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<')
+  end select
+
+  enddo ! end loop over menu lines
+
+! convert unit of nuclear coordinates
+  if (l_convert_from_angstrom_to_bohr) then
+   write(6,'(a)') ' Converting nuclear coordinates from Angstrom to Bohr:'
+   call object_provide ('ncent')
+   call object_provide ('ndim')
+   call object_provide ('cent')
+   cent(1:ndim,1:ncent) = cent(1:ndim,1:ncent) * angstrom_to_bohr
+   call object_modified ('cent')
+   do cent_i = 1,ncent
+    write(6,'(a,i4,a,3f8.5)') ' center # ',cent_i,' : ',cent(1:ndim,cent_i)
+   enddo
+!  recalculate nuclear potential energy
+   call object_provide ('znuc')
+   call object_provide ('iwctype')
+   call pot_nn(cent,znuc,iwctype,ncent,pecent)
+   write(6,'(a,f14.7)') ' recalculting nuclear potential energy: pecent=',pecent
+   call object_modified ('pecent')
+  endif
+
+  write(6,'(a)') 'End of nuclei menu ---------------------------------------------------------------------------------------'
+
+  end subroutine nuclei_menu
 
 ! ==============================================================================
   subroutine mass_nucl_bld

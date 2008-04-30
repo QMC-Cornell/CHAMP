@@ -33,6 +33,9 @@ module constants_mod
   real(dp), parameter   :: oneover2pi = 0.15915494309189535d0
   real(dp), parameter   :: oneover4pi = 0.07957747154594767d0
 
+! convertion of units
+  real(dp), parameter   :: angstrom_to_bohr = 1.8897261249935897d0
+
 ! maximun numbers of nodes
   integer, parameter    ::  max_nodes_nb = 500
 
