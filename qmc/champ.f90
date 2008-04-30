@@ -1,6 +1,5 @@
 program champ
 
-
 ! modules use
   use all_tools_mod
   use f2kcli
