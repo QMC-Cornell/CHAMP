@@ -318,13 +318,13 @@ c write out current values of averages etc.
           ipeierr=nint(10000000*peierr)
           itpber=nint(10000000*tpberr)
           itjfer=nint(10000000*tjferr)
-          ifgerr=nint(10000000*fgerr)
+          if(ifr.gt.1) ifgerr=nint(10000000*fgerr)
          else
           iegerr=nint(100000*egerr)
           ipeerr=nint(100000*peerr)
           itpber=nint(100000*tpberr)
           itjfer=nint(100000*tjferr)
-          ifgerr=nint(100000*fgerr)
+          if(ifr.gt.1) ifgerr=nint(100000*fgerr)
         endif
 
 c magnetic energy for quantum dots...
