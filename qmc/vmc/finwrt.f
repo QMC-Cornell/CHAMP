@@ -141,6 +141,8 @@ c     write(6,*) 'before grad_hess_jas_fin'
       if(igradhess.ge.1) call grad_hess_jas_fin(passes,efin)
 c     write(6,*) 'after grad_hess_jas_fin'
 
+      trysum=0.d0 !JT
+      sucsum=0.d0 !JT
       do 90 i=1,NRAD
         trysum=trysum+try(i)
    90   sucsum=sucsum+suc(i)
