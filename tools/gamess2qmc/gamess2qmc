@@ -33,7 +33,7 @@
 # independent CSFs there really are in those cases where the molecule has a        #
 # higher point group symmetry than d4h symmetry (the highest symmetry in GAMESS).  #
 ####################################################################################
-#$Revision: 1.10 $                               
+#$Revision: 1.12 $
 
 # package for analyzing command line arguments
 use Getopt::Std;
@@ -45,7 +45,7 @@ sub main{
 # main driver for all input and output
 #######################################################################
 
-    printf "========= GAMESS to CHAMP interface =========\n" if(! $quiet); 
+    printf "========= GAMESS to CHAMP interface =========\n" if(! $quiet);
 
     initialize();
     get_options();
@@ -66,13 +66,13 @@ sub main{
     if($verbose) {test_print();}
 
     if($reverse_transfo){
- 	expand_shells();
- 	read_qmc_lcao();
- 	transform_back();
- 	print_gamess_vec();
- 	exit;
+	expand_shells();
+	read_qmc_lcao();
+	transform_back();
+	print_gamess_vec();
+	exit;
      }
-    
+
     if($make_geometry_file) {print_geometry();}
 
     if($make_radial_grids) {basis_grid();}
@@ -98,7 +98,7 @@ sub main{
 
         print_cyrus_input();
 
-        if($make_csf_file) {print_csf_cyrus();}  
+        if($make_csf_file) {print_csf_cyrus();}
 
 #        print_orb(); # JT
 
@@ -111,7 +111,7 @@ sub main{
 
 
     if($make_det_file || $make_efpci_file || $make_csf_file){
-    	if($detread && $gugaread){
+	if($detread && $gugaread){
 	    transform_det();
 	    trial_det();
 	} else {
@@ -148,19 +148,19 @@ sub initialize{
 # global initialization
 # NOTE: all settings below can be overridden using the
 # -x command line option, just put the appropriate perl
-# command(s) in a file and execute it with -x  
+# command(s) in a file and execute it with -x
 
 # strings indicating different orbital sections in gamess output
 # ***WARNING: the information in the next 3 arrays depends on the
 # Version of GAMESS and keeps changing!
 #####################################################################
 
-@orb_start=('^\s*EIGENVECTORS\s*$', '^\s*INITIAL GUESS ORBITALS\s*$', 
+@orb_start=('^\s*EIGENVECTORS\s*$', '^\s*INITIAL GUESS ORBITALS\s*$',
             '^\s*NATURAL ORBITALS IN ATOMIC ORBITAL BASIS\s*$',
             '^\s*MCSCF NATURAL ORBITALS\s*$',
             '^\s*MCSCF OPTIMIZED ORBITALS\s*');
 
-@orb_stop=('END OF RO?HF CALCULATION', 
+@orb_stop=('END OF RO?HF CALCULATION',
            'END OF INITIAL ORBITAL SELECTION',
            'END OF DENSITY MATRIX CALCULATION',
 	   '------------------------',
@@ -174,7 +174,7 @@ sub initialize{
 @lineskip2=(1,1,1,1,1); #JT
 
 # irrep  label within lineskip2 (0: don't try to fetch them)
-#@irreplabel=(2,2,2,0,2);  
+#@irreplabel=(2,2,2,0,2);
 @irreplabel=(1,1,1,0,1);  #JT
 
 # get orbital eigenvalues (0: no, 1:yes)
@@ -245,7 +245,7 @@ $gridpoints=2000;
 $gridarg=1.003;
 $gridr0=20.0;
 
-# format string (for one number) for grid print out 
+# format string (for one number) for grid print out
 $gridformat="  %.12E";
 # format string for lcao coefficients output
 $lcao_format=" % .8E";
@@ -260,6 +260,8 @@ $d7b4=7.0/4.0;
 $d9b4=9.0/4.0;
 $sq16b15=sqrt(16.0/15.0);
 $sq2b105=sqrt(2.0/105.0);
+$d11b4=11.0/4.0;
+$sq1b1155=sqrt(1.0/1155.0);
 
 $lcao_cs=sqrt(5.0);
 $lcao_cd=1.0/sqrt(3.0);
@@ -277,10 +279,10 @@ sub get_options{
     my %options = ();
 
 # in the string argument of getopts, each command line
-# option is specified with its letter (g for -g etc) 
+# option is specified with its letter (g for -g etc)
 # if the option takes an argument (like -d 0.1) it is
 # folowed by a colon (:). After invoking getopts, the
-# hash %options will contain the values. 
+# hash %options will contain the values.
 
 #JT getopts("grqht:v:n:b:x:ld:w:uc:sej:ED", \%options);
     getopts("grqht:v:n:b:x:ld:f:w:uc:sej:ao:EDCFSJ", \%options);   #JT
@@ -288,7 +290,7 @@ sub get_options{
 # shortcuts (which can be changed by individual options)
 # e.g. '-D' is the same as '-d 0.9 -w 1 -t initial -u'
 # but '-D -w 2' or '-w 2 -D' will both change the arg of
-# w (the trial state index) to 2. 
+# w (the trial state index) to 2.
    if(exists $options{E}){
        $options{e}=1 if(! exists $options{e});
        $options{s}=1 if(! exists $options{s});
@@ -302,7 +304,7 @@ sub get_options{
        $options{u}=1  if(! exists $options{u});
    }
 
-# process all 'atomic' options 
+# process all 'atomic' options
     if(exists $options{h}){
 	print_usage();
     }
@@ -374,7 +376,7 @@ sub get_options{
     if(exists $options{S}){
        print "Analytic Slater basis requested.\n";
        $analytic_basis=1;
-       $make_radial_grids=0; 
+       $make_radial_grids=0;
     }
     else{
      print "Assuming numerical basis request.\n";
@@ -397,7 +399,7 @@ sub get_options{
 	$porb=$options{n};
     }
 
-# omit unused orbitals? 
+# omit unused orbitals?
     if(exists $options{u}){
 	$omit_unused_orbitals = 1;
     } else {
@@ -409,7 +411,7 @@ sub get_options{
 	print_usage();
     }
     else {
-   # setup file names 
+   # setup file names
 	$gamess_file=$ARGV[0];
 	if( ! -f $gamess_file ){
 	    die "Input file $gamess_file does not exist!\n";
@@ -464,8 +466,8 @@ sub get_options{
 
 # LCAO file for reverse transformation
     if(exists $options{c}){
- 	$qmc_lcao_file=$options{c};
- 	$new_vec_file=$qmc_lcao_file . '.vec';
+	$qmc_lcao_file=$options{c};
+	$new_vec_file=$qmc_lcao_file . '.vec';
          $reverse_transfo=1;
      } else {
          $reverse_transfo=0;
@@ -509,11 +511,11 @@ sub get_options{
 	$case_vector_format=0;
     }
 
-# source extended option file 
-# this file must contain valid perl statements, which can be used to 
+# source extended option file
+# this file must contain valid perl statements, which can be used to
 # overide settings .
 # Everything specified above this point (e.g. file names) can be changed
-# by putting it in the 'extended options' file 
+# by putting it in the 'extended options' file
      if(exists $options{x}){
 	 $opt_file=$options{x};
 	 open(RCFILE,"< $opt_file") || die  "can not open option file $opt_file : $!\n";
@@ -531,9 +533,9 @@ sub get_options{
 # create input file in cyrus format - suppress printing claudias' files
 # is some output specified ?
 
-    if( (! $make_geometry_file ) 
-	&& (! $make_radial_grids) 
-	&& (! $make_det_file ) 
+    if( (! $make_geometry_file )
+	&& (! $make_radial_grids)
+	&& (! $make_det_file )
 	&& (! $make_lcao_file)
         && (! $reverse_transfo)
         && (! $make_cyrus_file)
@@ -547,7 +549,7 @@ sub get_options{
 ################################################################
 sub eat_lines{
 ################################################################
-# eat n lines 
+# eat n lines
     my $n= $_[0];
     for(my $i=0; $i<$n; $i++){
 	<>;
@@ -557,7 +559,7 @@ sub eat_lines{
 ################################################################
 sub read_from_gamess{
 ################################################################
-# main loop for reading from gamess : look for strings 
+# main loop for reading from gamess : look for strings
 # identifying a section and call the appropriate routine
 # <> reads from standard input, each <>; eats a line
 ################################################################
@@ -591,7 +593,7 @@ sub read_from_gamess{
       }
 
       if(  /^\s*ATOMIC BASIS SET\s*$/ ){
-	  eat_lines(5);  
+	  eat_lines(5);
 	  read_basis();
 	  next READ_LOOP;
       }
@@ -613,7 +615,7 @@ sub read_from_gamess{
       }
 
       if( ($orbread == -1) && ($_ =~ $orb_start[$orbtype] )){
-	  eat_lines($lineskip1[$orbtype]); 
+	  eat_lines($lineskip1[$orbtype]);
 	  read_orbitals($orb_stop[$orbtype]);
 	  $orbread=$orbtype;
 	  next READ_LOOP;
@@ -685,9 +687,9 @@ sub read_geometry{
       @w = split;
 
       if( $#w == 4 ){
-	  push @atom_symbols,$w[0]; 
+	  push @atom_symbols,$w[0];
 
-# remember unique atoms 
+# remember unique atoms
 	  if( ! $seen{$w[0]} ){
 	      $seen{$w[0]}=1;
 	      push @atom_types,$w[0];
@@ -734,12 +736,12 @@ sub read_zcore{
           $nelec=$1;
           next READ_LOOP;
       }
- 
+
       if( /^\sNUMBER OF OCCUPIED ORBITALS \(ALPHA\) KEPT IS\s*=\s*([0-9]+)$/){
           $nalpha=$1;
           next READ_LOOP;
       }
- 
+
       if( /^\sNUMBER OF OCCUPIED ORBITALS \(BETA \) KEPT IS\s*=\s*([0-9]+)$/){
           $nbeta=$1;
           next READ_LOOP;
@@ -767,7 +769,7 @@ sub read_zcore{
             print STDERR "Warning : ignoring new ZCORE for atom type ",$atom_symbols[$2-1],"\n" if(! $quiet);
           }
 
-        } 
+        }
 
       }
 
@@ -785,7 +787,7 @@ sub read_zcore{
 
 	    }
 
-        } 
+        }
 
       }
 
@@ -800,7 +802,7 @@ sub read_zcore{
 	    }
 	    printf "\n";
 	}
-    } 
+    }
 
 }
 
@@ -835,23 +837,23 @@ sub read_basis{
           $nbasis=$1;
           next READ_LOOP;
       }
- 
+
       if( /^\sNUMBER OF ELECTRONS\s*=\s*([0-9]+)$/){
           $nelec=$1;
           eat_lines(2);
           next READ_LOOP;
       }
- 
+
       if( /^\sNUMBER OF OCCUPIED ORBITALS \(ALPHA\)\s*=\s*([0-9]+)$/){
           $nalpha=$1;
           next READ_LOOP;
       }
- 
+
       if( /^\sNUMBER OF OCCUPIED ORBITALS \(BETA \)\s*=\s*([0-9]+)$/){
           $nbeta=$1;
           next READ_LOOP;
       }
- 
+
       if( /^\sTOTAL NUMBER OF ATOMS.*$/ ){
 	  last READ_LOOP;
       }
@@ -898,7 +900,7 @@ sub read_basis{
          $ftype[$current_func]=$w[1];
 
 #        Gaussian or Slater basis set?
-         process_basis_function_type();   #JT
+         process_basis_function_type($symbol);   #JT
 
 #        if analytic basis requested, check is all functions are Slaters.
          if($analytic_basis and ! $is_slater_function){
@@ -908,7 +910,7 @@ sub read_basis{
          }
 
          if($is_new_function and $is_slater_function){
-          
+
            $exponents_slater[$current_func]=$w[3];
 	   push @{$exponents[$current_func]}, $w[4];
 	   push @{$coeff[$current_func]}, $w[5];
@@ -924,11 +926,11 @@ sub read_basis{
 	     push @{$coeff_L[$current_func]}, $w[5];
 	   }
 
-          } 
+          }
 
       }
   }
-          
+
            if($analytic_basis) {check_slater_functions_order();}
 }
 
@@ -945,7 +947,7 @@ sub read_orbitals{
     @orbital_eigenvalues=();
     @orbital_occ_numbers=();
 
-#  ignore extra orbitals 
+#  ignore extra orbitals
     if(defined $mos_left){
 	$last_orb=$mos_left-1;
     } else {
@@ -960,7 +962,7 @@ sub read_orbitals{
   READ_LOOP: while(<>) {
       chomp;
 
-      ### trick for correct parsing  WAS 
+      ### trick for correct parsing  WAS
       if ($wiss==1){
 	  @w = split; $atomsym=$w[1]; $atomsymspace="$atomsym"."  ";
 	  #	  print "Replacing $atomsym with  $atomsymspace \n";
@@ -997,7 +999,7 @@ sub read_orbitals{
 
       if( ($no1 == -1) && ($no2 == -1)){
 # line following the blank line should contain orbital indices
-# (we are ignoring indices, just count)  
+# (we are ignoring indices, just count)
 	  $no1=$orbitals;
 	  $orbitals += ($#w+1);
 	  $no2=$orbitals - 1 ;
@@ -1008,7 +1010,7 @@ sub read_orbitals{
 
 #         skip empty line for MCSCF natural orbitals
           if($orbtype == 3){
-           $_=<>; 
+           $_=<>;
           }
 
           $_=<>; chomp; @w=split;
@@ -1045,7 +1047,7 @@ sub read_orbitals{
 	      eat_lines($lineskip2[$orbtype]);
 	  } else {
 	      eat_lines($irreplabel[$orbtype]-1);
-# get irrep labels 
+# get irrep labels
 	      $_=<>; chomp; @w=split;
 	      for($i=0; $i<=$#w; $i++){
 		  if((! defined $last_orb) || ($no1+$i <= $last_orb)){
@@ -1068,7 +1070,7 @@ sub read_orbitals{
       for ($i=$no1; $i <=$no2; $i++){
 	  if(( ! defined $last_orb) || ($i <= $last_orb)){
 	      push @{$lcao[$i]}, $w[$col];
-	  } 
+	  }
 
 	  $col++;
       }
@@ -1151,7 +1153,7 @@ sub read_vec{
 	for($i=1;$i<=$ncol;$i++){
 	    push @values,substr($st,$flen[0]+$flen[1]+($i-1)*$flen[2],$flen[2]);
 	}
-	push  @{$tmplcao[$orb-1]}, @values; 
+	push  @{$tmplcao[$orb-1]}, @values;
     }
     if(! $quiet){
 	print "Number of orbitals re-read from VEC : $norbit of $orbitals \n";
@@ -1229,7 +1231,7 @@ sub read_guga{
 		    print STDERR "case vector index $case_vector_index missing\n";
 		}
 	    }
- 
+
 	}
 
 	if(/^\s*CSF\s+([0-9]+):/){
@@ -1311,7 +1313,7 @@ sub read_guga{
 
 		if($verbose){
 		    print " -- sorted -- \n";
-		    print "count = $pm phase = $phase\n"; 
+		    print "count = $pm phase = $phase\n";
 		    foreach $r (@occ){
 			if($r<0){
 			    print "$r ";
@@ -1359,7 +1361,7 @@ sub read_guga{
 			    $n++;
 			}
 		    }
-		    
+		
 		}
 
 		
@@ -1407,7 +1409,7 @@ sub read_det{
 	if( (scalar @w ) == 3){
 	    ${$cicoef[$state]}[$w[0]]=$w[1];
 	    # with many orbitals, occupation patterns can continue on
-	    # the next line in GAMESS output 
+	    # the next line in GAMESS output
 	    if(($plen=length($w[2])) < ($nactive+$nexternal)){
 		do{
 		    $_=<>; chomp; @w=split;
@@ -1434,9 +1436,9 @@ sub transform_det{
         $n_actorb=$nactive+$nexternal;
     }
 
-    foreach $d (keys(%determinant)){    
+    foreach $d (keys(%determinant)){
 
-        # fill core orbitals   
+        # fill core orbitals
 	$nea=0; $neb=0;
 	for($i=1; $i<=$ncore; $i++){
 	    $orb_occ[$i]='2';
@@ -1504,10 +1506,10 @@ sub read_qmc_lcao{
        $f=1; next;
       }
       if($f){
- 	if(/^\s*end/){
- 	   $f=0; next;
- 	}
- 	push @qmc_lcao_lines, $_;
+	if(/^\s*end/){
+	   $f=0; next;
+	}
+	push @qmc_lcao_lines, $_;
       }
 
     }
@@ -1516,7 +1518,7 @@ sub read_qmc_lcao{
 #################################################################
 sub transform_back{
 #################################################################
-# assuming that the @qmc_lcao_lines contains lcao coefficients 
+# assuming that the @qmc_lcao_lines contains lcao coefficients
 # which correspond to the current basis , translate them back
 # (existing LCAO will be erased)
 #################################################################
@@ -1574,7 +1576,7 @@ sub trial_det{
       }
    }
 
-   %used_orbitals = (); 
+   %used_orbitals = ();
    foreach $d (keys %det_coeff){
      @ocsym=split '',$sorted_detlist[$d];
      for($j=0; $j<=$#ocsym; $j++){
@@ -1634,7 +1636,7 @@ sub trial_det_csf{
       die "selected determinants don't match in trial_det_csf";
    }
 
-   %used_orbitals = (); 
+   %used_orbitals = ();
    foreach $d (keys %det_coeff){
     @ocsym=split '',$sorted_detlist[$d];
     for($j=0; $j<=$#ocsym; $j++){
@@ -1659,7 +1661,7 @@ sub print_determinants{
     open(DETFILE,"> $det_file") || die  "cant open file $det_file : $!";
     printf DETFILE "# Determinants from run %s \n", $run_title;
     printf DETFILE "# State %s  Threshold on CSF coefficients %s\n",$trial_state,$det_threshold;
-    printf DETFILE "&electrons nelec %d nup %d\n", $alpha+$beta,$alpha; 
+    printf DETFILE "&electrons nelec %d nup %d\n", $alpha+$beta,$alpha;
     printf DETFILE "determinants %d\n",$selected_det;
 
     @sorted_keys = sort {abs($det_coeff{$b}) <=> abs($det_coeff{$a})} keys %det_coeff;
@@ -1727,7 +1729,7 @@ sub print_csf{
           printf CSFFILE "%.8f ",$$d{coef}*$phase_factors[$$d{det}]*$qmc_phase[$$d{det}];
 
           @ocsym=split '',$sorted_detlist[$$d{det}];
-          
+
           # print alpha electrons
           for($j=0; $j<=$#ocsym; $j++){
             if(($ocsym[$j] eq '+') || ($ocsym[$j] eq '2')){
@@ -1768,7 +1770,7 @@ sub print_csf_cyrus{
     printf "Writing CSF output to %s \n",$csf_file;
     open(CSFFILE,"> $csf_file") || die  "cant open file $csf_file : $!";
 
-    # print unique determinants 
+    # print unique determinants
 #   printf CSFFILE "%d ndet\n",$selected_det;
     printf CSFFILE "guga \n";
     printf CSFFILE "0 iused_orbs \n";
@@ -1882,7 +1884,7 @@ sub print_csf_cyrus{
       }
       printf CSFFILE " (iwdet_in_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
 
-      # print coefs 
+      # print coefs
       foreach $d (@{$csf_trial[$i]}){
         printf CSFFILE "%s ",$$d{coef}*$phase_factors[$$d{det}]*$qmc_phase[$$d{det}];
       }
@@ -1900,7 +1902,7 @@ sub csf_strings{
 ###############################################################
 # find occupation pattern to label entire CSF
 # this is a bit heuristic and might result in
-# different CSF having the same label 
+# different CSF having the same label
 ###############################################################
 
   CSFLOOP: for($i=1; $i<=$csf_read; $i++){
@@ -1937,7 +1939,7 @@ sub csf_strings{
 	  $csf_phase[$i]=$phase_factors[$detfm];
       } else {
 	  die "Error in csf label search";
-      } 
+      }
   }
 }
 
@@ -1966,7 +1968,7 @@ sub print_efpci_data{
     }
 
     printf EFPCI "&ci alpha %d beta %d\n",$alpha,$beta;
-    printf EFPCI "&ci det %d states %d\n",$detref,$states_read; 
+    printf EFPCI "&ci det %d states %d\n",$detref,$states_read;
     printf EFPCI "&ci orbitals %d core %d external %d\n",$ncore+$n_actorb,$ncore,$nexternal;
     printf EFPCI "&ci casevectors %d\n",$case_vector_format;
     if(defined $core_energy){
@@ -2076,7 +2078,7 @@ sub test_print{
     }
     if($orbread == -1){
 	print "no orbitals of type $orbtype found !!\n";
-    } else { 
+    } else {
 	printf " orbitals: type %d number %d\n", $orbtype,$orbitals;
 	if($verbose > 2){
 	printf "sym   %s\n", join " ",@lcao_atomsym;
@@ -2140,7 +2142,7 @@ sub basis_grid{
 ###############################################################
 sub compute_grid{
 ###############################################################
-# compute r values  according to grid type 
+# compute r values  according to grid type
 ###############################################################
 
     $grid=@_[0];
@@ -2159,7 +2161,7 @@ sub compute_grid{
 ###############################################################
 sub add_function{
 ###############################################################
-# put a new function on the grid 
+# put a new function on the grid
 ###############################################################
 
     ($type,$ex,$co,$grid)=@_;
@@ -2171,23 +2173,31 @@ sub add_function{
 	$r2=$r**2;
 	$value=0;
         for($ib=0; $ib<=$#$ex; $ib++){
-	    $z = gnorm($$ex[$ib],$l) * $$co[$ib] 
+	    $z = gnorm($$ex[$ib],$l) * $$co[$ib]
 		* exp(-1.0 * $$ex[$ib] * $r2);
 	    $value += $z;
 	}
         if( $l == 1){
 	    $value *= $r;
-	} elsif( $l == 2){
+	}
+        elsif( $l == 2){
 	    $value *= $r2;
 	}
 	elsif( $l == 3){
-	    
+	
 	    $value *= ($r2*$r);
+#            print "r= ", $r, " value= ", $value, " l=3 \n"
 	}
-	elsif ($l > 3)
+	elsif ($l == 4 )
 	{
-	    $value *= $r**$l;
+	    $value *= ($r2*$r2);
+#            print "r= ", $r, " value= ", $value, " l=4 \n"
 	}
+        elsif ($l > 4 )
+        {
+          print "l must be less than or equal to 4.\n";
+          exit;
+        }
         if( abs($value) > 1.0E-15 ){
          push @{$$grid[$k]},$value;
         } else {
@@ -2213,10 +2223,14 @@ sub gnorm{
 	$nrm=(2.0*$alp)**$d7b4*$sq16b15*$pi4i;
     } elsif($l == 3){
 	$nrm=(2.0*$alp)**$d9b4*4.0*$sq2b105*$pi4i;
-        print "implementation of f Gaussians to be checked before using";
-	exit;
+#        print "implementation of f Gaussians to be checked before using";
+#	exit;
+    } elsif($l == 4){
+        $nrm=(2.0*$alp)**$d11b4*8.0*$sq1b1155*$pi4i;
+#        print "implementation of g Gaussians to be checked before using";
+#       exit;
     } else{
-        print "normalization for Gaussians with l > 3 not implemented";
+        print "normalization for Gaussians with l > 4 not implemented";
 	exit;
     }
 }
@@ -2225,7 +2239,7 @@ sub gnorm{
 sub basis_info{
 ###############################################################
 # get basis info for atom type atype :
-# number of primitives of each kind, radial part index 
+# number of primitives of each kind, radial part index
 ###############################################################
 
     ($atype,$b_count,$b_rad) = @_;
@@ -2236,14 +2250,14 @@ sub basis_info{
     foreach my $j (@{$functions{$atype}}){
 	foreach my $k (@{$shell{$ftype[$j]}}){
 	    if( exists $map_prim{$k}){
-		$k2=$map_prim{$k} 
+		$k2=$map_prim{$k}
 	    } else {
 		$k2=$k;
 	    }
 	    push @{$r_func{$k2}}, $p;
 	    if( ($ftype[$j] eq 'L') && ($k eq 'S')){
 		$p++;
-	    } 
+	    }
 	}
 	$p++;
     }
@@ -2260,7 +2274,7 @@ sub basis_info{
 	    push @$b_count, 0;
         }
     }
- 
+
 }
 
 ###############################################################
@@ -2309,7 +2323,7 @@ sub basis_info_cyrus{
 sub expand_shells{
 ###############################################################
 # get complete list of primitive functions
-# and compare them to labels in gamess orbital output 
+# and compare them to labels in gamess orbital output
 # also reorder them to be qmc friendly
 ###############################################################
 
@@ -2330,8 +2344,8 @@ sub expand_shells{
 		    print " label  $lcao_bflabel[$count] | $k";
 		}
 
-              
-		if( ($lcao_atomsym[$count] eq $a) && ($lcao_atomidx[$count] == $i+1) 
+
+		if( ($lcao_atomsym[$count] eq $a) && ($lcao_atomidx[$count] == $i+1)
 		    && ($lcao_bflabel[$count] eq $k)){
 		    if($verbose > 1){
 			print " OK \n";
@@ -2346,7 +2360,7 @@ sub expand_shells{
 		push @{$radial_part{$k}}, $p;
 		push @{$prim_index{$k}}, $count;
 		if( exists $map_prim{$k}){
-		    $k2=$map_prim{$k} 
+		    $k2=$map_prim{$k}
 		} else {
 		    $k2=$k;
 		}
@@ -2370,12 +2384,12 @@ sub expand_shells{
 	}
     }
 }
-   
+
 ###############################################################
 sub transform_lcao{
 ###############################################################
 # transformation from cartesian to spherical d, f and g functions
-#  
+#
 # 6d -> 1s,5d:
 # 1 XX -> s = (1/sqrt(5)) [XX + YY + ZZ]
 # 2 YY -> d(2z^2-x^2-y^2) = (1/2) [2*ZZ - XX - YY]
@@ -2591,14 +2605,14 @@ sub print_lcao{
     open(LCAOFILE,"> $lcao_file") || die  "cant open file $lcao_file : $!";
 # info
     printf LCAOFILE "# orbitals from run %s\n",$run_title;
-    printf LCAOFILE "# orbital  type %s \n",$orbnames[$orbtype]; 
+    printf LCAOFILE "# orbital  type %s \n",$orbnames[$orbtype];
 
 # orbitals to be printed
     if($porb == 0){
 	$porb=$orbitals;
     }
     if( $omit_unused_orbitals && $make_det_file ){
-	@orbital_indices=sort { $a <=> $b } keys %used_orbitals; 
+	@orbital_indices=sort { $a <=> $b } keys %used_orbitals;
 	$porb=$#orbital_indices + 1;
     } else {
 	for(my $j=0; $j<$porb; $j++){
@@ -2644,8 +2658,8 @@ sub print_lcao{
 # print out coefficients ordered by atoms and
 # within each atom by the sequence given in the array basorder
 # this loop is a bit ugly since we loop over the complete set
-# of functions for each atom, the reason is the messy way of 
-# simulating multi-dimensional arrays 
+# of functions for each atom, the reason is the messy way of
+# simulating multi-dimensional arrays
     foreach my $j (@orbital_indices){
 	for(my $ia=0; $ia <= $#atom_symbols; $ia++){
 # debugging only
@@ -2661,7 +2675,7 @@ sub print_lcao{
             }
         }
         printf  LCAOFILE "\n";
-   } 
+   }
    printf  LCAOFILE "end\n";
    printf ("Writing basis info and lcao coefficients to $lcao_file\n")  if(! $quiet);
    close(LCAOFILE);
@@ -2711,7 +2725,7 @@ sub print_geometry{
 	printf  GEOFILE " %d %s ",$i+1,$atom_types[$i];
     }
     printf  GEOFILE "\n";
-    
+
     printf GEOFILE "geometry\n";
     for(my $i=0; $i<= $#atom_symbols; $i++){
 	printf GEOFILE "% f % f % f %d\n", $atom_x[$i],$atom_y[$i],$atom_z[$i],$atom_type_index{$atom_symbols[$i]}+1;
@@ -2850,7 +2864,7 @@ sub print_cyrus_input{
         basis_info_cyrus($a,\@c,\@r);
 	if($analytic_basis){ #JT
 # printf CYRFILE "%s  0   0  0 0 0   0  0 0 0  0 0 0 0 0   0  0 0 0  0 0 0 0 0  0  0 0 0  0 0 0 0 0 n1s...4pz,sa,pa,da\n";
-        print CYRFILE "  $n1s   $n2s  $n2p $n2p $n2p   $n3s  $n3p $n3p $n3p  $n3d $n3d $n3d $n3d $n3d   $n4s $n4p $n4p $n4p  $n4d $n4d $n4d $n4d $n4d  $n4f $n4f $n4f $n4f $n4f $n4f $n4f   $n5s $n5p $n5p $n5p  $n5d $n5d $n5d $n5d $n5d  $n5f $n5f $n5f $n5f $n5f $n5f $n5f   $n5g $n5g $n5g $n5g $n5g $n5g $n5g $n5g $n5g  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
+	    print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a} $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a} $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
         }
         else
 	{
@@ -2963,22 +2977,22 @@ sub print_cyrus_input{
 
       # print csf_trial
       printf CYRFILE "%d ncsf\n",$ncsf;
- 
+
       # print csf_coef
       for($i=1; $i<=$ncsf; $i++){
         printf CYRFILE "%s ",@csf_coef[$i]
       }
       printf CYRFILE " (csf_coef(icsf),icsf=1,ncsf)\n";
- 
+
       # num dets in each csf
       for($i=1; $i<=$ncsf; $i++){
         printf CYRFILE "%d ",$csf_ndet[$i];
       }
       printf CYRFILE " (ndet_in_csf(icsf),icsf=1,ncsf)\n";
- 
+
       # print csf
       for($i=1; $i<=$ncsf; $i++){
- 
+
         # print dets
         foreach $d (@{$csf_trial[$i]}){
           $cdet=$$d{det};
@@ -2990,14 +3004,14 @@ sub print_cyrus_input{
           printf CYRFILE "%2d ",$kdet;
         }
         printf CYRFILE " (iwdet_in_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
- 
+
         # print coefs
         foreach $d (@{$csf_trial[$i]}){
-       
+
           printf CYRFILE "%s ",$$d{coef}*$phase_factors[$$d{det}]*$qmc_phase[$$d{det}];
         }
         printf CYRFILE " (cdet_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
- 
+
       }
 
     } else {
@@ -3161,7 +3175,7 @@ sub print_cyrus_input{
     printf CYRFILE "end\n";
     printf CYRFILE "\n";
     }
-    
+
    } # end if($options_JT)
 
    close(CYRFILE);
@@ -3248,6 +3262,7 @@ my $i;
  close(ORBFILE);
 }
 
+
 ###############################################################
 sub process_basis_function_type{
 ###############################################################
@@ -3258,9 +3273,25 @@ sub process_basis_function_type{
 # drop principal quantum number (1S -> S, 2S ->S, 2P -> P, ...)
 #
 # J. Toulouse - 15 Sep 2005
+# WAS - bug fix for multiple atom basis sets  - July 1, 2007
 ###############################################################
 
     my $here="process_basis_function_type";
+
+    #WAS fix the problem when more than one atom type exists
+    my $atomtype=$_[0];
+    if (!(defined ($defined_basis{$atomtype})))
+    {
+	$defined_basis{$atomtype}=1;
+	$n1s{$atomtype} =0;	$n2s{$atomtype} =0;
+	$n3s{$atomtype} =0;	$n4s{$atomtype} =0;$n5s{$atomtype} =0;
+	$n2p{$atomtype} =0;
+	$n3p{$atomtype} =0;	$n4p{$atomtype} =0;$n5p{$atomtype} =0;
+	$n3d{$atomtype} =0;	$n4d{$atomtype} =0;$n5d{$atomtype} =0;
+	$n3f{$atomtype} =0;	$n4f{$atomtype} =0;$n5f{$atomtype} =0;
+	$n3g{$atomtype} =0;	$n4g{$atomtype} =0;$n5g{$atomtype} =0;
+    }
+    ### WAS
 
     $is_slater_function =  0;
 
@@ -3274,163 +3305,161 @@ sub process_basis_function_type{
 
 # Slaters
     elsif($ftype[$current_func] eq "1S"){
-         
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'S';
          $function_slater_quantum_number[$current_func] = '1';
          if($is_new_function){
-          $n1s = $n1s + 1;
+          $n1s{$atomtype} = $n1s{$atomtype} + 1;
          }
-
     }
     elsif($ftype[$current_func] eq "2S"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'S';
          $function_slater_quantum_number[$current_func] = '2';
          if($is_new_function){
-          $n2s = $n2s + 1;
+          $n2s{$atomtype} = $n2s{$atomtype} + 1;
          }
 
     }
     elsif($ftype[$current_func] eq "3S"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'S';
          $function_slater_quantum_number[$current_func] = '3';
          if($is_new_function){
-          $n3s = $n3s + 1;
+          $n3s{$atomtype} = $n3s{$atomtype} + 1;
          }
 
     }
     elsif($ftype[$current_func] eq "4S"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'S';
          $function_slater_quantum_number[$current_func] = '4';
          if($is_new_function){
-          $n4s = $n4s + 1;
+          $n4s{$atomtype} = $n4s{$atomtype} + 1;
          }
     }
     elsif($ftype[$current_func] eq "5S"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'S';
          $function_slater_quantum_number[$current_func] = '5';
          if($is_new_function){
-          $n5s = $n5s + 1;
+          $n5s{$atomtype} = $n5s{$atomtype} + 1;
          }
     }
     elsif($ftype[$current_func] eq "2P"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'P';
          $function_slater_quantum_number[$current_func] = '2';
          if($is_new_function){
-          $n2p = $n2p + 1;
+          $n2p{$atomtype} = $n2p{$atomtype} + 1;
          }
     }
     elsif($ftype[$current_func] eq "3P"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'P';
          $function_slater_quantum_number[$current_func] = '3';
          if($is_new_function){
-          $n3p = $n3p + 1;
+          $n3p{$atomtype} = $n3p{$atomtype} + 1;
          }
     }
     elsif($ftype[$current_func] eq "4P"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'P';
          $function_slater_quantum_number[$current_func] = '4';
          if($is_new_function){
-          $n4p = $n4p + 1;
+          $n4p{$atomtype} = $n4p{$atomtype} + 1;
          }
     }
     elsif($ftype[$current_func] eq "5P"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'P';
          $function_slater_quantum_number[$current_func] = '5';
          if($is_new_function){
-          $n5p = $n5p + 1;
+          $n5p{$atomtype} = $n5p{$atomtype} + 1;
          }
     }
     elsif($ftype[$current_func] eq "3D"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'D';
          $function_slater_quantum_number[$current_func] = '3';
          if($is_new_function){
-          $n3d = $n3d + 1;
-          $n3s = $n3s + 1;   # 6d ->5d,s
+          $n3d{$atomtype} = $n3d{$atomtype} + 1;
+          $n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
          }
     }
     elsif($ftype[$current_func] eq "4D"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'D';
          $function_slater_quantum_number[$current_func] = '4';
          if($is_new_function){
-          $n4d = $n4d + 1;
-          $n4s = $n4s + 1;  # 6d ->5d,s
+          $n4d{$atomtype} = $n4d{$atomtype} + 1;
+          $n4s{$atomtype} = $n4s{$atomtype} + 1;  # 6d ->5d,s
          }
     }
     elsif($ftype[$current_func] eq "5D"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'D';
          $function_slater_quantum_number[$current_func] = '5';
          if($is_new_function){
-          $n5d = $n5d + 1;
-          $n5s = $n5s + 1;  # 6d ->5d,s
+          $n5d{$atomtype} = $n5d{$atomtype} + 1;
+          $n5s{$atomtype} = $n5s{$atomtype} + 1;  # 6d ->5d,s
          }
     }
     elsif($ftype[$current_func] eq "4F"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'F';
          $function_slater_quantum_number[$current_func] = '4';
          if($is_new_function){
-          $n4f = $n4f + 1;
-          $n4p = $n4p + 1;  # 10f ->7f,3p
+          $n4f{$atomtype} = $n4f{$atomtype} + 1;
+          $n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
          }
     }
     elsif($ftype[$current_func] eq "5F"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'F';
          $function_slater_quantum_number[$current_func] = '5';
          if($is_new_function){
-          $n5f = $n5f + 1;
-          $n5p = $n5p + 1;  # 10f ->7f,3p
+          $n5f{$atomtype} = $n5f{$atomtype} + 1;
+          $n5p{$atomtype} = $n5p{$atomtype} + 1;  # 10f ->7f,3p
          }
     }
     elsif($ftype[$current_func] eq "5G"){
-         
+
          $is_slater_function = 1;
          $function_slater_type[$current_func] = $ftype[$current_func];
          $ftype[$current_func] = 'G';
          $function_slater_quantum_number[$current_func] = '5';
          if($is_new_function){
-          $n5g = $n5g + 1;
-          $n5d = $n5d + 1;  # 15g ->9g,5d,1s
-          $n5s = $n5s + 1;  # 15g ->9g,5d,1s
+          $n5g{$atomtype} = $n5g{$atomtype} + 1;
+          $n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
+          $n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
          }
     }
     else{
@@ -3438,6 +3467,7 @@ sub process_basis_function_type{
     exit;
     }
 }
+
 
 ###############################################################
 sub check_slater_functions_order{
@@ -3474,7 +3504,7 @@ sub check_slater_functions_order{
      print "$here: Wrong ordering of Slater basis functions\n";
      print "$here: A function $current_func_slater_type_previous has been found before a function $current_func_slater_type\n";
      exit;
-    } 
+    }
 
     $current_quantum_number_previous = $current_quantum_number;
     $current_func_slater_type_previous = $current_func_slater_type;
@@ -3595,7 +3625,7 @@ sub process_slater_exponents{
 sub check_for_symmetry_in_orbitals{
 ###############################################################
 # check and impose additional symmetry on the orbitals
-# 
+#
 # For homonuclear diatomic molecules in D4h symmetry, EU -> EUX,EUY and EG -> EGX,EGY
 # For heteronuclear diatomic molecules in C4h symmetry, E -> EX,EY
 #
@@ -3792,11 +3822,11 @@ print "The -F generates a separate .csf file that contains the coefs of dets (in
 print "addition to the csf coefs.  The former can be used to figure out how many\n";
 print "independent CSFs there really are in those cases where the molecule has a\n";
 print "higher point group symmetry than d4h symmetry (the highest symmetry in GAMESS)\n";
-   
+
 }
 
 ###############################################################
-# Finally : run main routine 
+# Finally : run main routine
 main();
 ###############################################################
 
@@ -3807,9 +3837,9 @@ __DATA__
 
 gamess2qmc: conversion of geometry, basis, orbitals (lcao), and CI-information
             from  GAMESS(US) output to formats suitable for QMC and EFPCI.
- 
+
 usage: gamess2qmc [OPTIONS]  gamess_output
-       OPTIONS: 
+       OPTIONS:
 
            -g              create geometry file
            -r              create basis on radial grid files
@@ -3820,21 +3850,21 @@ usage: gamess2qmc [OPTIONS]  gamess_output
            -f threshold    select CSF's with abs(csf_coef) >= threshold in det2csf
 	                   (used only in printout in gamess2qmc)
            -w state        select state for trial wave function (default 1)
-           -u              omit unused orbitals 
+           -u              omit unused orbitals
 
            -e              generate EFPCI input (all states, CSFs and determinants)
            -j n            case vector format (0 heuristic possibly not unique, 1 from gamess)
            -E              same as '-t initial -s -e -j 0' (i.e. all what is needed for EFPCI)
-           -D              short for '-t initial -d 0.9 -w 1 -u' 
+           -D              short for '-t initial -d 0.9 -w 1 -u'
 
            -b basename     alternative basename for output files
            -x file         source extended option file (e.g. different grid parameters)
            -l              re-read lcao coefficients (VEC format) from dat-file
                            (only available for orbital type initial)
-           -c file         get lcao coefficients from 'lcao' file and transform back 
+           -c file         get lcao coefficients from 'lcao' file and transform back
                            to VEC format (i.e. qmc2gamess )
 
-           -v n            set verbosity level to n 
+           -v n            set verbosity level to n
            -q              quiet (no print to stdout)
            -h              print this message
            -C              generates input file in Cyrus format.  Requires -t option.
@@ -3849,13 +3879,12 @@ usage: gamess2qmc [OPTIONS]  gamess_output
   given with -b, extensions as follows:
   *.geometry  : molecular geometry
   *.basis.N   : radial grids for atom #N
-  *.bfinfo    : pointers basis functions -> radial part 
+  *.bfinfo    : pointers basis functions -> radial part
   *.lcao      : orbital coefficients
   *.sym       : orbital pointgroup symmetry information
-  *.det       : determinantal expansion of trial state 
+  *.det       : determinantal expansion of trial state
   *.efpci     : CSFs, determinants and states for EFPCI
   *.i0        : QMC input file in Cyrus' format
   *.csf       : CSFs
 
-  === Version  $Revision: 1.10 $ ===
-
+  === Version  $Revision: 1.12 $ ===
