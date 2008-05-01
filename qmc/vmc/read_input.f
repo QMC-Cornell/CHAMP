@@ -459,6 +459,9 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
       if(mode.eq.'dmc_mov1_mpi2') write(6,'(''Diffusion MC 1-electron move, mpi global pop big comm'')')
       if(mode.eq.'dmc_mov1_mpi3') write(6,'(''Diffusion MC 1-electron move, mpi global pop small comm'')')
 
+!     initializations
+      nparm=0
+
 c     read(5,'(a20,4x,4i4)') title,irn
       read(5,*) title
       write(fmt,'(''(a'',i3,'')'')') len_trim(title)
