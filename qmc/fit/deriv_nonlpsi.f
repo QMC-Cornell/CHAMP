@@ -8,7 +8,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 !!!   added WAS
-      common /jas_c_cut/ icutjasc, cutjasc
+      common /jas_c_cut/ cutjasc,icutjasc
       common /contrl_per/ iperiodic,ibasis
 !!!
       common /dim/ ndim

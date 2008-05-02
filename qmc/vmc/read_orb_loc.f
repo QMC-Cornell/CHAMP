@@ -58,9 +58,9 @@ c Check that irecursion_ylm=1 if l of basis function >=4
           write(6,'(''(l_bas(ibasis) > ML_BAS'')')
           stop 'l_bas(ibasis) > ML_BAS'
         endif
-        if(l_bas(ibasis).ge.4 .and. irecursion_ylm.eq.0) then
-          write(6,'(''if basis functions with l>=4 are used, set irecursion_ylm=1 in read_input'')')
-          stop 'if basis functions with l>=4 are used, set irecursion_ylm=1 in read_input'
+        if(l_bas(ibasis).ge.5 .and. irecursion_ylm.eq.0) then
+          write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
+          stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
         endif
    20 continue
 

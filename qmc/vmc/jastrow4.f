@@ -15,7 +15,7 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !!! added WAS
-      common /jas_c_cut/ icutjasc, cutjasc
+      common /jas_c_cut/ cutjasc,icutjasc
       common /contrl_per/ iperiodic,ibasis
 !!!
 

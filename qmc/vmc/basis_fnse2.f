@@ -4,12 +4,12 @@ c Calculate 3-dim localised basis functions for electron ie
 
 c In input:
 c n1s,n2s,...     > 0 : Slater basis
-c nsa,npa,nda     = 0 : asymptotic basis
-c n1s,nsa,...     < 0 : Gaussian basis
+c n1s,n2s,...     < 0 : Gaussian basis
+c nsa,npa,nda         : asymptotic basis
 c Here:
 c n_bas2(irb,ict) > 0 : Slater basis
-c                 = 0 : asymptotic basis
 c                 < 0 : Gaussian basis
+c                 = 0 : asymptotic basis
 
       use all_tools_mod !JT
 
@@ -58,10 +58,14 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
      &,th(0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS)
 
 c Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
-      data cd0,cd1,cd2,cf0,cf1,cf2,cf3/0.5d0,1.73205080756888d0,0.866025403784439d0,
-     &0.5d0,0.612372435695794d0,1.93649167310371d0,0.790569415042095d0/
+c The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
+c JWL added cg0-4
+      data cd0,cd1,cd2,cf0,cf1,cf2,cf3,cg0,cg1,cg2,cg3,cg4/
+     &0.5d0,1.73205080756888d0,0.866025403784439d0,0.5d0,0.612372435695794d0,1.93649167310371d0,0.790569415042095d0,
+     &0.125d0,0.790569415042095d0,0.559016994374947d0,2.09165006633519d0,0.739509972887452d0/
 
       ider=0
+
 c     do 40 ie=1,nelec
         ib=0
         do 40 ic=1,ncent
@@ -79,6 +83,7 @@ c     do 40 ie=1,nelec
           ri=1/r
           ri2=ri*ri
           ri3=ri2*ri
+          ri4=ri3*ri
 
           if(numr.le.0) then
 
@@ -136,40 +141,42 @@ c Phi function
             ph(0)=1
 
             ph(1)=xx
-
             ph(-1)=yy
 
             ph(2)=xx2-yy2
-
             ph(-2)=2*xx*yy
 
 c           ph(3)=(xx2-yy2)*xx-2*xx*yy2
             ph(3)=ph(2)*ph(1)-ph(-2)*ph(-1)
-
             ph(-3)=ph(-2)*ph(1)+ph(-1)*ph(2)
+
+c JWL added l=4
+            ph(4)=xx2*xx2-6*xx2*yy2+yy2*yy2
+            ph(-4)=4*xx*yy*(xx2-yy2)
 
 c Theta function
 
             th(0,0)=1
 
             th(1,0)=ri*zz
-
             th(1,1)=ri
 
 c           th(2,0)=cd0*ri3*(3*zz**2-r2)
             th(2,0)=cd0*(3*zhat**2-1)
-
             th(2,1)=cd1*ri2*zz
-
             th(2,2)=cd2*ri2
 
             th(3,0)=cf0*ri3*zz*(2*zz2-3*(xx2+yy2))
-
             th(3,1)=cf1*ri3*(4*zz2-(xx2+yy2))
-
             th(3,2)=cf2*ri3*zz
-
             th(3,3)=cf3*ri3
+
+c JWL added l=4
+            th(4,0)=cg0*(35*zz2*zz2-30*r2*zz2+3*r2*r2)*ri4
+            th(4,1)=cg1*zz*(7*zz2-3*r2)*ri4
+            th(4,2)=cg2*(7*zz2-r2)*ri4
+            th(4,3)=cg3*zz*ri4
+            th(4,4)=cg4*ri4
 
             ib=ib+1
             irb=iwrwf(ib2,ict)
@@ -211,7 +218,7 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
 !                large_q(N_LMs,4) = n_s
 !
 !       at the beginning of the run by the subroutine
-!         'main_mov1.f -->  call setup_spherical_harmonics'
+!         'read_input.f -->  call setup_spherical_harmonics'
 !
 !     - The normalization coefficient coef_ylm(l,m) is also
 !       stored as module variable at the beginning of the run by

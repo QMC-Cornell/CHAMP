@@ -17,7 +17,7 @@
       use all_tools_mod !JT
 c Warning: If you change lmax, you need to recompile not only basis_fns.f but also basis_fns2e.f because
 c module real_spherical_harmonics is used in both
-      integer,parameter   :: lmax=3
+      integer,parameter   :: lmax=4
 !     integer,parameter   :: lmax=6
 !MS Jellium sphere
 !     integer,parameter   :: lmax=12
@@ -36,7 +36,7 @@ c module real_spherical_harmonics is used in both
 
       subroutine basis_fns(iel,rvec_en,r_en)
 
-c Written by Cyrus Umrigar
+c Written by Cyrus Umrigar.  L=4 added in by John Lawson(JWL).  Recursive Ylm for all L added in by Ryo Maezono
 c Calculate 3-dim localised basis functions and their derivatives
 c iel = 0, for all electrons
 c    != 0, for electron iel
@@ -98,9 +98,11 @@ c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
      &,th(0:ML_BAS,0:ML_BAS),dth(3,0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS),dph(3,-ML_BAS:ML_BAS)
 
 c Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
-c The additional normalization factors are Sqrt of 1/4, 3, 3/4, 1/4, 3/8, 15/4, 5/8.
-      data cd0,cd1,cd2,cf0,cf1,cf2,cf3/0.5d0,1.73205080756888d0,0.866025403784439d0,
-     &0.5d0,0.612372435695794d0,1.93649167310371d0,0.790569415042095d0/
+c The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
+c JWL added cg0-4
+      data cd0,cd1,cd2,cf0,cf1,cf2,cf3,cg0,cg1,cg2,cg3,cg4/
+     &0.5d0,1.73205080756888d0,0.866025403784439d0,0.5d0,0.612372435695794d0,1.93649167310371d0,0.790569415042095d0,
+     &0.125d0,0.790569415042095d0,0.559016994374947d0,2.09165006633519d0,0.739509972887452d0/
 
       ider=1
 
@@ -236,6 +238,15 @@ c           ph(3)=(xx2-yy2)*xx-2*xx*yy2
             dph(1,-3)=3*ph(-2)
             dph(2,-3)=3*ph(2)
 
+c JWL added l=4
+            ph(4)=xx2*xx2-6*xx2*yy2+yy2*yy2
+            dph(1,4)=4*xx*xx2-12*xx*yy2
+            dph(2,4)=-12*xx2*yy+4*yy*yy2
+
+            ph(-4)=4*xx*yy*(xx2-yy2)
+            dph(1,-4)=12*xx2*yy-4*yy*yy2
+            dph(2,-4)=4*xx*xx2-12*xx*yy2
+
 c Theta function
 
             th(0,0)=1
@@ -289,10 +300,34 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
             dth(2,3,3)=-3*cf3*ri5*yy
             dth(3,3,3)=-3*cf3*ri5*zz
 
+c JWL added l=4
+            th(4,0)=cg0*(35*zz2*zz2-30*r2*zz2+3*r2*r2)*ri4
+            dth(1,4,0)=cg0*(-60*xx*zz2+12*r2*xx)*ri4 + th(4,0)*(-4*ri2*xx)
+            dth(2,4,0)=cg0*(-60*yy*zz2+12*r2*yy)*ri4 + th(4,0)*(-4*ri2*yy)
+            dth(3,4,0)=cg0*(140*zz2*zz-(60*zz*zz2+60*r2*zz)+12*r2*zz)*ri4 + th(4,0)*(-4*ri2*zz)
+
+            th(4,1)=cg1*zz*(7*zz2-3*r2)*ri4
+            dth(1,4,1)=cg1*zz*(-6*xx)*ri4 + th(4,1)*(-4*ri2*xx)
+            dth(2,4,1)=cg1*zz*(-6*yy)*ri4 + th(4,1)*(-4*ri2*yy)
+            dth(3,4,1)=cg1*( (7*zz2-3*r2) + zz*(14*zz-6*zz) )*ri4 + th(4,1)*(-4*ri2*zz)
+
+            th(4,2)=cg2*(7*zz2-r2)*ri4
+            dth(1,4,2)=cg2*(-2*xx)*ri4 + th(4,2)*(-4*ri2*xx)
+            dth(2,4,2)=cg2*(-2*yy)*ri4 + th(4,2)*(-4*ri2*yy)
+            dth(3,4,2)=cg2*(14*zz-2*zz)*ri4 + th(4,2)*(-4*ri2*zz)
+
+            th(4,3)=cg3*zz*ri4
+            dth(1,4,3)=th(4,3)*(-4*ri2*xx)
+            dth(2,4,3)=th(4,3)*(-4*ri2*yy)
+            dth(3,4,3)=cg3*ri4 + th(4,3)*(-4*ri2*zz)
+
+            th(4,4)=cg4*ri4
+            dth(1,4,4)=th(4,4)*(-4*ri2*xx)
+            dth(2,4,4)=th(4,4)*(-4*ri2*yy)
+            dth(3,4,4)=th(4,4)*(-4*ri2*zz)
+
             ib=ib+1
-
             irb=iwrwf(ib2,ict)
-
             l=l_bas(ib)
             m=m_bas(ib)
             mabs=abs(m)
@@ -302,6 +337,12 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
             dphin(2,ib,ie)=ylm*yhat*wfv(2,irb)+(th(l,mabs)*dph(2,m)+dth(2,l,mabs)*ph(m))*wfv(1,irb)
             dphin(3,ib,ie)=ylm*zhat*wfv(2,irb)+(                    dth(3,l,mabs)*ph(m))*wfv(1,irb)
             d2phin(ib,ie)=ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
+
+c JWL,CJU
+            if(ipr.ge.1) then
+              write(*,'(''ib2,l,m,mabs,ylm:'',4i6,4f16.8)') ib2,l,m,mabs,ylm,(dphin(k,ib,ie),k=1,ndim)
+            endif
+
 c     write(6,'(''irb,l,m,ylm,xhat,wfv(1,irb),wfv(2,irb),th(l,mabs),dph(1,m),dth(1,l,mabs),ph(m))'',3i4,9d16.8)')
 c    &irb,l,m,ylm,xhat,wfv(1,irb),wfv(2,irb),th(l,mabs),dph(1,m),dth(1,l,mabs),ph(m)
       if(ipr.ge.4) write(6,'(''ie,ib,irb,l,m,ph(m),(dph(k,m),k=1,ndim),th(l,mabs),(dth(k,l,mabs),k=1,ndim)
@@ -349,12 +390,12 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !                large_q(N_LMs,4) = n_s
 !
 !       at the beginning of the run by the subroutine
-!         'main_mov1.f -->  call setup_spherical_harmonics'
+!         'read_input.f -->  call setup_spherical_harmonics'
 !
 !     - The normalization coefficient coef_ylm(l,m) is also
 !       stored as module variable at the beginning of the run by
 !       the subroutine
-!         'main_mov1.f -->  call setup_coefficients_ylm'
+!         'read_input.f -->  call setup_coefficients_ylm'
 !
 !     - For given (x,y,z),
 !       P_lm(x,y,z) = [\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}]/r^L,
@@ -370,57 +411,63 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !---------
 !* construct power of (x,y,z,1/r)
 !---------
-         r_inv_power_minus(:) = 1.d0 !* clear first at every centre...
-         x_power_of(:) = 0.d0        !* clear first at every centre...
-         y_power_of(:) = 0.d0        !* clear first at every centre...
-         z_power_of(:) = 0.d0        !* clear first at every centre...
+        r_inv_power_minus(:) = 1.d0 !* clear first at every centre...
+        x_power_of(:) = 0.d0        !* clear first at every centre...
+        y_power_of(:) = 0.d0        !* clear first at every centre...
+        z_power_of(:) = 0.d0        !* clear first at every centre...
 
-         x_power_of(0) = 1.d0 ; y_power_of(0) = 1.d0 ; z_power_of(0) = 1.d0
+        x_power_of(0) = 1.d0 ; y_power_of(0) = 1.d0 ; z_power_of(0) = 1.d0
 
-         do itemp1 = 1, lmax
-            r_inv_power_minus(itemp1) = r_inv_power_minus(itemp1-1)*ri
-            x_power_of(itemp1) = x_power_of(itemp1-1)*xc(1)
-            y_power_of(itemp1) = y_power_of(itemp1-1)*xc(2)
-            z_power_of(itemp1) = z_power_of(itemp1-1)*xc(3)
-         enddo
-
-!----------
-!* P_lm(x,y,z), dP_lm/dx, dP_lm/dy, and dP_lm/dz is calculated and stored.
-!----------
-         call calculate_spherical_harmonics
+        do itemp1 = 1, lmax
+           r_inv_power_minus(itemp1) = r_inv_power_minus(itemp1-1)*ri
+           x_power_of(itemp1) = x_power_of(itemp1-1)*xc(1)
+           y_power_of(itemp1) = y_power_of(itemp1-1)*xc(2)
+           z_power_of(itemp1) = z_power_of(itemp1-1)*xc(3)
+        enddo
 
 !----------
-!* Orbital functions are constructed.
+!*P_lm(x,y,z), dP_lm/dx, dP_lm/dy, and dP_lm/dz is calculated and stored.
 !----------
-         do ib2 = 1,nbasis_ctype(ict)
-            irb=iwrwf(ib2,ict)
-            ib = ib + 1
-            l = l_bas(ib)
-            m = m_bas(ib)
-            mabs=abs(m)
-            if(l.gt.lmax) stop 'l>lmax in basis_fns.f'
+        call calculate_spherical_harmonics
 
-            ylm           = large_p(l,m)*r_inv_power_minus(l)
-            phin(ib,ie)   = ylm*wfv(1,irb)*coef_ylm(l,mabs)
-           d2phin(ib,ie)  = coef_ylm(l,mabs)*ylm*(
-     &                       wfv(3,irb) + 2.d0*wfv(2,irb)*r_inv_power_minus(1)
-     &                       - dble(l*(l+1))*wfv(1,irb)*r_inv_power_minus(2))
-           aux1           = (wfv(2,irb) - dble(l)*wfv(1,irb)*r_inv_power_minus(1))
-     &                      *large_p(l,m)*r_inv_power_minus(1)
-           dphin(1,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(1) + d_large_p(1,l,m)*wfv(1,irb))
-     &                      *r_inv_power_minus(l)
-           dphin(2,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(2) + d_large_p(2,l,m)*wfv(1,irb))
-     &                      *r_inv_power_minus(l)
-           dphin(3,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb))
-     &                      *r_inv_power_minus(l)
-c        write(6,'(''ib2,ylm'',i3,9f16.10)') ib,ylm
-c        write(6,'(''ib2,etc'',i3,9f16.10)')
-c    &   ib,ylm*wfv(1,irb)*coef_ylm(l,mabs),
-c    &   coef_ylm(l,mabs)*(aux1*xc(1) + d_large_p(1,l,m)*wfv(1,irb))*r_inv_power_minus(l),
-c    &   coef_ylm(l,mabs)*(aux1*xc(2) + d_large_p(2,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
-c    &   coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
-c    &   coef_ylm(l,mabs)*ylm*( wfv(3,irb) + 2.d0*wfv(2,irb)*r_inv_power_minus(1) - dble(l*(l+1))*wfv(1,irb)*r_inv_power_minus(2))
-         enddo
+!----------
+!*Orbital functions are constructed.
+!----------
+        do ib2 = 1,nbasis_ctype(ict)
+          irb=iwrwf(ib2,ict)
+          ib = ib + 1
+          l = l_bas(ib)
+          m = m_bas(ib)
+          mabs=abs(m)
+          if(l.gt.lmax) stop 'l>lmax in basis_fns.f'
+
+          ylm           = large_p(l,m)*r_inv_power_minus(l)
+          phin(ib,ie)   = ylm*wfv(1,irb)*coef_ylm(l,mabs)
+          d2phin(ib,ie)  = coef_ylm(l,mabs)*ylm*(
+     &                      wfv(3,irb) + 2.d0*wfv(2,irb)*r_inv_power_minus(1)
+     &                      - dble(l*(l+1))*wfv(1,irb)*r_inv_power_minus(2))
+          aux1           = (wfv(2,irb) - dble(l)*wfv(1,irb)*r_inv_power_minus(1))
+     &                     *large_p(l,m)*r_inv_power_minus(1)
+          dphin(1,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(1) + d_large_p(1,l,m)*wfv(1,irb))
+     &                     *r_inv_power_minus(l)
+          dphin(2,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(2) + d_large_p(2,l,m)*wfv(1,irb))
+     &                     *r_inv_power_minus(l)
+          dphin(3,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb))
+     &                     *r_inv_power_minus(l)
+c       write(6,'(''ib2,ylm'',i3,9f16.10)') ib,ylm
+c       write(6,'(''ib2,etc'',i3,9f16.10)')
+c    &  ib,ylm*wfv(1,irb)*coef_ylm(l,mabs),
+c    &  coef_ylm(l,mabs)*(aux1*xc(1) + d_large_p(1,l,m)*wfv(1,irb))*r_inv_power_minus(l),
+c    &  coef_ylm(l,mabs)*(aux1*xc(2) + d_large_p(2,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
+c    &  coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
+c    &  coef_ylm(l,mabs)*ylm*( wfv(3,irb) + 2.d0*wfv(2,irb)*r_inv_power_minus(1) - dble(l*(l+1))*wfv(1,irb)*r_inv_power_minus(2))
+
+cJWL,CJU
+        if(ipr.ge.1) then
+          write(*,'(''ib2,l,m,mabs,ylm:'',4i6,4f16.8)') ib2,l,m,mabs,coef_ylm(l,mabs)*ylm,(dphin(k,ib,ie),k=1,ndim)
+        endif
+
+        enddo
       endif
 !**EndRM(5)
 
@@ -1088,7 +1135,6 @@ c coo. derivatives of parameter derivatives:
       return
       end
 
-
 c--------------------------------------------------------------------------
 
 !**RM(3) Following added by RM.
@@ -1246,7 +1292,7 @@ c--------------------------------------------------------------------------
 !
 !       All 'sq_...' quantities are integer and already stored as module variables
 !       in the preceding call
-!                'main_mov1.f -->  call setup_spherical_harmonics'
+!         'read_input.f -->  call setup_spherical_harmonics'
 !-------------
 
       use real_spherical_harmonics

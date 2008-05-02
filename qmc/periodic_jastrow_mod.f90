@@ -37,8 +37,7 @@ contains
     include 'commons_jaspar6.h'
     integer                              :: icutjasc
     real(dp)                             :: cutjasc
-    common /jas_c_cut/ cutjasc, icutjasc
-
+    common /jas_c_cut/ cutjasc,icutjasc
 
     icutjasc = 0
     cutjasc= 0.0_dp
@@ -62,6 +61,10 @@ contains
           write(6,'(2a)') 'pjas_ee_read (list): initial starting point fo e-e periodic jastrow term'
           write(6,'(2a)') 'sym_file (list): Names of two existing filenames with symmetries of the primitive and simulation cells'
           write(6,'(2a)') 'end'
+
+!!! These two variable were introduced to impose a cutoff on the Jastrow C-term
+!!! in the case of non-periodic calculations
+!!! should be defined using the periodic_jastrow_menu
 
        case ('icutjasc')
           call get_next_value (icutjasc)

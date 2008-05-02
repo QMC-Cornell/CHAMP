@@ -11,7 +11,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 
 !!!   added WAS
-      common /jas_c_cut/ icutjasc, cutjasc
+      common /jas_c_cut/ cutjasc,icutjasc
       common /contrl_per/ iperiodic,ibasis
 !!!
       common /dim/ ndim
@@ -142,6 +142,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
               if(2*m.eq.n-k-l) then
                 ll=ll+1
                 p=uu(k)*ss(l)*tt(m)
+c     write(6,'(''n,k,l,p,fcut='',3i4,9d12.4)') n,k,l,p,fcut
 !!WAS
                 if(icutjasc.gt.0 .or. iperiodic.ne.0) then
                    p=p*fcut
