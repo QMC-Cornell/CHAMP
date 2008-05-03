@@ -2293,6 +2293,11 @@ module optimization_mod
   enddo ! dorb_i
 
 ! diagonalize kappa
+  call alloc ('mat_a', mat_a, orb_tot_nb, orb_tot_nb)
+  call alloc ('mat_vr', mat_vr, orb_tot_nb, orb_tot_nb)
+  call alloc ('mat_vl', mat_vl, orb_tot_nb, orb_tot_nb)
+  call alloc ('mat_wr', mat_wr, orb_tot_nb)
+  call alloc ('mat_wi', mat_wi, orb_tot_nb)
   lwork = 1
   call alloc ('work', work, lwork)
   call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, -1, info )
@@ -2300,11 +2305,6 @@ module optimization_mod
    call die (here, 'problem in dgeev')
   endif
   lwork = work(1)
-  call alloc ('mat_a', mat_a, orb_tot_nb, orb_tot_nb)
-  call alloc ('mat_vr', mat_vr, orb_tot_nb, orb_tot_nb)
-  call alloc ('mat_vl', mat_vl, orb_tot_nb, orb_tot_nb)
-  call alloc ('mat_wr', mat_wr, orb_tot_nb)
-  call alloc ('mat_wi', mat_wi, orb_tot_nb)
   call alloc ('work', work, lwork)
   mat_a (:,:) = kappa (:,:)
   call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, lwork, info )

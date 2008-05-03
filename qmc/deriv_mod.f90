@@ -1069,7 +1069,7 @@ module deriv_mod
   call object_alloc ('deloc_deloc_covar_inv', deloc_deloc_covar_inv, param_nb, param_nb)
 
   threshold = 1.d-10
-  threshold = 1.d-8 !!!!!!
+!!  threshold = 1.d-8 !!!!!!
   call inverse_by_svd (deloc_deloc_covar, deloc_deloc_covar_inv, param_nb, threshold)
 
   end subroutine deloc_deloc_covar_inv_bld
