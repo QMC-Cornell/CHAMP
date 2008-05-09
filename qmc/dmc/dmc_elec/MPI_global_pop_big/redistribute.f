@@ -27,8 +27,8 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      dimension nwalk_all(0:NPROCX),icommunicate_all(0:NPROCX),
-     &iwalk_stack(NPROCX)
+      dimension nwalk_all(0:MPROC),icommunicate_all(0:MPROC),
+     &iwalk_stack(MPROC)
 
 c Use all_gather rather than gather, so that all processors can do this
 c computation and there is no need to scatter the computed information to processors.

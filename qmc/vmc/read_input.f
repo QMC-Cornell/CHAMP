@@ -28,7 +28,7 @@ c Written by Cyrus Umrigar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
       common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
@@ -160,10 +160,11 @@ c eunit      'Hartree'
 c nstep      number of steps per block
 c nblk       number of blocks
 c nblkeq     number of equilibration blocks
-c nconf      target number of MC configurations in dmc
+c nconf      target number of MC configurations per processor in all dmc modes
+c nconf_global = nconf in dmc, dmc_mov1 and dmc_mov1_mpi1 modes
 c nconf_new  number of new MC configs. saved per processor.
-c idump      dump restart file
-c irstar     restart from restart file
+c idump      = 1 dump restart file
+c irstar     = 1 restart from restart file
 c isite      if le 0, read starting MC config. in vmc from mc_configs_start
 c isite      if ge 1, call sites to generate starting MC config. in vmc
 c ipr        print level
@@ -506,6 +507,14 @@ c    & system run dmc or dmc.mov1 with idmc < 0'
 
       if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
         read(5,*) nstep,nblk,nblkeq,nconf,nconf_new
+        write(6,'(''no. of steps/block ='',t31,i10)') nstep
+        write(6,'(''no. of blocks after eq.='',t31,i10)') nblk
+        write(6,'(''no. of blocks before eq. ='',t31,i10)') nblkeq
+        if(index(mode,'dmc').ne.0) then
+          write(6,'(''target walker population/processor='',t36,i5)') nconf
+          if(nconf.le.0) stop 'target population <= 0'
+        endif
+        write(6,'(''no. configurations saved ='',t31,i10)') nconf_new
         call object_modified ('nstep') !JT
         call object_modified ('nconf') !JT
 c Make sure that the printout is not huge
@@ -516,17 +525,18 @@ c Make sure that the printout is not huge
        else
         read(5,*)
       endif
+      if(mode.eq.'dmc' .or. mode.eq.'dmc_mov1' .or. mode.eq.'dmc_mov1_mpi1') then
+        nconf_global=nconf
+       elseif(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+        nconf_global=nconf*nproc
+      endif
+
       read(5,*) idump,irstar,isite,ipr
       if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
         if(irstar.eq.1) nblkeq=0
-        write(6,'(''no. of steps/block ='',t31,i10)') nstep
-        write(6,'(''no. of blocks after eq.='',t31,i10)') nblk
         write(6,'(''no. of blocks before eq. ='',t31,i10)') nblkeq
-        if(index(mode,'dmc').ne.0) then
-          write(6,'(''target walker population ='',t31,i10)') nconf
-          if(nconf.le.0) stop 'target population <= 0'
-        endif
-        write(6,'(''no. configurations saved ='',t31,i10)') nconf_new
+        if(irstar.eq.1) write(6,'(''Job is starting from restart file'')')
+        if(idump.eq.1) write(6,'(''Job will write restart file at end of run'')')
       endif
 
       if(index(mode,'vmc').ne.0) then

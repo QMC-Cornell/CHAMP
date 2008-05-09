@@ -49,7 +49,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &ricum,taucum(MFORCE)
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -90,7 +90,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
 
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
-      ffn=eigv*wdsumo/nconf
+      ffn=eigv*wdsumo/nconf_global
       ffi=one/ffn
       fprod=fprod*ffn/ff(ipmod)
       ff(ipmod)=ffn

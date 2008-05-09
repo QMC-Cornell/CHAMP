@@ -10,7 +10,7 @@ module initialization_mod
 ! -----------------------------------------------------------------------------------
 ! Description   : initialization of some global variables after reading Cyrus's input
 !
-! Created       : J. Toulouse, 03 Ocr 2006
+! Created       : J. Toulouse, 03 Oct 2006
 ! -----------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -33,6 +33,7 @@ module initialization_mod
   if (index(mode, 'dmc_mov1') /= 0)      l_mode_dmc_mov1 = .true.
   if (index(mode, 'dmc_mov1_mpi1') /= 0) l_mode_dmc_mov1_mpi1 = .true.
   if (index(mode, 'dmc_mov1_mpi2') /= 0) l_mode_dmc_mov1_mpi2 = .true.
+  if (index(mode, 'dmc_mov1_mpi3') /= 0) l_mode_dmc_mov1_mpi3 = .true.
 
 ! set nstep_total
   nstep_input = nstep

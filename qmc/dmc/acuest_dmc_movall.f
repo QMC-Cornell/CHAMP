@@ -16,7 +16,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -316,11 +316,11 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       eigv=one
       eest=etrial
       nwalk=nconf
-      wdsumo=nconf
-      wgdsumo=nconf
+      wdsumo=nconf_global
+      wgdsumo=nconf_global
       fprod=one
       do 70 i=0,MFPRD1
-        wtgen(i)=nconf
+        wtgen(i)=nconf_global
    70   ff(i)=one
 
       do 80 iw=1,nconf

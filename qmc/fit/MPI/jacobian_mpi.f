@@ -9,7 +9,7 @@ c Written by Claudia Filippi and Cyrus Umrigar
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
 
-      common /mpioffset/ ircounts(0:nprocx),idispls(0:nprocx)
+      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension ajac(ndata2,nparm)
 

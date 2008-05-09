@@ -11,7 +11,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
      &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
      &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
@@ -65,8 +65,8 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
       common /doefp/ nefp
       common /div_v/ div_vo(MELEC)
 
-      dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
-      dimension ircounts(0:nprocx),idispls(0:nprocx)
+      dimension irn(4,0:MPROC),istatus(MPI_STATUS_SIZE)
+      dimension ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT),znucx(MCTYPE)
      &,n1sx(MCTYPE),n2sx(MCTYPE),n2px(-1:1,MCTYPE)
@@ -79,7 +79,7 @@ c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)
       dimension xstrech(3,MELEC)
 
       rewind 10
-      if(wid) write(10) nproc
+      if(idtask.eq.0) write(10) nproc
       call savern(irn(1,idtask))
 
       do 124 i=0,nproc-1
@@ -121,7 +121,7 @@ c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)
       endif
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(.not.wid) return
+      if(idtask.ne.0) return
       write(10) ((irn(i,j),i=1,4),j=0,nproc-1)
       write(10) hb,delta
       write(10) nelec,nforce
@@ -198,8 +198,8 @@ c   2   pecent=pecent+znuc(iwctype(i))*znuc(iwctype(j))/r
 c   3 continue
 
       rewind 10
-      read(10) nprock
-      if(nprock.ne.nproc) stop 'nproc does not match that in restart file'
+      read(10) nprocx
+      if(nprocx.ne.nproc) stop 'nproc does not match that in restart file'
       do 4 id=0,idtask
         read(10) ((xold(k,i),k=1,ndim),i=1,nelec)
     4   if(nloc.gt.0) read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
@@ -384,7 +384,7 @@ c set n-coord and n-n potential
       r2sum=0
 
 c Zero out all except master processor
-      if(wid) return
+      if(idtask.eq.0) return
 
       acccum=0
       pecum=0

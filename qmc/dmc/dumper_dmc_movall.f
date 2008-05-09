@@ -17,7 +17,7 @@ c job where it left off
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
@@ -98,7 +98,7 @@ c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)
       write(10) irn
       write(10) hb
       write(10) tau,rttau,taueff(1),tautot,idmc,nfprod
-      write(10) nelec,nconf,nforce
+      write(10) nelec,nconf_global,nforce
       write(10) nwalk
       write(10) (wtgen(i),ff(i),i=0,nfprod),(wt(i),i=1,nwalk)
      &,eigv,eest,wdsumo,wgdsumo,fprod
@@ -168,7 +168,7 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       call setrn(irn)
       read(10) hbx
       read(10) taux,rttau,taueff(1),tautot,idmc,nfprod
-      read(10) nelecx,nconf,nforce
+      read(10) nelecx,nconf_global,nforce
       if(dabs(hbx-hb).gt.small) stop 'hb'
       if(dabs(taux-tau).gt.small) stop 'tau'
       if(nelecx.ne.nelec) stop 'nelec'

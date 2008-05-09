@@ -4,6 +4,8 @@ c routine to accumulate estimators for energy etc.
 
 # if defined (MPI)
       use all_tools_mod
+      use montecarlo_mod
+      use mpi_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
@@ -12,7 +14,7 @@ c routine to accumulate estimators for energy etc.
       common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -121,7 +123,7 @@ c xerr = current error of x
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(.not.wid) goto 17
+      if(idtask.ne.0) goto 17
 
 c     wnow=wsum/nstep
 c     wfnow=wfsum/nstep
@@ -212,6 +214,7 @@ c       wgnow=wgsum(ifr)/nstep
           fgcm2(ifr)=fgcm2(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
           fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
           if(iblk.eq.1) then
+c           ifgerr=0
             fgerr=0
            else
             fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
@@ -247,13 +250,13 @@ c write out current values of averages etc.
           ipeierr=nint(10000000*peierr)
           itpber=nint(10000000*tpberr)
           itjfer=nint(10000000*tjferr)
-          ifgerr=nint(10000000*fgerr)
+          if(ifr.gt.1) ifgerr=nint(10000000*fgerr)
          else
           iegerr=nint(100000*egerr)
           ipeerr=nint(100000*peerr)
           itpber=nint(100000*tpberr)
           itjfer=nint(100000*tjferr)
-          ifgerr=nint(100000*fgerr)
+          if(ifr.gt.1) ifgerr=nint(100000*fgerr)
         endif
 
 c magnetic energy for quantum dots...
@@ -272,26 +275,34 @@ c         ipeerr=ipeerr+iemerr
         if(ifr.eq.1) then
           if(ndim.eq.2) then
             write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)')
-     &      egcollect(ifr)/wgcollect(ifr),
+c    &      egcollect(ifr)/wgcollect(ifr),
+     &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,
-     &      npass,nint(wgcollect(ifr)/nproc),ioldest
+c    &      npass,nint(wgcollect(ifr)/nproc),ioldest
+     &      npass,nint(wgsum(ifr)/nproc),ioldest
            else
             write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
-     &      egcollect(ifr)/wgcollect(ifr),
+c    &      egcollect(ifr)/wgcollect(ifr),
+     &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      npass,nint(wgcollect(ifr)/nproc),ioldest
+c    &      npass,nint(wgcollect(ifr)/nproc),ioldest
+     &      npass,nint(wgsum(ifr)/nproc),ioldest
           endif
          else
           if(ndim.eq.2) then
             write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)')
-     &      egcollect(ifr)/wgcollect(ifr),
+c    &      egcollect(ifr)/wgcollect(ifr),
+     &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      emave,iemerr,fgave,ifgerr,nint(wgcollect(ifr)/nproc)
+c    &      emave,iemerr,fgave,ifgerr,nint(wgcollect(ifr)/nproc)
+     &      emave,iemerr,fgave,ifgerr,nint(wgsum(ifr)/nproc)
            else
             write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)')
-     &      egcollect(ifr)/wgcollect(ifr),
+c    &      egcollect(ifr)/wgcollect(ifr),
+     &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      fgave,ifgerr,nint(wgcollect(ifr)/nproc)
+c    &      fgave,ifgerr,nint(wgcollect(ifr)/nproc)
+     &      fgave,ifgerr,nint(wgsum(ifr)/nproc)
           endif
         endif
    15 continue
@@ -299,9 +310,9 @@ c         ipeerr=ipeerr+iemerr
 c If we remove the dwt limit in the dmc routines then there is no need for these warning msgs.
 c The dwt limit is there to prevent population explosions with nonlocal psps. but there are
 c better solutions than dwt limits.
-      if(wgsum(ifr).gt.1.5d0*nstep*nwalk*nproc)
+      if(wgsum(1).gt.1.5d0*nstep*nwalk*nproc)
      &write(6,'(''Warning: etrial too high? It should be reasonably close to DMC energy because of dwt in dmc'')')
-      if(wgsum(ifr).lt.0.7d0*nstep*nwalk*nproc)
+      if(wgsum(1).lt.0.7d0*nstep*nwalk*nproc)
      &write(6,'(''Warning: etrial too low? It should be reasonably close to DMC energy because of dwt in dmc'')')
 
       call systemflush(6)
@@ -378,7 +389,7 @@ c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(.not.wid) goto 36
+      if(idtask.ne.0) goto 36
 
 c Warning: The tausum is being done in an ugly way, and should be cleaned up
       esum1(1)=collect_t(1)
@@ -488,12 +499,13 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
 
       eigv=one
       eest=etrial
+      write(6,'(''nconf,nconf_global='',9i5)') nconf,nconf_global
       nwalk=nconf
-      wdsumo=nconf*nproc
-      wgdsumo=nconf*nproc
+      wdsumo=nconf_global
+      wgdsumo=nconf_global
       fprod=one
       do 70 i=0,MFPRD1
-        wtgen(i)=nconf*nproc
+        wtgen(i)=nconf_global
    70   ff(i)=one
 
       do 80 iw=1,nconf

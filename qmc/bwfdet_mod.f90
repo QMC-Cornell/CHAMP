@@ -16,6 +16,7 @@ MODULE bwfdet_mod
 !-----------------------------------------------------------------!
 
  USE constants_mod
+ USE mpi_mod
  IMPLICIT NONE
  INTEGER,DIMENSION(3) :: nrbwf ! Blip grid
  INTEGER nwvec,nkvec_bwfdet,maxband,nemax,ndet_bwfdet
@@ -38,7 +39,7 @@ MODULE bwfdet_mod
  COMPLEX(dp),ALLOCATABLE :: cavc(:,:,:,:,:), cavc2(:,:,:,:,:)
  COMPLEX(dp),DIMENSION(:),ALLOCATABLE :: zdum,lzdum,ztemp
  COMPLEX(dp),DIMENSION(:,:),ALLOCATABLE :: gzdum
- LOGICAL spin_polarized,am_master,pwreal,open_unit(99)
+ LOGICAL spin_polarized,pwreal,open_unit(99)
  LOGICAL,DIMENSION(:),ALLOCATABLE :: lkcalc,lkpair,lkedge
  LOGICAL,DIMENSION(:,:,:),ALLOCATABLE :: use_real_part
  PRIVATE
@@ -105,13 +106,7 @@ CONTAINS
  if(ierr/=0)call errstop('READBWF','Error in MPI_TYPE_COMMIT')
 #endif
 
- if(nproc==1) then
-   am_master=.true.
- else
-   am_master=wid
- endif
-
- if(am_master) then
+ if(idtask == 0) then
     ialloc=0
 
     call open_units(io,ierr)
@@ -161,13 +156,13 @@ CONTAINS
 
 #ifdef MPI
 ! Broadcast array dimensions so other processors start allocating
- if(am_master) then
+ if(idtask == 0) then
     bwf = bwfsize_type(spin_polarized,  pwreal, nbasisbwf, nwvec, nrbwf(3), nkvec_bwfdet)
  endif
  CALL MPI_BCAST(bwf, 1, MPI_bwfsizetype, 0, MPI_COMM_WORLD,ierr)
  if(ierr/=0)call errstop('READBWF','Error in MPI_BCAST')
 
- if (.NOT.am_master) then
+ if (idtask /= 0) then
     spin_polarized = bwf%spin_polarized
     pwreal         = bwf%pwreal
     nbasisbwf      = bwf%nbasisbwf
@@ -208,7 +203,7 @@ CONTAINS
     endif
  endif
 
- if(am_master) then
+ if(idtask == 0) then
     rewind(io)
 
 ! Detailed read of bwfn.data:
@@ -298,7 +293,7 @@ CONTAINS
     read(io,*,err=30)nrbwf
  endif
 
- if(am_master) then
+ if(idtask == 0) then
     call skip(io,4)
 ! k points, numbers of bands, eigenvalues, orbital coefficients
     read(io,*,err=30)nkvec_bwfdet
@@ -804,12 +799,12 @@ aloop: do jk=ik+1,nkvec_bwfdet
    if(ne>=nele(ispin))exit
   enddo
 
-  if(am_master.and.ne>nele(ispin))then
+  if(idtask == 0.and.ne>nele(ispin))then
    call errstop('BWFDET_SETUP','Problem in orbital counting. Not allowed to &
     &singly occupy +k/-k paired states - need more intelligent code?')
   endif
 
-  if(am_master.and.nele(ispin)<nstates)then
+  if(idtask == 0.and.nele(ispin)<nstates)then
    if(abs(eigtemp(indx(nele(ispin)))-eigtemp(indx(nele(ispin)+1)))<1.d-6)then
     call errwarn('BWFDET_SETUP','Partially occupied degenerate states at the &
      &Fermi level. Multideterminant calculation probably advisable.')
@@ -820,7 +815,7 @@ aloop: do jk=ik+1,nkvec_bwfdet
 
  if(.not.spin_polarized)boccband(:,2)=boccband(:,1)
 
- if(am_master)then
+ if(idtask == 0)then
 
   write(6,*)
   write(6,'( 1x,''Blip setup'',/1x,''=========='')')
@@ -938,7 +933,7 @@ bloop:do ik=1,num_g
 
  k_s=kvec2(1:3,1)
 
- if(am_master)then
+ if(idtask == 0)then
 
 ! Complain if no unique k_s
   do ik=2,nkvec_bwfdet
@@ -1075,7 +1070,7 @@ bloop:do ik=1,num_g
 !   write(6,*)
 !  endif
 
- endif ! am_master
+ endif ! (idtask == 0
  call qmc_barrier
 
  norm=0.d0
@@ -2291,7 +2286,7 @@ bloop:do ik=1,num_g
 !--------------------------!
  IMPLICIT NONE
  CHARACTER(*),INTENT(in) :: subroutine,warning
- if(am_master)then
+ if(idtask == 0)then
   write(6,'(1x,78(''*''))')
   write(6,'(/1x,''WARNING : '',a,/1x,a/)')subroutine,warning
   write(6,'(1x,78(''*''),/)')

@@ -44,17 +44,16 @@ program champ
    call die (lhere, 'error in mpi_comm_size.')
   endif
 
-  if(nproc > NPROCX) then
-   call die (lhere, 'nproc > NPROCX.')
+  if(nproc > MPROC) then
+   call die (lhere, 'nproc > MPROC.')
   endif
 
-  wid=(idtask.eq.0)
-
 ! Close standard output if not the master
-  if (.not.wid) then
+  if (idtask.ne.0) then
    close(6)
-   open(6,file='/dev/null')
-!   open(6,file='slave.out')
+! Warning temporarily commented out
+!  open(6,file='/dev/null')
+   open(6,file='slave.out')
   endif
 # endif
 

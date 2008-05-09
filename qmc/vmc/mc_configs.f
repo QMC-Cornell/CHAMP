@@ -38,7 +38,7 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
 
       common /dim/ ndim
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
      &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
@@ -83,7 +83,7 @@ c if isite>=1 then get initial configuration from sites routine
   394     continue
         if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
         call sites(xold,nelec,nsite)
-!JT        write(6,'(/,''initial configuration from sites'')')
+        write(6,'(/,''initial configuration from sites'')')
 
   395   continue
 
@@ -115,10 +115,9 @@ c-----------------------------------------------------------------------
       entry mc_configs_write_notmpi !JT
 
 c write out last configuration to unit mc_configs_start
-! comment this out to avoid that different job write the same file
-!      open(9,status='unknown',file='mc_configs_start')
-!      write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
-!      close(9)
+      open(9,status='unknown',file='mc_configs_start')
+      write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
+      close(9)
 
       return
       end

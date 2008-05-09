@@ -54,7 +54,7 @@ c     include '../fit/fit.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
      &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
      &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
@@ -119,7 +119,7 @@ c        nstep  = number of metropolis steps/block
 c        nblk   = number of blocks od nstep steps after the
 c                equilibrium steps
 c        nblkeq = number of equilibrium blocks
-c        nconf  = target number of mc configurations (dmc only)
+c        nconf_global  = target number of mc configurations (dmc only)
 c        nconf_new = number of mc configurations generated for optim and dmc
 c        idump  =  1 dump out stuff for a restart
 c        irstar =  1 pick up stuff for a restart

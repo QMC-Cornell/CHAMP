@@ -77,7 +77,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -133,7 +133,7 @@ c Undo products
       ipmod2=mod(ipass+1,nfprod)
       if(idmc.gt.0) then
         ginv=min(1.d0,tau)
-        ffn=eigv*(wdsumo/nconf)**ginv
+        ffn=eigv*(wdsumo/nconf_global)**ginv
         ffi=one/ffn
         fprod=fprod*ffn/ff(ipmod)
         ff(ipmod)=ffn
@@ -799,7 +799,7 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(1,iw))
   300 continue
 
-!JT      if(wsum1(1).gt.1.1d0*nconf) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
+!JT      if(wsum1(1).gt.1.1d0*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
 !JT     &fprod/ff(ipmod2),wsum1(1),wgdsumo
 
       if(idmc.gt.0.or.iacc_rej.eq.0) then

@@ -1,4 +1,5 @@
 module accumulation_mod
+! Not used at present
 
   use all_tools_mod
   use control_mod
@@ -465,7 +466,7 @@ module accumulation_mod
       call mpi_allreduce(ef2sum,ef2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(wf2sum,wf2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-!JT      if(.not.wid) goto 17
+!JT      if(idtask.ne.0) goto 17
 
       wcm2=wcm2+w2collect
       wfcm2=wfcm2+wf2collect
@@ -762,7 +763,7 @@ module accumulation_mod
 
 !JT      if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')') nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
 
-!JT      if(.not.wid) return
+!JT      if(idtask.ne.0) return
 # endif
 
 ! Write out radial charge density for atoms

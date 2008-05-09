@@ -4,7 +4,9 @@ c routine to print out final results
 
 # if defined (MPI)
 
-      use all_tools_mod
+!     use all_tools_mod
+      use main_menu_mod
+      use mpi_mod
 
       implicit real*8(a-h,o-z)
 
@@ -15,7 +17,7 @@ c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -93,16 +95,17 @@ c statement functions for error calculation
       errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk))
 
       passes=dfloat(iblk*nstep)
-      eval=nconf*passes
+      eval=nconf_global*passes
 c Either the next 3 lines or the 3 lines following them could be used.
 c They should give nearly (but not exactly) the same result.
 c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
-c     eval_eff=nconf*rn_eff(wcum1,wcm21)
-c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
-c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf*nstep*rn_eff(wcum,wcm2)
-      evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+c     eval_eff=nconf_global*rn_eff(wcum1,wcm21)
+c     evalf_eff=nconf_global*rn_eff(wfcum1,wfcm21)
+c     evalg_eff=nconf_global*rn_eff(wgcum1(1),wgcm21(1))
+      eval_eff=nconf_global*nstep*rn_eff(wcum,wcm2)
+      evalf_eff=nconf_global*nstep*rn_eff(wfcum,wfcm2)
+      write(6,'(''evalf_eff,nconf_global,nstep,wfcum,wfcm2'',d12.4,2i5,9d12.4)') evalf_eff,nconf_global,nstep,wfcum,wfcm2
+      evalg_eff=nconf_global*nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(passes-1)
       rteval=dsqrt(eval)
       rteval_eff1=dsqrt(eval_eff-1)
@@ -122,12 +125,10 @@ c Collect radial charge density for atoms
      &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 2 i=1,NRAD
     2     rprob(i)=rprobcollect(i)
-
         call mpi_reduce(rprobup,rprobcollect,NRAD,mpi_double_precision
      &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 3 i=1,NRAD
     3     rprobup(i)=rprobcollect(i)
-
         call mpi_reduce(rprobdn,rprobcollect,NRAD,mpi_double_precision
      &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 4 i=1,NRAD
@@ -190,16 +191,14 @@ c Collect radial charge density for atoms
    13       den2d_u(i1,i2)=den2dt(i1,i2)
       endif
 
-
-      call mpi_reduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,0,
+      call mpi_allreduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,
      &MPI_COMM_WORLD,ierr)
-      call mpi_reduce(try_int,try_int_collect,1,mpi_double_precision,mpi_sum,0,
+      call mpi_allreduce(try_int,try_int_collect,1,mpi_double_precision,mpi_sum,
      &MPI_COMM_WORLD,ierr)
-      call mpi_reduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,0,
+      call mpi_allreduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,
      &MPI_COMM_WORLD,ierr)
-      call mpi_reduce(acc_int,acc_int_collect,1,mpi_double_precision,mpi_sum,0,
+      call mpi_allreduce(acc_int,acc_int_collect,1,mpi_double_precision,mpi_sum,
      &MPI_COMM_WORLD,ierr)
-
       nodecr=nodecr_collect
       try_int=try_int_collect
       acc=acc_collect
@@ -208,39 +207,41 @@ c Collect radial charge density for atoms
       call grad_hess_jas_mpi
 
 c     write(11,'(4i5,f11.5,f7.4,f10.7,
-c    &'' nstep,nblk,nblkeq,nconf,etrial,tau,taueff'')')
-c    &nstep,nblk,nblkeq,nconf,etrial,tau,taucum(1)/wgcum(1)
+c    &'' nstep,nblk,nblkeq,nconf_global,etrial,tau,taueff'')')
+c    &nstep,nblk,nblkeq,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
       if(ipr.gt.-2)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
-     &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
-     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+     &  '' nstep,nblk,nconf_global,etrial,tau,taueff'')')
+     &  nstep,iblk,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
-      if(.not.wid) return
+c Warning tmp
+c     if(idtask.ne.0) return
 
       if(iperiodic.eq.0 .and. ncent.eq.1 .and. ipr.ge.-1) then
         if(ndim.eq.3) write(6,'(/,'' r  4*pi*r^2*rho 4*pi*r^2*rhoup 4*pi*r^2*rhodn'')')
         if(ndim.eq.2) write(6,'(/,'' r  2*pi*r*rho 2*pi*r*rhoup 2*pi*r*rhodn'')')
         delr=one/delri
         term=one/(wgcum(1)*delr)
-        do 15 i=1,NRAD
-   15     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,
+        do 18 i=1,NRAD
+   18     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,
      &    rprobup(i)*term,rprobdn(i)*term
       endif
+      write(6,'(''5'')')
 
       if(idmc.ge.0) then
         write(6,'(/,''ages of walkers are:'')')
         write(6,'(10i4)') (iage(i),i=1,nwalk)
-        do 17 i=1,nwalk
+        do 19 i=1,nwalk
           if(iage(i).gt.50) then
             write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eoldw(i,1),
      &      ((xoldw(k,j,i,1),k=1,ndim),j=1,nelec)
             write(6,'(99f8.4)') ((voldw(k,j,i,1),k=1,ndim),j=1,nelec)
           endif
-   17   continue
+   19   continue
 
         write(6,'(''age of oldest walker (this generation, any gen)='',
-     &   3i9)') ioldest,ioldestmx
+     &  3i9)') ioldest,ioldestmx
       endif
 
       write(6,'(''average of the squares of the accepted step-size='',
@@ -317,10 +318,9 @@ c     write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title,date
 
       if(idmc.ge.0) then
 c       write(6,'(''Actual, expected # of branches for 0, inf corr time='',
-c    &  i6,2f9.0)') nbrnch
-c    &  ,nconf*passes*
+c    &  i6,2f9.0)') nbrnch,nconf_global*passes*
 c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2
-c    &  ,nconf*passes*
+c    &  ,nconf_global*passes*
 c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
 
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
@@ -333,9 +333,12 @@ c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
      &  rn_eff(wgcum1(1),wgcm21(1))/passes,rn_eff(wgcum(1),wgcm2(1))/iblk
       endif
 
-      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq
-     & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
-     &eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
+      write(6,'(''nconf*nproc*passes'',t20,''nconf nproc     passes nstep  nblk nblkeq
+     &     tau   taueff'',/,f18.0,2i6,f11.0,3i6,2f9.5)')
+     &eval*nproc,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
+c     write(6,'(''nconf_global*passes'',t19,''passes  nconf_global nstep  nblk nblkeq
+c    & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
+c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sig
      &ma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
@@ -439,6 +442,10 @@ c    &  ,f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
 c     endif
 
       if(ifixe.ne.0) call den2dwrt(wgcum(1))
+
+      if (l_dipole_moment) then
+        call print_dipole_moment
+      endif
 # endif
 
       return

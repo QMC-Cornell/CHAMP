@@ -16,7 +16,7 @@ c Also do other things that differ for serial and parallel runs, such as setting
       common /dim/ ndim
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr3/ mode
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -49,8 +49,14 @@ c set the random number seed, setrn already called in read_input
           write(filename,'(''walkalize.'',i2)') idtask
          elseif(idtask.le.999) then
           write(filename,'(''walkalize.'',i3)') idtask
+         elseif(idtask.le.9999) then
+          write(filename,'(''walkalize.'',i4)') idtask
+         elseif(idtask.le.99999) then
+          write(filename,'(''walkalize.'',i5)') idtask
+         elseif(idtask.le.999999) then
+          write(filename,'(''walkalize.'',i6)') idtask
          else
-          stop 'idtask > 999'
+          stop 'idtask > 999999'
         endif
         open(11,file=filename)
         rewind 11
@@ -58,39 +64,16 @@ c       write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line
         write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
       endif
 
-      if(ipr.gt.-2) then
-        if(idtask.le.9) then
-          write(filename,'(''walkalize.'',i1)') idtask
-         elseif(idtask.le.99) then
-          write(filename,'(''walkalize.'',i2)') idtask
-         elseif(idtask.le.999) then
-          write(filename,'(''walkalize.'',i3)') idtask
-         else
-          stop 'idtask > 999'
-        endif
-      endif
-
       call get_initial_walkers
 
-      if(irstar.ne.1) then
-        if(ipr.gt.-2) then
-c         open(11,file=filename,status='new')
-          open(11,file=filename)
-          rewind 11
-c         write(11,*)
-c    &    'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
-          write(11,'(i3,'' nblkeq to be added to nblock at file end'')')
-     &    nblkeq
-        endif
-      endif
-
-c initialize sums and averages and reset nconf if there is one global population on all processors
+c initialize sums and averages and reset nconf_global if there is one global population on all processors
       if(irstar.ne.1 .and. (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3')) then
         call my_second(1,'zeres0')
         call zeres0_dmc
-        if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
-          nconf=nconf*nproc
-        endif
+c This is now done in read_input
+c       if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+c         nconf_global=nconf_global*nproc
+c       endif
       endif
 
 c If nconf_new > 0 then we want to dump configurations for a future

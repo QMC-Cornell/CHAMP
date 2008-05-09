@@ -21,7 +21,7 @@ c Also, one or all electrons can be moved at once.
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
      &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
      &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo

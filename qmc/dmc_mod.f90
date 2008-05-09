@@ -5,7 +5,7 @@ module dmc_mod
   use montecarlo_mod
   use average_mod
   use print_mod
-  use accumulation_mod
+! use accumulation_mod
   use restart_mod
 
 ! Declaration of global variables and default values
@@ -64,26 +64,26 @@ module dmc_mod
 !
 ! common block variables:
 !
-!   /const/
-!      nelec    = number of electrons
-!      pi       = 3.14159...
-!      hb       = hbar**2/(2m)
-!      delta    = side of box in which metropolis steps are made
-!      deltai   = 1/delta
-!      fbias    = force bias parameter
-!   /contrl/
-!      nstep    = number of metropolis steps/block
-!      nblk     = number of blocks od nstep steps after the
-!                 equilibrium steps
-!      nblkeq   = number of equilibrium blocks
-!      nconf    = initial and target number of dmc configurations
-!      nconf_new= number of new configurations saved per processor
-!      idump    =  1 dump out stuff for a restart
-!      irstar   =  1 pick up stuff for a restart
-!   /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-!          ,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-!      tau      = time-step
-!      nfprod   = number of f's used for removing finite popul. bias
+! /const/
+!   nelec       = number of electrons
+!   pi          = 3.14159...
+!   hb          = hbar**2/(2m)
+!   delta       = side of box in which metropolis steps are made
+!   deltai      = 1/delta
+!   fbias       = force bias parameter
+! /contrl/
+!   nstep       = number of metropolis steps/block
+!   nblk        = number of blocks of nstep steps after the equilibrium blocks
+!   nblkeq      = number of equilibrium blocks
+!   nconf       = initial and target number of dmc configurations per processor
+!   nconf_global= nconf*nproc in dmc_mov1_mpi2 and dmc_mov1_mpi3 modes
+!   nconf_new   = number of new configurations saved per processor
+!   idump       = 1 dump out stuff for a restart
+!   irstar      = 1 pick up stuff for a restart
+! /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!       ,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!   tau         = time-step
+!   nfprod      = number of f's used for removing finite popul. bias
 ! Control variables are:
 ! idmc         < 0     VMC
 !              > 0     DMC
@@ -120,7 +120,7 @@ module dmc_mod
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'dmc'
-  integer i, j, jj, k, id
+  integer i, istep, jj, k, id
   integer ngfmc
   character (len=27) fmt
   character (len=27) filename
@@ -160,7 +160,7 @@ module dmc_mod
         call zerest_dmc
      endif
 
-     do j=1,nstep
+     do istep=1,nstep
 
         ipass=ipass+1
         call dmc_algorithm
@@ -171,7 +171,7 @@ module dmc_mod
 !       walkers reconfiguration
         call splitj
 
-      enddo ! j
+      enddo ! istep
 
 !   averages at each block
     call acuest_dmc
@@ -192,7 +192,7 @@ module dmc_mod
 ! loop over blocks
   do i=1,100000000
     block_iterations_nb = block_iterations_nb + 1
-    do j=1,nstep
+    do istep=1,nstep
       step_iterations_nb = step_iterations_nb + 1
       ipass=ipass+1
       call dmc_algorithm
@@ -237,7 +237,7 @@ module dmc_mod
   352         write(7,fmt) ((xoldw(k,jj,iwalk,1),k=1,ndim),jj=1,nelec),int(sign(1.d0,psidow(iwalk,1))),log(dabs(psidow(iwalk,1)))+psijow(iwalk,1),eoldw(iwalk,1)
           endif
 
-         enddo ! j
+         enddo ! istep
 
         call acuest_dmc
         call compute_averages_walk_block
@@ -252,7 +252,9 @@ module dmc_mod
 !        l_end_of_block = .false.
 
 !     exit loop if nblk and threshold on statistical error reached
-      if (i .ge. nblk .and. egerr .gt. 0 .and. egerr .le. error_threshold) then
+! In dmc_mov1_mpi2/3 modes egerr is always 0 since slaves never calculate it.
+!     if (i .ge. nblk .and. egerr .gt. 0 .and. egerr .le. error_threshold) then
+      if (i .ge. nblk .and. egerr .le. error_threshold) then
         exit
       endif
 

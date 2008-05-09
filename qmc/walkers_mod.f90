@@ -225,7 +225,7 @@ module walkers_mod
 
 
 ! output
-  logical ok, am_master
+  logical ok
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'read_initial_walkers'
@@ -261,13 +261,7 @@ module walkers_mod
   call object_provide ('nconf')
 
 #ifdef MPI
- if(nproc==1) then
-   am_master=.true.
- else
-   am_master=wid
- endif
-
- if (am_master) then
+ if(idtask == 0) then
 #endif
 
 ! check file exists
@@ -306,7 +300,7 @@ module walkers_mod
 
   CALL MPI_BCAST(nconf_read, 1, MPI_INTEGER, 0, MPI_COMM_WORLD,ierr)
 
-  if (.not.am_master) then
+  if(idtask /= 0) then
      call alloc ('coord_elec_wlk_read', coord_elec_wlk_read, ndim, nelec, nconf_total)
   endif
 

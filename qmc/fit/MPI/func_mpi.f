@@ -14,7 +14,7 @@ c Richard Hennig also fixed the load balancing.
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
 
-      common /mpioffset/ ircounts(0:nprocx),idispls(0:nprocx)
+      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension diff(*)
 

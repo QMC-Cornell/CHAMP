@@ -76,7 +76,7 @@ module nodes_mod
 
 ! check maximun number of nodes
   if (nodes_nb == max_nodes_nb) then
-   write(6,*) trim(lhere),': maximun number of nodes max_nodes_nb=',max_nodes_nb,' reached'
+   write(6,*) trim(lhere),': maximum number of nodes max_nodes_nb=',max_nodes_nb,' reached'
    call die (lhere)
   endif
 

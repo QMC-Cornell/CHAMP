@@ -17,7 +17,7 @@ c routine to accumulate estimators for energy etc.
       common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -179,8 +179,6 @@ c Warning temp fix
       call object_modified_by_index (walker_weights_sum_block_index) !JT
       call object_modified_by_index (walker_weights_sum_index) !JT
 
-
-
       call mpi_allreduce(pesum,pecollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(peisum,peicollect,MFORCE
@@ -189,7 +187,6 @@ c Warning temp fix
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjfsum,tjfcollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-
 
       call mpi_allreduce(wg2sum,wg2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -204,12 +201,10 @@ c Warning temp fix
       call mpi_allreduce(tjf2sum,tjf2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-
       call mpi_allreduce(fsum,fcollect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(f2sum,f2collect,MFORCE
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-
 
       call mpi_allreduce(esum,ecollect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -220,7 +215,6 @@ c Warning temp fix
       call mpi_allreduce(wfsum,wfcollect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-
       call mpi_allreduce(e2sum,e2collect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(w2sum,w2collect,1
@@ -230,8 +224,7 @@ c Warning temp fix
       call mpi_allreduce(wf2sum,wf2collect,1
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-
-!JT      if(.not.wid) goto 17
+!JT   if(idtask.ne.0) goto 17 ! The slaves also have to calculate egerr so that they can stop when egerr < error_threshold
 
       wcm2=wcm2+w2collect
       wfcm2=wfcm2+wf2collect
@@ -486,14 +479,14 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       eigv=one
       eest=etrial
       nwalk=nconf
-      wdsumo=nconf
-      wgdsumo=nconf
+      wdsumo=nconf_global
+      wgdsumo=nconf_global
       fprod=one
 
       call object_modified_by_index (nwalk_index)
 
       do 70 i=0,MFPRD1
-        wtgen(i)=nconf
+        wtgen(i)=nconf_global
    70   ff(i)=one
 
       do 80 iw=1,nconf

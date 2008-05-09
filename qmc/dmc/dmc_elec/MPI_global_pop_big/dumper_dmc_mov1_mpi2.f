@@ -15,7 +15,7 @@ c job where it left off
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -83,7 +83,7 @@ c job where it left off
 
       character*13 filename
 
-      dimension irn(4,0:nprocx),istatus(MPI_STATUS_SIZE)
+      dimension irn(4,0:MPROC),istatus(MPI_STATUS_SIZE)
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT),znucx(MCENT)
      &,n1sx(MCTYPE),n2sx(MCTYPE),n2px(-1:1,MCTYPE)
      &,n3sx(MCTYPE),n3px(-1:1,MCTYPE),n3dx(-2:2,MCTYPE)
@@ -101,7 +101,7 @@ c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)
       call mpi_gather(irn(1,idtask),nscounts,mpi_integer
      &,irn,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
-      if(.not.wid) then
+      if(idtask.ne.0) then
         call mpi_isend(nwalk,1,mpi_integer,0
      &  ,1,MPI_COMM_WORLD,irequest,ierr)
 C     RGH
@@ -178,7 +178,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       endif
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(.not.wid) return
+      if(idtask.ne.0) return
 
       write(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i)
      &,wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i)
@@ -186,7 +186,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) ((irn(i,j),i=1,4),j=0,nproc-1)
       write(10) hb
       write(10) tau,rttau,idmc
-      write(10) nelec,nconf
+      write(10) nelec,nconf_global
       write(10) (wtgen(i),i=0,nfprod),wgdsumo
       write(10) wcum,wfcum,wdcum,wgdcum
      &,wcum1,wfcum1,(wgcum1(i),i=1,nforce),wdcum1
@@ -239,10 +239,10 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       entry startr_dmc_mov1_mpi2
       write(6,'(1x,''attempting restart from restart_dmc'')')
       rewind 10
-      read(10) nprock
+      read(10) nprocx
       read(10) nfprod,(ff(i),i=0,nfprod),fprod,eigv,eest,wdsumo
      &,ioldest,ioldestmx
-      if(nprock.ne.nproc) stop 'nproc does not match that in restart file'
+      if(nprocx.ne.nproc) stop 'nproc does not match that in restart file'
       do 4 id=0,idtask
         read(10) nwalk
         read(10) (wt(i),i=1,nwalk),(iage(i),i=1,nwalk)
@@ -267,7 +267,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call setrn(irn(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc
-      read(10) nelecx,nconf
+      read(10) nelecx,nconf_global
       if(dabs(hbx-hb).gt.small) stop 'hb'
       if(dabs(taux-tau).gt.small) stop 'tau'
       if(nelecx.ne.nelec) stop 'nelec'
@@ -285,7 +285,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,NRAD)
       read(10) dfus2ac,dfus2un,dr2ac,dr2un,acc
      &,acc_int,try_int,nbrnch,nodecr
-      if(.not.wid) then
+      if(idtask.ne.0) then
         acc=0
         acc_int=0
         try_int=0

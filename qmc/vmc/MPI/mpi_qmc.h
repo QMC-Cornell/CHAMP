@@ -1,2 +1,2 @@
       integer NPROCX
-      parameter(NPROCX=200)
+      parameter(MPROC=200)

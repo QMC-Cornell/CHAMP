@@ -68,7 +68,7 @@ c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MD
 c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
 
-      common /mpioffset/ ircounts(0:nprocx),idispls(0:nprocx)
+      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
 c     dimension parm(nparm),ajac(ndata2,nparm),denergy(MPARM)
       dimension parm(nparm),ajac(ndata2,nparm)

@@ -7,7 +7,7 @@ c routine to print out final results
 
       implicit real*8(a-h,o-z)
 
-!JT      parameter (one=1.d0,two=2.d0,half=.5d0)
+!JT   parameter (one=1.d0,two=2.d0,half=.5d0)
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -16,7 +16,7 @@ c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -91,16 +91,16 @@ c statement functions for error calculation
       errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk))
 
       passes=dfloat(iblk*nstep)
-      eval=nconf*passes
+      eval=nconf_global*passes
 c Either the next 3 lines or the 3 lines following them could be used.
 c They should give nearly (but not exactly) the same result.
 c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
-c     eval_eff=nconf*rn_eff(wcum1,wcm21)
-c     evalf_eff=nconf*rn_eff(wfcum1,wfcm21)
-c     evalg_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf*nstep*rn_eff(wcum,wcm2)
-      evalf_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
-      evalg_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+c     eval_eff=nconf_global*rn_eff(wcum1,wcm21)
+c     evalf_eff=nconf_global*rn_eff(wfcum1,wfcm21)
+c     evalg_eff=nconf_global*rn_eff(wgcum1(1),wgcm21(1))
+      eval_eff=nconf_global*nstep*rn_eff(wcum,wcm2)
+      evalf_eff=nconf_global*nstep*rn_eff(wfcum,wfcm2)
+      evalg_eff=nconf_global*nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(passes-1)
       rteval=dsqrt(eval)
       rteval_eff1=dsqrt(eval_eff-1)
@@ -203,8 +203,8 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
       if(idmc.ge.0) then
         write(6,'(''Actual, expected # of branches for 0, inf corr time='',
      &  i6,2f9.0)') nbrnch
-     &  ,nconf*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2
-     &  ,nconf*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
+     &  ,nconf_global*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2
+     &  ,nconf_global*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
         write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
@@ -216,7 +216,7 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
       endif
 
       write(6,'(''nconf*passes     passes   nconf nstep  nblk nblkeq  tau    taueff'',/,
-     & 2f12.0,2i6,i7,i5,2f9.5)') eval,passes,nconf,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
+     & 2f12.0,2i6,i7,i5,2f9.5)') eval,passes,nconf_global,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
         write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
@@ -325,7 +325,7 @@ c save energy difference and error in energy difference for optimization
       if(ipr.gt.-2)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
      &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
-     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+     &  nstep,iblk,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))
 

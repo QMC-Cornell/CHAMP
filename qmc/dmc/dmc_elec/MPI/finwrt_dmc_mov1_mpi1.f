@@ -16,7 +16,7 @@ c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -96,16 +96,16 @@ c statement functions for error calculation
       passes=dfloat(iblk*nstep)
       eval=nconf*passes
       pass_proc=dfloat(iblk_proc*nstep)
-      eval_proc=nconf*pass_proc
+      eval_proc=nconf_global*pass_proc
 c Either the next 3 lines or the 3 lines following them could be used.
 c They should give nearly (but not exactly) the same result.
 c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
-c     eval_proc_eff=nconf*rn_eff(wcum1,wcm21)
-c     evalf_proc_eff=nconf*rn_eff(wfcum1,wfcm21)
-c     evalg_proc_eff=nconf*rn_eff(wgcum1(1),wgcm21(1))
-      eval_proc_eff=nconf*nstep*rn_eff(wcum,wcm2)
-      evalf_proc_eff=nconf*nstep*rn_eff(wfcum,wfcm2)
-      evalg_proc_eff=nconf*nstep*rn_eff(wgcum(1),wgcm2(1))
+c     eval_proc_eff=nconf_global*rn_eff(wcum1,wcm21)
+c     evalf_proc_eff=nconf_global*rn_eff(wfcum1,wfcm21)
+c     evalg_proc_eff=nconf_global*rn_eff(wgcum1(1),wgcm21(1))
+      eval_proc_eff=nconf_global*nstep*rn_eff(wcum,wcm2)
+      evalf_proc_eff=nconf_global*nstep*rn_eff(wfcum,wfcm2)
+      evalg_proc_eff=nconf_global*nstep*rn_eff(wgcum(1),wgcm2(1))
 c     rtpass1=dsqrt(passes-1)
       rtpass_proc1=dsqrt(pass_proc-1)
 c     rteval=dsqrt(eval)
@@ -121,6 +121,7 @@ c     rteval_proc=dsqrt(eval_proc)
      & passes,eval,pass_proc,eval_proc,eval_proc_eff,evalf_proc_eff,
      & evalg_proc_eff
 
+c For the next 15 calls we switched from using mpi_reduce to mpi_allreduce
       call mpi_allreduce(ecum1,e1collect,1,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ecm21,e21collect,1,mpi_double_precision
@@ -166,16 +167,16 @@ c     rteval_proc=dsqrt(eval_proc)
 
 c Collect radial charge density for atoms
       if(iperiodic.eq.0) then
-        call mpi_allreduce(rprob,rprobcollect,NRAD,mpi_double_precision
-     &  ,mpi_sum,MPI_COMM_WORLD,ierr)
+        call mpi_reduce(rprob,rprobcollect,NRAD,mpi_double_precision
+     &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 2 i=1,NRAD
     2     rprob(i)=rprobcollect(i)
-        call mpi_allreduce(rprobup,rprobcollect,NRAD,mpi_double_precision
-     &  ,mpi_sum,MPI_COMM_WORLD,ierr)
+        call mpi_reduce(rprobup,rprobcollect,NRAD,mpi_double_precision
+     &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 3 i=1,NRAD
     3     rprobup(i)=rprobcollect(i)
-        call mpi_allreduce(rprobdn,rprobcollect,NRAD,mpi_double_precision
-     &  ,mpi_sum,MPI_COMM_WORLD,ierr)
+        call mpi_reduce(rprobdn,rprobcollect,NRAD,mpi_double_precision
+     &  ,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 4 i=1,NRAD
     4     rprobdn(i)=rprobcollect(i)
       endif
@@ -252,13 +253,13 @@ c Collect radial charge density for atoms
       call grad_hess_jas_mpi
 
 c     write(11,'(4i5,f11.5,f7.4,f10.7,
-c    &'' nstep,nblk,nblkeq,nconf,etrial,tau,taueff'')')
-c    &nstep,nblk,nblkeq,nconf,etrial,tau,taucum(1)/wgcum(1)
+c    &'' nstep,nblk,nblkeq,nconf_global,etrial,tau,taueff'')')
+c    &nstep,nblk,nblkeq,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
       if(ipr.gt.-2)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
-     &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
-     &  nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+     &  '' nstep,nblk,nconf_global,etrial,tau,taueff'')')
+     &  nstep,iblk,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
 c Warning tmp
 c     if(idtask.ne.0) return
@@ -362,9 +363,9 @@ c     write(6,'(''dmc_mov1_mpi '',2a10)') title
 
       if(idmc.ge.0) then
 c       write(6,'(''Actual, expected # of branches for 0, inf corr time='',
-c    &  i6,2f9.0)') nbrnch ,nconf*passes*
+c    &  i6,2f9.0)') nbrnch,nconf_global*passes*
 c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2
-c    &  ,nconf*passes*
+c    &  ,nconf_global*passes*
 c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
@@ -376,9 +377,12 @@ c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
      &  rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),wgcm2(1))/iblk_proc
       endif
 
-      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq
-     & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
-     &eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
+      write(6,'(''nconf*nproc*passes'',t20,''nconf nproc     passes nstep  nblk nblkeq
+     &     tau   taueff'',/,f18.0,2i6,f11.0,3i6,2f9.5)')
+     &eval*nproc,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
+c     write(6,'(''nconf_global*passes'',t19,''passes  nconf_global nstep  nblk nblkeq
+c    & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
+c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sig
      &ma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
@@ -475,12 +479,12 @@ c save energy difference and error in energy difference for optimization
   50  continue
 
 c These are not being collected at the moment.
-c      if(iperiodic.eq.0 .and. ncent.eq.1) then
-c        write(6,'(''<r2>_av ='',t22,f14.7,'' +-''
-c     &  ,f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
-c        write(6,'(''<ri>_av ='',t22,f14.7,'' +-''
-c    &   ,f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
-c      endif
+c     if(iperiodic.eq.0 .and. ncent.eq.1) then
+c       write(6,'(''<r2>_av ='',t22,f14.7,'' +-''
+c    &  ,f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
+c       write(6,'(''<ri>_av ='',t22,f14.7,'' +-''
+c    &  ,f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
+c     endif
 
       if(ifixe.ne.0) call den2dwrt(wgcum(1))
 

@@ -14,7 +14,7 @@ c routine to accumulate estimators for energy etc.
       common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_new,isite,idump,irstar
+      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -388,14 +388,14 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       eigv=one
       eest=etrial
       nwalk=nconf
-      wdsumo=nconf
-      wgdsumo=nconf
+      wdsumo=nconf_global
+      wgdsumo=nconf_global
       fprod=one
 
       call object_modified ('nwalk')
 
       do 70 i=0,MFPRD1
-        wtgen(i)=nconf
+        wtgen(i)=nconf_global
    70   ff(i)=one
 
       do 80 iw=1,nconf
