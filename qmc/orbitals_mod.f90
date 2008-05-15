@@ -110,6 +110,8 @@ module orbitals_mod
   character(len=max_string_len_rout), save :: lhere = 'orbitals_menu'
 
 ! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of orbitals menu -------------------------------------------------------------------------------'
 
 ! loop over menu lines
   do
@@ -186,6 +188,8 @@ module orbitals_mod
     call ortho_orb
   endif
 
+  write(6,'(a)') 'End of orbitals menu -------------------------------------------------------------------------------------'
+
   end subroutine orbitals_menu
 
 !===========================================================================
@@ -237,6 +241,7 @@ module orbitals_mod
 ! impose the e-N cusp condition
   write(6,*) trim(lhere), ': call cusp_en_orb'
   call cusp_en_orb
+
 
   end subroutine orb_cusp_menu
 
@@ -1838,20 +1843,16 @@ module orbitals_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_ex_forbidden_rd'
-  integer orb_i
   integer, allocatable :: orb_ex_forbidden_flat (:)
-  integer orb_ex_forbidden_flat_nb, orb_ex_forbidden_nb
+  integer orb_i, orb_ex_forbidden_flat_nb
 
 ! begin
-
   call get_next_value_list ('orb_ex_forbidden_flat', orb_ex_forbidden_flat, orb_ex_forbidden_flat_nb)
 
   if (mod(orb_ex_forbidden_flat_nb,2) /= 0) then
     write(6,'(2a,i3,a)') trim(lhere),': the card "forbidden_excitations ... end" contains ', orb_ex_forbidden_flat_nb,' elements; it must be even number!'
     call die (lhere)
   endif
-
-  orb_ex_forbidden_nb = orb_ex_forbidden_flat_nb/2
 
   call object_provide ('orb_tot_nb')
 
@@ -1863,12 +1864,11 @@ module orbitals_mod
   enddo
 
   call object_alloc ('orb_ex_forbidden', orb_ex_forbidden, orb_tot_nb, orb_tot_nb)
-
   orb_ex_forbidden (:,:) = .false.
 
-  do orb_i = 1, orb_ex_forbidden_nb
+  do orb_i = 1, orb_ex_forbidden_flat_nb, 2
    orb_ex_forbidden (orb_ex_forbidden_flat(orb_i), orb_ex_forbidden_flat(orb_i+1)) = .true.
-   write(6,'(2a,i3,a,i3,a)') trim(lhere),': orbital excitation ',orb_ex_forbidden_flat(orb_i),' -> ', orb_ex_forbidden_flat(orb_i+1),' is marked as forbidden'
+   write(6,'(a,i3,a,i3,a)') ' orbital excitation ',orb_ex_forbidden_flat(orb_i),' -> ', orb_ex_forbidden_flat(orb_i+1),' is marked as forbidden'
   enddo
 
 
@@ -2037,7 +2037,7 @@ module orbitals_mod
     call die (here, 'orb_opt_vir_i='+orb_opt_vir_i+' /= orb_opt_vir_nb='+orb_opt_vir_nb)
   endif
 
-  write(6,'(a,i3,a,1000i3)') ' There are ',orb_opt_nb,' orbitals in the optimization space of indexes:', orb_opt_lab
+  write(6,'(a,i3,a,1000i4)') ' There are ',orb_opt_nb,' orbitals in the optimization space of indexes:', orb_opt_lab
 
  end subroutine orb_optimized_bld
 

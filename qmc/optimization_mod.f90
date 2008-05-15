@@ -152,6 +152,7 @@ module optimization_mod
    write(6,'(a)') ' delta_param_norm_max = [real] : maximum parameter variation norm allowed (default=10)'
    write(6,'(a)') ' hessian_variance = [linear|levenberg_marquardt|levenberg_marquardt_cov] : choice of variance hessian (default=linear)'
    write(6,'(a)') ' decrease_p_var= [bool] : decrease progressively proportion of variance (default=false)'
+   write(6,'(a)') ' print_orbital_excitations = [bool] print orbital excitation information? (default=false)'
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
@@ -265,6 +266,9 @@ module optimization_mod
 
   case ('decrease_p_var')
    call get_next_value (l_decrease_p_var)
+
+  case ('print_orbital_excitations')
+   call get_next_value (l_print_orbital_excitations)
 
   case ('orthonormalize_orbitals')
    call get_next_value (l_ortho_orb_opt)
@@ -435,7 +439,7 @@ module optimization_mod
   write(6,'(a,i3)') ' Number of CSF parameters:       ', nparmcsf
   write(6,'(a,i3)') ' Number of orbital parameters:   ', param_orb_nb
   write(6,'(a,i3)') ' Number of exponent parameters:  ', param_exp_nb
-  write(6,'(a,i3)') 'Number of periodic jastrow parameters: ', param_pjas_nb
+  write(6,'(a,i3)') ' Number of periodic jastrow parameters: ', param_pjas_nb
   write(6,'(a,i3)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i3)') ' Total number of parameters:     ', param_nb
   write(6,*)

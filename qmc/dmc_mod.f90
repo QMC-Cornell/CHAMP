@@ -5,7 +5,6 @@ module dmc_mod
   use montecarlo_mod
   use average_mod
   use print_mod
-! use accumulation_mod
   use restart_mod
 
 ! Declaration of global variables and default values

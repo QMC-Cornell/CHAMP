@@ -180,6 +180,13 @@ c       wgnow=wgsum(ifr)/nstep
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
+        if(ifr.eq.1) then                                !JT
+         eloc_bav = egnow                                !JT
+         eloc_av = egave                                 !JT
+         call object_modified_by_index (eloc_bav_index)  !JT
+         call object_modified_by_index (eloc_av_index)   !JT
+        endif                                            !JT
+
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))
           fgcm2(ifr)=fgcm2(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
@@ -267,8 +274,9 @@ c         ipeerr=ipeerr+iemerr
         endif
    15 continue
 
-      eloc_av = egave                                 !JT
-      call object_modified_by_index (eloc_av_index)   !JT
+!      moved up
+!      eloc_av = egave                                 !JT
+!      call object_modified_by_index (eloc_av_index)   !JT
 
 c If we remove the dwt limit in the dmc routines then there is no need for these warning msgs.
 c The dwt limit is there to prevent population explosions with nonlocal psps. but there are

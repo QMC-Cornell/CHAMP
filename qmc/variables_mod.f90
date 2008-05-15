@@ -31,6 +31,7 @@ module variables_mod
 
 ! label of last occupied orbital
   integer                         :: orb_occ_last_in_wf_lab
+  logical                         :: l_print_orbital_excitations = .false.
 
 ! CPU time
   real(dp)                :: cpu_time_start

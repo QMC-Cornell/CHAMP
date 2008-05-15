@@ -382,7 +382,7 @@ module deriv_orb_mod
   include 'commons.h'
 
 ! local
-  integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j
+  integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j, dorb_i
   integer ex_dir_rev
   logical dpsi_orb_is_zero, ex_is_zero, csf_ex_unq_is_zero, dpsi_orb_is_redundant
 
@@ -1093,6 +1093,18 @@ module deriv_orb_mod
 !    write(6,'(2a,i4,a,i4,a)') trim(here),': excitation ',orb_1st, ' ->', orb_2nd, ' is no longer present'
 !   endif
 !  enddo
+
+  if (l_print_orbital_excitations) then
+  write(6,*)
+  write(6,'(a)') ' Orbital excitations:'
+   do dorb_i = 1, param_orb_nb
+    write(6,'(a,i4,a,i4,a,i4,a,i4)') ' orbital parameter # ',dorb_i,' corresponds to single excitation # ',ex_orb_ind (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind (dorb_i))
+    if (ex_orb_ind_rev (dorb_i) /= 0) then
+     write(6,'(a,i4,a,i4,a,i4)') '                             and reverse single excitation # ',ex_orb_ind_rev (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind_rev (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind_rev (dorb_i))
+    endif
+   enddo ! dorb_i
+  write(6,*)
+  endif
 
  end subroutine single_ex_wf_bld_2
 

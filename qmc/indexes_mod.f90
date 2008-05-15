@@ -28,6 +28,7 @@ module indexes_mod
   integer     :: vpsp_ex_index
   integer     :: orbe_index
   integer     :: detn_index
+  integer     :: eloc_bav_index
   integer     :: eloc_av_index
   integer     :: eloc_av_err_index
   integer     :: eloc_pot_nloc_index

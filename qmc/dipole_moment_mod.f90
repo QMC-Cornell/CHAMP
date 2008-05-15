@@ -33,6 +33,8 @@
   real(dp), allocatable                       :: dipole_moment_zv_coef_blk (:,:)
   real(dp), allocatable                       :: dipole_moment_zv_av (:)
   real(dp), allocatable                       :: dipole_moment_zv_bav (:)
+  real(dp), allocatable                       :: dipole_moment_zv_bav_av (:)
+  real(dp), allocatable                       :: dipole_moment_zv_bav_av_err (:)
   real(dp), allocatable                       :: dipole_moment_zv_bav_sq (:)
   real(dp), allocatable                       :: dipole_moment_zv_bav_sq_av (:)
   real(dp), allocatable                       :: dipole_moment_zv_av_var (:)
@@ -40,6 +42,9 @@
   real(dp), allocatable                       :: dipole_moment_zvzb_av (:)
   real(dp), allocatable                       :: dipole_moment_zvzb_av_var (:)
   real(dp), allocatable                       :: dipole_moment_zvzb_av_err (:)
+  real(dp), allocatable                       :: dipole_moment_zvzb_bav (:)
+  real(dp), allocatable                       :: dipole_moment_zvzb_bav_av (:)
+  real(dp), allocatable                       :: dipole_moment_zvzb_bav_av_err (:)
 
   contains
 
@@ -145,10 +150,13 @@
    call object_covariance_request ('dipole_moment_av_deloc_av_covar')
    call object_covariance_request ('deloc_av_deloc_av_covar')
 !   call object_average_request ('dipole_moment_zv_bav_sq_av')
+
   endif
 
   if (l_dipole_moment_zv) then
    call object_error_request ('dipole_moment_zv_av_err')
+   call object_average_request ('dipole_moment_zv_bav_av') !!!!
+   call object_error_request ('dipole_moment_zv_bav_av_err') !!!
   endif
 
   if (l_dipole_moment_zvzb) then
@@ -168,6 +176,9 @@
    call object_covariance_request ('dpsi_av_eloc_av_covar')
 
    call object_error_request ('dipole_moment_zvzb_av_err')
+
+   call object_average_request ('dipole_moment_zvzb_bav_av') !!!!
+   call object_error_request ('dipole_moment_zvzb_bav_av_err') !!!
   endif
 
   write(6,'(a)') 'End of dipole_moment menu --------------------------------------------------------------------------------'
@@ -581,6 +592,8 @@
   if (header_exe) then
 
    call object_create ('dipole_moment_zv_bav')
+   call object_average_define_from_block_average ('dipole_moment_zv_bav',  'dipole_moment_zv_bav_av')
+   call object_error_define ('dipole_moment_zv_bav_av',  'dipole_moment_zv_bav_av_err')
 
    call object_needed ('ndim')
    call object_needed ('param_nb')
@@ -594,6 +607,8 @@
 
 ! allocations
   call object_alloc ('dipole_moment_zv_bav', dipole_moment_zv_bav, ndim)
+  call object_alloc ('dipole_moment_zv_bav_av', dipole_moment_zv_bav_av, ndim)
+  call object_alloc ('dipole_moment_zv_bav_av_err', dipole_moment_zv_bav_av_err, ndim)
 
   do dim_i = 1, ndim
    dipole_moment_zv_bav (dim_i) = dipole_moment_bav (dim_i)
@@ -763,6 +778,52 @@
   end subroutine dipole_moment_zvzb_av_bld
 
 ! ==============================================================================
+  subroutine dipole_moment_zvzb_bav_bld
+! ------------------------------------------------------------------------------
+! Description   : block average of zero-variance zero-bias estimator total dipole moment
+!
+! Created       : J. Toulouse, 08 May 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer dim_i, param_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dipole_moment_zvzb_bav')
+   call object_average_define_from_block_average ('dipole_moment_zvzb_bav',  'dipole_moment_zvzb_bav_av')
+   call object_error_define ('dipole_moment_zvzb_bav_av',  'dipole_moment_zvzb_bav_av_err')
+
+   call object_needed ('ndim')
+   call object_needed ('param_nb')
+   call object_needed ('dipole_moment_zv_bav')
+   call object_needed ('dipole_moment_zv_coef_blk')
+   call object_needed ('gradient_energy_blk')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dipole_moment_zvzb_bav', dipole_moment_zvzb_bav, ndim)
+  call object_alloc ('dipole_moment_zvzb_bav_av', dipole_moment_zvzb_bav_av, ndim)
+  call object_alloc ('dipole_moment_zvzb_bav_av_err', dipole_moment_zvzb_bav_av_err, ndim)
+
+  do dim_i = 1, ndim
+   dipole_moment_zvzb_bav (dim_i) = dipole_moment_zv_bav (dim_i)
+   do param_i = 1, param_nb
+    dipole_moment_zvzb_bav (dim_i) = dipole_moment_zvzb_bav (dim_i) + dipole_moment_zv_coef_blk (dim_i, param_i) * gradient_energy_blk (param_i)
+   enddo ! param_i
+  enddo ! dim_i
+
+  end subroutine dipole_moment_zvzb_bav_bld
+
+! ==============================================================================
   subroutine dipole_moment_zvzb_av_var_bld
 ! ------------------------------------------------------------------------------
 ! Description   : variance of average of zero-variance zero-bias estimator total dipole moment
@@ -869,9 +930,14 @@
   if (l_dipole_moment_zv) then
    call object_provide ('dipole_moment_zv_av')
    call object_provide ('dipole_moment_zv_av_err')
+   call object_provide ('dipole_moment_zv_bav_av') !!
+   call object_provide ('dipole_moment_zv_bav_av_err') !!
    write(6,'(a)') 'Total dipole moment using zero-variance estimator:'
    do dim_i = 1, ndim
     write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_av_err (dim_i)
+   enddo
+   do dim_i = 1, ndim
+    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_bav_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_bav_av_err (dim_i)
    enddo
   endif
   if (l_dipole_moment_zvzb) then

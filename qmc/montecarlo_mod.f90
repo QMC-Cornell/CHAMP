@@ -8,14 +8,19 @@ module montecarlo_mod
 
 ! local energy
   real(dp)    :: eloc
+  real(dp)    :: eloc_bav
+  real(dp)    :: eloc_av
+  real(dp)    :: eloc_av_var
+  real(dp)    :: eloc_av_err
 
 ! local energy over walkers
   real(dp), allocatable   :: eloc_wlk (:)
-  real(dp)                :: eloc_av
-  real(dp)                :: eloc_av_var
-  real(dp)                :: eloc_av_err
 
 ! local energy for tests
+  real(dp), allocatable   :: eloc_test (:)          ! for tests
+  real(dp), allocatable   :: eloc_test_bav (:)         ! for tests
+  real(dp), allocatable   :: eloc_test_av (:)         ! for tests
+  real(dp), allocatable   :: eloc_test_av_err (:)     ! for tests
   real(dp), allocatable   :: eloc_wlk_test (:,:)          ! for tests
   real(dp), allocatable   :: eloc_wlk_test_av (:)         ! for tests
   real(dp), allocatable   :: eloc_wlk_test_av_err (:)     ! for tests
@@ -86,6 +91,46 @@ module montecarlo_mod
   end subroutine eloc_wlk_bld
 
 ! ==============================================================================
+  subroutine eloc_test_bld
+! ------------------------------------------------------------------------------
+! Description   : local energy for tests
+!
+! Created       : J. Toulouse, 08 May 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_test')
+   call object_block_average_define ('eloc_test', 'eloc_test_bav')
+   call object_average_define_from_block_average ('eloc_test_bav', 'eloc_test_av')
+!   call object_average_define ('eloc_test', 'eloc_test_av')
+   call object_error_define ('eloc_test_av', 'eloc_test_av_err')
+
+   call object_needed ('eold')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('eloc_test', eloc_test, 3)
+  call object_alloc ('eloc_test_bav', eloc_test_bav, 3)
+  call object_alloc ('eloc_test_av', eloc_test_av, 3)
+  call object_alloc ('eloc_test_av_err', eloc_test_av_err, 3)
+
+  eloc_test (1) = eold (1)
+
+  eloc_test (2) = 2.d0 * eloc_test (1)
+  eloc_test (3) = - eloc_test (1)
+
+  end subroutine eloc_test_bld
+
+! ==============================================================================
   subroutine eloc_wlk_test_bld
 ! ------------------------------------------------------------------------------
 ! Description   : local energy over walkers for tests
@@ -130,11 +175,11 @@ module montecarlo_mod
 
   else
    call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
-
   endif
 
-   eloc_wlk_test (2,:) = -eloc_wlk_test (1,:)
-   eloc_wlk_test (3,:) = 2.d0*eloc_wlk_test (1,:)
+   eloc_wlk_test (2,1) = 2.d0 * eloc_wlk_test (1,1)
+   eloc_wlk_test (3,1) = - eloc_wlk_test (1,1)
+
 
   end subroutine eloc_wlk_test_bld
 

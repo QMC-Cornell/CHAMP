@@ -298,7 +298,7 @@ module objects_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_add'
-  integer object_ind, obj_i, object_sort_pos
+  integer obj_i, object_sort_pos
 
 ! begin
   if (objects_nb == max_objects_nb) then
@@ -841,7 +841,6 @@ module objects_mod
 
 ! local
   character(len=max_string_len_rout), save  :: lhere =  'node_exe_by_index'
-  integer node_i
   integer obj_i
   real(dp) cpu1, cpu2
 

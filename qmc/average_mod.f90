@@ -75,16 +75,19 @@ module average_mod
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'average_menu'
-  integer averages_list_nb, errors_list_nb, obj_i
+  integer block_averages_list_nb, averages_list_nb, errors_list_nb, obj_i
 # if defined (PATHSCALE)
+   character (len=max_string_len) :: block_averages_list (max_string_array_len) ! for pathscale compiler
    character (len=max_string_len) :: averages_list (max_string_array_len) ! for pathscale compiler
    character (len=max_string_len) :: errors_list (max_string_array_len) ! for pathscale compiler
 # else
+   character (len=max_string_len), allocatable :: block_averages_list (:)
    character (len=max_string_len), allocatable :: averages_list (:)
    character (len=max_string_len), allocatable :: errors_list (:)
 # endif
 
 ! begin
+  block_averages_list_nb = 0
   averages_list_nb = 0
   errors_list_nb = 0
 
@@ -97,10 +100,18 @@ module average_mod
    write(6,*)
    write(6,'(a)') 'HELP for average menu:'
    write(6,'(a)') 'average'
-   write(6,'(a)') '  averages ... end: list of averages to compute'
+   write(6,'(a)') '  block_averages ... end: list of block averages to compute'
+   write(6,'(a)') '  averages ... end: list of global averages to compute'
    write(6,'(a)') '  errors ... end: list of statistical errors to compute'
    write(6,'(a)') 'end'
    write(6,*)
+
+  case ('block_averages')
+# if defined (PATHSCALE)
+   call get_next_value_list_string ('block_averages_list', block_averages_list, block_averages_list_nb) ! for pathscale compiler
+# else
+   call get_next_value_list ('block_averages_list', block_averages_list, block_averages_list_nb)
+# endif
 
   case ('averages')
 # if defined (PATHSCALE)
@@ -124,6 +135,11 @@ module average_mod
   end select
 
   enddo ! end loop over menu lines
+
+! request block averages to compute
+  do obj_i = 1, block_averages_list_nb
+   call object_block_average_request (block_averages_list (obj_i))
+  enddo
 
 ! request averages to compute
   do obj_i = 1, averages_list_nb

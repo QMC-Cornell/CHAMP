@@ -14,6 +14,7 @@ module deriv_mod
   character(max_string_len), allocatable :: param_type (:)
 
   real(dp), allocatable          :: dpsi (:)
+  real(dp), allocatable          :: dpsi_bav (:)
   real(dp), allocatable          :: dpsi_av (:)
   real(dp), allocatable          :: dpsi_sq (:)
   real(dp), allocatable          :: dpsi_sq_av (:)
@@ -30,8 +31,10 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_dpsi_eloc_sq (:)
   real(dp), allocatable          :: dpsi_dpsi_eloc_sq_av (:)
   real(dp), allocatable          :: dpsi_eloc (:)
+  real(dp), allocatable          :: dpsi_eloc_bav (:)
   real(dp), allocatable          :: dpsi_eloc_av (:)
   real(dp), allocatable          :: dpsi_eloc_covar (:)
+  real(dp), allocatable          :: dpsi_eloc_blk_covar (:)
   real(dp), allocatable          :: dpsi_eloc_sq (:)
   real(dp), allocatable          :: dpsi_eloc_sq_av (:)
   real(dp), allocatable          :: dpsi_eloc_sq_covar (:)
@@ -71,6 +74,7 @@ module deriv_mod
   real(dp), allocatable          :: d2psi_eloc_av (:)
 
   real(dp), allocatable          :: gradient_energy (:)
+  real(dp), allocatable          :: gradient_energy_blk (:)
   real(dp), allocatable          :: gradient_variance (:)
   real(dp), allocatable          :: gradient (:)
   real(dp)                       :: gradient_norm
@@ -217,8 +221,6 @@ module deriv_mod
 
   end subroutine param_nb_bld
 
-
-
 ! ==============================================================================
   subroutine dpsi_bld
 ! ------------------------------------------------------------------------------
@@ -239,6 +241,8 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi')
+   call object_block_average_define ('dpsi', 'dpsi_bav')
+   call object_average_define ('dpsi', 'dpsi_av')
    call object_covariance_define ('dpsi_av', 'dpsi_av', 'dpsi_av_dpsi_av_covar')
    call object_covariance_define ('dpsi_av', 'eloc_av', 'dpsi_av_eloc_av_covar')
 
@@ -250,6 +254,7 @@ module deriv_mod
 
 ! begin
   call object_alloc ('dpsi', dpsi, param_nb)
+  call object_alloc ('dpsi_bav', dpsi_bav, param_nb)
   call object_alloc ('dpsi_av', dpsi_av, param_nb)
   call object_alloc ('dpsi_av_dpsi_av_covar', dpsi_av_dpsi_av_covar, param_nb, param_nb)
   call object_alloc ('dpsi_av_eloc_av_covar', dpsi_av_eloc_av_covar, param_nb)
@@ -774,6 +779,8 @@ module deriv_mod
    call object_needed ('param_nb')
    call object_needed ('dpsi')
    call object_needed ('eloc')
+   call object_block_average_define ('dpsi_eloc', 'dpsi_eloc_bav')
+   call object_average_define ('dpsi_eloc', 'dpsi_eloc_av')
    call object_covariance_define ('dpsi_eloc_av', 'dpsi_eloc_av', 'dpsi_eloc_av_dpsi_eloc_av_covar')
    call object_covariance_define ('dpsi_eloc_av', 'dpsi_av', 'dpsi_eloc_av_dpsi_av_covar')
    call object_covariance_define ('dpsi_eloc_av', 'eloc_av', 'dpsi_eloc_av_eloc_av_covar')
@@ -785,6 +792,7 @@ module deriv_mod
 ! begin
 
   call object_alloc ('dpsi_eloc', dpsi_eloc, param_nb)
+  call object_alloc ('dpsi_eloc_bav', dpsi_eloc_bav, param_nb)
   call object_alloc ('dpsi_eloc_av', dpsi_eloc_av, param_nb)
   call object_alloc ('dpsi_eloc_av_dpsi_eloc_av_covar', dpsi_eloc_av_dpsi_eloc_av_covar, param_nb, param_nb)
   call object_alloc ('dpsi_eloc_av_dpsi_av_covar', dpsi_eloc_av_dpsi_av_covar, param_nb, param_nb)
@@ -1253,6 +1261,38 @@ module deriv_mod
   end subroutine dpsi_eloc_covar_bld
 
 ! ==============================================================================
+  subroutine dpsi_eloc_blk_covar_bld
+! ------------------------------------------------------------------------------
+! Description   : covariance <dpsi_eloc> - <dpsi> <eloc> for current block
+! Description   : <dpsi_eloc> - <dpsi> <eloc>
+!
+! Created       : J. Toulouse, 08 May 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_eloc_blk_covar')
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_eloc_bav')
+   call object_needed ('dpsi_bav')
+   call object_needed ('eloc_bav')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_eloc_blk_covar', dpsi_eloc_blk_covar, param_nb)
+
+  dpsi_eloc_blk_covar =  dpsi_eloc_bav - dpsi_bav * eloc_bav
+
+  end subroutine dpsi_eloc_blk_covar_bld
+
+! ==============================================================================
   subroutine dpsi_dpsi_c_eloc_av_bld
 ! ------------------------------------------------------------------------------
 ! Description   : dpsi_dpsi_c_eloc_av = < ( dpsi - < dpsi > ) * ( dpsi - < dpsi > ) * eloc >
@@ -1452,6 +1492,34 @@ module deriv_mod
   gradient_energy =  2.d0 * dpsi_eloc_covar
 
   end subroutine gradient_energy_bld
+
+! ==============================================================================
+  subroutine gradient_energy_blk_bld
+! ------------------------------------------------------------------------------
+! Description   : gradient_energy on one block
+!
+! Created       : J. Toulouse, 08 May 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! header
+  if (header_exe) then
+
+   call object_create ('gradient_energy_blk')
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_eloc_blk_covar')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('gradient_energy_blk', gradient_energy_blk, param_nb)
+  gradient_energy_blk =  2.d0 * dpsi_eloc_blk_covar
+
+  end subroutine gradient_energy_blk_bld
 
 ! ==============================================================================
   subroutine gradient_variance_bld

@@ -60,6 +60,7 @@ module catalog_routines_mod
 ! basic
   call catalog_one_node ('coord_elec_wlk_bld', coord_elec_wlk_bld, coord_elec_wlk_bld_index)
   call catalog_one_node ('eloc_wlk_bld', eloc_wlk_bld, eloc_wlk_bld_index)
+  call catalog_one_node ('eloc_test_bld', eloc_test_bld)
   call catalog_one_node ('eloc_wlk_test_bld', eloc_wlk_test_bld, eloc_wlk_test_bld_index)
   call catalog_one_node ('eloc_wlk_test2_bld', eloc_wlk_test2_bld, eloc_wlk_test2_bld_index)
   call catalog_one_node ('sigma_bld', sigma_bld)
@@ -146,6 +147,7 @@ module catalog_routines_mod
   call catalog_one_node ('delta_param_bld', delta_param_bld)
   call catalog_one_node ('gradient_bld', gradient_bld, gradient_bld_index)
   call catalog_one_node ('gradient_energy_bld', gradient_energy_bld)
+  call catalog_one_node ('gradient_energy_blk_bld', gradient_energy_blk_bld)
   call catalog_one_node ('gradient_variance_bld', gradient_variance_bld)
   call catalog_one_node ('gradient_norm_bld', gradient_norm_bld)
   call catalog_one_node ('hessian_variance_lm_bld', hessian_variance_lm_bld)
@@ -238,6 +240,7 @@ module catalog_routines_mod
   call catalog_one_node ('dpsi_dpsi_c_eloc_av_bld', dpsi_dpsi_c_eloc_av_bld)
   call catalog_one_node ('dpsi_eloc_bld', dpsi_eloc_bld)
   call catalog_one_node ('dpsi_eloc_covar_bld', dpsi_eloc_covar_bld)
+  call catalog_one_node ('dpsi_eloc_blk_covar_bld', dpsi_eloc_blk_covar_bld)
   call catalog_one_node ('d2psi_bld', d2psi_bld, d2psi_bld_index)
   call catalog_one_node ('d2psi_eloc_bld', d2psi_eloc_bld)
   call catalog_one_node ('dpsi_deloc_eloc_bld', dpsi_deloc_eloc_bld)
@@ -352,6 +355,7 @@ module catalog_routines_mod
   call catalog_one_node ('dipole_moment_zv_bav_sq_bld', dipole_moment_zv_bav_sq_bld)
   call catalog_one_node ('dipole_moment_zv_av_var_bld', dipole_moment_zv_av_var_bld)
   call catalog_one_node ('dipole_moment_zvzb_av_bld', dipole_moment_zvzb_av_bld)
+  call catalog_one_node ('dipole_moment_zvzb_bav_bld', dipole_moment_zvzb_bav_bld)
   call catalog_one_node ('dipole_moment_zvzb_av_var_bld', dipole_moment_zvzb_av_var_bld)
 
 ! grids

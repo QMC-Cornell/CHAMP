@@ -91,7 +91,7 @@ c computation and there is no need to scatter the computed information to proces
         write(6,'(''iwalk_stack='',(10i4))')
      &   (iwalk_stack(i),i=1,nproc)
         write(6,'(''nwalk_all='',(10i4))') (nwalk_all(i),i=0,nproc-1)
-        write(6,'(''nwalk_stack='',i4))') nwalk_stack
+        write(6,'(''nwalk_stack='',(i4))') nwalk_stack
         write(6,*)
       endif
 

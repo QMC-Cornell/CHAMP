@@ -45,10 +45,10 @@ CHAMP_MPIF77=mpif77
 
 CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
 CHAMP_F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
-CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -error_limit 1 -fpp -DDEBUG
+CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
 CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
 CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
-CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
 CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
 
 CHAMP_F95_FAST=-O3 -ip -static -align all -fpp

@@ -28,15 +28,12 @@ module catalog_averages_mod
   call object_variance_define ('eloc_av', 'eloc_av_var')
 
 ! general derivatives
-  call object_average_define ('dpsi', 'dpsi_av')
-  call object_error_define ('dpsi_av', 'dpsi_av_err')
   call object_average_define ('dpsi_sq', 'dpsi_sq_av')
   call object_average_define ('dpsi_dpsi', 'dpsi_dpsi_av')
   call object_error_define ('dpsi_dpsi_av', 'dpsi_dpsi_av_err')
   call object_average_define ('dpsi_deloc', 'dpsi_deloc_av')
   call object_average_define ('dpsi_sq_eloc', 'dpsi_sq_eloc_av')
   call object_average_define ('dpsi_dpsi_eloc', 'dpsi_dpsi_eloc_av')
-  call object_average_define ('dpsi_eloc', 'dpsi_eloc_av')
   call object_average_define ('d2psi', 'd2psi_av')
   call object_average_define ('d2psi_eloc', 'd2psi_eloc_av')
   call object_average_define ('dpsi_orb', 'dpsi_orb_av')
