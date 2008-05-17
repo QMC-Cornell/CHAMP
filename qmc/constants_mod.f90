@@ -6,7 +6,7 @@ module constants_mod
   integer, parameter    ::  max_string_len      = 100
   integer, parameter    ::  max_string_len_obj  = 50  ! important for speed!
   integer, parameter    ::  max_string_len_type = 15
-  integer, parameter    ::  max_string_len_rout = 50
+  integer, parameter    ::  max_string_len_rout = 60
   integer, parameter    ::  max_string_len_file = 200
 
 ! max length of string arrays
