@@ -667,6 +667,14 @@ sub read_from_gamess{
 	}
     }
 
+# JT beg: add check if orbitals have been read
+#    print "orbread=$orbread\n";
+    if($orbread==-1){
+     print "\nERROR: orbitals not found.\n";
+     exit;
+    }
+# JT end
+
     print "done\n" if(! $quiet);
 }
 
