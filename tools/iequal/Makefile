@@ -5,9 +5,14 @@ system := $(shell uname)
 hostname := $(shell uname -n)
 
 # planck_compiler=g77
-planck_compiler=ifort
+ planck_compiler=ifort
+
 
 ifeq ($(system),Linux)
+
+ FC = ifort
+ FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad
+ LDFLAGS = -nothread
 
 ifeq ($(hostname),planck)
 # AMD Athlon cluster of Arias group
