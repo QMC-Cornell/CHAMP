@@ -37,6 +37,7 @@ c            = 1  write out used orbs only
      &,iwdet_in_csf(MDET_IN_CSF,MCSF),cdet_in_csf(MDET_IN_CSF,MCSF)
      &,iworbd(MELEC,MDET),eigs(MORB),eigs_in_det(MELEC,MDET),label_det(MDET)
      &,coef(MBASIS,MORB),iflag_orb(MORB),map_orb(MORB)
+     &,abs_csf_coef(MCSF),csf_coef_tmp(MCSF),eigs_tmp(MORB)
       character(MORB) alphain(MDET),betain(MDET),ctmp,ctmp2
       integer alpha(MDET,MACT),beta(MDET,MACT)
 
@@ -49,8 +50,10 @@ c            = 1  write out used orbs only
 
       if(index(mode,'guga').ne.0) then
 
-c eps should be something like 4.d-6
+c eps should be something like 4.d-6 to 4.d-5
         read(5,*) ndet,nelec,nup,norb,nbasis,eps
+        write(6,'(''This program is far from foolproof since it looks for near equalities'')')
+        write(6,'(''You can play with eps in a range something like 4.d-6 to 4.d-5'')')
         write(6,'(''ndet,nelec,nup,norb,nbasis,eps='',5i4,1pd9.2)') ndet,nelec,nup,norb,nbasis,eps
         if(ndet.gt.MDET) stop 'ndet>MDET'
         if(nelec.gt.MELEC) stop 'nelec>MELEC'
@@ -61,7 +64,7 @@ c eps should be something like 4.d-6
         write(6,'(''cdet='',20f9.6)') (cdet(i),i=1,ndet)
 
         read(5,*) (eigs(i),i=1,norb)
-        write(6,'(''eigs(i)='',20f9.6)') (eigs(i),i=1,norb)
+        write(6,'(''eigs(i)='',20f10.6)') (eigs(i),i=1,norb)
 
         do 5 iorb=1,norb
     5     read(5,*) (coef(ibasis,iorb),ibasis=1,nbasis)
@@ -153,19 +156,49 @@ c       write(fmt2,'(''(''i3,''i3,a)'')') 2*ncore+nalpha+nbeta
 
       endif
 
+c Write out eigs just to see in practice how close the ones that should be degenerate are, since only those within eps can be put in a CSF.
+      do 80 i=1,norb
+   80   eigs_tmp(i)=eigs(i)
+      call shell(eigs_tmp,norb)
+      write(6,'(/,''Only determinants with orbitals whose eigs are within 0.1*eps of each other can be combined into CSFs'')')
+      write(6,'(''This helps in choosing eps'')')
+      write(6,'(''sorted eigs'',90f10.6)') (eigs_tmp(i),i=1,norb)
+
+c Write out the small eigenvalue diffs.
+      ndiffs=0
+      do 90 i=2,norb
+        if(eigs_tmp(i).gt.eigs_tmp(i-1) .and. eigs_tmp(i)-eigs_tmp(i-1).lt.100*eps) then
+          ndiffs=ndiffs+1
+          eigs_tmp(ndiffs)=eigs_tmp(i)-eigs_tmp(i-1)
+        endif
+   90 continue
+c     write(6,'(i4,'' Eigenvalue diffs are'')') ndiffs
+c     write(6,'(''Eig diffs'',90f10.6)') (eigs_tmp(i),i=1,ndiffs)
+      call shell(eigs_tmp,ndiffs)
+c     write(6,'(''Eig diffs'',90f10.6)') (eigs_tmp(i),i=1,ndiffs)
+      ndiffs2=1
+      do 95 i=2,ndiffs
+        if(eigs_tmp(i).gt.eigs_tmp(i-1)+1.d-9) then
+          ndiffs2=ndiffs2+1
+          eigs_tmp(ndiffs2)=eigs_tmp(i)
+        endif
+   95 continue
+      write(6,'(i4,'' Eigenvalue diffs are'')') ndiffs2
+      write(6,'(''Eig diffs'',90f10.6)') (eigs_tmp(i),i=1,ndiffs2)
 
 c Sort eigenvalues and match eigenvalue sets to label dets. so that those dets. that
 c can be in the same CSF have the same label.
 c For the eigenvlues we use 0.1*eps rather than eps as the matching criterion.
+      write(6,'(/,''Only determinants with orbitals whose eigs are within 0.1*eps of each other can be combined into CSFs'')')
       do 120 idet=1,ndet
         do 110 iel=1,nelec
   110     eigs_in_det(iel,idet)=eigs(iworbd(iel,idet))
         call shell(eigs_in_det(1,idet),nelec)
-  120   write(6,'(''sorted eigs'',i3,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
+  120   write(6,'(''sorted eigs'',i4,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
 
       do 125 idet=2,ndet
   125   label_det(idet)=0
- 
+
       nlabel=1
       label_det(1)=1
       do 150 idet=2,ndet
@@ -211,6 +244,44 @@ c Check that all dets in a given CSF have the same label_det
 c     write(6,'(''label_det(~icsf)='',100i8)') (label_det(iwdet_in_csf(1,icsf)),icsf=1,ncsf)
       write(6,'(''nlabel,iflag_det(idet)='',i3,2x,90i3)') nlabel,(iflag_det(idet),idet=1,ndet)
       write(6,'(''nlabel,iflag_label_det(ilabel)='',i3,2x,90i3)') nlabel,(iflag_label_det(ilabel),ilabel=1,nlabel)
+
+c Write out csf_coefs just to see in practice how close the ones that should be identical are, since only those within eps can be put in a CSF.
+      do i=1,ncsf
+        csf_coef_tmp(i)=abs(csf_coef(i))
+      enddo
+      call shell(csf_coef_tmp,ncsf)
+      write(6,'(/,''Only determinants in CSFs whose abs(csf_coef) are within eps*sqrt(abs(csf_coef(icsf))) of each other can be'',
+     &'' combined into CSFs'')')
+      write(6,'(''This helps in choosing eps'')')
+      write(6,'(''sorted abs(csf_coef)'',i4,90f10.6)') idet,(csf_coef_tmp(i),i=1,ncsf)
+
+c Write out the small csf_coef diffs.
+      ndiffs=0
+      do i=2,ncsf
+        if(csf_coef_tmp(i).gt.csf_coef_tmp(i-1) .and. csf_coef_tmp(i)-csf_coef_tmp(i-1).lt.100*eps) then
+          ndiffs=ndiffs+1
+          abs_csf_coef(ndiffs)=csf_coef_tmp(i)
+          csf_coef_tmp(ndiffs)=csf_coef_tmp(i)-csf_coef_tmp(i-1)
+        endif
+      enddo
+      write(6,'(i4,'' abs(csf_coef) diffs are'')') ndiffs
+      write(6,'(/,''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
+      write(6,'(''And the corresponding abs(csf_coef) are'')')
+      write(6,'(''abs(csf_coef)      '',90f10.6)') (abs_csf_coef(i),i=1,ndiffs)
+      call shell(csf_coef_tmp,ndiffs)
+c     write(6,'(''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
+      ndiffs2=1
+      do i=2,ndiffs
+        if(csf_coef_tmp(i).gt.csf_coef_tmp(i-1)+1.d-9) then
+          ndiffs2=ndiffs2+1
+          abs_csf_coef(ndiffs2)=abs_csf_coef(i)
+          csf_coef_tmp(ndiffs2)=csf_coef_tmp(i)
+        endif
+      enddo
+      write(6,'(/,i4,'' abs(csf_coef) diffs are'')') ndiffs2
+      write(6,'(''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs2)
+c abs_csf_coef was not sorted when csf_coef_tmp was sorted, so the next write is not correct.
+c     write(6,'(''abs(csf_coef)      '',90f10.6)') (abs_csf_coef(i),i=1,ndiffs2)
 
 c Make cdet_in_csf more accurate
       do 167 icsf=1,ncsf
@@ -361,7 +432,7 @@ c For the eigenvlues we use 0.1*eps rather than eps as the matching criterion.
         do 210 iel=1,nelec
   210     eigs_in_det(iel,idet)=eigs(iworbd(iel,idet))
         call shell(eigs_in_det(1,idet),nelec)
-  220   write(6,'(''sorted eigs'',i3,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
+  220   write(6,'(''sorted eigs'',i4,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
 
       do 225 idet=2,ndet
   225   label_det(idet)=0
@@ -470,9 +541,9 @@ c Create old version inputs
           iwdet(nparmd)=i
         endif
   330 continue
-      write(6,'(i3,'' nparmd'')') nparmd
+      write(6,'(i4,'' nparmd'')') nparmd
       if(nparmd.gt.0) then
-        write(fmt,'(''(''i4,''i3,a)'')') nparmd
+        write(fmt,'(''(''i4,''i4,a)'')') nparmd
         write(6,fmt) (iwdet(ipar),ipar=1,nparmd),' (iwdet(ipar),ipar=1,nparmd)'
        else
         write(6,'(a)') '(iwdet(ipar),ipar=1,nparmd)'
@@ -711,7 +782,7 @@ c Sort the CSFs by the absolute value of csf_coef
       write(6,'(''before shell_abs_csf_coef'')')
       call shell_abs_csf_coef(csf_coef,ncsf,ndet_in_csf,iwdet_in_csf,cdet_in_csf,MDET_IN_CSF,MCSF,cutoff_d2c)
       write(6,'(''after shell_abs_csf_coef'')')
-                  
+
 c Keep only CSF's with csf_coef larger than cutoff_d2c and corresponding dets
 c This is not done quite correctly because of the normalization of the CSFs
 c     ncsf_new=0
@@ -839,7 +910,7 @@ c For the eigenvlues we use 0.1*eps rather than eps as the matching criterion.
         do 610 iel=1,nelec
   610     eigs_in_det(iel,idet)=eigs(iworbd(iel,idet))
         call shell(eigs_in_det(1,idet),nelec)
-  620   write(6,'(''sorted eigs'',i3,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
+  620   write(6,'(''sorted eigs'',i4,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
 
       do 625 idet=2,ndet
   625   label_det(idet)=0
@@ -933,7 +1004,7 @@ c I need to do the checking completely differently using orbital energies or occ
 c First write the easy lines that are to be swapped into the input file
 c     write(6,'(a1,''ncsf='',i2,'' ndet='',i3,'' norb='',i3,'' csf_sum='',f8.6,a1,a)')
 c    &"'",ncsf,ndet,norb,csf_sum,"'",'  title'
-      write(6,'(a1,''ncsf='',i2,'' ndet='',i3,'' norb='',i3,'' csf_sum='',f8.6,'' cutoff_g2q='',f6.4,'' cutoff_d2c='',f5.3,a1,a)')
+      write(6,'(a1,''ncsf='',i3,'' ndet='',i3,'' norb='',i3,'' csf_sum='',f8.6,'' cutoff_g2q='',f6.4,'' cutoff_d2c='',f5.3,a1,a)')
      &"'",ncsf,ndet,norb,csf_sum,cutoff_g2q,cutoff_d2c,"'",'  title'
       write(6,'(i3,2i4,t42,a)') ndet,nbasis,norb, 'ndet,nbasis,norb'
       nparm=24+ncsf-1
@@ -973,7 +1044,7 @@ c Write the line for making 0Info
           write(6,fmt) (iworbd(iel,idet),iel=1,nelec), label_det(idet)
         endif
   707 continue
- 
+
       write(6,'(i5,'' ncsf'')') ncsf
 c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') ncsf
       write(fmt,'(''(''i4,''f12.8,a)'')') ncsf
