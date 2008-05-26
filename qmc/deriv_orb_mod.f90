@@ -983,8 +983,8 @@ module deriv_orb_mod
 !   this orbital derivative is redundant.
 !   (Even if not optimized, the first csf is also considered as part of the optimization space.
 !   This is necessary so that for a CASSCF wave function all active->active excitations are redundant.
-!   I am sure if one should not include also the first csf is the optimization for this to be really correct,
-!   as for instance danish MCSCF people do).
+!   I am not sure if one should not include also the first csf is the optimization for this to be really correct,
+!   as for instance Danish MCSCF people do).
     if (.not. dpsi_orb_is_redundant .and. l_opt_csf) then
       dpsi_orb_is_redundant = .true.
       do csf_unq_in_dpsi_orb_cur_i = 1, csf_unq_in_dpsi_orb_cur_nb
@@ -1039,9 +1039,10 @@ module deriv_orb_mod
       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
       if (ex_orb_ind_cur == 0) then
-       write(6,'(2a)') trim(here),': orbital derivative with vanishing direct excitation'
+       write(6,'(2a,i4,a,i4)') trim(here),': orbital excitation ', orb_opt_lab_j, ' -> ', orb_opt_lab_i
+       write(6,'(2a)') trim(here),': orbital derivative with vanishing direct excitation but not vanishing reverse excitation'
        write(6,'(2a)') trim(here),': this case is not yet implemented'
-       write(6,'(2a,i4)') trim(here),': the index of reverse excitation is ',ex_orb_ind_rev_cur
+!       write(6,'(2a,i4)') trim(here),': the index of reverse excitation is ',ex_orb_ind_rev_cur
        call die (here)
       endif
       ex_orb_ind (param_orb_nb) = ex_orb_ind_cur
