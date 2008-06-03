@@ -52,8 +52,8 @@ program champ
   if (idtask.ne.0) then
    close(6)
 ! Warning temporarily commented out
-!  open(6,file='/dev/null')
-   open(6,file='slave.out')
+  open(6,file='/dev/null')
+!   open(6,file='slave.out')
   endif
 # endif
 

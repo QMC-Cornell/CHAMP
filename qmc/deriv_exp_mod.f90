@@ -135,6 +135,7 @@ module deriv_exp_mod
          call append (dexp_to_bas (param_exp_nb)%row, bas_j)
          bas_to_dexp (bas_j) = param_exp_nb
          is_basis_func_attributed (bas_j) = .true.
+         cycle
       endif
 
 !     restriction on exponent parameters

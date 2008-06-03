@@ -301,6 +301,9 @@ module optimization_mod
     l_increase_blocks = .false.
   endif
 
+  add_diag_mult_exp = 1.d0
+  call object_modified ('add_diag_mult_exp')
+
 ! choice of optimization method
   select case(trim(opt_method))
    case ('linear')
@@ -514,7 +517,6 @@ module optimization_mod
    write (6,'(2a)') 'unknown stabilization choice:',trim(stabilization)
    call die (lhere)
   end select
-
 
 ! Nice printing
   write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent,',param_pjasen_nb, &

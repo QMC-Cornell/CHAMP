@@ -462,8 +462,8 @@ module deriv_mod
 ! ==============================================================================
   subroutine deloc_av_abs_max_bld
 ! ------------------------------------------------------------------------------
-! Description   :  absolute maximal value of deloc_av
-! Description   :  must be zero with statistical noise because of Hermiticity of Hamiltonian
+! Description   : absolute maximal value of deloc_av
+! Description   : must be zero with statistical noise because of Hermiticity of Hamiltonian
 !
 ! Created       : J. Toulouse, 23 Jan 2007
 ! ------------------------------------------------------------------------------

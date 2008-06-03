@@ -180,6 +180,7 @@ module catalog_routines_mod
   call catalog_one_node ('ham_lin_renorm_bld', ham_lin_renorm_bld)
   call catalog_one_node ('ham_lin_renorm_stab_bld', ham_lin_renorm_stab_bld)
   call catalog_one_node ('delta_lin_bld', delta_lin_bld)
+  call catalog_one_node ('psi_lin_norm_sq_bld', psi_lin_norm_sq_bld)
 
 ! perturbative optimization method
   call catalog_one_node ('delta_ptb_bld', delta_ptb_bld)
@@ -345,6 +346,8 @@ module catalog_routines_mod
   call catalog_one_node ('dipole_moment_origin_bld', dipole_moment_origin_bld)
   call catalog_one_node ('dipole_moment_nucl_bld', dipole_moment_nucl_bld)
   call catalog_one_node ('dipole_moment_bld', dipole_moment_bld)
+  call catalog_one_node ('dipole_moment_dpsi_bld', dipole_moment_dpsi_bld)
+  call catalog_one_node ('dipole_moment_dpsi_dpsi_bld', dipole_moment_dpsi_dpsi_bld)
   call catalog_one_node ('dipole_moment_deloc_bld', dipole_moment_deloc_bld)
   call catalog_one_node ('dipole_moment_deloc_covar_bld', dipole_moment_deloc_covar_bld)
   call catalog_one_node ('dipole_moment_deloc_blk_covar_bld', dipole_moment_deloc_blk_covar_bld)
@@ -354,9 +357,12 @@ module catalog_routines_mod
   call catalog_one_node ('dipole_moment_zv_bav_bld', dipole_moment_zv_bav_bld)
   call catalog_one_node ('dipole_moment_zv_bav_sq_bld', dipole_moment_zv_bav_sq_bld)
   call catalog_one_node ('dipole_moment_zv_av_var_bld', dipole_moment_zv_av_var_bld)
+  call catalog_one_node ('dipole_moment_delta_zb_av_bld', dipole_moment_delta_zb_av_bld)
+  call catalog_one_node ('dipole_moment_delta_zb_av_var_bld', dipole_moment_delta_zb_av_var_bld)
   call catalog_one_node ('dipole_moment_zvzb_av_bld', dipole_moment_zvzb_av_bld)
   call catalog_one_node ('dipole_moment_zvzb_bav_bld', dipole_moment_zvzb_bav_bld)
   call catalog_one_node ('dipole_moment_zvzb_av_var_bld', dipole_moment_zvzb_av_var_bld)
+  call catalog_one_node ('dipole_moment_lin_av_bld', dipole_moment_lin_av_bld)
 
 ! grids
   call catalog_one_node ('grid_r_bld', grid_r_bld)

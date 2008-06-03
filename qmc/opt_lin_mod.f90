@@ -31,6 +31,7 @@ module opt_lin_mod
   real(dp), allocatable           :: delta_lin (:)
   real(dp)                        :: psi_lin_var_norm = 0.d0
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
+  real(dp)                        :: psi_lin_norm_sq
 
   logical                         :: l_select_eigvec_lowest = .true. ! default
   logical                         :: l_select_eigvec_largest_1st_coef = .false.
@@ -848,11 +849,56 @@ module opt_lin_mod
     call die (lhere, 'unknown update choice >'+trim(update_nonlinear)+'<')
   end select
 
-! final paramter variations
+! final parameter variations
   do iparm = 1, param_nb
     delta_lin (iparm) = eigvec (1+iparm, eig_ind) / eigvec_first_coef
   enddo
 
   end subroutine delta_lin_bld
+
+! ==============================================================================
+  subroutine psi_lin_norm_sq_bld
+! ------------------------------------------------------------------------------
+! Description   : square of norm of linear wave function (in the original basis)
+!
+! Created       : J. Toulouse, 18 May 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer param_i, param_j, pair
+
+! header
+  if (header_exe) then
+
+   call object_create ('psi_lin_norm_sq')
+
+   call object_needed ('param_nb')
+   call object_needed ('delta_lin')
+   call object_needed ('dpsi_av')
+   call object_needed ('dpsi_dpsi_av')
+   call object_needed ('param_pairs')
+
+   return
+
+  endif
+
+! begin
+
+! allocation
+  call object_associate ('psi_lin_norm_sq', psi_lin_norm_sq)
+
+  psi_lin_norm_sq = 1.d0
+
+  do param_i = 1, param_nb
+    psi_lin_norm_sq = psi_lin_norm_sq + 2.d0 * delta_lin (param_i) * dpsi_av (param_i)
+    do param_j = 1, param_nb
+      pair = param_pairs (param_i, param_j)
+      psi_lin_norm_sq = psi_lin_norm_sq + delta_lin (param_i) * delta_lin (param_j) * dpsi_dpsi_av (pair)
+    enddo ! param_j
+  enddo ! param_i
+
+  end subroutine psi_lin_norm_sq_bld
 
 end module opt_lin_mod

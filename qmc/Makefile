@@ -68,7 +68,7 @@ SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
 	dmc/dmc_good_inhom_movall.f dmc/dmc_good_movall.f \
 	dmc/dmc_good_ps_movall.f dmc/dumper_dmc_movall.f \
 	dmc/finwrt_dmc_movall.f dmc/gauss.f dmc/maindmc.f dmc/open_files.f \
-	dmc/opt_wf_dmc.f dmc/sites_per.f dmc/splitj_movall.f \
+	dmc/opt_wf_dmc.f dmc/sites_dmc.f dmc/sites_per.f dmc/splitj_movall.f \
 	dmc/zeta_cusp.f dmc/dmc_elec/acuest_dmc_mov1.f \
 	dmc/dmc_elec/cwalksav_det.f dmc/dmc_elec/dmc_brock_mov1.f \
 	dmc/dmc_elec/dmc_good_inhom_mov1.f dmc/dmc_elec/dmc_good_mov1.f \
@@ -148,7 +148,7 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o basic_tools_mod.o \
 	dmc/dmc_good_inhom_movall.o dmc/dmc_good_movall.o \
 	dmc/dmc_good_ps_movall.o dmc/dumper_dmc_movall.o \
 	dmc/finwrt_dmc_movall.o dmc/gauss.o dmc/maindmc.o dmc/open_files.o \
-	dmc/opt_wf_dmc.o dmc/sites_per.o dmc/splitj_movall.o \
+	dmc/opt_wf_dmc.o dmc/sites_dmc.o dmc/sites_per.o dmc/splitj_movall.o \
 	dmc/zeta_cusp.o dmc/dmc_elec/acuest_dmc_mov1.o \
 	dmc/dmc_elec/cwalksav_det.o dmc/dmc_elec/dmc_brock_mov1.o \
 	dmc/dmc_elec/dmc_good_inhom_mov1.o dmc/dmc_elec/dmc_good_mov1.o \
@@ -261,7 +261,7 @@ deriv_orb_mod.o: all_tools_mod.o csfs_mod.o determinants_mod.o eloc_mod.o \
 	montecarlo_mod.o orbitals_mod.o commons.h
 determinants_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o commons.h
 dipole_moment_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o nuclei_mod.o \
-	commons.h
+	opt_lin_mod.o commons.h
 dmc_mod.o: all_tools_mod.o average_mod.o control_mod.o montecarlo_mod.o \
 	print_mod.o restart_mod.o commons.h
 electrons_mod.o: all_tools_mod.o walkers_mod.o commons.h
