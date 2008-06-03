@@ -150,10 +150,10 @@ module deriv_exp_mod
 
   enddo ! bas_i
 
-  write(6,'(a,i)') 'Number of exponent parameters =',param_exp_nb
+  write(6,'(a,i)') ' Number of exponent parameters =',param_exp_nb
   do dexp_i = 1, param_exp_nb
-!    write(6,'(a,i3,a,100i3)') 'Exponent parameter # ',dexp_i,' corresponds to exponents: ', dexp_to_bas(dexp_i)%row (:)
-    write(6,'(a,i3,a,100(a,x))') 'Exponent parameter # ',dexp_i,' corresponds to basis functions: ', (trim(basis_fns_name (dexp_to_bas(dexp_i)%row (bas_i))), bas_i=1, dexp_to_bas_nb(dexp_i))
+!    write(6,'(a,i3,a,100i3)') ' Exponent parameter # ',dexp_i,' corresponds to exponents: ', dexp_to_bas(dexp_i)%row (:)
+    write(6,'(a,i3,a,100(a,x))') ' Exponent parameter # ',dexp_i,' corresponds to basis functions: ', (trim(basis_fns_name (dexp_to_bas(dexp_i)%row (bas_i))), bas_i=1, dexp_to_bas_nb(dexp_i))
   enddo ! dexp_i
 
   end subroutine param_exp_nb_bld
