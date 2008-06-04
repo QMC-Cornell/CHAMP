@@ -8,11 +8,13 @@ module deriv_exp_mod
   use electrons_mod
   use psi_mod
   use eloc_mod
+  use deriv_orb_mod
 
 ! Declaration of global variables and default values
   logical                        :: l_exp_opt_restrict = .true.
   logical                        :: l_deloc_exp_num = .false.
   integer                        :: param_exp_nb = 0
+  logical, allocatable           :: is_exp_opt (:)
   logical, allocatable           :: orbital_depends_on_optimized_exponent (:,:)
   real(dp), allocatable          :: dnorm_basis_dz (:)
   real(dp), allocatable          :: dbasis_ovlp_dz (:,:,:)
@@ -31,6 +33,8 @@ module deriv_exp_mod
   real(dp), allocatable          :: grd_dorb_dexp (:,:,:,:)
   real(dp), allocatable          :: lap_dorb_dexp (:,:,:)
 
+  integer, allocatable                   :: dexp_to_all_bas_nb (:)
+  type (type_integer_row), allocatable   :: dexp_to_all_bas (:)
   integer, allocatable                   :: dexp_to_bas_nb (:)
   type (type_integer_row), allocatable   :: dexp_to_bas (:)
   integer, allocatable                   :: bas_to_dexp (:)
@@ -69,6 +73,12 @@ module deriv_exp_mod
   subroutine param_exp_nb_bld
 ! ------------------------------------------------------------------------------
 ! Description   : number of derivatives wrt to optimized exponents
+! Description   : dexp_to_all_bas is the correspondence between exponent parameters
+! Description   :                 and all basis exponents to be updated including those 
+! Description   :                 not directly involved in the optimization but updated
+! Description   :                 because of symmetry constraints
+! Description   : dexp_to_bas     is the correspondence between exponent parameters
+! Description   :                 and only the basis exponents directly involved in the optimization
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
@@ -83,6 +93,8 @@ module deriv_exp_mod
   if (header_exe) then
 
    call object_create ('param_exp_nb', param_exp_nb_index)
+   call object_create ('dexp_to_all_bas_nb')
+   call object_create ('dexp_to_all_bas')
    call object_create ('dexp_to_bas_nb')
    call object_create ('dexp_to_bas')
    call object_create ('bas_to_dexp')
@@ -93,6 +105,7 @@ module deriv_exp_mod
    call object_needed ('m_bas')
    call object_needed ('exp_opt_lab_nb')
    call object_needed ('exp_opt_lab')
+   call object_needed ('is_exp_opt')
    call object_needed ('basis_fns_name')
 
    return
@@ -122,15 +135,20 @@ module deriv_exp_mod
     if (is_basis_func_attributed (bas_i)) cycle
 
     param_exp_nb = param_exp_nb + 1
+    call object_alloc ('dexp_to_all_bas_nb', dexp_to_all_bas_nb, param_exp_nb)
+    call object_alloc ('dexp_to_all_bas', dexp_to_all_bas, param_exp_nb)
     call object_alloc ('dexp_to_bas_nb', dexp_to_bas_nb, param_exp_nb)
     call object_alloc ('dexp_to_bas', dexp_to_bas, param_exp_nb)
+    dexp_to_all_bas_nb (param_exp_nb) = 0
     dexp_to_bas_nb (param_exp_nb) = 0
 
-    do exp_opt_lab_j = exp_opt_lab_i, exp_opt_lab_nb
-
-      bas_j = exp_opt_lab (exp_opt_lab_j)
+!    do exp_opt_lab_j = exp_opt_lab_i, exp_opt_lab_nb
+!      bas_j = exp_opt_lab (exp_opt_lab_j)
+     do bas_j = 1, nbasis
 
       if (bas_j == bas_i) then
+         dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
+         call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
          dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
          call append (dexp_to_bas (param_exp_nb)%row, bas_j)
          bas_to_dexp (bas_j) = param_exp_nb
@@ -138,22 +156,37 @@ module deriv_exp_mod
          cycle
       endif
 
-!     restriction on exponent parameters
-      if (l_exp_opt_restrict .and. zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
-         dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
-         call append (dexp_to_bas (param_exp_nb)%row, bas_j)
-         bas_to_dexp (bas_j) = param_exp_nb
-         is_basis_func_attributed (bas_j) = .true.
-      endif
+      if (l_exp_opt_restrict) then
 
-    enddo ! bas_j
+!       restriction on exponent parameter involved in the optimization
+        if (is_exp_opt (bas_j) .and. zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
+           dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
+           call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
+           dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
+           call append (dexp_to_bas (param_exp_nb)%row, bas_j)
+           bas_to_dexp (bas_j) = param_exp_nb
+           is_basis_func_attributed (bas_j) = .true.
+           cycle
+        endif
+      
+!       restriction on exponent parameter not directly involved in the optimization
+        if (.not. is_exp_opt (bas_j) .and. zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
+           dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
+           call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
+           cycle
+        endif
 
-  enddo ! bas_i
+      endif ! l_exp_opt_restrict
+
+    enddo ! lab_j
+
+  enddo ! exp_opt_lab_i
 
   write(6,'(a,i)') ' Number of exponent parameters =',param_exp_nb
   do dexp_i = 1, param_exp_nb
 !    write(6,'(a,i3,a,100i3)') ' Exponent parameter # ',dexp_i,' corresponds to exponents: ', dexp_to_bas(dexp_i)%row (:)
-    write(6,'(a,i3,a,100(a,x))') ' Exponent parameter # ',dexp_i,' corresponds to basis functions: ', (trim(basis_fns_name (dexp_to_bas(dexp_i)%row (bas_i))), bas_i=1, dexp_to_bas_nb(dexp_i))
+!    write(6,'(a,i3,a,100(a,x))') ' Exponent parameter # ',dexp_i,' corresponds to basis functions: ', (trim(basis_fns_name (dexp_to_bas(dexp_i)%row (bas_i))), bas_i=1, dexp_to_bas_nb(dexp_i))
+    write(6,'(a,i3,a,100(a,x))') ' Exponent parameter # ',dexp_i,' corresponds to basis functions: ', (trim(basis_fns_name (dexp_to_all_bas(dexp_i)%row (bas_i))), bas_i=1, dexp_to_all_bas_nb(dexp_i))
   enddo ! dexp_i
 
   end subroutine param_exp_nb_bld
@@ -176,9 +209,11 @@ module deriv_exp_mod
 
    call object_create ('exp_opt_lab_nb')
    call object_create ('exp_opt_lab')
+   call object_create ('is_exp_opt')
 
    call object_needed ('nbasis')
-   call object_needed ('orb_occ_last_in_wf_lab')
+   call object_needed ('orb_tot_nb')
+!   call object_needed ('orb_occ_last_in_wf_lab')
    call object_needed ('orb_occ_in_wf_lab')
 
    return
@@ -186,20 +221,55 @@ module deriv_exp_mod
   endif
 
 ! begin
+  call object_alloc ('is_exp_opt', is_exp_opt, nbasis)
+  is_exp_opt (:) = .false.
 
 ! provide orbital coef
   call object_provide ('coef')
 
+!  do bas_i = 1, nbasis
+!   do orb_i = 1, orb_occ_last_in_wf_lab
+!     if (orb_occ_in_wf (orb_i) .and. coef (bas_i, orb_i, 1) /= 0.d0) then
+!        exp_opt_lab_nb = exp_opt_lab_nb + 1
+!        call object_alloc ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
+!        exp_opt_lab (exp_opt_lab_nb) = bas_i
+!        exit
+!      endif
+!   enddo ! orb_i
+!  enddo ! bas_i
+
+  if (l_opt_orb) then
+    call object_provide ('orb_mix_lab')
+  endif
+
   do bas_i = 1, nbasis
-   do orb_i = 1, orb_occ_last_in_wf_lab
+   do orb_i = 1, orb_tot_nb
+
+!    occupied orbital with non zero coefficient
      if (orb_occ_in_wf (orb_i) .and. coef (bas_i, orb_i, 1) /= 0.d0) then
         exp_opt_lab_nb = exp_opt_lab_nb + 1
         call object_alloc ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
         exp_opt_lab (exp_opt_lab_nb) = bas_i
+        is_exp_opt (bas_i) = .true.
         exit
       endif
+
+!    virtual orbital with non zero coefficient which can be mixed in in orbital optimization
+     if (l_opt_orb) then
+      if (orb_mix_lab (orb_i) .and. coef (bas_i, orb_i, 1) /= 0.d0) then
+        exp_opt_lab_nb = exp_opt_lab_nb + 1
+        call object_alloc ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
+        exp_opt_lab (exp_opt_lab_nb) = bas_i
+        is_exp_opt (bas_i) = .true.
+        exit
+       endif
+      endif
+
    enddo ! orb_i
   enddo ! bas_i
+
+! check
+  call require ('exp_opt_lab_nb <= nbasis', exp_opt_lab_nb <= nbasis)
 
   end subroutine exp_opt_lab_bld
 
@@ -239,7 +309,7 @@ module deriv_exp_mod
   call object_alloc ('orbital_depends_on_optimized_exponent', orbital_depends_on_optimized_exponent, orb_occ_last_in_wf_lab, param_exp_nb)
   orbital_depends_on_optimized_exponent (:, :) = .false.
 
-! warning: coef change during orbital optimization
+! warning: coef changes during orbital optimization
   do orb_i = 1, orb_occ_last_in_wf_lab
     do dexp_i = 1, param_exp_nb
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)

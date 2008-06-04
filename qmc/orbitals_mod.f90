@@ -1814,9 +1814,8 @@ module orbitals_mod
 !  check orb_opt_nb
    call require ('orb_opt_nb > 0', orb_opt_nb > 0)
    if (orb_opt_nb <= orb_occ_in_wf_nb .and. (ndet == 1 .or. l_casscf)) then
-     write(6,*) trim(here),': orb_opt_nb=',orb_opt_nb,' <= orb_occ_in_wf_nb=',orb_occ_in_wf_nb
-     write(6,*) trim(here),': number of orbitals in optimization space must > number of occupied orbitals'
-     call die (here)
+     write(6,'(2a,i5,a,i5)') trim(here),': orb_opt_nb=',orb_opt_nb,' <= orb_occ_in_wf_nb=',orb_occ_in_wf_nb
+     call die (here, 'there are no virtual orbitals for optimizing.')
    endif
 
 !  orbital space for optimization

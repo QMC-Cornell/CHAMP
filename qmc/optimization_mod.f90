@@ -969,7 +969,7 @@ module optimization_mod
   character(len=max_string_len_rout), save :: lhere = 'wf_update_and_check'
   integer bas_i, orb_i
   integer i, ict, isp, iparmcsf, iparm, icsf
-  integer dexp_i, dexp_to_bas_i
+  integer dexp_i, dexp_to_all_bas_i
   real(dp), parameter :: AMAX_NONLIN = 100.d0
   integer exponent_negative_nb
   real(dp) parm2min
@@ -1049,21 +1049,21 @@ module optimization_mod
   if (l_opt_exp) then
 
    call object_provide ('param_exp_nb')
-   call object_provide ('dexp_to_bas_nb')
-   call object_provide ('dexp_to_bas')
+   call object_provide ('dexp_to_all_bas_nb')
+   call object_provide ('dexp_to_all_bas')
    call object_provide ('zex')
    call object_provide ('delta_exp')
 
    do dexp_i = 1, param_exp_nb
-     do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
-        bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+     do dexp_to_all_bas_i = 1, dexp_to_all_bas_nb (dexp_i)
+        bas_i = dexp_to_all_bas (dexp_i)%row (dexp_to_all_bas_i)
         if (l_optimize_log_exp) then
           zex (bas_i, iwf) = exp(log(zex (bas_i, 1)) + delta_exp (dexp_i))
 !          zex (bas_i, iwf) = zex (bas_i, 1) * (1.d0 + delta_exp (dexp_i))
         else
           zex (bas_i, iwf) = zex (bas_i, 1) + delta_exp (dexp_i)
         endif
-     enddo ! dexp_to_bas_i
+     enddo ! dexp_to_all_bas_i
    enddo ! dexp_i
 
    call object_modified ('zex')
@@ -1224,8 +1224,8 @@ module optimization_mod
   if (l_opt_exp) then
     exponent_negative_nb = 0
     do dexp_i = 1, param_exp_nb
-      do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
-        bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+      do dexp_to_all_bas_i = 1, dexp_to_all_bas_nb (dexp_i)
+        bas_i = dexp_to_all_bas (dexp_i)%row (dexp_to_all_bas_i)
         if (zex (bas_i, iwf) < 0.d0) then
           is_bad_move = 1
           exponent_negative_nb = exponent_negative_nb + 1
@@ -1240,7 +1240,7 @@ module optimization_mod
                    &  " of basis ", bas_i , " is ", 100 * abs (delta_exp (dexp_i))/ zex (bas_i, 1), " percent"
            endif
         endif ! do_add_diag_mult_exp
-      enddo ! dexp_to_bas_i
+      enddo ! dexp_to_all_bas_i
     enddo ! dexp_i
     if (exponent_negative_nb > 0) then
        write (6,'(a,i3,a)') 'This is a bad move because ',exponent_negative_nb,' exponents are negative.'

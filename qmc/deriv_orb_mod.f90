@@ -15,6 +15,9 @@ module deriv_orb_mod
   integer                                :: single_ex_nb_old = 0  ! temp
   integer                                :: deriv_orb_pairs_nb = 0
 
+  integer                                :: orb_mix_lab_nb
+  integer, allocatable                   :: orb_mix_lab (:)
+
 ! new
   integer                                :: csf_ex_unq_nb = 0
   integer, allocatable                   :: csf_ex_unq_ref (:)
@@ -139,7 +142,7 @@ module deriv_orb_mod
   include 'commons.h'
 
 ! local
-  integer det_i, elec_up_i
+  integer det_i, elec_up_i, ex_i, orb_i
   integer orb_opt_cls_i, orb_opt_opn_i, orb_opt_act_i, orb_opt_act_j, orb_opt_vir_i
   integer orb_opt_cls, orb_opt_opn, orb_opt_act, orb_opt_vir, orb_opt_act_lab_i, orb_opt_act_lab_j
 
@@ -153,7 +156,10 @@ module deriv_orb_mod
    call object_create ('ex_orb_ind_rev')
    call object_create ('ex_orb_1st_lab')
    call object_create ('ex_orb_2nd_lab')
+   call object_create ('orb_mix_lab')
+   call object_create ('orb_mix_lab_nb')
 
+   call object_needed ('orb_tot_nb')
    call object_needed ('orb_opt_nb')
    call object_needed ('orb_opt_lab')
    call object_needed ('orb_opt_occ_nb')
@@ -340,8 +346,24 @@ module deriv_orb_mod
 
   endif
 
+! determine (occupied or vitual) orbitals mixed in orbital optimization 
+  call object_alloc ('orb_mix_lab', orb_mix_lab, orb_tot_nb)
+  orb_mix_lab (:) = .false.
+  do ex_i = 1, single_ex_nb
+   orb_mix_lab (ex_orb_1st_lab (ex_i)) = .true.
+   orb_mix_lab (ex_orb_2nd_lab (ex_i)) = .true.
+  enddo ! ex_i
+  orb_mix_lab_nb = 0
+  do orb_i = 1, orb_tot_nb
+    if (orb_mix_lab (orb_i)) then
+      orb_mix_lab_nb = orb_mix_lab_nb + 1
+    endif
+  enddo
+
   write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
   write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
+  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb
+
 
 ! excitation pairs number
   deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
@@ -349,16 +371,16 @@ module deriv_orb_mod
 ! temporary: new routine
   if (l_check_redundant_orbital_derivative) then
 
-! temporary: save created objects for comparison with new routine
-  param_orb_nb_old = param_orb_nb
-  single_ex_nb_old = single_ex_nb
-  call copy (ex_orb_ind, ex_orb_ind_old)
-  call copy (ex_orb_ind_rev, ex_orb_ind_rev_old)
-  call copy (ex_orb_1st_lab, ex_orb_1st_lab_old)
-  call copy (ex_orb_2nd_lab, ex_orb_2nd_lab_old)
+!  temporary: save created objects for comparison with new routine
+   param_orb_nb_old = param_orb_nb
+   single_ex_nb_old = single_ex_nb
+   call copy (ex_orb_ind, ex_orb_ind_old)
+   call copy (ex_orb_ind_rev, ex_orb_ind_rev_old)
+   call copy (ex_orb_1st_lab, ex_orb_1st_lab_old)
+   call copy (ex_orb_2nd_lab, ex_orb_2nd_lab_old)
 
-! temporary: call new routine checking for redundancies
-  call node_exe ('single_ex_wf_bld_2')
+!  temporary: call new routine checking for redundancies
+   call node_exe ('single_ex_wf_bld_2')
 
   endif
 
@@ -382,7 +404,7 @@ module deriv_orb_mod
   include 'commons.h'
 
 ! local
-  integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j, dorb_i
+  integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j, dorb_i, orb_i
   integer ex_dir_rev
   logical dpsi_orb_is_zero, ex_is_zero, csf_ex_unq_is_zero, dpsi_orb_is_redundant
 
@@ -1070,8 +1092,23 @@ module deriv_orb_mod
 
   enddo ! orb_opt_i
 
+! determine (occupied or vitual) orbitals mixed in orbital optimization 
+  call object_alloc ('orb_mix_lab', orb_mix_lab, orb_tot_nb)
+  orb_mix_lab (:) = .false.
+  do ex_i = 1, single_ex_nb
+   orb_mix_lab (ex_orb_1st_lab (ex_i)) = .true.
+   orb_mix_lab (ex_orb_2nd_lab (ex_i)) = .true.
+  enddo ! ex_i
+  orb_mix_lab_nb = 0
+  do orb_i = 1, orb_tot_nb
+    if (orb_mix_lab (orb_i)) then
+      orb_mix_lab_nb = orb_mix_lab_nb + 1
+    endif
+  enddo
+
   write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
   write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
+  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb
 
 ! excitation pairs number
   deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
