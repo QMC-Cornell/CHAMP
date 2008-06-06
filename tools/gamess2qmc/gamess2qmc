@@ -2861,7 +2861,7 @@ sub print_cyrus_input{
     }
 
     printf CYRFILE "'* Determinantal section'\n";
-    printf CYRFILE "0 0 \t \t \t \t \t inum_orb,iorb_used\n";
+    printf CYRFILE "0 0 'tm' \t \t \t \t inum_orb,iorb_used,iorb_format\n";
     printf CYRFILE "%d %d %d \t \t \t \t ndet,nbasis,norb\n",$selected_det,$nbasis,$porb;
 
 #basis function info
@@ -2872,7 +2872,7 @@ sub print_cyrus_input{
         basis_info_cyrus($a,\@c,\@r);
 	if($analytic_basis){ #JT
 # printf CYRFILE "%s  0   0  0 0 0   0  0 0 0  0 0 0 0 0   0  0 0 0  0 0 0 0 0  0  0 0 0  0 0 0 0 0 n1s...4pz,sa,pa,da\n";
-	    print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a} $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a} $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
+	    print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a}  $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a}  $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
         }
         else
 	{
@@ -3040,13 +3040,13 @@ sub print_cyrus_input{
    $nordc=5;
    printf CYRFILE "'* Jastrow section'\n";
    printf CYRFILE "1             ianalyt_lap\n";
-   printf CYRFILE "4 2 1 1 5 0   ijas,isc,nspin1,nspin2,nord,ifock\n";
+   printf CYRFILE "4 4 1 1 5 0   ijas,isc,nspin1,nspin2,nord,ifock\n";
    if($no_jastrow){
    printf CYRFILE "0 0 0         norda,nordb,nordc\n";
    }else{
    printf CYRFILE "%d %d %d         norda,nordb,nordc\n",$norda,$nordb,$nordc;
    }
-   printf CYRFILE "0.5 0. scalek,a21\n";
+   printf CYRFILE "0.8 0. scalek,a21\n";
 
    for($j=0; $j<$nctype; $j++){
     printf CYRFILE "0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n";
@@ -3065,9 +3065,9 @@ sub print_cyrus_input{
 
    printf CYRFILE "'* Optimization section'\n";
    if($no_jastrow){
-   printf CYRFILE "0 1000 1.d-6 0. 1.d-3     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy\n";
+   printf CYRFILE "0 10000 1.d-8 0.05 1.d-4     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy\n";
    }else{
-   printf CYRFILE "100 1000 1.d-6 0. 1.d-3     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy\n";
+   printf CYRFILE "10 10000 1.d-8 0.05 1.d-4     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy\n";
    }
 
    if($ecp){
@@ -3180,6 +3180,9 @@ sub print_cyrus_input{
     printf CYRFILE "optimization\n";
     printf CYRFILE " parameters jastrow end\n";
     printf CYRFILE " method = linear\n";
+    printf CYRFILE "!linear renormalize=true end\n";
+    printf CYRFILE " increase_blocks=true\n";
+    printf CYRFILE " increase_blocks_factor=1.4\n";
     printf CYRFILE "end\n";
     printf CYRFILE "\n";
     }
