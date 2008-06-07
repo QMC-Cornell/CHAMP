@@ -103,6 +103,7 @@ module deriv_exp_mod
    call object_needed ('n_bas')
    call object_needed ('l_bas')
    call object_needed ('m_bas')
+   call object_needed ('ictype_basis')
    call object_needed ('exp_opt_lab_nb')
    call object_needed ('exp_opt_lab')
    call object_needed ('is_exp_opt')
@@ -158,23 +159,27 @@ module deriv_exp_mod
 
       if (l_exp_opt_restrict) then
 
-!       restriction on exponent parameter involved in the optimization
-        if (is_exp_opt (bas_j) .and. zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
-           dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
-           call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
-           dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
-           call append (dexp_to_bas (param_exp_nb)%row, bas_j)
-           bas_to_dexp (bas_j) = param_exp_nb
-           is_basis_func_attributed (bas_j) = .true.
-           cycle
-        endif
+!       restriction on exponent parameters
+        if (zex (bas_i, iwf) == zex (bas_j, iwf) .and. ictype_basis(bas_i) == ictype_basis(bas_j) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
+
+!         exponent parameter involved in the optimization
+          if (is_exp_opt (bas_j)) then
+             dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
+             call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
+             dexp_to_bas_nb (param_exp_nb) = dexp_to_bas_nb (param_exp_nb) + 1
+             call append (dexp_to_bas (param_exp_nb)%row, bas_j)
+             bas_to_dexp (bas_j) = param_exp_nb
+             is_basis_func_attributed (bas_j) = .true.
+             cycle
+          
+!         exponent parameter not directly involved in the optimization
+          else
+             dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
+             call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
+             cycle
+          endif
       
-!       restriction on exponent parameter not directly involved in the optimization
-        if (.not. is_exp_opt (bas_j) .and. zex (bas_i, iwf) == zex (bas_j, iwf) .and. abs(n_bas(bas_i)) == abs(n_bas(bas_j)) .and. abs(l_bas(bas_i)) == abs(l_bas(bas_j))) then
-           dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
-           call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
-           cycle
-        endif
+        endif ! restriction on exponent parameters
 
       endif ! l_exp_opt_restrict
 

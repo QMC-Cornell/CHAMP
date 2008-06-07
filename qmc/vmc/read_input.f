@@ -876,6 +876,7 @@ c       write(6,'(''Warning temporarily set irecursion_ylm=1'')')
       call object_modified ('n_bas') !JT
       call object_modified ('l_bas') !JT
       call object_modified ('m_bas') !JT
+      call object_modified ('ictype_basis') !JT
       call object_modified ('zex')   !JT
 
       write(6,'(''done reading local orbitals'')')
