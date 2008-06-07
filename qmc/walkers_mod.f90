@@ -217,6 +217,8 @@ module walkers_mod
 !
 ! Created       : J. Toulouse, 01 Apr 2007
 ! Modified      : R. G. Hennig, April 2008, Read walkers on master node & bcast
+! Modified      : R. G. Hennig, June 2008, Removed two large arrays
+!                 and removed unecessary operations
 ! ------------------------------------------------------------------------------
   USE mpi_mod
   implicit none
@@ -231,8 +233,8 @@ module walkers_mod
   character (len=max_string_len_rout), save :: lhere = 'read_initial_walkers'
   real(dp), allocatable :: coord_elec_read (:,:)
   real(dp), allocatable :: coord_elec_wlk_read (:,:,:)
-  real(dp), allocatable :: dist_ee_wlk_read (:,:,:)
-  real(dp), allocatable :: dist_en_wlk_read (:,:,:)
+! arrays too large for petascale, work around implemented (RGH)
+  real(dp)              :: dist_ee_wlk_read, dist_en_wlk_read, dist_en_wlk_read_closest
   real(dp), allocatable :: elec_nb_closest_to_atom_wlk_read (:,:)
   real(dp), allocatable :: elec_up_nb_closest_to_atom_wlk_read (:,:)
   real(dp), allocatable :: elec_dn_nb_closest_to_atom_wlk_read (:,:)
@@ -287,6 +289,10 @@ module walkers_mod
 ! close file
      close(file_unit)
 
+!     write(0,*) 'release(coord_elec_read)'
+!     call fflush(0)
+!     call release ('coord_elec_read', coord_elec_read)
+
      write(6,'(i5,3a)') nconf_read,' walkers read from file >',trim(file_mc_configs_in),'<'
 
 ! if no walkers read, return
@@ -329,21 +335,22 @@ module walkers_mod
   endif
 
 ! Check electron-electron distances
-  call alloc ('dist_ee_wlk_read', dist_ee_wlk_read, nelec, nelec, nconf_read)
-  dist_ee_wlk_read (:,:,:) = 0.d0
+!  call alloc ('dist_ee_wlk_read', dist_ee_wlk_read, nelec, nelec, nconf_read)
+!  dist_ee_wlk_read (:,:,:) = 0.d0
   do walk_i = 1, nconf_read
     do elec_i = 1, nelec
       do elec_j = elec_i+1, nelec
+        dist_ee_wlk_read = 0.d0
         do dim_i = 1, ndim
-          dist_ee_wlk_read (elec_i, elec_j, walk_i) = dist_ee_wlk_read (elec_i, elec_j, walk_i) &
+          dist_ee_wlk_read = dist_ee_wlk_read &
                + (coord_elec_wlk_read (dim_i, elec_i, walk_i) - coord_elec_wlk_read (dim_i, elec_j, walk_i))**2
         enddo ! dim_i
-        dist_ee_wlk_read (elec_i, elec_j, walk_i) = dsqrt (dist_ee_wlk_read (elec_i, elec_j, walk_i))
-        dist_ee_wlk_read (elec_j, elec_i, walk_i) = dist_ee_wlk_read (elec_i, elec_j, walk_i)
-        if (dist_ee_wlk_read (elec_i, elec_j, walk_i) < 1.d-12) then
+!        dist_ee_wlk_read (elec_i, elec_j, walk_i) = dsqrt (dist_ee_wlk_read (elec_i, elec_j, walk_i))
+!        dist_ee_wlk_read (elec_j, elec_i, walk_i) = dist_ee_wlk_read (elec_i, elec_j, walk_i)
+        if (dist_ee_wlk_read < 1.d-6) then
            write(6,*)
            write(6,'(a,i5,a,i3,a,i3,a)') 'Error: in walker # ',walk_i,', electrons ',elec_i,' and ',elec_j, ' are too close.'
-           write(6,'(a,f)') 'They are at a distance of ',dist_ee_wlk_read (elec_i, elec_j, walk_i), ' < 1.d-12.'
+           write(6,'(a,f)') 'They are at a distance of ',dist_ee_wlk_read, ' < 1.d-12.'
            call die (lhere, 'two electrons are too close in a walker.')
         endif
       enddo ! elec_j
@@ -353,20 +360,21 @@ module walkers_mod
 ! Check electron-nuclei distances
   call object_provide ('ncent')
   call object_provide ('cent')
-  call alloc ('dist_en_wlk_read', dist_en_wlk_read, nelec, ncent, nconf_read)
-  dist_en_wlk_read (:,:,:) = 0.d0
+!  call alloc ('dist_en_wlk_read', dist_en_wlk_read, nelec, ncent, nconf_read)
+!  dist_en_wlk_read (:,:,:) = 0.d0
   do walk_i = 1, nconf_read
    do cent_i = 1, ncent
      do elec_i = 1, nelec
+       dist_en_wlk_read = 0.d0
        do dim_i = 1, ndim
-         dist_en_wlk_read (elec_i, cent_i, walk_i) = dist_en_wlk_read (elec_i, cent_i, walk_i)  &
+         dist_en_wlk_read = dist_en_wlk_read &
               +   (coord_elec_wlk_read (dim_i, elec_i, walk_i) - cent (dim_i, cent_i))**2
        enddo ! dim_i
-       dist_en_wlk_read (elec_i, cent_i, walk_i) = dsqrt (dist_en_wlk_read (elec_i, cent_i, walk_i))
-       if (dist_en_wlk_read (elec_i, cent_i, walk_i) < 1.d-12) then
+!       dist_en_wlk_read (elec_i, cent_i, walk_i) = dsqrt (dist_en_wlk_read (elec_i, cent_i, walk_i))
+       if (dist_en_wlk_read < 1.d-6) then
            write(6,*)
            write(6,'(a,i5,a,i3,a,i3)') 'Warning: in walker # ',walk_i,', electron #',elec_i,' is very close to nucleus #',cent_i
-           write(6,'(a,f)') 'They are at a distance of ',dist_en_wlk_read (elec_i, cent_i, walk_i), ' < 1.d-12.'
+           write(6,'(a,f)') 'They are at a distance of ',dist_en_wlk_read, ' < 1.d-12.'
        endif
       enddo ! elec_i
    enddo ! cent_i
@@ -384,7 +392,13 @@ module walkers_mod
    do elec_i = 1, nelec
      cent_closest_i = 1
      do cent_i = 1, ncent
-       if (dist_en_wlk_read (elec_i, cent_i, walk_i) < dist_en_wlk_read (elec_i, cent_closest_i, walk_i)) then
+       dist_en_wlk_read = 0.d0
+       do dim_i = 1, ndim
+         dist_en_wlk_read = dist_en_wlk_read &
+              +   (coord_elec_wlk_read (dim_i, elec_i, walk_i) - cent (dim_i, cent_i))**2
+       enddo ! dim_i
+       if (dist_en_wlk_read < dist_en_wlk_read_closest) then
+         dist_en_wlk_read_closest = dist_en_wlk_read
          cent_closest_i = cent_i
        endif
      enddo ! cent_i
