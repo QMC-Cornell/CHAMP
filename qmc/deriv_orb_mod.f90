@@ -16,7 +16,7 @@ module deriv_orb_mod
   integer                                :: deriv_orb_pairs_nb = 0
 
   integer                                :: orb_mix_lab_nb
-  integer, allocatable                   :: orb_mix_lab (:)
+  logical, allocatable                   :: orb_mix_lab (:)
 
 ! new
   integer                                :: csf_ex_unq_nb = 0
