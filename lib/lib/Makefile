@@ -62,7 +62,7 @@ ifeq ($(planck_compiler),ifort)
 # In the mpif77 line, the fc=ifc tells it to use ifc rather than the default g77
 # fpp2 is the preprocessor
 # -ax{i|M|K|W} i=Pentium Pro, M-Pentium MMX, K=Pentium3, W=Pentium4,Xeon
-# On Pentium4 -axW results in 3% faster execution than not using it and 2% faster execution than using -axi, but uncerta inties are equally big
+# On Pentium4 -axW results in 3% faster execution than not using it and 2% faster execution than using -axi, but uncertainties are equally big
 # -O3 seems to be about the same a O2 for ifc (v7).  Have not tested ifort.
 # -w turns off warnings
 # -fpp2 for preprocessor (not needed for this code)
@@ -292,26 +292,7 @@ ifeq ($(system),CYGWIN_NT-5.0)
 endif
 
 # Jaguar at NCCS Oak Ridge
-ifeq ($(hostname),jaguar2)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar3)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar4)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar11)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar12)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar13)
-hostname=jaguar
-endif
-
-ifeq ($(hostname),jaguar)
+ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
 # Portland compiler
 #  FC    = pgf95
@@ -319,22 +300,13 @@ ifeq ($(hostname),jaguar)
 #  FC_MPI = mpif77.pgf
 #  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 
-# Pathscale compiler serial
-#  FC    = pathf95
-#  FC    = ftn 
-#  FFLAGS = -Ofast -r8 -extend-source -zerouv
-
-# Pathscale compiler MPI
-#  FC_MPI = ftn 
-#  FFLAGS_MPI = -Ofast -r8 -extend-source -zerouv
-
-# Pathscale compiler serial
+# Pathscale compiler
+# module swap PrgEnv-pgi PrgEnv-pathscale && module load acml
   FC = ftn -target=linux
   FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
-
-# Pathscale compiler MPI
+  LDFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
   FC_MPI = ftn -target=linux
-  FFLAGS_MPI = -O3 -r8 -extend-source -zerouv -fno-second-underscore
+  FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 
 endif
 

@@ -17,9 +17,9 @@ export FC FFLAGS AR ARFLAGS
 # FC:         Sequential FC compile command
 # FFLAGS:      Flags for sequential FC compilations
 # FC_MPI:     Parallel FC compile command (may e.g. the F90 sequential compiler)
-# FLINKER_MPI: Parallel link editor command (is useful if FC_MPI for some reason 
+# FLINKER_MPI: Parallel link editor command (is useful if FC_MPI for some reason
 #                is not an MPI compiler)
-# FFLAGS_MPI:  Flags for parallel FC compilations (May have to contain include 
+# FFLAGS_MPI:  Flags for parallel FC compilations (May have to contain include
 #                directory that contains mpif.h)
 # In most cases the Fortran compilers used for sequential and MPI programs are
 # in fact the same, but many implementations of MPI provide a script (often called
@@ -313,26 +313,7 @@ ifeq ($(system),CYGWIN_NT-5.0)
 endif
 
 # Jaguar at NCCS Oak Ridge
-ifeq ($(hostname),jaguar2)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar3)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar4)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar11)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar12)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar13)
-hostname=jaguar
-endif
-
-ifeq ($(hostname),jaguar)
+ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
 # Portland compiler
 #  FC    = pgf95
@@ -340,21 +321,11 @@ ifeq ($(hostname),jaguar)
 #  FC_MPI = mpif77.pgf
 #  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 
-# Pathscale compiler serial
-#  FC    = pathf95 
-#  FC    = ftn 
-#  FFLAGS = -Ofast  -r8 -extend-source -zerouv
-
-# Pathscale compiler MPI
-#  FC_MPI = mpif77.pgf
-#  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI -zerouv
-
-# Pathscale compiler serial
+# Pathscale compiler
+# module swap PrgEnv-pgi PrgEnv-pathscale && module load acml
   FC = ftn -target=linux
   FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
-
-
-# Pathscale compiler MPI
+  LDFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
   FC_MPI = ftn -target=linux
   FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 

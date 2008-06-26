@@ -370,26 +370,7 @@ ifeq ($(system),CYGWIN_NT-5.0)
 endif
 
 # Jaguar at NCCS Oak Ridge
-ifeq ($(hostname),jaguar2)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar3)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar4)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar11)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar12)
-hostname=jaguar
-endif
-ifeq ($(hostname),jaguar13)
-hostname=jaguar
-endif
-
-ifeq ($(hostname),jaguar)
+ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
 # Portland compiler
 #  FC    = pgf95
@@ -397,29 +378,16 @@ ifeq ($(hostname),jaguar)
 #  FC_MPI = mpif77.pgf
 #  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 
-# Pathscale compiler serial
-#  FC    = pathf95
-#  FFLAGS = -Ofast -r8 -extend_source -zerouv
-#  LDFLAGS = -Ofast -r8 -extend-source -zerouv
-
-# Pathscale compiler MPI
-#  FC_MPI = ftn 
-#  FLINKER_MPI = ftn
-#  FFLAGS_MPI = -Ofast -r8 -DCLOBBER -DMPI  -extend-source -zerouv
-
-# Pathscale compiler serial
-  FC    = ftn -target=linux
-  FFLAGS = -O3 -r8 -extend_source -zerouv  -fno-second-underscore
+# Pathscale compiler
+# module swap PrgEnv-pgi PrgEnv-pathscale && module load acml
+  FC = ftn -target=linux
+  FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
   LDFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
-
-# Pathscale compiler MPI
   FC_MPI = ftn -target=linux
-  FLINKER_MPI = ftn -target=linux
-  FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI  -extend-source -zerouv -fno-second-underscore
+  FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 
 endif
 
-# clastos in Paris
 ifeq ($(hostname),clastos)
   FC = /usr/local/bin/mpif90_64
   FC_MPI = /usr/local/bin/mpif90_64
@@ -573,6 +541,8 @@ OBJS_MPI     = $(LIB_MPI)(main/func_mpi.o)\
 ###################################
 # Targets, Dependencies and Rules #
 ###################################
+
+default: $(OBJS) $(OBJS_MATH) $(OBJS_SEQ)
 
 all: seq mpi
 

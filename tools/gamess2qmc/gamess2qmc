@@ -358,11 +358,11 @@ sub get_options{
           $make_cyrus_file=1;
           $make_radial_grids=1;
         } else {
-	    printf "\n Input Error: Must Specify Orbital Type with -t! \n";
+	    printf "\n Input Error: Must Specify Orbital Type with -t!\n";
 	    print_usage();
         }
         if(!exists $options{d}){
-	    printf "Assuming single determinant wavefunction \n";
+	    printf "Assuming single determinant wavefunction\n";
             $ncsf=1;
         }
     }
@@ -541,7 +541,7 @@ sub get_options{
         && (! $make_cyrus_file)
         && (! $make_csf_file)
 	&& (! $make_efpci_file)){
-	 print "\n\n  No output specified ! \n\n";
+	 print "\n\n  No output specified !\n\n";
 	 print_usage();
     }
 }
@@ -802,7 +802,7 @@ sub read_zcore{
    }
 
     if($verbose){
-	print "\n Atom Charges \n";
+	print "\n Atom Charges\n";
 	foreach my $i (@atom_types){
 	    printf "Atom type %s charge %f ",$i,$zatom{$i};
 	    if( exists $zcore{$i} ){
@@ -973,7 +973,7 @@ sub read_orbitals{
       ### trick for correct parsing  WAS
       if ($wiss==1){
 	  @w = split; $atomsym=$w[1]; $atomsymspace="$atomsym"."  ";
-	  #	  print "Replacing $atomsym with  $atomsymspace \n";
+	  #	  print "Replacing $atomsym with  $atomsymspace\n";
       }
       if ($wiss > 1 && !($_ =~  $end_tag)) {
 	  $_=~s/$atomsym/$atomsymspace/;
@@ -1164,7 +1164,7 @@ sub read_vec{
 	push  @{$tmplcao[$orb-1]}, @values;
     }
     if(! $quiet){
-	print "Number of orbitals re-read from VEC : $norbit of $orbitals \n";
+	print "Number of orbitals re-read from VEC : $norbit of $orbitals\n";
     }
 
     $nb=$#lcao_bflabel;
@@ -2768,7 +2768,7 @@ sub print_cyrus_input{
     printf CYRFILE "1837465927472523                         irn\n";
     printf CYRFILE "0 1                                      iperiodic,ibasis\n";
     printf CYRFILE "0.5  %7.2f  '  Hartrees'               hb,etrial,eunit\n",$total_energy;
-    printf CYRFILE "1000  10   1   100   0                   nstep,nblk,nblkeq,nconf,nconf_new\n";
+    printf CYRFILE "100   100  1   100   0                   nstep,nblk,nblkeq,nconf,nconf_new\n";
     printf CYRFILE "0    0    1    -2                        idump,irstar,isite,ipr\n";
     printf CYRFILE "6  1.  5.  1.  1.                        imetro delta,deltar,deltat fbias\n";
     printf CYRFILE "2 1 1 1 1 0 0 0 0                        idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e\n";

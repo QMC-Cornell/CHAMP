@@ -1,0 +1,5 @@
+Can make all the libraries by doing make here.
+lib was written by Cyrus, SimulatedAnnealing by Peter Nightingale and Cyrus.
+but lib2 contains standard libraries, blas, lapack, linpack and pspline.
+blas and lapack are available on most machines.
+One should link to existing standard libraries whenever available.
