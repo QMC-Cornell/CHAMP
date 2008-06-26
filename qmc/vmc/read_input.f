@@ -1429,6 +1429,7 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
         na2=nctype
       endif
 
+      nparmot=0
       if(ibasis.ne.4 .and. ibasis.ne.5) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
@@ -1439,16 +1440,16 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
      &  (nparmf(it),it=1,nctype),nparmcsf,nparms,nparmg,
      &  (nparmo(it),it=1,notype)
-        nparmot=0
         do it=1,notype
           nparmot=nparmot+nparmo(it)
           if(nparmo(it).lt.0 .or. nparmo(it).gt.norb) then
             stop 'nparmo must be between 0 and norb'
           endif
         enddo
-        if(nparmot+nparmcsf.gt.MPARMD) then
-          stop 'nparmot+nparmcsf.gt.MPARMD'
-        endif
+      endif
+      if(nopt_iter.gt.0 .and. nparmot+nparmcsf.gt.MPARMD) then
+        write(6,'(''nparmot+nparmcsf > MPARMD in an optimization run'')')
+        stop 'nparmot+nparmcsf.gt.MPARMD'
       endif
 
       if(nparmcsf.gt.ncsf) then
