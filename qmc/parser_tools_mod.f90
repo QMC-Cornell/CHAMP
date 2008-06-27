@@ -90,6 +90,14 @@ module parser_tools_mod
 
 ! begin
 
+!!! added to handle the case where there is no 'end' after the optimization section
+  call read_next_line (iostat)
+  if (iostat < 0) then
+   word = 'exit'
+   return
+  endif
+!!!
+
 ! find first character of word
   first_char_in_word_found = .false.
   do

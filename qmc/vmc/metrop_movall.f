@@ -36,6 +36,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
@@ -167,10 +168,19 @@ c form expected values of e, pe, etc.
         rprob(itryn)=rprob(itryn)+p
 c calculate 2density related functions:
         if(ifixe.ne.0 .and. ifixe.ne.i .and. ifixe.ne.-2) then     ! fixed electron density or 2d density
-          do 27 idim=1,ndim
-c note that ix can be negative or positive. nint is a better choice...
-            ixo(idim)=nint(delxi*xold(idim,i))
-   27       ixn(idim)=nint(delxi*xnew(idim,i))
+            if(icoosys.eq.1) then 
+              do 27 idim=1,ndim
+c note that ix can be negative or positive. nint is a better choice.
+                ixo(idim)=nint(delxi*xold(idim,i))
+  27            ixn(idim)=nint(delxi*xnew(idim,i))
+             else
+c same trick adapted to circular coordinates
+               ixo(1)=nint(delradi*(rold-rmean))
+               ixn(1)=nint(delradi*(rnew-rmean))
+               ixo(2)=nint(delti*(datan2(xold(2,i),xold(1,i))))
+               ixn(2)=nint(delti*(datan2(xnew(2,i),xnew(1,i))))
+            endif
+
           if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
             den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+q
             if(i.le.nup) then

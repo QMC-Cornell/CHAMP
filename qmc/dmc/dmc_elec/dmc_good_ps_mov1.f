@@ -112,6 +112,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
@@ -542,9 +543,18 @@ c electron-i is being moved
               endif
 
               if(ifixe.eq.-1 .or. ifixe.eq.-3) then
-                do 265 idim=1,ndim
-                  ixo(idim)=nint(delxi*xoci(idim,i,i))
-  265             ixn(idim)=nint(delxi*xnci(idim,i,i))
+                if(icoosys.eq.1) then 
+                  do 265 idim=1,ndim
+c note that ix can be negative or positive. nint is a better choice.
+                    ixo(idim)=nint(delxi*xoci(idim,i,i))
+  265               ixn(idim)=nint(delxi*xnci(idim,i,i))
+                 else
+c same trick adapted to circular coordinates
+                    ixo(1)=nint(delradi*(dsqrt(xoci(1,i,i)*xoci(1,i,i)+xoci(2,i,i)*xoci(2,i,i))-rmean))
+                    ixn(1)=nint(delradi*(dsqrt(xnci(1,i,i)*xnci(1,i,i)+xnci(2,i,i)*xnci(2,i,i))-rmean))
+                    ixo(2)=nint(delti*(datan2(xoci(2,i,i),xoci(1,i,i))))
+                    ixn(2)=nint(delti*(datan2(xnci(2,i,i),xnci(1,i,i))))
+                endif
                 if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
                   den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+wtgq
                   if(i.le.nup) then

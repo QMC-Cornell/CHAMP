@@ -83,7 +83,7 @@ c if isite>=1 then get initial configuration from sites routine
   394     continue
         if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
         call sites(xold,nelec,nsite)
-        write(6,'(/,''initial configuration from sites'')')
+!JT        write(6,'(/,''initial configuration from sites'')')
 
   395   continue
 

@@ -498,7 +498,10 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
         wtgen(i)=nconf_global
    70   ff(i)=one
 
+! JT: it seems that the code remains stuck around here runs when compiled with ifort 10.1 with optimization option -O3.
+! It works with optimization option -O2. It also works when a write statement is added in the loop as done below!
       do 80 iw=1,nconf
+        write(6,*) 'iw=',iw
         wt(iw)=one
         if(istrech.eq.0) then
           do 71 ifr=2,nforce

@@ -10,10 +10,11 @@ c iflag is useless for the moment since we don't optimize in fit
 c any "exponent term" in coefficients for dots. maybe could be useful later?
 c also see basis_norm.dot for real wfs
 
+      use all_tools_mod  !JT
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!     include 'vmc.h'
+!     include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -61,6 +62,9 @@ c        write(*,*) 'ib,n_fd,m_fd,anorm=',ib,n_fd(ib),m_fd(ib),anorm(ib)
  10       enddo
         endif
  20   enddo
+
+      call object_modified ('anorm')   !JT
+      call object_modified ('coef')    !JT
 
       return
       end

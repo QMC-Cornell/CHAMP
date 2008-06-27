@@ -95,10 +95,11 @@ c Written by Cyrus Umrigar
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
-
+      common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
       common /compferm/ emagv,nv,idot
 c      complex*16 cvd_sav,cvk_sav
 c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
@@ -131,6 +132,7 @@ c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
       namelist /opt_list/ xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
+     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
       common /jel_sph2/ zconst ! RM
@@ -151,7 +153,8 @@ c            >0 periodic system
 c ibasis     =1 localized Slater or gaussian or numerical basis
 c            =2 planewave basis, also for extended orbitals on grid
 c            =3 complex basis for 2D quantum dots / composite fermions
-c            =4 2d localized gaussians (wigner crystal).
+c            =4 2d localized floating gaussians in caresian coord. (wigner crystal).
+c            =5 2d localized gloating gaussians in circular coord. (wigner crystal)
 c            Warning I would like to be able to use for dots a gaussian radial basis with complex
 c            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
 c hb         hbar=0.5 for Hartree units
@@ -303,6 +306,12 @@ c          -3: calculate full 2d pair density  AND 2d density.
 c xfix(3)  can represent 2 different things:
 c          if ifixe>0   :  coordinates of fixed electron
 c                  -2/-3:  full pair-densities is written for x1 coord. between xfix(1) and xfix(2)
+c icoosys  coordinate system for calculating 2d density/pairdensity
+c          1: cartesian 
+c          2: circular
+c rmin,rmax radius limits for circular coordinates
+c nmeshr   2*nmeshr+1 is the number of radial mesh points for circular coordinates around rring
+c nmesht   2*nmesht+1 is the number of angular mesh points for circular coordinates
 c ifourier 1: "internal(?) fourier transform" of the 2 dimensional density is performed
 c          0: ... is not performed (default value)
 c idot     0: pure complex quantum dots
@@ -314,6 +323,15 @@ c          of composite fermions.nv is usually denoted as p in the litterature.
 c          also used for laughlin wave functions (m = 2 nv + 1).
 c emagv    vortices angular momentum magnetic energy due to the extra-momentum
 c          carried by vortices of composite fermions (or laughlin wfs).
+c rring    >0 quantum ring with potential given by 0.5 w0^2 (r-rring)^2
+c iperturb 0: off (no angular perturbation for quantum rings)
+c          1: smoothed-square-like perturbation for quantum rings
+c     = amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
+c          2: gaussian-like perturbation for quantum rings
+c     = 2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
+c ang_perturb  angular perturbation range 
+c amp_perturb  amplitude of the angular perturbation
+c shrp_perturb sharpness of the angular perturbation
 
 
 c Optimization parameters:
@@ -488,7 +506,7 @@ c     read(5,'(a20,4x,4i4)') title,irn
         write(6,'(''Floating Gaussian basis for 2D Wigner crystals'')')
         notype=3
        elseif(ibasis.eq.5) then
-        write(6,'(''Floating Gaussian basis for quasi-1D Wigner crystals'')')
+        write(6,'(''Floating Gaussian basis for 2D Wigner crystals in ring geom.'')')
         notype=4
       endif
 
@@ -814,7 +832,13 @@ c Determinantal section
       read(5,*) section
       write(6,'(/,a30,/)') section
 
-      read(5,*) inum_orb,iorb_used,iorb_format !JT
+      if(ibasis.ge.3 .or. ibasis.le.5) then   ! ADG
+        read(5,*) inum_orb
+        iorb_used=0
+        iorb_format='unused'
+      else
+        read(5,*) inum_orb,iorb_used,iorb_format !JT
+      endif
       write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
       if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.(abs(inum_orb).ne.4.and.abs(inum_orb).ne.6))) then
          stop 'abs(inum_orb) must be 0, 4 or 6'
@@ -1200,25 +1224,36 @@ c   default values:
       xfix(2)=0.d0
       xfix(3)=0.d0
       rring=0.d0
+      iperturb=0
+      ang_perturb=0.d0
+      amp_perturb=0.d0
+      shrp_perturb=0.d0
       ifourier=0
       fmax1=10.d0
       fmax2=1.d0
       nv=0
       idot=0
+      rmin=0.d0
+      rmax=10.d0
+      nmeshr=NAX
+      nmesht=NAX
+      icoosys=1
 
 c Read optional variables if any:
-c Warning: temporarily commented out.
-c     read(5,*) section
-c     write(6,'(/,a30,/)') section
-c     read(5,opt_list)
-c     write(6,opt_list)
+c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
+      if(ibasis.ge.3 .and. ibasis.le.5) then 
+        read(5,*) section
+        write(6,'(/,a30,/)') section
+        read(5,opt_list)
+        write(6,opt_list)
+      endif
 
 c pair density calculation parameters:
-      if(ifixe.lt.-3 .or. ifixe.gt.nelec) stop 'ifixe must be between -2 and nelec'
+      if(ifixe.lt.-4 .or. ifixe.gt.nelec) stop 'ifixe must be between -4 and nelec'
       if(abs(ifixe).gt.0) then
         if(ifixe.gt.0 .and. index(mode,'vmc').eq.0) stop 'fixed electron not possible in fit or dmc!'
 c        if(ifixe.gt.0 .and. nopt_iter.ne.0) stop 'fixed electron not possible with optimization'
-        if(ncent.ne.1) stop 'Pair-density calculation not implemented for ncent.ne.1'
+c        if(ncent.ne.1) stop 'Pair-density calculation not implemented for ncent.ne.1'
         if(index(mode,'vmc').ne.0 .and. imetro.ne.1) stop 'Pair-density calculation only possible for imetro=1 in vmc'
         if(index(mode,'dmc').ne.0 .and. abs(idmc).ne.2)
      &    stop 'Pair-density calculation only possible for idmc=2 in dmc'
@@ -1265,9 +1300,27 @@ c composite fermions:
 
 c Quantum rings:
       if(bext.ne.0.d0 .and. rring.ne.0.d0) stop 'Quantum rings in magnetic field not yet implemented'
+      if(iperturb.ne.0) then
+        if (rring.eq.0.d0) stop 'Perturbation only possible for quantum rings'
+        if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) 
+     &     stop 'shrp_perturb must be between 0 and 100'
+        if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) 
+     &     stop 'ang_perturb must be between 0 and 4pi'
+      endif
+
+c circular coordinates
+      if(icoosys.lt.1 .or. icoosys.gt.2)
+     &  stop 'icoosys must be 1 or 2' 
+      if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) 
+     &  stop 'we must have 0<rmin<rmax'
+      if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1)
+     &  stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
+      delti=(2*nmesht+1)/(2*pi)
+      delradi=(2*nmeshr+1)/(rmax-rmin)
+      rmean=(rmin+rmax)*0.5d0
 
 c get normalization for basis functions
-c moved up
+c (used to be up)
       if(ibasis.eq.3.and.numr.eq.0) then
         call basis_norm_dot(1,1)
        else
@@ -1429,7 +1482,6 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
         na2=nctype
       endif
 
-      nparmot=0
       if(ibasis.ne.4 .and. ibasis.ne.5) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
@@ -1440,6 +1492,7 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
      &  (nparmf(it),it=1,nctype),nparmcsf,nparms,nparmg,
      &  (nparmo(it),it=1,notype)
+        nparmot=0
         do it=1,notype
           nparmot=nparmot+nparmo(it)
           if(nparmo(it).lt.0 .or. nparmo(it).gt.norb) then

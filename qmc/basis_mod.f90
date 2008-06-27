@@ -126,6 +126,7 @@ module basis_mod
    call object_create ('norm_basis')
 
    call object_needed ('nbasis')
+!   call object_needed ('ibasis')    !   ADG
    call object_needed ('ndim')
    call object_needed ('numr')
    call object_needed ('n_bas')
@@ -161,8 +162,12 @@ module basis_mod
        endif
      elseif (ndim == 2) then
        m = m_bas(ib)
+!       ibasis=4  ! testing !ADG
+!       if (numr <= 0 .and. ibasis < 4) then !ADG
        if (numr <= 0) then
          norm_basis(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(factorial(2*n-1)*2*pi))
+!       elseif (numr <= 0 .and. ibasis == 4 .or. ibasis == 5) then !ADG
+!         norm_basis(ib)=sqrt(1/pi) !ADG
        else
 !        Warning: temporarily commented out diff norm for m=0
 !         norm_basis(ib)=sqrt(min(abs(m)+1,2)/(2*pi))

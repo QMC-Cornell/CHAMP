@@ -49,11 +49,12 @@ c just for convenience.
 c For Fock-Darwin states, zex is more than an exponential parameter.
 c It serves as a multiplicatif optimization factor for the spring constant.
 
+      use all_tools_mod ! ADG: not sure if this is needed or not? testing
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+c      include 'vmc.h'
+c      include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb

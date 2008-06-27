@@ -91,6 +91,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
@@ -449,12 +450,22 @@ c Collect density only for primary walk
               r2sum=r2sum+wtg*(q*r2o+p*r2n)
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
-c calculate 2density related functions:
+c calculate 2d density related functions:
               if(ifixe.eq.-1 .or. ifixe.ne.-3) then
-                do 247 idim=1,ndim
+
+                if(icoosys.eq.1) then 
+                  do 247 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
-                  ixo(idim)=nint(delxi*xoldw(idim,i,iw,ifr))
-  247             ixn(idim)=nint(delxi*xnew(idim,i,ifr))
+                    ixo(idim)=nint(delxi*xoldw(idim,i,iw,ifr))
+  247               ixn(idim)=nint(delxi*xnew(idim,i,ifr))
+                  else
+c same trick adapted to circular coordinates
+                    ixo(1)=nint(delradi*(rmino-rmean))
+                    ixn(1)=nint(delradi*(rminn-rmean))
+                    ixo(2)=nint(delti*(datan2(xoldw(2,i,iw,ifr),xoldw(1,i,iw,ifr))))
+                    ixn(2)=nint(delti*(datan2(xnew(2,i,ifr),xnew(1,i,ifr))))
+                endif
+
                 if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
                   den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+wtgq
                   if(i.le.nup) then

@@ -15,13 +15,25 @@ c called by finwrt from vmc,dmc,dmc_elec
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
 c verify the normalization later...
       delx=1/delxi
-      term=1/(passes*delx*delx)
+      if(icoosys.eq.1) then
+        del1=delx
+        del2=delx
+        nax1=NAX
+        nax2=NAX
+      else
+        del1=1/delradi
+        del2=1/delti
+        nax1=nmeshr
+        nax2=nmesht
+      endif
+      term=1/(passes*del1*del2)
 
       if(ifixe.gt.0) then          ! fixed electron pair-density
         if(ifixe.le.nup) then
@@ -38,11 +50,11 @@ c verify the normalization later...
         open(43,file=file3,status='unknown')
 
 c verify the normalization later...
-        do in1=-NAX,NAX
-          do in2=-NAX,NAX
-            write(41,'(2g19.8,g19.8)') in1*delx,in2*delx,den2d_t(in1,in2)*term
-            write(42,'(2g19.8,g19.8)') in1*delx,in2*delx,den2d_d(in1,in2)*term
-            write(43,'(2g19.8,g19.8)') in1*delx,in2*delx,den2d_u(in1,in2)*term
+        do in1=-nax1,nax1
+          do in2=-nax2,nax2
+            write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_t(in1,in2)*term
+            write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_d(in1,in2)*term
+            write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_u(in1,in2)*term
           enddo
 c following spaces are for gnuplot convention:
           write(41,*)
@@ -63,11 +75,11 @@ c following spaces are for gnuplot convention:
         open(43,file=file3,status='unknown')
 
 c verify the normalization later...
-        do in1=-NAX,NAX
-          do in2=-NAX,NAX
-            write(41,'(2g19.8,g19.8)') in1*delx,in2*delx,den2d_t(in1,in2)*term
-            write(42,'(2g19.8,g19.8)') in1*delx,in2*delx,den2d_d(in1,in2)*term
-            write(43,'(2g19.8,g19.8)') in1*delx,in2*delx,den2d_u(in1,in2)*term
+        do in1=-nax1,nax1
+          do in2=-nax2,nax2
+            write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_t(in1,in2)*term
+            write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_d(in1,in2)*term
+            write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_u(in1,in2)*term
           enddo
           write(41,*)
           write(42,*)

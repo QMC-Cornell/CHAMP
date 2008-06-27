@@ -27,6 +27,7 @@ c atoms then the up-spins have an additional electron.
 c So assumption is that system is not strongly polarized.
 
 c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
+      pi=4*datan(1.d0)
 
       if(nloc.eq.-1) then ! parabolic quantum dot
         if(we.eq.0.d0) stop 'we should not be 0 in sites for quantum dots (nloc=-1)'
@@ -62,14 +63,25 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
              else
               sitsca=5/max(znucc-36,1.d0)
             endif
-            do 10 k=1,ndim
+
 
 c sample position from exponentials or gaussian around center
+c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots            
+            if(nloc.eq.-1 .and. rring.gt.0.d0) then
+              site=dsqrt(site)
+              site=sign(site,(rannyu(0)-half))
+              angle=2*pi*rannyu(0)
+              x(1,ielec)=(sitsca*site+rring)*dcos(angle)
+              x(2,ielec)=(sitsca*site+rring)*dsin(angle)
+             else
+              do 5 k=1,ndim
+              site=-dlog(rannyu(0))
+              if(nloc.eq.-1) site=dsqrt(site)
+              site=sign(site,(rannyu(0)-half))
+   5          x(k,ielec)=sitsca*site+cent(k,i)
+            endif
 
-             site=-dlog(rannyu(0))
-             if(nloc.eq.-1) site=dsqrt(site)
-             site=sign(site,(rannyu(0)-half))
-   10        x(k,ielec)=sitsca*site+cent(k,i)
+   10     continue
 
 
 !      write(6,*)
@@ -79,3 +91,4 @@ c sample position from exponentials or gaussian around center
       if(ielec.lt.nelec) stop 'bad input to sites'
       return
       end
+

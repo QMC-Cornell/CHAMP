@@ -2,6 +2,7 @@ module walkers_mod
 
   use all_tools_mod
   use restart_mod
+  use vmc_mod
 
 ! Declaration of global variables and default values
   character (len=max_string_len_file)   :: file_mc_configs_in  = 'mc_configs'
@@ -16,6 +17,7 @@ module walkers_mod
   logical :: l_write_walkers = .false.
   integer :: write_walkers_step = 1
   integer :: file_walkers_out_unit
+  logical :: l_generate_walkers = .false.
 
   contains
 
@@ -36,6 +38,8 @@ module walkers_mod
   integer elec_dn_nb_closest_to_atom_input_nb
 
 ! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of walkers menu --------------------------------------------------------------------------------'
 
 ! loop over menu lines
   do
@@ -54,6 +58,7 @@ module walkers_mod
    write(6,'(a)') '  file_walkers_out  = [string] : output file for walkers in Scemama format'
    write(6,'(a)') '  write_walkers = [logical] write walkers in Scemama format (default=false)'
    write(6,'(a)') '  write_walkers_step = [integer] write walkers in Scemama format every X step? (default=1)'
+   write(6,'(a)') '  generate_from_vmc = [bool] generate walkers from a VMC run (default=false)'
    write(6,'(a)') ' end'
    write(6,*)
 
@@ -106,6 +111,9 @@ module walkers_mod
   case ('write_walkers_step')
    call get_next_value (write_walkers_step)
 
+  case ('generate_from_vmc')
+   call get_next_value (l_generate_walkers)
+
   case ('end')
    exit
 
@@ -114,6 +122,8 @@ module walkers_mod
   end select
 
   enddo ! end loop over menu lines
+
+  write(6,'(a)') 'End of walkers menu --------------------------------------------------------------------------------------'
 
   end subroutine walkers_menu
 
@@ -132,13 +142,35 @@ module walkers_mod
   integer walk_i, elec_i, elec_j, dim_i
   real(dp) dist
   logical ok
+  integer nstep_save, nblk_save, nstep_total_save, nwalk_save
+  character(len=max_string_len) :: mode_save
 
 ! begin
   write(6,*)
   write(6,'(a)') 'Initial walkers:'
 
+! generate walkers from a VMC run
+  if (l_generate_walkers) then
+    call die (lhere, 'generate_walkers does not work!')
+    write(6,'(a)') 'Generating initial walkers from a VMC run...'
+    mode_save = mode
+    nstep_save = nstep
+    nblk_save = nblk
+    nstep_total_save = nstep_total
+    nwalk_save = nwalk
+    mode = 'vmc_mov1'
+    nstep = 100
+    nblk = 100
+    nwalk = 1
+    nstep_total = nstep * nproc
+    call vmc_run
+    nstep = nstep_save
+    nblk = nblk_save
+    nstep_total = nstep_total_save
+    nwalk = nwalk_save
+
 ! walkers from restart file
-  if (irstar.eq.1) then
+  elseif (irstar.eq.1) then
     if(idmc.lt.0) then
       if(index(mode,'mov1').ne.0) then
         open(10,file='restart_dmcvmc_mov1',status='old',form='unformatted')
@@ -350,7 +382,7 @@ module walkers_mod
         if (dist_ee_wlk_read < 1.d-6) then
            write(6,*)
            write(6,'(a,i5,a,i3,a,i3,a)') 'Error: in walker # ',walk_i,', electrons ',elec_i,' and ',elec_j, ' are too close.'
-           write(6,'(a,f)') 'They are at a distance of ',dist_ee_wlk_read, ' < 1.d-12.'
+           write(6,'(a,f)') 'They are at a distance of ',dist_ee_wlk_read, ' < 1.d-6.'
            call die (lhere, 'two electrons are too close in a walker.')
         endif
       enddo ! elec_j
@@ -374,7 +406,7 @@ module walkers_mod
        if (dist_en_wlk_read < 1.d-6) then
            write(6,*)
            write(6,'(a,i5,a,i3,a,i3)') 'Warning: in walker # ',walk_i,', electron #',elec_i,' is very close to nucleus #',cent_i
-           write(6,'(a,f)') 'They are at a distance of ',dist_en_wlk_read, ' < 1.d-12.'
+           write(6,'(a,f)') 'They are at a distance of ',dist_en_wlk_read, ' < 1.d-6.'
        endif
       enddo ! elec_i
    enddo ! cent_i

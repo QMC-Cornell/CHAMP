@@ -16,6 +16,7 @@ c calculate interparticle distances
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
 c     common /compferm/ emagv,nv,idot
       common /jel_sph1/ dn_background,rs_jel,radius_b !RM
 
@@ -41,10 +42,19 @@ c Calculate e-N inter-particle distances
             r_en(i,ic)=dsqrt(r_en(i,ic))
             if(nloc.eq.0) pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
 c           if(nloc.eq.-1) pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
-            if(nloc.eq.-1) then
+            if(nloc.eq.-1 .and. ic.eq.1) then  
 c             pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
 c             emag=emag+0.125d0*(bext*r_en(i,ic))**2
               pe_en=pe_en+0.5d0*(we*(r_en(i,ic)-rring))**2
+              if(iperturb.eq.1) then
+c note that the perturbation potential is defined only for -pi<theta<pi  (it's not periodic)
+                theta=datan2(x(2,i),x(1,i))
+                pe_en=pe_en+amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))
+     &                            -tanh(shrp_perturb*(theta-ang_perturb)))
+               elseif(iperturb.eq.2) then               ! this is for testing
+                theta=datan2(x(2,i),x(1,i))
+                pe_en=pe_en+2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
+              endif
             endif
             if(nloc.eq.-2) pe_en=pe_en+p1*rvec_en(1,i,ic)**4+p2*rvec_en(2,i,ic)**4
      &      -2*p3*(rvec_en(1,i,ic)*rvec_en(2,i,ic))**2

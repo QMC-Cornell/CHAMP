@@ -316,6 +316,6 @@ strings_tools_mod.o: basic_tools_mod.o constants_mod.o
 testing_mod.o: all_tools_mod.o
 variables_mod.o: constants_mod.o
 vmc_mod.o: all_tools_mod.o commons.h
-walkers_mod.o: all_tools_mod.o mpi_mod.o restart_mod.o commons.h
+walkers_mod.o: all_tools_mod.o mpi_mod.o restart_mod.o vmc_mod.o commons.h
 write_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o variables_mod.o \
 	commons.h
