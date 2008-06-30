@@ -171,7 +171,7 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
      &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
 
       if(nforce.eq.1) then
-        write(6,'(''total E ='',f20.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
+        write(6,'(''total E ='',f19.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
      &  efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq
 
 !MS Jellium sphere
@@ -189,7 +189,7 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
         ifr=1
 !       write(6,'(''total E'',i3,'' ='',t17,f12.7,'' +-'',f11.7,3f9.5,t82,f8.2)') !JT
 !    &  ifr,efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,tcsq*tcsq
-        write(6,'(''total E'',i3,'' ='',f17.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
+        write(6,'(''total E'',i3,'' ='',f16.7,'' +-'',f11.7,3f9.5,'' +-'',f9.5,f8.2)')
      &  ifr,efin,eerr,eerr*rtpass,eerr1*rtpass,sigma,error_sigma,tcsq*tcsq
       endif
 
@@ -216,7 +216,7 @@ c force and force_err are really the energy difference and the error in the ener
         energy_sigma(ifr)=sigma
         force(ifr)=ffin
         force_err(ifr)=ferr
-        write(6,'(''total E'',i3,'' ='',f17.7,'' +-'',f11.7,f9.5,f18.5,t82,f8.2)') !JT
+        write(6,'(''total E'',i3,'' ='',f16.7,'' +-'',f11.7,f9.5,f18.5,t82,f8.2)') !JT
      &  ifr,efin,eerr,eerr*rtpass,sigma,tcsq*tcsq
   110   write(6,'(''E_diff'',i3,'' ='',t13,f16.7,'' +-'',f11.7,f9.5)')
      &  ifr,ffin,ferr,ferr*rtpass

@@ -832,12 +832,12 @@ c Determinantal section
       read(5,*) section
       write(6,'(/,a30,/)') section
 
-      if(ibasis.ge.3 .or. ibasis.le.5) then   ! ADG
+      if(ibasis.ge.3 .and. ibasis.le.5) then
         read(5,*) inum_orb
         iorb_used=0
         iorb_format='unused'
-      else
-        read(5,*) inum_orb,iorb_used,iorb_format !JT
+       else
+        read(5,*) inum_orb,iorb_used,iorb_format
       endif
       write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
       if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.(abs(inum_orb).ne.4.and.abs(inum_orb).ne.6))) then
@@ -1482,6 +1482,7 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
         na2=nctype
       endif
 
+      nparmot=0
       if(ibasis.ne.4 .and. ibasis.ne.5) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
@@ -1492,7 +1493,6 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
      &  (nparmf(it),it=1,nctype),nparmcsf,nparms,nparmg,
      &  (nparmo(it),it=1,notype)
-        nparmot=0
         do it=1,notype
           nparmot=nparmot+nparmo(it)
           if(nparmo(it).lt.0 .or. nparmo(it).gt.norb) then
