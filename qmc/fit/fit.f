@@ -530,7 +530,7 @@ c     if(icusp2.ge.1.and.ijas.eq.4.and.isc.le.7) call cuspinit4(1)
 
       ishft=ncuspc*(nspin2-nspin1+1)+nfockc
 
-      if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) then
+      if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) then
 c Calculate coefs to construct the piece of the orbital that comes
 c from basis fns that are related by symmetry.  This is needed to
 c impose cusp conditions when there is more than one atom.
@@ -696,7 +696,7 @@ c     dum_func=func(ndata2,nparm,parm,diff,1)
         endif
       endif
       ishft=ncuspc*(nspin2-nspin1+1)+nfockc
-      if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),1)
+      if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),1)
 
       do 120 i=1,necn
   120   coef(iebasi(1,i),ieorb(1,i),1)=sign(one,dfloat(ieorb(2,i)))*

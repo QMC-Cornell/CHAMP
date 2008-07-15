@@ -42,12 +42,10 @@ c vps  = (V_l-V_L)
       do 20 i=1,nelec
         if(nloc.eq.1) then
           call getvps_fahy(r_en,i)
-         elseif(nloc.ge.2 .and. nloc.le.4) then
+         elseif(nloc.ge.2 .and. nloc.le.5) then
           call getvps_champ(r_en,i)
-         elseif(nloc.eq.5) then
+         elseif(nloc.eq.6) then
           call getvps_gauss(r_en,i)
-         elseif (nloc .ge. 6) then
-          call getvps_champ(r_en,i)
          else
           stop "nloc is not implemented in deriv_nonloc_pot.f"
         endif

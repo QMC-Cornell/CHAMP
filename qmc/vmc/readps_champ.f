@@ -1,9 +1,12 @@
       subroutine readps_champ
 c Written by Cyrus Umrigar
 
-c Read CHAMP-formatted Troullier-Martins pseudopotentials.
+c Read CHAMP-formatted nonlocal pseudopotentials.
+c Reads also FHI-formatted nonlocal pseudopotentials, though I am not
+c quite sure what some of the entries in the file are.
 c Reads in v in Hartrees and subtracts out local part from all except
-c the lpotp1 component.
+c the lpotp1 component.  If lpotp1<=0 then set lpotp1 so that the highest l
+c channel is the local one.
 c Also initializes quadrature pts.
 c rmax_coul is the point at which the psp. becomes -Z/r to within eps.
 c rmax_nloc is the point at which the psp. becomes local to within eps.
@@ -51,71 +54,162 @@ c The prefered grid is 3.
 
         filename='pseudopot'//atomtyp(1:index(atomtyp,' ')-1)
         open(1,file=filename,status='old',form='formatted',err=999)
-        write(6,'(''Reading CHAMP format pseudopotential file '',a20)') filename
 
-c position file to skip comments
-        title(1:1)='#'
-        do while(title(1:1).eq.'#')
-          read(1,'(a80)') title
-        enddo
+        if(nloc.eq.4) then
+          write(6,'(''Reading CHAMP format pseudopotential file '',a20)') filename
+
+c position file to skip an arbitrary number of comment lines but write out the first one
+c if it exists
+          title(1:1)='#'
+          i=0
+          do while(title(1:1).eq.'#')
+            if(i.eq.1) write(6,'(a)') trim(title)
+            i=i+1
+            read(1,'(a80)') title
+          enddo
 
 c The TM psp. format has npotd and npotu for down and up, but we just use one of them
 c They are the number of different l components of the psp.
 
-        write(6,'(''Reading psp in champ format'')')
-        read(title,*) npotd(ict),zion,r_asymp
-        write(6,'(''ict,npotd(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,npotd(ict),zion,r_asymp
-        if(npotd(ict).le.0 .or. npotd(ict).gt.MPS_L) stop 'npotd must be > 0 and <= MPS_L'
+          read(title,*) npotd(ict),zion,r_asymp
+          write(6,'(''ict,npotd(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,npotd(ict),zion,r_asymp
+          if(npotd(ict).le.0 .or. npotd(ict).gt.MPS_L) stop 'npotd must be > 0 and <= MPS_L'
 
-        if(lpotp1(ict).gt.npotd(ict)) then
-          write(6,'(''lpotp1(ict),npotd(ict)='',2i3)') lpotp1(ict),npotd(ict)
-          stop 'Cannot choose local psp. to be > number of l components, lpotp1(ict) > npotd(ict)'
-        endif
-        if(npotd(ict).gt.MPS_L) stop 'npotd(ict).gt.MPS_L'
+          if(lpotp1(ict).gt.npotd(ict)) then
+            write(6,'(''lpotp1(ict),npotd(ict)='',2i3)') lpotp1(ict),npotd(ict)
+            stop 'Cannot choose local psp. to be > number of l components, lpotp1(ict) > npotd(ict)'
+          endif
+          if(npotd(ict).gt.MPS_L) stop 'npotd(ict).gt.MPS_L'
 
 c If the local pseudopot component is not set in input, set it here
-        if(lpotp1(ict).le.0) then
-          lpotp1(ict)=npotd(ict)
-          write(6,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpotp1(ict)
-        endif
+          if(lpotp1(ict).le.0) then
+            lpotp1(ict)=npotd(ict)
+            write(6,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpotp1(ict)
+          endif
 
-        write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
-     &  ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
+          write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
+     &    ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
 
-        if(znuc(ict).ne.zion) then
-          write(6,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
-          stop 'znuc(ict) != zion in readps_tm'
-        endif
+          if(znuc(ict).ne.zion) then
+            write(6,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
+            stop 'znuc(ict) != zion in readps_tm'
+          endif
 
-        read(1,*) igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
-        nr=nr_ps(ict)
-        write(6,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
-     &  igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
-        exp_h_ps(ict)=exp(h_ps)
-
-        if(igrid_ps(ict).lt.1 .or. igrid_ps(ict).gt.3) stop 'igrid_ps(ict) must be 1 or 2 or 3'
-        if(igrid_ps(ict).lt.1 .and. r0_ps(ict).ne.0.d0) stop 'if igrid_ps(ict)=1 r0_ps(ict) must be 0'
-
-        if(nr.lt.100) then
-          write(6,'(''nr in psp grid too small'',2i6)') nr
-          stop 'nr in psp grid too small'
-        endif
-        if(nr.gt.MPS_GRID .or. igrid_ps(ict).eq.2.and.nr.gt.MPS_GRID-1) then
-          write(6,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
-          stop 'nr > MPS_GRID'
-        endif
-
-        if(igrid_ps(ict).eq.1 .or. igrid_ps(ict).eq.3) then
+          read(1,*) igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
           nr=nr_ps(ict)
-          do 10 ir=1,nr_ps(ict)
-   10       read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,npotd(ict))
-          if(r(1).ne.0.d0) stop 'if igrid_ps is 1 or 3, r(1) must be 0'
-         else
+          write(6,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
+     &    igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
+          exp_h_ps(ict)=exp(h_ps)
+
+          if(igrid_ps(ict).lt.1 .or. igrid_ps(ict).gt.3) stop 'igrid_ps(ict) must be 1 or 2 or 3'
+          if(igrid_ps(ict).lt.1 .and. r0_ps(ict).ne.0.d0) stop 'if igrid_ps(ict)=1 r0_ps(ict) must be 0'
+
+          if(nr.lt.100) then
+            write(6,'(''nr in psp grid too small'',2i6)') nr
+            stop 'nr in psp grid too small'
+          endif
+          if(nr.gt.MPS_GRID .or. igrid_ps(ict).eq.2.and.nr.gt.MPS_GRID-1) then
+            write(6,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
+            stop 'nr > MPS_GRID'
+          endif
+
+          if(igrid_ps(ict).eq.1 .or. igrid_ps(ict).eq.3) then
+            nr=nr_ps(ict)
+            do 10 ir=1,nr_ps(ict)
+   10         read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,npotd(ict))
+            if(r(1).ne.0.d0) stop 'if igrid_ps is 1 or 3, r(1) must be 0'
+           else
+            nr_ps(ict)=nr_ps(ict)+1
+            nr=nr_ps(ict)
+            nrm1=nr-1
+            do 20 ir=2,nr_ps(ict)
+   20         read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,npotd(ict))
+            r(1)=0
+            if(r0_ps(ict).le.0.d0 .or. h_ps.le.0.d0) then
+              r0_ps(ict)=r(2)
+              exp_h_ps(ict)=r(3)/r(2)
+              h_ps=dlog(exp_h_ps(ict))
+              write(6,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,exp_h_ps(ict)='',9f10.5)')
+     &        r0_ps(ict),h_ps,exp_h_ps(ict)
+            endif
+            do 30 i=1,npotd(ict)
+              call intpol(r(2),vpseudo(2,ict,i),nrm1,r(1),vpseudo(1,ict,i),1,3)
+   30         write(6,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+          endif
+
+         elseif(nloc.eq.5) then
+
+          write(6,'(''Reading FHI format pseudopotential file '',a20)') filename
+          read(1,'(a80)') title
+          write(6,'(a)') trim(title)
+          if(index(title,' GEN ').ne.0 .or. index(title,' Gen ').ne.0 .or. index(title,' gen ').ne.0) then
+            write(6,'(''Use nloc=6 for GAMESS formatted pseudopotentials'')')
+            stop 'Use nloc=6 for GAMESS formatted pseudopotentials'
+          endif
+c position file to skip items we do not use and do not know what they are
+          read(1,*) crap,zion
+          read(1,*) (junk,i=1,4),nr_ps(ict)
+c         write(6,'(''nr_ps for atomtype'',i3,'' is'',i5)') ict,nr_ps(ict)
+          do i=1,4
+            read(1,*)
+          enddo
+          read(1,*) crap,npotd(ict)
+          do i=1,10
+            read(1,*)
+          enddo
+          igrid_ps(ict)=2
+          r0_ps(ict)=0.d0
+          h_ps=0.d0
+
+c The TM psp. format has npotd and npotu for down and up, but we just use one of them
+c They are the number of different l components of the psp.
+          write(6,'(''ict,npotd(ict),zion'',2i2,f4.0)') ict,npotd(ict),zion
+          if(npotd(ict).le.0 .or. npotd(ict).gt.MPS_L) stop 'npotd must be > 0 and <= MPS_L'
+
+          if(lpotp1(ict).gt.npotd(ict)) then
+            write(6,'(''lpotp1(ict),npotd(ict)='',2i3)') lpotp1(ict),npotd(ict)
+            stop 'Cannot choose local psp. to be > number of l components, lpotp1(ict) > npotd(ict)'
+          endif
+          if(npotd(ict).gt.MPS_L) stop 'npotd(ict).gt.MPS_L'
+
+c If the local pseudopot component is not set in input, set it here
+          if(lpotp1(ict).le.0) then
+            lpotp1(ict)=npotd(ict)
+            write(6,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpotp1(ict)
+          endif
+
+          write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
+     &    ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
+
+          if(znuc(ict).ne.zion) then
+            write(6,'(''znuc(ict) != zion in readps_tm'',2f6.1)') znuc(ict),zion
+            stop 'znuc(ict) != zion in readps_tm'
+          endif
+
+          nr=nr_ps(ict)
+          write(6,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
+     &    igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
+          exp_h_ps(ict)=exp(h_ps)
+
+          if(igrid_ps(ict).lt.1 .or. igrid_ps(ict).gt.3) stop 'igrid_ps(ict) must be 1 or 2 or 3'
+          if(igrid_ps(ict).lt.1 .and. r0_ps(ict).ne.0.d0) stop 'if igrid_ps(ict)=1 r0_ps(ict) must be 0'
+
+          if(nr.lt.100) then
+            write(6,'(''nr in psp grid too small'',2i6)') nr
+            stop 'nr in psp grid too small'
+          endif
+          if(nr.gt.MPS_GRID .or. igrid_ps(ict).eq.2.and.nr.gt.MPS_GRID-1) then
+            write(6,'(''nr > MPS_GRID'',2i6)') nr,MPS_GRID
+            stop 'nr > MPS_GRID'
+          endif
+
           nr_ps(ict)=nr_ps(ict)+1
           nr=nr_ps(ict)
           nrm1=nr-1
-          do 20 ir=2,nr_ps(ict)
-   20       read(1,*) r(ir),(vpseudo(ir,ict,i),i=1,npotd(ict))
+          do 40 i=1,npotd(ict)
+            read(1,*)
+            do 40 ir=2,nr_ps(ict)
+   40         read(1,*) junk,r(ir),crap,vpseudo(ir,ict,i)
           r(1)=0
           if(r0_ps(ict).le.0.d0 .or. h_ps.le.0.d0) then
             r0_ps(ict)=r(2)
@@ -124,9 +218,15 @@ c If the local pseudopot component is not set in input, set it here
             write(6,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,exp_h_ps(ict)='',9f10.5)')
      &      r0_ps(ict),h_ps,exp_h_ps(ict)
           endif
-          do 30 i=1,npotd(ict)
+          do 45 i=1,npotd(ict)
             call intpol(r(2),vpseudo(2,ict,i),nrm1,r(1),vpseudo(1,ict,i),1,3)
-   30       write(6,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+   45     write(6,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+
+         else
+
+          write(6,'(''readps_champ should only be called if nloc = 4 or 5'')')
+          stop 'readps_champ should only be called if nloc = 4 or 5'
+
         endif
 
         if(r0_ps(ict).lt.0.d0 .or. r0_ps(ict).gt.1.d-2) stop 'r0_ps in psp grid is not reasonable'

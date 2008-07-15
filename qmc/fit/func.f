@@ -225,7 +225,7 @@ c      endif
 c If icusp>=0 impose cusp condition for each s orbital.
 c In any case calculate cusp-violation penalty. Should be 0 if icusp>=0.
       ishft=ncuspc*(nspin2-nspin1+1)+nfockc
-      if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),0)
+      if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),0)
 
       do 50 i=1,ncent*norbc
    50   diff(ndata+ishft+i)=diff(ndata+ishft+i)*cuspwt

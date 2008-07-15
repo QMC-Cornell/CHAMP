@@ -25,10 +25,10 @@
 
 ! Cyrus:
 ! I have set MPARMD>= MCSF but if this is not an optimization run it could be less.
-      parameter(MCTYPE=2, MCENT=MAX(8,MCTYPE), MELECUD=40, MELEC=MAX(42,MELECUD))
+      parameter(MCTYPE=2, MCENT=MAX(8,MCTYPE), MELECUD=25, MELEC=MAX(42,MELECUD))
       parameter(MORB_OCC=24, MORB=MAX(64,MORB_OCC), MBASIS_CTYPE=102, MBASIS=(272,MBASIS_CTYPE))
 !     parameter(MCSF=165, MDET_CSF=140, MDETUD=190, MDET=MAX(660,MDET_CSF,MDETUD))
-      parameter(MCSF=16, MDET_CSF=10, MDETUD=20, MDET=MAX(100,MDET_CSF,MDETUD))
+      parameter(MCSF=60, MDET_CSF=132, MDETUD=162, MDET=MAX(350,MDET_CSF,MDETUD))
       parameter(MOTYPE=5, MPARMD=MAX(770,MCSF), ML_BAS=4)
 
 ! Julien:

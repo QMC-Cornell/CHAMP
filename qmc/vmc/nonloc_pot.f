@@ -24,14 +24,12 @@ c and store in vps
       do 20 i=1,nelec
         if(nloc.eq.1) then
           call getvps_fahy(r_en,i)
-         elseif(nloc.ge.2 .and. nloc.le.4) then
+         elseif(nloc.ge.2 .and. nloc.le.5) then
           call getvps_champ(r_en,i)
-         elseif(nloc.eq.5) then
+         elseif(nloc.eq.6) then
           call getvps_gauss(r_en,i)
-         elseif (nloc .ge. 6) then
-          call getvps_champ(r_en,i)
-         else
-          stop 'nloc > 5'
+         elseif(nloc.ge.7) then
+          stop 'nloc >= 7'
         endif
    20 continue
 
