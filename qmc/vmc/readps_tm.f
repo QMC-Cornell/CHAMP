@@ -5,7 +5,7 @@ c read Troullier-Martins pseudopotentials
 c reads in r*v in ryd.
 c does 3 conversions: a) ryd -> Har, b) r*v -> v and
 c c) subtracts out local part from all except highest l component.
-c Also eval pot. at 0 and initializes quadrature pts.
+c Also eval pot. at r=0
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'pseudo.h'
@@ -370,7 +370,7 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
       if(r.lt.rmax_coul(ict)) then
 
         if(igrid_ps(ict).eq.1)then
-c Warning: this needs fixing to h_ps
+c Warning: this may need fixing to h_ps
           stop 'May need fixing in splfit_ps'
           xr=(r-r0_ps(ict))/exp_h_ps(ict)+1
           jx=int(xr)
@@ -412,8 +412,9 @@ c cubic spline interpolation
         aa=(ref1-r)/delh
         cc=aa*(aa**2-1.d0)*delh**2/6.d0
         dd=bb*(bb**2-1.d0)*delh**2/6.d0
-        vpot=aa*vpseudo(jx,ict,l)+bb*vpseudo(jx+1,ict,l)+
-     &  cc*d2pot(jx,ict,l)+dd*d2pot(jx+1,ict,l)
+c Take into account that for igrid=2 we added in an additional point at r=0.
+        if(igrid_ps(ict).eq.2) jx=jx+1
+        vpot=aa*vpseudo(jx,ict,l)+bb*vpseudo(jx+1,ict,l)+cc*d2pot(jx,ict,l)+dd*d2pot(jx+1,ict,l)
        else
         if(l.eq.lpotp1(ict)) then
           vpot=-znuc(ict)/r
