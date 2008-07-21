@@ -316,6 +316,28 @@ ifeq ($(hostname),clastos)
   FC_MPI = /usr/local/bin/mpif90_64
 endif
 
+#gauss in Arias cluster
+ifeq ($(hostname),gauss)
+  #-zero Initializes to zero all local scalar variables of intrinsic type INTEGER, REAL, COMPLEX, or LOGICAL that are saved but not yet initialized
+#-save ????
+#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132). 
+#-w disable all warnings
+#-r8 set default size of real to 8 bytes
+#-O3 aggressive optimization
+#-pad enable changing variable and arrau memory layout
+#-mtune=core2 optimize specifically for core2 cpu
+#-march=core2 generate code exclusively for core2cpu
+#-xT generate code to run exclusively on Intel(R) Core(TM)2 processor family with SSSE3
+  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad -mtune=core2 -march=core2 -xT
+#-static prevents linking with shared libraries
+#-nothread
+#-no multithreaded libraries
+  LDFLAGS = -static -nothread
+  FC_MPI = mpif90 -fc=ifort
+  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3  -pad -mtune=core2 -march=core2 -xT
+  LDFLAGS_MPI = -static -nothread -lmpi
+endif
+
 # OBJS = my_second.o ranf.o shellnn.o intpol.o intpol_monot.o grater.o \
 # hartre.o deriv.o deriv2.o divergence.o lapla3.o laplac.o fderiv.o simson.o bode.o \
 # hartre_grid2.o deriv_grid2.o deriv2_grid2.o divergence_grid2.o laplac_grid2.o fderiv_grid2.o \
