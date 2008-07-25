@@ -33,8 +33,8 @@ module opt_lin_mod
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
   real(dp)                        :: psi_lin_norm_sq
 
-  logical                         :: l_select_eigvec_lowest = .true. ! default
-  logical                         :: l_select_eigvec_largest_1st_coef = .false.
+  logical                         :: l_select_eigvec_lowest = .false.
+  logical                         :: l_select_eigvec_largest_1st_coef = .true. ! default
   integer                         :: target_state = 0
   real(dp)                        :: add_diag_mult_exp = 1.d0
 
@@ -73,8 +73,8 @@ module opt_lin_mod
    write(6,'(a)') '   approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
    write(6,'(a)') '   approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
    write(6,'(a)') '   renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
-   write(6,'(a)') '   select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization (default=true)'
-   write(6,'(a)') '   select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization (default=false)'
+   write(6,'(a)') '   select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization (default=false)'
+   write(6,'(a)') '   select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization (default=true)'
    write(6,'(a)') '   target_state = [integer] : index of target state to optimize (default is ground-state)'
    write(6,'(a)') ' end'
 
@@ -732,8 +732,10 @@ module opt_lin_mod
   eigval_lowest = 9.d99
   eigval_lowest_ind = 0
   do i = 1, param_aug_nb
-    if ((p_var < 1.d0 .and. eigval_r (i) < eigval_lowest .and. dabs(eigval_r (i)-(1-p_var)*etrial) < 10.d0) .or. &
-        (p_var == 1.d0 .and. eigval_r (i) < eigval_lowest .and. eigval_r (i) > 0.d0)) then
+! Needs to be improved, but for the moment this is no longer the default, so that's OK.
+!   if (dabs(eigval_r (i) - (p_var*(energy(1)-energy_sigma(1)) + (1-p_var)*energy_sigma(1)**2)) < )
+     if ((p_var < 1.d0 .and. eigval_r (i) < eigval_lowest .and. dabs(eigval_r (i)-(1-p_var)*etrial) < 10.d0) .or. &
+         (p_var == 1.d0 .and. eigval_r (i) < eigval_lowest .and. eigval_r (i) > 0.d0)) then
       eigval_lowest = eigval_r (i)
       eigval_lowest_ind = i
     endif
