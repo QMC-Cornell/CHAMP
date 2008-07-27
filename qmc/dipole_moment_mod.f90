@@ -7,7 +7,6 @@
   use opt_lin_mod
 
 ! Declaration of global variables and default values
-  logical                                     :: l_dipole_moment = .false.
   logical                                     :: l_dipole_moment_debye = .true.
   logical                                     :: l_dipole_moment_hf = .true.
   logical                                     :: l_dipole_moment_zv = .false.
@@ -79,7 +78,6 @@
   write(6,'(a)') 'Beginning of dipole_moment menu --------------------------------------------------------------------------'
 
 ! initialization
-  l_dipole_moment = .true.
   l_origin_given = .false.
 
 ! loop over menu lines
@@ -206,6 +204,8 @@
    call object_average_request ('dipole_moment_dpsi_av')
    call object_average_request ('dipole_moment_dpsi_dpsi_av')
   endif
+
+  call routine_write_final_request ('dipole_moment_wrt')
 
   write(6,'(a)') 'End of dipole_moment menu --------------------------------------------------------------------------------'
 
@@ -1148,9 +1148,9 @@
   end subroutine dipole_moment_lin_av_bld
 
 !===========================================================================
-  subroutine print_dipole_moment
+  subroutine dipole_moment_wrt
 !---------------------------------------------------------------------------
-! Description : print dipole moment
+! Description : write dipole moment
 !
 ! Created     : J. Toulouse, 12 Feb 2008
 !---------------------------------------------------------------------------
@@ -1158,7 +1158,7 @@
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'print_dipole_moment'
+  character(len=max_string_len_rout), save :: lhere = 'dipole_moment_wrt'
   integer dim_i
 
 ! begin
@@ -1229,6 +1229,6 @@
    enddo
   endif
 
-  end subroutine print_dipole_moment
+  end subroutine dipole_moment_wrt
 
 end module dipole_moment_mod

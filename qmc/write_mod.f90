@@ -5,17 +5,17 @@ module write_mod
   use variables_mod
   use objects_mod
 
-  integer                      :: write_routines_nb = 0
-  integer, allocatable         :: write_routines_index (:)
-
-! Interfaces
+  integer                      :: routines_write_block_nb = 0
+  integer, allocatable         :: routines_write_block_index (:)
+  integer                      :: routines_write_final_nb = 0
+  integer, allocatable         :: routines_write_final_index (:)
 
   contains
 
 ! ===================================================================================
-  subroutine routine_write (routine_name)
+  subroutine routine_write_block_request (routine_name)
 ! -----------------------------------------------------------------------------------
-! Description   : define writing routine to be called at each block
+! Description   : requesting a writing routine to be called at each block
 ! Description   : store index of routine
 !
 ! Created       : J. Toulouse, 04 Mar 2006
@@ -26,7 +26,7 @@ module write_mod
   character(len=*), intent(in) :: routine_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'routine_write'
+  character(len=max_string_len_rout), save :: lhere = 'routine_write_block_request'
   integer routine_ind
   integer rtn_i
 
@@ -40,22 +40,64 @@ module write_mod
   endif
 
 ! if routine already defined as write routine, do nothing
-  do rtn_i = 1, write_routines_nb
-   if (routine_ind == write_routines_index (rtn_i) ) then
+  do rtn_i = 1, routines_write_block_nb
+   if (routine_ind == routines_write_block_index (rtn_i) ) then
        return
    endif
   enddo
 
-  write_routines_nb = write_routines_nb + 1
-  call alloc ('write_routines_index', write_routines_index, write_routines_nb)
-  write_routines_index (write_routines_nb) = routine_ind
+  routines_write_block_nb = routines_write_block_nb + 1
+  call alloc ('routines_write_block_index', routines_write_block_index, routines_write_block_nb)
+  routines_write_block_index (routines_write_block_nb) = routine_ind
 
   write(6,'(4a)') trim(lhere),': ', trim(routine_name),' defined as writing routine'
 
- end subroutine routine_write
+ end subroutine routine_write_block_request
 
 ! ===================================================================================
-  subroutine writing_routines
+  subroutine routine_write_final_request (routine_name)
+! -----------------------------------------------------------------------------------
+! Description   : requesting a writing routine to be called at the end of MC run
+! Description   : store index of routine
+!
+! Created       : J. Toulouse, 23 Jul 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: routine_name
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'routine_write_final_request'
+  integer routine_ind
+  integer rtn_i
+
+
+! begin
+! index of routine
+  routine_ind = routine_index (routine_name)
+  if (routine_ind == 0) then
+     write(6,'(4a)') trim(lhere),': routine ', trim(routine_name), ' is not catalogued.'
+    call die (lhere)
+  endif
+
+! if routine already defined as writing routine, do nothing
+  do rtn_i = 1, routines_write_final_nb
+   if (routine_ind == routines_write_final_index (rtn_i)) then
+       return
+   endif
+  enddo
+
+  routines_write_final_nb = routines_write_final_nb + 1
+  call alloc ('routines_write_final_index', routines_write_final_index, routines_write_final_nb)
+  routines_write_final_index (routines_write_final_nb) = routine_ind
+
+!  write(6,'(4a)') trim(lhere),': ', trim(routine_name),' defined as writing routine'
+
+ end subroutine routine_write_final_request
+
+! ===================================================================================
+  subroutine routines_write_block
 ! -----------------------------------------------------------------------------------
 ! Description   : call writing routines at each block
 !
@@ -65,7 +107,7 @@ module write_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'writing_routines'
+  character(len=max_string_len_rout), save :: lhere = 'routines_write_block'
   integer rtn_i
 
 ! begin
@@ -78,18 +120,52 @@ module write_mod
    return
   endif
 
-  do rtn_i = 1, write_routines_nb
-    call exe_by_address_0 (routines(write_routines_index(rtn_i))%address)
+  do rtn_i = 1, routines_write_block_nb
+    call exe_by_address_0 (routines(routines_write_block_index(rtn_i))%address)
   enddo !rtn_i
 
 # if defined (DEBUG)
    call routine_exit (lhere)
 # endif
 
- end subroutine writing_routines
+ end subroutine routines_write_block
 
 ! ===================================================================================
-  subroutine reinit_writing_routines
+  subroutine routines_write_final
+! -----------------------------------------------------------------------------------
+! Description   : call writing routines at the end of a MC run
+!
+! Created       : J. Toulouse, 23 Jul 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'routines_write_final'
+  integer rtn_i
+
+! begin
+# if defined (DEBUG)
+   call routine_enter (lhere)
+# endif
+
+! for MPI: write only for main process (idtask=0)
+  if (idtask /= 0) then
+   return
+  endif
+
+  do rtn_i = 1, routines_write_final_nb
+    call exe_by_address_0 (routines(routines_write_final_index(rtn_i))%address)
+  enddo !rtn_i
+
+# if defined (DEBUG)
+   call routine_exit (lhere)
+# endif
+
+ end subroutine routines_write_final
+
+! ===================================================================================
+  subroutine reinit_routines_write_block
 ! -----------------------------------------------------------------------------------
 ! Description   : reinitialize array of writing routines
 !
@@ -98,13 +174,30 @@ module write_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'reinit_writing_routines'
+  character(len=max_string_len_rout), save :: lhere = 'reinit_routines_write_block'
 
 ! begin
+  routines_write_block_nb = 0
+  call release ('routines_write_block_index', routines_write_block_index)
 
-  write_routines_nb = 0
-  call release ('write_routines_index', write_routines_index)
+ end subroutine reinit_routines_write_block
 
- end subroutine reinit_writing_routines
+! ===================================================================================
+  subroutine reinit_routines_write_final
+! -----------------------------------------------------------------------------------
+! Description   : reinitialize array of writing routines
+!
+! Created       : J. Toulouse, 23 Jul 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'reinit_routines_write_final'
+
+! begin
+  routines_write_final_nb = 0
+  call release ('routines_write_final_index', routines_write_final_index)
+
+ end subroutine reinit_routines_write_final
 
 end module write_mod

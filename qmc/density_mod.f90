@@ -99,7 +99,7 @@ module density_mod
    call die (lhere)
   end select
 
-  call routine_write  ('dens_wrt')
+  call routine_write_block_request  ('dens_wrt')
 
   end subroutine dens_menu
 
@@ -171,7 +171,7 @@ module density_mod
    call die (lhere)
   end select
 
-  call routine_write  ('dens_3d_wrt')
+  call routine_write_block_request  ('dens_3d_wrt')
 
   end subroutine dens_3d_menu
 

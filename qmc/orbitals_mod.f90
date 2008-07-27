@@ -657,7 +657,7 @@ module orbitals_mod
 
   orb_sym_lab (1:orb_tot_nb) = 'A'
 
-  write (6,'(2a)') trim(here), ': warning: not using symmetry for orbitals'
+  write (6,'(a)') ' Warning: not using symmetry for orbitals'
 
   end subroutine orb_sym_lab_default_bld
 

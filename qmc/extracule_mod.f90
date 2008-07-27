@@ -121,7 +121,7 @@ module extracule_mod
 
   call object_average_request ('extracule_zv1_av')
   call object_error_request ('extracule_zv1_av_err')
-  call routine_write  ('extracule_wrt')
+  call routine_write_block_request  ('extracule_wrt')
 
   end subroutine extracule_menu
 

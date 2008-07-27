@@ -337,7 +337,7 @@ c       write out configuration for optimization/dmc/gfmc here
 
 !     write at each block
       call objects_print_at_each_block
-      call writing_routines !JT
+      call routines_write_block !JT
 
 !     exit loop if nblk and threshold on statistical error reached
 !JT      if (block_iterations_nb .ge. nblk .and. eloc_av_err .gt. 0 .and. eloc_av_err .le. error_threshold) then    !JT
@@ -352,7 +352,7 @@ c       write out configuration for optimization/dmc/gfmc here
       step_iterations_nb  = 0   !JT
       block_iterations_nb = 0   !JT
       call reinit_averages_and_errors !JT
-      call reinit_writing_routines !JT
+      call reinit_routines_write_block !JT
 
       call print_cpu_time_in_seconds ('End       of accumulation ')
 

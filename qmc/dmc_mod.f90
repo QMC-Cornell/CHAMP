@@ -246,7 +246,7 @@ module dmc_mod
 
 !       write at each block
         call objects_print_at_each_block
-        call writing_routines
+        call routines_write_block
 
 !        l_end_of_block = .false.
 
@@ -267,7 +267,7 @@ module dmc_mod
       step_iterations_nb  = 0
       block_iterations_nb = 0
       call reinit_averages_and_errors
-      call reinit_writing_routines
+      call reinit_routines_write_block
 
       passes=dble(iblk)*dble(nstep)
 !     efin=ecum1/passes

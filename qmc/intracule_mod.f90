@@ -243,7 +243,7 @@
    call die (lhere)
   end select
 
-  call routine_write  ('intra_wrt')
+  call routine_write_block_request  ('intra_wrt')
 
   end subroutine intra_menu
 
@@ -315,7 +315,7 @@
    write(6,*) trim(lhere), ': unknown estimator >',trim(intra_3d_estimator),'<'
    call die (lhere)
   end select
-  call routine_write  ('intra_3d_wrt')
+  call routine_write_block_request  ('intra_3d_wrt')
 
   end subroutine intra_3d_menu
 

@@ -1,7 +1,7 @@
 module deriv_geo_mod
 
   use all_tools_mod
-  use forces_mod
+!  use forces_mod
 
 ! Declaration of global variables and default values
   integer                        :: param_geo_nb = 0
@@ -32,7 +32,8 @@ module deriv_geo_mod
   endif
 
 ! begin
-  param_geo_nb = forces_nb
+!  param_geo_nb = forces_nb
+  param_geo_nb = 0
 
   end subroutine param_geo_nb_bld
 

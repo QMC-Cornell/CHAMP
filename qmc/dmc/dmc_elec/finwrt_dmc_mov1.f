@@ -329,9 +329,8 @@ c save energy difference and error in energy difference for optimization
 
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))
 
-      if (l_dipole_moment) then
-        call print_dipole_moment
-      endif
+      call routines_write_final
+      call reinit_routines_write_final
 
       return
       end

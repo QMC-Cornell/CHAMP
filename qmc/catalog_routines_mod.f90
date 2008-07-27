@@ -416,12 +416,20 @@ module catalog_routines_mod
 
 ! forces
   call catalog_one_node ('forces_nn_bld', forces_nn_bld)
-  call catalog_one_node ('forces_bare_bld', forces_bare_bld)
+  call catalog_one_node ('forces_hf_bld', forces_hf_bld)
   call catalog_one_node ('forces_zv_bld', forces_zv_bld)
   call catalog_one_node ('forces_zvzb_av_bld', forces_zvzb_av_bld)
   call catalog_one_node ('forces_q_bld', forces_q_bld)
   call catalog_one_node ('forces_q_eloc_bld', forces_q_eloc_bld)
   call catalog_one_node ('forces_zvzb_av_var_bld', forces_zvzb_av_var_bld)
+  call catalog_one_node ('forces_zv_linear_coef_bld', forces_zv_linear_coef_bld)
+  call catalog_one_node ('forces_zv_deloc_bld', forces_zv_deloc_bld)
+  call catalog_one_node ('forces_zv_deloc_covar_bld', forces_zv_deloc_covar_bld)
+  call catalog_one_node ('forces_zv_linear_av_bld', forces_zv_linear_av_bld)
+  call catalog_one_node ('forces_zv_linear_av_var_bld', forces_zv_linear_av_var_bld)
+  call catalog_one_node ('forces_zv_linear_var_bld', forces_zv_linear_var_bld)
+  call catalog_one_node ('forces_zv_sq_bld', forces_zv_sq_bld)
+  call catalog_one_node ('forces_zv_var_bld', forces_zv_var_bld)
 
 ! average routines (not nodes!)
 !  call catalog_one_routine ('dpsi_orb_av_bld', dpsi_orb_av_bld)
@@ -436,23 +444,17 @@ module catalog_routines_mod
   call catalog_one_routine ('dens_wrt', dens_wrt)
   call catalog_one_routine ('dens_3d_wrt', dens_3d_wrt)
   call catalog_one_routine ('extracule_wrt', extracule_wrt)
-
+  call catalog_one_routine ('dipole_moment_wrt', dipole_moment_wrt)
+  call catalog_one_routine ('forces_wrt', forces_wrt)
 
 !!pjas WAS
   call catalog_one_node ('pjas_init_bld', pjas_init_bld)
   call catalog_one_node ('deloc_pjasen_bld',deloc_pjasen_bld)
 !  call catalog_one_node ('d2psi_pjase_bld',  d2psi_pjase_bld)
-
-
   call catalog_one_node ('deloc_pjasee_bld',deloc_pjasee_bld)
-
   call catalog_one_node ('dpsi_pjas_bld',  dpsi_pjas_bld)
-
   call catalog_one_node ('deloc_pjas_bld',deloc_pjas_bld)
-
   call catalog_one_node ('deloc_pot_nloc_pjas_bld',deloc_pot_nloc_pjas_bld)
-
-
 
  end subroutine catalog_all_nodes_and_routines
 

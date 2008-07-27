@@ -254,7 +254,7 @@ deriv_csf_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o \
 deriv_exp_mod.o: all_tools_mod.o basis_mod.o csfs_mod.o deriv_orb_mod.o \
 	determinants_mod.o electrons_mod.o eloc_mod.o orbitals_mod.o \
 	psi_mod.o commons.h
-deriv_geo_mod.o: all_tools_mod.o forces_mod.o commons.h
+deriv_geo_mod.o: all_tools_mod.o commons.h
 deriv_jas_mod.o: all_tools_mod.o montecarlo_mod.o commons.h
 deriv_mod.o: all_tools_mod.o deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o \
 	deriv_jas_mod.o deriv_orb_mod.o periodic_jastrow_mod.o commons.h
@@ -271,7 +271,7 @@ extracule_mod.o: all_tools_mod.o commons.h
 files_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	strings_tools_mod.o
 forces_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o montecarlo_mod.o \
-	nuclei_mod.o psi_mod.o commons.h
+	nuclei_mod.o opt_lin_mod.o psi_mod.o commons.h
 grid_mod.o: all_tools_mod.o orbitals_mod.o commons.h
 initialization_mod.o: all_tools_mod.o orbitals_mod.o commons.h
 intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \

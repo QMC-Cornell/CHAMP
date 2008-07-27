@@ -6,19 +6,32 @@
   use nuclei_mod
   use psi_mod
   use montecarlo_mod
+  use opt_lin_mod
 
 ! Declaration of global variables and default values
   integer                                     :: forces_nb = 0
   integer, allocatable                        :: forces_cent (:)
   integer, allocatable                        :: forces_direct (:)
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: forces_list (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable  :: forces_list (:)
+# endif
+  logical                                     :: l_forces_hf = .false.
+  logical                                     :: l_forces_zv = .true.
+  logical                                     :: l_forces_zvzb = .false.
+  logical                                     :: l_forces_zv_linear = .false.
   real(dp), allocatable                       :: forces_nn (:)
-  real(dp), allocatable                       :: forces_bare (:)
-  real(dp), allocatable                       :: forces_bare_av (:)
-  real(dp), allocatable                       :: forces_bare_av_err (:)
+  real(dp), allocatable                       :: forces_hf (:)
+  real(dp), allocatable                       :: forces_hf_av (:)
+  real(dp), allocatable                       :: forces_hf_av_err (:)
   real(dp), allocatable                       :: forces_zv (:)
   real(dp), allocatable                       :: forces_zv_av (:)
   real(dp), allocatable                       :: forces_zv_av_var (:)
   real(dp), allocatable                       :: forces_zv_av_err (:)
+  real(dp), allocatable                       :: forces_zv_sq (:)
+  real(dp), allocatable                       :: forces_zv_sq_av (:)
+  real(dp), allocatable                       :: forces_zv_var (:)
   real(dp), allocatable                       :: forces_q (:)
   real(dp), allocatable                       :: forces_q_av (:)
   real(dp), allocatable                       :: forces_q_av_var (:)
@@ -37,6 +50,15 @@
   real(dp), allocatable                       :: forces_q_eloc_av_eloc_av_covar (:)
   real(dp), allocatable                       :: forces_q_eloc_av_q_av_covar (:)
   real(dp), allocatable                       :: forces_q_av_eloc_av_covar (:)
+  real(dp), allocatable                       :: forces_zv_linear_av (:)
+  real(dp), allocatable                       :: forces_zv_linear_av_var (:)
+  real(dp), allocatable                       :: forces_zv_linear_av_err (:)
+  real(dp), allocatable                       :: forces_zv_linear_var (:)
+  real(dp), allocatable                       :: forces_zv_linear_coef (:,:)
+  real(dp), allocatable                       :: forces_zv_deloc (:,:)
+  real(dp), allocatable                       :: forces_zv_deloc_av (:,:)
+  real(dp), allocatable                       :: forces_zv_deloc_covar (:,:)
+  real(dp), allocatable                       :: forces_zv_av_deloc_av_covar (:,:)
 
   logical                                     :: l_eloc_av_fixed = .false.
   logical                                     :: l_forces_q_av_fixed = .false.
@@ -57,14 +79,17 @@
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'forces_menu'
-# if defined (PATHSCALE)
-   character(len=max_string_len) :: forces_list (max_string_array_len) ! for pathscale compiler
-# else
-   character(len=max_string_len), allocatable  :: forces_list (:)
-# endif
+  character(len=max_string_len) estimator
   integer force_i
 
 ! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of forces menu ---------------------------------------------------------------------------------'
+
+! not for a pseudopotential
+  if (nloc > 0) then
+    call die (here, 'calculation of forces not implemented for pseudopotentials!')
+  endif
 
 ! loop over menu lines
   do
@@ -73,11 +98,12 @@
   select case (trim(word))
    case ('help')
     write(6,'(a)') 'HELP for menu forces'
-    write(6,'(a)') ': forces'
-    write(6,'(a)') ':  components 1x 1y 1z 2x 2y 2z end'
-    write(6,'(a)') ':  eloc_av_fixed  = [real] fixed value of average of local energy to use in ZB term'
-    write(6,'(a)') ':  forces_q_av_fixed  list of reals end: fixed value of average of Q to use in ZB term'
-    write(6,'(a)') ': end'
+    write(6,'(a)') 'forces'
+    write(6,'(a)') ' components 1x 1y 1z 2x 2y 2z end'
+    write(6,'(a)') ' estimator = {hf,zv,zvzb,zv_linear}: estimator to use (default=zv)'
+    write(6,'(a)') ' eloc_av_fixed  = [real] fixed value of average of local energy to use in ZB term'
+    write(6,'(a)') ' forces_q_av_fixed  list of reals end: fixed value of average of Q to use in ZB term'
+    write(6,'(a)') 'end'
 
    case ('components')
 # if defined (PATHSCALE)
@@ -85,7 +111,18 @@
 # else
     call get_next_value_list ('forces_list', forces_list, forces_nb)
 # endif
+    call object_modified ('forces_list')
     call object_modified ('forces_nb')
+
+   case ('estimator')
+    call get_next_value (estimator)
+    select case (estimator)
+     case ('hf');   l_forces_hf = .true.
+     case ('zv');   l_forces_zv = .true.
+     case ('zvzb'); l_forces_zv = .true.; l_forces_zvzb = .true.
+     case ('zv_linear'); l_forces_zv = .true.; l_forces_zv_linear = .true.
+     case default; call die (lhere, 'unknown keyword >'+trim(word)+'<.')
+    end select
 
    case ('eloc_av_fixed')
     call get_next_value (eloc_av_fixed)
@@ -107,6 +144,7 @@
 
   enddo ! end loop over menu lines
 
+! determine forces' centers and directions
   call object_alloc ('forces_cent', forces_cent, forces_nb)
   call object_alloc ('forces_direct', forces_direct, forces_nb)
   do force_i = 1, forces_nb
@@ -125,24 +163,58 @@
   call object_modified ('forces_cent')
   call object_modified ('forces_direct')
 
-  call object_average_request ('forces_bare_av')
-  call object_error_request ('forces_bare_av_err')
+  if (l_forces_hf) then
+   write(6,'(a)') ' Forces will be calculated with (bare) Hellmann-Feynman estimator.'
+  endif
+  if (l_forces_zv) then
+   write(6,'(a)') ' Forces will be calculated with simplest zero-variance estimator.'
+  endif
+  if (l_forces_zvzb) then
+   write(6,'(a)') ' Forces will be calculated with simplest zero-variance zero-bias estimator.'
+  endif
+  if (l_forces_zv_linear) then
+   write(6,'(a)') ' Forces will be calculated with zero-variance estimator using wave function derivatives wrt parameters.'
+  endif
 
-  call object_average_request ('forces_zv_av')
-  call object_error_request ('forces_zv_av_err')
+! request averages and statistical errors
+  if (l_forces_hf) then
+   call object_average_request ('forces_hf_av')
+   call object_error_request ('forces_hf_av_err')
+  endif
 
-  call object_average_request ('forces_q_av')
-  call object_average_request ('forces_q_eloc_av')
-  call object_variance_request ('forces_q_eloc_av_var')
+  if (l_forces_zv) then
+   call object_average_request ('forces_zv_av')
+   call object_error_request ('forces_zv_av_err')
+   call object_average_request ('forces_zv_sq_av')
+  endif
 
-  call object_error_request ('forces_zvzb_av_err')
+  if (l_forces_zvzb) then
+    call object_average_request ('forces_q_av')
+    call object_average_request ('forces_q_eloc_av')
+    call object_variance_request ('forces_q_eloc_av_var')
+ 
+    call object_error_request ('forces_zvzb_av_err')
+ 
+    call object_covariance_request ('forces_zv_av_eloc_av_covar')
+    call object_covariance_request ('forces_zv_av_q_eloc_av_covar')
+    call object_covariance_request ('forces_zv_av_q_av_covar')
+    call object_covariance_request ('forces_q_eloc_av_eloc_av_covar')
+    call object_covariance_request ('forces_q_eloc_av_q_av_covar')
+    call object_covariance_request ('forces_q_av_eloc_av_covar')
+  endif
 
-  call object_covariance_request ('forces_zv_av_eloc_av_covar')
-  call object_covariance_request ('forces_zv_av_q_eloc_av_covar')
-  call object_covariance_request ('forces_zv_av_q_av_covar')
-  call object_covariance_request ('forces_q_eloc_av_eloc_av_covar')
-  call object_covariance_request ('forces_q_eloc_av_q_av_covar')
-  call object_covariance_request ('forces_q_av_eloc_av_covar')
+  if (l_forces_zv_linear) then
+   call object_average_request ('deloc_av')
+   call object_average_request ('deloc_deloc_av')
+   call object_average_request ('forces_zv_deloc_av')
+   call object_covariance_request ('deloc_av_deloc_av_covar')
+   call object_covariance_request ('forces_zv_av_deloc_av_covar')
+   call object_error_request ('forces_zv_linear_av_err')
+  endif
+
+  call routine_write_final_request ('forces_wrt')
+
+  write(6,'(a)') 'End of forces menu ---------------------------------------------------------------------------------------'
 
   end subroutine forces_menu
 
@@ -200,9 +272,9 @@
   end subroutine forces_nn_bld
 
 ! ==============================================================================
-  subroutine forces_bare_bld
+  subroutine forces_hf_bld
 ! ------------------------------------------------------------------------------
-! Description   : Bare (Hellmann-Feynman) forces
+! Description   : Bare Hellmann-Feynman forces
 !
 ! Created       : J. Toulouse, 26 Jul 2007
 ! ------------------------------------------------------------------------------
@@ -217,9 +289,9 @@
 ! header
   if (header_exe) then
 
-   call object_create ('forces_bare')
-   call object_average_define ('forces_bare', 'forces_bare_av')
-   call object_error_define ('forces_bare_av', 'forces_bare_av_err')
+   call object_create ('forces_hf')
+   call object_average_define ('forces_hf', 'forces_hf_av')
+   call object_error_define ('forces_hf_av', 'forces_hf_av_err')
 
    call object_needed ('forces_nb')
    call object_needed ('forces_nn')
@@ -233,25 +305,25 @@
   endif
 
 ! allocations
-  call object_alloc ('forces_bare', forces_bare, forces_nb)
-  call object_alloc ('forces_bare_av', forces_bare_av, forces_nb)
-  call object_alloc ('forces_bare_av_err', forces_bare_av_err, forces_nb)
+  call object_alloc ('forces_hf', forces_hf, forces_nb)
+  call object_alloc ('forces_hf_av', forces_hf_av, forces_nb)
+  call object_alloc ('forces_hf_av_err', forces_hf_av_err, forces_nb)
 
 
   do force_i = 1, forces_nb
    cent_i = forces_cent (force_i)
    dim_i = forces_direct (force_i)
 
-   forces_bare (force_i) = forces_nn (force_i)
+   forces_hf (force_i) = forces_nn (force_i)
 
 !  loop over electrons
    do elec_i = 1, nelec
-    forces_bare (force_i) = forces_bare (force_i) + znuc(iwctype(cent_i)) * vec_en_xyz_wlk (dim_i, elec_i, cent_i, 1) / dist_en_wlk (elec_i, cent_i, 1)**3
+    forces_hf (force_i) = forces_hf (force_i) + znuc(iwctype(cent_i)) * vec_en_xyz_wlk (dim_i, elec_i, cent_i, 1) / dist_en_wlk (elec_i, cent_i, 1)**3
    enddo ! elec_i
 
   enddo ! force_i
 
-  end subroutine forces_bare_bld
+  end subroutine forces_hf_bld
 
 ! ==============================================================================
   subroutine forces_zv_bld
@@ -320,6 +392,69 @@
   enddo ! force_i
 
   end subroutine forces_zv_bld
+
+! ==============================================================================
+  subroutine forces_zv_sq_bld
+! ------------------------------------------------------------------------------
+! Description   : square of forces_zv
+!
+! Created       : J. Toulouse, 24 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_sq')
+   call object_average_define ('forces_zv_sq', 'forces_zv_sq_av')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_zv')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_sq', forces_zv_sq, forces_nb)
+  call object_alloc ('forces_zv_sq_av', forces_zv_sq_av, forces_nb)
+
+  forces_zv_sq (:) = forces_zv (:)**2
+
+  end subroutine forces_zv_sq_bld
+
+! ==============================================================================
+  subroutine forces_zv_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of forces_zv
+!
+! Created       : J. Toulouse, 24 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_var')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_zv_sq_av')
+   call object_needed ('forces_zv_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_var', forces_zv_var, forces_nb)
+
+  forces_zv_var (:) = forces_zv_sq_av (:) - forces_zv_av (:)**2
+
+  end subroutine forces_zv_var_bld
 
 ! ==============================================================================
   subroutine forces_q_bld
@@ -636,5 +771,340 @@
   enddo ! force_i
 
   end subroutine forces_zvzb_old2_bld
+
+! ==============================================================================
+  subroutine forces_zv_deloc_bld
+! ------------------------------------------------------------------------------
+! Description   : forces_zv * deloc
+!
+! Created       : J. Toulouse, 23 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i, force_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deloc')
+   call object_average_define ('forces_zv_deloc', 'forces_zv_deloc_av')
+   call object_covariance_define ('forces_zv_av', 'deloc_av', 'forces_zv_av_deloc_av_covar')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv')
+   call object_needed ('deloc')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deloc', forces_zv_deloc, forces_nb, param_nb)
+  call object_alloc ('forces_zv_deloc_av', forces_zv_deloc_av, forces_nb, param_nb)
+  call object_alloc ('forces_zv_av_deloc_av_covar', forces_zv_av_deloc_av_covar, forces_nb, param_nb)
+
+  do force_i = 1, forces_nb
+   do param_i = 1, param_nb
+    forces_zv_deloc (force_i, param_i) = forces_zv (force_i) * deloc (param_i)
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deloc_bld
+
+! ==============================================================================
+  subroutine forces_zv_deloc_covar_bld
+! ------------------------------------------------------------------------------
+! Description   : covariance : < forces_zv * deloc > - < forces_zv > * < deloc >
+!
+! Created       : J. Toulouse, 23 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i, force_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deloc_covar')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deloc_av')
+   call object_needed ('forces_zv_av')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deloc_covar', forces_zv_deloc_covar, forces_nb, param_nb)
+
+  do force_i = 1, forces_nb
+   do param_i = 1, param_nb
+    forces_zv_deloc_covar (force_i, param_i) = forces_zv_deloc_av (force_i, param_i) - forces_zv_av (force_i) * deloc_av (param_i)
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deloc_covar_bld
+
+! ==============================================================================
+  subroutine forces_zv_linear_coef_bld
+! ------------------------------------------------------------------------------
+! Description   : coefficient minimizing the variance of zero-variance estimator of total dipole moment
+!
+! Created       : J. Toulouse, 23 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_linear_coef')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deloc_covar')
+   call object_needed ('deloc_deloc_covar_inv')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_linear_coef', forces_zv_linear_coef, forces_nb, param_nb)
+
+  do force_i = 1, forces_nb
+   do param_i = 1, param_nb
+    forces_zv_linear_coef (force_i, param_i) = 0.d0
+    do param_j = 1, param_nb
+     forces_zv_linear_coef (force_i, param_i) = forces_zv_linear_coef (force_i, param_i) - deloc_deloc_covar_inv (param_i, param_j) * forces_zv_deloc_covar (force_i, param_j)
+    enddo ! param_j
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_linear_coef_bld
+
+! ==============================================================================
+  subroutine forces_zv_linear_av_bld
+! ------------------------------------------------------------------------------
+! Description   : average of ZV estimator for forces using wave function derivatives wrt parameters
+!
+! Created       : J. Toulouse, 12 Feb 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_linear_av')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_linear_coef')
+   call object_needed ('forces_zv_av')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_linear_av', forces_zv_linear_av, forces_nb)
+
+  do force_i = 1, forces_nb
+   forces_zv_linear_av (force_i) = forces_zv_av (force_i)
+   do param_i = 1, param_nb
+    forces_zv_linear_av (force_i) = forces_zv_linear_av (force_i) + forces_zv_linear_coef (force_i, param_i) * deloc_av (param_i)
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_linear_av_bld
+
+! ==============================================================================
+  subroutine forces_zv_linear_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of zero-variance estimator of force
+!
+! Created       : J. Toulouse, 24 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_linear_var')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_var')
+   call object_needed ('forces_zv_linear_coef')
+   call object_needed ('forces_zv_deloc_covar')
+   call object_needed ('deloc_deloc_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_linear_var', forces_zv_linear_var, forces_nb)
+
+  do force_i = 1, forces_nb
+   forces_zv_linear_var (force_i) = forces_zv_var (force_i)
+   do param_i = 1, param_nb
+    forces_zv_linear_var (force_i) = forces_zv_linear_var (force_i) + 2.d0 * forces_zv_linear_coef (force_i, param_i) * forces_zv_deloc_covar (force_i, param_i)
+     do param_j = 1, param_nb
+      forces_zv_linear_var (force_i) = forces_zv_linear_var (force_i) + forces_zv_linear_coef (force_i, param_i) * forces_zv_linear_coef (force_i, param_j) * deloc_deloc_covar (param_i, param_j)
+     enddo ! param_j
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_linear_var_bld
+
+! ==============================================================================
+  subroutine forces_zv_linear_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of average of zero-variance estimator of force
+!
+! Created       : J. Toulouse, 24 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_linear_av_var')
+   call object_error_define_from_variance ('forces_zv_linear_av_var', 'forces_zv_linear_av_err')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_av_var')
+   call object_needed ('forces_zv_linear_coef')
+   call object_needed ('forces_zv_av_deloc_av_covar')
+   call object_needed ('deloc_av_deloc_av_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_linear_av_var', forces_zv_linear_av_var, forces_nb)
+  call object_alloc ('forces_zv_linear_av_err', forces_zv_linear_av_err, forces_nb)
+
+  do force_i = 1, forces_nb
+   forces_zv_linear_av_var (force_i) = forces_zv_av_var (force_i)
+   do param_i = 1, param_nb
+    forces_zv_linear_av_var (force_i) = forces_zv_linear_av_var (force_i) + 2.d0 * forces_zv_linear_coef (force_i, param_i) * forces_zv_av_deloc_av_covar (force_i, param_i)
+     do param_j = 1, param_nb
+      forces_zv_linear_av_var (force_i) = forces_zv_linear_av_var (force_i) + forces_zv_linear_coef (force_i, param_i) * forces_zv_linear_coef (force_i, param_j) * deloc_av_deloc_av_covar (param_i, param_j)
+     enddo ! param_j
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_linear_av_var_bld
+
+!===========================================================================
+  subroutine forces_wrt
+!---------------------------------------------------------------------------
+! Description : write forces
+!
+! Created     : J. Toulouse, 23 Jul 2008
+!---------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'forces_wrt'
+  integer force_i
+
+! begin
+  write(6,*)
+  write(6,'(a)') 'Forces results:'
+
+  write(6,'(a)') 'Nuclei-nuclei contribution to force:'
+  call object_provide ('forces_nb')
+  call object_provide ('forces_list')
+  call object_provide ('forces_nn')
+  do force_i = 1, forces_nb
+   write(6,'(a,a4,a,f)') 'component # ',forces_list (force_i),' : ', forces_nn (force_i)
+  enddo
+
+  if (l_forces_hf) then
+   write(6,*)
+   write(6,'(a)') 'Total force with (bare) Hellmann-Feynman estimator:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_hf_av')
+   call object_provide ('forces_hf_av_err')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_hf_av (force_i), ' +-', forces_hf_av_err (force_i)
+   enddo
+  endif
+
+  if (l_forces_zv) then
+   write(6,*)
+   write(6,'(a)') 'Total force with simplest zero-variance estimator:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_zv_av')
+   call object_provide ('forces_zv_av_err')
+   call object_provide ('forces_zv_var')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_av (force_i), ' +-', forces_zv_av_err (force_i),' (variance =',forces_zv_var (force_i),')'
+   enddo
+  endif
+
+  if (l_forces_zvzb) then
+   write(6,*)
+   write(6,'(a)') 'Total force with simplest zero-variance zero-bias estimator:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_zvzb_av')
+   call object_provide ('forces_zvzb_av_err')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zvzb_av (force_i), ' +-', forces_zvzb_av_err (force_i)
+   enddo
+  endif
+
+  if (l_forces_zv_linear) then
+   write(6,*)
+   write(6,'(a)') 'Total force with zero-variance estimator using wave function derivatives wrt parameters:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_zv_linear_av')
+   call object_provide ('forces_zv_linear_av_err')
+   call object_provide ('forces_zv_linear_var')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
+   enddo
+  endif
+
+  end subroutine forces_wrt
 
 end module forces_mod
