@@ -793,6 +793,11 @@ module optimization_mod
      call object_modified ('diag_stab')
      write(6,'(a,1pd9.1)') 'Wave function got worse, increase add_diag up to ',diag_stab
      call wf_update_and_check_and_stab
+!    write new wave function
+     write(6,'(a)') ''
+     write(6,'(a)') 'New wave function:'
+     call write_wf_new
+
 !    just in case mc config is in crazy place, reset mc_configs by calling sites
      isite = 1; call mc_configs_read
      if (l_decrease_error) then
