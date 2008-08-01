@@ -40,6 +40,7 @@ module catalog_objects_mod
   call catalog_one_object ('ddorb', ddorb_index)
   call catalog_one_object ('deti_det', deti_det_index)
   call catalog_one_object ('psido', psido_index)
+  call catalog_one_object ('psijo', psijo_index)
   call catalog_one_object ('eloc', eloc_index)
   call catalog_one_object ('slmui', slmui_index)
   call catalog_one_object ('slmdi', slmdi_index)

@@ -16,8 +16,9 @@ SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
 	deriv_jas_mod.f90 deriv_mod.f90 deriv_orb_mod.f90 \
 	determinants_mod.f90 dipole_moment_mod.f90 dmc_mod.f90 \
 	electrons_mod.f90 eloc_mod.f90 extracule_mod.f90 f2kcli.f90 \
-	files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 grid_mod.f90 \
-	indexes_mod.f90 initialization_mod.f90 intracule_mod.f90 \
+	files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 \
+	forces_pulay_mod.f90 grid_mod.f90 indexes_mod.f90 \
+	initialization_mod.f90 intracule_mod.f90 jastrow_mod.f90 \
 	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
 	nodes_mod.f90 nuclei_mod.f90 objects_mod.f90 opt_lin_mod.f90 \
 	opt_nwt_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 orbitals_mod.f90 \
@@ -97,8 +98,8 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o basic_tools_mod.o \
 	deriv_exp_mod.o deriv_geo_mod.o deriv_jas_mod.o deriv_mod.o \
 	deriv_orb_mod.o determinants_mod.o dipole_moment_mod.o dmc_mod.o \
 	electrons_mod.o eloc_mod.o extracule_mod.o f2kcli.o files_tools_mod.o \
-	fitdet_mod.o forces_mod.o grid_mod.o indexes_mod.o \
-	initialization_mod.o intracule_mod.o main_menu_mod.o \
+	fitdet_mod.o forces_mod.o forces_pulay_mod.o grid_mod.o indexes_mod.o \
+	initialization_mod.o intracule_mod.o jastrow_mod.o main_menu_mod.o \
 	matrix_tools_mod.o montecarlo_mod.o mpi_mod.o nodes_mod.o \
 	nuclei_mod.o objects_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o \
 	optimization_mod.o orbitals_mod.o parser_tools_mod.o \
@@ -236,8 +237,8 @@ catalog_objects_mod.o: basic_tools_mod.o constants_mod.o indexes_mod.o \
 catalog_routines_mod.o: all_tools_mod.o basis_mod.o density_mod.o \
 	deriv_jas_mod.o deriv_mod.o determinants_mod.o dipole_moment_mod.o \
 	eloc_mod.o extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o \
-	montecarlo_mod.o nodes_mod.o nuclei_mod.o opt_lin_mod.o opt_nwt_mod.o \
-	opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
+	jastrow_mod.o montecarlo_mod.o nodes_mod.o nuclei_mod.o opt_lin_mod.o \
+	opt_nwt_mod.o opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o dmc_mod.o f2kcli.o \
 	initialization_mod.o main_menu_mod.o mpi_mod.o commons.h
@@ -270,12 +271,16 @@ eloc_mod.o: all_tools_mod.o montecarlo_mod.o psi_mod.o commons.h
 extracule_mod.o: all_tools_mod.o commons.h
 files_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	strings_tools_mod.o
-forces_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o montecarlo_mod.o \
-	nuclei_mod.o opt_lin_mod.o psi_mod.o commons.h
+forces_mod.o: all_tools_mod.o electrons_mod.o forces_pulay_mod.o grid_mod.o \
+	montecarlo_mod.o nuclei_mod.o opt_lin_mod.o psi_mod.o commons.h
+forces_pulay_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o \
+	jastrow_mod.o montecarlo_mod.o orbitals_mod.o commons.h
 grid_mod.o: all_tools_mod.o orbitals_mod.o commons.h
 initialization_mod.o: all_tools_mod.o orbitals_mod.o commons.h
 intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \
 	commons.h
+jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
+	montecarlo_mod.o orbitals_mod.o commons.h
 main_menu_mod.o: all_tools_mod.o basis_mod.o control_mod.o debug_mod.o \
 	density_mod.o dipole_moment_mod.o dmc_mod.o extracule_mod.o \
 	forces_mod.o grid_mod.o intracule_mod.o optimization_mod.o \
@@ -298,14 +303,12 @@ optimization_mod.o: all_tools_mod.o control_mod.o deriv_mod.o \
 orbitals_mod.o: all_tools_mod.o basis_mod.o commons.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
-	pjasee_mod.o pjasen_mod.o common_jasn.h common_pjase.h commons.h \
-	commons_jaspar6.h
+	pjasee_mod.o pjasen_mod.o commons.h
 pjas_interface.o: periodic_jastrow_mod.o pjasee_mod.o pjasen_mod.o commons.h
 pjas_setup_mod.o: all_tools_mod.o
 pjasee_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
-	pjasen_mod.o common_jasn.h common_vd.h commons.h
-pjasen_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
-	common_jasn.h common_vd.h commons.h
+	pjasen_mod.o commons.h
+pjasen_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o commons.h
 print_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	parser_tools_mod.o variables_mod.o
 psi_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o orbitals_mod.o \

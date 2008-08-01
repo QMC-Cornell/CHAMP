@@ -256,6 +256,8 @@ c Note when one electron moves the velocity on all electrons change.
         endif
   300 continue
 
+      call object_modified_by_index (xold_index)  !JT
+
 c loop over secondary configurations
       do 350 ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
@@ -272,6 +274,7 @@ c primary configuration
       call object_modified_by_index (eold_index)  !JT
       call object_modified_by_index (eloc_index)  !JT
       call object_modified_by_index (psido_index) !JT
+      call object_modified_by_index (psijo_index)  !JT
       call object_modified_by_index (denergy_index) !JT
       call object_modified_by_index (vold_index) !JT
       call object_modified_by_index (div_vo_index) !JT

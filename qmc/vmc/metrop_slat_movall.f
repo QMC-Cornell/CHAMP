@@ -621,6 +621,7 @@ c       endif
       endif
 
       eloc = eold(1)            !JT
+      call object_modified_by_index (xold_index)  !JT
       call object_modified_by_index (eold_index) !JT
       call object_modified_by_index (eloc_index)  !JT
       call object_modified_by_index (psido_index) !JT

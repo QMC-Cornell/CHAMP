@@ -34,6 +34,9 @@ module print_mod
   integer obj_i
 
 ! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of print menu ----------------------------------------------------------------------------------'
+
   objects_to_print_now_nb = 0
   objects_to_print_block_nb = 0
 
@@ -95,6 +98,8 @@ module print_mod
   end select
 
   enddo ! end loop over menu lines
+
+  write(6,'(a)') 'End of print menu ----------------------------------------------------------------------------------------'
 
   end subroutine print_menu
 

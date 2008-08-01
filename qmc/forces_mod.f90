@@ -7,20 +7,20 @@
   use psi_mod
   use montecarlo_mod
   use opt_lin_mod
+  use forces_pulay_mod
 
 ! Declaration of global variables and default values
-  integer                                     :: forces_nb = 0
-  integer, allocatable                        :: forces_cent (:)
-  integer, allocatable                        :: forces_direct (:)
 # if defined (PATHSCALE)
    character(len=max_string_len) :: forces_list (max_string_array_len) ! for pathscale compiler
 # else
    character(len=max_string_len), allocatable  :: forces_list (:)
 # endif
   logical                                     :: l_forces_hf = .false.
-  logical                                     :: l_forces_zv = .true.
+  logical                                     :: l_forces_zv = .false.
   logical                                     :: l_forces_zvzb = .false.
   logical                                     :: l_forces_zv_linear = .false.
+  logical                                     :: l_forces_pulay = .false.
+  logical                                     :: l_forces_zv_pulay = .true.
   real(dp), allocatable                       :: forces_nn (:)
   real(dp), allocatable                       :: forces_hf (:)
   real(dp), allocatable                       :: forces_hf_av (:)
@@ -59,6 +59,9 @@
   real(dp), allocatable                       :: forces_zv_deloc_av (:,:)
   real(dp), allocatable                       :: forces_zv_deloc_covar (:,:)
   real(dp), allocatable                       :: forces_zv_av_deloc_av_covar (:,:)
+  real(dp), allocatable                       :: forces_zv_pulay_av (:)
+  real(dp), allocatable                       :: forces_zv_pulay_av_var (:)
+  real(dp), allocatable                       :: forces_zv_pulay_av_err (:)
 
   logical                                     :: l_eloc_av_fixed = .false.
   logical                                     :: l_forces_q_av_fixed = .false.
@@ -100,7 +103,13 @@
     write(6,'(a)') 'HELP for menu forces'
     write(6,'(a)') 'forces'
     write(6,'(a)') ' components 1x 1y 1z 2x 2y 2z end'
-    write(6,'(a)') ' estimator = {hf,zv,zvzb,zv_linear}: estimator to use (default=zv)'
+    write(6,'(a)') ' estimator = [string] estimator to use:'
+    write(6,'(a)') '           = hf : bare Hellmann-Feynamn estimator'
+    write(6,'(a)') '           = zv : simplest zero-variance estimator'
+    write(6,'(a)') '           = zvzb : simplest zero-variance zero-bias estimator'
+    write(6,'(a)') '           = zv_linear : zero-variance estimator using wave function derivatives wrt parameters'
+    write(6,'(a)') '           = zv_pulay : simplest zero-variance + Pulay estimator (default)'
+    write(6,'(a)') '           = pulay : Pulay contribution only'
     write(6,'(a)') ' eloc_av_fixed  = [real] fixed value of average of local energy to use in ZB term'
     write(6,'(a)') ' forces_q_av_fixed  list of reals end: fixed value of average of Q to use in ZB term'
     write(6,'(a)') 'end'
@@ -117,12 +126,17 @@
    case ('estimator')
     call get_next_value (estimator)
     select case (estimator)
-     case ('hf');   l_forces_hf = .true.
-     case ('zv');   l_forces_zv = .true.
-     case ('zvzb'); l_forces_zv = .true.; l_forces_zvzb = .true.
-     case ('zv_linear'); l_forces_zv = .true.; l_forces_zv_linear = .true.
+     case ('hf');        l_forces_hf = .true.
+     case ('zv');        l_forces_zv = .true.
+     case ('zvzb');      l_forces_zvzb = .true.
+     case ('zv_linear'); l_forces_zv_linear = .true.
+     case ('pulay');     l_forces_pulay = .true.
+     case ('zv_pulay');  l_forces_zv_pulay = .true.
      case default; call die (lhere, 'unknown keyword >'+trim(word)+'<.')
     end select
+
+   case ('pulay')
+    call get_next_value (l_forces_pulay)
 
    case ('eloc_av_fixed')
     call get_next_value (eloc_av_fixed)
@@ -175,6 +189,9 @@
   if (l_forces_zv_linear) then
    write(6,'(a)') ' Forces will be calculated with zero-variance estimator using wave function derivatives wrt parameters.'
   endif
+  if (l_forces_pulay) then
+   write(6,'(a)') ' Pulay correction will be calculated.'
+  endif
 
 ! request averages and statistical errors
   if (l_forces_hf) then
@@ -182,7 +199,7 @@
    call object_error_request ('forces_hf_av_err')
   endif
 
-  if (l_forces_zv) then
+  if (l_forces_zv .or. l_forces_zvzb .or. l_forces_zv_linear .or. l_forces_zv_pulay) then
    call object_average_request ('forces_zv_av')
    call object_error_request ('forces_zv_av_err')
    call object_average_request ('forces_zv_sq_av')
@@ -193,6 +210,7 @@
     call object_average_request ('forces_q_eloc_av')
     call object_variance_request ('forces_q_eloc_av_var')
  
+    call object_variance_request ('forces_q_av_var')
     call object_error_request ('forces_zvzb_av_err')
  
     call object_covariance_request ('forces_zv_av_eloc_av_covar')
@@ -210,6 +228,23 @@
    call object_covariance_request ('deloc_av_deloc_av_covar')
    call object_covariance_request ('forces_zv_av_deloc_av_covar')
    call object_error_request ('forces_zv_linear_av_err')
+  endif
+
+  if (l_forces_pulay .or. l_forces_zv_pulay) then
+   call object_average_request ('dpsi_rn_av')
+   call object_average_request ('dpsi_rn_eloc_av')
+   call object_error_request ('forces_pulay_av_err')
+
+   call object_variance_request ('dpsi_rn_av_var')
+   call object_variance_request ('dpsi_rn_eloc_av_var')
+   call object_covariance_request ('dpsi_rn_eloc_av_dpsi_rn_av_covar')
+   call object_covariance_request ('dpsi_rn_eloc_av_eloc_av_covar')
+   call object_covariance_request ('dpsi_rn_av_eloc_av_covar')
+  endif
+
+  if (l_forces_zv_pulay) then
+   call object_error_request ('forces_zv_pulay_av_err')
+   call object_covariance_request ('forces_zv_av_forces_pulay_av_covar')
   endif
 
   call routine_write_final_request ('forces_wrt')
@@ -635,7 +670,7 @@
   call object_alloc ('forces_zvzb_av_err', forces_zvzb_av_err, forces_nb)
 
   forces_zvzb_av_var (:) = forces_zv_av_var (:) + 4.d0 * forces_q_eloc_av_var (:)                                  &
-                          + 4.d0 * (eloc_av**2) * forces_q_av_var (:) + 2.d0 * (forces_q_av (:)**2) * eloc_av_var  &
+                          + 4.d0 * (eloc_av**2) * forces_q_av_var (:) + 4.d0 * (forces_q_av (:)**2) * eloc_av_var  &
                           + 4.d0 * forces_zv_av_q_eloc_av_covar (:) - 4.d0 * eloc_av * forces_zv_av_q_av_covar (:) &
                           - 4.d0 * forces_q_av (:) * forces_zv_av_eloc_av_covar (:)                                &
                           - 8.d0 * eloc_av * forces_q_eloc_av_q_av_covar (:)                                       &
@@ -771,6 +806,71 @@
   enddo ! force_i
 
   end subroutine forces_zvzb_old2_bld
+
+! ==============================================================================
+  subroutine forces_zv_pulay_av_bld
+! ------------------------------------------------------------------------------
+! Description   : simple averaged ZV + Pulay estimator for forces
+!
+! Created       : J. Toulouse, 31 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_pulay_av')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_zv_av')
+   call object_needed ('forces_pulay_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_pulay_av', forces_zv_pulay_av, forces_nb)
+
+  forces_zv_pulay_av (:) = forces_zv_av (:) + forces_pulay_av (:)
+
+  end subroutine forces_zv_pulay_av_bld
+
+! ==============================================================================
+  subroutine forces_zv_pulay_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of forces_zv_pulay_av
+!
+! Created       : J. Toulouse, 31 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_pulay_av_var')
+   call object_error_define_from_variance ('forces_zv_pulay_av_var', 'forces_zv_pulay_av_err')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_zv_av_var')
+   call object_needed ('forces_pulay_av_var')
+   call object_needed ('forces_zv_av_forces_pulay_av_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_pulay_av_var', forces_zv_pulay_av_var, forces_nb)
+  call object_alloc ('forces_zv_pulay_av_err', forces_zv_pulay_av_err, forces_nb)
+
+  forces_zv_pulay_av_var (:) = forces_zv_av_var (:) + forces_pulay_av_var (:) + 2.d0 * forces_zv_av_forces_pulay_av_covar (:)
+
+  end subroutine forces_zv_pulay_av_var_bld
 
 ! ==============================================================================
   subroutine forces_zv_deloc_bld
@@ -1080,6 +1180,18 @@
    enddo
   endif
 
+  if (l_forces_zv_pulay) then
+   write(6,*)
+   write(6,'(a)') 'Total force with simplest zero-variance + pulay estimator:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_zv_pulay_av')
+   call object_provide ('forces_zv_pulay_av_err')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
+   enddo
+  endif
+
   if (l_forces_zvzb) then
    write(6,*)
    write(6,'(a)') 'Total force with simplest zero-variance zero-bias estimator:'
@@ -1104,6 +1216,20 @@
     write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
    enddo
   endif
+
+  if (l_forces_pulay) then
+   write(6,*)
+   write(6,'(a)') 'Pulay contribution to force:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_pulay_av')
+   call object_provide ('forces_pulay_av_err')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
+   enddo
+  endif
+
+
 
   end subroutine forces_wrt
 

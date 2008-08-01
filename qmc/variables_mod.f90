@@ -104,6 +104,11 @@ module variables_mod
   integer :: nparmj_input = 0
   integer :: nparmcsf_input = 0
 
+! forces
+  integer                                     :: forces_nb = 0
+  integer, allocatable                        :: forces_cent (:)
+  integer, allocatable                        :: forces_direct (:)
+
 ! function
   real(dp), external     :: erf_spline
   real(dp), external     :: ei2

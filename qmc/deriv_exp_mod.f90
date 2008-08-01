@@ -1293,7 +1293,7 @@ module deriv_exp_mod
 ! ==============================================================================
   subroutine ddet_dexp_unq_bld
 ! ------------------------------------------------------------------------------
-! Description   : Calculate value of derivatives of unique spin-up and spin-down determinants
+! Description   : derivatives of unique spin-up and spin-down determinants
 ! Description   : with respect to basis exponents
 ! Description   : by updating reference determinant via the Sherman-Morrison formula
 !
@@ -1422,6 +1422,7 @@ module deriv_exp_mod
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
    call object_needed ('cdet_in_csf')
+   call object_needed ('csf_coef')
    call object_needed ('det_to_det_unq_up')
    call object_needed ('det_to_det_unq_dn')
    call object_needed ('ddet_dexp_unq_up')
@@ -2492,21 +2493,6 @@ module deriv_exp_mod
   call object_alloc ('deloc_exp', deloc_exp, param_exp_nb)
 
   deloc_exp (:) = (eloc_exp (:)- eloc) * dpsi_exp (:)
-
-!  do elec_i = 1, nelec
-!   write(6,'(a,i3,a,3f12.6)') 'elec_i=', elec_i, ' xold=', (xold (dim_i, elec_i),dim_i=1,ndim)
-!  enddo
-!  write(6,'(a)') 'Basis exponents (zex(i),i=1,nbasis):'
-!  write(6,'(1000f10.6)') zex (1:nbasis, iwf)
-!  write(6,'(a,f12.6)') 'eloc=',eloc
-!  write(6,'(a,100f12.6)') 'dpsi_exp=',dpsi_exp
-!  write(6,'(a,100f12.6)') 'eloc_exp=',eloc_exp
-! write(6,'(a,100f12.6)') 'deloc_exp=',deloc_exp
-
-!  zex (bas_i, iwf) = zex (bas_i, 1) + 0.0001
-!  call object_modified ('zex')
-!  call distinct_radial_bas
-!  call
 
   end subroutine deloc_exp_bld
 

@@ -61,7 +61,7 @@ contains
     integer                              :: ist, ie , k, idim
     real(dp)                             :: sum , sum1, sum2
     include 'commons.h'
-    include 'common_vd.h'
+!JT    include 'common_vd.h'
     ! header
     if (header_exe) then
        call object_create ('deloc_pjasen',deloc_pjasen_index)
@@ -717,7 +717,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    include 'common_jasn.h'
+!JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: xvec (3, melec)
     real (dp)                            :: gen, fen , fen1 (3), fsum

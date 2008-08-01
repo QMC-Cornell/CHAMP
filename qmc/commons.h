@@ -30,6 +30,7 @@
           include 'commons/common_jaspar.h'
           include 'commons/common_jaspar3.h'
           include 'commons/common_jaspar4.h'
+          include 'commons/commons_jaspar6.h'
           include 'commons/common_bparm.h'
           include 'commons/common_jasparread.h'
           include 'commons/common_pointer.h'
@@ -50,6 +51,10 @@
           include 'commons/common_stepv.h'
           include 'commons/common_header.h'
           include 'commons/common_lbas.h'
+          include 'commons/common_jaso.h'
+          include 'commons/common_jasn.h'
+          include 'commons/common_vd.h'
+          include 'commons/common_pjase.h'
 
 ! for dmc
           include 'commons/common_config_dmc.h'

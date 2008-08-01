@@ -42,7 +42,7 @@ contains
     integer                              :: i,k,ieta, ie
     real(dp)                             :: sum
     include 'commons.h'
-    include 'common_vd.h'
+!JT    include 'common_vd.h'
     ! header
     if (header_exe) then
        call object_create ('deloc_pjasee',deloc_pjasee_index)
@@ -137,7 +137,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
-    include "common_jasn.h"
+!JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
     real(dp)                             :: xcoord (3,melec)
     real(dp)                             :: rvec (3,melec*(melec-1)/2)
@@ -204,7 +204,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
-    include "common_jasn.h"
+!JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij, ije
     real(dp)                             :: xcoord (3,melec)
     real(dp)                             :: rvec (3,melec*(melec-1)/2)
@@ -593,7 +593,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    include 'common_jasn.h'
+!JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
     real (dp)                            :: gen, fen , fen1(3), temp (3), fsum

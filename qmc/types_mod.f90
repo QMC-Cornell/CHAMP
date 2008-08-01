@@ -12,7 +12,7 @@ module types_mod
 
 ! some derived types:
   type type_integer_row
-   integer, allocatable              :: row (:)
+   integer, allocatable      :: row (:)
   end type type_integer_row
 
   type type_real_row

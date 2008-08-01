@@ -875,9 +875,6 @@ module psi_mod
 ! output
   real(dp) :: psi2_eval
 
-! local
-  real(dp) d2o
-
 ! begin
   call unflatten  (coord_elec_vec, xold, ndim, nelec)
   call hpsi (xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)

@@ -1153,6 +1153,10 @@ ccWAS
 c Note: Fock terms yet to be put in ijas=4,5,6.
       endif
 
+      call object_modified ('scalek')
+      call object_modified ('norda') !JT
+      call object_modified ('nordb') !JT
+      call object_modified ('nordc') !JT
       call object_modified ('nparma_read') !JT
       call object_modified ('nparmb_read') !JT
       call object_modified ('nparmc_read') !JT

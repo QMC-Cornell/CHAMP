@@ -20,16 +20,16 @@ module nodes_mod
    real(dp)                      :: cpu_duration = 0.d0
   end type type_node
 
-  integer                         :: nodes_nb = 0
-  integer                         :: node_current_index = 0
-  type (type_node), save          :: nodes (max_nodes_nb)
+  integer                        :: nodes_nb = 0
+  integer                        :: node_current_index = 0
+  type (type_node), save         :: nodes (max_nodes_nb)
 
-  logical                         :: header_exe = .false.
-  logical                         :: l_trace = .false.
+  logical                        :: header_exe = .false.
+  logical                        :: l_trace = .false.
 
-  integer, allocatable            :: nodes_indexes_sort (:)
-  integer, allocatable            :: nodes_calls_nb_sort (:)
-  real(dp), allocatable           :: nodes_cpu_duration_sort (:)
+  integer, allocatable           :: nodes_indexes_sort (:)
+  integer, allocatable           :: nodes_calls_nb_sort (:)
+  real(dp), allocatable          :: nodes_cpu_duration_sort (:)
 
   contains
 
@@ -357,6 +357,7 @@ module nodes_mod
   enddo
   enddo
 
+    write(6,*)
     write(6,'(a)') '----------------------------------------------------------------------'
     write(6,'(a)') '                        NODE STATISTICS'
     write(6,'(a)') ''
@@ -371,7 +372,7 @@ module nodes_mod
   enddo
    write(6,'(a)') '------------------------------------------------------------------'
    write(6,'(a,f)') 'TOTAL                                   ',cpu_duration_total
-   write(6,'(a)') ''
+   write(6,*)
 
  end subroutine nodes_statistics
 

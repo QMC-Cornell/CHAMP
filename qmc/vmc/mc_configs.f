@@ -33,6 +33,7 @@ c If isite<=0 reads initial MC configuration from mc_configs_start
 c         >=1 gets initial MC configuration by calling subroutine sites
 c Write mc_configs_new at end of run to provide configurations for fit optimization
 
+      use all_tools_mod
       use walkers_mod
       implicit real*8(a-h,o-z)
 
@@ -83,6 +84,7 @@ c if isite>=1 then get initial configuration from sites routine
   394     continue
         if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
         call sites(xold,nelec,nsite)
+        call object_modified ('xold') ! JT
 !JT        write(6,'(/,''initial configuration from sites'')')
 
   395   continue

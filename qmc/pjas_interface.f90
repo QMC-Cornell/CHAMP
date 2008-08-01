@@ -14,9 +14,9 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
   dimension x(3,melec),v(3,melec),div_vj(melec)
 
 
-  real(dp)                               :: fso , fijo , d2ijo, d2o, fsumo, fjo
-  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
-       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT  real(dp)                               :: fso , fijo , d2ijo, d2o, fsumo, fjo
+!JT  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
+!JT       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
   integer                                :: i, j, k ,ij
 
@@ -68,9 +68,9 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
   dimension x(3,melec),v(3,melec)
 
 
-  real(dp)                               :: fso , fijo , d2ijo, d2o, fsumo, fjo
-  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
-       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT  real(dp)                               :: fso , fijo , d2ijo, d2o, fsumo, fjo
+!JT  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
+!JT       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
   integer                                :: i, j, k ,ij
 
@@ -122,7 +122,7 @@ subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
   integer                                :: iel
   real (dp)                              :: x, v, value, d2
   dimension x(3,melec),v(3,melec)
-  real (dp)                              :: fsn, fijn, d2ijn, d2n , fsumn, fjn
+!JT  real (dp)                              :: fsn, fijn, d2ijn, d2n , fsumn, fjn
 
   call pjas_jas_e (iel, x, rvec, v, value)
 

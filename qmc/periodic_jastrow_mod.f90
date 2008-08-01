@@ -33,8 +33,8 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    include 'common_pjase.h'
-    include 'commons_jaspar6.h'
+!JT    include 'common_pjase.h'
+!JT    include 'commons_jaspar6.h'
     integer                              :: icutjasc
     real(dp)                             :: cutjasc
     common /jas_c_cut/ cutjasc,icutjasc
@@ -472,7 +472,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
-    include "common_jasn.h"
+!JT    include "common_jasn.h"
 
     integer                              :: iel, ist
     real(dp)                             :: rvec (3,melec)
@@ -507,7 +507,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
-    include "common_jasn.h"
+!JT    include "common_jasn.h"
     real(dp)                             :: rvec (3,melec)
     integer                              :: iel, ist
     real(dp)                             :: xvec (3), value1, temp, value2, value
@@ -638,7 +638,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    include 'common_jasn.h'
+!JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
     real (dp)                            :: xvec (3, melec)

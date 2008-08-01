@@ -274,10 +274,10 @@ module objects_mod
   if (object_ind == 0) then
       write(6,*)
       write(6,'(4a)') trim(lhere),': object >',trim(object_name),'< not catalogued. You should check that:'
-      write(6,'(4a)') trim(lhere),':- this object has been declared as created object of a node, i.e. call object_create (',trim(object_name),')'
-      write(6,'(2a)') trim(lhere),':- the creating node of this object has been catalogued in catalog_routines_mod.f90, i.e. call catalog_one_node (...)'
-      write(6,'(2a)') trim(lhere),'or that'
-      write(6,'(4a)') trim(lhere),':- this object has at least been declared as an object using call object_modified (',trim(object_name),')'
+      write(6,'(4a)') trim(lhere),': - this object has been declared as created object of a node, i.e. call object_create (',trim(object_name),')'
+      write(6,'(2a)') trim(lhere),': - the creating node of this object has been catalogued in catalog_routines_mod.f90, i.e. call catalog_one_node (...)'
+      write(6,'(2a)') trim(lhere),': or that'
+      write(6,'(4a)') trim(lhere),': - this object has at least been declared as an object using call object_modified (',trim(object_name),')'
       call die (lhere)
   endif
 

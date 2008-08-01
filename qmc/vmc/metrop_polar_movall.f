@@ -8,15 +8,16 @@ c    C.J. Umrigar, in {\it Quantum Monte Carlo Methods in Physics and Chemistry}
 c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
+      use all_tools_mod ! JT
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include '../fit/fit.h'
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0)
-      parameter (half=.5d0,third=1.d0/3.d0)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0)
+!JT      parameter (half=.5d0,third=1.d0/3.d0)
 c     parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
       parameter (d3b2=1.5d0)
       parameter (eps=1.d-10)
@@ -472,6 +473,8 @@ c move is accepted so update positions etc.
 
         if(nefp.gt.0) call efpsav
       endif
+
+      call object_modified_by_index (xold_index)  !JT
 
 c Warning: does not have correlated sampling for forces yet.
       do 380 ifr=1,nforce

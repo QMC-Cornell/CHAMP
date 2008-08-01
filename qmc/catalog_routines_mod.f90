@@ -5,6 +5,7 @@ module catalog_routines_mod
   use routines_mod
   use basis_mod
   use orbitals_mod
+  use jastrow_mod
   use optimization_mod
   use opt_nwt_mod
   use opt_lin_mod
@@ -73,6 +74,12 @@ module catalog_routines_mod
   call catalog_one_node ('walker_weights_bld', walker_weights_bld, walker_weights_bld_index)
   call catalog_one_node ('vec_en_xyz_wlk_bld', vec_en_xyz_wlk_bld)
   call catalog_one_node ('dist_en_wlk_bld', dist_en_wlk_bld)
+  call catalog_one_node ('dist_en_scaled_wlk_bld', dist_en_scaled_wlk_bld)
+  call catalog_one_node ('dist_en_scaled_deriv1_wlk_bld', dist_en_scaled_deriv1_wlk_bld)
+  call catalog_one_node ('dist_ee_scaled2_wlk_bld', dist_ee_scaled2_wlk_bld)
+  call catalog_one_node ('dist_en_scaled2_wlk_bld', dist_en_scaled2_wlk_bld)
+  call catalog_one_node ('dist_en_scaled2_deriv1_wlk_bld', dist_en_scaled2_deriv1_wlk_bld)
+  call catalog_one_node ('dist_ee_scaled2_deriv1_wlk_bld', dist_ee_scaled2_deriv1_wlk_bld)
   call catalog_one_node ('grd_dist_en_bld', grd_dist_en_bld)
   call catalog_one_node ('lap_dist_en_bld', lap_dist_en_bld)
   call catalog_one_node ('elec_nb_closest_to_atom_wlk_bld', elec_nb_closest_to_atom_wlk_bld)
@@ -342,6 +349,12 @@ module catalog_routines_mod
   call catalog_one_node ('deloc_lnexp_bld', deloc_lnexp_bld)
   call catalog_one_node ('slater_mat_exp_trans_inv_bld', slater_mat_exp_trans_inv_bld)
 
+! jastrow
+  call catalog_one_node ('fen_bld', fen_bld)
+  call catalog_one_node ('feen_bld', feen_bld)
+  call catalog_one_node ('dfen_drn_bld', dfen_drn_bld)
+  call catalog_one_node ('dfeen_drn_bld', dfeen_drn_bld)
+
 ! dipole moment
   call catalog_one_node ('dipole_moment_origin_bld', dipole_moment_origin_bld)
   call catalog_one_node ('dipole_moment_nucl_bld', dipole_moment_nucl_bld)
@@ -430,6 +443,21 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_linear_var_bld', forces_zv_linear_var_bld)
   call catalog_one_node ('forces_zv_sq_bld', forces_zv_sq_bld)
   call catalog_one_node ('forces_zv_var_bld', forces_zv_var_bld)
+  call catalog_one_node ('forces_zv_pulay_av_bld', forces_zv_pulay_av_bld)
+  call catalog_one_node ('forces_zv_pulay_av_var_bld', forces_zv_pulay_av_var_bld)
+
+! forces pulay
+  call catalog_one_node ('force_to_bas_bld', force_to_bas_bld)
+  call catalog_one_node ('dphin_norm_drn_bld', dphin_norm_drn_bld)
+  call catalog_one_node ('dorb_drn_bld', dorb_drn_bld)
+  call catalog_one_node ('ddet_drn_unq_bld', ddet_drn_unq_bld)
+  call catalog_one_node ('dpsid_rn_bld', dpsid_rn_bld)
+  call catalog_one_node ('dpsij_rn_bld', dpsij_rn_bld)
+  call catalog_one_node ('dpsi_rn_bld', dpsi_rn_bld)
+  call catalog_one_node ('dpsi_rn_num_bld', dpsi_rn_num_bld)
+  call catalog_one_node ('dpsi_rn_eloc_bld', dpsi_rn_eloc_bld)
+  call catalog_one_node ('forces_pulay_av_bld', forces_pulay_av_bld)
+  call catalog_one_node ('forces_pulay_av_var_bld', forces_pulay_av_var_bld)
 
 ! average routines (not nodes!)
 !  call catalog_one_routine ('dpsi_orb_av_bld', dpsi_orb_av_bld)

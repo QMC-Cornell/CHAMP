@@ -4,13 +4,14 @@ c Written by Cyrus Umrigar
 c routine to move configuration by one step using a
 c force-bias type Monte Carlo.
 c Minor mods added by A.D.Guclu to include correlated sampling.
+      use all_tools_mod ! JT
 
       implicit real*8(a-h,o-z)
-      parameter (zero=0.d0,one=1.d0,two=2.d0)
-      parameter (half=.5d0)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
+!JT      parameter (half=.5d0)
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include '../fit/fit.h'
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -229,6 +230,8 @@ c move is accepted so update positions etc.
         call grad_hess_jas_save
 
       endif
+
+      call object_modified_by_index (xold_index)  !JT
 
       do 380 ifr=1,nforce
         if(ifr.eq.1) then

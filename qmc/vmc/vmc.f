@@ -295,7 +295,7 @@ c now do averaging steps
            call metrop_slat(l)
         endif
 
-        call object_modified_by_index (xold_index)  !JT
+!JT        call object_modified_by_index (xold_index)  !JT
 
 !       accumulate data for averages and statitical errors
 !        call compute_averages        !JT
