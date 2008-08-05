@@ -1405,8 +1405,8 @@ module optimization_mod
 
    loop = loop + 1
 
-   if (loop >= 10) then
-    call die (lhere, 'add_diag has been increased 10 times but moves are still too bad')
+   if (loop >= 15) then
+    call die (lhere, 'add_diag has been increased 15 times but moves are still too bad')
    endif
 
    iwf = 2
