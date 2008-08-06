@@ -429,7 +429,7 @@ module catalog_routines_mod
 
 ! forces
   call catalog_one_node ('forces_nn_bld', forces_nn_bld)
-  call catalog_one_node ('forces_hf_bld', forces_hf_bld)
+  call catalog_one_node ('forces_bare_bld', forces_bare_bld)
   call catalog_one_node ('forces_zv_bld', forces_zv_bld)
   call catalog_one_node ('forces_zvzb_av_bld', forces_zvzb_av_bld)
   call catalog_one_node ('forces_q_bld', forces_q_bld)
@@ -445,6 +445,9 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_var_bld', forces_zv_var_bld)
   call catalog_one_node ('forces_zv_pulay_av_bld', forces_zv_pulay_av_bld)
   call catalog_one_node ('forces_zv_pulay_av_var_bld', forces_zv_pulay_av_var_bld)
+  call catalog_one_node ('forces_zv_deriv_bld', forces_zv_deriv_bld)
+  call catalog_one_node ('forces_zv_deriv_sq_bld', forces_zv_deriv_sq_bld)
+  call catalog_one_node ('forces_zv_deriv_var_bld', forces_zv_deriv_var_bld)
 
 ! forces pulay
   call catalog_one_node ('force_to_bas_bld', force_to_bas_bld)
@@ -456,6 +459,7 @@ module catalog_routines_mod
   call catalog_one_node ('dpsi_rn_bld', dpsi_rn_bld)
   call catalog_one_node ('dpsi_rn_num_bld', dpsi_rn_num_bld)
   call catalog_one_node ('dpsi_rn_eloc_bld', dpsi_rn_eloc_bld)
+  call catalog_one_node ('deloc_rn_num_bld', deloc_rn_num_bld)
   call catalog_one_node ('forces_pulay_av_bld', forces_pulay_av_bld)
   call catalog_one_node ('forces_pulay_av_var_bld', forces_pulay_av_var_bld)
 

@@ -30,6 +30,8 @@ module forces_pulay_mod
   real(dp), allocatable                  :: dpsi_rn_av_eloc_av_covar (:)
   real(dp), allocatable                  :: dpsi_rn_eloc_av_eloc_av_covar (:)
   real(dp), allocatable                  :: dpsi_rn_eloc_av_dpsi_rn_av_covar (:)
+  real(dp), allocatable                  :: deloc_rn_num (:)
+  real(dp), allocatable                  :: deloc_rn_num_av (:)
   real(dp), allocatable                  :: forces_pulay_av (:)
   real(dp), allocatable                  :: forces_pulay_av_var (:)
   real(dp), allocatable                  :: forces_pulay_av_err (:)
@@ -425,7 +427,7 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
 ! Description   : dpsi_rn calculating by numerical differentiation for checkings
 !
-! Created       : J. Toulouse, 28 May 2008
+! Created       : J. Toulouse, 28 Jul 2008
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
@@ -535,6 +537,77 @@ module forces_pulay_mod
   dpsi_rn_eloc (:) = dpsi_rn (:) * eloc
 
   end subroutine dpsi_rn_eloc_bld
+
+! ==============================================================================
+  subroutine deloc_rn_num_bld
+! ------------------------------------------------------------------------------
+! Description   : deloc_rn calculating by numerical differentiation for checkings
+!
+! Created       : J. Toulouse, 04 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer force_i, cent_i, dim_i
+  real(dp) :: cent_save, d, eloc1, eloc2
+
+! header
+  if (header_exe) then
+
+   call object_create ('deloc_rn_num')
+   call object_average_define ('deloc_rn_num', 'deloc_rn_num_av')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_cent')
+   call object_needed ('forces_direct')
+   call object_needed ('cent')
+   call object_needed ('eloc')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('deloc_rn_num', deloc_rn_num, forces_nb)
+  call object_alloc ('deloc_rn_num_av', deloc_rn_num_av, forces_nb)
+
+! current local energy
+  eloc1 = eloc
+
+! loop over force components
+  do force_i = 1, forces_nb
+   cent_i = forces_cent (force_i)
+   dim_i = forces_direct (force_i)
+
+!  moving nuclear coordinates
+   d = 0.000001d0
+   cent_save = cent (dim_i, cent_i)
+   cent (dim_i, cent_i) = cent (dim_i, cent_i) + d
+   call object_modified ('cent')
+
+!  recalculating wave function and local energy (including nuclear potential energy!)
+   call pot_nn(cent,znuc,iwctype,ncent,pecent)
+   call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+   call object_modified_by_index (eold_index)
+   call object_modified_by_index (eloc_index)
+   call object_modified_by_index (psido_index)
+   call object_modified_by_index (denergy_index)
+   call object_modified_by_index (vold_index)
+   call object_modified_by_index (div_vo_index)
+   eloc2 = eold(1)
+
+!  calculating numerical derivative
+   deloc_rn_num (force_i) = (eloc2 - eloc1)/d
+   
+!  restoring the nuclear coordinates and nuclear potential energy
+   cent (dim_i, cent_i) = cent_save
+   call object_modified ('cent')
+   call pot_nn(cent,znuc,iwctype,ncent,pecent)
+
+  enddo ! force_i
+  
+  end subroutine deloc_rn_num_bld
 
 ! ==============================================================================
   subroutine forces_pulay_av_bld
