@@ -47,7 +47,7 @@ foreach $file (@allfiles){
 
 # detect 'BEGINNING OF'
   if ($between_beginning_and_end == 0){
-   if (/BEGINNING OF/ || /Beginning of equilibration/){
+   if (/BEGINNING OF EQUILIBRATION/ || /Beginning of equilibration/){
     $between_beginning_and_end = 1;
     $line_beginning_index = $i;
    }
@@ -58,11 +58,12 @@ foreach $file (@allfiles){
     print OUT $_;
   }
 
-# print last lines when encountering 'Final writre:' for DMC
+# print last lines when encountering 'Final write:' for DMC
   if ($between_beginning_and_end == 1){
    if (/Final write:/){
     $between_beginning_and_end = 0;
     print OUT "............ lines cut ............\n";
+    print OUT $line_previous_4;  
     print OUT $line_previous_3;  
     print OUT $line_previous_2;  
     print OUT $line_previous;  
