@@ -76,9 +76,11 @@ module variables_mod
   logical                         :: l_casscf = .false.
   logical                         :: l_check_redundant_orbital_derivative = .true.
 
-  logical                                :: l_deriv2nd = .true.
+  logical                         :: l_deriv2nd = .true.
+  logical                         :: l_deriv_bound = .false.
+  real(dp)                        :: deriv_bound_value = 10.d0
 
-  real(dp)                       :: lambda = 0.3d0
+  real(dp)                        :: lambda = 0.3d0
 
 ! total number of configurations (walkers)
   integer   :: nconf_total = 1

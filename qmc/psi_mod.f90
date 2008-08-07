@@ -578,11 +578,11 @@ module psi_mod
   call object_alloc ('grd_psi_over_psi_wlk', grd_psi_over_psi_wlk, ndim, nelec, nwalk)
 
   if (index(mode, 'vmc') /= 0) then
-   call object_provide_in_node_by_index (grd_psi_over_psi_wlk_bld_index, vold_index)
+   call object_provide_by_index (grd_psi_over_psi_wlk_bld_index, vold_index)
    grd_psi_over_psi_wlk (:,:,1) = vold (1:ndim, 1:nelec)
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (grd_psi_over_psi_wlk_bld_index, voldw_index)
+   call object_provide_by_index (grd_psi_over_psi_wlk_bld_index, voldw_index)
    grd_psi_over_psi_wlk (:,:,:) = voldw (1:ndim, 1:nelec, 1:nwalk, 1)
 
   else
@@ -700,11 +700,11 @@ module psi_mod
   call object_alloc ('div_grd_psi_over_psi_wlk', div_grd_psi_over_psi_wlk, nelec, nwalk)
 
   if (index(mode, 'vmc') /= 0) then
-   call object_provide_in_node_by_index (div_grd_psi_over_psi_wlk_bld_index, div_vo_index)
+   call object_provide_by_index (div_grd_psi_over_psi_wlk_bld_index, div_vo_index)
    div_grd_psi_over_psi_wlk (:,1) = div_vo (1:nelec)
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (div_grd_psi_over_psi_wlk_bld_index, div_vow_index)
+   call object_provide_by_index (div_grd_psi_over_psi_wlk_bld_index, div_vow_index)
    div_grd_psi_over_psi_wlk (:,:) = div_vow (1:nelec, 1:nwalk)
 
   else

@@ -76,11 +76,11 @@ module montecarlo_mod
 
 ! allocations
   if (index(mode, 'vmc') /= 0) then
-   call object_provide_in_node_by_index (eloc_wlk_bld_index, eold_index)
+   call object_provide_by_index (eloc_wlk_bld_index, eold_index)
    eloc_wlk (1) = eold (1)
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (eloc_wlk_bld_index, eoldw_index)
+   call object_provide_by_index (eloc_wlk_bld_index, eoldw_index)
    eloc_wlk (:) = eoldw (1:nwalk, 1)
 
   else
@@ -164,11 +164,11 @@ module montecarlo_mod
   call object_alloc ('eloc_wlk_test_av_err', eloc_wlk_test_av_err, 3)
 
   if (index(mode, 'vmc') /= 0) then
-   call object_provide_in_node_by_index (eloc_wlk_test_bld_index, eold_index)
+   call object_provide_by_index (eloc_wlk_test_bld_index, eold_index)
    eloc_wlk_test (1,1) = eold (1)
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (eloc_wlk_test_bld_index, eoldw_index)
+   call object_provide_by_index (eloc_wlk_test_bld_index, eoldw_index)
    do walk_i = 1, nwalk
     eloc_wlk_test (1,walk_i) = eoldw (walk_i, 1)
    enddo
@@ -217,11 +217,11 @@ module montecarlo_mod
   call object_alloc ('eloc_wlk_test2_av_err', eloc_wlk_test2_av_err, 2, 3)
 
   if (index(mode, 'vmc') /= 0) then
-   call object_provide_in_node_by_index (eloc_wlk_test2_bld_index, eold_index)
+   call object_provide_by_index (eloc_wlk_test2_bld_index, eold_index)
    eloc_wlk_test2 (1,1,1) = eold (1)
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (eloc_wlk_test2_bld_index, eoldw_index)
+   call object_provide_by_index (eloc_wlk_test2_bld_index, eoldw_index)
    do walk_i = 1, nwalk
     eloc_wlk_test2 (1,1,walk_i) = eoldw (walk_i, 1)
    enddo
@@ -394,8 +394,8 @@ module montecarlo_mod
    walker_weights (:) = 1.d0
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (walker_weights_bld_index, wt_index)
-   call object_provide_in_node_by_index (walker_weights_bld_index, fprod_index) ! fprod is the finite population correction
+   call object_provide_by_index (walker_weights_bld_index, wt_index)
+   call object_provide_by_index (walker_weights_bld_index, fprod_index) ! fprod is the finite population correction
    do walk_i = 1, nwalk
     walker_weights (walk_i) = wt (walk_i) * fprod
    enddo
@@ -434,11 +434,11 @@ module montecarlo_mod
 !
 !! allocations
 !  if (index(mode, 'vmc') /= 0) then
-!   call object_provide_in_node_by_index (walker_weights_sum_index, block_iterations_nb_index)
+!   call object_provide_by_index (walker_weights_sum_index, block_iterations_nb_index)
 !   walker_weights_sum  = nstep_total*block_iterations_nb
 !
 !  elseif (index(mode, 'dmc') /= 0) then
-!   call object_provide_in_node_by_index (walker_weights_sum_bld_index, wgcum_index)
+!   call object_provide_by_index (walker_weights_sum_bld_index, wgcum_index)
 !   walker_weights_sum  = wgcum(1)
 !
 !  else

@@ -35,7 +35,6 @@ module forces_pulay_mod
   real(dp), allocatable                  :: forces_pulay_av (:)
   real(dp), allocatable                  :: forces_pulay_av_var (:)
   real(dp), allocatable                  :: forces_pulay_av_err (:)
-  real(dp), allocatable                  :: forces_zv_av_forces_pulay_av_covar (:)
 
   contains
 
@@ -623,7 +622,6 @@ module forces_pulay_mod
   if (header_exe) then
 
    call object_create ('forces_pulay_av')
-   call object_covariance_define ('forces_zv_av','forces_pulay_av','forces_zv_av_forces_pulay_av_covar')
 
    call object_needed ('forces_nb')
    call object_needed ('dpsi_rn_eloc_av')
@@ -638,7 +636,6 @@ module forces_pulay_mod
 
 ! allocations
   call object_alloc ('forces_pulay_av', forces_pulay_av, forces_nb)
-  call object_alloc ('forces_zv_av_forces_pulay_av_covar', forces_zv_av_forces_pulay_av_covar, forces_nb)
 
   forces_pulay_av (:) = -2.d0 * (dpsi_rn_eloc_av (:) - dpsi_rn_av (:) * eloc_av)
 

@@ -298,6 +298,8 @@ module opt_lin_mod
    call object_needed ('dpsi_deloc_covar')
    call object_needed ('dpsi_dpsi_eloc_av')
    call object_needed ('dpsi_av')
+   call object_needed ('is_param_type_orb')
+   call object_needed ('is_param_type_geo')
 
    return
 
@@ -319,20 +321,25 @@ module opt_lin_mod
 
 ! first row and first column
   do i = 1, param_nb
-    ham_lin_energy (i+1,1) = dpsi_eloc_covar (i)
 
 !   approximate Hamiltonian for orbitals
-    if (l_opt_orb_eig .and. i > nparmcsf+nparmj) then
+    if (l_opt_orb_eig .and. is_param_type_orb (i)) then
+     ham_lin_energy (1+i,1) = dpsi_eloc_covar (i) 
 !     ham_lin_energy (1,i+1) = ovlp_lin(1,i+1) * (eloc_av + delta_eps (i-nparmcsf-nparmj))
-     ham_lin_energy (1,i+1) = ham_lin_energy (i+1,1)  ! symmetric for orbitals
+     ham_lin_energy (1,1+i) = ham_lin_energy (1+i,1)  ! symmetric for orbitals
+
+!   symmetric Hamiltonian for geometry parameters
+    elseif (l_opt_geo .and. is_param_type_geo (i)) then
+     ham_lin_energy (1+i,1) = dpsi_eloc_covar (i) + deloc_av (i)/2.d0
+     ham_lin_energy (1,1+i) = ham_lin_energy (1+i,1)
 
 !   normal Hamiltoniam
     else
-     ham_lin_energy (1,i+1) = dpsi_eloc_covar (i) + deloc_av (i)
+     ham_lin_energy (1+i,1) = dpsi_eloc_covar (i)
+     ham_lin_energy (1,1+i) = dpsi_eloc_covar (i) + deloc_av (i)
     endif
 
-  enddo
-
+  enddo ! i
 
 ! derivative-derivative part
   do j = 1, param_nb
@@ -340,24 +347,31 @@ module opt_lin_mod
      pair = param_pairs (i,j)
 
 !   approximate Hamiltonian for Jastrow-orbital, CSF-orbital mixed terms (swap i and j)
-    if (l_opt_orb_eig .and. i <= nparmcsf+nparmj .and. j > nparmcsf+nparmj) then
+    if (l_opt_orb_eig .and. .not. is_param_type_orb (i) .and. is_param_type_orb (j)) then
      ham_lin_energy (i+1,j+1) =  ham_lin_energy (j+1,i+1)
 
 !   diagonal-only approximation for orbital-orbital block
-    elseif (l_opt_orb_orb_diag .and. i > nparmcsf+nparmj .and. j > nparmcsf+nparmj .and. i /= j ) then
+    elseif (l_opt_orb_orb_diag .and. is_param_type_orb (i) .and. is_param_type_orb (j) .and. i /= j ) then
      ham_lin_energy (i+1,j+1) = 0.d0
 
 !   approximate Hamiltonian for orbital-orbital terms
-    elseif ((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. i > nparmcsf+nparmj .and. j > nparmcsf+nparmj) then
+    elseif ((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. is_param_type_orb (i) .and. is_param_type_orb (j)) then
 !     ham_lin_energy (i+1,j+1) = ovlp_lin (i+1,j+1) * (eloc_av + delta_eps (j-nparmcsf-nparmj))
      ham_lin_energy (i+1,j+1) = ovlp_lin (i+1,j+1) * ((eloc_av + delta_eps (j-nparmcsf-nparmj)) + (eloc_av + delta_eps (i-nparmcsf-nparmj)))/2.d0
 
+!   symmetric Hamiltonian for geometry parameters
+    elseif (l_opt_geo .and. (is_param_type_geo (i) .or. is_param_type_geo (j))) then
+     ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
+                               - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
+                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
+                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
+
 !   normal Hamiltoniam
     else
-
-     ham_lin_energy (i+1,j+1) = dpsi_deloc_covar (i, j) + dpsi_dpsi_eloc_av (pair)     &
-                       - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
-                       + dpsi_av (i) * dpsi_av (j) * eloc_av
+     ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
+                               - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
+                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
+                               + dpsi_deloc_covar (i, j)
     endif
 
 !   if (i /= j) then

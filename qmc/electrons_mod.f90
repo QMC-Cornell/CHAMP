@@ -73,11 +73,11 @@ module electrons_mod
   call object_alloc ('coord_elec_wlk', coord_elec_wlk, ndim, nelec, nwalk)
 
   if (index(mode, 'vmc') /= 0) then
-   call object_provide_in_node_by_index (coord_elec_wlk_bld_index, xold_index)
+   call object_provide_by_index (coord_elec_wlk_bld_index, xold_index)
    coord_elec_wlk (:,:,1) = xold (1:ndim, 1:nelec)
 
   elseif (index(mode, 'dmc') /= 0) then
-   call object_provide_in_node_by_index (coord_elec_wlk_bld_index, xoldw_index)
+   call object_provide_by_index (coord_elec_wlk_bld_index, xoldw_index)
    coord_elec_wlk (:,:,:) = xoldw (1:ndim, 1:nelec, 1:nwalk, 1)
 
   else

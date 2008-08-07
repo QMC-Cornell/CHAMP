@@ -52,13 +52,11 @@ module optimization_mod
   real(dp), allocatable   :: delta_csf (:)
   real(dp), allocatable   :: delta_csf_rot (:)
   real(dp), allocatable   :: delta_jas (:)
+  real(dp), allocatable   :: delta_pjas (:)
   real(dp), allocatable   :: delta_coef_ex (:)
   real(dp), allocatable   :: delta_mat_rot_real (:,:)
   real(dp), allocatable   :: delta_exp (:)
-!
-  real(dp), allocatable   :: delta_pjas (:)
-!
-
+  real(dp), allocatable   :: delta_geo (:)
   real(dp), allocatable   :: delta_c_rp (:,:)
   real(dp), allocatable   :: delta_c_rm (:,:)
   real(dp), allocatable   :: delta_c_ip (:,:)
@@ -102,6 +100,14 @@ module optimization_mod
   l_opt = .true.
   l_stab = .true.
   target_state = 0
+  l_opt_jas = .false.
+  l_opt_pjas = .false.
+  l_opt_pjasen = .false.
+  l_opt_pjasee = .false.
+  l_opt_csf = .false.
+  l_opt_orb = .false.
+  l_opt_exp = .false.
+  l_opt_geo = .false.
 
 ! temporary error messages
   if (nopt_iter <= 0) then
@@ -156,6 +162,8 @@ module optimization_mod
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
+   write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function wrt parameters?  (default=false)'
+   write(6,'(a)') ' deriv_bound_value = [real] : value of the bound mentioned above (default=10.d0)'
    write(6,'(a)') 'end'
 
   case ('optimize')
@@ -282,6 +290,13 @@ module optimization_mod
   case ('exp_opt_restrict')
    call get_next_value (l_exp_opt_restrict)
 
+  case ('deriv_bound')
+   call get_next_value (l_deriv_bound)
+
+  case ('deriv_bound_value')
+   call get_next_value (deriv_bound_value)
+   call require ('deriv_bound_value > 1', deriv_bound_value > 1)
+
   case ('end')
    exit
 
@@ -318,26 +333,22 @@ module optimization_mod
 
 ! parameters to optimize
   write(6,'(a,10a10)') ' Requested parameter types: ',parameter_type(:)
-  l_opt_jas = .false.
-  l_opt_csf = .false.
-  l_opt_orb = .false.
-  l_opt_exp = .false.
-  l_opt_pjas = .false.
-  l_opt_geo = .false.
   do param_type_i = 1, parameter_type_nb
    select case(trim(parameter_type(param_type_i)))
    case ('jastrow')
     l_opt_jas = .true.
+   case ('pjasen')
+    l_opt_pjasen = .true.
+    l_opt_pjas = .true.
+   case ('pjasee')
+    l_opt_pjasee = .true.
+    l_opt_pjas = .true.
    case ('csfs')
     l_opt_csf = .true.
    case ('orbitals')
     l_opt_orb = .true.
    case ('exponents')
     l_opt_exp = .true.
-   case ('pjasen')
-    l_opt_pjasen = .true.
-   case ('pjasee')
-    l_opt_pjasee = .true.
    case ('geometry')
     l_opt_geo = .true.
    case default
@@ -345,19 +356,24 @@ module optimization_mod
    end select
   enddo
 
-  if ( l_opt_pjasen .or. l_opt_pjasee) then
-     l_opt_pjas = .true.
-     if (.not. l_opt_pjasen) param_pjasen_nb = 0
-     if (.not. l_opt_pjasee) param_pjasee_nb = 0
-     param_pjas_nb = param_pjasee_nb  + param_pjasen_nb
-  endif
-
-! set numbers of Jastrow and/or CSF parameters to zero if necessary
+! set numbers parameters to zero if not optimized
   nparmj = nparmj_input
   nparmcsf = nparmcsf_input
   if (.not. l_opt_jas) then
     nparmj=0
     call object_modified ('nparmj')
+  endif
+  if (.not. l_opt_pjas) then
+     param_pjas_nb  = 0
+     call object_modified ('param_pjas_nb')
+  endif
+  if (.not. l_opt_pjasen) then
+     param_pjasen_nb  = 0
+     call object_modified ('param_pjasen_nb')
+  endif
+  if (.not. l_opt_pjasee) then
+     param_pjasee_nb  = 0
+     call object_modified ('param_pjasee_nb')
   endif
   if (.not. l_opt_csf) then
     nparmcsf=0
@@ -371,14 +387,11 @@ module optimization_mod
     param_exp_nb  = 0
     call object_modified ('param_exp_nb')
   endif
-  if (.not. l_opt_pjas) then
-     param_pjas_nb  = 0
-     call object_modified ('param_pjas_nb')
-  endif
   if (.not. l_opt_geo) then
     param_geo_nb  = 0
     call object_modified ('param_geo_nb')
   endif
+
 ! check consistency of options
   if (l_opt_ptb) then
    if (l_opt_jas .or. l_opt_csf) then
@@ -433,22 +446,22 @@ module optimization_mod
 ! Print number of parameters to optimized
   call object_provide ('nparmj')
   call object_provide ('nparmcsf')
+  call object_provide ('param_pjas_nb')
   call object_provide ('param_orb_nb')
   call object_provide ('param_exp_nb')
   call object_provide ('param_geo_nb')
   call object_provide ('param_nb')
   write(6,*)
   write(6,'(a,i3)') ' Number of Jastrow parameters:   ', nparmj
+  write(6,'(a,i3)') ' Number of periodic Jastrow parameters: ', param_pjas_nb
   write(6,'(a,i3)') ' Number of CSF parameters:       ', nparmcsf
   write(6,'(a,i3)') ' Number of orbital parameters:   ', param_orb_nb
   write(6,'(a,i3)') ' Number of exponent parameters:  ', param_exp_nb
-  write(6,'(a,i3)') ' Number of periodic jastrow parameters: ', param_pjas_nb
   write(6,'(a,i3)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i3)') ' Total number of parameters:     ', param_nb
   write(6,*)
 
   write(6,'(a)') 'End of optimization menu ---------------------------------------------------------------------------------'
-
 
 ! launch optimization
   if (l_launch_opt) then
@@ -519,9 +532,7 @@ module optimization_mod
   end select
 
 ! Nice printing
-  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent,',param_pjasen_nb, &
-       &  ' pjasen,',param_pjasee_nb,' pjasee and ',param_geo_nb," geometry parameters with ",trim(opt_method)," method:"
-!  write(6,'(a,i5,a,i5,a,i7,a,i5,3a)') 'OPT: optimization of',param_pjasen_nb, ' pjasen and ', param_pjasee_nb, " pjasee parameters"
+  write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj+param_pjas_nb,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent and ',param_geo_nb," geometry parameters with ",trim(opt_method)," method:"
 
 ! Warnings for pertubative method
   if (l_opt_ptb) then
@@ -665,7 +676,7 @@ module optimization_mod
    if (l_opt_lin .or. l_opt_nwt) then
     call object_provide ('deloc_av_abs_max')
     write(6,*)
-    write(6,'(a,f,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise)'
+    write(6,'(a,f,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise except for geometry optimization)'
    endif
 
 !  calculate and print hessian
@@ -979,6 +990,7 @@ module optimization_mod
   integer exponent_negative_nb
   real(dp) parm2min
   integer iparmpjase
+  integer force_i, cent_i, dim_i
 
 ! begin
 
@@ -1049,6 +1061,15 @@ module optimization_mod
       if(ijas == 4 .and. isc <= 9) call cuspexact4(1,iwf)
 
   endif ! l_opt_jas
+
+! Periodic Jastrow  parameters
+  if (l_opt_pjas) then
+     call object_provide ('delta_pjas')
+     do iparmpjase = 1, param_pjas_nb
+        pjas_parms (iparmpjase,iwf)=pjas_parms (iparmpjase,1) + delta_pjas (iparmpjase)
+     enddo
+     call object_modified ('pjas_parms')
+  endif ! l_opt_pjas
 
 ! Exponent parameters
   if (l_opt_exp) then
@@ -1154,17 +1175,25 @@ module optimization_mod
 
   endif ! l_opt_orb
 
-  ! pjase parameters
-  if (l_opt_pjas) then
-     call object_provide ('delta_pjas')
-     do iparmpjase = 1, param_pjas_nb
-        pjas_parms (iparmpjase,iwf)=pjas_parms (iparmpjase,1) + delta_pjas (iparmpjase)
-     enddo
-     call object_modified ('pjas_parms')
-  endif ! l_opt_pjas
+! Geometry parameters
+  if (l_opt_geo) then
 
+   call object_provide ('param_geo_nb')
+   call object_provide ('cent')
+   call object_provide ('delta_geo')
 
+   do force_i = 1, param_geo_nb
+    cent_i = forces_cent (force_i) 
+    dim_i = forces_direct (force_i) 
+    cent (dim_i, cent_i) = cent (dim_i, cent_i) + delta_geo (force_i)
+   enddo
+   call object_modified ('cent')
+ 
+!  recalculating nuclear potential energy
+   call pot_nn(cent,znuc,iwctype,ncent,pecent)
+   call object_modified ('pecent')
 
+  endif ! l_opt_geo
 
 ! check if really correct to call after each update
   call set_scale_dist(ipr,iwf)
@@ -1621,8 +1650,7 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'write_wf'
-  integer orb_i
-  integer bas_i
+  integer orb_i, bas_i, cent_i, dim_i
   integer i, ict, isp
   character(len=30) fmt
 
@@ -1678,6 +1706,22 @@ module optimization_mod
 
   endif ! l_opt_jas
 
+! print pjas parameters
+  if (l_opt_pjas) then
+     if ( l_opt_pjasen) then
+        write(6,'(a)') 'periodic Jastrow parameters  (pjas_en_read(i),i=1,):'
+        write(6,'(1000f10.6)') pjas_parms (1:param_pjasen_nb, iwf)
+        if (.not. inversion) then
+           write(6,'(a,1000f10.6)') "cosine", (pjas_parms (i, iwf), i=1,param_pjasen_nb-1,2)
+           write(6,'(a,1000f10.6)') "sine", (pjas_parms (i+1, iwf), i=1,param_pjasen_nb-1,2)
+        endif
+     endif
+     if (l_opt_pjasee) then
+        write(6,'(a)') 'periodic Jastrow parameters  (pjas_ee_read(i),i=1,):'
+        write(6,'(1000f10.6)') pjas_parms (param_pjasen_nb+1:param_pjas_nb, iwf)
+     endif
+  endif
+
 ! print orbitals coefficients
   if (l_opt_orb .or. (l_opt_exp .and. trim(basis_functions_varied) /= 'normalized')) then
 
@@ -1718,23 +1762,16 @@ module optimization_mod
 # endif
   endif ! l_opt_exp
 
-
-
-  ! print pjas parameters
-  if (l_opt_pjas) then
-     if ( l_opt_pjasen) then
-        write(6,'(a)') 'periodic Jastrow parameters  (pjas_en_read(i),i=1,):'
-        write(6,'(1000f10.6)') pjas_parms (1:param_pjasen_nb, iwf)
-        if (.not. inversion) then
-           write(6,'(a,1000f10.6)') "cosine", (pjas_parms (i, iwf), i=1,param_pjasen_nb-1,2)
-           write(6,'(a,1000f10.6)') "sine", (pjas_parms (i+1, iwf), i=1,param_pjasen_nb-1,2)
-        endif
-     endif
-     if (l_opt_pjasee) then
-        write(6,'(a)') 'periodic Jastrow parameters  (pjas_ee_read(i),i=1,):'
-        write(6,'(1000f10.6)') pjas_parms (param_pjasen_nb+1:param_pjas_nb, iwf)
-     endif
-  endif
+! print geometry
+  if (l_opt_geo) then
+   call object_provide ('ncent')
+   call object_provide ('ndim')
+   call object_provide ('cent')
+   write(6,'(a)') 'Geometry:'
+   do cent_i = 1, ncent
+    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent (dim_i, cent_i), dim_i = 1, ndim)
+   enddo ! cent_i
+  endif ! l_opt_geo
 
   write(6,*)
 
@@ -1753,8 +1790,7 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'write_wf_new'
-  integer orb_i
-  integer bas_i
+  integer orb_i, bas_i, cent_i, dim_i
   integer i, ict, isp
   character(len=30) fmt
 
@@ -1850,6 +1886,18 @@ module optimization_mod
 # endif
   endif ! l_opt_exp
 
+! print geometry
+  if (l_opt_geo) then
+   call object_provide ('ncent')
+   call object_provide ('ndim')
+   call object_provide ('cent')
+   write(6,'(a)') 'Geometry:'
+   do cent_i = 1, ncent
+    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent (dim_i, cent_i), dim_i = 1, ndim)
+   enddo ! cent_i
+  endif ! l_opt_geo
+
+
   write(6,*)
 
   end subroutine write_wf_new
@@ -1866,8 +1914,7 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'write_wf_best'
-  integer orb_i
-  integer bas_i
+  integer orb_i, bas_i, cent_i, dim_i
   integer i, ict, isp
   character(len=30) fmt
 
@@ -1963,6 +2010,17 @@ module optimization_mod
 # endif
   endif ! l_opt_exp
 
+! print geometry
+  if (l_opt_geo) then
+   call object_provide ('ncent')
+   call object_provide ('ndim')
+   call object_provide ('cent')
+   write(6,'(a)') 'Geometry:'
+   do cent_i = 1, ncent
+    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent (dim_i, cent_i), dim_i = 1, ndim)
+   enddo ! cent_i
+  endif ! l_opt_geo
+
   write(6,*)
 
   end subroutine write_wf_best
@@ -1991,9 +2049,10 @@ module optimization_mod
    call object_create ('delta_csf_norm')
    call object_create ('delta_jas')
    call object_create ('delta_jas_norm')
+   call object_create ('delta_pjas')
    call object_create ('delta_coef_ex')
    call object_create ('delta_exp')
-   call object_create ('delta_pjas') !WAS
+   call object_create ('delta_geo')
 
    call object_needed ('param_nb')
 
@@ -2043,6 +2102,13 @@ module optimization_mod
    delta_jas_norm = dsqrt(dot_product(delta_jas,delta_jas)/nparmj)
   endif
 
+  if (l_opt_pjas) then
+     call object_alloc ('delta_pjas', delta_pjas, param_pjas_nb)
+     delta_pjas (:)= delta_param (shift+1: shift+param_pjas_nb)
+     shift = shift + param_pjas_nb
+     write(6,'(a,600f12.7)') 'Periodic Jastrow parameters variations=', delta_pjas (:)
+  endif
+
   if (l_opt_exp) then
    call object_alloc ('delta_exp', delta_exp, param_exp_nb)
    delta_exp (:)= delta_param (shift+1: shift+param_exp_nb)
@@ -2057,11 +2123,11 @@ module optimization_mod
    write(6,'(a,600f12.7)') 'Orbital rotations parameters variations=', delta_coef_ex (:)
   endif
 
-  if (l_opt_pjas) then
-     call object_alloc ('delta_pjas', delta_pjas, param_pjas_nb)
-     delta_pjas (:)= delta_param (shift+1: shift+param_pjas_nb)
-     shift = shift + param_pjas_nb
-     write(6,'(a,600f12.7)') 'pjas  parameters variations=', delta_pjas (:)
+  if (l_opt_geo) then
+   call object_alloc ('delta_geo', delta_geo, param_geo_nb)
+   delta_geo (:)= delta_param (shift+1: shift+param_geo_nb)
+   shift = shift + param_geo_nb
+   write(6,'(a,600f12.7)') 'Geometry parameters variations=', delta_geo (:)
   endif
 
  end subroutine delta_param_bld

@@ -40,12 +40,15 @@ module indexes_mod
   integer     :: dpsi_csf_index
   integer     :: dpsi_jas_index
   integer     :: dpsi_orb_index
+  integer     :: dpsi_geo_index
   integer     :: dpsi_csf_av_index
   integer     :: dpsi_jas_av_index
   integer     :: dpsi_orb_av_index
   integer     :: deloc_csf_index
   integer     :: deloc_jas_index
   integer     :: deloc_orb_index
+  integer     :: deloc_geo_index
+  integer     :: deloc_av_index
   integer     :: eloc_pot_index
   integer     :: eloc_pot_loc_index
   integer     :: eloc_pot_nloc_ex_index
@@ -141,6 +144,7 @@ module indexes_mod
   integer     :: coef_orb_on_ortho_basis_index
   integer     :: psid_ex_in_x_index
   integer     :: add_diag_mult_exp_index
+  integer     :: is_param_type_geo_index
 
 ! indexes of nodes
   integer     :: dpsi_bld_index
@@ -177,6 +181,7 @@ module indexes_mod
   integer     :: dorb_dexp_bld_index
   integer     :: grd_dorb_dexp_bld_index
   integer     :: lap_dorb_dexp_bld_index
+  integer     :: gradient_energy_bld_index
   !! pjasen
   integer    :: param_pjasen_nb_index
   integer    :: grad_dpsi_pjasen_index

@@ -153,7 +153,7 @@ module catalog_routines_mod
 ! general optimization method
   call catalog_one_node ('delta_param_bld', delta_param_bld)
   call catalog_one_node ('gradient_bld', gradient_bld, gradient_bld_index)
-  call catalog_one_node ('gradient_energy_bld', gradient_energy_bld)
+  call catalog_one_node ('gradient_energy_bld', gradient_energy_bld, gradient_energy_bld_index)
   call catalog_one_node ('gradient_energy_blk_bld', gradient_energy_blk_bld)
   call catalog_one_node ('gradient_variance_bld', gradient_variance_bld)
   call catalog_one_node ('gradient_norm_bld', gradient_norm_bld)
@@ -349,6 +349,11 @@ module catalog_routines_mod
   call catalog_one_node ('deloc_lnexp_bld', deloc_lnexp_bld)
   call catalog_one_node ('slater_mat_exp_trans_inv_bld', slater_mat_exp_trans_inv_bld)
 
+! geometry derivatives
+  call catalog_one_node ('param_geo_nb_bld', param_geo_nb_bld)
+  call catalog_one_node ('dpsi_geo_bld', dpsi_geo_bld)
+  call catalog_one_node ('deloc_geo_bld', deloc_geo_bld)
+
 ! jastrow
   call catalog_one_node ('fen_bld', fen_bld)
   call catalog_one_node ('feen_bld', feen_bld)
@@ -448,6 +453,8 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_deriv_bld', forces_zv_deriv_bld)
   call catalog_one_node ('forces_zv_deriv_sq_bld', forces_zv_deriv_sq_bld)
   call catalog_one_node ('forces_zv_deriv_var_bld', forces_zv_deriv_var_bld)
+  call catalog_one_node ('forces_zv_deriv_pulay_av_bld', forces_zv_deriv_pulay_av_bld)
+  call catalog_one_node ('forces_zv_deriv_pulay_av_var_bld', forces_zv_deriv_pulay_av_var_bld)
 
 ! forces pulay
   call catalog_one_node ('force_to_bas_bld', force_to_bas_bld)

@@ -68,6 +68,7 @@ module catalog_objects_mod
   call catalog_one_object ('deloc_jas', deloc_jas_index)
   call catalog_one_object ('d2eloc_jas', d2eloc_jas_index)
   call catalog_one_object ('deloc_orb', deloc_orb_index)
+  call catalog_one_object ('deloc_av', deloc_av_index)
   call catalog_one_object ('eloc_pot', eloc_pot_index)
   call catalog_one_object ('eloc_pot_loc', eloc_pot_loc_index)
   call catalog_one_object ('eloc_pot_nloc_ex', eloc_pot_nloc_ex_index)

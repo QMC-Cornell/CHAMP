@@ -16,12 +16,13 @@
    character(len=max_string_len), allocatable  :: forces_list (:)
 # endif
   logical                                     :: l_forces_bare = .false.
-  logical                                     :: l_forces_zv = .false.
+  logical                                     :: l_forces_zv = .true.
   logical                                     :: l_forces_zvzb = .false.
   logical                                     :: l_forces_zv_linear = .false.
   logical                                     :: l_forces_zv_deriv = .false.
   logical                                     :: l_forces_pulay = .false.
-  logical                                     :: l_forces_zv_pulay = .true.
+  logical                                     :: l_forces_zv_pulay = .false.
+  logical                                     :: l_forces_zv_deriv_pulay = .false.
   real(dp), allocatable                       :: forces_nn (:)
   real(dp), allocatable                       :: forces_bare (:)
   real(dp), allocatable                       :: forces_bare_av (:)
@@ -59,6 +60,7 @@
   real(dp), allocatable                       :: forces_zv_deriv (:)
   real(dp), allocatable                       :: forces_zv_deriv_av (:)
   real(dp), allocatable                       :: forces_zv_deriv_var (:)
+  real(dp), allocatable                       :: forces_zv_deriv_av_var (:)
   real(dp), allocatable                       :: forces_zv_deriv_av_err (:)
   real(dp), allocatable                       :: forces_zv_deriv_sq (:)
   real(dp), allocatable                       :: forces_zv_deriv_sq_av (:)
@@ -69,6 +71,11 @@
   real(dp), allocatable                       :: forces_zv_pulay_av (:)
   real(dp), allocatable                       :: forces_zv_pulay_av_var (:)
   real(dp), allocatable                       :: forces_zv_pulay_av_err (:)
+  real(dp), allocatable                       :: forces_zv_av_forces_pulay_av_covar (:)
+  real(dp), allocatable                       :: forces_zv_deriv_pulay_av (:)
+  real(dp), allocatable                       :: forces_zv_deriv_pulay_av_var (:)
+  real(dp), allocatable                       :: forces_zv_deriv_pulay_av_err (:)
+  real(dp), allocatable                       :: forces_zv_deriv_av_forces_pulay_av_covar (:)
 
   logical                                     :: l_eloc_av_fixed = .false.
   logical                                     :: l_forces_q_av_fixed = .false.
@@ -112,12 +119,13 @@
     write(6,'(a)') ' components 1x 1y 1z 2x 2y 2z end'
     write(6,'(a)') ' estimator = [string] estimator to use:'
     write(6,'(a)') '           = bare : bare Hellmann-Feynamn estimator'
-    write(6,'(a)') '           = zv : simplest zero-variance estimator'
-    write(6,'(a)') '           = zvzb : simplest zero-variance zero-bias estimator'
+    write(6,'(a)') '           = zv : simplest zero-variance estimator (default)'
     write(6,'(a)') '           = zv_deriv : zero-variance estimator using wave function derivatives wrt nuclear coordinates'
     write(6,'(a)') '           = zv_linear : zero-variance estimator using wave function derivatives wrt parameters'
-    write(6,'(a)') '           = zv_pulay : simplest zero-variance + Pulay estimator (default)'
-    write(6,'(a)') '           = pulay : Pulay contribution only'
+    write(6,'(a)') '           = zvzb : simplest zero-variance zero-bias estimator'
+    write(6,'(a)') '           = zv_pulay : simplest zero-variance + Pulay estimator'
+    write(6,'(a)') '           = zv_deriv_pulay : zero-variance using wave function derivatives wrt nuclear coordinates + Pulay estimator'
+    write(6,'(a)') '           = pulay : Pulay contribution to the force'
     write(6,'(a)') ' eloc_av_fixed  = [real] fixed value of average of local energy to use in ZB term'
     write(6,'(a)') ' forces_q_av_fixed  list of reals end: fixed value of average of Q to use in ZB term'
     write(6,'(a)') 'end'
@@ -134,13 +142,27 @@
    case ('estimator')
     call get_next_value (estimator)
     select case (estimator)
-     case ('bare');      l_forces_bare = .true.
-     case ('zv');        l_forces_zv = .true.
-     case ('zvzb');      l_forces_zvzb = .true.
-     case ('zv_linear'); l_forces_zv_linear = .true.
-     case ('zv_deriv');  l_forces_zv_deriv = .true.
-     case ('pulay');     l_forces_pulay = .true.
-     case ('zv_pulay');  l_forces_zv_pulay = .true.
+     case ('bare')
+       l_forces_bare = .true.
+     case ('zv')
+       l_forces_zv = .true.
+     case ('zv_deriv')
+       l_forces_zv_deriv = .true.
+     case ('zv_linear')
+       l_forces_zv_linear = .true.
+       l_forces_zv = .true.
+     case ('zvzb')
+       l_forces_zvzb = .true.
+       l_forces_zv   = .true.
+     case ('zv_pulay')
+       l_forces_zv_pulay = .true.
+       l_forces_pulay = .true.
+     case ('zv_deriv_pulay')
+       l_forces_zv_deriv_pulay = .true.
+       l_forces_zv_deriv = .true.
+       l_forces_pulay = .true.
+     case ('pulay')
+       l_forces_pulay = .true.
      case default; call die (lhere, 'unknown keyword >'+trim(estimator)+'<.')
     end select
 
@@ -192,45 +214,35 @@
   if (l_forces_zv) then
    write(6,'(a)') ' Forces will be calculated with simplest zero-variance estimator.'
   endif
-  if (l_forces_zvzb) then
-   write(6,'(a)') ' Forces will be calculated with simplest zero-variance zero-bias estimator.'
-  endif
   if (l_forces_zv_deriv) then
    write(6,'(a)') ' Forces will be calculated with zero-variance estimator using wave function derivatives wrt nuclear coordinates.'
   endif
   if (l_forces_zv_linear) then
    write(6,'(a)') ' Forces will be calculated with zero-variance estimator using wave function derivatives wrt parameters.'
   endif
+  if (l_forces_zvzb) then
+   write(6,'(a)') ' Forces will be calculated with simplest zero-variance zero-bias estimator.'
+  endif
   if (l_forces_pulay) then
-   write(6,'(a)') ' Pulay correction will be calculated.'
+   write(6,'(a)') ' Pulay contribution to forces will be calculated.'
+  endif
+  if (l_forces_zv_pulay) then
+   write(6,'(a)') ' Forces will be calculated with zero-variance + Pulay estimator.'
+  endif
+  if (l_forces_zv_deriv_pulay) then
+   write(6,'(a)') ' Forces will be calculated with zero-variance using wave function derivatives wrt nuclear coordinates + Pulay estimator.'
   endif
 
 ! request averages and statistical errors
-  if (l_forces_bare .or. l_forces_zv_deriv) then
+  if (l_forces_bare) then
    call object_average_request ('forces_bare_av')
    call object_error_request ('forces_bare_av_err')
   endif
 
-  if (l_forces_zv .or. l_forces_zvzb .or. l_forces_zv_linear .or. l_forces_zv_pulay) then
+  if (l_forces_zv) then
    call object_average_request ('forces_zv_av')
    call object_error_request ('forces_zv_av_err')
    call object_average_request ('forces_zv_sq_av')
-  endif
-
-  if (l_forces_zvzb) then
-    call object_average_request ('forces_q_av')
-    call object_average_request ('forces_q_eloc_av')
-    call object_variance_request ('forces_q_eloc_av_var')
- 
-    call object_variance_request ('forces_q_av_var')
-    call object_error_request ('forces_zvzb_av_err')
- 
-    call object_covariance_request ('forces_zv_av_eloc_av_covar')
-    call object_covariance_request ('forces_zv_av_q_eloc_av_covar')
-    call object_covariance_request ('forces_zv_av_q_av_covar')
-    call object_covariance_request ('forces_q_eloc_av_eloc_av_covar')
-    call object_covariance_request ('forces_q_eloc_av_q_av_covar')
-    call object_covariance_request ('forces_q_av_eloc_av_covar')
   endif
 
   if (l_forces_zv_deriv) then
@@ -248,11 +260,24 @@
    call object_error_request ('forces_zv_linear_av_err')
   endif
 
-  if (l_forces_pulay .or. l_forces_zv_pulay) then
+  if (l_forces_zvzb) then
+    call object_average_request ('forces_q_av')
+    call object_average_request ('forces_q_eloc_av')
+    call object_variance_request ('forces_q_eloc_av_var')
+    call object_variance_request ('forces_q_av_var')
+    call object_error_request ('forces_zvzb_av_err')
+    call object_covariance_request ('forces_zv_av_eloc_av_covar')
+    call object_covariance_request ('forces_zv_av_q_eloc_av_covar')
+    call object_covariance_request ('forces_zv_av_q_av_covar')
+    call object_covariance_request ('forces_q_eloc_av_eloc_av_covar')
+    call object_covariance_request ('forces_q_eloc_av_q_av_covar')
+    call object_covariance_request ('forces_q_av_eloc_av_covar')
+  endif
+
+  if (l_forces_pulay) then
    call object_average_request ('dpsi_rn_av')
    call object_average_request ('dpsi_rn_eloc_av')
    call object_error_request ('forces_pulay_av_err')
-
    call object_variance_request ('dpsi_rn_av_var')
    call object_variance_request ('dpsi_rn_eloc_av_var')
    call object_covariance_request ('dpsi_rn_eloc_av_dpsi_rn_av_covar')
@@ -263,6 +288,11 @@
   if (l_forces_zv_pulay) then
    call object_error_request ('forces_zv_pulay_av_err')
    call object_covariance_request ('forces_zv_av_forces_pulay_av_covar')
+  endif
+
+  if (l_forces_zv_deriv_pulay) then
+   call object_error_request ('forces_zv_deriv_pulay_av_err')
+   call object_covariance_request ('forces_zv_deriv_av_forces_pulay_av_covar')
   endif
 
   call routine_write_final_request ('forces_wrt')
@@ -402,6 +432,7 @@
    call object_average_define ('forces_zv', 'forces_zv_av')
    call object_variance_define ('forces_zv_av', 'forces_zv_av_var')
    call object_error_define ('forces_zv_av', 'forces_zv_av_err')
+   call object_covariance_define ('forces_zv_av','forces_pulay_av','forces_zv_av_forces_pulay_av_covar')
 
    call object_needed ('forces_nb')
    call object_needed ('ndim')
@@ -424,6 +455,7 @@
   call object_alloc ('forces_zv_av_eloc_av_covar', forces_zv_av_eloc_av_covar, forces_nb)
   call object_alloc ('forces_zv_av_q_eloc_av_covar', forces_zv_av_q_eloc_av_covar, forces_nb)
   call object_alloc ('forces_zv_av_q_av_covar', forces_zv_av_q_av_covar, forces_nb)
+  call object_alloc ('forces_zv_av_forces_pulay_av_covar', forces_zv_av_forces_pulay_av_covar, forces_nb)
 
   do force_i = 1, forces_nb
    cent_i = forces_cent (force_i)
@@ -524,8 +556,10 @@
   if (header_exe) then
 
    call object_create ('forces_zv_deriv')
+   call object_variance_define ('forces_zv_deriv_av', 'forces_zv_deriv_av_var')
    call object_average_define ('forces_zv_deriv', 'forces_zv_deriv_av')
    call object_error_define ('forces_zv_deriv_av', 'forces_zv_deriv_av_err')
+   call object_covariance_define ('forces_zv_deriv_av','forces_pulay_av','forces_zv_deriv_av_forces_pulay_av_covar')
 
    call object_needed ('forces_nb')
 !   call object_needed ('forces_bare')
@@ -538,7 +572,9 @@
 ! allocations
   call object_alloc ('forces_zv_deriv', forces_zv_deriv, forces_nb)
   call object_alloc ('forces_zv_deriv_av', forces_zv_deriv_av, forces_nb)
+  call object_alloc ('forces_zv_deriv_av_var', forces_zv_deriv_av_var, forces_nb)
   call object_alloc ('forces_zv_deriv_av_err', forces_zv_deriv_av_err, forces_nb)
+  call object_alloc ('forces_zv_deriv_av_forces_pulay_av_covar', forces_zv_deriv_av_forces_pulay_av_covar, forces_nb)
 
 !  forces_zv_deriv (:) = forces_bare (:) - deloc_rn_num (:)
 ! deloc_rn_num includes forces_bare !
@@ -608,6 +644,71 @@
   forces_zv_deriv_var (:) = forces_zv_deriv_sq_av (:) - forces_zv_deriv_av (:)**2
 
   end subroutine forces_zv_deriv_var_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_pulay_av_bld
+! ------------------------------------------------------------------------------
+! Description   : forces_zv_deriv_av + forces_pulay_av
+!
+! Created       : J. Toulouse, 06 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_pulay_av')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_zv_deriv_av')
+   call object_needed ('forces_pulay_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_pulay_av', forces_zv_deriv_pulay_av, forces_nb)
+
+  forces_zv_deriv_pulay_av (:) = forces_zv_deriv_av (:) + forces_pulay_av (:)
+
+  end subroutine forces_zv_deriv_pulay_av_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_pulay_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of forces_zv_deriv_pulay_av
+!
+! Created       : J. Toulouse, 06 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_pulay_av_var')
+   call object_error_define_from_variance ('forces_zv_deriv_pulay_av_var', 'forces_zv_deriv_pulay_av_err')
+
+   call object_needed ('forces_nb')
+   call object_needed ('forces_zv_deriv_av_var')
+   call object_needed ('forces_pulay_av_var')
+   call object_needed ('forces_zv_deriv_av_forces_pulay_av_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_pulay_av_var', forces_zv_deriv_pulay_av_var, forces_nb)
+  call object_alloc ('forces_zv_deriv_pulay_av_err', forces_zv_deriv_pulay_av_err, forces_nb)
+
+  forces_zv_deriv_pulay_av_var (:) = forces_zv_deriv_av_var (:) + forces_pulay_av_var (:) + 2.d0 * forces_zv_deriv_av_forces_pulay_av_covar (:)
+
+  end subroutine forces_zv_deriv_pulay_av_var_bld
 
 ! ==============================================================================
   subroutine forces_q_bld
@@ -1311,18 +1412,6 @@
    enddo
   endif
 
-  if (l_forces_zv_pulay) then
-   write(6,*)
-   write(6,'(a)') 'Total force with simplest zero-variance + pulay estimator:'
-   call object_provide ('forces_nb')
-   call object_provide ('forces_list')
-   call object_provide ('forces_zv_pulay_av')
-   call object_provide ('forces_zv_pulay_av_err')
-   do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
-   enddo
-  endif
-
   if (l_forces_zv_linear) then
    write(6,*)
    write(6,'(a)') 'Total force with zero-variance estimator using wave function derivatives wrt parameters:'
@@ -1333,6 +1422,18 @@
    call object_provide ('forces_zv_linear_var')
    do force_i = 1, forces_nb
     write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
+   enddo
+  endif
+
+  if (l_forces_pulay) then
+   write(6,*)
+   write(6,'(a)') 'Pulay contribution to force:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_pulay_av')
+   call object_provide ('forces_pulay_av_err')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
    enddo
   endif
 
@@ -1348,16 +1449,27 @@
    enddo
   endif
 
-
-  if (l_forces_pulay) then
+  if (l_forces_zv_pulay) then
    write(6,*)
-   write(6,'(a)') 'Pulay contribution to force:'
+   write(6,'(a)') 'Total force with simplest zero-variance estimator + Pulay contribution:'
    call object_provide ('forces_nb')
    call object_provide ('forces_list')
-   call object_provide ('forces_pulay_av')
-   call object_provide ('forces_pulay_av_err')
+   call object_provide ('forces_zv_pulay_av')
+   call object_provide ('forces_zv_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
+   enddo
+  endif
+
+  if (l_forces_zv_deriv_pulay) then
+   write(6,*)
+   write(6,'(a)') 'Total force with zero-variance estimator using wave function derivatives wrt nuclear coordinates + Pulay contribution:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_zv_deriv_pulay_av')
+   call object_provide ('forces_zv_deriv_pulay_av_err')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_pulay_av (force_i), ' +-', forces_zv_deriv_pulay_av_err (force_i)
    enddo
   endif
 
