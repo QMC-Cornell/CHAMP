@@ -1,8 +1,8 @@
-all: lib lib2 quench
-lib:
+all: lib_dir lib2_dir quench
+lib_dir:
 	cd lib ; $(MAKE)
 
-lib2:
+lib2_dir:
 	cd lib2 ; $(MAKE)
 
 quench:
