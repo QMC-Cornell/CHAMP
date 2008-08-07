@@ -255,7 +255,7 @@ deriv_csf_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o \
 deriv_exp_mod.o: all_tools_mod.o basis_mod.o csfs_mod.o deriv_orb_mod.o \
 	determinants_mod.o electrons_mod.o eloc_mod.o orbitals_mod.o \
 	psi_mod.o commons.h
-deriv_geo_mod.o: all_tools_mod.o commons.h
+deriv_geo_mod.o: all_tools_mod.o forces_pulay_mod.o commons.h
 deriv_jas_mod.o: all_tools_mod.o montecarlo_mod.o commons.h
 deriv_mod.o: all_tools_mod.o deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o \
 	deriv_jas_mod.o deriv_orb_mod.o periodic_jastrow_mod.o commons.h
