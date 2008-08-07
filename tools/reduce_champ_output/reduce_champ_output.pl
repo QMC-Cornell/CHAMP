@@ -47,7 +47,7 @@ foreach $file (@allfiles){
 
 # detect 'BEGINNING OF'
   if ($between_beginning_and_end == 0){
-   if (/BEGINNING OF/ || /Beginning of/){
+   if (/BEGINNING OF/ || /Beginning of equilibration/){
     $between_beginning_and_end = 1;
     $line_beginning_index = $i;
    }
