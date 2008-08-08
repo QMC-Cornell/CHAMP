@@ -23,6 +23,7 @@ module catalog_routines_mod
   use nuclei_mod
   use forces_mod
   use dipole_moment_mod
+  use backflow_mod, only: xi_een_phi_bld, phi_all_elec_bld, phi_pseudo_bld, scaled_dist_een_ee_wlk_bld,  scaled_dist_een_en_wlk_bld, xi_ee_bld, eta_all_elec_bld, eta_pseudo_bld, asymp_eta_bld, c_param_eta_bld, scaled_dist_ee_wlk_bld, xi_en_bld, mu_all_elec_bld, mu_pseudo_bld, asymp_mu_pseudo_bld, scaled_dist_en_wlk_bld,  asymp_scaled_dist_two_body_bld,   d_param_mu_all_elec_bld, d_param_mu_pseudo_bld, smooth_cutoff_g_bld !fp
 
   contains
 
@@ -455,6 +456,29 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_deriv_var_bld', forces_zv_deriv_var_bld)
   call catalog_one_node ('forces_zv_deriv_pulay_av_bld', forces_zv_deriv_pulay_av_bld)
   call catalog_one_node ('forces_zv_deriv_pulay_av_var_bld', forces_zv_deriv_pulay_av_var_bld)
+
+!backflow fp
+  call catalog_one_node('xi_een_phi_bld', xi_een_phi_bld) !fp
+  call catalog_one_node('phi_all_elec_bld', phi_all_elec_bld) !fp 
+  call catalog_one_node('phi_pseudo_bld', phi_pseudo_bld) !fp 
+  call catalog_one_node('scaled_dist_een_ee_wlk_bld', scaled_dist_een_ee_wlk_bld) !fp
+  call catalog_one_node('scaled_dist_een_en_wlk_bld', scaled_dist_een_en_wlk_bld) !fp
+  call catalog_one_node('xi_ee_bld', xi_ee_bld) !fp
+  call catalog_one_node('eta_pseudo_bld', eta_pseudo_bld) !fp
+  call catalog_one_node('eta_all_elec_bld', eta_all_elec_bld) !fp
+  call catalog_one_node('asymp_eta_bld', asymp_eta_bld) !fp
+  call catalog_one_node('scaled_dist_ee_wlk_bld', scaled_dist_ee_wlk_bld) !fp
+  call catalog_one_node('c_param_eta_bld', c_param_eta_bld) !fp
+  call catalog_one_node('xi_en_bld', xi_en_bld) !fp
+  call catalog_one_node('mu_pseudo_bld', mu_pseudo_bld) !fp
+  call catalog_one_node('mu_all_elec_bld', mu_all_elec_bld) !fp
+  call catalog_one_node('asymp_mu_pseudo_bld', asymp_mu_pseudo_bld) !fp
+  call catalog_one_node('scaled_dist_en_wlk_bld', scaled_dist_en_wlk_bld) !fp
+  call catalog_one_node('asymp_scaled_dist_two_body_bld', asymp_scaled_dist_two_body_bld) !fp
+  call catalog_one_node('d_param_mu_pseudo_bld', d_param_mu_pseudo_bld) !fp
+  call catalog_one_node('d_param_mu_all_elec_bld',  d_param_mu_all_elec_bld) !fp
+  call catalog_one_node('smooth_cutoff_g_bld',smooth_cutoff_g_bld) !fp
+
 
 ! forces pulay
   call catalog_one_node ('force_to_bas_bld', force_to_bas_bld)

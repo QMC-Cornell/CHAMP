@@ -3761,7 +3761,7 @@ module basic_tools_mod
   end subroutine get_date
 
 ! ================================================================================
-  subroutine require (string, bool)
+  subroutine require ( lhere, string, bool)
 ! --------------------------------------------------------------------------------
 ! Description :  die if bool = false
 !
@@ -3770,14 +3770,12 @@ module basic_tools_mod
   implicit none
 
 ! input
+  character(len=*), intent(in) :: lhere !fp
   character(len=*), intent(in) :: string
   logical, intent(in)          :: bool
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'require'
-
   if (.not. bool) then
-    write(6,'(6a)') trim(lhere),': in routine ',trim(here),', condition ', trim(string), ' is false.'
+    write(6,'(6a)') 'require: in routine ',trim(lhere),', condition ', trim(string), ' is false.' !fp
     call die (lhere)
   endif
 

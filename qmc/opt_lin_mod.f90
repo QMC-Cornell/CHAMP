@@ -109,7 +109,7 @@ module opt_lin_mod
 
   case ('target_state')
    call get_next_value (target_state)
-   call require ('target_state >= 0', target_state >= 0)
+   call require (lhere, 'target_state >= 0', target_state >= 0) !fp
 
   case ('end')
    exit

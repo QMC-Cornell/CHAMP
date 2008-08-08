@@ -1154,6 +1154,7 @@ c Note: Fock terms yet to be put in ijas=4,5,6.
       endif
 
       call object_modified ('scalek')
+      call object_modified('isc')          !fp
       call object_modified ('norda') !JT
       call object_modified ('nordb') !JT
       call object_modified ('nordc') !JT

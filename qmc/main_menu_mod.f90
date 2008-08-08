@@ -17,6 +17,7 @@ module main_menu_mod
   use testing_mod
   use dmc_mod
   use debug_mod
+  use backflow_mod, only: backflow_menu !fp
 
   logical                             :: use_parser = .false.
 
@@ -72,6 +73,7 @@ module main_menu_mod
    write(6,'(a)') ' forces    ... end: menu for calculation of forces'
    write(6,'(a)') ' debug ... end: menu for debugging'
    write(6,'(a)') ' statistics ... end: menu for printing timing statistics'
+   write(6,'(a)') ' backflow ... end: menu for backflow transformation' !fp
    write(6,*)
 
   case ('test')              ; call testing
@@ -86,6 +88,7 @@ module main_menu_mod
   case ('walkers')           ; call walkers_menu
   case ('periodic_jastrow')  ; call periodic_jastrow_menu
   case ('optimization')      ; call optimization_menu
+  case ('backflow')          ; call backflow_menu      !fp
   case ('print')             ; call print_menu
   case ('average')           ; call average_menu
   case ('dipole_moment')     ; call dipole_moment_menu

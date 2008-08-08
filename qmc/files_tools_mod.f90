@@ -106,7 +106,7 @@ module files_tools_mod
 ! checkings
 !  call file_exist_or_die (filename)
   call file_not_opened_or_die (filename)
-  call require ('file_unit > 0', file_unit > 0)
+  call require (lhere, 'file_unit > 0', file_unit > 0) !fp
 
 ! open file
   open (file=trim(filename), unit=file_unit, iostat=iostat)

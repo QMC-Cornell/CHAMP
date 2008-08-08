@@ -208,6 +208,7 @@ module deriv_exp_mod
 
 ! local
   integer bas_i, orb_i
+  character(len=max_string_len_rout), save :: lhere = 'exp_opt_lab_bld' !fp
 
 ! header
   if (header_exe) then
@@ -274,7 +275,7 @@ module deriv_exp_mod
   enddo ! bas_i
 
 ! check
-  call require ('exp_opt_lab_nb <= nbasis', exp_opt_lab_nb <= nbasis)
+  call require (lhere, 'exp_opt_lab_nb <= nbasis', exp_opt_lab_nb <= nbasis) !fp
 
   end subroutine exp_opt_lab_bld
 

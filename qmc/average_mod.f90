@@ -2546,7 +2546,7 @@ module average_mod
   if (step_iterations_nb == 1) then
 
 !   initialization
-    call require ('objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
+    call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0) !fp
     call alloc ('objects(object_ind)%sum_double_1', objects(object_ind)%sum_double_1, objects(object_ind)%dimensions(1))
     objects(object_ind)%sum_double_1 (:) = 0.d0
 
@@ -2582,8 +2582,8 @@ module average_mod
   if (step_iterations_nb == 1) then
 
 !   initialization
-    call require ('objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
-    call require ('objects(object_ind)%dimensions(2) > 0', objects(object_ind)%dimensions(2) > 0)
+    call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0) !fp
+    call require (lhere, 'objects(object_ind)%dimensions(2) > 0', objects(object_ind)%dimensions(2) > 0) !fp
     call alloc ('objects(object_ind)%sum_double_2', objects(object_ind)%sum_double_2, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
     objects(object_ind)%sum_double_2 (:,:) = 0.d0
 

@@ -315,7 +315,7 @@ module deriv_mod
    enddo ! param_i
   endif
 
-!  call require ('shift == param_nb', shift == param_nb)
+!  call require (lhere, 'shift == param_nb', shift == param_nb) !fp
 
   end subroutine dpsi_bld
 
@@ -482,7 +482,7 @@ module deriv_mod
    shift = shift + param_geo_nb
   endif
 
-!  call require ('shift == param_nb', shift == param_nb)
+!  call require (lhere, 'shift == param_nb', shift == param_nb) !fp
 
 ! applying bounds to deloc for non-Jastrow parameters
   if (l_deriv_bound) then

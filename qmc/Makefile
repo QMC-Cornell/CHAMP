@@ -7,7 +7,7 @@ include makefile.inc
 PROG =	$(CHAMP_EXE)
 
 SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
-	basic_tools_mod.f90 basis_mod.f90 bwfdet_mod.f90 \
+	backflow_mod.f90 basic_tools_mod.f90 basis_mod.f90 bwfdet_mod.f90 \
 	catalog_averages_mod.f90 catalog_objects_mod.f90 \
 	catalog_routines_mod.f90 champ.f90 constants_mod.f90 control_mod.f90 \
 	crystal_symmetries_mod.f90 csfs_mod.f90 cslater_cf_mod.f90 \
@@ -90,42 +90,42 @@ SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.f \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f
 
-OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o basic_tools_mod.o \
-	basis_mod.o bwfdet_mod.o catalog_averages_mod.o catalog_objects_mod.o \
-	catalog_routines_mod.o champ.o constants_mod.o control_mod.o \
-	crystal_symmetries_mod.o csfs_mod.o cslater_cf_mod.o cslater_mod.o \
-	cslaterw_mod.o debug_mod.o density_mod.o deriv_csf_mod.o \
-	deriv_exp_mod.o deriv_geo_mod.o deriv_jas_mod.o deriv_mod.o \
-	deriv_orb_mod.o determinants_mod.o dipole_moment_mod.o dmc_mod.o \
-	electrons_mod.o eloc_mod.o extracule_mod.o f2kcli.o files_tools_mod.o \
-	fitdet_mod.o forces_mod.o forces_pulay_mod.o grid_mod.o indexes_mod.o \
-	initialization_mod.o intracule_mod.o jastrow_mod.o main_menu_mod.o \
-	matrix_tools_mod.o montecarlo_mod.o mpi_mod.o nodes_mod.o \
-	nuclei_mod.o objects_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o \
-	optimization_mod.o orbitals_mod.o parser_tools_mod.o \
-	periodic_jastrow_een.o periodic_jastrow_mod.o pjas_interface.o \
-	pjas_setup_mod.o pjasee_mod.o pjasen_mod.o print_mod.o psi_mod.o \
-	restart_mod.o routines_mod.o strings_tools_mod.o testing_mod.o \
-	types_mod.o variables_mod.o vmc_mod.o walkers_mod.o write_mod.o \
-	amoeba.o amotry.o choldc.o cholsl.o ei.o ei2.o erf.o expint.o \
-	hash_funcs.o pythag.o svbksb.o svdcmp.o tools.o address_tools.o \
-	fit/checkjas2.o fit/cusorb.o fit/cusorb_equiv.o fit/cuspcheck2.o \
-	fit/cuspcheck3.o fit/cuspco.o fit/cuspexact2.o fit/cuspexact3.o \
-	fit/cuspexact4.o fit/cuspinit3.o fit/cuspinit4.o fit/deriv_hpsi.o \
-	fit/deriv_jastrow.o fit/deriv_jastrow3.o fit/deriv_jastrow4.o \
-	fit/deriv_nonloc.o fit/deriv_nonloc_pot.o fit/deriv_nonlpsi.o \
-	fit/deriv_scale.o fit/dummy_newton.o fit/equiv_bas.o fit/fit.o \
-	fit/fockcheck3.o fit/fockexact3.o fit/func.o fit/jacobian.o \
-	fit/piksrt.o fit/plot_jas.o fit/rewght.o fit/strech.o \
-	fit/MPI/func_mpi.o fit/MPI/jacobian_mpi.o vmc/acuest.o \
-	vmc/basis_fns.o vmc/basis_fnse2.o vmc/basis_norm.o \
-	vmc/basis_norm_dot.o vmc/cbasis_fns.o vmc/cdeterminant.o \
-	vmc/cdeterminante.o vmc/cdetsav.o vmc/cjastrow.o vmc/cmatinv.o \
-	vmc/corbitals_loc_ana.o vmc/corbitals_loc_ana_grade.o vmc/den2dwrt.o \
-	vmc/deriv_jastrow4.o vmc/determinant.o vmc/determinant_up_dn.o \
-	vmc/determinante.o vmc/detsav.o vmc/dgelg.o vmc/distances.o \
-	vmc/dumper.o vmc/emagnetic.o vmc/ewald.o vmc/find_image.o \
-	vmc/finwrt.o vmc/fock.o vmc/fourier2d.o vmc/gammai.o \
+OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
+	basic_tools_mod.o basis_mod.o bwfdet_mod.o catalog_averages_mod.o \
+	catalog_objects_mod.o catalog_routines_mod.o champ.o constants_mod.o \
+	control_mod.o crystal_symmetries_mod.o csfs_mod.o cslater_cf_mod.o \
+	cslater_mod.o cslaterw_mod.o debug_mod.o density_mod.o \
+	deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o deriv_jas_mod.o \
+	deriv_mod.o deriv_orb_mod.o determinants_mod.o dipole_moment_mod.o \
+	dmc_mod.o electrons_mod.o eloc_mod.o extracule_mod.o f2kcli.o \
+	files_tools_mod.o fitdet_mod.o forces_mod.o forces_pulay_mod.o \
+	grid_mod.o indexes_mod.o initialization_mod.o intracule_mod.o \
+	jastrow_mod.o main_menu_mod.o matrix_tools_mod.o montecarlo_mod.o \
+	mpi_mod.o nodes_mod.o nuclei_mod.o objects_mod.o opt_lin_mod.o \
+	opt_nwt_mod.o opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
+	parser_tools_mod.o periodic_jastrow_een.o periodic_jastrow_mod.o \
+	pjas_interface.o pjas_setup_mod.o pjasee_mod.o pjasen_mod.o \
+	print_mod.o psi_mod.o restart_mod.o routines_mod.o \
+	strings_tools_mod.o testing_mod.o types_mod.o variables_mod.o \
+	vmc_mod.o walkers_mod.o write_mod.o amoeba.o amotry.o choldc.o \
+	cholsl.o ei.o ei2.o erf.o expint.o hash_funcs.o pythag.o svbksb.o \
+	svdcmp.o tools.o address_tools.o fit/checkjas2.o fit/cusorb.o \
+	fit/cusorb_equiv.o fit/cuspcheck2.o fit/cuspcheck3.o fit/cuspco.o \
+	fit/cuspexact2.o fit/cuspexact3.o fit/cuspexact4.o fit/cuspinit3.o \
+	fit/cuspinit4.o fit/deriv_hpsi.o fit/deriv_jastrow.o \
+	fit/deriv_jastrow3.o fit/deriv_jastrow4.o fit/deriv_nonloc.o \
+	fit/deriv_nonloc_pot.o fit/deriv_nonlpsi.o fit/deriv_scale.o \
+	fit/dummy_newton.o fit/equiv_bas.o fit/fit.o fit/fockcheck3.o \
+	fit/fockexact3.o fit/func.o fit/jacobian.o fit/piksrt.o \
+	fit/plot_jas.o fit/rewght.o fit/strech.o fit/MPI/func_mpi.o \
+	fit/MPI/jacobian_mpi.o vmc/acuest.o vmc/basis_fns.o vmc/basis_fnse2.o \
+	vmc/basis_norm.o vmc/basis_norm_dot.o vmc/cbasis_fns.o \
+	vmc/cdeterminant.o vmc/cdeterminante.o vmc/cdetsav.o vmc/cjastrow.o \
+	vmc/cmatinv.o vmc/corbitals_loc_ana.o vmc/corbitals_loc_ana_grade.o \
+	vmc/den2dwrt.o vmc/deriv_jastrow4.o vmc/determinant.o \
+	vmc/determinant_up_dn.o vmc/determinante.o vmc/detsav.o vmc/dgelg.o \
+	vmc/distances.o vmc/dumper.o vmc/emagnetic.o vmc/ewald.o \
+	vmc/find_image.o vmc/finwrt.o vmc/fock.o vmc/fourier2d.o vmc/gammai.o \
 	vmc/grad_hess_jastrow.o vmc/hpsi.o vmc/hpsie.o vmc/ie.o \
 	vmc/interpol_orb.o vmc/jassav.o vmc/jastrow.o vmc/jastrow1.o \
 	vmc/jastrow2.o vmc/jastrow3.o vmc/jastrow3e.o vmc/jastrow4.o \
@@ -188,7 +188,7 @@ cleanlocal:
 make:
 	perl makemake.pl 
 	/usr/bin/ctags *.f *.f90
-	etags -l fortran *.f *.f90
+	etags -l fortran *.f *.f90 */*.f 
 
 .SUFFIXES: 
 
@@ -227,6 +227,9 @@ all_tools_mod.o: average_mod.o basic_tools_mod.o catalog_averages_mod.o \
 	variables_mod.o write_mod.o
 average_mod.o: basic_tools_mod.o constants_mod.o indexes_mod.o objects_mod.o \
 	parser_tools_mod.o strings_tools_mod.o variables_mod.o commons.h
+backflow_mod.o: basic_tools_mod.o constants_mod.o electrons_mod.o nodes_mod.o \
+	objects_mod.o parser_tools_mod.o strings_tools_mod.o variables_mod.o \
+	commons.h
 basic_tools_mod.o: constants_mod.o mpi_mod.o types_mod.o variables_mod.o
 basis_mod.o: all_tools_mod.o commons.h
 bwfdet_mod.o: constants_mod.o mpi_mod.o commons.h
@@ -234,12 +237,13 @@ catalog_averages_mod.o: average_mod.o basic_tools_mod.o constants_mod.o \
 	objects_mod.o variables_mod.o
 catalog_objects_mod.o: basic_tools_mod.o constants_mod.o indexes_mod.o \
 	objects_mod.o variables_mod.o
-catalog_routines_mod.o: all_tools_mod.o basis_mod.o density_mod.o \
-	deriv_jas_mod.o deriv_mod.o determinants_mod.o dipole_moment_mod.o \
-	eloc_mod.o extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o \
-	jastrow_mod.o montecarlo_mod.o nodes_mod.o nuclei_mod.o opt_lin_mod.o \
-	opt_nwt_mod.o opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
-	periodic_jastrow_mod.o routines_mod.o
+catalog_routines_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
+	density_mod.o deriv_jas_mod.o deriv_mod.o determinants_mod.o \
+	dipole_moment_mod.o eloc_mod.o extracule_mod.o forces_mod.o \
+	grid_mod.o intracule_mod.o jastrow_mod.o montecarlo_mod.o nodes_mod.o \
+	nuclei_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o \
+	optimization_mod.o orbitals_mod.o periodic_jastrow_mod.o \
+	routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o dmc_mod.o f2kcli.o \
 	initialization_mod.o main_menu_mod.o mpi_mod.o commons.h
 constants_mod.o: types_mod.o dmc/dmc.h fit/fit.h vmc/MPI/mpi_qmc.h \
@@ -281,11 +285,11 @@ intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \
 	commons.h
 jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o commons.h
-main_menu_mod.o: all_tools_mod.o basis_mod.o control_mod.o debug_mod.o \
-	density_mod.o dipole_moment_mod.o dmc_mod.o extracule_mod.o \
-	forces_mod.o grid_mod.o intracule_mod.o optimization_mod.o \
-	orbitals_mod.o periodic_jastrow_mod.o print_mod.o psi_mod.o \
-	testing_mod.o commons.h
+main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o control_mod.o \
+	debug_mod.o density_mod.o dipole_moment_mod.o dmc_mod.o \
+	extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o \
+	optimization_mod.o orbitals_mod.o periodic_jastrow_mod.o print_mod.o \
+	psi_mod.o testing_mod.o commons.h
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o
 montecarlo_mod.o: all_tools_mod.o commons.h
 mpi_mod.o: constants_mod.o

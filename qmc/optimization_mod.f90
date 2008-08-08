@@ -226,11 +226,11 @@ module optimization_mod
 
   case ('decrease_error_factor')
    call get_next_value (decrease_error_factor)
-   call require ('decrease_error_factor > 0', decrease_error_factor > 0)
+   call require (lhere, 'decrease_error_factor > 0', decrease_error_factor > 0) !fp
 
   case ('decrease_error_limit')
    call get_next_value (decrease_error_limit)
-   call require ('decrease_error_limit > 0', decrease_error_limit > 0)
+   call require (lhere, 'decrease_error_limit > 0', decrease_error_limit > 0) !fp
 
   case ('increase_blocks')
    call get_next_value (l_increase_blocks)
@@ -240,22 +240,22 @@ module optimization_mod
 
   case ('increase_blocks_factor')
    call get_next_value (increase_blocks_factor)
-   call require ('increase_blocks_factor > 0', increase_blocks_factor > 0)
+   call require (lhere, 'increase_blocks_factor > 0', increase_blocks_factor > 0) !fp
 
   case ('increase_blocks_limit')
    call get_next_value (increase_blocks_limit)
-   call require ('increase_blocks_limit > 0', increase_blocks_limit > 0)
+   call require (lhere, 'increase_blocks_limit > 0', increase_blocks_limit > 0) !fp
 
   case ('check_convergence')
    call get_next_value (l_check_convergence)
 
   case ('check_convergence_nb')
    call get_next_value (check_convergence_nb)
-   call require ('check_convergence_nb > 0', check_convergence_nb > 0)
+   call require (lhere, 'check_convergence_nb > 0', check_convergence_nb > 0) !fp
 
   case ('energy_threshold')
    call get_next_value (energy_threshold)
-   call require ('energy_threshold > 0', energy_threshold > 0)
+   call require (lhere, 'energy_threshold > 0', energy_threshold > 0) !fp
 
   case ('casscf')
    call get_next_value (l_casscf)
@@ -295,7 +295,7 @@ module optimization_mod
 
   case ('deriv_bound_value')
    call get_next_value (deriv_bound_value)
-   call require ('deriv_bound_value > 1', deriv_bound_value > 1)
+   call require (lhere, 'deriv_bound_value > 1', deriv_bound_value > 1) !fp
 
   case ('end')
    exit

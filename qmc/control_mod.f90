@@ -126,8 +126,8 @@ module control_mod
 
   case ('proba_hopping_moves')
    call get_next_value (proba_hopping_moves)
-   call require ('proba_hopping_moves >= 0', proba_hopping_moves >= 0)
-   call require ('proba_hopping_moves <= 1', proba_hopping_moves <= 1)
+   call require (lhere, 'proba_hopping_moves >= 0', proba_hopping_moves >= 0) !fp
+   call require (lhere, 'proba_hopping_moves <= 1', proba_hopping_moves <= 1) !fp
    if (proba_hopping_moves > 0) then
      l_hopping_moves = .true.
      write(6,'(a,f)') 'Hopping moves between atoms will be used in VMC with probability = ',proba_hopping_moves

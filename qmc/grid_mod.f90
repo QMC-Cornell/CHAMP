@@ -128,11 +128,11 @@ module grid_mod
 
 
 ! Parameters for grid over r
-  call require ('grid_r_step > 0', grid_r_step > 0.d0 )
-  call require ('grid_r_max > 0', grid_r_max > 0.d0 )
+  call require (lhere, 'grid_r_step > 0', grid_r_step > 0.d0 ) !fp
+  call require (lhere, 'grid_r_max > 0', grid_r_max > 0.d0 ) !fp
 
   grid_r_nb = int(grid_r_max/grid_r_step) + 1
-  call require ('grid_r_nb > 0', grid_r_nb > 0 )
+  call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0 ) !fp
 
   write (6,*) trim(lhere), ': Parameters for radial grid:'
   write (6,*) trim(lhere), ': grid_r_step = ', grid_r_step
@@ -212,21 +212,21 @@ module grid_mod
 
 
 ! Parameters for grid xyz
-  call require ('grid_x_step > 0', grid_x_step > 0.d0 )
-  call require ('grid_x_min <= grid_x_max ', grid_x_min <= grid_x_max)
-  call require ('grid_y_step > 0', grid_y_step > 0.d0 )
-  call require ('grid_y_min <= grid_y_max ', grid_y_min <= grid_y_max)
-  call require ('grid_z_step > 0', grid_z_step > 0.d0 )
-  call require ('grid_z_min <= grid_z_max ', grid_z_min <= grid_z_max)
+  call require (lhere, 'grid_x_step > 0', grid_x_step > 0.d0 ) !fp 
+  call require (lhere, 'grid_x_min <= grid_x_max ', grid_x_min <= grid_x_max) !fp
+  call require (lhere, 'grid_y_step > 0', grid_y_step > 0.d0 ) !fp
+  call require (lhere, 'grid_y_min <= grid_y_max ', grid_y_min <= grid_y_max) !fp
+  call require (lhere, 'grid_z_step > 0', grid_z_step > 0.d0 ) !fp
+  call require (lhere, 'grid_z_min <= grid_z_max ', grid_z_min <= grid_z_max) !fp
 
   grid_x_nb = int((grid_x_max - grid_x_min)/grid_x_step) + 1
   grid_y_nb = int((grid_y_max - grid_y_min)/grid_y_step) + 1
   grid_z_nb = int((grid_z_max - grid_z_min)/grid_z_step) + 1
   grid_xyz_nb = grid_x_nb * grid_y_nb * grid_z_nb
-  call require ('grid_x_nb > 0', grid_x_nb > 0 )
-  call require ('grid_y_nb > 0', grid_y_nb > 0 )
-  call require ('grid_z_nb > 0', grid_z_nb > 0 )
-  call require ('grid_xyz_nb > 0', grid_xyz_nb > 0 )
+  call require (lhere, 'grid_x_nb > 0', grid_x_nb > 0 ) !fp
+  call require (lhere, 'grid_y_nb > 0', grid_y_nb > 0 ) !fp
+  call require (lhere, 'grid_z_nb > 0', grid_z_nb > 0 ) !fp
+  call require (lhere, 'grid_xyz_nb > 0', grid_xyz_nb > 0 ) !fp
 
   write (6,*) trim(lhere), ': Parameters for grid xyz:'
   write (6,*) trim(lhere), ': grid_x_step = ', grid_x_step
@@ -270,6 +270,7 @@ module grid_mod
 
 ! local
   integer                       :: grid_i
+  character(len=max_string_len_rout), save :: lhere = 'grid_r_bld' !fp
 
 ! header
   if (header_exe) then
@@ -284,8 +285,8 @@ module grid_mod
   endif
 
 ! begin
-  call require ('grid_r_nb > 0', grid_r_nb > 0)
-  call require ('grid_r_step > 0', grid_r_step > 0)
+  call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0) !fp
+  call require (lhere, 'grid_r_step > 0', grid_r_step > 0) !fp
 
 ! allocation
   call object_alloc ('grid_r', grid_r, grid_r_nb)
@@ -307,6 +308,7 @@ module grid_mod
 ! local
   integer                       :: grid_i
   integer                       :: grid_x_i, grid_y_i, grid_z_i
+  character(len=max_string_len_rout), save :: lhere = 'grid_xyz_bld' !fp
 
 ! header
   if (header_exe) then
@@ -349,7 +351,7 @@ module grid_mod
    enddo
   enddo
 
-  call require ('grid_i == grid_xyz_nb', grid_i == grid_xyz_nb)
+  call require (lhere, 'grid_i == grid_xyz_nb', grid_i == grid_xyz_nb) !fp
 
   end subroutine grid_xyz_bld
 

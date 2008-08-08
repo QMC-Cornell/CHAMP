@@ -103,7 +103,7 @@
 
    case ('origin')
     call get_next_value_list ('dipole_moment_origin', dipole_moment_origin, dipole_moment_origin_dim)
-    call require ('dipole_moment_origin_dim == ndim', dipole_moment_origin_dim == ndim)
+    call require (lhere, 'dipole_moment_origin_dim == ndim', dipole_moment_origin_dim == ndim) !fp
     l_origin_given = .true.
 
    case ('estimator')

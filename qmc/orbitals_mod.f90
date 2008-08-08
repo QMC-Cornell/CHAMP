@@ -1789,6 +1789,7 @@ module orbitals_mod
 
 ! local
   integer orb_i
+  character(len=max_string_len_rout), save :: lhere = 'orb_opt_lab_bld' !fp
 
 ! header
   if (header_exe) then
@@ -1812,7 +1813,7 @@ module orbitals_mod
    endif
 
 !  check orb_opt_nb
-   call require ('orb_opt_nb > 0', orb_opt_nb > 0)
+   call require (lhere, 'orb_opt_nb > 0', orb_opt_nb > 0) !fp
    if (orb_opt_nb <= orb_occ_in_wf_nb .and. (ndet == 1 .or. l_casscf)) then
      write(6,'(2a,i5,a,i5)') trim(here),': orb_opt_nb=',orb_opt_nb,' <= orb_occ_in_wf_nb=',orb_occ_in_wf_nb
      call die (here, 'there are no virtual orbitals for optimizing.')

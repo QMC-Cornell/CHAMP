@@ -33,7 +33,7 @@ module objects_mod
    real(dp), pointer                 :: pointer_double_3 (:,:,:)
    real(dp), pointer                 :: pointer_double_4 (:,:,:,:)
    real(dp), pointer                 :: pointer_double_5 (:,:,:,:,:)
-   real(dp), pointer                 :: pointer_logical_0
+   logical, pointer                 :: pointer_logical_0
    logical, pointer                  :: pointer_logical_1 (:)
    logical, pointer                  :: pointer_logical_2 (:,:)
    logical, pointer                  :: pointer_logical_3 (:,:,:)
@@ -130,6 +130,7 @@ module objects_mod
                     object_associate_double_4,  &
                     object_associate_double_5,  &
                     object_associate_double_row_1, &
+                    object_associate_logical_0, & !fp
                     object_associate_logical_1, &
                     object_associate_logical_2, &
                     object_associate_logical_3, &
@@ -1571,6 +1572,40 @@ module objects_mod
 !  objects(object_ind)%associated = .true.
 
   end subroutine object_associate_double_row_1
+
+!===========================================================================
+  subroutine object_associate_logical_0 (object_name, object) !fp
+!---------------------------------------------------------------------------
+! Description : associate pointer to object
+!
+! Created     : F. Petruzielo, 21 Jul 2008
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)        :: object_name
+  logical, target, intent(in)         :: object
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_associate_logical_0'
+  integer object_ind
+
+! begin
+
+! index of object, catalog if necessary
+  call object_add_once_and_index (object_name, object_ind)
+
+! if object already associated, return
+  if (objects(object_ind)%associated) return
+
+! store type
+  objects(object_ind)%type = 'logical_0'
+
+! associate pointer
+  objects(object_ind)%pointer_logical_0 => object
+  objects(object_ind)%associated = .true.
+
+ end subroutine object_associate_logical_0
 
 !===========================================================================
   subroutine object_associate_logical_1 (object_name, object, dim1)
@@ -3305,10 +3340,11 @@ module objects_mod
     enddo
    enddo
 
+  case ('logical_0') !fp
+        write(6,'(2a,l)') trim(object_name),'=' ,objects(object_ind)%pointer_logical_0 !fp
+     
 ! skip writing of objects of remaining types for now
   case ('string_1')
-     write (6,'(5a)') 'Warning: skip writing object >',trim(object_name),'< of type >',trim(object_type),'<'
-  case ('logical_0')
      write (6,'(5a)') 'Warning: skip writing object >',trim(object_name),'< of type >',trim(object_type),'<'
   case ('logical_1')
      write (6,'(5a)') 'Warning: skip writing object >',trim(object_name),'< of type >',trim(object_type),'<'
