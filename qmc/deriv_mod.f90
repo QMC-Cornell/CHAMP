@@ -109,8 +109,6 @@ module deriv_mod
   integer i, j, pair
   integer param_i, shift
 
-!  integer index_params(10)
-
 ! header
   if (header_exe) then
 
@@ -218,39 +216,6 @@ module deriv_mod
   is_param_type_geo (shift+1:shift+param_geo_nb) = .true.
   shift = shift + param_geo_nb
 
-!  index_params (1)= 0
-!  index_params (2)= index_params (1) + nparmcsf
-!  index_params (3)= index_params (2) + nparmj
-!
-!  index_params (4)= index_params (3) + param_exp_nb
-!  index_params (5)= index_params (4) + param_orb_nb
-!  index_params (6)= index_params (5) + param_pjas_nb
-!  index_params (7)= index_params (6) + param_geo_nb
-!
-!  do param_i =   index_params (1) +1 , index_params (2)
-!     param_type (param_i) = 'CSF'
-!  enddo
-!
-!  do param_i =   index_params (2) +1 , index_params (3)
-!     param_type (param_i) = 'Jastrow'
-!  enddo
-!
-!  do param_i =   index_params (3) +1 , index_params (4)
-!     param_type (param_i) = 'exponent'
-!  enddo
-!
-!  do param_i =   index_params (4) +1 , index_params (5)
-!     param_type (param_i) = 'orbital'
-!  enddo
-!
-!  do param_i =   index_params (5) +1 , index_params (6)
-!     param_type (param_i) = 'pjas'
-!  enddo
-!
-!  do param_i =   index_params (6) +1 , index_params (7)
-!     param_type (param_i) = 'geometry'
-!  enddo
-
   end subroutine param_nb_bld
 
 ! ==============================================================================
@@ -344,7 +309,7 @@ module deriv_mod
 ! applying bounds to dpsi for non-Jastrow parameters
   if (l_deriv_bound) then
    do param_i = 1, param_nb
-    if (.not. is_param_type_jas (param_i) .and. dabs(dpsi (param_i)) > deriv_bound_value) then
+    if ((.not. is_param_type_jas (param_i)) .and. dabs(dpsi (param_i)) > deriv_bound_value) then
       dpsi (param_i) = sign (deriv_bound_value, dpsi (param_i))
     endif
    enddo ! param_i

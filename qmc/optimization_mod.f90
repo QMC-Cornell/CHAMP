@@ -162,7 +162,7 @@ module optimization_mod
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
-   write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function wrt parameters?  (default=false)'
+   write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function wrt parameters? (default=false)'
    write(6,'(a)') ' deriv_bound_value = [real] : value of the bound mentioned above (default=10.d0)'
    write(6,'(a)') 'end'
 
@@ -403,11 +403,22 @@ module optimization_mod
     endif
    endif
   endif
-!WAS
+
   if (l_opt_nwt .and. l_opt_pjas) then
      call  die (lhere, 'Optimization of periodic Jastrow parameters is done with linear method only')
   endif
-!
+
+! Warnings for pertubative method
+  if (l_opt_ptb) then
+    if(l_opt_jas) then
+      write(6,'(a)') 'Warning: the perturbative method is usually very bad for optimizing the Jastrow parameters.'
+      l_warning = .true.
+    endif
+    if (l_opt_csf) then
+      write(6,'(a)') 'Warning: the perturbative method is usally not very good for optimizing of the CSF parameters.'
+      l_warning = .true.
+    endif
+  endif
 
 ! compute or not energies associated to orbitals derivatives
   l_opt_orb_energy = l_opt_orb .and. .not. l_opt_orb_eig
@@ -534,17 +545,6 @@ module optimization_mod
 ! Nice printing
   write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj+param_pjas_nb,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent and ',param_geo_nb," geometry parameters with ",trim(opt_method)," method:"
 
-! Warnings for pertubative method
-  if (l_opt_ptb) then
-    if(l_opt_jas) then
-      write(6,'(a)') 'Warning: the perturbative method is usually very bad for optimizing the Jastrow parameters.'
-      l_warning = .true.
-    endif
-    if (l_opt_csf) then
-      write(6,'(a)') 'Warning: the perturbative method is usally not very good for optimizing of the CSF parameters.'
-      l_warning = .true.
-    endif
-  endif
 
 ! Start optimization loop ------------------------------------------------------------------------
   do iter = 1, iter_opt_max_nb

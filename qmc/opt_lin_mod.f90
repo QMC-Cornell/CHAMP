@@ -61,21 +61,21 @@ module opt_lin_mod
 
   select case(trim(word))
   case ('help')
-   write(6,'(a)') 'HELP for linear optimization menu'
-   write(6,'(a)') ' linear'
-   write(6,'(a)') '  update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'
-   write(6,'(a)') '  xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 + (1-xi) Psi_lin'
-   write(6,'(a)') '               - xi=1: orthogonalization to Psi_0 (default)'
-   write(6,'(a)') '               - xi=0: orthogonalization to Psi_lin, ensures min |Psi_lin-Psi_0|'
-   write(6,'(a)') '               - xi=0.5: orthogonalization to Psi_0 + Psi_lin, ensures |Psi_0|=|Psi_lin|'
-   write(6,'(a)') '   use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues? (default=false)'
-   write(6,'(a)') '   symmetrize_hamiltonian = [logical] : symmetrize Hamiltonian (default=false)'
-   write(6,'(a)') '   approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
-   write(6,'(a)') '   approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
-   write(6,'(a)') '   renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
-   write(6,'(a)') '   select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization (default=false)'
-   write(6,'(a)') '   select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization (default=true)'
-   write(6,'(a)') '   target_state = [integer] : index of target state to optimize (default is ground-state)'
+   write(6,'(a)') ' HELP for linear optimization menu'
+   write(6,'(a)') '  linear'
+   write(6,'(a)') '   update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'
+   write(6,'(a)') '   xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 + (1-xi) Psi_lin'
+   write(6,'(a)') '                - xi=1: orthogonalization to Psi_0 (default)'
+   write(6,'(a)') '                - xi=0: orthogonalization to Psi_lin, ensures min |Psi_lin-Psi_0|'
+   write(6,'(a)') '                - xi=0.5: orthogonalization to Psi_0 + Psi_lin, ensures |Psi_0|=|Psi_lin|'
+   write(6,'(a)') '    use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues? (default=false)'
+   write(6,'(a)') '    symmetrize_hamiltonian = [logical] : symmetrize Hamiltonian (default=false)'
+   write(6,'(a)') '    approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
+   write(6,'(a)') '    approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
+   write(6,'(a)') '    renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
+   write(6,'(a)') '    select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization (default=false)'
+   write(6,'(a)') '    select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization (default=true)'
+   write(6,'(a)') '    target_state = [integer] : index of target state to optimize (default is ground-state)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
@@ -101,11 +101,11 @@ module opt_lin_mod
 
   case ('select_eigvec_lowest')
    call get_next_value (l_select_eigvec_lowest)
-   l_select_eigvec_largest_1st_coef = .false.
+   if (l_select_eigvec_lowest) l_select_eigvec_largest_1st_coef = .false.
 
   case ('select_eigvec_largest_1st_coef')
    call get_next_value (l_select_eigvec_largest_1st_coef)
-   l_select_eigvec_lowest = .false.
+   if (l_select_eigvec_largest_1st_coef) l_select_eigvec_lowest = .false.
 
   case ('target_state')
    call get_next_value (target_state)
@@ -121,11 +121,12 @@ module opt_lin_mod
   enddo ! end loop over menu lines
 
   if (trim(update_nonlinear) == 'original') then
-   write(6,'(2a)') trim(lhere),': update of nonlinear parameters in linear optimization method will be done using the original derivatives'
-   write(6,'(2a)') trim(lhere),': WARNING: this is very bad for the Jastrow parameters!'
+   write(6,'(a)') ' update of nonlinear parameters in linear optimization method will be done using the original derivatives'
+   write(6,'(a)') ' Warning: this update choice is very bad for the Jastrow parameters!'
+   l_warning = .true.
   else
-   write(6,'(2a)') trim(lhere),': update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives'
-   write(6,'(2a,f)') trim(lhere),': the derivatives will be orthogonalized to [xi Psi_0 + (1-xi) Psi_lin], with xi=',xi
+   write(6,'(a)') ' update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives:'
+   write(6,'(a,f)') ' the derivatives will be orthogonalized to [xi Psi_0 + (1-xi) Psi_lin], with xi=',xi
   endif
 
   end subroutine opt_lin_menu
@@ -211,7 +212,7 @@ module opt_lin_mod
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
   do i = 1, param_aug_nb
-    write(6,'(a,i3,a,e)') 'eigenvalue # ',i,': ',ovlp_lin_eigval(i)
+    write(6,'(a,i3,a,e)') 'overlap eigenvalue # ',i,': ',ovlp_lin_eigval(i)
   enddo
 
   end subroutine ovlp_lin_bld

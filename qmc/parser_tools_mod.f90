@@ -386,7 +386,10 @@ module parser_tools_mod
 
     value_list_nb = value_list_nb + 1
 # if !defined (PATHSCALE)
-   call object_alloc (value_list_name, value_list, value_list_nb) ! commented out for pathscale compiler
+!  must not call object_alloc because this routine it creates an object of type string even when called
+!  by get_next_value_list_integer and get_next_value_list_double
+!  we should create another routine just to read strings
+   call alloc (value_list_name, value_list, value_list_nb) ! commented out for pathscale compiler
 # endif
     value_list (value_list_nb) = value_string
 
