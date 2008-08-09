@@ -1,6 +1,7 @@
 module opt_lin_mod
 
   use all_tools_mod
+  use opt_common_mod
   use deriv_mod
 
 ! Declaration of global variables and default values
@@ -13,30 +14,36 @@ module opt_lin_mod
 
   integer                         :: param_aug_nb
 
-  real(dp), allocatable           :: ovlp_lin (:,:)
-  real(dp), allocatable           :: ovlp_lin_renorm (:,:)
-  real(dp), allocatable           :: ovlp_lin_eigvec (:,:)
-  real(dp), allocatable           :: ovlp_lin_eigval (:)
-  real(dp), allocatable           :: renorm_vector (:)
-  real(dp), allocatable           :: ham_lin_energy (:,:)
-  real(dp), allocatable           :: ham_lin_variance (:,:)
-  real(dp), allocatable           :: ham_lin (:,:)
-  real(dp), allocatable           :: ham_lin_renorm (:,:)
-  real(dp), allocatable           :: ham_lin_renorm_stab (:,:)
-  real(dp), allocatable           :: ham_ovlp_lin (:,:)
-  real(dp), allocatable           :: ham_ovlp_lin_eigvec (:,:)
-  real(dp), allocatable           :: ham_ovlp_lin_eigval (:)
-  real(dp), allocatable           :: ovlp_lin_inv (:,:)
+  real(dp), allocatable           :: ovlp_lin(:,:)
+  real(dp), allocatable           :: ovlp_lin_renorm(:,:)
+  real(dp), allocatable           :: ovlp_lin_eigvec(:,:)
+  real(dp), allocatable           :: ovlp_lin_eigval(:)
+  real(dp), allocatable           :: renorm_vector(:)
+  real(dp), allocatable           :: ham_lin_energy(:,:)
+  real(dp), allocatable           :: ham_lin_variance(:,:)
+  real(dp), allocatable           :: ham_lin(:,:)
+  real(dp), allocatable           :: ham_lin_renorm(:,:)
+  real(dp), allocatable           :: ham_lin_renorm_stab(:,:)
+  real(dp), allocatable           :: ham_ovlp_lin(:,:)
+  real(dp), allocatable           :: ham_ovlp_lin_eigvec(:,:)
+  real(dp), allocatable           :: ham_ovlp_lin_eigval(:)
+  real(dp), allocatable           :: ovlp_lin_inv(:,:)
 
-  real(dp), allocatable           :: delta_lin (:)
+  real(dp), allocatable           :: delta_lin(:)
   real(dp)                        :: psi_lin_var_norm = 0.d0
   real(dp)                        :: psi_lin_var_norm_max = 10.d0
   real(dp)                        :: psi_lin_norm_sq
 
   logical                         :: l_select_eigvec_lowest = .false.
-  logical                         :: l_select_eigvec_largest_1st_coef = .true. ! default
+  logical                         :: l_select_eigvec_largest_1st_coef = .false.
+  logical                         :: l_select_eigvec_smallest_norm = .true. ! default
+
   integer                         :: target_state = 0
   real(dp)                        :: add_diag_mult_exp = 1.d0
+
+! moved to subroutine:
+! real(dp)                        :: smallest_norm
+! integer                         :: eigvec_smallest_norm_ind
 
   contains
 
@@ -57,76 +64,90 @@ module opt_lin_mod
 
 ! loop over menu lines
   do
-  call get_next_word (word)
+  call get_next_word(word)
 
-  select case(trim(word))
+  select case (trim(word))
   case ('help')
    write(6,'(a)') ' HELP for linear optimization menu'
    write(6,'(a)') '  linear'
    write(6,'(a)') '   update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'
-   write(6,'(a)') '   xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 + (1-xi) Psi_lin'
-   write(6,'(a)') '                - xi=1: orthogonalization to Psi_0 (default)'
+   write(6,'(a)') '   xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 +(1-xi) Psi_lin'
+   write(6,'(a)') '                - xi=1: orthogonalization to Psi_0(default)'
    write(6,'(a)') '                - xi=0: orthogonalization to Psi_lin, ensures min |Psi_lin-Psi_0|'
    write(6,'(a)') '                - xi=0.5: orthogonalization to Psi_0 + Psi_lin, ensures |Psi_0|=|Psi_lin|'
-   write(6,'(a)') '    use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues? (default=false)'
-   write(6,'(a)') '    symmetrize_hamiltonian = [logical] : symmetrize Hamiltonian (default=false)'
-   write(6,'(a)') '    approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
-   write(6,'(a)') '    approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
-   write(6,'(a)') '    renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal (default=false)'
-   write(6,'(a)') '    select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization (default=false)'
-   write(6,'(a)') '    select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization (default=true)'
-   write(6,'(a)') '    target_state = [integer] : index of target state to optimize (default is ground-state)'
+   write(6,'(a)') '    use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues?(default=false)'
+   write(6,'(a)') '    symmetrize_hamiltonian = [logical] : symmetrize Hamiltonian(default=false)'
+   write(6,'(a)') '    approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only(default=false)'
+   write(6,'(a)') '    approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block(default=false)'
+   write(6,'(a)') '    renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal(default=false)'
+   write(6,'(a)') '    select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization(default=false)'
+   write(6,'(a)') '    select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization(default=false)'
+   write(6,'(a)') '    select_eigvec_smallest_norm = [bool] : select eigenvector with smallest norm(Psi_lin-Psi_)) for nonlinear params for ground state optimization(default=true)'
+   write(6,'(a)') '    target_state = [integer] : index of target state to optimize(default is ground-state)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
-   call get_next_value (update_nonlinear)
+   call get_next_value(update_nonlinear)
 
   case ('xi')
-   call get_next_value (xi)
+   call get_next_value(xi)
 
   case ('use_orbital_eigenvalues')
-   call get_next_value (l_opt_orb_eig)
+   call get_next_value(l_opt_orb_eig)
 
   case ('symmetrize_hamiltonian')
-   call get_next_value (l_sym_ham)
+   call get_next_value(l_sym_ham)
 
   case ('approx_orb_orb')
-   call get_next_value (l_opt_orb_orb_eig)
+   call get_next_value(l_opt_orb_orb_eig)
 
   case ('approx_orb_orb_diag')
-   call get_next_value (l_opt_orb_orb_diag)
+   call get_next_value(l_opt_orb_orb_diag)
 
   case ('renormalize')
-   call get_next_value (l_renormalize)
+   call get_next_value(l_renormalize)
 
   case ('select_eigvec_lowest')
-   call get_next_value (l_select_eigvec_lowest)
-   if (l_select_eigvec_lowest) l_select_eigvec_largest_1st_coef = .false.
+   call get_next_value(l_select_eigvec_lowest)
+   if(l_select_eigvec_lowest) then
+     l_select_eigvec_largest_1st_coef = .false.
+     l_select_eigvec_smallest_norm = .false.
+   endif
 
   case ('select_eigvec_largest_1st_coef')
-   call get_next_value (l_select_eigvec_largest_1st_coef)
-   if (l_select_eigvec_largest_1st_coef) l_select_eigvec_lowest = .false.
+   call get_next_value(l_select_eigvec_largest_1st_coef)
+   if(l_select_eigvec_largest_1st_coef) then
+     l_select_eigvec_lowest = .false.
+     l_select_eigvec_smallest_norm = .false.
+   endif
+
+  case ('select_eigvec_smallest_norm')
+   call get_next_value(l_select_eigvec_smallest_norm)
+   if(l_select_eigvec_smallest_norm) then
+     l_select_eigvec_lowest = .false.
+     l_select_eigvec_largest_1st_coef = .false.
+   endif
 
   case ('target_state')
-   call get_next_value (target_state)
-   call require (lhere, 'target_state >= 0', target_state >= 0) !fp
+   call get_next_value(target_state)
+   call require (lhere, 'target_state >= 0', target_state >= 0)
 
   case ('end')
    exit
 
   case default
-   call die (lhere, 'unknown word >'+trim(word)+'<')
+   call die(lhere, 'unknown word >'+trim(word)+'<')
   end select
 
   enddo ! end loop over menu lines
 
-  if (trim(update_nonlinear) == 'original') then
+  if(trim(update_nonlinear) == 'original') then
    write(6,'(a)') ' update of nonlinear parameters in linear optimization method will be done using the original derivatives'
    write(6,'(a)') ' Warning: this update choice is very bad for the Jastrow parameters!'
    l_warning = .true.
   else
    write(6,'(a)') ' update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives:'
-   write(6,'(a,f)') ' the derivatives will be orthogonalized to [xi Psi_0 + (1-xi) Psi_lin], with xi=',xi
+   write(6,'(a,f)') ' the derivatives will be orthogonalized to [xi Psi_0 +(1-xi) Psi_lin], with xi=',xi
   endif
 
   end subroutine opt_lin_menu
@@ -147,16 +168,16 @@ module opt_lin_mod
 
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('param_aug_nb')
-   call object_create ('ovlp_lin')
-   call object_create ('ovlp_lin_eigvec')
-   call object_create ('ovlp_lin_eigval')
+   call object_create('param_aug_nb')
+   call object_create('ovlp_lin')
+   call object_create('ovlp_lin_eigvec')
+   call object_create('ovlp_lin_eigval')
 
-   call object_needed ('param_nb')
-   call object_needed ('dpsi_av')
-   call object_needed ('dpsi_dpsi_covar')
+   call object_needed('param_nb')
+   call object_needed('dpsi_av')
+   call object_needed('dpsi_dpsi_covar')
 
    return
 
@@ -166,15 +187,15 @@ module opt_lin_mod
 
 ! allocations
   param_aug_nb = param_nb + 1
-  call object_alloc ('ovlp_lin', ovlp_lin, param_aug_nb, param_aug_nb)
+  call object_alloc('ovlp_lin', ovlp_lin, param_aug_nb, param_aug_nb)
 
 ! first element
-  ovlp_lin (1,1) = 1.d0
+  ovlp_lin(1,1) = 1.d0
 
 ! first row and first column
   do i = 1, param_nb
-   ovlp_lin (1,i+1) = 0.d0
-   ovlp_lin (i+1,1) = 0.d0
+   ovlp_lin(1,i+1) = 0.d0
+   ovlp_lin(i+1,1) = 0.d0
   enddo
 
 ! derivative-derivative part
@@ -182,19 +203,19 @@ module opt_lin_mod
    do j = 1, param_nb
 
 !   diagonal-only approximation for orbital-orbital part
-    if (l_opt_orb_orb_diag .and. i > nparmcsf+nparmj .and. j > nparmcsf+nparmj .and. i /= j) then
+    if(l_opt_orb_orb_diag .and. i > nparmcsf+nparmj .and. j > nparmcsf+nparmj .and. i /= j) then
 
-     ovlp_lin (i+1,j+1) = 0.d0
+     ovlp_lin(i+1,j+1) = 0.d0
 
 !   normal overlap
     else
 
-     ovlp_lin (i+1,j+1) = dpsi_dpsi_covar (i,j)
+     ovlp_lin(i+1,j+1) = dpsi_dpsi_covar(i,j)
 
     endif
 
-!    if (i /= j) then
-!     ovlp_lin (j+1,i+1) = ovlp_lin (i+1,j+1)
+!    if(i /= j) then
+!     ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
 !    endif
 
    enddo
@@ -205,9 +226,9 @@ module opt_lin_mod
 !  enddo
 
 ! check eigenvalues
-  call object_alloc ('ovlp_lin_eigvec', ovlp_lin_eigvec, param_aug_nb, param_aug_nb)
-  call object_alloc ('ovlp_lin_eigval', ovlp_lin_eigval, param_aug_nb)
-  call eigensystem (ovlp_lin, ovlp_lin_eigvec, ovlp_lin_eigval, param_aug_nb)
+  call object_alloc('ovlp_lin_eigvec', ovlp_lin_eigvec, param_aug_nb, param_aug_nb)
+  call object_alloc('ovlp_lin_eigval', ovlp_lin_eigval, param_aug_nb)
+  call eigensystem(ovlp_lin, ovlp_lin_eigvec, ovlp_lin_eigval, param_aug_nb)
 
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
@@ -234,13 +255,13 @@ module opt_lin_mod
   integer i, j
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('ovlp_lin_renorm')
-   call object_create ('renorm_vector')
+   call object_create('ovlp_lin_renorm')
+   call object_create('renorm_vector')
 
-   call object_needed ('param_aug_nb')
-   call object_needed ('ovlp_lin')
+   call object_needed('param_aug_nb')
+   call object_needed('ovlp_lin')
 
    return
 
@@ -249,22 +270,22 @@ module opt_lin_mod
 ! begin
 
 ! allocations
-  call object_alloc ('renorm_vector', renorm_vector, param_aug_nb)
-  call object_alloc ('ovlp_lin_renorm', ovlp_lin_renorm, param_aug_nb, param_aug_nb)
+  call object_alloc('renorm_vector', renorm_vector, param_aug_nb)
+  call object_alloc('ovlp_lin_renorm', ovlp_lin_renorm, param_aug_nb, param_aug_nb)
 
 ! computing renormalization matrix
-  if (l_renormalize) then
+  if(l_renormalize) then
    do i = 1, param_aug_nb
-    renorm_vector (i) = dsqrt(ovlp_lin (i,i))
+    renorm_vector(i) = dsqrt(ovlp_lin(i,i))
    enddo
   else
-    renorm_vector (:) = 1.d0
+    renorm_vector(:) = 1.d0
   endif
 
 ! renormalized overlap matrix
   do i = 1, param_aug_nb
      do j = 1, param_aug_nb
-       ovlp_lin_renorm (i,j) = ovlp_lin (i,j) / (renorm_vector (i) * renorm_vector (j))
+       ovlp_lin_renorm(i,j) = ovlp_lin(i,j) /(renorm_vector(i) * renorm_vector(j))
      enddo
   enddo
 
@@ -285,22 +306,22 @@ module opt_lin_mod
   integer i, j, pair
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('ham_lin_energy')
+   call object_create('ham_lin_energy')
 
-   call object_needed ('param_nb')
-   call object_needed ('param_aug_nb')
-   call object_needed ('param_pairs')
-   call object_needed ('eloc_av')
-   call object_needed ('deloc_av')
-   call object_needed ('dpsi_eloc_av')
-   call object_needed ('dpsi_eloc_covar')
-   call object_needed ('dpsi_deloc_covar')
-   call object_needed ('dpsi_dpsi_eloc_av')
-   call object_needed ('dpsi_av')
-   call object_needed ('is_param_type_orb')
-   call object_needed ('is_param_type_geo')
+   call object_needed('param_nb')
+   call object_needed('param_aug_nb')
+   call object_needed('param_pairs')
+   call object_needed('eloc_av')
+   call object_needed('deloc_av')
+   call object_needed('dpsi_eloc_av')
+   call object_needed('dpsi_eloc_covar')
+   call object_needed('dpsi_deloc_covar')
+   call object_needed('dpsi_dpsi_eloc_av')
+   call object_needed('dpsi_av')
+   call object_needed('is_param_type_orb')
+   call object_needed('is_param_type_geo')
 
    return
 
@@ -309,35 +330,35 @@ module opt_lin_mod
 ! begin
 
 ! For approximate Hamitonian for orbitals
-  if (l_opt_orb_eig .or. l_opt_orb_orb_eig) then
-   call object_provide (lhere, 'ovlp_lin')
-   call object_provide (lhere, 'delta_eps')
+  if(l_opt_orb_eig .or. l_opt_orb_orb_eig) then
+   call object_provide(lhere, 'ovlp_lin')
+   call object_provide(lhere, 'delta_eps')
   endif
 
 ! allocations
-  call object_alloc ('ham_lin_energy', ham_lin_energy, param_aug_nb, param_aug_nb)
+  call object_alloc('ham_lin_energy', ham_lin_energy, param_aug_nb, param_aug_nb)
 
 ! first element
-  ham_lin_energy (1,1) = eloc_av
+  ham_lin_energy(1,1) = eloc_av
 
 ! first row and first column
   do i = 1, param_nb
 
 !   approximate Hamiltonian for orbitals
-    if (l_opt_orb_eig .and. is_param_type_orb (i)) then
-     ham_lin_energy (1+i,1) = dpsi_eloc_covar (i) 
-!     ham_lin_energy (1,i+1) = ovlp_lin(1,i+1) * (eloc_av + delta_eps (i-nparmcsf-nparmj))
-     ham_lin_energy (1,1+i) = ham_lin_energy (1+i,1)  ! symmetric for orbitals
+    if(l_opt_orb_eig .and. is_param_type_orb(i)) then
+     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) 
+!     ham_lin_energy(1,i+1) = ovlp_lin(1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
+     ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)  ! symmetric for orbitals
 
 !   symmetric Hamiltonian for geometry parameters
-    elseif (l_opt_geo .and. is_param_type_geo (i)) then
-     ham_lin_energy (1+i,1) = dpsi_eloc_covar (i) + deloc_av (i)/2.d0
-     ham_lin_energy (1,1+i) = ham_lin_energy (1+i,1)
+    elseif(l_opt_geo .and. is_param_type_geo(i)) then
+     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) + deloc_av(i)/2.d0
+     ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)
 
 !   normal Hamiltoniam
     else
-     ham_lin_energy (1+i,1) = dpsi_eloc_covar (i)
-     ham_lin_energy (1,1+i) = dpsi_eloc_covar (i) + deloc_av (i)
+     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i)
+     ham_lin_energy(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
     endif
 
   enddo ! i
@@ -345,48 +366,48 @@ module opt_lin_mod
 ! derivative-derivative part
   do j = 1, param_nb
    do i = 1, param_nb
-     pair = param_pairs (i,j)
+     pair = param_pairs(i,j)
 
-!   approximate Hamiltonian for Jastrow-orbital, CSF-orbital mixed terms (swap i and j)
-    if (l_opt_orb_eig .and. .not. is_param_type_orb (i) .and. is_param_type_orb (j)) then
-     ham_lin_energy (i+1,j+1) =  ham_lin_energy (j+1,i+1)
+!   approximate Hamiltonian for Jastrow-orbital, CSF-orbital mixed terms(swap i and j)
+    if(l_opt_orb_eig .and. .not. is_param_type_orb(i) .and. is_param_type_orb(j)) then
+     ham_lin_energy(i+1,j+1) =  ham_lin_energy(j+1,i+1)
 
 !   diagonal-only approximation for orbital-orbital block
-    elseif (l_opt_orb_orb_diag .and. is_param_type_orb (i) .and. is_param_type_orb (j) .and. i /= j ) then
-     ham_lin_energy (i+1,j+1) = 0.d0
+    elseif(l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j ) then
+     ham_lin_energy(i+1,j+1) = 0.d0
 
 !   approximate Hamiltonian for orbital-orbital terms
-    elseif ((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. is_param_type_orb (i) .and. is_param_type_orb (j)) then
-!     ham_lin_energy (i+1,j+1) = ovlp_lin (i+1,j+1) * (eloc_av + delta_eps (j-nparmcsf-nparmj))
-     ham_lin_energy (i+1,j+1) = ovlp_lin (i+1,j+1) * ((eloc_av + delta_eps (j-nparmcsf-nparmj)) + (eloc_av + delta_eps (i-nparmcsf-nparmj)))/2.d0
+    elseif((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. is_param_type_orb(i) .and. is_param_type_orb(j)) then
+!     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(eloc_av + delta_eps(j-nparmcsf-nparmj))
+     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *((eloc_av + delta_eps(j-nparmcsf-nparmj)) +(eloc_av + delta_eps(i-nparmcsf-nparmj)))/2.d0
 
 !   symmetric Hamiltonian for geometry parameters
-    elseif (l_opt_geo .and. (is_param_type_geo (i) .or. is_param_type_geo (j))) then
-     ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
-                               - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
-                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
-                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
+    elseif(l_opt_geo .and.(is_param_type_geo(i) .or. is_param_type_geo(j))) then
+     ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                        &
+                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
+                               + dpsi_av(i) * dpsi_av(j) * eloc_av                             &
+                               +(dpsi_deloc_covar(i, j) + dpsi_deloc_covar(j, i))/2.d0
 
 !   normal Hamiltoniam
     else
-     ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
-                               - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
-                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
-                               + dpsi_deloc_covar (i, j)
+     ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                        &
+                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
+                               + dpsi_av(i) * dpsi_av(j) * eloc_av                             &
+                               + dpsi_deloc_covar(i, j)
     endif
 
-!   if (i /= j) then
+!   if(i /= j) then
 !
 !!   approximate Hamiltonian for Jastrow-orbital, CSF-orbital and orbital-orbital terms
-!    if (l_opt_orb_eig .and. i > nparmcsf+nparmj) then
-!     ham_lin_energy (j+1,i+1) = ovlp_lin (j+1,i+1) * (eloc_av + delta_eps (i-nparmcsf-nparmj))
+!    if(l_opt_orb_eig .and. i > nparmcsf+nparmj) then
+!     ham_lin_energy(j+1,i+1) = ovlp_lin(j+1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
 !
 !!   normal Hamiltoniam
 !    else
-!     ham_lin_energy (j+1,i+1) = dpsi_deloc_covar (j, i) + dpsi_dpsi_eloc_av (pair)     &
-!                       - dpsi_av (i) * dpsi_eloc_av (j)                     &
-!                       - dpsi_av (j) * ( dpsi_eloc_av (i)) &
-!                       + dpsi_av (i) * dpsi_av (j) * eloc_av
+!     ham_lin_energy(j+1,i+1) = dpsi_deloc_covar(j, i) + dpsi_dpsi_eloc_av(pair)     &
+!                       - dpsi_av(i) * dpsi_eloc_av(j)                     &
+!                       - dpsi_av(j) *( dpsi_eloc_av(i)) &
+!                       + dpsi_av(i) * dpsi_av(j) * eloc_av
 !    endif
 !
 !   endif !i /= j
@@ -395,18 +416,18 @@ module opt_lin_mod
   enddo
 
 ! symmetrize Hamiltonian
-  if (l_sym_ham) then
-   ham_lin_energy = (ham_lin_energy + transpose(ham_lin_energy))/2.d0
+  if(l_sym_ham) then
+   ham_lin_energy =(ham_lin_energy + transpose(ham_lin_energy))/2.d0
   endif
 
 
 !  write(6,*)
 !  write(6,'(a)') 'Hamiltonian matrix:'
 !  do i = 1, param_aug_nb
-!    write(6,'(100e16.8)') (ham_lin_energy(i,j),j=1,param_aug_nb)
+!    write(6,'(100e16.8)')(ham_lin_energy(i,j),j=1,param_aug_nb)
 !  enddo
 
-!  call object_provide ('ovlp_lin')
+!  call object_provide('ovlp_lin')
 !  write(6,'(2a,100f12.4)') trim(here),': ham_lin_energy diagonal=',(ham_lin_energy(i,i)/ovlp_lin(i,i),i=1,param_aug_nb)
 
   end subroutine ham_lin_energy_bld
@@ -426,16 +447,16 @@ module opt_lin_mod
   integer i, j
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('ham_lin_variance')
+   call object_create('ham_lin_variance')
 
-   call object_needed ('param_nb')
-   call object_needed ('param_aug_nb')
-   call object_needed ('eloc_var')
-   call object_needed ('gradient_variance')
-   call object_needed ('hessian_variance')
-   call object_needed ('dpsi_dpsi_covar')
+   call object_needed('param_nb')
+   call object_needed('param_aug_nb')
+   call object_needed('eloc_var')
+   call object_needed('gradient_variance')
+   call object_needed('hessian_variance')
+   call object_needed('dpsi_dpsi_covar')
 
    return
 
@@ -444,21 +465,21 @@ module opt_lin_mod
 ! begin
 
 ! allocations
-  call object_alloc ('ham_lin_variance', ham_lin_variance, param_aug_nb, param_aug_nb)
+  call object_alloc('ham_lin_variance', ham_lin_variance, param_aug_nb, param_aug_nb)
 
 ! first element
-  ham_lin_variance (1,1) = eloc_var
+  ham_lin_variance(1,1) = eloc_var
 
 ! first row and first column
   do i = 1, param_nb
-    ham_lin_variance (i+1,1) = gradient_variance (i)/2.d0
-    ham_lin_variance (1,i+1) = ham_lin_variance (i+1,1)
+    ham_lin_variance(i+1,1) = gradient_variance(i)/2.d0
+    ham_lin_variance(1,i+1) = ham_lin_variance(i+1,1)
   enddo
 
 ! derivative-derivative part
   do j = 1, param_nb
    do i = 1, param_nb
-     ham_lin_variance (i+1,j+1) = hessian_variance (i,j)/2.d0 + eloc_var * dpsi_dpsi_covar (i, j)
+     ham_lin_variance(i+1,j+1) = hessian_variance(i,j)/2.d0 + eloc_var * dpsi_dpsi_covar(i, j)
    enddo
   enddo
 
@@ -479,14 +500,14 @@ module opt_lin_mod
   integer i, j
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('ham_lin')
+   call object_create('ham_lin')
 
-   call object_needed ('param_nb')
-   call object_needed ('param_aug_nb')
-   call object_needed ('ham_lin_energy')
-   call object_needed ('p_var')
+   call object_needed('param_nb')
+   call object_needed('param_aug_nb')
+   call object_needed('ham_lin_energy')
+   call object_needed('p_var')
 
    return
 
@@ -495,13 +516,13 @@ module opt_lin_mod
 ! begin
 
 ! allocations
-  call object_alloc ('ham_lin', ham_lin, param_aug_nb, param_aug_nb)
+  call object_alloc('ham_lin', ham_lin, param_aug_nb, param_aug_nb)
 
-  if (p_var /= 0) then
-    call object_provide (lhere, 'ham_lin_variance')
-    ham_lin (:,:) = (1.d0 - p_var) * ham_lin_energy (:,:) + p_var * ham_lin_variance (:,:)
+  if(p_var /= 0) then
+    call object_provide(lhere, 'ham_lin_variance')
+    ham_lin(:,:) =(1.d0 - p_var) * ham_lin_energy(:,:) + p_var * ham_lin_variance(:,:)
   else
-    ham_lin (:,:) = ham_lin_energy (:,:)
+    ham_lin(:,:) = ham_lin_energy(:,:)
   endif
 
   end subroutine ham_lin_bld
@@ -521,13 +542,13 @@ module opt_lin_mod
   integer i, j
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('ham_lin_renorm')
+   call object_create('ham_lin_renorm')
 
-   call object_needed ('param_aug_nb')
-   call object_needed ('ham_lin')
-   call object_needed ('renorm_vector')
+   call object_needed('param_aug_nb')
+   call object_needed('ham_lin')
+   call object_needed('renorm_vector')
 
    return
 
@@ -536,12 +557,12 @@ module opt_lin_mod
 ! begin
 
 ! allocations
-  call object_alloc ('ham_lin_renorm', ham_lin_renorm, param_aug_nb, param_aug_nb)
+  call object_alloc('ham_lin_renorm', ham_lin_renorm, param_aug_nb, param_aug_nb)
 
 ! renormalizing Hamiltonian matrix
   do i = 1, param_aug_nb
     do j = 1, param_aug_nb
-      ham_lin_renorm (i,j) = ham_lin (i,j) / (renorm_vector (i) * renorm_vector (j))
+      ham_lin_renorm(i,j) = ham_lin(i,j) /(renorm_vector(i) * renorm_vector(j))
     enddo
   enddo
 
@@ -563,15 +584,15 @@ module opt_lin_mod
   integer i
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('ham_lin_renorm_stab')
+   call object_create('ham_lin_renorm_stab')
 
-   call object_needed ('param_nb')
-   call object_needed ('param_aug_nb')
-   call object_needed ('ham_lin_renorm')
-   call object_needed ('diag_stab')
-   call object_needed ('add_diag_mult_exp')
+   call object_needed('param_nb')
+   call object_needed('param_aug_nb')
+   call object_needed('ham_lin_renorm')
+   call object_needed('diag_stab')
+   call object_needed('add_diag_mult_exp')
 
    return
 
@@ -579,24 +600,24 @@ module opt_lin_mod
 
 ! begin
 ! allocations
-  call object_alloc ('ham_lin_renorm_stab', ham_lin_renorm_stab, param_aug_nb, param_aug_nb)
+  call object_alloc('ham_lin_renorm_stab', ham_lin_renorm_stab, param_aug_nb, param_aug_nb)
 
-  ham_lin_renorm_stab (:,:) = ham_lin_renorm (:,:)
+  ham_lin_renorm_stab(:,:) = ham_lin_renorm(:,:)
 
 ! stabilization by adding overlap matrix
-  if (trim(stabilization) == 'overlap') then
-  call object_provide ('ovlp_lin')
+  if(trim(stabilization) == 'overlap') then
+  call object_provide('ovlp_lin')
   do i = 1, param_nb
-      ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab * ovlp_lin (i+1,i+1)
+      ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab * ovlp_lin(i+1,i+1)
   enddo
 
 ! stabilization by adding identity matrix
   else
   do i = 1, param_nb
-    if (i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
-      ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab * add_diag_mult_exp ! multiplicative factor for exponent parameters
+    if(i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
+      ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab * add_diag_mult_exp ! multiplicative factor for exponent parameters
     else
-      ham_lin_renorm_stab (i+1,i+1) = ham_lin_renorm (i+1,i+1) + diag_stab
+      ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab
     endif
 
   enddo
@@ -619,30 +640,31 @@ module opt_lin_mod
   integer i, j
   integer ex_i, iparmcsf, iparmj, iparm, jparm
   integer lwork, info
-  real(dp), allocatable :: mat_a (:,:), mat_b (:,:)
-  real(dp), allocatable :: eigvec (:,:)
-  real(dp), allocatable :: eigval_r (:), eigval_i (:), eigval_denom (:)
-  real(dp), allocatable :: work (:)
-  real(dp) eigvec_1st_component_max, eigval_r_min, eigvec_first_coef, eigval_lowest
-  integer eig_ind, eig_1st_component_max_ind, eigval_lowest_ind
-  integer, allocatable :: eigval_srt_ind_to_eigval_ind (:), eigval_ind_to_eigval_srt_ind (:)
+  real(dp), allocatable :: mat_a(:,:), mat_b(:,:)
+  real(dp), allocatable :: eigvec(:,:)
+  real(dp), allocatable :: eigval_r(:), eigval_i(:), eigval_denom(:)
+  real(dp), allocatable :: work(:)
+  real(dp) eigvec_max_1st_compon, eigval_r_min, eigvec_first_coef, lowest_eigval, smallest_norm
+  integer eig_ind, eigvec_max_1st_compon_ind, eigvec_lowest_eigval_ind, eigvec_smallest_norm_ind
+
+  integer, allocatable :: eigval_srt_ind_to_eigval_ind(:), eigval_ind_to_eigval_srt_ind(:)
   integer temp
   logical target_state_found
 
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('delta_lin')
+   call object_create('delta_lin')
 
-   call object_needed ('param_aug_nb')
-   call object_needed ('param_nb')
-   call object_needed ('ovlp_lin')
-   call object_needed ('ham_lin_renorm_stab')
-   call object_needed ('dpsi_av')
-   call object_needed ('ovlp_lin_renorm')
-   call object_needed ('renorm_vector')
-   call object_needed ('p_var')
+   call object_needed('param_aug_nb')
+   call object_needed('param_nb')
+   call object_needed('ovlp_lin')
+   call object_needed('ham_lin_renorm_stab')
+   call object_needed('dpsi_av')
+   call object_needed('ovlp_lin_renorm')
+   call object_needed('renorm_vector')
+   call object_needed('p_var')
 
    return
 
@@ -651,181 +673,220 @@ module opt_lin_mod
 ! begin
 
 ! allocation
-  call object_alloc ('delta_lin', delta_lin, param_nb)
+  call object_alloc('delta_lin', delta_lin, param_nb)
 
 ! temprorary arrays
-  call alloc ('mat_a', mat_a, param_aug_nb, param_aug_nb)
-  call alloc ('mat_b', mat_b, param_aug_nb, param_aug_nb)
-  call alloc ('eigvec', eigvec, param_aug_nb, param_aug_nb)
-  call alloc ('eigval_r', eigval_r, param_aug_nb)
-  call alloc ('eigval_i', eigval_i, param_aug_nb)
-  call alloc ('eigval_denom', eigval_denom, param_aug_nb)
+  call alloc('mat_a', mat_a, param_aug_nb, param_aug_nb)
+  call alloc('mat_b', mat_b, param_aug_nb, param_aug_nb)
+  call alloc('eigvec', eigvec, param_aug_nb, param_aug_nb)
+  call alloc('eigval_r', eigval_r, param_aug_nb)
+  call alloc('eigval_i', eigval_i, param_aug_nb)
+  call alloc('eigval_denom', eigval_denom, param_aug_nb)
 
-  mat_a (:,:) = ham_lin_renorm_stab (:,:)
-  mat_b (:,:) = ovlp_lin_renorm (:,:)
+  mat_a(:,:) = ham_lin_renorm_stab(:,:)
+  mat_b(:,:) = ovlp_lin_renorm(:,:)
 
 ! calculate optimal value of lwork
   lwork = 1
-  call alloc ('work', work, lwork)
+  call alloc('work', work, lwork)
   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, -1, info)
-  if (info /= 0) then
-   call die (lhere, 'problem in dggev (while calculating optimal value of lwork): info='+info+' /= 0')
+  if(info /= 0) then
+   call die(lhere, 'problem in dggev(while calculating optimal value of lwork): info='+info+' /= 0')
   endif
   lwork =  work(1)
-  call alloc ('work', work, lwork)
+  call alloc('work', work, lwork)
 
 ! solve generalized eigenvalue problem A*x = lambda*B*x
   write(6,*)
   write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation of linear method with a_diag =', diag_stab
   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
-  if (info /= 0) then
-   call die (lhere, 'problem in dggev: info='+info+' /= 0')
+  if(info /= 0) then
+   call die(lhere, 'problem in dggev: info='+info+' /= 0')
   endif
 
-!   write(6,'(2a,100d10.2)') trim(lhere),': eigval_denom=', eigval_denom (:)
+!   write(6,'(2a,100d10.2)') trim(lhere),': eigval_denom=', eigval_denom(:)
 
 ! calculate eigenvalue
   do i = 1, param_aug_nb
-    eigval_r (i) = eigval_r (i) / eigval_denom (i)
-    eigval_i (i) = eigval_i (i) / eigval_denom (i)
+    eigval_r(i) = eigval_r(i) / eigval_denom(i)
+    eigval_i(i) = eigval_i(i) / eigval_denom(i)
   enddo
 
 ! Sorting out eigenvalues
 ! eigval_srt_ind_to_eigval_ind is the map from sorted eigenvalues to original eigenvalues
-  call alloc ('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind, param_aug_nb)
+  call alloc('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind, param_aug_nb)
   do i = 1, param_aug_nb
-    eigval_srt_ind_to_eigval_ind (i) = i
+    eigval_srt_ind_to_eigval_ind(i) = i
   enddo
   do i = 1, param_aug_nb
     do j = i+1, param_aug_nb
-      if (eigval_r (eigval_srt_ind_to_eigval_ind (j)) < eigval_r (eigval_srt_ind_to_eigval_ind (i))) then
-        temp = eigval_srt_ind_to_eigval_ind (i)
-        eigval_srt_ind_to_eigval_ind (i) = eigval_srt_ind_to_eigval_ind (j)
-        eigval_srt_ind_to_eigval_ind (j) = temp
+      if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
+        temp = eigval_srt_ind_to_eigval_ind(i)
+        eigval_srt_ind_to_eigval_ind(i) = eigval_srt_ind_to_eigval_ind(j)
+        eigval_srt_ind_to_eigval_ind(j) = temp
       endif
     enddo
   enddo
 ! eigval_ind_to_eigval_srt_ind is the map from original eigenvalues to sorted eigenvalues
-  call alloc ('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, param_aug_nb)
+  call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, param_aug_nb)
   do i = 1, param_aug_nb
-   eigval_ind_to_eigval_srt_ind (eigval_srt_ind_to_eigval_ind (i)) = i
+   eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
   enddo
 
 ! print eigenvalues
   write(6,'(a)') 'Sorted (complex) eigenvalues:'
   do i = 1, param_aug_nb
-    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'eigenvalue #',i,': ',eigval_r (eigval_srt_ind_to_eigval_ind (i)), ' +', eigval_i (eigval_srt_ind_to_eigval_ind (i)),' i'
+    write(6,'(a,i5,a,2(f10.4,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
   enddo
 
 ! print eigenvectors
 !  write(6,'(a)') 'Eigenvectors:'
 !  do j = 1, param_aug_nb
-!    write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :', (eigvec (i, eigval_srt_ind_to_eigval_ind (j)), i = 1, param_aug_nb)
+!    write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :',(eigvec(i, eigval_srt_ind_to_eigval_ind(j)), i = 1, param_aug_nb)
 !  enddo
 
+! Find eigenvector with smallest norm(Psi_lin-Psi_0) for nonlinear parameters
+  smallest_norm=9.d99
+  eigvec_smallest_norm_ind=1
+  do i = 1, param_aug_nb
+   psi_lin_var_norm = 0
+   do iparm = nparmcsf+1, param_nb
+    do jparm = nparmcsf+1, param_nb
+      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,i)*eigvec(1+jparm,i)*ovlp_lin(1+iparm,1+jparm)
+    enddo
+   enddo
+   psi_lin_var_norm = psi_lin_var_norm/eigvec(1,i)**2  ! Normalize so first component is 1
+!  write(6,'(2i4,a,f20.8)') i, eigval_ind_to_eigval_srt_ind(i), ' Norm of linear wave function variation for nonlinear parameters =', psi_lin_var_norm
+   if(psi_lin_var_norm < smallest_norm) then
+     smallest_norm = psi_lin_var_norm
+     eigvec_smallest_norm_ind = i
+   endif
+  enddo
+  write(6,'(/,''Reasonable bounds for the eigenvalue are:'',2f12.5)')(1-p_var)*energy_sav+p_var*energy_sigma_sav**2 &
+  ,(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2
+  write(6,'(a,i4,a,f12.8)') 'Eigenvector',eigvec_smallest_norm_ind,' has smallest norm of linear wave function variation for nonlinear parameters =', smallest_norm
+   write(6,'(a,f8.3,a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with smallest |Psi_lin-Psi_0|=',smallest_norm,' for nonlin params is #'&
+   &,eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+
 ! Find eigenvector with largest first coefficient
-  eigvec_1st_component_max = dabs(eigvec (1,1))
-  eig_1st_component_max_ind = 1
+! When there are more than one with largest first coeff., pick out of these the one with the lowest eigenvalue
+  eigvec_max_1st_compon = dabs(eigvec(1,1))
+  eigvec_max_1st_compon_ind = 1
   do i = 1, param_aug_nb
-    if (dabs(eigvec (1,i)) > eigvec_1st_component_max) then
-      eigvec_1st_component_max = dabs(eigvec (1,i))
-      eig_1st_component_max_ind = i
+    if(dabs(eigvec(1,i)) > eigvec_max_1st_compon) then
+      eigvec_max_1st_compon = dabs(eigvec(1,i))
+      eigvec_max_1st_compon_ind = i
     endif
-    if (dabs(eigvec (1,i)) == eigvec_1st_component_max) then
-      if (eigval_r (i) < eigval_r (eig_1st_component_max_ind)) then
-       eigvec_1st_component_max = dabs(eigvec (1,i))
-       eig_1st_component_max_ind = i
+    if(dabs(eigvec(1,i)) == eigvec_max_1st_compon) then
+      if(eigval_r(i) < eigval_r(eigvec_max_1st_compon_ind)) then
+       eigvec_max_1st_compon = dabs(eigvec(1,i))
+       eigvec_max_1st_compon_ind = i
       endif
     endif
   enddo
-  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind (eig_1st_component_max_ind), ': ',eigval_r (eig_1st_component_max_ind), ' +', eigval_i (eig_1st_component_max_ind),' i'
+  write(6,'(a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i'
 
-! Find eigenvector with lowest eigenvalue that is not crazy
-! If eigenvec with lowest eigenvalue is degenerate, choose the one with largest first coef
-  eigval_lowest = 9.d99
-  eigval_lowest_ind = 0
+! Find eigenvector with lowest eigenvalue that in a reasonable window
+! If eigenvec with lowest eigenvalue is degenerate(never happens), choose the one with largest first coef
+  lowest_eigval = 9.d99
+  eigvec_lowest_eigval_ind = 0
   do i = 1, param_aug_nb
-! Needs to be improved, but for the moment this is no longer the default, so that's OK.
-!   if (dabs(eigval_r (i) - (p_var*(energy(1)-energy_sigma(1)) + (1-p_var)*energy_sigma(1)**2)) < )
-     if ((p_var < 1.d0 .and. eigval_r (i) < eigval_lowest .and. dabs(eigval_r (i)-(1-p_var)*etrial) < 10.d0) .or. &
-         (p_var == 1.d0 .and. eigval_r (i) < eigval_lowest .and. eigval_r (i) > 0.d0)) then
-      eigval_lowest = eigval_r (i)
-      eigval_lowest_ind = i
+!   write(6,*)(1-p_var)*energy_sav + p_var*energy_sigma_sav**2,(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2
+    if(eigval_r(i) < lowest_eigval .and. &
+        eigval_r(i) <(1-p_var)*energy_sav + p_var*energy_sigma_sav**2 .and. &
+        eigval_r(i) >(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2) then
+! Old criteria
+!    if((p_var < 1.d0 .and. eigval_r(i) < lowest_eigval .and. dabs(eigval_r(i)-(1-p_var)*etrial) < 10.d0) .or. &
+!       (p_var == 1.d0 .and. eigval_r(i) < lowest_eigval .and. eigval_r(i) > 0.d0)) then
+      lowest_eigval = eigval_r(i)
+      eigvec_lowest_eigval_ind = i
     endif
-    if (eigval_r (i) == eigval_lowest) then
-      if (dabs(eigvec (1,i)) > dabs(eigvec (1, eigval_lowest_ind))) then
-        eigval_lowest = eigval_r (i)
-        eigval_lowest_ind = i
+    if(eigval_r(i) == lowest_eigval) then
+      if(dabs(eigvec(1,i)) > dabs(eigvec(1, eigvec_lowest_eigval_ind))) then
+        lowest_eigval = eigval_r(i)
+        eigvec_lowest_eigval_ind = i
       endif
     endif
   enddo
 
-!  if (eigval_lowest_ind /= 0) then
-!    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+!  if(eigvec_lowest_eigval_ind /= 0) then
+!    write(6,'(a,i5,a,2(f10.4,a))') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i'
 !  else
 !!   if no reasonable lowest eigenvalue found, then just take the lowest one
-!    eigval_lowest = 9.d99
-!    eigval_lowest_ind = 0
+!    lowest_eigval = 9.d99
+!    eigvec_lowest_eigval_ind = 0
 !    do i = 1, param_aug_nb
-!      if (eigval_r (i) < eigval_lowest) then
-!        eigval_lowest = eigval_r (i)
-!        eigval_lowest_ind = i
+!      if(eigval_r(i) < lowest_eigval) then
+!        lowest_eigval = eigval_r(i)
+!        eigvec_lowest_eigval_ind = i
 !      endif
-!      if (eigval_r (i) == eigval_lowest) then
-!        if (dabs(eigvec (1,i)) > dabs(eigvec (1, eigval_lowest_ind))) then
-!          eigval_lowest = eigval_r (i)
-!          eigval_lowest_ind = i
+!      if(eigval_r(i) == lowest_eigval) then
+!        if(dabs(eigvec(1,i)) > dabs(eigvec(1, eigvec_lowest_eigval_ind))) then
+!          lowest_eigval = eigval_r(i)
+!          eigvec_lowest_eigval_ind = i
 !        endif
 !      endif
 !    enddo
-!    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+!    write(6,'(a,i5,a,2(f12.6,a))') 'The (sorted) eigenvector with lowest eigenvalue is #',eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i'
 !    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows!'
 !  endif
 
-  if (eigval_lowest_ind /= 0) then
-    write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind (eigval_lowest_ind), ': ',eigval_r (eigval_lowest_ind), ' +', eigval_i (eigval_lowest_ind),' i'
+  if(eigvec_lowest_eigval_ind /= 0) then
+    write(6,'(a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i'
   else
-!   if no reasonable lowest eigenvalue found, then take the one with the largest 1st component
-    l_select_eigvec_lowest = .false.
-    l_select_eigvec_largest_1st_coef = .true.
-    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows so select eigenvector with largest 1st component!'
+    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows so select eigenvector with smallest norm(Psi_lin-Psi_0)!'
   endif
 
+! if target_state = 0, select eigenvector from one of the 3 criteria:
+! 1) lowest reasonable eigenvalue,
+!    if no reasonable lowest eigenvalue found, then take the one with  smallest norm(Psi_lin-Psi_0)
+! 2) largest 1st component relative and from these the one with the lowest eigenvalue
+! 3) smallest norm(Psi_lin-Psi_0) for nonlinear parameters
+  if(target_state == 0) then
 
-! if target_state = 0, select eigenvector with lowest reasonable eigenvalue or largest 1st components
-  if (target_state == 0) then
-
-   if (l_select_eigvec_lowest) then
-     eig_ind = eigval_lowest_ind
-   elseif (l_select_eigvec_largest_1st_coef) then
-     eig_ind = eig_1st_component_max_ind
+   if(l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind /= 0) then
+     eig_ind = eigvec_lowest_eigval_ind
+   elseif(l_select_eigvec_largest_1st_coef) then
+     eig_ind = eigvec_max_1st_compon_ind
+   elseif(l_select_eigvec_smallest_norm .or.(l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind == 0)) then
+     eig_ind = eigvec_smallest_norm_ind
    else
-     call die (lhere, 'Both select_eigvec_lowest and select_eigvec_largest_1st_coef are false.')
+     call die(lhere, 'All 3 of select_eigvec_lowest, select_eigvec_largest_1st_coef and select_eigvec_smallest_norm are false.')
    endif
 
 ! if target_state >= 1, simply select the corresponding the wanted target state
   else
 
-    if (target_state > param_aug_nb) then
-     call die (lhere, 'target_state='+target_state+' > param_aug_nb='+param_aug_nb)
+    if(target_state > param_aug_nb) then
+     call die(lhere, 'target_state='+target_state+' > param_aug_nb='+param_aug_nb)
     endif
-    eig_ind = eigval_srt_ind_to_eigval_ind (target_state)
+    eig_ind = eigval_srt_ind_to_eigval_ind(target_state)
 
   endif
 
-  if (eig_1st_component_max_ind /= eigval_lowest_ind) then
-   write(6,'(a)') 'Warning: the eigenvector with largest first coefficient and the eigenvector with lowest reasonable eigenvalue are different.'
+  if(eigvec_lowest_eigval_ind /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind .or. eigvec_smallest_norm_ind /= eigvec_lowest_eigval_ind) then
+   if(eigvec_lowest_eigval_ind /= 0) then
+     write(6,'(a,3(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
+     eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i', &
+     eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
+     eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+    else
+     write(6,'(a,a,2(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
+     'no reasonable eigenvalue', &
+     eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
+     eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+   endif
    l_warning = .true.
   endif
 
-  write(6,'(a,i5,a,f12.6,a,f12.6,a)') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind (eig_ind), ': ',eigval_r (eig_ind), ' +', eigval_i (eig_ind),' i'
-!  write(6,'(2a,100f12.7)') trim(lhere),': parameters variations =', eigvec_lin (:)
+  write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+!  write(6,'(2a,100f12.7)') trim(lhere),': parameters variations =', eigvec_lin(:)
 
 ! undo renormalization
 ! warning: only for selected eigenvector
-  eigvec (:, eig_ind) = eigvec (:, eig_ind) / renorm_vector (:)
+  eigvec(:, eig_ind) = eigvec(:, eig_ind) / renorm_vector(:)
 
 ! normalize eigenvector so that first component is 1
   eigvec(:,eig_ind) = eigvec(:,eig_ind)/eigvec(1,eig_ind)
@@ -837,18 +898,18 @@ module opt_lin_mod
      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_ind)*eigvec(1+jparm,eig_ind)*ovlp_lin(1+iparm,1+jparm)
    enddo
   enddo
-  write (6,'(a,f)') 'Norm of linear wave function variation for nonlinear parameters =', psi_lin_var_norm
+  write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlinear parameters =', psi_lin_var_norm
 
 
 ! calculate the actual parameter variations
   eigvec_first_coef = eigvec(1,eig_ind)
 
-  select case(trim(update_nonlinear))
+  select case (trim(update_nonlinear))
 
 ! original: come back to original derivatives basis for all parameters
    case ('original')
     do i = 1, param_nb
-       eigvec_first_coef = eigvec_first_coef - eigvec(1+i,eig_ind) * dpsi_av (i)
+       eigvec_first_coef = eigvec_first_coef - eigvec(1+i,eig_ind) * dpsi_av(i)
     enddo
 
 ! semiorthogonal: use semiorthognal derivatives for nonlinear parameters
@@ -856,19 +917,19 @@ module opt_lin_mod
 
 !   come back to original derivatives for the CSFs only
     do iparmcsf = 1, nparmcsf
-       eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av (iparmcsf)
+       eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
     enddo
 
 !   nonlinear paramater
-    eigvec_first_coef = eigvec_first_coef + (1.d0-xi)*psi_lin_var_norm/((1.d0-xi) + xi*(1.d0+psi_lin_var_norm))
+    eigvec_first_coef = eigvec_first_coef +(1.d0-xi)*psi_lin_var_norm/((1.d0-xi) + xi*(1.d0+psi_lin_var_norm))
 
   case default
-    call die (lhere, 'unknown update choice >'+trim(update_nonlinear)+'<')
+    call die(lhere, 'unknown update choice >'+trim(update_nonlinear)+'<')
   end select
 
 ! final parameter variations
   do iparm = 1, param_nb
-    delta_lin (iparm) = eigvec (1+iparm, eig_ind) / eigvec_first_coef
+    delta_lin(iparm) = eigvec(1+iparm, eig_ind) / eigvec_first_coef
   enddo
 
   end subroutine delta_lin_bld
@@ -876,7 +937,7 @@ module opt_lin_mod
 ! ==============================================================================
   subroutine psi_lin_norm_sq_bld
 ! ------------------------------------------------------------------------------
-! Description   : square of norm of linear wave function (in the original basis)
+! Description   : square of norm of linear wave function(in the original basis)
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
@@ -887,15 +948,15 @@ module opt_lin_mod
   integer param_i, param_j, pair
 
 ! header
-  if (header_exe) then
+  if(header_exe) then
 
-   call object_create ('psi_lin_norm_sq')
+   call object_create('psi_lin_norm_sq')
 
-   call object_needed ('param_nb')
-   call object_needed ('delta_lin')
-   call object_needed ('dpsi_av')
-   call object_needed ('dpsi_dpsi_av')
-   call object_needed ('param_pairs')
+   call object_needed('param_nb')
+   call object_needed('delta_lin')
+   call object_needed('dpsi_av')
+   call object_needed('dpsi_dpsi_av')
+   call object_needed('param_pairs')
 
    return
 
@@ -904,15 +965,15 @@ module opt_lin_mod
 ! begin
 
 ! allocation
-  call object_associate ('psi_lin_norm_sq', psi_lin_norm_sq)
+  call object_associate('psi_lin_norm_sq', psi_lin_norm_sq)
 
   psi_lin_norm_sq = 1.d0
 
   do param_i = 1, param_nb
-    psi_lin_norm_sq = psi_lin_norm_sq + 2.d0 * delta_lin (param_i) * dpsi_av (param_i)
+    psi_lin_norm_sq = psi_lin_norm_sq + 2.d0 * delta_lin(param_i) * dpsi_av(param_i)
     do param_j = 1, param_nb
-      pair = param_pairs (param_i, param_j)
-      psi_lin_norm_sq = psi_lin_norm_sq + delta_lin (param_i) * delta_lin (param_j) * dpsi_dpsi_av (pair)
+      pair = param_pairs(param_i, param_j)
+      psi_lin_norm_sq = psi_lin_norm_sq + delta_lin(param_i) * delta_lin(param_j) * dpsi_dpsi_av(pair)
     enddo ! param_j
   enddo ! param_i
 

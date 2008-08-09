@@ -4,6 +4,7 @@ module optimization_mod
   use opt_nwt_mod
   use opt_lin_mod
   use opt_ptb_mod
+  use opt_common_mod
   use orbitals_mod
   use periodic_jastrow_mod
   use deriv_mod
@@ -38,11 +39,6 @@ module optimization_mod
 
   real(dp)                :: energy_threshold          = 0.001d0
   real(dp)                :: gradient_norm_threshold   = 0.1d0
-  real(dp)                :: energy_sav
-  real(dp)                :: energy_err_sav
-  real(dp)                :: energy_sigma_sav
-  real(dp)                :: error_sigma_sav
-  real(dp)                :: ene_var_sav
 
   real(dp)                :: delta_param_norm
   real(dp)                :: delta_csf_norm
