@@ -1078,7 +1078,8 @@ contains
              if( dist_en_wlk(elec_i, cent_i, walk_i) .ge. threshold_l(iwctype(cent_i))) then
                 smooth_cutoff_g(elec_i, cent_i, walk_i) = 1.d0
              else
-                smooth_cutoff_g(elec_i, cent_i, walk_i) = (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2 * (6.d0 - 8.d0 * (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i))) + 3.d0 * (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2)
+                smooth_cutoff_g(elec_i, cent_i, walk_i) = (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2 * (6.d0 - 8.d0 &
+                     & * (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i))) + 3.d0 * (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2)
              end if
           enddo
        enddo
@@ -1968,7 +1969,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_up) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_up) &
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k &
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) &
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -1990,7 +1994,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_up) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_up) &
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k&
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2024,7 +2031,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), down_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2046,7 +2055,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), down_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k&
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2079,7 +2091,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2112,7 +2126,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_all_elec(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2219,7 +2235,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_up) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_up)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2241,7 +2259,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_up) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_up)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2275,7 +2295,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), down_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2297,7 +2319,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), down_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2330,7 +2354,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2363,7 +2389,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_down) * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + phi_param_phi_pseudo(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo

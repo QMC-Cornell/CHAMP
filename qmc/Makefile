@@ -20,9 +20,9 @@ SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
 	forces_pulay_mod.f90 grid_mod.f90 indexes_mod.f90 \
 	initialization_mod.f90 intracule_mod.f90 jastrow_mod.f90 \
 	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
-	nodes_mod.f90 nuclei_mod.f90 objects_mod.f90 opt_lin_mod.f90 \
-	opt_nwt_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 orbitals_mod.f90 \
-	parser_tools_mod.f90 periodic_jastrow_een.f90 \
+	nodes_mod.f90 nuclei_mod.f90 objects_mod.f90 opt_common_mod.f90 \
+	opt_lin_mod.f90 opt_nwt_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 \
+	orbitals_mod.f90 parser_tools_mod.f90 periodic_jastrow_een.f90 \
 	periodic_jastrow_mod.f90 pjas_interface.f90 pjas_setup_mod.f90 \
 	pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 psi_mod.f90 \
 	restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
@@ -101,11 +101,11 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
 	files_tools_mod.o fitdet_mod.o forces_mod.o forces_pulay_mod.o \
 	grid_mod.o indexes_mod.o initialization_mod.o intracule_mod.o \
 	jastrow_mod.o main_menu_mod.o matrix_tools_mod.o montecarlo_mod.o \
-	mpi_mod.o nodes_mod.o nuclei_mod.o objects_mod.o opt_lin_mod.o \
-	opt_nwt_mod.o opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
-	parser_tools_mod.o periodic_jastrow_een.o periodic_jastrow_mod.o \
-	pjas_interface.o pjas_setup_mod.o pjasee_mod.o pjasen_mod.o \
-	print_mod.o psi_mod.o restart_mod.o routines_mod.o \
+	mpi_mod.o nodes_mod.o nuclei_mod.o objects_mod.o opt_common_mod.o \
+	opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o optimization_mod.o \
+	orbitals_mod.o parser_tools_mod.o periodic_jastrow_een.o \
+	periodic_jastrow_mod.o pjas_interface.o pjas_setup_mod.o pjasee_mod.o \
+	pjasen_mod.o print_mod.o psi_mod.o restart_mod.o routines_mod.o \
 	strings_tools_mod.o testing_mod.o types_mod.o variables_mod.o \
 	vmc_mod.o walkers_mod.o write_mod.o amoeba.o amotry.o choldc.o \
 	cholsl.o ei.o ei2.o erf.o expint.o hash_funcs.o pythag.o svbksb.o \
@@ -297,13 +297,15 @@ nodes_mod.o: basic_tools_mod.o constants_mod.o strings_tools_mod.o
 nuclei_mod.o: all_tools_mod.o commons.h
 objects_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o routines_mod.o \
 	strings_tools_mod.o types_mod.o
-opt_lin_mod.o: all_tools_mod.o deriv_mod.o commons.h
+opt_common_mod.o: all_tools_mod.o
+opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o commons.h
 opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o commons.h
 opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o \
 	commons.h
 optimization_mod.o: all_tools_mod.o control_mod.o deriv_mod.o \
-	montecarlo_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o \
-	orbitals_mod.o periodic_jastrow_mod.o vmc_mod.o commons.h
+	montecarlo_mod.o opt_common_mod.o opt_lin_mod.o opt_nwt_mod.o \
+	opt_ptb_mod.o orbitals_mod.o periodic_jastrow_mod.o vmc_mod.o \
+	commons.h
 orbitals_mod.o: all_tools_mod.o basis_mod.o commons.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
