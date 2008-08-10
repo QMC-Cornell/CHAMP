@@ -458,6 +458,12 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_deriv_var_bld', forces_zv_deriv_var_bld)
   call catalog_one_node ('forces_zv_deriv_pulay_av_bld', forces_zv_deriv_pulay_av_bld)
   call catalog_one_node ('forces_zv_deriv_pulay_av_var_bld', forces_zv_deriv_pulay_av_var_bld)
+  call catalog_one_node ('forces_zv_deriv_deloc_bld', forces_zv_deriv_deloc_bld)
+  call catalog_one_node ('forces_zv_deriv_deloc_covar_bld', forces_zv_deriv_deloc_covar_bld)
+  call catalog_one_node ('forces_zv_deriv_linear_coef_bld', forces_zv_deriv_linear_coef_bld)
+  call catalog_one_node ('forces_zv_deriv_linear_var_bld', forces_zv_deriv_linear_var_bld)
+  call catalog_one_node ('forces_zv_deriv_linear_av_bld', forces_zv_deriv_linear_av_bld)
+  call catalog_one_node ('forces_zv_deriv_linear_av_var_bld', forces_zv_deriv_linear_av_var_bld)
 
 !backflow fp
   call catalog_one_node('xi_een_phi_bld', xi_een_phi_bld) !fp

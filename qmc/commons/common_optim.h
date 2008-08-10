@@ -8,4 +8,3 @@
       integer necn,nebase
 
       common /optim/ lo,npoint,iwjasa,iwjasb,iwjasc,iwjasf,iwbase,iwbasi,iworb,iwcsf,iebase,iebasi,ieorb,imnbas,nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,nparma,nparmb,nparmc,nparmf,necn,nebase
-

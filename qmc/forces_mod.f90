@@ -17,9 +17,10 @@
 # endif
   logical                                     :: l_forces_bare = .false.
   logical                                     :: l_forces_zv = .true.
-  logical                                     :: l_forces_zvzb = .false.
-  logical                                     :: l_forces_zv_linear = .false.
   logical                                     :: l_forces_zv_deriv = .false.
+  logical                                     :: l_forces_zv_linear = .false.
+  logical                                     :: l_forces_zv_deriv_linear = .false.
+  logical                                     :: l_forces_zvzb = .false.
   logical                                     :: l_forces_pulay = .false.
   logical                                     :: l_forces_zv_pulay = .false.
   logical                                     :: l_forces_zv_deriv_pulay = .false.
@@ -57,6 +58,11 @@
   real(dp), allocatable                       :: forces_zv_linear_av_err (:)
   real(dp), allocatable                       :: forces_zv_linear_var (:)
   real(dp), allocatable                       :: forces_zv_linear_coef (:,:)
+  real(dp), allocatable                       :: forces_zv_deriv_linear_av (:)
+  real(dp), allocatable                       :: forces_zv_deriv_linear_av_var (:)
+  real(dp), allocatable                       :: forces_zv_deriv_linear_av_err (:)
+  real(dp), allocatable                       :: forces_zv_deriv_linear_var (:)
+  real(dp), allocatable                       :: forces_zv_deriv_linear_coef (:,:)
   real(dp), allocatable                       :: forces_zv_deriv (:)
   real(dp), allocatable                       :: forces_zv_deriv_av (:)
   real(dp), allocatable                       :: forces_zv_deriv_var (:)
@@ -68,6 +74,10 @@
   real(dp), allocatable                       :: forces_zv_deloc_av (:,:)
   real(dp), allocatable                       :: forces_zv_deloc_covar (:,:)
   real(dp), allocatable                       :: forces_zv_av_deloc_av_covar (:,:)
+  real(dp), allocatable                       :: forces_zv_deriv_deloc (:,:)
+  real(dp), allocatable                       :: forces_zv_deriv_deloc_av (:,:)
+  real(dp), allocatable                       :: forces_zv_deriv_deloc_covar (:,:)
+  real(dp), allocatable                       :: forces_zv_deriv_av_deloc_av_covar (:,:)
   real(dp), allocatable                       :: forces_zv_pulay_av (:)
   real(dp), allocatable                       :: forces_zv_pulay_av_var (:)
   real(dp), allocatable                       :: forces_zv_pulay_av_err (:)
@@ -122,6 +132,7 @@
     write(6,'(a)') '           = zv : simplest zero-variance estimator (default)'
     write(6,'(a)') '           = zv_deriv : zero-variance estimator using wave function derivatives wrt nuclear coordinates'
     write(6,'(a)') '           = zv_linear : zero-variance estimator using wave function derivatives wrt parameters'
+    write(6,'(a)') '           = zv_deriv_linear : zero-variance estimator using wave function derivatives wrt nuclear coordinates and parameters'
     write(6,'(a)') '           = zvzb : simplest zero-variance zero-bias estimator'
     write(6,'(a)') '           = zv_pulay : simplest zero-variance + Pulay estimator'
     write(6,'(a)') '           = zv_deriv_pulay : zero-variance using wave function derivatives wrt nuclear coordinates + Pulay estimator'
@@ -151,6 +162,9 @@
      case ('zv_linear')
        l_forces_zv_linear = .true.
        l_forces_zv = .true.
+     case ('zv_deriv_linear')
+       l_forces_zv_deriv_linear = .true.
+       l_forces_zv_deriv = .true.
      case ('zvzb')
        l_forces_zvzb = .true.
        l_forces_zv   = .true.
@@ -220,6 +234,9 @@
   if (l_forces_zv_linear) then
    write(6,'(a)') ' Forces will be calculated with zero-variance estimator using wave function derivatives wrt parameters.'
   endif
+  if (l_forces_zv_deriv_linear) then
+   write(6,'(a)') ' Forces will be calculated with zero-variance estimator using wave function derivatives wrt nuclear coordinates and parameters.'
+  endif
   if (l_forces_zvzb) then
    write(6,'(a)') ' Forces will be calculated with simplest zero-variance zero-bias estimator.'
   endif
@@ -258,6 +275,15 @@
    call object_covariance_request ('deloc_av_deloc_av_covar')
    call object_covariance_request ('forces_zv_av_deloc_av_covar')
    call object_error_request ('forces_zv_linear_av_err')
+  endif
+
+  if (l_forces_zv_deriv_linear) then
+   call object_average_request ('deloc_av')
+   call object_average_request ('deloc_deloc_av')
+   call object_average_request ('forces_zv_deriv_deloc_av')
+   call object_covariance_request ('deloc_av_deloc_av_covar')
+   call object_covariance_request ('forces_zv_deriv_av_deloc_av_covar')
+   call object_error_request ('forces_zv_deriv_linear_av_err')
   endif
 
   if (l_forces_zvzb) then
@@ -1349,6 +1375,264 @@
 
   end subroutine forces_zv_linear_av_var_bld
 
+! ==============================================================================
+  subroutine forces_zv_deriv_deloc_bld
+! ------------------------------------------------------------------------------
+! Description   : forces_zv_deriv * deloc
+!
+! Created       : J. Toulouse, 10 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i, force_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_deloc')
+   call object_average_define ('forces_zv_deriv_deloc', 'forces_zv_deriv_deloc_av')
+   call object_covariance_define ('forces_zv_deriv_av', 'deloc_av', 'forces_zv_deriv_av_deloc_av_covar')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deriv')
+   call object_needed ('deloc')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_deloc', forces_zv_deriv_deloc, forces_nb, param_nb)
+  call object_alloc ('forces_zv_deriv_deloc_av', forces_zv_deriv_deloc_av, forces_nb, param_nb)
+  call object_alloc ('forces_zv_deriv_av_deloc_av_covar', forces_zv_deriv_av_deloc_av_covar, forces_nb, param_nb)
+
+  do force_i = 1, forces_nb
+   do param_i = 1, param_nb
+    forces_zv_deriv_deloc (force_i, param_i) = forces_zv_deriv (force_i) * deloc (param_i)
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deriv_deloc_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_deloc_covar_bld
+! ------------------------------------------------------------------------------
+! Description   : covariance : < forces_zv_deriv * deloc > - < forces_zv_deriv > * < deloc >
+!
+! Created       : J. Toulouse, 10 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i, force_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_deloc_covar')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deriv_deloc_av')
+   call object_needed ('forces_zv_deriv_av')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_deloc_covar', forces_zv_deriv_deloc_covar, forces_nb, param_nb)
+
+  do force_i = 1, forces_nb
+   do param_i = 1, param_nb
+    forces_zv_deriv_deloc_covar (force_i, param_i) = forces_zv_deriv_deloc_av (force_i, param_i) - forces_zv_deriv_av (force_i) * deloc_av (param_i)
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deriv_deloc_covar_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_linear_coef_bld
+! ------------------------------------------------------------------------------
+! Description   : coefficient minimizing the variance of zero-variance estimator
+!
+! Created       : J. Toulouse, 10 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_linear_coef')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deriv_deloc_covar')
+   call object_needed ('deloc_deloc_covar_inv')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_linear_coef', forces_zv_deriv_linear_coef, forces_nb, param_nb)
+
+  do force_i = 1, forces_nb
+   do param_i = 1, param_nb
+    forces_zv_deriv_linear_coef (force_i, param_i) = 0.d0
+    do param_j = 1, param_nb
+     forces_zv_deriv_linear_coef (force_i, param_i) = forces_zv_deriv_linear_coef (force_i, param_i) - deloc_deloc_covar_inv (param_i, param_j) * forces_zv_deriv_deloc_covar (force_i, param_j)
+    enddo ! param_j
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deriv_linear_coef_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_linear_av_bld
+! ------------------------------------------------------------------------------
+! Description   : average of ZV estimator for forces using wave function derivatives
+! Description   : wrt to nuclear coordinates and parameters
+!
+! Created       : J. Toulouse, 10 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_linear_av')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deriv_linear_coef')
+   call object_needed ('forces_zv_deriv_av')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_linear_av', forces_zv_deriv_linear_av, forces_nb)
+
+  do force_i = 1, forces_nb
+   forces_zv_deriv_linear_av (force_i) = forces_zv_deriv_av (force_i)
+   do param_i = 1, param_nb
+    forces_zv_deriv_linear_av (force_i) = forces_zv_deriv_linear_av (force_i) + forces_zv_deriv_linear_coef (force_i, param_i) * deloc_av (param_i)
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deriv_linear_av_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_linear_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of zero-variance estimator of force
+!
+! Created       : J. Toulouse, 10 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_linear_var')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deriv_var')
+   call object_needed ('forces_zv_deriv_linear_coef')
+   call object_needed ('forces_zv_deriv_deloc_covar')
+   call object_needed ('deloc_deloc_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_linear_var', forces_zv_deriv_linear_var, forces_nb)
+
+  do force_i = 1, forces_nb
+   forces_zv_deriv_linear_var (force_i) = forces_zv_deriv_var (force_i)
+   do param_i = 1, param_nb
+    forces_zv_deriv_linear_var (force_i) = forces_zv_deriv_linear_var (force_i) + 2.d0 * forces_zv_deriv_linear_coef (force_i, param_i) * forces_zv_deriv_deloc_covar (force_i, param_i)
+     do param_j = 1, param_nb
+      forces_zv_deriv_linear_var (force_i) = forces_zv_deriv_linear_var (force_i) + forces_zv_deriv_linear_coef (force_i, param_i) * forces_zv_deriv_linear_coef (force_i, param_j) * deloc_deloc_covar (param_i, param_j)
+     enddo ! param_j
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deriv_linear_var_bld
+
+! ==============================================================================
+  subroutine forces_zv_deriv_linear_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of average of zero-variance estimator of force
+!
+! Created       : J. Toulouse, 10 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer force_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_zv_deriv_linear_av_var')
+   call object_error_define_from_variance ('forces_zv_deriv_linear_av_var', 'forces_zv_deriv_linear_av_err')
+
+   call object_needed ('forces_nb')
+   call object_needed ('param_nb')
+   call object_needed ('forces_zv_deriv_av_var')
+   call object_needed ('forces_zv_deriv_linear_coef')
+   call object_needed ('forces_zv_deriv_av_deloc_av_covar')
+   call object_needed ('deloc_av_deloc_av_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('forces_zv_deriv_linear_av_var', forces_zv_deriv_linear_av_var, forces_nb)
+  call object_alloc ('forces_zv_deriv_linear_av_err', forces_zv_deriv_linear_av_err, forces_nb)
+
+  do force_i = 1, forces_nb
+   forces_zv_deriv_linear_av_var (force_i) = forces_zv_deriv_av_var (force_i)
+   do param_i = 1, param_nb
+    forces_zv_deriv_linear_av_var (force_i) = forces_zv_deriv_linear_av_var (force_i) + 2.d0 * forces_zv_deriv_linear_coef (force_i, param_i) * forces_zv_deriv_av_deloc_av_covar (force_i, param_i)
+     do param_j = 1, param_nb
+      forces_zv_deriv_linear_av_var (force_i) = forces_zv_deriv_linear_av_var (force_i) + forces_zv_deriv_linear_coef (force_i, param_i) * forces_zv_deriv_linear_coef (force_i, param_j) * deloc_av_deloc_av_covar (param_i, param_j)
+     enddo ! param_j
+   enddo ! param_i
+  enddo ! force_i
+
+  end subroutine forces_zv_deriv_linear_av_var_bld
 !===========================================================================
   subroutine forces_wrt
 !---------------------------------------------------------------------------
@@ -1422,6 +1706,19 @@
    call object_provide ('forces_zv_linear_var')
    do force_i = 1, forces_nb
     write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
+   enddo
+  endif
+
+  if (l_forces_zv_deriv_linear) then
+   write(6,*)
+   write(6,'(a)') 'Total force with zero-variance estimator using wave function derivatives wrt nuclear coordinates and parameters:'
+   call object_provide ('forces_nb')
+   call object_provide ('forces_list')
+   call object_provide ('forces_zv_deriv_linear_av')
+   call object_provide ('forces_zv_deriv_linear_av_err')
+   call object_provide ('forces_zv_deriv_linear_var')
+   do force_i = 1, forces_nb
+    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_linear_av (force_i), ' +-', forces_zv_deriv_linear_av_err (force_i),' (variance =',forces_zv_deriv_linear_var (force_i),')'
    enddo
   endif
 

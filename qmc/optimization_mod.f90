@@ -1134,9 +1134,11 @@ module optimization_mod
       call coef_orb_on_norm_basis_from_coef (iwf)
      endif
 
-!    check or impose e-N cusp conditions
-     l_cusp_en = l_cusp_en_opt
-!    call cusp_en_orb
+!    checking or imposing e-n cusp conditions
+!    Warning: I should check if something is needed to be done for exponent optimization (coef_from_coef_orb_on_norm_basis?)
+     if (l_check_cusp_en .or. l_impose_cusp_en_opt) then
+      call cusp_en_orb
+     endif
 
 !  periodic case
    else

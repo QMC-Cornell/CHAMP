@@ -10,7 +10,7 @@ c:::  the cusp exactly.                                              :::
 c:::  The number of these cusp conditions is ncent*norb              :::
 !
 ! J. Toulouse - 06 Jan 05:
-!  l_cusp_en_occ = true : impose cusp conditions only on occupied orbitals
+! l_impose_cusp_en_occ = true : impose cusp conditions only on occupied orbitals
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
 !                        : change a(i,j,1) -> a(i,j,iwf)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -158,7 +158,7 @@ c     write(6,'(''ibas,imnbas(icent),imxbas'',9i5)') ibas,imnbas(icent),imxbas
          call cusorb_equiv(icent,orb2)
          do 35 iorb=1,norb
 ! JT beg: skip non-occupied orbitals
-           if(l_cusp_en_occ) then
+           if(l_impose_cusp_en_occ) then
             call object_provide ('orb_occ_in_wf')
             if(.not. orb_occ_in_wf(iorb)) cycle
            endif
@@ -230,7 +230,7 @@ c If icusp.ge.0 then all the diffs should be 0.
          call cusorb(icent,orb)
          do 50 iorb=1,norb
 ! JT beg: skip non-occupied orbitals
-           if(l_cusp_en_occ) then
+           if(l_impose_cusp_en_occ) then
             call object_provide ('orb_occ_in_wf')
             if(.not. orb_occ_in_wf(iorb)) cycle
            endif
@@ -256,11 +256,14 @@ c If icusp.ge.0 then all the diffs should be 0.
 c      write(6,'(''top,bot,orb(iorb),znuc(iwctype(icent)),aa1'',9d12.4)')
 c    & top,bot,orb(iorb),znuc(iwctype(icent)),aa1
 
-             if(iprin.ge.1) write(6,'(''coef  of cnst - znuc'',5x,f12.6
-     &       ,4x,''orb'',i2,3x,''atom'',i2)')
-     &	     differ, iorb,icent
-             if(abs(differ).ge.1.d-13) write(6,'(''differ'',2i2,d12.4)')
-     &       icent,iorb,differ
+!             if (iprin.ge.1) then
+!              write(6,'(''coef  of cnst - znuc'',5x,f12.6
+!     &       ,4x,''orb'',i2,3x,''atom'',i2)')
+!     &	     differ, iorb,icent
+!             endif
+!             if(abs(differ).ge.1.d-13) write(6,'(''differ'',2i2,d12.4)')
+!     &       icent,iorb,differ
+             write(6,'(a,i2,a,i2,a,f12.6)') 'atom # ',icent,' orbital # ',iorb,' : log_deriv + znuc =',differ
 	     diff(ishft+1) = differ
 
              ishft=ishft+1

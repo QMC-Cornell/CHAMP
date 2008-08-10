@@ -46,7 +46,7 @@ c necn -> necoef
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-       common /optim/ lo(MORB),npoint(MORB),
+      common /optim/ lo(MORB),npoint(MORB),
      &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
      &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
      &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
@@ -64,21 +64,20 @@ c necn -> necoef
 !JT   &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT   &necn,nebase
 
-      write(6,*) 'ie: entering'
 !      read(5,*) nctype,ncent
-      write(6,'(''nctype,ncent='',2i3)') nctype,ncent
+!JT      write(6,'(''nctype,ncent='',2i3)') nctype,ncent
 !      if(nctype.gt.MCTYPE) stop 'ctype>MCTYPE'
 !      if(ncent.gt.MCENT) stop 'ncent>MCENT'
 !      read(5,*) (iwctype(icent),icent=1,ncent)
-      write(6,'(''iwctype='',20i3)') (iwctype(icent),icent=1,ncent)
+!JT      write(6,'(''iwctype='',20i3)') (iwctype(icent),icent=1,ncent)
 !      read(5,*) numr
-      write(6,'(''numr='',i2)') numr
+!JT      write(6,'(''numr='',i2)') numr
       if(numr.eq.1) then
 !        read(5,*) (nrbas(ic),ic=1,nctype)
-        write(6,'(''nrbas='',20i3)') (nrbas(ic),ic=1,nctype)
+!JT        write(6,'(''nrbas='',20i3)') (nrbas(ic),ic=1,nctype)
       endif
 !      read(5,*) norb,nbasis
-      write(6,'(''norb,nbasis='',9i5)') norb,nbasis
+!JT      write(6,'(''norb,nbasis='',9i5)') norb,nbasis
 !      if(norb.gt.MORB) stop 'norb>MORB'
 !      if(nbasis.gt.MBASIS) stop 'nbasis>MBASIS'
 
@@ -92,7 +91,8 @@ c necn -> necoef
 
 !      write(6,'(''read in analytical orbitals'')')
 
-      write(6,'(''lbasis'',20a)') (lbasis(i),i=1,nbasis)
+!JT      write(6,'(''lbasis'',20a)') (lbasis(i),i=1,nbasis)
+
 c I have to put in more features.
 c At present I assume that if a coef is zero, then it is not to be varied and
 c it need not be equal to other zero coefs.  Neither assumption is correct.

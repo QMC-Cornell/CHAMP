@@ -1413,18 +1413,18 @@ c if doing fit, allocate memory for saved configurations
         write(6,'(''Warning: iopt set to 2 because now fit uses quench only; zxssq is obsolete'')')
        endif
 
-! JT beg: checking e-N cusp condition on orbitals
-      if (index(mode,'vmc').ne.0 .and. icusp.ge.0) then
-
-       imnbas(1)=1
-      do i=1,ncent-1
-        it=iwctype(i)
-        imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
-      enddo
-
+! JT beg: checking e-N cusp condition on orbitals -> moved to orbitals_mod
+!      if (index(mode,'vmc').ne.0 .and. icusp.ge.0) then
+!
+!       imnbas(1)=1
+!      do i=1,ncent-1
+!        it=iwctype(i)
+!        imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
+!      enddo
+!
 !       call ie
 !       call cusp_en_orb
-      endif
+!      endif
 ! JT end
 
       read(5,*) i3body,irewgt,iaver,istrch

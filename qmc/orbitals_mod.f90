@@ -6,9 +6,10 @@ module orbitals_mod
 ! Declaration of global variables and default values
   integer                             :: orb_tot_nb
 
-  logical                             :: l_cusp_en     = .false.
-  logical                             :: l_cusp_en_occ = .false.
-  logical                             :: l_cusp_en_opt = .false.
+  logical                             :: l_check_cusp_en = .false.
+  logical                             :: l_impose_cusp_en = .false.
+  logical                             :: l_impose_cusp_en_occ = .false.
+  logical                             :: l_impose_cusp_en_opt = .false.
   logical                             :: l_approx_orb_rot = .false.
   logical                             :: l_ortho_orb_now = .false.
   logical                             :: l_ortho_orb_opt = .false.
@@ -202,46 +203,72 @@ module orbitals_mod
   implicit none
   include 'commons.h'
 
-  character*(max_string_len_rout),save :: lhere = 'orb_cusp_menu'
-  character*(max_string_len) line, word
+! local
+  character(len=max_string_len_rout),save :: lhere = 'orb_cusp_menu'
+  integer i, it
 
 ! begin
-  l_cusp_en = .true.
-  write(6,*) trim(lhere), ': l_cusp_en=', l_cusp_en
 
 ! loop over menu lines
   do
   call get_next_word (word)
 
-  if(trim(word) == 'help') then
-   write(6,*) 'cusp-h: menu for e-N cusp'
-   write(6,*) 'cusp-h: cusp'
-   write(6,*) 'cusp-h:  occ: impose the e-N cusp conditions on occupied orbitals only'
-   write(6,*) 'cusp-h:  opt: impose the e-N cusp conditions during the orbital optimization'
-   write(6,*) 'cusp-h: end'
+  select case(trim(word))
+  case ('help')
+   write(6,*)
+   write(6,'(a)') 'HELP for cusp menu:'
+   write(6,'(a)') ' cusp'
+   write(6,'(a)') '  check_cusp_en = [bool] : check e-n cusp conditions? (default=false)'
+   write(6,'(a)') '  impose_cusp_en = [bool] : impose e-n cusp conditions on all orbitals (default=false)'
+   write(6,'(a)') '  impose_cusp_en_opt = [bool] : impose e-n cusp conditions during orbital optimization (default=false)'
+   write(6,'(a)') '  impose_cusp_en_occ = [bool] : impose e-n cusp conditions on occupied orbitals only during orbital optimization (default=false)'
+   write(6,'(a)') ' end'
 
-  elseif(trim(word) == 'occ') then
-   l_cusp_en_occ = .true.
+  case ('check_cusp_en')
+   call get_next_value (l_check_cusp_en)
 
-  elseif(trim(word) == 'opt') then
-   l_cusp_en_opt = .true.
+  case ('impose_cusp_en')
+   call get_next_value (l_impose_cusp_en)
 
-  elseif(trim(word) == 'end') then
+  case ('impose_cusp_en_occ')
+   call get_next_value (l_impose_cusp_en_occ)
+   if (l_impose_cusp_en_occ) l_impose_cusp_en = .true.
+
+  case ('impose_cusp_en_opt')
+   call get_next_value (l_impose_cusp_en_opt)
+   if (l_impose_cusp_en_opt) l_impose_cusp_en = .true.
+
+  case ('end')
    exit
 
-  else
-
-   write(6,*) trim(lhere),': unknown word = ',trim(word)
-   call die(lhere)
-
-  endif
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<')
+  end select
 
   enddo ! end loop over menu lines
 
-! impose the e-N cusp condition
-  write(6,*) trim(lhere), ': call cusp_en_orb'
-  call cusp_en_orb
+  if (l_impose_cusp_en_opt) then
+   call die (lhere, 'option impose_cusp_en_opt=true not fully checked yet.')
+  endif
+  if (l_impose_cusp_en_occ) then
+   call die (lhere, 'option impose_cusp_en_occ=true not fully checked yet.')
+  endif
 
+  if (l_check_cusp_en .or. l_impose_cusp_en) then
+
+!   initilization for cusp
+    call object_provide ('nbasis_ctype')
+    call object_provide ('iwctype')
+    imnbas(1)=1
+    do i=1,ncent-1
+       it=iwctype(i)
+       imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
+    enddo
+    call ie
+
+!   imposing or checking e-n cusp conditions
+    call cusp_en_orb
+  endif
 
   end subroutine orb_cusp_menu
 
@@ -2139,7 +2166,6 @@ module orbitals_mod
 
   call object_provide ('coef')
 
-
   do orb_i = 1, orb_tot_nb
    lo (orb_i) = 1
    do bas_i = 1, nbasis
@@ -2237,7 +2263,7 @@ module orbitals_mod
 ! ==============================================================================
   subroutine cusp_en_orb
 ! ------------------------------------------------------------------------------
-! Description   : check or impose e-N cusp conditions orbitals
+! Description   : check or impose e-n cusp conditions on orbital coefficients
 !
 ! Created       : J. Toulouse, 06 Jan 2005
 ! ------------------------------------------------------------------------------
@@ -2259,22 +2285,25 @@ module orbitals_mod
   call alloc('diff', diff, ncent*orb_tot_nb)
 
   if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) then
-     if (l_cusp_en) then
-       icusp = 1
-       if(l_cusp_en_occ) then
-        write(6,'(a)') 'imposing e-N cusp conditions on occupied orbitals:'
-       else
-        write(6,'(a)') 'imposing e-N cusp conditions on all orbitals:'
-       endif
-     else
-        icusp = -1
-        write(6,'(a)') 'checking e-N cusp conditions on orbitals:'
-     endif
-     call equiv_bas
-     call cuspco(diff,1)
-  endif
 
-  call object_modified ('coef')
+    if (l_check_cusp_en .and. .not. l_impose_cusp_en) then
+     icusp = -1
+     write(6,'(a)') 'checking e-n cusp conditions on orbitals:'
+    endif
+
+    if (l_impose_cusp_en) then
+     icusp = 1
+     if (l_impose_cusp_en_occ) then
+      write(6,'(a)') 'imposing e-n cusp conditions on occupied orbitals:'
+     else
+      write(6,'(a)') 'imposing e-n cusp conditions on orbitals:'
+     endif
+    endif
+
+    call equiv_bas
+    call cuspco(diff,1)
+    call object_modified ('coef')
+  endif
 
   end subroutine cusp_en_orb
 
