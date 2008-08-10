@@ -64,9 +64,9 @@ ifeq ($(system),Linux)
 # LDFLAGS_MPI = -Vaxlib -static
   LDFLAGS_MPI = -static -nothread -lmpi
 
-ifeq ($(hostname),planck)
+# Old AMD Athlon cluster of Arias group
+ifeq ($(hostname),dft.physics.cornell.edu)
 ifeq ($(planck_compiler),g77)
-# AMD Athlon cluster of Arias group
 # FC = g77-3.2
 # FC = g77-3.0
   FC = g77
@@ -77,7 +77,6 @@ ifeq ($(planck_compiler),g77)
 endif
 
 ifeq ($(planck_compiler),ifort)
-# AMD Athlon cluster of Arias group
 # In the mpif77 line, the fc=ifc tells it to use ifc rather than the default g77
 # fpp2 is the preprocessor
 # -ax{i|M|K|W} i=Pentium Pro, M-Pentium MMX, K=Pentium3, W=Pentium4,Xeon
@@ -96,6 +95,27 @@ ifeq ($(planck_compiler),ifort)
   FFLAGS = -extend_source -w -r8 -O3 -axi -pad
 # LDFLAGS = -Vaxlib -static
 endif
+endif
+
+ifeq ($(hostname),gauss)
+  #-zero Initializes to zero all local scalar variables of intrinsic type INTEGER, REAL, COMPLEX, or LOGICAL that are saved but not yet initialized
+#-save ????
+#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132). 
+#-w disable all warnings
+#-r8 set default size of real to 8 bytes
+#-O3 aggressive optimization
+#-pad enable changing variable and arrau memory layout
+#-mtune=core2 optimize specifically for core2 cpu
+#-march=core2 generate code exclusively for core2cpu
+#-xT generate code to run exclusively on Intel(R) Core(TM)2 processor family with SSSE3
+  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad -mtune=core2 -march=core2 -xT
+#-static prevents linking with shared libraries
+#-nothread
+#-no multithreaded libraries
+  LDFLAGS = -static -nothread
+  FC_MPI = /usr/bin/mpif90 -fc=ifort
+  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3  -pad -mtune=core2 -march=core2 -xT
+  LDFLAGS_MPI = -static -nothread -lmpi
 endif
 
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
@@ -337,52 +357,14 @@ ifeq ($(hostname),clastos)
   FC_MPI = /usr/local/bin/mpif90_64
 endif
 
-ifeq ($(hostname),gauss)
-  #-zero Initializes to zero all local scalar variables of intrinsic type INTEGER, REAL, COMPLEX, or LOGICAL that are saved but not yet initialized
-#-save ????
-#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132). 
-#-w disable all warnings
-#-r8 set default size of real to 8 bytes
-#-O3 aggressive optimization
-#-pad enable changing variable and arrau memory layout
-#-mtune=core2 optimize specifically for core2 cpu
-#-march=core2 generate code exclusively for core2cpu
-#-xT generate code to run exclusively on Intel(R) Core(TM)2 processor family with SSSE3
-  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad -mtune=core2 -march=core2 -xT
-#-static prevents linking with shared libraries
-#-nothread
-#-no multithreaded libraries
-  LDFLAGS = -static -nothread
-  FC_MPI = /usr/bin/mpif90 -fc=ifort
-  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3  -pad -mtune=core2 -march=core2 -xT
-  LDFLAGS_MPI = -static -nothread -lmpi
-endif
-
 # AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
-# Serial compilation
- CHAMP_F77 = ftn -target=linux
- CHAMP_F95 = ftn -target=linux
- CHAMP_C = cc -target=linux
- CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
- CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
- CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
- CHAMP_LD = ftn -target=linux -Wl,-z,muldefs
- CHAMP_LD_FAST = -O2
-
-# MPI compilation
- CHAMP_MPIF77 = ftn -target=linux
- CHAMP_MPIF95 = ftn -target=linux
- CHAMP_MPIC = cc -target=linux
- CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
- CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
- CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
- CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
- 
-# acml has both the LAPACK and the BLAS
- LAPACK=-lacml
- BLAS=
+ FC = pathf90
+#FFLAGS = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
+ FC_MPI = pathf90
+ FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 
 endif
 

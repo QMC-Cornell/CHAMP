@@ -101,8 +101,8 @@ ifeq ($(system),Linux)
 # LDFLAGS_MPI = -Vaxlib -static
   LDFLAGS_MPI = -static -nothread -lmpi
 
-ifeq ($(hostname),planck)
-# AMD Athlon cluster of Arias group
+# Old AMD Athlon cluster of Arias group
+ifeq ($(hostname),dft.physics.cornell.edu)
 ifeq ($(planck_compiler),g77)
 # to link g77 mpi libraries, make sure /usr/bin is ahead of /usr/local/bin
 # FC = g77-3.2
@@ -148,6 +148,29 @@ ifeq ($(planck_compiler),ifort)
   LDFLAGS_MPI = -static -lmpi
   FLINKER_MPI = mpif77
 endif
+endif
+
+#Gauss in new Arias cluster
+ifeq ($(hostname),gauss)
+  #-zero Initializes to zero all local scalar variables of intrinsic type INTEGER, REAL, COMPLEX, or LOGICAL that are saved but not yet initialized
+#-save ????
+#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132). 
+#-w disable all warnings
+#-r8 set default size of real to 8 bytes
+#-O3 aggressive optimization
+#-pad enable changing variable and arrau memory layout
+#-mtune=core2 optimize specifically for core2 cpu
+#-march=core2 generate code exclusively for core2cpu
+#-xT generate code to run exclusively on Intel(R) Core(TM)2 processor family with SSSE3
+  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad -mtune=core2 -march=core2 -xT
+#-static prevents linking with shared libraries
+#-nothread
+#-no multithreaded libraries
+  LDFLAGS = -static -nothread
+  FC_MPI = /usr/bin/mpif90.openmpi -fc=ifort
+  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3  -pad -mtune=core2 -march=core2 -xT
+  LDFLAGS_MPI = -static -nothread -lmpi
+  FLINKER_MPI = /usr/bin/mpif90.openmpi
 endif
 
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
@@ -394,29 +417,16 @@ ifeq ($(hostname),clastos)
   FLINKER_MPI = /usr/local/bin/mpif90_64
 endif
 
-#gauss in Arias cluster
-ifeq ($(hostname),gauss)
-  #-zero Initializes to zero all local scalar variables of intrinsic type INTEGER, REAL, COMPLEX, or LOGICAL that are saved but not yet initialized
-#-save ????
-#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132). 
-#-w disable all warnings
-#-r8 set default size of real to 8 bytes
-#-O3 aggressive optimization
-#-pad enable changing variable and arrau memory layout
-#-mtune=core2 optimize specifically for core2 cpu
-#-march=core2 generate code exclusively for core2cpu
-#-xT generate code to run exclusively on Intel(R) Core(TM)2 processor family with SSSE3
-  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad -mtune=core2 -march=core2 -xT
-#-static prevents linking with shared libraries
-#-nothread
-#-no multithreaded libraries
-  LDFLAGS = -static -nothread
-  FC_MPI = /usr/bin/mpif90.openmpi -fc=ifort
-  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3  -pad -mtune=core2 -march=core2 -xT
-  LDFLAGS_MPI = -static -nothread -lmpi
-  FLINKER_MPI = /usr/bin/mpif90.openmpi
-endif
+# AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
+ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
+ FC = pathf90
+#FFLAGS = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
+ FC_MPI = pathf90
+ FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
+
+endif
 
 # The Intel compiler ifc causes trouble in dlamch unless the latter is
 # compiled with -O0

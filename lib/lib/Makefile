@@ -45,9 +45,9 @@ ifeq ($(system),Linux)
 # LDFLAGS_MPI = -Vaxlib -static
   LDFLAGS_MPI = -static -nothread -lmpi
 
-ifeq ($(hostname),planck)
+# Old AMD Athlon cluster of Arias group
+ifeq ($(hostname),dft.physics.cornell.edu)
 ifeq ($(planck_compiler),g77)
-# AMD Athlon cluster of Arias group
 # FC = g77-3.2
   FC = g77-3.0
 # FC = g77
@@ -58,7 +58,6 @@ ifeq ($(planck_compiler),g77)
 endif
 
 ifeq ($(planck_compiler),ifort)
-# AMD Athlon cluster of Arias group
 # In the mpif77 line, the fc=ifc tells it to use ifc rather than the default g77
 # fpp2 is the preprocessor
 # -ax{i|M|K|W} i=Pentium Pro, M-Pentium MMX, K=Pentium3, W=Pentium4,Xeon
@@ -341,28 +340,11 @@ endif
 # AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
-# Serial compilation
- CHAMP_F77 = ftn -target=linux
- CHAMP_F95 = ftn -target=linux
- CHAMP_C = cc -target=linux
- CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
- CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
- CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
- CHAMP_LD = ftn -target=linux -Wl,-z,muldefs
- CHAMP_LD_FAST = -O2
-
-# MPI compilation
- CHAMP_MPIF77 = ftn -target=linux
- CHAMP_MPIF95 = ftn -target=linux
- CHAMP_MPIC = cc -target=linux
- CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
- CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
- CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
- CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
- 
-# acml has both the LAPACK and the BLAS
- LAPACK=-lacml
- BLAS=
+ FC = pathf90
+#FFLAGS = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
+ FC_MPI = pathf90
+ FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 
 endif
 
