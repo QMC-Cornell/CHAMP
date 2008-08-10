@@ -37,6 +37,7 @@ CHAMP_C_PROF=-O3 -DUNDERSCORE -pg
 CHAMP_C_FLAGS=$(CHAMP_C_FAST)
 
 # Fortran compilation ------------------------------------------------------
+# These are defaults using the ifort compiler and are used e.g. on the old AMD cluster dft, and on nanolab
 
 CHAMP_F95=ifort
 CHAMP_F77=ifort
@@ -83,14 +84,24 @@ CHAMP_DEBUG_EXE=champ.exe
 
 ####################### MACHINES ########################################
 
-# Theory Center's linux cluster
-ifeq ($(hostname),linuxlogin1.tc.cornell.edu)
- CHAMP_MPIF77=mpif90
- CHAMP_MPIF95=mpif90
- CHAMP_LD_MPI=mpif90
+ifeq ($(hostname),gauss)
+  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
+  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+  CHAMP_F95_FAST=-O3 -ip -static -align all -fpp -mtune=core2 -march=core2 -xT
+  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+  CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
+  CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+  CHAMP_MPIC=mpicc
+  CHAMP_MPIF95=mpif90
+  CHAMP_MPIF77=mpif90
+  CHAMP_LD_MPI=mpif90
+  CHAMP_F77_MPI=-zero  -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
+  CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
 endif
 
-ifeq ($(hostname),linuxlogin2.tc.cornell.edu)
+# Theory Center's linux cluster
+# ifeq ($(hostname),linuxlogin1.tc.cornell.edu)
+ifeq ($(findstring linuxlogin,$(hostname)), linuxlogin)
  CHAMP_MPIF77=mpif90
  CHAMP_MPIF95=mpif90
  CHAMP_LD_MPI=mpif90
@@ -303,22 +314,6 @@ ifeq ($(hostname),clastos)
 
 endif
 
-ifeq ($(hostname),gauss)
-  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
-  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-  CHAMP_F95_FAST=-O3 -ip -static -align all -fpp -mtune=core2 -march=core2 -xT
-  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-  CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
-  CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
-  CHAMP_MPIC=mpicc
-  CHAMP_MPIF95=mpif90
-  CHAMP_MPIF77=mpif90
-  CHAMP_LD_MPI=mpif90
-  CHAMP_F77_MPI=-zero  -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
-  CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
-endif
-
-
 # NASA Ames Columbia Itanium cluster
 ifeq ($(hostname),cfe1)
   CHAMP_MPIF95=ifort
@@ -327,5 +322,34 @@ ifeq ($(hostname),cfe1)
   CHAMP_LD_FAST=-O3 -align all
   CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
 endif
+
+# AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
+ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
+
+# Serial compilation
+ CHAMP_F77 = ftn -target=linux
+ CHAMP_F95 = ftn -target=linux
+ CHAMP_C = cc -target=linux
+ CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
+ CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
+ CHAMP_LD = ftn -target=linux -Wl,-z,muldefs
+ CHAMP_LD_FAST = -O2
+
+# MPI compilation
+ CHAMP_MPIF77 = ftn -target=linux
+ CHAMP_MPIF95 = ftn -target=linux
+ CHAMP_MPIC = cc -target=linux
+ CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
+ CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
+ CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
+ CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
+ 
+# acml has both the LAPACK and the BLAS
+ LAPACK=-lacml
+ BLAS=
+
+endif
+
 
 CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
