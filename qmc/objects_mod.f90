@@ -713,7 +713,9 @@ module objects_mod
   if (objects(object_index)%node_create_index == 0) then
     write(6,*)
     write(6,'(4a)') trim(lhere),': object ', trim(objects(object_index)%name),' is marked as not valid and cannot be provided since it does not have a catalogued creating node.'
-    write(6,'(4a)') trim(lhere),': This object is asked in routine ',trim(here),'.'
+    if (trim(here) /= 'undefined') then
+     write(6,'(4a)') trim(lhere),': This object is asked in routine ',trim(here),'.'
+    endif
     write(6,'(2a)') trim(lhere),': Check that this object is declared as created in a node and that this node is catalogued in catalog_routines_mod.f90.'
     call die (lhere)
   endif

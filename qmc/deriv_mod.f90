@@ -245,6 +245,7 @@ module deriv_mod
 
    call object_needed ('param_nb')
    call object_needed ('is_param_type_jas') ! for bounds
+   call object_needed ('is_param_type_pjas') ! for bounds
 
    return
 
@@ -309,7 +310,7 @@ module deriv_mod
 ! applying bounds to dpsi for non-Jastrow parameters
   if (l_deriv_bound) then
    do param_i = 1, param_nb
-    if ((.not. is_param_type_jas (param_i)) .and. dabs(dpsi (param_i)) > deriv_bound_value) then
+    if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i)) .and. dabs(dpsi (param_i)) > deriv_bound_value) then
       dpsi (param_i) = sign (deriv_bound_value, dpsi (param_i))
     endif
    enddo ! param_i
@@ -419,6 +420,7 @@ module deriv_mod
 
    call object_needed ('param_nb')
    call object_needed ('is_param_type_jas') !for bounds
+   call object_needed ('is_param_type_pjas') ! for bounds
    call object_needed ('dpsi') ! for bounds
 
    return
@@ -487,7 +489,7 @@ module deriv_mod
 ! applying bounds to deloc for non-Jastrow parameters
   if (l_deriv_bound) then
    do param_i = 1, param_nb
-    if (.not. is_param_type_jas(param_i) .and. dabs(dpsi(param_i)) > deriv_bound_value) then
+    if ((.not. is_param_type_jas(param_i) .and. .not. is_param_type_pjas(param_i)) .and. dabs(dpsi(param_i)) > deriv_bound_value) then
       deloc(param_i) = (deriv_bound_value/dabs(dpsi(param_i))) * deloc(param_i)
     endif
    enddo ! param_i

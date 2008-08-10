@@ -174,6 +174,8 @@ module opt_lin_mod
    call object_needed('param_nb')
    call object_needed('dpsi_av')
    call object_needed('dpsi_dpsi_covar')
+   call object_needed ('is_param_type_orb')
+   call object_needed ('is_param_type_geo')
 
    return
 
@@ -199,9 +201,12 @@ module opt_lin_mod
    do j = 1, param_nb
 
 !   diagonal-only approximation for orbital-orbital part
-    if(l_opt_orb_orb_diag .and. i > nparmcsf+nparmj .and. j > nparmcsf+nparmj .and. i /= j) then
+    if (l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j) then
+     ovlp_lin (i+1,j+1) = 0.d0
 
-     ovlp_lin(i+1,j+1) = 0.d0
+!   mixed terms with geometry parameters!!!!!!!!
+    elseif (l_opt_geo .and. ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
+     ovlp_lin (i+1,j+1) = 0.d0
 
 !   normal overlap
     else
@@ -209,10 +214,6 @@ module opt_lin_mod
      ovlp_lin(i+1,j+1) = dpsi_dpsi_covar(i,j)
 
     endif
-
-!    if(i /= j) then
-!     ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
-!    endif
 
    enddo
   enddo
@@ -377,12 +378,16 @@ module opt_lin_mod
 !     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(eloc_av + delta_eps(j-nparmcsf-nparmj))
      ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *((eloc_av + delta_eps(j-nparmcsf-nparmj)) +(eloc_av + delta_eps(i-nparmcsf-nparmj)))/2.d0
 
-!   symmetric Hamiltonian for geometry parameters
-    elseif(l_opt_geo .and.(is_param_type_geo(i) .or. is_param_type_geo(j))) then
-     ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                        &
-                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
-                               + dpsi_av(i) * dpsi_av(j) * eloc_av                             &
-                               +(dpsi_deloc_covar(i, j) + dpsi_deloc_covar(j, i))/2.d0
+!   mixed terms with geometry parameters
+    elseif (l_opt_geo .and. ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
+     ham_lin_energy (i+1,j+1) =  0.d0
+
+!   symmetric Hamiltonian for geometry-geometry block
+    elseif (l_opt_geo .and. (is_param_type_geo (i) .and. is_param_type_geo (j))) then
+     ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
+                               - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
+                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
+                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
 
 !   normal Hamiltoniam
     else
@@ -734,7 +739,7 @@ module opt_lin_mod
 ! print eigenvalues
   write(6,'(a)') 'Sorted (complex) eigenvalues:'
   do i = 1, param_aug_nb
-    write(6,'(a,i5,a,2(f10.4,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
+    write(6,'(a,i5,a,2(f10.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
   enddo
 
 ! print eigenvectors

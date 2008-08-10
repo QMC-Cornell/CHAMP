@@ -5,6 +5,7 @@ module optimization_mod
   use opt_lin_mod
   use opt_ptb_mod
   use opt_common_mod
+  use nuclei_mod
   use orbitals_mod
   use periodic_jastrow_mod
   use deriv_mod
@@ -497,7 +498,6 @@ module optimization_mod
   integer convergence_reached_nb
   integer is_bad_move
   integer :: move_rejected = 0
-! real(dp) error_sigma_sav
   real(dp) energy_plus_err, energy_plus_err_best
 
 ! begin
@@ -1141,7 +1141,7 @@ module optimization_mod
 !  periodic case
    else
 
-      write(*,*) "ngvec_orb = ", ngvec_orb
+!      write(6,*) "ngvec_orb = ", ngvec_orb
 
 !    provide needed objects
      call object_provide ('ngvec_orb')
@@ -1174,21 +1174,34 @@ module optimization_mod
 ! Geometry parameters
   if (l_opt_geo) then
 
+   call object_provide ('ncent')
+   call object_provide ('znuc')
+   call object_provide ('iwctype')
+   call object_provide ('ndim')
    call object_provide ('param_geo_nb')
    call object_provide ('cent')
    call object_provide ('delta_geo')
 
+   call object_alloc ('cent2', cent2, ndim, ncent, 3)
+   cent2 (1:ndim,1:ncent,iwf) = cent (1:ndim,1:ncent)
    do force_i = 1, param_geo_nb
     cent_i = forces_cent (force_i) 
     dim_i = forces_direct (force_i) 
-    cent (dim_i, cent_i) = cent (dim_i, cent_i) + delta_geo (force_i)
+    cent2 (dim_i, cent_i, iwf) = cent (dim_i, cent_i) + delta_geo (force_i)
    enddo
-   call object_modified ('cent')
- 
-!  recalculating nuclear potential energy
-   call pot_nn(cent,znuc,iwctype,ncent,pecent)
-   call object_modified ('pecent')
+   call object_modified ('cent2')
 
+!  recalculating nuclear potential energy
+   call pot_nn(cent2(:,:,iwf),znuc,iwctype,ncent,pecentn(iwf))
+   call object_modified ('pecentn')
+
+   if (iwf == 1) then
+    cent (1:ndim,1:ncent) = cent2 (1:ndim,1:ncent,1)
+    pecent=pecentn(1) 
+    call object_modified ('cent')
+    call object_modified ('pecent')
+   endif ! iwf == 1
+   
   endif ! l_opt_geo
 
 ! check if really correct to call after each update
@@ -1439,7 +1452,7 @@ module optimization_mod
    diag_stab = add_diag (2)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,I1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   write(6,'(a,i1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
    call wf_update_and_check (is_bad_move_2, is_bad_move_exp2, exp_move_big2)
 
    iwf = 3
@@ -1447,15 +1460,27 @@ module optimization_mod
    diag_stab = add_diag (3)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,I1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   write(6,'(a,i1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
    call wf_update_and_check (is_bad_move_3, is_bad_move_exp3, exp_move_big3)
 
    iwf = 1
    diag_stab =  add_diag (1)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,I1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   write(6,'(a,i1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
    call wf_update_and_check (is_bad_move_1, is_bad_move_exp1, exp_move_big1)
+
+!  update nuclear coordinates
+   if (l_opt_geo) then
+    call object_provide ('ndim')
+    call object_provide ('ncent')
+    call object_provide ('cent2')
+    cent_ref (1:ndim,1:ncent) = cent2 (1:ndim,1:ncent,1)
+    delc (1:ndim,1:ncent,2) = cent2 (1:ndim,1:ncent,2) - cent_ref (1:ndim,1:ncent)
+    delc (1:ndim,1:ncent,3) = cent2 (1:ndim,1:ncent,3) - cent_ref (1:ndim,1:ncent)
+    call object_modified ('cent_ref')
+    call object_modified ('delc')
+   endif
 
 !  if move too large, restore wave function and increase diag_stab_ref, otherwise exit loop
    if (is_bad_move_1 /= 0 .or. is_bad_move_2 /= 0 .or. is_bad_move_3 /= 0) then
@@ -1762,10 +1787,10 @@ module optimization_mod
   if (l_opt_geo) then
    call object_provide ('ncent')
    call object_provide ('ndim')
-   call object_provide ('cent')
+   call object_provide ('cent2')
    write(6,'(a)') 'Geometry:'
    do cent_i = 1, ncent
-    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent (dim_i, cent_i), dim_i = 1, ndim)
+    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent2 (dim_i, cent_i,iwf), dim_i = 1, ndim)
    enddo ! cent_i
   endif ! l_opt_geo
 
@@ -1886,13 +1911,12 @@ module optimization_mod
   if (l_opt_geo) then
    call object_provide ('ncent')
    call object_provide ('ndim')
-   call object_provide ('cent')
+   call object_provide ('cent2')
    write(6,'(a)') 'Geometry:'
    do cent_i = 1, ncent
-    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent (dim_i, cent_i), dim_i = 1, ndim)
+    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent2 (dim_i, cent_i,iwf), dim_i = 1, ndim)
    enddo ! cent_i
   endif ! l_opt_geo
-
 
   write(6,*)
 
@@ -2010,10 +2034,10 @@ module optimization_mod
   if (l_opt_geo) then
    call object_provide ('ncent')
    call object_provide ('ndim')
-   call object_provide ('cent')
+   call object_provide ('cent_best')
    write(6,'(a)') 'Geometry:'
    do cent_i = 1, ncent
-    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent (dim_i, cent_i), dim_i = 1, ndim)
+    write(6,'(a,i3,a,3f9.5)') 'center # ',cent_i, ' :',(cent_best (dim_i, cent_i), dim_i = 1, ndim)
    enddo ! cent_i
   endif ! l_opt_geo
 

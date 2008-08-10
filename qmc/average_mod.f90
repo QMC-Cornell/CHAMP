@@ -3388,4 +3388,44 @@ module average_mod
 
  end subroutine reinit_averages_and_errors
 
+! ===================================================================================
+  subroutine invalidate_averages_and_errors
+! -----------------------------------------------------------------------------------
+! Description   : invalidate averages and errors, etc...
+! Description   : at the beginning of a new qmc run
+! Description   : not used because in an optimization run with correlated sampling stabilization
+! Description   : we need to keep objects depending on averages such as ovlp_lin valid.
+!
+! Created       : J. Toulouse, 08 Aug 2008
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'invalidate_averages_and_errors'
+  integer block_averages_defined_i, averages_defined_i, variances_defined_i
+  integer covariances_defined_i, errors_defined_i
+
+! begin
+  do block_averages_defined_i = 1, block_averages_defined_nb
+    call object_invalidate_by_index (block_averages_defined_object_bav_index (block_averages_defined_i))
+  enddo
+
+  do averages_defined_i = 1, averages_defined_nb
+    call object_invalidate_by_index (averages_defined_object_av_index (averages_defined_i))
+  enddo
+
+  do variances_defined_i = 1, variances_defined_nb
+    call object_invalidate_by_index (variances_defined_object_var_index (variances_defined_i))
+  enddo
+
+  do covariances_defined_i = 1, covariances_defined_nb
+    call object_invalidate_by_index (covariances_defined_object_covar_index (covariances_defined_i))
+  enddo
+
+  do errors_defined_i = 1, errors_defined_nb
+    call object_invalidate_by_index (errors_defined_object_err_index (errors_defined_i))
+  enddo
+
+ end subroutine invalidate_averages_and_errors
+
 end module average_mod

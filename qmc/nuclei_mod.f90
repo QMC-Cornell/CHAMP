@@ -8,6 +8,13 @@ module nuclei_mod
   real(dp), allocatable     :: mass_nucl  (:)
   real(dp), allocatable     :: mass_nucl_center (:)
   real(dp)                  :: mass_nucl_total
+  real(dp), allocatable     :: cent2 (:,:,:)
+  real(dp), allocatable     :: cent_sav (:,:)
+  real(dp), allocatable     :: cent_best (:,:)
+
+  real(dp)                  :: cent_ref(3,MCENT)
+  real(dp)                  :: delc(3,MCENT,MFORCE)
+  real(dp)                  :: pecentn(MFORCE)
 
   contains
 

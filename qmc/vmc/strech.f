@@ -12,14 +12,15 @@ c rigidly with that nucleus
 c returns secondary geom. nuclear positions, stretched electron positions and
 c jacobian of the transformation
 
+      use nuclei_mod
       implicit real*8(a-h,o-z)
       character*64 filename
       character*16 mode
 
-      include 'vmc.h'
-      include 'force.h'
+!      include 'vmc.h'
+!      include 'force.h'
 
-      parameter (zero=0.d0,one=1.d0)
+!      parameter (zero=0.d0,one=1.d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -32,15 +33,16 @@ c jacobian of the transformation
       common /wfname/ filename
 
       dimension x(3,MELEC),xstrech(3,MELEC)
-      dimension delc(3,MCENT,MFORCE),centsav(3,MCENT),pecentn(MFORCE),
-     &wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3),cent_str(3,MCENT)
+      dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3),cent_str(3,MCENT)
 
-      save alfstr,delc,centsav,pecentn
+!     JT: cent_ref, delc and pecentn used to be local, now there are in nuclei module
+
+      save alfstr
 
       pecent=pecentn(ifr)
       do 1 icent=1,ncent
         do 1 k=1,ndim
-    1     cent(k,icent)=centsav(k,icent)+delc(k,icent,ifr)
+    1     cent(k,icent)=cent_ref(k,icent)+delc(k,icent,ifr)
 
       ajacob=one
 
@@ -66,7 +68,7 @@ c initialize volume change matrix
         do 20 icent=1,ncent
           dist2=zero
           do 10 k=1,ndim
-   10       dist2=dist2+(x(k,i)-centsav(k,icent))**2
+   10       dist2=dist2+(x(k,i)-cent_ref(k,icent))**2
             dist=dsqrt(dist2)
             if(istrech.eq.1) then
               wt(icent)=dexp(-alfstr*dist)
@@ -80,11 +82,11 @@ c initialize volume change matrix
             wtsm=wtsm+wt(icent)
             do 20 k=1,ndim
               if(istrech.eq.1) dwt(k,icent)=-alfstr*dexp(-alfstr*dist)*
-     &        (x(k,i)-centsav(k,icent))/dist
+     &        (x(k,i)-cent_ref(k,icent))/dist
               if(istrech.eq.2) dwt(k,icent)=-alfstr*
-     &        (x(k,i)-centsav(k,icent))/dist**(alfstr+2)
+     &        (x(k,i)-cent_ref(k,icent))/dist**(alfstr+2)
               if(istrech.eq.3) dwt(k,icent)=-alfstr*dexp(alfstr/dist)*
-     &        (x(k,i)-centsav(k,icent))/(dist2*dist)
+     &        (x(k,i)-cent_ref(k,icent))/(dist2*dist)
               dwtsm(k)=dwtsm(k)+dwt(k,icent)
    20     continue
           wtsmi=one/wtsm
@@ -138,7 +140,7 @@ c read force parameters and set up n-n potential energy at displaced positions
 
       do 65 k=1,ndim
         do 65 icent=1,ncent
-   65     centsav(k,icent)=cent(k,icent)
+   65     cent_ref(k,icent)=cent(k,icent)
 
 c     do 80 ifl=1,nforce
 c       pecentn(ifl)=zero
@@ -152,9 +154,9 @@ c    &             +delc(k,i,ifl)-delc(k,j,ifl))**2
 c         r=dsqrt(r2)
 c  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
 
-      write(6,'(''pecentn(ifl)1'',9f9.4)') (pecentn(ifl),ifl=1,nforce)
+!      write(6,'(''pecentn(ifl)1'',9f9.4)') (pecentn(ifl),ifl=1,nforce)
       do 80 ifl=1,nforce
-        do 80 i=1,ncent
+        do 70 i=1,ncent
             do 70 k=1,ndim
    70         cent_str(k,i)=cent(k,i)+delc(k,i,ifl)
    80     call pot_nn(cent_str,znuc,iwctype,ncent,pecentn(ifl))
@@ -196,7 +198,7 @@ c For wf. optim. copy first geometry info to next two
 
         do 165 ic=1,ncent
           do 165 k=1,ndim
-  165       centsav(k,ic)=cent(k,ic)
+  165       cent_ref(k,ic)=cent(k,ic)
 
 c     do 170 iwf=2,nwftype
 c 170   call basis_norm(iwf,1)

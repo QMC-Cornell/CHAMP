@@ -17,6 +17,7 @@ c Read parameters for secondary wavefns.
       character*20 filename,wfile,fmt
       character*30 section
 
+      common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -260,6 +261,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
 
       parameter(NCOEF=5)
 
+      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -393,13 +395,15 @@ c  90 call basis_norm(iadd_diag,1)
 c-----------------------------------------------------------------------
       subroutine wf_save
 
-      use all_tools_mod !JT
-      use orbitals_mod  !JT
-      use basis_mod  !JT
+      use all_tools_mod
+      use nuclei_mod
+      use basis_mod
+      use orbitals_mod
 
 c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
+      common /dim/ ndim
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -511,6 +515,14 @@ c Jastrow
       call object_modified ('zex_sav')
       call object_modified ('zex2_sav')
 
+!     save nuclear coordinates
+      call object_provide ('ndim')
+      call object_provide ('ncent')
+      call object_provide ('cent')
+      call object_alloc ('cent_sav', cent_sav, ndim, ncent)
+      cent_sav (1:ndim,1:ncent) = cent (1:ndim,1:ncent)
+      call object_modified ('cent_sav')
+
       return
 c-----------------------------------------------------------------------
       entry wf_restore
@@ -559,6 +571,11 @@ c-----------------------------------------------------------------------
       call object_modified ('zex')
       call object_modified ('zex2')
 
+!     restore nuclear coordinates
+      call object_valid_or_die ('cent_sav')
+      cent (1:ndim,1:ncent) = cent_sav (1:ndim,1:ncent)
+      call object_modified ('cent')
+
       return
       end
 c-----------------------------------------------------------------------
@@ -576,6 +593,7 @@ c Saves the best wf yet and writes it out at end of run
       character*30 fmt
 
 c     common /contrl_per/ iperiodic,ibasis
+      common /dim/ ndim
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -676,6 +694,14 @@ c Jastrow
       call object_alloc ('zex_best', zex_best, nbasis)
       zex_best (1:nbasis) = zex (1:nbasis,1)
       call object_modified ('zex_best')
+
+!     save nuclear coordinates
+      call object_provide ('ndim')
+      call object_provide ('ncent')
+      call object_provide ('cent')
+      call object_alloc ('cent_best', cent_best, ndim, ncent)
+      cent_best (1:ndim,1:ncent) = cent (1:ndim,1:ncent)
+      call object_modified ('cent_best')
 
       return
 c-----------------------------------------------------------------------
