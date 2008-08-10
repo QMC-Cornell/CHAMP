@@ -358,6 +358,34 @@ ifeq ($(hostname),gauss)
   LDFLAGS_MPI = -static -nothread -lmpi
 endif
 
+# AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
+ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
+
+# Serial compilation
+ CHAMP_F77 = ftn -target=linux
+ CHAMP_F95 = ftn -target=linux
+ CHAMP_C = cc -target=linux
+ CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
+ CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
+ CHAMP_LD = ftn -target=linux -Wl,-z,muldefs
+ CHAMP_LD_FAST = -O2
+
+# MPI compilation
+ CHAMP_MPIF77 = ftn -target=linux
+ CHAMP_MPIF95 = ftn -target=linux
+ CHAMP_MPIC = cc -target=linux
+ CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
+ CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
+ CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
+ CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
+ 
+# acml has both the LAPACK and the BLAS
+ LAPACK=-lacml
+ BLAS=
+
+endif
+
 ###################################
 # Targets, Dependencies and Rules #
 ###################################
