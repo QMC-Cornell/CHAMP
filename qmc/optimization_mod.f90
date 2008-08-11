@@ -609,6 +609,12 @@ module optimization_mod
 
    endif
 
+!  request additional averages for bounds on dpsi and deloc
+   if (l_deriv_bound) then
+      call object_average_request ('dpsi_sq_av')
+      call object_average_request ('deloc_sq_av')
+   endif
+
 !  set norb
    if (l_opt_orb) then
     call object_provide ('orb_opt_last_lab')

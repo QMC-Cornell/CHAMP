@@ -145,6 +145,9 @@ module indexes_mod
   integer     :: psid_ex_in_x_index
   integer     :: add_diag_mult_exp_index
   integer     :: is_param_type_geo_index
+  integer     :: dpsi_av_index
+  integer     :: dpsi_var_index
+  integer     :: deloc_var_index
 
 ! indexes of nodes
   integer     :: dpsi_bld_index

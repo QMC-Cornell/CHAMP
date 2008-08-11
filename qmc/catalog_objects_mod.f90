@@ -141,6 +141,7 @@ module catalog_objects_mod
   call catalog_one_object ('coef_orb_on_norm_basis', coef_orb_on_norm_basis_index)
   call catalog_one_object ('coef_orb_on_ortho_basis', coef_orb_on_ortho_basis_index)
   call catalog_one_object ('add_diag_mult_exp', add_diag_mult_exp_index)
+  call catalog_one_object ('dpsi_av', dpsi_av_index)
 
 !! pjas WAS
   call catalog_one_object ('psid_pjas', psid_pjas_index)

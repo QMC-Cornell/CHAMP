@@ -24,6 +24,7 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_av (:)
   real(dp), allocatable          :: dpsi_sq (:)
   real(dp), allocatable          :: dpsi_sq_av (:)
+  real(dp), allocatable          :: dpsi_var (:)
   real(dp), allocatable          :: dpsi_sq_covar (:)
   real(dp), allocatable          :: dpsi_dpsi (:)
   real(dp), allocatable          :: dpsi_dpsi_av (:)
@@ -59,6 +60,9 @@ module deriv_mod
   real(dp), allocatable          :: deloc (:)
   real(dp), allocatable          :: deloc_av (:)
   real(dp), allocatable          :: deloc_bav (:)
+  real(dp), allocatable          :: deloc_sq (:)
+  real(dp), allocatable          :: deloc_sq_av (:)
+  real(dp), allocatable          :: deloc_var (:)
   real(dp)                       :: deloc_av_abs_max
   real(dp), allocatable          :: deloc_eloc (:)
   real(dp), allocatable          :: deloc_eloc_av (:)
@@ -308,10 +312,23 @@ module deriv_mod
   endif
 
 ! applying bounds to dpsi for non-Jastrow parameters
-  if (l_deriv_bound) then
+!  if (l_deriv_bound) then
+!   do param_i = 1, param_nb
+!    if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i)) .and. dabs(dpsi (param_i)) > deriv_bound_value) then
+!      dpsi (param_i) = sign (deriv_bound_value, dpsi (param_i))
+!    endif
+!   enddo ! param_i
+!  endif
+
+  if (l_deriv_bound .and. block_iterations_nb > 1) then
+   call object_provide_by_index (dpsi_av_index)
+   call object_provide_by_index (dpsi_var_index)
    do param_i = 1, param_nb
-    if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i)) .and. dabs(dpsi (param_i)) > deriv_bound_value) then
-      dpsi (param_i) = sign (deriv_bound_value, dpsi (param_i))
+!    write (6,'(a,i3,3(a,f12.6))') 'param_i =', param_i, 'dpsi =',dpsi (param_i),' dpsi_av =',dpsi_av (param_i), ' dpsi_var =',dpsi_var (param_i)
+    if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i))  &
+         .and. dabs(dpsi (param_i) - dpsi_av (param_i)) > deriv_bound_value * dsqrt(dpsi_var (param_i))) then
+      dpsi (param_i) = dpsi_av (param_i) + sign (deriv_bound_value * dsqrt(dpsi_var (param_i)), dpsi (param_i) - dpsi_av (param_i))
+!     write (6,'(a,i3,a,f12.6,a)') 'param_i =', param_i, 'dpsi =',dpsi (param_i),' after bound applied'
     endif
    enddo ! param_i
   endif
@@ -487,10 +504,23 @@ module deriv_mod
 !  call require (lhere, 'shift == param_nb', shift == param_nb) !fp
 
 ! applying bounds to deloc for non-Jastrow parameters
-  if (l_deriv_bound) then
+!  if (l_deriv_bound) then
+!   do param_i = 1, param_nb
+!    if ((.not. is_param_type_jas(param_i) .and. .not. is_param_type_pjas(param_i)) .and. dabs(dpsi(param_i)) > deriv_bound_value) then
+!      deloc(param_i) = (deriv_bound_value/dabs(dpsi(param_i))) * deloc(param_i)
+!    endif
+!   enddo ! param_i
+!  endif
+
+  if (l_deriv_bound .and. block_iterations_nb > 1) then
+   call object_provide_by_index (deloc_av_index)
+   call object_provide_by_index (deloc_var_index)
    do param_i = 1, param_nb
-    if ((.not. is_param_type_jas(param_i) .and. .not. is_param_type_pjas(param_i)) .and. dabs(dpsi(param_i)) > deriv_bound_value) then
-      deloc(param_i) = (deriv_bound_value/dabs(dpsi(param_i))) * deloc(param_i)
+!    write (6,'(a,i3,3(a,f12.6))') 'param_i =', param_i, 'deloc =',deloc (param_i),' deloc_av =',deloc_av (param_i), ' deloc_var =',deloc_var (param_i)
+    if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i))  &
+         .and. dabs(deloc (param_i) - deloc_av (param_i)) > deriv_bound_value * dsqrt(deloc_var (param_i))) then
+      deloc (param_i) = deloc_av (param_i) + sign (deriv_bound_value * dsqrt(deloc_var (param_i)), deloc (param_i) - deloc_av (param_i))
+!     write (6,'(a,i3,a,f12.6,a)') 'param_i =', param_i, 'deloc =',deloc (param_i),' after bound applied'
     endif
    enddo ! param_i
   endif
@@ -561,6 +591,36 @@ module deriv_mod
   dpsi_sq (:) = dpsi (:) * dpsi (:)
 
   end subroutine dpsi_sq_bld
+
+! ==============================================================================
+  subroutine dpsi_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of dpsi
+!
+! Created       : J. Toulouse, 11 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_var', dpsi_var_index)
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_sq_av')
+   call object_needed ('dpsi_av')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_var', dpsi_var, param_nb)
+
+  dpsi_var (:) = dpsi_sq_av (:) - dpsi_av (:)**2
+
+  end subroutine dpsi_var_bld
 
 ! ==============================================================================
   subroutine dpsi_sq_covar_bld
@@ -902,6 +962,65 @@ module deriv_mod
   dpsi_eloc_sq_covar (:) = dpsi_eloc_sq_av (:) - dpsi_av (:) * eloc_sq_av
 
   end subroutine dpsi_eloc_sq_covar_bld
+
+! ==============================================================================
+  subroutine deloc_sq_bld
+! ------------------------------------------------------------------------------
+! Description   : deloc_sq = deloc (i) * deloc (i)
+!
+! Created       : J. Toulouse, 11 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('deloc_sq')
+   call object_average_define ('deloc_sq', 'deloc_sq_av')
+
+   call object_needed ('param_nb')
+   call object_needed ('deloc')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('deloc_sq', deloc_sq, param_nb)
+  call object_alloc ('deloc_sq_av', deloc_sq_av, param_nb)
+
+  deloc_sq (:) = deloc (:) * deloc (:)
+
+  end subroutine deloc_sq_bld
+
+! ==============================================================================
+  subroutine deloc_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of deloc
+!
+! Created       : J. Toulouse, 11 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('deloc_var', deloc_var_index)
+
+   call object_needed ('param_nb')
+   call object_needed ('deloc_sq_av')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('deloc_var', deloc_var, param_nb)
+
+  deloc_var (:) = deloc_sq_av (:) - deloc_av (:)**2
+
+  end subroutine deloc_var_bld
 
 ! ==============================================================================
   subroutine deloc_eloc_bld
