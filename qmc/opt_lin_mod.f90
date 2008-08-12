@@ -10,6 +10,9 @@ module opt_lin_mod
   logical                         :: l_sym_ham = .false.
   logical                         :: l_opt_orb_orb_eig = .false.
   logical                         :: l_opt_orb_orb_diag = .false.
+  logical                         :: l_mixed_wf_geo = .false.
+  logical                         :: l_sym_ham_geo = .true.
+  logical                         :: l_sym_ham_first_row_column_geo = .false.
   logical                         :: l_renormalize = .false.
 
   integer                         :: param_aug_nb
@@ -68,13 +71,16 @@ module opt_lin_mod
    write(6,'(a)') '  linear'
    write(6,'(a)') '   update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'
    write(6,'(a)') '   xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 +(1-xi) Psi_lin'
-   write(6,'(a)') '                - xi=1: orthogonalization to Psi_0(default)'
+   write(6,'(a)') '                - xi=1: orthogonalization to Psi_0 (default)'
    write(6,'(a)') '                - xi=0: orthogonalization to Psi_lin, ensures min |Psi_lin-Psi_0|'
    write(6,'(a)') '                - xi=0.5: orthogonalization to Psi_0 + Psi_lin, ensures |Psi_0|=|Psi_lin|'
-   write(6,'(a)') '    use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues?(default=false)'
+   write(6,'(a)') '    use_orbital_eigenvalues = [logical] : approximate orbital part of Hamiltonian using orbital eigenvalues? (default=false)'
    write(6,'(a)') '    symmetrize_hamiltonian = [logical] : symmetrize Hamiltonian(default=false)'
-   write(6,'(a)') '    approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only(default=false)'
-   write(6,'(a)') '    approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block(default=false)'
+   write(6,'(a)') '    approx_orb_orb = [logical] : approximate orbital-orbital part of Hamiltonian only (default=false)'
+   write(6,'(a)') '    approx_orb_orb_diag = [logical] : diagonal only approximation for orbital-orbital block (default=false)'
+   write(6,'(a)') '    mixed_wf_geo  = [logical] : use mixed wave function-geometry terms? (default=false)'
+   write(6,'(a)') '    sym_ham_geo = [logical] : symmetrize geometry part of Hamiltonian(default=true)'
+   write(6,'(a)') '    sym_ham_first_row_column_geo = [logical] : symmetrize first row/column for geometry part of Hamiltonian(default=false)'
    write(6,'(a)') '    renormalize = [logical] : renormalize generalized eigenvalue equation with square root of overlap matrix diagonal(default=false)'
    write(6,'(a)') '    select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization(default=true)'
    write(6,'(a)') '    select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization(default=false)'
@@ -99,6 +105,15 @@ module opt_lin_mod
 
   case ('approx_orb_orb_diag')
    call get_next_value(l_opt_orb_orb_diag)
+
+  case ('mixed_wf_geo')
+   call get_next_value(l_mixed_wf_geo)
+
+  case ('sym_ham_geo')
+   call get_next_value(l_sym_ham_geo)
+
+  case ('sym_ham_first_row_column_geo')
+   call get_next_value(l_sym_ham_first_row_column_geo)
 
   case ('renormalize')
    call get_next_value(l_renormalize)
@@ -204,13 +219,13 @@ module opt_lin_mod
     if (l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j) then
      ovlp_lin (i+1,j+1) = 0.d0
 
-!   mixed terms with geometry parameters!!!!!!!!
-    elseif (l_opt_geo .and. ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
+!   no mixed wave function-geometry terms
+    elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
+    ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
      ovlp_lin (i+1,j+1) = 0.d0
 
 !   normal overlap
     else
-
      ovlp_lin(i+1,j+1) = dpsi_dpsi_covar(i,j)
 
     endif
@@ -347,8 +362,8 @@ module opt_lin_mod
 !     ham_lin_energy(1,i+1) = ovlp_lin(1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
      ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)  ! symmetric for orbitals
 
-!   symmetric Hamiltonian for geometry parameters
-    elseif(l_opt_geo .and. is_param_type_geo(i)) then
+!   symmetric Hamiltonian for geometry parameters?
+    elseif(l_opt_geo .and. (l_sym_ham_geo .or. l_sym_ham_first_row_column_geo) .and. is_param_type_geo(i)) then
      ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) + deloc_av(i)/2.d0
      ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)
 
@@ -378,16 +393,18 @@ module opt_lin_mod
 !     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(eloc_av + delta_eps(j-nparmcsf-nparmj))
      ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *((eloc_av + delta_eps(j-nparmcsf-nparmj)) +(eloc_av + delta_eps(i-nparmcsf-nparmj)))/2.d0
 
-!   mixed terms with geometry parameters
-    elseif (l_opt_geo .and. ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
+!   no mixed wave function-geometry terms?
+    elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
+    ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
      ham_lin_energy (i+1,j+1) =  0.d0
 
-!   symmetric Hamiltonian for geometry-geometry block
-    elseif (l_opt_geo .and. (is_param_type_geo (i) .and. is_param_type_geo (j))) then
+!   symmetric Hamiltonian for geometry-geometry block?
+    elseif (l_opt_geo .and. l_sym_ham_geo .and. (is_param_type_geo (i) .and. is_param_type_geo (j))) then
      ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
                                - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
                                + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
                                + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
+!JT                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/1.d0
 
 !   normal Hamiltoniam
     else
@@ -642,7 +659,7 @@ module opt_lin_mod
   integer ex_i, iparmcsf, iparmj, iparm, jparm
   integer lwork, info
   real(dp), allocatable :: mat_a(:,:), mat_b(:,:)
-  real(dp), allocatable :: eigvec(:,:)
+  real(dp), allocatable :: eigvec(:,:), eigvec_left(:,:)
   real(dp), allocatable :: eigval_r(:), eigval_i(:), eigval_denom(:)
   real(dp), allocatable :: work(:)
   real(dp) eigvec_max_1st_compon, eigval_r_min, eigvec_first_coef, lowest_eigval, smallest_norm
@@ -680,18 +697,23 @@ module opt_lin_mod
   call alloc('mat_a', mat_a, param_aug_nb, param_aug_nb)
   call alloc('mat_b', mat_b, param_aug_nb, param_aug_nb)
   call alloc('eigvec', eigvec, param_aug_nb, param_aug_nb)
+!  call alloc('eigvec_left', eigvec_left, param_aug_nb, param_aug_nb)
   call alloc('eigval_r', eigval_r, param_aug_nb)
   call alloc('eigval_i', eigval_i, param_aug_nb)
   call alloc('eigval_denom', eigval_denom, param_aug_nb)
 
   mat_a(:,:) = ham_lin_renorm_stab(:,:)
   mat_b(:,:) = ovlp_lin_renorm(:,:)
+!  write(6,*) 'mat_a=',mat_a
+!  write(6,*) 'mat_b=',mat_b
 
 ! calculate optimal value of lwork
   lwork = 1
   call alloc('work', work, lwork)
   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, -1, info)
+!  call dggev('V','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
+!             eigval_denom, eigvec_left, param_aug_nb, eigvec, param_aug_nb, work, -1, info)
   if(info /= 0) then
    call die(lhere, 'problem in dggev(while calculating optimal value of lwork): info='+info+' /= 0')
   endif
@@ -703,6 +725,8 @@ module opt_lin_mod
   write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation of linear method with a_diag =', diag_stab
   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
+!  call dggev('V','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
+!             eigval_denom, eigvec_left, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
   if(info /= 0) then
    call die(lhere, 'problem in dggev: info='+info+' /= 0')
   endif
@@ -714,6 +738,19 @@ module opt_lin_mod
     eigval_r(i) = eigval_r(i) / eigval_denom(i)
     eigval_i(i) = eigval_i(i) / eigval_denom(i)
   enddo
+
+! print eigenvalues
+!  write(6,'(a)') 'Unsorted (complex) eigenvalues:'
+!  do i = 1, param_aug_nb
+!    write(6,'(a,i5,a,2(f10.6,a))') 'eigenvalue #',i,': ',eigval_r(i), ' +', eigval_i(i),' i'
+!  enddo
+
+! print eigenvectors
+!  write(6,'(a)') 'Unsorted eigenvectors:'
+!  do j = 1, param_aug_nb
+!    write(6,'(a,i3,a,100f12.6)') 'right eigenvector # ', j,' :',(eigvec(i, j), i = 1, param_aug_nb)
+!    write(6,'(a,i3,a,100f12.6)') 'left  eigenvector # ', j,' :',(eigvec_left(i, j), i = 1, param_aug_nb)
+!  enddo
 
 ! Sorting out eigenvalues
 ! eigval_srt_ind_to_eigval_ind is the map from sorted eigenvalues to original eigenvalues
@@ -743,7 +780,7 @@ module opt_lin_mod
   enddo
 
 ! print eigenvectors
-!  write(6,'(a)') 'Eigenvectors:'
+!  write(6,'(a)') 'Sorted right eigenvectors:'
 !  do j = 1, param_aug_nb
 !    write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :',(eigvec(i, eigval_srt_ind_to_eigval_ind(j)), i = 1, param_aug_nb)
 !  enddo
@@ -794,7 +831,7 @@ module opt_lin_mod
   write(6,'(a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i'
 
 ! Find eigenvector with lowest eigenvalue that is in a reasonable window
-! If eigenvec with lowest eigenvalue is degenerate(never happens), choose the one with largest first coef
+! If eigenvec with lowest eigenvalue is degenerate, choose the one with largest first coef
   lowest_eigval = 9.d99
   eigvec_lowest_eigval_ind = 0
   do i = 1, param_aug_nb
@@ -849,7 +886,7 @@ module opt_lin_mod
      call die(lhere, 'All 3 of select_eigvec_lowest, select_eigvec_largest_1st_coef and select_eigvec_smallest_norm are false.')
    endif
 
-! if target_state >= 1, simply select the corresponding the wanted target state
+! if target_state >= 1, simply select the corresponding wanted target state
   else
 
     if(target_state > param_aug_nb) then

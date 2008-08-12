@@ -33,7 +33,7 @@ module objects_mod
    real(dp), pointer                 :: pointer_double_3 (:,:,:)
    real(dp), pointer                 :: pointer_double_4 (:,:,:,:)
    real(dp), pointer                 :: pointer_double_5 (:,:,:,:,:)
-   logical, pointer                 :: pointer_logical_0
+   logical, pointer                  :: pointer_logical_0
    logical, pointer                  :: pointer_logical_1 (:)
    logical, pointer                  :: pointer_logical_2 (:,:)
    logical, pointer                  :: pointer_logical_3 (:,:,:)
