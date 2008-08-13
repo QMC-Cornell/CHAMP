@@ -598,7 +598,6 @@ module opt_lin_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: here = 'ham_lin_renorm_stab_bld'
   integer i
 
 ! header
@@ -622,24 +621,33 @@ module opt_lin_mod
 
   ham_lin_renorm_stab(:,:) = ham_lin_renorm(:,:)
 
-! stabilization by adding overlap matrix
-  if(trim(stabilization) == 'overlap') then
-  call object_provide('ovlp_lin')
-  do i = 1, param_nb
-      ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab * ovlp_lin(i+1,i+1)
-  enddo
+  select case (trim(stabilization))
 
 ! stabilization by adding identity matrix
-  else
-  do i = 1, param_nb
-    if(i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
-      ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab * add_diag_mult_exp ! multiplicative factor for exponent parameters
-    else
-      ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab
-    endif
+  case ('identity')
+   do i = 1, param_nb
+     if(i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
+       ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab * add_diag_mult_exp ! multiplicative factor for exponent parameters
+     else
+       ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab
+     endif
+   enddo
 
-  enddo
-  endif
+! stabilization by adding overlap matrix
+  case ('overlap')
+   call object_provide('ovlp_lin')
+   do i = 1, param_nb
+       ham_lin_renorm_stab(i+1,i+1) = ham_lin_renorm(i+1,i+1) + diag_stab * ovlp_lin(i+1,i+1)
+   enddo
+
+! stabilization by symmetrizing the hamiltonian
+  case ('symmetrize')
+       ham_lin_renorm_stab = ham_lin_renorm + diag_stab/(1.d0+diag_stab) * (transpose(ham_lin_renorm) - ham_lin_renorm)/2.d0
+
+  case default
+   call die (here, 'unknown stabilization choice >'+trim(stabilization)+'<.')
+  end select
+
 
   end subroutine ham_lin_renorm_stab_bld
 

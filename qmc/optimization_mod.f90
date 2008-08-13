@@ -526,16 +526,16 @@ module optimization_mod
 ! choice of stabilization
   select case (trim(stabilization))
    case ('identity')
-   write (6,'(a)') 'optimization will be stabilized by adding multiple of identity matrix'
+    write (6,'(a)') 'optimization will be stabilized by adding multiple of identity matrix'
    case ('overlap')
-   write (6,'(a)') 'optimization will be stabilized by adding multiple of overlap matrix'
-   if (.not. l_opt_lin) then
-    write (6,'(a)') 'stabilization = overlap is only implemented for the linear optimization method'
-    call die (lhere)
-   endif
+    write (6,'(a)') 'optimization will be stabilized by adding multiple of overlap matrix'
+    if (.not. l_opt_lin) then
+     call die (lhere, 'stabilization = overlap is only implemented for the linear optimization method')
+    endif
+   case ('symmetrize')
+    write (6,'(a)') 'optimization will be stabilized by symmetrizing the hamiltonian matrix'
    case default
-   write (6,'(2a)') 'unknown stabilization choice:',trim(stabilization)
-   call die (lhere)
+    call die (lhere, 'unknown stabilization choice >'+trim(stabilization)+'<.')
   end select
 
 ! Nice printing

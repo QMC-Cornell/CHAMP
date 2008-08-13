@@ -789,7 +789,7 @@
   real(dp)              :: mcabsrmu, mcrpu, exp_mcabsrmu, exp_mcrpu
   real(dp)              :: dotproduct
   real(dp)              :: intra_temp1, intra_temp2
-  integer                       :: spin
+  integer               :: spin
 
 ! begin
 

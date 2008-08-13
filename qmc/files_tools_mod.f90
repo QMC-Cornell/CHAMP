@@ -159,7 +159,6 @@ module files_tools_mod
   logical :: exist
 
 ! begin
-
   inquire(file=trim(filename), exist=exist)
 
   end function file_exist

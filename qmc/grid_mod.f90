@@ -8,28 +8,28 @@ module grid_mod
 ! grid r
   real(dp)                  :: grid_r_step
   real(dp)                  :: grid_r_max
-  integer                           :: grid_r_nb = 0.d0
+  integer                   :: grid_r_nb = 0.d0
   real(dp), allocatable     :: grid_r (:)
 
 ! grid xyz
   real(dp)                  :: grid_x_step
   real(dp)                  :: grid_x_max
   real(dp)                  :: grid_x_min
-  integer                           :: grid_x_nb = 0.d0
+  integer                   :: grid_x_nb = 0.d0
   real(dp)                  :: grid_y_step
   real(dp)                  :: grid_y_max
   real(dp)                  :: grid_y_min
-  integer                           :: grid_y_nb = 0.d0
+  integer                   :: grid_y_nb = 0.d0
   real(dp)                  :: grid_z_step
   real(dp)                  :: grid_z_max
   real(dp)                  :: grid_z_min
-  integer                           :: grid_z_nb = 0.d0
-  integer                           :: grid_xyz_nb = 0.d0
+  integer                   :: grid_z_nb = 0.d0
+  integer                   :: grid_xyz_nb = 0.d0
   real(dp), allocatable     :: grid_xyz (:,:)
   real(dp), allocatable     :: grid_xyz_index (:,:,:)
 
 ! old grid for orbitals
-  integer                           :: grid_on_x_nb
+  integer                   :: grid_on_x_nb
   real(dp)                  :: grid_max
   real(dp)                  :: grid_step
   real(dp), allocatable     :: grid_on_x (:)
@@ -48,38 +48,39 @@ module grid_mod
   implicit none
 
   character(len=max_string_len_rout), save :: lhere = 'grid_menu'
-  character(len=max_string_len) line, word
 
 ! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of grid menu -----------------------------------------------------------------------------------'
 
 ! loop over menu lines
   do
   call get_next_word (word)
 
-  if(trim(word) == 'help') then
-   write(6,*) 'grid-h: menu for grid'
-   write(6,*) 'grid-h: grid'
-   write(6,*) 'grid-h:  grid_r   = [command] grid over spatial radial coordinate r'
-   write(6,*) 'grid-h:  grid_xyz = [command] grid over spatial cartesian coordinates x y z'
-   write(6,*) 'grid-h: end'
+  select case(trim(word))
+  case ('help')
+   write(6,'(a)') 'HELP for grid menu:'
+   write(6,'(a)') ' grid'
+   write(6,'(a)') '  grid_r ... end   : submenu for grid over spatial radial coordinate r'
+   write(6,'(a)') '  grid_xyz ... end : submenu for grid over spatial cartesian coordinates x y z'
+   write(6,'(a)') ' end'
 
-  elseif (trim(word) == 'grid_r') then
+  case ('grid_r')
    call grid_r_menu
 
-  elseif (trim(word) == 'grid_xyz') then
+  case ('grid_xyz')
    call grid_xyz_menu
 
-  elseif (trim(word) == 'end') then
+  case ('end')
    exit
 
-  else
-
-   write(6,*) trim(lhere),': unknown word = ',trim(word)
-   call die(here)
-
-  endif
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
+  end select
 
   enddo ! end loop over menu lines
+
+  write(6,'(a)') 'End of grid menu -----------------------------------------------------------------------------------------'
 
   end subroutine grid_menu
 
@@ -93,7 +94,6 @@ module grid_mod
   implicit none
 
   character(len=max_string_len_rout), save :: lhere = 'grid_r_menu'
-  character(len=max_string_len) word
 
 ! begin
 
@@ -101,43 +101,40 @@ module grid_mod
   do
   call get_next_word (word)
 
-  if(trim(word) == 'help') then
-   write(6,*) 'grid_r-h: menu for grid_r'
-   write(6,*) 'grid_r-h: grid_r'
-   write(6,*) 'grid_r-h:  grid_r_step   = [real] grid spacing'
-   write(6,*) 'grid_r-h:  grid_r_max    = [real] grid max value'
-   write(6,*) 'grid_r-h: end'
+  select case(trim(word))
+  case ('help')
+   write(6,'(a)') 'HELP for menu grid_r:'
+   write(6,'(a)') ' grid_r'
+   write(6,'(a)') '  grid_r_step   = [real] : grid spacing'
+   write(6,'(a)') '  grid_r_max    = [real] : grid max value'
+   write(6,'(a)') ' end'
 
-  elseif(trim(word) == 'grid_r_step') then
+  case ('grid_r_step')
    call get_next_value (grid_r_step)
 
-  elseif(trim(word) == 'grid_r_max') then
+  case ('grid_r_max')
    call get_next_value (grid_r_max)
 
-  elseif(trim(word) == 'end') then
+  case ('end')
    exit
 
-  else
-
-   write(6,*) trim(lhere),': unknown word = ',trim(word)
-   call die(here)
-
-  endif
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
+  end select
 
   enddo ! end loop over menu lines
 
-
 ! Parameters for grid over r
-  call require (lhere, 'grid_r_step > 0', grid_r_step > 0.d0 ) !fp
-  call require (lhere, 'grid_r_max > 0', grid_r_max > 0.d0 ) !fp
+  call require (lhere, 'grid_r_step > 0', grid_r_step > 0.d0 )
+  call require (lhere, 'grid_r_max > 0', grid_r_max > 0.d0 )
 
   grid_r_nb = int(grid_r_max/grid_r_step) + 1
-  call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0 ) !fp
+  call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0 )
 
-  write (6,*) trim(lhere), ': Parameters for radial grid:'
-  write (6,*) trim(lhere), ': grid_r_step = ', grid_r_step
-  write (6,*) trim(lhere), ': grid_r_max = ', grid_r_max
-  write (6,*) trim(lhere), ': grid_r_nb=', grid_r_nb
+  write (6,'(a)') ' Parameters for radial grid:'
+  write (6,'(a,f)') ' grid_r_step = ', grid_r_step
+  write (6,'(a,f)') ' grid_r_max = ', grid_r_max
+  write (6,'(a,i)') ' grid_r_nb=', grid_r_nb
 
   call object_modified ('grid_r_step')
   call object_modified ('grid_r_max')
@@ -155,7 +152,6 @@ module grid_mod
   implicit none
 
   character(len=max_string_len_rout), save :: lhere = 'grid_xyz_menu'
-  character(len=max_string_len) word
 
 ! begin
 
@@ -163,53 +159,50 @@ module grid_mod
   do
   call get_next_word (word)
 
-  if(trim(word) == 'help') then
-   write(6,*) 'grid_xyz-h: menu for grid_xyz'
-   write(6,*) 'grid_xyz-h: grid_xyz'
-   write(6,*) 'grid_xyz-h:  grid_x_step   = [real] grid x spacing'
-   write(6,*) 'grid_xyz-h:  grid_x_max    = [real] grid x max value'
-   write(6,*) 'grid_xyz-h:  grid_x_min    = [real] grid x min value'
-   write(6,*) 'grid_xyz-h:  grid_y_step   = [real] grid y spacing'
-   write(6,*) 'grid_xyz-h:  grid_y_max    = [real] grid y max value'
-   write(6,*) 'grid_xyz-h:  grid_y_min    = [real] grid y min value'
-   write(6,*) 'grid_xyz-h:  grid_z_step   = [real] grid z spacing'
-   write(6,*) 'grid_xyz-h:  grid_z_max    = [real] grid z max value'
-   write(6,*) 'grid_xyz-h:  grid_z_min    = [real] grid z min value'
-   write(6,*) 'grid_xyz-h: end'
+  select case(trim(word))
+  case ('help')
+   write(6,'(a)') 'HELP for menu grid_xyz:'
+   write(6,'(a)') ' grid_xyz'
+   write(6,'(a)') '  grid_x_step   = [real] grid x spacing'
+   write(6,'(a)') '  grid_x_max    = [real] grid x max value'
+   write(6,'(a)') '  grid_x_min    = [real] grid x min value'
+   write(6,'(a)') '  grid_y_step   = [real] grid y spacing'
+   write(6,'(a)') '  grid_y_max    = [real] grid y max value'
+   write(6,'(a)') '  grid_y_min    = [real] grid y min value'
+   write(6,'(a)') '  grid_z_step   = [real] grid z spacing'
+   write(6,'(a)') '  grid_z_max    = [real] grid z max value'
+   write(6,'(a)') '  grid_z_min    = [real] grid z min value'
+   write(6,'(a)') ' end'
 
-  elseif(trim(word) == 'grid_x_step') then
+  case ('grid_x_step')
    call get_next_value (grid_x_step)
-  elseif(trim(word) == 'grid_x_max') then
+  case ('grid_x_max')
    call get_next_value (grid_x_max)
-  elseif(trim(word) == 'grid_x_min') then
+  case ('grid_x_min')
    call get_next_value (grid_x_min)
 
-  elseif(trim(word) == 'grid_y_step') then
+  case ('grid_y_step')
    call get_next_value (grid_y_step)
-  elseif(trim(word) == 'grid_y_max') then
+  case ('grid_y_max')
    call get_next_value (grid_y_max)
-  elseif(trim(word) == 'grid_y_min') then
+  case ('grid_y_min')
    call get_next_value (grid_y_min)
 
-  elseif(trim(word) == 'grid_z_step') then
+  case ('grid_z_step')
    call get_next_value (grid_z_step)
-  elseif(trim(word) == 'grid_z_max') then
+  case ('grid_z_max')
    call get_next_value (grid_z_max)
-  elseif(trim(word) == 'grid_z_min') then
+  case ('grid_z_min')
    call get_next_value (grid_z_min)
 
-  elseif(trim(word) == 'end') then
+  case ('end')
    exit
 
-  else
-
-   write(6,*) trim(lhere),': unknown word = ',trim(word)
-   call die(here)
-
-  endif
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
+  end select
 
   enddo ! end loop over menu lines
-
 
 ! Parameters for grid xyz
   call require (lhere, 'grid_x_step > 0', grid_x_step > 0.d0 ) !fp 
@@ -223,25 +216,25 @@ module grid_mod
   grid_y_nb = int((grid_y_max - grid_y_min)/grid_y_step) + 1
   grid_z_nb = int((grid_z_max - grid_z_min)/grid_z_step) + 1
   grid_xyz_nb = grid_x_nb * grid_y_nb * grid_z_nb
-  call require (lhere, 'grid_x_nb > 0', grid_x_nb > 0 ) !fp
-  call require (lhere, 'grid_y_nb > 0', grid_y_nb > 0 ) !fp
-  call require (lhere, 'grid_z_nb > 0', grid_z_nb > 0 ) !fp
-  call require (lhere, 'grid_xyz_nb > 0', grid_xyz_nb > 0 ) !fp
+  call require (lhere, 'grid_x_nb > 0', grid_x_nb > 0 )
+  call require (lhere, 'grid_y_nb > 0', grid_y_nb > 0 )
+  call require (lhere, 'grid_z_nb > 0', grid_z_nb > 0 )
+  call require (lhere, 'grid_xyz_nb > 0', grid_xyz_nb > 0 )
 
-  write (6,*) trim(lhere), ': Parameters for grid xyz:'
-  write (6,*) trim(lhere), ': grid_x_step = ', grid_x_step
-  write (6,*) trim(lhere), ': grid_x_max = ', grid_x_max
-  write (6,*) trim(lhere), ': grid_x_min = ', grid_x_min
-  write (6,*) trim(lhere), ': grid_x_nb=', grid_x_nb
-  write (6,*) trim(lhere), ': grid_y_step = ', grid_y_step
-  write (6,*) trim(lhere), ': grid_y_max = ', grid_y_max
-  write (6,*) trim(lhere), ': grid_y_min = ', grid_y_min
-  write (6,*) trim(lhere), ': grid_y_nb=', grid_y_nb
-  write (6,*) trim(lhere), ': grid_z_step = ', grid_z_step
-  write (6,*) trim(lhere), ': grid_z_max = ', grid_z_max
-  write (6,*) trim(lhere), ': grid_z_min = ', grid_z_min
-  write (6,*) trim(lhere), ': grid_z_nb=', grid_z_nb
-  write (6,*) trim(lhere), ': grid_xyz_nb=', grid_xyz_nb
+  write (6,'(a)')  ' Parameters for grid xyz:'
+  write (6,'(a,f)')  ' grid_x_step = ', grid_x_step
+  write (6,'(a,f)')  ' grid_x_min  = ', grid_x_min
+  write (6,'(a,f)')  ' grid_x_max  = ', grid_x_max
+  write (6,'(a,f)')  ' grid_x_nb   = ', grid_x_nb
+  write (6,'(a,f)')  ' grid_y_step = ', grid_y_step
+  write (6,'(a,f)')  ' grid_y_min  = ', grid_y_min
+  write (6,'(a,f)')  ' grid_y_max  = ', grid_y_max
+  write (6,'(a,f)')  ' grid_y_nb   = ', grid_y_nb
+  write (6,'(a,f)')  ' grid_z_step = ', grid_z_step
+  write (6,'(a,f)')  ' grid_z_min  = ', grid_z_min
+  write (6,'(a,f)')  ' grid_z_max  = ', grid_z_max
+  write (6,'(a,f)')  ' grid_z_nb   = ', grid_z_nb
+  write (6,'(a,f)')  ' grid_xyz_nb = ', grid_xyz_nb
 
   call object_modified ('grid_x_step')
   call object_modified ('grid_x_max')
@@ -269,8 +262,8 @@ module grid_mod
   implicit none
 
 ! local
-  integer                       :: grid_i
-  character(len=max_string_len_rout), save :: lhere = 'grid_r_bld' !fp
+  integer grid_i
+  character(len=max_string_len_rout), save :: lhere = 'grid_r_bld'
 
 ! header
   if (header_exe) then
@@ -285,8 +278,8 @@ module grid_mod
   endif
 
 ! begin
-  call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0) !fp
-  call require (lhere, 'grid_r_step > 0', grid_r_step > 0) !fp
+  call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0)
+  call require (lhere, 'grid_r_step > 0', grid_r_step > 0)
 
 ! allocation
   call object_alloc ('grid_r', grid_r, grid_r_nb)
@@ -306,9 +299,8 @@ module grid_mod
   implicit none
 
 ! local
-  integer                       :: grid_i
-  integer                       :: grid_x_i, grid_y_i, grid_z_i
-  character(len=max_string_len_rout), save :: lhere = 'grid_xyz_bld' !fp
+  character(len=max_string_len_rout), save :: lhere = 'grid_xyz_bld'
+  integer grid_i, grid_x_i, grid_y_i, grid_z_i
 
 ! header
   if (header_exe) then
@@ -351,7 +343,7 @@ module grid_mod
    enddo
   enddo
 
-  call require (lhere, 'grid_i == grid_xyz_nb', grid_i == grid_xyz_nb) !fp
+  call require (lhere, 'grid_i == grid_xyz_nb', grid_i == grid_xyz_nb)
 
   end subroutine grid_xyz_bld
 

@@ -86,16 +86,6 @@ module catalog_averages_mod
 
 ! perturbative method
 
-! density
-  call object_average_define ('dens_zv1', 'dens_zv1_av')
-  call object_error_define ('dens_zv1_av', 'dens_zv1_av_err')
-  call object_average_define ('dens_3d_histo', 'dens_3d_histo_av')
-  call object_error_define ('dens_3d_histo_av', 'dens_3d_histo_av_err')
-  call object_average_define ('dens_3d_zv1', 'dens_3d_zv1_av')
-  call object_error_define ('dens_3d_zv1_av', 'dens_3d_zv1_av_err')
-  call object_average_define ('dens_3d_zv2', 'dens_3d_zv2_av')
-  call object_error_define ('dens_3d_zv2_av', 'dens_3d_zv2_av_err')
-
 ! intracule
   call object_average_define ('intra_sp_histo', 'intra_sp_histo_av')
   call object_error_define ('intra_sp_histo_av', 'intra_sp_histo_av_err')

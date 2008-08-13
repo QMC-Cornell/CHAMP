@@ -27,16 +27,14 @@ module write_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'routine_write_block_request'
-  integer routine_ind
-  integer rtn_i
+  integer routine_ind, rtn_i
 
 
 ! begin
 ! index of routine
   routine_ind = routine_index (routine_name)
   if (routine_ind == 0) then
-     write(6,'(4a)') trim(lhere),': routine ', trim(routine_name), ' is not catalogued.'
-    call die (lhere)
+    call die (lhere, 'routine >'+trim(routine_name)+'< is not catalogued.')
   endif
 
 ! if routine already defined as write routine, do nothing
@@ -50,7 +48,7 @@ module write_mod
   call alloc ('routines_write_block_index', routines_write_block_index, routines_write_block_nb)
   routines_write_block_index (routines_write_block_nb) = routine_ind
 
-  write(6,'(4a)') trim(lhere),': ', trim(routine_name),' defined as writing routine'
+!  write(6,'(4a)') trim(lhere),': ', trim(routine_name),' defined as writing routine'
 
  end subroutine routine_write_block_request
 
