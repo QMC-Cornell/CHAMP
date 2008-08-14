@@ -323,33 +323,93 @@ ifeq ($(hostname),cfe1)
   CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
 endif
 
-# AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
+# AMD Opteron cluster with Pathscale compiler on slid.fysik at Lyngby, Denmark
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
 # Serial compilation
- CHAMP_F77 = ftn -target=linux
- CHAMP_F95 = ftn -target=linux
- CHAMP_C = cc -target=linux
+#CHAMP_F77 = ftn -target=linux
+#CHAMP_F95 = ftn -target=linux
+ CHAMP_F77 = pathf90
+ CHAMP_F95 = pathf90
+#CHAMP_C = cc -target=linux
+ CHAMP_C = pathf90
  CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
  CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
  CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
- CHAMP_LD = ftn -target=linux -Wl,-z,muldefs
+ CHAMP_LD = pathf90 -Wl,-z,muldefs
  CHAMP_LD_FAST = -O2
 
 # MPI compilation
- CHAMP_MPIF77 = ftn -target=linux
- CHAMP_MPIF95 = ftn -target=linux
- CHAMP_MPIC = cc -target=linux
+ CHAMP_MPIF77 = pathf90
+ CHAMP_MPIF95 = pathf90
+ CHAMP_MPIC = pathf90
  CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
  CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
  CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
- CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
- 
+ CHAMP_LD_MPI = pathf90 -O2 -Wl,-z,muldefs
+
 # acml has both the LAPACK and the BLAS
- LAPACK=-lacml
+ LAPACK=-L/opt/acml-3.6.0/pathscale64/lib -lacml
  BLAS=
 
 endif
 
+# AMD Opteron cluster with Intel compiler on school1.fysik at Lyngby, Denmark
+ifeq ($(findstring school,$(hostname)), school)
+
+#CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
+#CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+#CHAMP_F95_FAST=-O3 -ip -align all -fpp -mtune=core2 -march=core2 -xT
+#CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+#CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
+#CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+#CHAMP_MPIC=mpicc
+#CHAMP_MPIF95=mpif90
+#CHAMP_MPIF77=mpif90
+#CHAMP_LD_MPI=mpif90
+#CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
+#CHAMP_F95_MPI=-O3 -ip -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
+
+CHAMP_F95=ifort
+CHAMP_F77=ifort
+CHAMP_MPIF95=mpif77
+CHAMP_MPIF77=mpif77
+
+CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
+CHAMP_F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
+CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
+CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
+CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+
+CHAMP_F95_FAST=-O3 -ip -align all -fpp
+CHAMP_F95_IPO=-O3 -ipo -align all -fast -fpp
+CHAMP_F95_DEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+CHAMP_F95_PROF=-O3 -pg -fpp
+CHAMP_F95_MPI=-O3 -ip -align all -fpp -DMPI
+CHAMP_F95_MPIDEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+
+# Linking  ------------------------------------------------------------------
+
+CHAMP_LD=ifort
+CHAMP_LD_MPI=mpif77
+
+CHAMP_LD_FAST=-O3 -align all
+CHAMP_LD_IPO=-O3 -ipo -align all -fast
+CHAMP_LD_DEBUG=
+CHAMP_LD_PROF=-O3 -pg
+CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+
+CHAMP_LD_END=
+#CHAMP_LD_END_MPI=-lpmi -lpthread
+CHAMP_LD_END_MPI=
+
+# acml has both the LAPACK and the BLAS
+ LAPACK=-L/opt/acml-3.6.0/ifort64/lib -lacml
+ BLAS=
+
+endif
 
 CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)

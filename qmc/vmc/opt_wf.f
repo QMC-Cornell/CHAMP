@@ -187,6 +187,9 @@ c Evaluate the eigenvalues of the Hessian of the objective function (linear comb
 c Turn correlated sampling on/off
           if(iadd_diag_opt.eq.1) then
 
+c Reset add_diag
+            add_diag(1)=1.d-8
+
 c Make sure that the add_diag values are not tiny compared to eig_min
 c Done in ham_ovlp_grad_hess now
 c           add_diag(1)=max(add_diag(1),1.d-1*eig_min)

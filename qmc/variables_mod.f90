@@ -4,9 +4,13 @@ module variables_mod
 
 ! mode
   integer, parameter              :: modes_nb = 11
-  character(len=max_string_len)   :: modes (modes_nb) = (/'fit', 'fit_mpi',         &
-                                     'vmc', 'vmc_mov1', 'vmc_mpi', 'vmc_mov1_mpi',  &
-                                     'dmc', 'dmc_mov1', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
+! Variable string lengths work with Pathscale 3 but not Pathscale 2.5 in Lyngby, so temporarily make all string lengths equal
+! character(len=max_string_len)   :: modes (modes_nb) = (/'fit', 'fit_mpi',         &
+!                                    'vmc', 'vmc_mov1', 'vmc_mpi', 'vmc_mov1_mpi',  &
+!                                    'dmc', 'dmc_mov1', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
+  character(len=max_string_len)   :: modes (modes_nb) = (/'fit          ', 'fit_mpi      ',              &
+                                     'vmc          ', 'vmc_mov1     ', 'vmc_mpi      ', 'vmc_mov1_mpi ', &
+                                     'dmc          ', 'dmc_mov1     ', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
   logical                         :: l_mode_mpi            = .false.
   logical                         :: l_mode_fit            = .false.
   logical                         :: l_mode_fit_mpi        = .false.

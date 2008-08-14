@@ -6,4 +6,4 @@ lib2_dir:
 	cd lib2 ; $(MAKE)
 
 quench:
-	cd SimulatedAnnealing/quench_anneal ; $(MAKE)
+	cd SimulatedAnnealing/quench_anneal ; $(MAKE) seq
