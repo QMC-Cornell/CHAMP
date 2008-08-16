@@ -253,7 +253,8 @@ module dmc_mod
 !     exit loop if nblk and threshold on statistical error reached
 ! In dmc_mov1_mpi2/3 modes egerr is always 0 since slaves never calculate it.
 !     if (i .ge. nblk .and. egerr .gt. 0 .and. egerr .le. error_threshold) then
-      if (i .ge. nblk .and. egerr .le. error_threshold) then
+!     egerr .ne. egerr is true if egerr is NaN
+      if (i .ge. nblk .and. ((egerr .le. error_threshold) .or. (egerr .ne. egerr))) then
         exit
       endif
 

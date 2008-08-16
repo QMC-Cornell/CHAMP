@@ -341,7 +341,8 @@ c       write out configuration for optimization/dmc/gfmc here
 
 !     exit loop if nblk and threshold on statistical error reached
 !JT      if (block_iterations_nb .ge. nblk .and. eloc_av_err .gt. 0 .and. eloc_av_err .le. error_threshold) then    !JT
-      if (block_iterations_nb .ge. nblk .and. eloc_av_err .le. error_threshold) then    !JT
+!     eloc_av_err .ne. eloc_av_err is true if eloc_av_err is NaN
+      if (block_iterations_nb .ge. nblk .and. ((eloc_av_err .le. error_threshold) .or. (eloc_av_err .ne. eloc_av_err))) then    !JT
         exit                              !JT
       endif                               !JT
 

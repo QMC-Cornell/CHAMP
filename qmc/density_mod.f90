@@ -4,6 +4,7 @@ module density_mod
   use grid_mod
   use electrons_mod
   use psi_mod
+  use deriv_mod
 
 ! Declaration of global variables and default values
   character(len=max_string_len_file):: dens_file_out  = ''
@@ -24,7 +25,16 @@ module density_mod
   real(dp), allocatable             :: dens_3d_zv1_av_err (:)
   real(dp), allocatable             :: dens_3d_zv2 (:,:)
   real(dp), allocatable             :: dens_3d_zv2_av (:)
+  real(dp), allocatable             :: dens_3d_zv2_av_var (:)
   real(dp), allocatable             :: dens_3d_zv2_av_err (:)
+  real(dp), allocatable             :: dens_3d_zv2_linear_av (:)
+  real(dp), allocatable             :: dens_3d_zv2_linear_av_var (:)
+  real(dp), allocatable             :: dens_3d_zv2_linear_av_err (:)
+  real(dp), allocatable             :: dens_3d_zv2_linear_coef (:,:)
+  real(dp), allocatable             :: dens_3d_zv2_deloc_covar (:,:)
+  real(dp), allocatable             :: dens_3d_zv2_deloc (:,:)
+  real(dp), allocatable             :: dens_3d_zv2_deloc_av (:,:)
+  real(dp), allocatable             :: dens_3d_zv2_av_deloc_av_covar (:,:)
   real(dp), allocatable             :: dens_3d (:)
   real(dp), allocatable             :: dens_3d_err (:)
 
@@ -128,7 +138,7 @@ module density_mod
   case ('help')
    write(6,'(a)') 'HELP for density_3d menu'
    write(6,'(a)') 'density_3d'
-   write(6,'(a)') '  estimator = [string] : can be "histogram", "zv1" or "zv2" (default=zv2)'
+   write(6,'(a)') '  estimator = [string] : can be "histogram", "zv1",  "zv2" or "zv2_linear" (default=zv2)'
    write(6,'(a)') '  file    = [string]   : file in which density will be written'
    write(6,'(a)') 'end'
 
@@ -157,16 +167,30 @@ module density_mod
 
   select case(trim(dens_3d_estimator))
    case ('histogram')
+   write(6,'(a)') ' density will be calculated with histogram estimator.'
    call object_average_request ('dens_3d_histo_av')
    call object_error_request ('dens_3d_histo_av_err')
 
    case ('zv1')
+   write(6,'(a)') ' density will be calculated with the zero-variance estimator using the drift velocity.'
    call object_average_request ('dens_3d_zv1_av')
    call object_error_request ('dens_3d_zv1_av_err')
 
    case ('zv2')
+   write(6,'(a)') ' density will be calculated with the zero-variance estimator using the drift velocity and the laplacian of the wave function.'
    call object_average_request ('dens_3d_zv2_av')
    call object_error_request ('dens_3d_zv2_av_err')
+
+   case ('zv2_linear')
+   write(6,'(a)') ' density will be calculated with the zero-variance estimator using the drift velocity, the laplacian of the wave function and the wave function derivatives wrt parameters.'
+   call object_average_request ('dens_3d_zv2_av')
+   call object_error_request ('dens_3d_zv2_av_err')
+   call object_average_request ('deloc_av')
+   call object_average_request ('deloc_deloc_av')
+   call object_average_request ('dens_3d_zv2_deloc_av')
+   call object_covariance_request ('deloc_av_deloc_av_covar')
+   call object_covariance_request ('dens_3d_zv2_av_deloc_av_covar')
+   call object_error_request ('dens_3d_zv2_linear_av_err')
 
    case default
    call die (lhere, 'unknown estimator >'+trim(dens_3d_estimator)+'<.')
@@ -422,7 +446,7 @@ module density_mod
 !     dot product: drift_i . (ri -r)
       dotproduct = 0.d0
       do dim_i = 1, ndim
-        dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_i, walk_i) * (coord_elec_wlk (dim_i, elec_i, walk_i) - grid_xyz (dim_i, grid_i))
+        dotproduct = dotproduct + grd_psi_over_psi_wlk (dim_i, elec_i, walk_i) * (coord_elec_wlk (dim_i, elec_i, walk_i) - grid_xyz (dim_i, grid_i))
       enddo
 
       dens_3d_zv1 (grid_i, walk_i) = dens_3d_zv1 (grid_i, walk_i) - oneover2pi * dotproduct / di**3
@@ -456,6 +480,7 @@ module density_mod
 
    call object_create ('dens_3d_zv2')
    call object_average_walk_define ('dens_3d_zv2', 'dens_3d_zv2_av')
+   call object_variance_define ('dens_3d_zv2_av', 'dens_3d_zv2_av_var')
    call object_error_define ('dens_3d_zv2_av', 'dens_3d_zv2_av_err')
 
    call object_needed ('nwalk')
@@ -473,6 +498,7 @@ module density_mod
 ! allocations
   call object_alloc ('dens_3d_zv2', dens_3d_zv2, grid_xyz_nb, nwalk)
   call object_alloc ('dens_3d_zv2_av', dens_3d_zv2_av, grid_xyz_nb)
+  call object_alloc ('dens_3d_zv2_av_var', dens_3d_zv2_av_var, grid_xyz_nb)
   call object_alloc ('dens_3d_zv2_av_err', dens_3d_zv2_av_err, grid_xyz_nb)
 
   dens_3d_zv2 (:,:) = 0.d0
@@ -497,6 +523,220 @@ module density_mod
   enddo ! walk_i
 
   end subroutine dens_3d_zv2_bld
+
+! ==============================================================================
+  subroutine dens_3d_zv2_deloc_bld
+! ------------------------------------------------------------------------------
+! Description   : dens_3d_zv2 * deloc
+!
+! Created       : J. Toulouse, 13 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i, grid_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_3d_zv2_deloc')
+   call object_average_define ('dens_3d_zv2_deloc', 'dens_3d_zv2_deloc_av')
+   call object_covariance_define ('dens_3d_zv2_av', 'deloc_av', 'dens_3d_zv2_av_deloc_av_covar')
+
+   call object_needed ('grid_xyz_nb')
+   call object_needed ('param_nb')
+   call object_needed ('dens_3d_zv2')
+   call object_needed ('deloc')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_3d_zv2_deloc', dens_3d_zv2_deloc, grid_xyz_nb, param_nb)
+  call object_alloc ('dens_3d_zv2_deloc_av', dens_3d_zv2_deloc_av, grid_xyz_nb, param_nb)
+  call object_alloc ('dens_3d_zv2_av_deloc_av_covar', dens_3d_zv2_av_deloc_av_covar, grid_xyz_nb, param_nb)
+
+  do grid_i = 1, grid_xyz_nb
+   do param_i = 1, param_nb
+    dens_3d_zv2_deloc (grid_i, param_i) = dens_3d_zv2 (grid_i, 1) * deloc (param_i)
+   enddo ! param_i
+  enddo ! grid_i
+
+  end subroutine dens_3d_zv2_deloc_bld
+
+! ==============================================================================
+  subroutine dens_3d_zv2_deloc_covar_bld
+! ------------------------------------------------------------------------------
+! Description   : covariance : < dens_3d_zv2 * deloc > - < dens_3d_zv2 > * < deloc >
+!
+! Created       : J. Toulouse, 13 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i, grid_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_3d_zv2_deloc_covar')
+
+   call object_needed ('grid_xyz_nb')
+   call object_needed ('param_nb')
+   call object_needed ('dens_3d_zv2_deloc_av')
+   call object_needed ('dens_3d_zv2_av')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_3d_zv2_deloc_covar', dens_3d_zv2_deloc_covar, grid_xyz_nb, param_nb)
+
+  do grid_i = 1, grid_xyz_nb
+   do param_i = 1, param_nb
+    dens_3d_zv2_deloc_covar (grid_i, param_i) = dens_3d_zv2_deloc_av (grid_i, param_i) - dens_3d_zv2_av (grid_i) * deloc_av (param_i)
+   enddo ! param_i
+  enddo ! grid_i
+
+  end subroutine dens_3d_zv2_deloc_covar_bld
+
+! ==============================================================================
+  subroutine dens_3d_zv2_linear_coef_bld
+! ------------------------------------------------------------------------------
+! Description   : coefficient minimizing the variance of estimator dens_3d_zv2_linear
+!
+! Created       : J. Toulouse, 13 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer grid_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_3d_zv2_linear_coef')
+
+   call object_needed ('grid_xyz_nb')
+   call object_needed ('param_nb')
+   call object_needed ('dens_3d_zv2_deloc_covar')
+   call object_needed ('deloc_deloc_covar_inv')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_3d_zv2_linear_coef', dens_3d_zv2_linear_coef, grid_xyz_nb, param_nb)
+
+  do grid_i = 1, grid_xyz_nb
+   do param_i = 1, param_nb
+    dens_3d_zv2_linear_coef (grid_i, param_i) = 0.d0
+    do param_j = 1, param_nb
+     dens_3d_zv2_linear_coef (grid_i, param_i) = dens_3d_zv2_linear_coef (grid_i, param_i) - deloc_deloc_covar_inv (param_i, param_j) * dens_3d_zv2_deloc_covar (grid_i, param_j)
+    enddo ! param_j
+   enddo ! param_i
+  enddo ! grid_i
+
+  end subroutine dens_3d_zv2_linear_coef_bld
+
+! ==============================================================================
+  subroutine dens_3d_zv2_linear_av_bld
+! ------------------------------------------------------------------------------
+! Description   : average of second-order renormalized improved estimator of 3D density
+! Description   : including wave function derivatives wrt to parameters
+!
+! Created       : J. Toulouse, 13 Aug 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer grid_i, param_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_3d_zv2_linear_av')
+
+   call object_needed ('grid_xyz_nb')
+   call object_needed ('param_nb')
+   call object_needed ('dens_3d_zv2_av')
+   call object_needed ('dens_3d_zv2_linear_coef')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_3d_zv2_linear_av', dens_3d_zv2_linear_av, grid_xyz_nb)
+
+  do grid_i = 1, grid_xyz_nb
+   dens_3d_zv2_linear_av (grid_i) = dens_3d_zv2_av (grid_i)
+   do param_i = 1, param_nb
+    dens_3d_zv2_linear_av (grid_i) = dens_3d_zv2_linear_av (grid_i) + dens_3d_zv2_linear_coef (grid_i, param_i) * deloc_av (param_i)
+   enddo ! param_i
+  enddo ! grid_i
+
+  end subroutine dens_3d_zv2_linear_av_bld
+
+! ==============================================================================
+  subroutine dens_3d_zv2_linear_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of average of zero-variance estimator of force
+!
+! Created       : J. Toulouse, 24 Jul 2008
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer grid_i, param_i, param_j
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_3d_zv2_linear_av_var')
+   call object_error_define_from_variance ('dens_3d_zv2_linear_av_var', 'dens_3d_zv2_linear_av_err')
+
+   call object_needed ('grid_xyz_nb')
+   call object_needed ('param_nb')
+   call object_needed ('dens_3d_zv2_av_var')
+   call object_needed ('dens_3d_zv2_linear_coef')
+   call object_needed ('dens_3d_zv2_av_deloc_av_covar')
+   call object_needed ('deloc_av_deloc_av_covar')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_3d_zv2_linear_av_var', dens_3d_zv2_linear_av_var, grid_xyz_nb)
+  call object_alloc ('dens_3d_zv2_linear_av_err', dens_3d_zv2_linear_av_err, grid_xyz_nb)
+
+  do grid_i = 1, grid_xyz_nb
+   dens_3d_zv2_linear_av_var (grid_i) = dens_3d_zv2_av_var (grid_i)
+   do param_i = 1, param_nb
+    dens_3d_zv2_linear_av_var (grid_i) = dens_3d_zv2_linear_av_var (grid_i) + 2.d0 * dens_3d_zv2_linear_coef (grid_i, param_i) * dens_3d_zv2_av_deloc_av_covar (grid_i, param_i)
+     do param_j = 1, param_nb
+      dens_3d_zv2_linear_av_var (grid_i) = dens_3d_zv2_linear_av_var (grid_i) + dens_3d_zv2_linear_coef (grid_i, param_i) * dens_3d_zv2_linear_coef (grid_i, param_j) * deloc_av_deloc_av_covar (param_i, param_j)
+     enddo ! param_j
+   enddo ! param_i
+  enddo ! grid_i
+
+  end subroutine dens_3d_zv2_linear_av_var_bld
 
 ! ==============================================================================
   subroutine dens_3d_bld
@@ -546,6 +786,12 @@ module density_mod
    call object_provide (lhere,'dens_3d_zv2_av_err')
    dens_3d (:)     = dens_3d_zv2_av (:)
    dens_3d_err (:) = dens_3d_zv2_av_err (:)
+
+   case ('zv2_linear')
+   call object_provide (lhere,'dens_3d_zv2_linear_av')
+   call object_provide (lhere,'dens_3d_zv2_linear_av_err')
+   dens_3d (:)     = dens_3d_zv2_linear_av (:)
+   dens_3d_err (:) = dens_3d_zv2_linear_av_err (:)
 
    case default
    call die (lhere, 'unknown estimator >'+trim(dens_3d_estimator)+'<.')
@@ -637,7 +883,7 @@ module density_mod
   unit = 0
   call open_file_or_die (dens_3d_file_out, unit)
 
-  write(unit,'(a)')         '3D density generated by CHAMP'
+  write(unit,'(3a)')        '3D density generated by CHAMP using estimator "',trim(dens_3d_estimator),'"'
   write(unit,'(a,i5)')      'number of electrons       =',nelec
   write(unit,'(a,i20)')     'number of walkers         =',nwalk
   write(unit,'(a,i20)')     'number of steps per block =',nstep_total

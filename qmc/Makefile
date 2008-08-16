@@ -253,7 +253,8 @@ control_mod.o: all_tools_mod.o walkers_mod.o commons.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o commons.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o commons.h
 debug_mod.o: all_tools_mod.o
-density_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o commons.h
+density_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o grid_mod.o \
+	psi_mod.o commons.h
 deriv_csf_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o \
 	commons.h
 deriv_exp_mod.o: all_tools_mod.o basis_mod.o csfs_mod.o deriv_orb_mod.o \

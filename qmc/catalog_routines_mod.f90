@@ -399,6 +399,11 @@ module catalog_routines_mod
   call catalog_one_node ('dens_3d_histo_bld', dens_3d_histo_bld)
   call catalog_one_node ('dens_3d_zv1_bld', dens_3d_zv1_bld)
   call catalog_one_node ('dens_3d_zv2_bld', dens_3d_zv2_bld)
+  call catalog_one_node ('dens_3d_zv2_linear_av_bld', dens_3d_zv2_linear_av_bld)
+  call catalog_one_node ('dens_3d_zv2_linear_coef_bld', dens_3d_zv2_linear_coef_bld)
+  call catalog_one_node ('dens_3d_zv2_deloc_covar_bld', dens_3d_zv2_deloc_covar_bld)
+  call catalog_one_node ('dens_3d_zv2_deloc_bld', dens_3d_zv2_deloc_bld)
+  call catalog_one_node ('dens_3d_zv2_linear_av_var_bld', dens_3d_zv2_linear_av_var_bld)
 
 ! intracule
   call catalog_one_node ('intra_bld', intra_bld)
