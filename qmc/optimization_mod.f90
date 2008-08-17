@@ -1968,6 +1968,7 @@ module optimization_mod
     call object_provide ('b_best')
     call object_provide ('c_best')
 
+
       write(6,'(a)') 'Jastrow parameters:'
       if (nparma_read > 0) then
         write(fmt,'(''(''i2,''f15.8,a)'')') nparma_read

@@ -714,6 +714,8 @@ c-----------------------------------------------------------------------
         open(2,file='/dev/null')
       endif
 
+      write(6,'(/,''Best wave function:'')')
+
       if(ncsf.gt.0) then
         write(fmt,'(''(''i2,''f15.8,a)'')') ncsf
        else
@@ -724,12 +726,27 @@ c-----------------------------------------------------------------------
 
       do it=1,notype
         write(fmt,'(''(''i2,''f15.8,a)'')') nbasis
-        write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (oparm_best(it,i),i=1,nbasis)'
-        write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (oparm_best(it,i),i=1,nbasis)'
+        if(it.eq.1) then
+          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_pos_best(it,i),i=1,nbasis)'
+          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_pos_best(it,i),i=1,nbasis)'
+         elseif(it.eq.2) then
+          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_pos_best(it,i),i=1,nbasis)'
+          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_pos_best(it,i),i=1,nbasis)'
+         elseif(it.eq.3) then
+          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_width_best(it,i),i=1,nbasis)'
+          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_width_best(it,i),i=1,nbasis)'
+         elseif(it.eq.4) then
+          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_width_best(it,i),i=1,nbasis)'
+          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_width_best(it,i),i=1,nbasis)'
+         endif
       enddo
 
       write(6,'(f9.6,'' 0. scalek_best,a21'')') scalek_best
       write(2,'(f9.6,'' 0. scalek_best,a21'')') scalek_best
+
+      nparma_read=2+max(0,norda-1)
+      nparmb_read=2+max(0,nordb-1)
+      nparmc_read=nterms4(nordc)
 
       if(nparma_read.gt.0) then
 c       write(fmt,'(''(''i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read

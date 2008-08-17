@@ -67,7 +67,6 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
       do 8 ifr=1,nforce
     8   ecm21s(ifr)=work(ifr)
 
-      write(6,*) 'rprob'
       call mpi_allreduce(rprob,rprobt,NRAD,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
       do 10 i=1,NRAD
@@ -99,30 +98,35 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
           do 40 i2=-NAX,NAX
             do 40 i3=-NAX,NAX
    40         xx0probut(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_allreduce(xx0probud,xx0probt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 41 i1=0,NAX
           do 41 i2=-NAX,NAX
             do 41 i3=-NAX,NAX
    41         xx0probud(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_allreduce(xx0probuu,xx0probt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 42 i1=0,NAX
           do 42 i2=-NAX,NAX
             do 42 i3=-NAX,NAX
    42         xx0probuu(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_allreduce(xx0probdu,xx0probt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 43 i1=0,NAX
           do 43 i2=-NAX,NAX
             do 43 i3=-NAX,NAX
    43         xx0probdu(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_allreduce(xx0probdd,xx0probt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 44 i1=0,NAX
           do 44 i2=-NAX,NAX
             do 44 i3=-NAX,NAX
    44         xx0probdd(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_allreduce(xx0probdt,xx0probt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 45 i1=0,NAX
@@ -130,16 +134,19 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
             do 45 i3=-NAX,NAX
    45         xx0probdt(i1,i2,i3)=xx0probt(i1,i2,i3)
         naxt=(2*NAX+1)*(2*NAX+1)
+
         call mpi_allreduce(den2d_t,den2dt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 50 i1=-NAX,NAX
           do 50 i2=-NAX,NAX
    50       den2d_t(i1,i2)=den2dt(i1,i2)
+
         call mpi_allreduce(den2d_d,den2dt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 51 i1=-NAX,NAX
           do 51 i2=-NAX,NAX
    51       den2d_d(i1,i2)=den2dt(i1,i2)
+
         call mpi_allreduce(den2d_u,den2dt,naxt,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
         do 52 i1=-NAX,NAX

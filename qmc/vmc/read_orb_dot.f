@@ -144,9 +144,14 @@ c the witdh of gaussians is given by zex*we
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
+      write(6,'(/,''Reading floating gaussian orbitals for dots'')')
       do it=1,notype
         read(5,*)  (oparm(it,ib,1),ib=1,nbasis)
-        write(*,*) (oparm(it,ib,1),ib=1,nbasis)
+        if(it.eq.1) write(6,'(''Floating gaussian radial positions:'')')
+        if(it.eq.2) write(6,'(''Floating gaussian angular positions:'')')
+        if(it.eq.3) write(6,'(''Floating gaussian radial widths:'')')
+        if(it.eq.4) write(6,'(''Floating gaussian angular widths:'')')
+        write(6,'(1000f9.6)') (oparm(it,ib,1),ib=1,nbasis)
       enddo
 
       do ib=1,nbasis
@@ -184,4 +189,3 @@ c      endif
 
       return
       end
-

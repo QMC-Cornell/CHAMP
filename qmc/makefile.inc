@@ -85,9 +85,11 @@ CHAMP_DEBUG_EXE=champ.exe
 ####################### MACHINES ########################################
 
 ifeq ($(hostname),gauss)
-  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
+  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O1 -pad -ip -fpp -mtune=core2 -march=core2 -xT
+  CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
   CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-  CHAMP_F95_FAST=-O3 -ip -static -align all -fpp -mtune=core2 -march=core2 -xT
+  CHAMP_F95_FAST=-O1 -ip -static -align all -fpp -mtune=core2 -march=core2 -xT
+  CHAMP_F95_DEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
   CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
   CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
   CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)

@@ -659,8 +659,10 @@ c     do 22 i=1,min(nparmp1,5)
 
       if(mod(iopt/1000,10).eq.1) then
         i0=i_emin
+        write(6,'(''Choosing eigenvector with lowest reasonable eigenvalue'')')
        else
         i0=i_coef_max
+        write(6,'(''Choosing eigenvector with largest 1st coeff rel. to rest'')')
       endif
 
 c Undo rescaling used to normalize H and O matrices
@@ -1074,6 +1076,8 @@ c Write out wavefn
 
       write(2,'(''iadd_diag,add_diag='',i1,1pd12.4)') iadd_diag,add_diag(iadd_diag)
 
+      write(6,'(/,''New wave function:'')')
+
       if(ncsf.gt.0) then
         write(fmt,'(''('',i3,''f15.8,a)'')') ncsf
        else
@@ -1090,11 +1094,33 @@ c Write out wavefn
       do it=1,notype
         write(fmt,'(''('',i3,''f15.8,a)'')') nbasis
         if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
-          write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (oparm(it,i,iadd_diag),i=1,nbasis)'
-          write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (oparm(it,i,iadd_diag),i=1,nbasis)'
-        else
-          write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (oparm_new(it,i,iadd_diag),i=1,nbasis)'
-          write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (oparm_new(it,i,iadd_diag),i=1,nbasis)'
+          if(it.eq.1) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_pos(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_pos(it,i),i=1,nbasis)'
+           elseif(it.eq.2) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_pos(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_pos(it,i),i=1,nbasis)'
+           elseif(it.eq.3) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_width(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_width(it,i),i=1,nbasis)'
+           elseif(it.eq.4) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_width(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_width(it,i),i=1,nbasis)'
+          endif
+         else
+          if(it.eq.1) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_pos_new(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_pos_new(it,i),i=1,nbasis)'
+           elseif(it.eq.2) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_pos_new(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_pos_new(it,i),i=1,nbasis)'
+           elseif(it.eq.3) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_width_new(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_rad_width_new(it,i),i=1,nbasis)'
+           elseif(it.eq.4) then
+            write(6,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_width_new(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm(it,i,iadd_diag),i=1,nbasis),' (floating_gauss_ang_width_new(it,i),i=1,nbasis)'
+          endif
         endif
       enddo
 

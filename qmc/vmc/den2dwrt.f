@@ -1,14 +1,16 @@
       subroutine den2dwrt(passes)
-c Written by A.D.Guclu
+c Written by A.D.Guclu, modified by Cyrus Umrigar for MPI
 c routine to print out 2d-density related quantities
 c called by finwrt from vmc,dmc,dmc_elec
 
       implicit real*8(a-h,o-z)
+      character*16 mode
       character*20 file1,file2,file3
 
       include 'vmc.h'
       include 'force.h'
 
+      common /contr3/ mode
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -45,9 +47,16 @@ c verify the normalization later...
           file2='pairden_dd'
           file3='pairden_du'
         endif
-        open(41,file=file1,status='unknown')
-        open(42,file=file2,status='unknown')
-        open(43,file=file3,status='unknown')
+
+        if(idtask.eq.0) then
+          open(41,file=file1,status='unknown')
+          open(42,file=file2,status='unknown')
+          open(43,file=file3,status='unknown')
+         else
+          open(41,file='/dev/null',status='unknown')
+          open(42,file='/dev/null',status='unknown')
+          open(43,file='/dev/null',status='unknown')
+        endif
 
 c verify the normalization later...
         do in1=-nax1,nax1
@@ -67,12 +76,25 @@ c following spaces are for gnuplot convention:
       endif
 
       if(ifixe.eq.-1 .or. ifixe.eq.-3) then          ! 2d density
-        file1='den2d_t'
-        file2='den2d_d'
-        file3='den2d_u'
-        open(41,file=file1,status='unknown')
-        open(42,file=file2,status='unknown')
-        open(43,file=file3,status='unknown')
+        if(index(mode,'vmc').ne.0) then
+          file1='den2d_t_vmc'
+          file2='den2d_d_vmc'
+          file3='den2d_u_vmc'
+         else
+          file1='den2d_t_dmc'
+          file2='den2d_d_dmc'
+          file3='den2d_u_dmc'
+        endif
+        
+        if(idtask.eq.0) then
+          open(41,file=file1,status='unknown')
+          open(42,file=file2,status='unknown')
+          open(43,file=file3,status='unknown')
+         else
+          open(41,file='/dev/null',status='unknown')
+          open(42,file='/dev/null',status='unknown')
+          open(43,file='/dev/null',status='unknown')
+        endif
 
 c verify the normalization later...
         do in1=-nax1,nax1
@@ -97,9 +119,16 @@ c up electron:
           file1='pairden_ut'
           file2='pairden_ud'
           file3='pairden_uu'
-          open(41,file=file1,status='unknown')
-          open(42,file=file2,status='unknown')
-          open(43,file=file3,status='unknown')
+
+          if(idtask.eq.0) then
+            open(41,file=file1,status='unknown')
+            open(42,file=file2,status='unknown')
+            open(43,file=file3,status='unknown')
+           else
+            open(41,file='/dev/null',status='unknown')
+            open(42,file='/dev/null',status='unknown')
+            open(43,file='/dev/null',status='unknown')
+          endif
           do in0=0,NAX
             r0=in0*delx
             if(in0.ge.nint(xfix(1)*delxi) .and. in0.le.nint(xfix(2)*delxi)) then
@@ -128,9 +157,17 @@ c down electron:
           file1='pairden_dt'
           file2='pairden_dd'
           file3='pairden_du'
-          open(41,file=file1,status='unknown')
-          open(42,file=file2,status='unknown')
-          open(43,file=file3,status='unknown')
+
+          if(idtask.eq.0) then
+            open(41,file=file1,status='unknown')
+            open(42,file=file2,status='unknown')
+            open(43,file=file3,status='unknown')
+           else
+            open(41,file='/dev/null',status='unknown')
+            open(42,file='/dev/null',status='unknown')
+            open(43,file='/dev/null',status='unknown')
+          endif
+
           do in0=0,NAX
             r0=in0*delx
             if(in0.ge.nint(xfix(1)*delxi) .and. in0.le.nint(xfix(2)*delxi)) then
@@ -160,9 +197,15 @@ c down electron:
         file1='fourierrk_t'
         file2='fourierrk_d'
         file3='fourierrk_u'
-        open(41,file=file1,status='unknown')
-        open(42,file=file2,status='unknown')
-        open(43,file=file3,status='unknown')
+        if(idtask.eq.0) then
+          open(41,file=file1,status='unknown')
+          open(42,file=file2,status='unknown')
+          open(43,file=file3,status='unknown')
+         else
+          open(41,file='/dev/null',status='unknown')
+          open(42,file='/dev/null',status='unknown')
+          open(43,file='/dev/null',status='unknown')
+        endif
 
 c verify the normalization later...
         term=1/(passes*delx)
@@ -188,9 +231,15 @@ c verify the normalization later...
         file1='fourierkk_t'
         file2='fourierkk_d'
         file3='fourierkk_u'
-        open(41,file=file1,status='unknown')
-        open(42,file=file2,status='unknown')
-        open(43,file=file3,status='unknown')
+        if(idtask.eq.0) then
+          open(41,file=file1,status='unknown')
+          open(42,file=file2,status='unknown')
+          open(43,file=file3,status='unknown')
+         else
+          open(41,file='/dev/null',status='unknown')
+          open(42,file='/dev/null',status='unknown')
+          open(43,file='/dev/null',status='unknown')
+        endif
 
 c verify the normalization later...
         do in1=-NAK2,NAK2
