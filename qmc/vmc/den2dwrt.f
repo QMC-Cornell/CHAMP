@@ -3,12 +3,14 @@ c Written by A.D.Guclu, modified by Cyrus Umrigar for MPI
 c routine to print out 2d-density related quantities
 c called by finwrt from vmc,dmc,dmc_elec
 
+      use mpi_mod
+
       implicit real*8(a-h,o-z)
       character*16 mode
       character*20 file1,file2,file3
 
-      include 'vmc.h'
-      include 'force.h'
+c     include 'vmc.h'
+c     include 'force.h'
 
       common /contr3/ mode
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn

@@ -1,0 +1,7 @@
+#! /bin/sh
+for file in $*
+do
+  in=$file
+  out=`echo $in | sed -e 's/i/o/'`
+  floating_gauss < $in > $out
+done
