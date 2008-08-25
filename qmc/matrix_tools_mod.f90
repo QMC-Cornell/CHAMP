@@ -175,7 +175,7 @@ module matrix_tools_mod
        write(6,'(''Warning: low accuracy in diagonalization; the error on a matrix element'',2i4,'' is'',d12.4)') &
          i,j,matrix_check-matrix(i,j)
      endif
-     if(abs(matrix_check-matrix(i,j)) > 1.d-4) then
+     if(abs(matrix_check-matrix(i,j)) > 1.d-2) then
        call die (lhere, 'low accuracy in diagonalization; the error on a matrix element is '+abs(matrix_check-matrix(i,j)))
      endif
    enddo ! j
