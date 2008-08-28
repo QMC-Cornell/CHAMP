@@ -16,6 +16,7 @@ c calculate interparticle distances
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
       common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
 c     common /compferm/ emagv,nv,idot
       common /jel_sph1/ dn_background,rs_jel,radius_b !RM
@@ -69,6 +70,26 @@ c Contribution from Jellium to the potential energy. A temporary patch which sho
               pe=pe+p_bg
 ! MS The potential energy between Z and e
               pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
+            endif
+            if(nloc.eq.-4) then  !  quantum wire
+              pe_y=0.5d0*(wire_w*x(2,i))**2  !  y-direction
+              pe_en=pe_en+pe_y
+c      These are used to calculate confining, x-direction potential:
+              xshift=x(1,i)+wire_length*0.5d0
+              wire_root2 = dsqrt(wire_radius2 + xshift**2)
+              wire_root3 = dsqrt(wire_radius2 + (wire_length - xshift)**2)
+c      The x-direction (confining) potential:
+              pe_x=wire_prefactor * 
+     &((1.d0 - 2*wire_potential_cutoff**2) * wire_length2 
+     & + wire_length * (2*wire_potential_cutoff*wire_root1-wire_root3-2*xshift)
+     &+ xshift * (wire_root3 + 2 * xshift - wire_root2) 
+     &+ wire_radius2 * dlog( ((wire_potential_cutoff * wire_length 
+     &+ wire_root1)**2) 
+     &/ ((wire_length + wire_root3 - xshift)*(xshift + wire_root2))  ) )
+              pe_en=pe_en+pe_x
+c              write(*,*) 'wire_root1, wire_root2, wire_root3 = ', wire_root1, wire_root2, wire_root3
+c              write(*,*) 'wire_radius2, wire_length, wire_prefactor ', wire_radius2, wire_length, wire_prefactor
+c              write(*,*) 'i,x(1,i),x(2,i),pe_x,pe_y=',i,x(1,i),x(2,i),pe_x,pe_y
             endif
    26   continue
 

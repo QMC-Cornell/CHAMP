@@ -90,6 +90,7 @@ c Written by Cyrus Umrigar
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /periodic2/ rkvec_shift_latt(3)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -153,7 +154,7 @@ c            >0 periodic system
 c ibasis     =1 localized Slater or gaussian or numerical basis
 c            =2 planewave basis, also for extended orbitals on grid
 c            =3 complex basis for 2D quantum dots / composite fermions
-c            =4 2d localized floating gaussians in caresian coord. (wigner crystal).
+c            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
 c            =5 2d localized gloating gaussians in circular coord. (wigner crystal)
 c            Warning I would like to be able to use for dots a gaussian radial basis with complex
 c            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
@@ -188,6 +189,7 @@ c nfprod     number of products to undo for estimating population control bias i
 c tau        time-step in dmc
 c nloc       external potential (a positive value => nonlocal pseudopotential)
 c            -9 numerical dot potential read in from potential_num (not yet implemented)
+c            -4 finite quantum wire   Vwire(x) + 0.5 w0 * y^2
 c            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
 c            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
 c            -1 quadratic dot potential .5*w0*r^2
@@ -217,6 +219,12 @@ c w0         spring constant for quantum dot
 c bext       external magnetic field in a.u. (only for quantum dots)
 c            1 a.u. = (meff/epsilon_rel)^2 epsilon_0 /(2 mu_bohr) = 6.86219 Tesla for GaAs
 c we         effective spring constant = sqrt(w0*w0+0.25*bext*bext)
+c wire_w       "omega" in transverse harmonic potential 0.5 r^2 wire_w^2 for finite quantum wire
+c wire_length  Length of finite quantum wire
+c wire_radius2 "radius" of 3D cylindrical leads used to calculate confining potential at edges of finite quantum wire ( = 1/ (2 wire_w)
+c wire_potential_cutoff  Number of wire-lengths of the 3D cylindrical leads on each side to consider when calculating quantum wire confining potential
+c wire_prefactor  constant used in calculation of confining potential of quantum wire, saved to speed up calculation
+c wire_root1  constant used in calculation of confining potential of quantum wire, saved to speed up calculation.
 c emaglz     "magnetic energy" due to B-Lz coupling=-0.5*B*Lz (favor positive Lz)
 c emagsz     "magnetic energy" due to B-Sz coupling=-0.5*B*glande*Sz (favor spin up)
 c glande     effective lande factor (only for quantum dots) considered positive
@@ -607,7 +615,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr
       write(6,'(''nforce,nefp ='',t31,4i5)') nforce,nefp
       if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
-      if(nloc.lt.-3 .or. nloc.gt.6) stop 'nloc must be between -3 and 6 inclusive'
+      if(nloc.lt.-4 .or. nloc.gt.6) stop 'nloc must be between -4 and 6 inclusive'
       if(nloc.ge.2) then
         read(5,*) nquad
         write(6,'(''nquad='',t31,i4)') nquad
@@ -621,6 +629,11 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
        elseif(nloc.eq.-2) then
         read(5,*) p1,p2,p3,p4
         write(6,'(''quartic dot pot. p1,p2,p3,p4='',t31,9f9.6)') p1,p2,p3,p4
+       elseif(nloc.eq.-4) then 
+        read(5,*) wire_w,wire_length,wire_potential_cutoff
+        we=wire_w  !  this is a quick fix:  needed for the subroutine basis_fns_2dgauss
+        write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
+
       endif
 
       call object_modified ('nloc') ! JT
@@ -639,9 +652,17 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       if(nup.le.0) stop 'nup must be >=1'
       if(nup.lt.ndn) stop 'nup must be >=ndn'
 
+      if(nloc.eq.-4) then ! values used for quantum wire
+        wire_length2 = wire_length*wire_length
+        wire_radius2 = 1 / (2 * wire_w)
+        wire_prefactor = nelec / (wire_radius2 * wire_length) 
+        wire_root1 = dsqrt((wire_potential_cutoff **2)  * wire_length2 + wire_radius2)
+      endif
+
       call object_modified ('nelec') !JT
       call object_modified ('nup') !JT
       call object_modified ('ndn') !JT
+      
 
 c The foll. does not work because mode is set in maindmc.f and the same maindmc.f is used for all-electron and 1-electron move versions.
 c     if(nelec.gt.4 .and. index(mode,'one').eq.0) write(6,'(''Warning: for more'',

@@ -23,7 +23,7 @@ c do some debugging. not sure if all these are necessary to check
 c but take no chance for now
       if(ndim.ne.2) stop 'ndim must be 2 for quantum dots'
       if(nforce.ne.1) stop 'nforce must be 1 for quantum dots'
-      if(nloc.ne.-1) stop 'nloc must be -1 for quantum dots'
+c     if(nloc.ne.-1) stop 'nloc must be -1 for quantum dots'
       if(numr.ne.0) stop 'numr must be 0 in read_orb_dot'
       if(inum_orb.ne.0) stop 'inum_orb must be 0 for quantum dots'
 
@@ -132,7 +132,7 @@ c-----------------------------------------------------------------------
       subroutine read_orb_dot_gauss
 c Written by A.D.Guclu, Apr 2006.
 c Reads in quantum dot orbitals in gaussian basis set
-c the witdh of gaussians is given by zex*we
+c the witdh of gaussians is given by zex*we 
 
       implicit real*8(a-h,o-z)
 
@@ -144,14 +144,9 @@ c the witdh of gaussians is given by zex*we
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
-      write(6,'(/,''Reading floating gaussian orbitals for dots'')')
       do it=1,notype
         read(5,*)  (oparm(it,ib,1),ib=1,nbasis)
-        if(it.eq.1) write(6,'(''Floating gaussian radial positions:'')')
-        if(it.eq.2) write(6,'(''Floating gaussian angular positions:'')')
-        if(it.eq.3) write(6,'(''Floating gaussian radial widths:'')')
-        if(it.eq.4) write(6,'(''Floating gaussian angular widths:'')')
-        write(6,'(1000f9.6)') (oparm(it,ib,1),ib=1,nbasis)
+        write(*,*) (oparm(it,ib,1),ib=1,nbasis)
       enddo
 
       do ib=1,nbasis
@@ -159,11 +154,15 @@ c the witdh of gaussians is given by zex*we
           write(6,'(''WARNING: exponent oparm(3,ib,1) set to 1'')')
           oparm(3,ib,1)=1
         endif
+c        if(oparm(4,ib,1).le.0.d0 .or. oparm(4,ib,1).gt.60.d0) then
+c          stop 'oparm(3,ib,1) must be between 0 and 60'
+c        endif
+        
       enddo
 
-      if(norb.ne.nbasis) stop
+      if(norb.ne.nbasis) stop 
      &  'norb must be equal to nbasis in read_orb_dot_gauss'
-
+        
 
 c read orbital coefficients
 c      write(6,'(/,(12a10))') (n_fd(j),m_fd(j),j=1,nbasis)
@@ -177,7 +176,7 @@ c      else
         write(6,'(''Assuming basis set=orbitals for 2D-gaussian orbitals'')')
         do 40 iorb=1,norb
           do 30 j=1,nbasis
-            if(iorb.eq.j) then
+            if(iorb.eq.j) then 
               coef(j,iorb,1)=1
             else
               coef(j,iorb,1)=0
@@ -189,3 +188,4 @@ c      endif
 
       return
       end
+

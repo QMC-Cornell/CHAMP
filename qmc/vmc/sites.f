@@ -18,6 +18,7 @@ c when they are too close.
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
       common /jel_sph2/ zconst  ! RM
 
       dimension x(3,*),nsite(*)
@@ -42,8 +43,11 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
             znucc=dsqrt(we)
            elseif(nloc.eq.-3) then ! jellium RM
             znucc=zconst
+           elseif(nloc.eq.-4) then ! quantum wire
+            znucc=dsqrt(wire_w)
            else ! atoms and molecules
-            if(znuc(iwctype(i)).eq.0.d0) stop 'znuc should not be 0 in sites for atoms and molecules'
+            if(znuc(iwctype(i)).eq.0.d0) 
+     &stop 'znuc should not be 0 in sites for atoms and molecules'
             znucc=znuc(iwctype(i))
           endif
           ju=(nsite(i)+2-ispin)/2
@@ -74,11 +78,23 @@ c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots
               x(1,ielec)=(sitsca*site+rring)*dcos(angle)
               x(2,ielec)=(sitsca*site+rring)*dsin(angle)
              else
-              do 5 k=1,ndim
-              site=-dlog(rannyu(0))
-              if(nloc.eq.-1) site=dsqrt(site)
-              site=sign(site,(rannyu(0)-half))
-   5          x(k,ielec)=sitsca*site+cent(k,i)
+               do 5 k=1,ndim
+c sample position from exponentials or gaussian around center
+c a.d.guclu: for wires distribute electrons linearly in y direction  
+                 site=-dlog(rannyu(0))
+                 if(nloc.eq.-1 .or. nlock.eq.-4) site=dsqrt(site)
+                 site=sign(site,(rannyu(0)-half))
+
+                 if(nloc.eq.-4) then 
+                   if(k.eq.2) then
+                     x(k,ielec)=sitsca*site+cent(k,i)
+                   else
+                     x(k,ielec)=wire_length*(0.5d0-rannyu(0))
+                   endif
+                 else
+                   x(k,ielec)=sitsca*site+cent(k,i)
+                 endif
+   5           enddo
             endif
 
    10     continue

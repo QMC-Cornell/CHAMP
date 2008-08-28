@@ -713,6 +713,8 @@ c      write(*,*) 'in basis_fns'
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
+c       write(*,*) 'x1,x2,we=',x1,x2,we
+
         do ib=1,nbasis
           wez=we*oparm(3,ib,iwf)
           wez2=wez*wez
@@ -724,7 +726,8 @@ c      write(*,*) 'in basis_fns'
 
           phin(ib,ie)=dsqrt(wez)*dexp(-0.5d0*wez*rrel2)
 
-c          write(*,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+c         write(*,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+c         write(*,*) 'oparm1,oparm2,oparm3=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf)
 
           dphin(1,ib,ie)=-wez*x1rel*phin(ib,ie)
           dphin(2,ib,ie)=-wez*x2rel*phin(ib,ie)
