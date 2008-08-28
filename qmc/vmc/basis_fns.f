@@ -915,6 +915,7 @@ c Decide whether we are computing all or one electron
       endif
 
       ic=1
+      expnorm=1.d0
 c      write(*,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
@@ -942,7 +943,7 @@ c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
           sxtrel=dsin(xtrel)
 
           phir=dsqrt(we)*dexp(-0.5d0*wez*xrrel2)
-          phit=dexp(xg4*cxtrel)
+          phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
 c          write(*,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
@@ -1024,6 +1025,7 @@ c     common /dim/ ndim
       nelec2=nelec
 
       ic=1
+      expnorm=1.d0
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
@@ -1056,7 +1058,7 @@ c jacobian:
 
 c wfs and coo. derivatives:
           phir=dsqrt(we)*dexp(-0.5d0*wez*xrrel2)
-          phit=dexp(xg4*cxtrel)
+          phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
 c         write(*,*) 'phir,phit=',phir,phit
@@ -1079,18 +1081,18 @@ c parameter derivatives:
           dparam(1,ib,ie)=-dpdxr                                 ! wrt xg1
           dparam(2,ib,ie)=-dpdxt                                 ! wrt xg2
           dparam(3,ib,ie)=-0.5d0*we*xrrel2*phin(ib,ie)           ! wrt xg3
-          dparam(4,ib,ie)=cxtrel*phin(ib,ie)                     ! wrt xg4
+          dparam(4,ib,ie)=(cxtrel-expnorm)*phin(ib,ie)           ! wrt xg4
 
           d2param(1,1,ib,ie)=d2pdxr2                             ! wrt xg1,xg1
           d2param(2,2,ib,ie)=d2pdxt2                             ! wrt xg2,xg2
           d2param(3,3,ib,ie)=-0.5d0*we*xrrel2*dparam(3,ib,ie)    ! wrt xg3,xg3
-          d2param(4,4,ib,ie)=cxtrel*dparam(4,ib,ie)              ! wrt xg4,xg4
+          d2param(4,4,ib,ie)=(cxtrel-expnorm)*dparam(4,ib,ie)    ! wrt xg4,xg4
 
           d2param(1,2,ib,ie)=-tempr1*dparam(2,ib,ie)
           d2param(1,3,ib,ie)=we*xrrel*(1.d0-0.5d0*wez*xrrel2)*phin(ib,ie)
           d2param(1,4,ib,ie)=-tempr1*dparam(4,ib,ie)
           d2param(2,3,ib,ie)=-tempt1*dparam(3,ib,ie)
-          d2param(2,4,ib,ie)=sxtrel*(1.d0+xg4*cxtrel)*phin(ib,ie)
+          d2param(2,4,ib,ie)=sxtrel*(1.d0+xg4*(cxtrel-expnorm))*phin(ib,ie)
           d2param(3,4,ib,ie)=-0.5d0*we*xrrel2*dparam(4,ib,ie)
 
           d2param(2,1,ib,ie)=d2param(1,2,ib,ie)
