@@ -82,7 +82,7 @@ c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots
 c sample position from exponentials or gaussian around center
 c a.d.guclu: for wires distribute electrons linearly in y direction  
                  site=-dlog(rannyu(0))
-                 if(nloc.eq.-1 .or. nlock.eq.-4) site=dsqrt(site)
+                 if(nloc.eq.-1 .or. nloc.eq.-4) site=dsqrt(site)
                  site=sign(site,(rannyu(0)-half))
 
                  if(nloc.eq.-4) then 
