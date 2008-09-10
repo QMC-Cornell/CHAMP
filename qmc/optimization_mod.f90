@@ -60,7 +60,7 @@ module optimization_mod
   real(dp), allocatable   :: delta_c_im (:,:)
   real(dp)                :: add_diag_max  = 1.d10
   logical                 :: l_reset_add_diag = .true.
-  real(dp)                :: add_diag_reset_value  = 1.d-8
+  real(dp)                :: add_diag_reset_value  = 1.d-12
   logical                 :: do_add_diag_mult_exp = .false.
   logical                 :: l_last_run = .true.
 
@@ -134,7 +134,7 @@ module optimization_mod
    write(6,'(a)') '              = overlap: add multiple of overlap matrix to Hamiltonian (only for linear method)'
    write(6,'(a)') ' add_diag_max = [real] : maximum allowed value of add_diag (default=1.d10)'
    write(6,'(a)') ' reset_add_diag = [bool] : reset add_diag to add_diag_reset_value at each step before adjustment (default=true)'
-   write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-8)'
+   write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-12)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
    write(6,'(a)') ' iter_opt_max_nb = [integer] : maximun number of optimization iterations (default=nopt_iter)'
    write(6,'(a)') ' last_run = [logical] : perform a last run with the last predicted parameters? (default=true)'
@@ -1707,7 +1707,7 @@ module optimization_mod
 
       write(6,'(a)') 'Jastrow parameters:'
       if (nparma_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparma_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparma_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1716,7 +1716,7 @@ module optimization_mod
       enddo
 
       if(nparmb_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparmb_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparmb_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1725,7 +1725,7 @@ module optimization_mod
       enddo
 
       if(nparmc_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparmc_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1847,7 +1847,7 @@ module optimization_mod
 
       write(6,'(a)') 'Jastrow parameters:'
       if (nparma_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparma_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparma_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1856,7 +1856,7 @@ module optimization_mod
       enddo
 
       if(nparmb_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparmb_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparmb_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1865,7 +1865,7 @@ module optimization_mod
       enddo
 
       if(nparmc_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparmc_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1971,7 +1971,7 @@ module optimization_mod
 
       write(6,'(a)') 'Jastrow parameters:'
       if (nparma_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparma_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparma_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1980,7 +1980,7 @@ module optimization_mod
       enddo
 
       if(nparmb_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparmb_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparmb_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -1989,7 +1989,7 @@ module optimization_mod
       enddo
 
       if(nparmc_read > 0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') nparmc_read
+        write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
        else
         write(fmt,'(''(a)'')')
       endif

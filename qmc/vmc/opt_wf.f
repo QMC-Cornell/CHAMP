@@ -188,7 +188,7 @@ c Turn correlated sampling on/off
           if(iadd_diag_opt.eq.1) then
 
 c Reset add_diag
-            add_diag(1)=1.d-8
+            add_diag(1)=1.d-12
 
 c Make sure that the add_diag values are not tiny compared to eig_min
 c Done in ham_ovlp_grad_hess now

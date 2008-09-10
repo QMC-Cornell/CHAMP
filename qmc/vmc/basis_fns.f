@@ -962,7 +962,7 @@ c          write(*,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           d2phin(ib,ie)=(dpdxr*xri+d2pdxr2+d2pdxt2*xri2)*phin(ib,ie)
 
-          if(abs(phin(ib,ie)).lt.1.d-100 .or.  abs(phin(ib,ie)).gt.1.d+100) then
+          if(abs(phin(ib,ie)).lt.1.d-150 .or.  abs(phin(ib,ie)).gt.1.d+150) then
             write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
      &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
             stop 'phir,phit,phin(ib,ie) outside range'

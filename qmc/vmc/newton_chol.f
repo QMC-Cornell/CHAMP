@@ -121,12 +121,12 @@ c set the superdiag elements of ovlp
         write(6,'(/,''Hamiltonian and overlap matrices after renormalization'')')
         do 150 i=1,nparmp1
 c 150     write(6,'(''ovlp='',20g12.4)') (ovlp(i,j),j=1,i)
-  150     write(6,'(''ovlp='',20g20.12)') (ovlp(i,j),j=1,i)
+  150     write(6,'(''ovlp='',20g22.14)') (ovlp(i,j),j=1,i)
         write(6,*)
 
         do 160 i=1,nparmp1
 c 160     write(6,'(''ham='',20g12.4)') (ham(i,j),j=1,nparmp1)
-  160     write(6,'(''ham='',20g20.12)') (ham(i,j),j=1,nparmp1)
+  160     write(6,'(''ham='',20g22.14)') (ham(i,j),j=1,nparmp1)
         write(6,*)
       endif
       write(6,'(/,''diagonal H/O'',9f9.4)') (ham(i,i)/ovlp(i,i),i=1,nparmp1)
@@ -1135,7 +1135,7 @@ c Write out wavefn
 
       if(nparma_read.gt.0) then
 c       write(fmt,'(''('',i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
-        write(fmt,'(''(1p'',i2,''g16.8,a)'')') nparma_read
+        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
        else
 c       write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
         write(fmt,'(''(a)'')')
@@ -1152,7 +1152,7 @@ c       write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
 
       if(nparmb_read.gt.0) then
 c       write(fmt,'(''('',i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
-        write(fmt,'(''(1p'',i2,''g16.8,a)'')') nparmb_read
+        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
        else
 c       write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
         write(fmt,'(''(a)'')')
@@ -1169,7 +1169,7 @@ c       write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
 
       if(nparmc_read.gt.0) then
 c       write(fmt,'(''('',i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
-        write(fmt,'(''(1p'',i2,''g16.8,a)'')') nparmc_read
+        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
        else
 c       write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
         write(fmt,'(''(a)'')')

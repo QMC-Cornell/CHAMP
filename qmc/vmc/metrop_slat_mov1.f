@@ -326,7 +326,7 @@ c rratio^2 is needed for the density of the angular moves
           write(6,'(''vold='',9d12.4)') (vold(k,i),k=1,ndim)
           write(6,'(''voldr,voldp='',9d12.4)') voldr,voldp
           write(6,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(6,'(''rmino(i),rmax1,rmax2,rzero'',9f9.4)')
+          if(co.lt.zero) write(6,'(''rmino(i),rmax1,rmax2,rzero'',9f9.4)')
      &    rmino(i),rmax1,rmax2,rzero
           write(6,'(''rtry,costht,sintht,phitry'',9f9.4)') rtry,costht,
      &    sintht,phitry
@@ -476,7 +476,7 @@ c p is the probability of accepting new move
           write(6,'(''vnew='',9d12.4)') (vnew(k,i),k=1,ndim)
           write(6,'(''vnewr,vnewp='',9d12.4)') vnewr,vnewp
           write(6,'(''axes='',(3f8.4,3x))') xaxis,yaxis,zaxis
-          write(6,'(''rminn(i),rmax1,rmax2,rzero'',9f9.4)')
+          if(co.lt.zero) write(6,'(''rminn(i),rmax1,rmax2,rzero'',9f9.4)')
      &    rminn(i),rmax1,rmax2,rzero
           write(6,'(''rtry,costht,sintht,phitry,cosphi'',9f9.4)') rtry,
      &    costht,sintht,phitry,cosphi

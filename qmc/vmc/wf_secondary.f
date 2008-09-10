@@ -750,7 +750,7 @@ c-----------------------------------------------------------------------
 
       if(nparma_read.gt.0) then
 c       write(fmt,'(''(''i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
-        write(fmt,'(''(1p'',i2,''g16.8,a)'')') nparma_read
+        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
        else
 c       write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
         write(fmt,'(''(a)'')')
@@ -761,7 +761,7 @@ c       write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
 
       if(nparmb_read.gt.0) then
 c       write(fmt,'(''(''i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
-        write(fmt,'(''(1p'',i2,''g16.8,a)'')') nparmb_read
+        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
        else
 c       write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
         write(fmt,'(''(a)'')')
@@ -772,7 +772,7 @@ c       write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
 
       if(nparmc_read.gt.0) then
 c       write(fmt,'(''(''i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
-        write(fmt,'(''(1p'',i2,''g19.8,a)'')') nparmc_read
+        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
        else
 c       write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
         write(fmt,'(''(a)'')')
