@@ -143,14 +143,21 @@ c the witdh of gaussians is given by zex*we
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+      common /contrl_per/ iperiodic,ibasis
 
       write(6,'(/,''Reading floating gaussian orbitals for dots'')')
       do it=1,notype
         read(5,*)  (oparm(it,ib,1),ib=1,nbasis)
-        if(it.eq.1) write(6,'(''Floating gaussian radial positions:'')')
-        if(it.eq.2) write(6,'(''Floating gaussian angular positions:'')')
-        if(it.eq.3) write(6,'(''Floating gaussian radial widths:'')')
-        if(it.eq.4) write(6,'(''Floating gaussian angular widths:'')')
+        if(ibasis.eq.4) then
+          if(it.eq.1) write(6,'(''Floating gaussian x-positions:'')')
+          if(it.eq.2) write(6,'(''Floating gaussian y-positions:'')')
+          if(it.eq.3) write(6,'(''Floating gaussian widths:'')')
+        else
+          if(it.eq.1) write(6,'(''Floating gaussian radial positions:'')')
+          if(it.eq.2) write(6,'(''Floating gaussian angular positions:'')')
+          if(it.eq.3) write(6,'(''Floating gaussian radial widths:'')')
+          if(it.eq.4) write(6,'(''Floating gaussian angular widths:'')')
+        endif
         write(6,'(1000f9.6)') (oparm(it,ib,1),ib=1,nbasis)
       enddo
 
@@ -159,9 +166,11 @@ c the witdh of gaussians is given by zex*we
           write(6,'(''WARNING: exponent oparm(3,ib,1) set to 1'')')
           oparm(3,ib,1)=1
         endif
-        if(oparm(4,ib,1).le.0.d0) then
-          write(6,'(''oparm(3,ib,1) must be between > 0'')')
-          stop 'oparm(3,ib,1) must be between > 0'
+        if(ibasis.eq.5) then
+          if(oparm(4,ib,1).le.0.d0) then
+            write(6,'(''oparm(4,ib,1) must be  > 0'')')
+            stop 'oparm(4,ib,1) must be  > 0'
+          endif
         endif
       enddo
 
