@@ -1,6 +1,6 @@
 ***********************************************************************
 
-      subroutine get_job_name(job_name)
+      subroutine get_job_name
 
 c Written by Devrim Guclu for Cyrus Umrigar
 *----------------------------------------------------------------------
@@ -10,28 +10,76 @@ c Written by Devrim Guclu for Cyrus Umrigar
 * arguments:   job_name = argv
 *----------------------------------------------------------------------
 
-      character*35      job_name
-      character*35      argv
+      character*35  job_name
+      character*35  dstrfile,inputfile,outfile,s2file,detfile,csffile,conffile,dpfile
+	common/bfield/  ibfield,dstrfile
 
       write(*,*) '* Getting job argument'
 
-      call getarg(1,argv)
-      if (argv(1:1).ne.' ') then
-         job_name = argv
-      else
-         write(*,*) ' Use: prog_name job_name '
-         stop
-      end if
+
+	read(*,*) job_name
       write(*,*) '  Job name = ',job_name
       write(*,*) '  OK.'
-      write(*,*)
+
+c define file names
+      ii=1
+      do 10 while (job_name(ii:ii).ne.' ')
+         ii=ii+1
+ 10   enddo
+      lname=ii-1
+      inputfile=job_name
+      inputfile(lname+1:lname+3)='.in'
+      write(*,*) '  Input file name = ',inputfile
+
+      outfile=job_name
+      outfile(lname+1:lname+4)='.out'
+      write(*,*) '  output file name = ',outfile
+
+      s2file=job_name
+      s2file(lname+1:lname+3)='.s2'
+      write(*,*) '  S^2 eigenvector file name = ',s2file
+
+      detfile=job_name
+      detfile(lname+1:lname+4)='.det'
+      write(*,*) '  determinant file name = ',detfile
+
+      csffile=job_name
+      csffile(lname+1:lname+4)='.csf'
+      write(*,*) '  CSF file name = ',csffile
+
+      conffile=job_name
+      conffile(lname+1:lname+5)='.conf'
+      write(*,*) '  configuration file name = ',conffile
+
+      dstrfile=job_name
+      dstrfile(lname+1:lname+5)='.dstr'
+      write(*,*) '  distribution file name = ',dstrfile
+
+c      dpfile=job_name
+c      dpfile(lname+1:lname+3)='.dp'
+c      write(*,*) '  linear dependance file name = ',dpfile
+
+c open the file
+      open(18,file=inputfile,status='UNKNOWN')
+	open(19,file=conffile,status='UNKNOWN')
+	open(20,file=s2file,status='UNKNOWN')
+
+c	if (ibfield .eq. 1) open(11,file=dstrfile)
+
+	open(15,file=outfile,status='UNKNOWN',access='sequential',form='formatted')
+c	open(16,file=detfile,status='UNKNOWN',access='sequential',form='formatted')
+c	open(17,file=csffile,status='UNKNOWN',access='sequential',form='formatted')
+	open(16,file=detfile,status='REPLACE',access='sequential',form='formatted')
+	open(17,file=csffile,status='REPLACE',access='sequential',form='formatted')
+
+c	open(27,file=dpfile,status='REPLACE',access='sequential',form='formatted')
 
       return
       end
 
 **********************************************************************
 
-      subroutine read_input(job_name)
+      subroutine read_input
 
 c Written by Devrim Guclu for Cyrus Umrigar
 *---------------------------------------------------------------------
@@ -59,23 +107,12 @@ c commons:
 
       common/psi_n/   cdet,ndim,nelec,ndet,det
 
-      write(*,*) '* Reading the input file'
 
-c define input file name
-      ii=1
-      do 10 while (job_name(ii:ii).ne.' ')
-         ii=ii+1
- 10   enddo
-      lname=ii-1
-      inputfile=job_name
-      inputfile(lname+1:lname+3)='.in'
-      write(*,*) '  Input file name = ',inputfile
 
-c open the file
-      open(33,file=inputfile,status='old')
+
 
 c read the file
-      read(33,*) ndim,nelec,ndet
+      read(18,*) ndim,nelec,ndet,icsf,iconf
       write(*,*) '  Number of spatial dimensions = ', ndim
       write(*,*) '  Number of electrons          = ', nelec
       write(*,*) '  Number of determinants       = ', ndet
@@ -95,12 +132,12 @@ c read the file
       endif
 
       do 20 idet=1,ndet
-         read(33,*) amp
+         read(18,*) amp
          write(*,*)
          write(*,*) '  Determinant: ',idet,', Coeff.: ',amp
          cdet(idet)=dcmplx(amp,0.d0)
          do 15 in=1,nelec
-            read(33,*) (det(idet,in,iq),iq=qns,qnm)
+            read(18,*) (det(idet,in,iq),iq=qns,qnm)
             write(*,'(''     Electron'',i3,'' : | s = '',i2,
      &        '' , n = '',i2,'' , l = '',i2,'' , m = '',i2,'' )'')')
      &              in,det(idet,in,qns),det(idet,in,qnn),
@@ -143,7 +180,6 @@ c check if the quantum numbers satisfy "atomic orbital rules" in 3D.
  15      enddo
  20   enddo
 
-      close(33)
 
       write(*,*) '  OK.'
       write(*,*)
@@ -152,7 +188,7 @@ c check if the quantum numbers satisfy "atomic orbital rules" in 3D.
 
 **********************************************************************
 
-      subroutine write_output(job_name)
+      subroutine write_output(mmax)
 
 c Written by Devrim Guclu for Cyrus Umrigar
 *---------------------------------------------------------------------
@@ -167,9 +203,11 @@ c arguments:
       character*35    job_name
 
 c locals:
-      real*8          norm2
+      real*8          norm2, coeff(MAXNDET), coeffi(MAXNDET)
       character*35    outputfile
-      integer         idet,in,rcount,icount
+      integer         idet,in,rcount,icount, mmax(0:MAXN), mplus(MAXNELEC)
+	integer         morb(2*MAXM+1)
+
 
 c commons:
       integer         ndim,nelec,ndet
@@ -180,68 +218,83 @@ c commons:
 
       write(*,*) '* Writing input file'
 
-c define input file name
-      ii=1
-      do 10 while (job_name(ii:ii).ne.' ')
-        ii=ii+1
- 10   enddo
-      lname=ii-1
-      outputfile=job_name
-      outputfile(lname+1:lname+4)='.out'
-      write(*,*) '  output file name = ',outputfile
 
-c open the file
-      open(33,file=outputfile)
 
-      norm2=0.d0
+c assume 1st Landau Level(LL) orbitals with m=0, 1, -1, 2, -2, ... morbmax, -morbmax
+c in order, then 2nd LL orbitals with m=0, 1, -1, 2, -2, ..., then 3rd LL
+c      write(*,*) ' input maximum of m for 1st Landau Level'
+c	read(*,*)  morbmax
+c      write(*,*) ' input maximum of m for 2nd Landau Level'
+c	read(*,*)  morbmax1
+c	if (morbmax .gt.MAXM) then
+c         write(*,*) '  PROBLEM! cannot handle such a large m value'
+c         stop
+c      endif
+
+
       rcount=0
       icount=0
-      write(33,*) ' REAL PART:'
-      write(33,*)
+	write(15,'(//,i3,6x,"electrons",/)') nelec
+      write(15,*) ' REAL PART:'
+	norm2=0.0
+      do idet=1,ndet
+        if (abs(dreal(cdet(idet))).gt.1.d-6) rcount=rcount+1
+	  norm2=norm2+dreal(cdet(idet))**2	
+      enddo
+      write(15,'(i3,6x,"determinantal coefficients")')  rcount
+      rcount=0
       do 20 idet=1,ndet
-        if (dreal(cdet(idet)).ne.0.d0) then
-          rcount=rcount+1
-          write(33,*) ' Coeff.: ', dreal(cdet(idet))
-          do 17 in=1,nelec
-             write(33,'(''     Electron'',i3,'' : | s = '',i2,
-     &        '' , n = '',i2,'' , l = '',i2,'' , m = '',i2,'' )'')')
-     &              in,det(idet,in,qns),det(idet,in,qnn),
-     &                     det(idet,in,qnl),det(idet,in,qnm)
- 17       enddo
-          norm2=norm2+dreal(cdet(idet))*dreal(cdet(idet))
+        if (abs(dreal(cdet(idet))).gt.1.d-6) then
+	    rcount=rcount+1
+c	    if (rcount .eq. 1)	norm2=abs(dreal(cdet(idet)))
+          coeff(rcount)=dreal(cdet(idet))/dsqrt(norm2)
+	    do ielec=1,nelec
+		 mplus(ielec)=0
+	     do ii=0,det(idet,ielec,qnn)-1
+	      mplus(ielec)=mplus(ielec)+2*mmax(ii)+1
+	     enddo
+	    enddo
+          write(15,'(<nelec>i3)') (2*abs(det(idet,in,qnm))
+     &	+(1-sign(1,det(idet,in,qnm)-1))/2+mplus(in),in=1,nelec)
         endif
- 20   enddo
-      if (rcount.eq.0) write(33,*) ' No real part'
+20	enddo
 
-      write(33,*)
-      write(33,*) ' IMAGINARY PART:'
-      write(33,*)
+      if (rcount.ne.0) write(15,'(<rcount>f12.6)') (coeff(i),i=1,rcount)
+
+      write(15,*)
+      write(15,*) ' IMAGINARY PART:'
+	norm2=0.0
+      do idet=1,ndet
+        if (abs(dimag(cdet(idet))).gt.1.d-6) icount=icount+1
+	  norm2=norm2+dimag(cdet(idet))**2	
+      enddo
+      write(15,'(i3,6x,"determinantal coefficients")')  icount
+      icount=0
       do 30 idet=1,ndet
-        if (dimag(cdet(idet)).ne.0.d0) then
+        if (abs(dimag(cdet(idet))).gt.1.d-6) then
           icount=icount+1
-          write(33,*) ' Coeff.:', dimag(cdet(idet))
-          do 25 in=1,nelec
-            write(33,'(''     Electron'',i3,'' : | s = '',i2,
-     &        '' , n = '',i2,'' , l = '',i2,'' , m = '',i2,'' )'')')
-     &              in,det(idet,in,qns),det(idet,in,qnn),
-     &                     det(idet,in,qnl),det(idet,in,qnm)
- 25       enddo
-          norm2=norm2+dimag(cdet(idet))*dimag(cdet(idet))
+c	    if (icount .eq. 1)	norm2=abs(dimag(cdet(idet)))
+          coeffi(icount)=dimag(cdet(idet))/dsqrt(norm2)
+	    do ielec=1,nelec
+		 mplus(ielec)=0
+	     do ii=0,det(idet,ielec,qnn)-1
+	      mplus(ielec)=mplus(ielec)+2*mmax(ii)+1
+	     enddo
+	    enddo
+          write(15,'(<nelec>i3)') (2*abs(det(idet,in,qnm))
+     &	+(1-sign(1,det(idet,in,qnm)-1))/2+mplus(in),in=1,nelec)
         endif
  30   enddo
+      if (icount.ne.0) write(15,'(<icount>f12.6)') (coeffi(i),i=1,icount)
       if (icount.eq.0) then
-         write(33,*) ' No imaginary part'
-         write(33,*)
          if (rcount.eq.0) then
-            write(33,*) ' WARNING! Null wavefunction. Verify the initial',
+            write(15,*) ' WARNING! Null wavefunction. Verify the initial',
      &                  ' wavefunction'
          endif
       endif
-      write(33,*)
-      write(33,*) ' NORMALIZATION Norm^2 : ', norm2
+	
 
 
-      close(33)
 
       write(*,*) '  OK.'
 

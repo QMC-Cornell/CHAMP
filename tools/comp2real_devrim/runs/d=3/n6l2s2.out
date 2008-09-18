@@ -1,0 +1,21 @@
+  REAL PART:
+
+  Coeff.:   0.707106781
+     Electron  1 : | s =  1 , n =  3 , l =  2 , m = -2 )
+     Electron  2 : | s =  1 , n =  3 , l =  2 , m = -1 )
+     Electron  3 : | s =  1 , n =  3 , l =  2 , m =  0 )
+     Electron  4 : | s =  1 , n =  3 , l =  2 , m =  1 )
+     Electron  5 : | s =  1 , n =  3 , l =  2 , m =  2 )
+     Electron  6 : | s = -1 , n =  3 , l =  2 , m =  2 )
+
+  IMAGINARY PART:
+
+  Coeff.:  0.707106781
+     Electron  1 : | s =  1 , n =  3 , l =  2 , m = -2 )
+     Electron  2 : | s =  1 , n =  3 , l =  2 , m = -1 )
+     Electron  3 : | s =  1 , n =  3 , l =  2 , m =  0 )
+     Electron  4 : | s =  1 , n =  3 , l =  2 , m =  1 )
+     Electron  5 : | s =  1 , n =  3 , l =  2 , m =  2 )
+     Electron  6 : | s = -1 , n =  3 , l =  2 , m = -2 )
+
+  NORMALIZATION Norm^2 :   1.

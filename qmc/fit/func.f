@@ -283,7 +283,7 @@ c For a serial run this reduces to a "do 123 i=1,ndata"
         call hpsi(x(1,1,i),psid(i),psij(i),velocity,div_v,d2psi,pe,pei,energy,denergy,1)
   123   diff(i)=energy-eguess
 c 123   uwdiff(i)=diff(i)
-      if(nparml+nparme+nparmd.eq.0) isaved=1
+      if(nparml+nparme+nparmcsf.eq.0) isaved=1
 
       if(index(mode,'mpi').ne.0) call func_qmc_mpi(diff)
 

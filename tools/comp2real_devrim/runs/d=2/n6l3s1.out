@@ -1,0 +1,37 @@
+  REAL PART:
+
+  Coeff.:  -0.5
+     Electron  1 : | s =  1 , n =  0 , l =  1 , m = -1 )
+     Electron  2 : | s =  1 , n =  0 , l =  0 , m =  0 )
+     Electron  3 : | s =  1 , n =  0 , l =  1 , m =  1 )
+     Electron  4 : | s =  1 , n =  0 , l =  2 , m =  2 )
+     Electron  5 : | s = -1 , n =  0 , l =  1 , m = -1 )
+     Electron  6 : | s = -1 , n =  0 , l =  0 , m =  0 )
+  Coeff.:  -0.5
+     Electron  1 : | s =  1 , n =  0 , l =  2 , m = -2 )
+     Electron  2 : | s =  1 , n =  0 , l =  1 , m = -1 )
+     Electron  3 : | s =  1 , n =  0 , l =  0 , m =  0 )
+     Electron  4 : | s =  1 , n =  0 , l =  1 , m =  1 )
+     Electron  5 : | s = -1 , n =  0 , l =  0 , m =  0 )
+     Electron  6 : | s = -1 , n =  0 , l =  1 , m =  1 )
+Number of real determinants=    2
+
+  IMAGINARY PART:
+
+  Coeff.: -0.5
+     Electron  1 : | s =  1 , n =  0 , l =  1 , m = -1 )
+     Electron  2 : | s =  1 , n =  0 , l =  0 , m =  0 )
+     Electron  3 : | s =  1 , n =  0 , l =  1 , m =  1 )
+     Electron  4 : | s =  1 , n =  0 , l =  2 , m =  2 )
+     Electron  5 : | s = -1 , n =  0 , l =  0 , m =  0 )
+     Electron  6 : | s = -1 , n =  0 , l =  1 , m =  1 )
+  Coeff.:  0.5
+     Electron  1 : | s =  1 , n =  0 , l =  2 , m = -2 )
+     Electron  2 : | s =  1 , n =  0 , l =  1 , m = -1 )
+     Electron  3 : | s =  1 , n =  0 , l =  0 , m =  0 )
+     Electron  4 : | s =  1 , n =  0 , l =  1 , m =  1 )
+     Electron  5 : | s = -1 , n =  0 , l =  1 , m = -1 )
+     Electron  6 : | s = -1 , n =  0 , l =  0 , m =  0 )
+Number of imag determinants=    2
+
+  NORMALIZATION Norm^2 :   1.

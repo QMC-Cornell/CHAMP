@@ -1,0 +1,62 @@
+Program for producing CSF and seperating complex orbital determinants into real part
+and imaginary part based on Devrim Guclu's program and Wolfgang Geist's program.
+
+Currently works for 2d QD occupying 1st,2nd,3rd LL with up to nelec=15.
+
+For mid/high B field, where the GS conifguration populates only in lowest
+landau level with non-negative l values and total angular momemtum
+L>=nup*(nup-1)/2+ndn*(ndn-1)/2. First find out the largest l value possible for one
+electron lmax, deduct it out from the total L, decuce to the problem of L-lmaxand for
+nelec-1 QD, iterate to QD with 1 electron. Then lower to lmax-1, repeat the iteration.
+
+For zero B field, where we can use pauli's principle to calculate the distribution of
+electrons in energy shells, which is to say, up to E_n up/down spin electrons can be
+put in the energy shell E_n=2*n+|m|+1. Here we only consider configurations that are
+non-interacting system GS. We first calculate what's the largest L value possible for
+non-interacting system GS, given nup and ndn. Non-interacting system GS configurations
+will always has a total angular momentum L_GS that has a even number difference to Lmax.
+Choose your L_GS and program will find possible combination of l_shl total in each energy
+shell to add up to L_GS. Then find out l value of orbitals in an energy shell that add up
+to l_shl. Also we can add 2,4,6... excitements to consideration by change the distribution
+of electrons among energy shells and recalculate the configuration.
+
+Still working on B field/L value fall in between.
+
+output files:
+1. job_name.in
+Using spinfunctions.f to construct a complete set of S^2 eigenfunctions, or CSFs
+
+2. job_name.out
+Using Devrim's program to seperate real part and imaginary part of CSFs, displayed in
+iworbd for input of vmc/dmc.
+
+3. job_name.det
+Accumulate determinants from different configurations and get rid of redundant ones.
+
+4. job_name.csf
+Accumulate real/imaginary part of CSFs from different configurations and check for
+possible linear dependance (I haven't figured out how to check linear dependance among
+multiple(>2) CSFs automatically, just warn about the possibility, have to check by hand.
+The only example in question is for S0L0, N=10 with 2 excitements, CSF 22 23 29 30 are
+linearly dependant). If real parts have linear dependance, using imaginary part instead.
+
+5. job_name.conf
+Specifies the configuration/electron occupation by giving n,m values. For mid/high B
+field, n is always 0.
+
+6. job_name.dstr
+Specifies the distribution of electrons in energy shells, used in the case of zero B
+field only.
+
+7. job_name.s2
+Pretty much the same as job_name.in, organized a bit differently
+
+
+Updates:
+1. Now the program can eliminate the possible linear dependance after taking real/imaginary
+part of S^2 eigenfunction.
+
+2. The VMC input is written out at the end of the program now. Choose 1 for LDA orbitals
+based version and the filename is i555, you'll produce an LDA basis file separately and
+the program need your input on which orbitals has what l value in that LDA basis file.
+Choose 5 for Fock-Darwin states based version and the filename is ivmc.5

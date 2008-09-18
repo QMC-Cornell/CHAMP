@@ -1,0 +1,13 @@
+3 2 3        ndim, nelec, ndet
+
+1.           cdet
+ 1 2 1 1     2s,n,l,m
+-1 2 1 -1
+
+1.           cdet
+ 1 2 1 -1    2s,n,l,m
+-1 2 1 1
+
+-1.          cdet
+ 1 2 1 0     2s,n,l,m
+-1 2 1 0

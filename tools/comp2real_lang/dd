@@ -1,0 +1,9 @@
+for file in $*
+  do
+  file_old=../comp2real_devrim/$file
+  echo $file_old $file
+  diff $file_old $file
+  echo ""
+  echo ""
+done
+
