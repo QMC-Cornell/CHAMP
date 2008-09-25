@@ -63,12 +63,15 @@ c        derivatives
 
       do iel=1,nelec
 
-c Determine position in lattice coordinates
-c Find vector in basis coordinates
+c Determine position in lattice coordinates in line 10, same modulo 1 in line 20, and whether phase factor, isgn, is +1 or -1.
+c Note that modulo and mod are different functions in fortran.
 c Note we add 1 to r_basis because interpol_orb expects a positive input
-c r_basis in the line after 10 is between  0 and 1 if r_basis in line 10 is > 0
-c                             but between -1 and 0 if r_basis in line 10 is < 0
-c r_basis in line 20 is always between 0 and 1
+c The 'if' after 10 does the foll.  Since the k-vectors can be half sim-cell reciprocal lattice vectors
+c and we reduce r_basis(k) to be between 0 and 1 in line 20, we need to multiply by -1 for
+c each rbasis(k) in line 10 for which floor(r_basis) is odd.
+c r_basis in the line just before 20 is between  0 and 1 if r_basis in line 10 is > 0
+c                                   but between -1 and 0 if r_basis in line 10 is < 0
+c r_basis in line 20 is always between 0 and 1.
         isgn=1
         do 20 k=1,ndim
           r_basis(k)=0
@@ -83,6 +86,22 @@ c r_basis in line 20 is always between 0 and 1
           endif
           r_basis(k)=r_basis(k)-int(r_basis(k))
    20     if(r_basis(k).lt.0.d0) r_basis(k)=r_basis(k)+1
+
+c Warning: I could replace the above with the foll., but since I do not have the time to test it I am
+c for the moment just putting in the foll. commented lines:
+c Determine position in lattice coordinates in line 10, same modulo 1 in line 20, and whether phase factor, isgn, is +1 or -1.
+c Note that modulo and mod are different functions in fortran.
+c Since the k-vectors can be half sim-cell reciprocal lattice vectors
+c and we reduce r_basis(k) to be between 0 and 1 in line 20, we need to multiply by -1 for 
+c each rbasis(k) in line 10 for which floor(r_basis) is odd. 
+c       isgn=1
+c       do 20 k=1,ndim
+c         r_basis(k)=0
+c         do 10 i=1,ndim
+c  10       r_basis(k)=r_basis(k)+rlatt_sim_inv(k,i)*x(i,iel)
+c         isgn=isgn*(-1)**floor(r_basis(k))
+c  20     r_basis(k)=r_basis(k)-floor(r_basis(k))
+
 
         if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
           xi=r_basis(1)*ngrid_orbx

@@ -110,7 +110,7 @@ c     evalg_eff=nconf_global*rn_eff(wgcum1(1),wgcm21(1))
       write(6,'(/,''Final write:'')')
 
 c Write out radial charge density for atoms
-      if(print_radial_probability .and. iperiodic.eq.0 .and. ncent.eq.1 .and. ipr.ge.-2) then
+      if(print_radial_probability .and. iperiodic.eq.0 .and. ncent.eq.1 .and. ipr.ge.-4) then
         if(ndim.eq.3) write(6,'(/,'' r  4*pi*r^2*rho 4*pi*r^2*rhoup 4*pi*r^2*rhodn'')')
         if(ndim.eq.2) write(6,'(/,'' r  2*pi*r*rho 2*pi*r*rhoup 2*pi*r*rhodn'')')
         delr=one/delri
