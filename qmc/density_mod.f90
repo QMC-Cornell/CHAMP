@@ -230,7 +230,7 @@ module density_mod
    call object_needed ('grid_r')
    call object_needed ('nelec')
    call object_needed ('coord_elec_wlk')
-   call object_needed ('dist_e')
+   call object_needed ('dist_e_wlk')
    call object_needed ('grd_psi_over_psi_wlk')
 
    return
@@ -248,7 +248,7 @@ module density_mod
     do elec_i = 1, nelec
 
 !     distance |r_i|
-      di = dist_e (elec_i)
+      di = dist_e_wlk (elec_i, walk_i)
 
 !     dot product: drift_i . r_i
       dotproduct = 0.d0

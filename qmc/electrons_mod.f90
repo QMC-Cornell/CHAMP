@@ -6,7 +6,7 @@ module electrons_mod
 ! Declaration of global variables and default values
   real(dp), allocatable     :: coord_elec_wlk (:,:,:)
 
-  real(dp), allocatable     :: dist_e (:)
+  real(dp), allocatable     :: dist_e_wlk (:,:)
   real(dp)                  :: dist_e_min = 1000.d0
   real(dp)                  :: dist_e_max = 0.d0
 
@@ -87,63 +87,67 @@ module electrons_mod
   end subroutine coord_elec_wlk_bld
 
 ! ==============================================================================
-  subroutine dist_e_bld
+  subroutine dist_e_wlk_bld
 ! ------------------------------------------------------------------------------
 ! Description   : distance |ri - 0| between one electron and origin
 !
 ! Created       : J. Toulouse, 07 Nov 2006
+! Modified      : J. Toulouse, 02 Oct 2008: add walkers for DMC
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
 
 ! local
-  integer                       :: elec_i, dim_i
+  integer                       :: walk_i, elec_i, dim_i
 
 ! begin
 
 ! header
   if (header_exe) then
 
-   call object_create ('dist_e')
+   call object_create ('dist_e_wlk')
    call object_create ('dist_e_min')
    call object_create ('dist_e_max')
 
+   call object_needed ('nwalk')
    call object_needed ('ndim')
    call object_needed ('nelec')
-   call object_needed ('xold')
+   call object_needed ('coord_elec_wlk')
 
    return
 
   endif
 
 ! allocations
-  call object_alloc ('dist_e', dist_e, nelec)
+  call object_alloc ('dist_e_wlk', dist_e_wlk, nelec, nwalk)
   call object_associate ('dist_e_min', dist_e_min)
   call object_associate ('dist_e_max', dist_e_max)
 
-  dist_e (:) = 0.d0
+  dist_e_wlk (:,:) = 0.d0
 
-  do elec_i = 1, nelec
+  do walk_i = 1, nwalk
+   do elec_i = 1, nelec
 
       do dim_i = 1, ndim
-        dist_e (elec_i) = dist_e (elec_i) + xold (dim_i, elec_i)**2
+        dist_e_wlk (elec_i, walk_i) = dist_e_wlk (elec_i, walk_i) + coord_elec_wlk (dim_i, elec_i, walk_i)**2
       enddo ! dim_i
 
-      dist_e (elec_i) = dsqrt (dist_e (elec_i))
+      dist_e_wlk (elec_i, walk_i) = dsqrt (dist_e_wlk (elec_i, walk_i))
 
 !     minimal e distance in the simulation
-      if (dist_e (elec_i) < dist_e_min) then
-        dist_e_min = dist_e (elec_i)
+      if (dist_e_wlk (elec_i, walk_i) < dist_e_min) then
+        dist_e_min = dist_e_wlk (elec_i, walk_i)
       endif
 
 !     maximal e distance in the simulation
-      if (dist_e (elec_i) > dist_e_max) then
-        dist_e_max = dist_e (elec_i)
+      if (dist_e_wlk (elec_i, walk_i) > dist_e_max) then
+        dist_e_max = dist_e_wlk (elec_i, walk_i)
       endif
 
-  enddo !elec_i
+   enddo ! elec_i
+  enddo ! walk_i
 
-  end subroutine dist_e_bld
+  end subroutine dist_e_wlk_bld
 
 ! ==============================================================================
   subroutine vec_ee_xyz_wlk_bld

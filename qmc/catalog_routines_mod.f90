@@ -70,7 +70,7 @@ module catalog_routines_mod
   call catalog_one_node ('sigma_bld', sigma_bld)
   call catalog_one_node ('eloc_var_bld', eloc_var_bld)
   call catalog_one_node ('eloc_sq_bld', eloc_sq_bld)
-  call catalog_one_node ('dist_e_bld', dist_e_bld)
+  call catalog_one_node ('dist_e_wlk_bld', dist_e_wlk_bld)
   call catalog_one_node ('vec_ee_xyz_wlk_bld', vec_ee_xyz_wlk_bld)
   call catalog_one_node ('dist_ee_wlk_bld', dist_ee_wlk_bld)
   call catalog_one_node ('spin_two_elec_wlk_bld', spin_two_elec_wlk_bld)
