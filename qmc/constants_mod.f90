@@ -43,7 +43,7 @@ module constants_mod
   integer, parameter    ::  max_routines_nb = 500
 
 ! maximun numbers of objects
-  integer, parameter    ::  max_objects_nb = 1100
+  integer, parameter    ::  max_objects_nb = 1500
 
 ! dimension parameters
   include 'vmc/vmc.h'
