@@ -7,6 +7,7 @@ module grid_mod
 
 ! grid r
   real(dp)                  :: grid_r_step
+  real(dp)                  :: grid_r_min = 0.d0
   real(dp)                  :: grid_r_max
   integer                   :: grid_r_nb = 0.d0
   real(dp), allocatable     :: grid_r (:)
@@ -106,11 +107,15 @@ module grid_mod
    write(6,'(a)') 'HELP for menu grid_r:'
    write(6,'(a)') ' grid_r'
    write(6,'(a)') '  grid_r_step   = [real] : grid spacing'
+   write(6,'(a)') '  grid_r_min    = [real] : grid min value (default = 0.)'
    write(6,'(a)') '  grid_r_max    = [real] : grid max value'
    write(6,'(a)') ' end'
 
   case ('grid_r_step')
    call get_next_value (grid_r_step)
+
+  case ('grid_r_min')
+   call get_next_value (grid_r_min)
 
   case ('grid_r_max')
    call get_next_value (grid_r_max)
@@ -127,16 +132,19 @@ module grid_mod
 ! Parameters for grid over r
   call require (lhere, 'grid_r_step > 0', grid_r_step > 0.d0 )
   call require (lhere, 'grid_r_max > 0', grid_r_max > 0.d0 )
+  call require (lhere, 'grid_r_min >= 0', grid_r_min >= 0.d0 )
 
-  grid_r_nb = int(grid_r_max/grid_r_step) + 1
+  grid_r_nb = int((grid_r_max-grid_r_min)/grid_r_step) + 1
   call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0 )
 
   write (6,'(a)') ' Parameters for radial grid:'
   write (6,'(a,f)') ' grid_r_step = ', grid_r_step
+  write (6,'(a,f)') ' grid_r_min = ', grid_r_min
   write (6,'(a,f)') ' grid_r_max = ', grid_r_max
   write (6,'(a,i)') ' grid_r_nb=', grid_r_nb
 
   call object_modified ('grid_r_step')
+  call object_modified ('grid_r_min')
   call object_modified ('grid_r_max')
   call object_modified ('grid_r_nb')
 
@@ -272,6 +280,7 @@ module grid_mod
 
    call object_needed ('grid_r_nb')
    call object_needed ('grid_r_step')
+   call object_needed ('grid_r_min')
 
    return
 
@@ -285,7 +294,7 @@ module grid_mod
   call object_alloc ('grid_r', grid_r, grid_r_nb)
 
   do grid_i = 1, grid_r_nb
-   grid_r (grid_i) = (grid_i - 1) * grid_r_step
+   grid_r (grid_i) = grid_r_min + (grid_i - 1) * grid_r_step
   enddo
 
   end subroutine grid_r_bld
