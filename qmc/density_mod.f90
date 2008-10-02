@@ -9,9 +9,16 @@ module density_mod
 ! Declaration of global variables and default values
   character(len=max_string_len_file):: dens_file_out  = ''
   character(len=max_string_len)     :: dens_estimator  = 'zv1'
+  real(dp)                          :: dens_exp = 1.d0
+  real(dp), allocatable             :: dens_histo (:,:)
+  real(dp), allocatable             :: dens_histo_av (:)
+  real(dp), allocatable             :: dens_histo_av_err (:)
   real(dp), allocatable             :: dens_zv1 (:,:)
   real(dp), allocatable             :: dens_zv1_av (:)
   real(dp), allocatable             :: dens_zv1_av_err (:)
+  real(dp), allocatable             :: dens_zv5 (:,:)
+  real(dp), allocatable             :: dens_zv5_av (:)
+  real(dp), allocatable             :: dens_zv5_av_err (:)
   real(dp), allocatable             :: dens (:)
   real(dp), allocatable             :: dens_err (:)
 
@@ -63,7 +70,8 @@ module density_mod
   case ('help')
    write(6,'(a)') 'HELP for menu density'
    write(6,'(a)') 'density'
-   write(6,'(a)') ' estimator = [string] : can be "histogram", "zv1" or "zv2" (default=zv1)'
+   write(6,'(a)') ' estimator = [string] : choice of estimator {histogram|zv1|zv5} (default=zv1)'
+   write(6,'(a)') ' exponent  = [real] : exponent for zv5 estimator (should be 2*sqrt(2*I)) (default = 1.0)'
    write(6,'(a)') ' file      = [string] : file in which density will be written'
    write(6,'(a)') 'end'
 
@@ -72,6 +80,9 @@ module density_mod
 
   case ('estimator')
    call get_next_value (dens_estimator)
+
+  case ('exponent')
+   call get_next_value (dens_exp)
 
   case ('end')
    exit
@@ -85,18 +96,19 @@ module density_mod
 
 ! File
   if (trim(dens_file_out) /= '') then
-   write (6,'(2a)') ' density will be written on file >',trim(dens_file_out),'<.'
+   write (6,'(3a)') ' density will be written on file >',trim(dens_file_out),'<.'
   else
    call die (lhere, 'file for writing density not specified.')
   endif
 
   select case(trim(dens_estimator))
    case ('histogram')
-   call die (lhere, 'estimator "histogram" not yet implemented.')
+   write (6,'(a)') ' density will be calculated with histogram estimator'
    call object_average_request ('dens_histo_av')
    call object_error_request ('dens_histo_av_err')
 
    case ('zv1')
+   write (6,'(a)') ' density will be calculated with ZV1 estimator (simplest improved estimator)'
    call object_average_request ('dens_zv1_av')
    call object_error_request ('dens_zv1_av_err')
 
@@ -104,6 +116,11 @@ module density_mod
    call die (lhere, 'estimator "zv2" not yet implemented.')
    call object_average_request ('dens_zv2_av')
    call object_error_request ('dens_zv2_av_err')
+
+   case ('zv5')
+   write (6,'(a,f)') ' density will be calculated with ZV5 estimator, i.e. improved estimator with exponential decay with exponent=',dens_exp
+   call object_average_request ('dens_zv5_av')
+   call object_error_request ('dens_zv5_av_err')
 
    case default
    call die (lhere, 'unknown estimator >'+trim(dens_estimator)+'<')
@@ -203,6 +220,66 @@ module density_mod
   end subroutine dens_3d_menu
 
 ! ==============================================================================
+  subroutine dens_histo_bld
+! ------------------------------------------------------------------------------
+! Description   : histogram estimator of radial density
+!
+! Created       : J. Toulouse, 02 Oct 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer               :: grid_i
+  integer               :: elec_i, walk_i
+  real(dp)              :: di, d4pir2
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_histo')
+   call object_average_walk_define ('dens_histo', 'dens_histo_av')
+   call object_error_define ('dens_histo_av', 'dens_histo_av_err')
+
+   call object_needed ('grid_r')
+   call object_needed ('grid_r_step')
+   call object_needed ('grid_r_nb')
+   call object_needed ('nwalk')
+   call object_needed ('nelec')
+   call object_needed ('dist_e_wlk')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_histo', dens_histo, grid_r_nb, nwalk)
+  call object_alloc ('dens_histo_av', dens_histo_av, grid_r_nb)
+  call object_alloc ('dens_histo_av_err', dens_histo_av_err, grid_r_nb)
+
+  dens_histo (:,:) = 0.d0
+
+  do walk_i = 1, nwalk
+    do elec_i = 1, nelec
+
+!     distance e-origin
+      di = dist_e_wlk (elec_i, walk_i)
+
+      grid_i = floor(di/grid_r_step - 0.5d0) + 2
+
+      if (grid_i <= grid_r_nb) then
+       d4pir2 = 4.d0*pi*grid_r(grid_i)**2
+       dens_histo (grid_i, walk_i) = dens_histo (grid_i, walk_i) + 1.d0/(d4pir2 * grid_r_step)
+      endif
+
+    enddo ! elec_i
+  enddo ! walk_i
+
+  end subroutine dens_histo_bld
+
+! ==============================================================================
   subroutine dens_zv1_bld
 ! ------------------------------------------------------------------------------
 ! Description   : first-order renormalized improved estimator of spherically averaged density
@@ -273,6 +350,101 @@ module density_mod
   end subroutine dens_zv1_bld
 
 ! ==============================================================================
+  subroutine dens_zv5_bld
+! ------------------------------------------------------------------------------
+! Description   : improved zero-variance estimator of radial density
+! Description   : Q(R) = (-1/4pi) sum_i dOmega_u/(4pi) 1/|ri -u| f(ri,u)
+! Description   : with f(ri,u) =exp [-c |ri-u|]
+!
+! Created       : J. Toulouse, 02 Oct 2008
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer               :: grid_i
+  integer               :: elec_i, dim_i, walk_i
+  real(dp)              :: cc, cc2
+  real(dp)              :: r, r2, u, rpu, ru, rmu, abs_rmu
+  real(dp)              :: mcabsrmu, mcrpu, exp_mcabsrmu, exp_mcrpu
+  real(dp)              :: dotproduct
+  real(dp)              :: dens_temp1, dens_temp2
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_zv5')
+   call object_average_walk_define ('dens_zv5', 'dens_zv5_av')
+   call object_error_define ('dens_zv5_av', 'dens_zv5_av_err')
+
+   call object_needed ('nwalk')
+   call object_needed ('grid_r')
+   call object_needed ('grid_r_nb')
+   call object_needed ('nelec')
+   call object_needed ('dist_e_wlk')
+   call object_needed ('coord_elec_wlk')
+   call object_needed ('grd_psi_over_psi_wlk')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_zv5', dens_zv5, grid_r_nb, nwalk)
+  call object_alloc ('dens_zv5_av', dens_zv5_av, grid_r_nb)
+  call object_alloc ('dens_zv5_av_err', dens_zv5_av_err, grid_r_nb)
+
+  dens_zv5 (:,:) = 0.d0
+
+  cc = dens_exp
+  cc2 = cc*cc
+
+  do walk_i = 1, nwalk
+    do elec_i = 1, nelec
+
+!     distance e-origin
+      r = dist_e_wlk (elec_i, walk_i)
+      r2 = r*r
+!
+!     dot product: drift_i . ri
+      dotproduct = 0.d0
+      do dim_i = 1, ndim
+        dotproduct = dotproduct +  grd_psi_over_psi_wlk  (dim_i, elec_i, walk_i) * coord_elec_wlk (dim_i, elec_i, walk_i)
+      enddo
+
+!     loop over grid points
+      do grid_i = 1, grid_r_nb
+
+        u = grid_r (grid_i)
+
+        rpu = r + u
+        rmu   = r - u
+        abs_rmu = dabs(rmu)
+        ru = r * u
+
+        mcabsrmu = -cc*abs_rmu
+        mcrpu = -cc*rpu
+
+        exp_mcabsrmu = dexp(mcabsrmu)
+        exp_mcrpu = dexp(mcrpu)
+
+        dens_temp1 = (exp_mcabsrmu - exp_mcrpu)/(2.d0*cc*ru)
+        dens_temp2 = 0.5d0 * (sign(1.d0,rmu) * exp_mcabsrmu - exp_mcrpu)
+
+        dens_zv5 (grid_i, walk_i) = dens_zv5 (grid_i, walk_i) -          &
+            oneover2pi*((dotproduct/r2)*(dens_temp1 + dens_temp2/u)  &
+            - 0.5d0*cc2*dens_temp1)
+
+     enddo !grid_i
+
+   enddo !elec_i
+  enddo !walk_i
+
+  end subroutine dens_zv5_bld
+
+! ==============================================================================
   subroutine dens_bld
 ! ------------------------------------------------------------------------------
 ! Description   : spherically averaged density density  n(r)
@@ -303,11 +475,23 @@ module density_mod
   call object_alloc ('dens_err', dens_err, grid_r_nb)
 
   select case(trim(dens_estimator))
+   case ('histogram')
+   call object_provide (lhere,'dens_histo_av')
+   call object_provide (lhere,'dens_histo_av_err')
+   dens (:)     = dens_histo_av (:)
+   dens_err (:) = dens_histo_av_err (:)
+
    case ('zv1')
    call object_provide (lhere,'dens_zv1_av')
    call object_provide (lhere,'dens_zv1_av_err')
    dens (:)     = dens_zv1_av (:)
    dens_err (:) = dens_zv1_av_err (:)
+
+   case ('zv5')
+   call object_provide (lhere,'dens_zv5_av')
+   call object_provide (lhere,'dens_zv5_av_err')
+   dens (:)     = dens_zv5_av (:)
+   dens_err (:) = dens_zv5_av_err (:)
 
    case default
    call die (lhere, 'unknown estimator >'+trim(dens_estimator)+'<.')

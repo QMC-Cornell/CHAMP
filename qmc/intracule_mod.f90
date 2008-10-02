@@ -17,16 +17,16 @@
 
   integer                           :: intra_block_nb = 0
 
-  real(dp), allocatable     :: sum_intra_imp_num(:)
-  real(dp), allocatable     :: intra_imp_num(:)
-  real(dp), allocatable     :: intra_imp_norm(:)
-  real(dp), allocatable     :: sum_intra_imp_norm(:)
-  real(dp), allocatable     :: sum_intra_imp_norm_square(:)
-  real(dp), allocatable     :: intra_imp_f_av(:)
-  real(dp), allocatable     :: intra_imp_f_var(:)
-  real(dp), allocatable     :: intra_imp_f_av_err(:)
-  real(dp), allocatable     :: intra_imp_f4pir2_av(:)
-  real(dp), allocatable     :: intra_imp_f4pir2_av_err(:)
+  real(dp), allocatable             :: sum_intra_imp_num(:)
+  real(dp), allocatable             :: intra_imp_num(:)
+  real(dp), allocatable             :: intra_imp_norm(:)
+  real(dp), allocatable             :: sum_intra_imp_norm(:)
+  real(dp), allocatable             :: sum_intra_imp_norm_square(:)
+  real(dp), allocatable             :: intra_imp_f_av(:)
+  real(dp), allocatable             :: intra_imp_f_var(:)
+  real(dp), allocatable             :: intra_imp_f_av_err(:)
+  real(dp), allocatable             :: intra_imp_f4pir2_av(:)
+  real(dp), allocatable             :: intra_imp_f4pir2_av_err(:)
   integer                           :: intra_imp_nb
   logical                           :: init_intra_imp_step = .true.
   logical                           :: init_intra_imp_block = .true.
@@ -151,14 +151,10 @@
    exit
 
   case default
-
-   write(6,'(3a)') trim(lhere),': unknown keyword = ',trim(word)
-   call die (lhere, 'unknown keyword')
-
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
   end select
 
   enddo ! end loop over menu lines
-
 
 
 ! File
@@ -782,8 +778,8 @@
   include 'commons.h'
 
 ! local
-  integer                       :: grid_i
-  integer                       :: elec_i, elec_j, dim_i, walk_i
+  integer               :: grid_i
+  integer               :: elec_i, elec_j, dim_i, walk_i
   real(dp)              :: cc, cc2
   real(dp)              :: r, r2, u, rpu, ru, rmu, abs_rmu
   real(dp)              :: mcabsrmu, mcrpu, exp_mcabsrmu, exp_mcrpu
@@ -1050,11 +1046,11 @@
   include 'commons.h'
 
 ! local
-  integer                       :: walk_i, elec_i, elec_j, grid_i
+  integer               :: walk_i, elec_i, elec_j, grid_i
   real(dp)              :: dij,  r
   real(dp)              :: u, rpu, ru, rmu, abs_rmu
   real(dp)              :: mcabsrmu, mcrpu, exp_mcabsrmu, exp_mcrpu
-  integer                       :: spin
+  integer               :: spin
 
 ! begin
 

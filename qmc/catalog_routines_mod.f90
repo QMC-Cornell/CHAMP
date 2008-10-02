@@ -394,7 +394,9 @@ module catalog_routines_mod
 
 ! density
   call catalog_one_node ('dens_bld', dens_bld)
+  call catalog_one_node ('dens_histo_bld', dens_histo_bld)
   call catalog_one_node ('dens_zv1_bld', dens_zv1_bld)
+  call catalog_one_node ('dens_zv5_bld', dens_zv5_bld)
   call catalog_one_node ('dens_3d_bld', dens_3d_bld)
   call catalog_one_node ('dens_3d_histo_bld', dens_3d_histo_bld)
   call catalog_one_node ('dens_3d_zv1_bld', dens_3d_zv1_bld)
