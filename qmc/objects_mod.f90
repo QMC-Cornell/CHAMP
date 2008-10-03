@@ -303,7 +303,8 @@ module objects_mod
 
 ! begin
   if (objects_nb == max_objects_nb) then
-   call die (lhere, 'maximun number of objects max_objects_nb='+max_objects_nb+' reached.')
+   call die (lhere, 'maximum number of objects max_objects_nb='+max_objects_nb+' reached. Increase max_objects_nb in &
+   objects_mod.f90')
   endif
 
   objects_nb = objects_nb + 1

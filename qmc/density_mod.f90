@@ -1018,6 +1018,7 @@ module density_mod
   write(unit,'(a,i20)')     'number of steps per block =',nstep_total
   write(unit,'(a,i20)')     'number of blocks          =',block_iterations_nb
   write(unit,'(a,3e25.15)') 'grid_r_step               =',grid_r_step
+  write(unit,'(a,3e25.15)') 'grid_r_min                =',grid_r_min
   write(unit,'(a,3e25.15)') 'grid_r_max                =',grid_r_max
   write(unit,'(a,i25)')     'grid_r_nb                 =',grid_r_nb
   write(unit,'(a,f)')       'dist_e_min                =',dist_e_min
@@ -1025,10 +1026,10 @@ module density_mod
 
 
   write(unit,*) ''
-  write(unit,'(a)') '              r                        n(r)                error on n(r)'
+  write(unit,'(a)') '    r                 n(r)            error of n(r)'
 
   do grid_i = 1, grid_r_nb
-       write(unit,'(3e25.15)') grid_r (grid_i), dens (grid_i), dens_err (grid_i)
+       write(unit,'(es12.6,2es21.14)') grid_r (grid_i), dens (grid_i), dens_err (grid_i)
   enddo ! grid_i
 
   close(unit)

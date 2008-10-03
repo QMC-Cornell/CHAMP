@@ -71,7 +71,7 @@ c Warning: At present NGVECX is used to dimension not only quantities that are
 c used for the Ewald sum, but also quantities used for the wavefunction pw coefficients.
 c There is no reason for the latter to be tied to the former.
 
-c I write out orbitals_pw so that in future runs I can just read that file in
+c I write out orbitals_pw_lagrange so that in future runs I can just read that file in
 c rather than orbitals_pw_tm, but at the moment I am not using that feature.
 c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
@@ -227,9 +227,10 @@ c    &'')')
 cwparker Read in Lagrange interpolated numerical orbitals from file
 
         if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
-          open(4,file='orbitals_num.lagrange',form='unformatted',
+          open(4,file='orbitals_num_lagrange',form='unformatted',
      &status='old',err=10)
           num_orb_exist=1
+c         write(6,'(''Lagrange interpolation grid is'',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
           read(4) ngrid_orbxf,ngrid_orbyf,ngrid_orbzf
           if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby
      &       .or.  ngrid_orbzf.ne.ngrid_orbz) then
@@ -251,12 +252,14 @@ c complains that record is too big on reading it back in
     9       read(4) ((((dorb_num(k,iorb,ix,iy,iz),iorb=1,norb),ix=0,
      &               ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
 
+          write(6,'(''Done reading orbitals_num_lagrange'')')
+          close(4)
         endif
 
 cwparker Read in spline interpolated numerical orbitals from file
 
 c     if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c         open(4,file='orbitals_num.splines',form='unformatted',
+c         open(4,file='orbitals_num_splines',form='unformatted',
 c    &status='old',err=10)
 c         num_orb_exist=1
 c         read(4) ngrid_orbxf,ngrid_orbyf,ngrid_orbzf,norbf
@@ -330,13 +333,11 @@ cwparker pecent is reset later in the read_input subroutine
 
         endif
 
-        if(inum_orb.ne.6) write(6,'(''Done reading orbitals_num'')')
-        close(4)
         return
       endif
 
    10 if(inum_orb.ne.0 .and. num_orb_exist.eq.0)
-     &write(6,'(''Warning: orbitals_num not read correctly'')')
+     &write(6,'(''Warning: orbitals_num_lagrange not read correctly'')')
 
 c Read in orbitals in Jose-Luis Martins or PWSCF format
       if(index(iorb_format,'tm').ne.0) then
@@ -749,7 +750,7 @@ c         enddo
 c         endif
 
           if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
-          open(4,file='orbitals_num.lagrange',form='unformatted',
+          open(4,file='orbitals_num_lagrange',form='unformatted',
      &status='new')
 cwparker	Unformatted output
           write(4) ngrid_orbx,ngrid_orby,ngrid_orbz

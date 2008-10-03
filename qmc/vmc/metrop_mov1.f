@@ -116,8 +116,8 @@ c calculate probability for reverse transition
 
 c form the Jackson Feenberg kinetic energy expression
 
-          tjfn=d2
-          tjfn=-tjfn*half*hb
+c         tjfn=d2
+c         tjfn=-tjfn*half*hb
 
 c p is the probability of accepting new move
 

@@ -157,7 +157,7 @@ CONTAINS
 #ifdef MPI
 ! Broadcast array dimensions so other processors start allocating
  if(idtask == 0) then
-    bwf = bwfsize_type(spin_polarized,  pwreal, nbasisbwf, nwvec, nrbwf(3), nkvec_bwfdet)
+    bwf = bwfsize_type(spin_polarized,  pwreal, nbasisbwf, nwvec, nrbwf, nkvec_bwfdet)
  endif
  CALL MPI_BCAST(bwf, 1, MPI_bwfsizetype, 0, MPI_COMM_WORLD,ierr)
  if(ierr/=0)call errstop('READBWF','Error in MPI_BCAST')
@@ -388,12 +388,15 @@ CONTAINS
        CALL MPI_BCAST(avc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
     endif
  else
-    CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+!   CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+    CALL MPI_BCAST(cavc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
     if (spin_polarized) then
+       write(6,'(''starting bcast of cavc2'')')
        CALL MPI_BCAST(cavc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
     endif
  endif
 #endif
+ write(6,'(''end of readbwf'')')
 
  return
 
@@ -1102,7 +1105,7 @@ bloop:do ik=1,num_g
  spin1=.true. ; if(ispin==2.and.spin_polarized)spin1=.false.
  do ik=1,nkvec_bwfdet
   kd=rvec(1)*kvec_bwfdet(1,ik)+rvec(2)*kvec_bwfdet(2,ik)+rvec(3)*kvec_bwfdet(3,ik)
-  zdum(ik)=norm*exp(zi*kd)
+  zdum(ik)=norm*exp(zi*kd) ! normalization times phase factor used to multiply wavefn in blip3d
   if(igl==1)then
    lzdum(ik)=-dot_product(kvec_bwfdet(:,ik),kvec_bwfdet(:,ik))*norm*exp(zi*kd)
    gzdum(1,ik)=kvec_bwfdet(1,ik)*zi*norm*exp(zi*kd)
@@ -1114,6 +1117,8 @@ bloop:do ik=1,num_g
 ! Position must be in units of crystal lattice
  r=matmul(transpose(painv),rvec)
 
+! Warning: Just as William split blip3dgamma into blip3dgamma_w and blip3dgamma_gl (no derivs and derivs) to save time
+! one could do the same for blip3d
  if(spin1)then ! spin 1 (and spin 2 in spin restricted case)
   if(pwreal)then
    if(igl==0) then
@@ -1141,6 +1146,9 @@ bloop:do ik=1,num_g
     &nkvec_bwfdet,maxband,use_real_part(1,1,ispin))
   endif
  endif
+
+! William says there is no possibility of using more than 1 det in this module.
+! It just sets them all equal.
  do idet=2,ndet_bwfdet
   if(iw==1)rpsi(:,idet)=rpsi(:,1)
   if(igl==1)then
@@ -1288,6 +1296,7 @@ bloop:do ik=1,num_g
   d2tzpp=(3.d0+1.5d0*z)*nrbwf(3)*nrbwf(3)
  endif
 
+! bg are the primitive? cell reciprocal lattice vectors
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
  b(3)=(bg(1,3)**2+bg(2,3)**2+bg(3,3)**2)
@@ -1342,7 +1351,7 @@ bloop:do ik=1,num_g
     if(iw==1) then
      if(lkedge(ik))then
       if(use_real_part(ib,ik))then
-       rpsi(idum+ib)=dble(zdum(ik)*rdum)
+       rpsi(idum+ib)=dble(zdum(ik)*rdum) ! multiply wavefn by phase factor
       else
        rpsi(idum+ib)=aimag(zdum(ik)*rdum)
       endif
@@ -1511,6 +1520,7 @@ bloop:do ik=1,num_g
       grad(3,idum+2)=aimag(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
      endif
     endif
+! Increment idum by 2 if not at BZ edge and by occup of band if at edge set around line 763? Don't follow logic.
     if(.not.lkedge(ik))idum=idum+2
    enddo
    if(lkedge(ik))idum=idum+boccband(ik)
@@ -1953,6 +1963,7 @@ bloop:do ik=1,num_g
 
  END SUBROUTINE blip3dgamma_gl
 
+! Called by sum_orbs_over_grid_with_blips to check if orbs are pure real or imag
  SUBROUTINE blip_one_band(rpsi,r,avc,nrbwf,bg)
 
  IMPLICIT NONE
@@ -2108,6 +2119,7 @@ bloop:do ik=1,num_g
 
 
  SUBROUTINE bwfdet_wrapper(rvec,iw,igl,ispin,rpsi,grad,lap)
+! Not used in CHAMP
 ! Wrapper to improve behaviour of the Hitachi SR2201  - now sadly defunct :-)
  IMPLICIT NONE
  INTEGER igl,iw,ispin

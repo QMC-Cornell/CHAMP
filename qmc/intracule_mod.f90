@@ -2634,6 +2634,7 @@
   write(unit,'(a,i25)')     'number of steps per block     =',nstep_total
   write(unit,'(a,i25)')     'number of blocks              =',block_iterations_nb
   write(unit,'(a,3e25.15)') 'grid_r_step                   =',grid_r_step
+  write(unit,'(a,3e25.15)') 'grid_r_min                    =',grid_r_min
   write(unit,'(a,3e25.15)') 'grid_r_max                    =',grid_r_max
   write(unit,'(a,i25)')     'grid_r_nb                     =',grid_r_nb
   write(unit,'(a,f)')       'dist_ee_min                   =',dist_ee_min

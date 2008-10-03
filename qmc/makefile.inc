@@ -86,19 +86,26 @@ CHAMP_DEBUG_EXE=champ.exe
 
 ifeq ($(hostname),gauss)
   CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
-  CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+  CHAMP_F77_DEBUG=-O0 -zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
   CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+# CHAMP_F77_FLAGS=$(CHAMP_F77_DEBUG)
   CHAMP_F95_FAST=-O3 -ip -static -align all -fpp -mtune=core2 -march=core2 -xT
-  CHAMP_F95_DEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+  CHAMP_F95_DEBUG=-O0 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
   CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+# CHAMP_F95_FLAGS=$(CHAMP_F95_DEBUG)
   CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
   CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
   CHAMP_MPIC=mpicc
   CHAMP_MPIF95=mpif90
   CHAMP_MPIF77=mpif90
   CHAMP_LD_MPI=mpif90
-  CHAMP_F77_MPI=-zero  -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
-  CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
+  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT -DMPI
+# CHAMP_F77_MPI=-zero  -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
+# CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
+  CHAMP_F77_MPI=$(CHAMP_F77_FAST) -DMPI
+  CHAMP_F95_MPI=$(CHAMP_F95_FAST) -DMPI
+# CHAMP_F77_MPI=$(CHAMP_F77_DEBUG) -DMPI
+# CHAMP_F95_MPI=$(CHAMP_F95_DEBUG) -DMPI
 endif
 
 # Theory Center's linux cluster
