@@ -330,7 +330,7 @@ c Analytical basis functions
           do 35 irwf=1,MRWF
    35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
       endif
-      if(ibasis.eq.4 .or. ibasis.eq.5) then
+      if(ibasis.ge.4 .and. ibasis.le.6) then
         do 37 i=1,orb_tot_nb
           do 37 j=1,nbasis
    37       coef(j,i,iadd_diag)=coef(j,i,1)

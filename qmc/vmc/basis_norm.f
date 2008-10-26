@@ -81,7 +81,7 @@ c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
           m=m_bas(ib)
           if(numr.le.0 .and. ibasis.lt.4) then
             anorm(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(fact(2*n-1)*2*pi))
-           elseif(numr.le.0 .and. ibasis.eq.4 .or. ibasis.eq.5) then
+           elseif(numr.le.0 .and. (ibasis.ge.4 .and. ibasis.le.6)) then
             anorm(ib)=dsqrt(1/pi)
            else
 c Warning: temporarily commented out diff norm for m=0

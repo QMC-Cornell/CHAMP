@@ -959,6 +959,12 @@ c orbital parameters (type 1,2,3 and 4)
             write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
      &'' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
           endif
+        elseif(ibasis.eq.6) then
+          if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
+            iflag=1
+            write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
+     &'' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
+          endif
         elseif(ibasis.eq.5) then
           if(dparm_norm.gt..2d0) then
             iflag=1

@@ -165,7 +165,7 @@ module basis_mod
 !       ibasis=4  ! testing !ADG
        if (numr <= 0 .and. ibasis < 4) then !ADG
          norm_basis(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(factorial(2*n-1)*2*pi))
-       elseif (numr <= 0 .and. ibasis == 4 .or. ibasis == 5) then !ADG
+       elseif (numr <= 0 .and. ibasis == 4 .or. ibasis == 5 .or. ibasis == 6) then !ADG
          norm_basis(ib)=sqrt(1/pi) !ADG
        else
 !        Warning: temporarily commented out diff norm for m=0

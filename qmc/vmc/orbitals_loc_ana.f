@@ -35,8 +35,10 @@ c get basis functions
            call basis_fns_2dgauss(iel,rvec_en,r_en)
          elseif(ibasis.eq.5) then
            call basis_fns_polargauss(iel,rvec_en,r_en)
+         elseif(ibasis.eq.6) then
+           call basis_fns_2dgauss_noncirc(iel,rvec_en,r_en)
          else
-           stop 'orbitals_loc_ana: ibasis must be 1,4 or 5 for 2d systems'
+           stop 'orbitals_loc_ana: ibasis must be 1,4,5 or 6 for 2d systems'
          endif
       endif
 
@@ -136,8 +138,10 @@ c get basis functions
         call deriv_2dgauss(rvec_en,r_en)
       elseif(ibasis.eq.5) then
         call deriv_polargauss(rvec_en,r_en)
+      elseif(ibasis.eq.6) then
+        call deriv_2dgauss_noncirc(rvec_en,r_en)
       else
-        stop 'deriv_orbitals: ibasis must be 4 or 5'
+        stop 'deriv_orbitals: ibasis must be 4, 5, or 6'
       endif
 
       do iorb=1,norb

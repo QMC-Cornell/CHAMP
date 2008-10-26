@@ -29,10 +29,10 @@ c     if(nloc.ne.-1) stop 'nloc must be -1 for quantum dots'
 
       if(ibasis.eq.3) then
         call read_orb_dot_fd
-      elseif(ibasis.eq.4 .or. ibasis.eq.5) then
+      elseif(ibasis.ge.4 .or. ibasis.le.6) then
         call read_orb_dot_gauss
       else
-        stop 'In read_orb_dot: only ibasis=3,4,5 allowed'
+        stop 'In read_orb_dot: only ibasis=3,4,5,6 allowed'
       endif
       return
       end
@@ -152,11 +152,19 @@ c the witdh of gaussians is given by zex*we
           if(it.eq.1) write(6,'(''Floating gaussian x-positions:'')')
           if(it.eq.2) write(6,'(''Floating gaussian y-positions:'')')
           if(it.eq.3) write(6,'(''Floating gaussian widths:'')')
-        else
+        elseif(ibasis.eq.5) then
           if(it.eq.1) write(6,'(''Floating gaussian radial positions:'')')
           if(it.eq.2) write(6,'(''Floating gaussian angular positions:'')')
           if(it.eq.3) write(6,'(''Floating gaussian radial widths:'')')
           if(it.eq.4) write(6,'(''Floating gaussian angular widths:'')')
+        elseif(ibasis.eq.6) then
+          if(it.eq.1) write(6,'(''Floating gaussian x-positions:'')')
+          if(it.eq.2) write(6,'(''Floating gaussian y-positions:'')')
+          if(it.eq.3) write(6,'(''Floating gaussian x-widths:'')')
+          if(it.eq.4) write(6,'(''Floating gaussian y-widths:'')')
+        else
+          write(6,'(''ibasis must be 4, 5, or 6 in read_orb_dot_gauss'')')
+          stop 'ibasis must be 4, 5, or 6 in read_orb_dot_gauss'
         endif
         write(6,'(1000f9.6)') (oparm(it,ib,1),ib=1,nbasis)
       enddo
@@ -164,9 +172,9 @@ c the witdh of gaussians is given by zex*we
       do ib=1,nbasis
         if(oparm(3,ib,1).le.0.d0) then
           write(6,'(''WARNING: exponent oparm(3,ib,1) set to 1'')')
-          oparm(3,ib,1)=1
+          oparm(3,ib,1)=1  
         endif
-        if(ibasis.eq.5) then
+        if(ibasis.eq.5 .or. ibasis.eq.6) then
           if(oparm(4,ib,1).le.0.d0) then
             write(6,'(''oparm(4,ib,1) must be  > 0'')')
             stop 'oparm(4,ib,1) must be  > 0'

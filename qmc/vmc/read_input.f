@@ -156,6 +156,7 @@ c            =2 planewave basis, also for extended orbitals on grid
 c            =3 complex basis for 2D quantum dots / composite fermions
 c            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
 c            =5 2d localized gloating gaussians in circular coord. (wigner crystal)
+c            =6 2d localized non-circular floating gaussians in cartesian coord. (wigner crystal)
 c            Warning I would like to be able to use for dots a gaussian radial basis with complex
 c            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
 c hb         hbar=0.5 for Hartree units
@@ -517,6 +518,9 @@ c     read(5,'(a20,4x,4i4)') title,irn
        elseif(ibasis.eq.5) then
         write(6,'(''Floating Gaussian basis for 2D Wigner crystals in ring geom.'')')
         notype=4
+       elseif(ibasis.eq.6) then
+        write(6,'(''Floating, non-circular Gaussian basis for 2D Wigner crystals'')')
+        notype=4
       endif
 
 c     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC calculation for periodic
@@ -854,7 +858,7 @@ c Determinantal section
       read(5,*) section
       write(6,'(/,a30,/)') section
 
-      if(ibasis.ge.3 .and. ibasis.le.5) then
+      if(ibasis.ge.3 .and. ibasis.le.6) then
         read(5,*) inum_orb
         iorb_used=0
         iorb_format='unused'
@@ -894,8 +898,10 @@ c     if(ibasis.eq.3.and.numr.gt.0) stop 'Warning: ibasis.eq.3.and.numr.gt.0 nev
       if(ibasis.eq.3.and.numr.eq.0) call read_orb_dot
       if(ibasis.eq.4.and.numr.eq.0) call read_orb_dot
       if(ibasis.eq.5.and.numr.eq.0) call read_orb_dot
+      if(ibasis.eq.6.and.numr.eq.0) call read_orb_dot
       if(ibasis.eq.4.and.numr.ne.0) stop 'numr must be 0 for ibasis=4'
       if(ibasis.eq.5.and.numr.ne.0) stop 'numr must be 0 for ibasis=5'
+      if(ibasis.eq.6.and.numr.ne.0) stop 'numr must be 0 for ibasis=6'
 
       if(ibasis.eq.1) then
 c irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
@@ -1268,7 +1274,7 @@ c   default values:
 
 c Read optional variables if any:
 c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
-      if(ibasis.ge.3 .and. ibasis.le.5) then 
+      if(ibasis.ge.3 .and. ibasis.le.6) then 
         read(5,*) section
         write(6,'(/,a30,/)') section
         read(5,opt_list)
@@ -1510,7 +1516,7 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
       endif
 
       nparmot=0
-      if(ibasis.ne.4 .and. ibasis.ne.5) then
+      if(ibasis.le.3) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
 c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg

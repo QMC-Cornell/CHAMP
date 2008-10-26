@@ -677,7 +677,7 @@ c                    (or electron-dot center in this context)
 c output: phin,dphin, and d2phin are calculated
 
 c Wave functions are given by (except the normalization sqrt(we/pi)):
-c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
+c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
 c normalization is taken care in (..)
 
@@ -756,7 +756,7 @@ c output: phin,dphin,d2phin  = wfs and coo. derivatives
 c         dparam, d2param  = parameter derivatives
 
 c Wave functions are given by (except the normalization sqrt(1/pi)):
-c phi=dsqrt(we*xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
+c phi=dsqrt(we*xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
 c normalization is taken care in (..)
 
@@ -875,7 +875,7 @@ c output: phin,dphin, and d2phin are calculated
 
 c Wave functions are given by (except the normalization csnt)
 
-c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
+c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 
 c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
 
@@ -992,7 +992,7 @@ c         dparam, d2param  = parameter derivatives
 
 c Wave functions are given by (except the normalization csnt)
 
-c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2-(x2-xg2)^2))
+c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 
 c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
 
@@ -1146,7 +1146,244 @@ c coo. derivatives of parameter derivatives:
       return
       end
 
+
+c-------------------------------------------------------------------------
+
+      subroutine basis_fns_2dgauss_noncirc(iel,rvec_en,r_en)
+
+c Written by Abhijit C. Mehta, October 2008
+c (modified version of basis_fns_2dgauss)
+c 2-dimensional localized gaussian basis set, 
+c    gaussians can have diffferent widths in x- and y- directions
+c Main purpose is the study 2d wigner crystal in quantum wires
+
+c arguments: iel=0 -> all electron
+c               >0 -> only electron iel
+c            rvec_en=vector electron-nucleus
+c                    (or electron-dot/"wire" center in this context)
+
+c output: phin,dphin, and d2phin are calculated
+
+c Wave functions are given by (except the normalization sqrt(we/pi)):
+
+c phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2)) 
+c                           * exp(-we*xg4/2*((x2-xg2)^2))
+
+c where x1,x2 are the electronic x and y positions, 
+c       xg1, xg2 are the gaussian x and y positions.
+c       xg3, xg4 are the gaussian x and y width parameters
+c       (Note that xg3 and xg4 are the "omegas" (1/width)
+c         in units of we (or wire_w in case of wire)))
+
+
+      implicit real*8(a-h,o-z)
+
+      include 'vmc.h'
+      include 'force.h'
+
+c     common /dim/ ndim
+      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
+      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+     &,d2phin(MBASIS,MELEC)
+      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+
+      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+
+c Decide whether we are computing all or one electron
+      if(iel.eq.0) then
+        nelec1=1
+        nelec2=nelec
+      else
+        nelec1=iel
+        nelec2=iel
+      endif
+
+      ic=1
+c      write(*,*) 'in basis_fns'
+
+      do ie=nelec1,nelec2
+        x1=rvec_en(1,ie,ic)
+        x2=rvec_en(2,ie,ic)
+
+c       write(*,*) 'x1,x2,we=',x1,x2,we
+
+        do ib=1,nbasis
+          wex=we*oparm(3,ib,iwf)
+          wex2=wex*wex
+          wey=we*oparm(4,ib,iwf)
+          wey2=wey*wey
+          x1rel=x1-oparm(1,ib,iwf)
+          x1rel2=x1rel*x1rel
+          x2rel=x2-oparm(2,ib,iwf)
+          x2rel2=x2rel*x2rel
+     
+          phin(ib,ie)=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wex*x1rel2)*dexp(-0.5d0*wey*x2rel2)
+
+c         write(*,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+c         write(*,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
+
+          dphin(1,ib,ie)=-wex*x1rel*phin(ib,ie)
+          dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
+
+          d2phin(ib,ie)=(wex2*x1rel2 + wey2*x2rel2 - wex - wey)*phin(ib,ie)
+
+        enddo
+      enddo
+
+      return
+      end
+
 c--------------------------------------------------------------------------
+
+      subroutine deriv_2dgauss_noncirc(rvec_en,r_en)
+
+c Written by Abhijit C. Mehta, October 2008
+c modified version of deriv_2dgauss
+c 2-dimensional localized gaussian basis set, with different x- and y- widths,
+c and the derivatives wrt parameters.
+c Main purpose is the study of 2d wigner crystal in quantum wires
+
+c arguments:
+c            rvec_en=vector electron-nucleus
+c                    (or electron-dot center in this context)
+
+c output: phin,dphin,d2phin  = wfs and coo. derivatives
+c         dparam, d2param, ddparam, d2dparam  = parameter derivatives
+
+c Wave functions are given by (except the normalization sqrt(we/pi)):
+
+c phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2)) 
+c                           * exp(-we*xg4/2*((x2-xg2)^2))
+
+c where x1,x2 are the electronic x and y positions, 
+c       xg1, xg2 are the gaussian x and y positions.
+c       xg3, xg4 are the gaussian x and y width parameters
+c       (Note that xg3 and xg4 are the "omegas" (1/width)
+c         in units of we (or wire_w in case of wire)))
+
+c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
+
+      implicit real*8(a-h,o-z)
+
+      include 'vmc.h'
+      include 'force.h'
+
+c     common /dim/ ndim
+      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
+      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+     &,d2phin(MBASIS,MELEC)
+      common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
+     &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
+     &,d2dparam(MOTYPE,MBASIS,MELEC)
+      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+
+      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+
+      nelec1=1
+      nelec2=nelec
+
+      ic=1
+c      write(*,*) 'in deriv_2dgauss'
+      do ie=nelec1,nelec2
+        x1=rvec_en(1,ie,ic)
+        x2=rvec_en(2,ie,ic)
+
+c in the following we are losing some efficiency by calculating all the
+c gaussians for each electron. Because up and down electrons do not share
+c the same gaussian in crystals we could restrict the calculations...
+c I will however keep it this way in case we are interested in other
+c application than crystals.
+        do ib=1,nbasis
+          if(oparm(3,ib,iwf).lt.0.d0) then
+            stop 'oparm(3,ib,iwf).lt.0.d0 in deriv_2dgauss_noncirc. '
+          elseif(oparm(4,ib,iwf).lt.0.d0) then
+            stop 'oparm(4,ib,iwf).lt.0.d0 in deriv_2dgauss_noncirc. '
+          endif
+
+          wex=we*oparm(3,ib,iwf)
+          wex2=wex*wex
+          wey=we*oparm(4,ib,iwf)
+          wey2=wey*wey 
+          xg3i=1/oparm(3,ib,iwf)
+          xg4i=1/oparm(4,ib,iwf)
+          x1rel=x1-oparm(1,ib,iwf)
+          x1rel2=x1rel*x1rel
+          x2rel=x2-oparm(2,ib,iwf)
+          x2rel2=x2rel*x2rel
+
+c wfs and coo. derivatives:
+          phin(ib,ie)=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wex*x1rel2)*dexp(-0.5d0*wey*x2rel2)
+
+          dphin(1,ib,ie)=-wex*x1rel*phin(ib,ie)
+          dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
+          tempd2 = (wex2*x1rel2 + wey2*x2rel2 - wex - wey)
+          d2phin(ib,ie)=tempd2*phin(ib,ie)
+
+
+c parameter derivatives:
+          dparam(1,ib,ie)=-dphin(1,ib,ie)                                  ! wrt xg1
+          dparam(2,ib,ie)=-dphin(2,ib,ie)                                  ! wrt xg2
+          dparam(3,ib,ie)=0.5d0*(0.5d0*xg3i - we*x1rel2)* phin(ib,ie)      ! wrt xg3
+          dparam(4,ib,ie)=0.5d0*(0.5d0*xg4i - we*x2rel2)* phin(ib,ie)      ! wrt xg4
+
+
+          d2param(1,1,ib,ie)=(wex2*x1rel2-wex)*phin(ib,ie)                 ! wrt xg1,xg1
+          d2param(2,2,ib,ie)=(wey2*x2rel2-wey)*phin(ib,ie)                 ! wrt xg2,xg2
+          d2param(3,3,ib,ie)=(0.25d0*we*x1rel2*(we*x1rel2 - xg3i)
+     &                        - 0.1875d0*xg3i*xg3i)*phin(ib,ie)            ! wrt xg3,xg3
+          d2param(4,4,ib,ie)=(0.25d0*we*x2rel2*(we*x2rel2 - xg4i)
+     &                        - 0.1875d0*xg4i*xg4i)*phin(ib,ie)            ! wrt xg4,xg4
+          d2param(1,2,ib,ie)=wex*wey*x1rel*x2rel*phin(ib,ie)               ! wrt xg1,xg2
+          
+          d2param(1,3,ib,ie)=x1rel*(wex*dparam(3,ib,ie) + we*phin(ib,ie))  ! wrt xg1,xg3
+          d2param(1,4,ib,ie)=x1rel*wex*dparam(4,ib,ie)                     ! wrt xg1,xg3
+          d2param(2,3,ib,ie)=x2rel*wey*dparam(3,ib,ie)                     ! wrt xg2,xg3
+          d2param(2,4,ib,ie)=x2rel*(wey*dparam(4,ib,ie) + we*phin(ib,ie))  ! wrt xg2,xg4
+          d2param(3,4,ib,ie)=0.5d0*(0.5d0*xg4i - we*x2rel2)*dparam(3,ib,ie) ! wrt xg3,xg4
+
+          d2param(2,1,ib,ie)=d2param(1,2,ib,ie)
+          d2param(3,1,ib,ie)=d2param(1,3,ib,ie)
+          d2param(4,1,ib,ie)=d2param(1,4,ib,ie)
+          d2param(3,2,ib,ie)=d2param(2,3,ib,ie)
+          d2param(4,2,ib,ie)=d2param(2,4,ib,ie)
+          d2param(4,3,ib,ie)=d2param(3,4,ib,ie)
+
+c coo. derivatives of parameter derivatives:
+          ddparam(1,1,ib,ie)=-d2param(1,1,ib,ie)                            ! wrt x1,xg1
+          ddparam(2,1,ib,ie)=-d2param(2,1,ib,ie)                            ! wrt x2,xg1
+          
+          ddparam(1,2,ib,ie)= ddparam(2,1,ib,ie)                            ! wrt x1,xg2
+          ddparam(2,2,ib,ie)=-d2param(2,2,ib,ie)                             ! wrt x2,xg2
+
+          ddparam(1,3,ib,ie)=-d2param(1,3,ib,ie)                             ! wrt x1,xg3
+          ddparam(2,3,ib,ie)=-d2param(2,3,ib,ie)                             ! wrt x2,xg3
+
+          ddparam(1,4,ib,ie)=-d2param(1,4,ib,ie)                             ! wrt x1,xg4
+          ddparam(2,4,ib,ie)=-d2param(2,4,ib,ie)                             ! wrt x2,xg4
+
+          d2dparam(1,ib,ie)=wex*(2*dparam(1,ib,ie)+x1rel*d2phin(ib,ie))  ! laplacian of dparam(1,ib,ie)
+          d2dparam(2,ib,ie)=wey*(2*dparam(2,ib,ie)+x2rel*d2phin(ib,ie))   ! laplacian of dparam(2,ib,ie)
+          d2dparam(3,ib,ie)=(2*wex2*xg3i*x1rel2 - we)*phin(ib,ie) 
+     &                      + tempd2*dparam(3,ib,ie)  ! laplacian of dparam(3,ib,ie)
+          d2dparam(4,ib,ie)=(2*wey2*xg4i*x2rel2 - we)*phin(ib,ie) 
+     &                      + tempd2*dparam(4,ib,ie)  ! laplacian of dparam(4,ib,ie)
+
+        enddo
+      enddo
+
+      return
+      end
+
+c--------------------------------------------------------------------------
+
+
+
 
 !**RM(3) Following added by RM.
 !*******************
