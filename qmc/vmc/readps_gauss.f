@@ -1,5 +1,5 @@
       subroutine readps_gauss
-c Written by Claudia Filippi (or Friedemann Schautz?)
+c Written by Claudia Filippi (or Friedemann Schautz?), modified by Cyrus Umrigar
 c read 'Quantum-chemist' gauss pseudopotentials
 c file format: one text file with basename gauss_ecp.dat
 c              for each atom type
@@ -34,12 +34,12 @@ c NOTE: as usual power n means r**(n-2)
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      do 200 ic=1,nctype
+      do 100 ict=1,nctype
 
-        if(ic.lt.10) then
-          write(atomtyp,'(i1)') ic
-         elseif(ic.lt.100) then
-          write(atomtyp,'(i2)') ic
+        if(ict.lt.10) then
+          write(atomtyp,'(i1)') ict
+         elseif(ict.lt.100) then
+          write(atomtyp,'(i2)') ict
          else
           stop 'readps_tm, nctype>100'
         endif
@@ -48,51 +48,64 @@ c NOTE: as usual power n means r**(n-2)
         open(1,file=filename,status='old',form='formatted',err=999)
         write(6,'(''Reading gaussian pseudopotential file '',a)') filename
 
-c label
         read(1,'(a100)',err=1000,end=1001) label
-        write(6,'(''ECP for center type'',i4,'' label= '',a80)') ic,label
+        write(6,'(''ECP for center type'',i4,'' label= '',a80)') ict,label
 
 c Number of l components
-        read(1,*,err=1000,end=1001) npotd(ic)
+        read(1,*,err=1000,end=1001) npotd(ict)
 
 c If the local pseudopot component is not set in input, set it here
-        if(lpotp1(ic).lt.0) then
-          lpotp1(ic)=npotd(ic)
-          write(6,'(''Center type'',i4,'' local pseudopot component is'',i3)') ic,lpotp1(ic)
+        if(lpotp1(ict).lt.0) then
+          lpotp1(ict)=npotd(ict)
+          write(6,'(''Center type'',i4,'' local pseudopot component is'',i3)') ict,lpotp1(ict)
         endif
 
         write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
-     &  ,i2,'' is chosen to be local'')') ic,npotd(ic),lpotp1(ic)
+     &  ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
 
-        if(lpotp1(ic).gt.npotd(ic)) then
-          write(6,'(''lpotp1(ic),npotd(ic)='',2i3)') lpotp1(ic),npotd(ic)
-          stop 'Cannot choose local psp. to be > number of l components, lpotp1(ic) > npotd(ic)'
+        if(lpotp1(ict).gt.npotd(ict)) then
+          write(6,'(''lpotp1(ict),npotd(ict)='',2i3)') lpotp1(ict),npotd(ict)
+          stop 'Cannot choose local psp. to be > number of l components, lpotp1(ict) > npotd(ict)'
         endif
-        if(npotd(ic).gt.MPS_L) stop 'npotd(ic).gt.MPS_L'
+        if(npotd(ict).gt.MPS_L) stop 'npotd(ict).gt.MPS_L'
 
 c read terms of local part and all non-local parts
 c local part first in file, but stored at index lpotp1
 c since psps. are stored in order of ascending l.
 
-        do 200 l=1,npotd(ic)
-c         if(l.eq.lpotp1(ic))then
+        do 50 l=1,npotd(ict)
+c         if(l.eq.lpotp1(ict))then
           if(l.eq.1)then
-            idx=lpotp1(ic)
+            idx=lpotp1(ict)
            else
             idx=l-1
           endif
-          read(1,*,err=999,end=1000) necp_term(idx,ic)
+          read(1,*,err=999,end=1000) necp_term(idx,ict)
 
-          if(necp_term(idx,ic).gt.MGAUSS) stop 'necp_term(idx,ic) > MGAUSS'
-          write(6,'(''L component, #terms='',2i4)') l,necp_term(idx,ic)
-          do 200 i=1,necp_term(idx,ic)
-            read(1,*,err=999,end=1000) ecp_coef(i,idx,ic),
-     &        necp_power(i,idx,ic),ecp_exponent(i,idx,ic)
-            write(6,'(''Psp coef, power, expo'',f16.8,i2,f16.8)') ecp_coef(i,idx,ic),necp_power(i,idx,ic)
-     &        ,ecp_exponent(i,idx,ic)
-  200   continue
+          if(necp_term(idx,ict).gt.MGAUSS) stop 'necp_term(idx,ict) > MGAUSS'
+          write(6,'(''L component, #terms='',2i4)') l,necp_term(idx,ict)
+          do 50 i=1,necp_term(idx,ict)
+            read(1,*,err=999,end=1000) ecp_coef(i,idx,ict),
+     &        necp_power(i,idx,ict),ecp_exponent(i,idx,ict)
+            write(6,'(''Psp coef, power, expo'',f16.8,i2,f16.8)') ecp_coef(i,idx,ict),necp_power(i,idx,ict)
+     &        ,ecp_exponent(i,idx,ict)
 
-c     call gesqua(nquad,xq0,yq0,zq0,wq)
+   50   continue
+
+c Find the point beyond which the various v components differ from each other by no more than .5*d-6
+c The angular integration needs to be done only within rmax_nloc, so the smaller this number is the
+c less the computational expense per MC step.
+        r=5.d0
+        do 70 ir=1,500
+          do 70 l=1,npotd(ict)
+            if(l.ne.lpotp1(ict)) then
+              call gauss_pot(r,l,ict,vpot)
+              if(dabs(vpot).gt..5d-6) goto 80
+            endif
+   70   r=r-0.01d0
+   80   rmax_nloc=r
+  100 write(6,'(''center '',i3,'' pseudopot rmax_nloc= '',f6.2)') ict,rmax_nloc
+
 c     call gesqua(nquad,xq0,yq0,zq0,wq)
 
       return
@@ -100,10 +113,10 @@ c     call gesqua(nquad,xq0,yq0,zq0,wq)
   999 write(6,'(''Error: Pseudopot. file '',a20,'' is missing'')') filename
       stop 'Pseudopot. file is missing'
 
- 1000 write(6,'(''Error when reading gaussian psp. of center type'',i4)') ic
+ 1000 write(6,'(''Error when reading gaussian psp. of center type'',i4)') ict
       stop 'readps_gauss: error while reading gaussian pseudopotential'
 
- 1001 write(6,'(''End of file when reading gaussian psp. of center type'',i4)') ic
+ 1001 write(6,'(''End of file when reading gaussian psp. of center type'',i4)') ict
       stop 'readps_gauss: end of file while reading gaussian pseudopotential'
 
       end

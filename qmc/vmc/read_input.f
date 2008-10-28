@@ -198,7 +198,7 @@ c            0  local, -Z/r
 c            1  in Fahy format
 c            2  in Troullier-Martins format (unformatted)
 c            3  in Troullier-Martins format (formatted)
-c            4  in champ format (formatted)
+c            4  in CHAMP format (formatted)
 c            5  in fhi format (formatted)
 c            6  chemistry pseudopotentials in GAMESS-like format with 1 extra line (formatted)
 c numr     <=0 analytic radial basis functions (Slater, asymptotic, gaussian
@@ -844,7 +844,7 @@ c Warn if not equal, stop if they differ by more than 2.
 !JT      if(abs(znuc_tot-dfloat(nelec)).gt.3) stop 'abs(znuc_tot - nelec) > 3'
 
       if(nloc.ne.-3) then ! RM
-        if(abs(znuc_tot-dfloat(nelec)).gt.3) stop 'abs(znuc_tot - nelec) > 3'
+        if(abs(znuc_tot-dfloat(nelec)).gt.6) stop 'abs(znuc_tot - nelec) > 6'
       endif
 
 c TEMPORARY: Warning: we are not calling readforce and only using one geometry

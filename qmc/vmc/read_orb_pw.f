@@ -1235,7 +1235,7 @@ c combine coefs. of G and -G, whereas QMC code does.
 
       dimension centx(3),gvec_dft(3),gvec_latt(3),rkvec_latt(3)
 
-      complex c_complex_tmp
+      complex*16 c_complex_tmp
 
 c The current version of PWSCF does not exploit inversion symmetry to make the
 c PW coefs. real.  So, set icmplx=1.  Dario Alfe tells me that the older versions
