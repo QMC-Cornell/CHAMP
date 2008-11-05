@@ -66,7 +66,7 @@ c Note: d2edeti_deti(MELEC,MDET) need not be in common
      &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
-     common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
+      common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),ddet_det(3,*),div_vd(MELEC)
       dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
@@ -112,6 +112,8 @@ c         write(6,'(''x(1,1),orb(1,1) from nu'',9f12.8)') x(1,1),orb(1,1),dorb(1
 
       endif
 
+      write(6,*) 'in determinant:'
+      write(6,*) 'orb =',orb
       call object_modified_by_index (orb_index)   !JT
       call object_modified_by_index (dorb_index)   !JT
       call object_modified_by_index (ddorb_index)   !JT
