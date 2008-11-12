@@ -112,8 +112,6 @@ c         write(6,'(''x(1,1),orb(1,1) from nu'',9f12.8)') x(1,1),orb(1,1),dorb(1
 
       endif
 
-      write(6,*) 'in determinant:'
-      write(6,*) 'orb =',orb
       call object_modified_by_index (orb_index)   !JT
       call object_modified_by_index (dorb_index)   !JT
       call object_modified_by_index (ddorb_index)   !JT
