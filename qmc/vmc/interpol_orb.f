@@ -54,6 +54,7 @@ c-----------------------------------------------------------------------
 
       subroutine interpol_orb(nx,ny,nz,xi,yi,zi,orb,dorb,ddorb)
 c Written by Cyrus Umrigar
+
       implicit real*8(a-h,o-z)
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -84,17 +85,19 @@ c grid, but this routine is specialized to make it fast.
 c Warning: This routine assumes fn. is periodic and tabulated on entire period.
 c If function is tabulated on half-period then this routine needs modification.
 
+      use orbital_grid_mod
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'numorb.h'
 
       common /dim/ ndim
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ngrid_orbx,ngrid_orby,ngrid_orbz
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
       dimension orb(*),dorb(3,*),ddorb(*)
 
@@ -289,17 +292,20 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
+
+      use orbital_grid_mod
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'numorb.h'
       parameter(half=0.5d0,sixth=1.d0/6.d0)
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ngrid_orbx,ngrid_orby,ngrid_orbz
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*)
@@ -516,16 +522,18 @@ c grid, but this routine is specialized to make it fast.
 c Warning: This routine assumes fn. is periodic and tabulated on entire period.
 c If function is tabulated on half-period then this routine needs modification.
 
+      use orbital_grid_mod
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'numorb.h'
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ngrid_orbx,ngrid_orby,ngrid_orbz
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
       dimension orb(*)
 
@@ -703,17 +711,19 @@ c Written by Cyrus Umrigar
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use orbital_grid_mod
       implicit real*8(a-h,o-z)
+
       include 'vmc.h'
       include 'force.h'
       include 'numorb.h'
       parameter(half=0.5d0,sixth=1.d0/6.d0)
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ngrid_orbx,ngrid_orby,ngrid_orbz
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*)

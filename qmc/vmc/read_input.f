@@ -6,6 +6,7 @@ c Written by Cyrus Umrigar
       use orbitals_mod
       use optimization_mod
       use fitdet_mod
+      use orbital_grid_mod
 
       implicit real*8(a-h,o-z)
 
@@ -69,6 +70,11 @@ c Written by Cyrus Umrigar
       common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
       common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
      &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
@@ -267,7 +273,9 @@ c         =4 numerical orbitals using 4-pt interpolation in each direction
 c            if file orbitals_num exists, read from it, else write to it
 c        =-4 numerical orbitals using 4-pt interpolation in each direction
 c            if file orbitals_num exists, read from it, but do not write to it
-cWP       =+-6 numerical orbitals using 4-pt B-spline approximation in each direction
+c         =+-5 numerical orbitals using 4-pt interpolating pp-spline in each direction
+cWP       =+-6 numerical orbitals using 4-pt approximating B-spline in each direction
+c         =+-8 numerical orbitals using 4-pt interpolating B-spline in each direction
 c iorb_used =1 compute only occupied orbitals
 c           =0 compute all occupied and virtual orbitals if necessary (for orbital optimization)
 c iorb_format 'tm' for orbitals file orbitals_pw_tm generated from Jose-Luis Martins' program
@@ -866,9 +874,32 @@ c Determinantal section
         read(5,*) inum_orb,iorb_used,iorb_format
       endif
       write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
-      if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.(abs(inum_orb).ne.4.and.abs(inum_orb).ne.6))) then
-         stop 'abs(inum_orb) must be 0, 4 or 6'
+      if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.abs(inum_orb).ne.4.and.abs(inum_orb).ne.5.and.abs(inum_orb).ne.6
+     &   .and.abs(inum_orb).ne.8)) then
+         stop 'abs(inum_orb) must be 0, 4 or 6 or 8'
       endif
+      if(inum_orb .ne. 0) then
+        read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap
+        write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
+         if(abs(num_orb).eq.8) then
+           if(igrad_lap .eq. 0) then
+             write(6,'(''Interpolate orbitals, calculate gradient and Laplcian from interpolated orbitals'')')
+            elseif(igrad_lap .eq. 1) then
+             write(6,'(''Interpolate orbitals and Laplacian, calculate gradient from interpolated orbitals'')')
+            elseif(igrad_lap .eq. 2) then
+             write(6,'(''Interpolate orbitals, gradient and Laplacian'')')
+            else
+             stop 'igrad_lap must equal 0, 1 or 2'
+           endif
+         endif
+c       if(((ngrid_orbx .gt. MGRID_ORB_PER) .or.
+c    &      (ngrid_orby .gt. MGRID_ORB_PER) .or.
+c    &      (ngrid_orbz .gt. MGRID_ORB_PER)) .and.
+c    &     ((inum_orb .eq. 4). or. (inum_orb .eq. 5))) then
+c          stop 'ngrid_orbx, ngrid_orby and ngrid_orbz must be <= MGRID_ORB_PER (in vmc/numorb.h) for Lagrange and pp-splines'
+c       endif
+      endif
+
       read(5,*) ndet,nbasis,norb
       write(6,'(''no. of determinants ='',t31,i10)') ndet
       write(6,'(''no. of orbitals ='',t31,i10)') norb
@@ -881,6 +912,29 @@ c Determinantal section
       if(ndet.gt.MDET) then
        write(6,*) trim(lhere),': ndet =', ndet, ' > MDET=', MDET !JT
        stop 'ndet > MDET'
+      endif
+
+c For Lagrange interpolation allocate orb, dorb and ddorb; for interpolating splines allocate just orb
+c For the moment, interpolating splines are being done in the bsplines_mode module, so allocate nothing for them.
+c     if(abs(inum_orb).eq.4 .or. abs(inum_orb).eq.8) then
+      if(abs(inum_orb).eq.4) then
+c       call alloc('orb_num',orb_num,norb,0:ngrid_orbx-1,ngrid_orbx-1,ngrid_orbx-1)
+c       call alloc('dorb_num',dorb_num,3,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1)
+c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1)
+        allocate(orb_num(norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1),stat=istat)
+        if(istat.ne.0) then
+          stop "Error in allocating orb_num"
+        endif
+        if(abs(inum_orb).eq.4) then
+          allocate(dorb_num(3,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1),stat=istat)
+          if(istat.ne.0) then
+             stop "Error in allocating dorb_num"
+          endif
+          allocate(ddorb_num(norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1),stat=istat)
+          if(istat.ne.0) then
+             stop "Error in allocating ddorb_num"
+          endif
+        endif
       endif
 
       if(nbasis.gt.MBASIS) stop 'nbasis > MBASIS'

@@ -8,14 +8,12 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC),d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
-     &,fsumow(MWALK),fjow(3,MELEC,MWALK)
+      common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK),fsumow(MWALK),fjow(3,MELEC,MWALK)
 
       dimension istatus(MPI_STATUS_SIZE)
 

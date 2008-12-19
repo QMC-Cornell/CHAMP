@@ -83,20 +83,21 @@ c nimax is the number of longest lattice vectors
 c             write(6,'(''imax(i),i1,i2,i3,rlenmax,rlen'',4i3,9f9.5)') imax(i),i1,i2,i3,rlenmax,rlen
               if(rlen.lt.rlenmax-eps) then
                 if(isim_cell.eq.0) then
-                  write(6,*) 'found shorter primitive cell lattice vector'
+                  write(6,*) 'Warning: found shorter primitive cell lattice vector'
                  else
-                  write(6,*) 'found shorter simulation cell lattice vector'
+                  write(6,*) 'Warning: found shorter simulation cell lattice vector'
                 endif
                 write(6,'(''i1,i2,i3,rlen='',3i3,f8.3)') i1,i2,i3,rlen
                 write(6,'(''new rlatt='',3f8.3)')
      &          i1*rlatt(1,1)+i2*rlatt(1,2)+i3*rlatt(1,3),
      &          i1*rlatt(2,1)+i2*rlatt(2,2)+i3*rlatt(2,3),
      &          i1*rlatt(3,1)+i2*rlatt(3,2)+i3*rlatt(3,3)
-                if(isim_cell.eq.0) then
-                  stop 'found shorter primitive cell lattice vector in check_lattice'
-                 else
-                  stop 'found shorter simulation cell lattice vector in check_lattice'
-                endif
+c Warning: For the moment to run AF MnO comment out the stop.
+c               if(isim_cell.eq.0) then
+c                 stop 'found shorter primitive cell lattice vector in check_lattice'
+c                else
+c                 stop 'found shorter simulation cell lattice vector in check_lattice'
+c               endif
               endif
             endif
    40 continue

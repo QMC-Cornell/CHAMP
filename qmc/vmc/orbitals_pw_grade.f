@@ -58,7 +58,7 @@ c     call cossin_psi_k(glatt_sim,rknorm,rkvec,kvec,nkvec,x,nelec,ng1d_sim,cos_k
       call cossin_psi_k(glatt_sim,rknorm,rkvec,kvec,nkvec,x,ng1d_sim,cos_k,sin_k
      &,dcos_k,dsin_k,ddcos_k,ddsin_k,rkvec_shift)
 
-      if(ipr.ge.4) then
+      if(ipr.ge.5) then
         write(6,'(''rkvec'',9f9.5)') ((rkvec(k,ikvec),k=1,ndim),ikvec=1,nkvec)
         write(6,'(''cos_k,sin_k,dcos_k,dsin_k,ddcos_k,ddsin_k='',10f9.4)')
      & (cos_k(ik),sin_k(ik),(dcos_k(k,ik),k=1,ndim),(dsin_k(k,ik),k=1,ndim),ddcos_k(ik),ddsin_k(ik),ik=1,nkvec)
@@ -123,11 +123,11 @@ c Calculate psi_+ orbital if there are 2 indep states or if the + state is the o
 
             iorb=iorb+1
 
-            if(ipr.ge.4) write(6,'(''1iorb,ireal_imag(iorb)'',9i5)') iorb,ireal_imag(iorb)
+            if(ipr.ge.5) write(6,'(''1iorb,ireal_imag(iorb)'',9i5)') iorb,ireal_imag(iorb)
 
             orb(iorb)=cos_k(ikvec)*term1
      &               -sin_k(ikvec)*term2
-            if(ipr.ge.4) write(6,'(''1orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb)
+            if(ipr.ge.5) write(6,'(''1orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb)
      &,cos_rp,cos_ip,sin_rm,sin_im='',i5,20d12.4)')
      & iorb,orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb),cos_rp,cos_ip,sin_rm,sin_im
 
@@ -157,12 +157,12 @@ c           write(6,'(''orb'',i5,9d12.4)') iorb,orb(iorb),(dorb(k,iorb),k=1,ndim
 c Calculate psi_- orbital if there are 2 indep states or if the - state is the one kept.
             iorb=iorb+1
 
-            if(ipr.ge.4) write(6,'(''2iorb,ireal_imag(iorb)'',9i5)') iorb,ireal_imag(iorb)
+            if(ipr.ge.5) write(6,'(''2iorb,ireal_imag(iorb)'',9i5)') iorb,ireal_imag(iorb)
 
             orb(iorb)=cos_k(ikvec)*term2
      &               +sin_k(ikvec)*term1
 
-            if(ipr.ge.4) write(6,'(''2orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb)
+            if(ipr.ge.5) write(6,'(''2orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb)
      &,cos_rp,cos_ip,sin_rm,sin_im='',i5,20d12.4)')
      & iorb,orb(iorb),cos_k(ikvec),sin_k(ikvec),c_rp(1,jorb),c_ip(1,jorb),cos_rp,cos_ip,sin_rm,sin_im
 
@@ -184,7 +184,7 @@ c           write(6,'(''orb2'',i5,9d12.4)') iorb,orb(iorb),(dorb(k,iorb),k=1,ndi
 
   130       continue
 
-      if(ipr.ge.4) write(6,'(i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
+      if(ipr.ge.5) write(6,'(''orbitals_pw_grade:'',i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
 
       return
       end

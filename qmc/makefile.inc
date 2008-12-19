@@ -25,6 +25,8 @@ BLAS=-L$(LIBHOME)/lib2/blas -lblas
 
 PSPLINE=-L$(LIBHOME)/lib2/pspline/pspline -lpspline
 
+EINSPLINE=-L$(LIBHOME)/lib2/einspline/lib -leinspline
+
 # C compilation ------------------------------------------------------------
 
 CHAMP_C=gcc
@@ -51,6 +53,7 @@ CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
 CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
 CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
 CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+# CHAMP_F77_FLAGS=$(CHAMP_F77_DEBUG)
 
 CHAMP_F95_FAST=-O3 -ip -static -align all -fpp
 CHAMP_F95_IPO=-O3 -ipo -static -align all -fast -fpp
@@ -59,6 +62,7 @@ CHAMP_F95_PROF=-O3 -pg -fpp
 CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI
 CHAMP_F95_MPIDEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
 CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+# CHAMP_F95_FLAGS=$(CHAMP_F95_DEBUG)
 
 # Linking  ------------------------------------------------------------------
 
@@ -67,9 +71,10 @@ CHAMP_LD_MPI=mpif77
 
 CHAMP_LD_FAST=-O3 -static -align all
 CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
-CHAMP_LD_DEBUG=
+CHAMP_LD_DEBUG=-static -align all
 CHAMP_LD_PROF=-O3 -pg
 CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+# CHAMP_LD_FLAGS=$(CHAMP_LD_DEBUG)
 
 CHAMP_LD_END=
 #CHAMP_LD_END_MPI=-lpmi -lpthread
@@ -80,12 +85,12 @@ CHAMP_LD_END_MPI=
 CHAMP_EXE=champ.exe
 CHAMP_MPI_EXE=champ_mpi.exe
 CHAMP_DEBUG_EXE=champ_debug.exe
-CHAMP_DEBUG_EXE=champ.exe
 
 ####################### MACHINES ########################################
 
 ifeq ($(hostname),gauss)
   CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
+# CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT -I/home/cyrus/temp_mpi/include
   CHAMP_F77_DEBUG=-O0 -zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
   CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
 # CHAMP_F77_FLAGS=$(CHAMP_F77_DEBUG)
@@ -93,15 +98,13 @@ ifeq ($(hostname),gauss)
   CHAMP_F95_DEBUG=-O0 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
   CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
 # CHAMP_F95_FLAGS=$(CHAMP_F95_DEBUG)
+# CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT -L/home/cyrus/temp_mpi/lib
   CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
   CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
   CHAMP_MPIC=mpicc
   CHAMP_MPIF95=mpif90
   CHAMP_MPIF77=mpif90
   CHAMP_LD_MPI=mpif90
-  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT -DMPI
-# CHAMP_F77_MPI=-zero  -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
-# CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
   CHAMP_F77_MPI=$(CHAMP_F77_FAST) -DMPI
   CHAMP_F95_MPI=$(CHAMP_F95_FAST) -DMPI
 # CHAMP_F77_MPI=$(CHAMP_F77_DEBUG) -DMPI
@@ -180,6 +183,7 @@ endif
 ifeq ($(hostname),devon)
  LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
  BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
+ CHAMP_C=icc
 endif
 ifeq ($(hostname),kunoy)
  LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
@@ -421,4 +425,6 @@ CHAMP_LD_END_MPI=
 
 endif
 
-CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
+CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
+#CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
+

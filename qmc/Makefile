@@ -7,8 +7,8 @@ include makefile.inc
 PROG =	$(CHAMP_EXE)
 
 SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
-	backflow_mod.f90 basic_tools_mod.f90 basis_mod.f90 bwfdet_mod.f90 \
-	catalog_averages_mod.f90 catalog_objects_mod.f90 \
+	backflow_mod.f90 basic_tools_mod.f90 basis_mod.f90 bsplines_mod.f90 \
+	bwfdet_mod.f90 catalog_averages_mod.f90 catalog_objects_mod.f90 \
 	catalog_routines_mod.f90 champ.f90 constants_mod.f90 control_mod.f90 \
 	crystal_symmetries_mod.f90 csfs_mod.f90 cslater_cf_mod.f90 \
 	cslater_mod.f90 cslaterw_mod.f90 debug_mod.f90 density_mod.f90 \
@@ -22,10 +22,10 @@ SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
 	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
 	nodes_mod.f90 nuclei_mod.f90 objects_mod.f90 opt_common_mod.f90 \
 	opt_lin_mod.f90 opt_nwt_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 \
-	orbitals_mod.f90 parser_tools_mod.f90 periodic_jastrow_een.f90 \
-	periodic_jastrow_mod.f90 pjas_interface.f90 pjas_setup_mod.f90 \
-	pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 psi_mod.f90 \
-	restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
+	orbital_grid_mod.f90 orbitals_mod.f90 parser_tools_mod.f90 \
+	periodic_jastrow_een.f90 periodic_jastrow_mod.f90 pjas_interface.f90 \
+	pjas_setup_mod.f90 pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 \
+	psi_mod.f90 restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
 	testing_mod.f90 types_mod.f90 variables_mod.f90 vmc_mod.f90 \
 	walkers_mod.f90 write_mod.f90 amoeba.f amotry.f choldc.f cholsl.f \
 	ei.f ei2.f erf.f expint.f hash_funcs.f pythag.f svbksb.f svdcmp.f \
@@ -91,21 +91,22 @@ SRCS =	accumulation_mod.f90 all_tools_mod.f90 average_mod.f90 \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f
 
 OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
-	basic_tools_mod.o basis_mod.o bwfdet_mod.o catalog_averages_mod.o \
-	catalog_objects_mod.o catalog_routines_mod.o champ.o constants_mod.o \
-	control_mod.o crystal_symmetries_mod.o csfs_mod.o cslater_cf_mod.o \
-	cslater_mod.o cslaterw_mod.o debug_mod.o density_mod.o \
-	deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o deriv_jas_mod.o \
-	deriv_mod.o deriv_orb_mod.o determinants_mod.o dipole_moment_mod.o \
-	dmc_mod.o electrons_mod.o eloc_mod.o extracule_mod.o f2kcli.o \
-	files_tools_mod.o fitdet_mod.o forces_mod.o forces_pulay_mod.o \
-	grid_mod.o indexes_mod.o initialization_mod.o intracule_mod.o \
-	jastrow_mod.o main_menu_mod.o matrix_tools_mod.o montecarlo_mod.o \
-	mpi_mod.o nodes_mod.o nuclei_mod.o objects_mod.o opt_common_mod.o \
-	opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o optimization_mod.o \
-	orbitals_mod.o parser_tools_mod.o periodic_jastrow_een.o \
-	periodic_jastrow_mod.o pjas_interface.o pjas_setup_mod.o pjasee_mod.o \
-	pjasen_mod.o print_mod.o psi_mod.o restart_mod.o routines_mod.o \
+	basic_tools_mod.o basis_mod.o bsplines_mod.o bwfdet_mod.o \
+	catalog_averages_mod.o catalog_objects_mod.o catalog_routines_mod.o \
+	champ.o constants_mod.o control_mod.o crystal_symmetries_mod.o \
+	csfs_mod.o cslater_cf_mod.o cslater_mod.o cslaterw_mod.o debug_mod.o \
+	density_mod.o deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o \
+	deriv_jas_mod.o deriv_mod.o deriv_orb_mod.o determinants_mod.o \
+	dipole_moment_mod.o dmc_mod.o electrons_mod.o eloc_mod.o \
+	extracule_mod.o f2kcli.o files_tools_mod.o fitdet_mod.o forces_mod.o \
+	forces_pulay_mod.o grid_mod.o indexes_mod.o initialization_mod.o \
+	intracule_mod.o jastrow_mod.o main_menu_mod.o matrix_tools_mod.o \
+	montecarlo_mod.o mpi_mod.o nodes_mod.o nuclei_mod.o objects_mod.o \
+	opt_common_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o \
+	optimization_mod.o orbital_grid_mod.o orbitals_mod.o \
+	parser_tools_mod.o periodic_jastrow_een.o periodic_jastrow_mod.o \
+	pjas_interface.o pjas_setup_mod.o pjasee_mod.o pjasen_mod.o \
+	print_mod.o psi_mod.o restart_mod.o routines_mod.o \
 	strings_tools_mod.o testing_mod.o types_mod.o variables_mod.o \
 	vmc_mod.o walkers_mod.o write_mod.o amoeba.o amotry.o choldc.o \
 	cholsl.o ei.o ei2.o erf.o expint.o hash_funcs.o pythag.o svbksb.o \
@@ -232,6 +233,7 @@ backflow_mod.o: basic_tools_mod.o constants_mod.o electrons_mod.o nodes_mod.o \
 	commons.h
 basic_tools_mod.o: constants_mod.o mpi_mod.o types_mod.o variables_mod.o
 basis_mod.o: all_tools_mod.o commons.h
+bsplines_mod.o: basic_tools_mod.o mpi_mod.o orbital_grid_mod.o commons.h
 bwfdet_mod.o: constants_mod.o mpi_mod.o commons.h
 catalog_averages_mod.o: average_mod.o basic_tools_mod.o constants_mod.o \
 	objects_mod.o variables_mod.o
@@ -307,6 +309,7 @@ optimization_mod.o: all_tools_mod.o control_mod.o deriv_mod.o \
 	montecarlo_mod.o nuclei_mod.o opt_common_mod.o opt_lin_mod.o \
 	opt_nwt_mod.o opt_ptb_mod.o orbitals_mod.o periodic_jastrow_mod.o \
 	vmc_mod.o commons.h
+orbital_grid_mod.o: types_mod.o
 orbitals_mod.o: all_tools_mod.o basis_mod.o commons.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \

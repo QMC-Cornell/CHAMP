@@ -195,7 +195,7 @@ c           endif
 
   130       continue
 
-      if(ipr.ge.4) write(6,'(i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
+      if(ipr.ge.4) write(6,'(''orbitals_pw:'',i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
 
       return
       end
@@ -296,6 +296,10 @@ c    &)
             term1=c_rp(1,jorb)+cos_rp-sin_im
             term2=c_ip(1,jorb)+cos_ip+sin_rm
 
+c           write(6,'(''iorb,term1,term2,cos_k(ikvec)*term1-sin_k(ikvec)*term2,cos_k(ikvec)*term2+sin_k(ikvec)*term1'',i5,9d12.4)')
+c    & iorb,term1,term2,cos_k(ikvec)*term1-sin_k(ikvec)*term2,cos_k(ikvec)*term2+sin_k(ikvec)*term1
+
+
 c Calculate psi_+ orbital if there are 2 indep states or if the + state is the one kept.
             if(k_inv(ikvec).eq.2. .or. ireal_imag(iorb+1).eq.1) then
 
@@ -333,7 +337,7 @@ c           endif
 
   130       continue
 
-      if(ipr.ge.4) write(6,'(i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
+      if(ipr.ge.4) write(6,'(''orbitals_pwe:'',i4,'' electrons placed in'',i4,'' orbitals'')') nelec,iorb
 
       return
       end

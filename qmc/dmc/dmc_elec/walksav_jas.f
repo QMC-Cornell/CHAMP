@@ -6,11 +6,9 @@ c Written by Claudia Filippi
       include '../dmc.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2ow,fsumo,fjo(3,MELEC)
+      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC),d2ijo(MELEC,MELEC),d2ow,fsumo,fjo(3,MELEC)
 
-      common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK)
-     &,fsumow(MWALK),fjow(3,MELEC,MWALK)
+      common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK),fsumow(MWALK),fjow(3,MELEC,MWALK)
 
       fsumow(iw)=fsumo
 

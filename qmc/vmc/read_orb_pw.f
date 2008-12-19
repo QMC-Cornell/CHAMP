@@ -1,5 +1,5 @@
       subroutine read_orb_pw_real
-c Written by Cyrus Umrigar
+c Written by Cyrus Umrigar.
 c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
@@ -65,7 +65,7 @@ c Note that jorba can be > nord if ndet>1
 c-----------------------------------------------------------------------
 
       subroutine read_orb_pw
-c Written by Cyrus Umrigar
+c Written by Cyrus Umrigar.  Modified by William Parker to interface to Einspline library for interpolating B-splines.
 c Reads in pw basis orbitals and convert them to real ones suitable for qmc.
 c Warning: At present NGVECX is used to dimension not only quantities that are
 c used for the Ewald sum, but also quantities used for the wavefunction pw coefficients.
@@ -78,7 +78,10 @@ c it is only after one has processed all the k-pts that one knows how big ngvec_
 c However, that causes problems when running with mpi, so comment out that part.
 
       use bwfdet_mod
+      use bsplines_mod
       use all_tools_mod
+      use orbital_grid_mod
+
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -96,10 +99,10 @@ c However, that causes problems when running with mpi, so comment out that part.
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
      &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ngrid_orbx,ngrid_orby,ngrid_orbz
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -126,23 +129,10 @@ c atom included just to be able to shift test pt. for checking orbs by cent(k,1)
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
      &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
      &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
-c    &,orb_splines_tmp(10)
-c    &,wk(80*MGRID_ORB_PER*MGRID_ORB_PER*MGRID_ORB_PER)
-c    &,orb_tmp(MORB_OCC),dorb_tmp(3,MORB_OCC),ddorb_tmp(MORB_OCC)
-c    &,ict(10),ddorb_splines_tmp(3),ibcxmin,ibcymin,ibczmin,ibcxmax,
-c    &ibcymax,ibczmax
 
       dimension ipoint(MORB)
       real*8 r_basis(3),xi,yi,zi
-     &      ,bcxmin(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
-     &       bcxmax(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
-     &       bcymin(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
-     &       bcymax(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
-     &       bczmin(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB),
-     &       bczmax(0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,MORB)
 
-c     write(6,*)'rlatt_sim=',((rlatt_sim(k,i),i=1,3),k=1,3)
-c     stop
       write(6,'(/,''Reading in orbitals for periodic system'',/)')
 
 c Factor for renormalizing orbitals to avoid overflow when calculating determinant.
@@ -199,145 +189,72 @@ c Set coordinates of test point
       r(2)=.2d0+cent(2,1)
       r(3)=.3d0+cent(3,1)
 
-c Read in orbitals on grid if file exists and has correct mesh
+c Use interpolated orbitals if inum_orb.ne.0
       if(inum_orb.ne.0) then
-c ** Warning: set ngrid_orbx better
-c       ngrid_orbx=ngvec**(1.d0/3.d0)
-c       ngrid_orby=ngrid_orbx
-c       ngrid_orbz=ngrid_orbx
-        if(inum_orb.ne.6) then
-           if(inum_orb.eq.4) then
-             write(6,'(''Using Lagrange polynomial interpolation'')')
-c          elseif(inum_orb.eq.5) then
-c            write(6,'(''Using piecewise-polynomial spline interpolation
-c    &'')')
-           endif
-           if(MGRID_ORB_PER.lt.5) stop 'MGRID_ORB_PER < 5'
-           if(MGRID_ORB_PER.lt.21) write(6,'(''Warning: MGRID_ORB_PER < 21 ='',i5)') MGRID_ORB_PER
-           ngrid_orbx=MGRID_ORB_PER
-           ngrid_orby=MGRID_ORB_PER
-           ngrid_orbz=MGRID_ORB_PER
-           write(6,'(''ngrid_orbx,ngrid_orby,ngrid_orbz='',9i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
-        else
-	   write(6,'(''Using B-spline approximation'')')
+
+        if(abs(inum_orb).eq.4) then
+          write(6,'(''Using Lagrange polynomial interpolation'')')
+         elseif(abs(inum_orb).eq.6) then
+          write(6,'(''Using approximating B-spline'')')
+         elseif(abs(inum_orb).eq.8) then
+          write(6,'(''Using interpolating B-spline'')')
         endif
 
         num_orb_exist=0
 
-cwparker Read in Lagrange interpolated numerical orbitals from file
+c Read in numerical orbitals on grid if file orbitals_num_lagrange exists and has correct mesh
+c For Lagrange read in orbitals, gradient and Laplacian; for interpolating B-splines read in orbitals only
 
-        if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
-          open(4,file='orbitals_num_lagrange',form='unformatted',
-     &status='old',err=10)
+c       if(abs(inum_orb).eq.4 .or. abs(inum_orb).eq.8) then
+        if(abs(inum_orb).eq.4) then
+          open(4,file='orbitals_num_lagrange',form='unformatted',status='old',err=10)
           num_orb_exist=1
 c         write(6,'(''Lagrange interpolation grid is'',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
           read(4) ngrid_orbxf,ngrid_orbyf,ngrid_orbzf
           if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby
      &       .or.  ngrid_orbzf.ne.ngrid_orbz) then
-            write(6,'(''orbital grids do not match, program, orbitals_nu
-     &m:'',3i4,x,3i4)')
-     &      ngrid_orbx,ngrid_orby,ngrid_orbz,ngrid_orbxf,ngrid_orbyf,
-     &      ngrid_orbzf
+            write(6,'(''orbital grids do not match, program, orbitals_num:'',3i4,x,3i4)')
+     &      ngrid_orbx,ngrid_orby,ngrid_orbz,ngrid_orbxf,ngrid_orbyf,ngrid_orbzf
             stop 'orbital grids do not match'
           endif
           read(4) ((((orb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,
      &             ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
-          read(4) ((((ddorb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,
+          if(abs(inum_orb).eq.4) then
+            read(4) ((((ddorb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,
      &             ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
-c         read(4) (((((dorb_num(k,iorb,ix,iy,iz),k=1,ndim),iorb=1,norb),
+c           read(4) (((((dorb_num(k,iorb,ix,iy,iz),k=1,ndim),iorb=1,norb),
 c    &          ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
 c I break up the loop over k because otherwise the ifort compiler
 c complains that record is too big on reading it back in
-          do 9 k=1,3
-    9       read(4) ((((dorb_num(k,iorb,ix,iy,iz),iorb=1,norb),ix=0,
+            do 9 k=1,3
+    9         read(4) ((((dorb_num(k,iorb,ix,iy,iz),iorb=1,norb),ix=0,
      &               ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
-
+          endif
           write(6,'(''Done reading orbitals_num_lagrange'')')
           close(4)
         endif
 
-cwparker Read in spline interpolated numerical orbitals from file
-
-c     if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c         open(4,file='orbitals_num_splines',form='unformatted',
-c    &status='old',err=10)
-c         num_orb_exist=1
-c         read(4) ngrid_orbxf,ngrid_orbyf,ngrid_orbzf,norbf
-c         write(6,*) "read in gridsizes,orbitals=",ngrid_orbxf,
-c    &ngrid_orbyf,ngrid_orbzf,norbf
-c         if(ngrid_orbxf.ne.ngrid_orbx .or. ngrid_orbyf.ne.ngrid_orby
-c    &       .or.  ngrid_orbzf.ne.ngrid_orbz) then
-c           write(6,'(''orbital grid sizes do not match, program, orbita
-c    &ls_num:'',3i4,x,3i4)')
-c    &      ngrid_orbx,ngrid_orby,ngrid_orbz,ngrid_orbxf,ngrid_orbyf,
-c    &      ngrid_orbzf
-c           stop 'orbital grid sizes do not match'
-c         endif
-c         if(norbf.ne.norb) then
-c           write(6,'(''number of orbitals does not match, program, orbi
-c    &tals_num:'',i4,x,i4)')
-c    &      norb,norbf
-c           stop 'number of orbitals does not match'
-c         endif
-!cwparker Read in the grids
-c         do ix=0,ngrid_orbx-1
-c            read(4)grid_orbx(ix)
-c         enddo
-c         do iy=0,ngrid_orby-1
-c            read(4)grid_orby(iy)
-c         enddo
-c         do iz=0,ngrid_orbz-1
-c            read(4)grid_orbz(iz)
-c         enddo
-
-!cwparker Read in the values of the grid
-c          do ix=0,ngrid_orbx-1
-c             do iy=0,ngrid_orby-1
-c                do iz= 0,ngrid_orbz-1
-c                   do iorb=1,norb
-cc Compact splines
-c                      do i=1,8
-c                         read(4) orb_splines(i,ix,iy,iz,iorb)
-c                      enddo
-cc Explicit splines
-cc                     do i=1,4
-cc                        do j=1,4
-cc                           do k=1,4
-cc                              read(4) orb_splines_explicit(i,j,k,ix,
-cc    &                                                      iy,iz,iorb)
-cc                           enddo
-cc                        enddo
-cc                     enddo
-
-c                   enddo
-c                enddo
-c             enddo
-c          enddo
-
-c        endif
-
 cwparker Read in B-spline coefficients from file
         if(inum_orb.eq.6 .or .inum_orb.eq.-6) then
-           write(6,*)
-           write(6,*)'Reading blip wave function and associated data'
-           write(6,*)'=============================================='
+          write(6,*)
+          write(6,*)'Reading blip wave function and associated data'
+          write(6,*)'=============================================='
 cwparker pecent is reset later in the read_input subroutine
-           call readbwf(pecent)
-           call bwfdet_setup(rnorm)
+          call readbwf(pecent)
+          call bwfdet_setup(rnorm)
 !     ! WAS
-           ngvec_orb = nwvec !! defined in module bwf
-           call object_modified ("ngvec_orb")
+          ngvec_orb = nwvec !! defined in module bwf
+          call object_modified ("ngvec_orb")
 !     !
-
-           write(6,'(''Done with B-spline setup'')')
-
+          write(6,'(''Done with approximating B-spline setup'')')
         endif
 
-        return
+        if(num_orb_exist.eq.1) goto 100
+
       endif
 
    10 if(inum_orb.ne.0 .and. num_orb_exist.eq.0)
-     &write(6,'(''Warning: orbitals_num_lagrange not read correctly'')')
+     &write(6,'(''Warning: orbitals_num_lagrange either does not exist (which is OK) or not read correctly'')')
 
 c Read in orbitals in Jose-Luis Martins or PWSCF format
       if(index(iorb_format,'tm').ne.0) then
@@ -421,12 +338,12 @@ c Calculate orbitals on grid and save them if orbitals_num does not exist
 c1      nelec_sav=nelec
 c1      nelec=1
 
-c       call my_second(0,'begin ')
         call my_second(1,'orb_pw')
 
-cwparker Calculate orbitals at grid points for Lagrange interpolation
+c Calculate orbitals at grid points for Lagrange and interpolating B-spline interpolation
 
-        if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
+c       if(abs(inum_orb).eq.4 .or. abs(inum_orb).eq.8) then
+        if(abs(inum_orb).eq.4) then
 
           do 76 ix=0,ngrid_orbx-1
             r_basis(1)=ix/dfloat(ngrid_orbx)
@@ -454,237 +371,11 @@ c               write(6,'(''ix'',4i2,9f8.4)')ix,iy,iz,iorb,(r_basis(k),k=1,ndim)
 cwparker End if block for Lagrange interpolation setup and printout
         endif
 
-cwparker Calculate orbitals on grid points for spline interpolation
-
-c       if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c        write(6,*)'Calculating spline coefficients'
-!wparker Set up an evenly spaced grid for the control points in each direction
-!	 with values from 0 to 1
-
-c         do ix=0,ngrid_orbx-1
-c            r_basis(1)=ix/dfloat(ngrid_orbx-1)
-c            grid_orbx(ix)=r_basis(1)
-
-c            do iy=0,ngrid_orby-1
-c               r_basis(2)=iy/dfloat(ngrid_orby-1)
-c               grid_orby(iy)=r_basis(2)
-
-c               do iz=0,ngrid_orbz-1
-c                  r_basis(3)=iz/dfloat(ngrid_orbz-1)
-c                  grid_orbz(iz)=r_basis(3)
-
-!cwparker Convert the current control point, r_basis(i), into Cartesian
-!c        coordinates because the orbitals evaluation routine needs a
-!c        point in Cartesian coordinates
-!
-c                    do k=1,ndim
-c                       r(k)=0
-c                       do i=1,ndim
-c                          r(k)=r(k)+rlatt_sim(k,i)*r_basis(i)
-c                       enddo
-c                    enddo
-!
-!cwparker Get the analytic value of the orbitals and their derivatives
-!c        at the current control point
-!
-c                    call orbitals_pw_grade(r,orb,dorb,ddorb)
-
-!cwparker Set the value of the splines function to the values of the
-!c        orbitals at the control point
-!
-c                    do iorb=1,norb
-!cwparker Compact splines
-c                       orb_splines(1,ix,iy,iz,iorb)=orb(iorb)
-!cwparker Explicit splines
-!c                      orb_splines_explicit(1,1,1,ix,iy,iz,iorb)=
-!c    &                                                         orb(iorb)
-
-!cwparker Set boundary conditions if at a grid point on the boundary
-!c		(i.e. ix = 0 or ngrid_orbx-1, etc.)
-c                      if (ix.eq.0) then
-c                         bcxmin(iy,iz,iorb)=rlatt_sim(1,1)*dorb(1,iorb)
-c    &                                      +rlatt_sim(1,2)*dorb(2,iorb)
-c    &                                      +rlatt_sim(1,3)*dorb(3,iorb)
-c                      endif
-c                      if (iy.eq.0) then
-c                         bcymin(iz,ix,iorb)=rlatt_sim(2,1)*dorb(1,iorb)
-c    &                                      +rlatt_sim(2,2)*dorb(2,iorb)
-c    &                                      +rlatt_sim(2,3)*dorb(3,iorb)
-c                      endif
-c                      if (iz.eq.0) then
-c                         bczmin(ix,iy,iorb)=rlatt_sim(3,1)*dorb(1,iorb)
-c    &                                      +rlatt_sim(3,2)*dorb(2,iorb)
-c    &                                      +rlatt_sim(3,3)*dorb(3,iorb)
-c                      endif
-c                      if (ix.eq.ngrid_orbx-1) then
-c                         bcxmax(iy,iz,iorb)=rlatt_sim(1,1)*dorb(1,iorb)
-c    &                                      +rlatt_sim(1,2)*dorb(2,iorb)
-c    &                                      +rlatt_sim(1,3)*dorb(3,iorb)
-c                      endif
-c                      if (iy.eq.ngrid_orby-1) then
-c                         bcymax(iz,ix,iorb)=rlatt_sim(2,1)*dorb(1,iorb)
-c    &                                      +rlatt_sim(2,2)*dorb(2,iorb)
-c    &                                      +rlatt_sim(2,3)*dorb(3,iorb)
-c                      endif
-c                      if (iz.eq.ngrid_orbz-1) then
-c                         bczmax(ix,iy,iorb)=rlatt_sim(3,1)*dorb(1,iorb)
-c    &                                      +rlatt_sim(3,2)*dorb(2,iorb)
-c    &                                      +rlatt_sim(3,3)*dorb(3,iorb)
-c                      endif
-c                   enddo
-
-!cwparker End do loops for the grid of control points for the spline
-c               enddo
-c            enddo
-c         enddo
-!
-!cwparker Output x-boundary condition arrays in first orbital (for testing)
-!c        iorb=1
-!c        do iy=0,ngrid_orby-1
-!c           do iz=0,ngrid_orbz-1
-!c              write(6,*)'bcxmin(',iy,',',iz,')=',bcxmin(iy,iz,iorb)
-!c           enddo
-!c        enddo
-!c        write(6,*)
-!c        do iy=0,ngrid_orby-1
-!c           do iz=0,ngrid_orbz-1
-!c              write(6,*)'bcxmax(',iy,',',iz,')=',bcxmax(iy,iz,iorb)
-!c           enddo
-!c        enddo
-!c        stop 'Look at x-boundary condition arrays above'
-!
-!cwparker End if block for spline grid setup
-c        endif
-
         if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
           stop 'Blip data must already exist in bwfn.data.'
         endif
 
         call my_second(1,'orb_nu')
-
-cwparker Set up the boundary conditions for the splines
-c        ibcimin = -1 (i=x,y,z) are for periodic boundary conditions
-c        ibcimin = 1 are for specified slopes at the boundaries
-
-        if(rkvec_shift(1).eq.0.d0) then
-           ibcxmin=-1
-           ibcxmax=0
-        elseif(rkvec_shift(1).eq.0.5d0) then
-           ibcxmin=1
-           ibcxmax=1
-        endif
-        if(rkvec_shift(2).eq.0.d0) then
-           ibcymin=-1
-           ibcymax=0
-        elseif(rkvec_shift(2).eq.0.5d0) then
-           ibcymin=1
-           ibcymax=1
-        endif
-        if(rkvec_shift(3).eq.0.d0) then
-           ibczmin=-1
-           ibczmax=0
-        elseif(rkvec_shift(3).eq.0.5d0) then
-           ibczmin=1
-           ibczmax=1
-        endif
-
-cwparker Set up the size of the work space needed for spline calculations
-c        This is as per instructions in the PSPLINE library
-
-c Compact representation of splines
-c       nwk=80*ngrid_orbx*ngrid_orby*ngrid_orbz
-c       do i=1,nwk
-c          wk(i)=0.d0
-c       enddo
-c Explicit representation of splines
-c       if(ibczmin.eq.1 .or. ibczmin.eq.2 .or. ibczmax.eq.1 .or.
-c    &     ibczmax.eq.2) then
-c           nwk=16*ngrid_orbx*ngrid_orby*ngrid_orbz
-c       else
-c           nwk=20*ngrid_orbx*ngrid_orby+10*max(ngrid_orbx,ngrid_orby,
-c    &                                          ngrid_orbz)
-c       endif
-
-c       if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-
-!cwparker Make the splines for each orbital, taking the orb_splines array
-!c        made above as the input
-
-c         do iorb=1,norb
-!cwparker Call for compact version of splines
-c               write(6,*)'Calling r8mktricubw with:'
-c               write(6,*)'iorb=',iorb
-c               write(6,*)'grid_orbx(0),grid_orbx(n-1)=',
-c    &grid_orbx(0),grid_orbx(ngrid_orbx-1)
-c               write(6,*)'grid_orby(0),grid_orby(n-1)=',
-c    &grid_orby(0),grid_orby(ngrid_orby-1)
-c               write(6,*)'grid_orbz(0),grid_orbz(n-1)=',
-c    &grid_orbz(0),grid_orbz(ngrid_orbz-1)
-c               write(6,*)'ngrid_orbx,ngrid_orby,ngrid_orbz=',ngrid_orbx
-c    &,ngrid_orby,ngrid_orbz
-c               write(6,*)'orb_splines(1,0,0,0,',iorb,')=',
-c    &orb_splines(1,0,0,0,iorb)
-c               write(6,*)'orb_splines(1,n-1,0,0,',iorb,')=',
-c    &orb_splines(1,ngrid_orbx-1,0,0,iorb)
-c               write(6,*)'orb_splines(1,0,n-1,0,',iorb,')=',
-c    &orb_splines(1,0,ngrid_orby-1,0,iorb)
-c               write(6,*)'orb_splines(1,0,0,n-1,',iorb,')=',
-c    &orb_splines(1,0,0,ngrid_orbz-1,iorb)
-c               write(6,*)'ibcxmin,ibcymin,ibczmin=',ibcxmin,ibcymin,
-c    &ibczmin
-c               if(ibcxmin.eq.1) then
-c                  write(6,*)'bcxmin(0,0,',iorb,'),bcxmin(0,n-1,',iorb,'
-c    &)=',bcxmin(0,0,iorb),bcxmin(0,ngrid_orbx-1,iorb)
-c                  write(6,*)'bcxmax(0,0,',iorb,'),bcxmax(0,n-1,',iorb,'
-c    &)=',bcxmax(0,0,iorb),bcxmax(0,ngrid_orbx-1,iorb)
-c               endif
-c               if(ibcymin.eq.1) then
-c                  write(6,*)'bcymin(0,0,',iorb,'),bcymin(0,n-1,',iorb,'
-c    &)=',bcymin(0,0,iorb),bcymin(0,ngrid_orby-1,iorb)
-c                  write(6,*)'bcymax(0,0,',iorb,'),bcymax(0,n-1,',iorb,'
-c    &)=',bcymax(0,0,iorb),bcymax(0,ngrid_orby-1,iorb)
-c               endif
-c               if(ibczmin.eq.1) then
-c                  write(6,*)'bczmin(0,0,',iorb,'),bczmin(0,n-1,',iorb,'
-c    &)=',bczmin(0,0,iorb),bczmin(0,ngrid_orbz-1,iorb)
-c                  write(6,*)'bczmax(0,0,',iorb,'),bczmax(0,n-1,',iorb,'
-c    &)=',bczmax(0,0,iorb),bczmax(0,ngrid_orbz-1,iorb)
-c               endif
-c               write(6,*)'nwk=',nwk
-
-c              call r8mktricubw(grid_orbx,ngrid_orbx,grid_orby,
-c    &                         ngrid_orby,grid_orbz,ngrid_orbz,
-c    &                         orb_splines(1,0,0,0,iorb),
-c    &                         ngrid_orby,ngrid_orbz,
-c    &                         ibcxmin,bcxmin(0,0,iorb),
-c    &                         ibcxmax,bcxmax(0,0,iorb),ngrid_orbx,
-c    &                         ibcymin,bcymin(0,0,iorb),
-c    &                         ibcymax,bcymax(0,0,iorb),ngrid_orby,
-c    &                         ibczmin,bczmin(0,0,iorb),
-c    &                         ibczmax,bczmax(0,0,iorb),ngrid_orbz,
-c    &                         wk,nwk,1,1,1,ier)
-
-c              if(ier.ne.0) stop 'error in r8mktricubw'
-c               write(6,*)'orb_splines(1,0,0,0,',iorb,')=',
-c    &orb_splines(1,0,0,0,iorb)
-c               write(6,*)
-
-!cwparker Call for explicit version of splines
-!c             call r8tcspline(grid_orbx,ngrid_orbx,grid_orby,
-!c    &                        ngrid_orby,grid_orbz,ngrid_orbz,
-!c    &                        orb_splines_explicit(1,1,1,0,0,0,iorb),
-!c    &                        ngrid_orbx,ngrid_orby,
-!c    &                        ibcxmin,bcxmin(0,0,iorb),
-!c    &                        ibcxmax,bcxmax(0,0,iorb),ngrid_orbx,
-!c    &                        ibcymin,bcymin(0,0,iorb),
-!c    &                        ibcymax,bcymax(0,0,iorb),ngrid_orby,
-!c    &                        ibczmin,bczmin(0,0,iorb),
-!c    &                        ibczmax,bczmax(0,0,iorb),ngrid_orbz,
-!c    &                        wk,nwk,1,1,1,ier)
-c         enddo
-
-!cwparker End if block for splines
-c       endif
 
 c Check values on grid pts.
 c       do 78 ix=0,ngrid_orbx-1
@@ -707,71 +398,22 @@ cc 78   write(6,'(''orb_complic3='',i3,5f12.8)') (iorb,orb(iorb),ddorb(iorb),(do
 
         if(index(mode,'mpi').eq.0 .or. idtask.eq.0) then
 
-c       if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c         open(4,file='orbitals_num.splines',form='unformatted',
-c    &status='new')
-c         write(4) ngrid_orbx,ngrid_orby,ngrid_orbz,norb
-
-!cwparker Write out the grids
-c         do ix=0,ngrid_orbx-1
-c            write(4)grid_orbx(ix)
-c         enddo
-c         do iy=0,ngrid_orby-1
-c            write(4)grid_orby(iy)
-c         enddo
-c         do iz=0,ngrid_orbz-1
-c            write(4)grid_orbz(iz)
-c         enddo
-!
-!cwparker Write out the grid point values
-c         do ix=0,ngrid_orbx-1
-c            do iy=0,ngrid_orby-1
-c               do iz=0,ngrid_orbz-1
-c                  do iorb=1,norb
-ccwparker Compact splines
-c                     do i=1,8
-c                        write(4)orb_splines(i,ix,iy,iz,iorb)
-c                     enddo
-ccwparker Explicit splines
-cc                     do i=1,4
-cc                        do j=1,4
-cc                           do k=1,4
-cc                              write(4) orb_splines_explicit(i,j,k,ix,
-cc    &                                                       iy,iz,iorb)
-cc                           enddo
-cc                        enddo
-cc                     enddo
-
-c                  enddo
-c               enddo
-c            enddo
-c         enddo
-
-c         endif
-
-          if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
-          open(4,file='orbitals_num_lagrange',form='unformatted',
-     &status='new')
-cwparker	Unformatted output
-          write(4) ngrid_orbx,ngrid_orby,ngrid_orbz
-          write(4) ((((orb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
-          write(4) ((((ddorb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
-
-c         write(4) (((((dorb_num(k,iorb,ix,iy,iz),k=1,ndim),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
+c Write to file for later use only if inum_orb.eq.4, not -4.
+c         if(inum_orb.eq.4 .or. inum_orb.eq.8) then
+          if(inum_orb.eq.4) then
+            open(4,file='orbitals_num_lagrange',form='unformatted',status='new')
+            write(4) ngrid_orbx,ngrid_orby,ngrid_orbz
+            write(4) ((((orb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
+            if(abs(inum_orb).eq.4) then
+              write(4) ((((ddorb_num(iorb,ix,iy,iz),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
+c             write(4) (((((dorb_num(k,iorb,ix,iy,iz),k=1,ndim),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
 c I break up the loop over k because otherwise the ifort compiler complains that record is too big on reading it back in
-          do 79 k=1,3
-   79       write(4) ((((dorb_num(k,iorb,ix,iy,iz),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
+              do 79 k=1,3
+   79         write(4) ((((dorb_num(k,iorb,ix,iy,iz),iorb=1,norb),ix=0,ngrid_orbx-1),iy=0,ngrid_orby-1),iz=0,ngrid_orbz-1)
+            endif
+            close(4)
           endif
-          close(4)
-        endif
-c       write(14,'(51f12.6)') (orb_num(1,ix,1,1),ix=0,ngrid_orbx-1)
-c       write(14,'(51f12.6)') (orb_num(2,ix,2,1),ix=0,ngrid_orbx-1)
-c       write(14,'(51f12.6)') (orb_num(3,ix,1,1),ix=0,ngrid_orbx-1)
-c       write(14,'(51f12.6)') (orb_num(4,ix,2,1),ix=0,ngrid_orbx-1)
-c       write(14,'(51f12.6)') (orb_num(1,1,iy,1),iy=0,ngrid_orby-1)
-c       write(14,'(51f12.6)') (orb_num(2,2,iy,1),iy=0,ngrid_orby-1)
-c       write(14,'(51f12.6)') (orb_num(3,1,iy,1),iy=0,ngrid_orby-1)
-c       write(14,'(51f12.6)') (orb_num(4,2,iy,1),iy=0,ngrid_orby-1)
+        endif ! mpi or idtask.eq.0
 
         call my_second(2,'orb_nu')
 
@@ -802,6 +444,13 @@ c  80     continue
 
 c     close(3,status='delete')
 c     close(4)
+
+  100 if(abs(inum_orb).eq.8) then
+c       call setup_bsplines_coefficients(ngrid_orbx,ngrid_orby,ngrid_orbz)
+        call setup_bsplines_coefficients
+        write(6,'(''Done setting up interpolating B-spline coeffs'')')
+      endif
+
       return
 
       end
@@ -825,7 +474,9 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-6)
+      character*16 mode
 
+      common /contr3/ mode
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -870,7 +521,7 @@ c  20   write(6,*) (igvec_dft(k,i),k=1,ndim)
         stop 'nkvec_tmp != nkvec in read_orb_pw_tm'
       endif
 
-      if(ipr.ge.1) write(3,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
+      if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) write(3,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
       if(ipr.ge.1) write(6,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
       if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw_tm'
 
@@ -899,9 +550,12 @@ c       orbs by combining Psi_k with Psi_-k.
    21       c_imag(ig)=0
         endif
 
-c       if(ipr.ge.1) write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in cartesian units)'')') ikv,nband(ikv),(rkvec(k,ikv),k=1,ndim)
-        if(ipr.ge.1) write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in recip. lat. units)'')') ikv,nband(ikv),(rkvec_tmp(k),k=1,ndim)
         write(6,'(''ikvec, nband='',2i4)') ikv,nband(ikv)
+c       if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0))
+c    &  write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in cartesian units)'')') ikv,nband(ikv),(rkvec(k,ikv),k=1,ndim)
+        if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0))
+     &  write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in recip. lat. units)'')') ikv,nband(ikv),(rkvec_tmp(k),k=1,ndim)
+
         do 22 k=1,ndim
    22     rkvec_tmp2(k)=rkvec_tmp(k)
         do 23 k=1,ndim
@@ -955,8 +609,9 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
         call object_modified ('ngvec_orb')
 
         if(ngvec_found.ne.ngvec_dftorb) then
-          if(ipr.ge.1) write(3,'(''ngvec_dftorb,ngvec_found='',2i5)') ngvec_dftorb,ngvec_found
           write(6,'(''ngvec_dftorb,ngvec_found='',2i5)') ngvec_dftorb,ngvec_found
+          if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0))
+     &    write(3,'(''ngvec_dftorb,ngvec_found='',2i5)') ngvec_dftorb,ngvec_found
           if(ngvec_found.lt.ngvec_dftorb) then
              write(6,'(''Increase cutg to about'',f6.2,'' or more'')') cutg*(dfloat(ngvec_dftorb)/ngvec_found)**(1.d0/3.d0)
              stop 'probably need to increase cutg to generate more g-vectors'
@@ -1067,12 +722,14 @@ c         call my_second(2,'42    ')
           call object_modified ('c_ip')
           call object_modified ('c_im')
 
-          if(ipr.ge.1) write(3,'(i5,f10.6,'' iband, eig (Ha)'')') iband,eig
           if(ipr.ge.0) write(6,'(i5,f10.6,'' iband, eig (Ha)'')') iband,eig
-          if(k_inv(ikv).eq.1) then
-            if(ipr.ge.1) write(3,'(1p2d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),igv=1,ngvec)
-           else
-            if(ipr.ge.1) write(3,'(1p4d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb),igv=1,ngvec)
+          if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) then
+            write(3,'(i5,f10.6,'' iband, eig (Ha)'')') iband,eig
+            if(k_inv(ikv).eq.1) then
+              write(3,'(1p2d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),igv=1,ngvec)
+             else
+              write(3,'(1p4d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb),igv=1,ngvec)
+            endif
           endif
 
 c We calculate orbitals dumb way and then smart way so that they can be compared
@@ -1088,32 +745,36 @@ c unless it is linearly dependent on an already chosen state
 
             if(jorba.ge.2) then
               if(orb_si(jorba+1)*ddorb_si(jorba+1).eq.0.d0 .or.
-c    &        abs(orb_si(jorba+1)*ddorb_si(jorba-1)/(orb_si(jorba-1)*ddorb_si(jorba+1))-1).lt.eps) then
-     &        abs(orb_si(jorba+1)*ddorb_si(jorba-1)-orb_si(jorba-1)*ddorb_si(jorba+1)).lt.
-     &        abs(eps*orb_si(jorba-1)*ddorb_si(jorba+1))) then
+     &        (abs(orb_si(jorba+1)*ddorb_si(jorba-1)-orb_si(jorba-1)*ddorb_si(jorba+1)).lt.
+     &        abs(eps*orb_si(jorba-1)*ddorb_si(jorba+1)) .and.
+     &        abs(orb_si(jorba+1)*dorb_si(1,jorba-1)-orb_si(jorba-1)*dorb_si(1,jorba+1)).lt.
+     &        abs(eps*orb_si(jorba-1)*dorb_si(1,jorba+1)))) then
                 ireal_imag(jorba)=1
                 goto 70
               endif
               if(orb_si(jorba)*ddorb_si(jorba).eq.0.d0 .or.
-c    &        abs(orb_si(jorba)*ddorb_si(jorba-1)/(orb_si(jorba-1)*ddorb_si(jorba))-1).lt.eps) then
-     &        abs(orb_si(jorba)*ddorb_si(jorba-1)-orb_si(jorba-1)*ddorb_si(jorba)).lt.
-     &        abs(eps*orb_si(jorba-1)*ddorb_si(jorba))) then
+     &        (abs(orb_si(jorba)*ddorb_si(jorba-1)-orb_si(jorba-1)*ddorb_si(jorba)).lt.
+     &        abs(eps*orb_si(jorba-1)*ddorb_si(jorba)) .and.
+     &        abs(orb_si(jorba)*dorb_si(1,jorba-1)-orb_si(jorba-1)*dorb_si(1,jorba)).lt.
+     &        abs(eps*orb_si(jorba-1)*dorb_si(1,jorba)))) then
                 ireal_imag(jorba)=2
                 goto 70
               endif
             endif
             if(jorba.ge.3) then
               if(orb_si(jorba+1)*ddorb_si(jorba+1).eq.0.d0 .or.
-c    &        abs(orb_si(jorba+1)*ddorb_si(jorba-2)/(orb_si(jorba-2)*ddorb_si(jorba+1))-1).lt.eps) then
-     &        abs(orb_si(jorba+1)*ddorb_si(jorba-2)-orb_si(jorba-2)*ddorb_si(jorba+1)).lt.
-     &        abs(eps*orb_si(jorba-2)*ddorb_si(jorba+1))) then
+     &        (abs(orb_si(jorba+1)*ddorb_si(jorba-2)-orb_si(jorba-2)*ddorb_si(jorba+1)).lt.
+     &        abs(eps*orb_si(jorba-2)*ddorb_si(jorba+1)) .and.
+     &        abs(orb_si(jorba+1)*dorb_si(1,jorba-2)-orb_si(jorba-2)*dorb_si(1,jorba+1)).lt.
+     &        abs(eps*orb_si(jorba-2)*dorb_si(1,jorba+1)))) then
                 ireal_imag(jorba)=1
                 goto 70
               endif
               if(orb_si(jorba)*ddorb_si(jorba).eq.0.d0 .or.
-c    &        abs(orb_si(jorba)*ddorb_si(jorba-2)/(orb_si(jorba-2)*ddorb_si(jorba))-1).lt.eps) then
-     &        abs(orb_si(jorba)*ddorb_si(jorba-2)-orb_si(jorba-2)*ddorb_si(jorba)).lt.
-     &        abs(eps*orb_si(jorba-2)*ddorb_si(jorba))) then
+     &        (abs(orb_si(jorba)*ddorb_si(jorba-2)-orb_si(jorba-2)*ddorb_si(jorba)).lt.
+     &        abs(eps*orb_si(jorba-2)*ddorb_si(jorba)) .and.
+     &        abs(orb_si(jorba)*dorb_si(1,jorba-2)-orb_si(jorba-2)*dorb_si(1,jorba)).lt.
+     &        abs(eps*orb_si(jorba-2)*dorb_si(1,jorba)))) then
                 ireal_imag(jorba)=2
                 goto 70
               endif
@@ -1197,6 +858,7 @@ c it is only after one has processed all the k-pts that one knows how big ngvec_
 c However, that causes problems when running with mpi, so comment out that part.
 
       implicit real*8(a-h,o-z)
+      character*16 mode
 
       include 'vmc.h'
       include 'force.h'
@@ -1204,6 +866,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       include 'numorb.h'
       parameter(eps=1.d-4)
 
+      common /contr3/ mode
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -1255,13 +918,19 @@ c plane wave coefs. are read in, otherwise complex.
         call systemflush(6)
         read(30,*) iznuc_allelec,(centx(k),k=1,ndim)
         do 14 k=1,ndim
-          if(abs(centx(k)-cent(k,i)).gt.1.d-6) then
-            write(6,'(''k,i,centx(k),cent(k,i)='',2i5,9f9.5)') k,i,centx(k),cent(k,i)
-            stop 'centx(k).ne.cent(k,i) in read_orb_pw_casino'
-          endif
+c Warning: For the moment do not check this because it ought to be OK to have the atom positions
+c differ by lattice vectors.  So, I should convert to lattice vector soordinates and then check
+c if the difference modulo 1 is less than epsilon.
+c         if(abs(centx(k)-cent(k,i)).gt.1.d-6) then
+c           write(6,'(''k,i,centx(k),cent(k,i)='',2i5,9f9.5)') k,i,centx(k),cent(k,i)
+c           stop 'centx(k).ne.cent(k,i) in read_orb_pw_casino'
+c         endif
    14   continue
+
+c Skip over reading primitive lattice vectors etc
       do 16 i=1,8
    16   read(30,*)
+
       read(30,*) ngvec_dft
       if(ngvec_dft.gt.NGVEC_BIGX) stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'
 c In orbitals_pw_tm ngvec_dftorb depends on k vector and can be smaller than ngvec_dft.
@@ -1293,8 +962,8 @@ c  19   write(6,*) (igvec_dft(k,igv),k=1,ndim)
         stop 'nkvec_tmp != nkvec in read_orb_pw_pwscf'
       endif
 
-      if(ipr.ge.1) write(3,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
-      if(ipr.ge.1) write(6,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
+      if(ipr.ge.0) write(6,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
+      if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) write(3,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
       if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw_pwscf'
 
       call my_second(1,'orb_si')
@@ -1305,6 +974,8 @@ c       orbs by combining Psi_k with Psi_-k.
 c jorb  goes over all occup. orbitals
 c jorba goes over all occup. orbitals and takes into account that for k.ne.G/2 we get 2 indep.
 c       orbs by combining Psi_k with Psi_-k.
+c It seems in PWSCF format if nband_dn is down then the same orbs are used for up and down.
+c In CHAMP I do not make a distinction between up and down at this stage, so I just add the up and down number of bands at this stage.
       iorba=0
       jorb=0
       jorba=0
@@ -1314,7 +985,10 @@ c       orbs by combining Psi_k with Psi_-k.
       do 90 ikv=1,nkvec
         read(30,*)
         read(30,*) ikvec,nband(ikv),nband_dn,(rkvec(k,ikv),k=1,ndim)
-        if(nband_dn.ne.0) stop 'for the moment nband_dn must be 0'
+        if(nband_dn.ne.0) then
+          write(6,'(''Different orbitals are read in for up and down bands; nband_up, nband_dn='',2i5)') nband(ikv),nband_dn
+          nband(ikv)=nband(ikv)+nband_dn
+        endif
         if(ikvec.ne.ikv) stop 'ikvec.ne.ikv in read_orb_pw_pwscf'
         ngg(ikv)=ngvec_dftorb
         if(icmplx.eq.0) then
@@ -1322,8 +996,9 @@ c       orbs by combining Psi_k with Psi_-k.
    21       c_imag(ig)=0
         endif
 
-c       if(ipr.ge.1) write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in cartesian units)'')') ikv,nband(ikv),(rkvec(k,ikv),k=1,ndim)
         write(6,'(''ikvec, nband='',2i4)') ikv,nband(ikv)
+c       if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0))
+c    &  write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in cartesian units)'')') ikv,nband(ikv),(rkvec(k,ikv),k=1,ndim)
 
 c Figure out k-vector in primitive-cell lattice vector units
         write(6,'(/,i2,'' k-vectors (shifted) in recip. latt. units, and wts, for input to pw program'')') nkvec
@@ -1349,8 +1024,13 @@ c Figure out k-vector in reciprocal simulation-cell lattice vector units with k-
           rkvec_latt(k)=0
           do 26 i=1,ndim
    26       rkvec_latt(k)=rkvec_latt(k)+glatt_sim_inv(k,i)*rkvec_tmp(i)
-          if(abs(rkvec_latt(k)-nint(rkvec_latt(k))).gt.1.d-12)
-     &    stop 'unshifted k-vector is not a integer in recip. simul. cell latt. units'
+          if(abs(rkvec_latt(k)-nint(rkvec_latt(k))).gt.1.d-12) then
+            write(6,'(''k-vec('',i2,'')='',3f14.10)') ikv,rkvec_latt(k)
+            write(6,'(''unshifted k-vector is not a integer in recip. simul. cell latt. units. Possibly the k-vector shifts in the
+     & input and the orbitals file do not match'')')
+            stop 'unshifted k-vector is not a integer in recip. simul. cell latt. units. Possibly the k-vector shifts in the
+     & input and the orbitals file do not match'
+          endif
    28   kvec(k,ikv)=nint(rkvec_latt(k))
         write(6,'(''k-vec('',i2,'')='',3f14.10)') ikv,(rkvec_latt(k),k=1,ndim)
 
@@ -1390,8 +1070,9 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
    35   continue
 
         if(ngvec_found.ne.ngvec_dftorb) then
-          if(ipr.ge.1) write(3,'(''ngvec_dftorb,ngvec_found='',2i5)') ngvec_dftorb,ngvec_found
           write(6,'(''ngvec_dftorb,ngvec_found='',2i5)') ngvec_dftorb,ngvec_found
+          if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0))
+     &    write(3,'(''ngvec_dftorb,ngvec_found='',2i5)') ngvec_dftorb,ngvec_found
           if(ngvec_found.lt.ngvec_dftorb) then
              write(6,'(''Increase cutg to about'',f6.2,'' or more'')') cutg*(dfloat(ngvec_dftorb)/ngvec_found)**(1.d0/3.d0)
              stop 'probably need to increase cutg to generate more g-vectors'
@@ -1409,13 +1090,11 @@ c         write(6,*) 'Skipped "Band, spin, eigenvalue (au)" line'
           read(30,*) ibandx,ispin,eig
 c         write(6,*) ibandx,ispin,eig
           read(30,*)
-c         write(6,*) 'Skipped "Eigenvector coeffecients" line'
-          if(ibandx.ne.iband) stop 'ibandx.ne.iband in read_orb_pw_pwscf'
-          if(ispin.ne.1) stop 'ispin.ne.1 in read_orb_pw_pwscf'
+c         write(6,*) 'Skipped "Eigenvector coefficients" line'
+c I am commenting out the next line because pwscf numbers the band index separately for up and down spins, when the orbitals for these are not the same.
+c         if(ibandx.ne.iband) stop 'ibandx.ne.iband in read_orb_pw_pwscf'
+          if(ispin.ne.1 .and. ispin.ne.2) stop 'ispin.ne.1 or 2 in read_orb_pw_pwscf'
           if(icmplx.ne.0) then
-cwparker Orignal statement
-c           read(30,*) (c_real(ig),c_imag(ig),ig=1,ngvec_dftorb)
-cwparker Modified statement
             do ig=1,ngvec_dftorb
                read(30,*) c_complex_tmp
 c              write(6,*) ig,c_complex_tmp
@@ -1512,12 +1191,14 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
    60       c_im(igv,jorb)=rnorm*c_im(igv,jorb)
 c         call my_second(2,'42    ')
 
-          if(ipr.ge.1) write(3,'(i5,f10.6,'' iband, eig (Ha)'')') iband,eig
+          if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) write(3,'(i5,f10.6,'' iband, eig (Ha)'')') iband,eig
           if(ipr.ge.0) write(6,'(i5,f10.6,'' iband, eig (Ha)'')') iband,eig
-          if(k_inv(ikv).eq.1) then
-            if(ipr.ge.1) write(3,'(1p2d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),igv=1,ngvec)
-           else
-            if(ipr.ge.1) write(3,'(1p4d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb),igv=1,ngvec)
+          if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) then
+            if(k_inv(ikv).eq.1 ) then
+              write(3,'(1p2d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),igv=1,ngvec)
+             else
+              write(3,'(1p4d22.14)') (c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb),igv=1,ngvec)
+            endif
           endif
 
 c We calculate orbitals dumb way and then smart way so that they can be compared
@@ -1529,23 +1210,30 @@ c Test to see if orbitals and derivs. calculated correctly
           call orbitals_pw2(ikv,iband,jorba)
 c If there is only 1 independent state, choose it to be the one with the largest absolute value
 c unless it is linearly dependent on an already chosen state
+c If there is only 1 independent state, choose it to be the one with the largest absolute value
+c unless it is linearly dependent on an already chosen state.  To check for linear dependence check both the ratio of
+c the laplacian to the orbital and the first gradient component to the orbital to avoid a match by chance.
           if(k_inv(ikv).eq.1) then
             if(jorba.ge.2) then
-              if(abs(orb_si(jorba+1)*ddorb_si(jorba-1)/(orb_si(jorba-1)*ddorb_si(jorba+1))-1).lt.eps) then
+              if(abs(orb_si(jorba+1)*ddorb_si(jorba-1)/(orb_si(jorba-1)*ddorb_si(jorba+1))-1).lt.eps .and.
+     &           abs(orb_si(jorba+1)*dorb_si(1,jorba-1)/(orb_si(jorba-1)*dorb_si(1,jorba+1))-1).lt.eps) then
                 ireal_imag(jorba)=1
                 goto 70
               endif
-              if(abs(orb_si(jorba)*ddorb_si(jorba-1)/(orb_si(jorba-1)*ddorb_si(jorba))-1).lt.eps) then
+              if(abs(orb_si(jorba)*ddorb_si(jorba-1)/(orb_si(jorba-1)*ddorb_si(jorba))-1).lt.eps .and.
+     &           abs(orb_si(jorba)*dorb_si(1,jorba-1)/(orb_si(jorba-1)*dorb_si(1,jorba))-1).lt.eps) then
                 ireal_imag(jorba)=2
                 goto 70
               endif
             endif
             if(jorba.ge.3) then
-              if(abs(orb_si(jorba+1)*ddorb_si(jorba-2)/(orb_si(jorba-2)*ddorb_si(jorba+1))-1).lt.eps) then
+              if(abs(orb_si(jorba+1)*ddorb_si(jorba-2)/(orb_si(jorba-2)*ddorb_si(jorba+1))-1).lt.eps .and.
+     &           abs(orb_si(jorba+1)*dorb_si(1,jorba-2)/(orb_si(jorba-2)*dorb_si(1,jorba+1))-1).lt.eps) then
                 ireal_imag(jorba)=1
                 goto 70
               endif
-              if(abs(orb_si(jorba)*ddorb_si(jorba-2)/(orb_si(jorba-2)*ddorb_si(jorba))-1).lt.eps) then
+              if(abs(orb_si(jorba)*ddorb_si(jorba-2)/(orb_si(jorba-2)*ddorb_si(jorba))-1).lt.eps .and.
+     &           abs(orb_si(jorba)*dorb_si(1,jorba-2)/(orb_si(jorba-2)*dorb_si(1,jorba))-1).lt.eps) then
                 ireal_imag(jorba)=2
                 goto 70
               endif
@@ -1771,14 +1459,17 @@ c-----------------------------------------------------------------------
       subroutine print_orbitals_pw
 
       use bwfdet_mod
+      use bsplines_mod
+      use orbital_grid_mod
+
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'numorb.h'
+!     include 'vmc.h'
+!     include 'force.h'
+!     include 'ewald.h'
+!     include 'numorb.h'
       parameter(eps=1.d-3)
 
       common /dim/ ndim
@@ -1792,10 +1483,10 @@ c-----------------------------------------------------------------------
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /dorb/ iworbd(MELEC,MDET)
 
-      common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-     &,ngrid_orbx,ngrid_orby,ngrid_orbz
+c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
+c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -1816,7 +1507,7 @@ c    &MGRID_ORB_PER-1,MORB_OCC)
 
       common /periodic2/ rkvec_shift_latt(3)
 
-      dimension r(3),r_basis(3),r_test(3,MGRID_ORB_PER**3)
+      dimension r(3),r_basis(3),r_test(3,ngrid_orbx*ngrid_orby*ngrid_orbz)
       dimension orb(MORB_OCC),dorb(3,MORB_OCC),ddorb(MORB_OCC)
 c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
       dimension orb_tmp(MORB_OCC),dorb_tmp(3,MORB_OCC),
@@ -1828,10 +1519,11 @@ c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
 
       integer i,k,ix,iy,iz,iorb,ier,isgn,npts,npts_max,xfac,yfac,zfac
 
+      write(6,'(''Entering print_orbitals_pw'')')
 
-      ngrid_orbx=MGRID_ORB_PER
-      ngrid_orby=MGRID_ORB_PER
-      ngrid_orbz=MGRID_ORB_PER
+c     ngrid_orbx=MGRID_ORB_PER
+c     ngrid_orby=MGRID_ORB_PER
+c     ngrid_orbz=MGRID_ORB_PER
 
       open(14,file='print_orbitals.data')
       read(14,*)npts,xfac,yfac,zfac
@@ -1874,21 +1566,17 @@ c File open
           write(15,*)'#',npts,'points'
           write(15,*)'#',xfac,yfac,zfac,' direction'
       endif
-!     if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-!         open(15,file='spline_test.data')
-!         write(15,*)'#',npts,'points'
-!         write(15,*)'#',xfac,yfac,zfac,' direction'
-!        do i=1,10
-!           ict(i)=1
-!        enddo
-!     endif
       if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
           open(15,file='blip_test.data')
           write(15,*)'#',npts,'points'
           write(15,*)'#',xfac,yfac,zfac,' direction'
       endif
 
-
+      if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
+          open(15,file='bspline_test.data')
+          write(15,*)'#',npts,'points'
+          write(15,*)'#',xfac,yfac,zfac,' direction'
+      endif
 
       do ix=0,npts-1
          r_basis(1)=r_test(1,ix)
@@ -1994,109 +1682,6 @@ cwparker write statement for 00z directions
                  endif
 cwparker End of Lagrange polynomial printout
 
-cwparker Spline printout
-!                 if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-!
-!                   do iorb=1,norb
-!
-!cwparker Compact splines
-!                      call r8evtricub(r_basis(1),r_basis(2),r_basis(3),
-!     &                                grid_orbx,ngrid_orbx,grid_orby,
-!     &                                ngrid_orby,grid_orbz,ngrid_orbz
-!     &                                ,1,1,1,orb_splines(1,0,0,0,iorb),
-!     &                                ngrid_orby,ngrid_orbz,
-!     &                                ict,orb_splines_tmp,ier)
-!
-!             if(ier.ne.0) stop 'error in r8evtricub'
-!cwparker Explicit splines
-!c                     call r8tcspeval(r_basis(1),r_basis(2),r_basis(3),
-!c    &                                ict,orb_splines_tmp,grid_orbx,
-!c    &                                ngrid_orbx,grid_orby,ngrid_orby,
-!c    &                                grid_orbz,ngrid_orbz,1,1,1,
-!c    &                                orb_splines_explicit(1,1,1,0,0,0,
-!c    &                                                            iorb),
-!c    &                                ngrid_orbx,ngrid_orby,ier)
-!
-!             if(ier.ne.0) stop 'error in r8tcspeval'
-!
-!             orb_tmp(iorb)    = orb_splines_tmp(1)
-!
-!             dorb_tmp(1,iorb) = rlatt_sim_inv(1,1)*orb_splines_tmp(2)+
-!     &                          rlatt_sim_inv(1,2)*orb_splines_tmp(3)+
-!     &                          rlatt_sim_inv(1,3)*orb_splines_tmp(4)
-!
-!             dorb_tmp(2,iorb) = rlatt_sim_inv(2,1)*orb_splines_tmp(2)+
-!     &                          rlatt_sim_inv(2,2)*orb_splines_tmp(3)+
-!     &                          rlatt_sim_inv(2,3)*orb_splines_tmp(4)
-!
-!             dorb_tmp(3,iorb) = rlatt_sim_inv(3,1)*orb_splines_tmp(2)+
-!     &                          rlatt_sim_inv(3,2)*orb_splines_tmp(3)+
-!     &                          rlatt_sim_inv(3,3)*orb_splines_tmp(4)
-!
-!              ddorb_splines_tmp(1)=rlatt_sim_inv(1,1)**2*
-!     &                      orb_splines_tmp(5)+
-!     &                      2*rlatt_sim_inv(1,1)*rlatt_sim_inv(1,2)*
-!     &                      orb_splines_tmp(8)+rlatt_sim_inv(1,2)**2*
-!     &                      orb_splines_tmp(6)+2*rlatt_sim_inv(1,2)*
-!     &                      rlatt_sim_inv(1,3)*orb_splines_tmp(10)+
-!     &                      rlatt_sim_inv(1,3)**2*orb_splines_tmp(7)+
-!     &                      2*rlatt_sim_inv(1,3)*rlatt_sim_inv(1,1)*
-!     &                      orb_splines_tmp(9)
-!
-!             ddorb_splines_tmp(2)=rlatt_sim_inv(2,1)**2*
-!     &                      orb_splines_tmp(5)+
-!     &                      2*rlatt_sim_inv(2,1)*rlatt_sim_inv(2,2)*
-!     &                      orb_splines_tmp(8)+rlatt_sim_inv(2,2)**2*
-!     &                      orb_splines_tmp(6)+2*rlatt_sim_inv(2,2)*
-!     &                      rlatt_sim_inv(2,3)*orb_splines_tmp(10)+
-!     &                      rlatt_sim_inv(2,3)**2*orb_splines_tmp(7)+
-!     &                      2*rlatt_sim_inv(2,3)*rlatt_sim_inv(2,1)*
-!     &                      orb_splines_tmp(9)
-!
-!             ddorb_splines_tmp(3)=rlatt_sim_inv(3,1)**2*
-!     &                      orb_splines_tmp(5)+
-!     &                      2*rlatt_sim_inv(3,1)*rlatt_sim_inv(3,2)*
-!     &                      orb_splines_tmp(8)+rlatt_sim_inv(3,2)**2*
-!     &                      orb_splines_tmp(6)+2*rlatt_sim_inv(3,2)*
-!     &                      rlatt_sim_inv(3,3)*orb_splines_tmp(10)+
-!     &                      rlatt_sim_inv(3,3)**2*orb_splines_tmp(7)+
-!     &                      2*rlatt_sim_inv(3,3)*rlatt_sim_inv(3,1)*
-!     &                      orb_splines_tmp(9)
-!
-!             ddorb_tmp(iorb) =  ddorb_splines_tmp(1)+
-!     &                          ddorb_splines_tmp(2)+
-!     &                          ddorb_splines_tmp(3)
-!
-!             orb(iorb)=orb_tmp(iorb)*isgn
-!             do k=1,ndim
-!                dorb(k,iorb)=dorb_tmp(k,iorb)*isgn
-!             enddo
-!             ddorb(iorb)=ddorb_tmp(iorb)*isgn
-!
-!                      if(xfac.ne.0) then
-!cwparker write statement for xyz directions
-!                        write(15,'(''r(1),orb('',i2,''),dorb('',i2,''),
-!     &ddorb('',i2,'')= '',6f14.8)')iorb,iorb,iorb,r_basis(1),
-!     &orb_tmp(iorb),dorb_tmp(1,iorb),dorb_tmp(2,iorb),
-!     &dorb_tmp(3,iorb),ddorb_tmp(iorb)
-!                      elseif(yfac.ne.0) then
-!cwparker write statement for 0yz directions
-!                        write(15,'(''r(2),orb('',i2,''),dorb('',i2,''),
-!     &ddorb('',i2,'')= '',6f14.8)')iorb,iorb,iorb,r_basis(2),
-!     &orb_tmp(iorb),dorb_tmp(1,iorb),dorb_tmp(2,iorb),
-!     &dorb_tmp(3,iorb),ddorb_tmp(iorb)
-!                      elseif(zfac.ne.0) then
-!cwparker write statement for 00z directions
-!                        write(15,'(''r(3),orb('',i2,''),dorb('',i2,''),
-!     &ddorb('',i2,'')= '',6f14.8)')iorb,iorb,iorb,r_basis(3),
-!     &orb_tmp(iorb),dorb_tmp(1,iorb),dorb_tmp(2,iorb),
-!     &dorb_tmp(3,iorb),ddorb_tmp(iorb)
-!                      endif
-!                   enddo
-!
-!                 endif
-!cwparker End of Spline printout
-
 cwparker Blip printout
                  if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
                     call bwfdet_main(r,1,1,1,orb_blip_tmp,
@@ -2128,6 +1713,36 @@ cwparker write statement for xy1 directions
                    enddo
                  endif
 cwparker End of blip printout
+cwparker Interpolating B-Spline printout
+                 if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
+
+                    call evaluate_bsplines_with_derivatives(r,orb_tmp,dorb_tmp,ddorb_tmp)
+                    do iorb=1,norb
+
+                      if(xfac.ne.0) then
+cwparker write statement for xyz directions
+                        write(15,'(''r(1),orb('',i2,''),dorb('',i2,''),
+     &ddorb('',i2,'')= '',6f20.8)')iorb,iorb,iorb,r_basis(1),
+     &orb_tmp(iorb),dorb_tmp(1,iorb),dorb_tmp(2,iorb),
+     &dorb_tmp(3,iorb),ddorb_tmp(iorb)
+                      elseif(yfac.ne.0) then
+cwparker write statement for 0yz directions
+                        write(15,'(''r(2),orb('',i2,''),dorb('',i2,''),
+     &ddorb('',i2,'')= '',6f20.8)')iorb,iorb,iorb,r_basis(2),
+     &orb_tmp(iorb),dorb_tmp(1,iorb),dorb_tmp(2,iorb),
+     &dorb_tmp(3,iorb),ddorb_tmp(iorb)
+                      elseif(zfac.ne.0) then
+cwparker write statement for 00z directions
+                        write(15,'(''r(3),orb('',i2,''),dorb('',i2,''),
+     &ddorb('',i2,'')= '',6f20.8)')iorb,iorb,iorb,r_basis(3),
+     &orb_tmp(iorb),dorb_tmp(1,iorb),dorb_tmp(2,iorb),
+     &dorb_tmp(3,iorb),ddorb_tmp(iorb)
+                      endif
+
+                    enddo
+
+                  endif
+cwparker End of interpolating B-Spline printout
 
 c                endif
 
@@ -2150,11 +1765,11 @@ cwparker Stop with appropriate message
        if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
          stop 'Done with Lagrange printout; see lagrange_test.data'
        endif
-c      if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c        stop 'Done with pp-spline prinout; see spline_test.data'
-c      endif
        if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
          stop 'Done with B-spline printout; see blip_test.data'
+       endif
+       if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
+         stop 'Done with interpolating B-spline printout; see bspline_test.data'
        endif
 
        stop 'No orbital printout made; inum_orb invalid'
@@ -2217,9 +1832,6 @@ c     endif
 c     if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
 c         open(15,file='lagrange_energy_test.data')
 c     endif
-c     if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c         open(15,file='spline_energy_test.data')
-c     endif
 c     if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
 c         open(15,file='blip_energy_test.data')
 c     endif
@@ -2272,9 +1884,6 @@ c        stop 'done with plane wave test; see pw_energy_test.data'
 c      endif
 c      if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
 c        stop 'done with Lagrange test; see lagrange_energy_test.data'
-c      endif
-c      if(inum_orb.eq.5 .or. inum_orb.eq.-5) then
-c        stop 'done with spline test; see spline_energy_test.data'
 c      endif
 c      if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
 c        stop 'done with blip test; see blip_energy_test.data'
