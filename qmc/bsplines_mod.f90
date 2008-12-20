@@ -38,6 +38,7 @@ module bsplines_mod
 
 ! local
   integer                             :: idum
+  integer                             :: ierr
   integer                             :: ix
   integer                             :: iy
   integer                             :: iz
@@ -126,7 +127,14 @@ module bsplines_mod
       ! and we only need one set of B-spline coefficients for each orbital
       if (maxval(rkvec_shift) < zero_tolerance ) then
         if(ndim == 3) then
-          allocate (plane_wave_orbitals_at_grid_points(0:ngrid-1,norb_primitive))
+          allocate (plane_wave_orbitals_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+         if(ierr /= 0) then
+            write(6,*) trim(lhere),': allocation for object ', &
+            trim('plane_wave_orbitals_at_grid_points'),' failed'
+            write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+            call die(lhere,'allocation failed')
+         endif
+
           ! Set up an evenly spaced grid in each direction from 0 to (ngrid-1)/ngrid
 
           !If oritals_num_bspline exists, read pw orbitals on grid from there and skip calculating them
@@ -232,7 +240,13 @@ module bsplines_mod
         call alloc ('rbc_complex', rbc_complex, ndim, 2)
 
         if(ndim == 3) then
-        allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
+        allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+         if(ierr /= 0) then
+            write(6,*) trim(lhere),': allocation for object ', &
+            trim('complex_plane_wave_orbitals_at_grid_points'),' failed'
+            write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+            call die(lhere,'allocation failed')
+         endif
 
         !If orbitals_num_bspline exists, read orbitals on grid from there and skip calculating them
         num_orb_exist=0
@@ -345,7 +359,13 @@ module bsplines_mod
 
     if(ndim == 3) then
 
-      allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
+      allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
 
       !if orbitals_num_bspline exists, read orbitals on grid from there and skip calculating them
       num_orb_exist=0
@@ -454,8 +474,20 @@ module bsplines_mod
       ! and we only need one set of B-spline coefficients for each orbital
       if (maxval(rkvec_shift) < zero_tolerance ) then
         if(ndim == 3) then
-          allocate (plane_wave_orbitals_at_grid_points(0:ngrid-1,norb_primitive))
-          allocate (plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,norb_primitive))
+          allocate (plane_wave_orbitals_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
+          allocate (plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
           ! Set up an evenly spaced grid in each direction from 0 to (ngrid-1)/ngrid
 
           !If oritals_num_bspline exists, read pw orbitals on grid from there and skip calculating them
@@ -583,8 +615,20 @@ module bsplines_mod
         call alloc ('rbc_complex', rbc_complex, ndim, 2)
 
         if(ndim == 3) then
-        allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-        allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
+        allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
+        allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
 
         !If orbitals_num_bspline exists, read orbitals on grid from there and skip calculating them
         num_orb_exist=0
@@ -729,8 +773,20 @@ module bsplines_mod
 
     if(ndim == 3) then
 
-      allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-      allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
+      allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
+      allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
 
 !If orbitals_num_bspline exists, read orbitals on grid from there and skip calculating them
       num_orb_exist=0
@@ -867,11 +923,41 @@ module bsplines_mod
       ! and we only need one set of B-spline coefficients for each orbital
       if (maxval(rkvec_shift) < zero_tolerance ) then
         if(ndim == 3) then
-          allocate (plane_wave_orbitals_at_grid_points(0:ngrid-1,norb_primitive))
-          allocate (plane_wave_orbitals_gradient1_at_grid_points(0:ngrid-1,norb_primitive))
-          allocate (plane_wave_orbitals_gradient2_at_grid_points(0:ngrid-1,norb_primitive))
-          allocate (plane_wave_orbitals_gradient3_at_grid_points(0:ngrid-1,norb_primitive))
-          allocate (plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,norb_primitive))
+          allocate (plane_wave_orbitals_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
+          allocate (plane_wave_orbitals_gradient1_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_gradient1_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
+          allocate (plane_wave_orbitals_gradient2_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_gradient2_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
+          allocate (plane_wave_orbitals_gradient3_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_gradient3_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
+          allocate (plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,norb_primitive),stat=ierr)
+          if(ierr /= 0) then
+             write(6,*) trim(lhere),': allocation for object ', &
+             trim('plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+             write(6,*) trim(lhere),': dimensions are ', ngrid, norb_primitive
+             call die(lhere,'allocation failed')
+          endif
           !set up an evenly spaced grid in each direction from 0 to (ngrid-1)/ngrid
 
           !if oritals_num_bspline exists, read pw orbitals on grid from there and skip calculating them
@@ -1056,11 +1142,41 @@ module bsplines_mod
         call alloc ('rbc_complex', rbc_complex, ndim, 2)
 
         if(ndim == 3) then
-        allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-        allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-        allocate (complex_plane_wave_orbitals_gradient1_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-        allocate (complex_plane_wave_orbitals_gradient2_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-        allocate (complex_plane_wave_orbitals_gradient3_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
+        allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
+        allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
+        allocate (complex_plane_wave_orbitals_gradient1_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_gradient1_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
+        allocate (complex_plane_wave_orbitals_gradient2_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_gradient2_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
+        allocate (complex_plane_wave_orbitals_gradient3_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+        if(ierr /= 0) then
+           write(6,*) trim(lhere),': allocation for object ', &
+           trim('complex_plane_wave_orbitals_gradient3_at_grid_points'),' failed'
+           write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+           call die(lhere,'allocation failed')
+        endif
 
         !if orbitals_num_bspline exists, read orbitals on grid from there and skip calculating them
         num_orb_exist=0
@@ -1269,11 +1385,41 @@ module bsplines_mod
 
     if(ndim == 3) then
 
-      allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-      allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-      allocate (complex_plane_wave_orbitals_gradient1_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-      allocate (complex_plane_wave_orbitals_gradient2_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
-      allocate (complex_plane_wave_orbitals_gradient3_at_grid_points(0:ngrid-1,nkvec,norb_primitive))
+      allocate (complex_plane_wave_orbitals_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
+      allocate (complex_plane_wave_orbitals_laplacian_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_laplacian_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
+      allocate (complex_plane_wave_orbitals_gradient1_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_gradient1_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
+      allocate (complex_plane_wave_orbitals_gradient2_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_gradient2_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
+      allocate (complex_plane_wave_orbitals_gradient3_at_grid_points(0:ngrid-1,nkvec,norb_primitive),stat=ierr)
+      if(ierr /= 0) then
+         write(6,*) trim(lhere),': allocation for object ', &
+         trim('complex_plane_wave_orbitals_gradient3_at_grid_points'),' failed'
+         write(6,*) trim(lhere),': dimensions are ', ngrid, nkvec, norb_primitive
+         call die(lhere,'allocation failed')
+      endif
 
       !if orbitals_num_bspline exists, read orbitals on grid from there and skip calculating them
       num_orb_exist=0
