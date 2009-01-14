@@ -425,6 +425,19 @@ CHAMP_LD_END_MPI=
 
 endif
 
+# Julich BlueGene P
+ifeq ($(hostname),jugene1)
+
+# MPI
+  CHAMP_MPIF77 = mpixlf2003
+  CHAMP_MPIF95 = mpixlf2003
+  CHAMP_F77_MPI = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_MPI = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_MPIC = mpixlc
+  CHAMP_C_MPI = -O3 -qstrict
+  CHAMP_LD_MPI = mpixlf2003
+endif
+
 CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
 #CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
 
