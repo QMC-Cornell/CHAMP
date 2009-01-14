@@ -368,6 +368,18 @@ ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
 endif
 
+# Julich BlueGene P
+ifeq ($(hostname),jugene1)
+
+  FC = mpixlf77
+  FFLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DAIX -qfixed=132 
+  LDFLAGS = 
+  FC_MPI = mpixlf77      
+  FFLAGS_MPI = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DAIX -qfixed=132 
+  LDFLAGS_MPI =
+
+endif
+
 ###################################
 # Targets, Dependencies and Rules #
 ###################################
