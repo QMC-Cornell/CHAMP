@@ -1,0 +1,42 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+
+<ol>
+<li> <u> Where did the name come from? </u> <br>
+    The rather whimsical name, which rhymes with Einstein, is easy to remember 
+    and suggests its origin in the physics, rather than computer graphics, 
+    community.</li><br>
+<li> <u> What was the motivation for writing einspline? </u> </br>
+    There don't appear to be any generally-available libraries for the
+    creation of 2D and 3D interpolating B-splines.  These turn out to
+    be very useful for representing orbitals in Quantum Monte Carlo
+    computations.  They are also useful for many other things, but QMC
+    was my main motivation.</li><br/>
+<li> <u> Why stop at three-dimensional splines? </u><br/> 
+    I didn't have a use for higher than 3D.  The ideas are quite
+    easy to generalize to higher dimensionality, but the coding can get
+    a bit tedious.  If there is a good application for it, and I
+    had time, I might code a set of 4D routines. </li><br/>
+<li><u> Are there binding for languages other than C?</u><br/>
+    There are currently Fortran bindings.  I would like to C++ and (possibly)
+    Python bindings when time permits.</li><br/>
+<li><u> What are the licensing terms of einspline?</u><br/>
+    einspline is licensed under the <a href="http://www.gnu.org/copyleft/gpl.html">GNU Public License</a>. </li><br/>
+<li><u> How do I compile the library on Windows?</u><br/>
+    I have no idea.  I almost never use Windows and have no compilers
+    for that platform.  One user has reported that he was able to get
+    the library to compile, but I cannot help you with that.</li><br/>
+
+<li> <u> Where are all the other frequently asked questions in this FAQ? </u><br>
+    Besides this one, they haven't been written, yet. </li> <br>
+</ol>
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

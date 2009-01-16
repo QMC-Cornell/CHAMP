@@ -7,7 +7,9 @@
 
 # OBJS = ibc_ck.o r8bcspeval.o r8bcspline.o r8bcspvec.o r8cspeval.o r8cspline.o r8cubsplb.o r8dnherm1.o r8dnherm2.o r8dnherm3.o r8evbicub.o r8evspline.o r8evtricub.o r8genxpkg.o r8herm1ev.o r8herm2ev.o r8herm3ev.o r8mkbicubw.o r8mkherm1.o r8mkherm2.o r8mkherm3.o r8mkspl2p.o r8mkspl2pb.o r8mkspl2z.o r8mkspl2zb.o r8mkspl3pb.o r8mkspl3zb.o r8mkspline.o r8mktricubw.o r8nspline.o r8pc1ev.o r8pc2ev.o r8pc3ev.o r8speval.o r8splaan.o r8splbrk.o r8spleen.o r8splinck.o r8spline.o r8spvec.o r8tcspeval.o r8tcspline.o r8tcspvec.o r8v_spline.o r8vecbicub.o r8vecherm1.o r8vecherm2.o r8vecherm3.o r8vecpc1.o r8vecpc2.o r8vecpc3.o r8vecspline.o r8vectricub.o r8zonfind.o
 
-OBJS = ibc_ck.o r8bcspline.o r8mkbicubw.o r8v_spline.o r8bcspeval.o r8evbicub.o r8herm2ev.o r8splinck.o r8zonfind.o
+# OBJS = ibc_ck.o r8bcspline.o r8mkbicubw.o r8v_spline.o r8bcspeval.o r8evbicub.o r8herm2ev.o r8splinck.o r8zonfind.o r8evtricub.o  r8mktricubw.o
+OBJS = ibc_ck.o r8bcspline.o r8evtricub.o r8herm3ev.o r8mktricubw.o r8tcspeval.o r8v_spline.o r8bcspeval.o r8evbicub.o r8herm2ev.o r8mkbicubw.o r8splinck.o r8tcspline.o r8zonfind.o
+
 
 libpspline.a: $(OBJS)
 	ar r $@ $(OBJS)

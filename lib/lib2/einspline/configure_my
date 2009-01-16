@@ -1,0 +1,8 @@
+# gcc compilation
+# ./configure --prefix=/home/cyrus/champ/lib/lib2/einspline --exec-prefix=$HOME/champ/lib/lib2/einspline
+# gcc compilation without additional underscore (does not work, does not understand -fno-second-underscore. I never figured out how to turn the 2nd underscore off, so I edited the calls in the bsplines.f90 to put in the extra underscore)
+# ./configure "CC=gcc -std=c99 -fno-second-underscore" "CXX=cpp -fno-second-underscore" FC=ifort F77=ifort --prefix=$HOME/champ/lib/lib2/einspline --exec-prefix=$HOME/champ/lib/lib2/einspline
+
+# Intel icc compilation (-std=c99 tells it to conform to the c99 standard) The "-assume no2underscore" is not necessary since it is the default for icc but not for gcc
+# ./configure "CC=icc -std=c99 -assume no2underscore" "CXX=icpc -assume no2underscore" FC=ifort F77=ifort --prefix=$HOME/champ/lib/lib2/einspline
+./configure "CC=icc -std=c99" "CXX=icpc" FC=ifort F77=ifort --prefix=$HOME/champ/lib/lib2/einspline

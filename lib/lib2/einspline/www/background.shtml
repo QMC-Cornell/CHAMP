@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>libbspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+
+<center><h1>Background</h1></center>
+Basis splines were invented by developed by I.J. Schoenberg and made
+numerically stable by Carl de Boor for the parametric
+representation of curves, surfaces, volumetric data, etc.  The are
+more commonly known as B-splines.
+<h2> One dimension </h2>
+<h3> The basis </h3>
+As the name suggests, B-splines are constructed as a linear
+combination of basis functions, which are hat-like functions of
+<i>compact support</i>, i.e. each function is nonzero only in a
+bounded range.  The basis is constructed in such a way as to guarantee
+the continuity of the value, and perhaps derivatives of the B-spline,
+depending of the B-spline degree, <i>N</i>.  
+
+The B-spline basis is determined by two pieces of information:
+<ol>
+  <li> an ascending sequence of points, or <i>knot values</i>, which
+  are abscissas for the spline function
+  <li> the B-spline degree, <i>N</i>.  
+</ol>
+The degree determines how <i>smooth</i> the spline will be.  For
+degree <i>N</i>, the value and first <i>N-1</i> derivatives of the
+spline function will be continuous.  Cubic B-splines (<i>N</i>=3) are
+perhaps the most common form, and have continuous value, first, and
+second derivatives.
+<h4> Uniform case:</h4>
+In the case of a grid with uniform spacing, the basis functions for a
+cubic B-spline look like: 
+<center>
+<img src="UBsplineBasis.png" width=500/>
+</center>
+The vertical lines show the locations of the knots and the colored
+lines show the basis functions.  Note that at any value of <i>x</i>,
+only four basis functions are nonzero.
+<h4> Nonuniform case: </h4>
+We can also construct a grid with nonuniform spacing.  This is useful
+if the function to be represented has detailed structure concentrated
+over one part of it's range.  For example, the radial wave functions
+for an atom have rapid oscillations near the nucleus, but are much
+more slowly varying at large distance.  For a nonuniform grid spacing,
+the basis looks like:
+<center>
+<img src="NUBsplineBasis.png" width=500/>
+</center>
+The basis function of degree <i>n</i> centered around grid point
+<i>i</i> can be given recursively as: 
+<center>
+<img src="Cox_deBoor.png"/>
+</center>
+For a specific degree, these can be evaluated quickly without the
+explicity use of function recursion, as is done in einspline.
+
+<h3> Interpolating equations </h3>
+Once the basis is established, we must solve for the B-spline
+coefficients.  The einspline library chooses the coefficients such
+that the B-spline <i>interpolates</i> the data, i.e. the B-spline
+curve passes through the data values given at the knots.
+<br>
+In periodic boundary conditions, these equations may be written in
+matrix form as
+<center>
+<img src="PeriodicEquations.png"/>
+</center>
+where <img src="Mbar.png" align="bottom"/>.<br>
+For fixed first or second-derivative boundary condtions, they take the
+form
+<center>
+<img src="DerivativeEquations.png"/>
+</center>
+The einspline library solves these equations efficiently using
+row-reduction and back substitution.
+
+<h2> Multi-dimensional B-splines</h2>
+<center><h3> Tensor-product bases </h3></center>
+<table border="0" width="100%" cellpadding="15">
+<tr>
+<td width="50%" valign="top">
+<p align="justify">
+The one-dimensional B-spline can be generalized to two or more
+dimensions.  To do this, we can construct a two-dimensional basis
+consisting of the tensor product of one-dimensional basis functions in
+each direction.  For example, for a 1D cubic B-spline, their are four
+non-zero basis functions at each point, <i>x</i>.  In 2D, we construct
+a 1D basis for <i>x</i> and <i>y</i> separately, then construct the 2D
+basis as the tensor product and of the <i>x</i> and <i>y</i> basis
+functions.  Thus, for each point in the 2D space, their are 16 nonzero
+product basis functions.  Similarly, in 3D, there are 64 nonzero basis
+functions which contribute a <i>tricubic</i> B-spline.  4D B-splines
+could also be constructed, but are not implemented in the einspline
+library at this time.</p>
+<p align="justify">
+The great advantage of B-splines is that the number of floating point
+value which needs to be stored per mesh point does not increase with
+dimensionality.  In contrast, the more commonly used splines required 2<sup>d</sup>
+floating point values per mesh point.  Thus, we save a factor of 8 in
+storage in 3D.  Furthermore, the B-splines can be made to give exactly
+the same result as standard splines, within numerical round-off
+error.</p>
+</td>
+<td width="50%" valign="top">
+<p align="justify">
+A multi-dimensional interpolating B-spline can be constructed solving
+the interpolating equations for each direction in sequence.  That is,
+for a 2D spline, we first solve the interpolating equations in the
+<i>x</i> direction for each value of <i>y</i>, using the data to be
+ interpolated, <i> F(x<sub>i</sub>, y<sub>j</sub>)</i>, as the
+ right-hand-sides (RHS) of the equations.  This yields of set of
+ coefficients, F<sup>x</sup>(x<sub>i</sub>, y<sub>j</sub>).  We then
+ solve the interpolating equations in the <i>y</i> direction, using
+ these F<sup>x</sup> coefficients as the RHS, yielding the final 2D
+ B-spline coefficients. </p> 
+ </td> </tr> </table>
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

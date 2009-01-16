@@ -1,0 +1,79 @@
+multi_nubspline_create.lo: multi_nubspline_create.c multi_nubspline_create.h \
+ bspline_base.h config.h /opt/intel/cce/10.1.015/include/complex.h \
+ /usr/include/complex.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/gnu/stubs.h /usr/include/bits/mathdef.h \
+ /usr/include/bits/cmathcalls.h /usr/include/bits/cmathcalls.h \
+ /usr/include/bits/cmathcalls.h multi_nubspline_structs.h /usr/include/inttypes.h \
+ /usr/include/stdint.h /usr/include/bits/wchar.h /usr/include/bits/wordsize.h \
+ nubasis.h nugrid.h /opt/intel/cce/10.1.015/include/stdbool.h config.h \
+ /usr/include/stdlib.h /opt/intel/cce/10.1.015/include/stddef.h \
+ /usr/include/stdio.h /opt/intel/cce/10.1.015/include/stddef.h \
+ /usr/include/bits/types.h /usr/include/bits/wordsize.h \
+ /opt/intel/cce/10.1.015/include/stddef.h /usr/include/bits/typesizes.h \
+ /usr/include/libio.h /usr/include/_G_config.h \
+ /opt/intel/cce/10.1.015/include/stddef.h /usr/include/wchar.h \
+ /opt/intel/cce/10.1.015/include/stddef.h /usr/include/gconv.h \
+ /usr/include/wchar.h /opt/intel/cce/10.1.015/include/stddef.h \
+ /opt/intel/cce/10.1.015/include/stddef.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.1.2/include/stdarg.h \
+ /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h
+
+multi_nubspline_create.h:
+
+bspline_base.h:
+
+config.h:
+
+/opt/intel/cce/10.1.015/include/complex.h:
+
+/usr/include/complex.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/bits/mathdef.h:
+
+/usr/include/bits/cmathcalls.h:
+
+multi_nubspline_structs.h:
+
+/usr/include/inttypes.h:
+
+/usr/include/stdint.h:
+
+/usr/include/bits/wchar.h:
+
+/usr/include/bits/wordsize.h:
+
+nubasis.h:
+
+nugrid.h:
+
+/opt/intel/cce/10.1.015/include/stdbool.h:
+
+/usr/include/stdlib.h:
+
+/opt/intel/cce/10.1.015/include/stddef.h:
+
+/usr/include/stdio.h:
+
+/usr/include/bits/types.h:
+
+/usr/include/bits/typesizes.h:
+
+/usr/include/libio.h:
+
+/usr/include/_G_config.h:
+
+/usr/include/wchar.h:
+
+/usr/include/gconv.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.1.2/include/stdarg.h:
+
+/usr/include/bits/stdio_lim.h:
+
+/usr/include/bits/sys_errlist.h:

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+
+<table border=0 cellpadding=3 align="center" width=100%>
+<tr>
+<td width==60% valign="top">
+
+<h3> What is it? </h3>
+
+einspline is a C library for the creation and evaluation of
+interpolating cubic basis splines (B-splines) in 1, 2, and 3 dimensions.
+Fortran 77 wrappers are also included. 
+
+<h3> Features </h3>
+<ul>
+  <li> Basis-splines require storage of only a single coefficient
+       per mesh point.  Standard tricubic spline representation
+       requires 8 coefficients per mesh point.
+  <li> Uses a simple interface to create B-spline objects.
+  <li> Supports both uniform and nonuniform grids.
+  <li> Uses periodic, fixed first-derivative, or fixed second
+  derivative boundary conditions.
+  <li> Works with four types:
+       <ul> 
+         <li> Single-precision real
+         <li> Double-precision real
+         <li> Single-precsion complex
+         <li> Double-precision complex
+      </ul>
+  <li> Four evaluation functions per type:
+       <ul>
+          <li> Value only
+          <li> Value and gradient
+          <li> Value, gradient, and Laplacian
+          <li> Value, gradient, and Hessian matrix
+       </ul>
+  <li> Hand-coded SSE versions of evaluation routines for high-speed
+       <ul> 
+         <li> SIMD operations to increase FLOPS
+         <li> Data-prefetch to reduce memory latency
+       </ul> 
+  <li> Easy installation with autoconf/automake/libtool
+</ul>
+</td>
+<td> 
+<td width=35% align="center" valign="top">
+<img src="c-BN300y.png" align="center">
+</td> </tr>
+</table>
+
+For more information and downloading, please go to the
+<a href="http://sourceforge.net/projects/einspline"> SourceForge project page</a>.
+
+
+<h4> Author </h4>
+Kenneth P. Esler, Jr., Ph.D. <br>
+Carnegie Institution of Washington <br>
+Geophysical Laboratory <br>
+kesler AT ciw DOT edu
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

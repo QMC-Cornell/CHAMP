@@ -2136,7 +2136,7 @@ sub basis_grid{
 	if($make_radial_grids){
 	    $file="$basis_file.$i.$c";
 	    open(GRIDFILE,"> $file") || die "cant open file $file : $!";
-	    printf GRIDFILE "%d %d %d %f %f 0\n",$#{$bgrid[0]},$gridtype,$gridpoints,$gridarg,$gridr0_save;
+	    printf GRIDFILE "%d %d %d %f %f 0   nrbas,igrid,nr,exp_h_bas,r0_bas,icusp\n",$#{$bgrid[0]},$gridtype,$gridpoints,$gridarg,$gridr0_save;
 	    printf GRIDFILE "%s\n",join(" ",@lbas) if($print_lorb);
 	    for(my $k=0; $k<=$#bgrid; $k++){
 		printf GRIDFILE "%s\n", join("",map(sprintf($gridformat,$_),@{$bgrid[$k]}));

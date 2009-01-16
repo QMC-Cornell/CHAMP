@@ -5,12 +5,12 @@ c  bcspeval -- eval bicubic spline function and/or derivatives
      >                    x,nx,y,ny,ilinx,iliny,f,inf3,ier)
 
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       integer iselect(6)
       integer ilinx,iliny,nx,ny,inf3,ier
 
       REAL*8 xget,yget
-      REAL*8 fval(6)
+      REAL*8 fval(*)
       REAL*8 x(nx),y(ny),f(4,4,inf3,ny)
 
 c  modification -- dmc 11 Jan 1999 -- remove SAVE stmts; break routine
@@ -42,7 +42,29 @@ c                            f, df/dx, and df/dy all evaluated
 c                        iselect(4)=iselect(5)=iselect(6)=0
 c                            2nd derivatives not evaluated.
 
+c                   the number of non zero values iselect(1:6)
+c                   determines the number of outputs...
 c                   see fval (output) description.
+
+c  new dmc December 2005 -- access to higher derivatives (even if not
+c  continuous-- but can only go up to 3rd derivatives on any one coordinate.
+c     if iselect(1)=3 -- want 3rd derivatives
+c          iselect(2)=1 for d3f/dx3
+c          iselect(3)=1 for d3f/dx2dy
+c          iselect(4)=1 for d3f/dxdy2
+c          iselect(5)=1 for d3f/dy3
+c               number of non-zero values iselect(2:5) gives no. of outputs
+c     if iselect(1)=4 -- want 4th derivatives
+c          iselect(2)=1 for d4f/dx3dy
+c          iselect(3)=1 for d4f/dx2dy2
+c          iselect(4)=1 for d4f/dxdy3
+c               number of non-zero values iselect(2:4) gives no. of outputs
+c     if iselect(1)=5 -- want 5th derivatives
+c          iselect(2)=1 for d5f/dx3dy2
+c          iselect(3)=1 for d5f/dx2dy3
+c               number of non-zero values iselect(2:3) gives no. of outputs
+c     if iselect(1)=6 -- want 6th derivatives
+c          d6f/dx3dy3 -- one value is returned.
 
 c     x(1...nx)     independent coordinate x, strict ascending
 c     y(1...ny)     independent coordinate y, strict ascending
@@ -79,14 +101,18 @@ c      ier = 0 -- successful completion; = 1 -- an error occurred.
 c-------------------------------------------------------------------
 c  local
 
-      integer i,j
+      integer :: i(1)
+      integer :: j(1)
 
-      REAL*8 dx,dy
+      REAL*8 dx(1),dy(1)
 
 c--------------------------
 
+      i(1)=0
+      j(1)=0
+
       call r8bcspevxy(xget,yget,x,nx,y,ny,ilinx,iliny,
-     >   i,j,dx,dy,ier)
+     >   i(1),j(1),dx(1),dy(1),ier)
       if(ier.ne.0) return
 
       call r8bcspevfn(iselect,1,1,fval,i,j,dx,dy,f,inf3,ny)
@@ -105,7 +131,7 @@ c  this is the "first part" of bcspeval, see comments, above.
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER nxm,nym,ii,jj
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -137,15 +163,15 @@ c  range check
       zyget=yget
 
       if((xget.lt.x(1)).or.(xget.gt.x(nx))) then
-         zxtol=4.0D-7*max(abs(x(1)),abs(x(nx)))
+         zxtol=4.0E-7_r8*max(abs(x(1)),abs(x(nx)))
          if((xget.lt.x(1)-zxtol).or.(xget.gt.x(nx)+zxtol)) then
             ier=1
             write(6,1001) xget,x(1),x(nx)
  1001       format(' ?bcspeval:  xget=',1pe11.4,' out of range ',
      >         1pe11.4,' to ',1pe11.4)
          else
-            if((xget.lt.x(1)-0.5d0*zxtol).or.
-     >         (xget.gt.x(nx)+0.5d0*zxtol))
+            if((xget.lt.x(1)-0.5_r8*zxtol).or.
+     >         (xget.gt.x(nx)+0.5_r8*zxtol))
      >      write(6,1011) xget,x(1),x(nx)
  1011       format(' %bcspeval:  xget=',1pe15.8,' beyond range ',
      >         1pe15.8,' to ',1pe15.8,' (fixup applied)')
@@ -157,14 +183,14 @@ c  range check
          endif
       endif
       if((yget.lt.y(1)).or.(yget.gt.y(ny))) then
-         zytol=4.0D-7*max(abs(y(1)),abs(y(ny)))
+         zytol=4.0E-7_r8*max(abs(y(1)),abs(y(ny)))
          if((yget.lt.y(1)-zytol).or.(yget.gt.y(ny)+zytol)) then
             ier=1
             write(6,1002) yget,y(1),y(ny)
  1002       format(' ?bcspeval:  yget=',1pe11.4,' out of range ',
      >         1pe11.4,' to ',1pe11.4)
          else
-         if((yget.lt.y(1)-0.5d0*zytol).or.(yget.gt.y(ny)+0.5d0*zytol))
+         if((yget.lt.y(1)-0.5_r8*zytol).or.(yget.gt.y(ny)+0.5_r8*zytol))
      >      write(6,1012) yget,y(1),y(ny)
  1012       format(' %bcspeval:  yget=',1pe15.8,' beyond range ',
      >         1pe15.8,' to ',1pe15.8,' (fixup applied)')
@@ -236,7 +262,7 @@ c  input:
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER ny,iaval,i,j
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -252,13 +278,36 @@ c        ict(6)=1 for d2f/dxdy
 
 c    note:  if ict(1)=-1, evaluate f,d2f/dx2,d2f/dy2,d4f/dx2dy2
 
+c                   the number of non zero values ict(1:6)
+c                   determines the number of outputs...
+
+c  new dmc December 2005 -- access to higher derivatives (even if not
+c  continuous-- but can only go up to 3rd derivatives on any one coordinate.
+c     if ict(1)=3 -- want 3rd derivatives
+c          ict(2)=1 for d3f/dx3
+c          ict(3)=1 for d3f/dx2dy
+c          ict(4)=1 for d3f/dxdy2
+c          ict(5)=1 for d3f/dy3
+c               number of non-zero values ict(2:5) gives no. of outputs
+c     if ict(1)=4 -- want 4th derivatives
+c          ict(2)=1 for d4f/dx3dy
+c          ict(3)=1 for d4f/dx2dy2
+c          ict(4)=1 for d4f/dxdy3
+c               number of non-zero values ict(2:4) gives no. of outputs
+c     if ict(1)=5 -- want 5th derivatives
+c          ict(2)=1 for d5f/dx3dy2
+c          ict(3)=1 for d5f/dx2dy3
+c               number of non-zero values ict(2:3) gives no. of outputs
+c     if ict(1)=6 -- want 6th derivatives
+c          d6f/dx3dy3 -- one value is returned.
+
       integer ivec,ivd                  ! vector dimensioning
 
 c    ivec-- number of vector pts (spline values to look up)
 c    ivd -- 1st dimension of fval, .ge.ivec
 
 c output:
-      REAL*8 fval(ivd,6)                 ! output array
+      REAL*8 fval(ivd,*)                 ! output array
 
 c    v = index to element in vector;
 c  fval(v,1) = first item requested by ict(...),
@@ -309,115 +358,263 @@ c  OK can now do evaluations
 
       iaval=0  ! fval addressing
 
-      if((ict(1).gt.0).or.(ict(1).eq.-1)) then
+      if(ict(1).le.2) then
+         if((ict(1).gt.0).or.(ict(1).eq.-1)) then
 c  evaluate f
-         iaval=iaval+1
-         do v=1,ivec
-            i=iv(v)
-            j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
-            fval(v,iaval)=
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
      >       f(1,1,i,j)+dy*(f(1,2,i,j)+dy*(f(1,3,i,j)+dy*f(1,4,i,j)))
      >  +dx*(f(2,1,i,j)+dy*(f(2,2,i,j)+dy*(f(2,3,i,j)+dy*f(2,4,i,j)))
      >  +dx*(f(3,1,i,j)+dy*(f(3,2,i,j)+dy*(f(3,3,i,j)+dy*f(3,4,i,j)))
      >  +dx*(f(4,1,i,j)+dy*(f(4,2,i,j)+dy*(f(4,3,i,j)+dy*f(4,4,i,j))))))
-         enddo
-      endif
+            enddo
+         endif
 
-      if((ict(2).gt.0).and.(ict(1).ne.-1)) then
+         if((ict(2).gt.0).and.(ict(1).ne.-1)) then
 c  evaluate df/dx
-         iaval=iaval+1
-         do v=1,ivec
-            i=iv(v)
-            j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
-            fval(v,iaval)=
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
      >         f(2,1,i,j)+dy*(f(2,2,i,j)+dy*(f(2,3,i,j)+dy*f(2,4,i,j)))
-     >       +2.0d0*dx*(
+     >       +2.0_r8*dx*(
      >         f(3,1,i,j)+dy*(f(3,2,i,j)+dy*(f(3,3,i,j)+dy*f(3,4,i,j)))
-     >       +1.5d0*dx*(
+     >       +1.5_r8*dx*(
      >         f(4,1,i,j)+dy*(f(4,2,i,j)+dy*(f(4,3,i,j)+dy*f(4,4,i,j)))
-     >         ))
-         enddo
-      endif
+     >              ))
+            enddo
+         endif
 
-      if((ict(3).gt.0).and.(ict(1).ne.-1)) then
+         if((ict(3).gt.0).and.(ict(1).ne.-1)) then
 c  evaluate df/dy
-         iaval=iaval+1
-         do v=1,ivec
-            i=iv(v)
-            j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
-            fval(v,iaval)=
-     >         f(1,2,i,j)+dy*(2.0d0*f(1,3,i,j)+dy*3.0d0*f(1,4,i,j))
-     >      +dx*(f(2,2,i,j)+dy*(2.0d0*f(2,3,i,j)+dy*3.0d0*f(2,4,i,j))
-     >      +dx*(f(3,2,i,j)+dy*(2.0d0*f(3,3,i,j)+dy*3.0d0*f(3,4,i,j))
-     >      +dx*(f(4,2,i,j)+dy*(2.0d0*f(4,3,i,j)+dy*3.0d0*f(4,4,i,j))
-     >         )))
-         enddo
-      endif
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >         f(1,2,i,j)+dy*(2.0_r8*f(1,3,i,j)+dy*3.0_r8*f(1,4,i,j))
+     >      +dx*(f(2,2,i,j)+dy*(2.0_r8*f(2,3,i,j)+dy*3.0_r8*f(2,4,i,j))
+     >      +dx*(f(3,2,i,j)+dy*(2.0_r8*f(3,3,i,j)+dy*3.0_r8*f(3,4,i,j))
+     >      +dx*(f(4,2,i,j)+dy*(2.0_r8*f(4,3,i,j)+dy*3.0_r8*f(4,4,i,j))
+     >              )))
+            enddo
+         endif
 
-      if((ict(4).gt.0).or.(ict(1).eq.-1)) then
+         if((ict(4).gt.0).or.(ict(1).eq.-1)) then
 c  evaluate d2f/dx2
-         iaval=iaval+1
-         do v=1,ivec
-            i=iv(v)
-            j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
-            fval(v,iaval)=
-     >        2.0d0*(
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >        2.0_r8*(
      >         f(3,1,i,j)+dy*(f(3,2,i,j)+dy*(f(3,3,i,j)+dy*f(3,4,i,j))))
-     >       +6.0d0*dx*(
+     >       +6.0_r8*dx*(
      >         f(4,1,i,j)+dy*(f(4,2,i,j)+dy*(f(4,3,i,j)+dy*f(4,4,i,j))))
-         enddo
-      endif
+            enddo
+         endif
 
-      if((ict(5).gt.0).or.(ict(1).eq.-1)) then
+         if((ict(5).gt.0).or.(ict(1).eq.-1)) then
 c  evaluate d2f/dy2
-         iaval=iaval+1
-         do v=1,ivec
-            i=iv(v)
-            j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
-            fval(v,iaval)=
-     >         2.0d0*f(1,3,i,j)+6.0d0*dy*f(1,4,i,j)
-     >         +dx*(2.0d0*f(2,3,i,j)+6.0d0*dy*f(2,4,i,j)
-     >         +dx*(2.0d0*f(3,3,i,j)+6.0d0*dy*f(3,4,i,j)
-     >         +dx*(2.0d0*f(4,3,i,j)+6.0d0*dy*f(4,4,i,j))))
-         enddo
-      endif
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              2.0_r8*f(1,3,i,j)+6.0_r8*dy*f(1,4,i,j)
+     >              +dx*(2.0_r8*f(2,3,i,j)+6.0_r8*dy*f(2,4,i,j)
+     >              +dx*(2.0_r8*f(3,3,i,j)+6.0_r8*dy*f(3,4,i,j)
+     >              +dx*(2.0_r8*f(4,3,i,j)+6.0_r8*dy*f(4,4,i,j))))
+            enddo
+         endif
 
-      if((ict(6).gt.0).and.(ict(1).ne.-1)) then
+         if((ict(6).gt.0).and.(ict(1).ne.-1)) then
 c  evaluate d2f/dxdy
-         iaval=iaval+1
-         do v=1,ivec
-            i=iv(v)
-            j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
-            fval(v,iaval)=
-     >         f(2,2,i,j)+dy*(2.0d0*f(2,3,i,j)+dy*3.0d0*f(2,4,i,j))
-     > +2.d0*dx*(f(3,2,i,j)+dy*(2.0d0*f(3,3,i,j)+dy*3.0d0*f(3,4,i,j))
-     >+1.5d0*dx*(f(4,2,i,j)+dy*(2.0d0*f(4,3,i,j)+dy*3.0d0*f(4,4,i,j))
-     >         ))
-         enddo
-      endif
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >            f(2,2,i,j)+dy*(2.0_r8*f(2,3,i,j)+dy*3.0_r8*f(2,4,i,j))
+     > +2._r8*dx*(f(3,2,i,j)+dy*(2.0_r8*f(3,3,i,j)+dy*3.0_r8*f(3,4,i,j))
+     >+1.5_r8*dx*(f(4,2,i,j)+dy*(2.0_r8*f(4,3,i,j)+dy*3.0_r8*f(4,4,i,j))
+     >              ))
+            enddo
+         endif
 
-      if(ict(1).eq.-1) then
+         if(ict(1).eq.-1) then
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              4.0_r8*f(3,3,i,j)+12.0_r8*dy*f(3,4,i,j)
+     >              +dx*(12.0_r8*f(4,3,i,j)+36.0_r8*dy*f(4,4,i,j))
+            enddo
+         endif
+
+c-----------------------------------
+c  access to 3rd derivatives
+
+      else if(ict(1).eq.3) then
+         if(ict(2).eq.1) then
+c  evaluate d3f/dx3 (not continuous)
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              +6.0_r8*(
+     >         f(4,1,i,j)+dy*(f(4,2,i,j)+dy*(f(4,3,i,j)+dy*f(4,4,i,j))))
+            enddo
+         endif
+
+         if(ict(3).eq.1) then
+c  evaluate d3f/dx2dy
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              2.0_r8*(
+     >           f(3,2,i,j)+dy*(2.0_r8*f(3,3,i,j)+dy*3.0_r8*f(3,4,i,j)))
+     >              +6.0_r8*dx*(
+     >           f(4,2,i,j)+dy*(2.0_r8*f(4,3,i,j)+dy*3.0_r8*f(4,4,i,j)))
+            enddo
+         endif
+
+         if(ict(4).eq.1) then
+c  evaluate d3f/dxdy2
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              (2.0_r8*f(2,3,i,j)+6.0_r8*dy*f(2,4,i,j)
+     >              +2.0_r8*dx*(2.0_r8*f(3,3,i,j)+6.0_r8*dy*f(3,4,i,j)
+     >              +1.5_r8*dx*(2.0_r8*f(4,3,i,j)+6.0_r8*dy*f(4,4,i,j))
+     >              ))
+            enddo
+         endif
+
+         if(ict(5).eq.1) then
+c  evaluate d3f/dy3 (not continuous)
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               fval(v,iaval)=6.0_r8*(f(1,4,i,j)+
+     >              dx*(f(2,4,i,j)+dx*(f(3,4,i,j)+dx*f(4,4,i,j))))
+            enddo
+         endif
+
+c-----------------------------------
+c  access to 4th derivatives
+
+      else if(ict(1).eq.4) then
+         if(ict(2).eq.1) then
+c  evaluate d4f/dx3dy (not continuous)
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              +6.0_r8*(
+     >         f(4,2,i,j)+dy*2.0_r8*(f(4,3,i,j)+dy*1.5_r8*f(4,4,i,j)))
+            enddo
+         endif
+
+         if(ict(3).eq.1) then
+c  evaluate d4f/dx2dy2
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              4.0_r8*f(3,3,i,j)+12.0_r8*dy*f(3,4,i,j)
+     >              +dx*(12.0_r8*f(4,3,i,j)+36.0_r8*dy*f(4,4,i,j))
+            enddo
+         endif
+
+         if(ict(4).eq.1) then
+c  evaluate d4f/dxdy3 (not continuous)
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               fval(v,iaval)=
+     >              6.0_r8*(f(2,4,i,j)
+     >              +2.0_r8*dx*(f(3,4,i,j)+1.5_r8*dx*f(4,4,i,j)))
+            enddo
+         endif
+
+c-----------------------------------
+c  access to 5th derivatives
+
+      else if(ict(1).eq.5) then
+         if(ict(2).eq.1) then
+c  evaluate d5f/dx3dy2 (not continuous)
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dy=dyv(v)
+               fval(v,iaval)=
+     >              +12.0_r8*(f(4,3,i,j)+dy*3.0_r8*f(4,4,i,j))
+            enddo
+         endif
+
+         if(ict(3).eq.1) then
+c  evaluate d5f/dx3dy2 (not continuous)
+            iaval=iaval+1
+            do v=1,ivec
+               i=iv(v)
+               j=jv(v)
+               dx=dxv(v)
+               fval(v,iaval)=
+     >              12.0_r8*(f(3,4,i,j)+dx*3.0_r8*f(4,4,i,j))
+            enddo
+         endif
+
+c-----------------------------------
+c  access to 6th derivatives
+
+      else if(ict(1).eq.6) then
+c  evaluate d6f/dx3dy3 (not continuous)
          iaval=iaval+1
          do v=1,ivec
             i=iv(v)
             j=jv(v)
-            dx=dxv(v)
-            dy=dyv(v)
             fval(v,iaval)=
-     >         4.0d0*f(3,3,i,j)+12.0d0*dy*f(3,4,i,j)
-     >         +dx*(12.0d0*f(4,3,i,j)+36.0d0*dy*f(4,4,i,j))
+     >              36.0_r8*f(4,4,i,j)
          enddo
       endif
 

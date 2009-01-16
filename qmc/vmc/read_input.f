@@ -881,9 +881,9 @@ c Determinantal section
       if(inum_orb .ne. 0) then
         read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap
         write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
-         if(abs(num_orb).eq.8) then
+         if(abs(inum_orb).eq.8) then
            if(igrad_lap .eq. 0) then
-             write(6,'(''Interpolate orbitals, calculate gradient and Laplcian from interpolated orbitals'')')
+             write(6,'(''Interpolate orbitals, calculate gradient and Laplacian from interpolated orbitals'')')
             elseif(igrad_lap .eq. 1) then
              write(6,'(''Interpolate orbitals and Laplacian, calculate gradient from interpolated orbitals'')')
             elseif(igrad_lap .eq. 2) then

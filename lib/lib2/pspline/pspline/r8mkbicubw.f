@@ -13,7 +13,7 @@ C  input:
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER itest,iadfp,isiz1,iadfw,inwk
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -185,7 +185,7 @@ C  mkbicop -- copy spline function input data
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER nx,ny,nf2,iy,ix
 !============
       REAL*8 fin(4,nf2,ny)
@@ -208,7 +208,7 @@ C             (bcspline) representation
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER nx,ny,nf2,iy,ix,iflag,ixuse,iyuse,j
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -233,8 +233,8 @@ C-----------------------------------------------------
 C  copy derivatives from result.  Special treatment needed for end zones
 
             iflag=0
-            dxuse=0.0d0
-            dyuse=0.0d0
+            dxuse=0.0_r8
+            dyuse=0.0_r8
             ixuse=ix
             iyuse=iy
             if(ix.eq.nx) then
@@ -256,9 +256,9 @@ C  copy derivatives from result.  Special treatment needed for end zones
                   fin(j,ix,iy)=zvalues(j)
                enddo
             else
-               fin(2,ix,iy)=2.0d0*fwk(3,1,ix,iy)
-               fin(3,ix,iy)=2.0d0*fwk(1,3,ix,iy)
-               fin(4,ix,iy)=4.0d0*fwk(3,3,ix,iy)
+               fin(2,ix,iy)=2.0_r8*fwk(3,1,ix,iy)
+               fin(3,ix,iy)=2.0_r8*fwk(1,3,ix,iy)
+               fin(4,ix,iy)=4.0_r8*fwk(3,3,ix,iy)
             endif
 
          enddo

@@ -1,0 +1,422 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+
+<center><h1> Uniform splines </h1></center>
+<h3> <font color="Blue"> Spline creation </font></h3>
+Each B-spline object type has an associated creation routine, to the
+user must pass the dimensions of the data, the boundary conditions to
+use, and a pointer to the mesh data.  
+<h4> Base data types </h4>
+Each spline creation and evaluation routines have four versions,
+corresponding to the four support base data types.  Following the
+LAPACK naming convention, these types are specified by single-letter
+codes:
+<ul>
+  <li> <font color="blue"> s</font>: single-precision real <font color="blue">(float)</font>   </li>
+  <li> <font color="blue"> d</font>: double-precision real <font color="blue">(double)</font>   </li>
+  <li> <font color="blue"> c</font>: single-precision complex <font color="blue">(complex_float)</font></li>
+  <li> <font color="blue"> z</font>: double-precision complex
+  <font color="blue">(complex_double)</font> </li>
+</ul>
+<h4> Grid dimensions </h4>
+The uniform grid structure, has the following elements, which must be specified:
+<ul>
+  <li> <font color="blue"> double <i>start</i> </font>:  
+       the first grid point </li>
+  <li> <font color="blue"> double <i>end</i>   </font>:  
+       the last grid point  </li>
+  <li> <font color="blue"> int <i>num</i> </font>:  
+        the number of grid points </li>
+</ul>
+<h4> Boundary conditions </h4>
+The boundary conditions at the first and last grid point must be specified.  They are
+specifed with BCtype_<i>x</i> structures, where <i>x</i> is one of {s,
+d, c, z}, as described above.  For the real types (s and d) the
+structure contains the following elements
+<table CELLPADDING=3 frame=border rules=all bordercolor="gray" >
+  <tr> <td>Type</td> <td> Name </td> <td> Description </td> </tr>
+  <tr> <td>bc_code </td> <td> lCode </td> <td> "left"  boundary condition code </td> </tr>
+  <tr> <td>bc_code </td> <td> lCode </td> <td> "right" boundary condition code </td> </tr>
+  <tr> <td>d_type  </td> <td> lVal  </td> <td> "left"  boundary condition value </td> </tr>
+  <tr> <td>d_type  </td> <td> rVal  </td> <td> "right"  boundary condition value </td> </tr>
+  </tr>
+  <caption> <font color="blue"> BCtype_s and BCtype_d data structure elements</font></caption>
+</table>
+
+For the complex types, we must specify both the real and imaginary
+parts:
+<table CELLPADDING=3 frame=border rules=all bordercolor="gray" >
+  <tr> <td>Type</td> <td> Name </td> <td> Description </td> </tr>
+  <tr> <td>bc_code </td> <td> lCode </td> <td> "left"  boundary condition code </td> </tr>
+  <tr> <td>bc_code </td> <td> lCode </td> <td> "right" boundary condition code </td> </tr>
+  <tr> <td>d_type  </td> <td> lVal_r  </td> <td> "left"  boundary condition real part </td> </tr>
+  <tr> <td>d_type  </td> <td> lVal_i  </td> <td> "left"  boundary condition imag part </td> </tr>
+  <tr> <td>d_type  </td> <td> rVal_r  </td> <td> "right"  boundary condition real part </td> </tr>
+  <tr> <td>d_type  </td> <td> rVal_i  </td> <td> "right"  boundary condition imag part </td> </tr>
+  </tr>
+  <caption> <font color="blue"> BCtype_s and BCtype_d data structure elements</font></caption>
+</table>
+<br/> 
+<font color="blue">lCode</font> and <font color="blue">lVal</font> specify the boundary conditions
+at the first grid point (the "left" boundary), while <font color="blue">rCode</font> and 
+<font color="blue">rVal</font> specify the boundary conditions on the last grid point (the "right"
+boundary).<br>
+<font color="blue">bc_code</font> is one of the enumerated value,
+{<font color="blue">PERIODIC</font>, <font color="blue">DERIV1</font>,
+<font color="blue">DERIV2</font>, <font color="blue">FLAT</font>,
+<font color="blue">NATURAL</font> }. <br/>
+<font color="blue">d_type</font> is the the C type corresponding to
+{s, d, c, z}, i.e. {float, double, complex_float, complex_double}
+<br/> <br/>
+The codes have the following meaning
+<table CELLPADDING=3 frame=border rules=all bordercolor="gray" width="50%">
+  <tr> <td>                    Code     </td> <td> Meaning </td></tr>
+  <tr> <td> <font color="blue">PERIODIC </font> </td> <td> Use periodic boundary conditions.  The value, first derivative and second derivative at the left
+boundary match those at the right boundary. </td> </tr>
+  <tr> <td> <font color="blue">DERIV1   </font> </td> <td> The value of the first derivative is specified in lVal or rVal. </td> </tr>
+  <tr> <td> <font color="blue">DERIV2   </font> </td> <td> The value of the second derivative is specified in lVal or rVal. </td> </tr>
+  <tr> <td> <font color="blue">FLAT     </font> </td> <td> The value of the first derivative is set to zero at the boundary. </td> </tr>
+  <tr> <td> <font color="blue">NATURAL     </font> </td> <td> The value of the second derivative is set to zero at the boundary. </td> </tr>
+</table>
+
+
+
+<h4> Data to be interpolated </h4>
+The data to be interpolated should have
+<i>N<sub>x</sub</i> <i>N<sub>y</sub</i> <i>N<sub>z</sub</i> contiguous
+elements, arranged is row-order (C-style) format.  That is, the offset
+of the (ix,iy,iz) element is (ix*(Ny+iy)*Nz+iz).  Complex numbers are
+stored in the standard format of (real,imaginary) pairs, which the
+real element first.
+
+<h4> Function prototypes: </h4>
+<u>Single-precision real: </u><br>
+<PRE>
+UBspline_1d_s * create_UBspline_1d_s (Ugrid x_grid, BCtype_s xBC, float *data);
+UBspline_2d_s * create_UBspline_2d_s (Ugrid x_grid, Ugrid y_grid,
+                                      BCtype_s xBC, BCtype_s yBC, float *data);
+UBspline_3d_s * create_UBspline_3d_s (Ugrid x_grid,   Ugrid y_grid, Ugrid z_grid,
+                                      BCtype_s  xBC,  BCtype_s   yBC, BCtype_s   zBC, float *data);
+</PRE>
+<u>Single-precision complex: </u><br>
+<PRE>
+UBspline_1d_c * create_UBspline_1d_c (Ugrid x_grid, BCtype_c xBC, complex_float *data);
+UBspline_2d_c * create_UBspline_2d_c (Ugrid x_grid, Ugrid y_grid,
+                                      BCtype_c xBC, BCtype_c yBC, complex_float *data);
+UBspline_3d_c * create_UBspline_3d_c (Ugrid x_grid,   Ugrid y_grid, Ugrid z_grid,
+                                      BCtype_c  xBC,  BCtype_c   yBC, BCtype_c   zBC, 
+                                      complex_float *data);
+</PRE>
+<u>Double-precision real: </u><br>
+<PRE>
+UBspline_1d_d * create_UBspline_1d_d (Ugrid x_grid, BCtype_d xBC, double *data);
+UBspline_2d_d * create_UBspline_2d_d (Ugrid x_grid, Ugrid y_grid,
+                                      BCtype_d xBC, BCtype_d yBC, double *data);
+UBspline_3d_d * create_UBspline_3d_d (Ugrid x_grid,   Ugrid y_grid, Ugrid z_grid,
+                                      BCtype_d  xBC,  BCtype_d   yBC, BCtype_d   zBC, double *data);
+</PRE>
+<u> Double-precision complex: </u><br>
+<PRE>
+UBspline_1d_z * create_UBspline_1d_z (Ugrid x_grid, BCtype_z xBC, complex_double *data);
+UBspline_2d_z * create_UBspline_2d_z (Ugrid x_grid, Ugrid y_grid,
+                                      BCtype_z xBC, BCtype_z yBC, complex_double *data);
+UBspline_3d_z * create_UBspline_3d_z (Ugrid x_grid,   Ugrid y_grid, Ugrid z_grid,
+                                      BCtype_z  xBC,  BCtype_z   yBC, BCtype_z   zBC, 
+                                      complex_double *data);
+</PRE>
+<hr/>
+<h3> <font color="Blue"> Spline destruction </font></h3>
+The memory used for spline storage can be freed simply by a call to
+<pre>
+void
+destroy_Bspline (void *<i>spline</i>);
+</pre>
+The <i>spline</i> parameter can be a spline of any type and dimension,
+uniform or nonuniform.
+<hr/>
+<h3> <font color="Blue"> Spline evaluation </font> </h3>
+For each of the four datatypes, there are four evaluation routines, depending on
+which quantities need to be computed:
+<ul>
+  <li> Value only
+  <li> Value and gradient
+  <li> Value, gradient, and Laplacian
+  <li> Value, gradient, and Hessian (matrix of 2nd derivatives)
+</ul>
+For consistency, all results are returned through pointers passed to the evaluation
+routines.  Currently, no bounds checking is done for the sake of speed.  The user is
+responsible for ensuring that the points passed to the evaluation functions fall within
+the grids specified at the time of spline creation.<br>
+
+<h4> Function prototypes: </h4>
+
+<table CELLPADDING=5 frame=border rules=all> 
+  <tr>
+    <td> <font color="Blue">Quick Jump Table</font>   </td>
+    <td> 1D </td>
+    <td> 2D </td>
+    <td> 3D </td>
+  </tr>
+  <tr>
+     <td> Single-precision real </td>
+     <td> <a href="#1Ds"> 1ds </a>
+     <td> <a href="#2Ds"> 2ds </a>
+     <td> <a href="#3Ds"> 3ds </a>
+  </tr>
+  <tr>
+     <td> Single-precision complex </td>
+     <td> <a href="#1Dc"> 1dc </a>
+     <td> <a href="#2Dc"> 2dc </a>
+     <td> <a href="#3Dc"> 3dc </a>
+  </tr>
+  <tr>
+     <td> Double-precision real </td>
+     <td> <a href="#1Dd"> 1dd </a>
+     <td> <a href="#2Dd"> 2dd </a>
+     <td> <a href="#3Dd"> 3dd </a>
+  </tr>
+  <tr>
+     <td> Double-precision complex </td>
+     <td> <a href="#1Dz"> 1dz </a>
+     <td> <a href="#2Dz"> 2dz </a>
+     <td> <a href="#3Dz"> 3dz </a>
+  </tr>
+</table>
+<br>
+<h4> <font color="Blue"> Single-precision real: </font></h4>
+<u> <a name="1Ds"> 1D </a></u>
+<PRE>
+inline void
+eval_UBspline_1d_s     (UBspline_1d_s * restrict spline, 
+		        double x, float* restrict val);
+
+inline void
+eval_UBspline_1d_s_vg  (UBspline_1d_s * restrict spline, double x, 
+  		        float* restrict val, float* restrict grad);
+
+inline void
+eval_UBspline_1d_s_vgl (UBspline_1d_s * restrict spline, double x, 
+			float* restrict val, float* restrict grad, float* restrict lapl);
+
+inline void /* identical to above routine in 1D */
+eval_UBspline_1d_s_vgh (UBspline_1d_s * restrict spline, double x, 
+			float* restrict val, float* restrict grad, float* restrict hess);
+</PRE>
+
+<u> <a name="2Ds"> 2D </a> </u>
+<PRE>
+inline void
+eval_UBspline_2d_s     (UBspline_2d_s * restrict spline, double x, double y, 
+                        float* restrict val);
+
+inline void
+eval_UBspline_2d_s_vg  (UBspline_2d_s * restrict spline, double x, double y, 
+  		        float* restrict val, float* restrict grad);
+
+inline void
+eval_UBspline_2d_s_vgl (UBspline_2d_s * restrict spline, double x, double y,
+			float* restrict val, float* restrict grad, float* restrict lapl);
+
+inline void 
+eval_UBspline_2d_s_vgh (UBspline_2d_s * restrict spline, double x, double y,
+			float* restrict val, float* restrict grad, float* restrict hess);
+</PRE>
+<u><a name="3Ds"> 3D </a></u>
+<PRE>
+inline void
+eval_UBspline_3d_s     (UBspline_3d_s * restrict spline, double x, double y, double z,
+                        float* restrict val);
+
+inline void
+eval_UBspline_3d_s_vg  (UBspline_3d_s * restrict spline, double x, double y, double z,
+  		        float* restrict val, float* restrict grad);
+
+inline void
+eval_UBspline_3d_s_vgl (UBspline_3d_s * restrict spline, double x, double y, double z,
+			float* restrict val, float* restrict grad, float* restrict lapl);
+
+inline void 
+eval_UBspline_3d_s_vgh (UBspline_3d_s * restrict spline, double x, double y,
+			float* restrict val, float* restrict grad, float* restrict hess);
+</PRE>
+
+<h4><font color="Blue">Single-precision complex: </font></h4>
+<u> <a name="1Dc"> 1D </a></u>
+<PRE>
+inline void
+eval_UBspline_1d_c     (UBspline_1d_c * restrict spline, 
+		        double x, complex_float* restrict val);
+
+inline void
+eval_UBspline_1d_c_vg  (UBspline_1d_c * restrict spline, double x, 
+  		        complex_float* restrict val, complex_float* restrict grad);
+
+inline void
+eval_UBspline_1d_c_vgl (UBspline_1d_c * restrict spline, double x, 
+			complex_float* restrict val, complex_float* restrict grad, complex_float* restrict lapl);
+
+inline void /* identical to above routine in 1D */
+eval_UBspline_1d_c_vgh (UBspline_1d_c * restrict spline, double x, 
+			complex_float* restrict val, complex_float* restrict grad, complex_float* restrict hess);
+</PRE>
+
+<u> <a name="2Dc"> 2D </a> </u>
+<PRE>
+inline void
+eval_UBspline_2d_c     (UBspline_2d_c * restrict spline, double x, double y, 
+                        complex_float* restrict val);
+
+inline void
+eval_UBspline_2d_c_vg  (UBspline_2d_c * restrict spline, double x, double y, 
+  		        complex_float* restrict val, complex_float* restrict grad);
+
+inline void
+eval_UBspline_2d_c_vgl (UBspline_2d_c * restrict spline, double x, double y,
+			complex_float* restrict val, complex_float* restrict grad, complex_float* restrict lapl);
+
+inline void 
+eval_UBspline_2d_c_vgh (UBspline_2d_c * restrict spline, double x, double y,
+			complex_float* restrict val, complex_float* restrict grad, complex_float* restrict hess);
+</PRE>
+<u> <a name="3Dc"> 3D </a> </u>
+<PRE>
+inline void
+eval_UBspline_3d_c     (UBspline_3d_c * restrict spline, double x, double y, double z,
+                        complex_float* restrict val);
+
+inline void
+eval_UBspline_3d_c_vg  (UBspline_3d_c * restrict spline, double x, double y, double z,
+  		        complex_float* restrict val, complex_float* restrict grad);
+
+inline void
+eval_UBspline_3d_c_vgl (UBspline_3d_c * restrict spline, double x, double y, double z,
+			complex_float* restrict val, complex_float* restrict grad, complex_float* restrict lapl);
+
+inline void 
+eval_UBspline_3d_c_vgh (UBspline_3d_c * restrict spline, double x, double y,
+			complex_float* restrict val, complex_float* restrict grad, complex_float* restrict hess);
+</PRE>
+
+<h4> <font color="Blue">Double-precision real:</font></h4>
+<u> <a name="1Dd"> 1D </a></u>
+<PRE>
+inline void
+eval_UBspline_1d_d     (UBspline_1d_d * restrict spline, 
+		        double x, double* restrict val);
+
+inline void
+eval_UBspline_1d_d_vg  (UBspline_1d_d * restrict spline, double x, 
+  		        double* restrict val, double* restrict grad);
+
+inline void
+eval_UBspline_1d_d_vgl (UBspline_1d_d * restrict spline, double x, 
+			double* restrict val, double* restrict grad, double* restrict lapl);
+
+inline void /* identical to above routine in 1D */
+eval_UBspline_1d_d_vgh (UBspline_1d_d * restrict spline, double x, 
+			double* restrict val, double* restrict grad, double* restrict hess);
+</PRE>
+
+<u> <a name="2Dd"> 2D </a> </u>
+<PRE>
+inline void
+eval_UBspline_2d_d     (UBspline_2d_d * restrict spline, double x, double y, 
+                        double* restrict val);
+
+inline void
+eval_UBspline_2d_d_vg  (UBspline_2d_d * restrict spline, double x, double y, 
+  		        double* restrict val, double* restrict grad);
+
+inline void
+eval_UBspline_2d_d_vgl (UBspline_2d_d * restrict spline, double x, double y,
+			double* restrict val, double* restrict grad, double* restrict lapl);
+
+inline void 
+eval_UBspline_2d_d_vgh (UBspline_2d_d * restrict spline, double x, double y,
+			double* restrict val, double* restrict grad, double* restrict hess);
+</PRE>
+<u> <a name="3Dd"> 3D </a></u>
+<PRE>
+inline void
+eval_UBspline_3d_d     (UBspline_3d_d * restrict spline, double x, double y, double z,
+                        double* restrict val);
+
+inline void
+eval_UBspline_3d_d_vg  (UBspline_3d_d * restrict spline, double x, double y, double z,
+  		        double* restrict val, double* restrict grad);
+
+inline void
+eval_UBspline_3d_d_vgl (UBspline_3d_d * restrict spline, double x, double y, double z,
+			double* restrict val, double* restrict grad, double* restrict lapl);
+
+inline void 
+eval_UBspline_3d_d_vgh (UBspline_3d_d * restrict spline, double x, double y,
+			double* restrict val, double* restrict grad, double* restrict hess);
+</PRE>
+
+<h4> <font color="Blue">Double-precision complex: </font></h4>
+<u> <a name="1Dz"> 1D </a></u>
+<PRE>
+inline void
+eval_UBspline_1d_z     (UBspline_1d_z * restrict spline, 
+		        double x, complex_double* restrict val);
+
+inline void
+eval_UBspline_1d_z_vg  (UBspline_1d_z * restrict spline, double x, 
+  		        complex_double* restrict val, complex_double* restrict grad);
+
+inline void
+eval_UBspline_1d_z_vgl (UBspline_1d_z * restrict spline, double x, 
+			complex_double* restrict val, complex_double* restrict grad, complex_double* restrict lapl);
+
+inline void /* identical to above routine in 1D */
+eval_UBspline_1d_z_vgh (UBspline_1d_z * restrict spline, double x, 
+			complex_double* restrict val, complex_double* restrict grad, complex_double* restrict hess);
+</PRE>
+
+<u> <a name="2Dz"> 2D </a> </u>
+<PRE>
+inline void
+eval_UBspline_2d_z     (UBspline_2d_z * restrict spline, double x, double y, 
+                        complex_double* restrict val);
+
+inline void
+eval_UBspline_2d_z_vg  (UBspline_2d_z * restrict spline, double x, double y, 
+  		        complex_double* restrict val, complex_double* restrict grad);
+
+inline void
+eval_UBspline_2d_z_vgl (UBspline_2d_z * restrict spline, double x, double y,
+			complex_double* restrict val, complex_double* restrict grad, complex_double* restrict lapl);
+
+inline void 
+eval_UBspline_2d_z_vgh (UBspline_2d_z * restrict spline, double x, double y,
+			complex_double* restrict val, complex_double* restrict grad, complex_double* restrict hess);
+</PRE>
+<u> <a name="3Dz"> 3D </a> </u>
+<PRE>
+inline void
+eval_UBspline_3d_z     (UBspline_3d_z * restrict spline, double x, double y, double z,
+                        complex_double* restrict val);
+
+inline void
+eval_UBspline_3d_z_vg  (UBspline_3d_z * restrict spline, double x, double y, double z,
+  		        complex_double* restrict val, complex_double* restrict grad);
+
+inline void
+eval_UBspline_3d_z_vgl (UBspline_3d_z * restrict spline, double x, double y, double z,
+			complex_double* restrict val, complex_double* restrict grad, complex_double* restrict lapl);
+
+inline void 
+eval_UBspline_3d_z_vgh (UBspline_3d_z * restrict spline, double x, double y,
+			complex_double* restrict val, complex_double* restrict grad, complex_double* restrict hess);
+</PRE>
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

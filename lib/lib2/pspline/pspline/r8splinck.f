@@ -6,7 +6,7 @@ C  to w/in ztol
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER inx,ix
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -33,7 +33,7 @@ C-------------------------------
 
       do ix=2,inx
          zdiffx=(x(ix)-x(ix-1))
-         if(zdiffx.le.0.0d0) ier=2
+         if(zdiffx.le.0.0_r8) ier=2
          zdiff=zdiffx-dxavg
          if(abs(zdiff).gt.zeps) then
             ilinx=2

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+<h1>B-spline Background</h1>
+Some introductory background on interpolating B-splines and their construction can be
+found <a href="background.shtml">here</a>.
+
+<h1> Installation </h1>
+<p><font color="blue"> einspline</font> is written in standard C
+conforming to the C99 standard.  To install it, you will need a
+compiler which supports this standard.  It uses
+autoconf/automake/libtool for installation, but these are not required
+to build the library.  The following is a quick set of instructions
+for installing einspline.</p>
+<ol>
+  <li> Download the source from <a
+  href="http://einspline.sourceforge.net"> here </a>. </li>
+  <li> Unpack the tarball with a command such as <br>
+       <pre> tar xvpzf einspline-0.5.tar.gz </pre> </li>
+  <li> <b>cd</b> to the einspline root directory.
+  <li> Automatically configure for your machine by running the
+       <b>configure</b> script. <br/>
+       <pre>  ./configure</pre>
+  <li> For more configuration options run: <br/>
+       <pre>  ./configure --help</pre>
+       For example, to configure the library to be installed in your
+       home directory (such as on a supercomputer where you do not
+       have root access), run
+       <pre>  ./configure --prefix=$HOME </pre>
+  <li> To take maximum advantage of SSE instructions, configure
+       with "--enable-sse"
+  <li> To utilize software prefetch (in some routines) use
+       "--enable-prefetch".  This improves speed significantly
+       on some processors and hurts on others.
+  <li> Build the library with 
+       <pre>  make </pre>
+  <li> Finally, install the library with
+       <pre>  make install </pre>
+</ol>
+      
+<h1> Library API </h1>     
+<h2> C interface </h2>
+libbspline organizes spline routines into two groups:  those which are
+specified on a uniform grid (or multidimensional mesh), and those on
+nonuniform grids.  The uniform versions of the routines are documented
+below, followed by the nonuniform versions.
+
+<h3><a href="UBinterface.shtml"> Single uniform Splines </a></h3>
+<h3><a href="multiUBinterface.shtml"> Multiple uniform Splines </a></h3>
+<h3><a href="NUBinterface.shtml"> Single nonuniform Splines </a></h3>
+
+<h2> FORTRAN 77 interface </h2>
+<h3><a href="F77uniform.shtml">    Single uniform splines    </a></h3>
+<h3><a href="F77multi.shtml">    Multiple uniform splines    </a></h3>
+<h3><a href="F77nonuniform.shtml"> Single nonuniform splines </a></h3>
+
+<center>
+<h1> Python interface </h1>
+</center>
+This interface has not yet been coded.
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

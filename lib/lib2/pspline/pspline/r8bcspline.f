@@ -3,15 +3,22 @@ c  bcspline -- dmc 30 May 1996
 c  set up coefficients for bicubic spline with following BC's:
 c  FULL BC CONTROL at all bdys
 
-c  algorithm note -- handling of y & z explicit BC's while maintaining
-c  full C2 differentiability is delicate.  Basic method:  use a fully
-c  C2 method based on the "not-a-knot" BC, and then, correct to meet
-c  each user BC by calculating a C2 spline that is zero at all grid
+c  inhomogeneous explicit BCs -- this means setting of 1st or 2nd
+c  derivative at boundary to a non-zero value.
+
+c  periodic, not-a-knot, zero derivative, and divided-difference based
+c  BCs are "homogeneous"-- i.e. if splines s & t satisfy the BC then
+c  the spline (c*s + t) formed as a linear combination of these two
+c  splines, also satisfies the BC.
+
+c  algorithm note -- handling of inhomogeneous explicit BC's while
+c  maintaining full C2 differentiability is delicate.  Basic method:  use
+c  a fully C2 method based on the "not-a-knot" BC, and then, correct to
+c  meet each user BC by calculating a C2 spline that is zero at all grid
 c  points but satisfies a BC which is the difference btw the user spec
 c  and the not-a-knot result; add the coeffs of this into the original.
 
 c  for this more workspace is needed: nwk .ge. 4*inx*inth +5*max(inx,inth)
-
 
       subroutine r8bcspline(x,inx,th,inth,fspl,inf3,
      >                    ibcxmin,bcxmin,ibcxmax,bcxmax,
@@ -21,22 +28,22 @@ c  for this more workspace is needed: nwk .ge. 4*inx*inth +5*max(inx,inth)
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER inth,inf3,ibcxmin,ibcxmax,ibcthmin,ibcthmax,nwk,ilinx
       INTEGER ilinth,ier,inx,iflg2,ix,itest,ierx,ierth,inxo,ith
       INTEGER intho,ic,ibcthmina,ibcthmaxa,iasc,iinc,iawk,jx,jth,ii
       INTEGER iadr,ia5w,iaspl
 !============
 ! idecl:  explicitize implicit REAL declarations:
-      REAL*8 xo2,xo6,zhxn,zhth,zcur,zdiff1,zdiff2
+      REAL*8 xo2,xo6,zhxn,zhth,zdiff1,zdiff2
 !============
       REAL*8 x(inx),th(inth),fspl(4,4,inf3,inth),wk(nwk)
-      REAL*8 bcxmin(inth),bcxmax(inth)
-      REAL*8 bcthmin(inx),bcthmax(inx)
+      REAL*8 bcxmin(*),bcxmax(*)      ! (inth) if used
+      REAL*8 bcthmin(*),bcthmax(*)    ! (inx) if used
 
 c  input:
 c    x(1...inx) -- abscissae, first dimension of data
-c   th(1...inth) -- abscissae, second (periodic) dimension of data
+c   th(1...inth) -- abscissae, second dimension of data  f(x,th)
 c   fspl(1,1,1..inx,1..inth) -- function values
 c   inf3 -- fspl dimensioning, inf3.ge.inx required.
 
@@ -49,9 +56,9 @@ c     =1 -- match slope, specified at x(1),th(ith) by bcxmin(ith)
 c     =2 -- match 2nd derivative, specified at x(1),th(ith) by bcxmin(ith)
 c     =3 -- boundary condition is slope=0 (df/dx=0) at x(1), all th(j)
 c     =4 -- boundary condition is d2f/dx2=0 at x(1), all th(j)
-c     =5 -- match 1st derivative to 1st divided difference
-c     =6 -- match 2nd derivative to 2nd divided difference
-c     =7 -- match 3rd derivative to 3rd divided difference
+c     =5 -- match 1st derivative df/dx to 1st divided difference
+c     =6 -- match 2nd derivative d2f/dx2 to 2nd divided difference
+c     =7 -- match 3rd derivative d3f/dx3 3rd divided difference
 c           (for more detailed definition of BCs 5-7, see the
 c           comments of subroutine mkspline)
 c   NOTE bcxmin(...) referenced ONLY if ibcxmin=1 or ibcxmin=2
@@ -109,6 +116,7 @@ c      where d2=dt**2 and d3=dt**3.
       integer iselect1(10)
       integer iselect2(10)
 
+      REAL*8 zcur(1)
 c---------------------------------
 
 c  see if 2nd pass is needed due to "non-linear" d/dth bdy cond.
@@ -117,12 +125,12 @@ c  see if 2nd pass is needed due to "non-linear" d/dth bdy cond.
       if(ibcthmin.ne.-1) then
          if((ibcthmin.eq.1).or.(ibcthmin.eq.2)) then
             do ix=1,inx
-               if (bcthmin(ix).ne.0.0d0) iflg2=1
+               if (bcthmin(ix).ne.0.0_r8) iflg2=1
             enddo
          endif
          if((ibcthmax.eq.1).or.(ibcthmax.eq.2)) then
             do ix=1,inx
-               if (bcthmax(ix).ne.0.0d0) iflg2=1
+               if (bcthmax(ix).ne.0.0_r8) iflg2=1
             enddo
          endif
       endif
@@ -157,7 +165,7 @@ c  see if 2nd pass is needed due to "non-linear" d/dth bdy cond.
 
 c  check ilinx & x vector
 
-      call r8splinck(x,inx,ilinx,1.0D-3,ierx)
+      call r8splinck(x,inx,ilinx,1.0E-3_r8,ierx)
       if(ierx.ne.0) ier=2
 
       if(ier.eq.2) then
@@ -166,7 +174,7 @@ c  check ilinx & x vector
 
 c  check ilinth & th vector
 
-      call r8splinck(th,inth,ilinth,1.0D-3,ierth)
+      call r8splinck(th,inth,ilinth,1.0E-3_r8,ierth)
       if(ierth.ne.0) ier=3
 
       if(ier.eq.3) then
@@ -177,8 +185,8 @@ c  check ilinth & th vector
 
 c------------------------------------
 
-      xo2=0.5d0
-      xo6=1.0d0/6.0d0
+      xo2=0.5_r8
+      xo6=1.0_r8/6.0_r8
 
 c  spline in x direction
 
@@ -209,7 +217,7 @@ c  use Wayne's routine
 
 c  copy the coefficients out
 
-         do ix=1,inx-1
+         do ix=1,inx
             fspl(2,1,ix,ith)=wk(4*(ix-1)+2)
             fspl(3,1,ix,ith)=wk(4*(ix-1)+3)*xo2
             fspl(4,1,ix,ith)=wk(4*(ix-1)+4)*xo6
@@ -222,7 +230,7 @@ c-----------------------------------
 c  spline in theta direction
 
       intho=4*(inth-1)
-      do ix=1,inx-1
+      do ix=1,inx
 
 c  spline each x coeff
 
@@ -237,10 +245,10 @@ c  copy ordinates in
 c  first pass:  use a linear BC -- if flag indicates BC correction
 c  will be needed, it will be done later
 
-            wk(2)=0.0d0
-            wk(3)=0.0d0
-            wk(intho+2)=0.0d0
-            wk(intho+3)=0.0d0
+            wk(2)=0.0_r8
+            wk(3)=0.0_r8
+            wk(intho+2)=0.0_r8
+            wk(intho+3)=0.0_r8
 
             ibcthmina=ibcthmin
             ibcthmaxa=ibcthmax
@@ -253,7 +261,7 @@ c  will be needed, it will be done later
 
 c  copy coeffs out
 
-            do ith=1,inth-1
+            do ith=1,inth
                fspl(ic,2,ix,ith)=wk(4*(ith-1)+2)
                fspl(ic,3,ix,ith)=wk(4*(ith-1)+3)*xo2
                fspl(ic,4,ix,ith)=wk(4*(ith-1)+4)*xo6
@@ -295,22 +303,23 @@ c  (a) d/dth @ th(1) difference btw current BC and user request
 
             if(ibcthmin.eq.1) then
                if(ix.lt.inx) then
-                  zcur=fspl(1,2,ix,1)   ! 1st deriv.
+                  zcur(1)=fspl(1,2,ix,1)   ! 1st deriv.
                else
-                  zcur=fspl(1,2,jx,1)+zhxn*(fspl(2,2,jx,1)+zhxn*
+                  zcur(1)=fspl(1,2,jx,1)+zhxn*(fspl(2,2,jx,1)+zhxn*
      >               (fspl(3,2,jx,1)+zhxn*fspl(4,2,jx,1)))
                endif
-               zdiff1=bcthmin(ix)-zcur
+               zdiff1=bcthmin(ix)-zcur(1)
             else if(ibcthmin.eq.2) then
                if(ix.lt.inx) then
-                  zcur=2.0d0*fspl(1,3,ix,1) ! 2nd deriv.
+                  zcur(1)=2.0_r8*fspl(1,3,ix,1) ! 2nd deriv.
                else
-                  zcur=2.0d0*(fspl(1,3,jx,1)+zhxn*(fspl(2,3,jx,1)+zhxn*
+                  zcur(1)=2.0_r8*
+     >                 (fspl(1,3,jx,1)+zhxn*(fspl(2,3,jx,1)+zhxn*
      >               (fspl(3,3,jx,1)+zhxn*fspl(4,3,jx,1))))
                endif
-               zdiff1=bcthmin(ix)-zcur
+               zdiff1=bcthmin(ix)-zcur(1)
             else
-               zdiff1=0.0d0
+               zdiff1=0.0_r8
             endif
 
 c  (b) d/dth @ th(inth) difference btw current BC and user request
@@ -318,27 +327,28 @@ c  (b) d/dth @ th(inth) difference btw current BC and user request
             if(ibcthmax.eq.1) then
                if(ix.lt.inx) then
 c  1st deriv.
-                  zcur=fspl(1,2,ix,jth)+zhth*(2.0d0*fspl(1,3,ix,jth)+
-     >               zhth*3.0d0*fspl(1,4,ix,jth))
+                  zcur(1)=
+     >                 fspl(1,2,ix,jth)+zhth*(2.0_r8*fspl(1,3,ix,jth)+
+     >                 zhth*3.0_r8*fspl(1,4,ix,jth))
                else
                   call r8bcspeval(x(inx),th(inth),iselect2,  zcur,
      >               x,inx,th,inth,ilinx,ilinth,fspl,inf3,ier)
                   if(ier.ne.0) return
                endif
-               zdiff2=bcthmax(ix)-zcur
+               zdiff2=bcthmax(ix)-zcur(1)
             else if(ibcthmax.eq.2) then
                if(ix.lt.inx) then
 c  2nd deriv.
-                  zcur=2.0d0*fspl(1,3,ix,jth)+
-     >               6.0d0*zhth*fspl(1,4,ix,jth)
+                  zcur(1)=2.0_r8*fspl(1,3,ix,jth)+
+     >               6.0_r8*zhth*fspl(1,4,ix,jth)
                else
-                  call r8bcspeval(x(inx),th(inth),iselect2,  zcur,
+                  call r8bcspeval(x(inx),th(inth),iselect2,  zcur(1),
      >               x,inx,th,inth,ilinx,ilinth,fspl,inf3,ier)
                   if(ier.ne.0) return
                endif
-               zdiff2=bcthmax(ix)-zcur
+               zdiff2=bcthmax(ix)-zcur(1)
             else
-               zdiff2=0.0d0
+               zdiff2=0.0_r8
             endif
 
 c  ok compute the theta spline with BC's to span the difference(s)
@@ -347,13 +357,13 @@ c  but have at least one non-zero 1st or 2nd derivative BC
 
             iadr=iasc+(ix-1)*iinc
             do ith=1,inth
-               wk(iadr+4*(ith-1))=0.0d0
+               wk(iadr+4*(ith-1))=0.0_r8
             enddo
 
-            wk(iadr+1)=0.0d0
-            wk(iadr+2)=0.0d0
-            wk(iadr+intho+1)=0.0d0
-            wk(iadr+intho+2)=0.0d0
+            wk(iadr+1)=0.0_r8
+            wk(iadr+2)=0.0_r8
+            wk(iadr+intho+1)=0.0_r8
+            wk(iadr+intho+2)=0.0_r8
 
             if(ibcthmin.eq.1) then
                wk(iadr+1)=zdiff1
@@ -398,10 +408,10 @@ c  compute the x splines of the th spline correction coeffs
 
 c  use zero BCs for this correction spline
 
-               wk(iawk+1)=0.0d0
-               wk(iawk+2)=0.0d0
-               wk(iawk+inxo+1)=0.0d0
-               wk(iawk+inxo+2)=0.0d0
+               wk(iawk+1)=0.0_r8
+               wk(iawk+2)=0.0_r8
+               wk(iawk+inxo+1)=0.0_r8
+               wk(iawk+inxo+2)=0.0_r8
 
 c  periodic spline of correction spline higher coeffs (1st coeffs are
 c  all zero by defn of the correction spline

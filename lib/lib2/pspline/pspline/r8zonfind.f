@@ -3,7 +3,7 @@
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER nx,nxm,i1,i2,ij,ii
 !============
 ! idecl:  explicitize implicit REAL declarations:

@@ -1,0 +1,10 @@
+prefix=/home/cyrus/champ/lib/lib2/einspline
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: einspline
+Description: library for creation and evaluation of cubic B-splines
+Version: 0.8.9
+Libs: -L${libdir} -leinspline -L/usr/local/cuda/lib -lcuda -lcudart
+Cflags: -I${includedir} 

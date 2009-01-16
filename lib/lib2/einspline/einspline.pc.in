@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: einspline
+Description: library for creation and evaluation of cubic B-splines
+Version: @VERSION@
+Libs: -L${libdir} -leinspline @CUDA_LIBS@
+Cflags: -I${includedir} @PTHREAD_FLAG@

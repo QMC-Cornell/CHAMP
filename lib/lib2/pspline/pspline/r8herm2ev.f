@@ -14,7 +14,7 @@ C  ================
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER ny,inf2,nx
 !============
       REAL*8 xget,yget                    ! target of this interpolation
@@ -43,7 +43,7 @@ C  ict(4)=1 -- return d2f/dxdy (0, don't)
 C output arguments:
 C =================
 
-      REAL*8 fval(4)                      ! output data
+      REAL*8 fval(*)                      ! output data
       integer ier                       ! error code =0 ==> no error
 
 C  fval(1) receives the first output (depends on ict(...) spec)
@@ -110,7 +110,7 @@ c  ================
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER nxm,nym,ii,jj
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -155,15 +155,15 @@ c  range check
       zxget=xget
       zyget=yget
       if((xget.lt.x(1)).or.(xget.gt.x(nx))) then
-         zxtol=4.0D-7*max(abs(x(1)),abs(x(nx)))
+         zxtol=4.0E-7_r8*max(abs(x(1)),abs(x(nx)))
          if((xget.lt.x(1)-zxtol).or.(xget.gt.x(nx)+zxtol)) then
             ier=1
             write(6,1001) xget,x(1),x(nx)
  1001       format(' ?herm2ev:  xget=',1pe11.4,' out of range ',
      >         1pe11.4,' to ',1pe11.4)
          else
-            if((xget.lt.x(1)-0.5d0*zxtol).or.
-     >         (xget.gt.x(nx)+0.5d0*zxtol))
+            if((xget.lt.x(1)-0.5_r8*zxtol).or.
+     >         (xget.gt.x(nx)+0.5_r8*zxtol))
      >      write(6,1011) xget,x(1),x(nx)
  1011       format(' %herm2ev:  xget=',1pe15.8,' beyond range ',
      >         1pe15.8,' to ',1pe15.8,' (fixup applied)')
@@ -175,15 +175,15 @@ c  range check
          endif
       endif
       if((yget.lt.y(1)).or.(yget.gt.y(ny))) then
-         zytol=4.0D-7*max(abs(y(1)),abs(y(ny)))
+         zytol=4.0E-7_r8*max(abs(y(1)),abs(y(ny)))
          if((yget.lt.y(1)-zytol).or.(yget.gt.y(ny)+zytol)) then
             ier=1
             write(6,1002) yget,y(1),y(ny)
  1002       format(' ?herm2ev:  yget=',1pe11.4,' out of range ',
      >         1pe11.4,' to ',1pe11.4)
          else
-            if((yget.lt.y(1)-0.5d0*zytol).or.
-     >         (yget.gt.y(ny)+0.5d0*zytol))
+            if((yget.lt.y(1)-0.5_r8*zytol).or.
+     >         (yget.gt.y(ny)+0.5_r8*zytol))
      >      write(6,1012) yget,y(1),y(ny)
  1012       format(' %herm2ev:  yget=',1pe15.8,' beyond range ',
      >         1pe15.8,' to ',1pe15.8,' (fixup applied)')
@@ -244,8 +244,8 @@ c  now find interval in which target point lies..
       hx=(x(i+1)-x(i))
       hy=(y(j+1)-y(j))
 
-      hxi=1.0d0/hx
-      hyi=1.0d0/hy
+      hxi=1.0_r8/hx
+      hyi=1.0_r8/hy
 
       xparam=(zxget-x(i))*hxi
       yparam=(zyget-y(j))*hyi
@@ -263,7 +263,7 @@ C   --vectorized-- dmc 10 Feb 1999
 !============
 ! idecl:  explicitize implicit INTEGER declarations:
       IMPLICIT NONE
-c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
       INTEGER ny,inf2,i,j,iadr
 !============
 ! idecl:  explicitize implicit REAL declarations:
@@ -285,7 +285,7 @@ c     INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
 
       REAL*8 fin(0:3,inf2,ny)             ! interpolant data (cf "herm2ev")
 
-      REAL*8 fval(ivecd,4)                ! output returned
+      REAL*8 fval(ivecd,*)                ! output returned
 
 C  for detailed description of fin, ict and fval see subroutine
 C  herm2ev comments.  Note ict is not vectorized; the same output
@@ -318,46 +318,43 @@ C     bbar(x)=x**3-2*x**2+x  bbar'(x)=3*x**2-4*x+1
       REAL*8 sum
       integer v
 
-C   ...in x direction
-
       do v=1,ivec
          i=ii(v)
          j=jj(v)
+
+C   ...in x direction
+
          xp=xparam(v)
-         xpi=1.0d0-xp
+         xpi=1.0_r8-xp
          xp2=xp*xp
          xpi2=xpi*xpi
-         ax=xp2*(3.0d0-2.0d0*xp)
-         axbar=1.0d0-ax
+         ax=xp2*(3.0_r8-2.0_r8*xp)
+         axbar=1.0_r8-ax
          bx=-xp2*xpi
          bxbar=xpi2*xp
 
 C   ...in y direction
 
          yp=yparam(v)
-         ypi=1.0d0-yp
+         ypi=1.0_r8-yp
          yp2=yp*yp
          ypi2=ypi*ypi
-         ay=yp2*(3.0d0-2.0d0*yp)
-         aybar=1.0d0-ay
+         ay=yp2*(3.0_r8-2.0_r8*yp)
+         aybar=1.0_r8-ay
          by=-yp2*ypi
          bybar=ypi2*yp
 
 C   ...derivatives...
 
-         if((ict(2).eq.1).or.(ict(4).eq.1)) then
-            axp=6.0d0*xp*xpi
-            axbarp=-axp
-            bxp=xp*(3.0d0*xp-2.0d0)
-            bxbarp=xpi*(3.0d0*xpi-2.0d0)
-         endif
+         axp=6.0_r8*xp*xpi
+         axbarp=-axp
+         bxp=xp*(3.0_r8*xp-2.0_r8)
+         bxbarp=xpi*(3.0_r8*xpi-2.0_r8)
 
-         if((ict(3).eq.1).or.(ict(4).eq.1)) then
-            ayp=6.0d0*yp*ypi
-            aybarp=-ayp
-            byp=yp*(3.0d0*yp-2.0d0)
-            bybarp=ypi*(3.0d0*ypi-2.0d0)
-         endif
+         ayp=6.0_r8*yp*ypi
+         aybarp=-ayp
+         byp=yp*(3.0_r8*yp-2.0_r8)
+         bybarp=ypi*(3.0_r8*ypi-2.0_r8)
 
          iadr=0
 
@@ -447,6 +444,220 @@ C  d2f/dxdy:
      >            axp*(aybarp*fin(0,i+1,j)+ayp*fin(0,i+1,j+1)))
 
             sum=sum+hyi(v)*(
+     >         bxbarp*(aybarp*fin(1,i,j)  +ayp*fin(1,i,j+1))+
+     >            bxp*(aybarp*fin(1,i+1,j)+ayp*fin(1,i+1,j+1)))
+
+            sum=sum+hxi(v)*(
+     >         axbarp*(bybarp*fin(2,i,j)  +byp*fin(2,i,j+1))+
+     >            axp*(bybarp*fin(2,i+1,j)+byp*fin(2,i+1,j+1)))
+
+            sum=sum+
+     >         bxbarp*(bybarp*fin(3,i,j)  +byp*fin(3,i,j+1))+
+     >            bxp*(bybarp*fin(3,i+1,j)+byp*fin(3,i+1,j+1))
+
+            fval(v,iadr)=sum
+         endif
+
+      enddo                             ! vector loop
+
+      return
+      end
+C---------------------------------------------------------------------
+C  evaluate C1 cubic Hermite function interpolation -- 2d fcn
+C   --vectorized-- dmc 10 Feb 1999
+C    --optimized for VARIATION along x axis ONLY--
+
+      subroutine r8herm2fcnx(ict,ivec,ivecd,
+     >   fval,ii,jj,xparam,yparam,hx,hxi,hy,hyi,
+     >   fin,inf2,ny)
+
+!============
+! idecl:  explicitize implicit INTEGER declarations:
+      IMPLICIT NONE
+      INTEGER, PARAMETER :: R8=SELECTED_REAL_KIND(12,100)
+      INTEGER ny,inf2,j,i,iadr
+!============
+! idecl:  explicitize implicit REAL declarations:
+      REAL*8 yp,ypi,yp2,ypi2,ay,aybar,by,bybar,ayp,aybarp,byp
+      REAL*8 bybarp,xp,xpi,xp2,xpi2,ax,axbar,bx,bxbar,axp,axbarp
+      REAL*8 bxp,bxbarp
+!============
+      integer ict(4)                    ! requested output control
+      integer ivec                      ! vector length
+      integer ivecd                     ! vector dimension (1st dim of fval)
+
+      integer ii(ivec),jj               ! target cells (i,j)
+      REAL*8 xparam(ivec),yparam
+                          ! normalized displacements from (i,j) corners
+
+      REAL*8 hx(ivec),hy                  ! grid spacing, and
+      REAL*8 hxi(ivec),hyi                ! inverse grid spacing 1/(x(i+1)-x(i))
+                                        ! & 1/(y(j+1)-y(j))
+
+      REAL*8 fin(0:3,inf2,ny)             ! interpolant data (cf "herm2ev")
+
+      REAL*8 fval(ivecd,*)                ! output returned
+
+C  for detailed description of fin, ict and fval see subroutine
+C  herm2ev comments.  Note ict is not vectorized; the same output
+C  is expected to be returned for all input vector data points.
+
+C  note that the index inputs ii,jj and parameter inputs
+C     xparam,yparam,hx,hxi,hy,hyi are vectorized, and the
+C     output array fval has a vector ** 1st dimension ** whose
+C     size must be given as a separate argument
+
+C  to use this routine in scalar mode, pass in ivec=ivecd=1
+
+C---------------
+C  Hermite cubic basis functions
+C  -->for function value matching
+C     a(0)=0 a(1)=1        a'(0)=0 a'(1)=0
+C   abar(0)=1 abar(1)=0  abar'(0)=0 abar'(1)=0
+
+C   a(x)=-2*x**3 + 3*x**2    = x*x*(-2.0*x+3.0)
+C   abar(x)=1-a(x)
+C   a'(x)=-abar'(x)          = 6.0*x*(1.0-x)
+
+C  -->for derivative matching
+C     b(0)=0 b(1)=0          b'(0)=0 b'(1)=1
+C   bbar(0)=0 bbar(1)=0  bbar'(0)=1 bbar'(1)=0
+
+C     b(x)=x**3-x**2         b'(x)=3*x**2-2*x
+C     bbar(x)=x**3-2*x**2+x  bbar'(x)=3*x**2-4*x+1
+
+      REAL*8 sum
+      integer v
+
+      j=jj
+
+C   ...in y direction
+
+      yp=yparam
+      ypi=1.0_r8-yp
+      yp2=yp*yp
+      ypi2=ypi*ypi
+      ay=yp2*(3.0_r8-2.0_r8*yp)
+      aybar=1.0_r8-ay
+      by=-yp2*ypi
+      bybar=ypi2*yp
+
+C   ...derivatives...
+
+      ayp=6.0_r8*yp*ypi
+      aybarp=-ayp
+      byp=yp*(3.0_r8*yp-2.0_r8)
+      bybarp=ypi*(3.0_r8*ypi-2.0_r8)
+
+      do v=1,ivec
+         i=ii(v)
+
+C   ...in x direction
+
+         xp=xparam(v)
+         xpi=1.0_r8-xp
+         xp2=xp*xp
+         xpi2=xpi*xpi
+         ax=xp2*(3.0_r8-2.0_r8*xp)
+         axbar=1.0_r8-ax
+         bx=-xp2*xpi
+         bxbar=xpi2*xp
+
+C   ...derivatives...
+
+         axp=6.0_r8*xp*xpi
+         axbarp=-axp
+         bxp=xp*(3.0_r8*xp-2.0_r8)
+         bxbarp=xpi*(3.0_r8*xpi-2.0_r8)
+
+         iadr=0
+
+C  get desired values:
+
+         if(ict(1).eq.1) then
+
+C  function value:
+
+            iadr=iadr+1
+            sum=axbar*(aybar*fin(0,i,j)  +ay*fin(0,i,j+1))+
+     >             ax*(aybar*fin(0,i+1,j)+ay*fin(0,i+1,j+1))
+
+            sum=sum+hx(v)*(
+     >         bxbar*(aybar*fin(1,i,j)  +ay*fin(1,i,j+1))+
+     >            bx*(aybar*fin(1,i+1,j)+ay*fin(1,i+1,j+1)))
+
+            sum=sum+hy*(
+     >         axbar*(bybar*fin(2,i,j)  +by*fin(2,i,j+1))+
+     >            ax*(bybar*fin(2,i+1,j)+by*fin(2,i+1,j+1)))
+
+            sum=sum+hx(v)*hy*(
+     >         bxbar*(bybar*fin(3,i,j)  +by*fin(3,i,j+1))+
+     >            bx*(bybar*fin(3,i+1,j)+by*fin(3,i+1,j+1)))
+
+            fval(v,iadr)=sum
+         endif
+
+         if(ict(2).eq.1) then
+
+C  df/dx:
+
+            iadr=iadr+1
+
+            sum=hxi(v)*(
+     >         axbarp*(aybar*fin(0,i,j)  +ay*fin(0,i,j+1))+
+     >            axp*(aybar*fin(0,i+1,j)+ay*fin(0,i+1,j+1)))
+
+            sum=sum+
+     >         bxbarp*(aybar*fin(1,i,j)  +ay*fin(1,i,j+1))+
+     >            bxp*(aybar*fin(1,i+1,j)+ay*fin(1,i+1,j+1))
+
+            sum=sum+hxi(v)*hy*(
+     >         axbarp*(bybar*fin(2,i,j)  +by*fin(2,i,j+1))+
+     >            axp*(bybar*fin(2,i+1,j)+by*fin(2,i+1,j+1)))
+
+            sum=sum+hy*(
+     >         bxbarp*(bybar*fin(3,i,j)  +by*fin(3,i,j+1))+
+     >            bxp*(bybar*fin(3,i+1,j)+by*fin(3,i+1,j+1)))
+
+            fval(v,iadr)=sum
+         endif
+
+         if(ict(3).eq.1) then
+
+C  df/dy:
+
+            iadr=iadr+1
+
+            sum=hyi*(
+     >         axbar*(aybarp*fin(0,i,j)  +ayp*fin(0,i,j+1))+
+     >            ax*(aybarp*fin(0,i+1,j)+ayp*fin(0,i+1,j+1)))
+
+            sum=sum+hx(v)*hyi*(
+     >         bxbar*(aybarp*fin(1,i,j)  +ayp*fin(1,i,j+1))+
+     >            bx*(aybarp*fin(1,i+1,j)+ayp*fin(1,i+1,j+1)))
+
+            sum=sum+
+     >         axbar*(bybarp*fin(2,i,j)  +byp*fin(2,i,j+1))+
+     >            ax*(bybarp*fin(2,i+1,j)+byp*fin(2,i+1,j+1))
+
+            sum=sum+hx(v)*(
+     >         bxbar*(bybarp*fin(3,i,j)  +byp*fin(3,i,j+1))+
+     >            bx*(bybarp*fin(3,i+1,j)+byp*fin(3,i+1,j+1)))
+
+            fval(v,iadr)=sum
+         endif
+
+         if(ict(4).eq.1) then
+
+C  d2f/dxdy:
+
+            iadr=iadr+1
+
+            sum=hxi(v)*hyi*(
+     >         axbarp*(aybarp*fin(0,i,j)  +ayp*fin(0,i,j+1))+
+     >            axp*(aybarp*fin(0,i+1,j)+ayp*fin(0,i+1,j+1)))
+
+            sum=sum+hyi*(
      >         bxbarp*(aybarp*fin(1,i,j)  +ayp*fin(1,i,j+1))+
      >            bxp*(aybarp*fin(1,i+1,j)+ayp*fin(1,i+1,j+1)))
 

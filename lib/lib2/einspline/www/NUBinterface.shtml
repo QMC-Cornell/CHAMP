@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+
+<h1> Nonuniform Splines </h1>
+</center>
+<h2> Nonuniform grids </h2>
+In order to create nonuniform spline objects, we must first create the
+nonuniform grids on which the spline will be defined.  For
+multidimensional grids, a grid object is needed for each dimension
+(though a single grid object pointer may be used for more than one
+dimension).  
+<h3> <font color="Blue"> Grid creation </font></h3>
+Currently, there are two nonuniform grids implemented:
+
+<h4><u> Center grid</u> </h4>
+The <b>center grid</b> grid is a set of points which are more closely
+packed near the center of the interval than out the outside.  It is
+created by specifying four quantities:
+<ol>
+  <li> The first point
+  <li> The last point
+  <li> The ratio of the largest to smallest grid spacing
+  <li> The number of points
+</ol>
+A center grid is created with the call
+<pre>
+NUgrid*
+<font color="blue">create_center_grid</font> (double <i>start</i>, double <i>end</i>, double <i>ratio</i>, 
+		    int <i>num_points</i>);
+</pre>
+The center grid function has an analytic inverse, which can be used to
+find the nearest grid point to a given point very quickly.
+
+
+<h4><u> General grid</u> </h4>
+The general grid is a catch-all for all other types of grids.  It is
+created with a call to
+<pre>
+NUgrid*
+<font color="blue">create_general_grid</font> (double *<i>points</i>, int <i>num_points</i>);
+</pre>
+<i>points</i> is an array of points, which must be
+sorted in assending order.  <i>num_points</i> is
+self-explanatory.  While general_grid can be used for any type of grid
+spacing, it has the disadvantage that a bisection search must be
+performed to find the nearest grid point. 
+
+<h3> <font color="Blue"> Grid destruction </font></h3>
+Grids created with <font color="blue">create_<i>x</i>_grid</font> can
+be destroyed with a call to
+<pre>
+void
+<font color="blue">destroy_grid</font> (NUgrid* <i>grid</i>);
+</pre>
+<br/>
+<hr/>
+<h3> <font color="Blue"> Nonuniform spline creation </font></h3>
+After the necessary grids have been created, a nonuniform spline can
+be created using a very similar routines to the uniform ones.  The
+most apparent difference is that the nonuniform grids are passed
+through pointers.  Note that the nonuniform grids should not be
+destroyed until after the splines which use them.
+
+<h4> Function prototypes: </h4>
+<u>Single-precision real: </u><br>
+<PRE>
+NUBspline_1d_s * <font color="blue">create_NUBspline_1d_s</font> (NUgrid* <i>x_grid</i>, BCtype_s <i>xBC</i>, float *<i>data</i>);
+NUBspline_2d_s * <font color="blue">create_NUBspline_2d_s</font> (NUgrid* <i>x_grid</i>, NUgrid* <i>y_grid</i>,
+                                        BCtype_s <i>xBC</i>, BCtype_s <i>yBC</i>, float *<i>data</i>);
+NUBspline_3d_s * <font color="blue">create_NUBspline_3d_s</font> (NUgrid* <i>x_grid</i>,   NUgrid* <i>y_grid</i>, NUgrid* <i>z_grid</i>,
+                                        BCtype_s  <i>xBC</i>,  BCtype_s   <i>yBC</i>, BCtype_s   <i>zBC</i>, float *<i>data</i>);
+</PRE>
+<u>Single-precision complex: </u><br>
+<PRE>
+NUBspline_1d_c * <font color="blue">create_NUBspline_1d_c</font> (NUgrid* <i>x_grid</i>, BCtype_c <i>xBC</i>, complex_float *<i>data</i>);
+NUBspline_2d_c * <font color="blue">create_NUBspline_2d_c</font> (NUgrid* <i>x_grid</i>, NUgrid* <i>y_grid</i>,
+                                        BCtype_c <i>xBC</i>, BCtype_c <i>yBC</i>, complex_float *<i>data</i>);
+NUBspline_3d_c * <font color="blue">create_NUBspline_3d_c</font> (NUgrid* <i>x_grid</i>,   NUgrid* <i>y_grid</i>, NUgrid* <i>z_grid</i>,
+                                        BCtype_c  <i>xBC</i>,  BCtype_c   <i>yBC</i>, BCtype_c   <i>zBC</i>, 
+                                        complex_float *<i>data</i>);
+</PRE>
+<u>Double-precision real: </u><br>
+<PRE>
+NUBspline_1d_d * <font color="blue">create_NUBspline_1d_d</font> (NUgrid* <i>x_grid</i>, BCtype_d <i>xBC</i>, double *<i>data</i>);
+NUBspline_2d_d * <font color="blue">create_NUBspline_2d_d</font> (NUgrid* <i>x_grid</i>, NUgrid* <i>y_grid</i>,
+                                        BCtype_d <i>xBC</i>, BCtype_d <i>yBC</i>, double *<i>data</i>);
+NUBspline_3d_d * <font color="blue">create_NUBspline_3d_d</font> (NUgrid* <i>x_grid</i>,   NUgrid* <i>y_grid</i>, NUgrid* <i>z_grid</i>,
+                                        BCtype_d  <i>xBC</i>,  BCtype_d   <i>yBC</i>, BCtype_d   <i>zBC</i>, double *<i>data</i>);
+</PRE>
+<u> Double-precision complex: </u><br>
+<PRE>
+NUBspline_1d_z * <font color="blue">create_NUBspline_1d_z</font> (NUgrid* <i>x_grid</i>, BCtype_z <i>xBC</i>, complex_double *<i>data</i>);
+NUBspline_2d_z * <font color="blue">create_NUBspline_2d_z </font>(NUgrid* <i>x_grid</i>, NUgrid* <i>y_grid</i>,
+                                        BCtype_z <i>xBC</i>, BCtype_z <i>yBC</i>, complex_double *<i>data</i>);
+NUBspline_3d_z * <font color="blue">create_NUBspline_3d_z</font> (NUgrid* <i>x_grid</i>,   NUgrid* <i>y_grid</i>, NUgrid* <i>z_grid</i>,
+                                        BCtype_z  <i>xBC</i>,  BCtype_z   <i>yBC</i>, BCtype_z   <i>zBC</i>, 
+                                        complex_double *<i>data</i>);
+</PRE>
+<hr/>
+<h3> <font color="Blue"> Nonuniform spline destruction </font></h3>
+The memory used for spline storage can be freed simply by a call to
+<pre>
+void
+destroy_Bspline (void *<i>spline</i>);
+</pre>
+The <i>spline</i> parameter can be a spline of any type and dimension,
+uniform or nonuniform.
+<hr/> 
+<h3> <font color="Blue"> Nonuniform spline evaluation </font></h3>
+For each of the four datatypes, there are four evaluation routines, depending on
+which quantities need to be computed:
+<ul>
+  <li> Value only
+  <li> Value and gradient
+  <li> Value, gradient, and Laplacian
+  <li> Value, gradient, and Hessian (matrix of 2nd derivatives)
+</ul>
+For consistency, all results are returned through pointers passed to the evaluation
+routines.  Currently, no bounds checking is done for the sake of speed.  The user is
+responsible for ensuring that the points passed to the evaluation functions fall within
+the grids specified at the time of spline creation.<br>
+
+<h4> Function prototypes: </h4>
+
+<table CELLPADDING=5 frame=border rules=all> 
+  <tr>
+    <td> <font color="Blue">Quick Jump Table</font>   </td>
+    <td> 1D </td>
+    <td> 2D </td>
+    <td> 3D </td>
+  </tr>
+  <tr>
+     <td> Single-precision real </td>
+     <td> <a href="#1Ds"> 1ds </a>
+     <td> <a href="#2Ds"> 2ds </a>
+     <td> <a href="#3Ds"> 3ds </a>
+  </tr>
+  <tr>
+     <td> Single-precision complex </td>
+     <td> <a href="#1Dc"> 1dc </a>
+     <td> <a href="#2Dc"> 2dc </a>
+     <td> <a href="#3Dc"> 3dc </a>
+  </tr>
+  <tr>
+     <td> Double-precision real </td>
+     <td> <a href="#1Dd"> 1dd </a>
+     <td> <a href="#2Dd"> 2dd </a>
+     <td> <a href="#3Dd"> 3dd </a>
+  </tr>
+  <tr>
+     <td> Double-precision complex </td>
+     <td> <a href="#1Dz"> 1dz </a>
+     <td> <a href="#2Dz"> 2dz </a>
+     <td> <a href="#3Dz"> 3dz </a>
+  </tr>
+</table>
+<br>
+<h4> <font color="Blue"> Single-precision real: </font></h4>
+<u> <a name="1Ds"> 1D </a></u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_1d_s</font>     (NUBspline_1d_s * restrict <i>spline</i>, 
+		         double <i>x</i>, float* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_s_vg</font>  (NUBspline_1d_s * restrict <i>spline</i>, double <i>x</i>, 
+  		         float* restrict <i>val</i>, float* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_s_vgl</font> (NUBspline_1d_s * restrict <i>spline</i>, double <i>x</i>, 
+		 	 float* restrict <i>val</i>, float* restrict <i>grad</i>, float* restrict <i>lapl</i>);
+
+inline void /* identical to above routine in 1D */
+<font color="Blue">eval_NUBspline_1d_s_vgh</font> (NUBspline_1d_s * restrict <i>spline</i>, double <i>x</i>, 
+			 float* restrict <i>val</i>, float* restrict <i>grad</i>, float* restrict <i>hess</i>);
+</PRE>
+
+<u> <a name="2Ds"> 2D </a> </u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_2d_s</font>     (NUBspline_2d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+                        float* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_s_vg</font>  (NUBspline_2d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+  		         float* restrict <i>val</i>, float* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_s_vgl</font> (NUBspline_2d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 float* restrict <i>val</i>, float* restrict <i>grad</i>, float* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_2d_s_vgh</font> (NUBspline_2d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 float* restrict <i>val</i>, float* restrict <i>grad</i>, float* restrict <i>hess</i>);
+</PRE>
+<u><a name="3Ds"> 3D </a></u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_3d_s</font>     (NUBspline_3d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+                         float* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_s_vg</font>  (NUBspline_3d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+  		         float* restrict <i>val</i>, float* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_s_vgl</font> (NUBspline_3d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+			 float* restrict <i>val</i>, float* restrict <i>grad</i>, float* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_3d_s_vgh</font> (NUBspline_3d_s * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 float* restrict <i>val</i>, float* restrict <i>grad</i>, float* restrict <i>hess</i>);
+</PRE>
+
+<h4><font color="Blue">Single-precision complex: </font></h4>
+<u> <a name="1Dc"> 1D </a></u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_1d_c</font>     (NUBspline_1d_c * restrict <i>spline</i>, 
+		         double <i>x</i>, complex_float* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_c_vg</font>  (NUBspline_1d_c * restrict <i>spline</i>, double <i>x</i>, 
+  		         complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_c_vgl</font> (NUBspline_1d_c * restrict <i>spline</i>, double <i>x</i>, 
+			 complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>, complex_float* restrict <i>lapl</i>);
+
+inline void /* identical to above routine in 1D */
+<font color="Blue">eval_NUBspline_1d_c_vgh</font> (NUBspline_1d_c * restrict <i>spline</i>, double <i>x</i>, 
+			 complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>, complex_float* restrict <i>hess</i>);
+</PRE>
+
+<u> <a name="2Dc"> 2D </a> </u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_2d_c</font>     (NUBspline_2d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+                         complex_float* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_c_vg</font>  (NUBspline_2d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+  		         complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_c_vgl</font> (NUBspline_2d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>, complex_float* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_2d_c_vgh</font> (NUBspline_2d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>, complex_float* restrict <i>hess</i>);
+</PRE>
+<u> <a name="3Dc"> 3D </a> </u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_3d_c</font>     (NUBspline_3d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+                         complex_float* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_c_vg</font>  (NUBspline_3d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+  		         complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_c_vgl</font> (NUBspline_3d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+			 complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>, complex_float* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_3d_c_vgh</font> (NUBspline_3d_c * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+		 	 complex_float* restrict <i>val</i>, complex_float* restrict <i>grad</i>, complex_float* restrict <i>hess</i>);
+</PRE>
+
+<h4> <font color="Blue">Double-precision real:</font></h4>
+<u> <a name="1Dd"> 1D </a></u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_1d_d</font>     (NUBspline_1d_d * restrict <i>spline</i>, 
+		         double <i>x</i>, double* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_d_vg</font>  (NUBspline_1d_d * restrict <i>spline</i>, double <i>x</i>, 
+  		         double* restrict <i>val</i>, double* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_d_vgl</font> (NUBspline_1d_d * restrict <i>spline</i>, double <i>x</i>, 
+			 double* restrict <i>val</i>, double* restrict <i>grad</i>, double* restrict <i>lapl</i>);
+
+inline void /* identical to above routine in 1D */
+<font color="Blue">eval_NUBspline_1d_d_vgh</font> (NUBspline_1d_d * restrict <i>spline</i>, double <i>x</i>, 
+			 double* restrict <i>val</i>, double* restrict <i>grad</i>, double* restrict <i>hess</i>);
+</PRE>
+
+<u> <a name="2Dd"> 2D </a> </u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_2d_d</font>     (NUBspline_2d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+                         double* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_d_vg</font>  (NUBspline_2d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+  		         double* restrict <i>val</i>, double* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_d_vgl</font> (NUBspline_2d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 double* restrict <i>val</i>, double* restrict <i>grad</i>, double* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_2d_d_vgh</font> (NUBspline_2d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 double* restrict <i>val</i>, double* restrict <i>grad</i>, double* restrict <i>hess</i>);
+</PRE>
+<u> <a name="3Dd"> 3D </a></u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_3d_d</font>     (NUBspline_3d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+                         double* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_d_vg</font>  (NUBspline_3d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+  		         double* restrict <i>val</i>, double* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_d_vgl</font> (NUBspline_3d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+			 double* restrict <i>val</i>, double* restrict <i>grad</i>, double* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_3d_d_vgh</font> (NUBspline_3d_d * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 double* restrict <i>val</i>, double* restrict <i>grad</i>, double* restrict <i>hess</i>);
+</PRE>
+
+<h4> <font color="Blue">Double-precision complex: </font></h4>
+<u> <a name="1Dz"> 1D </a></u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_1d_z</font>     (NUBspline_1d_z * restrict <i>spline</i>, 
+		         double <i>x</i>, complex_double* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_z_vg</font>  (NUBspline_1d_z * restrict <i>spline</i>, double <i>x</i>, 
+  		         complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_1d_z_vgl</font> (NUBspline_1d_z * restrict <i>spline</i>, double <i>x</i>, 
+			 complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>, complex_double* restrict <i>lapl</i>);
+
+inline void /* identical to above routine in 1D */
+<font color="Blue">eval_NUBspline_1d_z_vgh</font> (NUBspline_1d_z * restrict <i>spline</i>, double <i>x</i>, 
+			 complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>, complex_double* restrict <i>hess</i>);
+</PRE>
+
+<u> <a name="2Dz"> 2D </a> </u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_2d_z</font>     (NUBspline_2d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+                         complex_double* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_z_vg</font>  (NUBspline_2d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, 
+  		         complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_2d_z_vgl</font> (NUBspline_2d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>, complex_double* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_2d_z_vgh</font> (NUBspline_2d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>, complex_double* restrict <i>hess</i>);
+</PRE>
+<u> <a name="3Dz"> 3D </a> </u>
+<PRE>
+inline void
+<font color="Blue">eval_NUBspline_3d_z</font>     (NUBspline_3d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+                         complex_double* restrict <i>val</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_z_vg</font>  (NUBspline_3d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+  		         complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>);
+
+inline void
+<font color="Blue">eval_NUBspline_3d_z_vgl</font> (NUBspline_3d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>, double <i>z</i>,
+			complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>, complex_double* restrict <i>lapl</i>);
+
+inline void 
+<font color="Blue">eval_NUBspline_3d_z_vgh</font> (NUBspline_3d_z * restrict <i>spline</i>, double <i>x</i>, double <i>y</i>,
+			 complex_double* restrict <i>val</i>, complex_double* restrict <i>grad</i>, complex_double* restrict <i>hess</i>);
+</PRE>
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>
