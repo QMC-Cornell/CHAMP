@@ -1,0 +1,14 @@
+This is version einspline-0.8.9
+
+Installation:
+
+1) ./configure_my
+   For more configuration options:
+   ./configure --help
+2) make
+3) make install
+
+Documentation at http://einspline.sourceforge.net/doc.shtml
+says
+To take maximum advantage of SSE instructions, configure with "--enable-sse"
+but I have not used that so far.

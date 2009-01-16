@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+<h2> Useful links: </h2>
+<ol>
+<li><a href="http://en.wikipedia.org/wiki/B-spline">Wikipedia article on B-splines:</a></li>
+<li><a href="http://www.ibiblio.org/e-notes/Splines/Basis.htm"> iBiblio page with instructive Java applets</a></li>
+<li><a href="http://mathworld.wolfram.com/B-Spline.html">Mathworld's B-spline page</a></li>
+<li><a href="http://users.wpi.edu/~pwdavis/sinews/spline17.htm"> A brief history of B-splines </a> </li>
+</ol>
+
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

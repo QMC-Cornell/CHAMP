@@ -1,0 +1,8 @@
+for file in * */*
+  do
+  file_old=../einspline/$file
+  echo $file_old $file
+  diff $file_old $file
+  echo ""
+  echo ""
+done

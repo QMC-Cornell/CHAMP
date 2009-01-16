@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+
+<h2> Requirements </h2>
+<p> For the standard C library, a compiler which supports the C99
+standard and a working install of pkg-config is all that is required.</p>
+<p> For the optional blip-generation facilities, a working install of
+FFTW 3 is required, with both the single and double-precision
+libraries compiled.</p>
+
+<h2> Source code </h2>
+To download the einspline source code, please visit the
+<a href="http://sourceforge.net/projects/einspline/"> SourceForge project page</a>.
+
+<!-- <h2> Source code </h2>
+<a href="../einspline-0.5.tar.gz"> einspline-0.5.tar.gz </a> -->
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>

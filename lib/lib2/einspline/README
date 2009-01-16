@@ -1,0 +1,32 @@
+Einspline B-spline library
+--------------------------
+libeinspline is intended to be a simple, fast, and accurate library
+for creating and evaluation interpolating B-splines.  In supports
+splines in 1D, 2D, and 3D, with real and complex datatypes in single
+or double precision.  It supports spline with uniform on nonuniform
+knot spacing.  When many splines need to be evaluated a single point,
+it has specialized routines to speed the calculations.
+
+Building
+--------
+einspline is built with the standard autotools sequence:
+1)  ./configure --option1 ...
+2)  make
+3)  make install
+
+Options
+-------
+Einspline contains hand-coded routines to take advantage of SSE, SSE2,
+and SSE3 instructions.  To enable their use, use
+  ./configure --enable-sse
+Some routines make optional use of software prefetching, which helps 
+on some processors and may hurt on others.  It is enabled by
+passing "--enable-prefetch" to configure.
+
+
+Known issues:
+   GCC 4.0.2 (and perhaps earlier versions) has a known bug in
+generating optimized SSE code on 32-bit machines.  The results of
+using the SSE version may not be correct.  We suggest upgrading to the
+4.1 or 4.2 line of gcc or using the Intel compiler, which is free on
+Linux for noncommercial use.  Alternatively, disable the SSE routines.

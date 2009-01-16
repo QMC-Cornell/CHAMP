@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+  <title>einspline</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor=#FFFFD0>
+<!--#include virtual="header.shtml" -->
+<h2> 1/18/08 </h2>
+Releasing einspline-0.8.0.  This release contains new functions which, for a 
+given evaluation point, evaluate a whole set of splines with a single
+evaluation call.  For large numbers of splines, this can result in
+a very significant speedup -- in some cases 4x!  The functions are
+very similar to the single-spline version.  Only uniform multi-splines
+have been implemented so far.
+<h2> 10/31/07 </h2>
+einspline-0.7.7 was released today.  It fixes an off-by-one error in the 
+construction of nonuniform B-spline bases.
+<h2> 5/11/07 </h2>
+Today, einspline 0.6 will be released today.  This release includes Fortran 77
+wrappers to the C library.
+<h2> 5/8/07 </h2>
+einspline-0.5 was released today.  This is the initial public release
+of the library.  I have tested it, but not extensively.  Please report
+any bugs to kpesler AT ciw DOT edu.
+
+<!--#include virtual="footer.shtml" -->
+</body>
+</html>
