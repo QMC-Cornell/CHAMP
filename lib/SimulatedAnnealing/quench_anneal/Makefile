@@ -1,3 +1,5 @@
+ifndef FC
+
 ##########
 # README #
 ##########
@@ -449,6 +451,8 @@ ifndef FFLAGS_NOOPT
   FFLAGS_NOOPT = $(FFLAGS)
 endif
 
+endif
+
 #######################
 # Using this Makefile #
 #######################
@@ -591,6 +595,8 @@ OBJS_MPI     = $(LIB_MPI)(main/func_mpi.o)\
 default: $(OBJS) $(OBJS_MATH) $(OBJS_SEQ)
 
 all: seq mpi
+
+libs: $(LIB_SEQ) $(LIB_COMMON)
 
 seq: $(LIB_SEQ) $(LIB_COMMON) $(LIB_LINPACK) $(LIB_LAPACK) $(LIB_BLAS)
 	cd tests ; $(MAKE) test_seq

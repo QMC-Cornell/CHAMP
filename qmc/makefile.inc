@@ -33,10 +33,10 @@ CHAMP_C=gcc
 CHAMP_MPIC=gcc
 
 CHAMP_C_FAST=-O3 -DUNDERSCORE
-CHAMP_C_MPI=-O3 -DUNDERSCORE
-CHAMP_C_DEBUG=-DUNDERSCORE
 CHAMP_C_PROF=-O3 -DUNDERSCORE -pg
+CHAMP_C_DEBUG=-DUNDERSCORE
 CHAMP_C_FLAGS=$(CHAMP_C_FAST)
+CHAMP_C_MPI_FLAGS=$(CHAMP_C_FLAGS)
 
 # Fortran compilation ------------------------------------------------------
 # These are defaults using the ifort compiler and are used e.g. on the old AMD cluster dft, and on nanolab
@@ -46,38 +46,32 @@ CHAMP_F77=ifort
 CHAMP_MPIF95=mpif77
 CHAMP_MPIF77=mpif77
 
-CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
-CHAMP_F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
-CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
-CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
-CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
-CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
-CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-# CHAMP_F77_FLAGS=$(CHAMP_F77_DEBUG)
+CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source
+CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source
+CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 
-CHAMP_F95_FAST=-O3 -ip -static -align all -fpp
-CHAMP_F95_IPO=-O3 -ipo -static -align all -fast -fpp
-CHAMP_F95_DEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
-CHAMP_F95_PROF=-O3 -pg -fpp
-CHAMP_F95_MPI=-O3 -ip -static -align all -fpp -DMPI
-CHAMP_F95_MPIDEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
 CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-# CHAMP_F95_FLAGS=$(CHAMP_F95_DEBUG)
+CHAMP_F95_MPI_FLAGS=$(CHAMP_F95_FLAGS) -DMPI
+
+CHAMP_F77_FLAGS=$(CHAMP_F95_FLAGS)
+CHAMP_F77_MPI_FLAGS=$(CHAMP_F95_MPI_FLAGS)
+
 
 # Linking  ------------------------------------------------------------------
 
 CHAMP_LD=ifort
 CHAMP_LD_MPI=mpif77
 
-CHAMP_LD_FAST=-O3 -static -align all
-CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
-CHAMP_LD_DEBUG=-static -align all
+#CHAMP_LD_FAST=-O3 -static -align all
+CHAMP_LD_FAST=$(CHAMP_F95_FLAGS) -static
 CHAMP_LD_PROF=-O3 -pg
+CHAMP_LD_DEBUG=-static -align all
+CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
+
 CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
-# CHAMP_LD_FLAGS=$(CHAMP_LD_DEBUG)
 
 CHAMP_LD_END=
-#CHAMP_LD_END_MPI=-lpmi -lpthread
+#CHAMP_LD_END_MPI=-lmpi -lpthread
 CHAMP_LD_END_MPI=
 
 # Executables -------------------------------------------------------------
@@ -86,29 +80,15 @@ CHAMP_EXE=champ.exe
 CHAMP_MPI_EXE=champ_mpi.exe
 CHAMP_DEBUG_EXE=champ_debug.exe
 
+# Export these for compiling the libraries
+export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS
+
 ####################### MACHINES ########################################
 
 ifeq ($(hostname),gauss)
-  CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
-# CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT -I/home/cyrus/temp_mpi/include
-  CHAMP_F77_DEBUG=-O0 -zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
-  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-# CHAMP_F77_FLAGS=$(CHAMP_F77_DEBUG)
-  CHAMP_F95_FAST=-O3 -ip -static -align all -fpp -mtune=core2 -march=core2 -xT
-  CHAMP_F95_DEBUG=-O0 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
-  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-# CHAMP_F95_FLAGS=$(CHAMP_F95_DEBUG)
-# CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT -L/home/cyrus/temp_mpi/lib
-  CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
-  CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
-  CHAMP_MPIC=mpicc
-  CHAMP_MPIF95=mpif90
-  CHAMP_MPIF77=mpif90
-  CHAMP_LD_MPI=mpif90
-  CHAMP_F77_MPI=$(CHAMP_F77_FAST) -DMPI
-  CHAMP_F95_MPI=$(CHAMP_F95_FAST) -DMPI
-# CHAMP_F77_MPI=$(CHAMP_F77_DEBUG) -DMPI
-# CHAMP_F95_MPI=$(CHAMP_F95_DEBUG) -DMPI
+  CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT 
+  CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source -mtune=core2 -march=core2 -xT
+  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 endif
 
 # Theory Center's linux cluster
@@ -165,9 +145,9 @@ ifeq ($(hostname),opt-login01.osc.edu)
 # CHAMP_MPIF95 = mpif90
 # CHAMP_MPIC = mpicc
 # CHAMP_LD_MPI = mpif90
-# CHAMP_F77_MPI = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
-# CHAMP_F95_MPI = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
-# CHAMP_C_MPI = -DMPI -DUNDERSCORE -O2 -tp amd64e
+# CHAMP_F77_MPI_FLAGS = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
+# CHAMP_F95_MPI_FLAGS = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
+# CHAMP_C_MPI_FLAGS = -DMPI -DUNDERSCORE -O2 -tp amd64e
 
   LAPACK=${ACML}
   BLAS=${ACML}
@@ -232,19 +212,19 @@ ifeq ($(hostname),login1)
 # MPI debug
   CHAMP_MPIF77 = mpif90.ibm
   CHAMP_MPIF95 = mpif90.ibm
-  CHAMP_F77_MPI = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_MPI = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_MPI_FLAGS = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpicc.ibm
-  CHAMP_C_MPI =  -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide
+  CHAMP_C_MPI_FLAGS =  -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide
   CHAMP_LD_MPI = mpif90.ibm
 
 # MPI
   CHAMP_MPIF77 = mpif90.ibm
   CHAMP_MPIF95 = mpif90.ibm
-  CHAMP_F77_MPI = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_MPI = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_MPI_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpicc.ibm
-  CHAMP_C_MPI = -O5
+  CHAMP_C_MPI_FLAGS = -O5
   CHAMP_LD_MPI = mpif90.ibm
 endif
 
@@ -270,9 +250,9 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
 # CHAMP_MPIF95 = mpif90
 # CHAMP_MPIC = mpicc
 # CHAMP_LD_MPI = mpif90
-# CHAMP_F77_MPI = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
-# CHAMP_F95_MPI = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
-# CHAMP_C_MPI = -DMPI -DUNDERSCORE -O2 -tp amd64e
+# CHAMP_F77_MPI_FLAGS = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
+# CHAMP_F95_MPI_FLAGS = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
+# CHAMP_C_MPI_FLAGS = -DMPI -DUNDERSCORE -O2 -tp amd64e
 
 #  LAPACK=${ACML}
 #  BLAS=${ACML}
@@ -296,9 +276,9 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
  CHAMP_MPIF77 = ftn -target=linux
  CHAMP_MPIF95 = ftn -target=linux
  CHAMP_MPIC = cc -target=linux
- CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
- CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
- CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
+ CHAMP_F77_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
+ CHAMP_F95_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
+ CHAMP_C_MPI_FLAGS = -DPATHSCALE -DMPI -DUNDERSCORE -O2
  CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
 
 # acml has both the LAPACK and the BLAS
@@ -322,8 +302,8 @@ ifeq ($(hostname),clastos)
  CHAMP_MPIF95=/usr/local/bin/mpif90_64
  CHAMP_MPIF77=/usr/local/bin/mpif90_64
  CHAMP_LD_MPI=/usr/local/bin/mpif90_64
- CHAMP_F77_MPI=-zero -extend_source -diag-disable vec -w -r8 -O3 -pad -ip -fpp -DMPI
- CHAMP_F95_MPI=-O3 -diag-disable vec -ip -static -align all -fpp -DMPI
+ CHAMP_F77_MPI_FLAGS=-zero -extend_source -diag-disable vec -w -r8 -O3 -pad -ip -fpp -DMPI
+ CHAMP_F95_MPI_FLAGS=-O3 -diag-disable vec -ip -static -align all -fpp -DMPI
 
 endif
 
@@ -356,9 +336,9 @@ ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
  CHAMP_MPIF77 = pathf90
  CHAMP_MPIF95 = pathf90
  CHAMP_MPIC = pathf90
- CHAMP_F77_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
- CHAMP_F95_MPI = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
- CHAMP_C_MPI = -DPATHSCALE -DMPI -DUNDERSCORE -O2
+ CHAMP_F77_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
+ CHAMP_F95_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
+ CHAMP_C_MPI_FLAGS = -DPATHSCALE -DMPI -DUNDERSCORE -O2
  CHAMP_LD_MPI = pathf90 -O2 -Wl,-z,muldefs
 
 # acml has both the LAPACK and the BLAS
@@ -380,8 +360,8 @@ ifeq ($(findstring school,$(hostname)), school)
 #CHAMP_MPIF95=mpif90
 #CHAMP_MPIF77=mpif90
 #CHAMP_LD_MPI=mpif90
-#CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
-#CHAMP_F95_MPI=-O3 -ip -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
+#CHAMP_F77_MPI_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
+#CHAMP_F95_MPI_FLAGS=-O3 -ip -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
 
 CHAMP_F95=ifort
 CHAMP_F77=ifort
@@ -392,16 +372,16 @@ CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
 CHAMP_F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
 CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
 CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
-CHAMP_F77_MPI=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
-CHAMP_F77_MPIDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F77_MPI_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
+CHAMP_F77_MPI_FLAGSDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
 CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
 
 CHAMP_F95_FAST=-O3 -ip -align all -fpp
 CHAMP_F95_IPO=-O3 -ipo -align all -fast -fpp
 CHAMP_F95_DEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
 CHAMP_F95_PROF=-O3 -pg -fpp
-CHAMP_F95_MPI=-O3 -ip -align all -fpp -DMPI
-CHAMP_F95_MPIDEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+CHAMP_F95_MPI_FLAGS=-O3 -ip -align all -fpp -DMPI
+CHAMP_F95_MPI_FLAGSDEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
 CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
 
 # Linking  ------------------------------------------------------------------
@@ -416,7 +396,7 @@ CHAMP_LD_PROF=-O3 -pg
 CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
 
 CHAMP_LD_END=
-#CHAMP_LD_END_MPI=-lpmi -lpthread
+#CHAMP_LD_END_MPI=-lmpi -lpthread
 CHAMP_LD_END_MPI=
 
 # acml has both the LAPACK and the BLAS
@@ -431,13 +411,11 @@ ifeq ($(hostname),jugene1)
 # MPI
   CHAMP_MPIF77 = mpixlf2003
   CHAMP_MPIF95 = mpixlf2003
-  CHAMP_F77_MPI = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_MPI = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpixlc
-  CHAMP_C_MPI = -O3 -qstrict
+  CHAMP_C_MPI_FLAGS = -O3 -qstrict
   CHAMP_LD_MPI = mpixlf2003
 endif
 
 CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
-#CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE)
-

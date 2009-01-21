@@ -40,8 +40,10 @@ print MAKEFILE "\n\n";
 #
 # make
 #
+print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n\n";
+
 print MAKEFILE "all: \$(PROG)\n\n";
-print MAKEFILE "\$(PROG): \$(OBJS)\n";
+print MAKEFILE "\$(PROG): \$(LIBS) \$(OBJS)\n";
 print MAKEFILE "\t\$(CHAMP_LD) \$(CHAMP_LD_FLAGS) -o \$@ \$(OBJS) \$(CHAMP_LIBS) \$(CHAMP_LD_END)\n\n";
 #
 # make clean
@@ -67,6 +69,24 @@ print MAKEFILE "\tperl makemake.pl $ARGV[0]\n";
 print MAKEFILE "\t/usr/bin/ctags *.f *.f90\n";
 print MAKEFILE "\tetags -l fortran *.f *.f90 */*.f \n\n";
 #
+# libraries
+print MAKEFILE "../lib/lib/libcyrus.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/lib2/blas/libblas.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/lib2/lapack/liblapack.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/lib2/linpack/liblinpack.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/lib2/einspline/lib/libeinspline.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/lib2/pspline/pspline/libpspline.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a:\n";
+print MAKEFILE "\tcd ../lib ; make\n\n";
+
 # Make .f95 a valid suffix
 #
 print MAKEFILE ".SUFFIXES: \n\n";
@@ -106,13 +126,13 @@ print MAKEFILE "\tmake \"CHAMP_F95_FLAGS=\$\{CHAMP_F95_PROF\}\" \"CHAMP_F77_FLAG
 # mpi:     
 #
 print MAKEFILE "mpi:\n";
-print MAKEFILE "\tmake \"CHAMP_EXE=\$\{CHAMP_MPI_EXE\}\" \"CHAMP_F95=\$\{CHAMP_MPIF95\}\" \"CHAMP_F77=\$\{CHAMP_MPIF77\}\" \"CHAMP_C=\$\{CHAMP_MPIC\}\" \"CHAMP_F77_FLAGS=\$\{CHAMP_F77_MPI\}\" \"CHAMP_F95_FLAGS=\$\{CHAMP_F95_MPI\}\" \"CHAMP_C_FLAGS=\$\{CHAMP_C_MPI\}\" \"CHAMP_LD=\$\{CHAMP_LD_MPI\}\" \"CHAMP_LD_END=\$\{CHAMP_LD_END_MPI\}\"\n\n";
+print MAKEFILE "\tmake \"CHAMP_EXE=\$\{CHAMP_MPI_EXE\}\" \"CHAMP_F95=\$\{CHAMP_MPIF95\}\" \"CHAMP_F77=\$\{CHAMP_MPIF77\}\" \"CHAMP_C=\$\{CHAMP_MPIC\}\" \"CHAMP_F77_FLAGS=\$\{CHAMP_F77_MPI_FLAGS\}\" \"CHAMP_F95_FLAGS=\$\{CHAMP_F95_MPI_FLAGS\}\" \"CHAMP_C_FLAGS=\$\{CHAMP_C_MPI_FLAGS\}\" \"CHAMP_LD=\$\{CHAMP_LD_MPI\}\" \"CHAMP_LD_END=\$\{CHAMP_LD_END_MPI\}\"\n\n";
 #
 #
 # mpi_debug:     
 #
 print MAKEFILE "mpi_debug:\n";
-print MAKEFILE "\tmake \"CHAMP_EXE=\$\{CHAMP_MPI_EXE\}\" \"CHAMP_F95=\$\{CHAMP_MPIF95\}\" \"CHAMP_F77=\$\{CHAMP_MPIF77\}\" \"CHAMP_F77_FLAGS=\$\{CHAMP_F77_MPIDEBUG\}\" \"CHAMP_F95_FLAGS=\$\{CHAMP_F95_MPIDEBUG\}\" \"CHAMP_LD=\$\{CHAMP_LD_MPI\}\" \"CHAMP_LD_END=\$\{CHAMP_LD_END_MPI\}\"\n\n";
+print MAKEFILE "\tmake \"CHAMP_EXE=\$\{CHAMP_MPI_EXE\}\" \"CHAMP_F95=\$\{CHAMP_MPIF95\}\" \"CHAMP_F77=\$\{CHAMP_MPIF77\}\" \"CHAMP_F77_FLAGS=\$\{CHAMP_F77_MPI_FLAGSDEBUG\}\" \"CHAMP_F95_FLAGS=\$\{CHAMP_F95_MPI_FLAGSDEBUG\}\" \"CHAMP_LD=\$\{CHAMP_LD_MPI\}\" \"CHAMP_LD_END=\$\{CHAMP_LD_END_MPI\}\"\n\n";
 #
 #
 #

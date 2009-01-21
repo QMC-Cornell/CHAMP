@@ -10,13 +10,13 @@
 #define F77_FUNC(name,NAME) name ## _
 
 /* As F77_FUNC, but for C identifiers containing underscores. */
-#define F77_FUNC_(name,NAME) name ## _
+#define F77_FUNC_(name,NAME) name ## __
 
 /* Define if F77 and FC dummy `main' functions are identical. */
 /* #undef FC_DUMMY_MAIN_EQ_F77 */
 
 /* Define to 1 if you have the `clock_gettime' function. */
-#define HAVE_CLOCK_GETTIME 1
+/* #undef HAVE_CLOCK_GETTIME */
 
 /* Define to 1 if C supports variable-length arrays. */
 #define HAVE_C_VARARRAYS 1
@@ -43,7 +43,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Support mmx instructions */
-#define HAVE_MMX 
+/* #undef HAVE_MMX */
 
 /* Define to 1 if you have the `posix_memalign' function. */
 #define HAVE_POSIX_MEMALIGN 1
@@ -55,22 +55,22 @@
 #define HAVE_SQRT 1
 
 /* Support SSE (Streaming SIMD Extensions) instructions */
-#define HAVE_SSE 
+/* #undef HAVE_SSE */
 
 /* Support SSE2 (Streaming SIMD Extensions 2) instructions */
-#define HAVE_SSE2 
+/* #undef HAVE_SSE2 */
 
 /* Support SSE3 (Streaming SIMD Extensions 3) instructions */
-#define HAVE_SSE3 
+/* #undef HAVE_SSE3 */
 
 /* Support SSE4.1 (Streaming SIMD Extensions 4.1) instructions */
-#define HAVE_SSE4_1 
+/* #undef HAVE_SSE4_1 */
 
 /* Support SSE4.2 (Streaming SIMD Extensions 4.2) instructions */
 /* #undef HAVE_SSE4_2 */
 
 /* Support SSSE3 (Supplemental Streaming SIMD Extensions 3) instructions */
-#define HAVE_SSSE3 
+/* #undef HAVE_SSSE3 */
 
 /* Define to 1 if stdbool.h conforms to C99. */
 #define HAVE_STDBOOL_H 1
@@ -103,7 +103,7 @@
 #define HAVE_UNISTD_H 1
 
 /* xmmintrin.h is available. */
-#define HAVE_XMMINTRIN_H 1
+/* #undef HAVE_XMMINTRIN_H */
 
 /* Define to 1 if the system has the type `_Bool'. */
 #define HAVE__BOOL 1
@@ -130,13 +130,13 @@
 #define PACKAGE_VERSION "0.8.9"
 
 /* Prefetch loop lead distance */
-#define PREFETCH_AHEAD 10
+/* #undef PREFETCH_AHEAD */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Use SSE prefetch */
-#define USE_PREFETCH 
+/* #undef USE_PREFETCH */
 
 /* Version number of package */
 #define VERSION "0.8.9"

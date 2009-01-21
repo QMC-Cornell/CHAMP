@@ -171,9 +171,11 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.o
 
+LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+
 all: $(PROG)
 
-$(PROG): $(OBJS)
+$(PROG): $(LIBS) $(OBJS)
 	$(CHAMP_LD) $(CHAMP_LD_FLAGS) -o $@ $(OBJS) $(CHAMP_LIBS) $(CHAMP_LD_END)
 
 clean:
@@ -190,6 +192,23 @@ make:
 	perl makemake.pl 
 	/usr/bin/ctags *.f *.f90
 	etags -l fortran *.f *.f90 */*.f 
+
+../lib/lib/libcyrus.a:
+	cd ../lib ; make
+../lib/lib2/blas/libblas.a:
+	cd ../lib ; make
+../lib/lib2/lapack/liblapack.a:
+	cd ../lib ; make
+../lib/lib2/linpack/liblinpack.a:
+	cd ../lib ; make
+../lib/lib2/einspline/lib/libeinspline.a:
+	cd ../lib ; make
+../lib/lib2/pspline/pspline/libpspline.a:
+	cd ../lib ; make
+../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:
+	cd ../lib ; make
+../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a:
+	cd ../lib ; make
 
 .SUFFIXES: 
 
@@ -214,10 +233,10 @@ prof:
 	make "CHAMP_F95_FLAGS=${CHAMP_F95_PROF}" "CHAMP_F77_FLAGS=${CHAMP_F77_PROF}" "CHAMP_C_FLAGS=${CHAMP_C_PROF}"  "CHAMP_LD_FLAGS=${CHAMP_LD_PROF}"
 
 mpi:
-	make "CHAMP_EXE=${CHAMP_MPI_EXE}" "CHAMP_F95=${CHAMP_MPIF95}" "CHAMP_F77=${CHAMP_MPIF77}" "CHAMP_C=${CHAMP_MPIC}" "CHAMP_F77_FLAGS=${CHAMP_F77_MPI}" "CHAMP_F95_FLAGS=${CHAMP_F95_MPI}" "CHAMP_C_FLAGS=${CHAMP_C_MPI}" "CHAMP_LD=${CHAMP_LD_MPI}" "CHAMP_LD_END=${CHAMP_LD_END_MPI}"
+	make "CHAMP_EXE=${CHAMP_MPI_EXE}" "CHAMP_F95=${CHAMP_MPIF95}" "CHAMP_F77=${CHAMP_MPIF77}" "CHAMP_C=${CHAMP_MPIC}" "CHAMP_F77_FLAGS=${CHAMP_F77_MPI_FLAGS}" "CHAMP_F95_FLAGS=${CHAMP_F95_MPI_FLAGS}" "CHAMP_C_FLAGS=${CHAMP_C_MPI_FLAGS}" "CHAMP_LD=${CHAMP_LD_MPI}" "CHAMP_LD_END=${CHAMP_LD_END_MPI}"
 
 mpi_debug:
-	make "CHAMP_EXE=${CHAMP_MPI_EXE}" "CHAMP_F95=${CHAMP_MPIF95}" "CHAMP_F77=${CHAMP_MPIF77}" "CHAMP_F77_FLAGS=${CHAMP_F77_MPIDEBUG}" "CHAMP_F95_FLAGS=${CHAMP_F95_MPIDEBUG}" "CHAMP_LD=${CHAMP_LD_MPI}" "CHAMP_LD_END=${CHAMP_LD_END_MPI}"
+	make "CHAMP_EXE=${CHAMP_MPI_EXE}" "CHAMP_F95=${CHAMP_MPIF95}" "CHAMP_F77=${CHAMP_MPIF77}" "CHAMP_F77_FLAGS=${CHAMP_F77_MPI_FLAGSDEBUG}" "CHAMP_F95_FLAGS=${CHAMP_F95_MPI_FLAGSDEBUG}" "CHAMP_LD=${CHAMP_LD_MPI}" "CHAMP_LD_END=${CHAMP_LD_END_MPI}"
 
 accumulation_mod.o: all_tools_mod.o average_mod.o control_mod.o \
 	montecarlo_mod.o print_mod.o commons.h
