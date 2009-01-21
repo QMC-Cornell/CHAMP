@@ -211,7 +211,7 @@ module bsplines_mod
           !boundary conditions (periodic: ibc=0, antiperiodic: ibc=5)
           ibc = 0
           rbc = 0.d0
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -220,7 +220,7 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(1))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(1), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(1), ispline, &
                                            plane_wave_orbitals_at_grid_points(:,iorb))
           enddo
           write (6,*) 'B-splines coefficients successfully set up'
@@ -313,7 +313,7 @@ module bsplines_mod
     !boundary conditions (periodic: ibc=0, antiperiodic: ibc=5)
     ibc = 0
     rbc_complex = (0.,0.)
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -324,7 +324,7 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(1),ispline, &
                                      complex_plane_wave_orbitals_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
@@ -435,7 +435,7 @@ module bsplines_mod
     !boundary conditions (periodic: ibc=0, antiperiodic: ibc=5)
     ibc = 0
     rbc_complex = (0.,0.)
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -446,7 +446,7 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(1),ispline, &
                                      complex_plane_wave_orbitals_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
@@ -573,7 +573,7 @@ module bsplines_mod
           ibc = 0
           rbc = 0.d0
           !create spline for orbitals
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -582,11 +582,11 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(1))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(1), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(1), ispline, &
                                            plane_wave_orbitals_at_grid_points(:,iorb))
           enddo
           !create spline for orbitals' Laplacian
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -595,7 +595,7 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(2))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(2), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(2), ispline, &
                                            plane_wave_orbitals_laplacian_at_grid_points(:,iorb))
           enddo
           write (6,*) 'B-splines coefficients successfully set up'
@@ -708,7 +708,7 @@ module bsplines_mod
     ibc = 0
     rbc_complex = (0.,0.)
     !create splines for orbitals
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -719,12 +719,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(1),ispline, &
                                      complex_plane_wave_orbitals_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create splines for orbitals' Laplacian
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -735,7 +735,7 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(2),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(2),ispline, &
                                      complex_plane_wave_orbitals_laplacian_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
@@ -862,7 +862,7 @@ module bsplines_mod
       ibc = 0
       rbc_complex = (0.,0.)
       !create splines for orbitals
-      call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+      call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                        rnaught(2),rone(2),ngrid_orb(2), &
                                        rnaught(3),rone(3),ngrid_orb(3), &
                                        ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -873,12 +873,12 @@ module bsplines_mod
       do ikvec=1,nkvec
          do iorb=1,nband(ikvec)
             ispline=(ikvec-1)*nkvec+(iorb-1)
-            call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),ispline, &
+            call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(1),ispline, &
                                        complex_plane_wave_orbitals_at_grid_points(:,ikvec,iorb))
          enddo
       enddo
       !create splines for orbitals' Laplacian
-      call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+      call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                        rnaught(2),rone(2),ngrid_orb(2), &
                                        rnaught(3),rone(3),ngrid_orb(3), &
                                        ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -889,7 +889,7 @@ module bsplines_mod
       do ikvec=1,nkvec
          do iorb=1,nband(ikvec)
             ispline=(ikvec-1)*nkvec+(iorb-1)
-            call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(2),ispline, &
+            call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(2),ispline, &
                                        complex_plane_wave_orbitals_laplacian_at_grid_points(:,ikvec,iorb))
          enddo
       enddo
@@ -1055,7 +1055,7 @@ module bsplines_mod
           ibc = 0
           rbc = 0.d0
           !create spline for orbitals
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -1064,11 +1064,11 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(1))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(1), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(1), ispline, &
                                            plane_wave_orbitals_at_grid_points(:,iorb))
           enddo
           !create spline for orbitals' Laplacian
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -1077,11 +1077,11 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(2))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(2), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(2), ispline, &
                                            plane_wave_orbitals_laplacian_at_grid_points(:,iorb))
           enddo
           !create spline for first component of orbitals' gradient
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -1090,11 +1090,11 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(3))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(3), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(3), ispline, &
                                            plane_wave_orbitals_gradient1_at_grid_points(:,iorb))
           enddo
           !create spline for second component of orbitals' gradient
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -1103,11 +1103,11 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(4))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(4), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(4), ispline, &
                                            plane_wave_orbitals_gradient2_at_grid_points(:,iorb))
           enddo
           !create spline for third component of orbitals' gradient
-          call fcreate_multi_ubspline_3d_d_(rnaught(1),rone(1),ngrid_orb(1), &
+          call fcreate_multi_ubspline_3d_d(rnaught(1),rone(1),ngrid_orb(1), &
                                             rnaught(2),rone(2),ngrid_orb(2), &
                                             rnaught(3),rone(3),ngrid_orb(3), &
                                             ibc(1,1),rbc(1,1),ibc(1,2),rbc(1,2), &
@@ -1116,7 +1116,7 @@ module bsplines_mod
                                             nspline,bspline_coefficient_pointer(5))
           do iorb=1,nspline
              ispline=iorb-1
-             call fset_multi_ubspline_3d_d_(bspline_coefficient_pointer(5), ispline, &
+             call fset_multi_ubspline_3d_d(bspline_coefficient_pointer(5), ispline, &
                                            plane_wave_orbitals_gradient3_at_grid_points(:,iorb))
           enddo
           write (6,*) 'B-splines coefficients successfully set up'
@@ -1266,7 +1266,7 @@ module bsplines_mod
     ibc = 0
     rbc_complex = (0.,0.)
     !create splines for orbitals
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1277,12 +1277,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(1),ispline, &
                                      complex_plane_wave_orbitals_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create splines for orbitals' Laplacian
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1293,12 +1293,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(2),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(2),ispline, &
                                      complex_plane_wave_orbitals_laplacian_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create splines for first component of orbitals' gradient
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1309,12 +1309,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(3),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(3),ispline, &
                                      complex_plane_wave_orbitals_gradient1_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create splines for second component of orbitals' gradient
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1325,12 +1325,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(4),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(4),ispline, &
                                      complex_plane_wave_orbitals_gradient2_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create splines for third component of orbitals' gradient
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1341,7 +1341,7 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(5),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(5),ispline, &
                                      complex_plane_wave_orbitals_gradient3_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
@@ -1508,7 +1508,7 @@ module bsplines_mod
     ibc = 0
     rbc_complex = (0.,0.)
     !create spline for orbitals
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1519,12 +1519,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(1),ispline, &
                                      complex_plane_wave_orbitals_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create spline for orbitals' Laplacian
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1535,12 +1535,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(2),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(2),ispline, &
                                      complex_plane_wave_orbitals_laplacian_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create spline for first component of orbitals' gradient
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1551,12 +1551,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(3),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(3),ispline, &
                                      complex_plane_wave_orbitals_gradient1_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create spline for second component of orbitals' gradient
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1567,12 +1567,12 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(4),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(4),ispline, &
                                      complex_plane_wave_orbitals_gradient2_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
     !create spline for third component of orbitals' gradient
-    call fcreate_multi_ubspline_3d_z_(rnaught(1),rone(1),ngrid_orb(1), &
+    call fcreate_multi_ubspline_3d_z(rnaught(1),rone(1),ngrid_orb(1), &
                                      rnaught(2),rone(2),ngrid_orb(2), &
                                      rnaught(3),rone(3),ngrid_orb(3), &
                                      ibc(1,1),rbc_complex(1,1),ibc(1,2),rbc_complex(1,2), &
@@ -1583,7 +1583,7 @@ module bsplines_mod
     do ikvec=1,nkvec
        do iorb=1,nband(ikvec)
           ispline=(ikvec-1)*nkvec+(iorb-1)
-          call fset_multi_ubspline_3d_z_(bspline_coefficient_pointer(5),ispline, &
+          call fset_multi_ubspline_3d_z(bspline_coefficient_pointer(5),ispline, &
                                      complex_plane_wave_orbitals_gradient3_at_grid_points(:,ikvec,iorb))
        enddo
     enddo
@@ -1667,7 +1667,7 @@ module bsplines_mod
   r=mod(r+abs(int(r))+one,one)
 
   if(l_need_phase) then
-    call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(1), &
+    call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(1), &
                                    r(1), r(2), r(3), orb_tmp_complex)
     iorb=0
     call cossin_psi_k(glatt_sim,rknorm,rkvec,kvec,nkvec,r_cart,ng1d_sim, &
@@ -1689,7 +1689,7 @@ module bsplines_mod
        enddo !orbitals
     enddo !k-points
   else !no phase (Gamma)
-    call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(1), &
+    call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(1), &
                                    r(1), r(2), r(3), orb_tmp)
     orb_bsplines=orb_tmp
   endif !need phase
@@ -1753,7 +1753,7 @@ module bsplines_mod
   select case (igrad_lap)
   case (0) !orbitals interpolated, gradient and Laplacian calculated
     if(l_need_phase) then
-      call feval_multi_ubspline_3d_z_vgh_(bspline_coefficient_pointer(1),&
+      call feval_multi_ubspline_3d_z_vgh(bspline_coefficient_pointer(1),&
                                          r(1), r(2), r(3),              &
                                          orb_tmp_complex,               &
                                          dorb_tmp_complex,              &
@@ -1807,7 +1807,7 @@ module bsplines_mod
         enddo !orbitals k-point
       enddo !k-vectors
     else !no phase (Gamma)
-       call feval_multi_ubspline_3d_d_vgh_(bspline_coefficient_pointer(1),&
+       call feval_multi_ubspline_3d_d_vgh(bspline_coefficient_pointer(1),&
                                           r(1),r(2),r(3),                &
                                           orb_tmp,dorb_tmp,              &
                                           hessian_bsplines)
@@ -1820,12 +1820,12 @@ module bsplines_mod
     endif !need phase
   case (1) !orbitals and Laplacian interpolated, gradient calculated
     if(l_need_phase) then
-      call feval_multi_ubspline_3d_z_vg_(bspline_coefficient_pointer(1),&
+      call feval_multi_ubspline_3d_z_vg(bspline_coefficient_pointer(1),&
                                         r(1), r(2), r(3),              &
                                         orb_tmp_complex,               &
                                         dorb_tmp_complex)
       dorb_tmp_complex=matmul(rlatt_inv_transpose,dorb_tmp_complex)
-      call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(2),&
+      call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(2),&
                                        r(1), r(2), r(3),              &
                                        ddorb_tmp_complex)
       call cossin_psi_k(glatt_sim,rknorm,rkvec,kvec,nkvec,r_cart,ng1d_sim, &
@@ -1869,10 +1869,10 @@ module bsplines_mod
         enddo !orbitals k-point
       enddo !k-vectors
     else !no phase (Gamma)
-       call feval_multi_ubspline_3d_d_vg_(bspline_coefficient_pointer(1), &
+       call feval_multi_ubspline_3d_d_vg(bspline_coefficient_pointer(1), &
                                          r(1), r(2), r(3),               &
                                          orb_tmp, dorb_tmp)
-       call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(2), &
+       call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(2), &
                                         r(1), r(2), r(3),               &
                                         ddorb_tmp)
        orb_bsplines=orb_tmp
@@ -1881,19 +1881,19 @@ module bsplines_mod
     endif !need phase
   case (2) !orbitals, gradient and Laplacian interpolated
     if(l_need_phase) then
-      call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(1),&
+      call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(1),&
                                      r(1), r(2), r(3),              &
                                      orb_tmp_complex)
-      call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(2),&
+      call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(2),&
                                      r(1), r(2), r(3),              &
                                      ddorb_tmp_complex)
-      call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(3),&
+      call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(3),&
                                      r(1), r(2), r(3),              &
                                      dorb_tmp_complex(1,:))
-      call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(4),&
+      call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(4),&
                                      r(1), r(2), r(3),              &
                                      dorb_tmp_complex(2,:))
-      call feval_multi_ubspline_3d_z_(bspline_coefficient_pointer(5),&
+      call feval_multi_ubspline_3d_z(bspline_coefficient_pointer(5),&
                                      r(1), r(2), r(3),              &
                                      dorb_tmp_complex(3,:))
       call cossin_psi_k(glatt_sim,rknorm,rkvec,kvec,nkvec,r_cart,ng1d_sim, &
@@ -1937,19 +1937,19 @@ module bsplines_mod
         enddo !orbitals k-point
       enddo !k-vectors
     else !no phase (Gamma)
-       call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(1), &
+       call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(1), &
                                       r(1), r(2), r(3),               &
                                       orb_tmp)
-       call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(2), &
+       call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(2), &
                                       r(1), r(2), r(3),               &
                                       ddorb_tmp)
-       call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(3), &
+       call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(3), &
                                       r(1), r(2), r(3),               &
                                       dorb_tmp(1,:))
-       call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(4), &
+       call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(4), &
                                       r(1), r(2), r(3),               &
                                       dorb_tmp(2,:))
-       call feval_multi_ubspline_3d_d_(bspline_coefficient_pointer(5), &
+       call feval_multi_ubspline_3d_d(bspline_coefficient_pointer(5), &
                                       r(1), r(2), r(3),               &
                                       dorb_tmp(3,:))
        orb_bsplines=orb_tmp
