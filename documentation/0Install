@@ -1,0 +1,12 @@
+To compile and link serial and parallel versions of CHAMP in champ/qmc/champ.exe and champ/qmc/champ_mpi.exe:
+1) cd champ/lib/lib2/einspline
+   Check that configure_my is appropriate (using icc or gcc)
+   install
+2) cd champ/qmc
+   make
+3) make clean
+   make mpi
+
+Note that you presently have to do a "make clean" between a "make" and a "make mpi" or vice versa.
+I should get rid of step 1), but for some reason configure_my does not run correctly if I run
+it by cd'ing there from a Makefile.

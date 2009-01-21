@@ -5,10 +5,18 @@ Installation:
 1) ./configure_my
    For more configuration options:
    ./configure --help
+   I then edit Makefile and change the FFLAGS line (line 128) to
+   FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad -mtune=core2 -march=core2 -xT
+   on 64-bit machines, but this is not necessary.
 2) make
 3) make install
+4) Go to lib and do a
+   rm *.so*
+   If we do not do that we can still link CHAMP but when executing we get the error msg:
+   /home/cyrus/champ/qmc/champ_mpi.exe: error while loading shared libraries: libeinspline.so.0: cannot open shared object file: No such file or directory
+   I think if we use -static when linking, then it is not necessary to delete the *.so* files.
 
 Documentation at http://einspline.sourceforge.net/doc.shtml
 says
 To take maximum advantage of SSE instructions, configure with "--enable-sse"
-but I have not used that so far.
+It works on the dft cluster, but does not seem to change execution speed appreciably.
