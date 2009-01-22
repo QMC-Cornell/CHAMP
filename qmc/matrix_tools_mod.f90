@@ -90,7 +90,7 @@ module matrix_tools_mod
      mat_w_inv (i) = 0.d0
      w_kept_nb = w_kept_nb - 1
    else
-     mat_w_inv (i) = 1.d0 /  mat_w (i)
+     mat_w_inv (i) = 1.d0 / mat_w (i)
    endif
   enddo
 !JT  write(6,*) trim(lhere), ': number of singular values dropped:', dim - w_kept_nb

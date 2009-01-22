@@ -3647,43 +3647,38 @@ module basic_tools_mod
 ! ================================================================================
   function cpu_to_string (rseconds)
 ! --------------------------------------------------------------------------------
-! Name          : cpu_to_string
+! Description : converts "rsecs" into a string "..h..m..s..c"
 !
-! Description    : converts "rsecs" into a string "..h..m..s..c"
-!
-! Authors: F.Colonna
-! Date  :06 Oct 2000
+! Created     : F. Colonna, 06 Oct 2000
+! Modified    : J. Toulouse, 22 Jan 2009
 ! --------------------------------------------------------------------------------
   implicit none
 
-! function:
+! input/ouput
   character(len=20) :: cpu_to_string
+  real(dp), intent(in) :: rseconds
 
-! i/o:
-  real(dp)  :: rseconds
+! local
+  character(len=20) :: string
+  real(dp)          :: hours, minutes, seconds, cents
+  integer           :: ihours, iminutes, iseconds, icents
 
-! local:
-  character(len=max_string_len) :: string
-  real(dp)              :: hours, minutes, seconds, cents
-  integer                       :: ihours, iminutes, iseconds, icents
+! begin
+  hours    = rseconds/3600.d0
+  ihours   = int(hours)
 
-! begin:
+  minutes  = (hours - ihours)*60.d0
+  iminutes = int(minutes)
 
-   hours    = rseconds/3600.d0
-   ihours   = int(hours)
+  seconds  = (minutes - iminutes)*60d0
+  iseconds = int(seconds)
 
-   minutes  = (hours - ihours)*60.d0
-   iminutes = int(minutes)
+  cents    = (seconds-iseconds)*100.d0
+  icents   = int(cents)
 
-   seconds  = (minutes - iminutes)*60d0
-   iseconds = int(seconds)
+  write(string,'(i4.4,a,i2.2,a,i2.2,a,i2.2,a)') ihours,'h',iminutes,'m',iseconds,'s',icents,'c'
 
-   cents    = (seconds-iseconds)*100.d0
-   icents   = int(cents)
-
-   write(string,'(i4.4,a,i2.2,a,i2.2,a,i2.2,a)') ihours,'h',iminutes,'m',iseconds,'s',icents,'c'
-
-   cpu_to_string = string
+  cpu_to_string = string
 
   end function cpu_to_string
 
