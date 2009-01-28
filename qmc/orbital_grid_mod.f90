@@ -6,9 +6,9 @@ module orbital_grid_mod
   save
 
 ! Declaration of shared variables and default values
-  real(dp), allocatable, save ::  orb_num(:,:,:,:),dorb_num(:,:,:,:,:),ddorb_num(:,:,:,:)
-  integer, save ::                ngrid_orbx,ngrid_orby,ngrid_orbz
-  integer, save ::                igrad_lap
+  real(dp), allocatable ::  orb_num(:,:,:,:),dorb_num(:,:,:,:,:),ddorb_num(:,:,:,:)
+  integer ::                ngrid_orbx,ngrid_orby,ngrid_orbz
+  integer ::                igrad_lap
 
 end module orbital_grid_mod
 

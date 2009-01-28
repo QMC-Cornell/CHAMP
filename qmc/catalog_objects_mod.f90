@@ -17,10 +17,6 @@ module catalog_objects_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'catalog_objects'
-
-
 ! begin
   call catalog_one_object ('xold', xold_index)
   call catalog_one_object ('xoldw', xoldw_index)

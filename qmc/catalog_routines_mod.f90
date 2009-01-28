@@ -38,8 +38,6 @@ module catalog_routines_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'build_tree'
 
 ! begin
   call catalog_all_nodes_and_routines
@@ -56,8 +54,6 @@ module catalog_routines_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'catalog_all_nodes_and_routines'
 
 ! begin
 

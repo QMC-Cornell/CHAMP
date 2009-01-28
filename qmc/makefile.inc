@@ -316,6 +316,22 @@ ifeq ($(hostname),cfe1)
   CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
 endif
 
+#jasmine at cornell
+ifeq ($(hostname),jasmine)
+  CHAMP_F95=gfortran
+  CHAMP_F77=gfortran
+  CHAMP_MPIF95=mpif90
+  CHAMP_MPIF77=mpif90
+  CHAMP_F95_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall
+  CHAMP_F77_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall
+  CHAMP_F95_MPI_FLAGS=$(CHAMP_F95_FLAGS) -DMPI
+  CHAMP_F77_MPI_FLAGS=$(CHAMP_F77_FLAGS) -DMPI
+  CHAMP_LD=gfortran
+# CHAMP_LD_FLAGS=-static
+  CHAMP_LD_FLAGS=-O3
+  CHAMP_LD_MPI=mpif90
+endif
+
 # AMD Opteron cluster with Pathscale compiler on slid.fysik at Lyngby, Denmark
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 

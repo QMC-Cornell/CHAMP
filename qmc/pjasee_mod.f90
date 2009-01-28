@@ -39,7 +39,7 @@ contains
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
-    integer                              :: i,k,ieta, ie
+    integer                              :: k,ieta, ie
     real(dp)                             :: sum
     include 'commons.h'
 !JT    include 'common_vd.h'
@@ -92,8 +92,6 @@ contains
 
     real(dp)                             :: xvec (3, melec*(melec-1)/2)
     integer                              :: ie, ist , ije, je
-    real(dp)                             :: temp
-    real(dp)                             :: c_s_fac, grad_c_s_fac (ndim_pj), sum
 
     call object_alloc ("grad_cos_star_ee ", grad_cos_star_ee, ndim_pj, nelec * (nelec-1)/2,  nstar_ee)
 
@@ -140,8 +138,7 @@ contains
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
     real(dp)                             :: xcoord (3,melec)
-    real(dp)                             :: rvec (3,melec*(melec-1)/2)
-    real(dp)                             :: xvec (3), value1, temp , cosstar
+    real(dp)                             :: value1, temp , cosstar
 
     !    call  find_rvec_ee (xcoord, rvec)
 
@@ -205,10 +202,9 @@ contains
     implicit none
     include "commons.h"
 !JT    include "common_jasn.h"
-    integer                              :: iel, ist, ist_s, i, j, jj, ij, ije
+    integer                              :: iel, ist, ist_s, i, j, jj, ij
     real(dp)                             :: xcoord (3,melec)
-    real(dp)                             :: rvec (3,melec*(melec-1)/2)
-    real(dp)                             :: xvec (3), value1, temp
+    real(dp)                             :: value1, temp
 
 
     value1 = 0
@@ -317,7 +313,7 @@ contains
     integer                              :: ije
     real(dp)                             :: c_s_fac, grad_c_s_fac (ndim_pj)
     integer                              :: ist
-    real(dp)                             :: dot , phas,  sindot, cosdot
+    real(dp)                             :: sindot, cosdot
     integer                              :: i, i1, i2, k
 
     !! note now basis contains both + and -
@@ -356,8 +352,8 @@ contains
     include "commons.h"
 
     integer                              :: ist
-    real(dp)                             :: r (ndim_pj), sum, dot
-    integer                              :: i, i1, i2, k, ij
+    real(dp)                             ::  sum
+    integer                              :: i, i1, i2, ij
 
 
     !! note now basis contains both + and -
@@ -386,7 +382,7 @@ contains
     implicit none
     include "commons.h"
     integer                              :: ist
-    real(dp)                             :: sum (ndim_pj), dot,  sindot
+    real(dp)                             :: sum (ndim_pj)
     integer                              :: i, i1, i2, k , ij
 
     !! note now basis contains both + and -
@@ -425,7 +421,7 @@ contains
     real (dp)                            :: pjasfsum, pjasd2
     real (dp)                            :: pjasdiv_vj (melec)
     real (dp)                            :: gen, fen, gradl (3), lap2, pgradl (3)
-    integer                              :: ist, i, ij , k , j , ist_s
+    integer                              :: ist, i, ij , j , ist_s
 
     if( nelec .lt. 2) return
 
@@ -517,8 +513,8 @@ contains
     real (dp)                            :: pjasv (3, melec)
     real (dp)                            :: pjasfsum, pjasd2
     real (dp)                            :: pjasdiv_vj (melec)
-    real (dp)                            :: gen, fen, gradl (3), lap2, pgradl (3)
-    integer                              :: ist, i, ij , k , j , ist_s
+    real (dp)                            :: fen, gradl (3), pgradl (3)
+    integer                              :: ist, i, ij , j , ist_s
 
 
     if( nelec .lt. 2) return
@@ -596,7 +592,7 @@ contains
 !JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
-    real (dp)                            :: gen, fen , fen1(3), temp (3), fsum
+    real (dp)                            :: fen , fen1(3), temp (3), fsum
     integer                              :: ist, i,j, ij , jj , ist_s
 
     if( nelec .lt. 2) return
@@ -661,7 +657,7 @@ contains
     implicit none
     include "commons.h"
     integer                              :: iel
-    integer                              :: ie, i, k, n , jj, j, u, v, ij
+    integer                              :: i, k, n , jj, u, v, ij
     real(dp)                             :: rvec (3, melec), xvec (3)
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:,:),  sin_temp(:,:,:)
@@ -774,7 +770,7 @@ contains
     implicit none
     include "commons.h"
     integer                              :: iel
-    integer                              :: ie, i, k, n , jj, j, u, v, ij
+    integer                              :: i, k, n , jj, u, v, ij
     real(dp)                             :: rvec (3, melec*(melec-1)/2), xvec (3)
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:,:),  sin_temp(:,:,:)

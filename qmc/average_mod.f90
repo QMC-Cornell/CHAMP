@@ -260,7 +260,6 @@ module average_mod
   character(len=*), intent(in) :: object_bav_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_block_average_request'
   integer object_bav_ind
 
 ! begin
@@ -405,7 +404,7 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_define_from_block_average'
   integer  object_bav_ind, object_av_ind, obj_i
-  logical object_found
+
 
 ! begin
 
@@ -451,8 +450,7 @@ module average_mod
   character(len=*), intent(in) :: object_name, object_av_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_average_walk_define'
-  integer object_ind, object_av_ind, obj_i
+  integer object_ind
 
   call object_average_define (object_name, object_av_name)
 
@@ -606,7 +604,6 @@ module average_mod
   character(len=*), intent(in) :: object_var_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_variance_request'
   integer object_var_ind
 
 ! begin
@@ -850,7 +847,6 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_error_define_from_variance'
   integer  object_var_ind, object_err_ind, obj_i
-  logical variance_found
 
 ! begin
 
@@ -963,8 +959,11 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_0'
   character(len=max_string_len_type)   :: object_type, object_av_type
-  integer dim1, dim_av1, ierr
+
+# if defined (MPI)
   real(dp) collect
+  integer ierr
+# endif
 
 ! begin
 
@@ -1055,8 +1054,12 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_1'
   character(len=max_string_len_type)   :: object_type, object_av_type
   integer dim1, dim_av1
+
+# if defined (MPI)
   real(dp), allocatable :: collect(:)
   integer ierr
+# endif
+
 
 ! begin
 
@@ -1083,8 +1086,8 @@ module average_mod
     dim_av1 = objects(object_av_ind)%dimensions(1)
 
     if (dim1 /= dim_av1) then
-     write(6,'(4a,i)') trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
-     write(6,'(4a,i)') trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
+     write(6,'(4a,i8)') trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
+     write(6,'(4a,i8)') trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
      write(6,'(2a)') trim(lhere),': they should be identical'
      call die (lhere)
     endif
@@ -1167,8 +1170,13 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'object_average_by_index_double_2'
   character(len=max_string_len_type)   :: object_type, object_av_type
   integer dim1, dim_av1, dim2, dim_av2
+
+
+# if defined (MPI)
   real(dp), allocatable :: collect(:,:)
   integer ierr
+# endif
+
 
 ! begin
 
@@ -1279,8 +1287,11 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_block_average_by_index_double_0'
   character(len=max_string_len_type)   :: object_type, object_bav_type
+
+# if defined (MPI)
   integer ierr
   real(dp) collect
+# endif
 
 ! begin
 
@@ -1362,8 +1373,15 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_block_average_by_index_double_1'
   character(len=max_string_len_type)   :: object_type, object_bav_type
-  integer dim1, dim_bav1, ierr
+  integer dim1, dim_bav1
+
+
+# if defined (MPI)
+  integer ierr
   real(dp), allocatable :: collect(:)
+# endif
+
+
 
 ! begin
 
@@ -1390,8 +1408,8 @@ module average_mod
     dim_bav1 = objects(object_bav_ind)%dimensions(1)
 
     if (dim1 /= dim_bav1) then
-     write(6,'(4a,i)') trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
-     write(6,'(4a,i)') trim(lhere),': dimension of object ',trim(objects(object_bav_ind)%name),' is ', dim_bav1
+     write(6,'(4a,i8)') trim(lhere),': dimension of object', trim(objects(object_ind)%name),' is ', dim1
+     write(6,'(4a,i8)') trim(lhere),': dimension of object ',trim(objects(object_bav_ind)%name),' is ', dim_bav1
      write(6,'(2a)') trim(lhere),': they should be identical'
      call die (lhere)
     endif
@@ -1464,8 +1482,14 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_block_average_by_index_double_2'
   character(len=max_string_len_type)   :: object_type, object_bav_type
-  integer dim1, dim_bav1, dim2, dim_bav2, ierr
+  integer dim1, dim_bav1, dim2, dim_bav2
+
+# if defined (MPI)
+  integer ierr
   real(dp), allocatable :: collect(:,:)
+# endif
+
+
 
 ! begin
 
@@ -1646,8 +1670,8 @@ module average_mod
     dim_av1 = objects(object_av_ind)%dimensions(1)
 
     if (dim_bav1 /= dim_av1) then
-     write(6,'(4a,i)') trim(lhere),': dimension of object', trim(objects(object_bav_ind)%name),' is ', dim_bav1
-     write(6,'(4a,i)') trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
+     write(6,'(4a,i8)') trim(lhere),': dimension of object', trim(objects(object_bav_ind)%name),' is ', dim_bav1
+     write(6,'(4a,i8)') trim(lhere),': dimension of object ',trim(objects(object_av_ind)%name),' is ', dim_av1
      write(6,'(2a)') trim(lhere),': they should be identical'
      call die (lhere)
     endif
@@ -1749,7 +1773,6 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_variance_by_index_double_0'
   character(len=max_string_len_type) object_av_type, object_var_type
-  integer dim_av1, dim_err1
 
 ! begin
 
@@ -1960,7 +1983,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_0_double_0'
-  character(len=max_string_len_type) object_av1_type, object_av2_type, object_covar_type
+  character(len=max_string_len_type) object_covar_type
 
 ! begin
 
@@ -2172,7 +2195,6 @@ module average_mod
   character(len=max_string_len_rout), save :: lhere = 'object_covariance_by_index_double_1_double_1_double_1'
   character(len=max_string_len_type) object_covar_type
   integer dim_av11, dim_av21, dim_covar1
-  integer i,j
 
 ! begin
 
@@ -2503,7 +2525,6 @@ module average_mod
   integer, intent(in) :: object_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_average_walk_step_by_index_double_0'
   integer walk_i
 
 ! begin
@@ -2611,8 +2632,13 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_0'
-  integer ierr, walk_i
+# if defined (MPI)
+  integer ierr
   real(dp) collect
+# endif
+
+
+
 
 ! begin
 
@@ -2674,8 +2700,12 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_1'
+
+# if defined (MPI)
   integer ierr
   real(dp), allocatable :: collect (:)
+# endif
+
 
 ! begin
 
@@ -2740,8 +2770,11 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_average_walk_block_by_index_double_2'
+# if defined (MPI)
   integer ierr
   real(dp), allocatable :: collect (:,:)
+# endif
+
 
 ! begin
 
@@ -2800,7 +2833,6 @@ module average_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'print_list_of_averages_and_errors'
   integer ind
 
 ! begin
@@ -3216,7 +3248,7 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_averages_walk_step'
-  integer ind, rtn_i
+  integer ind
   integer object_ind
   character(len=max_string_len_type) object_type
 
@@ -3356,7 +3388,6 @@ module average_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'reinit_averages_and_errors'
 
 ! begin
   block_averages_nb = 0
@@ -3401,7 +3432,6 @@ module average_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'invalidate_averages_and_errors'
   integer block_averages_defined_i, averages_defined_i, variances_defined_i
   integer covariances_defined_i, errors_defined_i
 

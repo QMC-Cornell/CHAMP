@@ -77,7 +77,7 @@ CONTAINS
 
 #ifdef MPI
  INTEGER, DIMENSION(3) :: blen, indices, types
- INTEGER MPI_bwfsizetype, mpi_err
+ INTEGER MPI_bwfsizetype
 
  TYPE bwfsize_type
     sequence
@@ -302,7 +302,7 @@ CONTAINS
        read(io,*,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2),kvec_bwfdet(1,k),kvec_bwfdet(2,k),kvec_bwfdet(3,k)
        if(kvec_bwfdet(1,k)-rkvec(1,k) > tolerance .or. kvec_bwfdet(2,k)-rkvec(2,k) > tolerance .or. kvec_bwfdet(3,k)-rkvec(3,k) > tolerance) then
           write(6,*)
-          write(6,'(''K-point '',i,'' in bwfn.data different from what CHAMP expects'')')k
+          write(6,'(''K-point '',i8,'' in bwfn.data different from what CHAMP expects'')')k
           write(6,'(''K-point CHAMP expects:   '')')
           write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rkvec(:,k)
           write(6,'(''K-point in bwfn.data:    '')')
@@ -419,19 +419,19 @@ CONTAINS
  REAL(dp),INTENT(in) :: orb_norm
  INTEGER, PARAMETER :: mdet_max_mods=15,lsize=500,num_g=lsize+lsize-1, &
   &twonum_g=num_g*2,sixnum_g=num_g*6,fournum_gp2=twonum_g+twonum_g+2
- INTEGER ialloc,ik,jk,ig,ispin,eff_nele(2),ix,iy,iz,num_spins,band,k,        &
+ INTEGER ialloc,ik,jk,ig,ispin,ix,iy,iz,num_spins,band,k,        &
   &ngridpoints,i,nstates,ne,                 &
-  &i1m,i2m,i3m,i1,i2,i3,j1,j2,j3,jmax,kmax,n,l,m,istart,&
-  &nep,nseg,ngpri,j,nentry,iband
-
+  &i1m,i2m,i3m,i1,i2,i3,j1,j2,j3,jmax,kmax,n,l,m,&
+  &ngpri,j,iband
+!eff_nele(2)
  INTEGER,ALLOCATABLE :: indx(:),kcheck(:),wf_np(:,:),wf_nm(:,:),&
   &istart_array(:),nentry_array(:),temp_i(:),vector_index(:),jm(:)
  REAL(dp) ksum(3),rvec(3),temp1,temp2,temp3,k_s(3),ktemp(1:3),             &
   &average_real_part,average_imaginary_part,pb1(3),pb2(3),pb3(3),              &
   &b1(3),b2(3),b3(3),           &
   &a1(3),a2(3),a3(3),           &
-  &rkvec_shift_latt,glatt_inv_squared(3),r,z,low,high,current,           &
-  &low2,current2,mean,glatt_sim_inv_squared(3)
+  &rkvec_shift_latt,glatt_inv_squared(3),r,z,           &
+  &glatt_sim_inv_squared(3)
  REAL(dp),ALLOCATABLE,DIMENSION(:) :: eigtemp,temp_r,low_array,high_array,d
  REAL(dp),ALLOCATABLE,DIMENSION(:,:) :: pr_lattice,sr_lattice
  COMPLEX(dp),ALLOCATABLE :: sum_orbs(:,:)

@@ -174,8 +174,6 @@ module main_menu_mod
 !---------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'include_menu'
 
 ! begin
 ! loop over menu lines
@@ -243,8 +241,6 @@ module main_menu_mod
 !---------------------------------------------------------------------------
   implicit none
 
-! local
-  character (len=max_string_len_rout), save :: lhere = 'close_include'
 
 ! begin
   current_line = current_line_save
@@ -431,7 +427,7 @@ module main_menu_mod
    write(6,'(a,a,i3)') trim(lhere),': number of calls =',nodes(node_ind)%calls_nb
 
 
-   write(6,'(a,a,f)') trim(lhere),': cpu duration =',nodes(node_ind)%cpu_duration
+   write(6,'(a,a,es15.8)') trim(lhere),': cpu duration =',nodes(node_ind)%cpu_duration
 
    write(6,*) trim(lhere),': cpu duration =', trim(cpu_to_string( nodes(node_ind)%cpu_duration))
 

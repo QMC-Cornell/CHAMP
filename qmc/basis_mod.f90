@@ -576,7 +576,7 @@ module basis_mod
 
   write(6,'(a)') 'Eigenvalues of overlap matrix of unnormalized basis functions:'
   do bas_i = 1, nbasis
-     write(6,'(a,i3,a,e)') 'eigenvalue # ',bas_i,' : ', basis_ovlp_eigval (bas_i)
+     write(6,'(a,i3,a,es15.8)') 'eigenvalue # ',bas_i,' : ', basis_ovlp_eigval (bas_i)
   enddo ! bas_i
   write(6,'(a)') 'Eigenvectors:'
   do bas_i = 1, nbasis
@@ -592,7 +592,7 @@ module basis_mod
      endif
   enddo ! bas_i
   if (lin_dep_nb > 0) then
-   write(6,'(a,i3,a,e)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres
+   write(6,'(a,i3,a,es15.8)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres
   endif
 
   end subroutine basis_ovlp_eig_bld

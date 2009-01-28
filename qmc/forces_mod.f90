@@ -749,7 +749,6 @@
 
 ! local
   integer force_i, elec_i, cent_i, dim_i
-  real(dp) eloc_c
 
 ! begin
 
@@ -936,7 +935,7 @@
   include 'commons.h'
 
 ! local
-  integer force_i, elec_i, cent_i, dim_i
+  integer force_i, cent_i, dim_i
   real(dp) eloc_c
 
 ! begin
@@ -1643,7 +1642,6 @@
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'forces_wrt'
   integer force_i
 
 ! begin
@@ -1655,7 +1653,7 @@
   call object_provide ('forces_list')
   call object_provide ('forces_nn')
   do force_i = 1, forces_nb
-   write(6,'(a,a4,a,f)') 'component # ',forces_list (force_i),' : ', forces_nn (force_i)
+   write(6,'(a,a4,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_nn (force_i)
   enddo
 
   if (l_forces_bare) then
@@ -1666,7 +1664,7 @@
    call object_provide ('forces_bare_av')
    call object_provide ('forces_bare_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_bare_av (force_i), ' +-', forces_bare_av_err (force_i)
+    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_bare_av (force_i), ' +-', forces_bare_av_err (force_i)
    enddo
   endif
 
@@ -1679,7 +1677,7 @@
    call object_provide ('forces_zv_av_err')
    call object_provide ('forces_zv_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_av (force_i), ' +-', forces_zv_av_err (force_i),' (variance =',forces_zv_var (force_i),')'
+    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_av (force_i), ' +-', forces_zv_av_err (force_i),' (variance =',forces_zv_var (force_i),')'
    enddo
   endif
 
@@ -1692,7 +1690,7 @@
    call object_provide ('forces_zv_deriv_av_err')
    call object_provide ('forces_zv_deriv_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_av (force_i), ' +-', forces_zv_deriv_av_err (force_i),' (variance =',forces_zv_deriv_var (force_i),')'
+    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_av (force_i), ' +-', forces_zv_deriv_av_err (force_i),' (variance =',forces_zv_deriv_var (force_i),')'
    enddo
   endif
 
@@ -1705,7 +1703,7 @@
    call object_provide ('forces_zv_linear_av_err')
    call object_provide ('forces_zv_linear_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
+    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
    enddo
   endif
 
@@ -1718,7 +1716,7 @@
    call object_provide ('forces_zv_deriv_linear_av_err')
    call object_provide ('forces_zv_deriv_linear_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f,a,f,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_linear_av (force_i), ' +-', forces_zv_deriv_linear_av_err (force_i),' (variance =',forces_zv_deriv_linear_var (force_i),')'
+    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_linear_av (force_i), ' +-', forces_zv_deriv_linear_av_err (force_i),' (variance =',forces_zv_deriv_linear_var (force_i),')'
    enddo
   endif
 
@@ -1730,7 +1728,7 @@
    call object_provide ('forces_pulay_av')
    call object_provide ('forces_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
+    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
    enddo
   endif
 
@@ -1742,7 +1740,7 @@
    call object_provide ('forces_zvzb_av')
    call object_provide ('forces_zvzb_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zvzb_av (force_i), ' +-', forces_zvzb_av_err (force_i)
+    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_zvzb_av (force_i), ' +-', forces_zvzb_av_err (force_i)
    enddo
   endif
 
@@ -1754,7 +1752,7 @@
    call object_provide ('forces_zv_pulay_av')
    call object_provide ('forces_zv_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
+    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
    enddo
   endif
 
@@ -1766,7 +1764,7 @@
    call object_provide ('forces_zv_deriv_pulay_av')
    call object_provide ('forces_zv_deriv_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,f,a,f)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_pulay_av (force_i), ' +-', forces_zv_deriv_pulay_av_err (force_i)
+    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_pulay_av (force_i), ' +-', forces_zv_deriv_pulay_av_err (force_i)
    enddo
   endif
 

@@ -118,7 +118,7 @@ module density_mod
    call object_error_request ('dens_zv2_av_err')
 
    case ('zv5')
-   write (6,'(a,f)') ' density will be calculated with ZV5 estimator, i.e. improved estimator with exponential decay with exponent=',dens_exp
+   write (6,'(a,es15.8)') ' density will be calculated with ZV5 estimator, i.e. improved estimator with exponential decay with exponent=',dens_exp
    call object_average_request ('dens_zv5_av')
    call object_error_request ('dens_zv5_av_err')
 
@@ -511,7 +511,7 @@ module density_mod
 
 ! local
   integer grid_i, grid_x_i, grid_y_i, grid_z_i
-  integer elec_i, dim_i, walk_i
+  integer elec_i, walk_i
   real(dp) xi, yi, zi
 
 ! begin
@@ -586,7 +586,7 @@ module density_mod
 
 ! local
   integer grid_i, elec_i, dim_i, walk_i
-  real(dp) di, di2, r, dotproduct, dens_temp
+  real(dp) di, di2, dotproduct
 
 ! begin
 
@@ -655,7 +655,7 @@ module density_mod
 
 ! local
   integer grid_i, elec_i, dim_i, walk_i
-  real(dp) di, di2, r, dotproduct, dens_temp
+  real(dp) di, di2
 
 ! begin
 
@@ -994,7 +994,6 @@ module density_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save   :: lhere = 'dens_wrt'
   integer unit, grid_i
 
 ! begin
@@ -1021,8 +1020,8 @@ module density_mod
   write(unit,'(a,3e25.15)') 'grid_r_min                =',grid_r_min
   write(unit,'(a,3e25.15)') 'grid_r_max                =',grid_r_max
   write(unit,'(a,i25)')     'grid_r_nb                 =',grid_r_nb
-  write(unit,'(a,f)')       'dist_e_min                =',dist_e_min
-  write(unit,'(a,f)')       'dist_e_max                =',dist_e_max
+  write(unit,'(a,es15.8)')       'dist_e_min                =',dist_e_min
+  write(unit,'(a,es15.8)')       'dist_e_max                =',dist_e_max
 
 
   write(unit,*) ''
@@ -1047,7 +1046,6 @@ module density_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save   :: lhere = 'dens_3d_wrt'
   integer                                    :: unit
   integer                                    :: grid_i, grid_x_i, grid_y_i, grid_z_i
 

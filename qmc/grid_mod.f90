@@ -138,10 +138,10 @@ module grid_mod
   call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0 )
 
   write (6,'(a)') ' Parameters for radial grid:'
-  write (6,'(a,f)') ' grid_r_step = ', grid_r_step
-  write (6,'(a,f)') ' grid_r_min = ', grid_r_min
-  write (6,'(a,f)') ' grid_r_max = ', grid_r_max
-  write (6,'(a,i)') ' grid_r_nb=', grid_r_nb
+  write (6,'(a,es15.8)') ' grid_r_step = ', grid_r_step
+  write (6,'(a,es15.8)') ' grid_r_min = ', grid_r_min
+  write (6,'(a,es15.8)') ' grid_r_max = ', grid_r_max
+  write (6,'(a,i8)') ' grid_r_nb=', grid_r_nb
 
   call object_modified ('grid_r_step')
   call object_modified ('grid_r_min')
@@ -230,19 +230,19 @@ module grid_mod
   call require (lhere, 'grid_xyz_nb > 0', grid_xyz_nb > 0 )
 
   write (6,'(a)')  ' Parameters for grid xyz:'
-  write (6,'(a,f)')  ' grid_x_step = ', grid_x_step
-  write (6,'(a,f)')  ' grid_x_min  = ', grid_x_min
-  write (6,'(a,f)')  ' grid_x_max  = ', grid_x_max
-  write (6,'(a,f)')  ' grid_x_nb   = ', grid_x_nb
-  write (6,'(a,f)')  ' grid_y_step = ', grid_y_step
-  write (6,'(a,f)')  ' grid_y_min  = ', grid_y_min
-  write (6,'(a,f)')  ' grid_y_max  = ', grid_y_max
-  write (6,'(a,f)')  ' grid_y_nb   = ', grid_y_nb
-  write (6,'(a,f)')  ' grid_z_step = ', grid_z_step
-  write (6,'(a,f)')  ' grid_z_min  = ', grid_z_min
-  write (6,'(a,f)')  ' grid_z_max  = ', grid_z_max
-  write (6,'(a,f)')  ' grid_z_nb   = ', grid_z_nb
-  write (6,'(a,f)')  ' grid_xyz_nb = ', grid_xyz_nb
+  write (6,'(a,es15.8)')  ' grid_x_step = ', grid_x_step
+  write (6,'(a,es15.8)')  ' grid_x_min  = ', grid_x_min
+  write (6,'(a,es15.8)')  ' grid_x_max  = ', grid_x_max
+  write (6,'(a,es15.8)')  ' grid_x_nb   = ', grid_x_nb
+  write (6,'(a,es15.8)')  ' grid_y_step = ', grid_y_step
+  write (6,'(a,es15.8)')  ' grid_y_min  = ', grid_y_min
+  write (6,'(a,es15.8)')  ' grid_y_max  = ', grid_y_max
+  write (6,'(a,es15.8)')  ' grid_y_nb   = ', grid_y_nb
+  write (6,'(a,es15.8)')  ' grid_z_step = ', grid_z_step
+  write (6,'(a,es15.8)')  ' grid_z_min  = ', grid_z_min
+  write (6,'(a,es15.8)')  ' grid_z_max  = ', grid_z_max
+  write (6,'(a,es15.8)')  ' grid_z_nb   = ', grid_z_nb
+  write (6,'(a,es15.8)')  ' grid_xyz_nb = ', grid_xyz_nb
 
   call object_modified ('grid_x_step')
   call object_modified ('grid_x_max')
@@ -366,9 +366,7 @@ module grid_mod
   implicit none
 
   character*(max_string_len_rout) here
-  character*(max_string_len) line, word
-
-  integer iostat
+  character*(max_string_len) word
 
 ! begin
   here = 'grid_orb_menu'
@@ -549,7 +547,6 @@ module grid_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: here = 'orb_on_x_wrt'
   character(len=max_string_len_file) file
   integer orb_i, grd_i
   integer unit
@@ -565,7 +562,7 @@ module grid_mod
   open(file=trim(file),unit=unit)
 
   do grd_i = 1, grid_on_x_nb
-   write(unit,'(f,100f)') grid_on_x (grd_i),  (orb_on_x (orb_i, grd_i), orb_i=1,orb_tot_nb)
+   write(unit,'(es15.8,100es15.8)') grid_on_x (grd_i),  (orb_on_x (orb_i, grd_i), orb_i=1,orb_tot_nb)
   enddo
 
   close (unit)

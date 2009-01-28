@@ -1597,7 +1597,7 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
         stop 'nparmcsf must be <= ncsf'
       endif
       if(nparmcsf.eq.ncsf) then
-        write(6,'(a,i5,a,i5)') 'Warning: because normalization of wavefn. is arbitrary nparmcsf=',nparmcsf,' should be <= ncsf-1=',ncsf-1
+        write(6,'(a,i5,a,i5)') 'Warning: since normalization of wavefn. is arb. nparmcsf=',nparmcsf,' should be <= ncsf-1=',ncsf-1
       endif
 
       if(ijas.ge.4.and.ijas.le.6) then

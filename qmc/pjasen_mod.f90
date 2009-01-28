@@ -58,8 +58,8 @@ contains
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
-    integer                              :: ist, ie , k, idim
-    real(dp)                             :: sum , sum1, sum2
+    integer                              :: ist, ie , k
+    real(dp)                             :: sum
     include 'commons.h'
 !JT    include 'common_vd.h'
     ! header
@@ -106,7 +106,7 @@ contains
     implicit none
     include "commons.h"
     integer                              :: ie, ist,  istt
-    real(dp)                             :: xvec (3,  melec ), temp, sum1
+    real(dp)                             :: xvec (3,  melec )
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
 
 
@@ -306,9 +306,9 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
-    integer                              :: ist, iel
-    real(dp)                             :: sum, dot , phas, cosdot
-    integer                              :: i, i1, i2, k
+    integer                              :: ist
+    real(dp)                             :: sum, phas, cosdot
+    integer                              :: i, i1, i2
 
     !! note now basis contains both + and -
     !! sum over the first half only
@@ -340,8 +340,8 @@ contains
     implicit none
     include "commons.h"
     integer                              :: ist
-    real(dp)                             :: sum (2), dot , phas , cosdot, sindot
-    integer                              :: i, i1, i2, k
+    real(dp)                             :: sum (2), phas , cosdot, sindot
+    integer                              :: i, i1, i2
 
     !! note now basis contains both + and -
     !! sum over the first half only
@@ -373,7 +373,7 @@ contains
     implicit none
     include "commons.h"
     integer                              :: ist
-    real(dp)                             :: sum (ndim_pj), dot , phas, sindot
+    real(dp)                             :: sum (ndim_pj), phas, sindot
     integer                              :: i, i1, i2, k
 
     !! note now basis contains both + and -
@@ -407,7 +407,7 @@ contains
     implicit none
     include "commons.h"
     integer                              :: ist
-    real(dp)                             :: sum (2,ndim_pj), dot , phas, sindot, cosdot
+    real(dp)                             :: sum (2,ndim_pj), phas, sindot, cosdot
     integer                              :: i, i1, i2, k
 
     !! note now basis contains both + and -
@@ -447,7 +447,7 @@ contains
 
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
     integer                              :: ist, ie
-    real(dp)                             :: r (ndim_pj),  dot , phas, cos, sin , cost (2)
+    real(dp)                             :: phas, cost (2)
     integer                              :: i, i1, i2, k
 
     !! note now basis contains both + and -
@@ -513,7 +513,7 @@ contains
 
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
     integer                              :: ist, ie
-    real(dp)                             :: r (ndim_pj),  dot , phas, cos, sin , cost (2)
+    real(dp)                             :: phas, cost (2)
     integer                              :: i, i1, i2, k
 
     !! note now basis contains both + and -
@@ -581,7 +581,7 @@ contains
     include 'commons.h'
     real (dp)                            :: xvec (3, melec)
     real (dp)                            :: pjasv (3,melec)
-    real (dp)                            :: pjasfsum, pjasd
+    real (dp)                            :: pjasfsum
     real (dp)                            :: pjasdiv_vj (melec), pjasd2
     real (dp)                            :: gen,  gradt (3)
     integer                              :: ist, i
@@ -657,9 +657,9 @@ contains
     include 'commons.h'
     real (dp)                            :: xvec (3, melec)
     real (dp)                            :: pjasv (3,melec)
-    real (dp)                            :: pjasfsum, pjasd
+    real (dp)                            :: pjasfsum
     real (dp)                            :: pjasdiv_vj (melec), pjasd2
-    real (dp)                            :: gen, fen
+    real (dp)                            :: fen
     integer                              :: ist, i
 
     do ist = 1, param_pjasen_nb
@@ -720,8 +720,8 @@ contains
 !JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: xvec (3, melec)
-    real (dp)                            :: gen, fen , fen1 (3), fsum
-    integer                              :: ist, i , istt
+    real (dp)                            :: fen , fen1 (3), fsum
+    integer                              :: ist, istt
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
 
     fen = 0
@@ -784,7 +784,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include "commons.h"
-    integer                              :: ie, i, k, n
+    integer                              :: i, k, n
     real(dp)                             :: xvec (3)
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:),  sin_temp(:,:)

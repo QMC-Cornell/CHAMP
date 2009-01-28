@@ -14,7 +14,7 @@ c necn -> necoef
       include 'force.h'
       parameter(eps=1.d-5)
 
-      character*80 fmt
+c      character*80 fmt
       character*10 lbasis(MBASIS)
 
       common /lbas/ lbasis !JT

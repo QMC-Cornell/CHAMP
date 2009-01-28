@@ -44,7 +44,7 @@ c Note vbare_coul is used both for prim. and simul. cells, so dimension it for s
 
       common /tempor/ dist_nn
 
-      dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
+c      dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
       dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3)
 
 c Temporary

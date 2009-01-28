@@ -158,7 +158,7 @@ module opt_lin_mod
    l_warning = .true.
   else
    write(6,'(a)') ' update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives:'
-   write(6,'(a,f)') ' the derivatives will be orthogonalized to [xi Psi_0 +(1-xi) Psi_lin], with xi=',xi
+   write(6,'(a,es15.8)') ' the derivatives will be orthogonalized to [xi Psi_0 +(1-xi) Psi_lin], with xi=',xi
   endif
 
   end subroutine opt_lin_menu
@@ -245,7 +245,7 @@ module opt_lin_mod
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
   do i = 1, param_aug_nb
-    write(6,'(a,i3,a,e)') 'overlap eigenvalue # ',i,': ',ovlp_lin_eigval(i)
+    write(6,'(a,i3,a,es15.8)') 'overlap eigenvalue # ',i,': ',ovlp_lin_eigval(i)
   enddo
 
   end subroutine ovlp_lin_bld
@@ -515,7 +515,6 @@ module opt_lin_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'ham_lin_bld'
-  integer i, j
 
 ! header
   if(header_exe) then
@@ -556,7 +555,6 @@ module opt_lin_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'ham_lin_renorm_bld'
   integer i, j
 
 ! header
@@ -664,18 +662,17 @@ module opt_lin_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'delta_lin_bld'
   integer i, j
-  integer ex_i, iparmcsf, iparmj, iparm, jparm
+  integer iparmcsf, iparm, jparm
   integer lwork, info
   real(dp), allocatable :: mat_a(:,:), mat_b(:,:)
-  real(dp), allocatable :: eigvec(:,:), eigvec_left(:,:)
+  real(dp), allocatable :: eigvec(:,:) !, eigvec_left(:,:)
   real(dp), allocatable :: eigval_r(:), eigval_i(:), eigval_denom(:)
   real(dp), allocatable :: work(:)
-  real(dp) eigvec_max_1st_compon, eigval_r_min, eigvec_first_coef, lowest_eigval, smallest_norm
+  real(dp) eigvec_max_1st_compon, eigvec_first_coef, lowest_eigval, smallest_norm
   integer eig_ind, eigvec_max_1st_compon_ind, eigvec_lowest_eigval_ind, eigvec_smallest_norm_ind
 
   integer, allocatable :: eigval_srt_ind_to_eigval_ind(:), eigval_ind_to_eigval_srt_ind(:)
   integer temp
-  logical target_state_found
 
 
 ! header

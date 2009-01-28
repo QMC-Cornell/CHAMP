@@ -540,7 +540,7 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   implicit none
 
-  integer i
+ ! integer i
 
 ! header
   if (header_exe) then

@@ -44,7 +44,6 @@ module parser_tools_mod
   integer, intent(out) :: iostat
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'read_next_line'
 
 ! begin
   iostat = 0
@@ -81,7 +80,6 @@ module parser_tools_mod
   character(len=max_string_len), intent(out) :: word
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'get_next_command'
   integer iostat
   integer current_line_length
   character (len=1) current_char
@@ -267,7 +265,6 @@ module parser_tools_mod
   character(len=max_string_len), intent(out) :: value
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'get_next_value_string'
   character(len=max_string_len) value_string
 
 ! begin
@@ -289,7 +286,6 @@ module parser_tools_mod
   integer, intent(out) :: value
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'get_next_value_integer'
   character(len=max_string_len) value_string
 
 ! begin
@@ -311,7 +307,6 @@ module parser_tools_mod
   real(dp), intent(out) :: value
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'get_next_value_double'
   character(len=max_string_len) value_string
 
 ! begin
@@ -430,7 +425,6 @@ module parser_tools_mod
 # else
    character(len=max_string_len), allocatable :: value_list_string (:)
 # endif
-  character(len=max_string_len_rout), save :: lhere = 'get_next_value_list_integer'
 !  character(len=max_string_len),allocatable :: value_list_string (:)
   integer i
 
@@ -471,7 +465,6 @@ module parser_tools_mod
   integer, intent(out)              :: value_list_nb
 
 ! local
-  character (len=max_string_len_rout), save :: lhere= 'get_next_value_list_double'
 # if defined (PATHSCALE)
    character(len=max_string_len) :: value_list_string (max_string_array_len) ! for pathscale compiler
 # else
@@ -506,9 +499,8 @@ module parser_tools_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'read_up_to_end'
-  character(len=max_string_len) string, lowstring
-  integer iostat
+  character(len=max_string_len) string_temp !, lowstring
+!  integer iostat
   logical l_echo_save
 
   l_echo_save = l_echo
@@ -519,7 +511,7 @@ module parser_tools_mod
 ! read current line
 !  read(5,'(a)',iostat=iostat) string
 
-  call get_next_command (string)
+  call get_next_command (string_temp)
 
 ! no end found
 !  if(iostat < 0) then
@@ -532,14 +524,14 @@ module parser_tools_mod
 !  lowstring = string
 !  call upplow (lowstring)
 
-  if(trim(string) == 'end') then
+  if(trim(string_temp) == 'end') then
    if (l_echo_save) then
-    write(6,'(2a)') 'input> ',trim(string)
+    write(6,'(2a)') 'input> ',trim(string_temp)
    endif
    exit
   endif
 
-  if(trim(string) == 'exit') then
+  if(trim(string_temp) == 'exit') then
    exit
   endif
 

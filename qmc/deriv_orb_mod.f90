@@ -142,7 +142,7 @@ module deriv_orb_mod
   include 'commons.h'
 
 ! local
-  integer det_i, elec_up_i, ex_i, orb_i
+  integer  ex_i, orb_i
   integer orb_opt_cls_i, orb_opt_opn_i, orb_opt_act_i, orb_opt_act_j, orb_opt_vir_i
   integer orb_opt_cls, orb_opt_opn, orb_opt_act, orb_opt_vir, orb_opt_act_lab_i, orb_opt_act_lab_j
 
@@ -431,7 +431,6 @@ module deriv_orb_mod
   real(dp), allocatable :: cdet_unq_in_csf_ex_cur_temp (:)
 
   integer csf_i, csf_k, csf_ex_unq_i, csf_cur
-  integer csf_opt_k, csf_opt_k_lab
   integer csf_unq_in_wf_ex_cur_nb
   integer, allocatable :: csf_unq_in_wf_ex_cur (:)
   integer, allocatable :: csf_unq_ref_in_wf_ex_cur (:)
@@ -452,8 +451,8 @@ module deriv_orb_mod
   real(dp), allocatable :: csf_unq_prefac_in_dpsi_orb_cur_temp (:)
 
 ! tenp
-   integer ex_j, orb_1st, orb_2nd
-   logical ex_found
+ !  integer ex_j, orb_1st, orb_2nd
+!   logical ex_found
 
 ! header
   if (header_exe) then
@@ -1453,7 +1452,7 @@ module deriv_orb_mod
   include 'commons.h'
 
 ! local
-  integer ex_i, ex_rev_i
+  integer ex_i
   integer csf_i, det_in_csf_i, det_i, det_unq_up_i, det_unq_dn_i
   integer iwdet, sgn
 
@@ -1570,7 +1569,7 @@ module deriv_orb_mod
 ! local
   integer ex_i, ex_rev_i
   integer csf_i, det_in_csf_i, det_i, dorb_i
-  real(dp) factor_up, factor_dn
+!  real(dp) factor_up, factor_dn
   real(dp) det
 
 ! header
@@ -1680,7 +1679,6 @@ module deriv_orb_mod
 
 ! local
   integer det_i, orb_i, elec_i
-  integer i, j, k, l
 
 ! header
   if (header_exe) then
@@ -2132,7 +2130,7 @@ module deriv_orb_mod
   include 'commons.h'
 
 ! local
-  integer det_i, dim_i, i, j
+  integer det_i, i, j
 
 ! header
   if (header_exe) then
@@ -2202,7 +2200,6 @@ module deriv_orb_mod
 
 ! local
   integer det_i
-  integer dim_i
   integer ex_i
   integer iwdet
   integer sgn
@@ -3073,9 +3070,6 @@ module deriv_orb_mod
   implicit none
   include 'commons.h'
 
-! local
-  integer ex_i
-
 ! header
   if (header_exe) then
 
@@ -3109,8 +3103,6 @@ module deriv_orb_mod
   implicit none
   include 'commons.h'
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'eloc_pot_ex_bld'
 
 ! header
   if (header_exe) then

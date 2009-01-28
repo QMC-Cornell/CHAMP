@@ -35,10 +35,10 @@ c FT(r,k=0)= electronic density
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
       dimension xold(3,MELEC),xnew(3,MELEC)
-      dimension fcos_uo(NAX),fcos_do(NAX),fcos_to(NAX)
-      dimension fsin_uo(NAX),fsin_do(NAX),fsin_to(NAX)
-      dimension fcos_un(NAX),fcos_dn(NAX),fcos_tn(NAX)
-      dimension fsin_un(NAX),fsin_dn(NAX),fsin_tn(NAX)
+      dimension fcos_uo(NAX),fcos_do(NAX)
+      dimension fsin_uo(NAX),fsin_do(NAX)
+      dimension fcos_un(NAX),fcos_dn(NAX)
+      dimension fsin_un(NAX),fsin_dn(NAX)
       dimension nr_uo(NAX),nr_do(NAX),nr_un(NAX),nr_dn(NAX)
 
       do ik=0,NAK1
@@ -152,10 +152,10 @@ c FT(r,k=0)= electronic density
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
       dimension xold(3,MELEC),xnew(3,MELEC)
-      dimension fcos_uo(NAX),fcos_do(NAX),fcos_to(NAX)
-      dimension fsin_uo(NAX),fsin_do(NAX),fsin_to(NAX)
-      dimension fcos_un(NAX),fcos_dn(NAX),fcos_tn(NAX)
-      dimension fsin_un(NAX),fsin_dn(NAX),fsin_tn(NAX)
+      dimension fcos_uo(NAX),fcos_do(NAX)
+      dimension fsin_uo(NAX),fsin_do(NAX)
+      dimension fcos_un(NAX),fcos_dn(NAX)
+      dimension fsin_un(NAX),fsin_dn(NAX)
 
       big=1000.d0
 

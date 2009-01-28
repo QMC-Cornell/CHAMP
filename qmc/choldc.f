@@ -10,7 +10,10 @@
             sum=sum-a(i,k)*a(j,k)
 11        continue
           if(i.eq.j)then
-            if(sum.le.0.)pause 'choldc failed'
+            if(sum.le.0.) then
+               write (*,*) 'choldc failed'
+               stop 'choldc failed'
+            end if
             p(i)=sqrt(sum)
           else
             a(j,i)=sum/p(i)

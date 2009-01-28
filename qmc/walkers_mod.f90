@@ -281,8 +281,12 @@ module walkers_mod
   integer               :: elec_dn_nb_closest_to_atom_read_nb, elec_dn_nb_closest_to_atom_read_i
   integer :: dim_i, elec_i, elec_j, walk_i, walk_mod_i, cent_closest_i, walk_j, cent_i
   integer nconf_read, nconf_missing, nconf_dropped, nconf_unique
-  integer file_unit, iostat, ierr
+  integer file_unit, iostat
   logical found, walker_not_unique
+
+#ifdef MPI
+  integer ierr
+#endif
 
 ! begin
   ok = .true.
@@ -382,7 +386,7 @@ module walkers_mod
         if (dist_ee_wlk_read < 1.d-6) then
            write(6,*)
            write(6,'(a,i5,a,i3,a,i3,a)') 'Error: in walker # ',walk_i,', electrons ',elec_i,' and ',elec_j, ' are too close.'
-           write(6,'(a,f)') 'They are at a distance of ',dist_ee_wlk_read, ' < 1.d-6.'
+           write(6,'(a,es15.8)') 'They are at a distance of ',dist_ee_wlk_read, ' < 1.d-6.'
            call die (lhere, 'two electrons are too close in a walker.')
         endif
       enddo ! elec_j
@@ -406,7 +410,7 @@ module walkers_mod
        if (dist_en_wlk_read < 1.d-6) then
            write(6,*)
            write(6,'(a,i5,a,i3,a,i3)') 'Warning: in walker # ',walk_i,', electron #',elec_i,' is very close to nucleus #',cent_i
-           write(6,'(a,f)') 'They are at a distance of ',dist_en_wlk_read, ' < 1.d-6.'
+           write(6,'(a,es15.8)') 'They are at a distance of ',dist_en_wlk_read, ' < 1.d-6.'
        endif
       enddo ! elec_i
    enddo ! cent_i

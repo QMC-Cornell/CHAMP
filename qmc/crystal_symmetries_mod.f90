@@ -34,11 +34,7 @@ contains
     implicit  none
     include 'commons.h'
 
-    logical                              :: iprt
-    integer                              :: i , j, k
     integer                              :: prim_sim
-    character                            :: isname (48) * 45
-    integer, allocatable                 :: isymrel (:,:,:)
 
     write(6,*)
     write(6,*) "========================================================"
@@ -135,7 +131,6 @@ contains
     !Local variables-------------------------------
     !scalars
     integer                              :: det,isym
-    character(len=500)                   :: message
 
     do isym=1,nsym
        det=sym(1,1,isym)*sym(2,2,isym)*sym(3,3,isym)+&
@@ -173,7 +168,6 @@ contains
     !Local variables-------------------------------
     !scalars
     integer                              :: ii,isym,jj,jsym,kk,ksym,symafmchk,testeq
-    character(len=500)                   :: message
     !arrays
     integer                              :: chk(3,3)
 
@@ -246,7 +240,7 @@ contains
     if (read_sym_file==1) then
 
        if (prim_sim == 1) then
-          file3 = file1		
+          file3 = file1
        else
           file3 = file2
        endif

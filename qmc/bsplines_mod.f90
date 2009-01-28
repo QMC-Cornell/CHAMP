@@ -54,7 +54,6 @@ module bsplines_mod
   integer                             :: igrad_lapf  !
   integer, allocatable                :: ngrid_orb(:)
   integer, allocatable                :: ibc(:,:)
-  real(dp)                            :: k_dot_r
   real(dp), allocatable               :: r(:)
   real(dp), allocatable               :: grid_orb(:)
   real(dp), allocatable               :: rnaught(:)
@@ -1649,9 +1648,6 @@ module bsplines_mod
   integer                             :: ispline
   real(dp)                            :: r(ndim)
   real(dp)                            :: orb_tmp(nspline)
-  real(dp)                            :: k_dot_r
-  real(dp)                            :: real_phase
-  real(dp)                            :: imaginary_phase
   real(dp)                            :: cos_k(nkvec)
   real(dp)                            :: sin_k(nkvec)
   real(dp)                            :: dcos_k(ndim,nkvec)
@@ -1723,7 +1719,6 @@ module bsplines_mod
   integer                             :: ikvec
   integer                             :: ispline
   real(dp)                            :: r(ndim)
-  real(dp)                            :: k_dot_r
   real(dp)                            :: orb_tmp(nspline)
   real(dp)                            :: dorb_tmp(ndim,nspline)
   real(dp)                            :: hessian_bsplines(ndim*ndim,nspline)

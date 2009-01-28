@@ -284,7 +284,6 @@ module orbitals_mod
 
 ! local
   integer det_unq_up_i, det_unq_dn_i
-  integer elec_up_i, elec_dn_i
 
 ! header
   if (header_exe) then
@@ -327,13 +326,13 @@ module orbitals_mod
 ! imposing that the determinants must be given already sorted to avoid taking care of permutations elsewehere
   do det_unq_up_i = 1, ndetup
     if (.not. is_sorted (det_unq_orb_lab_srt_up (:, det_unq_up_i))) then
-        write(6,'(a,i,a,100i)') 'orbitals in unique spin-up determinant # ', det_unq_up_i,' are not in increasing order:',det_unq_orb_lab_srt_up (:, det_unq_up_i)
+        write(6,'(a,i8,a,100i8)') 'orbitals in unique spin-up determinant # ', det_unq_up_i,' are not in increasing order:',det_unq_orb_lab_srt_up (:, det_unq_up_i)
         call die (here)
     endif
   enddo
   do det_unq_dn_i = 1, ndetdn
     if (.not. is_sorted (det_unq_orb_lab_srt_dn (:, det_unq_dn_i))) then
-        write(6,'(a,i,a,100i)') 'orbitals in unique spin-dn determinant # ', det_unq_dn_i,' are not in increasing order:',det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
+        write(6,'(a,i8,a,100i8)') 'orbitals in unique spin-dn determinant # ', det_unq_dn_i,' are not in increasing order:',det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
         call die (here)
     endif
   enddo
@@ -351,7 +350,7 @@ module orbitals_mod
   include 'commons.h'
 
 ! local
-  integer det_i, det_unq_up_i, det_unq_dn_i, ielec, orb_i
+  integer det_i, det_unq_up_i, det_unq_dn_i, orb_i
   integer elec_up_i, elec_dn_i
   integer orb_occ_in_wf_i, orb_cls_in_wf_i, orb_act_in_wf_i, orb_opn_in_wf_i, orb_vir_in_wf_i
   integer orb_up_lab, orb_dn_lab
@@ -599,7 +598,7 @@ module orbitals_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_energies_rd'
-  integer orb_energies_nb, orb_i
+  integer orb_energies_nb !, orb_i
 
 ! begin
   call get_next_value_list ('orb_energies', orb_energies, orb_energies_nb)
@@ -629,7 +628,7 @@ module orbitals_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_sym_lab_rd'
-  integer orb_sym_lab_nb, orb_i
+  integer orb_sym_lab_nb
 
 ! begin
   orb_sym_lab_nb  = 0
@@ -1058,7 +1057,7 @@ module orbitals_mod
   implicit none
 
 ! local
-  integer orb_i, orb_j, lin_dep_nb
+  integer orb_i, lin_dep_nb !,orb_j
   real(dp) lin_dep_thres
 
 ! header
@@ -1104,7 +1103,7 @@ module orbitals_mod
   enddo ! orb_i
   if (lin_dep_nb > 0) then
    l_warning = .true.
-   write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the closed orbitals.'
+   write(6,'(a,i3,a,es15.8,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the closed orbitals.'
   endif
 
   end subroutine orb_cls_ovlp_eig_bld
@@ -1119,7 +1118,7 @@ module orbitals_mod
   implicit none
 
 ! local
-  integer orb_i, orb_j, lin_dep_nb
+  integer orb_i, lin_dep_nb !,orb_j
   real(dp) lin_dep_thres
 
 ! header
@@ -1165,7 +1164,7 @@ module orbitals_mod
   enddo ! orb_i
   if (lin_dep_nb > 0) then
    l_warning = .true.
-   write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the active orbitals.'
+   write(6,'(a,i3,a,es15.8,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the active orbitals.'
   endif
 
   end subroutine orb_act_ovlp_eig_bld
@@ -1180,7 +1179,7 @@ module orbitals_mod
   implicit none
 
 ! local
-  integer orb_i, orb_j, lin_dep_nb
+  integer orb_i, lin_dep_nb !,orb_j
   real(dp) lin_dep_thres
 
 ! header
@@ -1226,7 +1225,7 @@ module orbitals_mod
   enddo ! orb_i
   if (lin_dep_nb > 0) then
    l_warning = .true.
-   write(6,'(a,i3,a,e,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the virtual orbitals.'
+   write(6,'(a,i3,a,es15.8,a)') 'Warning: there are ',lin_dep_nb,' eigenvalues < ',lin_dep_thres,' in the overlap of the virtual orbitals.'
   endif
 
   end subroutine orb_vir_ovlp_eig_bld
@@ -1676,7 +1675,6 @@ module orbitals_mod
   integer, intent(in) :: iwf_from
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'coef_orb_on_ortho_basis_from_coef'
   integer bas_i, bas_k, orb_i
 
 ! begin
@@ -1725,7 +1723,6 @@ module orbitals_mod
   integer, intent(in) :: iwf_from
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'coef_from_coef_orb_on_ortho_basis'
   integer bas_i, bas_k, orb_i
 
 ! begin
@@ -1943,7 +1940,6 @@ module orbitals_mod
 !  include 'commons.h'
 
 ! local
-  integer orb_i
   integer orb_opt_i, orb_opt
   integer orb_opt_occ_i, orb_opt_cls_i, orb_opt_opn_i, orb_opt_act_i, orb_opt_vir_i
 
@@ -2271,7 +2267,6 @@ module orbitals_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'cusp_en_orb'
   real(dp), allocatable :: diff (:)
 
 ! begin
@@ -2319,7 +2314,6 @@ module orbitals_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'write_orbitals_pw_real'
   integer file_unit
   integer ikv, k, iband, jorb, igv
 

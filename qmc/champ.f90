@@ -22,7 +22,10 @@ program champ
   character(len=max_string_len_file)       :: input_file_name = ''
   integer iostat, mode_i
 
+# if defined (MPI)
   integer ierr
+# endif
+
   common /contr3/ mode
 
 ! initialization

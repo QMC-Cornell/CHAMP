@@ -59,7 +59,6 @@
       character*(*) string
       character*30  text
       integer value, lenstr
-      logical done
  
       call strim (string, lenstr)
 

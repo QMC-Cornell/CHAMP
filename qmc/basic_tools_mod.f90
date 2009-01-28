@@ -223,8 +223,6 @@ module basic_tools_mod
 !---------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'die_basic'
 
   write(6,*)
   write(6,'(a)') 'The program died.'
@@ -245,8 +243,7 @@ module basic_tools_mod
   character(len=*), intent(in) :: routine_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'die_nomessage'
-  integer ierr
+!  integer ierr
 
   write(6,*)
 !  write(6,'(a,i3)') 'idtask=',idtask
@@ -2266,7 +2263,6 @@ module basic_tools_mod
   integer, intent(out)    :: object_1 (:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'flatten_integer_2'
   integer i, j
 
 ! begin
@@ -2295,7 +2291,6 @@ module basic_tools_mod
   real(dp), intent(out)       :: object_1 (:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'flatten_double_2'
   integer i, j
 
 ! begin
@@ -2324,7 +2319,6 @@ module basic_tools_mod
   integer, intent(out)    :: object_2 (:,:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'unflatten_integer_2'
   integer i, j
 
   do i = 1, dim1
@@ -2352,7 +2346,6 @@ module basic_tools_mod
   real(dp), intent(out)                :: object_2 (:,:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'unflatten_double_2'
   integer i, j
 
 ! begin
@@ -2379,8 +2372,6 @@ module basic_tools_mod
 ! input/output
   integer, allocatable, intent(inout) :: array2 (:)
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'copy_integer_1'
 
 ! begin
   call alloc ('array2', array2, mysize(array1))
@@ -2403,8 +2394,6 @@ module basic_tools_mod
 ! input/output
   real(dp), allocatable, intent(inout) :: array2 (:)
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'copy_double_1'
 
 ! begin
   call alloc ('array2', array2, mysize(array1))
@@ -2428,7 +2417,6 @@ module basic_tools_mod
   integer, allocatable, intent(inout) :: array(:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'append_integer_0_to_1'
   integer array_nb
 
 ! begin
@@ -2455,7 +2443,6 @@ module basic_tools_mod
   real(dp), allocatable, intent(inout) :: array (:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'append_double_0_to_1'
   integer array_nb
 
 ! begin
@@ -2482,7 +2469,6 @@ module basic_tools_mod
   integer, allocatable, intent(inout) :: array1 (:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'append_integer_1_to_1'
   integer i
 
 ! begin
@@ -2508,7 +2494,6 @@ module basic_tools_mod
   real(dp), allocatable, intent(inout) :: array1 (:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'append_double_1_to_1'
   integer i
 
 ! begin
@@ -2579,7 +2564,6 @@ module basic_tools_mod
   integer, intent(inout), allocatable :: array (:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere =  'append_once_integer'
   integer i, array_nb
 
 ! begin
@@ -2651,7 +2635,6 @@ module basic_tools_mod
   integer, intent(inout) :: integer1, integer2
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'swap_integer'
   integer temp
 
 ! begin
@@ -2674,7 +2657,6 @@ module basic_tools_mod
   real(dp), intent(inout) :: double1, double2
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'swap_double'
   real(dp) temp
 
 ! begin
@@ -2706,7 +2688,7 @@ module basic_tools_mod
   array2_nb = size (double2)
 
   if (array1_nb /= array2_nb) then
-   write(6,'(2a,i,a,i)') trim(lhere),': the two arrays are of different sizes: array1_nb=',array1_nb,' /= array2_nb=',array2_nb
+   write(6,'(2a,i8,a,i8)') trim(lhere),': the two arrays are of different sizes: array1_nb=',array1_nb,' /= array2_nb=',array2_nb
    call die (lhere)
   endif
 
@@ -2730,7 +2712,6 @@ module basic_tools_mod
   integer, intent(inout), allocatable :: array(:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'sort_integer1'
   integer i, j, array_nb
 
 ! begin
@@ -2768,7 +2749,7 @@ module basic_tools_mod
   array2_nb = size(array2)
 
   if (array1_nb /= array2_nb) then
-   write(6,'(2a,i,a,i)') trim(lhere),': the two arrays are of different sizes: array1_nb=',array1_nb,' /= array2_nb=',array2_nb
+   write(6,'(2a,i8,a,i8)') trim(lhere),': the two arrays are of different sizes: array1_nb=',array1_nb,' /= array2_nb=',array2_nb
    call die (lhere)
   endif
 
@@ -2818,7 +2799,7 @@ module basic_tools_mod
   array3_nb = size(array3)
 
   if (array1_nb /= array2_nb .or. array1_nb /= array3_nb .or. array2_nb /= array3_nb) then
-   write(6,'(2a,i,a,i,a,i)') trim(lhere),': arrays are of different sizes: array1_nb=',array1_nb,', array2_nb=',array2_nb,', array3_nb=',array3_nb
+   write(6,'(2a,i8,a,i8,a,i8)') trim(lhere),': arrays are of different sizes: array1_nb=',array1_nb,', array2_nb=',array2_nb,', array3_nb=',array3_nb
    call die (lhere)
   endif
 
@@ -2879,7 +2860,7 @@ module basic_tools_mod
   array3_nb = size(array3,2)
 
   if (array1_nb /= array2_nb .or. array1_nb /= array3_nb .or. array2_nb /= array3_nb) then
-   write(6,'(2a,i,a,i,a,i)') trim(lhere),': arrays are of different sizes: array1_nb=',array1_nb,', array2_nb=',array2_nb,', array3_nb=',array3_nb
+   write(6,'(2a,i8,a,i8,a,i8)') trim(lhere),': arrays are of different sizes: array1_nb=',array1_nb,', array2_nb=',array2_nb,', array3_nb=',array3_nb
    call die (lhere)
   endif
 
@@ -2922,7 +2903,6 @@ module basic_tools_mod
   logical is_sorted_integer1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'is_sorted_integer1'
   integer i, j, array_nb
 
 ! begin
@@ -3041,12 +3021,12 @@ module basic_tools_mod
   endif
 
   if (elt_position <= 0) then
-   write(6,'(2a,i,a)') trim(lhere),': elt_position=',elt_position,' <= 0'
+   write(6,'(2a,i8,a)') trim(lhere),': elt_position=',elt_position,' <= 0'
    call die (lhere)
   endif
 
   if (elt_position > array_nb) then
-   write(6,'(3a,i,a,i)') 'Fatal error in routine ',trim(lhere),': elt_position=',elt_position,' >  size(array)=', array_nb
+   write(6,'(3a,i8,a,i8)') 'Fatal error in routine ',trim(lhere),': elt_position=',elt_position,' >  size(array)=', array_nb
    call die (lhere)
   endif
 
@@ -3084,12 +3064,12 @@ module basic_tools_mod
   endif
 
   if (elt_position <= 0) then
-   write(6,'(2a,i,a)') trim(lhere),': elt_position=',elt_position,' <= 0'
+   write(6,'(2a,i8,a)') trim(lhere),': elt_position=',elt_position,' <= 0'
    call die (lhere)
   endif
 
   if (elt_position > array_nb) then
-   write(6,'(2a,i,a,i)') trim(lhere),': elt_position=',elt_position,' >  size(array)=', array_nb
+   write(6,'(2a,i8,a,i8)') trim(lhere),': elt_position=',elt_position,' >  size(array)=', array_nb
    call die (lhere)
   endif
 
@@ -3129,12 +3109,12 @@ module basic_tools_mod
   endif
 
   if (elt_position <= 0) then
-   write(6,'(2a,i,a)') trim(lhere),': elt_position=',elt_position,' <= 0'
+   write(6,'(2a,i8,a)') trim(lhere),': elt_position=',elt_position,' <= 0'
    call die (lhere)
   endif
 
   if (elt_position > array_nb3) then
-   write(6,'(2a,i,a,i)') trim(lhere),': elt_position=',elt_position,' >  size(array,3)=', array_nb3
+   write(6,'(2a,i8,a,i8)') trim(lhere),': elt_position=',elt_position,' >  size(array,3)=', array_nb3
    call die (lhere)
   endif
 
@@ -3201,7 +3181,6 @@ module basic_tools_mod
   logical :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'array_is_zero_double'
   integer i
 
 ! begin
@@ -3233,7 +3212,6 @@ module basic_tools_mod
   logical :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'arrays_equal_integer'
   integer i, array1_nb, array2_nb
 
 ! begin
@@ -3274,7 +3252,6 @@ module basic_tools_mod
   logical :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'arrays_equal_double_1'
   integer i, array1_nb, array2_nb
 
 ! begin
@@ -3315,7 +3292,6 @@ module basic_tools_mod
   logical :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'arrays_equal_double_2'
   integer i, array1_nb1, array2_nb1
   integer j, array1_nb2, array2_nb2
 
@@ -3361,7 +3337,6 @@ module basic_tools_mod
   logical  :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'arrays_equal'
   integer i, array1_nb, array2_nb
 
 ! begin
@@ -3402,7 +3377,6 @@ module basic_tools_mod
   logical  :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'elt_in_array_integer'
   integer i
 
 ! begin
@@ -3435,7 +3409,6 @@ module basic_tools_mod
   logical  :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'elt_in_array_string'
   integer i
 
 ! begin
@@ -3480,15 +3453,15 @@ module basic_tools_mod
   array2_nb = size(array2)
 
   if (array1_nb /= array2_nb) then
-   write(6,'(2a,i,a,i)') trim(lhere),': array1_nb=',array1_nb,' /= array2_nb=',array2_nb
+   write(6,'(2a,i8,a,i8)') trim(lhere),': array1_nb=',array1_nb,' /= array2_nb=',array2_nb
    call die (lhere)
   endif
 
   do i = 1, array1_nb
     if (dabs(array1(i) -array2(i)) > tol) then
-      write(6,'(2a,i)') trim(lhere),': element # ',i
-      write(6,'(2a,f,a,f)') trim(lhere),': array1=',array1(i),' /= array2=',array2(i)
-      write(6,'(2a,f)') trim(lhere),': tolerance=',tol
+      write(6,'(2a,i8)') trim(lhere),': element # ',i
+      write(6,'(2a,es15.8,a,es15.8)') trim(lhere),': array1=',array1(i),' /= array2=',array2(i)
+      write(6,'(2a,es15.8)') trim(lhere),': tolerance=',tol
       call die (lhere)
     endif
   enddo
@@ -3528,20 +3501,20 @@ module basic_tools_mod
   array2_dim2 = size(array2,2)
 
   if (array1_dim1 /= array2_dim1) then
-   write(6,'(2a,i,a,i)') trim(lhere),': array1_dim1=',array1_dim1,' /= array2_dim1=',array2_dim1
+   write(6,'(2a,i8,a,i8)') trim(lhere),': array1_dim1=',array1_dim1,' /= array2_dim1=',array2_dim1
    call die (lhere)
   endif
   if (array1_dim2 /= array2_dim2) then
-   write(6,'(2a,i,a,i)') trim(lhere),': array1_dim2=',array1_dim2,' /= array2_dim2=',array2_dim2
+   write(6,'(2a,i8,a,i8)') trim(lhere),': array1_dim2=',array1_dim2,' /= array2_dim2=',array2_dim2
    call die (lhere)
   endif
 
   do i = 1, array1_dim1
    do j = 1, array1_dim2
     if (dabs(array1(i,j) -array2(i,j)) > tol) then
-      write(6,'(2a,i,i)') trim(lhere),': element # ',i,j
-      write(6,'(2a,f,a,f)') trim(lhere),': array1=',array1(i,j),' /= array2=',array2(i,j)
-      write(6,'(2a,f)') trim(lhere),': tolerance=',tol
+      write(6,'(2a,i8,i8)') trim(lhere),': element # ',i,j
+      write(6,'(2a,es15.8,a,es15.8)') trim(lhere),': array1=',array1(i,j),' /= array2=',array2(i,j)
+      write(6,'(2a,es15.8)') trim(lhere),': tolerance=',tol
       call die (lhere)
     endif
   enddo
@@ -3585,15 +3558,15 @@ module basic_tools_mod
   array2_dim3 = size(array2,3)
 
   if (array1_dim1 /= array2_dim1) then
-   write(6,'(2a,i,a,i)') trim(lhere),': array1_dim1=',array1_dim1,' /= array2_dim1=',array2_dim1
+   write(6,'(2a,i8,a,i8)') trim(lhere),': array1_dim1=',array1_dim1,' /= array2_dim1=',array2_dim1
    call die (lhere)
   endif
   if (array1_dim2 /= array2_dim2) then
-   write(6,'(2a,i,a,i)') trim(lhere),': array1_dim2=',array1_dim2,' /= array2_dim2=',array2_dim2
+   write(6,'(2a,i8,a,i8)') trim(lhere),': array1_dim2=',array1_dim2,' /= array2_dim2=',array2_dim2
    call die (lhere)
   endif
   if (array1_dim3 /= array2_dim3) then
-   write(6,'(2a,i,a,i)') trim(lhere),': array1_dim3=',array1_dim3,' /= array2_dim3=',array2_dim3
+   write(6,'(2a,i8,a,i8)') trim(lhere),': array1_dim3=',array1_dim3,' /= array2_dim3=',array2_dim3
    call die (lhere)
   endif
 
@@ -3601,9 +3574,9 @@ module basic_tools_mod
    do j = 1, array1_dim2
     do k = 1, array1_dim3
     if (dabs(array1(i,j,k) -array2(i,j,k)) > tol) then
-      write(6,'(2a,i,i,i)') trim(lhere),': element # ',i,j,k
-      write(6,'(2a,f,a,f)') trim(lhere),': array1=',array1(i,j,k),' /= array2=',array2(i,j,k)
-      write(6,'(2a,f)') trim(lhere),': tolerance=',tol
+      write(6,'(2a,i8,i8,i8)') trim(lhere),': element # ',i,j,k
+      write(6,'(2a,es15.8,a,es15.8)') trim(lhere),': array1=',array1(i,j,k),' /= array2=',array2(i,j,k)
+      write(6,'(2a,es15.8)') trim(lhere),': tolerance=',tol
       call die (lhere)
     endif
   enddo
@@ -3639,7 +3612,7 @@ module basic_tools_mod
   endif
 
   do i = 1, array_nb
-    write(6,'(a,a,i3,a,f)') trim (array_name), '(',i,')=', array(i)
+    write(6,'(a,a,i3,a,es15.8)') trim (array_name), '(',i,')=', array(i)
   enddo
 
   end subroutine write_array_double_1
@@ -3776,32 +3749,32 @@ module basic_tools_mod
 
   end subroutine require
 
-! ================================================================================
-  subroutine is_a_number_or_die (array_name, array)
-! --------------------------------------------------------------------------------
-! Description : die if one element of array is not a number
-!
-! Created     : J. Toulouse, 24 Oct 2006
-! --------------------------------------------------------------------------------
-  implicit none
+! ! ================================================================================
+!   subroutine is_a_number_or_die (array_name, array)
+! ! --------------------------------------------------------------------------------
+! ! Description : die if one element of array is not a number
+! !
+! ! Created     : J. Toulouse, 24 Oct 2006
+! ! --------------------------------------------------------------------------------
+!   implicit none
 
-! input
-  character(len=*), intent(in) :: array_name
-  real(dp)             :: array (:)
+! ! input
+!   character(len=*), intent(in) :: array_name
+!   real(dp)             :: array (:)
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'is_a_number_or_die'
-  integer i
+! ! local
+!   character(len=max_string_len_rout), save :: lhere = 'is_a_number_or_die'
+!   integer i
 
-! comment this out for xlf
-!  do i = 1, size(array)
-!   if (array(i) == "NaN") then
-!    write(6,'(6a,i3,a,f,a)') trim(lhere),': in routine ',trim(here),', ', trim(array_name), ' (',i,')=',array(i), ' is not a number!'
-!    call die (lhere)
-!   endif
-!  enddo
+! ! comment this out for xlf
+! !  do i = 1, size(array)
+! !   if (array(i) == "NaN") then
+! !    write(6,'(6a,i3,a,f,a)') trim(lhere),': in routine ',trim(here),', ', trim(array_name), ' (',i,')=',array(i), ' is not a number!'
+! !    call die (lhere)
+! !   endif
+! !  enddo
 
-  end subroutine is_a_number_or_die
+!   end subroutine is_a_number_or_die
 
 !===========================================================================
   function mysize_integer_1 (array) result(result)
@@ -3819,8 +3792,6 @@ module basic_tools_mod
 ! output
   integer :: result
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'mysize_integer_1'
 
 ! begin
 
@@ -3849,8 +3820,6 @@ module basic_tools_mod
 ! output
   integer :: result
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'mysize_double_1'
 
 ! begin
 
@@ -3878,8 +3847,6 @@ module basic_tools_mod
 ! output
   integer :: result
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'last_element_integer'
 
 ! begin
   if (.not. allocated (array)) then
@@ -3906,8 +3873,6 @@ module basic_tools_mod
 ! output
   integer :: result
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'max_element_integer'
 
 ! begin
   if (.not. allocated (array)) then
@@ -3935,7 +3900,6 @@ module basic_tools_mod
   real(dp) :: result
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'array_norm_double_1'
   integer i
 
 ! begin

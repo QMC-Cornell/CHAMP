@@ -23,7 +23,6 @@ module accumulation_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'zeres0_dmc_clean'
   integer i, iw, ifr, ie, k, ip
 
 ! begin
@@ -91,7 +90,6 @@ module accumulation_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'zerest_dmc_clean'
   integer ifr, i
 
 ! begin
@@ -206,8 +204,7 @@ module accumulation_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'acues1_dmc_clean'
-  integer ifr, i, ipmod
+  integer ifr, ipmod
   real(dp) wgdsum1, nfpro
 
 ! begin
@@ -296,7 +293,6 @@ module accumulation_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'acuest_dmc_clean'
   real(dp) :: rn_eff, w, w2
   real(dp) :: error, x, x2
   real(dp) :: errg
@@ -619,23 +615,18 @@ module accumulation_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'finwrt_dmc_clean'
   integer i, j, k, ifr
   character*80 fmt
-  real (dp) :: rn_eff, error, errorn, errori, errc, errf, errg, errc1
-  real (dp) :: errf1, errg1, errw, errw1, erric, erric1, errig
+  real (dp) :: rn_eff, error, errorn, errc, errf, errg, errc1
+  real (dp) :: errf1, errg1, errw, errw1
   real (dp) :: x,x2,w,w2,rn
   real (dp) :: eval, eval_proc_eff,evalf_proc_eff, evalg_proc_eff
   real (dp) :: rtpass1
   real (dp) :: rteval, rteval_proc_eff1, rtevalf_proc_eff1, rtevalg_proc_eff1
-  real (dp) :: delr, delri, term
-  real (dp) :: accav, accavn, wave, wfave, eave, efave, ei1ave, ei2ave, ei3ave
-  real (dp) :: r2ave, riave
-  real (dp) :: e1ave, e2ave, e3ave
+!  real (dp) :: delr, delri, term
+  real (dp) :: accav, accavn, wave, wfave, eave, efave
   real (dp) :: werr, wferr, werr1, wferr1
-  real (dp) :: eerr, eferr, eerr1, eferr1, ei1err, ei2err, ei3err
-  real (dp) :: e1err, e2err, e3err
-  real (dp) :: r2err, rierr
+  real (dp) :: eerr, eferr, eerr1, eferr1
   real (dp) :: wgave, wgerr, wgerr1
   real (dp) :: egave, egerr1
   real (dp) :: peave, tpbave, tjfave
@@ -645,13 +636,20 @@ module accumulation_mod
   real(dp)  :: rtpass_proc1, rteval_proc
   real(dp)  :: tcor_g
 
+# if !defined (MPI)
+  real (dp) :: erric, erric1, errig, errori
+  real (dp) :: e1ave, e2ave, e3ave, ei1ave, ei2ave, ei3ave
+  real (dp) :: e1err, e2err, e3err, ei1err, ei2err, ei3err
+  real (dp) :: r2ave, r2err, riave, rierr
+# endif
+
 # if defined (MPI)
   integer  :: ierr
   real(dp) :: e1collect, e21collect, ef21collect, ef1collect
   real(dp) :: w1collect, w21collect, wf21collect, wf1collect
   integer  :: nodecr_collect
   real(dp) :: try_int_collect, acc_collect, acc_int_collect
-  real(dp) :: eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE),wg21collect(MFORCE),taucollect(MFORCE),rprobcollect(NRAD)
+  real(dp) :: eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE),wg21collect(MFORCE),rprobcollect(NRAD)
 # endif
 
 ! statement functions for error calculation

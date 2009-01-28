@@ -197,8 +197,7 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    integer                              :: ipar, i, j
-    real(dp)                             :: sum
+    integer                              :: i
 
     if (header_exe) then
        call object_create ('param_pjas_nb', param_pjas_nb_index)
@@ -341,8 +340,6 @@ contains
 !---------------------------------------------------------------------------
     implicit none
     include 'commons.h'
-    integer                              :: ipar, i, j
-    real(dp)                             :: sum
 
     if (header_exe) then
        call object_create ('dpsi_pjas', dpsi_pjas_index)
@@ -474,9 +471,9 @@ contains
     include "commons.h"
 !JT    include "common_jasn.h"
 
-    integer                              :: iel, ist
+    integer                              :: iel
     real(dp)                             :: rvec (3,melec)
-    real(dp)                             :: xvec (3), value1, temp , value2, value
+    real(dp)                             :: xvec (3), value1, value2, value
 
     call object_alloc ("gn_pjas", gn_pjas, param_pjas_nb)
 
@@ -509,8 +506,8 @@ contains
     include "commons.h"
 !JT    include "common_jasn.h"
     real(dp)                             :: rvec (3,melec)
-    integer                              :: iel, ist
-    real(dp)                             :: xvec (3), value1, temp, value2, value
+    integer                              :: iel
+    real(dp)                             :: xvec (3), value1, value2, value
 
     if (do_pjasen) then
        xvec = rvec(:,iel)
@@ -545,7 +542,6 @@ contains
     real (dp)                            :: v (3,melec)
     real (dp)                            :: fsum, d2
     real (dp)                            :: div_vj (melec)
-    integer                              :: i
     real(dp)                             :: pjasd2o_l, pjasfsumo_l
 
 !!! common block variables
@@ -592,7 +588,6 @@ contains
     real (dp)                            :: xvec (3, melec)
     real (dp)                            :: v (3,melec), div_vj (melec)
     real (dp)                            :: fsum, d2
-    integer                              :: i
     real(dp)                             :: pjasd2o_l, pjasfsumo_l
 
 

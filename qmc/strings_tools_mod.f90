@@ -43,8 +43,6 @@ module strings_tools_mod
 ! output
   character(len=max_string_len) :: string
 
-! local
-  character(len=max_string_len_rout),save :: lhere = 'string_string_cat'
 
 ! begin
   string = ''
@@ -69,7 +67,6 @@ module strings_tools_mod
   character(len=max_string_len) :: string_cat
 
 ! local
-  character(len=max_string_len_rout),save :: lhere = 'integer_string_cat'
   character(len=max_string_len) intg_string
 
 ! begin
@@ -96,7 +93,6 @@ module strings_tools_mod
   character(len=max_string_len) :: string_cat
 
 ! local
-  character(len=max_string_len_rout),save :: lhere = 'string_integer_cat'
   character(len=max_string_len) intg_string
 
 ! begin
@@ -123,12 +119,11 @@ module strings_tools_mod
   character(len=max_string_len) :: string_cat
 
 ! local
-  character(len=max_string_len_rout),save :: lhere = 'double_string_cat'
   character(len=max_string_len) real_string
 
 ! begin
   string_cat = ''
-  write (real_string,'(f)') real
+  write (real_string,'(es15.8)') real
   string_cat = trim(real_string)//trim(string)
 
   end function double_string_cat
@@ -150,12 +145,11 @@ module strings_tools_mod
   character(len=max_string_len) :: string_cat
 
 ! local
-  character(len=max_string_len_rout),save :: lhere = 'string_double_cat'
   character(len=max_string_len) real_string
 
 ! begin
   string_cat = ''
-  write (real_string,'(f)') real
+  write (real_string,'(es15.8)') real
   string_cat = trim(string)//trim(real_string)
 
   end function string_double_cat
@@ -175,9 +169,6 @@ module strings_tools_mod
 ! output
   character(len=max_string_len) :: string
 
-! local
-  character(len=max_string_len_rout),save :: lhere = 'string_integer'
-  character(len=max_string_len) real_string
 
 ! begin
   string = ''
@@ -201,10 +192,6 @@ module strings_tools_mod
 ! output
   character(len=max_string_len) :: string
 
-! local
-  character(len=max_string_len_rout),save :: lhere = 'string2_integer'
-  character(len=max_string_len) real_string
-
 ! begin
   string = ''
   write (string,'(i2)') intg
@@ -227,8 +214,6 @@ module strings_tools_mod
 ! output
   integer string_to_integer
 
-! local
-  character(len=max_string_len_rout),save :: lhere = 'string_to_integer'
 
 ! begin
   call cnvint (string, string_to_integer)

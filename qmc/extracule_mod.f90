@@ -46,9 +46,8 @@ module extracule_mod
   implicit none
 
   character*(max_string_len_rout), save :: lhere = 'extracule_menu'
-  character*(max_string_len) line, word
+  character*(max_string_len) word
 
-  integer iostat
 
 ! begin
 
@@ -333,7 +332,6 @@ module extracule_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout),save    :: lhere = 'extracule_wrt'
   integer                                    :: unit
   character(len=max_string_len_file)         :: file
   integer                                    :: grid_i

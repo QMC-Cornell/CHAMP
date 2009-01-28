@@ -109,9 +109,8 @@ module deriv_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'param_nb_bld'
   integer i, j, pair
-  integer param_i, shift
+  integer shift
 
 ! header
   if (header_exe) then
@@ -235,7 +234,6 @@ module deriv_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'dpsi_bld'
   integer shift, param_i
 
 ! header
@@ -350,8 +348,7 @@ module deriv_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'd2psi_bld'
-  integer i, iparmcsf, iparmj, iparmorb, iparmj_pair
+  integer i, iparmj_pair
 
 ! header
   if (header_exe) then
@@ -422,7 +419,6 @@ module deriv_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'deloc_bld'
   integer shift, param_i
 
 ! header
@@ -539,7 +535,6 @@ module deriv_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'deloc_av_abs_max_bld'
   integer param_i
 
 ! header
@@ -1361,8 +1356,6 @@ module deriv_mod
   implicit none
   include 'commons.h'
 
-! local
-  integer pair
 
 ! header
   if (header_exe) then

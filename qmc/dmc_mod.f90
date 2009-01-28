@@ -24,7 +24,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dmc_init'
 
 ! If add_diag(1) <= 0 turn OFF add_diag optimization and use fixed, add_diag
 ! equal to abs(add_diag) specified in input.  Usually you do NOT want to do this
@@ -118,11 +117,9 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dmc'
-  integer i, istep, jj, k, id
+  integer i, istep, jj, k
   integer ngfmc
   character (len=27) fmt
-  character (len=27) filename
   integer iwalk
   real(dp) passes, efin
 
@@ -346,7 +343,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dmc_brock'
 
 ! begin
   if (l_mode_dmc_mov1) then
@@ -368,7 +364,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dmc_good_ps'
 
 ! begin
   if (l_mode_dmc_mov1) then
@@ -390,7 +385,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dmc_good'
 
 ! begin
   if (l_mode_dmc_mov1) then
@@ -412,7 +406,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dmc_good_inhom'
 
 ! begin
   if (l_mode_dmc_mov1) then
@@ -434,7 +427,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'splitj'
 
 ! begin
     if (l_mode_dmc_mov1) then
@@ -456,7 +448,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'acuest_dmc'
 
 ! begin
 # if defined (MPI)
@@ -486,7 +477,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'acues1_dmc'
 
 ! begin
 # if defined (MPI)
@@ -516,7 +506,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'zeres0_dmc'
 
 ! begin
 # if defined (MPI)
@@ -546,7 +535,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'zerest_dmc'
 
 ! begin
 # if defined (MPI)
@@ -576,7 +564,6 @@ module dmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'finwrt_dmc'
 
 ! begin
 # if defined (MPI)
@@ -606,10 +593,10 @@ module dmc_mod
   include 'commons.h'
 
 ! input
+  character (len=max_string_len_rout), save :: lhere = 'send_jas'
   integer i
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'send_jas'
 
 ! begin
 # if defined (MPI)
@@ -635,10 +622,10 @@ module dmc_mod
   include 'commons.h'
 
 ! input
+  character (len=max_string_len_rout), save :: lhere = 'recv_jas'
   integer i
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'recv_jas'
 
 ! begin
 # if defined (MPI)

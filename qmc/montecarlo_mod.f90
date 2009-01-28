@@ -371,7 +371,6 @@ module montecarlo_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'walker_weights_bld'
   integer walk_i
 
 ! header

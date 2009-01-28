@@ -261,7 +261,9 @@ c     the program even when the 2 electrons are collinear.
      &ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       real*8 xlob,dlnrr2,x
       real*8 r1,r2,r12,s,t,rr2,term
-      real*8 r,Y00,Y20,Y21,root,y,omega,alph,beta
+      real*8 r,Y20,Y21,root,y,omega,alph,beta
+c     real*8 Y00
+
       real*8 psi1,psi21,psi20,psi2a,psi2b,psi2c
      &,psi2d,psi31,p1p21,phi21,phi20,phi31,ss1,ss2
       real*8 osix,otwe
@@ -1034,7 +1036,6 @@ c     implicit none
 
       include 'vmc.h'
 
-      integer fflag
       real*8 rlobx, rloby, rloby2
 
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)

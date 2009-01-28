@@ -140,7 +140,6 @@ module print_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'objects_print_at_each_block'
   integer obj_i
 
 ! begin
@@ -160,8 +159,6 @@ module print_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'reinit_objects_print_at_each_block'
 
 ! begin
   objects_print_at_each_block_nb = 0

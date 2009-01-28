@@ -69,12 +69,12 @@ contains
     real(dp)                             :: ecut
     complex(dp)                          :: cc
     real(dp)                             :: cx
-    logical                              :: iprint,lg1,lg2,lg3
+    logical                              :: lg1
     integer                              :: hi,low
     real(dp)                             :: bi(3),bj(3),bk(3)
     integer                              :: mnbmax,i,j,ipas,jpas,kpas,mnm,k,l,mn,mntot,mlign,iprot,ii,mn2
-    integer                              :: m1,m2,m3,i1,i2,mnbr,ntt,ir
-    real(dp)                             :: g,gkmod,xli,q
+    integer                              :: m1,m2,m3,i1,i2,mnbr,ntt
+    real(dp)                             :: g,gkmod,xli
     real(dp)                             :: bijk,bpi,bpj,bpk,bbi,bbj,gki,gkj,bbk,gkk
     integer                              :: ntstar,nop, istat, kk, nbasis_pw_t
     real(dp)                             :: temp , pi, twopi
@@ -95,7 +95,7 @@ contains
     real(dp),allocatable                 :: sk3_tt(:), ekin_tt(:), rkv_tt (:,:)
     integer, allocatable                 :: mstar_tt(:), istar_tt(:), kv_tt(:,:)
     complex(dp), allocatable             :: phase_tt (:)
-    integer                              :: j1, j2 , phase_zero, ist, r
+    integer                              :: j1, phase_zero, ist, r
 
     !
     !     calculate the metric in reciprocal space:
@@ -149,7 +149,7 @@ contains
     do j=1,3
        gij(j,j)=one
        do  i=1,3
-	  if (i.ne.j) gij(i,j)=zero
+          if (i.ne.j) gij(i,j)=zero
        enddo
     enddo
     !
@@ -162,8 +162,8 @@ contains
     gkmod=g
 
     bijk=bi(1)*(bj(2)*bk(3)-bj(3)*bk(2)) +&
-	 bi(2)*(bj(3)*bk(1)-bj(1)*bk(3)) +&
-	 bi(3)*(bj(1)*bk(2)-bj(2)*bk(1))
+         bi(2)*(bj(3)*bk(1)-bj(1)*bk(3)) +&
+         bi(3)*(bj(1)*bk(2)-bj(2)*bk(1))
     bijk=abs(bijk)
     bpi=gdot ( bi,bi,gij )
     bpj=gdot ( bj,bj,gij )
@@ -183,27 +183,27 @@ contains
     do i=1,ipas
        gv(1)=-gki+i-1
        do j=1,jpas
-	  gv(2)=-gkj+j-1
-	  do k=1,kpas
-	     gv(3)=-gkk+k-1
-	     gkmod=sqrt(gdot(gv,gv,bij))
+          gv(2)=-gkj+j-1
+          do k=1,kpas
+             gv(3)=-gkk+k-1
+             gkmod=sqrt(gdot(gv,gv,bij))
              if (not_include_zero .and. gkmod == 0) cycle
-	     if (gkmod.gt.g ) cycle
-	     mnm=mnm + 1
-	     !
-	     if (mnm.gt.ntstrd) then
-		write ( 6,*) 'create_pw_lattice: increase star dim.: mn,ntstrd=',mnm,ntstrd
-		stop 'create_pw_lattice:  increase  star dimensions'
-	     endif
+             if (gkmod.gt.g ) cycle
+             mnm=mnm + 1
+             !
+             if (mnm.gt.ntstrd) then
+                write ( 6,*) 'create_pw_lattice: increase star dim.: mn,ntstrd=',mnm,ntstrd
+                stop 'create_pw_lattice:  increase  star dimensions'
+             endif
 
              ekin_t(mnm)=gkmod+deltlg*mnm
 
-	     do l=1,3
-		rkv_t(l,mnm)=gv(l)
-	     enddo
-	  enddo
-       enddo
-    enddo
+             do l=1,3
+                rkv_t(l,mnm)=gv(l)
+             enddo
+           enddo
+        enddo
+     enddo
     !
     !
     !     construction of stars
@@ -216,7 +216,7 @@ contains
     do  mn=1,mnm
        res2(mn)=ekin_t(indexx(mn))
        do  l=1,3
-	  resultt(l,mn)=rkv_t(l,indexx(mn))
+          resultt(l,mn)=rkv_t(l,indexx(mn))
        enddo
     enddo
 
@@ -237,12 +237,12 @@ contains
     if(res2(hi+1).le.gkmod+xli)then
        hi=hi+1
        if((hi-low).gt.mlignd)then
-	  print*, 'hi=',hi
-	  print*, 'low=',low
-	  print*, mlignd
-	  write( 6,'('' create_pw_lattice:mlignd'')')
+          print*, 'hi=',hi
+          print*, 'low=',low
+          print*, mlignd
+          write( 6,'('' create_pw_lattice:mlignd'')')
           write(6,*) 'mlignd: check your symmetry operations and your lattice'
-	  stop
+          stop
        endif
        goto 17
     endif
@@ -269,33 +269,33 @@ contains
     do ii=1,nop
 
        do j=1,3
-	  gkt(j)=0.d0
-	  do k=1,3
-	     gkt(j)=gkt(j)+symrel(j,k,ii)*protyp(k)
-	  enddo
+          gkt(j)=0.d0
+          do k=1,3
+             gkt(j)=gkt(j)+symrel(j,k,ii)*protyp(k)
+          enddo
        enddo
        lg1=.true.
 
        do mn= 1, mlign
-	  mn2=mn+low-1
-	  !
+          mn2=mn+low-1
+          !
           temp =abs(gkt(1)-resultt(1,mn2))+abs(gkt(2)-resultt(2,mn2))+&
                abs(gkt(3)-resultt(3,mn2))
 
-	  if(temp .gt. xli ) then
-	     impt(mn,ii)=.true.
-	  else
+          if(temp .gt. xli ) then
+             impt(mn,ii)=.true.
+          else
 
 
-	     impt(mn,ii)=.false.
-	     impr(mn)=.false.
-	     lg1=.false.
-	     cx= 0.d0
-	     do j=1,3
-		cx=cx-gkt(j)*tnons (j, ii)
-	     enddo
-	     cx=cx*twopi
-	     etagv(ii)=cmplx(cos(cx), sin(cx))
+             impt(mn,ii)=.false.
+             impr(mn)=.false.
+             lg1=.false.
+             cx= 0.d0
+             do j=1,3
+                cx=cx-gkt(j)*tnons (j, ii)
+             enddo
+             cx=cx*twopi
+             etagv(ii)=cmplx(cos(cx), sin(cx))
              !             if ((sin(cx)) > 0.00001) then
              !                stop "complex phase with"
              !             endif
@@ -303,7 +303,7 @@ contains
 
        enddo !mn align
        if(lg1)then
-	  write(6,*)'error in create_pw_lattice: unsymmetric superstar', nstar
+          write(6,*)'error in create_pw_lattice: unsymmetric superstar', nstar
           write(6,*) 'Symmetrey operations inconsistent with your lattice'
           write(6,*) 'create_pw_lattice'
           stop
@@ -340,33 +340,33 @@ contains
        endif
        !
        if(used(mn)) then
-	  write(6,*)resultt(1,mn2),resultt(2,mn2),resultt(3,mn2)
-	  write(*,*)'create_pw_lattice: attempt to reuse rec. lat. vector'
+          write(6,*)resultt(1,mn2),resultt(2,mn2),resultt(3,mn2)
+          write(*,*)'create_pw_lattice: attempt to reuse rec. lat. vector'
        endif
        used(mn)=.true.
        mntot=mntot + 1
        cc=z_0
        do ii=1,nop
-	  if(impt(mn,ii)) then
+          if(impt(mn,ii)) then
              cycle
           endif
-	  cc=cc+etagv(ii)
+          cc=cc+etagv(ii)
        enddo
        cc=cc/real(ntt,dp)
        phase_t(mntot)=cc
        ekin_t(mntot)=res2(mn2)**2
        sk3_t(nstar)=res2(mn2)**2
        do j=1,3
-	  kv_t(j,mntot)=nint(resultt(j,mn2))
+          kv_t(j,mntot)=nint(resultt(j,mn2))
        enddo
        m1=kv_t(1,mntot)
        m2=kv_t(2,mntot)
        m3=kv_t(3,mntot)
 
        do j=1,3
-	  rkv_t(j,mntot)=kv_t(1,mntot)*bvec(j,1)&
-	       +kv_t(2,mntot)*bvec(j,2)&
-	       +kv_t(3,mntot)*bvec(j,3)
+          rkv_t(j,mntot)=kv_t(1,mntot)*bvec(j,1)&
+               +kv_t(2,mntot)*bvec(j,2)&
+               +kv_t(3,mntot)*bvec(j,3)
 
        enddo
 
@@ -672,12 +672,10 @@ contains
     deallocate(mstar_tt, istar_tt ,sk3_tt, ekin_tt , kv_tt , phase_tt,rkv_tt)
 
 
-2   format(10x,i7,' plane waves in ',i6,' stars',/,&
-	 10x,'gki gkj gkk = ',3f5.1)
 5   format(15x, i5,f15.8,3i5,2f10.5,10x,3f10.5)
 6   format(/3i5,5x,f15.8/)
-7   format (3(/4x,3f10.6))
-8   format (8f10.6)
+
+
 
   contains
 
@@ -696,9 +694,9 @@ contains
       integer                            :: i,j
       gdot=zero
       do  j=1,3
-	 do  i=1,3
-	    gdot=gdot+a(i)*gij(i,j)*b(j)
-	 enddo
+         do  i=1,3
+            gdot=gdot+a(i)*gij(i,j)*b(j)
+         enddo
       enddo
     end function gdot
 
@@ -715,40 +713,40 @@ contains
       integer                            :: ind(n)
       integer                            :: j,l,indxt,ir
       do j=1,n
-	 ind(j)=j
+         ind(j)=j
       enddo
       if(n.le.1)return
       l=n/2+1
       ir=n
 10    continue
       if(l.gt.1)then
-	 l=l-1
-	 indxt=ind(l)
-	 q=a(indxt)
+         l=l-1
+         indxt=ind(l)
+         q=a(indxt)
       else
-	 indxt=ind(ir)
-	 q=a(indxt)
-	 ind(ir)=ind(1)
-	 ir=ir-1
-	 if(ir.eq.1)then
-	    ind(1)=indxt
-	    return
-	 endif
+         indxt=ind(ir)
+         q=a(indxt)
+         ind(ir)=ind(1)
+         ir=ir-1
+         if(ir.eq.1)then
+            ind(1)=indxt
+            return
+         endif
       endif
       i=l
       j=l+l
 20    if(j.le.ir)then
-	 if(j.lt.ir)then
-	    if(a(ind(j)).lt.a(ind(j+1)))j=j+1
-	 endif
-	 if(q.lt.a(ind(j)))then
-	    ind(i)=ind(j)
-	    i=j
-	    j=j+j
-	 else
-	    j=ir+1
-	 endif
-	 goto 20
+         if(j.lt.ir)then
+            if(a(ind(j)).lt.a(ind(j+1)))j=j+1
+         endif
+         if(q.lt.a(ind(j)))then
+            ind(i)=ind(j)
+            i=j
+            j=j+j
+         else
+            j=ir+1
+         endif
+         goto 20
       endif
       ind(i)=indxt
       goto 10

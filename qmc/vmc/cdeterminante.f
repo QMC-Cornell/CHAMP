@@ -14,7 +14,7 @@ c coefficients are real.
 c complex locals:
       complex*16 cddet_det(3,MELEC),cdeterm,cdetinv
       complex*16 corb(MORB)
-      complex*16 cratio(MDET),csum,cterm,cdeti
+      complex*16 cratio(MDET),csum,cterm
 
 c complex commons:
 c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti

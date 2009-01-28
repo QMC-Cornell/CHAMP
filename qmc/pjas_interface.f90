@@ -18,7 +18,7 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
 !JT  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
 !JT       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-  integer                                :: i, j, k ,ij
+  integer                                :: i, j, k
 
 
 !!! all values will be added up (v, d2, div_vj, value)
@@ -72,7 +72,7 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
 !JT  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
 !JT       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-  integer                                :: i, j, k ,ij
+  integer                                :: i, j, k
 
 
 !!! all values will be added up (v, d2, div_vj, value)
@@ -120,7 +120,7 @@ subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
   include 'commons.h'
   real(dp)                               :: rvec(3,melec*(melec-1)/2)
   integer                                :: iel
-  real (dp)                              :: x, v, value, d2
+  real (dp)                              :: x, v, value
   dimension x(3,melec),v(3,melec)
 !JT  real (dp)                              :: fsn, fijn, d2ijn, d2n , fsumn, fjn
 

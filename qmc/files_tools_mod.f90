@@ -155,7 +155,6 @@ module files_tools_mod
   character (len=*), intent(in) :: filename
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'file_exist'
   logical :: exist
 
 ! begin
@@ -177,7 +176,6 @@ module files_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'file_exist_or_die'
-  logical :: exist
 
 ! begin
   if (.not. file_exist(filename)) then

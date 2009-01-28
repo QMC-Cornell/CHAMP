@@ -16,7 +16,7 @@ subroutine f_een_cuts (rp, ri, rj, gfunci, gfuncj, gfunc, dgfunci, dgfuncj, d2gf
   real(dp)                               :: ri2, ri3, ri4
   real(dp)                               :: rj2, rj3, rj4
   real(dp)                               :: gfunc, gfunci, gfuncj
-  real(dp)                               :: dgfunci , dgfuncj , d2gfunci,d2gfuncj, d2gfunc
+  real(dp)                               :: dgfunci , dgfuncj , d2gfunci,d2gfuncj
 
   rp2 = rp*rp
   rii= ri/rp
@@ -58,7 +58,7 @@ subroutine f_een_cuts_nd (rp, ri, rj, gfunc)
   real(dp)                               :: ri2, ri3, ri4
   real(dp)                               :: rj2, rj3, rj4
   real(dp)                               :: gfunc, gfunci, gfuncj
-  real(dp)                               :: dgfunci , dgfuncj , d2gfunci,d2gfuncj, d2gfunc
+!  real(dp)                               :: dgfunci, d2gfuncj, d2gfunci, dgfuncj
 
   rp2 = rp*rp
   rii= ri/rp

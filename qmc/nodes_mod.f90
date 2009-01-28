@@ -117,7 +117,6 @@ module nodes_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'execute_node_headers'
   integer node_i
 
 ! begin
@@ -196,7 +195,6 @@ module nodes_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'node_add'
-  integer node_ind
 
 ! begin
 
@@ -366,12 +364,12 @@ module nodes_mod
    nod_srt_i = nodes_indexes_sort (nod_i)
    if (nodes(nod_srt_i)%calls_nb >= 1) then
    node_name = trim(nodes(nod_srt_i)%routine_name)
-   write(6,'(a,i10,f)') node_name, nodes(nod_srt_i)%calls_nb, nodes(nod_srt_i)%cpu_duration
+   write(6,'(a,i10,es15.8)') node_name, nodes(nod_srt_i)%calls_nb, nodes(nod_srt_i)%cpu_duration
     cpu_duration_total = cpu_duration_total +  nodes(nod_srt_i)%cpu_duration
    endif
   enddo
    write(6,'(a)') '------------------------------------------------------------------'
-   write(6,'(a,f)') 'TOTAL                                   ',cpu_duration_total
+   write(6,'(a,es15.8)') 'TOTAL                                   ',cpu_duration_total
    write(6,*)
 
  end subroutine nodes_statistics

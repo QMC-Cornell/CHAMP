@@ -75,7 +75,7 @@ module opt_ptb_mod
   include 'commons.h'
 
 ! local
-  integer i, j
+  integer i
 
 ! header
   if (header_exe) then

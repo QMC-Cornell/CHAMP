@@ -202,7 +202,7 @@ module psi_mod
   include 'commons.h'
 
 ! local
-  integer det_unq_up_i, det_unq_dn_i, dim_i, i, j
+  integer det_unq_up_i, det_unq_dn_i, i, j
 
 ! header
   if (header_exe) then
@@ -555,9 +555,6 @@ module psi_mod
   implicit none
   include 'commons.h'
 
-! local
-  integer dim_i
-  integer elec_i
 
 ! header
   if (header_exe) then
@@ -762,7 +759,6 @@ module psi_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'find_max_of_psi'
   real(dp) psi2, psi2_tol, psi2_best
   integer elec_dim_nb, vectex_nb, vertex_i, elec_i, trial_i, trial_best_i
   integer itmax, iter, iter_all
@@ -801,12 +797,12 @@ module psi_mod
      write(6,'(a,i3)') 'vertex # ',vertex_i
      call mc_configs_read
      do elec_i = 1, nelec
-       write(6,'(a,i3, 3f)') 'electron # ',elec_i, xold (1:ndim, elec_i)
+       write(6,'(a,i3, 3es15.8)') 'electron # ',elec_i, xold (1:ndim, elec_i)
      enddo ! elec_i
      call flatten  (coord_elec_vec, xold, ndim, nelec)
      coord_elec_vec_simplex (vertex_i, :) = coord_elec_vec (:)
      psi2_simplex (vertex_i) = psi2_eval (coord_elec_vec)
-     write(6,'(a,f)') 'wave function square = ', psi2_simplex (vertex_i)
+     write(6,'(a,es15.8)') 'wave function square = ', psi2_simplex (vertex_i)
    enddo ! vertex_i
    
 !  simplex algorithm
@@ -816,7 +812,7 @@ module psi_mod
    itmax = 100
    iter_all = 0
    psi2_tol = 1.d-8
-   write(6,'(a,f)') 'convergence threshold on wave function square = ',psi2_tol
+   write(6,'(a,es15.8)') 'convergence threshold on wave function square = ',psi2_tol
    do
      call amoeba(coord_elec_vec_simplex,psi2_simplex,vectex_nb,elec_dim_nb,elec_dim_nb,psi2_tol,minus_psi2_eval,iter,itmax,converged)
    
@@ -828,10 +824,10 @@ module psi_mod
      coord_elec_vec = coord_elec_vec_simplex (1,:)
      call unflatten  (coord_elec_vec, xold, ndim, nelec)
      do elec_i = 1, nelec
-       write(6,'(a,i3, 3f)') 'electron # ',elec_i, xold (1:ndim, elec_i)
+       write(6,'(a,i3, 3es15.8)') 'electron # ',elec_i, xold (1:ndim, elec_i)
      enddo ! elec_i
      psi2 = psi2_eval (coord_elec_vec)
-     write(6,'(a,f)') 'wave function square = ', psi2
+     write(6,'(a,es15.8)') 'wave function square = ', psi2
   
 
      if (converged) exit
@@ -853,9 +849,9 @@ module psi_mod
   write(6,'(a,i10)') 'the best maximum was found at maximization trial # ', trial_best_i
   call unflatten  (coord_elec_vec_best, xold, ndim, nelec)
   do elec_i = 1, nelec
-     write(6,'(a,i3, 3f)') 'electron # ',elec_i, xold (1:ndim, elec_i)
+     write(6,'(a,i3, 3es15.8)') 'electron # ',elec_i, xold (1:ndim, elec_i)
   enddo ! elec_i
-  write(6,'(a,f)') 'wave function square = ', psi2_best
+  write(6,'(a,es15.8)') 'wave function square = ', psi2_best
 
  end subroutine maximize_psi2
 

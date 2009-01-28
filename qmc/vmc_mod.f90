@@ -17,7 +17,6 @@ module vmc_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'vmc_init'
 
   call my_second(0,'begin ')
 
@@ -59,7 +58,6 @@ module vmc_mod
   implicit none
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'vmc_run'
 
   call vmc_init
   call vmc
@@ -80,7 +78,6 @@ module vmc_mod
   integer l
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'metrop'
 
 ! begin
   if (l_mode_vmc_mov1) then
@@ -105,7 +102,6 @@ module vmc_mod
   integer l
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'metrop_polar'
 
 ! begin
   if (l_mode_vmc_mov1) then
@@ -130,7 +126,6 @@ module vmc_mod
   integer l
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'metrop_slat'
 
 ! begin
   if (l_mode_vmc_mov1) then

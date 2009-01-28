@@ -56,8 +56,9 @@
 ! really be necessary. However, at least one compiler (PGI) comments
 ! on their absence, so they are included for completeness.
 !
-      INTEGER :: IARGC
-      EXTERNAL   IARGC
+!fp
+!       INTEGER :: IARGC
+!       EXTERNAL   IARGC
 !
 ! Under Unix we must reconstruct the command line from its constituent
 ! parts. This will not be the original command line. Rather it will be
@@ -106,8 +107,9 @@
 ! really be necessary. However, at least one compiler (PGI) comments
 ! on their absence, so they are included for completeness.
 !
-      INTEGER :: IARGC
-      EXTERNAL   IARGC
+!fp
+!       INTEGER :: IARGC
+!       EXTERNAL   IARGC
 !
       COMMAND_ARGUMENT_COUNT = IARGC()
       RETURN
@@ -170,8 +172,9 @@
 ! really be necessary. However, at least one compiler (PGI) comments
 ! on their absence, so they are included for completeness.
 !
-      INTEGER :: IARGC
-      EXTERNAL   IARGC
+!fp
+!       INTEGER :: IARGC
+!       EXTERNAL   IARGC
 !
 ! Possible error codes:
 ! 1 = Argument number is less than minimum

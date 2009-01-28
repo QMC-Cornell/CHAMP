@@ -86,7 +86,7 @@ module deriv_exp_mod
   include 'commons.h'
 
 ! local
-  integer bas_i, bas_j, dexp_i, exp_opt_lab_i, exp_opt_lab_j
+  integer bas_i, bas_j, dexp_i, exp_opt_lab_i !, exp_opt_lab_j
   logical, allocatable :: is_basis_func_attributed (:)
 
 ! header
@@ -187,7 +187,7 @@ module deriv_exp_mod
 
   enddo ! exp_opt_lab_i
 
-  write(6,'(a,i)') ' Number of exponent parameters =',param_exp_nb
+  write(6,'(a,i8)') ' Number of exponent parameters =',param_exp_nb
   do dexp_i = 1, param_exp_nb
 !    write(6,'(a,i3,a,100i3)') ' Exponent parameter # ',dexp_i,' corresponds to exponents: ', dexp_to_bas(dexp_i)%row (:)
 !    write(6,'(a,i3,a,100(a,x))') ' Exponent parameter # ',dexp_i,' corresponds to basis functions: ', (trim(basis_fns_name (dexp_to_bas(dexp_i)%row (bas_i))), bas_i=1, dexp_to_bas_nb(dexp_i))
@@ -371,7 +371,7 @@ module deriv_exp_mod
 
   do bas_i = 1, nbasis
     if (zex (bas_i, iwf) == 0.d0) then
-      write(6,'(2a,i3,a,i3,a,f)') trim(here), ': zex(',bas_i,',',iwf,')=', zex (bas_i, iwf)
+      write(6,'(2a,i3,a,i3,a,es15.8)') trim(here), ': zex(',bas_i,',',iwf,')=', zex (bas_i, iwf)
       call die (here, 'exponent must be non zero')
     endif
     n = n_bas (bas_i)
@@ -671,7 +671,7 @@ module deriv_exp_mod
   include 'commons.h'
 
 ! local
-  integer bas_i, bas_k, dexp_i, dexp_to_bas_i
+  integer bas_i, bas_k, dexp_i
 
 ! header
   if (header_exe) then
@@ -780,7 +780,7 @@ module deriv_exp_mod
   include 'commons.h'
 
 ! local
-  integer elec_i, bas_i, dim_i, cent_i, dexp_i, dexp_to_bas_i
+  integer elec_i, bas_i, dim_i, dexp_i, dexp_to_bas_i
 
 ! header
   if (header_exe) then
@@ -831,7 +831,7 @@ module deriv_exp_mod
   include 'commons.h'
 
 ! local
-  integer elec_i, bas_i, bas_k, dim_i, cent_i, dexp_i, dexp_to_bas_i
+  integer elec_i, bas_i, bas_k, dim_i, dexp_i
 
 ! header
   if (header_exe) then
@@ -1004,7 +1004,7 @@ module deriv_exp_mod
   include 'commons.h'
 
 ! local
-  integer bas_i, bas_k, elec_i, dexp_i, dexp_to_bas_i
+  integer bas_i, bas_k, elec_i, dexp_i
 
 ! header
   if (header_exe) then
@@ -1890,7 +1890,7 @@ module deriv_exp_mod
 ! local
   integer dexp_i
   integer det_unq_up_i, det_unq_dn_i
-  integer dim_i, elec_up_i, elec_dn_i
+  integer elec_up_i, elec_dn_i
   integer col_i, col_j
   integer orb_i, orb_j
   real(dp) factor_up, factor_dn
@@ -2470,9 +2470,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   implicit none
   include 'commons.h'
-
-! local
-  integer elec_i, dim_i
 
 ! header
   if (header_exe) then

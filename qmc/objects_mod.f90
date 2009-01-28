@@ -366,7 +366,6 @@ module objects_mod
   integer, intent(out) :: object_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_add_and_index'
   character(len=max_string_len_obj) object_name
   integer object_number
 
@@ -397,7 +396,6 @@ module objects_mod
   integer, intent(out) :: object_ind
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_add_once_and_index'
 
 ! begin
 
@@ -633,7 +631,6 @@ module objects_mod
   character(len=*), intent(in) :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere ='object_provide_default'
   integer object_ind
 
 ! begin
@@ -843,7 +840,6 @@ module objects_mod
   integer, intent(in) :: node_index
 
 ! local
-  character(len=max_string_len_rout), save  :: lhere =  'node_exe_by_index'
   integer obj_i
   real(dp) cpu1, cpu2
 
@@ -911,7 +907,6 @@ module objects_mod
   character(len=*), intent(in)             :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_modified'
   integer                                  :: object_ind
 
 ! begin
@@ -938,7 +933,6 @@ module objects_mod
   integer, intent(in) :: object_index
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_modified_by_index'
   integer node_i, obj_i
 
 ! begin
@@ -980,7 +974,6 @@ module objects_mod
   integer, intent(in) :: object_index
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_modified2_by_index'
   integer node_i, obj_i
 
 ! begin
@@ -1022,7 +1015,6 @@ module objects_mod
   integer, intent(in) :: object_index
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_depend_valid_by_index'
   integer obj_i
 
 ! begin
@@ -1076,7 +1068,6 @@ module objects_mod
   integer, intent(in) :: object_index
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_invalidate_by_index'
   integer node_i, obj_i
 
 
@@ -1127,7 +1118,6 @@ module objects_mod
   integer, target, intent(in)         :: object
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_integer_0'
   integer object_ind
 
 ! begin
@@ -1162,7 +1152,6 @@ module objects_mod
   integer, intent(in)                 :: dim1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_integer_1'
   integer object_ind
 
 ! begin
@@ -1200,7 +1189,6 @@ module objects_mod
   integer, intent(in)                :: dim1, dim2
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_integer_2'
   integer object_ind
 
 ! begin
@@ -1239,7 +1227,6 @@ module objects_mod
   integer, intent(in)                 :: dim1, dim2, dim3
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_integer_3'
   integer object_ind
 
 ! begin
@@ -1279,7 +1266,6 @@ module objects_mod
   integer, intent(in)                            :: dim1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_integer_row_1'
   integer object_ind
 
 ! begin
@@ -1317,7 +1303,6 @@ module objects_mod
   real(dp), target, intent(in)            :: object
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_0'
   integer object_ind
 
 ! begin
@@ -1352,7 +1337,6 @@ module objects_mod
   integer, intent(in)                 :: dim1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_1'
   integer object_ind
 
 ! begin
@@ -1390,7 +1374,6 @@ module objects_mod
   integer, intent(in)                 :: dim1, dim2
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_2'
   integer object_ind
 
 ! begin
@@ -1429,7 +1412,6 @@ module objects_mod
   integer, intent(in)                 :: dim1, dim2, dim3
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_3'
   integer object_ind
 
 ! begin
@@ -1469,7 +1451,6 @@ module objects_mod
   integer, intent(in)                 :: dim1, dim2, dim3, dim4
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_4'
   integer object_ind
 
 ! begin
@@ -1510,7 +1491,6 @@ module objects_mod
   integer, intent(in)                 :: dim1, dim2, dim3, dim4, dim5
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_5'
   integer object_ind
 
 ! begin
@@ -1552,7 +1532,6 @@ module objects_mod
   integer, intent(in)                        :: dim1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_double_row_1'
   integer object_ind
 
 ! begin
@@ -1589,7 +1568,6 @@ module objects_mod
   logical, target, intent(in)         :: object
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_logical_0'
   integer object_ind
 
 ! begin
@@ -1624,7 +1602,6 @@ module objects_mod
   integer, intent(in)                 :: dim1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_logical_1'
   integer object_ind
 
 ! begin
@@ -1662,7 +1639,6 @@ module objects_mod
   integer, intent(in)            :: dim1, dim2
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_logical_2'
   integer object_ind
 
 ! begin
@@ -1701,7 +1677,6 @@ module objects_mod
   integer, intent(in)                    :: dim1, dim2, dim3
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_logical_3'
   integer object_ind
 
 ! begin
@@ -1741,7 +1716,6 @@ module objects_mod
   integer, intent(in)                                  :: dim1
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_associate_string_1'
   integer object_ind
 
 ! begin
@@ -1886,7 +1860,6 @@ module objects_mod
   character(len=*), intent(in)                       :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_deassociate'
   integer object_ind
 
 ! begin
@@ -1930,7 +1903,7 @@ module objects_mod
   if (.not. allocated(object)) then
    allocate (object(dim1), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,i)') trim(lhere),': dimension of object is ', dim1
+    write(6,'(2a,i8)') trim(lhere),': dimension of object is ', dim1
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:) = 0
@@ -1986,7 +1959,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1,dim2), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,2i)') trim(lhere),': dimensions are ', dim1, dim2
+    write(6,'(2a,2i8)') trim(lhere),': dimensions are ', dim1, dim2
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:) = 0
@@ -2044,7 +2017,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1,dim2,dim3), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,3i)') trim(lhere),': dimensions are ', dim1, dim2, dim3
+    write(6,'(2a,3i8)') trim(lhere),': dimensions are ', dim1, dim2, dim3
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:,:) = 0
@@ -2106,7 +2079,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,i)') trim(lhere),': dimension is ', dim1
+    write(6,'(2a,i8)') trim(lhere),': dimension is ', dim1
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    call object_associate (object_name, object, dim1)
@@ -2162,7 +2135,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,i)') trim(lhere),': dimension is ', dim1
+    write(6,'(2a,i8)') trim(lhere),': dimension is ', dim1
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:) = 0.d0
@@ -2223,7 +2196,7 @@ module objects_mod
 
    allocate (object(dim1,dim2), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,2i)') trim(lhere),': dimensions are ', dim1, dim2
+    write(6,'(2a,2i8)') trim(lhere),': dimensions are ', dim1, dim2
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:) = 0.d0
@@ -2289,7 +2262,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1,dim2,dim3), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,3i)') trim(lhere),': dimensions are ', dim1, dim2, dim3
+    write(6,'(2a,3i8)') trim(lhere),': dimensions are ', dim1, dim2, dim3
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:,:) = 0.d0
@@ -2356,7 +2329,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1,dim2,dim3,dim4), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,4i)') trim(lhere),': dimensions are ', dim1, dim2, dim3, dim4
+    write(6,'(2a,4i8)') trim(lhere),': dimensions are ', dim1, dim2, dim3, dim4
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:,:,:) = 0.d0
@@ -2420,7 +2393,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1,dim2,dim3,dim4,dim5), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,5i)') trim(lhere),': dimensions are ', dim1, dim2, dim3, dim4, dim5
+    write(6,'(2a,5i8)') trim(lhere),': dimensions are ', dim1, dim2, dim3, dim4, dim5
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:,:,:,:) = 0.d0
@@ -2482,7 +2455,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,i)') trim(lhere),': dimensions are ', dim1
+    write(6,'(2a,i8)') trim(lhere),': dimensions are ', dim1
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    call object_associate (object_name, object, dim1)
@@ -2534,7 +2507,7 @@ module objects_mod
   if(.not. allocated(object)) then
    allocate (object(dim1), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,i)') trim(lhere),': dimensions are ', dim1
+    write(6,'(2a,i8)') trim(lhere),': dimensions are ', dim1
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:) = .false.
@@ -2589,7 +2562,7 @@ module objects_mod
   if (.not. allocated(object)) then
    allocate (object(dim1,dim2), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,2i)') trim(lhere),': dimensions are ', dim1, dim2
+    write(6,'(2a,2i8)') trim(lhere),': dimensions are ', dim1, dim2
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:) = .false.
@@ -2647,7 +2620,7 @@ module objects_mod
   if (.not. allocated(object)) then
    allocate (object(dim1,dim2,dim3), stat = all_err)
    if (all_err /= 0) then
-    write(6,'(2a,3i)') trim(lhere),': dimensions are ', dim1, dim2, dim3
+    write(6,'(2a,3i8)') trim(lhere),': dimensions are ', dim1, dim2, dim3
     call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
    endif
    object(:,:,:) = .false.
@@ -3055,12 +3028,12 @@ module objects_mod
 
   select case (trim(object_type))
   case ('double_0')
-     write(6,'(4a,f)') trim(routine_name),': ',trim(object_name),'=' ,objects(object_ind)%pointer_double_0
+     write(6,'(4a,es15.8)') trim(routine_name),': ',trim(object_name),'=' ,objects(object_ind)%pointer_double_0
 
   case ('double_1')
    dim1 = objects(object_ind)%dimensions(1)
    do i = 1, dim1
-     write(6,'(4a,i3,a,f)') trim(routine_name),': ',trim(object_name),'(',i,')=' ,objects(object_ind)%pointer_double_1(i)
+     write(6,'(4a,i3,a,es15.8)') trim(routine_name),': ',trim(object_name),'(',i,')=' ,objects(object_ind)%pointer_double_1(i)
    enddo
 
   case('double_2')
@@ -3068,7 +3041,7 @@ module objects_mod
    dim2 = objects(object_ind)%dimensions(2)
    do i = 1, dim1
     do j = 1, dim2
-      write(6,'(4a,i3,a,i3,a,f)') trim(routine_name),': ',trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_double_2(i,j)
+      write(6,'(4a,i3,a,i3,a,es15.8)') trim(routine_name),': ',trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_double_2(i,j)
     enddo
    enddo
 
@@ -3091,7 +3064,6 @@ module objects_mod
   character(len=*), intent(in) :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_write_no_routine_name'
   integer object_ind
 
 ! begin
@@ -3160,19 +3132,19 @@ module objects_mod
 
   select case (trim(object_type1))
    case ('double_0')
-   write(6,'(2a,f,3a,f)') trim(object_name1),'=' ,objects(object_ind1)%pointer_double_0, ' ', trim(object_name2),'=' ,objects(object_ind2)%pointer_double_0
+   write(6,'(2a,es15.8,3a,es15.8)') trim(object_name1),'=' ,objects(object_ind1)%pointer_double_0, ' ', trim(object_name2),'=' ,objects(object_ind2)%pointer_double_0
 
    case ('double_1')
    dim11 = objects(object_ind1)%dimensions(1)
    dim12 = objects(object_ind2)%dimensions(1)
    if (dim11 /= dim12) then
-    write(6,'(4a,i)') trim(lhere),': dimensions of object ',trim(object_name1),' is', dim11
-    write(6,'(4a,i)') trim(lhere),': dimensions of object ',trim(object_name2),' is', dim12
+    write(6,'(4a,i8)') trim(lhere),': dimensions of object ',trim(object_name1),' is', dim11
+    write(6,'(4a,i8)') trim(lhere),': dimensions of object ',trim(object_name2),' is', dim12
     write(6,'(2a)') trim(lhere),': they should be the same.'
     call die (lhere)
    endif
    do i = 1, dim11
-     write(6,'(2a,i4,a,f,3a,i4,a,f)') trim(object_name1),'(',i,')=' ,objects(object_ind1)%pointer_double_1(i) , ' ',trim(object_name2),'(',i,')=' ,objects(object_ind2)%pointer_double_1(i)
+     write(6,'(2a,i4,a,es15.8,3a,i4,a,es15.8)') trim(object_name1),'(',i,')=' ,objects(object_ind1)%pointer_double_1(i) , ' ',trim(object_name2),'(',i,')=' ,objects(object_ind2)%pointer_double_1(i)
    enddo
 
    case ('double_2')
@@ -3181,14 +3153,14 @@ module objects_mod
    dim12 = objects(object_ind2)%dimensions(1)
    dim22 = objects(object_ind2)%dimensions(2)
    if (dim11 /= dim12 .or. dim21 /= dim22) then
-    write(6,'(4a,2i)') trim(lhere),': dimensions of object ',trim(object_name1),' are', dim11, dim21
-    write(6,'(4a,2i)') trim(lhere),': dimensions of object ',trim(object_name2),' are', dim12, dim22
+    write(6,'(4a,2i8)') trim(lhere),': dimensions of object ',trim(object_name1),' are', dim11, dim21
+    write(6,'(4a,2i8)') trim(lhere),': dimensions of object ',trim(object_name2),' are', dim12, dim22
     write(6,'(2a)') trim(lhere),': they should be the same.'
     call die (lhere)
    endif
    do i = 1, dim11
     do j = 1, dim21
-      write(6,'(2a,i4,a,i4,a,f,3a,i4,a,i4,a,f)') trim(object_name1),'(',i,',',j,')=' ,objects(object_ind1)%pointer_double_2(i,j), ' ',trim(object_name2),'(',i,',',j,')=' ,objects(object_ind2)%pointer_double_1(i)
+      write(6,'(2a,i4,a,i4,a,es15.8,3a,i4,a,i4,a,es15.8)') trim(object_name1),'(',i,',',j,')=' ,objects(object_ind1)%pointer_double_2(i,j), ' ',trim(object_name2),'(',i,',',j,')=' ,objects(object_ind2)%pointer_double_1(i)
     enddo
    enddo
 
@@ -3200,15 +3172,15 @@ module objects_mod
    dim22 = objects(object_ind2)%dimensions(2)
    dim32 = objects(object_ind2)%dimensions(3)
    if (dim11 /= dim12 .or. dim21 /= dim22 .or. dim31 /= dim32) then
-    write(6,'(4a,3i)') trim(lhere),': dimensions of object ',trim(object_name1),' are', dim11, dim21, dim31
-    write(6,'(4a,3i)') trim(lhere),': dimensions of object ',trim(object_name2),' are', dim12, dim22, dim32
+    write(6,'(4a,3i8)') trim(lhere),': dimensions of object ',trim(object_name1),' are', dim11, dim21, dim31
+    write(6,'(4a,3i8)') trim(lhere),': dimensions of object ',trim(object_name2),' are', dim12, dim22, dim32
     write(6,'(2a)') trim(lhere),': they should be the same.'
     call die (lhere)
    endif
    do i = 1, dim11
     do j = 1, dim21
      do k = 1, dim31
-      write(6,'(2a,i4,a,i4,a,i4,a,f,3a,i4,a,i4,a,i4,a,f)') trim(object_name1),'(',i,',',j,',',k,')=' ,objects(object_ind1)%pointer_double_3(i,j,k), ' ',trim(object_name2),'(',i,',',j,',',k,')=' ,objects(object_ind2)%pointer_double_3(i,j,k)
+      write(6,'(2a,i4,a,i4,a,i4,a,es15.8,3a,i4,a,i4,a,i4,a,es15.8)') trim(object_name1),'(',i,',',j,',',k,')=' ,objects(object_ind1)%pointer_double_3(i,j,k), ' ',trim(object_name2),'(',i,',',j,',',k,')=' ,objects(object_ind2)%pointer_double_3(i,j,k)
      enddo
     enddo
    enddo
@@ -3219,14 +3191,14 @@ module objects_mod
    dim12 = objects(object_ind2)%dimensions(1)
    dim22 = objects(object_ind2)%dimensions(2)
    if (dim11 /= dim12 .or. dim21 /= dim22) then
-    write(6,'(4a,2i)') trim(lhere),': dimensions of object ',trim(object_name1),' are', dim11, dim21
-    write(6,'(4a,2i)') trim(lhere),': dimensions of object ',trim(object_name2),' are', dim12, dim22
+    write(6,'(4a,2i8)') trim(lhere),': dimensions of object ',trim(object_name1),' are', dim11, dim21
+    write(6,'(4a,2i8)') trim(lhere),': dimensions of object ',trim(object_name2),' are', dim12, dim22
     write(6,'(2a)') trim(lhere),': they should be the same.'
     call die (lhere)
    endif
    do i = 1, dim11
     do j = 1, dim21
-      write(6,'(2a,i3,a,i3,a,i,2a,i3,a,i3,a,i)') trim(object_name1),'(',i,',',j,')=' ,objects(object_ind1)%pointer_integer_2(i,j), trim(object_name2),'(',i,',',j,')=' ,objects(object_ind2)%pointer_integer_2(i,j)
+      write(6,'(2a,i3,a,i3,a,i8,2a,i3,a,i3,a,i8)') trim(object_name1),'(',i,',',j,')=' ,objects(object_ind1)%pointer_integer_2(i,j), trim(object_name2),'(',i,',',j,')=' ,objects(object_ind2)%pointer_integer_2(i,j)
     enddo
    enddo
 
@@ -3264,17 +3236,17 @@ module objects_mod
 
   select case (trim(object_type))
   case ('double_0')
-     write(6,'(2a,f)') trim(object_name),'=' ,objects(object_ind)%pointer_double_0
+     write(6,'(2a,es15.8)') trim(object_name),'=' ,objects(object_ind)%pointer_double_0
 
   case ('double_1')
    do i = 1, objects(object_ind)%dimensions(1)
-     write(6,'(2a,i3,a,f)') trim(object_name),'(',i,')=' ,objects(object_ind)%pointer_double_1(i)
+     write(6,'(2a,i3,a,es15.8)') trim(object_name),'(',i,')=' ,objects(object_ind)%pointer_double_1(i)
    enddo
 
   case ('double_2')
    do j = 1, objects(object_ind)%dimensions(2)
     do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,f)') trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_double_2(i,j)
+      write(6,'(2a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_double_2(i,j)
     enddo
    enddo
 
@@ -3282,7 +3254,7 @@ module objects_mod
    do k = 1, objects(object_ind)%dimensions(3)
     do j = 1, objects(object_ind)%dimensions(2)
      do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,i3,a,f)') trim(object_name),'(',i,',',j,',',k,')=' ,objects(object_ind)%pointer_double_3(i,j,k)
+      write(6,'(2a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,',',k,')=' ,objects(object_ind)%pointer_double_3(i,j,k)
      enddo
     enddo
    enddo
@@ -3292,7 +3264,7 @@ module objects_mod
     do k = 1, objects(object_ind)%dimensions(3)
      do j = 1, objects(object_ind)%dimensions(2)
       do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,i3,a,i3,a,f)') trim(object_name),'(',i,',',j,',',k,',',l,')=' ,objects(object_ind)%pointer_double_4(i,j,k,l)
+      write(6,'(2a,i3,a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,',',k,',',l,')=' ,objects(object_ind)%pointer_double_4(i,j,k,l)
       enddo
      enddo
     enddo
@@ -3304,7 +3276,7 @@ module objects_mod
      do k = 1, objects(object_ind)%dimensions(3)
       do j = 1, objects(object_ind)%dimensions(2)
        do i = 1, objects(object_ind)%dimensions(1)
-       write(6,'(2a,i3,a,i3,a,i3,a,i3,a,i3,a,f)') trim(object_name),'(',i,',',j,',',k,',',l,',',m,')=' ,objects(object_ind)%pointer_double_5(i,j,k,l,m)
+       write(6,'(2a,i3,a,i3,a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,',',k,',',l,',',m,')=' ,objects(object_ind)%pointer_double_5(i,j,k,l,m)
        enddo
       enddo
      enddo
@@ -3322,7 +3294,7 @@ module objects_mod
   case ('integer_2')
    do j = 1, objects(object_ind)%dimensions(2)
     do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,i)') trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_integer_2(i,j)
+      write(6,'(2a,i3,a,i3,a,i8)') trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_integer_2(i,j)
     enddo
    enddo
 
@@ -3330,7 +3302,7 @@ module objects_mod
    do k = 1, objects(object_ind)%dimensions(3)
     do j = 1, objects(object_ind)%dimensions(2)
      do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,i3,a,i)') trim(object_name),'(',i,',',j,',',k,')=' ,objects(object_ind)%pointer_integer_3(i,j,k)
+      write(6,'(2a,i3,a,i3,a,i3,a,i8)') trim(object_name),'(',i,',',j,',',k,')=' ,objects(object_ind)%pointer_integer_3(i,j,k)
      enddo
     enddo
    enddo
@@ -3376,7 +3348,6 @@ module objects_mod
   character(len=*), intent(in) :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_save'
   integer object_ind
 
 ! begin
@@ -3475,7 +3446,6 @@ module objects_mod
   character(len=*), intent(in) :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'object_restore'
   integer object_ind
 
 ! begin
@@ -3565,7 +3535,6 @@ module objects_mod
   character(len=*), intent(in) :: object_name
 
 ! local
-  character(len=max_string_len_rout), save :: lhere ='object_freeze'
   integer object_ind
 
 ! begin

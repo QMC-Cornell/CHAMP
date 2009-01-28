@@ -15,7 +15,7 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
-      character*30 section
+c      character*30 section
       character*10 mesg
       logical converg,analytic,cholesky
       external func,jacobian

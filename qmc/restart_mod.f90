@@ -17,7 +17,6 @@ module restart_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'dumper_dmc'
 
 ! begin
 # if defined (MPI)
@@ -47,7 +46,6 @@ module restart_mod
   include 'commons.h'
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'startr_dmc'
 
 ! begin
 # if defined (MPI)

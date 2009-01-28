@@ -133,7 +133,7 @@
   endif
 
   if (l_origin_given) then
-   write(6,'(a,3f)') ' Dipole moment will be calculated with respect to the origin: ', dipole_moment_origin (:)
+   write(6,'(a,3es15.8)') ' Dipole moment will be calculated with respect to the origin: ', dipole_moment_origin (:)
   else
    write(6,'(a)') ' Dipole moment will be calculated with respect to the center of mass.'
   endif
@@ -1158,7 +1158,6 @@
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'dipole_moment_wrt'
   integer dim_i
 
 ! begin
@@ -1173,7 +1172,7 @@
   call object_provide ('dipole_moment_nucl')
   write(6,'(a)') 'Nuclear dipole moment:'
   do dim_i = 1, ndim
-   write(6,'(a,i1,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_nucl (dim_i)
+   write(6,'(a,i1,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_nucl (dim_i)
   enddo
 
   if (l_dipole_moment_hf) then
@@ -1181,7 +1180,7 @@
    call object_provide ('dipole_moment_av_err')
    write(6,'(a)') 'Total dipole moment using Hellmann-Feynman estimator:'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_av (dim_i), ' +-', dipole_moment_units * dipole_moment_av_err (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_av (dim_i), ' +-', dipole_moment_units * dipole_moment_av_err (dim_i)
    enddo
   endif
 
@@ -1192,11 +1191,11 @@
    call object_provide ('dipole_moment_zv_bav_av_err')
    write(6,'(a)') 'Total dipole moment using zero-variance estimator (average calculated with global averages and error with covariances):'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_av_err (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_av_err (dim_i)
    enddo
    write(6,'(a)') 'Total dipole moment using zero-variance estimator (average and error calculated with block averages):'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_bav_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_bav_av_err (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zv_bav_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zv_bav_av_err (dim_i)
    enddo
   endif
 
@@ -1209,15 +1208,15 @@
    call object_provide ('dipole_moment_delta_zb_av_err')
    write(6,'(a)') 'Total dipole moment using zero-variance zero-bias estimator (average calculated with global averages and error with covariances):'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zvzb_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zvzb_av_err (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zvzb_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zvzb_av_err (dim_i)
    enddo
    write(6,'(a)') 'Total dipole moment using zero-variance zero-bias estimator (average and error calculated with block averages):'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zvzb_bav_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zvzb_bav_av_err (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_zvzb_bav_av (dim_i), ' +-', dipole_moment_units * dipole_moment_zvzb_bav_av_err (dim_i)
    enddo
    write(6,'(a)') 'Zero-bias contribution (average calculated with global averages and error with covariances):'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_delta_zb_av (dim_i), ' +-', dipole_moment_units * dipole_moment_delta_zb_av_err (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_delta_zb_av (dim_i), ' +-', dipole_moment_units * dipole_moment_delta_zb_av_err (dim_i)
    enddo
   endif
 
@@ -1225,7 +1224,7 @@
    call object_provide ('dipole_moment_lin_av')
    write(6,'(a)') 'Total dipole moment using linear wave function:'
    do dim_i = 1, ndim
-    write(6,'(a,i1,a,f,a,f)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_lin_av (dim_i)
+    write(6,'(a,i1,a,es15.8,a,es15.8)') 'component # ',dim_i,' : ', dipole_moment_units * dipole_moment_lin_av (dim_i)
    enddo
   endif
 

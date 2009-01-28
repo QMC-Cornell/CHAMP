@@ -165,8 +165,6 @@ module deriv_csf_mod
   implicit none
   include 'commons.h'
 
-  integer i
-
 ! header
   if (header_exe) then
 

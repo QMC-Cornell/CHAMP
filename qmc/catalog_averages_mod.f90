@@ -17,9 +17,6 @@ module catalog_averages_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'define_averages_and_errors'
-
 ! begin
   call object_average_define ('e_loc','e_loc_av')
   call object_error_define ('e_loc_av','e_loc_av_err')

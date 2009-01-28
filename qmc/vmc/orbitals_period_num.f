@@ -45,7 +45,6 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),
      &     ddorb_blip_tmp(MORB_OCC,MDET)
 
-      integer ix,iy,iz
 
 cwparker Set up the ict array to tell PSPLINE to return the value
 c        of the function, its first derivative in every direction

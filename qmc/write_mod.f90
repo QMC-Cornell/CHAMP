@@ -105,7 +105,6 @@ module write_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'routines_write_block'
   integer rtn_i
 
 ! begin
@@ -139,7 +138,6 @@ module write_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'routines_write_final'
   integer rtn_i
 
 ! begin
@@ -172,7 +170,6 @@ module write_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'reinit_routines_write_block'
 
 ! begin
   routines_write_block_nb = 0
@@ -190,7 +187,6 @@ module write_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'reinit_routines_write_final'
 
 ! begin
   routines_write_final_nb = 0

@@ -162,7 +162,7 @@ module matrix_tools_mod
   eigenvectors (:,:) = mat_a (:,:)
 
 ! checkings
-  call is_a_number_or_die ('eigenvalues', eigenvalues)
+!  call is_a_number_or_die ('eigenvalues', eigenvalues)
 
 ! check recovery of original matrix after diagonalization
   do i = 1, dim

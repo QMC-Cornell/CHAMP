@@ -15,10 +15,6 @@ module initialization_mod
   implicit none
   include 'commons.h'
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'initialization'
-  integer bas_i
-
   write(6,*)
   write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
 
@@ -41,7 +37,7 @@ module initialization_mod
 ! number of orbitals to compute
   call object_provide ('orb_occ_last_in_wf_lab')
   norb = orb_occ_last_in_wf_lab
-  write(6,'(a,i)') ' Number of computed orbitals initialized to ', norb
+  write(6,'(a,i8)') ' Number of computed orbitals initialized to ', norb
   call object_modified ('norb')
 
 ! orbital coefficients on normalized and orthonormalized basis functions
@@ -60,7 +56,7 @@ module initialization_mod
   endif
   call object_modified ('nwalk')
   write(6,*)
-  write(6,'(a,i)') ' Number of walkers initialized to ', nwalk
+  write(6,'(a,i8)') ' Number of walkers initialized to ', nwalk
 
 ! maximal number of optimization iterations
   iter_opt_max_nb = nopt_iter
@@ -88,8 +84,6 @@ module initialization_mod
   implicit none
   include 'commons.h'
 
-! local
-  character(len=max_string_len_rout), save :: lhere = 'set_mode'
 
   l_mode_mpi = .false.
   l_mode_fit = .false.

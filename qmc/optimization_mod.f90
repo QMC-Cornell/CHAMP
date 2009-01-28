@@ -435,7 +435,7 @@ module optimization_mod
 
    call object_provide ('orb_opt_last_lab')
    norb = orb_opt_last_lab
-   write(6,'(a,i)') ' Number of computed orbitals will be ', norb
+   write(6,'(a,i8)') ' Number of computed orbitals will be ', norb
   endif
 
 ! Exponent optimization
@@ -496,7 +496,6 @@ module optimization_mod
   real(dp) d_eloc_av
   logical  l_convergence_reached
   integer convergence_reached_nb
-  integer is_bad_move
   integer :: move_rejected = 0
   real(dp) energy_plus_err, energy_plus_err_best
 
@@ -652,9 +651,9 @@ module optimization_mod
    write(6,*)
    write(6,'(a)') 'Gradient with respect to the parameters:'
    do param_i = 1, param_nb
-     write(6,'(a,i5,a,f,3a)') 'gradient component # ',param_i,' : ', gradient (param_i), ' (',trim(param_type (param_i)),')'
+     write(6,'(a,i5,a,es15.8,3a)') 'gradient component # ',param_i,' : ', gradient (param_i), ' (',trim(param_type (param_i)),')'
    enddo
-   write(6,'(a,f,a,f)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
+   write(6,'(a,es15.8,a,es15.8)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
    write(6,*)
 
 !  check vanishing components or linear dependencies in gradient
@@ -662,14 +661,14 @@ module optimization_mod
       if (abs(gradient (parm_i)) < 1.d-10) then
        l_warning = .true.
        write(6,'(a)') 'Warning: zero or very small gradient component:'
-       write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
+       write(6,'(a,i3,a,es15.8,a,i3,a,es15.8)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
        cycle
       endif
      do parm_j = parm_i+1, param_nb
       if (abs(gradient (parm_i) - gradient (parm_j)) < 1.d-10) then
        l_warning = .true.
        write(6,'(a)') 'Warning: possible linear dependency:'
-       write(6,'(a,i3,a,f,a,i3,a,f)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
+       write(6,'(a,i3,a,es15.8,a,i3,a,es15.8)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
       endif
      enddo
    enddo
@@ -678,7 +677,7 @@ module optimization_mod
    if (l_opt_lin .or. l_opt_nwt) then
     call object_provide ('deloc_av_abs_max')
     write(6,*)
-    write(6,'(a,f,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise except for geometry optimization)'
+    write(6,'(a,es15.8,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise except for geometry optimization)'
    endif
 
 !  calculate and print hessian
@@ -687,7 +686,7 @@ module optimization_mod
     write(6,*)
     write(6,'(a)') 'Hessian eigenvalues:'
     do param_i = 1, param_nb
-     write(6,'(a,i5,a,f)') 'eigenvalue # ',param_i,' : ', hess_nwt_eigval (param_i)
+     write(6,'(a,i5,a,es15.8)') 'eigenvalue # ',param_i,' : ', hess_nwt_eigval (param_i)
     enddo
    endif
 
@@ -984,9 +983,8 @@ module optimization_mod
   logical, intent(out) :: exp_move_big
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'wf_update_and_check'
-  integer bas_i, orb_i
-  integer i, ict, isp, iparmcsf, iparm, icsf
+  integer bas_i
+  integer i, ict, isp, iparmcsf, iparm
   integer dexp_i, dexp_to_all_bas_i
   real(dp), parameter :: AMAX_NONLIN = 100.d0
   integer exponent_negative_nb
@@ -1228,7 +1226,7 @@ module optimization_mod
     call object_provide ('delta_csf_norm')
     if (delta_csf_norm > 1.d0) then
       is_bad_move = 1
-      write (6,'(a,f,a)') 'This is a bad move because the norm of the csf coefficient variations is too large: delta_csf_norm=',delta_csf_norm,' > 1.'
+      write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the csf coefficient variations is too large: delta_csf_norm=',delta_csf_norm,' > 1.'
     endif
   endif
 
@@ -1237,7 +1235,7 @@ module optimization_mod
     call object_provide ('delta_jas_norm')
     if (delta_jas_norm > max(10.d0,1.d0/(5.d0*scalek(iwf)))) then
       is_bad_move = 1
-      write (6,'(a,f,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 10 or 1/5*scalek'
+      write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 10 or 1/5*scalek'
     endif
   endif
 
@@ -1251,22 +1249,22 @@ module optimization_mod
   do ict = 1, nctype
     if (a4(2,ict,iwf) < parm2min) then
      is_bad_move = 1
-     write (6,'(a,f,a,f)') 'This is a bad move because a2=',a4(2,ict,iwf),' < parm2min=',parm2min
+     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because a2=',a4(2,ict,iwf),' < parm2min=',parm2min
     endif
     if (a4(2,ict,iwf) > AMAX_NONLIN) then
      is_bad_move = 1
-     write (6,'(a,f,a,f)') 'This is a bad move because a2=',a4(2,ict,iwf),' > AMAX_NONLIN=',AMAX_NONLIN
+     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because a2=',a4(2,ict,iwf),' > AMAX_NONLIN=',AMAX_NONLIN
     endif
   enddo
 
   do isp = nspin1, nspin2b
    if (b(2,isp,iwf) < parm2min) then
      is_bad_move = 1
-     write (6,'(a,f,a,f)') 'This is a bad move because b2=',b(2,isp,iwf),' < parm2min=',parm2min
+     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because b2=',b(2,isp,iwf),' < parm2min=',parm2min
    endif
    if (b(2,isp,iwf) > AMAX_NONLIN) then
      is_bad_move = 1
-     write (6,'(a,f,a,f)') 'This is a bad move because b2=',b(2,isp,iwf),' > AMAX_NONLIN=',AMAX_NONLIN
+     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because b2=',b(2,isp,iwf),' > AMAX_NONLIN=',AMAX_NONLIN
    endif
   enddo
   endif ! l_opt_jas
@@ -1302,14 +1300,14 @@ module optimization_mod
   call object_provide ('delta_param_norm')
   if (delta_param_norm > delta_param_norm_max) then
     is_bad_move = 1
-    write (6,'(a,f,a,f)') 'This is a bad move because the norm of the parameter variations is too large: delta_param_norm=',delta_param_norm,' > ',delta_param_norm_max
+    write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the parameter variations is too large: delta_param_norm=',delta_param_norm,' > ',delta_param_norm_max
   endif
 
 ! test norm of linear wave function variation
   if (l_opt_lin) then
    if (psi_lin_var_norm > psi_lin_var_norm_max) then
     is_bad_move = 1
-    write (6,'(a,f,a,f)') 'This is a bad move because the norm of the linear wave function variation is too large: psi_lin_var_norm=',psi_lin_var_norm,' > ',psi_lin_var_norm_max
+    write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the linear wave function variation is too large: psi_lin_var_norm=',psi_lin_var_norm,' > ',psi_lin_var_norm_max
    endif
   endif
 
@@ -1678,8 +1676,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'write_wf'
-  integer orb_i, bas_i, cent_i, dim_i
+  integer orb_i, cent_i, dim_i
   integer i, ict, isp
   character(len=30) fmt
 
@@ -1693,7 +1690,9 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
-   write(6,'(<ncsf>f15.8,'' (csf_coef(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+!   write(6,'(<ncsf>f15.8,'' (csf_coef(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+!fp test
+   write(6,'("(csf_coef(icsf),icsf=1,ncsf) ",(f15.8))') csf_coef(1:ncsf,iwf)
 # endif
   endif ! l_opt_csf
 
@@ -1765,7 +1764,9 @@ module optimization_mod
 # if defined (PATHSCALE)
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
 # else
-     write(6,'(<nbasis>e16.8,'' (coef(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+     !write(6,'(<nbasis>e16.8,'' (coef(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+!fp test
+     write(6,'("(coef(i,j),j=1,nbasis) ",(e16.8))') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
 # endif
     else
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
@@ -1787,7 +1788,9 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
 # else
-   write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+!   write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+!fp test
+   write(6,'("(zex(i),i=1,nbasis) ",(f10.6))') zex(1:nbasis, iwf)
 # endif
   endif ! l_opt_exp
 
@@ -1818,8 +1821,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'write_wf_new'
-  integer orb_i, bas_i, cent_i, dim_i
+  integer orb_i, cent_i, dim_i
   integer i, ict, isp
   character(len=30) fmt
 
@@ -1833,7 +1835,9 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
-   write(6,'(<ncsf>f15.8,'' (csf_coef_new(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+!   write(6,'(<ncsf>f15.8,'' (csf_coef_new(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
+!fp test
+   write(6,'("(csf_coef_new(icsf),icsf=1,ncsf) ", (f15.8))') csf_coef(1:ncsf,iwf)
 # endif
   endif ! l_opt_csf
 
@@ -1889,7 +1893,9 @@ module optimization_mod
 # if defined (PATHSCALE)
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
 # else
-     write(6,'(<nbasis>e16.8,'' (coef_new(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+!fp test
+!     write(6,'(<nbasis>e16.8,'' (coef_new(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+     write(6,'("(coef_new(i,j),j=1,nbasis) ",(e16.8))') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
 # endif
     else
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
@@ -1911,7 +1917,9 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
 # else
-   write(6,'(<nbasis>f10.6,'' (zex_new(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+!fp test
+!   write(6,'(<nbasis>f10.6,'' (zex_new(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
+   write(6,'("(zex_new(i),i=1,nbasis) ",(f10.6))') zex (1:nbasis, iwf)
 # endif
   endif ! l_opt_exp
 
@@ -1941,8 +1949,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'write_wf_best'
-  integer orb_i, bas_i, cent_i, dim_i
+  integer orb_i, cent_i, dim_i
   integer i, ict, isp
   character(len=30) fmt
 
@@ -1956,7 +1963,9 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef_best(1:ncsf) ! for pathscale compiler
 # else
-   write(6,'(<ncsf>f15.8,'' (csf_coef_best(icsf),icsf=1,ncsf)'')') csf_coef_best(1:ncsf)
+!fp test
+!   write(6,'(<ncsf>f15.8,'' (csf_coef_best(icsf),icsf=1,ncsf)'')') csf_coef_best(1:ncsf)
+   write(6,'("(csf_coef_best(icsf),icsf=1,ncsf) ",(f15.8))') csf_coef_best(1:ncsf)
 # endif
   endif ! l_opt_csf
 
@@ -2013,7 +2022,9 @@ module optimization_mod
 # if defined (PATHSCALE)
      write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i) ! for pathscale compiler
 # else
-     write(6,'(<nbasis>e16.8,'' (coef_best(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+!fp test
+!     write(6,'(<nbasis>e16.8,'' (coef_best(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+     write(6,'("(coef_best(i,j),j=1,nbasis) ",(e16.8))') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
 # endif
     else
      write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
@@ -2035,7 +2046,9 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f10.6)') zex_best (1:nbasis) ! for pathscale compiler
 # else
-   write(6,'(<nbasis>f10.6,'' (zex_best(i),i=1,nbasis)'')') zex_best (1:nbasis)
+!fp test
+!   write(6,'(<nbasis>f10.6,'' (zex_best(i),i=1,nbasis)'')') zex_best (1:nbasis)
+   write(6,'("(zex_best(i),i=1,nbasis) ",(f10.6))') zex_best (1:nbasis)
 # endif
   endif ! l_opt_exp
 
@@ -2173,7 +2186,7 @@ module optimization_mod
 
 ! local
   integer i
-  real(dp) d, sum_temp, cosd, sindoverd
+  real(dp) d, cosd, sindoverd
 
 ! header
   if (header_exe) then
@@ -2222,7 +2235,6 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'delta_csf_rot_bld'
   integer iparmcsf, jparmcsf
   real(dp) d, sum_temp, sindoverd
 
@@ -2282,8 +2294,7 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'delta_csf_rot_bld'
-  integer iparmcsf, jparmcsf, i
+  integer iparmcsf, jparmcsf
   real(dp) d, sum_temp, sindoverd
 
 ! header
@@ -2340,9 +2351,8 @@ module optimization_mod
   include 'commons.h'
 
 ! local
-  integer bas_i, ex_i, i, j, k, dorb_i
+  integer ex_i, i, j, k, dorb_i
   integer orb_1st, orb_2nd
-  integer orb_i, orb_j
   integer lwork
   integer info
   integer eig
@@ -2350,14 +2360,13 @@ module optimization_mod
   real(dp), allocatable :: mat_rot_real (:,:)
   real(dp), allocatable :: mat_a (:,:)
   real(dp), allocatable :: mat_vr (:,:)
-  real(dp), allocatable :: mat_vr_inv (:,:)
   real(dp), allocatable :: mat_vl (:,:)
   real(dp), allocatable :: mat_wr (:)
   real(dp), allocatable :: mat_wi (:)
   real(dp), allocatable :: work (:)
   real(dp), allocatable :: identity (:,:)
   double complex, allocatable :: mat_w (:)
-  double complex, allocatable :: identity_complex (:,:)
+!  double complex, allocatable :: identity_complex (:,:)
   double complex, allocatable :: mat_u (:,:)
   double complex, allocatable :: kappa_check (:,:)
   double complex, allocatable :: mat_exp_w (:)
@@ -2429,7 +2438,7 @@ module optimization_mod
 ! check that all eigenvalues are purely imaginary
   do i = 1, orb_tot_nb
     if (dabs(mat_wr(i)) > 1.d-8) then
-      write(6,'(2a,i3,a,e,a,e,a)') trim(here),': eigenvalue # ',i,' : ' ,mat_wr(i), ' +', mat_wi(i),' i  is not purely imaginary'
+      write(6,'(2a,i3,a,es15.8,a,es15.8,a)') trim(here),': eigenvalue # ',i,' : ' ,mat_wr(i), ' +', mat_wi(i),' i  is not purely imaginary'
       call die (here)
     endif
   enddo
@@ -2479,8 +2488,8 @@ module optimization_mod
     if (dabs(real(kappa_check(i,j))-kappa(i,j)) > 10d-10 .or. aimag(kappa_check(i,j)) > 10d-10) then
 !   check relative accuracy
      if (dabs(1.d0 - real(kappa_check(i,j))/kappa(i,j)) > 10d-10) then
-         write(6,'(2a,i3,a,i3,a,f,f)') trim(here),': kappa(',i,',',j,')=',kappa(i,j)
-         write(6,'(2a,i3,a,i3,a,f,f)') trim(here),': kappa_check(',i,',',j,')=',kappa_check(i,j)
+         write(6,'(2a,i3,a,i3,a,es15.8,es15.8)') trim(here),': kappa(',i,',',j,')=',kappa(i,j)
+         write(6,'(2a,i3,a,i3,a,es15.8,es15.8)') trim(here),': kappa_check(',i,',',j,')=',kappa_check(i,j)
          write (6,'(2a)') trim(here),': problem in the diagonalisation of orbital rotation generator matrix kappa.'
          write (6,'(2a)') trim(here),': most likely, this happened because there are redundant orbital parameters.'
          call die (here)
@@ -2512,7 +2521,7 @@ module optimization_mod
   do i = 1,orb_tot_nb
    do j = 1,orb_tot_nb
       if (dabs(aimag(mat_rot (i,j))) > 10.d-10) then
-         write(6,'(2a,i3,a,i3,a,f,f)') trim(here),': mat_rot(',i,',',j,')=',mat_rot(i,j)
+         write(6,'(2a,i3,a,i3,a,es15.8,es15.8)') trim(here),': mat_rot(',i,',',j,')=',mat_rot(i,j)
          call die (here, 'orbital rotation matrix is not real')
       endif
    enddo
@@ -2528,12 +2537,12 @@ module optimization_mod
    do j = 1,orb_tot_nb
      if (i == j) then
        if(dabs(identity(i,j) -1.d0) > 10.d-10) then
-           write(6,'(2a,i3,a,i3,a,f,a)') trim(here),': identity(',i,',',j,')=',identity(i,j),' /= 1'
+           write(6,'(2a,i3,a,i3,a,es15.8,a)') trim(here),': identity(',i,',',j,')=',identity(i,j),' /= 1'
            call die (here, 'orbital rotation matrix is not orthogonal')
        endif
      else
        if(dabs(identity(i,j)) > 10.d-10) then
-           write(6,'(2a,i3,a,i3,a,f,a)') trim(here),': identity(',i,',',j,')=',identity(i,j), ' /= 0'
+           write(6,'(2a,i3,a,i3,a,es15.8,a)') trim(here),': identity(',i,',',j,')=',identity(i,j), ' /= 0'
            call die (here, 'orbital rotation matrix is not orthogonal')
        endif
      endif

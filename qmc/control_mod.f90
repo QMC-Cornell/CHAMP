@@ -49,14 +49,14 @@ module control_mod
 
   case ('error_threshold')
    call get_next_value (error_threshold)
-   write (6,'(a,f)') ' setting target statistical error on the energy to ', error_threshold
+   write (6,'(a,es15.8)') ' setting target statistical error on the energy to ', error_threshold
 
   case ('nstep_total')
    call get_next_value (nstep_total)
    nstep = max(1,int(nstep_total/nproc))
    nstep_total = nstep * nproc
-   write(6,'(a,i)') ' nstep total =', nstep_total
-   write(6,'(a,i)') ' nstep per CPU =', nstep
+   write(6,'(a,i8)') ' nstep total =', nstep_total
+   write(6,'(a,i8)') ' nstep per CPU =', nstep
 
   case ('print_orbitals_pw')
    call get_next_value (l_print_orbitals_pw)
@@ -130,7 +130,7 @@ module control_mod
    call require (lhere, 'proba_hopping_moves <= 1', proba_hopping_moves <= 1) !fp
    if (proba_hopping_moves > 0) then
      l_hopping_moves = .true.
-     write(6,'(a,f)') 'Hopping moves between atoms will be used in VMC with probability = ',proba_hopping_moves
+     write(6,'(a,es15.8)') 'Hopping moves between atoms will be used in VMC with probability = ',proba_hopping_moves
    endif
 
   case ('end')

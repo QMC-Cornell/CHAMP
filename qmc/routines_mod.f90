@@ -46,8 +46,6 @@ module routines_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'catalog_one_routine'
-  logical routine_found
-  integer rtn_i
   integer rout_ind
 
 ! begin
@@ -278,7 +276,6 @@ module routines_mod
   character(len=*), intent(in) :: routine_name
 
 ! local
-  character(len=max_string_len_rout) :: lhere = 'routine_enter'
   integer routine_ind
 
 ! begin
@@ -463,12 +460,12 @@ module routines_mod
    rn_srt_i = routines_indexes_sort (rn_i)
    if (routines(rn_srt_i)%calls_nb >= 1) then
    routine_name = trim(routines(rn_srt_i)%name)
-   write(6,'(a,i10,f)') routine_name, routines(rn_srt_i)%calls_nb, routines(rn_srt_i)%cpu_duration
+   write(6,'(a,i10,es15.8)') routine_name, routines(rn_srt_i)%calls_nb, routines(rn_srt_i)%cpu_duration
     cpu_duration_total = cpu_duration_total +  routines(rn_srt_i)%cpu_duration
    endif
   enddo
    write(6,'(a)') '------------------------------------------------------------------'
-   write(6,'(a,f)') 'TOTAL                                   ',cpu_duration_total
+   write(6,'(a,es15.8)') 'TOTAL                                   ',cpu_duration_total
    write(6,'(a)') ''
 
  end subroutine routines_statistics

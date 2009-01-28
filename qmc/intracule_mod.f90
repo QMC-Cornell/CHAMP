@@ -381,8 +381,8 @@
 
 ! local
   integer                       :: grid_i
-  integer                       :: elec_i, elec_j, dim_i
-  real(dp)              :: dij, dij2
+  integer                       :: elec_i, elec_j
+  real(dp)              :: dij
   real(dp)              :: d4pir2
   integer                       :: spin
 
@@ -446,7 +446,7 @@
 ! local
   integer                       :: grid_i
   integer                       :: elec_i, elec_j, dim_i
-  real(dp)              :: dij, dij2, r
+  real(dp)              :: dij, r
   real(dp)              :: dotproduct, intra_temp
   integer                       :: spin
 
@@ -522,9 +522,9 @@
 
 ! local
   integer                       :: grid_i
-  integer                       :: elec_i, elec_j, dim_i
-  real(dp)              :: dij, dij2, r
-  real(dp)              :: dotproduct, intra_temp
+  integer                       :: elec_i, elec_j
+  real(dp)              :: dij,  r
+  real(dp)              :: intra_temp
   integer                       :: spin
 
 ! begin
@@ -1047,7 +1047,7 @@
 
 ! local
   integer               :: walk_i, elec_i, elec_j, grid_i
-  real(dp)              :: dij,  r
+  real(dp)              ::   r
   real(dp)              :: u, rpu, ru, rmu, abs_rmu
   real(dp)              :: mcabsrmu, mcrpu, exp_mcabsrmu, exp_mcrpu
   integer               :: spin
@@ -1236,7 +1236,7 @@
 ! local
   integer                       :: grid_i
   integer                       :: elec_i, elec_j, dim_i
-  real(dp)              :: dij, dij2, r
+  real(dp)              :: dij, r
   real(dp)              :: dotproduct, intra_temp
   real(dp)              :: zbfac
   integer                       :: spin
@@ -1866,7 +1866,6 @@
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'intra_bld'
   integer :: spin
 
 ! header
@@ -1958,7 +1957,7 @@
 ! local
   integer                       :: grid_i
   integer                       :: grid_x_i, grid_y_i, grid_z_i
-  integer                       :: elec_i, elec_j, dim_i
+  integer                       :: elec_i, elec_j
   real(dp)              :: xij, yij, zij
 
 ! begin
@@ -2034,7 +2033,7 @@
 ! local
   integer                       :: grid_i
   integer                       :: elec_i, elec_j, dim_i
-  real(dp)              :: dij, dij2, r
+  real(dp)              :: dij, dij2
   real(dp)              :: dotproduct, intra_temp
 
 ! begin
@@ -2105,8 +2104,8 @@
 ! local
   integer                       :: grid_i
   integer                       :: elec_i, elec_j, dim_i
-  real(dp)              :: dij, dij2, r
-  real(dp)              :: dotproduct, intra_temp
+  real(dp)              :: dij, dij2
+  real(dp)              ::  intra_temp
 
 ! begin
 
@@ -2547,7 +2546,6 @@
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save   :: lhere
   integer                                    :: unit
   character(len=max_string_len_file)         :: file
   integer                                    :: grid_i
@@ -2603,7 +2601,6 @@
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save   :: lhere = 'intra_wrt'
   integer                                    :: unit
   character(len=max_string_len_file)         :: file
   integer                                    :: grid_i
@@ -2637,8 +2634,8 @@
   write(unit,'(a,3e25.15)') 'grid_r_min                    =',grid_r_min
   write(unit,'(a,3e25.15)') 'grid_r_max                    =',grid_r_max
   write(unit,'(a,i25)')     'grid_r_nb                     =',grid_r_nb
-  write(unit,'(a,f)')       'dist_ee_min                   =',dist_ee_min
-  write(unit,'(a,f)')       'dist_ee_max                   =',dist_ee_max
+  write(unit,'(a,es15.8)')       'dist_ee_min                   =',dist_ee_min
+  write(unit,'(a,es15.8)')       'dist_ee_max                   =',dist_ee_max
 
   write(unit,*) ''
   write(unit,'(a)') '             r                   4 pi r2 I(r)               error                    I(r)                     error           4 pi r2 I(r) same spins&
@@ -2668,7 +2665,6 @@
   include 'commons.h'
 
 ! local
-  character(len=max_string_len_rout), save   :: lhere = 'intra_3d_wrt'
   integer                                    :: unit
   character(len=max_string_len_file)         :: file
   integer                                    :: grid_i, grid_x_i, grid_y_i, grid_z_i

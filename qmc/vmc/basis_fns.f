@@ -1608,11 +1608,11 @@ c--------------------------------------------------------------------------
       use real_spherical_harmonics
 
       implicit none
-      integer :: ialloc,icount1,icount2
-      integer :: l,smax,mmax
+      integer :: ialloc
+      integer :: l,smax
       integer :: l_alreadyset,s_alreadyset,n_alreadyset
       integer :: pos_fin,pos_init,neg_init,neg_fin
-      integer :: itemp1,itemp2
+      integer :: itemp1
 
       allocate(sq_coef_a_num(0:lmax),sq_coef_a_denum(0:lmax),stat=ialloc)
       sq_coef_a_num(:)=0 ; sq_coef_a_denum(:)=1
@@ -1725,12 +1725,12 @@ c--------------------------------------------------------------------------
       integer,allocatable :: qtemp1(:,:),qtemp2(:,:),qtemp3(:,:),
      &qtemp4(:,:)
       integer :: ialloc,icount1,icount2
-      integer :: l,smax,mmax
+      integer :: l,smax
       integer :: l_alreadyset,s_alreadyset,n_alreadyset
       integer :: theta_pos(s_alreadyset,1:4),theta_neg(s_alreadyset,1:4)
-      integer :: itemp1,itemp2,i
+      integer :: itemp1,i
       integer :: ninit,nfin
-      integer :: mcount,sign
+      integer :: mcount
 
 ! * For given L,
 !   Y(L,M) = [\sum_s{a_s*(x^l_s)*(y^m_s)*(z^n_s)}]/r^L
@@ -1902,7 +1902,7 @@ c--------------------------------------------------------------------------
       integer :: q1(1:stemp,1:4),q2(1:stemp,1:4),q3(1:stemp,1:4),q2_copy(1:stemp,1:4)
 
       integer :: i,j,icount
-      integer :: itemp1,itemp2,l
+      integer :: l
 
       l=2
       q3(:,:)=0
@@ -2047,7 +2047,7 @@ c--------------------------------------------------------------------------
       implicit none
 
       integer :: l_show_max,n_show_max,n_mask
-      integer :: itemp1,itemp2
+      integer :: itemp1
       integer :: scount,mcount,lcount,m_tempmax,s_tempmax
 
       lcount = 0

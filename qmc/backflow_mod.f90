@@ -945,7 +945,7 @@ contains
     include 'commons.h'
 
     !local
-    integer  :: order_i, d_param_spin_nb, d_param_no_spin_nb
+    integer  :: d_param_spin_nb, d_param_no_spin_nb
     character(len=max_string_len_rout), save :: lhere = 'd_param_mu_pseudo_bld'
 
     ! header
@@ -1662,7 +1662,7 @@ contains
     include 'commons.h'
     
     !local
-    integer  :: order_i, c_param_spin_3_nb, c_param_spin_2_nb, c_param_spin_1_nb
+    integer  :: c_param_spin_3_nb, c_param_spin_2_nb, c_param_spin_1_nb
     integer, parameter :: spin_dependencies_nb = 3    !because three choices up_up, down_down, up_down
     character(len=max_string_len_rout), save :: lhere = 'c_param_eta_bld'
 
@@ -2174,7 +2174,7 @@ contains
     include 'commons.h'
 
     !local
-    integer  :: elec_i, elec_j, cent_i, walk_i, order_i, order_j, order_k, prod_i, param_i
+    integer  :: elec_i, elec_j, cent_i, walk_i, order_i, order_j, order_k, param_i
     integer  :: order_k_max
     integer, parameter  :: up_up=1, down_down=2, up_down=3 !index for the spin
         
