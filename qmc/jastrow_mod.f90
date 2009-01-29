@@ -41,6 +41,9 @@ module jastrow_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dist_scaled'
 
+! initialize
+  dist_scaled = 0.d0
+
   select case(isc)
    case (2)
      if (kappa == 0.d0) then
@@ -78,6 +81,9 @@ module jastrow_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dist_scaled_deriv1'
 
+! initialize
+  dist_scaled_deriv1 = 0.d0
+
   select case(isc)
    case (2)
      dist_scaled_deriv1 = dexp (-kappa * dist)
@@ -111,6 +117,9 @@ module jastrow_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dist_scaled2'
 
+! initialize
+  dist_scaled2 = 0.d0
+
   select case(isc)
    case (2)
      dist_scaled2 = dexp (-kappa * dist)
@@ -143,6 +152,9 @@ module jastrow_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dist_scaled2_deriv1'
+
+! initialize
+  dist_scaled2_deriv1 = 0.d0
 
   select case(isc)
    case (2)

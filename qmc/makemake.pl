@@ -67,7 +67,8 @@ print MAKEFILE "\trm -f *.o *.dif *.lst *.sav *.mod\n\n";
 print MAKEFILE "make:\n";
 print MAKEFILE "\tperl makemake.pl $ARGV[0]\n";
 print MAKEFILE "\t/usr/bin/ctags *.f *.f90\n";
-print MAKEFILE "\tetags -l fortran *.f *.f90 */*.f \n\n";
+#for etags want all .f .f90 files cataloged
+print MAKEFILE "\tfind . -iregex '.*\\.f\\(90\\)?' | etags -\n";
 #
 # libraries
 print MAKEFILE "../lib/lib/libcyrus.a:\n";

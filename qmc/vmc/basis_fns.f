@@ -50,6 +50,10 @@ c n_bas2(irb,ict) > 0 : Slater basis
 c                 < 0 : Gaussian basis
 c                 = 0 : asymptotic basis
 
+c !fp
+c     For notes on basis functions in QMC see fp notes (contain slater
+c     and gaussian 3-d)
+
       use all_tools_mod !JT
 
 !RM(1)
@@ -234,6 +238,7 @@ c           ph(3)=(xx2-yy2)*xx-2*xx*yy2
             dph(1,3)=3*ph(2)
             dph(2,3)=-3*ph(-2)
 
+c           ph(-3)=3*xx2*y-yy2*y
             ph(-3)=ph(-2)*ph(1)+ph(-1)*ph(2)
             dph(1,-3)=3*ph(-2)
             dph(2,-3)=3*ph(2)

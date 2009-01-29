@@ -593,7 +593,9 @@ module dmc_mod
   include 'commons.h'
 
 ! input
+# if defined (MPI)
   character (len=max_string_len_rout), save :: lhere = 'send_jas'
+# endif
   integer i
 
 ! local
@@ -622,7 +624,9 @@ module dmc_mod
   include 'commons.h'
 
 ! input
+# if defined (MPI)
   character (len=max_string_len_rout), save :: lhere = 'recv_jas'
+# endif
   integer i
 
 ! local

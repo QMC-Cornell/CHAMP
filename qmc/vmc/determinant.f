@@ -125,13 +125,39 @@ c         write(6,'(''x(1,1),orb(1,1) from nu'',9f12.8)') x(1,1),orb(1,1),dorb(1
    26     write(6,'(''iorb,ddorb='',i3,(30f9.5))') iorb,(ddorb(i,iorb),i=1,nelec)
       endif
 
-
+c !fp
+c Not only are we looking at the transpose of the Slater,
+c but also, we fold the the matrix into a single column
+c example: the following slater matrix
+c ( phi_1(r1) phi_1(r2) )
+c |                     |
+c ( phi_2(r1) phi_2(r2) )
+c is represented as
+c ( phi_1(r1) )
+c | phi_1(r2) |
+c | phi_2(r1) |
+c ( phi_2(r2) )
+c !fp
 c The 3 nested loops are over
 c 1) up electrons,
 c 2) determinants
 c 3) basis states setting up transpose of the Slater
 c matrix in slmui to get inverse transpose.
 c Also put derivatives in fpu and fppu.
+c iworbdup which orbitals enter which determinants
+c iworbdup(i,j) is ith orbitals of jth determinant
+
+c fpu example: (for a idet=1)
+c ( dphi_1(r1) / dx  dphi_2(r1) / dx  dphi_1(r2) / dx  dphi_2(r2) / dx )
+c | dphi_1(r1) / dy  dphi_2(r1) / dy  dphi_1(r2) / dy  dphi_2(r2) / dy |
+c ( dphi_1(r1) / dz  dphi_2(r1) / dz  dphi_1(r2) / dz  dphi_2(r2) / dz )
+
+c fppu example: (for idet=1)
+c ( d^2 phi_1(r1) / dx^2 + d^2 phi_1(r1) / dy^2 + d^2 phi_1(r1) / dz^2 )
+c ( d^2 phi_2(r1) / dx^2 + d^2 phi_2(r1) / dy^2 + d^2 phi_2(r1) / dz^2 )
+c ( d^2 phi_1(r2) / dx^2 + d^2 phi_1(r2) / dy^2 + d^2 phi_1(r2) / dz^2 )
+c ( d^2 phi_2(r2) / dx^2 + d^2 phi_2(r2) / dy^2 + d^2 phi_2(r2) / dz^2 )
+c !fp
       ik=-nup
       do 30 i=1,nup
         ik=ik+nup

@@ -191,8 +191,7 @@ cleanlocal:
 make:
 	perl makemake.pl 
 	/usr/bin/ctags *.f *.f90
-	etags -l fortran *.f *.f90 */*.f 
-
+	find . -iregex '.*\.f\(90\)?' | etags -
 ../lib/lib/libcyrus.a:
 	cd ../lib ; make
 ../lib/lib2/blas/libblas.a:

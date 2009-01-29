@@ -258,7 +258,6 @@ c ndet       number of determinants in wavefunction
 c nbasis     number of basis functions
 c norb       number of orbitals
 c cdet       coefficients of determinants (obsolete)
-c iworbd     which orbitals enter in which determinants
 c ncsf       number of configuration state functions (CSFs)
 c csf_coef   coefficients of each CSF
 c ndet_in_csf  number of determinants in each CSF
