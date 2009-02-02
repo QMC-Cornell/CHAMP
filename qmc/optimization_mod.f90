@@ -1678,7 +1678,7 @@ module optimization_mod
 ! local
   integer orb_i, cent_i, dim_i
   integer i, ict, isp
-  character(len=30) fmt
+  character(len=80) fmt
 
 ! begin
 
@@ -1690,9 +1690,8 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
-!   write(6,'(<ncsf>f15.8,'' (csf_coef(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
-!fp test
-   write(6,'("(csf_coef(icsf),icsf=1,ncsf) ",(f15.8))') csf_coef(1:ncsf,iwf)
+   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+   write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)'
 # endif
   endif ! l_opt_csf
 
@@ -1764,12 +1763,12 @@ module optimization_mod
 # if defined (PATHSCALE)
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
 # else
-     !write(6,'(<nbasis>e16.8,'' (coef(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
-!fp test
-     write(6,'("(coef(i,j),j=1,nbasis) ",(e16.8))') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+   write(fmt,"( '(', i8, 'e16.8,a)' )") nbasis
+   write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf), ' (coef(i,j),j=1,nbasis)'
 # endif
     else
-     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+       write(fmt,"( '(', i8, 'e16.8)' )") nbasis
+       write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf)
     endif
    enddo
 
@@ -1788,9 +1787,8 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
 # else
-!   write(6,'(<nbasis>f10.6,'' (zex(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
-!fp test
-   write(6,'("(zex(i),i=1,nbasis) ",(f10.6))') zex(1:nbasis, iwf)
+   write(fmt,"( '(', i8, 'f10.6,a)' )") nbasis
+   write(6,fmt) zex(1:nbasis, iwf), ' (zex(i),i=1,nbasis)'
 # endif
   endif ! l_opt_exp
 
@@ -1823,7 +1821,7 @@ module optimization_mod
 ! local
   integer orb_i, cent_i, dim_i
   integer i, ict, isp
-  character(len=30) fmt
+  character(len=80) fmt
 
 ! begin
 
@@ -1835,9 +1833,8 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
-!   write(6,'(<ncsf>f15.8,'' (csf_coef_new(icsf),icsf=1,ncsf)'')') csf_coef(1:ncsf,iwf)
-!fp test
-   write(6,'("(csf_coef_new(icsf),icsf=1,ncsf) ", (f15.8))') csf_coef(1:ncsf,iwf)
+   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+   write(6,fmt) csf_coef(1:ncsf,iwf), ' (csf_coef_new(icsf),icsf=1,ncsf)'
 # endif
   endif ! l_opt_csf
 
@@ -1893,12 +1890,12 @@ module optimization_mod
 # if defined (PATHSCALE)
      write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
 # else
-!fp test
-!     write(6,'(<nbasis>e16.8,'' (coef_new(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
-     write(6,'("(coef_new(i,j),j=1,nbasis) ",(e16.8))') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+   write(fmt,"( '(', i8, 'e16.8,a)' )") nbasis
+   write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf), ' (coef_new(i,j),j=1,nbasis)'
 # endif
     else
-     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf)
+       write(fmt,"( '(', i8, 'e16.8)' )") nbasis
+       write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf)
     endif
    enddo
 
@@ -1917,9 +1914,8 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
 # else
-!fp test
-!   write(6,'(<nbasis>f10.6,'' (zex_new(i),i=1,nbasis)'')') zex (1:nbasis, iwf)
-   write(6,'("(zex_new(i),i=1,nbasis) ",(f10.6))') zex (1:nbasis, iwf)
+   write(fmt,"( '(', i8, 'f10.6,a)' )") nbasis
+   write(6,fmt) zex(1:nbasis, iwf), ' (zex_new(i),i=1,nbasis)'
 # endif
   endif ! l_opt_exp
 
@@ -1951,7 +1947,7 @@ module optimization_mod
 ! local
   integer orb_i, cent_i, dim_i
   integer i, ict, isp
-  character(len=30) fmt
+  character(len=80) fmt
 
 ! begin
 
@@ -1963,9 +1959,8 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef_best(1:ncsf) ! for pathscale compiler
 # else
-!fp test
-!   write(6,'(<ncsf>f15.8,'' (csf_coef_best(icsf),icsf=1,ncsf)'')') csf_coef_best(1:ncsf)
-   write(6,'("(csf_coef_best(icsf),icsf=1,ncsf) ",(f15.8))') csf_coef_best(1:ncsf)
+   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+   write(6,fmt) csf_coef_best(1:ncsf), ' (csf_coef_best(icsf),icsf=1,ncsf)'
 # endif
   endif ! l_opt_csf
 
@@ -2022,12 +2017,12 @@ module optimization_mod
 # if defined (PATHSCALE)
      write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i) ! for pathscale compiler
 # else
-!fp test
-!     write(6,'(<nbasis>e16.8,'' (coef_best(i,j),j=1,nbasis)'')') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
-     write(6,'("(coef_best(i,j),j=1,nbasis) ",(e16.8))') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+   write(fmt,"( '(', i8, 'e16.8,a)' )") nbasis
+   write(6,fmt) coef_orb_on_norm_basis_best(1:nbasis, orb_i), ' (coef_best(i,j),j=1,nbasis)'
 # endif
     else
-     write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i)
+     write(fmt,"( '(', i8, 'e16.8)' )") nbasis
+     write(6,fmt) coef_orb_on_norm_basis_best(1:nbasis, orb_i)
     endif
    enddo
 
@@ -2046,9 +2041,8 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f10.6)') zex_best (1:nbasis) ! for pathscale compiler
 # else
-!fp test
-!   write(6,'(<nbasis>f10.6,'' (zex_best(i),i=1,nbasis)'')') zex_best (1:nbasis)
-   write(6,'("(zex_best(i),i=1,nbasis) ",(f10.6))') zex_best (1:nbasis)
+   write(fmt,"( '(', i8, 'f10.6,a)' )") nbasis
+   write(6,fmt) zex_best(1:nbasis), ' (zex_best(i),i=1,nbasis)'
 # endif
   endif ! l_opt_exp
 
