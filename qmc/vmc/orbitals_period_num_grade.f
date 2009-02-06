@@ -106,7 +106,13 @@ cwparker Added from the later version of this subroutine
       endif
 
       if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
+#ifdef NOEINSPLINE
+          write(6,*) 'the code must be linked to einspline library'
+          stop 'the code must be linked to einspline library'
+#else
          call evaluate_bsplines_with_derivatives(x,orb,dorb,ddorb)
+#endif
+
       endif
 
       return

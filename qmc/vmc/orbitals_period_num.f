@@ -149,7 +149,13 @@ cwparker End of if statement for blips
 
         if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
           if(ndet.gt.1) stop 'interpolating b-splines implementation can only handle one determinant currently'
+
+#ifdef NOEINSPLINE
+          write(6,*) 'the code must be linked to einspline library'
+          stop 'the code must be linked to einspline library'
+#else
           call evaluate_bsplines_with_derivatives(x(:,iel),orb_tmp,dorb_tmp,ddorb_tmp)
+#endif
 
            do iorb=1,norb
              orb(iel,iorb)=orb_tmp(iorb)
@@ -265,7 +271,12 @@ c     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
 
 c Interpolating B-splines
       if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
+#ifdef NOEINSPLINE
+         write(6,*) 'the code must be linked to einspline library'
+         stop 'the code must be linked to einspline library'
+#else
          call evaluate_bsplines_function_only(x,orb)
+#endif
       endif
 
       return

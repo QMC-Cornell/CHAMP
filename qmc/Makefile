@@ -2,7 +2,7 @@
 # Warning: DO NOT MODIFY THIS 'Makefile' BY HAND!
 # Warning: However, you may need to modify the file 'makefile.inc' for machine-specific options.
 
-include makefile.inc
+include ../makefile.inc
 
 PROG =	$(CHAMP_EXE)
 
@@ -171,8 +171,6 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.o
 
-LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-
 all: $(PROG)
 
 $(PROG): $(LIBS) $(OBJS)
@@ -192,23 +190,6 @@ make:
 	perl makemake.pl 
 	/usr/bin/ctags *.f *.f90
 	find . -iregex '.*\.f\(90\)?' | etags -
-../lib/lib/libcyrus.a:
-	cd ../lib ; make
-../lib/lib2/blas/libblas.a:
-	cd ../lib ; make
-../lib/lib2/lapack/liblapack.a:
-	cd ../lib ; make
-../lib/lib2/linpack/liblinpack.a:
-	cd ../lib ; make
-../lib/lib2/einspline/lib/libeinspline.a:
-	cd ../lib ; make
-../lib/lib2/pspline/pspline/libpspline.a:
-	cd ../lib ; make
-../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:
-	cd ../lib ; make
-../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a:
-	cd ../lib ; make
-
 .SUFFIXES: 
 
 .SUFFIXES: .f90 .f95 .o .f .c

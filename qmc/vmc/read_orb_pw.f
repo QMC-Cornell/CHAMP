@@ -446,8 +446,14 @@ c     close(3,status='delete')
 c     close(4)
 
   100 if(abs(inum_orb).eq.8) then
+#ifdef NOEINSPLINE
+          write(6,*) 'the code must be linked to einspline library'
+          stop 'the code must be linked to einspline library'
+#else
 c       call setup_bsplines_coefficients(ngrid_orbx,ngrid_orby,ngrid_orbz)
         call setup_bsplines_coefficients
+#endif
+
         write(6,'(''Done setting up interpolating B-spline coeffs'')')
       endif
 
@@ -1716,7 +1722,12 @@ cwparker End of blip printout
 cwparker Interpolating B-Spline printout
                  if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
 
+#ifdef NOEINSPLINE
+                    write(6,*) 'the code must be linked to einspline library'
+                    stop 'the code must be linked to einspline library'
+#else
                     call evaluate_bsplines_with_derivatives(r,orb_tmp,dorb_tmp,ddorb_tmp)
+#endif
                     do iorb=1,norb
 
                       if(xfac.ne.0) then

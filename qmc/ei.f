@@ -2,7 +2,8 @@
       INTEGER MAXIT
       REAL*8 ei,x,EPS,EULER,FPMIN
 c EULER is the Euler-Mascheroni constant, EulerGamma in Mathematica
-      PARAMETER (EPS=6.d-8,EULER=.5772156649015328d0,MAXIT=100,FPMIN=1.d-30)
+      PARAMETER (EPS=6.d-8,EULER=.5772156649015328d0,MAXIT=100)
+      PARAMETER (FPMIN=1.d-30)
       INTEGER k
       REAL fact,prev,sum,term
       if(x.le.0.) pause 'bad argument in ei'

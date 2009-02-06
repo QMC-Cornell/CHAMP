@@ -16,7 +16,7 @@
 /* #undef FC_DUMMY_MAIN_EQ_F77 */
 
 /* Define to 1 if you have the `clock_gettime' function. */
-/* #undef HAVE_CLOCK_GETTIME */
+#define HAVE_CLOCK_GETTIME 1
 
 /* Define to 1 if C supports variable-length arrays. */
 #define HAVE_C_VARARRAYS 1
@@ -43,7 +43,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Support mmx instructions */
-/* #undef HAVE_MMX */
+#define HAVE_MMX 
 
 /* Define to 1 if you have the `posix_memalign' function. */
 #define HAVE_POSIX_MEMALIGN 1
@@ -55,13 +55,13 @@
 #define HAVE_SQRT 1
 
 /* Support SSE (Streaming SIMD Extensions) instructions */
-/* #undef HAVE_SSE */
+#define HAVE_SSE 
 
 /* Support SSE2 (Streaming SIMD Extensions 2) instructions */
-/* #undef HAVE_SSE2 */
+#define HAVE_SSE2 
 
 /* Support SSE3 (Streaming SIMD Extensions 3) instructions */
-/* #undef HAVE_SSE3 */
+#define HAVE_SSE3 
 
 /* Support SSE4.1 (Streaming SIMD Extensions 4.1) instructions */
 /* #undef HAVE_SSE4_1 */
@@ -70,7 +70,7 @@
 /* #undef HAVE_SSE4_2 */
 
 /* Support SSSE3 (Supplemental Streaming SIMD Extensions 3) instructions */
-/* #undef HAVE_SSSE3 */
+#define HAVE_SSSE3 
 
 /* Define to 1 if stdbool.h conforms to C99. */
 #define HAVE_STDBOOL_H 1
@@ -103,7 +103,7 @@
 #define HAVE_UNISTD_H 1
 
 /* xmmintrin.h is available. */
-/* #undef HAVE_XMMINTRIN_H */
+#define HAVE_XMMINTRIN_H 1
 
 /* Define to 1 if the system has the type `_Bool'. */
 #define HAVE__BOOL 1

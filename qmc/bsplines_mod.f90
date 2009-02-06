@@ -7,7 +7,10 @@
 !       eliminate unnecessary case l_need_phase = .true., nkvec=1
 !       take advantage of antiperiodic boundary conditions in einspline
 !       use FFT to get plane wave values on real space grid
+
+
 module bsplines_mod
+
 
   use basic_tools_mod
   use mpi_mod
@@ -21,6 +24,8 @@ module bsplines_mod
   real(dp)                           :: rlatt_inv_transpose(3,3)
   real(dp)                           :: rlatt_inv_transpose_2(3,3)
   real(dp),parameter                 :: zero_tolerance = 1.d-5
+
+#ifndef NOEINSPLINE
 
   contains
 
@@ -2143,4 +2148,7 @@ module bsplines_mod
 
   end subroutine orbitals_pw_primitive
 
+#endif
+
 end module bsplines_mod
+

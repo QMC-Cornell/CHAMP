@@ -3,7 +3,7 @@ CHAMP
 Compilation:
 -----------
 
-In the directory qmc
+In the directory 'champ' 
 
 1) Setup environment variables for compilation.
 
@@ -11,6 +11,15 @@ Edit the file "makefile.inc" and look if you have to change the paths, compilers
 
 
 2) Compilation.
+
+a) Compiling the libraries:
+
+>cd lib
+>cd make
+
+b) Compiling the qmc code:
+
+>cd qmc
 
 There are only two executables. For the serial version, type
 >make clean

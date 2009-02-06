@@ -48,7 +48,7 @@ c routine to accumulate estimators for energy etc.
 
 c statement function for error calculation
 c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
-      err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
+!      err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk) ! JT: commented out because not used
 
 c xsum = sum of values of x from metrop
 c xnow = average of values of x from metrop

@@ -28,10 +28,9 @@ pspline:
 	cd pspline/pspline ; $(MAKE) libpspline.a
 
 einspline:
-	cd einspline ; configure_my ; $(MAKE) ; $(MAKE) install
+#	cd einspline ; configure_my ; $(MAKE) ; $(MAKE) install
+	cd einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=`pwd` "--enable-sse" ; $(MAKE) ; $(MAKE) install
 
 clean:
-	-rm -f linpack/*.o lapack/*.o blas/*.o pspline/pspline/*.o einspline/src/*.o
-clean_all:
 	-rm -f linpack/*.o lapack/*.o blas/*.o pspline/pspline/*.o einspline/src/*.o \
             linpack/liblinpack.a lapack/liblapack.a pspline/pspline/libpspline.a einspline/lib/lib*

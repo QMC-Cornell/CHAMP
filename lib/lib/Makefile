@@ -10,7 +10,5 @@ libcyrus.a: $(OBJS)
 	ranlib $@
 
 clean:
-	-rm *.o
-
-clean_all: clean
-	-rm *.a
+	-rm -f *.o
+	-rm -f *.a
