@@ -6,7 +6,7 @@ LDFLAGS= $(CHAMP_LD_FLAGS)
 CC     = $(CHAMP_C)
 CXX    = $(CHAMP_CXX)
 
-export FC FFLAGS LDFLAGS CC
+export FC FFLAGS LDFLAGS CC CXX
 
 # PHONY is a Make keyword that prevents it from getting confused if there
 # happens to be a file named "clean" in the directory.
