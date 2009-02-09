@@ -305,6 +305,9 @@ endif
 
 #jasmine at cornell
 ifeq ($(hostname),jasmine)
+  CHAMP_C=gcc
+  CHAMP_CXX=g++
+  CHAMP_MPIC=mpicc
   CHAMP_F95=gfortran
   CHAMP_MPIF95=mpif90
   CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall
