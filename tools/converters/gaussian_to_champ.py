@@ -194,7 +194,7 @@ def read_basis ():
   found = False
 
   for line in lines:
-    if re.search ("basis functions", line):
+    if re.search ("basis functions,", line):
       object_splitted = string.split (line)
       nbasis = int(object_splitted [0])
       found = True
