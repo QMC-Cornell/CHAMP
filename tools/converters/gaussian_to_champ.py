@@ -433,7 +433,7 @@ file_output.write('50  .01                                  nfprod,tau\n')
 file_output.write('0  -3   1  0                             nloc,numr,nforce,nefp\n')
 file_output.write(str(nelec)+' '+str(nup)+'                                     nelec,nup\n\n')
 
-file_output.write('* Geometry section\n')
+file_output.write('\'* Geometry section\'\n')
 file_output.write('3                                        ndim\n')
 file_output.write(str(nctype)+' '+str(ncent)+'                                      nctype,ncent\n')
 for i in range(ncent):
@@ -450,7 +450,7 @@ for i in range(ncent):
 file_output.write('  ((cent(k,i),k=1,3),i=1,ncent)\n')
 
 file_output.write('\n')
-file_output.write('* Determinantal section\n')
+file_output.write('\'* Determinantal section\'\n')
 file_output.write('0 0                                      inum_orb,iorb_used\n')
 file_output.write(str(ndet)+' '+str(nbasis)+' '+str(norb)+'                                    ndet,nbasis,norb\n')
 for i in range(nctype):
@@ -488,7 +488,7 @@ for i in range(ncsf):
   file_output.write('(cdet_csf(idet_in_csf,%d'%(i+1)+'),idet_in_csf=1,ndet_in_csf(%d'%(i+1)+'))\n')
     
 file_output.write('\n')
-file_output.write('* Jastrow section\n')
+file_output.write('\'* Jastrow section\'\n')
 file_output.write('1             ianalyt_lap\n')
 file_output.write('4 2 1 1 5 0   ijas,isc,nspin1,nspin2,nord,ifock\n')
 file_output.write('5 5 5         norda,nordb,nordc\n')
@@ -501,7 +501,7 @@ for i in range(nctype):
 
 
 file_output.write('\n')
-file_output.write('* Optimization section\n')
+file_output.write('\'* Optimization section\'\n')
 file_output.write('100 1000 1.d-6 0. 1.d-3     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy\n')
 file_output.write('1000 '+str(nparm)+' 1 1 5 1000 21101 1 NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr\n')
 file_output.write('0 0 0 0 i3body,irewgt,iaver,istrech\n')
