@@ -50,7 +50,9 @@ module basis_mod
    write(6,*)
    write(6,'(a)') 'HELP for basis menu:'
    write(6,'(a)') 'basis'
-   write(6,'(a)') '  basis_functions_varied = [unnormalized|normalized|orthonormalized] : choice of basis functions for exponent optimization (default=normalized)'
+   write(6,'(a)') '  basis_functions_varied = ',&
+        '[unnormalized|normalized|orthonormalized] : choice of basis ',&
+        'functions for exponent optimization (default=normalized)'
    write(6,'(a)') '  optimize_log_exp = [bool] : optimize logarithm of exponents (default=false)'
    write(6,'(a)') '  optimized_exponents 1 2 3 4 end : list of labels of exponents to optimize (default: all exponents)'
    write(6,'(a)') 'end'
@@ -632,7 +634,9 @@ module basis_mod
    do bas_j = 1, nbasis
      basis_ovlp_12 (bas_i, bas_j) = 0.d0
      do bas_k = 1, nbasis
-      basis_ovlp_12 (bas_i, bas_j) = basis_ovlp_12 (bas_i, bas_j) + basis_ovlp_eigvec (bas_i, bas_k) * dsqrt(basis_ovlp_eigval (bas_k)) * basis_ovlp_eigvec (bas_j, bas_k)
+      basis_ovlp_12 (bas_i, bas_j) = basis_ovlp_12 (bas_i, bas_j) + &
+           basis_ovlp_eigvec (bas_i, bas_k) * dsqrt(basis_ovlp_eigval (bas_k))&
+            * basis_ovlp_eigvec (bas_j, bas_k)
      enddo ! bas_k
    enddo ! bas_j
   enddo ! bas_i
@@ -674,7 +678,9 @@ module basis_mod
    do bas_j = 1, nbasis
      basis_ovlp_m12 (bas_i, bas_j) = 0.d0
      do bas_k = 1, nbasis
-      basis_ovlp_m12 (bas_i, bas_j) = basis_ovlp_m12 (bas_i, bas_j) + basis_ovlp_eigvec (bas_i, bas_k) * (1.d0/dsqrt(basis_ovlp_eigval (bas_k))) * basis_ovlp_eigvec (bas_j, bas_k)
+      basis_ovlp_m12 (bas_i, bas_j) = basis_ovlp_m12 (bas_i, bas_j) +&
+           basis_ovlp_eigvec (bas_i, bas_k) * (1.d0/dsqrt(basis_ovlp_eigval &
+           (bas_k))) * basis_ovlp_eigvec (bas_j, bas_k)
      enddo ! bas_k
    enddo ! bas_j
   enddo ! bas_i

@@ -2799,7 +2799,9 @@ module basic_tools_mod
   array3_nb = size(array3)
 
   if (array1_nb /= array2_nb .or. array1_nb /= array3_nb .or. array2_nb /= array3_nb) then
-   write(6,'(2a,i8,a,i8,a,i8)') trim(lhere),': arrays are of different sizes: array1_nb=',array1_nb,', array2_nb=',array2_nb,', array3_nb=',array3_nb
+   write(6,'(2a,i8,a,i8,a,i8)') trim(lhere),&
+': arrays are of different sizes: array1_nb=',array1_nb,&
+', array2_nb=',array2_nb,', array3_nb=',array3_nb
    call die (lhere)
   endif
 
@@ -2860,7 +2862,9 @@ module basic_tools_mod
   array3_nb = size(array3,2)
 
   if (array1_nb /= array2_nb .or. array1_nb /= array3_nb .or. array2_nb /= array3_nb) then
-   write(6,'(2a,i8,a,i8,a,i8)') trim(lhere),': arrays are of different sizes: array1_nb=',array1_nb,', array2_nb=',array2_nb,', array3_nb=',array3_nb
+   write(6,'(2a,i8,a,i8,a,i8)') trim(lhere),&
+': arrays are of different sizes: array1_nb=',array1_nb,&
+', array2_nb=',array2_nb,', array3_nb=',array3_nb
    call die (lhere)
   endif
 
@@ -3702,7 +3706,9 @@ module basic_tools_mod
   cpu_time_last = cpu_time_now
 
   if (idtask == 0) then
-   write(6,'(2a,f11.2,a,f11.2,a)') trim(message),' (total CPU time is',cpu_duration,' s, CPU time since last check is',cpu_duration_last,' s)'
+   write(6,'(2a,f11.2,a,f11.2,a)') trim(message),&
+' (total CPU time is',cpu_duration,' s, CPU time since last check is',&
+cpu_duration_last,' s)'
   endif
 
   end subroutine print_cpu_time_in_seconds
@@ -3724,7 +3730,9 @@ module basic_tools_mod
 
 ! begin
   call date_and_time (date, time, zone)
-  write (date_nice,'(a4,a,a2,a,a2,x,a2,a,a2,a,a2,a,a5,a)') date(1:4),'-',date(5:6),'-',date(7:8),time(1:2),':',time(3:4),':',time(4:6),' (',zone(1:5),')'
+  write (date_nice,'(a4,a,a2,a,a2,x,a2,a,a2,a,a2,a,a5,a)') date(1:4),&
+'-',date(5:6),'-',date(7:8),time(1:2),':',time(3:4),':',time(4:6),&
+' (',zone(1:5),')'
 
   end subroutine get_date
 

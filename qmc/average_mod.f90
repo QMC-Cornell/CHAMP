@@ -218,8 +218,11 @@ module average_mod
 ! test if block average has already been defined through a global average
   do obj_i = 1, averages_defined_nb
    if (object_ind == averages_defined_object_index (obj_i)) then
-     write(6,'(6a)') trim(lhere), ': block average >'+object_bav_name+'< of object >'+object_name+'< has already been automatically defined though the corresponding global average.'
-     write(6,'(2a)') trim(lhere), ': To define the block average, object_block_average_define has to be placed before object_average_define.'
+     write(6,'(6a)') trim(lhere), ': block average >'+object_bav_name+&
+          '< of object >'+object_name+&
+          '< has already been automatically defined though the corresponding global average.'
+     write(6,'(2a)') trim(lhere), &
+          ': To define the block average, object_block_average_define has to be placed before object_average_define.'
      call die (lhere)
    endif
   enddo
@@ -562,7 +565,9 @@ module average_mod
 ! test if variance has already been defined through an statistical error
   do obj_i = 1, errors_defined_nb
    if (object_av_ind == errors_defined_object_av_index (obj_i)) then
-     write(6,'(6a)') lhere, ': variance >'+object_var_name+'< of average >'+object_av_name+'< has already been automatically defined though the corresponding statistical error.'
+     write(6,'(6a)') lhere, ': variance >'+object_var_name+&
+          '< of average >'+object_av_name+&
+          '< has already been automatically defined though the corresponding statistical error.'
      write(6,'(2a)') lhere, ': To define the variance, object_variance_define has to be placed before object_error_define.'
      call die (lhere)
    endif
@@ -1128,14 +1133,16 @@ module average_mod
 
 !    initialization for first block
      if (block_iterations_nb == 1 ) then
-       call alloc ('objects(object_ind)%sum_blk_double_1', objects(object_ind)%sum_blk_double_1, objects(object_ind)%dimensions(1))
+       call alloc ('objects(object_ind)%sum_blk_double_1',&
+         objects(object_ind)%sum_blk_double_1, objects(object_ind)%dimensions(1))
        objects(object_ind)%sum_blk_double_1 = 0.d0
      endif
 
 # if defined (MPI)
 !    sum values from all processes
      call alloc ('collect', collect, objects(object_ind)%dimensions(1))
-     call mpi_allreduce(objects(object_ind)%sum_double_1,collect,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     call mpi_allreduce(objects(object_ind)%sum_double_1,collect,&
+          objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
         call die (lhere, 'error in mpi_allreduce')
      endif
@@ -1247,14 +1254,19 @@ module average_mod
 
 !    initialization for first block
      if (block_iterations_nb == 1 ) then
-       call alloc ('objects(object_ind)%sum_blk_double_2', objects(object_ind)%sum_blk_double_2,  objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
+       call alloc ('objects(object_ind)%sum_blk_double_2', &
+          objects(object_ind)%sum_blk_double_2,  &
+          objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
        objects(object_ind)%sum_blk_double_2 = 0.d0
      endif
 
 # if defined (MPI)
 !    sum values from all processes
      call alloc ('collect', collect,  objects(object_ind)%dimensions(1),  objects(object_ind)%dimensions(2))
-     call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     call mpi_allreduce(objects(object_ind)%sum_double_2,&
+          collect,objects(object_ind)%dimensions(1)*&
+          objects(object_ind)%dimensions(2),mpi_double_precision,&
+          mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
         call die (lhere, 'error in mpi_allreduce')
      endif
@@ -1451,7 +1463,9 @@ module average_mod
 # if defined (MPI)
 !    sum values from all processes
      call alloc ('collect', collect, objects(object_ind)%dimensions(1))
-     call mpi_allreduce(objects(object_ind)%sum_double_1,collect,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     call mpi_allreduce(objects(object_ind)%sum_double_1,&
+          collect,objects(object_ind)%dimensions(1),mpi_double_precision,&
+          mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
         call die (lhere, 'error in mpi_allreduce')
      endif
@@ -1561,7 +1575,9 @@ module average_mod
 # if defined (MPI)
 !    sum values from all processes
      call alloc ('collect', collect,  objects(object_ind)%dimensions(1),  objects(object_ind)%dimensions(2))
-     call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+     call mpi_allreduce(objects(object_ind)%sum_double_2,collect,&
+          objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),&
+          mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
         call die (lhere, 'error in mpi_allreduce')
      endif
@@ -1677,7 +1693,9 @@ module average_mod
     endif
 
 !  initialization
-   call alloc ('objects(object_bav_ind)%sum_blk_double_1', objects(object_bav_ind)%sum_blk_double_1, objects(object_bav_ind)%dimensions(1))
+   call alloc ('objects(object_bav_ind)%sum_blk_double_1', &
+        objects(object_bav_ind)%sum_blk_double_1, &
+        objects(object_bav_ind)%dimensions(1))
    objects(object_bav_ind)%sum_blk_double_1 = 0.d0
 
   endif ! first block
@@ -1743,16 +1761,20 @@ module average_mod
     endif
 
 !   initialization
-    call alloc ('objects(object_bav_ind)%sum_blk_double_2', objects(object_bav_ind)%sum_blk_double_2,  objects(object_bav_ind)%dimensions(1), objects(object_bav_ind)%dimensions(2))
+    call alloc ('objects(object_bav_ind)%sum_blk_double_2', &
+         objects(object_bav_ind)%sum_blk_double_2,  &
+         objects(object_bav_ind)%dimensions(1), objects(object_bav_ind)%dimensions(2))
     objects(object_bav_ind)%sum_blk_double_2 = 0.d0
 
   endif ! first block
 
 ! sum over blocks
-  objects(object_bav_ind)%sum_blk_double_2 = objects(object_bav_ind)%sum_blk_double_2 + objects(object_bav_ind)%pointer_double_2
+  objects(object_bav_ind)%sum_blk_double_2 = &
+       objects(object_bav_ind)%sum_blk_double_2 + objects(object_bav_ind)%pointer_double_2
 
 ! calculate global average
-  objects(object_av_ind)%pointer_double_2 = objects(object_bav_ind)%sum_blk_double_2 / block_iterations_nb
+  objects(object_av_ind)%pointer_double_2 = &
+       objects(object_bav_ind)%sum_blk_double_2 / block_iterations_nb
   call object_modified_by_index (object_av_ind)
 
  end subroutine object_global_average_by_index_double_2
@@ -1801,14 +1823,19 @@ module average_mod
    endif ! first block
 
 !  calculate sum of square of averages over blocks
-   objects(object_var_ind)%sum_blk_square_double_0 = objects(object_var_ind)%sum_blk_square_double_0   &
-       + (objects(object_av_ind)%pointer_double_0 * block_iterations_nb - objects(object_var_ind)%previous_av1_double_0 * (block_iterations_nb - 1))**2
+   objects(object_var_ind)%sum_blk_square_double_0 = &
+        objects(object_var_ind)%sum_blk_square_double_0   &
+       + (objects(object_av_ind)%pointer_double_0 * block_iterations_nb -&
+       objects(object_var_ind)%previous_av1_double_0 * &
+       (block_iterations_nb - 1))**2
 
 !  calculate variance
    if (block_iterations_nb == 1) then
     objects(object_var_ind)%pointer_double_0 = 0.d0
    else
-    objects(object_var_ind)%pointer_double_0 = (objects(object_var_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av_ind)%pointer_double_0**2)/(block_iterations_nb-1)
+    objects(object_var_ind)%pointer_double_0 = &
+         (objects(object_var_ind)%sum_blk_square_double_0/block_iterations_nb -&
+         objects(object_av_ind)%pointer_double_0**2)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_var_ind)
 
@@ -1876,14 +1903,19 @@ module average_mod
 
 
 !  calculate sum of square of averages over blocks
-   objects(object_var_ind)%sum_blk_square_double_1 = objects(object_var_ind)%sum_blk_square_double_1   &
-       + (objects(object_av_ind)%pointer_double_1 * block_iterations_nb - objects(object_var_ind)%previous_av1_double_1 * (block_iterations_nb - 1 ))**2
+   objects(object_var_ind)%sum_blk_square_double_1 =&
+        objects(object_var_ind)%sum_blk_square_double_1   &
+       + (objects(object_av_ind)%pointer_double_1 * block_iterations_nb - &
+       objects(object_var_ind)%previous_av1_double_1 * &
+       (block_iterations_nb - 1 ))**2
 
 !  calculate variance
    if (block_iterations_nb == 1) then
     objects(object_var_ind)%pointer_double_1 = 0.d0
    else
-    objects(object_var_ind)%pointer_double_1 = (objects(object_var_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av_ind)%pointer_double_1**2)/(block_iterations_nb-1)
+    objects(object_var_ind)%pointer_double_1 = &
+         (objects(object_var_ind)%sum_blk_square_double_1/block_iterations_nb -&
+         objects(object_av_ind)%pointer_double_1**2)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_var_ind)
 
@@ -1944,22 +1976,29 @@ module average_mod
     endif
 
 !   intermediate objects
-    call alloc ('objects(object_var_ind)%sum_blk_square_double_2', objects(object_var_ind)%sum_blk_square_double_2, dim_var1, dim_var2)
-    call alloc('objects(object_var_ind)%previous_av1_double_2', objects(object_var_ind)%previous_av1_double_2, dim_av1, dim_av2)
+    call alloc ('objects(object_var_ind)%sum_blk_square_double_2', &
+         objects(object_var_ind)%sum_blk_square_double_2, dim_var1, dim_var2)
+    call alloc('objects(object_var_ind)%previous_av1_double_2', &
+         objects(object_var_ind)%previous_av1_double_2, dim_av1, dim_av2)
     objects(object_var_ind)%sum_blk_square_double_2 = 0.d0
     objects(object_var_ind)%previous_av1_double_2 = 0.d0
 
    endif ! first block
 
 !  calculate sum of square of averages over blocks
-   objects(object_var_ind)%sum_blk_square_double_2 = objects(object_var_ind)%sum_blk_square_double_2   &
-       + ( objects(object_av_ind)%pointer_double_2 * block_iterations_nb - objects(object_var_ind)%previous_av1_double_2 * (block_iterations_nb - 1 ) )**2
+   objects(object_var_ind)%sum_blk_square_double_2 = &
+        objects(object_var_ind)%sum_blk_square_double_2   &
+       + ( objects(object_av_ind)%pointer_double_2 * block_iterations_nb - &
+       objects(object_var_ind)%previous_av1_double_2 * &
+       (block_iterations_nb - 1 ) )**2
 
 !  calculate variance
    if (block_iterations_nb == 1) then
     objects(object_var_ind)%pointer_double_2 = 0.d0
    else
-    objects(object_var_ind)%pointer_double_2 = (objects(object_var_ind)%sum_blk_square_double_2/block_iterations_nb - objects(object_av_ind)%pointer_double_2**2)/(block_iterations_nb-1)
+    objects(object_var_ind)%pointer_double_2 = &
+         (objects(object_var_ind)%sum_blk_square_double_2/block_iterations_nb -&
+         objects(object_av_ind)%pointer_double_2**2)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_var_ind)
 
@@ -1998,7 +2037,9 @@ module average_mod
 !   test on type
     object_covar_type = objects(object_covar_ind)%type
     if (object_covar_type /= 'double_0') then
-     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', trim(object_covar_type),' /= double_0'
+     write(6,'(6a)') trim(lhere),': type of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', &
+          trim(object_covar_type),' /= double_0'
      call die (lhere)
     endif
 
@@ -2010,15 +2051,22 @@ module average_mod
    endif ! first block
 
 !  calculate sum of product of averages over blocks
-   objects(object_covar_ind)%sum_blk_square_double_0 = objects(object_covar_ind)%sum_blk_square_double_0   &
-       + (objects(object_av1_ind)%pointer_double_0 * block_iterations_nb - objects(object_covar_ind)%previous_av1_double_0 * (block_iterations_nb - 1)) &
-       * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_0 * (block_iterations_nb - 1))
+   objects(object_covar_ind)%sum_blk_square_double_0 =&
+        objects(object_covar_ind)%sum_blk_square_double_0   &
+       + (objects(object_av1_ind)%pointer_double_0 * block_iterations_nb - &
+       objects(object_covar_ind)%previous_av1_double_0 * (block_iterations_nb &
+       - 1)) * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb &
+       - objects(object_covar_ind)%previous_av2_double_0 *&
+       (block_iterations_nb - 1))
 
 !  calculate covariance
    if (block_iterations_nb == 1) then
     objects(object_covar_ind)%pointer_double_0 = 0.d0
    else
-    objects(object_covar_ind)%pointer_double_0 = (objects(object_covar_ind)%sum_blk_square_double_0/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_0)/(block_iterations_nb-1)
+    objects(object_covar_ind)%pointer_double_0 = &
+         (objects(object_covar_ind)%sum_blk_square_double_0/&
+         block_iterations_nb - objects(object_av1_ind)%pointer_double_0*&
+         objects(object_av2_ind)%pointer_double_0)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_covar_ind)
 
@@ -2060,7 +2108,9 @@ module average_mod
     object_covar_type = objects(object_covar_ind)%type
 
     if (object_covar_type /= 'double_1') then
-     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_1'
+     write(6,'(6a)') trim(lhere),': type of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', &
+          object_covar_type,' /= double_1'
      call die (lhere)
     endif
 
@@ -2085,21 +2135,30 @@ module average_mod
    endif ! first block
 
 !  calculate sum of product of averages over blocks
-   objects(object_covar_ind)%sum_blk_square_double_1 = objects(object_covar_ind)%sum_blk_square_double_1   &
-       + (objects(object_av1_ind)%pointer_double_1 * block_iterations_nb - objects(object_covar_ind)%previous_av1_double_1 * (block_iterations_nb - 1 )) &
-       * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_0 * (block_iterations_nb - 1 ))
+   objects(object_covar_ind)%sum_blk_square_double_1 = &
+        objects(object_covar_ind)%sum_blk_square_double_1   &
+       + (objects(object_av1_ind)%pointer_double_1 * block_iterations_nb - &
+       objects(object_covar_ind)%previous_av1_double_1 * (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_0 * block_iterations_nb - &
+       objects(object_covar_ind)%previous_av2_double_0 * &
+       (block_iterations_nb - 1 ))
 
 !  calculate covariance
    if (block_iterations_nb == 1) then
     objects(object_covar_ind)%pointer_double_1 = 0.d0
    else
-    objects(object_covar_ind)%pointer_double_1 = (objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_1*objects(object_av2_ind)%pointer_double_0)/(block_iterations_nb-1)
+    objects(object_covar_ind)%pointer_double_1 = &
+         (objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb&
+         - objects(object_av1_ind)%pointer_double_1*&
+         objects(object_av2_ind)%pointer_double_0)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
-   objects(object_covar_ind)%previous_av1_double_1 = objects(object_av1_ind)%pointer_double_1
-   objects(object_covar_ind)%previous_av2_double_0 = objects(object_av2_ind)%pointer_double_0
+   objects(object_covar_ind)%previous_av1_double_1 =&
+        objects(object_av1_ind)%pointer_double_1
+   objects(object_covar_ind)%previous_av2_double_0 = &
+        objects(object_av2_ind)%pointer_double_0
 
  end subroutine object_covariance_by_index_double_1_double_0
 
@@ -2135,7 +2194,9 @@ module average_mod
     object_covar_type = objects(object_covar_ind)%type
 
     if (object_covar_type /= 'double_1') then
-     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_1'
+     write(6,'(6a)') trim(lhere),': type of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', object_covar_type,&
+          ' /= double_1'
      call die (lhere)
     endif
 
@@ -2144,15 +2205,19 @@ module average_mod
     dim_covar1 = objects(object_covar_ind)%dimensions(1)
 
     if (dim_av21 /= dim_covar1) then
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1
+     write(6,*) trim(lhere),': dimension of object >',&
+          trim(objects(object_av2_ind)%name),'< is ', dim_av21
+     write(6,*) trim(lhere),': dimension of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', dim_covar1
      write(6,*) trim(lhere),': they should be identical'
      call die (lhere)
     endif
 
 !   intermediate objects
-    call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
-    call alloc ('objects(object_covar_ind)%previous_av2_double_1', objects(object_covar_ind)%previous_av2_double_1, dim_av21)
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', &
+         objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
+    call alloc ('objects(object_covar_ind)%previous_av2_double_1', &
+         objects(object_covar_ind)%previous_av2_double_1, dim_av21)
     objects(object_covar_ind)%sum_blk_square_double_1 = 0.d0
     objects(object_covar_ind)%previous_av1_double_0 = 0.d0
     objects(object_covar_ind)%previous_av2_double_1 = 0.d0
@@ -2160,21 +2225,30 @@ module average_mod
    endif ! first block
 
 !  calculate sum of product of averages over blocks
-   objects(object_covar_ind)%sum_blk_square_double_1 = objects(object_covar_ind)%sum_blk_square_double_1   &
-       + (objects(object_av1_ind)%pointer_double_0 * block_iterations_nb - objects(object_covar_ind)%previous_av1_double_0 * (block_iterations_nb - 1 )) &
-       * (objects(object_av2_ind)%pointer_double_1 * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_1 * (block_iterations_nb - 1 ))
+   objects(object_covar_ind)%sum_blk_square_double_1 = &
+        objects(object_covar_ind)%sum_blk_square_double_1   &
+       + (objects(object_av1_ind)%pointer_double_0 * block_iterations_nb - &
+       objects(object_covar_ind)%previous_av1_double_0 * (block_iterations_nb &
+       - 1 )) * (objects(object_av2_ind)%pointer_double_1 * &
+       block_iterations_nb - objects(object_covar_ind)%previous_av2_double_1 &
+       * (block_iterations_nb - 1 ))
 
 !  calculate covariance
    if (block_iterations_nb == 1) then
     objects(object_covar_ind)%pointer_double_1 = 0.d0
    else
-    objects(object_covar_ind)%pointer_double_1 = (objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb - objects(object_av1_ind)%pointer_double_0*objects(object_av2_ind)%pointer_double_1)/(block_iterations_nb-1)
+    objects(object_covar_ind)%pointer_double_1 = &
+         (objects(object_covar_ind)%sum_blk_square_double_1/block_iterations_nb&
+         - objects(object_av1_ind)%pointer_double_0*&
+         objects(object_av2_ind)%pointer_double_1)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
-   objects(object_covar_ind)%previous_av1_double_0 = objects(object_av1_ind)%pointer_double_0
-   objects(object_covar_ind)%previous_av2_double_1 = objects(object_av2_ind)%pointer_double_1
+   objects(object_covar_ind)%previous_av1_double_0 = &
+        objects(object_av1_ind)%pointer_double_0
+   objects(object_covar_ind)%previous_av2_double_1 =&
+        objects(object_av2_ind)%pointer_double_1
 
  end subroutine object_covariance_by_index_double_0_double_1
 
@@ -2210,7 +2284,9 @@ module average_mod
     object_covar_type = objects(object_covar_ind)%type
 
     if (object_covar_type /= 'double_1') then
-     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_1'
+     write(6,'(6a)') trim(lhere),': type of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', &
+          object_covar_type,' /= double_1'
      call die (lhere)
     endif
 
@@ -2220,17 +2296,23 @@ module average_mod
     dim_covar1 = objects(object_covar_ind)%dimensions(1)
 
     if (dim_av11 /= dim_av21 .or. dim_av21 /= dim_covar1) then
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
-     write(6,*) trim(lhere),': dimensions of object >',trim(objects(object_covar_ind)%name),'< is ', dim_covar1
+     write(6,*) trim(lhere),': dimension of object >',&
+          trim(objects(object_av1_ind)%name),'< is ', dim_av11
+     write(6,*) trim(lhere),': dimension of object >',&
+          trim(objects(object_av2_ind)%name),'< is ', dim_av21
+     write(6,*) trim(lhere),': dimensions of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', dim_covar1
      write(6,*) trim(lhere),': they should match'
      call die (lhere)
     endif
 
 !   intermediate objects
-    call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
-    call alloc ('objects(object_covar_ind)%previous_av1_double_1', objects(object_covar_ind)%previous_av1_double_1, dim_av11)
-    call alloc ('objects(object_covar_ind)%previous_av2_double_1', objects(object_covar_ind)%previous_av2_double_1, dim_av21)
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_1', &
+         objects(object_covar_ind)%sum_blk_square_double_1, dim_covar1)
+    call alloc ('objects(object_covar_ind)%previous_av1_double_1', &
+         objects(object_covar_ind)%previous_av1_double_1, dim_av11)
+    call alloc ('objects(object_covar_ind)%previous_av2_double_1', &
+         objects(object_covar_ind)%previous_av2_double_1, dim_av21)
     objects(object_covar_ind)%sum_blk_square_double_1 = 0.d0
     objects(object_covar_ind)%previous_av1_double_1 = 0.d0
     objects(object_covar_ind)%previous_av2_double_1 = 0.d0
@@ -2238,21 +2320,31 @@ module average_mod
    endif ! first block
 
 !  calculate sum of product of averages over blocks
-   objects(object_covar_ind)%sum_blk_square_double_1 (:) = objects(object_covar_ind)%sum_blk_square_double_1 (:) &
-       + (objects(object_av1_ind)%pointer_double_1 (:) * block_iterations_nb - objects(object_covar_ind)%previous_av1_double_1 (:) * (block_iterations_nb - 1 )) &
-       * (objects(object_av2_ind)%pointer_double_1 (:) * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_1 (:) * (block_iterations_nb - 1 ))
+   objects(object_covar_ind)%sum_blk_square_double_1 (:) = &
+        objects(object_covar_ind)%sum_blk_square_double_1 (:) &
+       + (objects(object_av1_ind)%pointer_double_1 (:) * block_iterations_nb -&
+       objects(object_covar_ind)%previous_av1_double_1 (:) * &
+       (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_1 (:) * block_iterations_nb -&
+       objects(object_covar_ind)%previous_av2_double_1 (:) * &
+       (block_iterations_nb - 1 ))
 
 !  calculate covariance
    if (block_iterations_nb == 1) then
     objects(object_covar_ind)%pointer_double_1 (:) = 0.d0
    else
-    objects(object_covar_ind)%pointer_double_1 (:) = (objects(object_covar_ind)%sum_blk_square_double_1 (:)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (:) * objects(object_av2_ind)%pointer_double_1 (:))/(block_iterations_nb-1)
+    objects(object_covar_ind)%pointer_double_1 (:) = &
+         (objects(object_covar_ind)%sum_blk_square_double_1 (:)/&
+         block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (:) &
+         * objects(object_av2_ind)%pointer_double_1 (:))/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
-   objects(object_covar_ind)%previous_av1_double_1 (:) = objects(object_av1_ind)%pointer_double_1 (:)
-   objects(object_covar_ind)%previous_av2_double_1 (:) = objects(object_av2_ind)%pointer_double_1 (:)
+   objects(object_covar_ind)%previous_av1_double_1 (:) = &
+        objects(object_av1_ind)%pointer_double_1 (:)
+   objects(object_covar_ind)%previous_av2_double_1 (:) = &
+        objects(object_av2_ind)%pointer_double_1 (:)
 
  end subroutine object_covariance_by_index_double_1_double_1_double_1
 
@@ -2291,7 +2383,9 @@ module average_mod
     object_covar_type = objects(object_covar_ind)%type
 
     if (object_covar_type /= 'double_2') then
-     write(6,'(6a)') trim(lhere),': type of object >',trim(objects(object_covar_ind)%name),'< is ', object_covar_type,' /= double_2'
+     write(6,'(6a)') trim(lhere),': type of object >',&
+          trim(objects(object_covar_ind)%name),'< is ', &
+          object_covar_type,' /= double_2'
      call die (lhere)
     endif
 
@@ -2300,17 +2394,23 @@ module average_mod
     dim_av21 = objects(object_av2_ind)%dimensions(1)
 
     if (dim_av11 /= dim_covar1 .or. dim_av21 /= dim_covar2) then
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av1_ind)%name),'< is ', dim_av11
-     write(6,*) trim(lhere),': dimension of object >',trim(objects(object_av2_ind)%name),'< is ', dim_av21
-     write(6,*) trim(lhere),': dimensions of object >',trim(objects(object_covar_ind)%name),'< are ', dim_covar1, dim_covar2
+     write(6,*) trim(lhere),': dimension of object >',&
+          trim(objects(object_av1_ind)%name),'< is ', dim_av11
+     write(6,*) trim(lhere),': dimension of object >',&
+          trim(objects(object_av2_ind)%name),'< is ', dim_av21
+     write(6,*) trim(lhere),': dimensions of object >',&
+          trim(objects(object_covar_ind)%name),'< are ', dim_covar1, dim_covar2
      write(6,*) trim(lhere),': they should match'
      call die (lhere)
     endif
 
 !   intermediate objects
-    call alloc ('objects(object_covar_ind)%sum_blk_square_double_2', objects(object_covar_ind)%sum_blk_square_double_2, dim_covar1, dim_covar2)
-    call alloc ('objects(object_covar_ind)%previous_av1_double_1', objects(object_covar_ind)%previous_av1_double_1, dim_av11)
-    call alloc ('objects(object_covar_ind)%previous_av2_double_1', objects(object_covar_ind)%previous_av2_double_1, dim_av21)
+    call alloc ('objects(object_covar_ind)%sum_blk_square_double_2', &
+         objects(object_covar_ind)%sum_blk_square_double_2, dim_covar1, dim_covar2)
+    call alloc ('objects(object_covar_ind)%previous_av1_double_1', &
+         objects(object_covar_ind)%previous_av1_double_1, dim_av11)
+    call alloc ('objects(object_covar_ind)%previous_av2_double_1', &
+         objects(object_covar_ind)%previous_av2_double_1, dim_av21)
     objects(object_covar_ind)%sum_blk_square_double_2 = 0.d0
     objects(object_covar_ind)%previous_av1_double_1 = 0.d0
     objects(object_covar_ind)%previous_av2_double_1 = 0.d0
@@ -2320,9 +2420,14 @@ module average_mod
 !  calculate sum of product of averages over blocks
    do i = 1, dim_covar1
     do j = 1, dim_covar2
-     objects(object_covar_ind)%sum_blk_square_double_2 (i,j) = objects(object_covar_ind)%sum_blk_square_double_2 (i,j) &
-       + (objects(object_av1_ind)%pointer_double_1 (i) * block_iterations_nb - objects(object_covar_ind)%previous_av1_double_1 (i) * (block_iterations_nb - 1 )) &
-       * (objects(object_av2_ind)%pointer_double_1 (j) * block_iterations_nb - objects(object_covar_ind)%previous_av2_double_1 (j) * (block_iterations_nb - 1 ))
+     objects(object_covar_ind)%sum_blk_square_double_2 (i,j) =&
+          objects(object_covar_ind)%sum_blk_square_double_2 (i,j) &
+       + (objects(object_av1_ind)%pointer_double_1 (i) * block_iterations_nb -&
+       objects(object_covar_ind)%previous_av1_double_1 (i) &
+       * (block_iterations_nb - 1 )) &
+       * (objects(object_av2_ind)%pointer_double_1 (j) * block_iterations_nb &
+       - objects(object_covar_ind)%previous_av2_double_1 (j) * &
+       (block_iterations_nb - 1 ))
     enddo
    enddo
 
@@ -2332,15 +2437,21 @@ module average_mod
    else
     do i = 1, dim_covar1
      do j = 1, dim_covar2
-      objects(object_covar_ind)%pointer_double_2 (i,j) = (objects(object_covar_ind)%sum_blk_square_double_2 (i,j)/block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (i) * objects(object_av2_ind)%pointer_double_1 (j))/(block_iterations_nb-1)
+      objects(object_covar_ind)%pointer_double_2 (i,j) = &
+           (objects(object_covar_ind)%sum_blk_square_double_2 (i,j)/&
+           block_iterations_nb - objects(object_av1_ind)%pointer_double_1 (i) &
+           * objects(object_av2_ind)%pointer_double_1 (j))/&
+           (block_iterations_nb-1)
      enddo
     enddo
    endif
    call object_modified_by_index (object_covar_ind)
 
 !  save current average value for next iteration
-   objects(object_covar_ind)%previous_av1_double_1 (:) = objects(object_av1_ind)%pointer_double_1 (:)
-   objects(object_covar_ind)%previous_av2_double_1 (:) = objects(object_av2_ind)%pointer_double_1 (:)
+   objects(object_covar_ind)%previous_av1_double_1 (:) =&
+        objects(object_av1_ind)%pointer_double_1 (:)
+   objects(object_covar_ind)%previous_av2_double_1 (:) = &
+        objects(object_av2_ind)%pointer_double_1 (:)
 
  end subroutine object_covariance_by_index_double_1_double_1_double_2
 
@@ -2484,8 +2595,10 @@ module average_mod
     object_err_type = objects(object_err_ind)%type
 
     if (object_var_type /= object_err_type) then
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
-     write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
+     write(6,*) trim(lhere),': type of object ',&
+          trim(objects(object_var_ind)%name),' is ', object_var_type
+     write(6,*) trim(lhere),': type of object ',&
+          trim(objects(object_err_ind)%name),' is ', object_err_type
      write(6,*) trim(lhere),': they should be identical'
      call die (lhere)
     endif
@@ -2497,8 +2610,10 @@ module average_mod
     dim_err2 = objects(object_err_ind)%dimensions(2)
 
     if (dim_var1 /= dim_err1 .or. dim_var2 /= dim_err2) then
-     write(6,*) trim(lhere),': dimensions of object', trim(objects(object_var_ind)%name),' are ', dim_var1, dim_var2
-     write(6,*) trim(lhere),': dimensions of object ',trim(objects(object_err_ind)%name),' are ', dim_err1, dim_err2
+     write(6,*) trim(lhere),': dimensions of object', &
+          trim(objects(object_var_ind)%name),' are ', dim_var1, dim_var2
+     write(6,*) trim(lhere),': dimensions of object ',&
+          trim(objects(object_err_ind)%name),' are ', dim_err1, dim_err2
      write(6,*) trim(lhere),': they should be identical'
      call die (lhere)
     endif
@@ -2506,7 +2621,8 @@ module average_mod
    endif ! first block
 
 !  calculate error
-   objects(object_err_ind)%pointer_double_2 = dsqrt(objects(object_var_ind)%pointer_double_2)
+   objects(object_err_ind)%pointer_double_2 = &
+        dsqrt(objects(object_var_ind)%pointer_double_2)
    call object_modified_by_index (object_err_ind)
 
  end subroutine object_error_by_index_double_2
@@ -2539,7 +2655,8 @@ module average_mod
 
 ! at each step
   do walk_i = 1, nwalk
-   objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + objects(object_ind)%pointer_double_1(walk_i) * walker_weights(walk_i)
+   objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + &
+        objects(object_ind)%pointer_double_1(walk_i) * walker_weights(walk_i)
   enddo
 
  end subroutine object_average_walk_step_by_index_double_0
@@ -2567,15 +2684,19 @@ module average_mod
   if (step_iterations_nb == 1) then
 
 !   initialization
-    call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0) !fp
-    call alloc ('objects(object_ind)%sum_double_1', objects(object_ind)%sum_double_1, objects(object_ind)%dimensions(1))
+    call require (lhere, 'objects(object_ind)%dimensions(1) > 0', &
+         objects(object_ind)%dimensions(1) > 0) !fp
+    call alloc ('objects(object_ind)%sum_double_1', &
+         objects(object_ind)%sum_double_1, objects(object_ind)%dimensions(1))
     objects(object_ind)%sum_double_1 (:) = 0.d0
 
   endif ! first iteration
 
 ! at each step
   do walk_i = 1, nwalk
-   objects(object_ind)%sum_double_1 (:) = objects(object_ind)%sum_double_1 (:) + objects(object_ind)%pointer_double_2 (:,walk_i) * walker_weights(walk_i)
+   objects(object_ind)%sum_double_1 (:) =&
+        objects(object_ind)%sum_double_1 (:) + &
+        objects(object_ind)%pointer_double_2 (:,walk_i) * walker_weights(walk_i)
   enddo
 
  end subroutine object_average_walk_step_by_index_double_1
@@ -2603,16 +2724,22 @@ module average_mod
   if (step_iterations_nb == 1) then
 
 !   initialization
-    call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0) !fp
-    call require (lhere, 'objects(object_ind)%dimensions(2) > 0', objects(object_ind)%dimensions(2) > 0) !fp
-    call alloc ('objects(object_ind)%sum_double_2', objects(object_ind)%sum_double_2, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
+    call require (lhere, 'objects(object_ind)%dimensions(1) > 0', &
+         objects(object_ind)%dimensions(1) > 0) !fp
+    call require (lhere, 'objects(object_ind)%dimensions(2) > 0', &
+         objects(object_ind)%dimensions(2) > 0) !fp
+    call alloc ('objects(object_ind)%sum_double_2', &
+         objects(object_ind)%sum_double_2, objects(object_ind)%dimensions(1), &
+         objects(object_ind)%dimensions(2))
     objects(object_ind)%sum_double_2 (:,:) = 0.d0
 
   endif ! first iteration
 
 ! at each step
   do walk_i = 1, nwalk
-   objects(object_ind)%sum_double_2 (:,:) = objects(object_ind)%sum_double_2 (:,:) + objects(object_ind)%pointer_double_3 (:,:,walk_i) * walker_weights(walk_i)
+   objects(object_ind)%sum_double_2 (:,:) = &
+        objects(object_ind)%sum_double_2 (:,:) + &
+        objects(object_ind)%pointer_double_3 (:,:,walk_i) * walker_weights(walk_i)
   enddo
 
  end subroutine object_average_walk_step_by_index_double_2
@@ -2651,10 +2778,19 @@ module average_mod
     call object_associated_or_die_by_index (object_av_ind)
 
 !   test dimensions
-    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) .or. size(objects(object_bav_ind)%dimensions) /= size(objects(object_av_ind)%dimensions)) then
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
+    if (size(objects(object_ind)%dimensions) - 1 /= &
+         size(objects(object_av_ind)%dimensions) .or. &
+         size(objects(object_bav_ind)%dimensions) /= &
+         size(objects(object_av_ind)%dimensions)) then
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_ind)%name),' is of dimension ',&
+           size(objects(object_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_bav_ind)%name),' is of dimension ',&
+           size(objects(object_bav_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_av_ind)%name),' is of dimension ',&
+           size(objects(object_av_ind)%dimensions)
       call die (lhere)
     endif
 
@@ -2664,7 +2800,8 @@ module average_mod
 
 # if defined (MPI)
 ! sum values from all processes
-  call mpi_allreduce(objects(object_ind)%sum_double_0,collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+  call mpi_allreduce(objects(object_ind)%sum_double_0,collect,1,&
+       mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
   if (ierr /= 0) then
      call die (lhere, 'error in mpi_allreduce')
   endif
@@ -2676,8 +2813,10 @@ module average_mod
   call object_modified_by_index (object_bav_ind)
 
 ! calculate average
-  objects(object_ind)%sum_blk_double_0 = objects(object_ind)%sum_blk_double_0 + objects(object_ind)%sum_double_0
-  objects(object_av_ind)%pointer_double_0 = objects(object_ind)%sum_blk_double_0 / walker_weights_sum
+  objects(object_ind)%sum_blk_double_0 = &
+       objects(object_ind)%sum_blk_double_0 + objects(object_ind)%sum_double_0
+  objects(object_av_ind)%pointer_double_0 = &
+       objects(object_ind)%sum_blk_double_0 / walker_weights_sum
   call object_modified_by_index (object_av_ind)
 
 ! reinitialization of sum for each block
@@ -2718,22 +2857,33 @@ module average_mod
     call object_associated_or_die_by_index (object_av_ind)
 
 !   test dimensions
-    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) .or. size(objects(object_bav_ind)%dimensions) /= size(objects(object_av_ind)%dimensions)) then
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
+    if (size(objects(object_ind)%dimensions) - 1 /= &
+         size(objects(object_av_ind)%dimensions) .or. &
+         size(objects(object_bav_ind)%dimensions) /= &
+         size(objects(object_av_ind)%dimensions)) then
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_ind)%name),' is of dimension ',&
+           size(objects(object_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_bav_ind)%name),' is of dimension ',&
+           size(objects(object_bav_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_av_ind)%name),' is of dimension ',&
+           size(objects(object_av_ind)%dimensions)
       call die (lhere)
     endif
 
 !   initialization for first block
-    call alloc ('objects(object_ind)%sum_blk_double_1', objects(object_ind)%sum_blk_double_1, objects(object_ind)%dimensions(1))
+    call alloc ('objects(object_ind)%sum_blk_double_1', &
+         objects(object_ind)%sum_blk_double_1, objects(object_ind)%dimensions(1))
     objects(object_ind)%sum_blk_double_1 (:) = 0.d0
   endif
 
 # if defined (MPI)
 !   sum values from all processes
     call alloc ('collect', collect, objects(object_ind)%dimensions(1))
-    call mpi_allreduce(objects(object_ind)%sum_double_1,collect,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    call mpi_allreduce(objects(object_ind)%sum_double_1,collect,&
+         objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
     if (ierr /= 0) then
        call die (lhere, 'error in mpi_allreduce')
     endif
@@ -2746,8 +2896,10 @@ module average_mod
 
 
 ! calculate global average
-  objects(object_ind)%sum_blk_double_1 (:) = objects(object_ind)%sum_blk_double_1 (:) + objects(object_ind)%sum_double_1 (:)
-  objects(object_av_ind)%pointer_double_1 (:) = objects(object_ind)%sum_blk_double_1 (:) / walker_weights_sum
+  objects(object_ind)%sum_blk_double_1 (:) = &
+       objects(object_ind)%sum_blk_double_1 (:) + objects(object_ind)%sum_double_1 (:)
+  objects(object_av_ind)%pointer_double_1 (:) = &
+       objects(object_ind)%sum_blk_double_1 (:) / walker_weights_sum
   call object_modified_by_index (object_av_ind)
 
 ! reinitialization of sum for each block
@@ -2786,22 +2938,31 @@ module average_mod
     call object_associated_or_die_by_index (object_av_ind)
 
 !   test dimensions
-    if (size(objects(object_ind)%dimensions) - 1 /= size(objects(object_av_ind)%dimensions) .or. size(objects(object_bav_ind)%dimensions) /= size(objects(object_av_ind)%dimensions)) then
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_ind)%name),' is of dimension ',size(objects(object_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
-      write(6,'(4a,i3)') trim(lhere),': object ',trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
+    if (size(objects(object_ind)%dimensions) - 1 /= &
+         size(objects(object_av_ind)%dimensions) .or. &
+         size(objects(object_bav_ind)%dimensions) /= &
+         size(objects(object_av_ind)%dimensions)) then
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_ind)%name),' is of dimension ',&
+           size(objects(object_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_bav_ind)%name),' is of dimension ',size(objects(object_bav_ind)%dimensions)
+      write(6,'(4a,i3)') trim(lhere),': object ',&
+           trim(objects(object_av_ind)%name),' is of dimension ',size(objects(object_av_ind)%dimensions)
       call die (lhere)
     endif
 
 !  initialization for first block
-     call alloc ('objects(object_ind)%sum_blk_double_2', objects(object_ind)%sum_blk_double_2, objects(object_ind)%dimensions(1),objects(object_ind)%dimensions(2))
+     call alloc ('objects(object_ind)%sum_blk_double_2', &
+          objects(object_ind)%sum_blk_double_2, objects(object_ind)%dimensions(1),objects(object_ind)%dimensions(2))
      objects(object_ind)%sum_blk_double_2 (:,:) = 0.d0
    endif
 
 # if defined (MPI)
 !   sum values from all processes
     call alloc ('collect', collect, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
-    call mpi_allreduce(objects(object_ind)%sum_double_2,collect,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    call mpi_allreduce(objects(object_ind)%sum_double_2,collect,&
+         objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
      if (ierr /= 0) then
         call die (lhere, 'error in mpi_allreduce')
      endif
@@ -2840,13 +3001,17 @@ module average_mod
    write(6,'(a)') 'The following averages will be calculated:'
    do ind = 1, averages_nb
     if (averages_object_index (ind) /= 0) then
-     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
+     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,&
+          ' = average of ', trim(objects(averages_object_index (ind))%name)
     else
-     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average associated with block average ', trim(objects(averages_object_bav_index (ind))%name)
+     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,&
+          ' = average associated with block average ', &
+          trim(objects(averages_object_bav_index (ind))%name)
     endif
    enddo
    do ind = 1, averages_walk_nb
-    write(6,'(4a)') '- ', objects(averages_walk_object_av_index (ind))%name,' = average of ', trim(objects(averages_walk_object_index (ind))%name)
+    write(6,'(4a)') '- ', objects(averages_walk_object_av_index (ind))%name,&
+         ' = average of ', trim(objects(averages_walk_object_index (ind))%name)
    enddo
   endif
 
@@ -2854,7 +3019,8 @@ module average_mod
    write(6,*)
    write(6,'(a)') 'The following variances will be calculated:'
    do ind = 1, variances_nb
-    write(6,'(4a)') '- ', objects(variances_object_var_index (ind))%name,' = variance of average ', trim(objects(variances_object_av_index (ind))%name)
+    write(6,'(4a)') '- ', objects(variances_object_var_index (ind))%name,&
+         ' = variance of average ', trim(objects(variances_object_av_index (ind))%name)
    enddo
   endif
 
@@ -2862,7 +3028,9 @@ module average_mod
    write(6,*)
    write(6,'(a)') 'The following covariances will be calculated:'
    do ind = 1, covariances_nb
-    write(6,'(6a)') '- ', objects(covariances_object_covar_index (ind))%name,' = covariance of averages ', trim(objects(covariances_object_av1_index (ind))%name), ' and ',trim(objects(covariances_object_av2_index (ind))%name)
+    write(6,'(6a)') '- ', objects(covariances_object_covar_index (ind))%name,&
+         ' = covariance of averages ', trim(objects(covariances_object_av1_index (ind))%name),&
+         ' and ',trim(objects(covariances_object_av2_index (ind))%name)
    enddo
   endif
 
@@ -2871,9 +3039,13 @@ module average_mod
    write(6,'(a)') 'The following statistical errors will be calculated:'
    do ind = 1, errors_nb
     if (errors_object_av_index (ind) /= 0) then
-     write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error of average ', trim(objects(errors_object_av_index (ind))%name)
+     write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,&
+          ' = statistical error of average ',&
+          trim(objects(errors_object_av_index (ind))%name)
     else
-     write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,' = statistical error associated with variance ', trim(objects(errors_object_var_index (ind))%name)
+     write(6,'(4a)') '- ', objects(errors_object_err_index (ind))%name,&
+          ' = statistical error associated with variance ', &
+          trim(objects(errors_object_var_index (ind))%name)
     endif
    enddo
   endif
@@ -2913,9 +3085,12 @@ module average_mod
     object_type = objects(object_ind)%type
 
     if (trim(object_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is unknown'
-      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
-      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_ind)%name),' is unknown'
+      write(6,*) trim(lhere),&
+           ': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),&
+           ': by using either object_alloc or object_associate'
       call die (lhere)
     endif
 
@@ -2924,11 +3099,13 @@ module average_mod
      call object_block_average_by_index_double_0 (object_ind, object_bav_ind)
 
     elseif (trim(object_type) == 'double_1') then
-     call object_associate_by_index_double_1 (object_bav_ind, objects(object_ind)%dimensions(1))
+     call object_associate_by_index_double_1 (object_bav_ind, &
+          objects(object_ind)%dimensions(1))
      call object_block_average_by_index_double_1 (object_ind, object_bav_ind)
 
     elseif (trim(object_type) == 'double_2') then
-     call object_associate_by_index_double_2 (object_bav_ind, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
+     call object_associate_by_index_double_2 (object_bav_ind, &
+          objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
      call object_block_average_by_index_double_2 (object_ind, object_bav_ind)
 
     else
@@ -2966,8 +3143,10 @@ module average_mod
     object_type = objects(object_bav_ind)%type
 
     if (trim(object_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_bav_ind)%name),' is unknown'
-      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_bav_ind)%name),' is unknown'
+      write(6,*) trim(lhere),&
+           ': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
     endif
@@ -3023,7 +3202,8 @@ module average_mod
     object_type = objects(object_ind)%type
 
     if (trim(object_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_ind)%name),' is unknown'
       write(6,*) trim(lhere),': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
@@ -3081,8 +3261,10 @@ module average_mod
     object_av_type = objects(object_av_ind)%type
 
     if (trim(object_av_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is unknown'
-      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_av_ind)%name),' is unknown'
+      write(6,*) trim(lhere),&
+           ': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
     endif
@@ -3099,7 +3281,8 @@ module average_mod
 
     elseif (trim(object_av_type) == 'double_2') then
 
-      call object_associate_by_index_double_2 (object_var_ind, objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
+      call object_associate_by_index_double_2 (object_var_ind, &
+           objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
       call object_variance_by_index_double_2 (object_av_ind, object_var_ind)
 
     else
@@ -3132,7 +3315,9 @@ module average_mod
     object_av1_ind = covariances_object_av1_index (ind)
     object_av2_ind = covariances_object_av2_index (ind)
     object_covar_ind = covariances_object_covar_index (ind)
-!    write(6,'(6a)') 'computing covariance >',trim(objects(object_covar_ind)%name),'< of averages >',trim(objects(object_av1_ind)%name),'< and >',trim(objects(object_av2_ind)%name),'<'
+!    write(6,'(6a)') 'computing covariance >',trim(objects(object_covar_ind)&
+!    %name),'< of averages >',trim(objects(object_av1_ind)%name),'< and >',&
+!    trim(objects(object_av2_ind)%name),'<'
 
     call object_provide_by_index (object_av1_ind)
     call object_provide_by_index (object_av2_ind)
@@ -3142,41 +3327,59 @@ module average_mod
     object_covar_type = objects(object_covar_ind)%type
 
     if (trim(object_av1_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_av1_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_av1_ind)%name),' is unknown'
       write(6,*) trim(lhere),': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
     endif
     if (trim(object_av2_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_av2_ind)%name),' is unknown'
-      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_av2_ind)%name),' is unknown'
+      write(6,*) trim(lhere),&
+           ': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
     endif
     if (trim(object_covar_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_covar_ind)%name),' is unknown'
-      write(6,*) trim(lhere),': the object name has probably not be associated with a address'
-      write(6,*) trim(lhere),': by using either object_alloc or object_associate'
+      write(6,*) trim(lhere),&
+           ': type of object ',trim(objects(object_covar_ind)%name),' is unknown'
+      write(6,*) trim(lhere),&
+           ': the object name has probably not be associated with a address'
+      write(6,*) trim(lhere),&
+           ': by using either object_alloc or object_associate'
       call die (lhere)
     endif
 
-    if (trim(object_av1_type) == 'double_0' .and. trim(object_av2_type) == 'double_0') then
-      call object_covariance_by_index_double_0_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
+    if (trim(object_av1_type) == 'double_0' .and. &
+         trim(object_av2_type) == 'double_0') then
+      call object_covariance_by_index_double_0_double_0 &
+           (object_av1_ind, object_av2_ind, object_covar_ind)
 
-    elseif (trim(object_av1_type) == 'double_1' .and. trim(object_av2_type) == 'double_0') then
-      call object_covariance_by_index_double_1_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
+    elseif (trim(object_av1_type) == 'double_1' .and. &
+         trim(object_av2_type) == 'double_0') then
+      call object_covariance_by_index_double_1_double_0 &
+           (object_av1_ind, object_av2_ind, object_covar_ind)
 
-    elseif (trim(object_av1_type) == 'double_0' .and. trim(object_av2_type) == 'double_1') then
-      call object_covariance_by_index_double_0_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+    elseif (trim(object_av1_type) == 'double_0' .and. &
+         trim(object_av2_type) == 'double_1') then
+      call object_covariance_by_index_double_0_double_1&
+           (object_av1_ind, object_av2_ind, object_covar_ind)
 
-    elseif (trim(object_av1_type) == 'double_1' .and. trim(object_av2_type) == 'double_1' .and. trim(object_covar_type) == 'double_1') then
-      call object_covariance_by_index_double_1_double_1_double_1 (object_av1_ind, object_av2_ind, object_covar_ind)
+    elseif (trim(object_av1_type) == 'double_1' .and. &
+         trim(object_av2_type) == 'double_1' .and. trim(object_covar_type) == &
+         'double_1') then
+      call object_covariance_by_index_double_1_double_1_double_1 &
+           (object_av1_ind, object_av2_ind, object_covar_ind)
 
-    elseif (trim(object_av1_type) == 'double_1' .and. trim(object_av2_type) == 'double_1' .and. trim(object_covar_type) == 'double_2') then
-      call object_covariance_by_index_double_1_double_1_double_2 (object_av1_ind, object_av2_ind, object_covar_ind)
+    elseif (trim(object_av1_type) == 'double_1' .and. trim(object_av2_type) == &
+         'double_1' .and. trim(object_covar_type) == 'double_2') then
+      call object_covariance_by_index_double_1_double_1_double_2 &
+           (object_av1_ind, object_av2_ind, object_covar_ind)
 
     else
-     call die (lhere, 'objects types >'+trim(object_av1_type)+'<, >'+trim(object_av2_type)+'< and >'+trim(object_covar_type)+'< not handled.')
+     call die (lhere, 'objects types >'+trim(object_av1_type)+'<, >'+&
+          trim(object_av2_type)+'< and >'+trim(object_covar_type)+'< not handled.')
     endif
 
   enddo ! ind
@@ -3209,7 +3412,8 @@ module average_mod
     object_var_type = objects(object_var_ind)%type
 
     if (trim(object_var_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_var_ind)%name),' is unknown'
       write(6,*) trim(lhere),': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
@@ -3278,7 +3482,8 @@ module average_mod
 
     object_type = objects(object_ind)%type
     if (trim(object_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_ind)%name),' is unknown'
       write(6,*) trim(lhere),': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
@@ -3348,7 +3553,8 @@ module average_mod
 
     object_type = objects(object_ind)%type
     if (trim(object_type) == '') then
-      write(6,*) trim(lhere),': type of object ',trim(objects(object_ind)%name),' is unknown'
+      write(6,*) trim(lhere),': type of object ',&
+           trim(objects(object_ind)%name),' is unknown'
       write(6,*) trim(lhere),': the object name has probably not be associated with a address'
       write(6,*) trim(lhere),': by using either object_alloc or object_associate'
       call die (lhere)
@@ -3356,15 +3562,20 @@ module average_mod
 
      if (trim(object_type) == 'double_1') then
       call object_associate_by_index_double_0 (object_bav_ind)
-      call object_average_walk_block_by_index_double_0 (object_ind, object_bav_ind, object_av_ind)
+      call object_average_walk_block_by_index_double_0 &
+           (object_ind, object_bav_ind, object_av_ind)
 
      elseif (trim(object_type) == 'double_2') then
-      call object_associate_by_index_double_1 (object_bav_ind, objects(object_av_ind)%dimensions(1))
-      call object_average_walk_block_by_index_double_1 (object_ind, object_bav_ind, object_av_ind)
+      call object_associate_by_index_double_1 &
+           (object_bav_ind, objects(object_av_ind)%dimensions(1))
+      call object_average_walk_block_by_index_double_1 &
+           (object_ind, object_bav_ind, object_av_ind)
 
      elseif (trim(object_type) == 'double_3') then
-      call object_associate_by_index_double_2 (object_bav_ind, objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
-      call object_average_walk_block_by_index_double_2 (object_ind, object_bav_ind, object_av_ind)
+      call object_associate_by_index_double_2 (object_bav_ind, &
+           objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
+      call object_average_walk_block_by_index_double_2 &
+           (object_ind, object_bav_ind, object_av_ind)
 
      else
       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
