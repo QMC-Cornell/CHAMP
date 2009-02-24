@@ -274,17 +274,11 @@ module objects_mod
 ! if object not found, die
   if (object_ind == 0) then
       write(6,*)
-      write(6,'(4a)') trim(lhere),': object >',&
-           trim(object_name),'< not catalogued. You should check that:'
-      write(6,'(4a)') trim(lhere),&
-           ': - this object has been declared as created object of a node, i.e. call object_create ('&
-           ,trim(object_name),')'
-      write(6,'(2a)') trim(lhere),&
-           ': - the creating node of this object has been catalogued in catalog_routines_mod.f90, i.e. call catalog_one_node (...)'
+      write(6,'(4a)') trim(lhere),': object >',trim(object_name),'< not catalogued. You should check that:'
+      write(6,'(4a)') trim(lhere),': - this object has been declared as created object of a node, i.e. call object_create (',trim(object_name),')'
+      write(6,'(2a)') trim(lhere),': - the creating node of this object has been catalogued in catalog_routines_mod.f90, i.e. call catalog_one_node (...)'
       write(6,'(2a)') trim(lhere),': or that'
-      write(6,'(4a)') trim(lhere),&
-           ': - this object has at least been declared as an object using call object_modified (',&
-           trim(object_name),')'
+      write(6,'(4a)') trim(lhere),': - this object has at least been declared as an object using call object_modified (',trim(object_name),')'
       call die (lhere)
   endif
 
@@ -449,11 +443,8 @@ module objects_mod
   object_ind_local = object_index (object_name)
   if (object_ind_local /= 0 ) then
      if (objects(object_ind_local)%node_create_index /= 0) then
-       write(6,'(4a)') trim(lhere),': object >', trim(object_name),&
-            '< created at more than one place:'
-       write(6,'(6a)') trim(lhere),': first at node >',&
-            trim(nodes(objects(object_ind_local)%node_create_index)%routine_name),&
-            '< and then again at node >',trim(nodes(node_current_index)%routine_name),'<'
+       write(6,'(4a)') trim(lhere),': object >', trim(object_name),'< created at more than one place:'
+       write(6,'(6a)') trim(lhere),': first at node >',trim(nodes(objects(object_ind_local)%node_create_index)%routine_name),'< and then again at node >',trim(nodes(node_current_index)%routine_name),'<'
        call die (lhere)
      endif
   endif
@@ -461,9 +452,7 @@ module objects_mod
 ! check if object_ind not already set
   if (present(object_ind)) then
    if (object_ind /= 0 ) then
-     write(6,'(4a,i3)') trim(lhere),&
-          ': on entering the subroutine object_create, object ',&
-          trim(object_name),' has already a defined index different from 0'
+     write(6,'(4a,i3)') trim(lhere),': on entering the subroutine object_create, object ', trim(object_name),' has already a defined index different from 0'
      write(6,'(2a,i3)') trim(lhere),': object_ind= ',object_ind
      call die (lhere)
    endif
@@ -475,9 +464,7 @@ module objects_mod
 ! check if the current created object is not as the same time a needed object of the same node!
   do obj_i = 1, mysize(nodes(node_current_index)%objects_needed_index)
     if (object_ind_local == nodes(node_current_index)%objects_needed_index (obj_i) ) then
-      write(6,'(5a)') trim(lhere),': object ', &
-           trim(object_name),' is needed and created by the same node ',&
-           trim(nodes(node_current_index)%routine_name)
+      write(6,'(5a)') trim(lhere),': object ', trim(object_name),' is needed and created by the same node ', trim(nodes(node_current_index)%routine_name)
       call die (lhere)
     endif
   enddo
@@ -528,9 +515,7 @@ module objects_mod
 ! check if the current needed object is not as the same time a created object of the same node!
   do obj_i = 1, mysize(nodes(node_current_index)%objects_create_index)
     if (object_ind == nodes(node_current_index)%objects_create_index (obj_i) ) then
-      call die (lhere, 'object >'+trim(object_name)+&
-           '< is needed and created by the same node >'&
-           +trim(nodes(node_current_index)%routine_name)+'<.')
+      call die (lhere, 'object >'+trim(object_name)+'< is needed and created by the same node >'+trim(nodes(node_current_index)%routine_name)+'<.')
     endif
   enddo
 
@@ -724,14 +709,11 @@ module objects_mod
 ! if object has no create node, die
   if (objects(object_index)%node_create_index == 0) then
     write(6,*)
-    write(6,'(4a)') trim(lhere),': object ', trim(objects(object_index)%name),&
-         ' is marked as not valid and cannot be provided since it does not have a catalogued creating node.'
+    write(6,'(4a)') trim(lhere),': object ', trim(objects(object_index)%name),' is marked as not valid and cannot be provided since it does not have a catalogued creating node.'
     if (trim(here) /= 'undefined') then
-     write(6,'(4a)') trim(lhere),': This object is asked in routine ',&
-          trim(here),'.'
+     write(6,'(4a)') trim(lhere),': This object is asked in routine ',trim(here),'.'
     endif
-    write(6,'(2a)') trim(lhere),&
-         ': Check that this object is declared as created in a node and that this node is catalogued in catalog_routines_mod.f90.'
+    write(6,'(2a)') trim(lhere),': Check that this object is declared as created in a node and that this node is catalogued in catalog_routines_mod.f90.'
     call die (lhere)
   endif
 
@@ -759,12 +741,8 @@ module objects_mod
 
 ! if object not catalogued, die
    if (object_ind == 0) then
-     write(6,'(4a,i3)') trim(lhere),': in routine ', &
-          trim(nodes(node_ind)%routine_name),&
-          ', an object is asked but has an undefined index = ', object_ind
-     write(6,'(2a)') trim(lhere),&
-          ': most likely the index of this object has not been given in its ',&
-          ' creation routine: call object_create (object_name, object_index)'
+     write(6,'(4a,i3)') trim(lhere),': in routine ', trim(nodes(node_ind)%routine_name),', an object is asked but has an undefined index = ', object_ind
+     write(6,'(2a)') trim(lhere),': most likely the index of this object has not been given in its creation routine: call object_create (object_name, object_index)'
      call die (lhere)
    endif
 
@@ -810,14 +788,9 @@ module objects_mod
 ! if object has no create node, die
   if (objects(object_index)%node_create_index == 0) then
     write(6,*)
-    write(6,'(4a)') trim(lhere),': object >',trim(objects(object_index)%name),&
-         '< is marked as not valid and cannot be provided since it ',&
-         ' does not have a catalogued creating node.'
-    write(6,'(4a)') trim(lhere),': This object is asked by node >'&
-         ,trim(node_name),'<.'
-    write(6,'(2a)') trim(lhere),&
-         ': Check that this object is declared as created in a node and that ',&
-         ' this node is catalogued in catalog_routines_mod.f90'
+    write(6,'(4a)') trim(lhere),': object >',trim(objects(object_index)%name),'< is marked as not valid and cannot be provided since it does not have a catalogued creating node.'
+    write(6,'(4a)') trim(lhere),': This object is asked by node >',trim(node_name),'<.'
+    write(6,'(2a)') trim(lhere),': Check that this object is declared as created in a node and that this node is catalogued in catalog_routines_mod.f90'
     call die (lhere)
   endif
 
@@ -2433,9 +2406,7 @@ module objects_mod
    object_dim3 = size(object,3)
    object_dim4 = size(object,4)
    object_dim5 = size(object,5)
-   if (object_dim1 /= dim1 .or. object_dim2 /= dim2 .or. &
-        object_dim3 /= dim3 .or. object_dim4 /= dim4 .or. object_dim5 /= dim5)&
-        then
+   if (object_dim1 /= dim1 .or. object_dim2 /= dim2 .or. object_dim3 /= dim3 .or. object_dim4 /= dim4 .or. object_dim5 /= dim5) then
     dim_min1 =  min(object_dim1, dim1)
     dim_min2 =  min(object_dim2, dim2)
     dim_min3 =  min(object_dim3, dim3)
@@ -3070,9 +3041,7 @@ module objects_mod
    dim2 = objects(object_ind)%dimensions(2)
    do i = 1, dim1
     do j = 1, dim2
-      write(6,'(4a,i3,a,i3,a,es15.8)') trim(routine_name),': ',&
-           trim(object_name),'(',i,',',j,')=' ,&
-           objects(object_ind)%pointer_double_2(i,j)
+      write(6,'(4a,i3,a,i3,a,es15.8)') trim(routine_name),': ',trim(object_name),'(',i,',',j,')=' ,objects(object_ind)%pointer_double_2(i,j)
     enddo
    enddo
 
@@ -3163,9 +3132,7 @@ module objects_mod
 
   select case (trim(object_type1))
    case ('double_0')
-   write(6,'(2a,es15.8,3a,es15.8)') trim(object_name1),'=' ,&
-        objects(object_ind1)%pointer_double_0, ' ', trim(object_name2),&
-        '=' ,objects(object_ind2)%pointer_double_0
+   write(6,'(2a,es15.8,3a,es15.8)') trim(object_name1),'=' ,objects(object_ind1)%pointer_double_0, ' ', trim(object_name2),'=' ,objects(object_ind2)%pointer_double_0
 
    case ('double_1')
    dim11 = objects(object_ind1)%dimensions(1)
@@ -3177,10 +3144,7 @@ module objects_mod
     call die (lhere)
    endif
    do i = 1, dim11
-     write(6,'(2a,i4,a,es15.8,3a,i4,a,es15.8)') trim(object_name1),&
-          '(',i,')=' ,objects(object_ind1)%pointer_double_1(i) , &
-          ' ',trim(object_name2),'(',i,')=' ,&
-          objects(object_ind2)%pointer_double_1(i)
+     write(6,'(2a,i4,a,es15.8,3a,i4,a,es15.8)') trim(object_name1),'(',i,')=' ,objects(object_ind1)%pointer_double_1(i) , ' ',trim(object_name2),'(',i,')=' ,objects(object_ind2)%pointer_double_1(i)
    enddo
 
    case ('double_2')
@@ -3196,10 +3160,7 @@ module objects_mod
    endif
    do i = 1, dim11
     do j = 1, dim21
-      write(6,'(2a,i4,a,i4,a,es15.8,3a,i4,a,i4,a,es15.8)') trim(object_name1),&
-           '(',i,',',j,')=' ,objects(object_ind1)%pointer_double_2(i,j), ' ',&
-           trim(object_name2),'(',i,',',j,')=' ,&
-           objects(object_ind2)%pointer_double_1(i)
+      write(6,'(2a,i4,a,i4,a,es15.8,3a,i4,a,i4,a,es15.8)') trim(object_name1),'(',i,',',j,')=' ,objects(object_ind1)%pointer_double_2(i,j), ' ',trim(object_name2),'(',i,',',j,')=' ,objects(object_ind2)%pointer_double_1(i)
     enddo
    enddo
 
@@ -3219,11 +3180,7 @@ module objects_mod
    do i = 1, dim11
     do j = 1, dim21
      do k = 1, dim31
-      write(6,'(2a,i4,a,i4,a,i4,a,es15.8,3a,i4,a,i4,a,i4,a,es15.8)') &
-           trim(object_name1),'(',i,',',j,',',k,')=' ,&
-           objects(object_ind1)%pointer_double_3(i,j,k), ' ',&
-           trim(object_name2),'(',i,',',j,',',k,')=' ,&
-           objects(object_ind2)%pointer_double_3(i,j,k)
+      write(6,'(2a,i4,a,i4,a,i4,a,es15.8,3a,i4,a,i4,a,i4,a,es15.8)') trim(object_name1),'(',i,',',j,',',k,')=' ,objects(object_ind1)%pointer_double_3(i,j,k), ' ',trim(object_name2),'(',i,',',j,',',k,')=' ,objects(object_ind2)%pointer_double_3(i,j,k)
      enddo
     enddo
    enddo
@@ -3241,10 +3198,7 @@ module objects_mod
    endif
    do i = 1, dim11
     do j = 1, dim21
-      write(6,'(2a,i3,a,i3,a,i8,2a,i3,a,i3,a,i8)') trim(object_name1),&
-           '(',i,',',j,')=' ,objects(object_ind1)%pointer_integer_2(i,j), &
-           trim(object_name2),'(',i,',',j,')=' ,&
-           objects(object_ind2)%pointer_integer_2(i,j)
+      write(6,'(2a,i3,a,i3,a,i8,2a,i3,a,i3,a,i8)') trim(object_name1),'(',i,',',j,')=' ,objects(object_ind1)%pointer_integer_2(i,j), trim(object_name2),'(',i,',',j,')=' ,objects(object_ind2)%pointer_integer_2(i,j)
     enddo
    enddo
 
@@ -3300,8 +3254,7 @@ module objects_mod
    do k = 1, objects(object_ind)%dimensions(3)
     do j = 1, objects(object_ind)%dimensions(2)
      do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,&
-           ',',k,')=' ,objects(object_ind)%pointer_double_3(i,j,k)
+      write(6,'(2a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,',',k,')=' ,objects(object_ind)%pointer_double_3(i,j,k)
      enddo
     enddo
    enddo
@@ -3311,9 +3264,7 @@ module objects_mod
     do k = 1, objects(object_ind)%dimensions(3)
      do j = 1, objects(object_ind)%dimensions(2)
       do i = 1, objects(object_ind)%dimensions(1)
-      write(6,'(2a,i3,a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),&
-           '(',i,',',j,',',k,',',l,')=' &
-           ,objects(object_ind)%pointer_double_4(i,j,k,l)
+      write(6,'(2a,i3,a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,',',k,',',l,')=' ,objects(object_ind)%pointer_double_4(i,j,k,l)
       enddo
      enddo
     enddo
@@ -3325,8 +3276,7 @@ module objects_mod
      do k = 1, objects(object_ind)%dimensions(3)
       do j = 1, objects(object_ind)%dimensions(2)
        do i = 1, objects(object_ind)%dimensions(1)
-       write(6,'(2a,i3,a,i3,a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),&
-            '(',i,',',j,',',k,',',l,',',m,')=' ,objects(object_ind)%pointer_double_5(i,j,k,l,m)
+       write(6,'(2a,i3,a,i3,a,i3,a,i3,a,i3,a,es15.8)') trim(object_name),'(',i,',',j,',',k,',',l,',',m,')=' ,objects(object_ind)%pointer_double_5(i,j,k,l,m)
        enddo
       enddo
      enddo

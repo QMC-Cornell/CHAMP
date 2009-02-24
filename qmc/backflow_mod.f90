@@ -3,9 +3,7 @@ module backflow_mod
   use constants_mod    !give access to various common blocks
   use basic_tools_mod, only: require, die
   use strings_tools_mod !require operator overloading of + to concatenate strings
-  use objects_mod, only: object_modified, object_create,  &
-             object_needed, object_alloc, object_provide, object_associate,  &
-             object_provide_in_node
+  use objects_mod, only: object_modified, object_create, object_needed, object_alloc, object_provide, object_associate, object_provide_in_node
   use nodes_mod, only: header_exe
   use variables_mod, only: spin_nb
   use electrons_mod, only: dist_en_wlk, vec_en_xyz_wlk, vec_ee_xyz_wlk, dist_ee_wlk
@@ -205,136 +203,46 @@ contains
        case ('help')
           write(6,'(a)') 'HELP for backflow menu'
           write(6,'(a)') ': backflow'
-          write(6,'(a)')  &
-             ': en_bf = [logical] : backflow transformation includes',&
-             ' electron-nuclear backflow (default=true)'
-          write(6,'(a)')  &
-             ': ee_bf = [logical] : backflow transformation includes ',&
-             ' electron-electron backflow (default=true)'
-          write(6,'(a)')  &
-             ': een_phi_bf = [logical] : backflow transformation includes ',&
-             'electron-electron-nuclear phi backflow (default=true)'
-          write(6,'(a)')  &
-             ': een_theta_bf = [logical] : backflow transformation includes ',&
-             ' electron-electron-nuclear theta backflow (default=true)'
-          write(6,'(a)')  &
-            ': order_eta_bf = [integer] : order of expansion for eta function',&
-            ' in the electron-electron backflow'
-          write(6,'(a)')  &
-             ': order_mu_bf = [integer] : order of expansion for mu function ',&
-             ' in the electron-nuclear backflow'
-          write(6,'(a)')  &
-             ': order_phi_bf = [integer] : order of expansion for phi function',&
-             ' in the electron-electron-nuclear backflow'
-          write(6,'(a)')  &
-             ': order_theta_bf = [integer] : order of expansion for theta', &
-             ' function in the electron-electron-nuclear backflow'
-          write(6,'(a)')  &
-             ': isc_bf = [integer] : form of the scaling functions used ',&
-             ' in backflow functions mu, eta, phi, and theta. (default=isc)'
-          write(6,'(a)')  &
-             ': scalek_bf = [real(dp)] : scale factor used in the scaling ',&
-             ' functions. (default=scalek)'
-          write(6,'(a)')  &
-             ': mu_spin_dependent = [logical] : mu is spin dependent.', &
-             ' (default=true)'
-          write(6,'(a)')  &
-             ': eta_spin_dependence = [integer] :  1: up_up = down_down', &
-             '  = up_down '
-          write(6,'(a)')  &
-             ':                                    2: up_up = down_down', &
-             ' != up_down '
-          write(6,'(a)')  &
-             ':                                    3: up_up != down_down ',&
-             ' != up_down (default=3)'
-          write(6,'(a)')  &
-             ': phi_spin_dependence = [integer] :  1: up_up = ',&
-             ' down_down = up_down '
-          write(6,'(a)')  &
-             ':                                    2: up_up = ',&
-             ' down_down != up_down '
-          write(6,'(a)')  &
-             ':                                    3: up_up !=',&
-             '  down_down != up_down (default=3)'
-          write(6,'(a)')  &
-             ': theta_spin_dependence = [integer] :  1: up_up = ',&
-             ' down_down = up_down '
-          write(6,'(a)')  &
-             ':                                    2: up_up =',&
-             '  down_down != up_down '
-          write(6,'(a)')  &
-             ':                                    3: up_up !=',&
-             '  down_down != up_down (default=3)'
-          write(6,'(a)')  &
-             ': all_elec = [logical] : this is an all electron calculation'
-          write(6,'(a)')  &
-             ': threshold_l = [real(dp), rank-1 array] : ',&
-             ' threshold_l threshold_l(1) ... threshold_l(nctype) end'
-          write(6,'(a)')  &
-             '                This specifies the distance from a nucleus ',&
-             'beyond which the smooth_cutoff_g is equal to 1.'
-          write(6,'(a)')  &
-             ': read_d_param_mu = [real(dp), rank-1 array] : Note that this ',&
-             'will be reshaped into a rank-3 array of dimension ',&
-             ' (order_mu_bf + 1, nctype, spin_nb).'
-          write(6,'(a)')  &
-             '                                               Note the ',&
-             'order_mu_bf + 1 arises because of the definition of mu.'
-          write(6,'(a)')  &
-             '                                               The input ',&
-             ' for this option is the following: (for example ',&
-             ' order_mu_bf=1 nctype=2 spin_nb=2)'
-          write(6,'(a)')  &
-             '                                               read_d_param_mu ',&
-             ' (1,1,1)  (2,1,1)  (1,2,1)  (2,2,1) (1,1,2)  (2,1,2)  (1,2,2)  (2,2,2) end'
-          write(6,'(a)')  &
-             '                                               One final note:',&
-             ' if mu_spin_dependent=.false. then set final index to 1.'
-          write(6,'(a)')  &
-             ': read_c_param_eta = [real(dp), rank-1 array] : Note that this ',&
-             ' will be reshaped into a rank-2 array of dimension (order_eta_bf + 1, ',&
-             ' eta_spin_dependence).'
-          write(6,'(a)')  &
-             '                                               Note the ',&
-             ' order_eta_bf + 1 arises because of the definition of eta.'
-          write(6,'(a)')  &
-             '                                               The input for ',&
-             ' this option is the following: (for example order_eta_bf=1, ',&
-             ' eta_spin_dependence=2 )'
-          write(6,'(a)')  &
-             '                                               read_d_param_mu ',&
-             ' (1,1)  (2,1)  (1,2)  (2,2) end'
-          write(6,'(a)')  &
-             ': read_a_param_phi = [real(dp), rank-1 array] : Note that this ',&
-             'will be reshaped into a rank-3 array of dimension (nb_a_param_phi, ,nctype,',&
-             '  phi_spin_dependence).'
-          write(6,'(a)')  &
-             '                                                nb_a_param_phi ',&
-             'comes from the definition of phi and depends on order_phi_bf. This is ',&
-             'identical to the case of the three body jastrow. '
-          write(6,'(a)')  &
-             '                                               The input for', &
-             ' this option is the following: (for example order_phi_bf=3 =>', &
-             ' nb_a_param_phi=6, nctype=2 phi_spin_dependence=1 )'
-          write(6,'(a)')  &
-             '                                              read_a_param_phi ',&
-             '(1,1,1)  (2,1,1)  (3,1,1)  (4,1,1)  (5,1,1) (6,1,1) (1,2,1)  (2,2,1) ... end'
-          write(6,'(a)')  &
-            ': read_b_param_theta = [real(dp), rank-1 array] : Note that this',&
-            ' will be reshaped into a rank-3 array of dimension (nb_b_param_theta, ',&
-            ',nctype, theta_spin_dependence).'
-          write(6,'(a)')  &
-             '                                                ',&
-             'nb_b_param_theta comes from the definition of theta and depends on ',&
-             'order_theta_bf. This is identical to the case of the three body jastrow. '
-          write(6,'(a)') &
-            '                                                            The ',&
-            ' input for this option is the following: (for example ',&
-            ' order_theta_bf=3 => nb_b_param_theta=6,',&
-            ' nctype=2 theta_spin_dependence=1 )'
-          write(6,'(a)')  &
-          '                                               read_b_param_theta',&
-          ' (1,1,1)  (2,1,1)  (3,1,1)  (4,1,1)  (5,1,1) (6,1,1) (1,2,1)  (2,2,1) ... end'
+          write(6,'(a)') ': en_bf = [logical] : backflow transformation includes electron-nuclear backflow (default=true)'
+          write(6,'(a)') ': ee_bf = [logical] : backflow transformation includes electron-electron backflow (default=true)'
+          write(6,'(a)') ': een_phi_bf = [logical] : backflow transformation includes electron-electron-nuclear phi backflow (default=true)'
+          write(6,'(a)') ': een_theta_bf = [logical] : backflow transformation includes electron-electron-nuclear theta backflow (default=true)'
+          write(6,'(a)') ': order_eta_bf = [integer] : order of expansion for eta function in the electron-electron backflow'
+          write(6,'(a)') ': order_mu_bf = [integer] : order of expansion for mu function in the electron-nuclear backflow'
+          write(6,'(a)') ': order_phi_bf = [integer] : order of expansion for phi function in the electron-electron-nuclear backflow'
+          write(6,'(a)') ': order_theta_bf = [integer] : order of expansion for theta function in the electron-electron-nuclear backflow'
+          write(6,'(a)') ': isc_bf = [integer] : form of the scaling functions used in backflow functions mu, eta, phi, and theta. (default=isc)'
+          write(6,'(a)') ': scalek_bf = [real(dp)] : scale factor used in the scaling functions. (default=scalek)'
+          write(6,'(a)') ': mu_spin_dependent = [logical] : mu is spin dependent. (default=true)'
+          write(6,'(a)') ': eta_spin_dependence = [integer] :  1: up_up = down_down = up_down '
+          write(6,'(a)') ':                                    2: up_up = down_down != up_down '
+          write(6,'(a)') ':                                    3: up_up != down_down != up_down (default=3)'
+          write(6,'(a)') ': phi_spin_dependence = [integer] :  1: up_up = down_down = up_down '
+          write(6,'(a)') ':                                    2: up_up = down_down != up_down '
+          write(6,'(a)') ':                                    3: up_up != down_down != up_down (default=3)'
+          write(6,'(a)') ': theta_spin_dependence = [integer] :  1: up_up = down_down = up_down '
+          write(6,'(a)') ':                                    2: up_up = down_down != up_down '
+          write(6,'(a)') ':                                    3: up_up != down_down != up_down (default=3)'
+          write(6,'(a)') ': all_elec = [logical] : this is an all electron calculation'
+          write(6,'(a)') ': threshold_l = [real(dp), rank-1 array] : threshold_l threshold_l(1) ... threshold_l(nctype) end'
+          write(6,'(a)') '                This specifies the distance from a nucleus beyond which the smooth_cutoff_g is equal to 1.'
+          write(6,'(a)') ': read_d_param_mu = [real(dp), rank-1 array] : Note that this will be reshaped into a rank-3 array of dimension (order_mu_bf + 1, nctype, spin_nb).'
+          write(6,'(a)') '                                               Note the order_mu_bf + 1 arises because of the definition of mu.'
+          write(6,'(a)') '                                               The input for this option is the following: (for example order_mu_bf=1 nctype=2 spin_nb=2)'
+          write(6,'(a)') '                                               read_d_param_mu (1,1,1)  (2,1,1)  (1,2,1)  (2,2,1) (1,1,2)  (2,1,2)  (1,2,2)  (2,2,2) end'
+          write(6,'(a)') '                                               One final note: if mu_spin_dependent=.false. then set final index to 1.'
+          write(6,'(a)') ': read_c_param_eta = [real(dp), rank-1 array] : Note that this will be reshaped into a rank-2 array of dimension (order_eta_bf + 1, eta_spin_dependence).'
+          write(6,'(a)') '                                               Note the order_eta_bf + 1 arises because of the definition of eta.'
+          write(6,'(a)') '                                               The input for this option is the following: (for example order_eta_bf=1, eta_spin_dependence=2 )'
+          write(6,'(a)') '                                               read_d_param_mu (1,1)  (2,1)  (1,2)  (2,2) end'
+          write(6,'(a)') ': read_a_param_phi = [real(dp), rank-1 array] : Note that this will be reshaped into a rank-3 array of dimension (nb_a_param_phi, ,nctype, phi_spin_dependence).'
+          write(6,'(a)') '                                                nb_a_param_phi comes from the definition of phi and depends on order_phi_bf. This is identical to the case of the three body jastrow. '
+          write(6,'(a)') '                                               The input for this option is the following: (for example order_phi_bf=3 => nb_a_param_phi=6, nctype=2 phi_spin_dependence=1 )'
+          write(6,'(a)') '                                               read_a_param_phi (1,1,1)  (2,1,1)  (3,1,1)  (4,1,1)  (5,1,1) (6,1,1) (1,2,1)  (2,2,1) ... end'
+          write(6,'(a)') ': read_b_param_theta = [real(dp), rank-1 array] : Note that this will be reshaped into a rank-3 array of dimension (nb_b_param_theta, ,nctype, theta_spin_dependence).'
+          write(6,'(a)') '                                                nb_b_param_theta comes from the definition of theta and depends on order_theta_bf. This is identical to the case of the three body jastrow. '
+          write(6,'(a)') '                                               The input for this option is the following: (for example order_theta_bf=3 => nb_b_param_theta=6, nctype=2 theta_spin_dependence=1 )'
+          write(6,'(a)') '                                               read_b_param_theta (1,1,1)  (2,1,1)  (3,1,1)  (4,1,1)  (5,1,1) (6,1,1) (1,2,1)  (2,2,1) ... end'
           write(6,'(a)') ': end'
 
 
@@ -552,9 +460,7 @@ contains
           do cent_i = 1, ncent
              do elec_i = 1, nelec  !note that the first nup electrons have spin-up
                 do dim_i = 1, ndim
-                   xi_en(dim_i, elec_i, walk_i) = xi_en(dim_i, elec_i, walk_i) &
-                        + mu_all_elec(elec_i, cent_i, walk_i) * &
-                       vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
+                   xi_en(dim_i, elec_i, walk_i) = xi_en(dim_i, elec_i, walk_i) + mu_all_elec(elec_i, cent_i, walk_i) * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
                 enddo
              enddo
           enddo
@@ -573,9 +479,7 @@ contains
           do cent_i = 1, ncent
              do elec_i = 1, nelec  !note that the first nup electrons have spin-up
                 do dim_i = 1, ndim
-                   xi_en(dim_i, elec_i, walk_i) = xi_en(dim_i, elec_i, walk_i) &
-                        + mu_pseudo(elec_i, cent_i, walk_i)  &
-                        * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
+                   xi_en(dim_i, elec_i, walk_i) = xi_en(dim_i, elec_i, walk_i) + mu_pseudo(elec_i, cent_i, walk_i) * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
                 enddo
              enddo
           enddo
@@ -654,17 +558,10 @@ contains
           !loop over up-spin electrons
           do elec_i = 1, nup
              !pade term of mu_all_elec
-             mu_all_elec(elec_i, cent_i, walk_i) = d_param_mu_all_elec(1, &
-                  iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i,&
-                  walk_i) / (1.d0 + d_param_mu_all_elec(2, &
-                  iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, &
-                  cent_i, walk_i))
+             mu_all_elec(elec_i, cent_i, walk_i) = d_param_mu_all_elec(1, iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i, walk_i) / (1.d0 + d_param_mu_all_elec(2, iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i, walk_i))
              !power series terms of mu_all_elec
              do order_i=2, order_mu_bf
-                mu_all_elec(elec_i, cent_i, walk_i) = mu_all_elec(elec_i, &
-                       cent_i, walk_i) + d_param_mu_all_elec(order_i + 1, &
-                       iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, &
-                       cent_i, walk_i)**order_i
+                mu_all_elec(elec_i, cent_i, walk_i) = mu_all_elec(elec_i, cent_i, walk_i) + d_param_mu_all_elec(order_i + 1, iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i, walk_i)**order_i
              enddo
           enddo
        enddo
@@ -679,17 +576,10 @@ contains
           !loop over down-spin electrons: nup+1 to nelec
           do elec_i = nup+1, nelec
              !pade term of mu_all_elec
-             mu_all_elec(elec_i, cent_i, walk_i) = d_param_mu_all_elec(1, &
-                       iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i) / (1.d0 + d_param_mu_all_elec(2, &
-                       iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i))
+             mu_all_elec(elec_i, cent_i, walk_i) = d_param_mu_all_elec(1, iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, cent_i, walk_i) / (1.d0 + d_param_mu_all_elec(2, iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, cent_i, walk_i))
              !power series terms of mu_all_elec
              do order_i=2, order_mu_bf
-                mu_all_elec(elec_i, cent_i, walk_i) = mu_all_elec(elec_i, &
-                       cent_i, walk_i) + d_param_mu_all_elec(order_i + 1, &
-                       iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i)**order_i
+                mu_all_elec(elec_i, cent_i, walk_i) = mu_all_elec(elec_i, cent_i, walk_i) + d_param_mu_all_elec(order_i + 1, iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, cent_i, walk_i)**order_i
              enddo
           enddo
        enddo
@@ -700,12 +590,10 @@ contains
     !apply smooth cutoff function g
     do cent_i=1, ncent
        do prod_i=1, cent_i-1
-          mu_all_elec(:,cent_i,:) = mu_all_elec(:,cent_i,:) * &
-                       smooth_cutoff_g(:,prod_i,:)
+          mu_all_elec(:,cent_i,:) = mu_all_elec(:,cent_i,:) * smooth_cutoff_g(:,prod_i,:)
        end do
        do prod_i=cent_i+1, ncent
-          mu_all_elec(:,cent_i,:) = mu_all_elec(:,cent_i,:) * &
-                       smooth_cutoff_g(:,prod_i,:)
+          mu_all_elec(:,cent_i,:) = mu_all_elec(:,cent_i,:) * smooth_cutoff_g(:,prod_i,:)
        end do
     end do
 
@@ -780,17 +668,10 @@ contains
           !loop over up-spin electrons
           do elec_i = 1, nup
              !pade term of mu_pseudo
-             mu_pseudo(elec_i, cent_i, walk_i) = d_param_mu_pseudo(1, &
-                       iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i) / (1.d0 + d_param_mu_pseudo(2, &
-                       iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i))
+             mu_pseudo(elec_i, cent_i, walk_i) = d_param_mu_pseudo(1, iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i, walk_i) / (1.d0 + d_param_mu_pseudo(2, iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i, walk_i))
              !power series terms of mu_pseudo
              do order_i=2, order_mu_bf
-                mu_pseudo(elec_i, cent_i, walk_i) = mu_pseudo(elec_i, &
-                       cent_i, walk_i) + d_param_mu_pseudo(order_i + 1, &
-                       iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i)**order_i
+                mu_pseudo(elec_i, cent_i, walk_i) = mu_pseudo(elec_i, cent_i, walk_i) + d_param_mu_pseudo(order_i + 1, iwctype(cent_i), up) * scaled_dist_en_wlk(elec_i, cent_i, walk_i)**order_i
              enddo
           enddo
        enddo
@@ -800,8 +681,7 @@ contains
     !remove asymptotic value for spin-up electrons
     !loop over number of centers
     do cent_i = 1, ncent
-       mu_pseudo(1:nup,cent_i,:) = mu_pseudo(1:nup,cent_i,:) - &
-                       asymp_mu_pseudo(iwctype(cent_i), up)
+       mu_pseudo(1:nup,cent_i,:) = mu_pseudo(1:nup,cent_i,:) - asymp_mu_pseudo(iwctype(cent_i), up)
     enddo
 
     !spin-down electrons
@@ -812,17 +692,10 @@ contains
           !loop over down-spin electrons: nup+1 to nelec
           do elec_i = nup+1, nelec
              !pade term of mu_pseudo
-             mu_pseudo(elec_i, cent_i, walk_i) = d_param_mu_pseudo(1, &
-                       iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i,&
-                        cent_i, walk_i) / (1.d0 + d_param_mu_pseudo(2, &
-                       iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, &
-                       cent_i, walk_i))
+             mu_pseudo(elec_i, cent_i, walk_i) = d_param_mu_pseudo(1, iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, cent_i, walk_i) / (1.d0 + d_param_mu_pseudo(2, iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, cent_i, walk_i))
              !power series terms of mu_pseudo
              do order_i=2, order_mu_bf
-                mu_pseudo(elec_i, cent_i, walk_i) = mu_pseudo(elec_i, cent_i,&
-                        walk_i) + d_param_mu_pseudo(order_i + 1, &
-                       iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, &
-                       cent_i, walk_i)**order_i
+                mu_pseudo(elec_i, cent_i, walk_i) = mu_pseudo(elec_i, cent_i, walk_i) + d_param_mu_pseudo(order_i + 1, iwctype(cent_i), down) * scaled_dist_en_wlk(elec_i, cent_i, walk_i)**order_i
              enddo
           enddo
        enddo
@@ -832,8 +705,7 @@ contains
     !remove asymptotic value for spin-down electrons
     !loop over number of centers
     do cent_i = 1, ncent
-       mu_pseudo(nup+1:nelec,cent_i,:) = mu_pseudo(nup+1:nelec,cent_i,:) &
-                       - asymp_mu_pseudo(iwctype(cent_i), down)
+       mu_pseudo(nup+1:nelec,cent_i,:) = mu_pseudo(nup+1:nelec,cent_i,:) - asymp_mu_pseudo(iwctype(cent_i), down)
     enddo
 
   end subroutine mu_pseudo_bld
@@ -892,15 +764,10 @@ contains
        !loop over center types
        do ctype_i = 1, nctype
           !pade term of mu
-          asymp_mu_pseudo(ctype_i, spin_i) = d_param_mu_pseudo(1, ctype_i, &
-                       spin_i) * asymp_scaled_dist_two_body / (1.d0 + &
-                       d_param_mu_pseudo(2, ctype_i, spin_i) *&
-                        asymp_scaled_dist_two_body)
+          asymp_mu_pseudo(ctype_i, spin_i) = d_param_mu_pseudo(1, ctype_i, spin_i) * asymp_scaled_dist_two_body / (1.d0 + d_param_mu_pseudo(2, ctype_i, spin_i) * asymp_scaled_dist_two_body)
           !power series terms of mu
           do order_i=2, order_mu_bf
-             asymp_mu_pseudo(ctype_i, spin_i) = asymp_mu_pseudo(ctype_i, &
-                       spin_i) + d_param_mu_pseudo(order_i + 1, ctype_i,&
-                        spin_i) * asymp_scaled_dist_two_body**order_i
+             asymp_mu_pseudo(ctype_i, spin_i) = asymp_mu_pseudo(ctype_i, spin_i) + d_param_mu_pseudo(order_i + 1, ctype_i, spin_i) * asymp_scaled_dist_two_body**order_i
           enddo
        enddo
     enddo
@@ -954,8 +821,7 @@ contains
     ! allocation
 
     !this can be made more efficient
-    call object_alloc('scaled_dist_en_wlk', scaled_dist_en_wlk, nelec, &
-                       ncent, nwalk)
+    call object_alloc('scaled_dist_en_wlk', scaled_dist_en_wlk, nelec, ncent, nwalk)
 
     ! build scaled_dist_en_wlk
     !initialize
@@ -1005,8 +871,7 @@ contains
        call die(lhere,'Only isc = 4 is implemented.')
     end select
     !testing
-    call object_associate('asymp_scaled_dist_two_body', &
-                       asymp_scaled_dist_two_body)
+    call object_associate('asymp_scaled_dist_two_body', asymp_scaled_dist_two_body)
 
 
 
@@ -1088,13 +953,10 @@ contains
           !enough parameters were read in for a spin dependent mu
           if (.not. mu_spin_dependent) then
              !too many parameters were read in
-             call require(lhere, &
-                       'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype', &
-                       mu_spin_dependent)
+             call require(lhere, 'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype', mu_spin_dependent)
           else
              !correct number of parameters so reshape into correct dimensions for d_param_mu_all_elec
-             d_param_mu_all_elec = reshape( read_d_param_mu, (/ order_mu_bf +&
-                        1, nctype, spin_nb /))
+             d_param_mu_all_elec = reshape( read_d_param_mu, (/ order_mu_bf + 1, nctype, spin_nb /))
              !don't want to re-read
              read_d_param = .false.
           end if
@@ -1102,14 +964,11 @@ contains
           !number of parameters read in is only sufficient for no spin dependence
           if ( mu_spin_dependent) then
              !not enough parameters read in
-             call require(lhere, &
-                       'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype * spin_nb',&
-                       .not. mu_spin_dependent)
+             call require(lhere, 'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype * spin_nb',.not. mu_spin_dependent)
           else
              !correct number of parameters so reshape into correct dimensions for d_param_mu_all_elec
              write(*,*) "debug fp"
-             d_param_mu_all_elec = reshape( read_d_param_mu, (/ order_mu_bf +&
-                        1, nctype, spin_nb /), pad=read_d_param_mu)
+             d_param_mu_all_elec = reshape( read_d_param_mu, (/ order_mu_bf + 1, nctype, spin_nb /), pad=read_d_param_mu)
              !note that only the first index has any meaning from the previous statement so duplicate the meaningful values
 
 !debug             !d_param_mu_all_elec(:,:,2)=d_param_mu_all_elec(:,:,1)
@@ -1119,8 +978,7 @@ contains
           end if
        else
           !wrong number of parameters
-          call die(lhere,&
-                       'read_d_param_mu has an incorrect number of parameters.')
+          call die(lhere,'read_d_param_mu has an incorrect number of parameters.')
        end if
     else
        !don't read in parameters
@@ -1138,10 +996,7 @@ contains
     !Note that we assume the two-body scaling functions evaluated at 0 are 0.
     d_param_mu_all_elec(1,:,:) = 0.d0
     do order_i=2, order_mu_bf
-       d_param_mu_all_elec(1, :, :) = d_param_mu_all_elec(1, :, :) - &
-            d_param_mu_all_elec(order_i + 1, :, :) * asymp_scaled_dist_two_body&
-            **(order_i - 1) * ( 1.d0 +  d_param_mu_all_elec(2, :, :) * &
-            asymp_scaled_dist_two_body)
+       d_param_mu_all_elec(1, :, :) = d_param_mu_all_elec(1, :, :) - d_param_mu_all_elec(order_i + 1, :, :) * asymp_scaled_dist_two_body**(order_i - 1) * ( 1.d0 +  d_param_mu_all_elec(2, :, :) * asymp_scaled_dist_two_body)
     enddo
 
   end subroutine d_param_mu_all_elec_bld
@@ -1218,12 +1073,10 @@ contains
           !enough parameters were read in for a spin dependent mu
           if (.not. mu_spin_dependent) then
              !too many parameters were read in
-             call require(lhere, &
-                  'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype', mu_spin_dependent)
+             call require(lhere, 'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype', mu_spin_dependent)
           else
              !correct number of parameters so reshape into correct dimensions for d_param_mu_pseudo
-             d_param_mu_pseudo = reshape( read_d_param_mu, (/ order_mu_bf &
-                  + 1, nctype, spin_nb /))
+             d_param_mu_pseudo = reshape( read_d_param_mu, (/ order_mu_bf + 1, nctype, spin_nb /))
              !don't want to re-read
              read_d_param = .false.
           end if
@@ -1231,13 +1084,10 @@ contains
           !number of parameters read in is only sufficient for no spin dependence in mu
           if ( mu_spin_dependent) then
              !not enough parameters read in
-             call require(lhere, &
-                  'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype * spin_nb',&
-                  .not. mu_spin_dependent)
+             call require(lhere, 'number of parameters in read_d_param_mu is equal to (order_mu_bf + 1) * nctype * spin_nb',.not. mu_spin_dependent)
           else
              !correct number of parameters so reshape into correct dimensions for d_param_mu_pseudo
-             d_param_mu_pseudo = reshape( read_d_param_mu, (/ order_mu_bf + &
-                  1, nctype, spin_nb /), pad=read_d_param_mu)
+             d_param_mu_pseudo = reshape( read_d_param_mu, (/ order_mu_bf + 1, nctype, spin_nb /), pad=read_d_param_mu)
              !note that only the first index has any meaning from the previous assignment so duplicate the meaningful values
 !debug             d_param_mu_pseudo(:,:,2)=d_param_mu_pseudo(:,:,1)
              !don't want to re-read
@@ -1245,8 +1095,7 @@ contains
           end if
        else
           !wrong number of parameters read in
-          call die(lhere,&
-                  'read_d_param_mu has an incorrect number of parameters.')
+          call die(lhere,'read_d_param_mu has an incorrect number of parameters.')
        end if
     else
        !don't read in parameters
@@ -1322,13 +1171,8 @@ contains
              if( dist_en_wlk(elec_i, cent_i, walk_i) .ge. threshold_l(iwctype(cent_i))) then
                 smooth_cutoff_g(elec_i, cent_i, walk_i) = 1.d0
              else
-                smooth_cutoff_g(elec_i, cent_i, walk_i) = (dist_en_wlk(elec_i,&
-                     cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2 * &
-                     (6.d0 - 8.d0 &
-                     * (dist_en_wlk(elec_i, cent_i, walk_i) / &
-                     threshold_l(iwctype(cent_i))) + 3.d0 * (dist_en_wlk&
-                     (elec_i, cent_i, walk_i) / &
-                     threshold_l(iwctype(cent_i)))**2)
+                smooth_cutoff_g(elec_i, cent_i, walk_i) = (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2 * (6.d0 - 8.d0 &
+                     & * (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i))) + 3.d0 * (dist_en_wlk(elec_i, cent_i, walk_i) / threshold_l(iwctype(cent_i)))**2)
              end if
           enddo
        enddo
@@ -1396,16 +1240,12 @@ contains
           do elec_i= 1, nelec
              do elec_j = 1, elec_i - 1
                 do dim_i = 1, ndim
-                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i)&
-                         + eta_all_elec(elec_i, elec_j, walk_i) * &
-                        vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i) + eta_all_elec(elec_i, elec_j, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                 enddo
              enddo
              do elec_j = elec_i + 1, nelec
                 do dim_i = 1, ndim
-                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i) &
-                        + eta_all_elec(elec_i, elec_j, walk_i) * &
-                        vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i) + eta_all_elec(elec_i, elec_j, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                 enddo
              enddo
           enddo
@@ -1424,16 +1264,12 @@ contains
           do elec_i = 1, nelec
              do elec_j = 1, elec_i - 1
                 do dim_i = 1, ndim
-                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i)&
-                         + eta_pseudo(elec_i, elec_j, walk_i) * &
-                        vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i) + eta_pseudo(elec_i, elec_j, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                 enddo
              enddo
              do elec_j = elec_i + 1, nelec
                 do dim_i = 1, ndim
-                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i)&
-                         + eta_pseudo(elec_i, elec_j, walk_i) * &
-                        vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                   xi_ee(dim_i, elec_i, walk_i) = xi_ee(dim_i, elec_i, walk_i) + eta_pseudo(elec_i, elec_j, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                 enddo
              enddo
           enddo
@@ -1513,18 +1349,14 @@ contains
              !no pade term because c_param_eta(1,up_up) = 0
              !power series terms of mu_all_elec
              do order_i=2, order_eta_bf
-                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i,&
-                         elec_j, walk_i) + c_param_eta(order_i + 1, up_up) *&
-                         scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_up) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
           do elec_j = elec_i + 1, nup
              !no pade term because c_param_eta(1,up_up) = 0
              !power series terms of eta_all_elec
              do order_i=2, order_eta_bf
-                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i,&
-                         elec_j, walk_i) + c_param_eta(order_i + 1, up_up) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_up) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
@@ -1544,26 +1376,21 @@ contains
              !no pade term because c_param_eta(1,down_down) = 0
              !power series terms of eta_all_elec
              do order_i=2, order_eta_bf
-                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i,&
-                         elec_j, walk_i) + c_param_eta(order_i + 1, down_down)&
-                         * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, down_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
           do elec_j = elec_i + 1, nelec
              !no pade term because c_param_eta(1,down_down) = 0
              !power series terms of eta_all_elec
              do order_i=2, order_eta_bf
-                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i,&
-                         elec_j, walk_i) + c_param_eta(order_i + 1, down_down)&
-                         * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, down_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
     enddo
 
     !subtract off asymptotic value
-    eta_all_elec(nup + 1:nelec, nup + 1:nelec, :) = eta_all_elec(nup +&
-                         1:nelec, nup + 1:nelec, :) - asymp_eta(down_down)
+    eta_all_elec(nup + 1:nelec, nup + 1:nelec, :) = eta_all_elec(nup + 1:nelec, nup + 1:nelec, :) - asymp_eta(down_down)
 
     !calculate the up_down terms
 
@@ -1574,23 +1401,17 @@ contains
           !loop over down-spin electrons
           do elec_j = nup + 1, nelec
              !pade term
-             eta_all_elec(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / &
-                        (1.d0 + c_param_eta(2, up_down) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
+             eta_all_elec(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / (1.d0 + c_param_eta(2, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
              !power series terms of eta_all_elec
              do order_i=2, order_eta_bf
-                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i,&
-                         elec_j, walk_i) + c_param_eta(order_i + 1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
     enddo
 
     !subtract off asymptotic value
-    eta_all_elec(1:nup, nup + 1:nelec, :) = eta_all_elec(1:nup, nup + &
-         1:nelec, :) - asymp_eta(up_down)
+    eta_all_elec(1:nup, nup + 1:nelec, :) = eta_all_elec(1:nup, nup + 1:nelec, :) - asymp_eta(up_down)
 
     !calculate the down_up terms. Note that c_param_eta, and hence asymp_eta, are the same for up_down and down_up
 
@@ -1601,30 +1422,23 @@ contains
           !loop over up-spin electrons
           do elec_j = 1, nup
              !pade term
-             eta_all_elec(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / &
-                        (1.d0 + c_param_eta(2, up_down) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
+             eta_all_elec(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / (1.d0 + c_param_eta(2, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
              !power series terms of eta_all_elec
              do order_i=2, order_eta_bf
-                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, &
-                        elec_j, walk_i) + c_param_eta(order_i + 1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
     enddo
 
     !subtract off asymptotic value
-    eta_all_elec(nup + 1:nelec, 1:nup, :) = eta_all_elec(nup + 1:nelec, &
-                        1:nup, :) - asymp_eta(up_down)
+    eta_all_elec(nup + 1:nelec, 1:nup, :) = eta_all_elec(nup + 1:nelec, 1:nup, :) - asymp_eta(up_down)
 
     !apply smooth cutoff function g
     do elec_i = 1, nelec
        do elec_j = 1, nelec
           do walk_i = 1, nwalk
-             eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, &
-                  elec_j, walk_i) * product(smooth_cutoff_g(elec_i, : , walk_i))
+             eta_all_elec(elec_i, elec_j, walk_i) = eta_all_elec(elec_i, elec_j, walk_i) * product(smooth_cutoff_g(elec_i, : , walk_i))
           enddo
        enddo
     enddo
@@ -1699,18 +1513,14 @@ contains
              !no pade term because c_param_eta(1,up_up) = 0
              !power series terms of eta_pseudo
              do order_i=2, order_eta_bf
-                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, &
-                        elec_j, walk_i) + c_param_eta(order_i + 1, up_up) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_up) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
           do elec_j = elec_i + 1, nup
              !no pade term because c_param_eta(1,up_up) = 0
              !power series terms of eta_pseudo
              do order_i=2, order_eta_bf
-                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, &
-                        elec_j, walk_i) + c_param_eta(order_i + 1, up_up) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_up) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
@@ -1730,28 +1540,21 @@ contains
              !no pade term because c_param_eta(1,down_down) = 0
              !power series terms of eta_pseudo
              do order_i=2, order_eta_bf
-                eta_pseudo(elec_i, elec_j, walk_i) = &
-                        eta_pseudo(elec_i, elec_j, walk_i) + &
-                        c_param_eta(order_i + 1, down_down) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, down_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
           do elec_j = elec_i + 1, nelec
              !no pade term because c_param_eta(1,down_down) = 0
              !power series terms of eta_pseudo
              do order_i=2, order_eta_bf
-                eta_pseudo(elec_i, elec_j, walk_i) = &
-                        eta_pseudo(elec_i, elec_j, walk_i) + &
-                        c_param_eta(order_i + 1, down_down) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, down_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
     enddo
 
     !subtract off asymptotic value
-    eta_pseudo(nup + 1:nelec, nup + 1:nelec, :) = &
-             eta_pseudo(nup + 1:nelec, nup + 1:nelec, :) - asymp_eta(down_down)
+    eta_pseudo(nup + 1:nelec, nup + 1:nelec, :) = eta_pseudo(nup + 1:nelec, nup + 1:nelec, :) - asymp_eta(down_down)
 
     !calculate the up_down terms
 
@@ -1762,23 +1565,17 @@ contains
           !loop over down-spin electrons
           do elec_j = nup + 1, nelec
              !pade term
-             eta_pseudo(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / &
-                        (1.d0 + c_param_eta(2, up_down) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
+             eta_pseudo(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / (1.d0 + c_param_eta(2, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
              !power series terms of eta_pseudo
              do order_i=2, order_eta_bf
-                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i,&
-                         elec_j, walk_i) + c_param_eta(order_i + 1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
     enddo
 
     !subtract off asymptotic value
-    eta_pseudo(1:nup, nup + 1:nelec, :) = eta_pseudo(1:nup, nup + 1:nelec, :)&
-                         - asymp_eta(up_down)
+    eta_pseudo(1:nup, nup + 1:nelec, :) = eta_pseudo(1:nup, nup + 1:nelec, :) - asymp_eta(up_down)
 
     !calculate the down_down terms. Note that c_param_eta, and hence asymp_eta, are the same for up_down and down_up
 
@@ -1789,23 +1586,17 @@ contains
           !loop over up-spin electrons
           do elec_j = 1, nup
              !pade term
-             eta_pseudo(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / &
-                        (1.d0 + c_param_eta(2, up_down) * &
-                        scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
+             eta_pseudo(elec_i, elec_j, walk_i) = c_param_eta(1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i) / (1.d0 + c_param_eta(2, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i))
              !power series terms of eta_pseudo
              do order_i=2, order_eta_bf
-                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, &
-                        elec_j, walk_i) + c_param_eta(order_i + 1, up_down) &
-                        * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
+                eta_pseudo(elec_i, elec_j, walk_i) = eta_pseudo(elec_i, elec_j, walk_i) + c_param_eta(order_i + 1, up_down) * scaled_dist_ee_wlk(elec_i, elec_j, walk_i)**order_i
              enddo
           enddo
        enddo
     enddo
 
     !subtract off asymptotic value
-    eta_pseudo(nup + 1:nelec, 1:nup, :) = eta_pseudo(nup + 1:nelec, 1:nup, :) &
-         - asymp_eta(up_down)
+    eta_pseudo(nup + 1:nelec, 1:nup, :) = eta_pseudo(nup + 1:nelec, 1:nup, :) - asymp_eta(up_down)
 
     !no cutoff because pseudo
 
@@ -1862,26 +1653,22 @@ contains
     !no pade term because c_param_eta(1, up_up) = 0 for electron-electron cusp condition to be satisfied
     !power series terms
     do order_i=2, order_eta_bf
-       asymp_eta(up_up) = asymp_eta(up_up) + c_param_eta(order_i + 1, up_up) &
-                        * asymp_scaled_dist_two_body**order_i
+       asymp_eta(up_up) = asymp_eta(up_up) + c_param_eta(order_i + 1, up_up) * asymp_scaled_dist_two_body**order_i
     enddo
 
     !down_down
     !no pade term because c_param_eta(1, down_down) = 0 for electron-electron cusp condition to be satisfied
     !power series terms
     do order_i=2, order_eta_bf
-       asymp_eta(down_down) = asymp_eta(down_down) + c_param_eta(order_i + 1&
-                        , down_down) * asymp_scaled_dist_two_body**order_i
+       asymp_eta(down_down) = asymp_eta(down_down) + c_param_eta(order_i + 1, down_down) * asymp_scaled_dist_two_body**order_i
     enddo
 
     !up_down (or down_up)
     !pade term
-    asymp_eta(up_down) = c_param_eta(1, up_down) * asymp_scaled_dist_two_body &
-              / (1.d0 + c_param_eta(2, up_down) * asymp_scaled_dist_two_body)
+    asymp_eta(up_down) = c_param_eta(1, up_down) * asymp_scaled_dist_two_body / (1.d0 + c_param_eta(2, up_down) * asymp_scaled_dist_two_body)
     !power series terms
     do order_i=2, order_eta_bf
-       asymp_eta(up_down) = asymp_eta(up_down) + c_param_eta(order_i + 1,&
-                         up_down) * asymp_scaled_dist_two_body**order_i
+       asymp_eta(up_down) = asymp_eta(up_down) + c_param_eta(order_i + 1, up_down) * asymp_scaled_dist_two_body**order_i
     enddo
 
   end subroutine asymp_eta_bld
@@ -1932,8 +1719,7 @@ contains
     ! allocation
 
     !this can be made more efficient
-    call object_alloc('scaled_dist_ee_wlk', &
-                        scaled_dist_ee_wlk, nelec, nelec, nwalk)
+    call object_alloc('scaled_dist_ee_wlk', scaled_dist_ee_wlk, nelec, nelec, nwalk)
 
     ! build scaled_dist_ee_wlk
     !initialize
@@ -2007,8 +1793,7 @@ contains
 
 
     ! allocation
-    call object_alloc('c_param_eta', c_param_eta, order_eta_bf + 1,&
-                         spin_dependencies_nb)
+    call object_alloc('c_param_eta', c_param_eta, order_eta_bf + 1, spin_dependencies_nb)
 
     !do we read in parameters?
     if (read_c_param) then
@@ -2020,14 +1805,10 @@ contains
           !enough parameters were read in for:  up_up != down_down != up_down
           if (eta_spin_dependence .ne. 3) then
              !too many parameters were read in
-             call require(lhere, &
-             'number of parameters correct for eta_spin_dependence specified', &
-             eta_spin_dependence .eq. 3)
+             call require(lhere, 'number of parameters correct for eta_spin_dependence specified', eta_spin_dependence .eq. 3)
           else
              !correct number of parameters so reshape into correct dimensions for c_param_eta
-             c_param_eta = reshape( read_c_param_eta, (/ order_eta_bf + 1, &
-                        spin_dependencies_nb /)) 
-                     !  up_up != down_down != up_down
+             c_param_eta = reshape( read_c_param_eta, (/ order_eta_bf + 1, spin_dependencies_nb /)) !  up_up != down_down != up_down
              !don't want to re-read
              read_c_param = .false.
           end if
@@ -2035,13 +1816,10 @@ contains
           !enough parameters read in for:  up_up = down_down != up_down
           if ( eta_spin_dependence .ne. 2) then
              !incorrect number of parameters
-             call require(lhere, &
-                        'number of parameters correct for eta_spin_dependence specified', eta_spin_dependence .eq. 2)
+             call require(lhere, 'number of parameters correct for eta_spin_dependence specified', eta_spin_dependence .eq. 2)
           else
              !correct number of parameters so reshape into correct dimensions for c_param_eta
-             c_param_eta = reshape( read_c_param_eta, (/ order_eta_bf + 1,&
-                         spin_dependencies_nb /), pad=read_c_param_eta )   
-                           !up_up = down_down != up_down
+             c_param_eta = reshape( read_c_param_eta, (/ order_eta_bf + 1, spin_dependencies_nb /), pad=read_c_param_eta )   !up_up = down_down != up_down
              ! up_up is in c_param_eta(:,1), up_down is in c_param_eta(:,2) and c_param_eta(:,3) has garbage in it
              !want up_up in c_param_eta(:,1), up_up=down_down in c_param_eta(:,2), up_down in c_param_eta(:,3)
              c_param_eta(:,3)=c_param_eta(:,2)
@@ -2056,9 +1834,7 @@ contains
              call require(lhere, 'number of parameters correct for eta_spin_dependence specified', eta_spin_dependence .eq. 1)
           else
              !correct number of parameters so reshape into correct dimensions for c_param_eta
-             c_param_eta = reshape( read_c_param_eta, (/ order_eta_bf + 1, &
-                        spin_dependencies_nb /), pad=read_c_param_eta)  
-                       !up_up = down_down = up_down
+             c_param_eta = reshape( read_c_param_eta, (/ order_eta_bf + 1, spin_dependencies_nb /), pad=read_c_param_eta)   !up_up = down_down = up_down
              ! up_up is in c_param_eta(:,1), c_param_eta(:,2) has garbage in it and c_param_eta(:,3) has garbage in it
              !want up_up in c_param_eta(:,1), up_up=down_down in c_param_eta(:,2), up_up=up_down in c_param_eta(:,3)
              c_param_eta(:,2)=c_param_eta(:,1)
@@ -2163,19 +1939,14 @@ contains
                 do elec_j = 1, elec_i -1
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i, &
-                       elec_i, walk_i) +  phi_all_elec(elec_i, elec_j, cent_i,&
-                        walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i, elec_i, walk_i) +  phi_all_elec(elec_i, elec_j, cent_i, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                    enddo
                 enddo
                 !loop over other electrons after elec_i
                 do elec_j = elec_i + 1, nelec
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i,&
-                        elec_i, walk_i) +  phi_all_elec(elec_i, elec_j, &
-                       cent_i, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j,&
-                        walk_i)
+                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i, elec_i, walk_i) +  phi_all_elec(elec_i, elec_j, cent_i, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                    enddo
                 enddo
              enddo
@@ -2202,18 +1973,14 @@ contains
                 do elec_j = 1, elec_i -1
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i,&
-                        elec_i, walk_i) +  phi_pseudo(elec_i, elec_j, cent_i,&
-                        walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i, elec_i, walk_i) +  phi_pseudo(elec_i, elec_j, cent_i, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                    enddo
                 enddo
                 !loop over other electrons after elec_i
                 do elec_j = elec_i + 1, nelec
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i,&
-                        elec_i, walk_i) +  phi_pseudo(elec_i, elec_j, cent_i,&
-                        walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
+                      xi_een_phi(dim_i, elec_i, walk_i) = xi_een_phi(dim_i, elec_i, walk_i) +  phi_pseudo(elec_i, elec_j, cent_i, walk_i) * vec_ee_xyz_wlk(dim_i, elec_i, elec_j, walk_i)
                    enddo
                 enddo
              enddo
@@ -2309,16 +2076,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) + &
-                            a_param_phi_all_elec(param_i, iwctype(cent_i), up_up) &
-                            * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                            walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, &
-                            cent_i, walk_i)**order_k &
-                            +  scaled_dist_een_en_wlk(elec_j, cent_i, &
-                            walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) &
-                                 *  scaled_dist_een_en_wlk(elec_j, cent_i,&
-                                 walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + a_param_phi_all_elec(param_i, iwctype(cent_i), up_up) &
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k &
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) &
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2340,17 +2101,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) &
-                       = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + &
-                       a_param_phi_all_elec(param_i, iwctype(cent_i), up_up) &
-                                  * ( scaled_dist_een_ee_wlk(elec_i, elec_j, &
-                       walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, &
-                       cent_i, walk_i)**order_k&
-                                  +  scaled_dist_een_en_wlk(elec_j, cent_i, &
-                       walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, &
-                       cent_i, walk_i)&
-                       *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) **&
-                       ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + a_param_phi_all_elec(param_i, iwctype(cent_i), up_up) &
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k&
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2384,16 +2138,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                        phi_all_elec(elec_i, elec_j, cent_i, walk_i) + &
-                       a_param_phi_all_elec(param_i, iwctype(cent_i), down_down)&
-                       * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                       walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, &
-                        cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk &
-                       (elec_j, cent_i, walk_i)**order_k )&
-                       * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) * &
-                       scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) **  &
-                       ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + a_param_phi_all_elec(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2415,18 +2162,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = &
-                              phi_all_elec(elec_i, elec_j, cent_i, walk_i) &
-                              + a_param_phi_all_elec(param_i, iwctype &
-                              (cent_i), down_down)&
-                              * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                              walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                              (elec_i, cent_i, walk_i)**order_k&
-                              +  scaled_dist_een_en_wlk(elec_j, cent_i,  &
-                              walk_i)**order_k ) * ( scaled_dist_een_en_wlk( &
-                              elec_i, cent_i, walk_i)&
-                              *  scaled_dist_een_en_wlk(elec_j, cent_i, &
-                              walk_i) ) ** ((order_i - order_j - order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + a_param_phi_all_elec(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k&
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2459,19 +2198,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) =  &
-                              phi_all_elec(elec_i, elec_j, cent_i, walk_i) +  &
-                              a_param_phi_all_elec(param_i, iwctype(cent_i),  &
-                              up_down)&
-                              * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                              walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                              (elec_i, cent_i, walk_i)**order_k +   &
-                              scaled_dist_een_en_wlk(elec_j, cent_i,  &
-                              walk_i)**order_k )&
-                              * ( scaled_dist_een_en_wlk(elec_i, cent_i,  &
-                              walk_i) *  scaled_dist_een_en_wlk(elec_j,  &
-                              cent_i, walk_i) ) ** ((order_i - order_j -  &
-                              order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + a_param_phi_all_elec(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2504,19 +2233,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) =  &
-                              phi_all_elec(elec_i, elec_j, cent_i, walk_i) +  &
-                              a_param_phi_all_elec(param_i, iwctype(cent_i),  &
-                              up_down)&
-                              * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                              walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                              (elec_i, cent_i, walk_i)**order_k +   &
-                              scaled_dist_een_en_wlk(elec_j, cent_i,  &
-                              walk_i)**order_k )&
-                              * ( scaled_dist_een_en_wlk(elec_i, cent_i,  &
-                              walk_i) *  scaled_dist_een_en_wlk(elec_j,  &
-                              cent_i,walk_i) ) ** ((order_i - order_j - &
-                              order_k) / 2)
+                            phi_all_elec(elec_i, elec_j, cent_i, walk_i) = phi_all_elec(elec_i, elec_j, cent_i, walk_i) + a_param_phi_all_elec(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2531,12 +2250,10 @@ contains
     do cent_i=1, ncent
        do elec_j=1, nelec
           do prod_i=1, cent_i-1
-             phi_all_elec(:,elec_j,cent_i,:) = phi_all_elec(:,elec_j,cent_i,:) &
-                       * smooth_cutoff_g(:,prod_i,:)
+             phi_all_elec(:,elec_j,cent_i,:) = phi_all_elec(:,elec_j,cent_i,:) * smooth_cutoff_g(:,prod_i,:)
           end do
           do prod_i=cent_i+1, ncent
-             phi_all_elec(:,elec_j, cent_i,:) = phi_all_elec(:,elec_j,  &
-                       cent_i,:) * smooth_cutoff_g(:,prod_i,:)
+             phi_all_elec(:,elec_j, cent_i,:) = phi_all_elec(:,elec_j, cent_i,:) * smooth_cutoff_g(:,prod_i,:)
           end do
        end do
     enddo
@@ -2625,19 +2342,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = &
-                              phi_pseudo(elec_i, elec_j, cent_i, walk_i) +  &
-                              a_param_phi_pseudo(param_i, iwctype(cent_i), &
-                              up_up)&
-                              * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                              walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                              (elec_i, cent_i, walk_i)**order_k +   &
-                              scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) &
-                              **order_k )&
-                              * ( scaled_dist_een_en_wlk(elec_i, cent_i,  &
-                              walk_i) *  scaled_dist_een_en_wlk(elec_j,  &
-                              cent_i, walk_i) ) ** ((order_i - order_j  &
-                              - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + a_param_phi_pseudo(param_i, iwctype(cent_i), up_up)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2659,19 +2366,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) =  &
-                              phi_pseudo(elec_i, elec_j, cent_i, walk_i) + &
-                              a_param_phi_pseudo(param_i, iwctype(cent_i),  &
-                              up_up)&
-                              * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                              walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                              (elec_i, cent_i, walk_i)**order_k +   &
-                              scaled_dist_een_en_wlk(elec_j, cent_i,  &
-                              walk_i)**order_k )&
-                              * ( scaled_dist_een_en_wlk(elec_i, cent_i, &
-                              walk_i) *  scaled_dist_een_en_wlk(elec_j,  &
-                              cent_i, walk_i) ) ** ((order_i - order_j  &
-                              - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + a_param_phi_pseudo(param_i, iwctype(cent_i), up_up)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2705,19 +2402,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = &
-                                 phi_pseudo(elec_i, elec_j, cent_i, walk_i) &
-                                 + a_param_phi_pseudo(param_i, iwctype(cent_i) &
-                                 , down_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j, &
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                                 (elec_i, cent_i, walk_i)**order_k +  &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, &
-                                 walk_i)**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i, &
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j, &
-                                 cent_i, walk_i) ) ** ((order_i - order_j  &
-                                 - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + a_param_phi_pseudo(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2739,19 +2426,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = &
-                                 phi_pseudo(elec_i, elec_j, cent_i, walk_i) &
-                                 + a_param_phi_pseudo(param_i, iwctype(cent_i), &
-                                 down_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j, &
-                                 walk_i)**order_j ) * (  &
-                                 scaled_dist_een_en_wlk(elec_i, cent_i, &
-                                 walk_i)**order_k +  scaled_dist_een_en_wlk &
-                                 (elec_j, cent_i, walk_i)**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,  &
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j, &
-                                 cent_i, walk_i) ) ** ((order_i - order_j &
-                                 - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + a_param_phi_pseudo(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2784,19 +2461,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = &
-                                 phi_pseudo(elec_i, elec_j, cent_i, walk_i) &
-                                 + a_param_phi_pseudo(param_i, &
-                                 iwctype(cent_i), up_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j, &
-                                 walk_i)**order_j ) * ( &
-                                 scaled_dist_een_en_wlk(elec_i, cent_i, &
-                                 walk_i)**order_k +  scaled_dist_een_en_wlk &
-                                 (elec_j, cent_i, walk_i)**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i, &
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j &
-                                 , cent_i, walk_i) ) ** ((order_i - order_j  &
-                                 - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + a_param_phi_pseudo(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -2829,19 +2496,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = &
-                              phi_pseudo(elec_i, elec_j, cent_i, walk_i) + &
-                              a_param_phi_pseudo(param_i, iwctype(cent_i), &
-                              up_down)&
-                              * ( scaled_dist_een_ee_wlk(elec_i, elec_j,  &
-                              walk_i)**order_j ) * ( scaled_dist_een_en_wlk &
-                              (elec_i, cent_i, walk_i)**order_k +  &
-                              scaled_dist_een_en_wlk(elec_j, cent_i, &
-                              walk_i)**order_k )&
-                              * ( scaled_dist_een_en_wlk(elec_i, cent_i, &
-                              walk_i) *  scaled_dist_een_en_wlk(elec_j, &
-                              cent_i, walk_i) ) ** ((order_i - order_j &
-                              - order_k) / 2)
+                            phi_pseudo(elec_i, elec_j, cent_i, walk_i) = phi_pseudo(elec_i, elec_j, cent_i, walk_i) + a_param_phi_pseudo(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -3057,9 +2714,7 @@ contains
              call require(lhere, 'number of parameters correct for phi_spin_dependence specified', phi_spin_dependence .eq. 3)
           else
              !correct number of parameters so reshape into correct dimensions for a_param_phi
-             a_param_phi_pseudo = reshape( read_a_param_phi,  &
-                       (/ nb_a_param_phi, nctype, spin_dependencies_nb /))
-                        !  up_up != down_down != up_down
+             a_param_phi_pseudo = reshape( read_a_param_phi, (/ nb_a_param_phi, nctype, spin_dependencies_nb /)) !  up_up != down_down != up_down
              !don't want to re-read
              read_a_param = .false.
           end if
@@ -3067,15 +2722,10 @@ contains
           !enough parameters read in for:  up_up = down_down != up_down
           if ( phi_spin_dependence .ne. 2) then
              !incorrect number of parameters
-             call require(lhere,  &
-               'number of parameters correct for phi_spin_dependence specified' &
-                       , phi_spin_dependence .eq. 2)
+             call require(lhere, 'number of parameters correct for phi_spin_dependence specified', phi_spin_dependence .eq. 2)
           else
              !correct number of parameters so reshape into correct dimensions for a_param_phi_pseudo
-             a_param_phi_pseudo = reshape( read_a_param_phi,  &
-                       (/ nb_a_param_phi, nctype, spin_dependencies_nb /), &
-                        pad=read_a_param_phi)  
-                              !up_up = down_down != up_down
+             a_param_phi_pseudo = reshape( read_a_param_phi, (/ nb_a_param_phi, nctype, spin_dependencies_nb /), pad=read_a_param_phi)   !up_up = down_down != up_down
              ! up_up is in a_param_phi_pseudo(:,:,1), up_down is in a_param_phi_pseudo(:,:,2) and a_param_phi_pseudo(:,:,3) has garbage in it
              !want up_up in a_param_phi_pseudo(:,:,1), up_up=down_down in a_param_phi_pseudo(:,:,2), up_down in a_param_phi_pseudo(:,:,3)
              a_param_phi_pseudo(:,:,3)=a_param_phi_pseudo(:,:,2)
@@ -3087,15 +2737,10 @@ contains
           !enough parameters read in for:  up_up = down_down = up_down
           if ( phi_spin_dependence .ne. 1) then
              !incorrect number of parameters
-             call require(lhere, &
-                        'number of parameters correct for phi_spin_dependence specified', &
-                        phi_spin_dependence .eq. 1)
+             call require(lhere, 'number of parameters correct for phi_spin_dependence specified', phi_spin_dependence .eq. 1)
           else
              !correct number of parameters so reshape into correct dimensions for a_param_phi_pseudo
-             a_param_phi_pseudo = reshape( read_a_param_phi, &
-                        (/ nb_a_param_phi, nctype, spin_dependencies_nb /) &
-                       , pad=read_a_param_phi)  
-             !up_up = down_down = up_down
+             a_param_phi_pseudo = reshape( read_a_param_phi, (/ nb_a_param_phi, nctype, spin_dependencies_nb /), pad=read_a_param_phi)   !up_up = down_down = up_down
              ! up_up is in a_param_phi_pseudo(:,:,1), a_param_phi_pseudo(:,:,2) has garbage in it and a_param_phi_pseudo(:,:,3) has garbage in it
              !want up_up in a_param_phi_pseudo(:,:,1), up_up=down_down in a_param_phi_pseudo(:,:,2), up_up=up_down in a_param_phi_pseudo(:,:,3)
              a_param_phi_pseudo(:,:,2)=a_param_phi_pseudo(:,:,1)
@@ -3129,13 +2774,9 @@ contains
           do ctype_i=1, nctype
              !loop of parallel spins: up-up and down-down
              do spin_dependency_i=1, 2
-                a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel &
-                      (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                      dot_product( -a_param_phi_pseudo_parallel_cond &
-                      (dep_a_param_i, dep_a_param_phi_pseudo_parallel &
-                      (dep_a_param_i)+1:),&
-                      a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel &
-                      (dep_a_param_i) + 1:, ctype_i, spin_dependency_i))
+                a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                     & dot_product( -a_param_phi_pseudo_parallel_cond(dep_a_param_i, dep_a_param_phi_pseudo_parallel(dep_a_param_i)+1:),&
+                     & a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i) + 1:, ctype_i, spin_dependency_i))
              end do
           end do
        end do
@@ -3145,13 +2786,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_pseudo_anti_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel &
-                  (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_pseudo_anti_parallel_cond &
-                  (dep_a_param_i, dep_a_param_phi_pseudo_anti_parallel &
-                  (dep_a_param_i)+1:),&
-                  a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel &
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_pseudo_anti_parallel_cond(dep_a_param_i, dep_a_param_phi_pseudo_anti_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
     elseif ( phi_spin_dependence .eq. 2) then
@@ -3162,13 +2799,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_pseudo_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel &
-                  (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_pseudo_parallel_cond &
-                  (dep_a_param_i, dep_a_param_phi_pseudo_parallel &
-                  (dep_a_param_i)+1:),&
-                  a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel &
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_pseudo_parallel_cond(dep_a_param_i, dep_a_param_phi_pseudo_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !impose cusp anti_parallel
@@ -3177,13 +2810,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_pseudo_anti_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel &
-                  (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_pseudo_anti_parallel_cond &
-                  (dep_a_param_i, dep_a_param_phi_pseudo_anti_parallel &
-                  (dep_a_param_i)+1:),&
-                  a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel &
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_pseudo_anti_parallel_cond(dep_a_param_i, dep_a_param_phi_pseudo_anti_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_pseudo(dep_a_param_phi_pseudo_anti_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down
@@ -3196,12 +2825,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_pseudo_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-            a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i), &
-                ctype_i, spin_dependency_i) =&
-                dot_product( -a_param_phi_pseudo_parallel_cond(dep_a_param_i, &
-                dep_a_param_phi_pseudo_parallel(dep_a_param_i)+1:),&
-                a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel &
-                (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_pseudo_parallel_cond(dep_a_param_i, dep_a_param_phi_pseudo_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_pseudo(dep_a_param_phi_pseudo_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down=up-down
@@ -3290,24 +2916,17 @@ contains
     !do we read in parameters?
     if (read_a_param) then
        !read in parameters
-       a_param_spin_3_nb = (nb_a_param_phi) * nctype * 3         
-               !  up_up != down_down != up_down
-       a_param_spin_2_nb = (nb_a_param_phi) * nctype * 2         
-                !  up_up = down_down != up_down
-       a_param_spin_1_nb = (nb_a_param_phi) * nctype             
-               !  up_up = down_down = up_down
+       a_param_spin_3_nb = (nb_a_param_phi) * nctype * 3         !  up_up != down_down != up_down
+       a_param_spin_2_nb = (nb_a_param_phi) * nctype * 2         !  up_up = down_down != up_down
+       a_param_spin_1_nb = (nb_a_param_phi) * nctype             !  up_up = down_down = up_down
        if (read_a_param_phi_nb == a_param_spin_3_nb) then
           !enough parameters were read in for:  up_up != down_down != up_down
           if (phi_spin_dependence .ne. 3) then
              !too many parameters were read in
-             call require(lhere,  &
-                       'number of parameters correct for phi_spin_dependence specified',  &
-                       phi_spin_dependence .eq. 3)
+             call require(lhere, 'number of parameters correct for phi_spin_dependence specified', phi_spin_dependence .eq. 3)
           else
              !correct number of parameters so reshape into correct dimensions for a_param_phi
-             a_param_phi_all_elec = reshape( read_a_param_phi,  &
-                       (/ nb_a_param_phi, nctype, spin_dependencies_nb /)) 
-                       !  up_up != down_down != up_down
+             a_param_phi_all_elec = reshape( read_a_param_phi, (/ nb_a_param_phi, nctype, spin_dependencies_nb /)) !  up_up != down_down != up_down
              !don't want to re-read
              read_a_param = .false.
           end if
@@ -3315,14 +2934,10 @@ contains
           !enough parameters read in for:  up_up = down_down != up_down
           if ( phi_spin_dependence .ne. 2) then
              !incorrect number of parameters
-             call require(lhere,  &
-                       'number of parameters correct for phi_spin_dependence specified', &
-                        phi_spin_dependence .eq. 2)
+             call require(lhere, 'number of parameters correct for phi_spin_dependence specified', phi_spin_dependence .eq. 2)
           else
              !correct number of parameters so reshape into correct dimensions for a_param_phi_all_elec
-             a_param_phi_all_elec = reshape( read_a_param_phi,&
-                  (/ nb_a_param_phi, nctype, spin_dependencies_nb /), pad=read_a_param_phi)   
-                          !up_up = down_down != up_down
+             a_param_phi_all_elec = reshape( read_a_param_phi, (/ nb_a_param_phi, nctype, spin_dependencies_nb /), pad=read_a_param_phi)   !up_up = down_down != up_down
              ! up_up is in a_param_phi_all_elec(:,:,1), up_down is in a_param_phi_all_elec(:,:,2) and a_param_phi_all_elec(:,:,3) has garbage in it
              !want up_up in a_param_phi_all_elec(:,:,1), up_up=down_down in a_param_phi_all_elec(:,:,2), up_down in a_param_phi_all_elec(:,:,3)
              a_param_phi_all_elec(:,:,3)=a_param_phi_all_elec(:,:,2)
@@ -3337,9 +2952,7 @@ contains
              call require(lhere, 'number of parameters correct for phi_spin_dependence specified', phi_spin_dependence .eq. 1)
           else
              !correct number of parameters so reshape into correct dimensions for a_param_phi_all_elec
-             a_param_phi_all_elec = reshape( read_a_param_phi,&
-                         (/ nb_a_param_phi, nctype, spin_dependencies_nb /), pad=read_a_param_phi)   
-             !up_up = down_down = up_down
+             a_param_phi_all_elec = reshape( read_a_param_phi, (/ nb_a_param_phi, nctype, spin_dependencies_nb /), pad=read_a_param_phi)   !up_up = down_down = up_down
              ! up_up is in a_param_phi_all_elec(:,:,1), a_param_phi_all_elec(:,:,2) has garbage in it and a_param_phi_all_elec(:,:,3) has garbage in it
              !want up_up in a_param_phi_all_elec(:,:,1), up_up=down_down in a_param_phi_all_elec(:,:,2), up_up=up_down in a_param_phi_all_elec(:,:,3)
              a_param_phi_all_elec(:,:,2)=a_param_phi_all_elec(:,:,1)
@@ -3372,13 +2985,9 @@ contains
           do ctype_i=1, nctype
              !loop of parallel spins: up-up and down-down
              do spin_dependency_i=1, 2
-                a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel&
-                     (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                     dot_product( -a_param_phi_all_elec_parallel_cond&
-                     (dep_a_param_i, dep_a_param_phi_all_elec_parallel&
-                     (dep_a_param_i)+1:),&
-                     a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel&
-                     (dep_a_param_i) + 1:, ctype_i, spin_dependency_i))
+                a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                     & dot_product( -a_param_phi_all_elec_parallel_cond(dep_a_param_i, dep_a_param_phi_all_elec_parallel(dep_a_param_i)+1:),&
+                     & a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel(dep_a_param_i) + 1:, ctype_i, spin_dependency_i))
              end do
           end do
        end do
@@ -3388,13 +2997,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_all_elec_anti_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel&
-                  (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_all_elec_anti_parallel_cond&
-                  (dep_a_param_i, dep_a_param_phi_all_elec_anti_parallel&
-                  (dep_a_param_i)+1:),&
-                  a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel&
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_all_elec_anti_parallel_cond(dep_a_param_i, dep_a_param_phi_all_elec_anti_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
     elseif ( phi_spin_dependence .eq. 2) then
@@ -3405,13 +3010,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_all_elec_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel&
-             (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_all_elec_parallel_cond &
-                  (dep_a_param_i, dep_a_param_phi_all_elec_parallel&
-                  (dep_a_param_i)+1:),&
-                   a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel&
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_all_elec_parallel_cond(dep_a_param_i, dep_a_param_phi_all_elec_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !impose cusp anti_parallel
@@ -3420,13 +3021,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_all_elec_anti_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel&
-                  (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_all_elec_anti_parallel_cond&
-                  (dep_a_param_i, dep_a_param_phi_all_elec_anti_parallel&
-                  (dep_a_param_i)+1:),&
-                  a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel&
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_all_elec_anti_parallel_cond(dep_a_param_i, dep_a_param_phi_all_elec_anti_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_all_elec(dep_a_param_phi_all_elec_anti_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down
@@ -3439,13 +3036,9 @@ contains
        do dep_a_param_i=1, size(dep_a_param_phi_all_elec_parallel,1)
           !loop over center types
           do ctype_i=1, nctype
-             a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel&
-                  (dep_a_param_i), ctype_i, spin_dependency_i) =&
-                  dot_product( -a_param_phi_all_elec_parallel_cond&
-                  (dep_a_param_i, dep_a_param_phi_all_elec_parallel&
-                  (dep_a_param_i)+1:),&
-                  a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel&
-                  (dep_a_param_i)+1:, ctype_i, spin_dependency_i))
+             a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel(dep_a_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -a_param_phi_all_elec_parallel_cond(dep_a_param_i, dep_a_param_phi_all_elec_parallel(dep_a_param_i)+1:),&
+                  & a_param_phi_all_elec(dep_a_param_phi_all_elec_parallel(dep_a_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down=up-down
@@ -3569,8 +3162,7 @@ contains
     end do
 
     ! allocation
-    call object_alloc('dep_a_param_phi_pseudo_parallel', &
-         dep_a_param_phi_pseudo_parallel, nb_dep_a_param_phi_pseudo_parallel)
+    call object_alloc('dep_a_param_phi_pseudo_parallel', dep_a_param_phi_pseudo_parallel, nb_dep_a_param_phi_pseudo_parallel)
 
 
     !intialize the pivot column
@@ -3642,8 +3234,7 @@ contains
     end do
 
     ! allocation
-    call object_alloc('dep_a_param_phi_all_elec_parallel', &
-         dep_a_param_phi_all_elec_parallel, nb_dep_a_param_phi_all_elec_parallel)
+    call object_alloc('dep_a_param_phi_all_elec_parallel', dep_a_param_phi_all_elec_parallel, nb_dep_a_param_phi_all_elec_parallel)
 
 
     !intialize the pivot column
@@ -3715,8 +3306,7 @@ contains
     end do
 
     ! allocation
-    call object_alloc('dep_a_param_phi_pseudo_anti_parallel', &
-         dep_a_param_phi_pseudo_anti_parallel, nb_dep_a_param_phi_pseudo_anti_parallel)
+    call object_alloc('dep_a_param_phi_pseudo_anti_parallel', dep_a_param_phi_pseudo_anti_parallel, nb_dep_a_param_phi_pseudo_anti_parallel)
 
 
     !intialize the pivot column
@@ -3789,8 +3379,7 @@ contains
     end do
 
     ! allocation
-    call object_alloc('dep_a_param_phi_all_elec_anti_parallel', &
-         dep_a_param_phi_all_elec_anti_parallel, nb_dep_a_param_phi_all_elec_anti_parallel)
+    call object_alloc('dep_a_param_phi_all_elec_anti_parallel', dep_a_param_phi_all_elec_anti_parallel, nb_dep_a_param_phi_all_elec_anti_parallel)
 
 
     !intialize the pivot column
@@ -3858,8 +3447,7 @@ contains
 
     ! allocation
     ! one derivative constraints so number of contraints is (order_phi_bf -1 )
-    call object_alloc('a_param_phi_pseudo_anti_parallel_cond', &
-         a_param_phi_pseudo_anti_parallel_cond, order_phi_bf - 1, nb_a_param_phi)
+    call object_alloc('a_param_phi_pseudo_anti_parallel_cond', a_param_phi_pseudo_anti_parallel_cond, order_phi_bf - 1, nb_a_param_phi)
 
     !initialize
     a_param_phi_pseudo_anti_parallel_cond(:,:) = 0.d0
@@ -3884,15 +3472,8 @@ contains
                 ! d r_iI |
                 !         r_iI=0
                 !=================================
-                a_param_phi_pseudo_anti_parallel_cond&
-                     ((order_i+order_j-order_k)/2, param_i) =&
-                     a_param_phi_pseudo_anti_parallel_cond( &
-                     (order_i+order_j-order_k)/2, param_i) +&
-                     (order_k + order_i - order_j) / 2
-                a_param_phi_pseudo_anti_parallel_cond((order_i+order_j+&
-                     order_k)/2, param_i) = &
-                     a_param_phi_pseudo_anti_parallel_cond( (order_i+order_j&
-                     +order_k)/2, param_i) + ( order_i - order_j - order_k) / 2
+                a_param_phi_pseudo_anti_parallel_cond((order_i+order_j-order_k)/2, param_i) = a_param_phi_pseudo_anti_parallel_cond( (order_i+order_j-order_k)/2, param_i) + (order_k + order_i - order_j) / 2
+                a_param_phi_pseudo_anti_parallel_cond((order_i+order_j+order_k)/2, param_i) = a_param_phi_pseudo_anti_parallel_cond( (order_i+order_j+order_k)/2, param_i) + ( order_i - order_j - order_k) / 2
              endif
           enddo
        enddo
@@ -3950,8 +3531,7 @@ contains
 
     ! allocation
     ! two derivative constraints so number of contraints is 2*(order_phi_bf -1 )
-    call object_alloc('a_param_phi_pseudo_parallel_cond', &
-         a_param_phi_pseudo_parallel_cond, 2*(order_phi_bf - 1), nb_a_param_phi)
+    call object_alloc('a_param_phi_pseudo_parallel_cond', a_param_phi_pseudo_parallel_cond, 2*(order_phi_bf - 1), nb_a_param_phi)
 
 
     !initialize
@@ -3977,14 +3557,8 @@ contains
                 ! d r_iI |
                 !         r_iI=0
                 !=================================
-                a_param_phi_pseudo_parallel_cond((order_i+order_j-order_k)/2,&
-                     param_i) = a_param_phi_pseudo_parallel_cond( (order_i&
-                     +order_j-order_k)/2, param_i) + (order_k + order_i &
-                     - order_j) / 2
-                a_param_phi_pseudo_parallel_cond((order_i+order_j+order_k)/2,&
-                     param_i) = a_param_phi_pseudo_parallel_cond(&
-                     (order_i+order_j+order_k)/2, param_i) + ( order_i&
-                     - order_j - order_k) / 2
+                a_param_phi_pseudo_parallel_cond((order_i+order_j-order_k)/2, param_i) = a_param_phi_pseudo_parallel_cond( (order_i+order_j-order_k)/2, param_i) + (order_k + order_i - order_j) / 2
+                a_param_phi_pseudo_parallel_cond((order_i+order_j+order_k)/2, param_i) = a_param_phi_pseudo_parallel_cond( (order_i+order_j+order_k)/2, param_i) + ( order_i - order_j - order_k) / 2
                 !=================================
                 ! d phi  |
                 ! -----  |        = 0
@@ -3992,10 +3566,7 @@ contains
                 !         r_ij=0
                 !=================================
                 !note that the row needs to be shifted down by order_phi_bf - 1 because those rows hold the above constraints
-                a_param_phi_pseudo_parallel_cond(order_phi_bf - 1 &
-                     + order_i-order_j, param_i) = &
-                     a_param_phi_pseudo_parallel_cond(order_phi_bf - 1 +&
-                     order_i-order_j, param_i) + order_j
+                a_param_phi_pseudo_parallel_cond(order_phi_bf - 1 + order_i-order_j, param_i) = a_param_phi_pseudo_parallel_cond(order_phi_bf - 1 + order_i-order_j, param_i) + order_j
              endif
           enddo
        enddo
@@ -4070,8 +3641,7 @@ contains
     ! allocation
     ! two derivative constraints evaluated at 0, one constraint on function
     ! and one derivative constraint evaluated at another point so number of contraints is 2*(order_phi_bf -1 ) + order_phi_bf + order_phi_bf
-    call object_alloc('a_param_phi_all_elec_parallel_cond', &
-         a_param_phi_all_elec_parallel_cond, 4 * order_phi_bf - 2, nb_a_param_phi)
+    call object_alloc('a_param_phi_all_elec_parallel_cond', a_param_phi_all_elec_parallel_cond, 4 * order_phi_bf - 2, nb_a_param_phi)
 
     !initialize
     a_param_phi_all_elec_parallel_cond(:,:) = 0.d0
@@ -4096,14 +3666,8 @@ contains
                 ! d r_iI |
                 !         r_iI=0
                 !=================================
-                a_param_phi_all_elec_parallel_cond((order_i+order_j-order_k)&
-                     /2, param_i) = a_param_phi_all_elec_parallel_cond( &
-                     (order_i+order_j-order_k)/2, param_i) + (order_k +&
-                     order_i - order_j) / 2
-                a_param_phi_all_elec_parallel_cond((order_i+order_j+order_k&
-                     )/2, param_i) = a_param_phi_all_elec_parallel_cond( &
-                     (order_i+order_j+order_k)/2, param_i) + ( order_i &
-                     - order_j - order_k) / 2
+                a_param_phi_all_elec_parallel_cond((order_i+order_j-order_k)/2, param_i) = a_param_phi_all_elec_parallel_cond( (order_i+order_j-order_k)/2, param_i) + (order_k + order_i - order_j) / 2
+                a_param_phi_all_elec_parallel_cond((order_i+order_j+order_k)/2, param_i) = a_param_phi_all_elec_parallel_cond( (order_i+order_j+order_k)/2, param_i) + ( order_i - order_j - order_k) / 2
                 !=================================
                 ! d phi  |
                 ! -----  |        = 0
@@ -4111,10 +3675,7 @@ contains
                 !         r_ij=0
                 !=================================
                 !note that the row needs to be shifted down by order_phi_bf - 1 because those rows hold the above constraints
-                a_param_phi_all_elec_parallel_cond(order_phi_bf - 1 +&
-                     order_i-order_j, param_i) = &
-                     a_param_phi_all_elec_parallel_cond(order_phi_bf - 1 +&
-                     order_i-order_j, param_i) + order_j
+                a_param_phi_all_elec_parallel_cond(order_phi_bf - 1 + order_i-order_j, param_i) = a_param_phi_all_elec_parallel_cond(order_phi_bf - 1 + order_i-order_j, param_i) + order_j
                 !================================================
                 ! phi  |
                 !      |        = 0
@@ -4122,14 +3683,8 @@ contains
                 !       r_iI=0
                 !===============================================
                 !note that the row needs to be shifted down by 2*(order_phi_bf - 1) because those rows hold the above constraints
-                a_param_phi_all_elec_parallel_cond(2 *(order_phi_bf - 1) &
-                     + (order_i+order_j-order_k)/2, param_i) = &
-                     a_param_phi_all_elec_parallel_cond(2 * (order_phi_bf -1 )&
-                     + (order_i+order_j-order_k)/2, param_i) + 1.d0
-                a_param_phi_all_elec_parallel_cond(2 *(order_phi_bf - 1) +&
-                     (order_i+order_j+order_k)/2, param_i) =&
-                     a_param_phi_all_elec_parallel_cond(2 * (order_phi_bf -1 )&
-                     + (order_i+order_j+order_k)/2, param_i) + 1.d0
+                a_param_phi_all_elec_parallel_cond(2 *(order_phi_bf - 1) + (order_i+order_j-order_k)/2, param_i) = a_param_phi_all_elec_parallel_cond(2 * (order_phi_bf -1 ) + (order_i+order_j-order_k)/2, param_i) + 1.d0
+                a_param_phi_all_elec_parallel_cond(2 *(order_phi_bf - 1) + (order_i+order_j+order_k)/2, param_i) = a_param_phi_all_elec_parallel_cond(2 * (order_phi_bf -1 ) + (order_i+order_j+order_k)/2, param_i) + 1.d0
                 !================================================
                 !d phi  |
                 ! ----  |        = 0
@@ -4137,14 +3692,8 @@ contains
                 !       r_iI=0
                 !===============================================
                 !note that the row needs to be shifted down by 2*(order_phi_bf - 1) + order_phi_bf because those rows hold the above constraints
-                a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+(order_i+&
-                     order_j-2-order_k)/2, param_i) = &
-                     a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+&
-                     (order_i+order_j-2-order_k)/2, param_i) + order_j
-                a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+&
-                     (order_i+order_j-2+order_k)/2, param_i) =&
-                     a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2&
-                     +(order_i+order_j-2+order_k)/2, param_i) + order_j
+                a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+(order_i+order_j-2-order_k)/2, param_i) = a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+(order_i+order_j-2-order_k)/2, param_i) + order_j
+                a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+(order_i+order_j-2+order_k)/2, param_i) = a_param_phi_all_elec_parallel_cond(3*order_phi_bf-2+(order_i+order_j-2+order_k)/2, param_i) + order_j
              endif
           enddo
        enddo
@@ -4216,8 +3765,7 @@ contains
     ! allocation
     ! one derivative constraints evaluated at 0, one constraint on function
     ! and one derivative constraint evaluated at another point so number of contraints is (order_phi_bf -1 ) + order_phi_bf + order_phi_bf
-    call object_alloc('a_param_phi_all_elec_anti_parallel_cond', &
-         a_param_phi_all_elec_anti_parallel_cond, 3 * order_phi_bf - 1, nb_a_param_phi)
+    call object_alloc('a_param_phi_all_elec_anti_parallel_cond', a_param_phi_all_elec_anti_parallel_cond, 3 * order_phi_bf - 1, nb_a_param_phi)
 
     !initialize
     a_param_phi_all_elec_anti_parallel_cond(:,:) = 0.d0
@@ -4242,14 +3790,8 @@ contains
                 ! d r_iI |
                 !         r_iI=0
                 !=================================
-                a_param_phi_all_elec_anti_parallel_cond& 
-                     ((order_i+order_j-order_k)/2, param_i) =&
-                     a_param_phi_all_elec_anti_parallel_cond( (order_i+order_j-order_k)/2, param_i) &
-                     + (order_k + order_i - order_j) / 2
-                a_param_phi_all_elec_anti_parallel_cond((order_i+order_j&
-                     +order_k)/2, param_i) = &
-                     a_param_phi_all_elec_anti_parallel_cond( (order_i+order_j&
-                     +order_k)/2, param_i) + ( order_i - order_j - order_k) / 2
+                a_param_phi_all_elec_anti_parallel_cond((order_i+order_j-order_k)/2, param_i) = a_param_phi_all_elec_anti_parallel_cond( (order_i+order_j-order_k)/2, param_i) + (order_k + order_i - order_j) / 2
+                a_param_phi_all_elec_anti_parallel_cond((order_i+order_j+order_k)/2, param_i) = a_param_phi_all_elec_anti_parallel_cond( (order_i+order_j+order_k)/2, param_i) + ( order_i - order_j - order_k) / 2
                 !================================================
                 ! phi  |
                 !      |        = 0
@@ -4257,14 +3799,8 @@ contains
                 !       r_iI=0
                 !===============================================
                 !note that the row needs to be shifted down by (order_phi_bf - 1) because those rows hold the above constraints
-                a_param_phi_all_elec_anti_parallel_cond((order_phi_bf - 1) &
-                     + (order_i+order_j-order_k)/2, param_i) =&
-                     a_param_phi_all_elec_anti_parallel_cond((order_phi_bf -1 &
-                     ) + (order_i+order_j-order_k)/2, param_i) + 1.d0
-                a_param_phi_all_elec_anti_parallel_cond((order_phi_bf - 1)&
-                     + (order_i+order_j+order_k)/2, param_i) =&
-                     a_param_phi_all_elec_anti_parallel_cond((order_phi_bf -1 )&
-                     + (order_i+order_j+order_k)/2, param_i) + 1.d0
+                a_param_phi_all_elec_anti_parallel_cond((order_phi_bf - 1) + (order_i+order_j-order_k)/2, param_i) = a_param_phi_all_elec_anti_parallel_cond((order_phi_bf -1 ) + (order_i+order_j-order_k)/2, param_i) + 1.d0
+                a_param_phi_all_elec_anti_parallel_cond((order_phi_bf - 1) + (order_i+order_j+order_k)/2, param_i) = a_param_phi_all_elec_anti_parallel_cond((order_phi_bf -1 ) + (order_i+order_j+order_k)/2, param_i) + 1.d0
                 !================================================
                 !d phi  |
                 ! ----  |        = 0
@@ -4272,14 +3808,8 @@ contains
                 !       r_iI=0
                 !===============================================
                 !note that the row needs to be shifted down by (order_phi_bf - 1) + order_phi_bf because those rows hold the above constraints
-                a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1+&
-                     (order_i+order_j-2-order_k)/2, param_i) =&
-                     a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-&
-                     1+(order_i+order_j-2-order_k)/2, param_i) + order_j
-                a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1+&
-                     (order_i+order_j-2+order_k)/2, param_i) = &
-                     a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1&
-                     +(order_i+order_j-2+order_k)/2, param_i) + order_j
+                a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1+(order_i+order_j-2-order_k)/2, param_i) = a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1+(order_i+order_j-2-order_k)/2, param_i) + order_j
+                a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1+(order_i+order_j-2+order_k)/2, param_i) = a_param_phi_all_elec_anti_parallel_cond(2*order_phi_bf-1+(order_i+order_j-2+order_k)/2, param_i) + order_j
              endif
           enddo
        enddo
@@ -4357,20 +3887,14 @@ contains
                 do elec_j = 1, elec_i -1
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_theta(dim_i, elec_i, walk_i) = &
-                           xi_een_theta(dim_i, elec_i, walk_i) +  &
-                           theta_all_elec(elec_i, elec_j, cent_i, walk_i) * &
-                           vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
+                      xi_een_theta(dim_i, elec_i, walk_i) = xi_een_theta(dim_i, elec_i, walk_i) +  theta_all_elec(elec_i, elec_j, cent_i, walk_i) * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
                    enddo
                 enddo
                 !loop over other electrons after elec_i
                 do elec_j = elec_i + 1, nelec
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_theta(dim_i, elec_i, walk_i) =&
-                           xi_een_theta(dim_i, elec_i, walk_i) +  &
-                           theta_all_elec(elec_i, elec_j, cent_i, walk_i) &
-                           * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
+                      xi_een_theta(dim_i, elec_i, walk_i) = xi_een_theta(dim_i, elec_i, walk_i) +  theta_all_elec(elec_i, elec_j, cent_i, walk_i) * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
                    enddo
                 enddo
              enddo
@@ -4397,20 +3921,14 @@ contains
                 do elec_j = 1, elec_i -1
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_theta(dim_i, elec_i, walk_i) =&
-                           xi_een_theta(dim_i, elec_i, walk_i) + &
-                           theta_pseudo(elec_i, elec_j, cent_i, walk_i)&
-                           * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
+                      xi_een_theta(dim_i, elec_i, walk_i) = xi_een_theta(dim_i, elec_i, walk_i) +  theta_pseudo(elec_i, elec_j, cent_i, walk_i) * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
                    enddo
                 enddo
                 !loop over other electrons after elec_i
                 do elec_j = elec_i + 1, nelec
                    !loop over spatial dimensions
                    do dim_i = 1, ndim
-                      xi_een_theta(dim_i, elec_i, walk_i) =&
-                           xi_een_theta(dim_i, elec_i, walk_i) + &
-                           theta_pseudo(elec_i, elec_j, cent_i, walk_i) *&
-                           vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
+                      xi_een_theta(dim_i, elec_i, walk_i) = xi_een_theta(dim_i, elec_i, walk_i) +  theta_pseudo(elec_i, elec_j, cent_i, walk_i) * vec_en_xyz_wlk(dim_i, elec_i, cent_i, walk_i)
                    enddo
                 enddo
              enddo
@@ -4480,8 +3998,7 @@ contains
 
     ! allocation
 
-    call object_alloc('theta_all_elec', &
-         theta_all_elec, nelec, nelec, ncent, nwalk)
+    call object_alloc('theta_all_elec', theta_all_elec, nelec, nelec, ncent, nwalk)
 
     ! build theta_all_elec
 
@@ -4509,20 +4026,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_all_elec(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_all_elec(param_i, &
-                                 iwctype(cent_i), up_up) &
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * (&
-                                 scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i)**order_k &
-                                 +  scaled_dist_een_en_wlk(elec_j, cent_i,&
-                                 walk_i)**order_k ) * (&
-                                 scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
-                                 *  scaled_dist_een_en_wlk(elec_j, cent_i,&
-                                 walk_i) ) ** ((order_i - order_j - order_k)&
-                                 / 2)
+                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) = theta_all_elec(elec_i, elec_j, cent_i, walk_i) + b_param_theta_all_elec(param_i, iwctype(cent_i), up_up) &
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k &
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) &
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4544,20 +4051,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_all_elec(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_all_elec(param_i,&
-                                 iwctype(cent_i), up_up) &
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( &
-                                 scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i)**order_k&
-                                 +  scaled_dist_een_en_wlk(elec_j, cent_i,&
-                                 walk_i)**order_k ) * (&
-                                 scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
-                                 *  scaled_dist_een_en_wlk(elec_j, cent_i,&
-                                 walk_i) ) ** ((order_i - order_j - order_k&
-                                 ) / 2)
+                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) = theta_all_elec(elec_i, elec_j, cent_i, walk_i) + b_param_theta_all_elec(param_i, iwctype(cent_i), up_up) &
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k&
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4591,19 +4088,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_all_elec(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_all_elec(param_i,&
-                                 iwctype(cent_i), down_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k + &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)&
-                                 **order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j -&
-                                 order_k) / 2)
+                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) = theta_all_elec(elec_i, elec_j, cent_i, walk_i) + b_param_theta_all_elec(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4625,19 +4112,10 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_all_elec(elec_i, elec_j, cent_i, walk_i&
-                                 ) + b_param_theta_all_elec(param_i, iwctype&
-                                 (cent_i), down_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k&
-                                 + scaled_dist_een_en_wlk(elec_j, cent_i,&
-                                 walk_i)**order_k ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)&
-                                 * scaled_dist_een_en_wlk(elec_j, cent_i, &
-                                 walk_i) ) ** ((order_i - order_j - order_k)&
-                                 / 2)
+                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) = theta_all_elec(elec_i, elec_j, cent_i, walk_i) + b_param_theta_all_elec(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k&
+                                 & +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)&
+                                 & *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4670,19 +4148,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_all_elec(elec_i, elec_j, cent_i, walk_i&
-                                 ) + b_param_theta_all_elec(param_i, iwctype&
-                                 (cent_i), up_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k + &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i&
-                                 )**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j -&
-                                 order_k) / 2)
+                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) = theta_all_elec(elec_i, elec_j, cent_i, walk_i) + b_param_theta_all_elec(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4715,19 +4183,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_all_elec(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_all_elec(param_i,&
-                                 iwctype(cent_i), up_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k + &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)&
-                                 **order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j -&
-                                 order_k) / 2)
+                            theta_all_elec(elec_i, elec_j, cent_i, walk_i) = theta_all_elec(elec_i, elec_j, cent_i, walk_i) + b_param_theta_all_elec(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4742,12 +4200,10 @@ contains
     do cent_i=1, ncent
        do elec_j=1, nelec
           do prod_i=1, cent_i-1
-             theta_all_elec(:,elec_j,cent_i,:) =&
-                  theta_all_elec(:,elec_j,cent_i,:) * smooth_cutoff_g(:,prod_i,:)
+             theta_all_elec(:,elec_j,cent_i,:) = theta_all_elec(:,elec_j,cent_i,:) * smooth_cutoff_g(:,prod_i,:)
           end do
           do prod_i=cent_i+1, ncent
-             theta_all_elec(:,elec_j, cent_i,:) =&
-                  theta_all_elec(:,elec_j, cent_i,:) * smooth_cutoff_g(:,prod_i,:)
+             theta_all_elec(:,elec_j, cent_i,:) = theta_all_elec(:,elec_j, cent_i,:) * smooth_cutoff_g(:,prod_i,:)
           end do
        end do
     enddo
@@ -4836,19 +4292,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_pseudo(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_pseudo(param_i,&
-                                 iwctype(cent_i), up_up)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k + &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)&
-                                 **order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j&
-                                 , cent_i, walk_i) ) ** ((order_i - order_j&
-                                 - order_k) / 2)
+                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) = theta_pseudo(elec_i, elec_j, cent_i, walk_i) + b_param_theta_pseudo(param_i, iwctype(cent_i), up_up)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4870,19 +4316,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_pseudo(elec_i, elec_j, cent_i, walk_i&
-                                 ) + b_param_theta_pseudo(param_i, iwctype&
-                                 (cent_i), up_up)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k + &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i&
-                                 )**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j -&
-                                 order_k) / 2)
+                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) = theta_pseudo(elec_i, elec_j, cent_i, walk_i) + b_param_theta_pseudo(param_i, iwctype(cent_i), up_up)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4916,19 +4352,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_pseudo(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_pseudo(param_i,&
-                                 iwctype(cent_i), down_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k + &
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)&
-                                 **order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j -&
-                                 order_k) / 2)
+                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) = theta_pseudo(elec_i, elec_j, cent_i, walk_i) + b_param_theta_pseudo(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4950,19 +4376,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_pseudo(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_pseudo(param_i,&
-                                 iwctype(cent_i), down_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k +&
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i&
-                                 )**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j, &
-                                 cent_i, walk_i) ) ** ((order_i - order_j&
-                                 - order_k) / 2)
+                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) = theta_pseudo(elec_i, elec_j, cent_i, walk_i) + b_param_theta_pseudo(param_i, iwctype(cent_i), down_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -4995,19 +4411,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_pseudo(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_pseudo(param_i,&
-                                 iwctype(cent_i), up_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * ( scaled_dist_een_en_wlk&
-                                 (elec_i, cent_i, walk_i)**order_k +&
-                                 scaled_dist_een_en_wlk(elec_j, cent_i, walk_i&
-                                 )**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j -&
-                                 order_k) / 2)
+                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) = theta_pseudo(elec_i, elec_j, cent_i, walk_i) + b_param_theta_pseudo(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -5040,19 +4446,9 @@ contains
                          if (modulo(order_i - order_j - order_k, 2) .ne. 0) then
                             cycle
                          else
-                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) =&
-                                 theta_pseudo(elec_i, elec_j, cent_i, walk_i)&
-                                 + b_param_theta_pseudo(param_i, iwctype&
-                                 (cent_i), up_down)&
-                                 * ( scaled_dist_een_ee_wlk(elec_i, elec_j,&
-                                 walk_i)**order_j ) * (&
-                                 scaled_dist_een_en_wlk(elec_i, cent_i, walk_i&
-                                 )**order_k +  scaled_dist_een_en_wlk(elec_j&
-                                 , cent_i, walk_i)**order_k )&
-                                 * ( scaled_dist_een_en_wlk(elec_i, cent_i,&
-                                 walk_i) *  scaled_dist_een_en_wlk(elec_j,&
-                                 cent_i, walk_i) ) ** ((order_i - order_j &
-                                 - order_k) / 2)
+                            theta_pseudo(elec_i, elec_j, cent_i, walk_i) = theta_pseudo(elec_i, elec_j, cent_i, walk_i) + b_param_theta_pseudo(param_i, iwctype(cent_i), up_down)&
+                                 & * ( scaled_dist_een_ee_wlk(elec_i, elec_j, walk_i)**order_j ) * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i)**order_k +  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i)**order_k )&
+                                 & * ( scaled_dist_een_en_wlk(elec_i, cent_i, walk_i) *  scaled_dist_een_en_wlk(elec_j, cent_i, walk_i) ) ** ((order_i - order_j - order_k) / 2)
                             param_i = param_i + 1
                          endif
                       enddo
@@ -5132,30 +4528,22 @@ contains
     end if
 
     ! allocation
-    call object_alloc('b_param_theta_pseudo', b_param_theta_pseudo&
-         , nb_b_param_theta, nctype, spin_dependencies_nb)
+    call object_alloc('b_param_theta_pseudo', b_param_theta_pseudo, nb_b_param_theta, nctype, spin_dependencies_nb)
 
     !do we read in parameters?
     if (read_b_param) then
        !read in parameters
-       b_param_spin_3_nb = (nb_b_param_theta) *&
-            nctype * 3         !  up_up != down_down != up_down
-       b_param_spin_2_nb = (nb_b_param_theta) * nctype * 2
-            !  up_up = down_down != up_down
-       b_param_spin_1_nb = (nb_b_param_theta) * nctype     
-        !  up_up = down_down = up_down
+       b_param_spin_3_nb = (nb_b_param_theta) * nctype * 3         !  up_up != down_down != up_down
+       b_param_spin_2_nb = (nb_b_param_theta) * nctype * 2         !  up_up = down_down != up_down
+       b_param_spin_1_nb = (nb_b_param_theta) * nctype             !  up_up = down_down = up_down
        if (read_b_param_theta_nb == b_param_spin_3_nb) then
           !enough parameters were read in for:  up_up != down_down != up_down
           if (theta_spin_dependence .ne. 3) then
              !too many parameters were read in
-             call require(lhere,&
-                  'number of parameters correct for theta_spin_dependence specified'&
-                  , theta_spin_dependence .eq. 3)
+             call require(lhere, 'number of parameters correct for theta_spin_dependence specified', theta_spin_dependence .eq. 3)
           else
              !correct number of parameters so reshape into correct dimensions for b_param_theta
-             b_param_theta_pseudo = reshape( read_b_param_theta,&
-                  (/ nb_b_param_theta, nctype, spin_dependencies_nb /))
-             !  up_up != down_down != up_down
+             b_param_theta_pseudo = reshape( read_b_param_theta, (/ nb_b_param_theta, nctype, spin_dependencies_nb /)) !  up_up != down_down != up_down
              !don't want to re-read
              read_b_param = .false.
           end if
@@ -5163,14 +4551,10 @@ contains
           !enough parameters read in for:  up_up = down_down != up_down
           if ( theta_spin_dependence .ne. 2) then
              !incorrect number of parameters
-             call require(lhere, &
-                  'number of parameters correct for theta_spin_dependence specified',&
-                  theta_spin_dependence .eq. 2)
+             call require(lhere, 'number of parameters correct for theta_spin_dependence specified', theta_spin_dependence .eq. 2)
           else
              !correct number of parameters so reshape into correct dimensions for b_param_theta_pseudo
-             b_param_theta_pseudo = reshape( read_b_param_theta,&
-                  (/ nb_b_param_theta, nctype, spin_dependencies_nb /),&
-                  pad=read_b_param_theta)   !up_up = down_down != up_down
+             b_param_theta_pseudo = reshape( read_b_param_theta, (/ nb_b_param_theta, nctype, spin_dependencies_nb /), pad=read_b_param_theta)   !up_up = down_down != up_down
              ! up_up is in b_param_theta_pseudo(:,:,1), up_down is in b_param_theta_pseudo(:,:,2) and b_param_theta_pseudo(:,:,3) has garbage in it
              !want up_up in b_param_theta_pseudo(:,:,1), up_up=down_down in b_param_theta_pseudo(:,:,2), up_down in b_param_theta_pseudo(:,:,3)
              b_param_theta_pseudo(:,:,3)=b_param_theta_pseudo(:,:,2)
@@ -5182,14 +4566,10 @@ contains
           !enough parameters read in for:  up_up = down_down = up_down
           if ( theta_spin_dependence .ne. 1) then
              !incorrect number of parameters
-             call require(lhere,&
-                  'number of parameters correct for theta_spin_dependence specified',&
-                  theta_spin_dependence .eq. 1)
+             call require(lhere, 'number of parameters correct for theta_spin_dependence specified', theta_spin_dependence .eq. 1)
           else
              !correct number of parameters so reshape into correct dimensions for b_param_theta_pseudo
-             b_param_theta_pseudo = reshape( read_b_param_theta,&
-                  (/ nb_b_param_theta, nctype, spin_dependencies_nb /),&
-                  pad=read_b_param_theta)   !up_up = down_down = up_down
+             b_param_theta_pseudo = reshape( read_b_param_theta, (/ nb_b_param_theta, nctype, spin_dependencies_nb /), pad=read_b_param_theta)   !up_up = down_down = up_down
              ! up_up is in b_param_theta_pseudo(:,:,1), b_param_theta_pseudo(:,:,2) has garbage in it and b_param_theta_pseudo(:,:,3) has garbage in it
              !want up_up in b_param_theta_pseudo(:,:,1), up_up=down_down in b_param_theta_pseudo(:,:,2), up_up=up_down in b_param_theta_pseudo(:,:,3)
              b_param_theta_pseudo(:,:,2)=b_param_theta_pseudo(:,:,1)
@@ -5199,8 +4579,7 @@ contains
           end if
        else
           !wrong number of parameters
-          call die(lhere,&
-               'read_b_param_theta has an incorrect number of parameters.')
+          call die(lhere,'read_b_param_theta has an incorrect number of parameters.')
        end if
     else
        !don't read in parameters
@@ -5223,12 +4602,9 @@ contains
           do ctype_i=1, nctype
              !loop of spin_dependeny
              do spin_dependency_i=1, theta_spin_dependence
-                b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i),&
-                     ctype_i, spin_dependency_i) =&
-                     dot_product( -b_param_theta_pseudo_cond(dep_b_param_i,&
-                     dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
-                     b_param_theta_pseudo(dep_b_param_theta_pseudo&
-                     (dep_b_param_i) + 1:, ctype_i, spin_dependency_i))
+                b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                     & dot_product( -b_param_theta_pseudo_cond(dep_b_param_i, dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
+                     & b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i) + 1:, ctype_i, spin_dependency_i))
              end do
           end do
        end do
@@ -5239,12 +4615,9 @@ contains
        do dep_b_param_i=1, size(dep_b_param_theta_pseudo,1)
           !loop over center types
           do ctype_i=1, nctype
-             b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i),&
-                  ctype_i, spin_dependency_i) =&
-                  dot_product( -b_param_theta_pseudo_cond(dep_b_param_i,&
-                  dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
-                  b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i)&
-                  +1:, ctype_i, spin_dependency_i))
+             b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -b_param_theta_pseudo_cond(dep_b_param_i, dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
+                  & b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        spin_dependency_i = 3 !up_down or down_up
@@ -5252,12 +4625,9 @@ contains
        do dep_b_param_i=1, size(dep_b_param_theta_pseudo,1)
           !loop over center types
           do ctype_i=1, nctype
-             b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i),&
-                  ctype_i, spin_dependency_i) =&
-                  dot_product( -b_param_theta_pseudo_cond(dep_b_param_i,&
-                  dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
-                  b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i)&
-                  +1:, ctype_i, spin_dependency_i))
+             b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -b_param_theta_pseudo_cond(dep_b_param_i, dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
+                  & b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down
@@ -5269,12 +4639,9 @@ contains
        do dep_b_param_i=1, size(dep_b_param_theta_pseudo,1)
           !loop over center types
           do ctype_i=1, nctype
-             b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i),&
-                  ctype_i, spin_dependency_i) =&
-                  dot_product( -b_param_theta_pseudo_cond(dep_b_param_i,&
-                  dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
-                  b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i)&
-                  +1:, ctype_i, spin_dependency_i))
+             b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -b_param_theta_pseudo_cond(dep_b_param_i, dep_b_param_theta_pseudo(dep_b_param_i)+1:),&
+                  & b_param_theta_pseudo(dep_b_param_theta_pseudo(dep_b_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down=up-down
@@ -5358,24 +4725,17 @@ contains
     !do we read in parameters?
     if (read_b_param) then
        !read in parameters
-       b_param_spin_3_nb = (nb_b_param_theta) * nctype * 3        
-       !  up_up != down_down != up_down
-       b_param_spin_2_nb = (nb_b_param_theta) * nctype * 2         
-       !  up_up = down_down != up_down
-       b_param_spin_1_nb = (nb_b_param_theta) * nctype             
-       !  up_up = down_down = up_down
+       b_param_spin_3_nb = (nb_b_param_theta) * nctype * 3         !  up_up != down_down != up_down
+       b_param_spin_2_nb = (nb_b_param_theta) * nctype * 2         !  up_up = down_down != up_down
+       b_param_spin_1_nb = (nb_b_param_theta) * nctype             !  up_up = down_down = up_down
        if (read_b_param_theta_nb == b_param_spin_3_nb) then
           !enough parameters were read in for:  up_up != down_down != up_down
           if (theta_spin_dependence .ne. 3) then
              !too many parameters were read in
-             call require(lhere,&
-                  'number of parameters correct for theta_spin_dependence specified',&
-                  theta_spin_dependence .eq. 3)
+             call require(lhere, 'number of parameters correct for theta_spin_dependence specified', theta_spin_dependence .eq. 3)
           else
              !correct number of parameters so reshape into correct dimensions for b_param_theta
-             b_param_theta_all_elec = reshape( read_b_param_theta, &
-                  (/ nb_b_param_theta, nctype, spin_dependencies_nb /))
-             !  up_up != down_down != up_down
+             b_param_theta_all_elec = reshape( read_b_param_theta, (/ nb_b_param_theta, nctype, spin_dependencies_nb /)) !  up_up != down_down != up_down
              !don't want to re-read
              read_b_param = .false.
           end if
@@ -5383,14 +4743,10 @@ contains
           !enough parameters read in for:  up_up = down_down != up_down
           if ( theta_spin_dependence .ne. 2) then
              !incorrect number of parameters
-             call require(lhere, &
-                  'number of parameters correct for theta_spin_dependence specified',&
-                  theta_spin_dependence .eq. 2)
+             call require(lhere, 'number of parameters correct for theta_spin_dependence specified', theta_spin_dependence .eq. 2)
           else
              !correct number of parameters so reshape into correct dimensions for b_param_theta_all_elec
-             b_param_theta_all_elec = reshape( read_b_param_theta,&
-                  (/ nb_b_param_theta, nctype, spin_dependencies_nb /),&
-                  pad=read_b_param_theta)   !up_up = down_down != up_down
+             b_param_theta_all_elec = reshape( read_b_param_theta, (/ nb_b_param_theta, nctype, spin_dependencies_nb /), pad=read_b_param_theta)   !up_up = down_down != up_down
              ! up_up is in b_param_theta_all_elec(:,:,1), up_down is in b_param_theta_all_elec(:,:,2) and b_param_theta_all_elec(:,:,3) has garbage in it
              !want up_up in b_param_theta_all_elec(:,:,1), up_up=down_down in b_param_theta_all_elec(:,:,2), up_down in b_param_theta_all_elec(:,:,3)
              b_param_theta_all_elec(:,:,3)=b_param_theta_all_elec(:,:,2)
@@ -5402,14 +4758,10 @@ contains
           !enough parameters read in for:  up_up = down_down = up_down
           if ( theta_spin_dependence .ne. 1) then
              !incorrect number of parameters
-             call require(lhere,&
-                  'number of parameters correct for theta_spin_dependence specified',&
-                  theta_spin_dependence .eq. 1)
+             call require(lhere, 'number of parameters correct for theta_spin_dependence specified', theta_spin_dependence .eq. 1)
           else
              !correct number of parameters so reshape into correct dimensions for b_param_theta_all_elec
-             b_param_theta_all_elec = reshape( read_b_param_theta,&
-                  (/ nb_b_param_theta, nctype, spin_dependencies_nb /),&
-                  pad=read_b_param_theta)   !up_up = down_down = up_down
+             b_param_theta_all_elec = reshape( read_b_param_theta, (/ nb_b_param_theta, nctype, spin_dependencies_nb /), pad=read_b_param_theta)   !up_up = down_down = up_down
              ! up_up is in b_param_theta_all_elec(:,:,1), b_param_theta_all_elec(:,:,2) has garbage in it and b_param_theta_all_elec(:,:,3) has garbage in it
              !want up_up in b_param_theta_all_elec(:,:,1), up_up=down_down in b_param_theta_all_elec(:,:,2), up_up=up_down in b_param_theta_all_elec(:,:,3)
              b_param_theta_all_elec(:,:,2)=b_param_theta_all_elec(:,:,1)
@@ -5419,8 +4771,7 @@ contains
           end if
        else
           !wrong number of parameters
-          call die(lhere,&
-               'read_b_param_theta has an incorrect number of parameters.')
+          call die(lhere,'read_b_param_theta has an incorrect number of parameters.')
        end if
     else
        !don't read in parameters
@@ -5442,12 +4793,9 @@ contains
           do ctype_i=1, nctype
              !loop over spins
              do spin_dependency_i=1, theta_spin_dependence
-                b_param_theta_all_elec(dep_b_param_theta_all_elec&
-                     (dep_b_param_i), ctype_i, spin_dependency_i) =&
-                     dot_product( -b_param_theta_all_elec_cond(dep_b_param_i,&
-                     dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
-                     b_param_theta_all_elec(dep_b_param_theta_all_elec&
-                     (dep_b_param_i) + 1:, ctype_i, spin_dependency_i))
+                b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                     & dot_product( -b_param_theta_all_elec_cond(dep_b_param_i, dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
+                     & b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i) + 1:, ctype_i, spin_dependency_i))
              end do
           end do
        end do
@@ -5458,12 +4806,9 @@ contains
        do dep_b_param_i=1, size(dep_b_param_theta_all_elec,1)
           !loop over center types
           do ctype_i=1, nctype
-             b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i)&
-                  , ctype_i, spin_dependency_i) =&
-                  dot_product( -b_param_theta_all_elec_cond(dep_b_param_i, &
-                  dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
-                  b_param_theta_all_elec(dep_b_param_theta_all_elec&
-                  (dep_b_param_i)+1:, ctype_i, spin_dependency_i))
+             b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -b_param_theta_all_elec_cond(dep_b_param_i, dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
+                  & b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        spin_dependency_i = 3 !up_down or down_up
@@ -5471,12 +4816,9 @@ contains
        do dep_b_param_i=1, size(dep_b_param_theta_all_elec,1)
           !loop over center types
           do ctype_i=1, nctype
-             b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i)&
-                  , ctype_i, spin_dependency_i) =&
-                  dot_product( -b_param_theta_all_elec_cond(dep_b_param_i,&
-                  dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
-                  b_param_theta_all_elec(dep_b_param_theta_all_elec&
-                  (dep_b_param_i)+1:, ctype_i, spin_dependency_i))
+             b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -b_param_theta_all_elec_cond(dep_b_param_i, dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
+                  & b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down
@@ -5488,12 +4830,9 @@ contains
        do dep_b_param_i=1, size(dep_b_param_theta_all_elec,1)
           !loop over center types
           do ctype_i=1, nctype
-             b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i)&
-                  , ctype_i, spin_dependency_i) =&
-                  & dot_product( -b_param_theta_all_elec_cond(dep_b_param_i,&
-                  dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
-                  & b_param_theta_all_elec(dep_b_param_theta_all_elec&
-                  (dep_b_param_i)+1:, ctype_i, spin_dependency_i))
+             b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i), ctype_i, spin_dependency_i) =&
+                  & dot_product( -b_param_theta_all_elec_cond(dep_b_param_i, dep_b_param_theta_all_elec(dep_b_param_i)+1:),&
+                  & b_param_theta_all_elec(dep_b_param_theta_all_elec(dep_b_param_i)+1:, ctype_i, spin_dependency_i))
           end do
        end do
        !require up-up = down-down=up-down
@@ -5690,8 +5029,7 @@ contains
     end do
 
     ! allocation
-    call object_alloc('dep_b_param_theta_all_elec',&
-         dep_b_param_theta_all_elec, nb_dep_b_param_theta_all_elec)
+    call object_alloc('dep_b_param_theta_all_elec', dep_b_param_theta_all_elec, nb_dep_b_param_theta_all_elec)
 
 
     !intialize the pivot column
@@ -5758,8 +5096,7 @@ contains
 
     ! allocation
     ! one derivative constraints so number of contraints is (order_theta_bf -1 )
-    call object_alloc('b_param_theta_pseudo_cond',&
-         b_param_theta_pseudo_cond, order_theta_bf - 1, nb_b_param_theta)
+    call object_alloc('b_param_theta_pseudo_cond', b_param_theta_pseudo_cond, order_theta_bf - 1, nb_b_param_theta)
 
     !initialize
     b_param_theta_pseudo_cond(:,:) = 0.d0
@@ -5784,8 +5121,7 @@ contains
                 ! d r_ij |
                 !         r_ij=0
                 !=================================
-                b_param_theta_pseudo_cond(order_i-order_j, param_i) &
-                     = b_param_theta_pseudo_cond(order_i-order_j, param_i) + order_j
+                b_param_theta_pseudo_cond(order_i-order_j, param_i) = b_param_theta_pseudo_cond(order_i-order_j, param_i) + order_j
              endif
           enddo
        enddo
@@ -5850,8 +5186,7 @@ contains
 
     ! allocation
     ! one derivative constraints evaluated at 0, one constraint on function so number of contraints is 2 * order_theta_bf - 1
-    call object_alloc('b_param_theta_all_elec_cond',&
-         b_param_theta_all_elec_cond, 2 * order_theta_bf - 1, nb_b_param_theta)
+    call object_alloc('b_param_theta_all_elec_cond', b_param_theta_all_elec_cond, 2 * order_theta_bf - 1, nb_b_param_theta)
 
     !initialize
     b_param_theta_all_elec_cond(:,:) = 0.d0
@@ -5876,8 +5211,7 @@ contains
                 ! d r_ij |
                 !         r_ij=0
                 !=================================
-                b_param_theta_all_elec_cond(order_i-order_j, param_i) =&
-                     b_param_theta_all_elec_cond(order_i-order_j, param_i) + order_j
+                b_param_theta_all_elec_cond(order_i-order_j, param_i) = b_param_theta_all_elec_cond(order_i-order_j, param_i) + order_j
                 !================================================
                 ! theta|
                 !      |        = 0
@@ -5885,14 +5219,8 @@ contains
                 !       r_iI=0
                 !===============================================
                 !note that the row needs to be shifted down by (order_theta_bf - 1) because those rows hold the above constraints
-                b_param_theta_all_elec_cond((order_theta_bf - 1) + &
-                     (order_i+order_j-order_k)/2, param_i) =&
-                     b_param_theta_all_elec_cond((order_theta_bf -1 ) +&
-                     (order_i+order_j-order_k)/2, param_i) + 1.d0
-                b_param_theta_all_elec_cond((order_theta_bf - 1) + &
-                     (order_i+order_j+order_k)/2, param_i) =&
-                     b_param_theta_all_elec_cond((order_theta_bf -1 ) +&
-                     (order_i+order_j+order_k)/2, param_i) + 1.d0
+                b_param_theta_all_elec_cond((order_theta_bf - 1) + (order_i+order_j-order_k)/2, param_i) = b_param_theta_all_elec_cond((order_theta_bf -1 ) + (order_i+order_j-order_k)/2, param_i) + 1.d0
+                b_param_theta_all_elec_cond((order_theta_bf - 1) + (order_i+order_j+order_k)/2, param_i) = b_param_theta_all_elec_cond((order_theta_bf -1 ) + (order_i+order_j+order_k)/2, param_i) + 1.d0
              endif
           enddo
        enddo
@@ -5949,8 +5277,7 @@ contains
     do column_i = 1, nb_column
        !Find row below pivot_row_i (inclusive) with largest value of |matrix_coeff(:,column_i)|
        !maxloc returns an array
-       index_max_in_column = maxloc(abs(matrix_coeff&
-            (pivot_row_i:nb_row,column_i)))
+       index_max_in_column = maxloc(abs(matrix_coeff(pivot_row_i:nb_row,column_i)))
        !correct position for cutting off rows above pivot_row_i
        index_max_in_column_temp = index_max_in_column(1) + pivot_row_i - 1
 
@@ -5965,10 +5292,7 @@ contains
            !Subtract multiples of pivot_row_i from subsequent rows to zero all subsequent coefficients of column_i (done more efficiently than simply subtracting)
            do row_i = pivot_row_i + 1, nb_row
               !note that in row_i the columns before column_i are already zero
-              matrix_coeff(row_i,column_i + 1:nb_column) =&
-                   matrix_coeff(row_i,column_i + 1:nb_column) -&
-                   matrix_coeff(row_i, column_i) / matrix_coeff(pivot_row_i,&
-                   column_i) * matrix_coeff(pivot_row_i,column_i + 1:nb_column)
+              matrix_coeff(row_i,column_i + 1:nb_column) = matrix_coeff(row_i,column_i + 1:nb_column) - matrix_coeff(row_i, column_i) / matrix_coeff(pivot_row_i, column_i) * matrix_coeff(pivot_row_i,column_i + 1:nb_column)
               !zero out the rest of column_i
               matrix_coeff(row_i,column_i) = 0.d0
            end do
@@ -5976,19 +5300,13 @@ contains
            !Subtract multiples of pivot_row_i from previous rows to zero all previous coefficients of column_i
            do row_i = 1, pivot_row_i - 1
               !note that in row_i the columns before column_i are already zero (or pivots)
-              matrix_coeff(row_i,column_i + 1:nb_column) =&
-                   matrix_coeff(row_i,column_i + 1:nb_column) -&
-                   matrix_coeff(row_i, column_i) /&
-                   matrix_coeff(pivot_row_i, column_i) *&
-                   matrix_coeff(pivot_row_i,column_i + 1:nb_column)
+              matrix_coeff(row_i,column_i + 1:nb_column) = matrix_coeff(row_i,column_i + 1:nb_column) - matrix_coeff(row_i, column_i) / matrix_coeff(pivot_row_i, column_i) * matrix_coeff(pivot_row_i,column_i + 1:nb_column)
               !zero out the rest of column_i
               matrix_coeff(row_i,column_i) = 0.d0
            enddo
 
            !normalize
-           matrix_coeff(pivot_row_i,column_i+1:nb_column) =&
-                matrix_coeff(pivot_row_i,column_i+1:nb_column) /&
-                matrix_coeff(pivot_row_i,column_i)
+           matrix_coeff(pivot_row_i,column_i+1:nb_column) = matrix_coeff(pivot_row_i,column_i+1:nb_column) / matrix_coeff(pivot_row_i,column_i)
            matrix_coeff(pivot_row_i,column_i)=1.d0
            !found a pivot in this row
            pivot_row_i=pivot_row_i +1
@@ -6034,8 +5352,7 @@ contains
 
     ! input
     real(dp), dimension(:,:,:), intent(in) :: distance_dummy
-    character(len=max_string_len_rout),&
-         save :: lhere = 'scaling_func_three_body'
+    character(len=max_string_len_rout), save :: lhere = 'scaling_func_three_body'
 
     select case(isc_bf)
     case(4) ! 1 / (1 + r * k)

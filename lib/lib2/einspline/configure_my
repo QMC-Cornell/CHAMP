@@ -8,5 +8,5 @@ current_dir=`pwd`
 # --enable-sse" works on the dft cluster, but does not seem to change execution speed appreciably.
 # Intel icc compilation (-std=c99 tells it to conform to the c99 standard) The "-assume no2underscore" is not necessary since it is the default for icc but not for gcc
 # ./configure "CC=icc -std=c99 -assume no2underscore" "CXX=icpc -std=c99 -assume no2underscore" FC=ifort F77=ifort --prefix=$current_dir --enable-sse
-#./configure "CC=icc -std=c99" "CXX=icpc -std=c99" FC=ifort F77=ifort --prefix=$current_dir --enable-sse
-./configure  --prefix=$current_dir
+./configure "CC=icc -std=c99" "CXX=icpc -std=c99" FC=ifort F77=ifort --prefix=$current_dir --enable-sse
+#./configure  --prefix=$current_dir

@@ -258,9 +258,7 @@ module routines_mod
    else
     routines(routine_ind)%inside = .false.
     call cpu_time (routines(routine_ind)%cpu_end)
-    routines(routine_ind)%cpu_duration = &
-         routines(routine_ind)%cpu_duration + &
-         (routines(routine_ind)%cpu_end - routines(routine_ind)%cpu_start)
+    routines(routine_ind)%cpu_duration = routines(routine_ind)%cpu_duration + (routines(routine_ind)%cpu_end - routines(routine_ind)%cpu_start)
    endif
 
  end subroutine routine_exit_simple
@@ -289,10 +287,7 @@ module routines_mod
    if (routine_previous_index /= 0) then
     if (routines(routine_previous_index)%inside) then
      call cpu_time (routines(routine_previous_index)%cpu_end)
-     routines(routine_previous_index)%cpu_duration = &
-          routines(routine_previous_index)%cpu_duration + &
-          (routines(routine_previous_index)%cpu_end - &
-          routines(routine_previous_index)%cpu_start)
+     routines(routine_previous_index)%cpu_duration = routines(routine_previous_index)%cpu_duration + (routines(routine_previous_index)%cpu_end - routines(routine_previous_index)%cpu_start)
     endif
    endif
 
@@ -311,8 +306,7 @@ module routines_mod
   if (routines(routine_ind)%inside) then
     routines(routine_ind)%recursion_level = routines(routine_ind)%recursion_level + 1
   endif
-  call alloc ('routines(routine_ind)%routines_up_index', &
- routines(routine_ind)%routines_up_index, routines(routine_ind)%recursion_level)
+  call alloc ('routines(routine_ind)%routines_up_index', routines(routine_ind)%routines_up_index, routines(routine_ind)%recursion_level)
 
   if (routine_previous_index /= 0) then
 
@@ -370,9 +364,7 @@ module routines_mod
 
 !  calculate cpu time
    call cpu_time (routines(routine_ind)%cpu_end)
-   routines(routine_ind)%cpu_duration = &
-        routines(routine_ind)%cpu_duration + &
-        (routines(routine_ind)%cpu_end - routines(routine_ind)%cpu_start)
+   routines(routine_ind)%cpu_duration = routines(routine_ind)%cpu_duration + (routines(routine_ind)%cpu_end - routines(routine_ind)%cpu_start)
 
 !  we are no longer inside the routine
    routines(routine_ind)%inside = .false.
@@ -386,8 +378,7 @@ module routines_mod
 
 !    decrease level of recursion
      routines(routine_ind)%recursion_level = routines(routine_ind)%recursion_level - 1
-     call alloc ('routines(routine_ind)%routines_up_index', &
-routines(routine_ind)%routines_up_index, routines(routine_ind)%recursion_level)
+     call alloc ('routines(routine_ind)%routines_up_index', routines(routine_ind)%routines_up_index, routines(routine_ind)%recursion_level)
 
 !    start cpu time
      call cpu_time (routines(routine_previous_index)%cpu_start)

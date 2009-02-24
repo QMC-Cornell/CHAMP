@@ -65,9 +65,7 @@ module accumulation_mod
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
-          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),&
-               voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr),peow(iw,ifr),&
-               eoldw(iw,ifr),denergy,ifr)
+          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr),peow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
           if(ifr.eq.1) then
             call walksav_det(iw)
             call walksav_jas(iw)
@@ -536,9 +534,7 @@ module accumulation_mod
     if (nforce == 1) then
       write(6,'(a)') '    passes    energy      averaged energy      weights  oldest walker'
     else
-    write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32,''peave'',t38,&
-&''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66,''tjfave'',t72,''(tjferr)'',&
-&t83,''fgave'',t89,''(fgerr)'',t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
+    write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
     endif
   endif
 
@@ -553,12 +549,10 @@ module accumulation_mod
     if (nforce == 1) then
      write(6,'(i10,1x,f10.5,1x,f10.5,a,f8.5,2i10)') npass,egnow,egave,' +-',egerr,nint(wgsum(ifr)/nstep_total),ioldest
     else
-     write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egnow,egave,iegerr,&
-               peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,nint(wgsum(ifr)),ioldest
+     write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,nint(wgsum(ifr)),ioldest
     endif
   else
-    write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)') egnow,egave,iegerr,&
-               peave,ipeerr,tpbave,itpber,tjfave,itjfer,fgave,ifgerr,nint(wgsum(ifr))
+    write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,fgave,ifgerr,nint(wgsum(ifr))
   endif
 
    10 continue
@@ -567,17 +561,12 @@ module accumulation_mod
 
   if(ifr.eq.1) then
     if (nforce == 1) then
-     write(6,'(i10,1x,f10.5,1x,f10.5,a,f8.5,3i10)') npass,egcollect(ifr)/&
-               wgcollect(ifr),egave,' +-',egerr,nint(wgcollect(ifr)/nproc),ioldest
+     write(6,'(i10,1x,f10.5,1x,f10.5,a,f8.5,3i10)') npass,egcollect(ifr)/wgcollect(ifr),egave,' +-',egerr,nint(wgcollect(ifr)/nproc),ioldest
     else
-          write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') &
-               egcollect(ifr)/wgcollect(ifr),egave,iegerr,peave,ipeerr,tpbave,&
-               itpber,tjfave,itjfer,npass,nint(wgcollect(ifr)/nproc),ioldest
+          write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egcollect(ifr)/wgcollect(ifr),egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,nint(wgcollect(ifr)/nproc),ioldest
     endif
    else
-          write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)') egcollect(ifr)/&
-               wgcollect(ifr),egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,&
-               itjfer,fgave,ifgerr,nint(wgcollect(ifr)/nproc)
+          write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)') egcollect(ifr)/wgcollect(ifr),egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,fgave,ifgerr,nint(wgcollect(ifr)/nproc)
    endif
 
    15 continue
@@ -867,56 +856,43 @@ module accumulation_mod
       e3err=dlog((ei3ave+ei3err)/(ei3ave-ei3err))/(2*taucum(1)/wgcum(1))
 # endif
 
-      write(6,'(a,i9,f10.6)') 'Number and fraction of node crossings:',&
-               nodecr,dfloat(nodecr)/try_int
+      write(6,'(a,i9,f10.6)') 'Number and fraction of node crossings:',nodecr,dfloat(nodecr)/try_int
       write(6,'(a,2f10.6)') 'Acceptance:', accav,accavn
 
       if(idmc.ge.0) then
 
 # if !defined (MPI)
-        write(6,'(a,i6,2f9.0)') 'Actual number of branches and expected numbers for 0 and inf corr time:'&
-               ,nbrnch,nconf*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/&
-               dlog(two))**2,nconf*passes*(dlog(one+eerr1*rteval*taucum(1)/&
-               wgcum(1))/dlog(two))
+        write(6,'(a,i6,2f9.0)') 'Actual number of branches and expected numbers for 0 and inf corr time:',nbrnch,nconf*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2,nconf*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
 # endif
         write(6,'(a,i5)') 'Number of walkers at end of run =',nwalk
 
         write(6,'(a)') 'Effective/actual number of walkers ratio (with population-control correction):'
-        write(6,'(''nwalk_eff/nwalk (   0) ='',2f6.3)') rn_eff(wcum1,wcm21)/&
-               pass_proc,rn_eff(wcum,wcm2)/iblk_proc
-        write(6,'(''nwalk_eff/nwalk (   1) ='',2f6.3)') rn_eff(wfcum1,wfcm21)/&
-               pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
-        write(6,'(''nwalk_eff/nwalk ('',i4,'') ='',2f6.3)') nfprod, &
-               rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),wgcm2(1))/iblk_proc
+        write(6,'(''nwalk_eff/nwalk (   0) ='',2f6.3)') rn_eff(wcum1,wcm21)/pass_proc,rn_eff(wcum,wcm2)/iblk_proc
+        write(6,'(''nwalk_eff/nwalk (   1) ='',2f6.3)') rn_eff(wfcum1,wfcm21)/pass_proc,rn_eff(wfcum,wfcm2)/iblk_proc
+        write(6,'(''nwalk_eff/nwalk ('',i4,'') ='',2f6.3)') nfprod, rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),wgcm2(1))/iblk_proc
 
       endif
 
       write(fmt,'(''(/,a16,2x,a'',i3,'')'')') len_trim(title)
       write(6,fmt) mode,title
-      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')&
-                eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
+      write(6,'(''nconf*passes'',t19,''passes  nconf nstep  nblk nblkeq nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)') eval,passes,nconf,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
 
       write(6,'(a)') 'quantity (pop. corr.)     average       rms error sigma*T_cor  sigma   T_cor'
 
       if(idmc.ge.0) then
 
-        write(6,'(''weights      (   0) ='',t22,f14.7,'' +-'',f11.7,1x,2f9.5,f8.2)') &
-               wave,werr,werr*rtpass_proc1,werr1*rtpass_proc1,(werr/werr1)**2
-        write(6,'(''weights      (   1) ='',t22,f14.7,'' +-'',f11.7,1x,2f9.5,f8.2)') &
-               wfave,wferr,wferr*rtpass_proc1,wferr1*rtpass_proc1,(wferr/wferr1)**2
+        write(6,'(''weights      (   0) ='',t22,f14.7,'' +-'',f11.7,1x,2f9.5,f8.2)') wave,werr,werr*rtpass_proc1,werr1*rtpass_proc1,(werr/werr1)**2
+        write(6,'(''weights      (   1) ='',t22,f14.7,'' +-'',f11.7,1x,2f9.5,f8.2)') wfave,wferr,wferr*rtpass_proc1,wferr1*rtpass_proc1,(wferr/wferr1)**2
 
         do 20 ifr=1,nforce
           wgave=wgcum(ifr)/pass_proc
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
           wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
-          write(6,'(''weights      ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,1x,2f9.5,f8.2)')&
-                nfprod,wgave,wgerr,wgerr*rtpass_proc1,wgerr1*rtpass_proc1,(wgerr/wgerr1)**2
+          write(6,'(''weights      ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,1x,2f9.5,f8.2)') nfprod,wgave,wgerr,wgerr*rtpass_proc1,wgerr1*rtpass_proc1,(wgerr/wgerr1)**2
   20    continue
 
-        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)') &
-               eave,eerr,eerr*rteval_proc_eff1,eerr1*rteval_proc_eff1,(eerr/eerr1)**2
-        write(6,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)') &
-               efave,eferr,eferr*rtevalf_proc_eff1,eferr1*rtevalf_proc_eff1,(eferr/eferr1)**2
+        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)') eave,eerr,eerr*rteval_proc_eff1,eerr1*rteval_proc_eff1,(eerr/eerr1)**2
+        write(6,'(''total energy (   1) ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)') efave,eferr,eferr*rtevalf_proc_eff1,eferr1*rtevalf_proc_eff1,(eferr/eferr1)**2
       endif
 
       do ifr=1,nforce
@@ -924,18 +900,14 @@ module accumulation_mod
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
         tcor_g = (egerr/egerr1)**2
-        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)')&
-                nfprod,egave,egerr,egerr*rtevalg_proc_eff1,egerr1*rtevalg_proc_eff1,tcor_g
+        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',f11.7,1x,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_proc_eff1,egerr1*rtevalg_proc_eff1,tcor_g
       enddo
 
 # if !defined (MPI)
       if(idmc.ge.0) then
-        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,1x,f9.5, ''  (growth estimator)'')') &
-               e1ave,e1err,e1err*rteval_proc_eff1
-        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',f11.7,1x,f9.5, ''  (growth estimator)'')') &
-               nfprod-1,e2ave,e2err,e2err*rtevalg_proc_eff1
-        write(6,'(''total energy        ='',t24,f12.7,'' +-'',f11.7,1x,f9.5, ''  (growth estimator)'')') &
-               e3ave,e3err,e3err*rteval_proc_eff1
+        write(6,'(''total energy (   0) ='',t24,f12.7,'' +-'',f11.7,1x,f9.5, ''  (growth estimator)'')') e1ave,e1err,e1err*rteval_proc_eff1
+        write(6,'(''total energy ('',i4,'') ='',t24,f12.7,'' +-'',f11.7,1x,f9.5, ''  (growth estimator)'')') nfprod-1,e2ave,e2err,e2err*rtevalg_proc_eff1
+        write(6,'(''total energy        ='',t24,f12.7,'' +-'',f11.7,1x,f9.5, ''  (growth estimator)'')') e3ave,e3err,e3err*rteval_proc_eff1
       endif
 # endif
 
@@ -949,12 +921,8 @@ module accumulation_mod
         tjferr=errg(tjfcum(ifr),tjfcm2(ifr),ifr)
 
         write(6,'(a,t24,f12.7,a,f11.7,1x,f9.5)') 'potential  energy   =',peave,' +-',peerr,peerr*rtevalg_proc_eff1
-        write(6,'(a,t24,f12.7,a,f11.7,1x,f9.5,a,f9.5)') 'JF kinetic energy   ='&
-               ,tjfave,' +-',tjferr,tjferr*rtevalg_proc_eff1,&
-               '  Virial ratio =',peave/tjfave
-        write(6,'(a,t24,f12.7,a,f11.7,1x,f9.5,a,f9.5)') 'PB kinetic energy   ='&
-               ,tpbave,' +-',tpberr,tpberr*rtevalg_proc_eff1,&
-               '  Virial ratio =',peave/tpbave
+        write(6,'(a,t24,f12.7,a,f11.7,1x,f9.5,a,f9.5)') 'JF kinetic energy   =',tjfave,' +-',tjferr,tjferr*rtevalg_proc_eff1,'  Virial ratio =',peave/tjfave
+        write(6,'(a,t24,f12.7,a,f11.7,1x,f9.5,a,f9.5)') 'PB kinetic energy   =',tpbave,' +-',tpberr,tpberr*rtevalg_proc_eff1,'  Virial ratio =',peave/tpbave
   40  continue
 
       do 50 ifr=2,nforce
@@ -962,22 +930,17 @@ module accumulation_mod
         fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
 !       fgave=fgave/deltot(ifr)
 !       fgerr=fgerr/abs(deltot(ifr))
-        write(6,'(''total energy diff'',i2,t24,f12.7,'' +-'',f11.7,1x,f9.5)') &
-               ifr,fgave,fgerr,fgerr*rtevalg_proc_eff1
+        write(6,'(''total energy diff'',i2,t24,f12.7,'' +-'',f11.7,1x,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_proc_eff1
   50  continue
 
 # if !defined (MPI)
 !     These are not being collected at the moment
       if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(6,'(''<r2>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') &
-               r2ave,r2err,r2err*rtevalg_proc_eff1
-        write(6,'(''<ri>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') &
-               riave,rierr,rierr*rtevalg_proc_eff1
+        write(6,'(''<r2>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
+        write(6,'(''<ri>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') riave,rierr,rierr*rtevalg_proc_eff1
       endif
 
-      if(ipr.gt.-2) write(11,&
-               '(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')'&
-               )nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
+      if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')')nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)
 # endif
 
 ! Print warnings
@@ -986,8 +949,7 @@ module accumulation_mod
   endif
 
   if (nstep < 10.d0*tcor_g) then
-    write(6,'(a,i6,a,f8.2)') 'Warning: number of step per block =',nstep,&
-               ' is less than 10 times the autocorrelation time =',tcor_g
+    write(6,'(a,i6,a,f8.2)') 'Warning: number of step per block =',nstep,' is less than 10 times the autocorrelation time =',tcor_g
     write(6,'(a)') 'Warning: the errors are underestimated. Increase nstep.'
   endif
 

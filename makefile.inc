@@ -285,8 +285,9 @@ endif
 
 # clastos in Paris
 ifeq ($(hostname),clastos)
- CHAMP_C=icc
+# CHAMP_C=icc
  CHAMP_C=/usr/local/bin/mpicc_64
+# CHAMP_CXX=icpc
  CHAMP_CXX=/usr/local/bin/mpicxx_64
  CHAMP_F95=/usr/local/bin/mpif90_64
  CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -extend_source -diag-disable vec -fpp -DNOEINSPLINE
