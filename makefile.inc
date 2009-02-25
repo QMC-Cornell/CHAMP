@@ -47,18 +47,18 @@ CHAMP_C_MPI_FLAGS=$(CHAMP_C_FLAGS)
 CHAMP_F95=ifort
 CHAMP_MPIF95=mpif77
 
-CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source
-CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source
-CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip 
+CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg 
+CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 
 # by default, compilation for f77 is the same than for f95
 CHAMP_F77=$(CHAMP_F95)
 CHAMP_MPIF77=$(CHAMP_MPIF95)
-CHAMP_F77_FAST=$(CHAMP_F95_FAST)
+CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
 
 # by default, fast options
 CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+CHAMP_F77_FLAGS=$(CHAMP_F77_FAST) 
 
 # by default, same options for MPI
 CHAMP_F95_MPI_FLAGS=$(CHAMP_F95_FLAGS) -DMPI
@@ -290,7 +290,7 @@ ifeq ($(hostname),clastos)
 # CHAMP_CXX=icpc
  CHAMP_CXX=/usr/local/bin/mpicxx_64
  CHAMP_F95=/usr/local/bin/mpif90_64
- CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -extend_source -diag-disable vec -fpp -DNOEINSPLINE
+ CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -diag-disable vec -fpp -DNOEINSPLINE
  EINSPLINE=
  CHAMP_MPIF95=/usr/local/bin/mpif90_64
  CHAMP_MPIC=/usr/local/bin/mpicc_64
