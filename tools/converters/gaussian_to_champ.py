@@ -364,12 +364,28 @@ def sort_basis ():
     for j in range(i+1,nbasis):
       if (basis_atom_indexes[i] == basis_atom_indexes[j]): 
         if (basis_labels_to_champ_order [basis_labels_without_number[j]] < basis_labels_to_champ_order[basis_labels_without_number[i]]):
-#         swap i and j elements
-          basis_labels [i], basis_labels [j] = basis_labels [j], basis_labels [i]
-          basis_labels_without_number [i], basis_labels_without_number [j] = basis_labels_without_number [j], basis_labels_without_number [i]
-          basis_atom_indexes [i], basis_atom_indexes [j] = basis_atom_indexes [j], basis_atom_indexes [i]
+#         reorder arrays
+          temp = basis_labels [j]
+          del basis_labels [j]
+          basis_labels.insert (i, temp)
+
+          temp = basis_labels_without_number [j]
+          del basis_labels_without_number [j]
+          basis_labels_without_number.insert (i, temp)
+
+          temp = basis_atom_indexes [j]
+          del basis_atom_indexes [j]
+          basis_atom_indexes.insert (i, temp)
+
+#          basis_labels [i], basis_labels [j] = basis_labels [j], basis_labels [i]
+#          basis_labels_without_number [i], basis_labels_without_number [j] = basis_labels_without_number [j], basis_labels_without_number [i]
+#          basis_atom_indexes [i], basis_atom_indexes [j] = basis_atom_indexes [j], basis_atom_indexes [i]
+
           for k in range(norb):
-            orbital_coefficients[k][i], orbital_coefficients[k][j] = orbital_coefficients[k][j], orbital_coefficients[k][i]
+            temp = orbital_coefficients[k][j]
+            del orbital_coefficients[k][j]
+            orbital_coefficients[k].insert (i, temp)
+#            orbital_coefficients[k][i], orbital_coefficients[k][j] = orbital_coefficients[k][j], orbital_coefficients[k][i]
 
 #  print "orbital_coefficients[0]=",orbital_coefficients[0]
 #  print "basis_atom_indexes=",basis_atom_indexes
