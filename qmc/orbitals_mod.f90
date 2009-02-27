@@ -1675,6 +1675,10 @@ module orbitals_mod
   integer, intent(in) :: iwf_from
 
 ! local
+# if defined (DEBUG)
+  character(len=max_string_len_rout), save :: lhere = 'coef_orb_on_ortho_basis_from_coef'
+# endif
+
   integer bas_i, bas_k, orb_i
 
 ! begin
@@ -1723,6 +1727,9 @@ module orbitals_mod
   integer, intent(in) :: iwf_from
 
 ! local
+# if defined (DEBUG)
+  character(len=max_string_len_rout), save :: lhere = 'coef_from_coef_orb_on_ortho_basis'
+# endif
   integer bas_i, bas_k, orb_i
 
 ! begin

@@ -55,6 +55,8 @@ CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutpu
 CHAMP_F77=$(CHAMP_F95)
 CHAMP_MPIF77=$(CHAMP_MPIF95)
 CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
+CHAMP_F77_DEBUG=$(CHAMP_F95_DEBUG) -extend_source
+CHAMP_F77_PROF=$(CHAMP_F95_PROF) -extend_source
 
 # by default, fast options
 CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
@@ -291,6 +293,7 @@ ifeq ($(hostname),clastos)
  CHAMP_CXX=/usr/local/bin/mpicxx_64
  CHAMP_F95=/usr/local/bin/mpif90_64
  CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -diag-disable vec -fpp -DNOEINSPLINE
+ CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
  EINSPLINE=
  CHAMP_MPIF95=/usr/local/bin/mpif90_64
  CHAMP_MPIC=/usr/local/bin/mpicc_64

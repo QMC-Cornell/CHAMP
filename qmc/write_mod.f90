@@ -105,6 +105,9 @@ module write_mod
   include 'commons.h'
 
 ! local
+# if defined (DEBUG)
+  character(len=max_string_len_rout), save :: lhere = 'routines_write_block'
+# endif
   integer rtn_i
 
 ! begin
@@ -138,6 +141,9 @@ module write_mod
   include 'commons.h'
 
 ! local
+# if defined (DEBUG)
+  character(len=max_string_len_rout), save :: lhere = 'routines_write_final'
+# endif
   integer rtn_i
 
 ! begin
