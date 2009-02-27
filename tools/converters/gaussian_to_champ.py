@@ -39,6 +39,7 @@ basis_atom_indexes_allsubsection = []
 basis_atom_indexes = []
 basis_labels_allsubsection = []
 basis_labels = []
+basis_labels_without_number = []
 
 norb = 0
 orbital_indexes = []
@@ -270,9 +271,12 @@ def read_orbitals ():
 #       example: 2        2S          0.50758   0.50920  -0.21505  -0.22492   0.00000
         elif re.search ("^\s+\d+\s+\d+[SPDFGH][A-Z\+\-\d\ ]+(\s+[\d\-]+)",lines[j]):
 #          print "line ",j,", orbital coefficient:",lines[j]
-          line_splitted = filter (not_empty_string,string.split(lines[j],'  '))
+          lines[j] = string.replace(lines[j],'D 0','D+0')
+          line_splitted = filter (not_empty_string,string.split(lines[j],' '))
+#          print "line_splitted=",line_splitted
           basis_atom_indexes_subsection.append (atom_index)
           basis_labels_subsection.append (line_splitted[1])
+#          print "line_splitted[2:]=",line_splitted[2:]
           orbital_coefficients_subsection.append (map(float,map(string.strip,line_splitted[2:])))
 
 #       DENSITY MATRIX marks the end of the orbital section
@@ -312,7 +316,7 @@ def sort_basis ():
     print "\nERROR: dimension of basis_atom_indexes =",len(basis_atom_indexes)," is different from nbasis =",nbasis
     sys.exit(0)
   if (len(basis_labels) != nbasis):
-    print "\nERROR: dimension of basis_labels_indexes =",len(basis_labels)," is different from nbasis =",nbasis
+    print "\nERROR: dimension of basis_labels =",len(basis_labels)," is different from nbasis =",nbasis
     sys.exit(0)
 
 # check if basis atom indexes of other subsections are the same
@@ -331,12 +335,23 @@ def sort_basis ():
       print "basis labels for subsection #",i+1,":",basis_labels_allsubsection[i]
       sys.exit(0)
 
-#  print "basis_atom_indexes=",basis_atom_indexes
-#  print "basis_labels=",basis_labels
+# remove numbers of basis labels, e.g.: 1S -> S, 10PX -> PX, etc...
+  for i in range(nbasis):
+    object_matched = re.search ("[SPDFGH].*", basis_labels[i])
+    if object_matched:
+       object = object_matched.group()
+       basis_labels_without_number.append (object)
 
+# check dimensions
+  if (len(basis_labels_without_number) != nbasis):
+    print "\nERROR: dimension of basis_labels_without_number =",len(basis_labels_without_number)," is different from nbasis =",nbasis
+    sys.exit(0)
+
+#  print "basis_labels=",basis_labels
+#  print "basis_labels_without_number=",basis_labels_without_number
 
 # define champ basis order
-  basis_labels_to_champ_order = {'S':1,'PX':2,'PY':3,'PZ':4,'D 0':5,'D+2':6,'D-2':7,'D+1':8,'D-1':9}
+  basis_labels_to_champ_order = {'S':1,'PX':2,'PY':3,'PZ':4,'D+0':5,'D+2':6,'D-2':7,'D+1':8,'D-1':9}
 
 #  for i in range(nbasis):
 #    print "basis function # ",i+1
@@ -348,8 +363,10 @@ def sort_basis ():
   for i in range(nbasis):
     for j in range(i+1,nbasis):
       if (basis_atom_indexes[i] == basis_atom_indexes[j]): 
-        if (basis_labels_to_champ_order [basis_labels[j][1:]] < basis_labels_to_champ_order[basis_labels[i][1:]]):
+        if (basis_labels_to_champ_order [basis_labels_without_number[j]] < basis_labels_to_champ_order[basis_labels_without_number[i]]):
+#         swap i and j elements
           basis_labels [i], basis_labels [j] = basis_labels [j], basis_labels [i]
+          basis_labels_without_number [i], basis_labels_without_number [j] = basis_labels_without_number [j], basis_labels_without_number [i]
           basis_atom_indexes [i], basis_atom_indexes [j] = basis_atom_indexes [j], basis_atom_indexes [i]
           for k in range(norb):
             orbital_coefficients[k][i], orbital_coefficients[k][j] = orbital_coefficients[k][j], orbital_coefficients[k][i]
