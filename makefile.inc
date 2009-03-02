@@ -72,7 +72,7 @@ CHAMP_F77_MPI_FLAGS=$(CHAMP_F77_FLAGS) -DMPI
 CHAMP_LD=$(CHAMP_F95)
 CHAMP_LD_MPI=$(CHAMP_MPIF95)
 
-CHAMP_LD_FAST=$(CHAMP_F95_FLAGS) -static
+CHAMP_LD_FAST=$(CHAMP_F95_FLAGS) #-static
 CHAMP_LD_PROF=-O3 -pg
 CHAMP_LD_DEBUG=-static -align all
 CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
@@ -93,10 +93,19 @@ CHAMP_DEBUG_EXE=champ_debug.exe
 export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX
 ####################### MACHINES ########################################
 
+# New dft cluster at Cornell
 ifeq ($(hostname),gauss)
   CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT 
   CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source -mtune=core2 -march=core2 -xT
   CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+endif
+
+# nanolab at Cornell
+ifeq ($(findstring cnf.cornell,$(hostname)),cnf.cornell)
+  CHAMP_LD_FAST=$(CHAMP_F95_FLAGS)
+  CHAMP_LD_PROF=-O3 -pg
+  CHAMP_LD_DEBUG=-align all
+  CHAMP_LD_IPO=-O3 -ipo -align all -fast
 endif
 
 # Theory Center's linux cluster
