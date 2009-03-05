@@ -14,16 +14,21 @@ import sys
 import string
 import re
 import operator
+import getopt
 from Numeric import *
 
-print "GAUSSIAN -> CHAMP convertion script"
-print "WARNING: for now, it works only for closed-shell single-determinant calculations!"
+# ========================================================
+# Global variables and initializations
+# ========================================================
 
-# Initializations
+l_sort_basis = False
+
 ncent = 0
 nuclear_coordinates = []
 nuclear_charges = []
 cent = []
+cent_to_cent_type = []
+cent_type_to_first_cent = []
 nctype = 0
 nuclear_charges_unique = set()
 iwctype = []
@@ -40,6 +45,7 @@ basis_atom_indexes = []
 basis_labels_allsubsection = []
 basis_labels = []
 basis_labels_without_number = []
+basis_labels_by_cent_type = []
 
 norb = 0
 orbital_indexes = []
@@ -63,13 +69,15 @@ nparmb = 5
 nparmc = 15
 nparmcsf = 0
 
-
 # ========================================================
 def help_menu():
 # ========================================================
 # print help menu
 # --------------------------------------------------------
-  print "USAGE: %s" % sys.argv[0], "input_file output_file"
+  print "USAGE: %s" % sys.argv[0], "-i input_file -o output_file"
+  print "options: -h: print this menu"
+  print "         -s: sort basis functions in standard CHAMP order"
+  
   sys.exit(0)
 
 # ========================================================
@@ -129,6 +137,8 @@ def read_geometry ():
   "read geometry parameters of the molecule."
   global ncent, nctype, cent
   global nuclear_charges_unique
+  global cent_type_to_first_cent
+
   found = False
   j = 0
   for i in range(len(lines)):
@@ -151,6 +161,7 @@ def read_geometry ():
     sys.exit(0)
 
 #  print "geometry read"
+#  print "geometry_list=", geometry_list
 
   ncent = len(geometry_list)
   for i in range(ncent):
@@ -159,6 +170,15 @@ def read_geometry ():
 
   nuclear_charges_unique = list(set(nuclear_charges))
   nctype = len(nuclear_charges_unique)
+
+  for i in range(ncent):
+    cent_to_cent_type.append (nuclear_charges_unique.index (nuclear_charges[i])+1)
+#  print "cent_to_cent_type=",cent_to_cent_type
+
+  for i in range(nctype):
+    cent_type_to_first_cent.append (nuclear_charges.index (nuclear_charges_unique[i])+1)
+  print "cent_type_to_first_cent=",cent_type_to_first_cent
+
   cent = (angstrom_to_bohr * array(nuclear_coordinates)).tolist()
 
   for i in range(ncent):
@@ -302,14 +322,11 @@ def read_orbitals ():
 #  print "orbital_occupations=",orbital_occupations
 #  print "orbital_eigenvalues=",orbital_eigenvalues
 
-# ========================================================
-def sort_basis ():
-  "put basis function in champ order."
-#  global orbital_coefficients
 
 # keep only the basis atom indexes and basis labels of the first subsection
   basis_atom_indexes = basis_atom_indexes_allsubsection[0]
   basis_labels = basis_labels_allsubsection[0]
+#  print "basis_labels=",basis_labels
 
 # check dimensions
   if (len(basis_atom_indexes) != nbasis):
@@ -347,8 +364,22 @@ def sort_basis ():
     print "\nERROR: dimension of basis_labels_without_number =",len(basis_labels_without_number)," is different from nbasis =",nbasis
     sys.exit(0)
 
-#  print "basis_labels=",basis_labels
+#  print "\nbasis_labels=",basis_labels
 #  print "basis_labels_without_number=",basis_labels_without_number
+
+  for cent_type in range(nctype):
+    for i in range(nbasis):
+      if (int(basis_atom_indexes[i]) == int(cent_type_to_first_cent [cent_type])):
+        basis_labels_by_cent_type.append (basis_labels[i])
+
+  print "basis_labels_by_cent_type=",basis_labels_by_cent_type
+
+# ========================================================
+def sort_basis ():
+  "put basis function in champ order."
+#  global orbital_coefficients
+
+  print "sorting basis functions in standard CHAMP order..."
 
 # define champ basis order
   basis_labels_to_champ_order = {'S':1,'PX':2,'PY':3,'PZ':4,'D+0':5,'D+2':6,'D-2':7,'D+1':8,'D-1':9}
@@ -390,7 +421,7 @@ def sort_basis ():
 #  print "orbital_coefficients[0]=",orbital_coefficients[0]
 #  print "basis_atom_indexes=",basis_atom_indexes
 #  print "basis_labels=",basis_labels
-  
+
 # ========================================================
 def calculate_parameter_number ():
   "calculate the number of parameters."
@@ -413,14 +444,32 @@ def check_electron_number ():
 # main code
 # ========================================================
 
+print "GAUSSIAN -> CHAMP convertion script"
+print "WARNING: for now, it works only for closed-shell single-determinant calculations!"
+
 # check argument number
-if len(sys.argv) <= 2:
-  print "SYNTAX ERROR: missing arguments"
+if len(sys.argv) <= 1:
+  print "ERROR: missing arguments"
   help_menu()
 
 # command line arguments
-file_input_string = sys.argv[1]
-file_output_string = sys.argv[2]
+#file_input_string = sys.argv[1]
+#file_output_string = sys.argv[2]
+
+# command line arguments
+options, extra = getopt.getopt(sys.argv[1:],'i:o:hs')
+
+for opt, val in options:
+  if opt == "-h":
+     help_menu()
+  elif opt == "-i":
+   file_input_string = val
+  elif opt == "-o":
+   file_output_string = val
+  elif opt == "-s":
+   l_sort_basis = True
+  else:
+     print "ERROR: unknown option:", opt, val
 
 # open and read input file
 file_input = open(file_input_string,'r')
@@ -434,8 +483,13 @@ read_electron_number ()
 read_energy ()
 read_basis ()
 read_orbitals ()
-sort_basis ()
+
 sys.stdout.write('done\n')
+
+# sort basis in standard CHAMP order?
+if (l_sort_basis):
+  sort_basis ()
+
 
 # close input file
 file_input.close()
@@ -451,7 +505,7 @@ for idet in range(ndet):
   det_up_orb_lab.append (range(1,nup+1))
   det_dn_orb_lab.append (range(1,ndn+1))
 
-# writet CHAMP input file
+# write CHAMP input file
 sys.stdout.write('writing CHAMP file >'+ str(file_output_string) +'< ... ')
 file_output = open(file_output_string,'w')
 file_output.write('your title                               title\n')
@@ -519,7 +573,7 @@ for i in range(ncsf):
   for j in range(ndet_in_csf[i]):
     file_output.write('%f' %cdet_csf[i][j] + ' ')
   file_output.write('(cdet_csf(idet_in_csf,%d'%(i+1)+'),idet_in_csf=1,ndet_in_csf(%d'%(i+1)+'))\n')
-    
+  
 file_output.write('\n')
 file_output.write('\'* Jastrow section\'\n')
 file_output.write('1             ianalyt_lap\n')
@@ -571,6 +625,18 @@ file_output.write('1.d-6 5. 1 15 4 pmarquardt,tau,noutput,nstep,ibold\n')
 file_output.write('T F analytic,cholesky\n')
 file_output.write('end\n')
 
+if (not l_sort_basis):
+  file_output.write('\n')
+  file_output.write('basis\n')
+  file_output.write(' basis_functions\n')
+  for i in range(nctype):
+    file_output.write('  %d' %(i+1) + ' ')
+    for j in range(len(basis_labels_by_cent_type)):
+      file_output.write(basis_labels_by_cent_type[j] + ' ' )
+    file_output.write('\n')
+  file_output.write(' end\n')
+  file_output.write('end\n')
+
 file_output.write('\n')
 file_output.write('optimization\n')
 file_output.write(' parameters jastrow end\n')
@@ -581,4 +647,3 @@ file_output.write('end\n')
 file_output.close()
 sys.stdout.write('done\n')
 sys.stdout.write('WARNING: basis information needs to be entered in CHAMP file!\n')
-
