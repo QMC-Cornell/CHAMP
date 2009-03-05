@@ -309,6 +309,13 @@ ifeq ($(hostname),clastos)
  CHAMP_MPIC=/usr/local/bin/mpicc_64
 endif
 
+# hydrogene in Paris
+ifeq ($(hostname),hydrogene)
+ CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
+ CHAMP_C=gcc
+ EINSPLINE=
+endif
+
 # NASA Ames Columbia Itanium cluster
 ifeq ($(hostname),cfe1)
   CHAMP_MPIF95=ifort
