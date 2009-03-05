@@ -44,8 +44,10 @@ print MAKEFILE "\n\n";
 #print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n\n";
 #print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n\n";
 
-print MAKEFILE "all: \$(PROG)\n\n";
-print MAKEFILE "\$(PROG): \$(LIBS) \$(OBJS)\n";
+#print MAKEFILE "all: \$(PROG)\n\n";
+#print MAKEFILE "\$(PROG): \$(LIBS) \$(OBJS)\n";
+print MAKEFILE "\$(PROG): \$(OBJS)\n";
+print MAKEFILE "\tcd ../lib; make\n";
 print MAKEFILE "\t\$(CHAMP_LD) \$(CHAMP_LD_FLAGS) -o \$@ \$(OBJS) \$(CHAMP_LIBS) \$(CHAMP_LD_END)\n\n";
 #
 # make clean
@@ -73,6 +75,7 @@ print MAKEFILE "\t/usr/bin/ctags *.f *.f90\n";
 print MAKEFILE "\tfind . -iregex '.*\\.f\\(90\\)?' | etags -\n";
 #
 # libraries
+#print MAKEFILE "../lib/lib/libcyrus.a:\n";
 #print MAKEFILE "../lib/lib/libcyrus.a:\n";
 #print MAKEFILE "\tcd ../lib ; make\n";
 #print MAKEFILE "../lib/lib2/blas/libblas.a:\n";

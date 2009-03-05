@@ -171,9 +171,8 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.o
 
-all: $(PROG)
-
-$(PROG): $(LIBS) $(OBJS)
+$(PROG): $(OBJS)
+	cd ../lib; make
 	$(CHAMP_LD) $(CHAMP_LD_FLAGS) -o $@ $(OBJS) $(CHAMP_LIBS) $(CHAMP_LD_END)
 
 clean:

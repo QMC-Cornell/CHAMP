@@ -77,6 +77,7 @@ CHAMP_LD_PROF=-O3 -pg
 CHAMP_LD_DEBUG=-static -align all
 CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
 
+# by default, fast options
 CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
 
 CHAMP_LD_END=
@@ -90,7 +91,7 @@ CHAMP_MPI_EXE=champ_mpi.exe
 CHAMP_DEBUG_EXE=champ_debug.exe
 
 # Export these for compiling the libraries
-export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX
+export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE
 ####################### MACHINES ########################################
 
 # New dft cluster at Cornell

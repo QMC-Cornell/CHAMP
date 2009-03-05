@@ -27,10 +27,13 @@ blas:
 pspline:
 	cd pspline/pspline ; $(MAKE) libpspline.a
 
+# compile einspline only if EINSPLINE if defined.
+ifdef EINSPLINE
 einspline:
 #	cd einspline ; configure_my ; $(MAKE) ; $(MAKE) install
 #	cd einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/einspline/ "--enable-sse" ; $(MAKE) ; $(MAKE) install
 	cd einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/einspline/ ; $(MAKE) ; $(MAKE) install
+endif
 
 clean:
 	-rm -f linpack/*.o lapack/*.o blas/*.o pspline/pspline/*.o einspline/src/*.o \
