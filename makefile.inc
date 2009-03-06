@@ -99,7 +99,6 @@ ifeq ($(hostname),gauss)
   CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT 
   CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source -mtune=core2 -march=core2 -xT
   CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
-  USE_GCC=yes
 endif
 
 # nanolab at Cornell
@@ -347,6 +346,8 @@ ifeq ($(hostname),qmc1)
   CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
 
   CHAMP_LD=ifort
+
+  USE_GCC=yes
 endif
 
 #jasmine at cornell

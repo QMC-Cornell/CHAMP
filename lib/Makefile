@@ -47,7 +47,7 @@ lib2/einspline/lib/libeinspline.a:
 endif
 ifdef USE_GCC
 lib2/einspline/lib/libeinspline.a:
-	cd lib2/einspline ; ./configure "CC=$(CC)" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$current_dir --exec-prefix=$current_dir --prefix=$(shell pwd)/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
+	cd lib2/einspline ; ./configure "CC=$(CC)" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/lib2/einspline/ --exec-prefix=$(shell pwd)/lib2/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
 endif
 endif
 
