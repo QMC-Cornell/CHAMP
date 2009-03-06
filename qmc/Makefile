@@ -183,22 +183,28 @@ LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/libla
 $(PROG): $(LIBS) $(OBJS)
 	$(CHAMP_LD) $(CHAMP_LD_FLAGS) -o $@ $(OBJS) $(CHAMP_LIBS) $(CHAMP_LD_END)
 
-../lib/lib/libcyrus.a: ../lib/lib/my_second.o
+# ../lib/lib/libcyrus.a: ../lib/lib/my_second.o
+../lib/lib/libcyrus.a:
 	cd ../lib ; make
 
-../lib/lib2/blas/libblas.a: ../lib/lib2/blas/dasum.o
+# ../lib/lib2/blas/libblas.a: ../lib/lib2/blas/dasum.o
+../lib/lib2/blas/libblas.a:
 	cd ../lib ; make
 
-../lib/lib2/lapack/liblapack.a: ../lib/lib2/lapack/dbdsdc.o
+# ../lib/lib2/lapack/liblapack.a: ../lib/lib2/lapack/dbdsdc.o
+../lib/lib2/lapack/liblapack.a:
 	cd ../lib ; make
 
-../lib/lib2/linpack/liblinpack.a: ../lib/lib2/linpack/dcabs1.o
+# ../lib/lib2/linpack/liblinpack.a: ../lib/lib2/linpack/dcabs1.o
+../lib/lib2/linpack/liblinpack.a:
 	cd ../lib ; make
 
-../lib/lib2/einspline/lib/libeinspline.a: ../lib/lib2/einspline/src/bspline_create.o
+# ../lib/lib2/einspline/lib/libeinspline.a: ../lib/lib2/einspline/src/bspline_create.o
+../lib/lib2/einspline/lib/libeinspline.a:
 	cd ../lib ; make
 
-../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a(main/anneal.o)
+# ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/main/anneal_2.o
+../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:
 	cd ../lib ; make
 
 clean_local:

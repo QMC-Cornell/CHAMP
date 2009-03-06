@@ -629,15 +629,15 @@ $(LIB_MPI)(main/start_stop_mpi.o):        $(INC_MPI)
 $(LIB_MPI)(main/func_mpi.o) : main/func_mpi.F
 	$(FC_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
-	-rm $*.o
+#	-rm $*.o
 $(LIB_MPI)(main/IO_stop.o): main/IO_stop.F
 	$(FC_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
-	-rm $*.o
+#	-rm $*.o
 $(LIB_MPI)(main/start_stop_mpi.o): main/start_stop_mpi.F
 	$(FC_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
-	-rm $*.o
+#	-rm $*.o
 
 # Define suffix rule for .F files, since not all versions of make have
 # one built in.  Also redefine .f rule, just to be sure.  Note that .x.a
@@ -652,15 +652,15 @@ $(LIB_MPI)(main/start_stop_mpi.o): main/start_stop_mpi.F
 .F.a:
 	$(FC) $(FFLAGS) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
-	-rm $*.o
+#	-rm $*.o
 .f.a:
 	$(FC) $(FFLAGS) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
-	-rm $*.o
+#	-rm $*.o
 .for.a:
 	$(FC) $(FFLAGS_NOOPT) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
-	-rm $*.o
+#	-rm $*.o
 
 # PHONY is a Make keyword that prevents it from getting confused if there
 # happens to be a file named "clean" in the directory.
