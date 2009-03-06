@@ -14,3 +14,9 @@ OBJS = ibc_ck.o r8bcspline.o r8evtricub.o r8herm3ev.o r8mktricubw.o r8tcspeval.o
 libpspline.a: $(OBJS)
 	ar r $@ $(OBJS)
 	ranlib $@
+
+clean:
+	rm -f *.o
+
+clean_all:
+	rm -f *.o *.a

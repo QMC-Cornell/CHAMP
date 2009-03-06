@@ -72,10 +72,10 @@ CHAMP_F77_MPI_FLAGS=$(CHAMP_F77_FLAGS) -DMPI
 CHAMP_LD=$(CHAMP_F95)
 CHAMP_LD_MPI=$(CHAMP_MPIF95)
 
-CHAMP_LD_FAST=$(CHAMP_F95_FLAGS) #-static
+CHAMP_LD_FAST=$(CHAMP_F95_FLAGS)
 CHAMP_LD_PROF=-O3 -pg
-CHAMP_LD_DEBUG=-static -align all
-CHAMP_LD_IPO=-O3 -ipo -static -align all -fast
+CHAMP_LD_DEBUG=-align all
+CHAMP_LD_IPO=-O3 -ipo -fast -align all
 
 # by default, fast options
 CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
@@ -91,7 +91,7 @@ CHAMP_MPI_EXE=champ_mpi.exe
 CHAMP_DEBUG_EXE=champ_debug.exe
 
 # Export these for compiling the libraries
-export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE
+export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE USE_GCC
 ####################### MACHINES ########################################
 
 # New dft cluster at Cornell
@@ -99,6 +99,7 @@ ifeq ($(hostname),gauss)
   CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT 
   CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source -mtune=core2 -march=core2 -xT
   CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+  USE_GCC=yes
 endif
 
 # nanolab at Cornell
@@ -322,6 +323,30 @@ ifeq ($(hostname),cfe1)
   CHAMP_LD_MPI=ifort
   CHAMP_LD_FAST=-O3 -align all
   CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
+endif
+
+#qmc1 at cornell
+ifeq ($(hostname),qmc1)
+  CHAMP_F95=ifort
+  CHAMP_C=gcc
+  CHAMP_CXX=g++
+  CHAMP_MPIC=mpicc
+
+  CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip
+  CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg
+  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+
+# by default, compilation for f77 is the same than for f95
+  CHAMP_F77=$(CHAMP_F95)
+  CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
+  CHAMP_F77_DEBUG=$(CHAMP_F95_DEBUG) -extend_source
+  CHAMP_F77_PROF=$(CHAMP_F95_PROF) -extend_source
+
+# by default, fast options
+  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+
+  CHAMP_LD=ifort
 endif
 
 #jasmine at cornell

@@ -1,4 +1,4 @@
-ex bspline*f90 <<_end
+ex bspline_mod.f90 <<_end
 1,\$s/fcreate_multi_ubspline_3d_z\>/fcreate_multi_ubspline_3d_z_/
 1,\$s/fcreate_multi_ubspline_3d_d\>/fcreate_multi_ubspline_3d_d_/
 1,\$s/fset_multi_ubspline_3d_d\>/fset_multi_ubspline_3d_d_/

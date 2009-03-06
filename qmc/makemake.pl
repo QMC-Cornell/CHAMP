@@ -41,30 +41,54 @@ print MAKEFILE "\n\n";
 # make
 #
 
-#print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n\n";
-#print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n\n";
+print MAKEFILE "# PHONY is a Make keyword that tells it to execute the rule regardless of\n";
+print MAKEFILE "# the dependencies.  We use it here for 2 reasons:\n";
+print MAKEFILE "# 1) prevents it from getting confused if there happens to be a file named\n";
+print MAKEFILE "#    'clean' or 'clean_all' in the directory.\n";
+print MAKEFILE "# 2) Also, for the libraries, linpack etc. it does the make even though there\n";
+print MAKEFILE "#    are directories named linpack etc.\n";
+print MAKEFILE ".PHONY: clean_local clean clean_all clean_all_lib make\n";
 
-#print MAKEFILE "all: \$(PROG)\n\n";
-#print MAKEFILE "\$(PROG): \$(LIBS) \$(OBJS)\n";
-print MAKEFILE "\$(PROG): \$(OBJS)\n";
-print MAKEFILE "\tcd ../lib; make\n";
+print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n\n";
+
+print MAKEFILE "\$(PROG): \$(LIBS) \$(OBJS)\n";
 print MAKEFILE "\t\$(CHAMP_LD) \$(CHAMP_LD_FLAGS) -o \$@ \$(OBJS) \$(CHAMP_LIBS) \$(CHAMP_LD_END)\n\n";
+print MAKEFILE "";
+print MAKEFILE "../lib/lib/libcyrus.a: ../lib/lib/my_second.o\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "\n";
+print MAKEFILE "../lib/lib2/blas/libblas.a: ../lib/lib2/blas/dasum.o\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "\n";
+print MAKEFILE "../lib/lib2/lapack/liblapack.a: ../lib/lib2/lapack/dbdsdc.o\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "\n";
+print MAKEFILE "../lib/lib2/linpack/liblinpack.a: ../lib/lib2/linpack/dcabs1.o\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "\n";
+print MAKEFILE "../lib/lib2/einspline/lib/libeinspline.a: ../lib/lib2/einspline/src/bspline_create.o\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "\n";
+print MAKEFILE "../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a(main/anneal.o)\n";
+print MAKEFILE "\tcd ../lib ; make\n";
+print MAKEFILE "\n";
 #
-# make clean
+# make various cleans
 #
+print MAKEFILE "clean_local:\n";
+print MAKEFILE "\trm -f *.o *.dif *.lst *.sav *.mod\n";
+print MAKEFILE "\n";
 print MAKEFILE "clean:\n";
-print MAKEFILE "\trm -f \$(OBJS) *.o *.dif *.lst *.sav *.mod\n\n";
-#
-# make cleanall
-#
-print MAKEFILE "cleanall:\n";
+print MAKEFILE "\trm -f \$(OBJS) *.dif *.lst *.sav *.mod\n";
+print MAKEFILE "\n";
+print MAKEFILE "clean_all:\n";
 print MAKEFILE "\tmake clean\n";
-print MAKEFILE "\trm -f *exe\n\n";
-#
-# make cleanlocal
-#
-print MAKEFILE "cleanlocal:\n";
-print MAKEFILE "\trm -f *.o *.dif *.lst *.sav *.mod\n\n";
+print MAKEFILE "\trm -f *exe\n";
+print MAKEFILE "\n";
+print MAKEFILE "clean_all_lib:\n";
+print MAKEFILE "\tmake clean_all\n";
+print MAKEFILE "\tcd ../lib ; make clean_all\n";
+
 #
 # make make
 #

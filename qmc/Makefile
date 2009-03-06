@@ -171,20 +171,49 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.o
 
-$(PROG): $(OBJS)
-	cd ../lib; make
+# PHONY is a Make keyword that tells it to execute the rule regardless of
+# the dependencies.  We use it here for 2 reasons:
+# 1) prevents it from getting confused if there happens to be a file named
+#    'clean' or 'clean_all' in the directory.
+# 2) Also, for the libraries, linpack etc. it does the make even though there
+#    are directories named linpack etc.
+.PHONY: clean_local clean clean_all clean_all_lib make
+LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+
+$(PROG): $(LIBS) $(OBJS)
 	$(CHAMP_LD) $(CHAMP_LD_FLAGS) -o $@ $(OBJS) $(CHAMP_LIBS) $(CHAMP_LD_END)
 
-clean:
-	rm -f $(OBJS) *.o *.dif *.lst *.sav *.mod
+../lib/lib/libcyrus.a: ../lib/lib/my_second.o
+	cd ../lib ; make
 
-cleanall:
+../lib/lib2/blas/libblas.a: ../lib/lib2/blas/dasum.o
+	cd ../lib ; make
+
+../lib/lib2/lapack/liblapack.a: ../lib/lib2/lapack/dbdsdc.o
+	cd ../lib ; make
+
+../lib/lib2/linpack/liblinpack.a: ../lib/lib2/linpack/dcabs1.o
+	cd ../lib ; make
+
+../lib/lib2/einspline/lib/libeinspline.a: ../lib/lib2/einspline/src/bspline_create.o
+	cd ../lib ; make
+
+../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a(main/anneal.o)
+	cd ../lib ; make
+
+clean_local:
+	rm -f *.o *.dif *.lst *.sav *.mod
+
+clean:
+	rm -f $(OBJS) *.dif *.lst *.sav *.mod
+
+clean_all:
 	make clean
 	rm -f *exe
 
-cleanlocal:
-	rm -f *.o *.dif *.lst *.sav *.mod
-
+clean_all_lib:
+	make clean_all
+	cd ../lib ; make clean_all
 make:
 	perl makemake.pl 
 	/usr/bin/ctags *.f *.f90

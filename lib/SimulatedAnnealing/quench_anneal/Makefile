@@ -664,10 +664,12 @@ $(LIB_MPI)(main/start_stop_mpi.o): main/start_stop_mpi.F
 
 # PHONY is a Make keyword that prevents it from getting confused if there
 # happens to be a file named "clean" in the directory.
+# We used to remove include/parameters.h as part of clean_all because it can be machine dependent
+# but now I just leave it as parameters/parameters.Linux.
 .PHONY: clean clean_all
 clean:
 	-rm -f *.o main/*.o lib_standard/blas/*.o lib_standard/linpack/*.o math/*.o tests/*.o
 clean_all:
 	-rm -f *.o main/*.o lib_standard/blas/*.o lib_standard/linpack/*.o math/*.o tests/*.o \
             lib/libquench.a lib/libquench_seq.a lib/libquench_mpi.a lib/libblas.a lib/liblinpack.a lib/liblapack.a \
-            tests/test_seq tests/test_mpi include/parameters.h
+            tests/test_seq tests/test_mpi

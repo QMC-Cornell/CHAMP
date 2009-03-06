@@ -1,3 +1,4 @@
 configure_my
 make
 make install
+rm lib/*.so*

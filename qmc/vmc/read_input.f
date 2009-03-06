@@ -877,7 +877,8 @@ c Determinantal section
      &   .and.abs(inum_orb).ne.8)) then
          stop 'abs(inum_orb) must be 0, 4 or 6 or 8'
       endif
-      if(inum_orb .ne. 0) then
+c If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
+      if(inum_orb .ne. 0 .and. ndim.eq.3) then
         read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap
         write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
          if(abs(inum_orb).eq.8) then

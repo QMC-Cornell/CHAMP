@@ -14,3 +14,9 @@ test_mpi: test.F functions.f $(LIBS_MPI)
 	$(FLINKER_MPI) $(LDFLAGS) -o $@ test.o functions.o -I../include -L../lib -lquench -lquench_mpi -llinpack -llapack -lblas
 	-rm test.o functions.o
 	@echo Made test_mpi
+
+clean:
+	rm -f *.o
+
+clean_all:
+	rm -f *.o *.a

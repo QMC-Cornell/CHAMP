@@ -313,6 +313,9 @@ FRC:
 clean:
 	rm -f *.o
 
+clean_all:
+	rm -f *.o *.a
+
 slamch.o: slamch.f
 	$(FORTRAN) $(NOOPT) -c $<
 dlamch.o: dlamch.f

@@ -18,3 +18,9 @@ dtrdi.o dtrsl.o
 liblinpack.a: $(OBJS)
 	ar r $@ $(OBJS)
 	ranlib $@
+
+clean:
+	-rm -f *.o
+
+clean_all:
+	-rm -f *.o *.a

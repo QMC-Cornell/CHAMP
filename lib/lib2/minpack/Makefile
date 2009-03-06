@@ -17,3 +17,9 @@ dogleg.o  fdjac1.o  hybrd.o   lhesfcn.o  lmdif1.o  lmstr1.o  qrsolv.o  ssqfcn.o
 libminpack.a: $(OBJS)
 	ar r $@ $(OBJS)
 	ranlib $@
+
+clean:
+	rm -f *.o
+
+clean_all:
+	rm -f *.o *.a

@@ -10,3 +10,9 @@ OBJS = dasum.o daxpy.o dcopy.o ddot.o dnrm2.o drot.o drotg.o dscal.o dswap.o ida
 libblas.a: $(OBJS)
 	$(AR) $(ARFLAGS) $@ $(OBJS)
 	ranlib $@
+
+clean:
+	-rm -f *.o
+
+clean_all:
+	-rm -f *.o *.a
