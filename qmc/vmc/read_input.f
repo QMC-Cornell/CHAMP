@@ -1328,7 +1328,8 @@ c   default values:
 
 c Read optional variables if any:
 c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
-      if(ibasis.ge.3 .and. ibasis.le.6) then 
+c (also for 2D systems with numerical orbitals)
+      if((ibasis.ge.3 .and. ibasis.le.6) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then 
         read(5,*) section
         write(6,'(/,a30,/)') section
         read(5,opt_list)
