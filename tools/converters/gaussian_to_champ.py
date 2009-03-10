@@ -1,3 +1,4 @@
+#!/usr/local/bin/python
 #!/usr/bin/python
 
 ###################################################################################
@@ -46,6 +47,7 @@ basis_labels_allsubsection = []
 basis_labels = []
 basis_labels_without_number = []
 basis_labels_by_cent_type = []
+basis_labels_without_number_by_cent_type = []
 
 norb = 0
 orbital_indexes = []
@@ -177,7 +179,7 @@ def read_geometry ():
 
   for i in range(nctype):
     cent_type_to_first_cent.append (nuclear_charges.index (nuclear_charges_unique[i])+1)
-  print "cent_type_to_first_cent=",cent_type_to_first_cent
+#  print "cent_type_to_first_cent=",cent_type_to_first_cent
 
   cent = (angstrom_to_bohr * array(nuclear_coordinates)).tolist()
 
@@ -232,6 +234,11 @@ def read_orbitals ():
   "read molecular orbitals."
   global norb
   global orbital_coefficients
+  global basis_atom_indexes, basis_labels
+  global basis_labels_without_number
+  global basis_labels_by_cent_type
+  global basis_labels_without_number_by_cent_type
+
   basis_atom_indexes_subsection = []
   basis_labels_subsection = []
   orbital_coefficients_subsection = []
@@ -317,6 +324,7 @@ def read_orbitals ():
 
   norb = len(orbital_indexes)
 #  print "basis_labels_allsubsection=",basis_labels_allsubsection
+#  print "basis_atom_indexes_allsubsection=",basis_atom_indexes_allsubsection
 #  print "orbital_coefficients=",orbital_coefficients
 #  print "orbital_indexes=", orbital_indexes
 #  print "orbital_occupations=",orbital_occupations
@@ -326,6 +334,7 @@ def read_orbitals ():
 # keep only the basis atom indexes and basis labels of the first subsection
   basis_atom_indexes = basis_atom_indexes_allsubsection[0]
   basis_labels = basis_labels_allsubsection[0]
+#  print "basis_atom_indexes=",basis_atom_indexes
 #  print "basis_labels=",basis_labels
 
 # check dimensions
@@ -367,12 +376,14 @@ def read_orbitals ():
 #  print "\nbasis_labels=",basis_labels
 #  print "basis_labels_without_number=",basis_labels_without_number
 
+# basis lables for each unique center type
   for cent_type in range(nctype):
     for i in range(nbasis):
       if (int(basis_atom_indexes[i]) == int(cent_type_to_first_cent [cent_type])):
         basis_labels_by_cent_type.append (basis_labels[i])
+        basis_labels_without_number_by_cent_type.append (basis_labels_without_number[i])
 
-  print "basis_labels_by_cent_type=",basis_labels_by_cent_type
+#  print "basis_labels_by_cent_type=",basis_labels_by_cent_type
 
 # ========================================================
 def sort_basis ():
@@ -631,8 +642,8 @@ if (not l_sort_basis):
   file_output.write(' basis_functions\n')
   for i in range(nctype):
     file_output.write('  %d' %(i+1) + ' ')
-    for j in range(len(basis_labels_by_cent_type)):
-      file_output.write(basis_labels_by_cent_type[j] + ' ' )
+    for j in range(len(basis_labels_without_number_by_cent_type)):
+      file_output.write(basis_labels_without_number_by_cent_type[j] + ' ' )
     file_output.write('\n')
   file_output.write(' end\n')
   file_output.write('end\n')
