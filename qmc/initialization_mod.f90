@@ -42,7 +42,9 @@ module initialization_mod
 
 ! orbital coefficients on normalized and orthonormalized basis functions
 !  if(.not.(ibasis.ge.3 .and. ibasis.le.6)) then ! do not do it for quantum dots, rings, etc...
-   call coef_orb_on_norm_basis_from_coef (1)
+   if (inum_orb == 0) then ! only if non-numerical orbitals
+     call coef_orb_on_norm_basis_from_coef (1)
+   endif
 !  if (trim(basis_functions_varied) == 'orthonormalized') then
 !   call coef_orb_on_ortho_basis_from_coef
 !  endif

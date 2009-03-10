@@ -262,6 +262,9 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       parameter(NCOEF=5)
 
       common /dim/ ndim
+      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+     &,ifock,i3body,irewgt,iaver,istrch
+     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -380,14 +383,16 @@ c  90 call basis_norm(iadd_diag,1)
    90 continue
 
 !     Copy orbital coefficients
-      do iadd_diag = 2, 3
-        coef_orb_on_norm_basis (:,:,iadd_diag) = coef_orb_on_norm_basis (:,:,1)
-      enddo
-
-      if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+      if (inum_orb == 0) then
        do iadd_diag = 2, 3
-        coef_orb_on_ortho_basis (:,:,iadd_diag) = coef_orb_on_ortho_basis (:,:,1)
+         coef_orb_on_norm_basis (:,:,iadd_diag) = coef_orb_on_norm_basis (:,:,1)
        enddo
+      
+       if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+        do iadd_diag = 2, 3
+         coef_orb_on_ortho_basis (:,:,iadd_diag) = coef_orb_on_ortho_basis (:,:,1)
+        enddo
+       endif
       endif
 
       return
@@ -403,6 +408,9 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
+      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+     &,ifock,i3body,irewgt,iaver,istrch
+     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /dim/ ndim
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -486,34 +494,36 @@ c Jastrow
    56     c_sav(i,ict)=c(i,ict,1)
 
 !     save orbital coefficients
-      call object_provide ('nbasis')
-      call object_provide ('orb_tot_nb')
-
-      call object_provide ('coef')
-      call object_alloc ('coef_sav', coef_sav, nbasis, orb_tot_nb)
-      coef_sav (1:nbasis, 1:orb_tot_nb) = coef (1:nbasis, 1:orb_tot_nb, 1)
-      call object_modified ('coef_sav')
-
-      call object_provide ('coef_orb_on_norm_basis')
-      call object_alloc ('coef_orb_on_norm_basis_sav', coef_orb_on_norm_basis_sav, nbasis, orb_tot_nb)
-      coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
-      call object_modified ('coef_orb_on_norm_basis_sav')
-
-      if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
-       call object_provide ('coef_orb_on_ortho_basis')
-       call object_alloc ('coef_orb_on_ortho_basis_sav', coef_orb_on_ortho_basis_sav, nbasis, orb_tot_nb)
-       coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb) = coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1)
-       call object_modified ('coef_orb_on_ortho_basis_sav')
+      if (inum_orb == 0) then
+       call object_provide ('nbasis')
+       call object_provide ('orb_tot_nb')
+       
+       call object_provide ('coef')
+       call object_alloc ('coef_sav', coef_sav, nbasis, orb_tot_nb)
+       coef_sav (1:nbasis, 1:orb_tot_nb) = coef (1:nbasis, 1:orb_tot_nb, 1)
+       call object_modified ('coef_sav')
+       
+       call object_provide ('coef_orb_on_norm_basis')
+       call object_alloc ('coef_orb_on_norm_basis_sav', coef_orb_on_norm_basis_sav, nbasis, orb_tot_nb)
+       coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
+       call object_modified ('coef_orb_on_norm_basis_sav')
+       
+       if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+        call object_provide ('coef_orb_on_ortho_basis')
+        call object_alloc ('coef_orb_on_ortho_basis_sav', coef_orb_on_ortho_basis_sav, nbasis, orb_tot_nb)
+        coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb) = coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1)
+        call object_modified ('coef_orb_on_ortho_basis_sav')
+       endif
+       
+!      save exponents
+       call object_provide ('nctype')
+       call object_alloc ('zex_sav', zex_sav, nbasis)
+       call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
+       zex_sav (1:nbasis) = zex (1:nbasis,1)
+       zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
+       call object_modified ('zex_sav')
+       call object_modified ('zex2_sav')
       endif
-
-!     save exponents
-      call object_provide ('nctype')
-      call object_alloc ('zex_sav', zex_sav, nbasis)
-      call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
-      zex_sav (1:nbasis) = zex (1:nbasis,1)
-      zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
-      call object_modified ('zex_sav')
-      call object_modified ('zex2_sav')
 
 !     save nuclear coordinates
       call object_provide ('ndim')
@@ -549,27 +559,29 @@ c-----------------------------------------------------------------------
   156     c(i,ict,1)=c_sav(i,ict)
 
 !     restore orbital coefficients (must restore only for iwf=1 to avoid problems)
-      call object_valid_or_die ('coef_sav')
-      coef (1:nbasis, 1:orb_tot_nb, 1) = coef_sav (1:nbasis, 1:orb_tot_nb)
-      call object_modified ('coef')
-
-      call object_valid_or_die ('coef_orb_on_norm_basis_sav')
-      coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb)
-      call object_modified ('coef_orb_on_norm_basis')
-
-      if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
-       call object_valid_or_die ('coef_orb_on_ortho_basis_sav')
-       coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb)
-       call object_modified ('coef_orb_on_ortho_basis')
+      if (inum_orb == 0) then
+       call object_valid_or_die ('coef_sav')
+       coef (1:nbasis, 1:orb_tot_nb, 1) = coef_sav (1:nbasis, 1:orb_tot_nb)
+       call object_modified ('coef')
+       
+       call object_valid_or_die ('coef_orb_on_norm_basis_sav')
+       coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb)
+       call object_modified ('coef_orb_on_norm_basis')
+       
+       if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+        call object_valid_or_die ('coef_orb_on_ortho_basis_sav')
+        coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb)
+        call object_modified ('coef_orb_on_ortho_basis')
+       endif
+       
+!      restore exponents (must restore only for iwf=1 to avoid problems)
+       call object_valid_or_die ('zex_sav')
+       call object_valid_or_die ('zex2_sav')
+       zex (1:nbasis,1) = zex_sav (1:nbasis)
+       zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
+       call object_modified ('zex')
+       call object_modified ('zex2')
       endif
-
-!     restore exponents (must restore only for iwf=1 to avoid problems)
-      call object_valid_or_die ('zex_sav')
-      call object_valid_or_die ('zex2_sav')
-      zex (1:nbasis,1) = zex_sav (1:nbasis)
-      zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
-      call object_modified ('zex')
-      call object_modified ('zex2')
 
 !     restore nuclear coordinates
       call object_valid_or_die ('cent_sav')
@@ -594,6 +606,9 @@ c Saves the best wf yet and writes it out at end of run
 
 c     common /contrl_per/ iperiodic,ibasis
       common /dim/ ndim
+      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+     &,ifock,i3body,irewgt,iaver,istrch
+     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -682,18 +697,20 @@ c Jastrow
       call object_modified ('c_best')
 
 !     save orbital coefficients
-      call object_provide ('nbasis')
-      call object_provide ('orb_tot_nb')
-      call object_provide ('coef_orb_on_norm_basis')
-      call object_alloc ('coef_orb_on_norm_basis_best', coef_orb_on_norm_basis_best, nbasis, orb_tot_nb)
-      coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
-      call object_modified ('coef_orb_on_norm_basis_best')
-
-!     save exponents
-      call object_provide ('nctype')
-      call object_alloc ('zex_best', zex_best, nbasis)
-      zex_best (1:nbasis) = zex (1:nbasis,1)
-      call object_modified ('zex_best')
+      if (inum_orb == 0) then
+       call object_provide ('nbasis')
+       call object_provide ('orb_tot_nb')
+       call object_provide ('coef_orb_on_norm_basis')
+       call object_alloc ('coef_orb_on_norm_basis_best', coef_orb_on_norm_basis_best, nbasis, orb_tot_nb)
+       coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
+       call object_modified ('coef_orb_on_norm_basis_best')
+       
+!      save exponents
+       call object_provide ('nctype')
+       call object_alloc ('zex_best', zex_best, nbasis)
+       zex_best (1:nbasis) = zex (1:nbasis,1)
+       call object_modified ('zex_best')
+      endif
 
 !     save nuclear coordinates
       call object_provide ('ndim')

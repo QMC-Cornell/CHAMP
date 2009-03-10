@@ -220,4 +220,39 @@ module strings_tools_mod
 
   end function string_to_integer
 
+! ==================================================================================
+  function is_string_integer (string)
+! ----------------------------------------------------------------------------------
+! Description : is string an integer?
+!
+! Created     : J. Toulouse, 03 Mar 2009
+! ----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)  :: string
+
+! output
+  logical is_string_integer
+
+! local
+  character(len=1) c
+  integer i 
+
+! begin
+  is_string_integer = .true.
+
+  do i = 1, len(trim(string))
+   c = string(i:i)
+   if (c /= '0' .and. c /= '1' .and. c /= '2' .and. &
+       c /= '3' .and. c /= '4' .and. c /= '5' .and. &
+       c /= '6' .and. c /= '7' .and. c /= '8' .and. &
+       c /= '9') then
+      is_string_integer = .false.
+      exit
+    endif
+  enddo
+
+  end function is_string_integer
+
 end module strings_tools_mod

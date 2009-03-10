@@ -386,7 +386,8 @@ module parser_tools_mod
 !  we should create another routine just to read strings
    call alloc (value_list_name, value_list, value_list_nb) ! commented out for pathscale compiler
 # endif
-    value_list (value_list_nb) = value_string
+    value_list (value_list_nb) = trim(value_string)
+!    write(6,*) 'value_string=',value_string
 
   enddo ! end loop
 

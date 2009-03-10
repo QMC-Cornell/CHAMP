@@ -1627,8 +1627,10 @@ c     dimension v_ext(MGRID_ORB,MGRID_ORB)
       open(4,file='orbitals_num',form='formatted',status='old')
 
       read(4,*) ngrid_orbx,ngrid_orby,sizex,sizey,norba
-      if(ngrid_orbx.gt.MGRID_ORB .or. ngrid_orby.gt.MGRID_ORB) stop 'ngrid_orbx,ngrid_orby for numerical
-     & orbitals must be < MGRID_ORB'
+      if(ngrid_orbx.gt.MGRID_ORB .or. ngrid_orby.gt.MGRID_ORB) then
+          write(6,'(a,i10,a,i10,a)') 'ngrid_orbx=',ngrid_orbx,' ngrid_orby=',ngrid_orby,' > MGRID_ORB'
+          stop 'ngrid_orbx,ngrid_orby for numerical orbitals must be < MGRID_ORB'
+      endif
       if(mod(ngrid_orbx,2).ne.1) stop 'ngrid_orbx must be odd in read_orb_loc_num'
       if(mod(ngrid_orby,2).ne.1) stop 'ngrid_orby must be odd in read_orb_loc_num'
       if(norba.lt.norb) stop 'norba not large enough in read_orb_loc_num'
