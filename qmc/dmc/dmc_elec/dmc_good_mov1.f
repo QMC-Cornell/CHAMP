@@ -683,17 +683,20 @@ c               dwt=1+expon+0.5d0*expon**2
             endif
           endif
 
-c Warning: This prevents population explosions.  I have seen these occur only with nonlocal psps.
+c Warning: These lines were added to reduce the probability of population explosions.
+c These occur mostly for nonlocal psps.
 c A better solution would be to employ a better way of treating nonlocal psps. in DMC.
-          if(dwt.gt.1+5*tau) then
-            if(ipr_sav.eq.0) then
-              ipr_sav=1
-              write(6,'(''Warning: dwt>1+5*tau, nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)')
-     &        nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration
-            endif
-            dwt=1+5*tau
-          endif
-
+c At minimum, if one uses this cutoff, instead of having the factor 5 below, one should replace it by a few times sigma.
+c Otherwise, this gives a DMC energy that is too high even in the tau->0 limit, actually especially in this limit,
+c if sigma is large.
+c         if(dwt.gt.1+5*tau) then
+c           if(ipr_sav.eq.0) then
+c             ipr_sav=1
+c             write(6,'(''Warning: dwt>1+5*tau, nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)')
+c    &        nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration
+c           endif
+c           dwt=1+5*tau
+c         endif
 
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
