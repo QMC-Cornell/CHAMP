@@ -60,7 +60,7 @@ module optimization_mod
   real(dp), allocatable   :: delta_c_im (:,:)
   real(dp)                :: add_diag_max  = 1.d10
   logical                 :: l_reset_add_diag = .true.
-  real(dp)                :: add_diag_reset_value  = 1.d-12
+  real(dp)                :: add_diag_reset_value  = 1.d-8
   logical                 :: do_add_diag_mult_exp = .false.
   logical                 :: l_last_run = .true.
 

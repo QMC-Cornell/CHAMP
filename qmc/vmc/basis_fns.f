@@ -951,6 +951,26 @@ c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
           phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
+          if(abs(phir).lt.1.d-300) then
+            write(6,'(''phir='',9d12.4)') phir
+            stop 'phir too small'
+          endif
+
+          if(abs(phir).gt.1.d+300) then
+            write(6,'(''phir='',9d12.4)') phir
+            stop 'phir too large'
+          endif
+
+          if(abs(phir).lt.1.d-300) then
+            write(6,'(''phit='',9d12.4)') phit
+            stop 'phit too small'
+          endif
+
+          if(abs(phit).gt.1.d+300) then
+            write(6,'(''phit='',9d12.4)') phit
+            stop 'phit too large'
+          endif
+
 c          write(*,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
 c          write(*,*) 'xg1,xg2,xg3,xg4,wez,wez2,',
 c     &'xrrel,xrrel2,xtrel,cxtrel,sxtrel=',
@@ -967,10 +987,16 @@ c          write(*,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           d2phin(ib,ie)=(dpdxr*xri+d2pdxr2+d2pdxt2*xri2)*phin(ib,ie)
 
-          if(abs(phin(ib,ie)).lt.1.d-150 .or.  abs(phin(ib,ie)).gt.1.d+150) then
+          if(abs(phin(ib,ie)).lt.1.d-300) then
             write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
      &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
-            stop 'phir,phit,phin(ib,ie) outside range'
+            stop 'phir,phit,phin(ib,ie) too small'
+          endif
+
+          if(abs(phin(ib,ie)).gt.1.d+300) then
+            write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
+     &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
+            stop 'phir,phit,phin(ib,ie) too large'
           endif
 
         enddo

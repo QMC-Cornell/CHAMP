@@ -121,12 +121,12 @@ c set the superdiag elements of ovlp
         write(6,'(/,''Hamiltonian and overlap matrices after renormalization'')')
         do 150 i=1,nparmp1
 c 150     write(6,'(''ovlp='',20g12.4)') (ovlp(i,j),j=1,i)
-  150     write(6,'(''ovlp='',20g22.14)') (ovlp(i,j),j=1,i)
+  150     write(6,'(''ovlp='',20g15.8)') (ovlp(i,j),j=1,i)
         write(6,*)
 
         do 160 i=1,nparmp1
 c 160     write(6,'(''ham='',20g12.4)') (ham(i,j),j=1,nparmp1)
-  160     write(6,'(''ham='',20g22.14)') (ham(i,j),j=1,nparmp1)
+  160     write(6,'(''ham='',20g15.8)') (ham(i,j),j=1,nparmp1)
         write(6,*)
       endif
       write(6,'(/,''diagonal H/O'',9f9.4)') (ham(i,i)/ovlp(i,i),i=1,nparmp1)
