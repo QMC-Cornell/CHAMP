@@ -5,13 +5,13 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,two=2.d0,half=.5d0)
+!JT   parameter (zero=0.d0,two=2.d0,half=.5d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
@@ -25,7 +25,7 @@ c Written by Cyrus Umrigar
 
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
-      dimension iwundr(MWALK)
+      dimension iwundr(MWALK),wt_sav(MWALK)
 
       if(ipr.ge.2) then
         write(6,'(''nwalk,,ioldest,ioldestmx='',9i5)') nwalk,ioldest,ioldestmx
@@ -33,6 +33,9 @@ c Written by Cyrus Umrigar
         write(6,'(''eold='',100f6.2)') (eoldw(iww,1),iww=1,nwalk)
       endif
 
+c Identify the walkers that are to be killed because their wt. is zero, or that are
+c to be merged because their wts are less than 1/2.  For each pair whose wts are < 1/2
+c give the one that is to be kept the additional wt of the other and put the other one on a stack.
       iunder=0
       ipair=0
       wtsm=zero
@@ -64,9 +67,20 @@ c Written by Cyrus Umrigar
         endif
    10 continue
 
+c Figure out what weight walkers can be split without exceeding MWALK
+      nwalk_after_join=nwalk-iunder
+      nwalk_max_dupl=MWALK-nwalk_after_join
+      do iw=1,nwalk
+        wt_sav(iw)=wt(iw)
+      enddo
+      call shell(wt_sav,nwalk)
+      wt_split=wt_sav(max(1,nwalk-nwalk_max_dupl))
+
+c Split the walkers whose wt is >max(two,wt_split).  If there are walkers that were eliminated, so that iunder>0
+c then put the new walker in that location.  Otherwise put it at the end.
       nwalk2=nwalk
       do 20 iw=1,nwalk
-        if(wt(iw).ge.two) then
+        if(wt(iw).gt.max(two,wt_split)) then
           nbrnch=nbrnch+1
           if(iunder.gt.0) then
             iw2=iwundr(iunder)
@@ -77,7 +91,7 @@ c Written by Cyrus Umrigar
             if(nwalk2.gt.MWALK) then
               write(6,'(''iw,nwalk,nwalk2,MWALK='',9i5)') iw,nwalk,nwalk2,MWALK
               write(6,'(''wt='',100f6.2)') (wt(iww),iww=1,nwalk)
-              stop 'MWALK exceeded in splitj'
+              stop 'MWALK exceeded in splitj_mov1'
             endif
           endif
           wt(iw)=wt(iw)*half
@@ -108,6 +122,8 @@ c Written by Cyrus Umrigar
         endif
    20 continue
 
+c If more walkers were eliminated than the number duplicated then consolidate
+c the remaining walkers so that they are they occupy the first positions.
       do 30 j=iunder,1,-1
         iw2=iwundr(j)
         iw=nwalk2

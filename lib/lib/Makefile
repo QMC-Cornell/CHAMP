@@ -5,7 +5,7 @@
 # hartre_grid2.o deriv_grid2.o deriv2_grid2.o divergence_grid2.o laplac_grid2.o fderiv_grid2.o \
 # bode_grid2.o
 
-OBJS = my_second.o intpol.o simson.o
+OBJS = my_second.o intpol.o simson.o shell.o
 
 libcyrus.a: $(OBJS)
 	ar r $@ $(OBJS)

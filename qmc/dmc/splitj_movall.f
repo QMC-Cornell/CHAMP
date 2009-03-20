@@ -23,8 +23,17 @@ c Written by Cyrus Umrigar
 
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
-      dimension iwundr(MWALK)
+      dimension iwundr(MWALK),wt_sav(MWALK)
 
+      if(ipr.ge.2) then
+        write(6,'(''nwalk,,ioldest,ioldestmx='',9i5)') nwalk,ioldest,ioldestmx
+        write(6,'(''wt='',100f6.2)') (wt(iww),iww=1,nwalk)
+        write(6,'(''eold='',100f6.2)') (eoldw(iww,1),iww=1,nwalk)
+      endif
+
+c Identify the walkers that are to be killed because their wt. is zero, or that are
+c to be merged because their wts are less than 1/2.  For each pair whose wts are < 1/2
+c give the one that is to be kept the additional wt of the other and put the other one on a stack.
       iunder=0
       ipair=0
       wtsm=zero
@@ -56,9 +65,20 @@ c Written by Cyrus Umrigar
         endif
    10 continue
 
+c Figure out what weight walkers can be split without exceeding MWALK
+      nwalk_after_join=nwalk-iunder
+      nwalk_max_dupl=MWALK-nwalk_after_join
+      do iw=1,nwalk
+        wt_sav(iw)=wt(iw)
+      enddo
+      call shell(wt_sav,nwalk)
+      wt_split=wt_sav(max(1,nwalk-nwalk_max_dupl))
+
+c Split the walkers whose wt is >max(two,wt_split).  If there are walkers that were eliminated, so that iunder>0
+c then put the new walker in that location.  Otherwise put it at the end.
       nwalk2=nwalk
       do 20 iw=1,nwalk
-        if(wt(iw).ge.two) then
+        if(wt(iw).gt.max(two,wt_split)) then
           nbrnch=nbrnch+1
           if(iunder.gt.0) then
             iw2=iwundr(iunder)
@@ -66,11 +86,21 @@ c Written by Cyrus Umrigar
            else
             nwalk2=nwalk2+1
             iw2=nwalk2
-            if(nwalk2.gt.MWALK) stop 'MWALK exceeded in splitj'
+            if(nwalk2.gt.MWALK) then
+              write(6,'(''iw,nwalk,nwalk2,MWALK='',9i5)') iw,nwalk,nwalk2,MWALK
+              write(6,'(''wt='',100f6.2)') (wt(iww),iww=1,nwalk)
+              stop 'MWALK exceeded in splitj_movall'
+            endif
           endif
           wt(iw)=wt(iw)*half
           wt(iw2)=wt(iw)
           iage(iw2)=iage(iw)
+          if(ibasis.eq.3) then               !complex basis set
+            call csplitjdet(iw,iw2)
+           else
+            call splitjdet(iw,iw2)
+          endif
+          call splitjjas(iw,iw2)
           do 15 ifr=1,nforce
             ajacold(iw2,ifr)=ajacold(iw,ifr)
             eoldw(iw2,ifr)=eoldw(iw,ifr)
@@ -90,12 +120,20 @@ c Written by Cyrus Umrigar
         endif
    20 continue
 
+c If more walkers were eliminated than the number duplicated then consolidate
+c the remaining walkers so that they are they occupy the first positions.
       do 30 j=iunder,1,-1
         iw2=iwundr(j)
         iw=nwalk2
         nwalk2=nwalk2-1
         wt(iw2)=wt(iw)
         iage(iw2)=iage(iw)
+        if(ibasis.eq.3) then            !complex basis set
+          call csplitjdet(iw,iw2)
+         else
+          call splitjdet(iw,iw2)
+        endif
+        call splitjjas(iw,iw2)
         do 30 ifr=1,nforce
           ajacold(iw2,ifr)=ajacold(iw,ifr)
           eoldw(iw2,ifr)=eoldw(iw,ifr)
