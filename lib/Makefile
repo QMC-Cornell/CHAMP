@@ -18,7 +18,12 @@ export FC FFLAGS LDFLAGS CC CXX
 
 
 # In quench_anneal lib/libquench_seq.a also needs to be made, but it tags along with lib/libquench.a
+ifdef EINSPLINE
 all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a lib2/einspline/lib/libeinspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
+else
+all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
+endif
+
 
 lib/libcyrus.a:
 	cd lib ; $(MAKE)
