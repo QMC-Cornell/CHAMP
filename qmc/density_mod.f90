@@ -1010,6 +1010,7 @@ module density_mod
   call object_provide ('dens_err')
 
 ! open file
+  unit = 0
   call open_file_or_die (dens_file_out, unit)
 
   write(unit,'(a)')         'spherically averaged density calculated with CHAMP'
