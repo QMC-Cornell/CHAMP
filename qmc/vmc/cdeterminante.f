@@ -4,6 +4,7 @@ c by A.D.Guclu Feb2004
 c can deal with any complex determinant, provided that the determinantal
 c coefficients are real.
 
+      use control_mod
       use basic_tools_mod
       use cslater_mod
 
@@ -26,7 +27,7 @@ c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)

@@ -10,13 +10,14 @@ c The arrays in the routine are:
 c vpot = (1/N_quad) \sum_l (2l+1) (V_l-V_L) \sum_j^{N_quad} P_l(cos \theta_j) Psi(r_j,...)
 c vps  = (V_l-V_L)
 
-      use deriv_orb_mod ! JT
-      use eloc_mod ! JT
+      use control_mod
+      use deriv_orb_mod
+      use eloc_mod
       use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
 
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent

@@ -2,15 +2,17 @@
 c Written by Cyrus Umrigar
 c routine to print out final results
 
-      use all_tools_mod  !JT
-      use montecarlo_mod !JT
-      use main_menu_mod  !JT
-      use mpi_mod !JT
+      use all_tools_mod
+      use control_mod
+      use montecarlo_mod
+      use main_menu_mod
+      use mpi_mod
 
       implicit real*8(a-h,o-z)
       character*16 mode
-      character*80 title,fmt
-      character*24 date
+!JT      character*80 title,fmt
+      character*80 fmt
+!JT      character*24 date
 
 
 !      parameter (one=1.d0,half=.5d0)
@@ -22,7 +24,7 @@ c routine to print out final results
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl_opt2/ igradhess,iadd_diag_opt
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -30,7 +32,7 @@ c routine to print out final results
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /header/ title,date
+!JT      common /header/ title,date
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /forcepar/ deltot(MFORCE),nforce,istrech

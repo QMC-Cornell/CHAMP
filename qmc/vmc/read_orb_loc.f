@@ -43,10 +43,10 @@ c Do not confuse analytic orbs with analytic basis fns.
         close(4)
         call my_second(2,'read_o')
        else
-        if(numr.eq.0 .or. numr.eq.1 .or. numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
+        if(numr.eq.0 .or. numr.eq.1 .or. numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3 .or. numr.eq.-4) then
           call read_orb_loc_ana
          else
-          stop 'numr must be between -3 and 1'
+          stop 'numr must be between -4 and 1'
         endif
         call distinct_radial_bas
         write(6,'(''read in analytical orbitals'')')
@@ -227,6 +227,7 @@ c Note: the order that we read in the d functions is
 c 3z^-r^2, x^2-y^2, xy, xz, yz, in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
+
       if(numr.le.0) then
 c Analytic radial basis
         do 10 ict=1,nctype
@@ -263,7 +264,7 @@ c Analytic radial basis
      &      ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
      &      ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
 ! JT: if numr = -3, allows up to 5g functions
-           elseif(numr.eq.-3) then
+           elseif(numr.eq.-3 .or. numr.eq.-4) then
             read(5,*) n1s(ict)
      &      ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
      &      ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
@@ -309,9 +310,11 @@ c    &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
   123       nbas_tot=nbas_tot + iabs(n5g(m,ict))
 
    24     nbasis_ctype(ict)=nbas_typ
-        if(nbas_tot.ne.nbasis) then
+        if (numr.ne.-4) then ! JT: do not stop if numr=-4, basis information will be read in later
+         if(nbas_tot.ne.nbasis) then
           write(6,'(''nbas_tot,nbasis='',9i4)') nbas_tot,nbasis
           stop 'nbas_tot not equal to nbasis'
+         endif
         endif
 
         betaq=0
@@ -459,7 +462,7 @@ c single dot (ncent=nctype=1) and set nbasis_ctype=nbasis.
       endif ! end of nloc if
       endif
 
-      if(nloc.ne.-1) then
+      if(nloc.ne.-1 .and. numr.ne.-4) then
       write(6,'(/,''center type'',(12i4))') (i,i=1,nctype)
       write(6,'(/,''1s'',t11,(12i4))') (n1s(i),i=1,nctype)
       if(numr.le.0) write(6,'(''2s'',t11,(12i4))') (n2s(i),i=1,nctype)
@@ -524,16 +527,19 @@ c single dot (ncent=nctype=1) and set nbasis_ctype=nbasis.
 c The basis fns. in the LCAO coefs. are either in the atomic filling order
 c or in order of increasing l.  The former is the order I used to use the
 c latter is the order from GAMESS when doing all-electron calculations.
-      if(numr.eq.0 .or. numr.eq.1) then
-        call orb_loc_ana_original_order
-       elseif(numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
-        call orb_loc_ana_gamess_order
-       else
-        stop 'numr must be between -3 and 1'
-      endif
+       if(numr.eq.0 .or. numr.eq.1) then
+         call orb_loc_ana_original_order
+        elseif(numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
+         call orb_loc_ana_gamess_order
+        else
+         stop 'numr must be between -3 and 1'
+       endif
 
       endif ! end of if(nloc.ne.-1)
 
+      call object_modified ('nbasis_ctype') !JT
+
+      write(6,*)
       write(6,'(''orbital coefficients'')')
       do 260 i=1,norb
         read(5,*) (coef(j,i,1),j=1,nbasis)
@@ -544,11 +550,11 @@ c     if(inumr.ge.1) then
         write(6,'(''screening constants'')')
         read(5,*) (zex(i,1),i=1,nbasis)
         write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
-        do 262 i=1,nbasis
-  262     if(zex(i,1).le.0.d0) stop 'exponent zex should be > 0'
+        if (numr.ne.-4) then
+         do 262 i=1,nbasis
+  262      if(zex(i,1).le.0.d0) stop 'exponent zex should be > 0'
+        endif
 c     endif
-
-      call object_modified ('nbasis_ctype') !JT
 
       return
       end

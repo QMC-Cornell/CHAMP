@@ -72,31 +72,28 @@ module walkers_mod
    call get_next_value (l_check_initial_walkers)
 
   case ('elec_nb_closest_to_atom')
-   call get_next_value_list ('elec_nb_closest_to_atom_input', elec_nb_closest_to_atom_input, elec_nb_closest_to_atom_input_nb)
+   call get_next_value_list_object ('elec_nb_closest_to_atom_input', elec_nb_closest_to_atom_input, elec_nb_closest_to_atom_input_nb)
    call object_provide ('ncent')
    if (elec_nb_closest_to_atom_input_nb /= ncent) then
     write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_nb_closest_to_atom_input_nb,' values read in list elec_nb_closest_to_atom while the expected number was the number of atom centers = ',ncent
    call die (lhere)
    endif
-   call object_modified ('elec_nb_closest_to_atom_input')
 
   case ('elec_up_nb_closest_to_atom')
-   call get_next_value_list ('elec_up_nb_closest_to_atom_input', elec_up_nb_closest_to_atom_input, elec_up_nb_closest_to_atom_input_nb)
+   call get_next_value_list_object ('elec_up_nb_closest_to_atom_input', elec_up_nb_closest_to_atom_input, elec_up_nb_closest_to_atom_input_nb)
    call object_provide ('ncent')
    if (elec_up_nb_closest_to_atom_input_nb /= ncent) then
     write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_up_nb_closest_to_atom_input_nb,' values read in list elec_up_nb_closest_to_atom while the expected number was the number of atom centers = ',ncent
    call die (lhere)
    endif
-   call object_modified ('elec_up_nb_closest_to_atom_input')
 
   case ('elec_dn_nb_closest_to_atom')
-   call get_next_value_list ('elec_dn_nb_closest_to_atom_input', elec_dn_nb_closest_to_atom_input, elec_dn_nb_closest_to_atom_input_nb)
+   call get_next_value_list_object ('elec_dn_nb_closest_to_atom_input', elec_dn_nb_closest_to_atom_input, elec_dn_nb_closest_to_atom_input_nb)
    call object_provide ('ncent')
    if (elec_dn_nb_closest_to_atom_input_nb /= ncent) then
     write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_dn_nb_closest_to_atom_input_nb,' values read in list elec_dn_nb_closest_to_atom while the expected number was the number of atom centers = ',ncent
    call die (lhere)
    endif
-   call object_modified ('elec_dn_nb_closest_to_atom_input')
 
   case ('keep_only_walkers_with_elec_nb_closest_to_atom_input')
    call get_next_value (l_keep_only_walkers_with_elec_nb_closest_to_atom_input)

@@ -16,14 +16,14 @@
    character(len=max_string_len), allocatable  :: forces_list (:)
 # endif
   logical                                     :: l_forces_bare = .false.
-  logical                                     :: l_forces_zv = .true.
+  logical                                     :: l_forces_zv = .false.
   logical                                     :: l_forces_zv_deriv = .false.
   logical                                     :: l_forces_zv_linear = .false.
   logical                                     :: l_forces_zv_deriv_linear = .false.
   logical                                     :: l_forces_zvzb = .false.
   logical                                     :: l_forces_pulay = .false.
   logical                                     :: l_forces_zv_pulay = .false.
-  logical                                     :: l_forces_zv_deriv_pulay = .false.
+  logical                                     :: l_forces_zv_deriv_pulay = .true.
   real(dp), allocatable                       :: forces_nn (:)
   real(dp), allocatable                       :: forces_bare (:)
   real(dp), allocatable                       :: forces_bare_av (:)
@@ -129,26 +129,20 @@
     write(6,'(a)') ' components 1x 1y 1z 2x 2y 2z end'
     write(6,'(a)') ' estimator = [string] estimator to use:'
     write(6,'(a)') '           = bare : bare Hellmann-Feynamn estimator'
-    write(6,'(a)') '           = zv : simplest zero-variance estimator (default)'
+    write(6,'(a)') '           = zv : simplest zero-variance estimator'
     write(6,'(a)') '           = zv_deriv : zero-variance estimator using wave function derivatives wrt nuclear coordinates'
     write(6,'(a)') '           = zv_linear : zero-variance estimator using wave function derivatives wrt parameters'
     write(6,'(a)') '           = zv_deriv_linear : zero-variance estimator using wave function derivatives wrt nuclear coordinates and parameters'
     write(6,'(a)') '           = zvzb : simplest zero-variance zero-bias estimator'
     write(6,'(a)') '           = zv_pulay : simplest zero-variance + Pulay estimator'
-    write(6,'(a)') '           = zv_deriv_pulay : zero-variance using wave function derivatives wrt nuclear coordinates + Pulay estimator'
+    write(6,'(a)') '           = zv_deriv_pulay : zero-variance using wave function derivatives wrt nuclear coordinates + Pulay estimator (default)'
     write(6,'(a)') '           = pulay : Pulay contribution to the force'
     write(6,'(a)') ' eloc_av_fixed  = [real] fixed value of average of local energy to use in ZB term'
     write(6,'(a)') ' forces_q_av_fixed  list of reals end: fixed value of average of Q to use in ZB term'
     write(6,'(a)') 'end'
 
    case ('components')
-# if defined (PATHSCALE)
-    call get_next_value_list_string ('forces_list', forces_list, forces_nb) ! for pathscale compiler
-# else
-    call get_next_value_list ('forces_list', forces_list, forces_nb)
-# endif
-    call object_modified ('forces_list')
-    call object_modified ('forces_nb')
+    call forces_list_rd
 
    case ('estimator')
     call get_next_value (estimator)
@@ -169,11 +163,12 @@
        l_forces_zvzb = .true.
        l_forces_zv   = .true.
      case ('zv_pulay')
+       l_forces_zv = .true.
        l_forces_zv_pulay = .true.
        l_forces_pulay = .true.
      case ('zv_deriv_pulay')
-       l_forces_zv_deriv_pulay = .true.
        l_forces_zv_deriv = .true.
+       l_forces_zv_deriv_pulay = .true.
        l_forces_pulay = .true.
      case ('pulay')
        l_forces_pulay = .true.
@@ -189,8 +184,7 @@
     l_eloc_av_fixed = .true.
 
    case ('forces_q_av_fixed')
-    call get_next_value_list ('forces_q_av_fixed', forces_q_av_fixed, forces_nb)
-    call object_modified ('forces_q_av_fixed')
+    call get_next_value_list_object ('forces_q_av_fixed', forces_q_av_fixed, forces_nb)
     l_forces_q_av_fixed = .true.
 
    case ('end')
@@ -203,24 +197,24 @@
 
   enddo ! end loop over menu lines
 
-! determine forces' centers and directions
-  call object_alloc ('forces_cent', forces_cent, forces_nb)
-  call object_alloc ('forces_direct', forces_direct, forces_nb)
-  do force_i = 1, forces_nb
-      forces_cent (force_i) = string_to_integer (forces_list (force_i)(1:1))
-      select case (forces_list (force_i)(2:2))
-      case ('x')
-       forces_direct (force_i) = 1
-      case ('y')
-       forces_direct (force_i) = 2
-      case ('z')
-       forces_direct (force_i) = 3
-      case default
-       call die (lhere, 'Second character of the forces_list (force_i)='+forces_list (force_i)(2:2)+' must be x, y or z.')
-      end select
-  enddo
-  call object_modified ('forces_cent')
-  call object_modified ('forces_direct')
+! dependency between estimators
+  if (l_forces_zv_linear) then
+   l_forces_zv = .true.
+  endif
+  if (l_forces_zv_deriv_linear) then
+   l_forces_zv_deriv = .true.
+  endif
+  if (l_forces_zvzb) then
+   l_forces_zv = .true.
+  endif
+  if (l_forces_zv_pulay) then
+   l_forces_zv = .true.
+   l_forces_pulay = .true.
+  endif
+  if (l_forces_zv_deriv_pulay) then
+   l_forces_zv_deriv = .true.
+   l_forces_pulay = .true.
+  endif
 
   if (l_forces_bare) then
    write(6,'(a)') ' Forces will be calculated with bare (Hellmann-Feynman) estimator.'
@@ -326,6 +320,107 @@
   write(6,'(a)') 'End of forces menu ---------------------------------------------------------------------------------------'
 
   end subroutine forces_menu
+
+! ==============================================================================
+  subroutine forces_list_rd
+! ------------------------------------------------------------------------------
+! Description   : read values for list of force components to calculate
+!
+! Created       : J. Toulouse, 28 Mar 2009
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'forces_list_rd'
+  integer force_i
+
+! begin
+  call get_next_value_list_object ('forces_list', forces_list, forces_nb)
+  call object_modified ('forces_nb')
+
+! determine forces' centers and directions
+  call object_alloc ('forces_cent', forces_cent, forces_nb)
+  call object_alloc ('forces_direct', forces_direct, forces_nb)
+  do force_i = 1, forces_nb
+      forces_cent (force_i) = string_to_integer (forces_list (force_i)(1:1))
+      select case (forces_list (force_i)(2:2))
+      case ('x')
+       forces_direct (force_i) = 1
+      case ('y')
+       forces_direct (force_i) = 2
+      case ('z')
+       forces_direct (force_i) = 3
+      case default
+       call die (lhere, 'Second character of the forces_list (force_i)='+forces_list (force_i)(2:2)+' must be x, y or z.')
+      end select
+  enddo
+  call object_modified ('forces_cent')
+  call object_modified ('forces_direct')
+
+  end subroutine forces_list_rd
+
+! ==============================================================================
+  subroutine forces_list_bld
+! ------------------------------------------------------------------------------
+! Description   : default values for list of force components to calculate
+!
+! Created       : J. Toulouse, 28 Mar 2009
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  integer force_i, cent_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('forces_nb')
+   call object_create ('forces_list')
+   call object_create ('forces_cent')
+   call object_create ('forces_direct')
+
+   call object_needed ('ncent')
+
+   return
+
+  endif
+
+! allocations
+  forces_nb = 3 * ncent
+  call object_alloc ('forces_list', forces_list, forces_nb)
+  call object_alloc ('forces_cent', forces_cent, forces_nb)
+  call object_alloc ('forces_direct', forces_direct, forces_nb)
+
+  force_i = 0
+  do cent_i = 1, ncent
+
+!  x component
+   force_i = force_i + 1
+   forces_list (force_i) = string(cent_i) + 'x'
+   forces_cent (force_i) = cent_i
+   forces_direct (force_i) = 1
+
+!  y component
+   force_i = force_i + 1
+   forces_list (force_i) = string(cent_i) + 'y'
+   forces_cent (force_i) = cent_i
+   forces_direct (force_i) = 2
+
+!  z component
+   force_i = force_i + 1
+   forces_list (force_i) = string(cent_i) + 'z'
+   forces_cent (force_i) = cent_i
+   forces_direct (force_i) = 3
+
+  enddo ! cent_i
+
+  call require (here, 'force_i = forces_nb', force_i == forces_nb)
+
+  end subroutine forces_list_bld
 
 ! ==============================================================================
   subroutine forces_nn_bld
@@ -1653,7 +1748,7 @@
   call object_provide ('forces_list')
   call object_provide ('forces_nn')
   do force_i = 1, forces_nb
-   write(6,'(a,a4,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_nn (force_i)
+   write(6,'(a,a4,a,f15.8)') 'component # ',forces_list (force_i),' : ', forces_nn (force_i)
   enddo
 
   if (l_forces_bare) then
@@ -1664,7 +1759,7 @@
    call object_provide ('forces_bare_av')
    call object_provide ('forces_bare_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_bare_av (force_i), ' +-', forces_bare_av_err (force_i)
+    write(6,'(a,a4,a,f15.8,a,f15.8)') 'component # ',forces_list (force_i),' : ', forces_bare_av (force_i), ' +-', forces_bare_av_err (force_i)
    enddo
   endif
 
@@ -1677,7 +1772,7 @@
    call object_provide ('forces_zv_av_err')
    call object_provide ('forces_zv_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_av (force_i), ' +-', forces_zv_av_err (force_i),' (variance =',forces_zv_var (force_i),')'
+    write(6,'(a,a4,a,f15.8,a,f15.8,a,f15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_av (force_i), ' +-', forces_zv_av_err (force_i),' (variance =',forces_zv_var (force_i),')'
    enddo
   endif
 
@@ -1690,7 +1785,7 @@
    call object_provide ('forces_zv_deriv_av_err')
    call object_provide ('forces_zv_deriv_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_av (force_i), ' +-', forces_zv_deriv_av_err (force_i),' (variance =',forces_zv_deriv_var (force_i),')'
+    write(6,'(a,a4,a,f15.8,a,f15.8,a,f15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_av (force_i), ' +-', forces_zv_deriv_av_err (force_i),' (variance =',forces_zv_deriv_var (force_i),')'
    enddo
   endif
 
@@ -1703,7 +1798,7 @@
    call object_provide ('forces_zv_linear_av_err')
    call object_provide ('forces_zv_linear_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
+    write(6,'(a,a4,a,f15.8,a,f15.8,a,f15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_linear_av (force_i), ' +-', forces_zv_linear_av_err (force_i),' (variance =',forces_zv_linear_var (force_i),')'
    enddo
   endif
 
@@ -1716,7 +1811,7 @@
    call object_provide ('forces_zv_deriv_linear_av_err')
    call object_provide ('forces_zv_deriv_linear_var')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8,a,es15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_linear_av (force_i), ' +-', forces_zv_deriv_linear_av_err (force_i),' (variance =',forces_zv_deriv_linear_var (force_i),')'
+    write(6,'(a,a4,a,f15.8,a,f15.8,a,f15.8,a)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_linear_av (force_i), ' +-', forces_zv_deriv_linear_av_err (force_i),' (variance =',forces_zv_deriv_linear_var (force_i),')'
    enddo
   endif
 
@@ -1728,7 +1823,7 @@
    call object_provide ('forces_pulay_av')
    call object_provide ('forces_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
+    write(6,'(a,a4,a,f15.8,a,f15.8)') 'component # ',forces_list (force_i),' : ', forces_pulay_av (force_i), ' +-', forces_pulay_av_err (force_i)
    enddo
   endif
 
@@ -1740,7 +1835,7 @@
    call object_provide ('forces_zvzb_av')
    call object_provide ('forces_zvzb_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_zvzb_av (force_i), ' +-', forces_zvzb_av_err (force_i)
+    write(6,'(a,a4,a,f15.8,a,f15.8)') 'component # ',forces_list (force_i),' : ', forces_zvzb_av (force_i), ' +-', forces_zvzb_av_err (force_i)
    enddo
   endif
 
@@ -1752,7 +1847,7 @@
    call object_provide ('forces_zv_pulay_av')
    call object_provide ('forces_zv_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
+    write(6,'(a,a4,a,f15.8,a,f15.8)') 'component # ',forces_list (force_i),' : ', forces_zv_pulay_av (force_i), ' +-', forces_zv_pulay_av_err (force_i)
    enddo
   endif
 
@@ -1764,7 +1859,7 @@
    call object_provide ('forces_zv_deriv_pulay_av')
    call object_provide ('forces_zv_deriv_pulay_av_err')
    do force_i = 1, forces_nb
-    write(6,'(a,a4,a,es15.8,a,es15.8)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_pulay_av (force_i), ' +-', forces_zv_deriv_pulay_av_err (force_i)
+    write(6,'(a,a4,a,f15.8,a,f15.8)') 'component # ',forces_list (force_i),' : ', forces_zv_deriv_pulay_av (force_i), ' +-', forces_zv_deriv_pulay_av_err (force_i)
    enddo
   endif
 

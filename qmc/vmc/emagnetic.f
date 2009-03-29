@@ -1,16 +1,17 @@
       subroutine emagnetic(ltot)
+      use control_mod
 c Written by A.D.Guclu, Feb 2004.  Modified by Cyrus Umrigar
 c Magnetic energies due to excess of angular momentum and spin are calculated.
 c We also verify that all the determinants have same angular momentum
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'numbas.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'numbas.h'
 
 
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /dorb/   iworbd(MELEC,MDET)
       common /coefs/  coef(MBASIS,MORB,MWF),nbasis,norb

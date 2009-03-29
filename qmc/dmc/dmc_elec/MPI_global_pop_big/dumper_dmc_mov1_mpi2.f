@@ -6,6 +6,7 @@ c job where it left off
 # if defined (MPI)
 
       use all_tools_mod
+      use control_mod
 
       implicit real*8(a-h,o-z)
       parameter (small=1.d-6)
@@ -16,7 +17,7 @@ c job where it left off
       common /force_dmc/ itausec,nwprod
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

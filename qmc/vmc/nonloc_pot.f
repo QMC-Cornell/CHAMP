@@ -3,13 +3,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 c Calculates the local and nonlocal components of the pseudopotential
 c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
 
-      use deriv_orb_mod !JT
-      use eloc_mod !JT
+      use control_mod
+      use deriv_orb_mod
+      use eloc_mod
       use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
 
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent

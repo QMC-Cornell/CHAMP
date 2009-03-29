@@ -11,6 +11,7 @@ c    ed. by D.P. Landau, K.K. Mon and H.B. Schuttler (Springer-Verlag 1988).
 c 3) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
 c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
 c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
+      use control_mod
 
       implicit real*8(a-h,o-z)
 c     character*16 mode
@@ -20,18 +21,18 @@ c      character*30 section
       logical converg,analytic,cholesky
       external func,jacobian
 
-      include '../vmc/vmc.h'
-      include 'fit.h'
-      include '../vmc/pseudo.h'
-      include '../vmc/numbas.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'fit.h'
+!JT      include '../vmc/pseudo.h'
+!JT      include '../vmc/numbas.h'
+!JT      include '../vmc/force.h'
 c     parameter(MXJTJ=(MPARM*(MPARM+1))/2,MWORK=4*MDATA+5*MPARM+MXJTJ)
-      parameter(zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
+!JT      parameter(zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 
       use all_tools_mod
+      use control_mod
       use montecarlo_mod
       use orbitals_mod
       use optimization_mod
@@ -14,9 +15,10 @@ c Written by Cyrus Umrigar
       parameter (eps=1.d-4)
 
 
-      character*80 title,fmt
+!JT      character*80 title,fmt
+      character*80 fmt
       character*30 section
-      character*24 date
+!JT      character*24 date
       character*10 eunit
       character*16 mode,iorb_format
       character*80000 input_line
@@ -28,7 +30,7 @@ c Written by Cyrus Umrigar
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -81,7 +83,7 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
       common /atomtyp/ ncentyp(MCTYPE)
-      common /header/ title,date
+!JT      common /header/ title,date
 
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
@@ -218,6 +220,7 @@ c              in the atomic filling order but instead the order is all s's, all
 c              The basis functions read in are: 1s,2s,2p,3s,3p,3d,4s,4p,sa,pa,da
 c           -2 same as -1 but read in up to 4f functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,sa,pa,da
 c           -3 same as -2 but read in up to 5g functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
+c           -4 same as -3 but allows incorrect values to be replaced by the values from the new-style menu
 c            1 numerical radial functions read in from file basis.<ictype>
 c            Whether one is using Slater or gaussian basis fns. is inputted by having n1s,n2s etc. be either > 0 or < 0.
 c nforce     number of geometries (i.e. # of forces +1)

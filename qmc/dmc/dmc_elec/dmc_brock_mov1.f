@@ -19,6 +19,7 @@ c  He and Ceperley told me that they have also now switched to rejecting
 c  node crossing moves.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use all_tools_mod
+      use control_mod
       use average_mod
 
       implicit real*8(a-h,o-z)
@@ -50,7 +51,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

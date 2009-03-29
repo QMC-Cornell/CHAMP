@@ -4,6 +4,7 @@ c by A.D.Guclu Feb2004
 c can deal with any complex determinant, provided that the determinantal
 c coefficients are real.
 
+      use control_mod
       use basic_tools_mod
       use cslater_mod
 
@@ -48,7 +49,7 @@ c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
@@ -290,6 +291,7 @@ c laplacian (LLL wfs are analytical) is zero and ignored here.
 c by A.D.Guclu sep2004
 c can deal only with spin polarized systems for the moment
 
+      use control_mod
       use basic_tools_mod
       use cslater_cf_mod
 
@@ -335,7 +337,7 @@ c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)

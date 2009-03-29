@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 
       use all_tools_mod
+      use control_mod
 
       implicit real*8(a-h,o-z)
 
@@ -9,7 +10,7 @@ c Written by Cyrus Umrigar
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod

@@ -1,16 +1,17 @@
       subroutine hpsie(iel,coord,psid,psij,velocity)
+      use control_mod
 c Written by Claudia Filippi by modifying hpsi
 c Calculates wavefunction and velocity contributions for electron iel
 
       implicit real*8(a-h,o-z)
       character*16 mode
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'pseudo.h'
+!JT      include 'force.h'
 
       common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

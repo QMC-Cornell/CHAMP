@@ -4,6 +4,7 @@ c Written by Claudia Filippi, by modifying hpsi, written by Cyrus Umrigar
 c Calculates energy, velocity and Laplacian, and derivative of the energy
 c wrt the jastrow parameters.
 
+      use control_mod
       use basic_tools_mod
       use fitdet_mod
 
@@ -19,7 +20,7 @@ c complex
 c     complex*16 cvd_sav,cvk_sav
 
       common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

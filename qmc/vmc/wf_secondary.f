@@ -2,6 +2,7 @@
 c Written by Claudia Filippi and Cyrus Umrigar
 c Read parameters for secondary wavefns.
 
+      use control_mod
       use orbitals_mod
       use mpi_mod
 
@@ -19,7 +20,7 @@ c Read parameters for secondary wavefns.
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -256,6 +257,7 @@ c-----------------------------------------------------------------------
       subroutine wf_copy
 c Written by Cyrus Umrigar
 c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
+      use control_mod
       use orbitals_mod
       implicit real*8(a-h,o-z)
 
@@ -265,7 +267,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent

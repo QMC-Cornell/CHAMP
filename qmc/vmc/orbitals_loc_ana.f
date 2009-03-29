@@ -2,12 +2,14 @@
 c Written by Cyrus Umrigar
 c Calculate localized orbitals and derivatives for all or 1 electrons
 
-      use all_tools_mod !JT
+      use all_tools_mod
+      use control_mod
+
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -104,17 +106,18 @@ c---------------------------------------------------------------------------
 
       subroutine deriv_orbitals(rvec_en,r_en,orb,dorb,ddorb,dporb,d2porb
      &          ,ddporb,d2dporb)
+      use control_mod
 c Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
 c Calculate localized orbitals, coo. and parameter derivatives for all electrons
 
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)

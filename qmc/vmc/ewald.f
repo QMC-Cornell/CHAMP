@@ -1,12 +1,13 @@
       subroutine set_ewald
 c Written by Cyrus Umrigar
       use all_tools_mod
+      use control_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
 
       common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /constant/ twopi
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

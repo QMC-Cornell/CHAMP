@@ -2,10 +2,11 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
-      use all_tools_mod   !JT
-      use montecarlo_mod !JT
-      use variables_mod !JT
-      use mpi_mod !JT
+      use all_tools_mod
+      use control_mod
+      use montecarlo_mod
+      use variables_mod
+      use mpi_mod
 
       implicit real*8(a-h,o-z)
       character*16 mode
@@ -18,7 +19,7 @@ c routine to accumulate estimators for energy etc.
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

@@ -1,18 +1,20 @@
 c     function psinl(u,rshifti,rshiftj,rri,rrj,it)
 !WAS
       function psinl(u,rshifti,rshiftj,ri, rj, rri,rrj,it)
+      use control_mod
 !
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
-      parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
+!JT      parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
+      parameter (eps=1.d-12)
 
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,

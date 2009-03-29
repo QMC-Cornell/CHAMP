@@ -29,6 +29,15 @@ module parser_tools_mod
             get_next_value_list_double
   end interface
 
+!---------------------------------------------------------------------------
+  interface get_next_value_list_object
+!---------------------------------------------------------------------------
+   module procedure               &
+            get_next_value_list_object_string,  &
+            get_next_value_list_object_integer, &
+            get_next_value_list_object_double
+  end interface
+
   contains
 
 !---------------------------------------------------------------------------
@@ -68,10 +77,11 @@ module parser_tools_mod
 
   end subroutine read_next_line
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine get_next_command (word)
 !---------------------------------------------------------------------------
 ! Description : find next command in input file
+!
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
@@ -88,13 +98,12 @@ module parser_tools_mod
 
 ! begin
 
-!!! added to handle the case where there is no 'end' after the optimization section
+! added to handle the case where there is no 'end' after the optimization section
   call read_next_line (iostat)
   if (iostat < 0) then
    word = 'exit'
    return
   endif
-!!!
 
 ! find first character of word
   first_char_in_word_found = .false.
@@ -160,7 +169,7 @@ module parser_tools_mod
 
   end subroutine get_next_command
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine get_next_word (word)
 !---------------------------------------------------------------------------
 ! Description : find next word in input file
@@ -252,7 +261,7 @@ module parser_tools_mod
 
   end subroutine get_next_word
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine get_next_value_string (value)
 !---------------------------------------------------------------------------
 ! Description : find next value in line
@@ -273,7 +282,7 @@ module parser_tools_mod
 
   end subroutine get_next_value_string
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine get_next_value_integer (value)
 !---------------------------------------------------------------------------
 ! Description : find next value in line
@@ -344,10 +353,10 @@ module parser_tools_mod
 
   end subroutine get_next_value_logical
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine get_next_value_list_string (value_list_name, value_list, value_list_nb)
 !---------------------------------------------------------------------------
-! Description : find next list of values and allocate object
+! Description : find next list of values (not a catalogued object)
 !
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
@@ -380,10 +389,8 @@ module parser_tools_mod
     if (value_string == 'end') exit
 
     value_list_nb = value_list_nb + 1
+
 # if !defined (PATHSCALE)
-!  must not call object_alloc because this routine it creates an object of type string even when called
-!  by get_next_value_list_integer and get_next_value_list_double
-!  we should create another routine just to read strings
    call alloc (value_list_name, value_list, value_list_nb) ! commented out for pathscale compiler
 # endif
     value_list (value_list_nb) = trim(value_string)
@@ -397,10 +404,10 @@ module parser_tools_mod
 
   end subroutine get_next_value_list_string
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine get_next_value_list_integer (value_list_name, value_list, value_list_nb)
 !---------------------------------------------------------------------------
-! Description : find next list of values and allocate object
+! Description : find next list of values (not a catalogued object)
 !
 ! Created     : J. Toulouse, 25 Oct 2005
 !---------------------------------------------------------------------------
@@ -409,24 +416,154 @@ module parser_tools_mod
 ! input
   character (len=*), intent(in) :: value_list_name
 
-! output  WAS
+! output
 # if defined (PATHSCALE)
    integer, intent(out) :: value_list (max_int_array_len) ! for pathscale compiler
 # else
    integer, allocatable, intent(out) :: value_list (:)
 # endif
-
-!WAS
-!  integer, allocatable, intent(out) :: value_list (:)
   integer, intent(out)              :: value_list_nb
 
-! local !! added for pathscale WAS
+! local
 # if defined (PATHSCALE)
    character(len=max_string_len):: value_list_string (max_string_array_len) ! for pathscale compiler
 # else
    character(len=max_string_len), allocatable :: value_list_string (:)
 # endif
-!  character(len=max_string_len),allocatable :: value_list_string (:)
+  integer i
+
+! begin
+  call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
+
+# if !defined (PATHSCALE)
+  call alloc (value_list_name, value_list, value_list_nb)
+# endif
+
+  do i = 1, value_list_nb
+    call cnvint (value_list_string(i), value_list(i))
+  enddo
+
+  end subroutine get_next_value_list_integer
+
+!===========================================================================
+  subroutine get_next_value_list_double (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : find next list of values (not a catalogued object)
+!
+! Created     : J. Toulouse, 13 Oct 2005
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: value_list_name
+
+! output
+# if defined (PATHSCALE)
+   real(dp), intent(out)              :: value_list (max_double_array_len) ! for pathscale compiler
+# else
+   real(dp), allocatable, intent(out) :: value_list (:)
+# endif
+  integer, intent(out)              :: value_list_nb
+
+! local
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: value_list_string (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: value_list_string (:)
+# endif
+  integer i
+
+! begin
+  call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
+
+# if !defined (PATHSCALE)
+  call alloc (value_list_name, value_list, value_list_nb)
+# endif
+
+  do i = 1, value_list_nb
+    call cnvdbl (value_list_string(i), value_list(i))
+  enddo
+
+  end subroutine get_next_value_list_double
+
+!===========================================================================
+  subroutine get_next_value_list_object_string (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : find next list of values and allocate it as a catalogued object
+!
+! Created     : J. Toulouse, 10 Mar 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent (in)              :: value_list_name
+
+! output
+# if defined (PATHSCALE)
+   character(len=*), intent(out) :: value_list (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=*), allocatable, intent(out) :: value_list (:)
+# endif
+  integer, intent(out)                       :: value_list_nb
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'get_next_value_list_object_string'
+  character(len=max_string_len) value_string
+
+! begin
+  value_string = ''
+  value_list_nb = 0
+
+! loop over succesive words until 'end' is found
+  do
+
+    call get_next_word (value_string)
+
+    if (value_string == 'end') exit
+
+    value_list_nb = value_list_nb + 1
+
+# if !defined (PATHSCALE)
+   call object_alloc (value_list_name, value_list, value_list_nb) ! commented out for pathscale compiler
+# endif
+    value_list (value_list_nb) = trim(value_string)
+
+  enddo ! end loop
+
+  if (value_list_nb == 0 ) then
+    call die (lhere, 'no values found.')
+  endif
+
+  call object_modified (value_list_name)
+
+  end subroutine get_next_value_list_object_string
+
+!===========================================================================
+  subroutine get_next_value_list_object_integer (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : find next list of values and allocate it as a catalogued object
+!
+! Created     : J. Toulouse, 10 Mar 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character (len=*), intent(in) :: value_list_name
+
+! output
+# if defined (PATHSCALE)
+   integer, intent(out) :: value_list (max_int_array_len) ! for pathscale compiler
+# else
+   integer, allocatable, intent(out) :: value_list (:)
+# endif
+  integer, intent(out)              :: value_list_nb
+
+! local
+# if defined (PATHSCALE)
+   character(len=max_string_len):: value_list_string (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: value_list_string (:)
+# endif
   integer i
 
 ! begin
@@ -440,29 +577,28 @@ module parser_tools_mod
     call cnvint (value_list_string(i), value_list(i))
   enddo
 
-  end subroutine get_next_value_list_integer
+  call object_modified (value_list_name)
 
+  end subroutine get_next_value_list_object_integer
+
+!===========================================================================
+  subroutine get_next_value_list_object_double (value_list_name, value_list, value_list_nb)
 !---------------------------------------------------------------------------
-  subroutine get_next_value_list_double (value_list_name, value_list, value_list_nb)
-!---------------------------------------------------------------------------
-! Description : find next list of values and allocate object
+! Description : find next list of values and allocate it as a catalogued object
 !
-! Created     : J. Toulouse, 13 Oct 2005
+! Created     : J. Toulouse, 10 Mar 2009
 !---------------------------------------------------------------------------
   implicit none
 
 ! input
   character(len=*), intent(in) :: value_list_name
 
-! output  WAS
+! output
 # if defined (PATHSCALE)
-!   real(dp), intent(out)              :: value_list (max_double_array_len) ! for pathscale compiler
-   double precision, intent(out)              :: value_list (max_double_array_len) ! for pathscale compiler
+   real(dp), intent(out)              :: value_list (max_double_array_len) ! for pathscale compiler
 # else
    real(dp), allocatable, intent(out) :: value_list (:)
 # endif
-
-!  real(dp),allocatable, intent(out) :: value_list (:)
   integer, intent(out)              :: value_list_nb
 
 ! local
@@ -471,11 +607,9 @@ module parser_tools_mod
 # else
    character(len=max_string_len), allocatable :: value_list_string (:)
 # endif
-!  character (len=max_string_len),allocatable :: value_list_string (:)
   integer i
 
 ! begin
-
   call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
 
 # if !defined (PATHSCALE)
@@ -488,9 +622,9 @@ module parser_tools_mod
 
   call object_modified (value_list_name)
 
-  end subroutine get_next_value_list_double
+  end subroutine get_next_value_list_object_double
 
-!---------------------------------------------------------------------------
+!===========================================================================
   subroutine read_up_to_end
 !---------------------------------------------------------------------------
 ! Description : read lines in input files up to next 'end' keyword or end of file

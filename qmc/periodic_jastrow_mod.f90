@@ -106,10 +106,10 @@ contains
           call get_next_value (ecut_ee)
 
        case ('pjas_en_read')
-          call get_next_value_list ('pjas_en_read', pjas_en_read, i_pjas_en_read)
+          call get_next_value_list_object ('pjas_en_read', pjas_en_read, i_pjas_en_read)
 
        case ('pjas_ee_read')
-          call get_next_value_list ('pjas_ee_read', pjas_ee_read, i_pjas_ee_read)
+          call get_next_value_list_object ('pjas_ee_read', pjas_ee_read, i_pjas_ee_read)
 
        case ('end')
           exit

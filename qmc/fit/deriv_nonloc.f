@@ -1,8 +1,9 @@
       subroutine deriv_nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,dvpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use all_tools_mod  ! JT
-      use deriv_orb_mod  ! JT
+      use all_tools_mod
+      use control_mod
+      use deriv_orb_mod
       use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
@@ -11,7 +12,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -286,21 +287,22 @@ c-----------------------------------------------------------------------
 !     subroutine deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
 !WAS
       subroutine deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+      use control_mod
 !
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/ewald.h'
-      include '../vmc/force.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/ewald.h'
+!JT      include '../vmc/force.h'
+!JT      include 'fit.h'
 
-      parameter (half=.5d0)
+!JT      parameter (half=.5d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

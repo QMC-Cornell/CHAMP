@@ -1,12 +1,13 @@
       subroutine acuest_dmc_movall
 c Written by Cyrus Umrigar and Claudia Filippi
+      use control_mod
       implicit real*8(a-h,o-z)
-      parameter (zero=0.d0,one=1.d0)
-      include '../vmc/vmc.h'
-      include 'dmc.h'
-      include '../vmc/pseudo.h'
-      include '../vmc/force.h'
-      include '../fit/fit.h'
+!JT      parameter (zero=0.d0,one=1.d0)
+!JT      include '../vmc/vmc.h'
+!JT      include 'dmc.h'
+!JT      include '../vmc/pseudo.h'
+!JT      include '../vmc/force.h'
+!JT      include '../fit/fit.h'
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -17,7 +18,7 @@ c routine to accumulate estimators for energy etc.
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

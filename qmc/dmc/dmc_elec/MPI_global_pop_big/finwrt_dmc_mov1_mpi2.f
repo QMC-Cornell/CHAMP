@@ -6,6 +6,7 @@ c routine to print out final results
 
 !     use all_tools_mod
       use main_menu_mod
+      use control_mod
       use mpi_mod
 
       implicit real*8(a-h,o-z)
@@ -16,7 +17,7 @@ c routine to print out final results
 c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -52,7 +53,7 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /header/ title,date
+!JT      common /header/ title,date
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
      &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
@@ -71,8 +72,9 @@ c    &,wg21collect(MFORCE),rprobcollect(NRAD)
       dimension rprobcollect(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)
 
-      character*80 title,fmt
-      character*24 date
+      character*80 fmt
+!JT      character*80 title,fmt
+!JT      character*24 date
       character*16 mode
 
 c statement functions for error calculation

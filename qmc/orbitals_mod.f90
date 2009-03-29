@@ -57,10 +57,10 @@ module orbitals_mod
 # if defined (PATHSCALE)
    character(len=max_string_len) :: orb_sym_lab (max_string_array_len) ! for pathscale compiler
 !WAS
-   real(dp)                      :: orb_energies (max_double_array_len)
+   real(dp)                           :: orb_energies (max_double_array_len)
 # else
    character(len=max_string_len), allocatable  :: orb_sym_lab (:)
-    real(dp), allocatable               :: orb_energies (:)
+   real(dp), allocatable              :: orb_energies (:)
 # endif
 !WAS
 !  real(dp), allocatable               :: orb_energies (:)
@@ -601,7 +601,7 @@ module orbitals_mod
   integer orb_energies_nb !, orb_i
 
 ! begin
-  call get_next_value_list ('orb_energies', orb_energies, orb_energies_nb)
+  call get_next_value_list_object ('orb_energies', orb_energies, orb_energies_nb)
 
   call object_provide ('orb_tot_nb')
   if (orb_energies_nb /= orb_tot_nb) then
@@ -611,8 +611,6 @@ module orbitals_mod
 !  do orb_i = 1, orb_tot_nb
 !   write(6,*) trim(here),': orb_i=',orb_i,' orb_energies=',orb_energies(orb_i)
 !  enddo
-
-  call object_modified ('orb_energies')
 
   end subroutine orb_energies_rd
 
@@ -632,18 +630,12 @@ module orbitals_mod
 
 ! begin
   orb_sym_lab_nb  = 0
-# if defined (PATHSCALE)
-   call get_next_value_list_string ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb) ! for pathscale compiler
-# else
-   call get_next_value_list ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb)
-# endif
+  call get_next_value_list_object ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb)
 
   call object_provide ('orb_tot_nb')
   if (orb_sym_lab_nb /= orb_tot_nb) then
    call die (lhere, 'orb_sym_lab_nb='+orb_sym_lab_nb+ ' /= orb_tot_nb='+orb_tot_nb)
   endif
-
-  call object_modified ('orb_sym_lab')
 
   end subroutine orb_sym_lab_rd
 
@@ -1774,7 +1766,7 @@ module orbitals_mod
   integer orb_i, orb_j
 
 ! begin
-  call get_next_value_list ('orb_opt_lab', orb_opt_lab, orb_opt_nb)
+  call get_next_value_list_object ('orb_opt_lab', orb_opt_lab, orb_opt_nb)
 
 ! checking
   do orb_i = 1, orb_opt_nb

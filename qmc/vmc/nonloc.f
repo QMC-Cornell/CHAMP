@@ -1,7 +1,8 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use deriv_orb_mod ! JT
+      use control_mod
+      use deriv_orb_mod
       use periodic_jastrow_mod !WAS
 
       implicit real*8(a-h,o-z)
@@ -10,7 +11,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -237,8 +238,9 @@ c-----------------------------------------------------------------------
       subroutine nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,determ)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
-      use all_tools_mod !JT
-      use eloc_mod ! JT
+      use all_tools_mod
+      use control_mod
+      use eloc_mod
 
       implicit real*8(a-h,o-z)
 
@@ -249,7 +251,7 @@ c     common /dim/ ndim
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl_opt2/ igradhess,iadd_diag_opt
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /slatn2/ deti_new(MPARMD)
@@ -361,20 +363,21 @@ c-----------------------------------------------------------------------
 !      subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
 !WAS
       subroutine nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
+      use control_mod
 !
 
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'ewald.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'ewald.h'
+!JT      include 'force.h'
 
-      parameter (half=.5d0)
+!JT      parameter (half=.5d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 

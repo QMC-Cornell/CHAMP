@@ -446,6 +446,7 @@ module catalog_routines_mod
   call catalog_one_node ('extracule_zv1_bld', extracule_zv1_bld)
 
 ! forces
+  call catalog_one_node ('forces_list_bld', forces_list_bld)
   call catalog_one_node ('forces_nn_bld', forces_nn_bld)
   call catalog_one_node ('forces_bare_bld', forces_bare_bld)
   call catalog_one_node ('forces_zv_bld', forces_zv_bld)

@@ -1,13 +1,15 @@
       subroutine jastrow4e(iel,x,v,value)
+      use control_mod
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
-      parameter (half=.5d0,third=1.d0/3.d0,eps=1.d-12)
+!JT      parameter (half=.5d0,third=1.d0/3.d0,eps=1.d-12)
+      parameter (eps=1.d-12)
 
       common /dim/ ndim
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -15,7 +17,7 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !!! added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

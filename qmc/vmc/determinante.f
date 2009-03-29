@@ -1,18 +1,19 @@
       subroutine determinante(iel,x,rvec_en,r_en,ddet_det,determ)
 c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
+      use control_mod
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
-      parameter(one=1.d0)
+!JT      parameter(one=1.d0)
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c    &,d2phin(MBASIS,MELEC)

@@ -2,15 +2,17 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use control_mod
       implicit real*8(a-h,o-z)
-      include '../../vmc/vmc.h'
-      include '../dmc.h'
-      include '../../vmc/numbas.h'
-      include '../../vmc/pseudo.h'
-      include '../../vmc/force.h'
-      include '../../fit/fit.h'
+!JT      include '../../vmc/vmc.h'
+!JT      include '../dmc.h'
+!JT      include '../../vmc/numbas.h'
+!JT      include '../../vmc/pseudo.h'
+!JT      include '../../vmc/force.h'
+!JT      include '../../fit/fit.h'
 
-      parameter (one=1.d0,small=1.d-6)
+!JT      parameter (one=1.d0,small=1.d-6)
+      parameter (small=1.d-6)
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -18,7 +20,7 @@ c job where it left off
       common /force_dmc/ itausec,nwprod
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

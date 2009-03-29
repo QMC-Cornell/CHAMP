@@ -1,21 +1,23 @@
       function deriv_psinl(u,dkij,rshifti,rshiftj,ri,rj,rri,rrj,dki,dkj,gn,gns,it)
+      use control_mod
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 c minor modification by A.D.Guclu to add analytical scalek opt.
 
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
+!JT      include '../vmc/vmc.h'
       parameter(NEQSX=6*MORDJ,MTERMS=55)
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
+      parameter (eps=1.d-12)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Z
-      include '../vmc/force.h'
-      include 'fit.h'
+!JT      include '../vmc/force.h'
+!JT      include 'fit.h'
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

@@ -1,6 +1,7 @@
 !         commons
           include 'commons/common_contrl.h'
           include 'commons/common_const.h'
+          include 'commons/common_const2.h'
           include 'commons/common_dim.h'
           include 'commons/common_config.h'
           include 'commons/common_orb.h'
@@ -22,7 +23,7 @@
           include 'commons/common_vj.h'
           include 'commons/common_pseudo.h'
           include 'commons/common_orbe.h'
-          include 'commons/common_contrl_per.h'
+!JT          include 'commons/common_contrl_per.h'
           include 'commons/common_optim.h'
           include 'commons/common_cntrl_opt.h'
           include 'commons/common_derivjas.h'
@@ -49,12 +50,13 @@
           include 'commons/common_forcest.h'
           include 'commons/common_denupdn.h'
           include 'commons/common_stepv.h'
-          include 'commons/common_header.h'
+!JT          include 'commons/common_header.h'
           include 'commons/common_lbas.h'
           include 'commons/common_jaso.h'
           include 'commons/common_jasn.h'
           include 'commons/common_vd.h'
           include 'commons/common_pjase.h'
+          include 'commons/common_optimo.h'
 
 ! for dmc
           include 'commons/common_config_dmc.h'

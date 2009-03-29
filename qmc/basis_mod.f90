@@ -1,6 +1,7 @@
 module basis_mod
 
   use all_tools_mod
+  use control_mod
 
 ! Declaration of global variables and default values
   real(dp), allocatable           :: phin_norm (:,:)
@@ -38,6 +39,8 @@ module basis_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'basis_menu'
+  real(dp), allocatable  :: exponents (:)
+  integer exponents_nb
 
 ! begin
   write(6,*)
@@ -52,7 +55,8 @@ module basis_mod
    write(6,*)
    write(6,'(a)') 'HELP for basis menu:'
    write(6,'(a)') 'basis'
-   write(6,'(a)') '  basis_functions 1S 1S 2S 2S 2PX 2PY 2PZ 2PX 2PY 2PZ end'
+   write(6,'(a)') '  basis_functions 1 1S 1S 2S 2S 2PX 2PY 2PZ 2PX 2PY 2PZ end (the first number is the center type)'
+   write(6,'(a)') '  exponents 0.2 0.1 end'
    write(6,'(a)') '  basis_functions_varied = [unnormalized|normalized|orthonormalized] : choice of basis functions for exponent optimization (default=normalized)'
    write(6,'(a)') '  optimize_log_exp = [bool] : optimize logarithm of exponents (default=false)'
    write(6,'(a)') '  optimized_exponents 1 2 3 4 end : list of labels of exponents to optimize (default: all exponents)'
@@ -62,6 +66,17 @@ module basis_mod
   case ('basis_functions')
    call basis_functions
 
+  case ('exponents')
+   call get_next_value_list ('exponents', exponents, exponents_nb)
+   call object_provide ('nbasis')
+   call require (lhere, 'exponents_nb == nbasis', exponents_nb == nbasis)
+   write(6,*)
+   write(6,'(a,500f12.6)')  'exponents: ', exponents (:)
+   zex (1:nbasis,1) = exponents (:)
+   call object_modified ('zex')
+   call distinct_radial_bas
+   write(6,'(a,500f12.6)')  'zex2: ', zex2
+
   case ('basis_functions_varied')
    call get_next_value (basis_functions_varied)
 
@@ -69,13 +84,12 @@ module basis_mod
    call get_next_value (l_optimize_log_exp)
 
   case ('optimized_exponents')
-   call get_next_value_list ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
+   call get_next_value_list_object ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
    call object_provide ('nbasis')
    if (exp_opt_lab_nb > nbasis) then
     call die (lhere, 'number of optimized exponents read = '+exp_opt_lab_nb+' > number of basis functions nbasis ='+nbasis)
    endif
    call object_modified ('exp_opt_lab_nb')
-   call object_modified ('exp_opt_lab')
 
   case ('end')
    exit

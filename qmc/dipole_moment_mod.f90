@@ -102,7 +102,7 @@
     end select
 
    case ('origin')
-    call get_next_value_list ('dipole_moment_origin', dipole_moment_origin, dipole_moment_origin_dim)
+    call get_next_value_list_object ('dipole_moment_origin', dipole_moment_origin, dipole_moment_origin_dim)
     call require (lhere, 'dipole_moment_origin_dim == ndim', dipole_moment_origin_dim == ndim) !fp
     l_origin_given = .true.
 

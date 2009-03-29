@@ -4,10 +4,11 @@ c routine to accumulate estimators for energy etc.
 
 # if defined (MPI)
 
-      use all_tools_mod !JT
-      use montecarlo_mod !JT
-      use variables_mod !JT
-      use mpi_mod !JT
+      use all_tools_mod
+      use control_mod
+      use montecarlo_mod
+      use variables_mod
+      use mpi_mod
 
       implicit real*8(a-h,o-z)
 
@@ -21,7 +22,7 @@ c routine to accumulate estimators for energy etc.
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

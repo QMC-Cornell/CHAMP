@@ -1,20 +1,21 @@
       subroutine finwrt_dmc_movall
+      use control_mod 
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
       implicit real*8(a-h,o-z)
-      include 'dmc.h'
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
-      include '../fit/fit.h'
+!      include 'dmc.h'
+!      include '../vmc/vmc.h'
+!      include '../vmc/force.h'
+!      include '../fit/fit.h'
 
-      parameter (one=1.d0,two=2.d0,half=.5d0)
+!JT      parameter (one=1.d0,two=2.d0,half=.5d0)
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -50,7 +51,7 @@ c /config_dmc/ included to print out xold and vold for old walkers
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /header/ title,date
+!JT      common /header/ title,date
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
      &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
@@ -67,8 +68,9 @@ c /config_dmc/ included to print out xold and vold for old walkers
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
-      character*80 title,fmt
-      character*24 date
+!JT      character*80 title,fmt
+      character*80 fmt
+!JT      character*24 date
       character*16 mode
 
 c statement functions for error calculation

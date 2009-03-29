@@ -1,5 +1,5 @@
 module backflow_mod
-  use parser_tools_mod, only: word, get_next_word, get_next_value, get_next_value_list
+  use parser_tools_mod, only: word, get_next_word, get_next_value, get_next_value_list_object
   use constants_mod    !give access to various common blocks
   use basic_tools_mod, only: require, die
   use strings_tools_mod !require operator overloading of + to concatenate strings
@@ -323,7 +323,7 @@ contains
 
        case ('read_d_param_mu')
           !read in list of parameters. Note that read_d_param_mu_nb returns the length of the list
-          call get_next_value_list('read_d_param_mu', read_d_param_mu, read_d_param_mu_nb)
+          call get_next_value_list_object('read_d_param_mu', read_d_param_mu, read_d_param_mu_nb)
           call object_modified('read_d_param_mu')
           call object_modified('read_d_param_mu_nb')
           !d parameters were read in
@@ -333,7 +333,7 @@ contains
 
        case ('read_c_param_eta')
           !read in list of parameters. Note that read_c_param_eta_nb returns the length of the list
-          call get_next_value_list('read_c_param_eta', read_c_param_eta, read_c_param_eta_nb)
+          call get_next_value_list_object('read_c_param_eta', read_c_param_eta, read_c_param_eta_nb)
           call object_modified('read_c_param_eta')
           call object_modified('read_c_param_eta_nb')
           !c parameters were read in
@@ -342,7 +342,7 @@ contains
 
        case ('read_a_param_phi')
           !read in list of parameters. Note that read_a_param_phi_nb returns the length of the list
-          call get_next_value_list('read_a_param_phi', read_a_param_phi, read_a_param_phi_nb)
+          call get_next_value_list_object('read_a_param_phi', read_a_param_phi, read_a_param_phi_nb)
           call object_modified('read_a_param_phi')
           call object_modified('read_a_param_phi_nb')
           !a parameters were read in
@@ -351,7 +351,7 @@ contains
 
        case ('read_b_param_theta')
           !read in list of parameters. Note that read_b_param_theta_nb returns the length of the list
-          call get_next_value_list('read_b_param_theta', read_b_param_theta, read_b_param_theta_nb)
+          call get_next_value_list_object('read_b_param_theta', read_b_param_theta, read_b_param_theta_nb)
           call object_modified('read_b_param_theta')
           call object_modified('read_b_param_theta_nb')
           !b parameters were read in
@@ -359,7 +359,7 @@ contains
           call object_modified('read_b_param')
 
        case ('threshold_l')
-          call get_next_value_list('threshold_l', threshold_l, threshold_l_nb)
+          call get_next_value_list_object('threshold_l', threshold_l, threshold_l_nb)
           call object_modified('threshold_l')
           call object_modified('threshold_l_nb')
           call object_associate('threshold_l_nb', threshold_l_nb)

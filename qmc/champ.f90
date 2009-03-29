@@ -60,9 +60,10 @@ program champ
   endif
 # endif
 
+  write(6,'(a)') 'PROGRAM CHAMP version 3.08.0'
+  write(6,'(a)') 'SVN VERSION $Rev$ on $Date$'
   call get_date (date)
-  write(6,'(2a)') 'PROGRAM CHAMP run on ',date
-  write(6,'(2a)') 'SVN VERSION $Rev$ on $Date$'
+  write(6,'(2a)') 'Execution date: ',date
 
 # if defined (MPI)
   write(6,'(a,i4,a)') 'MPI version running on ', nproc, ' processors.'
@@ -121,7 +122,7 @@ program champ
   enddo ! end loop over arguments
 
 ! check mode
-  write(6,'(3a)') 'The mode is >',trim(mode),'<.'
+  write(6,'(3a)') 'Run in mode >',trim(mode),'<'
   if (.not. elt_in_array (modes, mode)) then
    write(6,'(3a)') 'This mode is unknown.'
    write(6,'(20a)') 'The available modes are:'
@@ -146,7 +147,7 @@ program champ
 # endif
 
 ! Open input file if given by '-i ...'
-  write(6,*)
+!  write(6,*)
   if (trim(input_file_name) /= '') then
      write(6,'(3a)') 'Opening input file >',trim(input_file_name),'<.'
      open(5, file=trim(input_file_name), status='old', iostat=iostat)
@@ -165,11 +166,13 @@ program champ
   call define_averages_and_errors
 
 ! Read input
-  write(6,'(2a)') 'Reading input file...'
-  write(6,*)
+!  write(6,'(2a)') 'Reading input file...'
+!  write(6,*)
 
-  if (trim(mode) == 'parser') then
+  if (use_parser) then
+    call initialization_before_parser
     call main_menu
+    call initialization_after_parser
   else
     call read_input
     if (index(mode,'fit') /= 0) then

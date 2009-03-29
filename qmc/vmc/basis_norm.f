@@ -23,15 +23,16 @@ c n1s,n2s etc. be either > 0 or < 0.
 c The two old versions of the code used unnormalized Gaussian and asymptotic functions,
 c and, the same normal. for Gaussians as for Slaters.
 
-      use all_tools_mod  !JT
-      use orbitals_mod  !JT
+      use all_tools_mod
+      use control_mod
+      use orbitals_mod
       implicit real*8(a-h,o-z)
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 c    &,iwctype(MCENT),nctype,ncent
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)

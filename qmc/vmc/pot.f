@@ -1,14 +1,15 @@
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
+      use control_mod
 c Written by Cyrus Umrigar
 c get nuclear potential energy
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'pseudo.h'
+!JT      include 'force.h'
 
       common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)

@@ -1,14 +1,15 @@
       subroutine orbitals_loc_ana_grade(iel,rvec_en,r_en,orb,dorb,ddorb)
+      use control_mod
 c Written by Cyrus Umrigar
 c Calculate localized orbitals and derivatives for all or 1 electrons
 
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
       common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb

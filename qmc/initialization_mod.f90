@@ -6,6 +6,86 @@ module initialization_mod
   contains
 
 ! ===================================================================================
+  subroutine initialization_before_parser
+! -----------------------------------------------------------------------------------
+! Description   : initialization of some global variables before parser
+!
+! Created       : J. Toulouse, 11 Mar 2009
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+!  write(6,*)
+!  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
+
+! constant
+  pi=four*datan(one)
+
+! default values for input variables
+  hb = 0.5d0
+  etrial = 0.d0
+  nstep=1000
+  call object_modified ('nstep')
+  nblk=10
+  nblkeq=1
+  nconf=100
+  call object_modified ('nconf')
+  nconf_new=0
+  idump=0
+  irstar=0
+  isite=1
+  ipr=-2
+  imetro=6
+  delta=1.
+  deltar=5.
+  deltat=1.
+  fbias=1.
+  idmc=2
+  ipq=1
+  itau_eff=1
+  iacc_rej=1
+  icross=1
+  icuspg=0
+  idiv_v=0
+  icut_br=0
+  icut_e=0
+  nfprod=50
+  tau=0.01
+  
+!0  -4   1  0                             nloc,numr,nforce,nefp
+!2 1                                     nelec,nup
+
+
+! correlated sampling index
+  iwf = 1
+  call object_modified ('iwf')
+ 
+! number of parameters to optimized
+  nparm=0
+
+!  write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
+
+ end subroutine initialization_before_parser
+
+! ===================================================================================
+  subroutine initialization_after_parser
+! -----------------------------------------------------------------------------------
+! Description   : initialization of some global variables after parser
+!
+! Created       : J. Toulouse, 11 Mar 2009
+! -----------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+  write(6,*)
+  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
+
+
+  write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
+
+ end subroutine initialization_after_parser
+
+! ===================================================================================
   subroutine initialization
 ! -----------------------------------------------------------------------------------
 ! Description   : initialization of some global variables after reading Cyrus's input

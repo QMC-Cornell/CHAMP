@@ -3,6 +3,7 @@ c Written by A.D.Guclu, Feb 2004.
 c Reads in 2-dimensional basis fns info for circular quantum dots.
 
       use all_tools_mod
+      use control_mod
 
       implicit real*8(a-h,o-z)
 
@@ -11,7 +12,7 @@ c Reads in 2-dimensional basis fns info for circular quantum dots.
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
@@ -130,20 +131,21 @@ c idot not defined at this point
 c-----------------------------------------------------------------------
 
       subroutine read_orb_dot_gauss
+      use control_mod
 c Written by A.D.Guclu, Apr 2006.
 c Reads in quantum dot orbitals in gaussian basis set
 c the witdh of gaussians is given by zex*we
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 
       write(6,'(/,''Reading floating gaussian orbitals for dots'')')
       do it=1,notype

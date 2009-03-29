@@ -6,10 +6,11 @@ c Calculates determinantal and Jastrow parts of psi, velocity, divergence of V,
 c Laplacian of psi, potential energy, total energy and derivatives of the energy
 c wrt the wavefunction parameters.
 
-      use all_tools_mod ! JT
+      use all_tools_mod
+      use control_mod
       use fitdet_mod
-      use eloc_mod      ! JT
-      use psi_mod       ! JT
+      use eloc_mod
+      use psi_mod
 !     use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
@@ -23,7 +24,7 @@ c     complex*16 cvd_sav,cvk_sav
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

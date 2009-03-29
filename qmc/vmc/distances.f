@@ -2,13 +2,14 @@
 c Written by Cyrus Umrigar
 c calculate interparticle distances
 
-      use deriv_orb_mod !JT
-      use eloc_mod !JT
+      use control_mod
+      use deriv_orb_mod
+      use eloc_mod
 
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
@@ -136,16 +137,17 @@ c     write(6,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,ndim),ij=1,nelec
       end
 c-----------------------------------------------------------------------
       subroutine distancese(iel,x)
+      use control_mod
 c Written by Cyrus Umrigar
 c calculate distances of electron iel to all other particles
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
+!JT      include 'vmc.h'
+!JT      include 'ewald.h'
 
       common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
