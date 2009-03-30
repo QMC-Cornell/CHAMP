@@ -357,12 +357,12 @@ ifeq ($(hostname),jasmine)
   CHAMP_MPIC=mpicc
   CHAMP_F95=gfortran
   CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall
-  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall
+  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
   CHAMP_LD=gfortran
-# CHAMP_LD_FLAGS=-static
   CHAMP_LD_FLAGS=-O3
   CHAMP_LD_MPI=mpif90
+  EINSPLINE=
 endif
 
 # AMD Opteron cluster with Pathscale compiler on slid.fysik at Lyngby, Denmark

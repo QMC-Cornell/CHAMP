@@ -23,13 +23,12 @@ module catalog_routines_mod
   use nuclei_mod
   use forces_mod
   use dipole_moment_mod
-  use backflow_mod, only: xi_een_phi_bld, phi_all_elec_bld, phi_pseudo_bld, scaled_dist_een_ee_wlk_bld,  scaled_dist_een_en_wlk_bld, xi_ee_bld, eta_all_elec_bld, eta_pseudo_bld,&
-       & asymp_eta_bld, c_param_eta_bld, scaled_dist_ee_wlk_bld, xi_en_bld, mu_all_elec_bld, mu_pseudo_bld, asymp_mu_pseudo_bld, scaled_dist_en_wlk_bld,  asymp_scaled_dist_two_body_bld,&
-       &   d_param_mu_all_elec_bld, d_param_mu_pseudo_bld, smooth_cutoff_g_bld, a_param_phi_pseudo_bld, nb_a_param_phi_bld, a_param_phi_pseudo_anti_parallel_cond_bld,&
-       & dep_a_param_phi_pseudo_anti_parallel_bld, dep_a_param_phi_pseudo_parallel_bld, a_param_phi_pseudo_parallel_cond_bld, a_param_phi_all_elec_parallel_cond_bld,&
-       & a_param_phi_all_elec_anti_parallel_cond_bld, dep_a_param_phi_all_elec_anti_parallel_bld, dep_a_param_phi_all_elec_parallel_bld, a_param_phi_all_elec_bld,&
-       & xi_een_theta_bld, theta_pseudo_bld, theta_all_elec_bld, b_param_theta_pseudo_bld, b_param_theta_all_elec_bld, nb_b_param_theta_bld, dep_b_param_theta_pseudo_bld,&
-       & dep_b_param_theta_all_elec_bld, b_param_theta_all_elec_cond_bld, b_param_theta_pseudo_cond_bld !fp
+  use backflow_mod, only: xi_ee_bld, eta_bld, asymp_eta_bld, c_param_eta_bld, d_eta_d_r_i_alpha_second_bld, d_eta_d_r_j_alpha_first_bld, d_xi_ee_j_beta_d_r_i_alpha_bld, d_xi_ee_j_beta_d_r_i_alpha_num_bld, d_eta_d_r_ji_bld, lap_i_xi_ee_j_beta_bld,  lap_i_xi_ee_j_beta_num_bld, lap_i_eta_second_bld, lap_j_eta_first_bld, d2_eta_d_r_ji_2_bld, &
+       & xi_en_bld, mu_bld, asymp_mu_pseudo_bld, d_param_mu_bld, d_mu_d_r_j_inuc_bld, d_mu_d_r_j_alpha_bld, d_xi_en_j_beta_d_r_i_alpha_bld, d_xi_en_j_beta_d_r_i_alpha_num_bld, lap_i_xi_en_j_beta_bld, lap_i_xi_en_j_beta_num_bld, lap_j_mu_bld, d2_mu_d_r_j_inuc_2_bld, &
+       & xi_een_phi_bld, phi_bld, a_param_phi_bld, a_param_phi_parallel_cond_bld, a_param_phi_anti_parallel_cond_bld, dep_a_param_phi_anti_parallel_bld, dep_a_param_phi_parallel_bld, nb_a_param_phi_bld, d_xi_een_phi_j_beta_d_r_i_alpha_bld, d_xi_een_phi_j_beta_d_r_i_alpha_num_bld, d_phi_d_r_j_alpha_first_bld, d_phi_d_r_i_alpha_second_bld, d_phi_d_r_ji_bld, d_phi_d_r_j_inuc_bld,&
+       & xi_een_theta_bld, theta_bld, b_param_theta_bld, nb_b_param_theta_bld, dep_b_param_theta_bld, b_param_theta_cond_bld, d_xi_een_theta_j_beta_d_r_i_alpha_bld, d_xi_een_theta_j_beta_d_r_i_alpha_num_bld, d_theta_d_r_j_alpha_first_bld, d_theta_d_r_i_alpha_second_bld, d_theta_d_r_ji_bld, d_theta_d_r_j_inuc_bld, lap_i_xi_een_theta_j_beta_bld, lap_i_xi_een_theta_j_beta_num_bld, lap_j_theta_first_bld, lap_i_theta_second_bld, d2_theta_d_r_ji_2_bld, d2_theta_d_r_j_inuc_d_r_ji_bld, d2_theta_d_r_j_inuc_2_bld, &
+       & smooth_cutoff_g_bld, d_smooth_cutoff_g_d_r_bld, d2_smooth_cutoff_g_d_r_2_bld, &
+       & d_scaled_dist_en_wlk_d_r_bld, d2_scaled_dist_en_wlk_d_r_2_bld, d_scaled_dist_ee_wlk_d_r_bld, d2_scaled_dist_ee_wlk_d_r_2_bld, d_scaled_dist_een_ee_wlk_d_r_bld, d_scaled_dist_een_en_wlk_d_r_bld, d2_scaled_dist_een_ee_wlk_d_r_2_bld, d2_scaled_dist_een_en_wlk_d_r_2_bld, scaled_dist_een_ee_wlk_bld, scaled_dist_een_en_wlk_bld, scaled_dist_ee_wlk_bld, scaled_dist_en_wlk_bld, asymp_scaled_dist_two_body_bld!fp
 
   contains
 
@@ -477,48 +476,87 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_deriv_linear_av_var_bld', forces_zv_deriv_linear_av_var_bld)
 
 !backflow fp
+
+  call catalog_one_node('xi_en_bld', xi_en_bld)
+  call catalog_one_node('mu_bld', mu_bld)
+  call catalog_one_node('asymp_mu_pseudo_bld', asymp_mu_pseudo_bld)
+  call catalog_one_node('d_mu_d_r_j_inuc_bld', d_mu_d_r_j_inuc_bld)
+  call catalog_one_node('d_mu_d_r_j_alpha_bld', d_mu_d_r_j_alpha_bld)
+  call catalog_one_node('d_param_mu_bld',  d_param_mu_bld)
+  call catalog_one_node('d_xi_en_j_beta_d_r_i_alpha_bld', d_xi_en_j_beta_d_r_i_alpha_bld)
+  call catalog_one_node('d_xi_en_j_beta_d_r_i_alpha_num_bld', d_xi_en_j_beta_d_r_i_alpha_num_bld)
+  call catalog_one_node('lap_i_xi_en_j_beta_bld', lap_i_xi_en_j_beta_bld)
+  call catalog_one_node('lap_i_xi_en_j_beta_num_bld', lap_i_xi_en_j_beta_num_bld)
+  call catalog_one_node('lap_j_mu_bld', lap_j_mu_bld)
+  call catalog_one_node('d2_mu_d_r_j_inuc_2_bld', d2_mu_d_r_j_inuc_2_bld)
+
+  call catalog_one_node('xi_ee_bld', xi_ee_bld)
+  call catalog_one_node('eta_bld', eta_bld)
+  call catalog_one_node('asymp_eta_bld', asymp_eta_bld)
+  call catalog_one_node('c_param_eta_bld', c_param_eta_bld)
+  call catalog_one_node('d_xi_ee_j_beta_d_r_i_alpha_num_bld', d_xi_ee_j_beta_d_r_i_alpha_num_bld)
+  call catalog_one_node('d_xi_ee_j_beta_d_r_i_alpha_bld', d_xi_ee_j_beta_d_r_i_alpha_bld)
+  call catalog_one_node('d_eta_d_r_j_alpha_first_bld',d_eta_d_r_j_alpha_first_bld)
+  call catalog_one_node('d_eta_d_r_i_alpha_second_bld',d_eta_d_r_i_alpha_second_bld)
+  call catalog_one_node('d_eta_d_r_ji_bld', d_eta_d_r_ji_bld)
+  call catalog_one_node('d2_eta_d_r_ji_2_bld', d2_eta_d_r_ji_2_bld)
+  call catalog_one_node('lap_i_xi_ee_j_beta_bld',lap_i_xi_ee_j_beta_bld)
+  call catalog_one_node('lap_i_xi_ee_j_beta_num_bld',lap_i_xi_ee_j_beta_num_bld)
+  call catalog_one_node('lap_i_eta_second_bld', lap_i_eta_second_bld)
+  call catalog_one_node('lap_j_eta_first_bld', lap_j_eta_first_bld)
+
   call catalog_one_node('xi_een_phi_bld', xi_een_phi_bld)
-  call catalog_one_node('xi_een_theta_bld', xi_een_theta_bld)
-  call catalog_one_node('a_param_phi_pseudo_bld', a_param_phi_pseudo_bld)
-  call catalog_one_node('b_param_theta_pseudo_bld', b_param_theta_pseudo_bld)
-  call catalog_one_node('a_param_phi_all_elec_bld', a_param_phi_all_elec_bld)
-  call catalog_one_node('b_param_theta_all_elec_bld', b_param_theta_all_elec_bld)
-  call catalog_one_node('a_param_phi_pseudo_anti_parallel_cond_bld', a_param_phi_pseudo_anti_parallel_cond_bld)
-  call catalog_one_node('a_param_phi_pseudo_parallel_cond_bld', a_param_phi_pseudo_parallel_cond_bld)
-  call catalog_one_node('a_param_phi_all_elec_parallel_cond_bld', a_param_phi_all_elec_parallel_cond_bld)
-  call catalog_one_node('a_param_phi_all_elec_anti_parallel_cond_bld', a_param_phi_all_elec_anti_parallel_cond_bld)
-  call catalog_one_node('b_param_theta_pseudo_cond_bld', b_param_theta_pseudo_cond_bld)
-  call catalog_one_node('b_param_theta_all_elec_cond_bld', b_param_theta_all_elec_cond_bld)
-  call catalog_one_node('dep_a_param_phi_pseudo_parallel_bld', dep_a_param_phi_pseudo_parallel_bld)
-  call catalog_one_node('dep_a_param_phi_pseudo_anti_parallel_bld', dep_a_param_phi_pseudo_anti_parallel_bld)
-  call catalog_one_node('dep_a_param_phi_all_elec_parallel_bld', dep_a_param_phi_all_elec_parallel_bld)
-  call catalog_one_node('dep_a_param_phi_all_elec_anti_parallel_bld', dep_a_param_phi_all_elec_anti_parallel_bld)
-  call catalog_one_node('dep_b_param_theta_all_elec_bld', dep_b_param_theta_all_elec_bld)
-  call catalog_one_node('dep_b_param_theta_pseudo_bld', dep_b_param_theta_pseudo_bld)
+  call catalog_one_node('a_param_phi_bld', a_param_phi_bld)
+  call catalog_one_node('a_param_phi_parallel_cond_bld', a_param_phi_parallel_cond_bld)
+  call catalog_one_node('a_param_phi_anti_parallel_cond_bld', a_param_phi_anti_parallel_cond_bld)
+  call catalog_one_node('dep_a_param_phi_parallel_bld', dep_a_param_phi_parallel_bld)
+  call catalog_one_node('dep_a_param_phi_anti_parallel_bld', dep_a_param_phi_anti_parallel_bld)
   call catalog_one_node('nb_a_param_phi_bld', nb_a_param_phi_bld)
+  call catalog_one_node('phi_bld', phi_bld)
+  call catalog_one_node('d_phi_d_r_j_inuc_bld',d_phi_d_r_j_inuc_bld)
+  call catalog_one_node('d_xi_een_phi_j_beta_d_r_i_alpha_bld',d_xi_een_phi_j_beta_d_r_i_alpha_bld)
+  call catalog_one_node('d_xi_een_phi_j_beta_d_r_i_alpha_num_bld',d_xi_een_phi_j_beta_d_r_i_alpha_num_bld)
+  call catalog_one_node('d_phi_d_r_ji_bld',d_phi_d_r_ji_bld)
+  call catalog_one_node('d_phi_d_r_j_alpha_first_bld',d_phi_d_r_j_alpha_first_bld)
+  call catalog_one_node('d_phi_d_r_i_alpha_second_bld',d_phi_d_r_i_alpha_second_bld)
+
+  call catalog_one_node('xi_een_theta_bld', xi_een_theta_bld)
+  call catalog_one_node('b_param_theta_bld', b_param_theta_bld)
+  call catalog_one_node('b_param_theta_cond_bld', b_param_theta_cond_bld)
   call catalog_one_node('nb_b_param_theta_bld', nb_b_param_theta_bld)
-  call catalog_one_node('phi_all_elec_bld', phi_all_elec_bld)
-  call catalog_one_node('phi_pseudo_bld', phi_pseudo_bld)
-  call catalog_one_node('theta_all_elec_bld', theta_all_elec_bld)
-  call catalog_one_node('theta_pseudo_bld', theta_pseudo_bld)
+  call catalog_one_node('theta_bld', theta_bld)
+  call catalog_one_node('dep_b_param_theta_bld', dep_b_param_theta_bld)
+  call catalog_one_node('d_theta_d_r_j_inuc_bld',d_theta_d_r_j_inuc_bld)
+  call catalog_one_node('d_xi_een_theta_j_beta_d_r_i_alpha_bld',d_xi_een_theta_j_beta_d_r_i_alpha_bld)
+  call catalog_one_node('d_xi_een_theta_j_beta_d_r_i_alpha_num_bld',d_xi_een_theta_j_beta_d_r_i_alpha_num_bld)
+  call catalog_one_node('d_theta_d_r_ji_bld',d_theta_d_r_ji_bld)
+  call catalog_one_node('d_theta_d_r_j_alpha_first_bld',d_theta_d_r_j_alpha_first_bld)
+  call catalog_one_node('d_theta_d_r_i_alpha_second_bld',d_theta_d_r_i_alpha_second_bld)
+  call catalog_one_node('lap_i_xi_een_theta_j_beta_bld', lap_i_xi_een_theta_j_beta_bld)
+  call catalog_one_node('lap_i_xi_een_theta_j_beta_num_bld', lap_i_xi_een_theta_j_beta_num_bld)
+  call catalog_one_node('lap_j_theta_first_bld', lap_j_theta_first_bld)
+  call catalog_one_node('lap_i_theta_second_bld', lap_i_theta_second_bld)
+  call catalog_one_node('d2_theta_d_r_j_inuc_d_r_ji_bld', d2_theta_d_r_j_inuc_d_r_ji_bld)
+  call catalog_one_node('d2_theta_d_r_ji_2_bld', d2_theta_d_r_ji_2_bld)
+  call catalog_one_node('d2_theta_d_r_j_inuc_2_bld', d2_theta_d_r_j_inuc_2_bld)
+
   call catalog_one_node('scaled_dist_een_ee_wlk_bld', scaled_dist_een_ee_wlk_bld)
   call catalog_one_node('scaled_dist_een_en_wlk_bld', scaled_dist_een_en_wlk_bld)
-  call catalog_one_node('xi_ee_bld', xi_ee_bld)
-  call catalog_one_node('eta_pseudo_bld', eta_pseudo_bld)
-  call catalog_one_node('eta_all_elec_bld', eta_all_elec_bld)
-  call catalog_one_node('asymp_eta_bld', asymp_eta_bld)
   call catalog_one_node('scaled_dist_ee_wlk_bld', scaled_dist_ee_wlk_bld)
-  call catalog_one_node('c_param_eta_bld', c_param_eta_bld)
-  call catalog_one_node('xi_en_bld', xi_en_bld)
-  call catalog_one_node('mu_pseudo_bld', mu_pseudo_bld)
-  call catalog_one_node('mu_all_elec_bld', mu_all_elec_bld)
-  call catalog_one_node('asymp_mu_pseudo_bld', asymp_mu_pseudo_bld)
   call catalog_one_node('scaled_dist_en_wlk_bld', scaled_dist_en_wlk_bld)
   call catalog_one_node('asymp_scaled_dist_two_body_bld', asymp_scaled_dist_two_body_bld)
-  call catalog_one_node('d_param_mu_pseudo_bld', d_param_mu_pseudo_bld)
-  call catalog_one_node('d_param_mu_all_elec_bld',  d_param_mu_all_elec_bld)
-  call catalog_one_node('smooth_cutoff_g_bld',smooth_cutoff_g_bld)
+  call catalog_one_node('d_scaled_dist_en_wlk_d_r_bld', d_scaled_dist_en_wlk_d_r_bld)
+  call catalog_one_node('d2_scaled_dist_en_wlk_d_r_2_bld', d2_scaled_dist_en_wlk_d_r_2_bld)
+  call catalog_one_node('d_scaled_dist_ee_wlk_d_r_bld', d_scaled_dist_ee_wlk_d_r_bld)
+  call catalog_one_node('d2_scaled_dist_ee_wlk_d_r_2_bld', d2_scaled_dist_ee_wlk_d_r_2_bld)
+  call catalog_one_node('d_scaled_dist_een_en_wlk_d_r_bld', d_scaled_dist_een_en_wlk_d_r_bld)
+  call catalog_one_node('d_scaled_dist_een_ee_wlk_d_r_bld', d_scaled_dist_een_ee_wlk_d_r_bld)
+  call catalog_one_node('d2_scaled_dist_een_en_wlk_d_r_2_bld', d2_scaled_dist_een_en_wlk_d_r_2_bld)
+  call catalog_one_node('d2_scaled_dist_een_ee_wlk_d_r_2_bld', d2_scaled_dist_een_ee_wlk_d_r_2_bld)
 
+  call catalog_one_node('smooth_cutoff_g_bld',smooth_cutoff_g_bld)
+  call catalog_one_node('d_smooth_cutoff_g_d_r_bld',d_smooth_cutoff_g_d_r_bld)
+  call catalog_one_node('d2_smooth_cutoff_g_d_r_2_bld',d2_smooth_cutoff_g_d_r_2_bld)
 
 ! forces pulay
   call catalog_one_node ('force_to_bas_bld', force_to_bas_bld)
