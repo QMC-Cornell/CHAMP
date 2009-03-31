@@ -82,6 +82,13 @@ module backflow_mod
   real(dp), allocatable                          :: d_phi_d_r_i_alpha_second(:,:,:,:,:)
   real(dp), allocatable                          :: d_phi_d_r_ji(:,:,:,:)
   real(dp), allocatable                          :: d_phi_d_r_j_inuc(:,:,:,:)
+  real(dp), allocatable                          :: lap_i_xi_een_phi_j_beta(:,:,:,:)
+  real(dp), allocatable                          :: lap_i_xi_een_phi_j_beta_num(:,:,:,:)
+  real(dp), allocatable                          :: lap_j_phi_first(:,:,:,:)
+  real(dp), allocatable                          :: lap_i_phi_second(:,:,:,:)
+  real(dp), allocatable                          :: d2_phi_d_r_ji_2(:,:,:,:)
+  real(dp), allocatable                          :: d2_phi_d_r_j_inuc_2(:,:,:,:)
+  real(dp), allocatable                          :: d2_phi_d_r_j_inuc_d_r_ji(:,:,:,:)
 
   logical                                        :: een_theta_bf
   real(dp), allocatable                          :: xi_een_theta(:,:,:)
@@ -4461,6 +4468,616 @@ contains
 
   !=============================================================================================
 
+  !==============================================================================================
+
+  subroutine lap_i_xi_een_phi_j_beta_bld
+
+    !---------------------------------------------------------------------------
+    ! Description : build lap_i_xi_een_phi_j_beta. This is a rank four array.
+    !               Laplacian of the electron-electron-nuclear phi backflow function
+    !               with respect to electron position.
+    !               It is necessary for the construction of the energy.
+    !               The first index is for the components of xi_een_phi (beta)
+    !               The second index is the label of the ee backflow transformed electon
+    !               The third index is for the electron that the laplacian is taken with respect to
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 31 Mar 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j, dim_j
+
+    ! header
+    if (header_exe) then
+
+       call object_create('lap_i_xi_een_phi_j_beta')
+
+       call object_needed('nwalk')
+       call object_needed('nelec')
+       call object_needed('vec_ee_xyz_wlk')
+       call object_needed('ndim')
+       call object_needed('d_phi_d_r_j_alpha_first')
+       call object_needed('d_phi_d_r_i_alpha_second')
+       call object_needed('lap_j_phi_first')
+       call object_needed('lap_i_phi_second')
+
+       return
+    endif
+
+    call object_alloc('lap_i_xi_een_phi_j_beta', lap_i_xi_een_phi_j_beta, ndim, nelec, nelec, nwalk)
+    lap_i_xi_een_phi_j_beta(:,:,:,:) = 0.d0
+
+    do elec_j = 1, nelec
+       do dim_j = 1, ndim
+          lap_i_xi_een_phi_j_beta(dim_j, elec_j, elec_j, :) =  sum(sum(lap_j_phi_first(elec_j,:,:,:), 2) * vec_ee_xyz_wlk(dim_j, elec_j, :, :) + 2.d0  * sum(d_phi_d_r_j_alpha_first(dim_j, elec_j, :, :, :), 2), 1)
+       end do
+    end do
+
+    do dim_j = 1,ndim
+       lap_i_xi_een_phi_j_beta(dim_j, :, :, :) = lap_i_xi_een_phi_j_beta(dim_j, :, :, :) + sum(lap_i_phi_second(:, :, :, :), 3) * vec_ee_xyz_wlk(dim_j, :, :, :) - 2.d0 * sum(d_phi_d_r_i_alpha_second(dim_j, :, :, :, :), 3)
+    end do
+
+  end subroutine lap_i_xi_een_phi_j_beta_bld
+
+  !==============================================================================================
+
+  !==============================================================================================
+
+  subroutine lap_i_xi_een_phi_j_beta_num_bld
+    !---------------------------------------------------------------------------
+    ! Description : build lap_i_xi_een_phi_j_beta_num. This is a rank four array.
+    !               Numerical laplacian of xi_een_phi:
+    !
+    !               (nabla_i)^2 xi_een_phi_j^beta
+    !
+    !               NOTE THIS IS TO CHECK ANALYTIC DERIVATIVES
+    !
+    !               The first index is for the components of xi_een_phi (beta)
+    !               The second index is the label of the een_phi backflow transformation of each electon
+    !               The third index is for the electron that the laplacian is taken with respect to
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 31 Mar 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_i, elec_j, dim_i, dim_j
+    real(dp), allocatable :: d_xi_een_phi_j_beta_d_r_i_alpha_plus(:,:,:,:,:), d_xi_een_phi_j_beta_d_r_i_alpha_minus(:,:,:,:,:)
+    real(dp), allocatable :: coord_elec_wlk_temp(:,:,:)
+    real(dp) :: epsilon = 1.d-7
+    character(len=max_string_len_rout), save :: lhere = 'lap_i_xi_een_phi_j_beta_num_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('lap_i_xi_een_phi_j_beta_num')
+
+       call object_needed('ndim')
+       call object_needed('nwalk')
+       call object_needed('nelec')
+       call object_needed('coord_elec_wlk')
+       call object_needed('d_xi_een_phi_j_beta_d_r_i_alpha')
+
+       return
+    endif
+
+    ! allocation
+    call object_alloc('lap_i_xi_een_phi_j_beta_num', lap_i_xi_een_phi_j_beta_num, ndim, nelec, nelec, nwalk)
+    lap_i_xi_een_phi_j_beta_num(:,:,:,:) = 0.d0
+
+    !allocate temporary objects
+    allocate(d_xi_een_phi_j_beta_d_r_i_alpha_plus(ndim, ndim, nelec, nelec, nwalk))
+    allocate(d_xi_een_phi_j_beta_d_r_i_alpha_minus(ndim, ndim, nelec, nelec, nwalk))
+    allocate(coord_elec_wlk_temp(ndim, nelec, nwalk))
+
+    !store original values
+    coord_elec_wlk_temp = coord_elec_wlk
+
+     do elec_i = 1, nelec
+        do elec_j = 1, nelec
+           do dim_j = 1, ndim  !beta
+              do dim_i = 1, ndim  !alpha
+                 coord_elec_wlk = coord_elec_wlk_temp
+                 !shift coordinates in a particular dimension, x,y,z, etc
+                 coord_elec_wlk(dim_i, elec_i, :) = coord_elec_wlk(dim_i, elec_i, :) + epsilon
+                 call object_modified('coord_elec_wlk')
+                 !get updated d_xi_een_phi_j_beta_d_r_i_alpha
+                 call object_provide_in_node(lhere, 'd_xi_een_phi_j_beta_d_r_i_alpha')
+                 d_xi_een_phi_j_beta_d_r_i_alpha_plus = d_xi_een_phi_j_beta_d_r_i_alpha
+                 coord_elec_wlk = coord_elec_wlk_temp
+                 !shift coordinates in a particular dimension, x,y,z, etc
+                 coord_elec_wlk(dim_i, elec_i, :) = coord_elec_wlk(dim_i, elec_i, :) - epsilon
+                 call object_modified('coord_elec_wlk')
+                 !get updated d_xi_een_phi_j_beta_d_r_i_alpha
+                 call object_provide_in_node(lhere, 'd_xi_een_phi_j_beta_d_r_i_alpha')
+                 d_xi_een_phi_j_beta_d_r_i_alpha_minus = d_xi_een_phi_j_beta_d_r_i_alpha
+                 !calculate derivative
+                 lap_i_xi_een_phi_j_beta_num(dim_j, elec_j, elec_i, :) = lap_i_xi_een_phi_j_beta_num(dim_j, elec_j, elec_i, :) + (d_xi_een_phi_j_beta_d_r_i_alpha_plus(dim_j, dim_i, elec_j, elec_i, :) - d_xi_een_phi_j_beta_d_r_i_alpha_minus(dim_j, dim_i, elec_j, elec_i, :) ) / (2.d0 * epsilon)
+              end do
+           end do
+        end do
+     end do
+
+    !restore values
+    coord_elec_wlk = coord_elec_wlk_temp
+    call object_modified('coord_elec_wlk')
+    call object_provide_in_node(lhere, 'd_xi_een_phi_j_beta_d_r_i_alpha')
+
+  end subroutine lap_i_xi_een_phi_j_beta_num_bld
+
+  !==============================================================================================
+
+  !==============================================================================================
+
+  subroutine lap_j_phi_first_bld
+
+    !---------------------------------------------------------------------------
+    ! Description : build lap_j_phi_first. This is a rank four array.
+    !               Laplacian of the phi:
+    !
+    !               (nabla_j)^2 phi(r_jI,r_lI,r_jl)       Note that this is derivative with respect to first index so derivatives of the cutoff
+    !
+    !               The first index has dimensions equal to the number of electrons and labels the jth electron
+    !               The second index has dimensions equal to the number of electrons and labels the lth electron
+    !               The third index has dimensions equal to the number of centers and labels the Ith nucleus
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 31 Mar 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_l, dim_i, cent_i
+    character(len=max_string_len_rout), save :: lhere = 'lap_j_phi_first_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('lap_j_phi_first')
+
+       call object_needed('nwalk')
+       call object_needed('nelec')
+       call object_needed('ncent')
+       call object_needed('ndim')
+       call object_needed('all_elec')
+       call object_needed('d_phi_d_r_j_inuc')
+       call object_needed('dist_en_wlk')
+       call object_needed('vec_en_xyz_wlk')
+       call object_needed('d_phi_d_r_ji')
+       call object_needed('dist_ee_wlk')
+       call object_needed('vec_ee_xyz_wlk')
+       call object_needed('d2_phi_d_r_ji_2')
+       call object_needed('d2_phi_d_r_j_inuc_2')
+       call object_needed('d2_phi_d_r_j_inuc_d_r_ji')
+
+       return
+    endif
+
+    call object_alloc('lap_j_phi_first', lap_j_phi_first, nelec, nelec, ncent, nwalk)
+    lap_j_phi_first(:,:,:,:) = 0.d0
+
+    do elec_l = 1, nelec
+       lap_j_phi_first(:, elec_l, :, :) = d2_phi_d_r_j_inuc_2(:, elec_l, :, :) + (ndim - 1.d0) * d_phi_d_r_j_inuc(:, elec_l, :, :) / dist_en_wlk(:, :, :) + d2_phi_d_r_ji_2(:, elec_l, :, :)
+    end do
+
+    do cent_i = 1, ncent
+       do elec_l = 1, nelec
+          lap_j_phi_first(1:elec_l - 1, elec_l, cent_i, :) = lap_j_phi_first(1:elec_l - 1, elec_l, cent_i, :) + (ndim - 1.d0) * d_phi_d_r_ji(1:elec_l - 1, elec_l, cent_i, :) / dist_ee_wlk(1:elec_l - 1, elec_l, :) +  2.d0 * d2_phi_d_r_j_inuc_d_r_ji(1:elec_l - 1, elec_l, cent_i, :) / dist_en_wlk(1:elec_l - 1, cent_i, :) / dist_ee_wlk(1:elec_l - 1, elec_l, :) * sum(vec_en_xyz_wlk(:, 1:elec_l - 1, cent_i, :) * vec_ee_xyz_wlk(:, 1:elec_l - 1, elec_l, :), 1)
+          lap_j_phi_first(elec_l + 1:nelec, elec_l, cent_i, :) = lap_j_phi_first(elec_l + 1:nelec, elec_l, cent_i, :) + (ndim - 1.d0) * d_phi_d_r_ji(elec_l + 1:nelec, elec_l, cent_i, :) / dist_ee_wlk(elec_l + 1:nelec, elec_l, :) + 2.d0 * d2_phi_d_r_j_inuc_d_r_ji(elec_l + 1:nelec, elec_l, cent_i, :) / dist_en_wlk(elec_l + 1:nelec, cent_i, :) / dist_ee_wlk(elec_l + 1:nelec, elec_l, :) * sum(vec_en_xyz_wlk(:, elec_l + 1:nelec, cent_i, :) * vec_ee_xyz_wlk(:, elec_l + 1:nelec, elec_l, :), 1)
+       end do
+    end do
+
+    if (all_elec) then
+       call object_provide_in_node(lhere, 'smooth_cutoff_g')
+       call object_provide_in_node(lhere, 'd_smooth_cutoff_g_d_r')
+       call object_provide_in_node(lhere, 'd2_smooth_cutoff_g_d_r_2')
+       call object_provide_in_node(lhere, 'phi')
+       call object_provide_in_node(lhere, 'd_phi_d_r_j_alpha_first')
+
+       do cent_i = 1, ncent
+          do elec_l = 1, nelec
+             do dim_i = 1, ndim
+                lap_j_phi_first(1:elec_l - 1, elec_l, cent_i, :) = lap_j_phi_first(1:elec_l - 1, elec_l, cent_i, :) + d_phi_d_r_ji(1:elec_l - 1, elec_l, cent_i, :) / dist_ee_wlk(1:elec_l - 1, elec_l, :) * vec_ee_xyz_wlk(dim_i, 1:elec_l - 1, elec_l, :) * ( sum(d_smooth_cutoff_g_d_r(1:elec_l - 1, 1:cent_i - 1, :) / smooth_cutoff_g(1:elec_l - 1, 1:cent_i - 1, :)  * vec_en_xyz_wlk(dim_i, 1:elec_l - 1, 1:cent_i - 1, :) / dist_en_wlk(1:elec_l - 1, 1:cent_i - 1, :), 2) + sum(d_smooth_cutoff_g_d_r(1:elec_l - 1, cent_i + 1:ncent, :) / smooth_cutoff_g(1:elec_l - 1, cent_i + 1:ncent, :)  * vec_en_xyz_wlk(dim_i, 1:elec_l - 1, cent_i + 1:ncent, :) / dist_en_wlk(1:elec_l - 1, cent_i + 1:ncent, :), 2) )
+                lap_j_phi_first(elec_l + 1:nelec, elec_l, cent_i, :) = lap_j_phi_first(elec_l + 1:nelec, elec_l, cent_i, :) + d_phi_d_r_ji(elec_l + 1:nelec, elec_l, cent_i, :) / dist_ee_wlk(elec_l + 1:nelec, elec_l, :) * vec_ee_xyz_wlk(dim_i, elec_l + 1:nelec, elec_l, :) * ( sum(d_smooth_cutoff_g_d_r(elec_l + 1:nelec, 1:cent_i - 1, :) / smooth_cutoff_g(elec_l + 1:nelec, 1:cent_i - 1, :)  * vec_en_xyz_wlk(dim_i, elec_l + 1:nelec, 1:cent_i - 1, :) / dist_en_wlk(elec_l + 1:nelec, 1:cent_i - 1, :), 2) + sum(d_smooth_cutoff_g_d_r(elec_l + 1:nelec, cent_i + 1:ncent, :) / smooth_cutoff_g(elec_l + 1:nelec, cent_i + 1:ncent, :)  * vec_en_xyz_wlk(dim_i, elec_l + 1:nelec, cent_i + 1:ncent, :) / dist_en_wlk(elec_l + 1:nelec, cent_i + 1:ncent, :), 2) )
+                lap_j_phi_first(:, elec_l, cent_i, :) = lap_j_phi_first(:, elec_l, cent_i, :) + d_phi_d_r_j_inuc(:, elec_l, cent_i, :) / dist_en_wlk(:, cent_i, :) * vec_en_xyz_wlk(dim_i, :, cent_i, :) * ( sum(d_smooth_cutoff_g_d_r(:, 1:cent_i - 1, :) / smooth_cutoff_g(:, 1:cent_i - 1, :)  * vec_en_xyz_wlk(dim_i, :, 1:cent_i - 1, :) / dist_en_wlk(:, 1:cent_i - 1, :), 2) + sum(d_smooth_cutoff_g_d_r(:, cent_i + 1:ncent, :) / smooth_cutoff_g(:, cent_i + 1:ncent, :)  * vec_en_xyz_wlk(dim_i, :, cent_i + 1:ncent, :) / dist_en_wlk(:, cent_i + 1:ncent, :), 2) )
+             end do
+          end do
+       end do
+
+       do cent_i = 1, ncent
+          do elec_l = 1, nelec
+             lap_j_phi_first(:, elec_l, cent_i, :) = lap_j_phi_first(:, elec_l, cent_i, :) * product(smooth_cutoff_g(:, 1:cent_i - 1, :), 2) * product(smooth_cutoff_g(:, cent_i + 1:ncent, :), 2)
+          end do
+       end do
+
+       do cent_i = 1, ncent
+          do elec_l = 1, nelec
+             lap_j_phi_first(:, elec_l, cent_i, :) = lap_j_phi_first(:, elec_l, cent_i, :) + phi(:, elec_l, cent_i, :) * ( sum( (d2_smooth_cutoff_g_d_r_2(:, 1:cent_i - 1, :) - d_smooth_cutoff_g_d_r(:, 1:cent_i - 1, :) ** 2 / smooth_cutoff_g(:, 1:cent_i - 1, :) + d_smooth_cutoff_g_d_r(:, 1:cent_i - 1, :) * (ndim - 1.d0) / dist_en_wlk(:, 1:cent_i - 1, :) ) / smooth_cutoff_g(:, 1:cent_i - 1, :), 2) + sum( (d2_smooth_cutoff_g_d_r_2(:, cent_i + 1:ncent, :) - d_smooth_cutoff_g_d_r(:, cent_i + 1:ncent, :) ** 2 / smooth_cutoff_g(:, cent_i + 1:ncent, :) + d_smooth_cutoff_g_d_r(:, cent_i + 1:ncent, :) * (ndim - 1.d0) / dist_en_wlk(:, cent_i + 1:ncent, :) ) / smooth_cutoff_g(:, cent_i + 1:ncent, :), 2) )
+             do dim_i = 1, ndim
+                lap_j_phi_first(:, elec_l, cent_i, :) = lap_j_phi_first(:, elec_l, cent_i, :) + d_phi_d_r_j_alpha_first(dim_i, :, elec_l, cent_i, :) * ( sum(d_smooth_cutoff_g_d_r(:, 1:cent_i - 1, :) / smooth_cutoff_g(:, 1:cent_i - 1, :)  * vec_en_xyz_wlk(dim_i, :, 1:cent_i - 1, :) / dist_en_wlk(:, 1:cent_i - 1, :), 2) + sum(d_smooth_cutoff_g_d_r(:, cent_i + 1:ncent, :) / smooth_cutoff_g(:, cent_i + 1:ncent, :)  * vec_en_xyz_wlk(dim_i, :, cent_i + 1:ncent, :) / dist_en_wlk(:, cent_i + 1:ncent, :), 2) )
+             end do
+          end do
+       end do
+
+    end if
+
+  end subroutine lap_j_phi_first_bld
+
+  !==============================================================================================
+
+  !==============================================================================================
+
+  subroutine lap_i_phi_second_bld
+
+    !---------------------------------------------------------------------------
+    ! Description : build lap_i_phi_second. This is a rank four array.
+    !               Laplacian of the phi:
+    !
+    !               (nabla_i)^2 phi(r_jI,r_iI,r_ji)       Note that this is derivative with respect to second index so no derivatives of the cutoff
+    !
+    !               The first index has dimensions equal to the number of electrons and labels the jth electron
+    !               The second index has dimensions equal to the number of electrons and labels the ith electron
+    !               The third index has dimensions equal to the number of centers and labels the Ith nucleus
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 31 Mar 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j, cent_i
+    character(len=max_string_len_rout), save :: lhere = 'lap_i_phi_second_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('lap_i_phi_second')
+
+       call object_needed('nwalk')
+       call object_needed('nelec')
+       call object_needed('ncent')
+       call object_needed('ndim')
+       call object_needed('all_elec')
+       call object_needed('d_phi_d_r_j_inuc')
+       call object_needed('dist_en_wlk')
+       call object_needed('vec_en_xyz_wlk')
+       call object_needed('d_phi_d_r_ji')
+       call object_needed('dist_ee_wlk')
+       call object_needed('vec_ee_xyz_wlk')
+       call object_needed('d2_phi_d_r_ji_2')
+       call object_needed('d2_phi_d_r_j_inuc_2')
+       call object_needed('d2_phi_d_r_j_inuc_d_r_ji')
+
+       return
+    endif
+
+    call object_alloc('lap_i_phi_second', lap_i_phi_second, nelec, nelec, ncent, nwalk)
+    lap_i_phi_second(:,:,:,:) = 0.d0
+
+    do elec_j = 1, nelec
+       lap_i_phi_second(elec_j, :, :, :) = d2_phi_d_r_j_inuc_2(:, elec_j, :, :) + (ndim - 1.d0) * d_phi_d_r_j_inuc(:, elec_j, :, :) / dist_en_wlk(:, :, :) + d2_phi_d_r_ji_2(:, elec_j, :, :)
+    end do
+
+    do cent_i = 1, ncent
+       do elec_j = 1, nelec
+          lap_i_phi_second(elec_j, 1:elec_j - 1, cent_i, :) = lap_i_phi_second(elec_j, 1:elec_j - 1, cent_i, :) + (ndim - 1.d0) * d_phi_d_r_ji(1:elec_j - 1, elec_j, cent_i, :) / dist_ee_wlk(1:elec_j - 1, elec_j, :) +  2.d0 * d2_phi_d_r_j_inuc_d_r_ji(1:elec_j - 1, elec_j, cent_i, :) / dist_en_wlk(1:elec_j - 1, cent_i, :) / dist_ee_wlk(1:elec_j - 1, elec_j, :) * sum(vec_en_xyz_wlk(:, 1:elec_j - 1, cent_i, :) * vec_ee_xyz_wlk(:, 1:elec_j - 1, elec_j, :), 1)
+          lap_i_phi_second(elec_j, elec_j + 1:nelec, cent_i, :) = lap_i_phi_second(elec_j, elec_j + 1:nelec, cent_i, :) + (ndim - 1.d0) * d_phi_d_r_ji(elec_j + 1:nelec, elec_j, cent_i, :) / dist_ee_wlk(elec_j + 1:nelec, elec_j, :) +  2.d0 * d2_phi_d_r_j_inuc_d_r_ji(elec_j + 1:nelec, elec_j, cent_i, :) / dist_en_wlk(elec_j + 1:nelec, cent_i, :) / dist_ee_wlk(elec_j + 1:nelec, elec_j, :) * sum(vec_en_xyz_wlk(:, elec_j + 1:nelec, cent_i, :) * vec_ee_xyz_wlk(:, elec_j + 1:nelec, elec_j, :), 1)
+       end do
+    end do
+
+    if (all_elec) then
+       call object_provide_in_node(lhere, 'smooth_cutoff_g')
+       !cutoff
+       do cent_i = 1, ncent
+          do elec_j = 1, nelec
+             lap_i_phi_second(:, elec_j, cent_i, :) = lap_i_phi_second(:, elec_j, cent_i, :) * product(smooth_cutoff_g(:, 1:cent_i - 1, :), 2) * product(smooth_cutoff_g(:, cent_i + 1:ncent, :), 2)
+          end do
+       end do
+    end if
+
+  end subroutine lap_i_phi_second_bld
+
+  !==============================================================================================
+
+  !======================================================================================
+
+  subroutine d2_phi_d_r_ji_2_bld
+    !---------------------------------------------------------------------------
+    ! Description : build object d2_phi_d_r_ji_2(:,:,:,:). This is a rank four array.
+    !
+    !               d^2 phi(r_jI,r_iI,r_ji)    (without cutoff)
+    !               ----------
+    !               d r_(ji)^2
+    !
+    !               The first index labels j and has dimension equal to the number of electrons.
+    !               The second index labels i and has dimension equal to the number of electrons.
+    !               The third index labels I and has dimensions equal to the number of nuclei.
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 31 Mar 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, ncent, iwctype, nelec, nup
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
+    integer  :: order_l_max
+    integer, parameter  :: up_up=1, down_down=2, up_down=3 !index for the spin
+
+    ! header
+    if (header_exe) then
+
+       call object_create('d2_phi_d_r_ji_2')
+
+       call object_needed('nwalk')
+       call object_needed('ncent')
+       call object_needed('iwctype')
+       call object_needed('nelec')
+       call object_needed('nup')
+       call object_needed('order_phi_bf')
+       call object_needed ('scaled_dist_een_en_wlk')
+       call object_needed ('scaled_dist_een_ee_wlk')
+       call object_needed ('d_scaled_dist_een_ee_wlk_d_r')
+       call object_needed ('d2_scaled_dist_een_ee_wlk_d_r_2')
+       call object_needed('a_param_phi')
+
+       return
+    endif
+
+    call object_alloc('d2_phi_d_r_ji_2', d2_phi_d_r_ji_2, nelec, nelec, ncent, nwalk)
+    d2_phi_d_r_ji_2 (:,:,:,:) = 0.d0
+
+    param_i = 1 !intialize parameter counter
+    do order_p = 2, order_phi_bf
+       do order_k = 0, order_p - 1
+          if (order_k .ne. 0) then
+             order_l_max = order_p - order_k
+          else
+             order_l_max = order_p - 2
+          end if
+          do order_l = 0, order_l_max
+             if (modulo(order_p - order_k - order_l, 2) .ne. 0) then
+                cycle
+             else
+                do cent_i = 1, ncent
+                   do elec_i = 1, nup
+                      do elec_j = 1, nup
+                         d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) + order_k * a_param_phi(param_i, iwctype(cent_i), up_up) * ( (order_k - 1) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-2) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) ** 2 + scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-1) * d2_scaled_dist_een_ee_wlk_d_r_2(elec_j, elec_i, :) ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :)**order_l + scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :) ) ** ((order_p - order_k - order_l) / 2)
+                      end do
+                      do elec_j = nup + 1, nelec
+                         d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) + order_k * a_param_phi(param_i, iwctype(cent_i), up_down) * ( (order_k - 1) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-2) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) ** 2 + scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-1) * d2_scaled_dist_een_ee_wlk_d_r_2(elec_j, elec_i, :) ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :)**order_l + scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :) ) ** ((order_p - order_k - order_l) / 2)
+                      end do
+                   end do
+                   do elec_i = nup + 1, nelec
+                      do elec_j = 1, nup
+                         d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) + order_k * a_param_phi(param_i, iwctype(cent_i), up_down) * ( (order_k - 1) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-2) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) ** 2 + scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-1) * d2_scaled_dist_een_ee_wlk_d_r_2(elec_j, elec_i, :) ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :)**order_l + scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :) ) ** ((order_p - order_k - order_l) / 2)
+                      end do
+                      do elec_j =  nup + 1, nelec
+                         d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_ji_2(elec_j, elec_i, cent_i, :) + order_k * a_param_phi(param_i, iwctype(cent_i), down_down) * ( (order_k - 1) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-2) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) ** 2 + scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k-1) * d2_scaled_dist_een_ee_wlk_d_r_2(elec_j, elec_i, :) ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :)**order_l + scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l ) * ( scaled_dist_een_en_wlk(elec_j, cent_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :) ) ** ((order_p - order_k - order_l) / 2)
+                      end do
+                   end do
+                end do
+                param_i = param_i + 1
+             endif
+          enddo
+       enddo
+    enddo
+
+    !no self backflow
+    do elec_i=1, nelec
+       d2_phi_d_r_ji_2(elec_i, elec_i, :, :) = 0.d0
+    end do
+
+  end subroutine d2_phi_d_r_ji_2_bld
+
+  !=============================================================================================
+
+  !======================================================================================
+
+  subroutine d2_phi_d_r_j_inuc_d_r_ji_bld
+    !---------------------------------------------------------------------------
+    ! Description : build object d2_phi_d_r_j_inuc_d_r_ji(:,:,:,:). This is a rank four array.
+    !
+    !               d^2 phi(r_jI,r_iI,r_jI)    (without cutoff)
+    !               ----------
+    !               d r_jI d r_ji
+    !
+    !               The first index labels j and has dimension equal to the number of electrons.
+    !               The second index labels i and has dimension equal to the number of electrons.
+    !               The third index labels I and has dimensions equal to the number of nuclei.
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 31 Mar 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, ncent, iwctype, nelec, nup
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
+    integer  :: order_l_max
+    integer, parameter  :: up_up=1, down_down=2, up_down=3 !index for the spin
+
+    ! header
+    if (header_exe) then
+
+       call object_create('d2_phi_d_r_j_inuc_d_r_ji')
+
+       call object_needed('nwalk')
+       call object_needed('ncent')
+       call object_needed('iwctype')
+       call object_needed('nelec')
+       call object_needed('nup')
+       call object_needed('order_phi_bf')
+       call object_needed ('scaled_dist_een_en_wlk')
+       call object_needed ('scaled_dist_een_ee_wlk')
+       call object_needed ('d_scaled_dist_een_en_wlk_d_r')
+       call object_needed ('d_scaled_dist_een_ee_wlk_d_r')
+       call object_needed('a_param_phi')
+
+       return
+    endif
+
+    call object_alloc('d2_phi_d_r_j_inuc_d_r_ji', d2_phi_d_r_j_inuc_d_r_ji, nelec, nelec, ncent, nwalk)
+    d2_phi_d_r_j_inuc_d_r_ji (:,:,:,:) = 0.d0
+
+    param_i = 1 !intialize parameter counter
+    do order_p = 2, order_phi_bf
+       do order_k = 0, order_p - 1
+          if (order_k .ne. 0) then
+             order_l_max = order_p - order_k
+          else
+             order_l_max = order_p - 2
+          end if
+          do order_l = 0, order_l_max
+             if (modulo(order_p - order_k - order_l, 2) .ne. 0) then
+                cycle
+             else
+                do cent_i = 1, ncent
+                   do elec_i = 1, nup
+                      do elec_j = 1, nup
+                         d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), up_up) * order_k * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k -1) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2)  * d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2) + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2))
+                      end do
+                      do elec_j = nup+1, nelec
+                         d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), up_down) * order_k * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k -1) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2)  * d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2) + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2))
+                      end do
+                   end do
+                   do elec_i = nup + 1, nelec
+                      do elec_j = 1, nup
+                         d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), up_down) * order_k * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k -1) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2)  * d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2) + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2))
+                      end do
+                      do elec_j = nup+1, nelec
+                         d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_d_r_ji(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), down_down) * order_k * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**(order_k -1) * d_scaled_dist_een_ee_wlk_d_r(elec_j, elec_i, :) *  scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2)  * d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2) + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2))
+                      end do
+                   end do
+                end do
+                param_i = param_i + 1
+             endif
+          enddo
+       enddo
+    enddo
+
+    !no self backflow
+    do elec_i=1, nelec
+       d2_phi_d_r_j_inuc_d_r_ji(elec_i, elec_i, :, :) = 0.d0
+    end do
+
+  end subroutine d2_phi_d_r_j_inuc_d_r_ji_bld
+
+  !=============================================================================================
+
+  !======================================================================================
+
+  subroutine d2_phi_d_r_j_inuc_2_bld
+    !---------------------------------------------------------------------------
+    ! Description : build object d2_phi_d_r_j_inuc_2(:,:,:,:). This is a rank four array.
+    !
+    !               d phi(r_jI,r_iI,r_jI)    (without cutoff)
+    !               ----------
+    !               d r_jI
+    !
+    !               The first index labels j and has dimension equal to the number of electrons.
+    !               The second index labels i and has dimension equal to the number of electrons.
+    !               The third index labels I and has dimensions equal to the number of nuclei.
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 25 Feb 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, ncent, iwctype, nelec, nup
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
+    integer  :: order_l_max
+    integer, parameter  :: up_up=1, down_down=2, up_down=3 !index for the spin
+
+    ! header
+    if (header_exe) then
+
+       call object_create('d2_phi_d_r_j_inuc_2')
+
+       call object_needed('nwalk')
+       call object_needed('ncent')
+       call object_needed('iwctype')
+       call object_needed('nelec')
+       call object_needed('nup')
+       call object_needed('order_phi_bf')
+       call object_needed ('scaled_dist_een_en_wlk')
+       call object_needed ('scaled_dist_een_ee_wlk')
+       call object_needed ('d_scaled_dist_een_en_wlk_d_r')
+       call object_needed ('d2_scaled_dist_een_en_wlk_d_r_2')
+       call object_needed('a_param_phi')
+
+       return
+    endif
+
+    call object_alloc('d2_phi_d_r_j_inuc_2', d2_phi_d_r_j_inuc_2, nelec, nelec, ncent, nwalk)
+    d2_phi_d_r_j_inuc_2 (:,:,:,:) = 0.d0
+
+    param_i = 1 !intialize parameter counter
+    do order_p = 2, order_phi_bf
+       do order_k = 0, order_p - 1
+          if (order_k .ne. 0) then
+             order_l_max = order_p - order_k
+          else
+             order_l_max = order_p - 2
+          end if
+          do order_l = 0, order_l_max
+             if (modulo(order_p - order_k - order_l, 2) .ne. 0) then
+                cycle
+             else
+                do cent_i = 1, ncent
+                   do elec_i = 1, nup
+                      do elec_j = 1, nup
+                         d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), up_up) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**order_k * scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2) * ( d2_scaled_dist_een_en_wlk_d_r_2(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2)  + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2)) + d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) **2 * ( (order_p - order_k + order_l) / 2 * (order_p - order_k + order_l - 2) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-4)/2)  + (order_p - order_k - order_l) / 2  * (order_p - order_k - order_l - 2) / 2 * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-4)/2)) )
+                      end do
+                      do elec_j = nup+1, nelec
+                         d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), up_down) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**order_k * scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2) * ( d2_scaled_dist_een_en_wlk_d_r_2(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2)  + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2)) + d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) **2 * ( (order_p - order_k + order_l) / 2 * (order_p - order_k + order_l - 2) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-4)/2)  + (order_p - order_k - order_l) / 2  * (order_p - order_k - order_l - 2) / 2 * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-4)/2)) )
+                      end do
+                   end do
+                   do elec_i = nup + 1, nelec
+                      do elec_j = 1, nup
+                         d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), up_down) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**order_k * scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2) * ( d2_scaled_dist_een_en_wlk_d_r_2(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2)  + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2)) + d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) **2 * ( (order_p - order_k + order_l) / 2 * (order_p - order_k + order_l - 2) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-4)/2)  + (order_p - order_k - order_l) / 2  * (order_p - order_k - order_l - 2) / 2 * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-4)/2)) )
+                      end do
+                      do elec_j = nup+1, nelec
+                         d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) = d2_phi_d_r_j_inuc_2(elec_j, elec_i, cent_i, :) + a_param_phi(param_i, iwctype(cent_i), down_down) * scaled_dist_een_ee_wlk(elec_j, elec_i, :)**order_k * scaled_dist_een_en_wlk(elec_i, cent_i, :)  ** ((order_p - order_k - order_l) / 2) * ( d2_scaled_dist_een_en_wlk_d_r_2(elec_j, cent_i, :) * ( (order_p - order_k + order_l) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-2)/2)  + (order_p - order_k - order_l) / 2  * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-2)/2)) + d_scaled_dist_een_en_wlk_d_r(elec_j, cent_i, :) **2 * ( (order_p - order_k + order_l) / 2 * (order_p - order_k + order_l - 2) / 2  * scaled_dist_een_en_wlk(elec_j, cent_i, :)**((order_p - order_k + order_l-4)/2)  + (order_p - order_k - order_l) / 2  * (order_p - order_k - order_l - 2) / 2 * scaled_dist_een_en_wlk(elec_i, cent_i, :)**order_l * scaled_dist_een_en_wlk(elec_j, cent_i, :) ** ((order_p - order_k - order_l-4)/2)) )
+                      end do
+                   end do
+                end do
+                param_i = param_i + 1
+             endif
+          enddo
+       enddo
+    enddo
+
+    !no self backflow
+    do elec_i=1, nelec
+       d2_phi_d_r_j_inuc_2(elec_i, elec_i, :, :) = 0.d0
+    end do
+
+  end subroutine d2_phi_d_r_j_inuc_2_bld
+
+  !=============================================================================================
 
   !======================================================================================
 

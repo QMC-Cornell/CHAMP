@@ -264,7 +264,7 @@ backflow_mod.o: basic_tools_mod.o constants_mod.o electrons_mod.o nodes_mod.o \
 	objects_mod.o parser_tools_mod.o strings_tools_mod.o variables_mod.o \
 	commons.h
 basic_tools_mod.o: constants_mod.o mpi_mod.o types_mod.o variables_mod.o
-basis_mod.o: all_tools_mod.o commons.h
+basis_mod.o: all_tools_mod.o control_mod.o commons.h
 bsplines_mod.o: basic_tools_mod.o mpi_mod.o orbital_grid_mod.o commons.h
 bwfdet_mod.o: constants_mod.o mpi_mod.o commons.h
 catalog_averages_mod.o: average_mod.o basic_tools_mod.o constants_mod.o \
