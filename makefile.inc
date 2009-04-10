@@ -29,6 +29,8 @@ EINSPLINE=-L$(LIBHOME)/lib2/einspline/lib -leinspline
 
 CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
 
+CHAMP_LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/einspline/lib/libeinspline.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+
 # C compilation ------------------------------------------------------------
 
 CHAMP_C=icc
@@ -91,7 +93,7 @@ CHAMP_MPI_EXE=champ_mpi.exe
 CHAMP_DEBUG_EXE=champ_debug.exe
 
 # Export these for compiling the libraries
-export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE USE_GCC
+export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE USE_GCC 
 ####################### MACHINES ########################################
 
 # New dft cluster at Cornell
@@ -307,6 +309,7 @@ ifeq ($(hostname),clastos)
  EINSPLINE=
  CHAMP_MPIF95=/usr/local/bin/mpif90_64
  CHAMP_MPIC=/usr/local/bin/mpicc_64
+ CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # hydrogene in Paris
@@ -314,6 +317,7 @@ ifeq ($(hostname),hydrogene)
  CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
  CHAMP_C=gcc
  EINSPLINE=
+ CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # NASA Ames Columbia Itanium cluster
@@ -363,6 +367,7 @@ ifeq ($(hostname),jasmine)
   CHAMP_LD_FLAGS=-O3
   CHAMP_LD_MPI=mpif90
   EINSPLINE=
+  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # AMD Opteron cluster with Pathscale compiler on slid.fysik at Lyngby, Denmark
@@ -451,7 +456,6 @@ endif
 
 # Julich BlueGene P
 ifeq ($(hostname),jugene1)
-
 # MPI
   CHAMP_MPIF95 = mpixlf2003
   CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
@@ -460,3 +464,22 @@ ifeq ($(hostname),jugene1)
   CHAMP_C_MPI_FLAGS = -O3 -qstrict
 endif
 
+# BlueGene P at IDRIS
+ifeq ($(hostname),babel1)
+
+ CHAMP_F95=mpixlf2003
+ CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+ CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+
+# MPI
+  CHAMP_MPIF95 = mpixlf2003_r
+  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_MPIC = mpixlc
+  CHAMP_C_MPI_FLAGS = -O3 -qstrict
+  LAPACK=-L/bglocal/prod/tools_ibm/lib -llapack -L/opt/ibmmath/essl/4.3/lib -lesslbg
+  BLAS=-L/opt/ibmmath/essl/4.3/lib -lesslbg
+  QUENCH=
+  EINSPLINE=
+  CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
+endif

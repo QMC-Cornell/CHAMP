@@ -18,34 +18,35 @@ export FC FFLAGS LDFLAGS CC CXX
 
 
 # In quench_anneal lib/libquench_seq.a also needs to be made, but it tags along with lib/libquench.a
-ifdef EINSPLINE
-all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a lib2/einspline/lib/libeinspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
-else
-all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
-endif
+#ifdef EINSPLINE
+#all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a lib2/einspline/lib/libeinspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
+#else
+#all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
+#endif
 
+all: $(CHAMP_LIBS_MAKE)
 
-lib/libcyrus.a:
+../lib/lib/libcyrus.a:
 	cd lib ; $(MAKE)
 
 lib2_dir:
 	cd lib2 ; $(MAKE)
 
-lib2/blas/libblas.a:
+../lib/lib2/blas/libblas.a:
 	cd lib2/blas ; $(MAKE) libblas.a
 
-lib2/lapack/liblapack.a:
+../lib/lib2/lapack/liblapack.a:
 	cd lib2/lapack ; make liblapack.a
 
-lib2/linpack/liblinpack.a:
+../lib/lib2/linpack/liblinpack.a:
 	cd lib2/linpack ; make liblinpack.a
 
-lib2/pspline/pspline/libpspline.a:
+../lib/lib2/pspline/pspline/libpspline.a:
 	cd lib2/pspline/pspline ; make libpspline.a
 
 ifdef EINSPLINE
 ifndef USE_GCC
-lib2/einspline/lib/libeinspline.a:
+../lib/lib2/einspline/lib/libeinspline.a:
 #	cd einspline ; configure_my ; $(MAKE) ; $(MAKE) install
 #	cd einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/einspline/ "--enable-sse" ; $(MAKE) ; $(MAKE) install
 	cd lib2/einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
@@ -56,7 +57,7 @@ lib2/einspline/lib/libeinspline.a:
 endif
 endif
 
-SimulatedAnnealing/quench_anneal/lib/libquench.a:
+../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:
 	cd SimulatedAnnealing/quench_anneal ; $(MAKE) libs
 
 

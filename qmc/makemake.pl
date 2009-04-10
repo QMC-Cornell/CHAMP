@@ -49,13 +49,13 @@ print MAKEFILE "# 2) Also, for the libraries, linpack etc. it does the make even
 print MAKEFILE "#    are directories named linpack etc.\n";
 print MAKEFILE ".PHONY: clean_local clean clean_all clean_all_lib make\n\n";
 
-print MAKEFILE "ifdef EINSPLINE\n";
-print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n";
-print MAKEFILE "else\n";
-print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n";
-print MAKEFILE "endif\n\n";
+#print MAKEFILE "ifdef EINSPLINE\n";
+#print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n";
+#print MAKEFILE "else\n";
+#print MAKEFILE "LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a\n";
+#print MAKEFILE "endif\n\n";
 
-print MAKEFILE "\$(PROG): \$(LIBS) \$(OBJS)\n";
+print MAKEFILE "\$(PROG): \$(CHAMP_LIBS_MAKE) \$(OBJS)\n";
 print MAKEFILE "\t\$(CHAMP_LD) \$(CHAMP_LD_FLAGS) -o \$@ \$(OBJS) \$(CHAMP_LIBS) \$(CHAMP_LD_END)\n\n";
 print MAKEFILE "";
 print MAKEFILE "../lib/lib/libcyrus.a:\n";

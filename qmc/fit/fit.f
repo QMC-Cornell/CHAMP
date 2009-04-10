@@ -657,9 +657,14 @@ c    &  ibold,cholesky,rot_wt,parmarmin,eps_diff)
 c       call quench(func,jacobian,analytic,parm,pmarquardt,tau,noutput,
 c    &  nstep,ndata2,nparm,ipr_opt,diff,err2,epsg,epsp,epsch2,converg,mesg,
 c    &  ibold,cholesky,rot_wt,eps_diff)
+
+#ifndef NOQUENCH
         call quench(func,jacobian,nanalytic,parm,pmarquardt,tau,noutput,
      &  nstep,ndata2,nparm,ipr_opt,diff,err2,epsg,epsp,epsch2,converg,mesg,
      &  ibold,cholesky,rot_wt,eps_diff)
+#else
+        stop 'needs quench library'
+#endif
 
         if(converg) then
           write(6,'(''chisq='',d12.6,i5,'' func evals, convergence: '',

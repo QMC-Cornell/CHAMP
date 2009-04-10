@@ -179,13 +179,7 @@ OBJS =	accumulation_mod.o all_tools_mod.o average_mod.o backflow_mod.o \
 #    are directories named linpack etc.
 .PHONY: clean_local clean clean_all clean_all_lib make
 
-ifdef EINSPLINE
-LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/einspline/lib/libeinspline.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-else
-LIBS = ../lib/lib/libcyrus.a ../lib/lib2/blas/libblas.a ../lib/lib2/lapack/liblapack.a ../lib/lib2/linpack/liblinpack.a ../lib/lib2/pspline/pspline/libpspline.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a ../lib/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-endif
-
-$(PROG): $(LIBS) $(OBJS)
+$(PROG): $(CHAMP_LIBS_MAKE) $(OBJS)
 	$(CHAMP_LD) $(CHAMP_LD_FLAGS) -o $@ $(OBJS) $(CHAMP_LIBS) $(CHAMP_LD_END)
 
 ../lib/lib/libcyrus.a:
