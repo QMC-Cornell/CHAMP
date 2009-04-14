@@ -67,16 +67,10 @@ module print_mod
     call object_provide (objects_to_print_now (obj_i))
    enddo
 
-!  if only two objects, write objects on the same column
-   if (objects_to_print_now_nb == 2) then
-    call object_write_2 (objects_to_print_now (1), objects_to_print_now (2))
-
-!  otherwise, write objects on separate lines
-   else
-    do obj_i = 1, objects_to_print_now_nb
-     call object_write (objects_to_print_now (obj_i))
-    enddo
-   endif
+   !write objects on separate lines
+   do obj_i = 1, objects_to_print_now_nb
+      call object_write (objects_to_print_now (obj_i))
+   end do
 
   case ('block')
 # if defined (PATHSCALE)
