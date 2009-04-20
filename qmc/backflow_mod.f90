@@ -7,7 +7,7 @@ module backflow_mod
   use objects_mod, only: object_modified, object_create, object_needed, object_alloc, object_provide, object_associate, object_provide_in_node
   use nodes_mod, only: header_exe
   use variables_mod, only: spin_nb
-  !objects
+  !begin objects
   use electrons_mod, only: dist_en_wlk, vec_en_xyz_wlk, vec_ee_xyz_wlk, dist_ee_wlk, coord_elec_wlk
 
   !Declaration of global variables and default values
@@ -15,6 +15,12 @@ module backflow_mod
   integer                                        :: isc_bf
   real(dp)                                       :: scalek_bf
   logical                                        :: all_elec
+
+  real(dp), allocatable                          :: xi(:, :, :)
+  real(dp), allocatable                          :: d_xi_j_beta_d_r_i_alpha(:, :, :, :, :)
+  real(dp), allocatable                          :: d_xi_j_beta_d_r_i_alpha_num(:, :, :, :, :)
+  real(dp), allocatable                          :: lap_i_xi_j_beta(:,:,:,:)
+  real(dp), allocatable                          :: lap_i_xi_j_beta_num(:,:,:,:)
 
   integer                                        :: threshold_l_nb
   real(dp), allocatable                          :: threshold_l(:)
@@ -129,6 +135,8 @@ module backflow_mod
   real(dp), allocatable                          :: d_scaled_dist_een_en_wlk_d_r(:,:,:)
   real(dp), allocatable                          :: d2_scaled_dist_een_ee_wlk_d_r_2(:,:,:)
   real(dp), allocatable                          :: d2_scaled_dist_een_en_wlk_d_r_2(:,:,:)
+
+  !end objects
 
 contains
 
@@ -1439,6 +1447,394 @@ contains
     !deallocation successful
 
   end subroutine row_reduce
+
+  !==============================================================================================
+
+  !======================================================================================
+
+  subroutine xi_bld
+    !---------------------------------------------------------------------------
+    ! Description : build object xi(:,:,:). This is a rank three array.
+    !               It is the total backflow.
+    !               The first index has dimension equal to the number of spatial dimensions, ndim.
+    !               The second index has dimensions equal to the number of electrons, nelec.
+    !               The third index has dimension equal to the number of walkers, nwalk.
+    !
+    ! Created     : F. Petruzielo, 10 Apr 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need ndim, nelec, nwalk
+    include 'commons.h'
+
+    !local
+    character(len=max_string_len_rout), save :: lhere = 'xi_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('xi')
+
+       call object_needed('ndim')
+       call object_needed('nelec')
+       call object_needed('nwalk')
+       call object_needed('en_bf')
+       call object_needed('ee_bf')
+       call object_needed('een_theta_bf')
+       call object_needed('een_phi_bf')
+
+       return
+    endif
+
+    call object_alloc('xi', xi, ndim, nelec, nwalk)
+    xi(:,:,:) = 0.d0
+
+    if (en_bf) then
+       call object_provide_in_node(lhere, 'xi_en')
+       xi(:, :, :) = xi(:, :, :) + xi_en(:, :, :)
+    end if
+
+    if (ee_bf) then
+       call object_provide_in_node(lhere, 'xi_ee')
+       xi(:, :, :) = xi(:, :, :) + xi_ee(:, :, :)
+    end if
+
+    if (een_theta_bf) then
+       call object_provide_in_node(lhere, 'xi_een_theta')
+       xi(:, :, :) = xi(:, :, :) + xi_een_theta(:, :, :)
+    end if
+
+    if (een_phi_bf) then
+       call object_provide_in_node(lhere, 'xi_een_phi')
+       xi(:, :, :) = xi(:, :, :) + xi_een_phi(:, :, :)
+    end if
+
+  end subroutine xi_bld
+
+  !======================================================================================
+
+  !==============================================================================================
+
+  subroutine d_xi_j_beta_d_r_i_alpha_bld
+
+    !---------------------------------------------------------------------------
+    ! Description : build d_xi_j_beta_d_r_i_alpha. This is a rank five array.
+    !               Derivative of xi with respect to electron position.
+    !               It is necessary for the construction of the energy, drift velocity.
+    !               The first and second indices are the number of spatial dimensions.
+    !               The first index is for the components of xi (beta)
+    !               The second index is for the components of the gradient (alpha)
+    !               The third and fourth indices have dimensions equal to the number of electrons.
+    !               The third index is the label of the backflow transformation of each electon
+    !               The fourth index is for the electron that the gradient is taken with respect to
+    !               The fifth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 10 Apr 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim, ncent
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j
+
+    !local
+    character(len=max_string_len_rout), save :: lhere = 'd_xi_j_beta_d_r_i_alpha_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('d_xi_j_beta_d_r_i_alpha')
+
+       call object_needed('ndim')
+       call object_needed('nelec')
+       call object_needed('nwalk')
+       call object_needed('en_bf')
+       call object_needed('ee_bf')
+       call object_needed('een_theta_bf')
+       call object_needed('een_phi_bf')
+
+       return
+    endif
+
+    call object_alloc('d_xi_j_beta_d_r_i_alpha', d_xi_j_beta_d_r_i_alpha, ndim, ndim, nelec, nelec, nwalk)
+    d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) = 0.d0
+
+    if (en_bf) then
+       call object_provide_in_node(lhere, 'd_xi_en_j_beta_d_r_i_alpha')
+       do elec_j = 1, nelec
+          d_xi_j_beta_d_r_i_alpha(:, :, elec_j, elec_j, :) = d_xi_j_beta_d_r_i_alpha(:, :, elec_j, elec_j, :) + d_xi_en_j_beta_d_r_i_alpha(:, :, elec_j, :)
+       end do
+    end if
+
+    if (ee_bf) then
+       call object_provide_in_node(lhere, 'd_xi_ee_j_beta_d_r_i_alpha')
+       d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) = d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) + d_xi_ee_j_beta_d_r_i_alpha(:, :, :, :, :)
+    end if
+
+    if (een_theta_bf) then
+       call object_provide_in_node(lhere, 'd_xi_een_theta_j_beta_d_r_i_alpha')
+       d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) = d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) + d_xi_een_theta_j_beta_d_r_i_alpha(:, :, :, :, :)
+    end if
+
+    if (een_phi_bf) then
+       call object_provide_in_node(lhere, 'd_xi_een_phi_j_beta_d_r_i_alpha')
+       d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) = d_xi_j_beta_d_r_i_alpha(:, :, :, :, :) + d_xi_een_phi_j_beta_d_r_i_alpha(:, :, :, :, :)
+    end if
+
+  end subroutine d_xi_j_beta_d_r_i_alpha_bld
+
+  !==============================================================================================
+
+  !==============================================================================================
+
+  subroutine d_xi_j_beta_d_r_i_alpha_num_bld
+    !---------------------------------------------------------------------------
+    ! Description : build d_xi_j_beta_d_r_i_alpha__num. This is a rank five array.
+    !               Numerical first derivative of the xi:
+    !
+    !               NOTE THIS IS TO CHECK ANALYTIC DERIVATIVES
+    !
+    !               The first and second indices are the number of spatial dimensions.
+    !               The first index is for the components of xi (beta)
+    !               The second index is for the components of the gradient (alpha)
+    !               The third and fourth indices have dimensions equal to the number of electrons.
+    !               The third index is the label of the backflow transformation of each electon
+    !               The fourth index is for the electron that the gradient is taken with respect to
+    !               The fifth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 10 Apr 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_i, elec_j, dim_i, dim_j
+    real(dp), allocatable :: xi_temp_plus(:,:,:), xi_temp_minus(:,:,:)
+    real(dp), allocatable :: coord_elec_wlk_temp(:,:,:)
+    real(dp) :: epsilon = 1.d-7
+    character(len=max_string_len_rout), save :: lhere = 'd_xi_j_beta_d_r_i_alpha_num_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('d_xi_j_beta_d_r_i_alpha_num')
+
+       call object_needed('ndim')
+       call object_needed('nwalk')
+       call object_needed('nelec')
+       call object_needed('xi')
+       call object_needed('coord_elec_wlk')
+
+       return
+    endif
+
+    ! allocation
+    call object_alloc('d_xi_j_beta_d_r_i_alpha_num', d_xi_j_beta_d_r_i_alpha_num, ndim, ndim, nelec, nelec, nwalk)
+    d_xi_j_beta_d_r_i_alpha_num(:,:,:,:,:) = 0.d0
+
+    !allocate temporary objects
+    allocate(xi_temp_plus(ndim, nelec, nwalk))
+    allocate(xi_temp_minus(ndim, nelec, nwalk))
+    allocate(coord_elec_wlk_temp(ndim, nelec, nwalk))
+
+    !store original values
+    coord_elec_wlk_temp = coord_elec_wlk
+
+    do elec_j = 1, nelec
+       do elec_i = 1, nelec
+          do dim_j = 1, ndim  !beta
+             do dim_i = 1, ndim  !alph
+                coord_elec_wlk = coord_elec_wlk_temp
+                !shift coordinates in a particular dimension, x,y,z, etc
+                coord_elec_wlk(dim_i, elec_i, :) = coord_elec_wlk(dim_i, elec_i, :) + epsilon
+                call object_modified('coord_elec_wlk')
+                !get updated xi
+                call object_provide_in_node(lhere, 'xi')
+                xi_temp_plus = xi
+                coord_elec_wlk = coord_elec_wlk_temp
+                !shift coordinates in a particular dimension, x,y,z, etc
+                coord_elec_wlk(dim_i, elec_i, :) = coord_elec_wlk(dim_i, elec_i, :) - epsilon
+                call object_modified('coord_elec_wlk')
+                !get updated xi
+                call object_provide_in_node(lhere, 'xi')
+                xi_temp_minus = xi
+                !calculate derivative
+                d_xi_j_beta_d_r_i_alpha_num(dim_j, dim_i, elec_j, elec_i, :) = (xi_temp_plus(dim_j, elec_j, :) - xi_temp_minus(dim_j, elec_j, :) ) / (2.d0 * epsilon)
+             end do
+          end do
+       end do
+    end do
+
+    !restore values
+    coord_elec_wlk = coord_elec_wlk_temp
+    call object_modified('coord_elec_wlk')
+    call object_provide_in_node(lhere, 'xi')
+
+  end subroutine d_xi_j_beta_d_r_i_alpha_num_bld
+
+  !==============================================================================================
+
+  !==============================================================================================
+
+  subroutine lap_i_xi_j_beta_bld
+
+    !---------------------------------------------------------------------------
+    ! Description : build lap_i_xi_j_beta. This is a rank four array.
+    !               Laplacian of the backflow function
+    !               with respect to electron position.
+    !               It is necessary for the construction of the energy.
+    !               The first index is for the components of xi (beta)
+    !               The second index is the label of the backflow transformed electon
+    !               The third index is for the electron that the laplacian is taken with respect to
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 10 Apr 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_j
+    character(len=max_string_len_rout), save :: lhere = 'lap_i_xi_j_beta_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('lap_i_xi_j_beta')
+
+       call object_needed('ndim')
+       call object_needed('nelec')
+       call object_needed('nwalk')
+       call object_needed('en_bf')
+       call object_needed('ee_bf')
+       call object_needed('een_theta_bf')
+       call object_needed('een_phi_bf')
+
+       return
+    endif
+
+    call object_alloc('lap_i_xi_j_beta', lap_i_xi_j_beta, ndim, nelec, nelec, nwalk)
+    lap_i_xi_j_beta(:,:,:,:) = 0.d0
+
+    if (en_bf) then
+       call object_provide_in_node(lhere, 'lap_i_xi_en_j_beta')
+       do elec_j = 1, nelec
+          lap_i_xi_j_beta(:, elec_j, elec_j, :) = lap_i_xi_j_beta(:, elec_j, elec_j, :) + lap_i_xi_en_j_beta(:, elec_j, :)
+       end do
+    end if
+
+    if (ee_bf) then
+       call object_provide_in_node(lhere, 'lap_i_xi_ee_j_beta')
+       lap_i_xi_j_beta(:, :, :, :) = lap_i_xi_j_beta(:, :, :, :) + lap_i_xi_ee_j_beta(:, :, :, :)
+    end if
+
+    if (een_theta_bf) then
+       call object_provide_in_node(lhere, 'lap_i_xi_een_theta_j_beta')
+       lap_i_xi_j_beta(:, :, :, :) = lap_i_xi_j_beta(:, :, :, :) + lap_i_xi_een_theta_j_beta(:, :, :, :)
+    end if
+
+    if (een_phi_bf) then
+       call object_provide_in_node(lhere, 'lap_i_xi_een_phi_j_beta')
+       lap_i_xi_j_beta(:, :, :, :) = lap_i_xi_j_beta(:, :, :, :) + lap_i_xi_een_phi_j_beta(:, :, :, :)
+    end if
+
+  end subroutine lap_i_xi_j_beta_bld
+
+  !==============================================================================================
+
+  !==============================================================================================
+
+  subroutine lap_i_xi_j_beta_num_bld
+    !---------------------------------------------------------------------------
+    ! Description : build lap_i_xi_j_beta_num. This is a rank four array.
+    !               Numerical laplacian of xi:
+    !
+    !               (nabla_i)^2 xi_j^beta
+    !
+    !               NOTE THIS IS TO CHECK ANALYTIC DERIVATIVES
+    !
+    !               The first index is for the components of xi (beta)
+    !               The second index is the label of the backflow transformation of each electon
+    !               The third index is for the electron that the laplacian is taken with respect to
+    !               The fourth index has dimension equal to the number of walkers.
+    !
+    ! Created     : F. Petruzielo, 10 Apr 2009
+    !---------------------------------------------------------------------------
+    implicit none
+
+    !need nwalk, nelec, ndim
+    include 'commons.h'
+
+    !local
+    integer  :: elec_i, elec_j, dim_i, dim_j
+    real(dp), allocatable :: d_xi_j_beta_d_r_i_alpha_plus(:,:,:,:,:), d_xi_j_beta_d_r_i_alpha_minus(:,:,:,:,:)
+    real(dp), allocatable :: coord_elec_wlk_temp(:,:,:)
+    real(dp) :: epsilon = 1.d-7
+    character(len=max_string_len_rout), save :: lhere = 'lap_i_xi_j_beta_num_bld'
+
+    ! header
+    if (header_exe) then
+
+       call object_create('lap_i_xi_j_beta_num')
+
+       call object_needed('ndim')
+       call object_needed('nwalk')
+       call object_needed('nelec')
+       call object_needed('coord_elec_wlk')
+       call object_needed('d_xi_j_beta_d_r_i_alpha')
+
+       return
+    endif
+
+    ! allocation
+    call object_alloc('lap_i_xi_j_beta_num', lap_i_xi_j_beta_num, ndim, nelec, nelec, nwalk)
+    lap_i_xi_j_beta_num(:,:,:,:) = 0.d0
+
+    !allocate temporary objects
+    allocate(d_xi_j_beta_d_r_i_alpha_plus(ndim, ndim, nelec, nelec, nwalk))
+    allocate(d_xi_j_beta_d_r_i_alpha_minus(ndim, ndim, nelec, nelec, nwalk))
+    allocate(coord_elec_wlk_temp(ndim, nelec, nwalk))
+
+    !store original values
+    coord_elec_wlk_temp = coord_elec_wlk
+
+     do elec_i = 1, nelec
+        do elec_j = 1, nelec
+           do dim_j = 1, ndim  !beta
+              do dim_i = 1, ndim  !alpha
+                 coord_elec_wlk = coord_elec_wlk_temp
+                 !shift coordinates in a particular dimension, x,y,z, etc
+                 coord_elec_wlk(dim_i, elec_i, :) = coord_elec_wlk(dim_i, elec_i, :) + epsilon
+                 call object_modified('coord_elec_wlk')
+                 !get updated d_xi_j_beta_d_r_i_alpha
+                 call object_provide_in_node(lhere, 'd_xi_j_beta_d_r_i_alpha')
+                 d_xi_j_beta_d_r_i_alpha_plus = d_xi_j_beta_d_r_i_alpha
+                 coord_elec_wlk = coord_elec_wlk_temp
+                 !shift coordinates in a particular dimension, x,y,z, etc
+                 coord_elec_wlk(dim_i, elec_i, :) = coord_elec_wlk(dim_i, elec_i, :) - epsilon
+                 call object_modified('coord_elec_wlk')
+                 !get updated d_xi_j_beta_d_r_i_alpha
+                 call object_provide_in_node(lhere, 'd_xi_j_beta_d_r_i_alpha')
+                 d_xi_j_beta_d_r_i_alpha_minus = d_xi_j_beta_d_r_i_alpha
+                 !calculate derivative
+                 lap_i_xi_j_beta_num(dim_j, elec_j, elec_i, :) = lap_i_xi_j_beta_num(dim_j, elec_j, elec_i, :) + (d_xi_j_beta_d_r_i_alpha_plus(dim_j, dim_i, elec_j, elec_i, :) - d_xi_j_beta_d_r_i_alpha_minus(dim_j, dim_i, elec_j, elec_i, :) ) / (2.d0 * epsilon)
+              end do
+           end do
+        end do
+     end do
+
+    !restore values
+    coord_elec_wlk = coord_elec_wlk_temp
+    call object_modified('coord_elec_wlk')
+    call object_provide_in_node(lhere, 'd_xi_j_beta_d_r_i_alpha')
+
+  end subroutine lap_i_xi_j_beta_num_bld
 
   !==============================================================================================
 

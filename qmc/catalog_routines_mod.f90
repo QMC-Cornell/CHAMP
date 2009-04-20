@@ -23,12 +23,17 @@ module catalog_routines_mod
   use nuclei_mod
   use forces_mod
   use dipole_moment_mod
-  use backflow_mod, only: xi_ee_bld, eta_bld, asymp_eta_bld, c_param_eta_bld, d_eta_d_r_i_alpha_second_bld, d_eta_d_r_j_alpha_first_bld, d_xi_ee_j_beta_d_r_i_alpha_bld, d_xi_ee_j_beta_d_r_i_alpha_num_bld, d_eta_d_r_ji_bld, lap_i_xi_ee_j_beta_bld,  lap_i_xi_ee_j_beta_num_bld, lap_i_eta_second_bld, lap_j_eta_first_bld, d2_eta_d_r_ji_2_bld, &
+  use backflow_mod, only: xi_bld, d_xi_j_beta_d_r_i_alpha_bld, d_xi_j_beta_d_r_i_alpha_num_bld, lap_i_xi_j_beta_bld, lap_i_xi_j_beta_num_bld, &
+       & xi_ee_bld, eta_bld, asymp_eta_bld, c_param_eta_bld, d_eta_d_r_i_alpha_second_bld, d_eta_d_r_j_alpha_first_bld, d_xi_ee_j_beta_d_r_i_alpha_bld, d_xi_ee_j_beta_d_r_i_alpha_num_bld, d_eta_d_r_ji_bld, lap_i_xi_ee_j_beta_bld,  lap_i_xi_ee_j_beta_num_bld, lap_i_eta_second_bld, lap_j_eta_first_bld, d2_eta_d_r_ji_2_bld, &
        & xi_en_bld, mu_bld, asymp_mu_pseudo_bld, d_param_mu_bld, d_mu_d_r_j_inuc_bld, d_mu_d_r_j_alpha_bld, d_xi_en_j_beta_d_r_i_alpha_bld, d_xi_en_j_beta_d_r_i_alpha_num_bld, lap_i_xi_en_j_beta_bld, lap_i_xi_en_j_beta_num_bld, lap_j_mu_bld, d2_mu_d_r_j_inuc_2_bld, &
        & xi_een_phi_bld, phi_bld, a_param_phi_bld, a_param_phi_parallel_cond_bld, a_param_phi_anti_parallel_cond_bld, dep_a_param_phi_anti_parallel_bld, dep_a_param_phi_parallel_bld, nb_a_param_phi_bld, d_xi_een_phi_j_beta_d_r_i_alpha_bld, d_xi_een_phi_j_beta_d_r_i_alpha_num_bld, d_phi_d_r_j_alpha_first_bld, d_phi_d_r_i_alpha_second_bld, d_phi_d_r_ji_bld, d_phi_d_r_j_inuc_bld, lap_i_xi_een_phi_j_beta_bld, lap_i_xi_een_phi_j_beta_num_bld, lap_j_phi_first_bld, lap_i_phi_second_bld, d2_phi_d_r_ji_2_bld, d2_phi_d_r_j_inuc_d_r_ji_bld, d2_phi_d_r_j_inuc_2_bld, &
        & xi_een_theta_bld, theta_bld, b_param_theta_bld, nb_b_param_theta_bld, dep_b_param_theta_bld, b_param_theta_cond_bld, d_xi_een_theta_j_beta_d_r_i_alpha_bld, d_xi_een_theta_j_beta_d_r_i_alpha_num_bld, d_theta_d_r_j_alpha_first_bld, d_theta_d_r_i_alpha_second_bld, d_theta_d_r_ji_bld, d_theta_d_r_j_inuc_bld, lap_i_xi_een_theta_j_beta_bld, lap_i_xi_een_theta_j_beta_num_bld, lap_j_theta_first_bld, lap_i_theta_second_bld, d2_theta_d_r_ji_2_bld, d2_theta_d_r_j_inuc_d_r_ji_bld, d2_theta_d_r_j_inuc_2_bld, &
        & smooth_cutoff_g_bld, d_smooth_cutoff_g_d_r_bld, d2_smooth_cutoff_g_d_r_2_bld, &
        & d_scaled_dist_en_wlk_d_r_bld, d2_scaled_dist_en_wlk_d_r_2_bld, d_scaled_dist_ee_wlk_d_r_bld, d2_scaled_dist_ee_wlk_d_r_2_bld, d_scaled_dist_een_ee_wlk_d_r_bld, d_scaled_dist_een_en_wlk_d_r_bld, d2_scaled_dist_een_ee_wlk_d_r_2_bld, d2_scaled_dist_een_en_wlk_d_r_2_bld, scaled_dist_een_ee_wlk_bld, scaled_dist_een_en_wlk_bld, scaled_dist_ee_wlk_bld, scaled_dist_en_wlk_bld, asymp_scaled_dist_two_body_bld!fp
+  use backflow_basis_mod, only: orbitals_bf_bld, orbital_coeff_bf_bld, d_orbitals_d_x_beta_bf_bld, &
+       & normalized_bas_funcs_bf_bld, bas_funcs_bf_bld, bas_funcs_normalization_bf_bld, d_normalized_bas_funcs_d_x_beta_bf_bld, d_bas_funcs_d_x_beta_bf_bld, d2_bas_funcs_d_x_beta_d_x_gamma_bf_bld, d2_bas_funcs_d_x_beta_d_x_gamma_bf_num_bld,&
+       & slat_bas_funcs_bf_bld, slat_bas_funcs_normalization_bf_bld, slat_bas_funcs_radial_bf_bld, d_slat_bas_funcs_d_x_beta_bf_bld, d_slat_bas_funcs_radial_d_x_beta_bf_bld, d_slat_bas_funcs_radial_d_x_bf_bld, d2_slat_bas_funcs_d_x_beta_d_x_gamma_bf_bld, d2_slat_bas_funcs_radial_d_x_beta_d_x_gamma_bf_bld, d2_slat_bas_funcs_radial_d_x2_bf_bld,&
+       & bas_funcs_3d_theta_bf_bld, bas_funcs_3d_phi_bf_bld, d_bas_funcs_3d_theta_d_x_beta_bf_bld, d_bas_funcs_3d_phi_d_x_beta_bf_bld, d2_bas_funcs_3d_theta_d_x_beta_d_x_gamma_bf_bld, d2_bas_funcs_3d_phi_d_x_beta_d_x_gamma_bf_bld
 
   contains
 
@@ -476,6 +481,11 @@ module catalog_routines_mod
   call catalog_one_node ('forces_zv_deriv_linear_av_var_bld', forces_zv_deriv_linear_av_var_bld)
 
 !backflow fp
+  call catalog_one_node('xi_bld', xi_bld)
+  call catalog_one_node('d_xi_j_beta_d_r_i_alpha_bld', d_xi_j_beta_d_r_i_alpha_bld)
+  call catalog_one_node('d_xi_j_beta_d_r_i_alpha_num_bld', d_xi_j_beta_d_r_i_alpha_num_bld)
+  call catalog_one_node('lap_i_xi_j_beta_bld', lap_i_xi_j_beta_bld)
+  call catalog_one_node('lap_i_xi_j_beta_num_bld', lap_i_xi_j_beta_num_bld)
 
   call catalog_one_node('xi_en_bld', xi_en_bld)
   call catalog_one_node('mu_bld', mu_bld)
@@ -564,6 +574,36 @@ module catalog_routines_mod
   call catalog_one_node('smooth_cutoff_g_bld',smooth_cutoff_g_bld)
   call catalog_one_node('d_smooth_cutoff_g_d_r_bld',d_smooth_cutoff_g_d_r_bld)
   call catalog_one_node('d2_smooth_cutoff_g_d_r_2_bld',d2_smooth_cutoff_g_d_r_2_bld)
+
+  !backflow_basis
+  call catalog_one_node('orbitals_bf_bld', orbitals_bf_bld)
+  call catalog_one_node('orbital_coeff_bf_bld', orbital_coeff_bf_bld)
+  call catalog_one_node('d_orbitals_d_x_beta_bf_bld', d_orbitals_d_x_beta_bf_bld)
+
+  call catalog_one_node('normalized_bas_funcs_bf_bld', normalized_bas_funcs_bf_bld)
+  call catalog_one_node('bas_funcs_bf_bld', bas_funcs_bf_bld)
+  call catalog_one_node('bas_funcs_normalization_bf_bld', bas_funcs_normalization_bf_bld)
+  call catalog_one_node('d_normalized_bas_funcs_d_x_beta_bf_bld', d_normalized_bas_funcs_d_x_beta_bf_bld)
+  call catalog_one_node('d_bas_funcs_d_x_beta_bf_bld', d_bas_funcs_d_x_beta_bf_bld)
+  call catalog_one_node('d2_bas_funcs_d_x_beta_d_x_gamma_bf_bld', d2_bas_funcs_d_x_beta_d_x_gamma_bf_bld)
+  call catalog_one_node('d2_bas_funcs_d_x_beta_d_x_gamma_bf_num_bld', d2_bas_funcs_d_x_beta_d_x_gamma_bf_num_bld)
+
+  call catalog_one_node('slat_bas_funcs_bf_bld', slat_bas_funcs_bf_bld)
+  call catalog_one_node('slat_bas_funcs_normalization_bf_bld', slat_bas_funcs_normalization_bf_bld)
+  call catalog_one_node('slat_bas_funcs_radial_bf_bld', slat_bas_funcs_radial_bf_bld)
+  call catalog_one_node('d_slat_bas_funcs_d_x_beta_bf_bld', d_slat_bas_funcs_d_x_beta_bf_bld)
+  call catalog_one_node('d_slat_bas_funcs_radial_d_x_beta_bf_bld', d_slat_bas_funcs_radial_d_x_beta_bf_bld)
+  call catalog_one_node('d_slat_bas_funcs_radial_d_x_bf_bld', d_slat_bas_funcs_radial_d_x_bf_bld)
+  call catalog_one_node('d2_slat_bas_funcs_d_x_beta_d_x_gamma_bf_bld', d2_slat_bas_funcs_d_x_beta_d_x_gamma_bf_bld)
+  call catalog_one_node('d2_slat_bas_funcs_radial_d_x_beta_d_x_gamma_bf_bld', d2_slat_bas_funcs_radial_d_x_beta_d_x_gamma_bf_bld)
+  call catalog_one_node('d2_slat_bas_funcs_radial_d_x2_bf_bld', d2_slat_bas_funcs_radial_d_x2_bf_bld)
+
+  call catalog_one_node('bas_funcs_3d_theta_bf_bld', bas_funcs_3d_theta_bf_bld)
+  call catalog_one_node('bas_funcs_3d_phi_bf_bld', bas_funcs_3d_phi_bf_bld)
+  call catalog_one_node('d_bas_funcs_3d_theta_d_x_beta_bf_bld', d_bas_funcs_3d_theta_d_x_beta_bf_bld)
+  call catalog_one_node('d_bas_funcs_3d_phi_d_x_beta_bf_bld', d_bas_funcs_3d_phi_d_x_beta_bf_bld)
+  call catalog_one_node('d2_bas_funcs_3d_phi_d_x_beta_d_x_gamma_bf_bld', d2_bas_funcs_3d_phi_d_x_beta_d_x_gamma_bf_bld)
+  call catalog_one_node('d2_bas_funcs_3d_theta_d_x_beta_d_x_gamma_bf_bld', d2_bas_funcs_3d_theta_d_x_beta_d_x_gamma_bf_bld)
 
 ! forces pulay
   call catalog_one_node ('force_to_bas_bld', force_to_bas_bld)
