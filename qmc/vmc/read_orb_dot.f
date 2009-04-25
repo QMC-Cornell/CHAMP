@@ -12,7 +12,7 @@ c Reads in 2-dimensional basis fns info for circular quantum dots.
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
@@ -145,7 +145,7 @@ c the witdh of gaussians is given by zex*we
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
 
       write(6,'(/,''Reading floating gaussian orbitals for dots'')')
       do it=1,notype

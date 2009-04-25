@@ -24,7 +24,7 @@ module variables_mod
   logical                         :: l_mode_dmc_mov1_mpi3  = .false.
 
 ! general common variables
-  integer                         :: nstep_input
+  logical                         :: use_parser = .false.
   integer                         :: nstep_total
   integer                         :: walk_nb = 1
   logical                         :: equilibration  = .false.
@@ -66,6 +66,7 @@ module variables_mod
   logical                         :: l_opt_jas  = .false.
   logical                         :: l_opt_exp  = .false.
   logical                         :: l_opt_geo  = .false.
+  real(dp)                        :: increase_blocks_limit 
 
 !! pjas WAS
   logical                         :: l_opt_pjasen  = .false.

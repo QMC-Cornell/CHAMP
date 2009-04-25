@@ -31,8 +31,8 @@ c     parameter(MXJTJ=(MPARM*(MPARM+1))/2,MWORK=4*MDATA+5*MPARM+MXJTJ)
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
-!JT      common /contrl_per/ iperiodic,ibasis
+     &   xm1,xm2,xm12,xms,xma,Zfock
+      common /contrl_per/ iperiodic,ibasis
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

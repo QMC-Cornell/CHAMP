@@ -16,7 +16,7 @@ c routine to print out final results
 c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

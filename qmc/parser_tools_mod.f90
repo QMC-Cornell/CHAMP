@@ -4,7 +4,7 @@ module parser_tools_mod
   use constants_mod
   use objects_mod
 
-  character(len=5000)                       :: current_line = ''
+  character(len=50000)                      :: current_line = ''
   integer                                   :: position_in_current_line = 0
   integer                                   :: unit_input = 5
   character(len=max_string_len)             :: word
@@ -18,6 +18,22 @@ module parser_tools_mod
             get_next_value_integer, &
             get_next_value_double,    &
             get_next_value_logical
+  end interface
+
+!---------------------------------------------------------------------------
+  interface read_next_line_list
+!---------------------------------------------------------------------------
+   module procedure               &
+            read_next_line_list_integer, &
+            read_next_line_list_double
+  end interface
+
+!---------------------------------------------------------------------------
+  interface get_next_value_list_noalloc
+!---------------------------------------------------------------------------
+   module procedure               &
+            get_next_value_list_noalloc_integer, &
+            get_next_value_list_noalloc_double
   end interface
 
 !---------------------------------------------------------------------------
@@ -262,6 +278,199 @@ module parser_tools_mod
   end subroutine get_next_word
 
 !===========================================================================
+  function words_number_in_string (string)
+!---------------------------------------------------------------------------
+! Description : returns the number of words in a string
+!
+! Created     : J. Toulouse, 08 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=max_string_len), intent(in) :: string
+
+! output
+  integer :: words_number_in_string
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'words_number_in_string'
+  integer string_length, position_in_string
+  character(len=1) current_char
+  integer first_char_in_word_index, last_char_in_word_index
+  logical first_char_in_word_found, last_char_in_word_found
+
+! begin
+  words_number_in_string = 0
+  position_in_string = 0
+
+! loop over succesive words until end of string
+  do
+
+!   find first character of word
+    first_char_in_word_found = .false.
+    do
+    
+      string_length = len(trim(string))
+    
+!     loop over characters in string
+      do while (position_in_string < string_length)
+    
+       position_in_string = position_in_string + 1
+    
+       current_char = string(position_in_string:position_in_string)
+    
+!       write(6,*) trim(here),': current_char=',current_char
+    
+!      ignore blank characters
+       if(current_char == ' ')  cycle
+    
+!      ignore '='
+       if(current_char == '=')  cycle
+    
+!      ignore remaining of line after ! (comments)
+       if(current_char == '!')  exit
+    
+       first_char_in_word_index = position_in_string
+       first_char_in_word_found = .true.
+       exit
+    
+      enddo
+    
+      if (first_char_in_word_found) exit
+    
+!     end of string is reached
+      return
+    
+    enddo
+    
+!   find last character of word
+    last_char_in_word_found = .false.
+    last_char_in_word_index = first_char_in_word_index
+    
+!    loop over characters in current line
+      do while (position_in_string < string_length)
+    
+       position_in_string = position_in_string + 1
+    
+       current_char = string(position_in_string:position_in_string)
+    
+       if(position_in_string == string_length) then
+        last_char_in_word_index = position_in_string
+        last_char_in_word_found = .true.
+        exit
+       endif
+    
+       if(current_char == ' ' .or. current_char == '=' .or. current_char == '!') then
+        last_char_in_word_index = position_in_string - 1
+        last_char_in_word_found = .true.
+        exit
+       endif
+    
+      enddo
+    
+!    word
+!     word = string(first_char_in_word_index:last_char_in_word_index)
+!    write(6,*) trim(lhere),': next word found >',trim(word),'<'
+     words_number_in_string = words_number_in_string + 1
+     
+  enddo ! end loop over words
+
+  end function words_number_in_string
+
+!===========================================================================
+  subroutine read_next_word_in_line (word)
+!---------------------------------------------------------------------------
+! Description : read next word in the line
+! Description : returns 'end_of_line' when end of the line is reached
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! output
+  character(len=max_string_len), intent(out) :: word
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'read_next_word_in_line'
+  integer iostat
+  integer current_line_length
+  character(len=1) current_char
+  integer first_char_in_word_index, last_char_in_word_index
+  logical first_char_in_word_found, last_char_in_word_found
+
+! begin
+
+! find first character of word
+  first_char_in_word_found = .false.
+  do
+
+    current_line_length = len(trim(current_line))
+
+!   loop over characters in current line
+    do while (position_in_current_line < current_line_length)
+
+     position_in_current_line = position_in_current_line + 1
+
+     current_char = current_line(position_in_current_line:position_in_current_line)
+
+!     write(6,*) trim(here),': current_char=',current_char
+
+!    ignore blank characters
+     if(current_char == ' ')  cycle
+
+!    ignore '='
+     if(current_char == '=')  cycle
+
+!    ignore remaining of line after ! (comments)
+     if(current_char == '!')  exit
+
+     first_char_in_word_index = position_in_current_line
+     first_char_in_word_found = .true.
+     exit
+
+    enddo
+
+    if (first_char_in_word_found) exit
+
+!   end of line is reached
+    word = 'end_of_line'
+    return
+
+  enddo
+
+! find last character of word
+  last_char_in_word_found = .false.
+  last_char_in_word_index = first_char_in_word_index
+
+!  loop over characters in current line
+    do while (position_in_current_line < current_line_length)
+
+     position_in_current_line = position_in_current_line + 1
+
+     current_char = current_line(position_in_current_line:position_in_current_line)
+
+     if(position_in_current_line == current_line_length) then
+      last_char_in_word_index = position_in_current_line
+      last_char_in_word_found = .true.
+      exit
+     endif
+
+     if(current_char == ' ' .or. current_char == '=' .or. current_char == '!') then
+      last_char_in_word_index = position_in_current_line - 1
+      last_char_in_word_found = .true.
+      exit
+     endif
+
+    enddo
+
+!  word
+   word = current_line(first_char_in_word_index:last_char_in_word_index)
+
+!  write(6,*) trim(lhere),': next word found >',trim(word),'<'
+
+  end subroutine read_next_word_in_line
+
+!===========================================================================
   subroutine get_next_value_string (value)
 !---------------------------------------------------------------------------
 ! Description : find next value in line
@@ -271,7 +480,7 @@ module parser_tools_mod
   implicit none
 
 ! output
-  character(len=max_string_len), intent(out) :: value
+  character(len=*), intent(out) :: value
 
 ! local
   character(len=max_string_len) value_string
@@ -485,6 +694,178 @@ module parser_tools_mod
   enddo
 
   end subroutine get_next_value_list_double
+
+!===========================================================================
+  subroutine read_next_line_list_string (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : read next line and store it in an array
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character (len=*), intent(in) :: value_list_name
+
+! output
+  character (len=*), allocatable, intent(out)  :: value_list (:)
+  integer, intent(out)  :: value_list_nb
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'read_next_line_list_string'
+  character(len=max_string_len) value_string
+  integer iostat, i
+
+! begin
+  value_string = ''
+  value_list_nb = 0
+
+! read line
+  call read_next_line (iostat)
+  if(iostat < 0) then
+    call die (lhere, 'error when reading line') 
+  endif
+
+! loop over succesive words until end of line
+  do
+
+    call read_next_word_in_line (value_string)
+
+    if (value_string == 'end_of_line') exit
+
+    value_list_nb = value_list_nb + 1
+
+    call alloc (value_list_name, value_list, value_list_nb)
+    value_list (value_list_nb) = trim(value_string)
+!    write(6,*) 'value_string=',value_string
+
+  enddo ! end loop
+
+  if (value_list_nb == 0 ) then
+    call die (lhere, 'no values found.')
+  endif
+
+  end subroutine read_next_line_list_string
+
+!===========================================================================
+  subroutine read_next_line_list_integer (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : read next line and store it in an array
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character (len=*), intent(in) :: value_list_name
+
+! output
+  integer, allocatable, intent(out)  :: value_list (:)
+  integer, intent(out)  :: value_list_nb
+
+! local
+  character(len=max_string_len), allocatable :: value_list_string (:)
+  integer i
+
+! begin
+  call read_next_line_list_string (value_list_name, value_list_string, value_list_nb)
+
+  call alloc (value_list_name, value_list, value_list_nb)
+
+  do i = 1, value_list_nb
+    call cnvint (value_list_string(i), value_list(i))
+  enddo
+
+  end subroutine read_next_line_list_integer
+
+!===========================================================================
+  subroutine read_next_line_list_double (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : read next line and store it in an array
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character (len=*), intent(in) :: value_list_name
+
+! output
+  real(dp), allocatable, intent(out) :: value_list (:)
+  integer, intent(out) :: value_list_nb
+
+! local
+  character(len=max_string_len), allocatable :: value_list_string (:)
+  integer i
+
+! begin
+  call read_next_line_list_string (value_list_name, value_list_string, value_list_nb)
+
+  call alloc (value_list_name, value_list, value_list_nb)
+
+  do i = 1, value_list_nb
+    call cnvdbl (value_list_string(i), value_list(i))
+  enddo
+
+  end subroutine read_next_line_list_double
+
+!===========================================================================
+  subroutine get_next_value_list_noalloc_integer (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : find next list of values (not a catalogued object, not allocated)
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character (len=*), intent(in) :: value_list_name
+
+! output
+   integer, intent(out) :: value_list (:)
+  integer, intent(out)  :: value_list_nb
+
+! local
+  character(len=max_string_len), allocatable :: value_list_string (:)
+  integer i
+
+! begin
+  call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
+
+  do i = 1, value_list_nb
+    call cnvint (value_list_string(i), value_list(i))
+  enddo
+
+  end subroutine get_next_value_list_noalloc_integer
+
+!===========================================================================
+  subroutine get_next_value_list_noalloc_double (value_list_name, value_list, value_list_nb)
+!---------------------------------------------------------------------------
+! Description : find next list of values (not a catalogued object, not allocated)
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: value_list_name
+
+! output
+  real(dp), intent(out) :: value_list (:)
+  integer, intent(out)  :: value_list_nb
+
+! local
+  character(len=max_string_len), allocatable :: value_list_string (:)
+  integer i
+
+! begin
+  call get_next_value_list_string (value_list_name, value_list_string, value_list_nb)
+
+  do i = 1, value_list_nb
+    call cnvdbl (value_list_string(i), value_list(i))
+  enddo
+
+  end subroutine get_next_value_list_noalloc_double
 
 !===========================================================================
   subroutine get_next_value_list_object_string (value_list_name, value_list, value_list_nb)

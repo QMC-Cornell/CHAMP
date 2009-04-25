@@ -192,7 +192,7 @@ module catalog_objects_mod
 
 ! i/o
   character(len=*), intent(in) :: object_name
-  integer, intent(out) :: object_ind
+  integer, intent(inout) :: object_ind
 
 ! local
   character(len=max_string_len_rout) :: lhere = 'catalog_one_object'

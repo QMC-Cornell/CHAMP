@@ -32,7 +32,7 @@ c and, the same normal. for Gaussians as for Slaters.
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 c    &,iwctype(MCENT),nctype,ncent
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)
@@ -91,8 +91,9 @@ c           anorm(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
           endif
         endif
         if(iflag.eq.1) then
-          do 10 iorb=1,norb
-   10       coef(ib,iorb,iwf)=coef(ib,iorb,iwf)*anorm(ib)
+          do iorb=1,norb
+            coef(ib,iorb,iwf)=coef(ib,iorb,iwf)*anorm(ib)
+          enddo
         endif
    20 continue
       if(ipr.ge.0) write(6,'(''anorm='',20f10.6)') (anorm(ib),ib=1,nbasis)

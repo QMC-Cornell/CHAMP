@@ -11,6 +11,10 @@ module types_mod
 
 
 ! some derived types:
+  type type_string_row
+   character(len=100), allocatable  :: row (:)
+  end type type_string_row
+
   type type_integer_row
    integer, allocatable      :: row (:)
   end type type_integer_row

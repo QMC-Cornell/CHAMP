@@ -14,11 +14,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
 !!!
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

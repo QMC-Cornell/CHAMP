@@ -34,6 +34,7 @@ module psi_mod
 ! Created     : J. Toulouse, 06 Apr 2008
 !---------------------------------------------------------------------------
   implicit none
+  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'wavefunction_menu'
@@ -52,9 +53,19 @@ module psi_mod
    write(6,*)
    write(6,'(a)') 'HELP for wavefunction menu:'
    write(6,'(a)') ' wavefunction'
-   write(6,'(a)') '  maximization ... end: menu for maximimization of wave function square'
+   write(6,'(a)') '  nelec = [integer] number of electrons'
+   write(6,'(a)') '  nup = [integer] number of spin-up electrons'
+   write(6,'(a)') '  maximization ... end: menu for maximization of wave function square'
    write(6,'(a)') ' end'
    write(6,*)
+
+  case ('nelec')
+   call get_next_value (nelec)
+   call object_modified ('nelec')
+
+  case ('nup')
+   call get_next_value (nup)
+   call object_modified ('nup')
 
   case ('maximization')
    call psi2_maximization_menu
@@ -67,6 +78,22 @@ module psi_mod
   end select
 
   enddo ! end loop over menu lines
+
+  call object_provide ('nelec')
+  call object_provide ('nup')
+  ndn=nelec-nup
+  call object_modified ('ndn')
+  write(6,'(a,i5)') ' numbers of total     electrons = ', nelec
+  write(6,'(a,i5)') ' numbers of spin-up   electrons = ', nup
+  write(6,'(a,i5)') ' numbers of spin-down electrons = ', ndn
+
+  if(nelec.gt.MELEC) stop 'nelec exceeds MELEC'
+  if(nup.gt.MELECUD) stop 'nup exceeds MELECUD. Dimension of Slater matrices, slmui etc. exceeded'
+  if(ndn.gt.MELECUD) stop 'ndn exceeds MELECUD. Dimension of Slater matrices, slmdi etc. exceeded'
+  if(nup.le.0) stop 'nup must be >=1'
+  if(nup.lt.ndn) stop 'nup must be >=ndn'
+
+
   write(6,'(a)') 'End of wavefunction menu ---------------------------------------------------------------------------------'
 
   end subroutine wavefunction_menu

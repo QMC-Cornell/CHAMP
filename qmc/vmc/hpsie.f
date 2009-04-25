@@ -11,7 +11,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 !JT      include 'force.h'
 
       common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

@@ -111,7 +111,8 @@ module objects_mod
                     object_alloc_logical_1,  &
                     object_alloc_logical_2,  &
                     object_alloc_logical_3,  &
-                    object_alloc_string_1
+                    object_alloc_string_1,   &
+                    object_alloc_string_row_1
 
   end interface object_alloc
 
@@ -134,7 +135,8 @@ module objects_mod
                     object_associate_logical_1, &
                     object_associate_logical_2, &
                     object_associate_logical_3, &
-                    object_associate_string_1
+                    object_associate_string_1,  &
+                    object_associate_string_row_1
 
   end interface object_associate
 
@@ -154,7 +156,8 @@ module objects_mod
                     object_release_logical_1,  &
                     object_release_logical_2,  &
                     object_release_logical_3, &
-                    object_release_string_1
+                    object_release_string_1,  &
+                    object_release_string_row_1
 
   end interface object_release
 
@@ -1739,6 +1742,43 @@ module objects_mod
   end subroutine object_associate_string_1
 
 !===========================================================================
+  subroutine object_associate_string_row_1 (object_name, object, dim1)
+!---------------------------------------------------------------------------
+! Description : associate pointer to object
+!
+! Created     : J. Toulouse, 11 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)               :: object_name
+  type (type_string_row), target, intent(in)   :: object (:)
+  integer, intent(in)                        :: dim1
+
+! local
+  integer object_ind
+
+! begin
+
+! index of object, catalog if necessary
+  call object_add_once_and_index (object_name, object_ind)
+
+! if object already associated, return
+  if (objects(object_ind)%associated) return
+
+! store type
+  objects(object_ind)%type = 'string_row_1'
+
+! store dimensions
+  call append(objects(object_ind)%dimensions, dim1)
+
+!  associate pointer
+!  objects(object_ind)%pointer_integer_row_1 => object
+!  objects(object_ind)%associated = .true.
+
+  end subroutine object_associate_string_row_1
+
+!===========================================================================
   subroutine object_associate_by_index_double_0 (object_ind)
 !---------------------------------------------------------------------------
 ! Description : associate pointer of object by its index
@@ -2701,6 +2741,57 @@ module objects_mod
   end subroutine object_alloc_string_1
 
 !===========================================================================
+  subroutine object_alloc_string_row_1 (object_name, object, dim1)
+!---------------------------------------------------------------------------
+! Description : allocate an object and associate its name with its address
+! Description : or resize it if already allocated
+!
+! Created     : J. Toulouse, 11 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)        :: object_name
+  integer, intent(in)                 :: dim1
+
+! input/output
+  type (type_string_row), allocatable, intent(inout)  :: object (:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_alloc_string_row_1'
+  integer object_dim, dim_min, all_err
+  type (type_string_row), allocatable    :: object_temp (:)
+
+! begin
+
+! allocate object if not already allocated
+  if(.not. allocated(object)) then
+   allocate (object(dim1), stat = all_err)
+   if (all_err /= 0) then
+    write(6,'(2a,i8)') trim(lhere),': dimensions are ', dim1
+    call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
+   endif
+   call object_associate (object_name, object, dim1)
+
+! resize object if already allocated with different dimension
+   else
+   object_dim = size(object)
+   if (object_dim /= dim1) then
+    dim_min =  min(object_dim, dim1)
+    call alloc ('object_temp', object_temp, dim_min)
+    object_temp(:) = object(1:dim_min)
+    call object_release (object_name, object)
+    allocate (object(dim1))
+    call object_associate (object_name, object, dim1)
+    object(1:dim_min) = object_temp(:)
+    call release ('object_temp', object_temp)
+   endif
+
+  endif
+
+  end subroutine object_alloc_string_row_1
+
+!===========================================================================
   subroutine object_release_integer_1 (object_name, object)
 !---------------------------------------------------------------------------
 ! Description : deallocate and deassociate an object
@@ -2993,6 +3084,27 @@ module objects_mod
   call object_deassociate (object_name)
 
   end subroutine object_release_string_1
+
+!===========================================================================
+  subroutine object_release_string_row_1 (object_name, object)
+!---------------------------------------------------------------------------
+! Description : deallocate and deassociate an object
+!
+! Created     : J. Toulouse, 11 Dec 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)                         :: object_name
+
+! input/output
+  type (type_string_row), allocatable, intent(inout)     :: object(:)
+
+! begin
+  call release (object_name, object)
+  call object_deassociate (object_name)
+
+  end subroutine object_release_string_row_1
 
 ! ===================================================================================
   subroutine object_write (routine_name, object_name)

@@ -10,7 +10,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
@@ -35,9 +35,9 @@ c f2n o(r^2) from phi20(r1=0)
 c f2elog o(s^2 log(s)) from phi21(r12=0)
 
       if(ifock.eq.4) then
-        z=znuc(iwctype(it))
-        f2n=-d1b6*(eguess+z*(z-dln2))-d1b24
-        f2e=-d1b12*eguess + (const1-d1b4*z)*z
+        zfock=znuc(iwctype(it))
+        f2n=-d1b6*(eguess+zfock*(zfock-dln2))-d1b24
+        f2e=-d1b12*eguess + (const1-d1b4*zfock)*zfock
 
         o(2)=o(2)+fck(2,it,1)*f2n
         o(2+nord)=o(2+nord)+fck(2,it,1)*f2e+half*a21

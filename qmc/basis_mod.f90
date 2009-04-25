@@ -7,6 +7,9 @@ module basis_mod
   real(dp), allocatable           :: phin_norm (:,:)
   real(dp), allocatable           :: phin_ortho (:,:)
   integer, allocatable            :: basis_fns_cent (:)
+  integer, allocatable            :: basis_fns_by_center_type_nb (:)
+  type (type_string_row), allocatable      :: basis_fns_type_by_center_type (:)
+  type (type_real_row), allocatable        :: basis_fns_expo_by_center_type (:)
   character(len=max_string_len), allocatable :: basis_fns_type (:)
   character(len=max_string_len), allocatable :: basis_fns_name (:)
   real(dp), allocatable           :: basis_ovlp (:,:)
@@ -40,7 +43,7 @@ module basis_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'basis_menu'
   real(dp), allocatable  :: exponents (:)
-  integer exponents_nb
+  integer exponents_nb, bas_i, bas_c_i, cent_i, cent_type_i
 
 ! begin
   write(6,*)
@@ -55,6 +58,8 @@ module basis_mod
    write(6,*)
    write(6,'(a)') 'HELP for basis menu:'
    write(6,'(a)') 'basis'
+   write(6,'(a)') '  ibasis = [integer]: type of basis (default: 1)'
+   write(6,'(a)') '  numr = [integer] options for numerical basis (default: -3)'
    write(6,'(a)') '  basis_functions 1 1S 1S 2S 2S 2PX 2PY 2PZ 2PX 2PY 2PZ end (the first number is the center type)'
    write(6,'(a)') '  exponents 0.2 0.1 end'
    write(6,'(a)') '  basis_functions_varied = [unnormalized|normalized|orthonormalized] : choice of basis functions for exponent optimization (default=normalized)'
@@ -63,19 +68,29 @@ module basis_mod
    write(6,'(a)') 'end'
    write(6,*)
 
+  case ('ibasis')
+   call get_next_value (ibasis)
+
+  case ('numr')
+   call get_next_value (numr)
+   call object_modified ('numr')
+
   case ('basis_functions')
    call basis_functions
 
   case ('exponents')
    call get_next_value_list ('exponents', exponents, exponents_nb)
    call object_provide ('nbasis')
+   write(6,*) 'nbasis=',nbasis
+   write(6,*) 'exponents_nb=',exponents_nb
    call require (lhere, 'exponents_nb == nbasis', exponents_nb == nbasis)
    write(6,*)
-   write(6,'(a,500f12.6)')  'exponents: ', exponents (:)
+   write(6,'(a,500f12.6)')  ' exponents: ', exponents (:)
    zex (1:nbasis,1) = exponents (:)
    call object_modified ('zex')
    call distinct_radial_bas
-   write(6,'(a,500f12.6)')  'zex2: ', zex2
+!   write(6,'(a,500f12.6)')  'zex2: ', zex2
+
 
   case ('basis_functions_varied')
    call get_next_value (basis_functions_varied)
@@ -100,12 +115,179 @@ module basis_mod
 
   enddo ! end loop over menu lines
 
+  if (use_parser) then
+
+  if(ibasis.eq.1) then
+    write(6,'(a)') ' type of basis: localized Slater or gaussian or numerical basis'
+    notype=0
+   elseif(ibasis.eq.2) then
+    write(6,'(a)') ' type of basis: planewave basis, or extended orbitals on grid'
+    notype=0
+   elseif(ibasis.eq.3) then
+    write(6,'(a)') ' type of basis: complex basis for 2D quantum dots / composite fermions'
+    notype=0
+   elseif(ibasis.eq.4) then
+    write(6,'(a)') ' type of basis: floating Gaussian basis for 2D Wigner crystals'
+    notype=3
+   elseif(ibasis.eq.5) then
+    write(6,'(a)') ' type of basis: floating Gaussian basis for 2D Wigner crystals in ring geom'
+    notype=4
+   elseif(ibasis.eq.6) then
+    write(6,'(a)') ' type of basis: floating, non-circular Gaussian basis for 2D Wigner crystals'
+    notype=4
+  endif
+
+  write(6,'(a,i5)') ' numr=',numr
+  if (numr>0) write(6,'(a)') ' numerical basis functions used'
+
+  call object_provide ('nctype')
+  call object_provide ('basis_fns_type_by_center_type')
+  call object_provide ('basis_fns_expo_by_center_type')
+  call object_provide ('basis_fns_by_center_type_nb')
+
+  do cent_type_i = 1, nctype
+    write (6, '(a,i5)') ' center type # ',cent_type_i
+    do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
+    write (6, '(a,i5,a,a6,a,f12.6)') ' function # ', bas_c_i, ': ',trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)), '       exponent = ', basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
+    enddo
+  enddo
+
+! initialization
+  ictype_basis (:) = 0
+  bas_i = 0
+
+  call object_provide ('ncent')
+  do cent_i = 1, ncent
+    cent_type_i = iwctype (cent_i)
+    
+    do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
+      bas_i = bas_i + 1
+
+    select case (trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)))
+     case ('1s');   n_bas (bas_i) = 1; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('2s');   n_bas (bas_i) = 2; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('3s');   n_bas (bas_i) = 3; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('4s');   n_bas (bas_i) = 4; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('5s');   n_bas (bas_i) = 5; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('2px');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('2py');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('2pz');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('3px');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('3py');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('3pz');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('4px');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('4py');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('4pz');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('5px');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('5py');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('5pz');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('3d0');  n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('3d+1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('3d-1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('3d+2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('3d-2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('4d0');  n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('4d+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('4d-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('4d+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('4d-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('5d0');  n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('5d+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('5d-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('5d+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('5d-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('4f0');  n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+     case ('4f+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+     case ('4f-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+     case ('4f+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+     case ('4f-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+     case ('4f+3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+     case ('4f-3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+     case ('5f0');  n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+     case ('5f+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+     case ('5f-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+     case ('5f+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+     case ('5f-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+     case ('5f+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+     case ('5f-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+     case ('5g0');  n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 0
+     case ('5g+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 1
+     case ('5g-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -1
+     case ('5g+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 2
+     case ('5g-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -2
+     case ('5g+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 3
+     case ('5g-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -3
+     case ('5g+4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 4
+     case ('5g-4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -4
+
+     case default
+       call die (lhere, 'unknown basis function label >'+trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i))+'<')
+
+    end select 
+
+    zex (bas_i,1) = basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
+    ictype_basis (bas_i)= cent_type_i
+
+    enddo
+  enddo
+   
+  nbasis = bas_i
+  write(6,'(a,i5)') ' number of basis functions = ',nbasis
+  if(nbasis > MBASIS) stop 'nbasis > MBASIS'
+
+  call object_modified ('nbasis')
+  call object_modified ('n_bas')
+  call object_modified ('l_bas')
+  call object_modified ('m_bas')
+  call object_modified ('ictype_basis')
+  call object_modified ('zex')
+
+! distinct_radial_bas must be called to update n_bas2, etc...
+  call distinct_radial_bas
+
+  if(ibasis.eq.1) then
+! irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
+! irecursion_ylm=1 use Ryo' spherical harmonics (any L)
+! Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
+! Change it to calculate upto largest l actually used.
+        irecursion_ylm=0
+!       irecursion_ylm=1
+!       write(6,'(''Warning temporarily set irecursion_ylm=1'')')
+!        call read_orb_loc
+
+!MS Jellium sphere
+        if(nloc.eq.-3) irecursion_ylm=1
+        if(irecursion_ylm.eq.0)then
+          write(6,'(a)') ' not using recursion for spherical harmonics'
+         elseif(irecursion_ylm.eq.1) then
+          write(6,'(a)') ' using recursion for spherical harmonics'
+          call setup_spherical_harmonics
+          call setup_coefficients_ylm
+         else
+          stop 'irecursion_ylm must be 0 or 1'
+        endif
+  endif
+
+! Check that irecursion_ylm=1 if l of basis function >=4
+      do bas_i=1,nbasis
+        if(l_bas(bas_i).gt.ML_BAS) then
+          write(6,'(''(l_bas(bas_i) > ML_BAS'')')
+          stop 'l_bas(bas_i) > ML_BAS'
+        endif
+        if(l_bas(bas_i).ge.5 .and. irecursion_ylm.eq.0) then
+          write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
+          stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
+        endif
+      enddo  
+
+  endif ! if use_parser
+
   write(6,'(a)') 'End of basis menu ----------------------------------------------------------------------------------------'
 
   end subroutine basis_menu
 
 !===========================================================================
-  subroutine basis_functions
+  subroutine basis_functions_old
 !---------------------------------------------------------------------------
 ! Description : read and set up basis functions
 !
@@ -128,7 +310,7 @@ module basis_mod
   call get_next_value_list ('basis_labels_read', basis_labels_read, basis_labels_read_nb)
 
   call object_provide ('nctype')
-  call object_provide ('nbasis')
+!  call object_provide ('nbasis')
 
 ! (re)initialization
   nbasis_ctype (:) = 0
@@ -215,22 +397,104 @@ module basis_mod
 
     end select 
 
+    ictype_basis (bas_i)= center_type
     nbasis_ctype (center_type) = nbasis_ctype (center_type) + 1
     nbasis_calc = nbasis_calc + 1
    
   enddo
 
+  nbasis = nbasis_calc
+  if(nbasis.gt.MBASIS) stop 'nbasis > MBASIS'
+  call object_modified ('nbasis')
+
   call object_modified ('n_bas')
   call object_modified ('l_bas')
   call object_modified ('m_bas')
+  call object_modified ('ictype_basis')
+  call object_modified ('nbasis_ctype')
 
 ! distinct_radial_bas must be called to update n_bas2, etc...
   call distinct_radial_bas
 
   call require (lhere, 'nctype_calc == nctype', nctype_calc == nctype)
-  call require (lhere, 'nbasis_calc == nbasis', nbasis_calc == nbasis)
+!  call require (lhere, 'nbasis_calc == nbasis', nbasis_calc == nbasis)
 
  
+  end subroutine basis_functions_old
+
+!===========================================================================
+  subroutine basis_functions
+!---------------------------------------------------------------------------
+! Description : read and set up basis functions
+!
+! Created     : J. Toulouse, 03 Mar 2009
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'basis_functions'
+  character(len=500) line
+  character(len=max_string_len) basis_fns_type_temp
+  real(dp) basis_fns_expo_temp
+  integer cent_type_i, bas_i, iostat,i
+
+! begin
+  call object_provide ('nctype')
+
+  call object_alloc ('basis_fns_by_center_type_nb', basis_fns_by_center_type_nb, nctype)
+  call object_alloc ('basis_fns_type_by_center_type', basis_fns_type_by_center_type, nctype)
+  call object_alloc ('basis_fns_expo_by_center_type', basis_fns_expo_by_center_type, nctype)
+  basis_fns_by_center_type_nb (:) = 0
+
+  do
+   read(unit_input,'(a)',iostat=iostat) line
+   if(iostat < 0) then
+     call die (lhere, 'error while reading basis functions')
+   endif
+!   write(6,*) 'line >',trim(line),'<'
+
+!  convert to lower case
+   call upplow (line)
+
+!  skip if empty line
+   if (trim(line) == '') cycle
+
+!  exit when 'end' is read
+   if (index(line,'end') /= 0) exit
+
+!  new center type
+   if (is_string_integer (line)) then
+ 
+     cent_type_i = string_to_integer (line)
+
+     if (cent_type_i > nctype) then
+       call die (lhere, ' center type index = '+cent_type_i+' > number of center types ='+nctype)
+     endif
+
+     cycle
+   endif
+
+!  read basis function type and exponent
+   basis_fns_by_center_type_nb (cent_type_i) = basis_fns_by_center_type_nb (cent_type_i) + 1
+   
+   read(line,*,iostat=iostat) basis_fns_type_temp , basis_fns_expo_temp
+   if(iostat < 0) then
+     call die (lhere, 'error while reading basis functions')
+   endif
+   
+   
+   call append (basis_fns_type_by_center_type (cent_type_i)%row, basis_fns_type_temp)
+   call append (basis_fns_expo_by_center_type (cent_type_i)%row, basis_fns_expo_temp)
+ 
+  enddo
+
+  nbasis_ctype (1:nctype) = basis_fns_by_center_type_nb (1:nctype)
+  call object_modified ('nbasis_ctype')
+  call object_modified ('basis_fns_by_center_type_nb')
+  call object_modified ('basis_fns_type_by_center_type')
+  call object_modified ('basis_fns_expo_by_center_type')
+
   end subroutine basis_functions
 
 ! ==============================================================================

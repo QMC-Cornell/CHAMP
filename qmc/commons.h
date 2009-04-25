@@ -23,7 +23,7 @@
           include 'commons/common_vj.h'
           include 'commons/common_pseudo.h'
           include 'commons/common_orbe.h'
-!JT          include 'commons/common_contrl_per.h'
+          include 'commons/common_contrl_per.h'
           include 'commons/common_optim.h'
           include 'commons/common_cntrl_opt.h'
           include 'commons/common_derivjas.h'
@@ -57,6 +57,14 @@
           include 'commons/common_vd.h'
           include 'commons/common_pjase.h'
           include 'commons/common_optimo.h'
+          include 'commons/common_jel_sph2.h'
+          include 'commons/common_atomtyp.h'
+          include 'commons/common_contr_names.h'
+          include 'commons/common_contr_ylm.h'
+          include 'commons/common_pars.h'
+          include 'commons/common_jaspar1.h'
+          include 'commons/common_jaspar2.h'
+          include 'commons/common_ncusp.h'
 
 ! for dmc
           include 'commons/common_config_dmc.h'

@@ -429,7 +429,7 @@ CONTAINS
  REAL(dp) ksum(3),rvec(3),temp1,temp2,temp3,k_s(3),ktemp(1:3),             &
   &average_real_part,average_imaginary_part,pb1(3),pb2(3),pb3(3),              &
   &b1(3),b2(3),b3(3),           &
-  &a1(3),a2(3),a3(3),           &
+  &a1b(3),a2b(3),a3b(3),           &
   &rkvec_shift_latt,glatt_inv_squared(3),r,z,           &
   &glatt_sim_inv_squared(3)
  REAL(dp),ALLOCATABLE,DIMENSION(:) :: eigtemp,temp_r,low_array,high_array,d
@@ -662,9 +662,9 @@ CONTAINS
 !end of sr_lattice setup
 
 !lattice vectors
- a1=rlatt_sim(:,1)
- a2=rlatt_sim(:,2)
- a3=rlatt_sim(:,3)
+ a1b=rlatt_sim(:,1)
+ a2b=rlatt_sim(:,2)
+ a3b=rlatt_sim(:,3)
 
 ! Allocate workspace.
  allocate(gmap(3,nwvec),kdotr(nkvec_bwfdet),zdum(nkvec_bwfdet),lzdum(nkvec_bwfdet),gzdum(3,nkvec_bwfdet),  &
@@ -922,9 +922,9 @@ s:do ispin=1,num_spins
  do jk=1,nkvec_bwfdet
 bloop:do ik=1,num_g
    ktemp(1:3)=kvec_bwfdet(1:3,jk)-0.5d0*sr_lattice(1:3,ik)
-   temp1=one_over_twopi*dot_product(ktemp,a1)
-   temp2=one_over_twopi*dot_product(ktemp,a2)
-   temp3=one_over_twopi*dot_product(ktemp,a3)
+   temp1=one_over_twopi*dot_product(ktemp,a1b)
+   temp2=one_over_twopi*dot_product(ktemp,a2b)
+   temp3=one_over_twopi*dot_product(ktemp,a3b)
    if(abs(temp1-anint(temp1))<tolerance.and.abs(temp2-anint(temp2))<tolerance.and. &
     &abs(temp3-anint(temp3))<tolerance)then ! i.e. if projections are integer
     ltemp(jk)=.false.
@@ -986,9 +986,9 @@ bloop:do ik=1,num_g
    write(6,*)'MAPPING ONTO UNIQUE K_S VECTOR:'
    write(6,'(3f20.8,a)')k_s(1:3),' (Cartesian a.u.)'
    if(any(abs(k_s(1:3))>tolerance))then
-    temp1=one_over_twopi*dot_product(k_s,a1)
-    temp2=one_over_twopi*dot_product(k_s,a2)
-    temp3=one_over_twopi*dot_product(k_s,a3)
+    temp1=one_over_twopi*dot_product(k_s,a1b)
+    temp2=one_over_twopi*dot_product(k_s,a2b)
+    temp3=one_over_twopi*dot_product(k_s,a3b)
     write(6,'(3f20.8,a)')temp1,temp2,temp3,' (frac supercell reciprocal &
      &lattice vectors)'
    endif

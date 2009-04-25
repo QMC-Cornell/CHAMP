@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 
       use all_tools_mod
+      use variables_mod
       use control_mod
       use montecarlo_mod
       use orbitals_mod
@@ -25,12 +26,12 @@ c Written by Cyrus Umrigar
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e

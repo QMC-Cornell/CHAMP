@@ -156,6 +156,7 @@ c Slater r^(n-1)*Exp(-zeta*r)
                elseif(n.eq.0) then
 c Warning: Asymptotic and Gaussian not yet tested.
 c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+                write(6,*) 'basis_fns: ict=',ict
                 write(6,*) 'basis_fns: irb=',irb
                 write(6,*) 'basis_fns: n=',n
                 stop 'basis_fns: asymptotic not yet fully tested'

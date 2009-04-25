@@ -9,7 +9,7 @@ c get nuclear potential energy
 !JT      include 'force.h'
 
       common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)

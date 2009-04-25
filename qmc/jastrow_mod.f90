@@ -21,6 +21,362 @@ module jastrow_mod
 
   contains
 
+!===========================================================================
+  subroutine jastrow_menu
+!---------------------------------------------------------------------------
+! Description : menu for jastrow
+!
+! Created     : J. Toulouse, 08 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'jastrow_menu'
+  integer isp, iparm, it
+  real(dp) parm2min, cutjas_ee_tmp, cutjas_en_tmp
+  real(dp),parameter :: eps=1.d-4
+
+
+! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of jastrow menu --------------------------------------------------------------------------------'
+
+! loop over menu lines
+  do
+  call get_next_word (word)
+
+  select case(trim(word))
+  case ('help')
+   write(6,*)
+   write(6,'(a)') 'HELP for jastrow menu:'
+   write(6,'(a)') 'basis'
+   write(6,'(a)') '  ijas = [integer] type of Jastrow factor (default=4)'
+   write(6,'(a)') '  isc = [integer] type of scaling function for coordinates (default=2)'
+   write(6,'(a)') '  nspin1 = [integer] starting spin index (default=1)'
+   write(6,'(a)') '  nspin2 = [integer] ending spin index (default=1)'
+   write(6,'(a)') '  nord = [integer] order of the polynomial (default=5)'
+   write(6,'(a)') '  fock = [integer] Fock terms (default=0)'
+   write(6,'(a)') '  ianalyt_lap = [integer] analytic Laplacian of Jastrow?  (default=1)'
+   write(6,'(a)') '  scalek = [real] scale factor for ijas>= 2 isc>= 2 (default=0.5)'
+   write(6,'(a)') '  a21 = [real] some constant for ijas and isc>= 2 (default=0.)'
+   write(6,'(a)') '  norda = [integer] order of e-n polynomial for ijas >= 4 (default=5)'
+   write(6,'(a)') '  nordb = [integer] order of e-e polynomial for ijas >= 4 (default=5)'
+   write(6,'(a)') '  nordc = [integer] order of e-e-n polynomial for ijas >= 4 (default=5)'
+   write(6,'(a)') '  parameters ... end = e-n, e-e and e-e-n parameters'
+   write(6,'(a)') 'end'
+   write(6,*)
+
+
+  case ('ijas')
+   call get_next_value (ijas)
+
+  case ('isc')
+   call get_next_value (isc)
+   call object_modified ('isc')
+
+  case ('nspin1')
+   call get_next_value (nspin1)
+
+  case ('nspin2')
+   call get_next_value (nspin2)
+
+  case ('nord')
+   call get_next_value (nord)
+
+  case ('ifock')
+   call get_next_value (ifock)
+
+  case ('ianalyt_lap')
+   call get_next_value (ianalyt_lap)
+
+  case ('scalek')
+   call get_next_value (scalek(1))
+   call object_modified ('scalek')
+
+  case ('a21')
+   call get_next_value (a21)
+
+  case ('norda')
+   call get_next_value (norda)
+   call object_modified ('norda')
+
+  case ('nordb')
+   call get_next_value (nordb)
+   call object_modified ('nordb')
+
+  case ('nordc')
+   call get_next_value (nordc)
+   call object_modified ('nordc')
+
+  case ('cutjas_en')
+   call get_next_value (cutjas_en_tmp)
+
+  case ('cutjas_ee')
+   call get_next_value (cutjas_ee_tmp)
+
+  case ('parameters')
+   call jastrow_parameters_rd
+
+  case ('end')
+   exit
+
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<')
+  end select
+
+  enddo ! end loop over menu lines
+
+  write(6,'(a,i4)') ' type of Jastrow factor: ijas=',ijas
+  write(6,'(a,i4)') ' type of scaling function: isc=',isc
+  write(6,'(a,i4)') ' starting spin index: nspin1=',nspin1
+  write(6,'(a,i4)') ' ending   spin index: nspin2=',nspin2
+  write(6,'(a,i4)') ' order of polynomial: nord=',nord
+  write(6,'(a,i4)') ' Fock terms: ifock=',ifock
+  write(6,'(a,i4)') ' analytic Laplacian: ianalyt_lap=',ianalyt_lap
+
+  call object_provide ('nloc')
+  call object_provide ('ndn')
+
+  if(ianalyt_lap.eq.0 .and. nloc.gt.0) stop 'Cannot have numerical Lap. with pseudopot'
+  if(ianalyt_lap.eq.0 .and. iperiodic.gt.0) stop 'Cannot have numerical Lap. with periodic system: distances in jastrow_num not correct'
+  if(ijas.ne.4 .and. iperiodic.gt.0) stop 'Only ijas=4 implemented for periodic systems'
+  if(ijas.gt.6) stop 'only ijas=1,2,3,4,5,6 implemented'
+  if(ifock.lt.0.or.ifock.gt.4) stop 'ifock must be between 0 and 4'
+  if(ndn.eq.1.and.nspin2.eq.3) stop '1 spin down and nspin2=3'
+  if((ijas.eq.4.or.ijas.eq.5).and.(isc.ne.2.and.isc.ne.4.and.isc.ne.6.and.isc.ne.7.and.    &
+      isc.ne.8.and.isc.ne.10.and.isc.ne.12.and.isc.ne.14.and.isc.ne.16.and.isc.ne.17))     &
+       stop 'if ijas=4 or 5, isc must be one of 2,4,6,7,8,10,12,14,16,17'
+  if((ijas.eq.6).and.(isc.ne.6.and.isc.ne.7)) stop 'if ijas=6, isc must be 6 or 7'
+
+  if(ijas.eq.3.and.nspin2.gt.1) stop 'ijas=3 and nspin2>1'
+
+
+  if(ijas.eq.1) then
+    write(6,'(a,f10.5)') ' Jastrow numerator =',cjas1(1)
+    write(6,'(a,f10.5)') ' Jastrow denominator =',cjas2(1)
+  elseif(ijas.eq.2) then
+!    nparm_read=69
+    write(6,'(a,f10.5)') ' scale factor: scalek=',scalek(1)
+    write(6,'(a,f10.5)') ' a21=',a21
+    do isp=nspin1,nspin2
+       call object_provide ('ncent')
+       if(ncent.gt.1.and.a1(2,isp,1).ne.zero) then
+         write(6,'(a)') ' Warning: e-n cusp condition cannot be imposed for molecules with present weighted form of Jastrow'
+       endif
+       write(6,'(a,10f10.6)') ' e-n terms: a=',(a1(iparm,isp,1),iparm=1,nparm_read)
+     enddo       
+     do isp=nspin1,nspin2
+       write(6,'(a,10f10.6)') ' e-e terms: b=',(a2(iparm,isp,1),iparm=1,nparm_read)
+     enddo
+
+   elseif(ijas.eq.3) then
+!     nparm_read=2
+!     nparmc_read=(nord**3+5*nord)/6+nord**2+nord
+!     write(6,'(a,3i5)') ' nparm_read, nparmc_read=', nparm_read,nparmc_read
+     if(isc.ge.2) then
+       write(6,'(a,f10.5)') ' scale factor: scalek=',scalek(1)
+       write(6,'(a,f10.5)') ' a21=',a21
+     endif
+     write(6,'(a,10f10.6)') ' e-n terms: a=',(a(iparm,1),iparm=1,nparm_read)
+     do isp=nspin1,nspin2b
+        write(6,'(a,10f10.6)') ' e-e terms: b=',(b(iparm,isp,1),iparm=1,nparm_read)
+     enddo
+     do it=1,nctype
+        write(6,'(a,50f10.6)') ' e-e-n terms: c=',(c(iparm,it,1),iparm=1,nparmc_read)
+     enddo
+     if(ifock.gt.0) then
+          do it=1,nctype
+            write(6,'(a,10f10.6)') ' Fock terms f=',(fck(iparm,it,1),iparm=1,nfock)
+          enddo
+     endif
+   elseif(ijas.ge.4.and.ijas.le.6) then
+     if(ifock.gt.0) stop 'fock not yet implemented for ijas=4,5,6'
+        write(6,'(a,i5)') ' order of e-n polynomial: norda=',norda
+        write(6,'(a,i5)') ' order of e-e polynomial: nordb=',nordb
+        write(6,'(a,i5)') ' order of e-e-n polynomial: nordc=',nordc
+!        nparma_read=2+max(0,norda-1)
+!        nparmb_read=2+max(0,nordb-1)
+!        nparmc_read=nterms4(nordc)
+!        write(6,'(a,3i5)') ' nparma_read,nparmb_read,nparmc_read=', nparma_read,nparmb_read,nparmc_read
+        if(norda.gt.MORDJ) stop 'norda>MORDJ'
+        if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
+        if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
+        if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
+        if(isc.ge.2) then
+          write(6,'(a,f10.5)') ' scale factor: scalek=',scalek(1)
+          write(6,'(a,f10.5)') ' a21=',a21
+        endif
+        if(isc.ne.8 .and. isc.ne.10) then
+          parm2min=-scalek(1)
+        else
+          parm2min=-1.d0
+        endif
+        do it=1,nctype
+           write(6,'(a,10f10.6)') ' e-n terms: a=',(a4(iparm,it,1),iparm=1,nparma_read)
+           if(nparma_read.ge.2 .and. a4(2,it,1).lt.parm2min) then
+               write(6,'(a)') ' Warning: a4(2,it,1) too low, Jastrow denom could become negative'
+               stop 'a4(2,it,1) too low, Jastrow denom could become negative'
+             else
+           endif
+        enddo     
+        do isp=nspin1,nspin2b
+          write(6,'(a,10f10.6)') ' e-e terms: b=',(b(iparm,isp,1),iparm=1,nparmb_read)
+           if(nparmb_read.ge.2 .and. b(2,isp,1).lt.parm2min) then
+             write(6,'(a)') ' Warning: b(2,isp,1) too low, Jastrow denom could become negative'
+             stop 'b(2,isp,1) too low, Jastrow denom could become negative'
+           endif
+        enddo    
+        do it=1,nctype
+          write(6,'(a,50f10.6)') ' e-e-n terms: c=',(c(iparm,it,1),iparm=1,nparmc_read)
+       enddo
+! Note: Fock terms yet to be put in ijas=4,5,6.
+   endif
+
+! Read cutoff for Jastrow4,5,6 and call set_scale_dist to evaluate constants
+! that need to be reset if scalek is being varied.
+! If cutjas=0, then reset cutjas_en, cutjas_ee to infinity
+! Warning: At present we are assuming that the same scalek is used
+! for primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
+! should be dimensioned to MWF
+      if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
+!        read(5,*) cutjas_en_tmp,cutjas_ee_tmp
+        if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
+          write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+         else
+          if(cutjas_en_tmp.lt.cutjas_en-eps) then
+            write(6,'(''Warning: Could use larger cutjas_en='',f9.5,'' instead of the input value='',f9.5)') cutjas_en,cutjas_en_tmp
+          endif
+          write(6,'(''input cutjas_en='',d12.5)') cutjas_en_tmp
+          cutjas_en=cutjas_en_tmp
+        endif
+        if(iperiodic.ne.0 .and. cutjas_ee_tmp.gt.cutjas_ee+eps) then
+          write(6,'(''Warning: input cutjas > half shortest simulation cell lattice vector;cutjas_ee reset from'',f9.5,'' to'',f9.5)') cutjas_ee_tmp,cutjas_ee
+         else
+          if(cutjas_ee_tmp.lt.cutjas_ee-eps) then
+            write(6,'(''Warning: Could use larger cutjas_ee='',f9.5,'' instead of the input value='',f9.5)') cutjas_ee,cutjas_ee_tmp
+          endif
+          write(6,'(''input cutjas_ee='',d12.5)') cutjas_ee_tmp
+          cutjas_ee=cutjas_ee_tmp
+        endif
+        if(cutjas_en_tmp.le.0.d0) then
+          write(6,'(''cutjas_en reset to infinity'')')
+          cutjas_en=1.d99
+        endif
+        if(cutjas_ee_tmp.le.0.d0) then
+          write(6,'(''cutjas_ee reset to infinity'')')
+          cutjas_ee=1.d99
+        endif
+      endif
+      call set_scale_dist(-1,1)
+
+      if(ifock.gt.0) then
+!     Setup for Chris' Fock
+!         fflag=7
+
+! Read pars for Chris's wf
+!       call wfpars
+        if(ifock.eq.4) then
+        call die (lhere, 'fock terms need to be updated')
+!          open(11, file =
+!     &    '/afs/theory.cornell.edu/user/tc/cyrus/qmc/vmc/lob.dat')
+!          rewind 11
+!          read(11,*) (rlobx(i),rloby(i),i=1,nsplin)
+!          call spline(rlobx,rloby,nsplin,0.d0,0.d0,rloby2)
+        endif
+      endif
+
+
+  write(6,'(a)') 'End of jastrow menu --------------------------------------------------------------------------------------'
+
+  end subroutine jastrow_menu
+
+!===========================================================================
+  subroutine jastrow_parameters_rd
+!---------------------------------------------------------------------------
+! Description : read Jastrow parameters (e-n, e-e, e-e-n)
+!
+! Created     : J. Toulouse, 09 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'jastrow_parameters_rd'
+  integer isp, iparm, it
+
+  integer, external :: nterms4
+
+! begin
+  call object_provide ('nctype')
+
+  nspin2b=iabs(nspin2)
+  nocuspb=0
+  if(nspin2.lt.0) then
+    if(nspin2.eq.-1) nocuspb=1
+    nspin2=1
+  endif
+
+  if(ijas.eq.1) then
+    read(5,*) cjas1(1),cjas2(1)
+  elseif(ijas.eq.2) then
+    nparm_read=69
+    do isp=nspin1,nspin2
+       read(unit_input,*) (a1(iparm,isp,1),iparm=1,nparm_read)
+    enddo
+    do isp=nspin1,nspin2
+       read(5,*) (a2(iparm,isp,1),iparm=1,nparm_read)
+    enddo
+  elseif(ijas.eq.3) then
+    nparm_read=2
+    nparmc_read=(nord**3+5*nord)/6+nord**2+nord
+!    write(6,'(a,3i5)') ' nparm_read, nparmc_read=', nparm_read,nparmc_read
+    read(5,*) (a(iparm,1),iparm=1,nparm_read)
+    do isp=nspin1,nspin2b
+       read(5,*) (b(iparm,isp,1),iparm=1,nparm_read)
+    enddo
+    do it=1,nctype
+       read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
+    enddo
+    if(ifock.gt.0) then
+      nfock=9
+      if(ifock.eq.2) nfock=15
+         do it=1,nctype
+           read(5,*) (fck(iparm,it,1),iparm=1,nfock)
+         enddo
+    endif
+  elseif(ijas.ge.4.and.ijas.le.6) then
+       nparma_read=2+max(0,norda-1)
+       nparmb_read=2+max(0,nordb-1)
+       nparmc_read=nterms4(nordc)
+!       write(6,'(a,3i5)') ' nparma_read,nparmb_read,nparmc_read=', nparma_read,nparmb_read,nparmc_read
+       if(norda.gt.MORDJ) stop 'norda>MORDJ'
+       if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
+       if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
+       do it=1,nctype
+          read(5,*) (a4(iparm,it,1),iparm=1,nparma_read)
+       enddo     
+       call object_modified ('a4')
+       do isp=nspin1,nspin2b
+         read(5,*) (b(iparm,isp,1),iparm=1,nparmb_read)
+       enddo    
+       do it=1,nctype
+         read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
+      enddo
+   endif
+
+   call read_up_to_end
+
+   call object_modified ('nspin2b')
+   call object_modified ('nparma_read')
+   call object_modified ('nparmb_read')
+   call object_modified ('nparmc_read')
+   call object_modified ('b')
+   call object_modified ('c')
+
+
+  end subroutine jastrow_parameters_rd
+
 ! ==============================================================================
   function dist_scaled (dist, kappa)
 ! ------------------------------------------------------------------------------

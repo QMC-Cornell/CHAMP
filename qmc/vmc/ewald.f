@@ -7,7 +7,7 @@ c Written by Cyrus Umrigar
       parameter (eps=1.d-12)
 
       common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /constant/ twopi
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

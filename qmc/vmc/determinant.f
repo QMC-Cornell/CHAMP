@@ -38,7 +38,7 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_opt2/ igradhess,iadd_diag_opt
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)

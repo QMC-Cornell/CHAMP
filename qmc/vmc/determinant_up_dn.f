@@ -71,13 +71,14 @@ c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
    80 write(6,'(''idet,ndetup,iwdetup(idet),ndetdn,iwdetdn(idet)'',9i5)') idet,ndetup,iwdetup(idet),ndetdn,iwdetdn(idet)
 
 
-      write(6,'(''ndet,ndetup,ndetdn='',9i5)') ndet,ndetup,ndetdn
-      write(6,'(''up-spin determinants have orbitals:'')')
+      write(6,'(a,i5)') ' number of unique spin-up   determinants = ', ndetup
+      write(6,'(a,i5)') ' number of unique spin-down determinants = ', ndetdn
+      write(6,'(a)') ' unique spin-up determinants have orbitals:'
       do 90 idetup=1,ndetup
-   90   write(6,'(i3,2x,(100i4))') idetup,(iworbdup(iup,idetup),iup=1,nup)
-      write(6,'(''dn-spin determinants have orbitals:'')')
+   90   write(6,'(a,i5,a,100i4)') ' det # ',idetup, ': ',(iworbdup(iup,idetup),iup=1,nup)
+      write(6,'(a)') ' unique spin-down determinants have orbitals:'
       do 95 idetdn=1,ndetdn
-   95   write(6,'(i3,2x,(100i4))') idetdn,(iworbddn(idn,idetdn),idn=1,ndn)
+   95   write(6,'(a,i5,a,100i4)') ' det # ',idetdn, ': ',(iworbddn(idn,idetdn),idn=1,ndn)
 
 !     JT: warning: quick (and dirty) fix for dealing with the case ndn = 0
 !     ndetdn is reset to 1, and the corresponding determinants will just have the value 1

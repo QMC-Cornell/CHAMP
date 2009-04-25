@@ -39,13 +39,13 @@ module constants_mod
   real(dp), parameter   :: angstrom_to_bohr = 1.8897261249935897d0
 
 ! maximun numbers of nodes
-  integer, parameter    ::  max_nodes_nb = 500
+  integer, parameter    :: max_nodes_nb = 500
 
 ! maximun numbers of routines
-  integer, parameter    ::  max_routines_nb = 500
+  integer, parameter    :: max_routines_nb = 500
 
 ! maximun numbers of objects
-  integer, parameter    ::  max_objects_nb = 1500
+  integer, parameter    :: max_objects_nb = 1500
 
 ! dimension parameters
   include 'vmc/vmc.h'

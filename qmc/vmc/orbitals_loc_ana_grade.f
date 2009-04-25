@@ -9,7 +9,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
 
       common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb

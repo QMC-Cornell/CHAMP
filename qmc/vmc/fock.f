@@ -11,9 +11,9 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Z
+      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
 
       include 'force.h'
 
@@ -177,10 +177,10 @@ c Written by Cyrus Umrigar
 
       parameter(one=1.d0)
 
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Z
+      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -194,7 +194,7 @@ c Written by Cyrus Umrigar
       common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
      &,iwctype(MCENT),nctype,ncent
 
-      Z=znuc(it)
+      Zfock=znuc(it)
 
 c     the GAM wave functions are region-dependent, hence,
 c     the definition of rg (greater) and rl (lesser)
@@ -279,15 +279,15 @@ c     real*8 Y00
 c     parameter (pi = 3.14159265358979323846d0)
 c     parameter (xln2 = 0.69314718055994530941d0)
 c     parameter (root2 = 1.41421356237309504880d0)
-c     parameter (Z = 2.0d0)
+c     parameter (Zfock = 2.0d0)
 c     parameter (E = -2.903724d0)
 
 c     integer fflag
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Z
+      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
 c     common /fflags/ fflag
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
 c     common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -316,10 +316,10 @@ c     Y00, Y20 and Y21 are solid harmonics (IC equivalents of HH)
 c     y = sin(alph), where alph = 2*atan(r2/r1)
 c     omega = cos(theta_{12})
 
-      xm1 = -Z
-      xm2 = -Z
+      xm1 = -Zfock
+      xm2 = -Zfock
       xm12 = one
-      xms = -Z
+      xms = -Zfock
       xma = zero
 
       s = r1 + r2
@@ -344,8 +344,8 @@ c     Y00 = one
       phi21=psi21
 
       if(ifock.ge.3) then
-        psi31 = (otwe*Z*(pi-two)/pi)
-     &  *(Z*s*Y21-r12*(rr2-five*r12*r12/six))*dlnrr2
+        psi31 = (otwe*Zfock*(pi-two)/pi)
+     &  *(Zfock*s*Y21-r12*(rr2-five*r12*r12/six))*dlnrr2
 
         p1p21 = psi1*psi21
 
@@ -419,7 +419,7 @@ c Analytic Fock derivatives
 
       d2utlogr = 0
 
-      term=-(pi-two)*Z/(three*pi)
+      term=-(pi-two)*Zfock/(three*pi)
 
 c Analytic derivatives of phi21
       dsphi21 = term*(rlog*dsy21+dslogr*y21)
@@ -446,41 +446,41 @@ c Analytic derivatives of phi21
 c Analytic derivatives of phi31
       if(ifock.ge.3) then
 
-        phi311 = term*(3*Z*s3 + 3*Z*s*t2 - 6*Z*s*u2 + u3)/12
+        phi311 = term*(3*Zfock*s3 + 3*Zfock*s*t2 - 6*Zfock*s*u2 + u3)/12
 
-        dsphi311 = term*(9*Z*s2 + 3*Z*t2 - 6*Z*u2)/12
+        dsphi311 = term*(9*Zfock*s2 + 3*Zfock*t2 - 6*Zfock*u2)/12
 
         dsphi31 = (rlog*dsphi311+dslogr*phi311)
 
-        dtphi311 = Z*s*t*term/2
+        dtphi311 = Zfock*s*t*term/2
 
         dtphi31 = (rlog*dtphi311+dtlogr*phi311)
 
-        duphi311 = term*(-12*Z*s*u + 3*u2)/12
+        duphi311 = term*(-12*Zfock*s*u + 3*u2)/12
 
         duphi31 = (rlog*duphi311+dulogr*phi311)
 
-        d2sphi311 = 3*Z*s*term/2
+        d2sphi311 = 3*Zfock*s*term/2
 
         d2sphi31 = (rlog*d2sphi311+d2slogr*phi311+
      &   2*dslogr*dsphi311)
 
-        d2tphi311 = Z*s*term/2
+        d2tphi311 = Zfock*s*term/2
 
         d2tphi31 = (rlog*d2tphi311+d2tlogr*phi311+
      &   2*dtlogr*dtphi311)
 
-        d2uphi311 = term*(-12*Z*s + 6*u)/12
+        d2uphi311 = term*(-12*Zfock*s + 6*u)/12
 
         d2uphi31 = (rlog*d2uphi311+d2ulogr*phi311+
      &   2*dulogr*duphi311)
 
-        d2stphi311 = Z*t*term/2
+        d2stphi311 = Zfock*t*term/2
 
         d2stphi31 = (rlog*d2stphi311+d2stlogr*phi311+
      &   dslogr*dtphi311+dtlogr*dsphi311)
 
-        d2suphi311 = -(Z*term*u)
+        d2suphi311 = -(Zfock*term*u)
 
         d2suphi31 = (rlog*d2suphi311+d2sulogr*phi311+
      &   dslogr*duphi311+dulogr*dsphi311)
@@ -607,12 +607,12 @@ c Analytic Fock derivatives
 
         dsc1 = s*u/Root
 
-        dspd = -2*etrial*s + 2*Z*(1 + 3*Z)*s - 8*Z*u
+        dspd = -2*etrial*s + 2*Zfock*(1 + 3*Zfock)*s - 8*Zfock*u
 
-        dspe = Z*(-(Z*s) + u/2)
+        dspe = Zfock*(-(Zfock*s) + u/2)
 
-        dsphi20 = otwe*(-4*Z*(y21*dsa+dsy21*a) +Z*(y20*dsb+dsy20*b)
-     &   +(4*Z/Pi)*(c1*dsbeta+dsc1*(beta+half*Pi)) +dspd) +dspe
+        dsphi20 = otwe*(-4*Zfock*(y21*dsa+dsy21*a) +Zfock*(y20*dsb+dsy20*b)
+     &   +(4*Zfock/Pi)*(c1*dsbeta+dsc1*(beta+half*Pi)) +dspd) +dspe
 
         dty20 = 2*s
 
@@ -645,12 +645,12 @@ c Analytic Fock derivatives
 
         dtc1 = t*u/Root
 
-        dtpd = -2*etrial*t - 2*Z*(1 + 3*Z)*t
+        dtpd = -2*etrial*t - 2*Zfock*(1 + 3*Zfock)*t
 
         dtpe = 0
 
-        dtphi20 = otwe*(-4*Z*(y21*dta+dty21*a) +Z*(y20*dtb+dty20*b)
-     &   +(4*Z/Pi)*(c1*dtbeta+dtc1*(beta+half*Pi)) +dtpd) +dtpe
+        dtphi20 = otwe*(-4*Zfock*(y21*dta+dty21*a) +Zfock*(y20*dtb+dty20*b)
+     &   +(4*Zfock/Pi)*(c1*dtbeta+dtc1*(beta+half*Pi)) +dtpd) +dtpe
 
         duy20 = 0
 
@@ -685,12 +685,12 @@ c Analytic Fock derivatives
 
         duc1 = 2*(RR - u)*(RR + u)/Root
 
-        dupd = -8*Z*s + 2*(1 + 4*Z**2)*u
+        dupd = -8*Zfock*s + 2*(1 + 4*Zfock**2)*u
 
-        dupe = -(-(Z*s) + u/2)/2
+        dupe = -(-(Zfock*s) + u/2)/2
 
-        duphi20 = otwe*(-4*Z*(y21*dua+duy21*a) +Z*(y20*dub+duy20*b)
-     &   +(4*Z/Pi)*(c1*dubeta+duc1*(beta+half*Pi)) +dupd) +dupe
+        duphi20 = otwe*(-4*Zfock*(y21*dua+duy21*a) +Zfock*(y20*dub+duy20*b)
+     &   +(4*Zfock/Pi)*(c1*dubeta+duc1*(beta+half*Pi)) +dupd) +dupe
 
         d2sy20 = 0
 
@@ -732,13 +732,13 @@ c Analytic Fock derivatives
 
         d2sc1 = -(u*(-t + u)*(t + u)/Root3)
 
-        d2spd = -2*etrial + 2*Z*(1 + 3*Z)
+        d2spd = -2*etrial + 2*Zfock*(1 + 3*Zfock)
 
-        d2spe = -(Z**2)
+        d2spe = -(Zfock**2)
 
-        d2sphi20 = otwe*(-4*Z*(y21*d2sa+d2sy21*a+2*dsy21*dsa) +
-     &   Z*(y20*d2sb+d2sy20*b+2*dsy20*dsb) +
-     &   (4*Z/Pi)*(c1*d2sbeta+d2sc1*(beta+half*Pi)+2*dsc1*dsbeta)
+        d2sphi20 = otwe*(-4*Zfock*(y21*d2sa+d2sy21*a+2*dsy21*dsa) +
+     &   Zfock*(y20*d2sb+d2sy20*b+2*dsy20*dsb) +
+     &   (4*Zfock/Pi)*(c1*d2sbeta+d2sc1*(beta+half*Pi)+2*dsc1*dsbeta)
      &   +d2spd)+d2spe
 
         d2ty20 = 0
@@ -787,13 +787,13 @@ c Analytic Fock derivatives
 
         d2tc1 = -(u*(-s + u)*(s + u)/Root3)
 
-        d2tpd = -2*etrial - 2*Z*(1 + 3*Z)
+        d2tpd = -2*etrial - 2*Zfock*(1 + 3*Zfock)
 
         d2tpe = 0
 
-        d2tphi20 = otwe*(-4*Z*(y21*d2ta+d2ty21*a+2*dty21*dta) +
-     &   Z*(y20*d2tb+d2ty20*b+2*dty20*dtb) +
-     &   (4*Z/Pi)*(c1*d2tbeta+d2tc1*(beta+half*Pi)+2*dtc1*dtbeta)
+        d2tphi20 = otwe*(-4*Zfock*(y21*d2ta+d2ty21*a+2*dty21*dta) +
+     &   Zfock*(y20*d2tb+d2ty20*b+2*dty20*dtb) +
+     &   (4*Zfock/Pi)*(c1*d2tbeta+d2tc1*(beta+half*Pi)+2*dtc1*dtbeta)
      &   +d2tpd)+d2tpe
 
         d2uy20 = 0
@@ -846,13 +846,13 @@ c Analytic Fock derivatives
 
         d2uc1 = u*(-3*s2 - 3*t2 + 2*u2)/Root3
 
-        d2upd = 2*(1 + 4*Z**2)
+        d2upd = 2*(1 + 4*Zfock**2)
 
         d2upe = -half*half
 
-        d2uphi20 = otwe*(-4*Z*(y21*d2ua+d2uy21*a+2*duy21*dua) +
-     &   Z*(y20*d2ub+d2uy20*b+2*duy20*dub) +
-     &   (4*Z/Pi)*(c1*d2ubeta+d2uc1*(beta+half*Pi)+2*duc1*dubeta)
+        d2uphi20 = otwe*(-4*Zfock*(y21*d2ua+d2uy21*a+2*duy21*dua) +
+     &   Zfock*(y20*d2ub+d2uy20*b+2*duy20*dub) +
+     &   (4*Zfock/Pi)*(c1*d2ubeta+d2uc1*(beta+half*Pi)+2*duc1*dubeta)
      &   +d2upd)+d2upe
 
         d2sty20 = 2
@@ -899,9 +899,9 @@ c Analytic Fock derivatives
 
         d2stpe = 0
 
-        d2stphi20 = otwe*(-4*Z*(y21*d2sta+d2sty21*a+dsy21*dta+dty21*dsa)
-     &   +Z*(y20*d2stb+d2sty20*b+dsy20*dtb+dty20*dsb) +
-     &   (4*Z/Pi)*
+        d2stphi20 = otwe*(-4*Zfock*(y21*d2sta+d2sty21*a+dsy21*dta+dty21*dsa)
+     &   +Zfock*(y20*d2stb+d2sty20*b+dsy20*dtb+dty20*dsb) +
+     &   (4*Zfock/Pi)*
      &   (c1*d2stbeta+d2stc1*(beta+half*Pi)+dsc1*dtbeta+dtc1*dsbeta)
      &   +d2stpd) +d2stpe
 
@@ -945,13 +945,13 @@ c Analytic Fock derivatives
 
         d2suc1 = s*(s2 + t2)/Root3
 
-        d2supd = -8*Z
+        d2supd = -8*Zfock
 
-        d2supe = Z/2
+        d2supe = Zfock/2
 
-        d2suphi20 = otwe*(-4*Z*(y21*d2sua+d2suy21*a+dsy21*dua+duy21*dsa)
-     &   +Z*(y20*d2sub+d2suy20*b+dsy20*dub+duy20*dsb) +
-     &   (4*Z/Pi)*
+        d2suphi20 = otwe*(-4*Zfock*(y21*d2sua+d2suy21*a+dsy21*dua+duy21*dsa)
+     &   +Zfock*(y20*d2sub+d2suy20*b+dsy20*dub+duy20*dsb) +
+     &   (4*Zfock/Pi)*
      &   (c1*d2subeta+d2suc1*(beta+half*Pi)+dsc1*dubeta+duc1*dsbeta)
      &   +d2supd) +d2supe
 
@@ -1003,9 +1003,9 @@ c Analytic Fock derivatives
 
         d2utpe = 0
 
-        d2utphi20 = otwe*(-4*Z*(y21*d2uta+d2uty21*a+duy21*dta+dty21*dua)
-     &   +Z*(y20*d2utb+d2uty20*b+duy20*dtb+dty20*dub) +
-     &   (4*Z/Pi)*
+        d2utphi20 = otwe*(-4*Zfock*(y21*d2uta+d2uty21*a+duy21*dta+dty21*dua)
+     &   +Zfock*(y20*d2utb+d2uty20*b+duy20*dtb+dty20*dub) +
+     &   (4*Zfock/Pi)*
      &   (c1*d2utbeta+d2utc1*(beta+half*Pi)+duc1*dtbeta+dtc1*dubeta)
      &   +d2utpd) +d2utpe
 

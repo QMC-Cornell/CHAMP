@@ -22,6 +22,8 @@ module initialization_mod
   pi=four*datan(one)
 
 ! default values for input variables
+  iperiodic=0
+  ibasis=1
   hb = 0.5d0
   etrial = 0.d0
   nstep=1000
@@ -30,6 +32,8 @@ module initialization_mod
   nblkeq=1
   nconf=100
   call object_modified ('nconf')
+  nstep_total = nstep * nproc
+  nconf_total = nconf * nproc
   nconf_new=0
   idump=0
   irstar=0
@@ -51,39 +55,101 @@ module initialization_mod
   icut_e=0
   nfprod=50
   tau=0.01
-  
-!0  -4   1  0                             nloc,numr,nforce,nefp
-!2 1                                     nelec,nup
+  nloc=0
+  call object_modified ('nloc')
+  numr=-3
+  call object_modified ('numr')
+  nforce=1
+  call object_modified ('nforce')
+  nefp=0
+  nquad=6
+  ndim=3
+  call object_modified ('ndim')
+  inum_orb=0
+  iorb_used=0
+  iorb_format='unused'
 
+! csfs
+  ncsf=1
+  csf_coef(1:ncsf,1) = 1.d0
+  ndet_in_csf (1:ncsf) = 1
+  iwdet_in_csf(1,1:ncsf) = 1
+  cdet_in_csf(1,1:ncsf) = 1.d0
+  call object_modified ('ncsf')
+  call object_modified ('csf_coef')
+  call object_modified ('ndet_in_csf')
+  call object_modified ('iwdet_in_csf')
+  call object_modified ('cdet_in_csf')
+
+! Jastrow variables
+  ianalyt_lap=1
+  ijas=4
+  isc=2
+  call object_modified ('isc')
+  nspin1=1
+  nspin2=1
+  nord=5
+  ifock=0
+  scalek(1)=0.5d0
+  call object_modified ('scalek')
+  a21=0.d0
+  norda=5
+  nordb=5
+  nordc=5
+  call object_modified ('norda')
+  call object_modified ('nordb')
+  call object_modified ('nordc')
 
 ! correlated sampling index
   iwf = 1
+  nwftype=1
+  iwftype(1)=1
   call object_modified ('iwf')
  
-! number of parameters to optimized
+! optimization
   nparm=0
+  nblk_max=10000
+  increase_blocks_limit=nblk_max
+  add_diag(1) = 1.d-8
+  diag_stab = add_diag(1)
+  p_var=0.d0
+  call object_modified ('p_var')
+!  ndata=1000
+  icusp=1
+  icusp2=1
+  nsig=5
+  ncalls=1000
+  iopt=21101
+  ipr_opt=1
+  i3body=0
+  irewgt=0
+  iaver=0
+  istrech=0
+  ipos=0
+!  idcds=0
+!  idcdr=0
+!  idcdt=0
+!  id2cds=0
+!  id2cdr=0
+!  id2cdt=0
+!  idbds=0
+!  idbdr=0
+!  idbdt=0
+  nparml=0
+  nparmb=5
+  nparmc=15
+  nparmf=0
+  nparmcsf=0
+  nparms=0
+  nparmg=0
+
+! initialize saved configuration indice iconfg (necessary for some compilers)
+!  isaved=0
+!  iconfg=1
 
 !  write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
 
  end subroutine initialization_before_parser
-
-! ===================================================================================
-  subroutine initialization_after_parser
-! -----------------------------------------------------------------------------------
-! Description   : initialization of some global variables after parser
-!
-! Created       : J. Toulouse, 11 Mar 2009
-! -----------------------------------------------------------------------------------
-  implicit none
-  include 'commons.h'
-
-  write(6,*)
-  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
-
-
-  write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
-
- end subroutine initialization_after_parser
 
 ! ===================================================================================
   subroutine initialization
@@ -98,12 +164,7 @@ module initialization_mod
   write(6,*)
   write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
 
-! mode
-  call set_mode
-
 ! set nstep_total
-  nstep_input = nstep
-!  nstep = max(1,int(nstep/nproc))
   nstep_total = nstep * nproc
 
 ! total number of configurations

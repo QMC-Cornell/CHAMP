@@ -320,7 +320,7 @@ jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o commons.h
 main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o control_mod.o \
 	debug_mod.o density_mod.o dipole_moment_mod.o dmc_mod.o \
-	extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o \
+	extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o jastrow_mod.o \
 	optimization_mod.o orbitals_mod.o periodic_jastrow_mod.o print_mod.o \
 	psi_mod.o testing_mod.o commons.h
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o

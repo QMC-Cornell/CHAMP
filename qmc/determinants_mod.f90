@@ -35,6 +35,59 @@ module determinants_mod
 
   contains
 
+!===========================================================================
+  subroutine determinants_rd
+!---------------------------------------------------------------------------
+! Description : read Slater determinants
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'orb_coefs_rd'
+  character(len=500) line
+  integer iostat, elec_i, det_i
+
+! begin
+  call object_provide ('nelec')
+
+  det_i = 0
+  iworbd(:,:) = 0.d0
+
+  do
+   read(unit_input,'(a)',iostat=iostat) line
+!   write(6,*) 'line >',trim(line),'<'
+
+!  no next line found
+   if(iostat < 0) then
+     call die (lhere, 'error while reading determinants')
+   endif
+
+!  convert to lower case
+   call upplow (line)
+
+!  exit when 'end' is read
+   if (index(line,'end') /= 0) exit
+
+   det_i = det_i + 1
+   if (det_i > MDET) then
+       call die (lhere, ' det_i='+det_i+' > MDET='+MDET)
+   endif
+
+   read(line,*,iostat=iostat) (iworbd(elec_i,det_i),elec_i=1,nelec)
+   if(iostat < 0) then
+     call die (lhere, 'error while reading determinants')
+   endif
+  enddo
+
+  ndet = det_i
+  call object_modified ('ndet')
+!!!  call object_modified ('iworbd') iworbd is sorted after reading csfs
+
+  end subroutine determinants_rd
+
 !! ==============================================================================
 !  subroutine det_orb_lab_srt_bld
 !! ------------------------------------------------------------------------------

@@ -131,6 +131,7 @@ program champ
    enddo
    call die (lhere)
   endif
+  call set_mode
 
 # if defined (MPI)
 !  check mode
@@ -172,7 +173,6 @@ program champ
   if (use_parser) then
     call initialization_before_parser
     call main_menu
-    call initialization_after_parser
   else
     call read_input
     if (index(mode,'fit') /= 0) then
@@ -186,21 +186,21 @@ program champ
       call main_menu
     endif
 
-!   do default run is not already done
-    if(.not. run_done) then
-      call run_default
-    endif
-
   endif
 
-   if (l_warning) then
-    write(6,*)
-    write(6,'(a)') 'Some warnings were encountered.'
-   endif
+! do default run is not already done
+  if(.not. run_done) then
+    call run_default
+  endif
 
+  if (l_warning) then
    write(6,*)
-   call print_cpu_time
-   write(6,'(a)') 'The program ended normally.'
+   write(6,'(a)') 'Some warnings were encountered.'
+  endif
+
+  write(6,*)
+  call print_cpu_time
+  write(6,'(a)') 'The program ended normally.'
 
 # if defined (MPI)
    call mpi_finalize (ierr)

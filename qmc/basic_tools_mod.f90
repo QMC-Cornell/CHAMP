@@ -35,7 +35,8 @@ module basic_tools_mod
                     alloc_logical_1,  &
                     alloc_logical_2,  &
                     alloc_logical_3,  &
-                    alloc_string_1
+                    alloc_string_1,   &
+                    alloc_string_row_1
 
    end interface alloc
 
@@ -59,7 +60,8 @@ module basic_tools_mod
                     release_logical_1,  &
                     release_logical_2,  &
                     release_logical_3,  &
-                    release_string_1
+                    release_string_1,   &
+                    release_string_row_1
 
    end interface release
 
@@ -93,7 +95,8 @@ module basic_tools_mod
    module procedure append_integer_0_to_1, &
                     append_integer_1_to_1, &
                     append_double_0_to_1,  &
-                    append_double_1_to_1
+                    append_double_1_to_1, &
+                    append_string_0_to_1
 
   end interface append
 
@@ -191,7 +194,8 @@ module basic_tools_mod
   interface mysize
 !---------------------------------------------------------------
    module procedure mysize_integer_1, &
-                    mysize_double_1
+                    mysize_double_1, &
+                    mysize_string_1
   end interface mysize
 
 !===============================================================
@@ -334,8 +338,7 @@ module basic_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'alloc_string_1'
-  integer all_err
-  integer i, object_dim, dim_min
+  integer i, object_dim, dim_min, all_err
   character(len=max_string_len), allocatable  :: object_temp (:)
 
 ! begin
@@ -383,6 +386,71 @@ module basic_tools_mod
   endif
 
   end subroutine alloc_string_1
+
+!===========================================================================
+  subroutine alloc_string_row_1 (object_name, object, dim1)
+!---------------------------------------------------------------------------
+! Description : allocate a object
+!
+! Created     : J. Toulouse, 11 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)        :: object_name
+  integer, intent(in)                 :: dim1
+
+! output
+  type (type_string_row), allocatable, intent(out)   :: object (:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'alloc_string_row_1'
+  integer i, object_dim, dim_min, all_err
+  type (type_string_row), allocatable          :: object_temp (:)
+
+! begin
+
+! allocate object if not already allocated
+  if(.not. allocated(object)) then
+
+   allocate (object(dim1), stat = all_err)
+
+   if(all_err /= 0) then
+    write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+    write(6,*) trim(lhere),': dimensions are ', dim1
+    call die (lhere,'allocation failed')
+   endif
+
+   else
+
+! resize object if already allocated with different dimension
+   object_dim = size(object)
+
+   if(object_dim /= dim1) then
+
+    dim_min =  min(object_dim, dim1)
+
+    allocate (object_temp (dim_min))
+
+    do i = 1, dim_min
+     object_temp(i) = object(i)
+    enddo
+
+    call release (object_name, object)
+
+    allocate (object (dim1))
+
+    do i = 1, dim_min
+     object(i) = object_temp(i)
+    enddo
+
+    deallocate (object_temp)
+
+   endif
+
+  endif
+
+  end subroutine alloc_string_row_1
 
 !===========================================================================
   subroutine alloc_integer_1 (object_name, object, dim1) ! new
@@ -2243,8 +2311,38 @@ module basic_tools_mod
    endif
   endif
 
-
   end subroutine release_string_1
+
+!===========================================================================
+  subroutine release_string_row_1 (object_name, object)
+!---------------------------------------------------------------------------
+! Description : deallocate object
+!
+! Created     : J. Toulouse, 11 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)                       :: object_name
+
+! input/output
+  type (type_string_row), allocatable, intent(inout)   :: object(:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'release_string_row_1'
+  integer all_err
+
+
+! build object if not allocated
+  if (allocated(object)) then
+   deallocate(object, stat = all_err)
+   if(all_err /= 0) then
+    write(6,*) trim(lhere),': deallocation for object ',trim(object_name),' failed'
+    call die (lhere, 'deallocation failed')
+   endif
+  endif
+
+  end subroutine release_string_row_1
 
 !===========================================================================
   subroutine flatten_integer_2 (object_1, object_2, dim1, dim2)
@@ -2452,6 +2550,37 @@ module basic_tools_mod
   array (array_nb) = double
 
   end subroutine append_double_0_to_1
+
+!===========================================================================
+  subroutine append_string_0_to_1 (array, string)
+!---------------------------------------------------------------------------
+! Description : append a string into an array
+!
+! Created     : J. Toulouse, 11 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: string
+
+! input/output
+  character(len=*), allocatable, intent(inout) :: array (:)
+
+! local
+  integer array_nb, i
+
+! begin
+!  write(6,*) "string=",string
+  array_nb = mysize(array)
+  array_nb = array_nb + 1
+  call alloc ('array', array, array_nb)
+  array (array_nb) = string
+
+!  do i=1,array_nb
+!  write(6,*) "array >",trim(array(i)),'<'
+!  enddo
+
+  end subroutine append_string_0_to_1
 
 !===========================================================================
   subroutine append_integer_1_to_1 (array1, array2)
@@ -3831,6 +3960,34 @@ module basic_tools_mod
 
   return
   end function mysize_double_1
+
+!===========================================================================
+  function mysize_string_1 (array) result(result)
+!---------------------------------------------------------------------------
+! Description : return size of array if allocated, and 0 if not allocated
+! Description : this is needed since size(array) is not 0 if array is not allocated but has been previously allocated
+!
+! Created     : J. Toulouse, 11 Apr 2009
+! --------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), allocatable, intent(in) :: array (:)
+
+! output
+  integer :: result
+
+! begin
+
+  if (.not. allocated (array)) then
+   result = 0
+  else
+   result = size(array)
+  endif
+
+  return
+  end function mysize_string_1
+
 
 !===========================================================================
   function last_element_integer (array) result(result)

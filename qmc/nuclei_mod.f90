@@ -30,7 +30,7 @@ module nuclei_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'nuclei_menu'
-  integer cent_i
+  integer cent_i, dim_i, iwctype_nb, znuc_nb, i, ic, it
 
 ! initialization
   l_convert_from_angstrom_to_bohr = .false.
@@ -47,9 +47,54 @@ module nuclei_mod
    write(6,*)
    write(6,'(a)') ' HELP for nuclei menu:'
    write(6,'(a)') '  nuclei'
+   write(6,'(a)') '   nloc = [integer] type of external potential (default: 0)'
+   write(6,'(a)') '   nquad = [integer] number of quadrature points for pseudopotential (default: 0)'
+   write(6,'(a)') '   nforce = [integer] number of geometries for correlated sampling (default: 1)'
+   write(6,'(a)') '   ndim = [integer] number of dimensions (default: 3)'
+   write(6,'(a)') '   nctype = [integer] number of atomic center types'
+   write(6,'(a)') '   ncent = [integer] number of atomic centers'
+   write(6,'(a)') '   cent : positions of atomic centers'
+   write(6,'(a)') '     0.0   1. 2.1'
+   write(6,'(a)') '    -1.3. 0.3 1.7'
+   write(6,'(a)') '   end'
+   write(6,'(a)') '   iwctype 81 2 ... end : which center type for each center'
+   write(6,'(a)') '   znuc 1.2 0.3 ... end : nuclear charge for each center type'
    write(6,'(a)') '   convert_from_angstrom_to_bohr = [logical] : convert nuclear coordinates from Angstrom to Bohr units (default=false)'
    write(6,'(a)') '  end'
    write(6,*)
+
+  case ('nloc')
+   call get_next_value (nloc)
+   call object_modified ('nloc')
+
+  case ('nforce')
+   call get_next_value (nforce)
+   call object_modified ('nforce')
+   write(6,'(a,i5)') ' number of geometries for correlated sampling calculation = ',nforce
+   call require (lhere, 'nforce <= MFORCE', nforce <= MFORCE)
+
+  case ('ndim')
+   call get_next_value (ndim)
+   call object_modified ('ndim')
+
+  case ('nctype')
+   call get_next_value (nctype)
+   call object_modified ('nctype')
+
+  case ('ncent')
+   call get_next_value (ncent)
+   call object_modified ('ncent')
+
+  case ('iwctype')
+   call get_next_value_list_noalloc ('iwctype', iwctype, iwctype_nb)
+   call object_modified ('iwctype')
+
+  case ('znuc')
+   call get_next_value_list_noalloc ('znuc', znuc, znuc_nb)
+   call object_modified ('znuc')
+
+  case ('geometry')
+   call geometry_rd
 
   case ('convert_from_angstrom_to_bohr')
    call get_next_value (l_convert_from_angstrom_to_bohr)
@@ -63,8 +108,205 @@ module nuclei_mod
 
   enddo ! end loop over menu lines
 
+  if (use_parser) then
+  write(6,'(a,i1)') ' system of dimension ', ndim
+  if(ndim.ne.2.and.ndim.ne.3) stop 'ndim must be 2 or 3'
+  if(ndim.eq.2.and.iperiodic.gt.0) stop 'ndim=2 not yet implemented for periodic systems'
+  if(ndim.eq.2.and.imetro.ne.1.and.index(mode,'vmc').ne.0) stop 'imetro!=1 not yet implemented for ndim=2'
+
+  write(6,'(a,i5)') ' type of external potential: nloc=',nloc
+  if(nloc.lt.-4 .or. nloc.gt.6) stop 'nloc must be between -4 and 6 inclusive'
+  if(nloc.ge.2) then
+     write(6,'(a,i4)') ' number of quadrature points for pseudopotential = ', nquad
+     if (nquad.gt.MPS_QUAD) stop 'nquad > MPS_QUAD'
+
+! warning quantum dots, wire,... stuff not added here
+!  elseif(nloc.eq.-1) then
+!        read(5,*) w0,bext,glande
+!        we=dsqrt(w0*w0+0.25d0*bext*bext)
+!        write(6,'(''spring const of dot pot., w0='',t31,f10.5)') w0
+!        write(6,'(''applied magnetic field., bext='',t31,f10.5)') bext
+!        write(6,'(''effective spring const., we='',t31,f10.5)') we
+!        write(6,'(''Lande factor, glande='',t31,f10.5)') glande
+!       elseif(nloc.eq.-2) then
+!        read(5,*) p1,p2,p3,p4
+!        write(6,'(''quartic dot pot. p1,p2,p3,p4='',t31,9f9.6)') p1,p2,p3,p4
+!       elseif(nloc.eq.-4) then 
+!        read(5,*) wire_w,wire_length,wire_potential_cutoff
+!        we=wire_w  !  this is a quick fix:  needed for the subroutine basis_fns_2dgauss
+!        write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
+   endif
+
+! Warning: periodic stuff not added yet
+!      if(iperiodic.ne.0) then
+!
+!c npoly is the polynomial order for short-range part
+!        read(5,*) npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
+!        write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
+!     &   npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
+!        if(npoly.ne.7) then
+!          write(6,'(''present version works best with npoly=7'')')
+!          stop 'present version works best with npoly=7'
+!        endif
+!
+!        ncoef=npoly+1
+!        if(ncoef.gt.NCOEFX) stop 'ncoef gt NCOEFX'
+!
+!        read(5,*) alattice
+!        do 10 i=1,ndim
+!          read(5,*) (rlatt(k,i),k=1,ndim)
+!          do 10 k=1,ndim
+!   10       rlatt(k,i)=rlatt(k,i)*alattice
+!
+!        write(6,'(/,''Lattice basis vectors'',3(/,3f10.6))')
+!     &   ((rlatt(k,j),k=1,ndim),j=1,ndim)
+!
+!c read the dimensions of the simulation 'cube'
+!        do 20 i=1,ndim
+!          read(5,*) (rlatt_sim(k,i),k=1,ndim)
+!          do 20 k=1,ndim
+!   20       rlatt_sim(k,i)=rlatt_sim(k,i)*alattice
+!
+!        write(6,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
+!    &   ((rlatt_sim(k,j),k=1,ndim),j=1,ndim)
+!
+!c read k-shift for generating k-vector lattice
+!        read(5,*) (rkvec_shift_latt(k),k=1,ndim)
+!        do 22 k=1,ndim
+!   22     if(rkvec_shift_latt(k).ne.0.d0 .and. rkvec_shift_latt(k).ne..5d0)
+!     &    stop 'rkvec_shift_latt components must be 0 or 1/2 to have real orbs'
+!
+!      endif
+
+      call object_provide ('nctype')
+      call object_provide ('ncent')
+      write(6,'(a,i3)') ' number of atomic center types = ', nctype
+      write(6,'(a,i5)') ' number of atomic centers = ', ncent
+      if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
+      if(ncent.gt.MCENT) stop 'ncent > MCENT'
+
+      call object_provide ('iwctype')
+!      call require (lhere, 'iwctype_nb == ncent', iwctype_nb == ncent)
+!      write(6,'(a,200i3)') ' iwctype = ', (iwctype(i),i=1,ncent)
+      do ic=1,ncent
+        if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
+      enddo
+
+!     Determine the number of centers of each type
+      do it=1,nctype
+        ncentyp(it)=0
+        do ic=1,ncent
+          if(iwctype(ic).eq.it) ncentyp(it)=ncentyp(it)+1
+        enddo
+      enddo
+
+      call object_provide ('znuc')
+!      call require (lhere, 'znuc_nb == nctype', znuc_nb == nctype)
+!      write(6,'(a,200f5.1)') ' nuclear charges =', (znuc(i),i=1,nctype)
+
+!     warning Jellium stuff not added yet
+      if(nloc.eq.-3) then ! Jellium RM
+!!MS Jellium sphere plus charge at center
+!        dn_background = nelec - znuc(1)
+!        rs_jel = 1.d0
+!        radius_b = (dn_background*(rs_jel)**3)**(1.d0/3.d0)
+!        zconst = 20 !* 27Aug06
+       else
+        zconst = 0  ! normal case
+      endif
+
+! warning pseudo stuff not added yet
+!c Read in which is the local component of the potential
+!      if(nloc.gt.0) then
+!        read(5,*) (lpotp1(i),i=1,nctype)
+!        write(6,'(''lpotp1='',t31,20i3,(20i3))') (lpotp1(i),i=1,nctype)
+!        do 35 i=1,nctype
+!   35     if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
+!      endif
+
+      write(6,'(a)')' geometry:'
+      if(iperiodic.eq.0) then
+       write(6,'(a)')'                  type  charge           position'
+       do cent_i=1,ncent
+        write(6,'(a,i4,a,i4,3x,f5.1,4x,3f8.5)') ' nucleus # ', cent_i,': ', iwctype(cent_i), znuc(iwctype(cent_i)), (cent(dim_i,cent_i),dim_i=1,ndim)
+       enddo
+      endif
+
+
+! Convert center positions from primitive lattice vector units to cartesian coordinates
+!     if(iperiodic.ne.0) then
+!       write(6,'(/,''center positions in primitive lattice vector units and in cartesian coordinates'')')
+!       do 66 ic=1,ncent
+!         do 62 k=1,ndim
+!  62       cent_tmp(k)=cent(k,ic)
+!         do 65 k=1,ndim
+!           cent(k,ic)=0
+!           do 65 i=1,ndim
+!  65         cent(k,ic)=cent(k,ic)+cent_tmp(i)*rlatt(k,i)
+!  66     write(6,'(''center'',i4,1x,''('',3f9.5,'')'',1x,''('',3f9.5,'')'')') ic, (cent_tmp(k),k=1,ndim),(cent(k,ic),k=1,ndim)
+!     endif
+!     write(6,*)
+
+!     if(nloc.gt.0) then
+!       write(6,'(/,''pseudopotential calculation'')')
+!       if(nloc.eq.1) then
+!         call readps
+!        elseif(nloc.eq.2.or.nloc.eq.3) then
+!         call readps_tm
+!        elseif(nloc.eq.4 .or. nloc.eq.5) then
+!         call readps_champ
+!        elseif(nloc.eq.6) then
+!         call readps_gauss
+!        else
+!         stop 'nloc >= 7'
+!       endif
+!       do 67 ict=1,nctype
+!         if(npotd(ict).ge.4 .and. nquad.lt.12) then
+!           nquad=12
+!           write(6,'(''Number of quadrature points, nquad, reset to 12 because npotd='',i2)') npotd(ict)
+!         endif
+!         if(npotd(ict).ge.5 .and. nquad.lt.24) then
+!           nquad=24
+!           write(6,'(''Number of quadrature points, nquad, reset to 24 because npotd='',i2)') npotd(ict)
+!         endif
+!         if(npotd(ict).ge.6) write(6,'(''Warning: We are not ensuring the right number of quadrature points for npotd >=6'')')
+!  67   continue
+!       call gesqua(nquad,xq0,yq0,zq0,wq)
+!        if(ipr.ge.0) then
+!          write(6,'(''Quadrature points for nonlocal pseudopotential'')')
+!          do 68 i=1,nquad
+!   68       write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+!        endif
+!      endif
+!
+!      if(iperiodic.ne.0) call set_ewald 
+!
+! Compute total nuclear charge and compare to number of electrons
+! Warn if not equal, stop if they differ by more than 2.
+!      znuc_tot=0
+!      do 69 ic=1,ncent
+!        ict=iwctype(ic)
+!   69   znuc_tot=znuc_tot+znuc(ict)
+!      if(iperiodic.ne.0) znuc_tot=znuc_tot*vcell_sim/vcell
+!      if(znuc_tot.ne.dfloat(nelec)) write(6,'(''znuc_tot='',f6.1,'' != nelec='',i4)') znuc_tot,nelec
+!JT      if(abs(znuc_tot-dfloat(nelec)).gt.3) stop 'abs(znuc_tot - nelec) > 3'
+
+!      if(nloc.ne.-3) then ! RM
+!        if(abs(znuc_tot-dfloat(nelec)).gt.6) stop 'abs(znuc_tot - nelec) > 6'
+!      endif
+
+! TEMPORARY: Warning: we are not calling readforce and only using one geometry
+!     if(index(mode,'fit').ne.0) then 
+!       nforce=1
+!       nwftype=1
+!       iwftype(1)=1
+!     endif
+
+  endif ! if use_parser
+
 ! convert unit of nuclear coordinates
   if (l_convert_from_angstrom_to_bohr) then
+   write(6,*)
    write(6,'(a)') ' Converting nuclear coordinates from Angstrom to Bohr:'
    call object_provide ('ncent')
    call object_provide ('ndim')
@@ -75,16 +317,84 @@ module nuclei_mod
     write(6,'(a,i4,a,3f8.5)') ' center # ',cent_i,' : ',cent(1:ndim,cent_i)
    enddo
 !  recalculate nuclear potential energy
-   call object_provide ('znuc')
-   call object_provide ('iwctype')
-   call pot_nn(cent,znuc,iwctype,ncent,pecent)
-   write(6,'(a,f14.7)') ' recalculting nuclear potential energy: pecent=',pecent
-   call object_modified ('pecent')
+!   call object_provide ('znuc')
+!   call object_provide ('iwctype')
+!   call pot_nn(cent,znuc,iwctype,ncent,pecent)
+!   write(6,'(a,f14.7)') ' recalculting nuclear potential energy: pecent=',pecent
+!   call object_modified ('pecent')
   endif
+
+! get nuclear potential energy
+  call object_provide ('znuc')
+  call object_provide ('iwctype')
+  call object_provide ('ncent')
+  call pot_nn(cent,znuc,iwctype,ncent,pecent)
+  write(6,'(a,f14.7)') ' nuclear potential energy: pecent=',pecent
+  call object_modified ('pecent')
 
   write(6,'(a)') 'End of nuclei menu ---------------------------------------------------------------------------------------'
 
   end subroutine nuclei_menu
+
+! ==============================================================================
+  subroutine geometry_rd
+! ------------------------------------------------------------------------------
+! Description   : read types, charges and geometry of nuclei
+!
+! Created       : J. Toulouse, 07 Apr 2009
+! ------------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'geometry_rd'
+  character(len=500) line
+  integer iostat, cent_i, dim_i
+
+! begin
+  call object_provide ('ndim')
+
+  cent_i = 0
+  iwctype (:) = 0
+  znuc (:) = 0.d0
+  cent (:,:) = 0.d0
+
+  do
+   read(unit_input,'(a)',iostat=iostat) line
+!   write(6,*) 'line >',trim(line),'<'
+
+!  no next line found
+   if(iostat < 0) then
+     call die (lhere, 'error while reading geometry')
+   endif
+
+!  convert to lower case
+   call upplow (line)
+
+!  exit when 'end' is read
+   if (index(line,'end') /= 0) exit
+
+   cent_i = cent_i + 1
+   if (cent_i > MCENT) then
+       call die (lhere, ' cent_i='+cent_i+' > MCENT='+MCENT)
+   endif
+
+   read(line,*,iostat=iostat) iwctype(cent_i), znuc(iwctype(cent_i)), (cent(dim_i,cent_i),dim_i=1,ndim)
+   if(iostat < 0) then
+     call die (lhere, 'error while reading geometry')
+   endif
+  enddo
+
+  ncent = cent_i
+  nctype = maxval(iwctype)
+  if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
+  call object_modified ('ncent')
+  call object_modified ('nctype')
+  call object_modified ('iwctype')
+  call object_modified ('znuc')
+  call object_modified ('cent')
+
+  end subroutine geometry_rd
 
 ! ==============================================================================
   subroutine mass_nucl_bld

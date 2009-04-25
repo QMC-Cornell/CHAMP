@@ -106,9 +106,11 @@ module orbitals_mod
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
+  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orbitals_menu'
+  integer bas_i, orb_i
 
 ! begin
   write(6,*)
@@ -123,6 +125,9 @@ module orbitals_mod
    write(6,*)
    write(6,'(a)') 'HELP for orbitals menu:'
    write(6,'(a)') ' orbitals'
+   write(6,'(a)') '  inum_orb = [integer]: use numerical orbitals? (default: 0)'
+   write(6,'(a)') '  iorb_used = [integer]: drop orbitals not used in the ground-state wave function? (default: 0)'
+   write(6,'(a)') '  iorb_format = [string]: default format for periodic orbitals (default=unused)'
    write(6,'(a)') '  energies -2.4 -0.2 0.44 7.4 end: orbital energies for perturbative optimization method'
    write(6,'(a)') '  symmetry A1G A2U EG EU end: symmetry labels for orbitals, default: no symmetry'
    write(6,'(a)') '  orthonormalize = [bool] orthonormalize orbitals once of current wave function? (default=false)'
@@ -137,6 +142,18 @@ module orbitals_mod
    write(6,'(a)') '  file_orbitals_pw_tm_out = [string] : output file for orbitals on plane waves in TM format (default=orbitals_pw_tm.out)'
    write(6,'(a)') ' end'
    write(6,*)
+
+  case ('inum_orb')
+   call get_next_value (inum_orb)
+
+  case ('iorb_used')
+   call get_next_value (iorb_used)
+
+  case ('iorb_format')
+   call get_next_value (iorb_format)
+
+  case ('coefficients')
+   call orb_coefs_rd
 
   case ('energies')
    call orb_energies_rd
@@ -183,6 +200,58 @@ module orbitals_mod
   end select
 
   enddo ! end loop over menu lines
+
+  if (use_parser) then
+  call object_provide ('norb')
+  write(6,'(a,i5)') ' number of orbitals = ',norb
+
+  call object_provide ('nbasis')
+  write(6,'(a)') ' orbital coefficients:'
+  do orb_i=1,norb
+     write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
+  enddo
+
+
+!   write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
+!     if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.abs(inum_orb).ne.4.and.abs(inum_orb).ne.5.and.abs(inum_orb).ne.6
+!    &   .and.abs(inum_orb).ne.8)) then
+!        stop 'abs(inum_orb) must be 0, 4 or 6 or 8'
+!     endif
+! If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
+!     if(inum_orb .ne. 0 .and. ndim.eq.3) then
+!       read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap
+!       write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
+!        if(abs(inum_orb).eq.8) then
+!          if(igrad_lap .eq. 0) then
+!            write(6,'(''Interpolate orbitals, calculate gradient and Laplacian from interpolated orbitals'')')
+!           elseif(igrad_lap .eq. 1) then
+!            write(6,'(''Interpolate orbitals and Laplacian, calculate gradient from interpolated orbitals'')')
+!           elseif(igrad_lap .eq. 2) then
+!            write(6,'(''Interpolate orbitals, gradient and Laplacian'')')
+!           else
+!            stop 'igrad_lap must equal 0, 1 or 2'
+!          endif
+!        endif
+!     endif
+
+! get normalization for basis functions
+  if(ibasis.eq.3.and.numr.eq.0) then
+    call basis_norm_dot(1,1)
+   else
+    call basis_norm(1,1)
+  endif
+  
+! orbital coefficients on normalized and orthonormalized basis functions
+!  if(.not.(ibasis.ge.3 .and. ibasis.le.6)) then ! do not do it for quantum dots, rings, etc...
+   if (inum_orb == 0) then ! only if non-numerical orbitals
+     call coef_orb_on_norm_basis_from_coef (1)
+   endif
+!  if (trim(basis_functions_varied) == 'orthonormalized') then
+!   call coef_orb_on_ortho_basis_from_coef
+!  endif
+!  endif
+
+  endif ! if use_parser
 
 ! orthonormalization the orbitals
   if (l_ortho_orb_now) then
@@ -585,6 +654,62 @@ module orbitals_mod
   endif
 
   end subroutine orb_occupations_bld
+
+!===========================================================================
+  subroutine orb_coefs_rd
+!---------------------------------------------------------------------------
+! Description : read orbital coefficients
+!
+! Created     : J. Toulouse, 07 Apr 2009
+!---------------------------------------------------------------------------
+  implicit none
+  include 'commons.h'
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'orb_coefs_rd'
+  character(len=50000) line
+  integer iostat, bas_i, orb_i
+
+! begin
+  call object_provide ('nbasis')
+
+  orb_i = 0
+  coef(:,:,:)= 0.d0
+
+  do
+   read(unit_input,'(a)',iostat=iostat) line
+!   write(6,*) 'line >',trim(line),'<'
+
+!  no next line found
+   if(iostat < 0) then
+     call die (lhere, 'error while reading orbital coefficients')
+   endif
+
+!  convert to lower case
+   call upplow (line)
+
+!  exit when 'end' is read
+   if (index(line,'end') /= 0) exit
+
+   orb_i = orb_i + 1
+   if (orb_i > MORB) then
+       call die (lhere, ' orb_i='+orb_i+' > MORB='+MORB)
+   endif
+   read(line,*,iostat=iostat) (coef(bas_i,orb_i,1),bas_i=1,nbasis)
+   if(iostat < 0) then
+     call die (lhere, 'error while reading orbital coefficients')
+   endif
+  enddo
+
+  norb = orb_i
+  call object_modified ('norb')
+  call object_modified ('coef')
+
+! total number of orbitals
+  orb_tot_nb = norb
+  call object_modified ('orb_tot_nb')
+
+  end subroutine orb_coefs_rd
 
 !===========================================================================
   subroutine orb_energies_rd

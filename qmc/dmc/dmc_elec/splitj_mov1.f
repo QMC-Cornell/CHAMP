@@ -10,7 +10,7 @@ c Written by Cyrus Umrigar
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod

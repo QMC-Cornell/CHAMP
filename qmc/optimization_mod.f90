@@ -34,11 +34,10 @@ module optimization_mod
   real(dp)                :: decrease_error_limit  = 0.d0
   logical                 :: l_increase_blocks     = .false.
   real(dp)                :: increase_blocks_factor = 2.d0
-  real(dp)                :: increase_blocks_limit  = 0.d0
   logical                 :: l_decrease_p_var = .false.
   logical                 :: l_ortho_orb_vir_to_orb_occ = .false.
 
-  real(dp)                :: energy_threshold          = 0.001d0
+  real(dp)                :: energy_threshold          = 1.d-3
   real(dp)                :: gradient_norm_threshold   = 0.1d0
 
   real(dp)                :: delta_param_norm
@@ -85,7 +84,7 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'optimization_menu'
-  integer param_type_i
+  integer param_type_i, param_i, na1, na2, ia, isp, it
   logical l_launch_opt
 
 ! begin
@@ -106,8 +105,8 @@ module optimization_mod
   l_opt_exp = .false.
   l_opt_geo = .false.
 
-! temporary error messages
-  if (nopt_iter <= 0) then
+! temporary error message
+  if (nopt_iter <= 0 .and. .not. use_parser) then
    call die (lhere, 'nopt_iter should be > 0 for optimization.')
   endif
 
@@ -128,15 +127,17 @@ module optimization_mod
    write(6,'(a)') ' newton ... end : menu for Newton optimization method'
    write(6,'(a)') ' linear ... end : menu for linear optimization method'
    write(6,'(a)') ' perturbative ... end : menu for perturbative optimization method'
+   write(6,'(a)') ' p_var = [real] : fraction of variance to minimize (default=0)'
    write(6,'(a)') ' stabilize  = [logical] stabilize the minimization? (default=true)'
    write(6,'(a)') ' stabilization : choice of stabilization of the minimization'
    write(6,'(a)') '              = identity: add multiple of identity matrix to Hessian or Hamiltonian (default)'
    write(6,'(a)') '              = overlap: add multiple of overlap matrix to Hamiltonian (only for linear method)'
+   write(6,'(a)') ' add_diag     = [real] : stabilization constant (default=1.d-8)'
    write(6,'(a)') ' add_diag_max = [real] : maximum allowed value of add_diag (default=1.d10)'
    write(6,'(a)') ' reset_add_diag = [bool] : reset add_diag to add_diag_reset_value at each step before adjustment (default=true)'
    write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-12)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
-   write(6,'(a)') ' iter_opt_max_nb = [integer] : maximun number of optimization iterations (default=nopt_iter)'
+   write(6,'(a)') ' iter_opt_max_nb = [integer] : maximum number of optimization iterations (default=100)'
    write(6,'(a)') ' last_run = [logical] : perform a last run with the last predicted parameters? (default=true)'
    write(6,'(a)') ' increase_accuracy = [logical] : default=true, increase statistical accuracy at each step?'
    write(6,'(a)') ' decrease_error = [logical] : default=true, decrease statistical error at each step?'
@@ -145,10 +146,10 @@ module optimization_mod
    write(6,'(a)') ' decrease_error_limit = [real] : default=energy_threshold/2, decrease statistical error at each step until this limit'
    write(6,'(a)') ' increase_blocks = [logical] : default=false, increase number of blocks at each step?'
    write(6,'(a)') ' increase_blocks_factor = [real] : default=2, increase number of blocks at each step by this factor'
-   write(6,'(a)') ' increase_blocks_limit = [real] : default=nblk_max, increase number of blocks at each step until this limit'
+   write(6,'(a)') ' increase_blocks_limit = [integer] : default=10000, increase number of blocks at each step until this limit'
    write(6,'(a)') ' check_convergence = [logical] : default=true, check and stop if energy difference is less than tolerance?'
    write(6,'(a)') ' check_convergence_nb = [integer] : default=1, number of consecutive steps energy difference must be less than tolerance before stopping'
-   write(6,'(a)') ' energy_threshold = [real] : default=tol_energy, threshold on energy for stopping criterium'
+   write(6,'(a)') ' energy_threshold = [real] : threshold on energy for stopping criterium (default=1.d-3)'
    write(6,'(a)') ' casscf = [logical] : default=false, is it a CASSCF wave function? If true, help the program by removing redundant active-active excitations for orbital optimization'
    write(6,'(a)') ' check_redundant_orbital_derivative = [logical] : default=true, check for additional redundancies in orbital derivatives'
    write(6,'(a)') ' deriv2nd = [logical] : default=true, compute second-order wave function derivatives if necessary?'
@@ -185,17 +186,28 @@ module optimization_mod
   case ('perturbative')
    call opt_ptb_menu
 
+  case ('p_var')
+   call get_next_value (p_var)
+   call object_modified ('p_var')  
+   call require (lhere, 'p_var >= 0 and p_var =< 1', p_var >= 0.d0 .and. p_var <= 1.d0)
+
   case ('iter_opt_min_nb')
    call get_next_value (iter_opt_min_nb)
 
   case ('iter_opt_max_nb')
    call get_next_value (iter_opt_max_nb)
+   nopt_iter = iter_opt_max_nb
 
   case ('last_run')
    call get_next_value (l_last_run)
 
   case ('stabilize')
    call get_next_value (l_stab)
+
+  case ('add_diag')
+   call get_next_value (add_diag(1))
+   diag_stab = add_diag(1)
+   call object_modified ('diag_stab')
 
   case ('reset_add_diag')
    call get_next_value (l_reset_add_diag)
@@ -242,6 +254,7 @@ module optimization_mod
   case ('increase_blocks_limit')
    call get_next_value (increase_blocks_limit)
    call require (lhere, 'increase_blocks_limit > 0', increase_blocks_limit > 0) !fp
+   nblk_max = increase_blocks_limit
 
   case ('check_convergence')
    call get_next_value (l_check_convergence)
@@ -253,6 +266,8 @@ module optimization_mod
   case ('energy_threshold')
    call get_next_value (energy_threshold)
    call require (lhere, 'energy_threshold > 0', energy_threshold > 0) !fp
+   tol_energy = energy_threshold
+   call object_modified ('energy_threshold')
 
   case ('casscf')
    call get_next_value (l_casscf)
@@ -302,6 +317,15 @@ module optimization_mod
   end select
 
   enddo ! end loop over menu lines
+
+  write(6,'(a,i4)') ' maximum number of iterations = ', iter_opt_max_nb
+  write(6,'(a,1pd9.1)') ' stabilization constant: add_diag=',add_diag(1)
+  write(6,'(a,f12.4)') ' fraction of variance: p_var=',p_var
+  write(6,'(a,e12.4)') ' energy threshold for convergence =',energy_threshold
+
+  if(iter_opt_max_nb /= 0) igradhess=1
+  if(iter_opt_max_nb /= 0 .and. nforce > 1) stop 'nforce > 1 not allowed in optimization. At present can optim 1 wf only'
+  if(iter_opt_max_nb /= 0 .and. (MWF.lt.3 .or. MFORCE.lt.3)) stop 'for optimization MWF and MFORCE should be >=3'
 
 ! set some default values
   if (decrease_error_limit == 0.d0 ) then
@@ -353,9 +377,126 @@ module optimization_mod
    end select
   enddo
 
+  if (use_parser) then
+
+! default csf parameters to optimize
+  call object_provide ('ncsf')
+  nparmcsf_input=ncsf-1
+  if(nparmcsf_input > MPARMD) call die (lhere, ' nparmcsf > MPARMD')
+  do param_i = 1, nparmcsf_input
+    iwcsf(param_i) = param_i + 1
+  enddo
+  call object_modified ('iwcsf')
+  if(nparmcsf_input.gt.ncsf) then
+      stop 'nparmcsf must be <= ncsf'
+   endif
+  if(nparmcsf_input.eq.ncsf) then
+     write(6,'(a,i5,a,i5)') ' Warning: since normalization of wavefn. is arb. nparmcsf=',nparmcsf_input,' should be <= ncsf-1=',ncsf-1
+  endif
+
+
+! default jastrow parameters to optimize
+  if(ijas.le.3) then
+   na1=nspin1
+   na2=nspin2
+  else
+   na1=1
+   na2=nctype
+  endif
+  nparmot=0
+  do ia=na1,na2
+   nparma(ia)=4
+  enddo
+  do isp=nspin1,nspin2b
+   nparmb(isp)=5
+  enddo
+  do it=1,nctype
+   nparmc(it)=15
+  enddo
+  if(ijas.ge.4.and.ijas.le.6) then
+    do it=1,nctype
+          if(numr.le.0) then
+! All-electron with analytic slater basis
+            if((norda.eq.0.and.nparma(it).gt.0).or.(norda.gt.0 .and. nparma(it).gt.norda+1)) then
+              write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
+              stop 'nparma too large for norda in all-electron calculation'
+            endif
+           else
+! Pseudopotential with numerical basis (cannot vary a(1) or a(2)
+            if(norda.eq.1) stop 'makes no sense to have norda=1 for numr>0'
+            if((norda.eq.0.and.nparma(it).gt.0).or.(norda.gt.0 .and. nparma(it).gt.norda-1)) then
+              write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
+              stop 'nparma too large for norda in pseudopot calculation'
+            endif
+          endif
+          if(isc.le.10 .and.((nordc.le.2.and.nparmc(it).gt.0)           &
+          .or.(nordc.eq.3.and.nparmc(it).gt.2).or.(nordc.eq.4.and.nparmc(it).gt.7)  &
+          .or.(nordc.eq.5.and.nparmc(it).gt.15).or.(nordc.eq.6.and.nparmc(it).gt.27)&
+          .or.(nordc.eq.7.and.nparmc(it).gt.43))) then
+            write(6,'(''it,nordc,nparmc(it)'',3i5)') it,nordc,nparmc(it)
+            stop 'nparmc too large for nordc in J_een with cusp conds'
+          endif
+          if(isc.gt.10 .and.((nordc.le.1.and.nparmc(it).gt.0).or.(nordc.eq.2.and.nparmc(it).gt.2) &
+          .or.(nordc.eq.3.and.nparmc(it).gt.6).or.(nordc.eq.4.and.nparmc(it).gt.13)               &
+          .or.(nordc.eq.5.and.nparmc(it).gt.23).or.(nordc.eq.6.and.nparmc(it).gt.37)              &
+          .or.(nordc.eq.7.and.nparmc(it).gt.55))) then
+            write(6,'(''it,nordc,nparmc(it)'',3i5)') it,nordc,nparmc(it)
+            stop 'nparmc too large for nordc without cusp conds'
+          endif
+     enddo
+! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
+        do isp=1,nspin1,nspin2b
+            if((nordb.eq.0.and.nparmb(isp).gt.0).or.(nordb.gt.0 .and. nparmb(isp).gt.nordb)) then
+              write(6,'(''isp,nordb,nparmb(isp)'',3i5)') isp,nordb,nparmb(isp)
+              stop 'nparmb too large for nordb'
+            endif
+        enddo
+      endif
+! compute nparmj
+      nparmj_input=0
+      npointa(1)=0
+      do ia=na1,na2
+        if(ia.gt.1) npointa(ia)=npointa(ia-1)+nparma(ia-1)
+        nparmj_input=nparmj_input+nparma(ia)
+      enddo
+      do isp=nspin1,nspin2b
+        nparmj_input=nparmj_input+nparmb(isp)
+      enddo
+      npoint(1)=nparmj_input
+      do it=1,nctype
+        if(it.gt.1) npoint(it)=npoint(it-1)+nparmc(it-1)
+        nparmj_input=nparmj_input+nparmc(it)
+      enddo
+      if(nparmj_input.gt.MPARMJ) stop 'nparmj > MPARMJ'
+
+      if(ijas.ge.4.and.ijas.le.6) then
+        do it=1,nctype 
+          iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
+        enddo
+        do isp=nspin1,nspin2b
+          iwjasb(1:nparmb(isp),isp) = (/2, 3, 4, 5, 6/)
+        enddo
+        do  it=1,nctype
+          iwjasc(1:nparmc(it),it) = (/ 3,  5,  7, 8, 9,   11,  13, 14, 15, 16, 17, 18,  20, 21,  23/)
+        enddo
+      endif
+
+      if(icusp2.ge.1 .and. ijas.eq.3 .and. isc.le.7) call cuspinit3(1)
+      if(icusp2.ge.1 .and. ijas.eq.4 .and. isc.le.10) call cuspinit4(0)
+      call object_modified ('nparma')
+      call object_modified ('nparmb')
+      call object_modified ('nparmc')
+      call object_modified ('iwjasa')
+      call object_modified ('iwjasb')
+      call object_modified ('iwjasc')
+
+  endif ! if use_parser
+
 ! set numbers parameters to zero if not optimized
   nparmj = nparmj_input
   nparmcsf = nparmcsf_input
+  call object_modified ('nparmj')
+  call object_modified ('nparmcsf')
   if (.not. l_opt_jas) then
     nparmj=0
     call object_modified ('nparmj')
@@ -468,6 +609,13 @@ module optimization_mod
   write(6,'(a,i3)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i3)') ' Total number of parameters:     ', param_nb
   write(6,*)
+
+! set nparm if new input
+  if (use_parser) then
+   nparm = nparmj+nparmcsf
+   if(nparm > MPARM) stop 'nparm > MPARM'
+  endif
+
 
   write(6,'(a)') 'End of optimization menu ---------------------------------------------------------------------------------'
 

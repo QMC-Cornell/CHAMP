@@ -17,7 +17,7 @@ c routine to print out final results
 c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -92,9 +92,9 @@ c statement functions for error calculation
       errg1(x,x2,i)=error(x,x2,wgcum1(i),wgcm21(i))
       errw(x,x2)=errorn(x,x2,dfloat(iblk))/nstep
       errw1(x,x2)=errorn(x,x2,passes)
-      erric(x,x2)=errori(x,x2,wcum,wcm2,dfloat(iblk))
-      erric1(x,x2)=errori(x,x2,wcum1,wcm21,passes)
-      errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk))
+!JT      erric(x,x2)=errori(x,x2,wcum,wcm2,dfloat(iblk)) ! unused
+!JT      erric1(x,x2)=errori(x,x2,wcum1,wcm21,passes)  ! unused
+!JT      errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk))  ! unused
 
       passes=dfloat(iblk*nstep)
       eval=nconf_global*passes

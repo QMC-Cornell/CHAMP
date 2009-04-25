@@ -11,7 +11,7 @@ c periodic systems.
       parameter (zero=0.d0,one=1.d0,two=2.d0)
 
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

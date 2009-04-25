@@ -23,7 +23,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk

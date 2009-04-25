@@ -285,7 +285,7 @@ sub get_options{
 # hash %options will contain the values.
 
 #JT getopts("grqht:v:n:b:x:ld:w:uc:sej:ED", \%options);
-    getopts("grqht:v:n:b:x:ld:f:w:uc:sej:ao:EDCFSJ", \%options);   #JT
+    getopts("grqht:v:n:b:x:ld:f:w:uc:sej:ao:EDCNFSJ", \%options);   #JT
 
 # shortcuts (which can be changed by individual options)
 # e.g. '-D' is the same as '-d 0.9 -w 1 -t initial -u'
@@ -365,6 +365,11 @@ sub get_options{
 	    printf "Assuming single determinant wavefunction\n";
             $ncsf=1;
         }
+    }
+
+    # create input file in new format
+    if(exists $options{N}){
+          $make_new_file=1;
     }
 
     # output CSFs to file
@@ -449,6 +454,7 @@ sub get_options{
     }else{
     $cyrus_input_file    = $basname . '.' . 'i0';
     }
+    $new_input_file    = $basname . '_vmc_new.inp';
     $csf_file    = $basname . '.' . 'csf';
     $orb_file    = $basname . '.' . 'orb'; # JT
 
@@ -3195,6 +3201,355 @@ sub print_cyrus_input{
    printf ("  Warning: verify values of lpotp1 especially for H ECP \n") if(! $quiet);
    }
 
+# print also file in new format
+  if($make_new_file){
+    print_new_input();
+  }
+
+}
+
+###############################################################
+sub print_new_input{
+###############################################################
+
+    open(NEWFILE,"> $new_input_file") || die  "cant open file $new_input_file : $!";
+
+# control menu
+
+    printf NEWFILE $ftype;
+    printf NEWFILE "control\n";
+    printf NEWFILE " seed = 1837465927472523\n";
+    printf NEWFILE " etrial=%7.2f\n",$total_energy;
+    printf NEWFILE " nstep=100 nblk=100 nblkeq=1 nconf=100 nconf_new=0\n";
+    if($ecp){
+    printf NEWFILE " tau=0.1\n";
+    }
+    else{
+    printf NEWFILE " tau=0.01\n";
+    }
+    printf NEWFILE "end\n\n";
+
+# nuclei menu
+
+    printf NEWFILE "nuclei\n";
+    if($ecp){
+     printf NEWFILE " nloc=4\n";
+     printf NEWFILE " nquad=6\n";
+    }
+
+    %atom_type_index=();
+    for(my $i=0; $i<= $#atom_symbols; $i++){
+       $atom_type_index{$atom_types[$i]}=$i;
+    }
+
+# lpotp1: print default values for now
+
+    if($ecp){     #JT
+    foreach my $i (@atom_types){
+        if( exists $zcore{$i} ){
+            $z=$lpotp1{$i};
+        } else {
+            $z=0;
+        }
+        printf NEWFILE "%d ",$z;
+    }
+    printf NEWFILE "(lpotp1(i),i=1,nctype)\n";
+   }
+
+    printf NEWFILE " geometry\n";
+    for(my $i=0; $i<= $#atom_symbols; $i++){
+        if( exists $zcore{$atom_types[$atom_type_index{$atom_symbols[$i]}]} ){
+            $z=$zatom{$atom_types[$atom_type_index{$atom_symbols[$i]}]}-$zcore{$atom_types[$atom_type_index{$atom_symbols[$i]}]};
+        } else {
+            $z=$zatom{$atom_types[$atom_type_index{$atom_symbols[$i]}]};
+        }
+        printf NEWFILE "  %d %2.1f %12.8f %12.8f %12.8f\n", $atom_type_index{$atom_symbols[$i]}+1,$z, $atom_x[$i],$atom_y[$i],$atom_z[$i];
+    }
+
+    printf NEWFILE " end\n";
+    printf NEWFILE "end\n\n";
+
+# wavefunction menu
+    printf NEWFILE "wavefunction\n";
+    printf NEWFILE " nelec=%d nup=%d\n",$nalpha+$nbeta,$nalpha;
+    printf NEWFILE "end\n\n";
+
+# basis menu
+
+    printf NEWFILE "basis\n";
+    if($ecp || !$analytic_basis){
+     printf NEWFILE " numr=1\n";
+    }
+
+# make list of basis functions by atom type for new input
+   process_basis_functions_by_atom_type(); 
+   process_slater_exponents_by_atom_type();
+
+    printf NEWFILE " basis_functions";
+
+    if($analytic_basis){ #JT
+      foreach my $a (@atom_types){
+        printf NEWFILE "\n%d",$atom_type_index{$a}+1;
+        $i=-1;
+        foreach my $b (@{$basis_functions_by_atom_type{$a}}){
+        $i=$i+1; 
+        printf NEWFILE "\n$b   ${$exponents_slater_ordered_by_atom_type{$a}}[$i]";
+        }
+      }
+    }
+    printf NEWFILE "\n end\n";
+
+
+#    printf NEWFILE " exponents\n";
+#    if($analytic_basis){
+#     printf NEWFILE "@exponents_slater_ordered";
+#    }
+#    else{
+#     for($j=0; $j<$nbasis; $j++){
+#       printf NEWFILE "1. ";
+#     }
+#    }
+#    printf NEWFILE "\n end\n";
+
+
+    printf NEWFILE "end\n\n";
+
+# orbitals menu
+
+    printf NEWFILE "orbitals\n";
+
+#   orbitals to be printed
+
+    if($porb == 0){
+        $porb=$orbitals;
+    }
+
+    if( $omit_unused_orbitals && $make_det_file ){
+        @orbital_indices=sort { $a <=> $b } keys %used_orbitals;
+        $porb=$#orbital_indices + 1;
+    } else {
+        for(my $j=0; $j<$porb; $j++){
+            $orbital_indices[$j]=$j;
+        }
+    }
+
+
+# irrep info
+
+    if($#irrep_strings > -1){
+        %irreps=();
+        $irrep_num=0;
+        @irrep_index=();
+        for($j=0; $j<$orbitals;$j++){
+            if( ! exists $irreps{$irrep_strings[$j]}){
+                $irrep_num++;
+                $irreps{$irrep_strings[$j]}=$irrep_num;
+                $idx=$irrep_num;
+            } else {
+                $idx=$irreps{$irrep_strings[$j]};
+            }
+            $irrep_index[$j]=$idx;
+        }
+    }
+
+    printf NEWFILE " coefficients\n";
+
+    foreach my $j (@orbital_indices){
+
+        for(my $ia=0; $ia <= $#atom_symbols; $ia++){
+            foreach my $i (@basorder){
+                for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
+                    $pk=${$prim_index2{$i}}[$k];
+                      if($lcao_atomidx[$pk] == ($ia+1)){
+                         printf NEWFILE $lcao_format, ${$lcao[$j]}[$pk];
+                      }
+               }
+            }
+        }
+        if ($j==0) {
+         printf  NEWFILE " ((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)\n";
+        } else {
+         printf  NEWFILE "\n";
+        }
+   }
+
+    printf NEWFILE " end\n";
+
+     # print orbital eigenvalues
+     printf NEWFILE " energies\n";
+     for($i=0; $i<$porb; $i++){
+      printf NEWFILE "$orbital_eigenvalues[@orbital_indices[$i]] ";
+     }
+     printf NEWFILE "\n end\n";
+
+     # print symmetry info
+     printf NEWFILE " symmetry\n";
+
+     if($#irrep_strings > -1){
+        %irreps=();
+        $irrep_num=0;
+        @irrep_index=();
+        for($j=0; $j<$orbitals;$j++){
+            if( ! exists $irreps{$irrep_strings[$j]}){
+                $irrep_num++;
+                $irreps{$irrep_strings[$j]}=$irrep_num;
+                $idx=$irrep_num;
+            } else {
+                $idx=$irreps{$irrep_strings[$j]};
+            }
+            $irrep_index[$j]=$idx;
+        }
+            foreach my $j (@orbital_indices){
+#JT                printf NEWFILE "%d ",$irrep_index[$j];
+                printf NEWFILE "%s ",$irrep_strings[$j];  #JT print label of irrep instead of index
+            }
+    }
+
+       printf NEWFILE "\n end\n";
+
+     printf NEWFILE "end\n\n";
+         
+
+#   foreach my $j (@orbital_indices){
+#   for($j=0; $j<$nbasis; $j++){
+#JT      printf NEWFILE "1. ";
+#      print "ftype[
+#      printf NEWFILE "$exponents_slater[$j] ";  #JT
+#      printf NEWFILE "%2.1f ",$irrep_index[$j];
+#   }
+
+
+# csfs menu
+    printf NEWFILE "csfs\n";
+    printf NEWFILE " determinants";
+
+    # print unique determinants
+    if ($detread) {
+
+      for($i=1; $i<=$selected_det; $i++){
+        printf NEWFILE "\n";
+        @ocsym=split '',$sorted_detlist[$kept_det[$i]];
+        for($j=0; $j<=$#ocsym; $j++){
+            if( ($ocsym[$j] eq '+') || ($ocsym[$j] eq '2')){
+                if($omit_unused_orbitals){
+                    printf NEWFILE "%3d ",$orb_index{$j}+1;
+                } else {
+                    printf NEWFILE "%3d ",$j+1;
+                }
+            }
+        }
+        printf NEWFILE  "    ";
+        for($j=0; $j<=$#ocsym; $j++){
+            if( ($ocsym[$j] eq '-') || ($ocsym[$j] eq '2')){
+                if($omit_unused_orbitals){
+                    printf NEWFILE "%3d ",$orb_index{$j}+1;
+                } else {
+                    printf NEWFILE "%3d ",$j+1;
+                }
+            }
+        }
+      }
+
+    } else {
+
+        printf NEWFILE  "\n";
+        for($j=0; $j<$nalpha; $j++){
+           printf NEWFILE "%d ",$j+1;
+        }
+        printf NEWFILE " ";
+        for($j=0; $j<$nbeta; $j++){
+           printf NEWFILE "%d ",$j+1;
+        }
+    }
+    printf NEWFILE "(iworbd(j,idet),j=1,nelec)\n";
+
+    printf NEWFILE " end\n";
+
+   # print CSFs
+   if ($detread) {
+
+      printf NEWFILE " csf_coef ";
+
+      # print csf_coef
+      for($i=1; $i<=$ncsf; $i++){
+        printf NEWFILE "%s ",@csf_coef[$i]
+      }
+      printf NEWFILE " end\n";
+
+      # num dets in each csf
+      for($i=1; $i<=$ncsf; $i++){
+        printf NEWFILE "%d ",$csf_ndet[$i];
+      }
+      printf NEWFILE " (ndet_in_csf(icsf),icsf=1,ncsf)\n";
+
+      # print csf
+      for($i=1; $i<=$ncsf; $i++){
+
+        # print dets
+        foreach $d (@{$csf_trial[$i]}){
+          $cdet=$$d{det};
+          for($j=1; $j<=$selected_det; $j++){
+            if ($kept_det[$j]==$cdet) {
+               $kdet=$j;
+            }
+          }
+          printf NEWFILE "%2d ",$kdet;
+        }
+        printf NEWFILE " (iwdet_in_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
+
+        # print coefs
+        foreach $d (@{$csf_trial[$i]}){
+
+          printf NEWFILE "%s ",$$d{coef}*$phase_factors[$$d{det}]*$qmc_phase[$$d{det}];
+        }
+        printf NEWFILE " (cdet_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
+
+      }
+
+    }
+
+   printf NEWFILE "end\n\n";
+
+# Jastrow menu
+
+   printf NEWFILE "jastrow\n";
+   $norda=5;
+   $nordb=5;
+   $nordc=5;
+   printf NEWFILE " ijas=4 isc=4\n";
+   printf NEWFILE " scalek=0.8\n";
+
+   printf NEWFILE " parameters\n";
+
+   for($j=0; $j<$nctype; $j++){
+    printf NEWFILE "0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n";
+   }
+   if($no_jastrow){
+    printf NEWFILE "0. 0. 0. 0. 0. 0. (b(iparmj),iparmj=1,nparmb)\n";
+   }else{
+    printf NEWFILE "0.5 1. 0. 0. 0. 0. (b(iparmj),iparmj=1,nparmb)\n";
+   }
+   for($j=0; $j<$nctype; $j++){
+    printf NEWFILE "0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. (c(iparmj),iparmj=1,nparmc)\n";
+   }
+   printf NEWFILE " end\n";
+   printf NEWFILE "end\n\n";
+
+# optimization menu
+
+    printf NEWFILE "optimization\n";
+    printf NEWFILE " parameters jastrow end\n";
+    printf NEWFILE " method = linear\n";
+    printf NEWFILE "end\n";
+    printf NEWFILE "\n";
+
+
+   close(NEWFILE);
+   printf ("New format input file written to $new_input_file\n") if(! $quiet);
+   if($ecp){
+   printf ("  Warning: verify values of lpotp1 especially for H ECP \n") if(! $quiet);
+   }
+
 }
 
 ###############################################################
@@ -3533,7 +3888,7 @@ sub check_slater_functions_order{
 ###############################################################
 sub process_slater_exponents{
 ###############################################################
-# Construct the list of Slater exponents in correct order
+# Construct the total list of Slater exponents in correct order
 #
 # J. Toulouse - 15 Sep 2005
 ###############################################################
@@ -3631,6 +3986,174 @@ sub process_slater_exponents{
   exit;
  }
 
+}
+###############################################################
+sub process_slater_exponents_by_atom_type{
+###############################################################
+# Construct the list of Slater exponents in correct order
+# BY ATOM TYPE
+#
+# J. Toulouse - 25 Apr 2009
+###############################################################
+
+  my $here = "process_slater_exponents_by_atom_type";
+
+
+# Loop over all atom types
+  foreach my $a (@atom_types){
+   
+# Exponents for S
+   for($j=0; $j <= $#function_type_index ; $j++){
+     $current_func_index = $function_type_index[$j];
+     $current_func_symbol = $function_type_symbol[$j];
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'S'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+
+   # 6d ->5d,s
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'D'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+   # 15g ->9g,5d,1s
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'G'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+   }
+
+# Exponents for P
+   for($i=0; $i < 3; $i++){
+   for($j=0; $j <= $#function_type_index ; $j++){
+     $current_func_index = $function_type_index[$j];
+     $current_func_symbol = $function_type_symbol[$j];
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'P'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+
+   # 10f ->7f,3p
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'F'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+
+   }
+   }
+
+# Exponents for D
+   for($i=0; $i < 5; $i++){
+   for($j=0; $j <= $#function_type_index ; $j++){
+     $current_func_index = $function_type_index[$j];
+     $current_func_symbol = $function_type_symbol[$j];
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'D'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+
+#  15g -> 9g,5d,1s
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'G'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+
+   }
+   }
+
+# Exponents for F
+   for($i=0; $i < 7; $i++){
+   for($j=0; $j <= $#function_type_index ; $j++){
+     $current_func_index = $function_type_index[$j];
+     $current_func_symbol = $function_type_symbol[$j];
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'F'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+   }
+   }
+
+# Exponents for G
+   for($i=0; $i < 9; $i++){
+   for($j=0; $j <= $#function_type_index ; $j++){
+     $current_func_index = $function_type_index[$j];
+     $current_func_symbol = $function_type_symbol[$j];
+   if($current_func_symbol eq $atom_types[$atom_type_index{$a}] && $ftype[$current_func_index] eq 'G'){
+    push @{$exponents_slater_ordered_by_atom_type{$a}},$exponents_slater[$function_type_index[$j]];
+   }
+   }
+   }
+
+#    printf "exponents_slater_ordered_by_atom_type=@{$exponents_slater_ordered_by_atom_type{$a}}\n";
+#    printf "exponents_slater_ordered_by_atom_type=${$exponents_slater_ordered_by_atom_type{$a}}[0]\n";
+#    printf "exponents_slater_ordered_by_atom_type=${$exponents_slater_ordered_by_atom_type{$a}}[1]\n";
+ } # end loop over atoms
+
+
+}
+###############################################################
+sub process_basis_functions_by_atom_type{
+###############################################################
+# Construct the list of basis functions in correct order
+# BY ATOM TYPE
+#
+# J. Toulouse - 25 Apr 2009
+###############################################################
+
+    foreach my $a (@atom_types){
+        @c=();
+        @r=();
+        basis_info_cyrus($a,\@c,\@r);
+#        printf "\n %d \n",$atom_type_index{$a}+1;
+        for(my $i=1; $i<= $n1s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "1S";}
+        for(my $i=1; $i<= $n2s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "2S";}
+        for(my $i=1; $i<= $n3s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3S";}
+        for(my $i=1; $i<= $n4s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4S";}
+        for(my $i=1; $i<= $n5s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5S";}
+        for(my $i=1; $i<= $n2p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "2PX";}
+        for(my $i=1; $i<= $n3p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3PX";}
+        for(my $i=1; $i<= $n4p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4PX";}
+        for(my $i=1; $i<= $n5p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5PX";}
+        for(my $i=1; $i<= $n2p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "2PY";}
+        for(my $i=1; $i<= $n3p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3PY";}
+        for(my $i=1; $i<= $n4p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4PY";}
+        for(my $i=1; $i<= $n5p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5PY";}
+        for(my $i=1; $i<= $n2p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "2PZ";}
+        for(my $i=1; $i<= $n3p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3PZ";}
+        for(my $i=1; $i<= $n4p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4PZ";}
+        for(my $i=1; $i<= $n5p{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5PZ";}
+        for(my $i=1; $i<= $n3d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3D0";}
+        for(my $i=1; $i<= $n4d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4D0";}
+        for(my $i=1; $i<= $n3d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3D+2";}
+        for(my $i=1; $i<= $n4d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4D+2";}
+        for(my $i=1; $i<= $n5d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5D+2";}
+        for(my $i=1; $i<= $n3d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3D-2";}
+        for(my $i=1; $i<= $n4d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4D-2";}
+        for(my $i=1; $i<= $n5d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5D-2";}
+        for(my $i=1; $i<= $n3d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3D+1";}
+        for(my $i=1; $i<= $n4d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4D+1";}
+        for(my $i=1; $i<= $n5d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5D+1";}
+        for(my $i=1; $i<= $n3d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3D-1";}
+        for(my $i=1; $i<= $n4d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4D-1";}
+        for(my $i=1; $i<= $n5d{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5D-1";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F+3";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F+3";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F-3";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F-3";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F+2";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F+2";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F-2";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F-2";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F+1";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F+1";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F-1";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F-1";}
+        for(my $i=1; $i<= $n4f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "4F0";}
+        for(my $i=1; $i<= $n5f{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5F0";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G+4";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G-4";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G+3";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G-3";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G+2";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G-2";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G+1";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G-1";}
+        for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G0";}
+#        printf "basis_functions_by_atom_type=@{$basis_functions_by_atom_type{$a}}\n";
+
+   }
 }
 ###############################################################
 sub check_for_symmetry_in_orbitals{
@@ -3880,6 +4403,7 @@ usage: gamess2qmc [OPTIONS]  gamess_output
            -h              print this message
            -C              generates input file in Cyrus format.  Requires -t option.
                            For multi-determinants, should also use -d
+           -N              generates also input file in new format
            -J              Julien's options
            -F              print CSF list to file
            -S              create input for analytic Slater basis set

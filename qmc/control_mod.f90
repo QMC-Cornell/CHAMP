@@ -6,8 +6,6 @@ module control_mod
 ! threshold on statistical error on energy
   character(len=max_string_len)  :: title = 'no title'
   character(len=max_string_len)  :: seed = '1837465927472523'
-  integer                        :: iperiodic = 0
-  integer                        :: ibasis = 1
 
   real(dp)                :: error_threshold = 1.d30
 
@@ -47,7 +45,6 @@ module control_mod
    write(6,'(a)') ' title = [string]: title for the job'
    write(6,'(a)') ' seed = [integer]'
    write(6,'(a)') ' iperiodic = [integer]: 0 for finite system, >0 for periodic system (default: 0)'
-   write(6,'(a)') ' ibasis = [integer]: type of basis (default: 1)'
    write(6,'(a)') ' etrial = [real]: trial energy'
    write(6,'(a)') ' nstep = [integer]: number of steps per block'
    write(6,'(a)') ' nblk = [integer]: number of blocks'
@@ -58,12 +55,12 @@ module control_mod
    write(6,'(a)') ' irstar = [integer]: restart from dump file (default: 0)'
    write(6,'(a)') ' isite = [integer]: start from random configuration (default: 1)'
    write(6,'(a)') ' ipr = [integer]: print level (default: -2)'
-   write(6,'(a)') ' imetro = [integer]'
+   write(6,'(a)') ' imetro = [integer] type of Metropolis algorithm (default=6)'
    write(6,'(a)') ' delta = [real]'
    write(6,'(a)') ' deltar = [real]'
    write(6,'(a)') ' deltat = [real]'
    write(6,'(a)') ' fbias = [real]'
-   write(6,'(a)') ' idmc = [integer]'
+   write(6,'(a)') ' idmc = [integer] type of DMC algorithm (default=2)'
    write(6,'(a)') ' ipq = [integer]'
    write(6,'(a)') ' itau_eff = [integer]'
    write(6,'(a)') ' iacc_rej = [integer]'
@@ -72,8 +69,9 @@ module control_mod
    write(6,'(a)') ' idiv_v = [integer]'
    write(6,'(a)') ' icut_br = [integer]'
    write(6,'(a)') ' icut_e = [integer]'
-   write(6,'(a)') ' nfprod = [integer]'
-   write(6,'(a)') ' tau = [real] time-step '
+   write(6,'(a)') ' nfprod = [integer] number of products undone for population-control bias correction'
+   write(6,'(a)') ' tau = [real] time step for DMC (default: 0.01)'
+   write(6,'(a)') ' nefp = [integer] (default: 0)'
    write(6,'(a)') ' vmc ... end : control menu for vmc'
    write(6,'(a)') ' error_threshold = [real] : montecarlo run until statistical error on energy reaches error_threshold'
    write(6,'(a)') ' nstep_total = [real]: For MPI, total number of steps per block for all CPUs'
@@ -86,15 +84,13 @@ module control_mod
 
   case ('seed')
    call get_next_value (seed)
-   read(seed,'(4i4)') irn
 
   case ('iperiodic'); call get_next_value (iperiodic)
-  case ('ibasis'); call get_next_value (ibasis)
   case ('etrial'); call get_next_value (etrial)
-  case ('nstep');  call get_next_value (nstep)
+  case ('nstep');  call get_next_value (nstep); call object_modified ('nstep')
   case ('nblk');   call get_next_value (nblk)
   case ('nblkeq'); call get_next_value (nblkeq)
-  case ('nconf');  call get_next_value (nconf)
+  case ('nconf');  call get_next_value (nconf); call object_modified ('nconf')
   case ('nconf_new'); call get_next_value (nconf_new)
   case ('idump');  call get_next_value (idump)
   case ('irstar'); call get_next_value (irstar)
@@ -116,6 +112,7 @@ module control_mod
   case ('icut_e');  call get_next_value (icut_e)
   case ('nfprod');  call get_next_value (nfprod)
   case ('tau');  call get_next_value (tau)
+  case ('nefp');  call get_next_value (nefp)
 
   case ('vmc')
    call vmc_menu
@@ -166,30 +163,12 @@ module control_mod
   enddo ! end loop over menu lines
 
 ! printing
-  if (iperiodic.gt.0) then
+  if (use_parser) then
+
+  if (iperiodic > 0) then
      write(6,'(a)') ' type of system: periodic system' 
   else
      write(6,'(a)') ' type of system: finite system' 
-  endif
-
-  if(ibasis.eq.1) then
-    write(6,'(a)') ' type of basis: localized Slater or gaussian or numerical basis'
-    notype=0
-   elseif(ibasis.eq.2) then
-    write(6,'(a)') ' type of basis: planewave basis, or extended orbitals on grid'
-    notype=0
-   elseif(ibasis.eq.3) then
-    write(6,'(a)') ' type of basis: complex basis for 2D quantum dots / composite fermions'
-    notype=0
-   elseif(ibasis.eq.4) then
-    write(6,'(a)') ' type of basis: floating Gaussian basis for 2D Wigner crystals'
-    notype=3
-   elseif(ibasis.eq.5) then
-    write(6,'(a)') ' type of basis: floating Gaussian basis for 2D Wigner crystals in ring geom'
-    notype=4
-   elseif(ibasis.eq.6) then
-    write(6,'(a)') ' type of basis: floating, non-circular Gaussian basis for 2D Wigner crystals'
-    notype=4
   endif
 
   write(6,'(a,f12.6)') ' trial energy = ',etrial
@@ -222,6 +201,21 @@ module control_mod
    elseif (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
     nconf_global=nconf*nproc
   endif
+
+! set nstep_total
+  nstep_total = nstep * nproc
+
+! total number of configurations
+  nconf_total = nconf * nproc
+
+! number of walkers
+  if (index(mode,'vmc') /= 0) then
+   nwalk = 1
+  elseif (index(mode,'dmc') /= 0) then
+   nwalk = nconf
+  endif
+  call object_modified ('nwalk')
+  write(6,'(a,i8)') ' number of walkers initialized to ', nwalk
 
 ! Metropolis parameters
   if (index(mode,'vmc').ne.0) then
@@ -257,6 +251,9 @@ module control_mod
     write(6,'(a,i5)')    ' nfprod = ', nfprod
     write(6,'(a,f10.5)') ' time-step tau = ', tau
   endif
+
+  endif ! if use_parser
+
 
   write(6,'(a)') 'End of control menu --------------------------------------------------------------------------------------'
 

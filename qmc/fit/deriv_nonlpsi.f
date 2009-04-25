@@ -11,11 +11,11 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-!JT      common /contrl_per/ iperiodic,ibasis
+      common /contrl_per/ iperiodic,ibasis
 !!!
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Z
+     &   xm1,xm2,xm12,xms,xma,Zfock
 !JT      include '../vmc/force.h'
 !JT      include 'fit.h'
 
