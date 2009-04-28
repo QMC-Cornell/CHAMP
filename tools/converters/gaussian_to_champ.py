@@ -1,5 +1,6 @@
-#!/usr/local/bin/python
 #!/usr/bin/python
+
+###/usr/local/bin/python
 
 ###################################################################################
 #
@@ -298,7 +299,7 @@ def read_orbitals ():
 #       example: 2        2S          0.50758   0.50920  -0.21505  -0.22492   0.00000
         elif re.search ("^\s+\d+\s+\d+[SPDFGH][A-Z\+\-\d\ ]+(\s+[\d\-]+)",lines[j]):
 #          print "line ",j,", orbital coefficient:",lines[j]
-          lines[j] = string.replace(lines[j],'D 0','D+0')
+          lines[j] = string.replace(lines[j],'D 0','D0')
           line_splitted = filter (not_empty_string,string.split(lines[j],' '))
 #          print "line_splitted=",line_splitted
           basis_atom_indexes_subsection.append (atom_index)
@@ -393,7 +394,7 @@ def sort_basis ():
   print "sorting basis functions in standard CHAMP order..."
 
 # define champ basis order
-  basis_labels_to_champ_order = {'S':1,'PX':2,'PY':3,'PZ':4,'D+0':5,'D+2':6,'D-2':7,'D+1':8,'D-1':9}
+  basis_labels_to_champ_order = {'S':1,'PX':2,'PY':3,'PZ':4,'D0':5,'D+2':6,'D-2':7,'D+1':8,'D-1':9}
 
 #  for i in range(nbasis):
 #    print "basis function # ",i+1
@@ -516,7 +517,87 @@ for idet in range(ndet):
   det_up_orb_lab.append (range(1,nup+1))
   det_dn_orb_lab.append (range(1,ndn+1))
 
-# write CHAMP input file
+# write CHAMP input file in new format
+sys.stdout.write('writing CHAMP file >'+ str(file_output_string) +'< ... ')
+file_output = open(file_output_string,'w')
+file_output.write('control\n')
+file_output.write(' seed=1837465927472523\n')
+file_output.write(' etrial=%.1f' %energy+ '\n')
+file_output.write(' nstep=100 nblk=10 nblkeq=1 nconf=100 nconf_new=0\n')
+file_output.write(' tau=0.01\n')
+file_output.write('end\n\n')
+
+file_output.write('nuclei\n')
+file_output.write(' geometry\n')
+for i in range(ncent):
+  file_output.write('  ' + str(iwctype[i]) + ' %.1f' %nuclear_charges[i])
+  for j in range(3):
+    file_output.write('  %0.8f' % cent[i][j] + '  ')
+  file_output.write('\n')
+file_output.write(' end\n')
+file_output.write('end\n\n')
+
+file_output.write('wavefunction\n')
+file_output.write(' nelec=' + str(nelec)+' nup='+str(nup)+'\n')
+file_output.write('end\n\n')
+
+file_output.write('basis\n')
+file_output.write(' basis_functions\n')
+for i in range(nctype):
+  file_output.write('%d' %(i+1) + '\n')
+  for j in range(len(basis_labels_without_number_by_cent_type)):
+    file_output.write(basis_labels_without_number_by_cent_type[j] + '   %0.8f' % 0. + '\n' )
+file_output.write(' end\n')
+file_output.write('end\n\n')
+
+file_output.write('orbitals\n')
+file_output.write(' coefficients')
+for i in range(norb):
+  file_output.write('\n')
+  for j in range(nbasis):
+    file_output.write(' %0.8e' % orbital_coefficients[i][j] + '  ')
+file_output.write('\n end\n')
+file_output.write('end\n\n')
+
+file_output.write('csfs\n')
+file_output.write(' determinants\n')
+for idet in range(ndet):
+  for i in range(nup):
+    file_output.write('%d' % det_up_orb_lab[idet][i] + ' ')
+  file_output.write(' ')
+  for i in range(ndn):
+    file_output.write('%d' % det_dn_orb_lab[idet][i] + ' ')
+file_output.write('\n')
+file_output.write(' end\n')
+file_output.write('end\n\n')
+
+file_output.write('jastrow\n')
+file_output.write(' ijas=4 isc=4\n')
+file_output.write(' scalek=0.8\n')
+file_output.write(' parameters\n')
+for i in range(nctype):
+  file_output.write('0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n')
+file_output.write('0.5 1. 0. 0. 0. 0. (b(iparmj),iparmj=1,nparmb)\n')
+for i in range(nctype):
+  file_output.write('0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. (c(iparmj),iparmj=1,nparmc)\n')
+file_output.write(' end\n')
+file_output.write('end\n\n')
+
+file_output.write('optimization\n')
+file_output.write(' parameters jastrow end\n')
+file_output.write('end\n')
+
+# close output file
+file_output.close()
+sys.stdout.write('done\n')
+sys.stdout.write('WARNING: basis information needs to be completed in CHAMP file!\n')
+
+
+
+#########################################################################################"
+# write CHAMP input file (old format)
+sys.exit(0)
+
 sys.stdout.write('writing CHAMP file >'+ str(file_output_string) +'< ... ')
 file_output = open(file_output_string,'w')
 file_output.write('your title                               title\n')
