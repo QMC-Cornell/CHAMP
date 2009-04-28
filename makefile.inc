@@ -9,7 +9,7 @@ hostname := $(shell uname -n)
 
 # Libraries --------------------------------------------------------------
 
-LIBHOME=../lib
+LIBHOME=../../champ/lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
@@ -111,11 +111,98 @@ ifeq ($(findstring cnf.cornell,$(hostname)),cnf.cornell)
   CHAMP_LD_IPO=-O3 -ipo -align all -fast
 endif
 
+#qmc1 at cornell
+ifeq ($(hostname),qmc1)
+  CHAMP_F95=ifort
+  CHAMP_C=gcc
+  CHAMP_CXX=g++
+  CHAMP_MPIC=mpicc
+
+  CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip
+  CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg
+  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+
+# by default, compilation for f77 is the same than for f95
+  CHAMP_F77=$(CHAMP_F95)
+  CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
+  CHAMP_F77_DEBUG=$(CHAMP_F95_DEBUG) -extend_source
+  CHAMP_F77_PROF=$(CHAMP_F95_PROF) -extend_source
+
+# by default, fast options
+  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+
+  CHAMP_LD=ifort
+
+  USE_GCC=yes
+endif
+
+#jasmine at cornell
+ifeq ($(hostname),jasmine)
+  CHAMP_C=gcc
+  CHAMP_CXX=g++
+  CHAMP_MPIC=mpicc
+  CHAMP_F95=gfortran
+  CHAMP_MPIF95=mpif90
+  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  CHAMP_LD=gfortran
+  CHAMP_LD_FLAGS=-O3
+  CHAMP_LD_MPI=mpif90
+  EINSPLINE=
+  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
+
+# zippy2 at home
+ifeq ($(hostname),zippy2)
+#CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
+ CHAMP_C=gcc
+#EINSPLINE=
+endif
+
 # Theory Center's linux cluster
 # ifeq ($(hostname),linuxlogin1.tc.cornell.edu)
 ifeq ($(findstring linuxlogin,$(hostname)), linuxlogin)
  CHAMP_MPIF95=mpif90
  CHAMP_LD_MPI=mpif90
+endif
+
+# clastos in Paris
+ifeq ($(hostname),clastos)
+# CHAMP_C=icc
+ CHAMP_C=/usr/local/bin/mpicc_64
+# CHAMP_CXX=icpc
+ CHAMP_CXX=/usr/local/bin/mpicxx_64
+ CHAMP_F95=/usr/local/bin/mpif90_64
+ CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -diag-disable vec -fpp -DNOEINSPLINE
+ CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
+ EINSPLINE=
+ CHAMP_MPIF95=/usr/local/bin/mpif90_64
+ CHAMP_MPIC=/usr/local/bin/mpicc_64
+ CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
+
+# hydrogene in Paris
+ifeq ($(hostname),hydrogene)
+ CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
+ CHAMP_C=gcc
+ EINSPLINE=
+ CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
+
+# NASA Ames Columbia Itanium cluster
+ifeq ($(hostname),cfe2)
+ CHAMP_C=icc
+ CHAMP_CXX=icc
+ CHAMP_MPIF95=ifort
+ CHAMP_MPIF77=ifort
+ CHAMP_LD_MPI=ifort
+ CHAMP_F95_FAST=-O3 -ip  -align all -fpp -DNOEINSPLINE
+ CHAMP_LD_FAST=-O3 -ip -align all -fpp -DNOEINSPLINE
+ CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
+ CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
+ EINSPLINE=
+ CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # OSC Itanium cluster, requires Intel compiler >9.0
@@ -295,79 +382,6 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
  LAPACK=-lacml
  BLAS=
 
-endif
-
-# clastos in Paris
-ifeq ($(hostname),clastos)
-# CHAMP_C=icc
- CHAMP_C=/usr/local/bin/mpicc_64
-# CHAMP_CXX=icpc
- CHAMP_CXX=/usr/local/bin/mpicxx_64
- CHAMP_F95=/usr/local/bin/mpif90_64
- CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -diag-disable vec -fpp -DNOEINSPLINE
- CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
- EINSPLINE=
- CHAMP_MPIF95=/usr/local/bin/mpif90_64
- CHAMP_MPIC=/usr/local/bin/mpicc_64
- CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-endif
-
-# hydrogene in Paris
-ifeq ($(hostname),hydrogene)
- CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
- CHAMP_C=gcc
- EINSPLINE=
- CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-endif
-
-# NASA Ames Columbia Itanium cluster
-ifeq ($(hostname),cfe1)
-  CHAMP_MPIF95=ifort
-  CHAMP_LD_MPI=ifort
-  CHAMP_LD_FAST=-O3 -align all
-  CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
-endif
-
-#qmc1 at cornell
-ifeq ($(hostname),qmc1)
-  CHAMP_F95=ifort
-  CHAMP_C=gcc
-  CHAMP_CXX=g++
-  CHAMP_MPIC=mpicc
-
-  CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip
-  CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg
-  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
-
-# by default, compilation for f77 is the same than for f95
-  CHAMP_F77=$(CHAMP_F95)
-  CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
-  CHAMP_F77_DEBUG=$(CHAMP_F95_DEBUG) -extend_source
-  CHAMP_F77_PROF=$(CHAMP_F95_PROF) -extend_source
-
-# by default, fast options
-  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-
-  CHAMP_LD=ifort
-
-  USE_GCC=yes
-endif
-
-#jasmine at cornell
-ifeq ($(hostname),jasmine)
-  CHAMP_C=gcc
-  CHAMP_CXX=g++
-  CHAMP_MPIC=mpicc
-  CHAMP_F95=gfortran
-  CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
-  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
-  CHAMP_LD=gfortran
-  CHAMP_LD_FLAGS=-O3
-  CHAMP_LD_MPI=mpif90
-  EINSPLINE=
-  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # AMD Opteron cluster with Pathscale compiler on slid.fysik at Lyngby, Denmark
