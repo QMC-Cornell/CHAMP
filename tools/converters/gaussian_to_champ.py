@@ -1,13 +1,12 @@
+#!/usr/local/bin/python2.4
 #!/usr/bin/python
-
-###/usr/local/bin/python
 
 ###################################################################################
 #
 # GAUSSIAN to CHAMP convertion script
 # Author: J. Toulouse
 # Created: 23 Jan 2008
-# Last modified: 20 Feb 2009
+# Last modified: 28 Apr 2009
 #
 ###################################################################################
 
@@ -77,7 +76,7 @@ def help_menu():
 # ========================================================
 # print help menu
 # --------------------------------------------------------
-  print "USAGE: %s" % sys.argv[0], "-i input_file -o output_file"
+  print "USAGE: %s" % sys.argv[0], "-i gaussian_output_file -o champ_input_file"
   print "options: -h: print this menu"
   print "         -s: sort basis functions in standard CHAMP order"
   
