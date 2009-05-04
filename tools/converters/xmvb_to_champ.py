@@ -57,6 +57,7 @@ def help_menu():
 # print help menu
 # --------------------------------------------------------
   print "USAGE: %s" % sys.argv[0], "-i xmvb_output_file -o champ_input_file"
+  print "the script overwrites orbital and CSF information in champ_input_file"
   print "options: -h: print this menu"
   
   sys.exit(0)
@@ -82,7 +83,7 @@ def read_energy ():
       break
 
   if not found:
-    print "ERROR: energy not found"
+    print "\nERROR: energy not found"
     sys.exit(0)
 
 # ========================================================
@@ -100,7 +101,7 @@ def read_structure_number ():
       break
 
   if not found:
-    print "ERROR: Number of Structures not found"
+    print "\nERROR: Number of Structures not found"
     sys.exit(0)
 
 # ========================================================
@@ -155,14 +156,14 @@ def read_structures ():
       break
        
   if not found:
-    print "ERROR: VB structures not found"
+    print "\nERROR: VB structures not found"
     sys.exit(0)
 
 #  print "csf_coef=",csf_coef
 #  print "structures=",structures
 
   if (structures_nb != ncsf):
-    print "ERROR: mismatch in number of structures =",structures_nb
+    print "\nERROR: mismatch in number of structures =",structures_nb
     sys.exit(0)
 
 # ========================================================
@@ -237,7 +238,7 @@ def read_determinants ():
       break
        
   if not found:
-    print "ERROR: determinants not found"
+    print "\nERROR: determinants not found"
     sys.exit(0)
 
 #  print "spin_up_spin_down=",spin_up_spin_down
@@ -307,7 +308,7 @@ def read_orbitals ():
       break
        
   if not found:
-    print "ERROR: orbital coefficients not found"
+    print "\nERROR: orbital coefficients not found"
     sys.exit(0)
 
 #  print "orbitals read"
@@ -321,29 +322,41 @@ def read_orbitals ():
 def dets_in_csfs ():
   "determine determinants in csfs."
   current_det_label_in_csf = []
+  orb_occ = []
+  structures_orb_occ = zeros([ncsf,norb], Int)
+  determinants_orb_occ = zeros([ndet,norb], Int)
 
+# determine orbital occupation in structures
+  for csf_i in range(ncsf):
+    for elec_i in range(nelec):
+      orb_i = int(structures[csf_i][elec_i])-1
+      structures_orb_occ[csf_i][orb_i] = structures_orb_occ[csf_i][orb_i] + 1
+#  print "structures_orb_occ=\n",structures_orb_occ
+
+# determine orbital occupation in determinants
+  for det_i in range(ndet):
+    for elec_i in range(nelec):
+      orb_i = int(determinants[det_i][elec_i])-1
+      determinants_orb_occ[det_i][orb_i] = determinants_orb_occ[det_i][orb_i] + 1
+#  print "determinants_orb_occ=\n",determinants_orb_occ
+
+
+# determine determinants in each structure
   for csf_i in range(ncsf):
     if (csf_i >= 1): 
       det_label_in_csf.append (current_det_label_in_csf)
       current_det_label_in_csf = []
 #    print "csf_i=",csf_i
-#    print "structure=",structures[csf_i]
+#    print "structures_orb_occ[csf_i]=",structures_orb_occ[csf_i]
     for det_i in range(ndet):
-#      print "determinants=",determinants[det_i]
       det_in_csf = True
-      for elec_i in range(nelec):
-         orb_found = False
-         for elec_j in range(nelec):
-           if (determinants[det_i][elec_i]  == structures[csf_i][elec_j]):
-             orb_found = True 
-             break
-         if (not orb_found):
-            det_in_csf = False
-            break
+      for orb_i in range(norb):
+         if (not determinants_orb_occ[det_i][orb_i]  == structures_orb_occ[csf_i][orb_i]):
+           det_in_csf = False
+           break
       if (det_in_csf):
         current_det_label_in_csf.append (det_i+1)
 #        print "determinant is in CSF"
-
   det_label_in_csf.append (current_det_label_in_csf)
 #  print "det_label_in_csf=", det_label_in_csf
 
@@ -367,7 +380,7 @@ def dets_in_csfs ():
     if (det_used[det_i] == 0):
       print "WARNING: determinant # ",det_i+1," is not used\n"
     if (det_used[det_i] > 1):
-      print "ERROR: determinant # ",det_i+1," is used in more than one structure. This case is not handled yet.\n"
+      print "\nERROR: determinant # ",det_i+1," is used in more than one structure. This case is not handled yet.\n"
       sys.exit(0)
       
 
@@ -380,7 +393,7 @@ print "WARNING: not fully tested!"
 
 # check argument number
 if len(sys.argv) <= 1:
-  print "ERROR: missing arguments"
+  print "\nERROR: missing arguments"
   help_menu()
 
 # command line arguments
@@ -398,7 +411,7 @@ for opt, val in options:
   elif opt == "-o":
    file_output_string = val
   else:
-     print "ERROR: unknown option:", opt, val
+     print "\nERROR: unknown option:", opt, val
 
 # open and read input file
 file_input = open(file_input_string,'r')
