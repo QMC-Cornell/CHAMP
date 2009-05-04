@@ -31,7 +31,7 @@ cent = []
 cent_to_cent_type = []
 cent_type_to_first_cent = []
 nctype = 0
-nuclear_charges_unique = set()
+#nuclear_charges_unique = set()
 iwctype = []
 angstrom_to_bohr = 1.889716165
 
@@ -170,7 +170,7 @@ def read_geometry ():
     nuclear_charges.append (int(geometry_list[i][1]))
     nuclear_coordinates.append (map(float, geometry_list[i][3:6]))
 
-  nuclear_charges_unique = list(set(nuclear_charges))
+  nuclear_charges_unique = nuclear_charges
   nctype = len(nuclear_charges_unique)
 
   for i in range(ncent):

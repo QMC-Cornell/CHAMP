@@ -109,7 +109,7 @@ module main_menu_mod
   case ('statistics')        ; call statistics_menu
   case ('norun')             ; run_done = .true.
   case ('run')               ; call run
-  case ('exit')              ; write(6,*); write(6,'(a)') 'Exit of menu.'; exit
+  case ('exit')              ; write(6,*); write(6,'(a)') 'Exit of menu.';  write(6,*); exit
   case default
    call die (lhere,'unknown command >'+trim(command)+'<')
   end select

@@ -39,7 +39,9 @@ c cdep is the constant of proportionality between dependent and independent vari
               if(i.gt.MTERMS) stop 'nterms>MTERMS in cuspinit4'
               if(k.eq.1.and.iwc4(n-1).eq.0) iwc4(n-1)=i
               if(k.eq.0.and.iwc4(n+nordc-2).eq.0) iwc4(n+nordc-2)=i
-              write(6,'(9i4)') i,n,k,l,m
+              if (iprin.gt.0) then !JT
+                write(6,'(9i4)') i,n,k,l,m
+              endif
               iord=l+2*m
               d(iord,i)=d(iord,i)-2*k
               if(l+m.gt.0) then
@@ -53,20 +55,22 @@ c cdep is the constant of proportionality between dependent and independent vari
             endif
    20 continue
       nterms=i
-      write(6,'(''# of e-e-n terms, nterms='',i5)') nterms
-      write(6,'(''d matrix:'')')
-      write(6,'(55i2)') (i,i=1,nterms)
-      do 30 n=1,2*(nordc-1)
+      if (iprin.gt.0) then !JT
+       write(6,'(''# of e-e-n terms, nterms='',i5)') nterms
+       write(6,'(''d matrix:'')')
+       write(6,'(55i2)') (i,i=1,nterms)
+       do 30 n=1,2*(nordc-1)
    30   write(6,'(55i2)') (nint(d(n,i)),i=1,nterms)
-      write(6,'(''coefs. fixed by cusp conditions are'')')
-      write(6,'(55i3)') (iwc4(i),i=1,2*(nordc-1))
+       write(6,'(''coefs. fixed by cusp conditions are'')')
+       write(6,'(55i3)') (iwc4(i),i=1,2*(nordc-1))
+      endif
 
-      call checkdepend4
+      call checkdepend4(iprin)
 
       return
       end
 c-----------------------------------------------------------------------
-      subroutine checkdepend4
+      subroutine checkdepend4(iprin)
 
       implicit real*8(a-h,o-z)
 
@@ -157,13 +161,15 @@ c indirectly on all the independent variables that are being varied.
    60   continue
    70 continue
 
-      write(6,'(''i  it nvdepend iwdepend or cdep'')')
-      do 80 i=1,neqs
-        do 80 it=1,nctype
-          write(6,'(i2,2i4,2x,15i4)') i,it,nvdepend(i,it),
-     &   (iwdepend(i,j,it),j=1,nvdepend(i,it))
-   80     write(6,'(i2,2i4,2x,15f4.0)') i,it,nvdepend(i,it),
-     &   (cdep(i,j,it),j=1,nvdepend(i,it))
+      if (iprin.gt.0) then !JT
+       write(6,'(''i  it nvdepend iwdepend or cdep'')')
+       do 80 i=1,neqs
+         do 80 it=1,nctype
+           write(6,'(i2,2i4,2x,15i4)') i,it,nvdepend(i,it),
+     &    (iwdepend(i,j,it),j=1,nvdepend(i,it))
+   80      write(6,'(i2,2i4,2x,15f4.0)') i,it,nvdepend(i,it),
+     &    (cdep(i,j,it),j=1,nvdepend(i,it))
+      endif
 
       return
       end

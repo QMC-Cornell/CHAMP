@@ -9,7 +9,7 @@ hostname := $(shell uname -n)
 
 # Libraries --------------------------------------------------------------
 
-LIBHOME=../../champ/lib
+LIBHOME=../lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
@@ -478,7 +478,7 @@ ifeq ($(hostname),jugene1)
   CHAMP_C_MPI_FLAGS = -O3 -qstrict
 endif
 
-# BlueGene P at IDRIS
+# BlueGene P at IDRIS (Paris)
 ifeq ($(hostname),babel1)
 
  CHAMP_F95=mpixlf2003
