@@ -205,6 +205,31 @@ ifeq ($(hostname),cfe2)
  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
+# Pleiades at NASA
+ifeq ($(hostname),p4fe1)
+  CHAMP_C=icc
+  CHAMP_CXX=icc
+  CHAMP_MPIF95=mpiifort
+  CHAMP_MPIF77=mpiifort
+  CHAMP_LD_MPI=mpiifort
+#  CHAMP_MPIF95=ifort
+#  CHAMP_MPIF77=ifort
+#  CHAMP_LD_MPI=ifort
+#  CHAMP_MPIF95=mpif90
+#  CHAMP_MPIF77=mpif90
+#  CHAMP_LD_MPI=mpif90
+  EINSPLINE=
+  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a
+  CHAMP_F95_FAST=-O3 -ip -align all -fpp -DNOEINSPLINE -mcmodel medium
+-shared-intel
+  CHAMP_LD_FAST=-O3 -ip -align all -fpp -DNOEINSPLINE -mcmodel medium
+-shared-intel
+#  CHAMP_F95_FAST=-O3 -ip  -fpe0 -traceback -align all -fpp -DNOEINSPLINE
+#  CHAMP_LD_FAST=-O3 -ip -fpe0 -traceback -align all -fpp -DNOEINSPLINE
+  CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
+endif
+
+
 # OSC Itanium cluster, requires Intel compiler >9.0
 ifeq ($(hostname),ipf-login1)
   CHAMP_MPIF95=mpif90
