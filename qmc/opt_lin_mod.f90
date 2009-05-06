@@ -14,6 +14,7 @@ module opt_lin_mod
   logical                         :: l_sym_ham_geo = .true.
   logical                         :: l_sym_ham_first_row_column_geo = .false.
   logical                         :: l_renormalize = .false.
+  logical                         :: l_print_eigenvector_norm = .false.
 
   integer                         :: param_aug_nb
 
@@ -85,7 +86,8 @@ module opt_lin_mod
    write(6,'(a)') '    select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization(default=true)'
    write(6,'(a)') '    select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization(default=false)'
    write(6,'(a)') '    select_eigvec_smallest_norm = [bool] : select eigenvector with smallest norm(Psi_lin-Psi_)) for nonlinear params for ground state optimization(default=false)'
-   write(6,'(a)') '    target_state = [integer] : index of target state to optimize(default is ground-state)'
+   write(6,'(a)') '    target_state = [integer] : index of target state to optimize (default is ground-state)'
+   write(6,'(a)') '    print_eigenvector_norm = [bool] : print norm of all eigenvectors? (default=false)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
@@ -142,6 +144,9 @@ module opt_lin_mod
   case ('target_state')
    call get_next_value(target_state)
    call require (lhere, 'target_state >= 0', target_state >= 0)
+
+  case ('print_eigenvector_norm')
+   call get_next_value (l_print_eigenvector_norm)
 
   case ('end')
    exit
@@ -791,6 +796,9 @@ module opt_lin_mod
 !  enddo
 
 ! Find eigenvector with smallest norm(Psi_lin-Psi_0) for nonlinear parameters
+  if (l_print_eigenvector_norm) then
+   write(6,'(/,a)') 'Norm of linear wave function variation for nonlinear parameters for unsorted eigenvectors:'
+  endif
   smallest_norm=9.d99
   eigvec_smallest_norm_ind=1
   do i = 1, param_aug_nb
@@ -801,21 +809,30 @@ module opt_lin_mod
     enddo
    enddo
    psi_lin_var_norm = psi_lin_var_norm/eigvec(1,i)**2  ! Normalize so first component is 1
-   write(6,'(2i4,a,f20.8)') i, eigval_ind_to_eigval_srt_ind(i), ' Norm of linear wave function variation for nonlinear parameters =', psi_lin_var_norm
+   if (l_print_eigenvector_norm) then
+    write(6,'(a,i5,a,f20.8)') 'eigenvector #',i, ': norm =', psi_lin_var_norm
+   endif
    if(psi_lin_var_norm < smallest_norm) then
      if(psi_lin_var_norm > 0.d0) then
        smallest_norm = psi_lin_var_norm
        eigvec_smallest_norm_ind = i
       else
-       write(6,'(''Warning:psi_lin_var_norm is < 0 because of roundoff, it is='',d12.4)') psi_lin_var_norm ! This can happen only because of numerical roundoff errors
+      if (l_print_eigenvector_norm) then
+       write(6,'(a,d12.4,a)') 'Warning: psi_lin_var_norm=',psi_lin_var_norm ,' < 0 because of roundoff' ! This can happen only because of numerical roundoff errors
+      endif
      endif
    endif
   enddo
-  write(6,'(/,''Reasonable bounds for the eigenvalue are:'',2f12.5)')(1-p_var)*energy_sav+p_var*energy_sigma_sav**2 &
+ 
+  if (l_print_eigenvector_norm) then
+   write(6,'(a,i4,a,g16.8)') 'Unsorted eigenvector # ',eigvec_smallest_norm_ind,' has smallest norm of linear wave function variation for nonlinear parameters =', smallest_norm
+  endif
+
+  write(6,'(/,a,2f12.5)') 'Reasonable eigenvalue window is:', (1-p_var)*energy_sav+p_var*energy_sigma_sav**2 &
   ,(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2
-  write(6,'(a,i4,a,g16.8)') 'Eigenvector',eigvec_smallest_norm_ind,' has smallest norm of linear wave function variation for nonlinear parameters =', smallest_norm
-   write(6,'(a,f8.3,a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with smallest |Psi_lin-Psi_0|=',smallest_norm,' for nonlin params is #'&
-   &,eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+
+  write(6,'(a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with smallest norm of wave function variation is #',eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+  write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', smallest_norm
 
 ! Find eigenvector with largest first coefficient
 ! When there are more than one with largest first coeff., pick out of these the one with the lowest eigenvalue
@@ -868,10 +885,10 @@ module opt_lin_mod
     enddo
     psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eigvec_lowest_eigval_ind)**2 ! Normalize so first component is 1
     if(psi_lin_var_norm < 0.d0) psi_lin_var_norm= 1.d99
-    write(6,'(a,f20.8)') '|Psi_lin-Psi0| for nonlinear parameters of eigenvec with lowest reasonable eigenvalue=', psi_lin_var_norm
     write(6,'(a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i'
+  write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   else
-    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable energy windows so select eigenvector with smallest norm(Psi_lin-Psi_0)!'
+    write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable eigenvalue windows so select eigenvector with smallest norm!'
   endif
 
 ! if target_state = 0, select eigenvector from one of the 3 criteria:
@@ -933,7 +950,7 @@ module opt_lin_mod
      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_ind)*eigvec(1+jparm,eig_ind)*ovlp_lin(1+iparm,1+jparm)
    enddo
   enddo
-  write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlinear parameters =', psi_lin_var_norm
+  write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   if(psi_lin_var_norm > 10*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 10*smallest_norm'',2d12.4)')  psi_lin_var_norm,smallest_norm
 
 ! calculate the actual parameter variations
