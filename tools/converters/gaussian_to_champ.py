@@ -103,7 +103,7 @@ def read_total_charge ():
       break
       
   if not found:
-    print "ERROR: total charge not found"
+    print "\nERROR: total charge not found"
     sys.exit(0)
 
 #  print "total charge = ", total_charge
@@ -125,7 +125,7 @@ def read_electron_number ():
       break
 
   if not found:
-    print "ERROR: alpha and beta electron numbers not found"
+    print "\nERROR: alpha and beta electron numbers not found"
     sys.exit(0)
 
 #  print "number of electrons read."
@@ -159,7 +159,7 @@ def read_geometry ():
             break
 
   if not found:
-    print "ERROR: geometry not found"
+    print "\nERROR: geometry not found"
     sys.exit(0)
 
 #  print "geometry read"
@@ -205,7 +205,7 @@ def read_energy ():
       break
 
   if not found:
-    print "ERROR: energy not found"
+    print "\nERROR: energy not found"
     sys.exit(0)
 
 #  print "SCF energy read"
@@ -217,14 +217,14 @@ def read_basis ():
   found = False
 
   for line in lines:
-    if re.search ("basis functions,", line):
+    if re.search ("basis functions", line):
       object_splitted = string.split (line)
       nbasis = int(object_splitted [0])
       found = True
       break
 
   if not found:
-    print "ERROR: number of basis functions not found"
+    print "\nERROR: number of basis functions not found"
     sys.exit(0)
 
 #  print "nbasis = ", nbasis
@@ -264,13 +264,13 @@ def read_orbitals ():
 #          print "line ",j,", orbital indexes:",lines[j]
           j = j + 1
           if not re.search ("([OV]\s+)+", lines[j]):
-            print "ERROR: the orbital section is not in the expected format"
+            print "\nERROR: the orbital section is not in the expected format"
             sys.exit(0)
           orbital_occupations.extend (string.split(lines[j]))
 #          print "line ",j,", orbital occupation:",lines[j]
           j = j + 1
           if not re.search ("EIGENVALUES \-\-\s+([0-9\-\.]+\s+)+", lines[j]):
-            print "ERROR: the orbital section is not in the expected format"
+            print "\nERROR: the orbital section is not in the expected format"
             sys.exit(0)
           orbital_eigenvalues.extend ((string.split(lines[j]))[2:])
 #          print "line ",j,", orbital eigenvalues:",lines[j]
@@ -317,7 +317,7 @@ def read_orbitals ():
       break
        
   if not found:
-    print "ERROR: orbital coefficients not found"
+    print "\nERROR: orbital coefficients not found"
     sys.exit(0)
 
 #  print "orbitals read"
@@ -448,7 +448,7 @@ def check_electron_number ():
   total_nuclear_charge = sum(nuclear_charges)
   nelec_check = total_nuclear_charge - total_charge
   if (nelec_check != nelec):
-    print "ERROR: electron number inconsistent with nuclear charges and total charge!"
+    print "\nERROR: electron number inconsistent with nuclear charges and total charge!"
     sys.exit(0)
 
 # ========================================================
@@ -456,11 +456,11 @@ def check_electron_number ():
 # ========================================================
 
 print "GAUSSIAN -> CHAMP convertion script"
-print "WARNING: for now, it works only for closed-shell single-determinant calculations!"
+print "WARNING: for now, it works only for single-determinant calculations!"
 
 # check argument number
 if len(sys.argv) <= 1:
-  print "ERROR: missing arguments"
+  print "\nERROR: missing arguments"
   help_menu()
 
 # command line arguments
@@ -480,7 +480,7 @@ for opt, val in options:
   elif opt == "-s":
    l_sort_basis = True
   else:
-     print "ERROR: unknown option:", opt, val
+     print "\nERROR: unknown option:", opt, val
 
 # open and read input file
 file_input = open(file_input_string,'r')
@@ -545,7 +545,7 @@ file_output.write(' basis_functions\n')
 for i in range(nctype):
   file_output.write('%d' %(i+1) + '\n')
   for j in range(len(basis_labels_without_number_by_cent_type)):
-    file_output.write(basis_labels_without_number_by_cent_type[j] + '   %0.8f' % 0. + '\n' )
+    file_output.write('?'+basis_labels_without_number_by_cent_type[j] + '   %0.8f' % 0. + '\n' )
 file_output.write(' end\n')
 file_output.write('end\n\n')
 
@@ -571,8 +571,8 @@ file_output.write(' end\n')
 file_output.write('end\n\n')
 
 file_output.write('jastrow\n')
-file_output.write(' ijas=4 isc=4\n')
-file_output.write(' scalek=0.8\n')
+file_output.write(' ijas=4 isc=2\n')
+file_output.write(' scalek=0.5\n')
 file_output.write(' parameters\n')
 for i in range(nctype):
   file_output.write('0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n')
