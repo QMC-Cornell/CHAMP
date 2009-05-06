@@ -786,7 +786,7 @@ module opt_lin_mod
 ! print eigenvalues
   write(6,'(a)') 'Sorted (complex) eigenvalues:'
   do i = 1, param_aug_nb
-    write(6,'(a,i5,a,2(f10.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
+    write(6,'(a,i5,a,2(f12.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
   enddo
 
 ! print eigenvectors
@@ -828,7 +828,8 @@ module opt_lin_mod
    write(6,'(a,i4,a,g16.8)') 'Unsorted eigenvector # ',eigvec_smallest_norm_ind,' has smallest norm of linear wave function variation for nonlinear parameters =', smallest_norm
   endif
 
-  write(6,'(/,a,2f12.5)') 'Reasonable eigenvalue window is:', (1-p_var)*energy_sav+p_var*energy_sigma_sav**2 &
+! JT: increase upper bound by 0.01 to avoid abusive rejection
+  write(6,'(/,a,2f12.5)') 'Reasonable eigenvalue window is:', (1-p_var)*energy_sav+p_var*energy_sigma_sav**2 + 0.01d0 &
   ,(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2
 
   write(6,'(a,t87,i4,a,2(f10.4,a))') 'The (sorted) eigenvector with smallest norm of wave function variation is #',eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
@@ -857,9 +858,8 @@ module opt_lin_mod
   lowest_eigval = 9.d99
   eigvec_lowest_eigval_ind = 0
   do i = 1, param_aug_nb
-!   write(6,*)(1-p_var)*energy_sav + p_var*energy_sigma_sav**2,(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2
     if(eigval_r(i) < lowest_eigval .and. &
-        eigval_r(i) <(1-p_var)*energy_sav + p_var*energy_sigma_sav**2 .and. &
+        eigval_r(i) <(1-p_var)*energy_sav + p_var*energy_sigma_sav**2 + 0.01d0 .and. &
         eigval_r(i) >(1-p_var)*(energy_sav-energy_sigma_sav) + 0.25*p_var*energy_sigma_sav**2) then
 ! Old criteria
 !    if((p_var < 1.d0 .and. eigval_r(i) < lowest_eigval .and. dabs(eigval_r(i)-(1-p_var)*etrial) < 10.d0) .or. &
