@@ -64,6 +64,7 @@
 !
 ! Created     : J. Toulouse, 02 Feb 2008
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -218,6 +219,7 @@
 !
 ! Created       : J. Toulouse, 02 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -248,6 +250,7 @@
 !
 ! Created       : J. Toulouse, 02 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -291,6 +294,7 @@
 !
 ! Created       : J. Toulouse, 02 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -343,6 +347,7 @@
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -395,6 +400,7 @@
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -437,6 +443,7 @@
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -479,6 +486,7 @@
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -520,6 +528,7 @@
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -561,6 +570,7 @@
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -605,6 +615,7 @@
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -648,6 +659,7 @@
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -690,6 +702,7 @@
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -736,6 +749,7 @@
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -770,6 +784,7 @@
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -804,6 +819,7 @@
 !
 ! Created       : J. Toulouse, 14 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -852,6 +868,7 @@
 !
 ! Created       : J. Toulouse, 16 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -893,6 +910,7 @@
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -948,6 +966,7 @@
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -990,6 +1009,7 @@
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1036,6 +1056,7 @@
 !
 ! Created       : J. Toulouse, 22 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1103,6 +1124,7 @@
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1154,6 +1176,7 @@
 !
 ! Created     : J. Toulouse, 12 Feb 2008
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

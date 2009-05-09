@@ -4,6 +4,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use control_mod
       use deriv_orb_mod
       use periodic_jastrow_mod !WAS
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 !JT      parameter (one=1.d0)
@@ -13,8 +14,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
@@ -363,11 +364,10 @@ c-----------------------------------------------------------------------
 !      subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
 !WAS
       subroutine nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
-      use control_mod
-!
-
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use control_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
@@ -381,8 +381,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)

@@ -101,6 +101,7 @@
 !
 ! Created     : J. Toulouse, 26 Jul 2007
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -328,6 +329,7 @@
 !
 ! Created       : J. Toulouse, 28 Mar 2009
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -367,6 +369,7 @@
 !
 ! Created       : J. Toulouse, 28 Mar 2009
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -429,6 +432,7 @@
 !
 ! Created       : J. Toulouse, 26 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -482,6 +486,7 @@
 !
 ! Created       : J. Toulouse, 26 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -537,6 +542,7 @@
 !
 ! Created       : J. Toulouse, 26 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -839,6 +845,7 @@
 !
 ! Created       : J. Toulouse, 09 Aug 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -936,6 +943,7 @@
 !
 ! Created       : J. Toulouse, 19 Sep 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1026,6 +1034,7 @@
 !
 ! Created       : J. Toulouse, 27 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1091,6 +1100,7 @@
 !
 ! Created       : J. Toulouse, 27 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

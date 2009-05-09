@@ -1,19 +1,20 @@
 	subroutine cbasis_fns_num(iel,rvec_en,r_en)
 c written by Amit Ghosal starting from basis_fns.f
 
+      use atom_mod
 	implicit real*8(a-h,o-z)
-	include 'vmc.h'
-	include 'pseudo.h'
-	include 'numbas.h'
-	include 'force.h'
+!JT	include 'vmc.h'
+!JT	include 'pseudo.h'
+!JT	include 'numbas.h'
+!JT	include 'force.h'
 
 c New temporary variables defined ************************
       complex*16 temp_p,temp_n,cph,cdph,cphin,cdphin,cd2phin,ylm
 c Definition of new temporary variables ends here ********
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)

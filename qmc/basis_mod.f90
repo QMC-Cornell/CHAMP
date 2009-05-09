@@ -37,6 +37,7 @@ module basis_mod
 !
 ! Created     : J. Toulouse, 18 Apr 2007
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -293,6 +294,7 @@ module basis_mod
 !
 ! Created     : J. Toulouse, 03 Mar 2009
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -429,6 +431,7 @@ module basis_mod
 !
 ! Created     : J. Toulouse, 03 Mar 2009
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -528,6 +531,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 16 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -598,6 +602,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -636,6 +641,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 30 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -677,6 +683,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -725,6 +732,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 21 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -817,6 +825,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 21 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -855,6 +864,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -886,6 +896,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -960,6 +971,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1018,6 +1030,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1060,6 +1073,7 @@ module basis_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

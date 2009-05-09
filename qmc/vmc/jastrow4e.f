@@ -1,9 +1,10 @@
       subroutine jastrow4e(iel,x,v,value)
-      use control_mod
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
+      use control_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -20,8 +21,8 @@ c Jastrow 6   must be used with one of isc=6,7
       common /contrl_per/ iperiodic,ibasis
 !!!
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /bparm/ nspin2b,nocuspb
 

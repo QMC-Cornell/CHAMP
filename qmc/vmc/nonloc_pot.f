@@ -7,13 +7,14 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use deriv_orb_mod
       use eloc_mod
       use periodic_jastrow_mod  !WAS
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
       common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 

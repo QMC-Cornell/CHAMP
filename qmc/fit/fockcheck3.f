@@ -1,10 +1,11 @@
       subroutine fockcheck3(o,op,diff,isht,nfsh,it,ipr)
 c Written by Cyrus Umrigar and Claudia Filippi
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'fit.h'
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -14,16 +15,16 @@ c Written by Cyrus Umrigar and Claudia Filippi
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
-      include '../vmc/force.h'
+!JT      include '../vmc/force.h'
 
-      parameter(half=0.5d0,two=2.d0,three=3.d0
-     &,d1b24=1.d0/24.d0,d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
+!JT      parameter(half=0.5d0,two=2.d0,three=3.d0
+      parameter(d1b24=1.d0/24.d0,d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
      &,rt2=1.414213562373095d0,dln2=0.6931471805599453d0
      &,const1=(1.d0-dln2)/12.d0)
 c    &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr

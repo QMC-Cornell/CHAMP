@@ -6,26 +6,28 @@ c note that for the log terms from the e-e cusp, the coefficients are
 c those of (s**n/2)*log(s**2/2), rather than (s**n)*log(s**2)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
+!JT      include '../vmc/vmc.h'
 
-      include 'fit.h'
+!JT      include 'fit.h'
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
 
-      include '../vmc/force.h'
+!JT      include '../vmc/force.h'
 
-      parameter (zero=0.d0,two=2.d0,four=4.d0
-     &,half=0.5d0,d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
+!JT      parameter (zero=0.d0,two=2.d0,four=4.d0
+!JT     &,half=0.5d0)
+      parameter(d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
      &,d1b24=1.d0/24.d0, rt22=2.82842712474619d0,rt2i=rt22/4.d0
      &,dln2=0.6931471805599453d0, pi=3.141592653589793d0
      &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /focsav/ a4sav,a5sav,a6sav,a7sav
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

@@ -79,6 +79,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 12 Oct 2005
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -634,6 +635,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 18 Feb 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1123,6 +1125,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 18 Jan 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1541,6 +1544,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 21 Jan 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1820,6 +1824,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 23 Jan 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1963,6 +1968,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 04 Dec 2007
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2089,6 +2095,7 @@ module optimization_mod
 !
 ! Created     : J. Toulouse, 20 Nov 2007
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2216,6 +2223,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2323,6 +2331,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 29 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2373,6 +2382,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 29 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2432,6 +2442,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 27 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2489,6 +2500,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 07 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2702,6 +2714,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 31 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2751,6 +2764,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 31 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2800,6 +2814,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 31 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2850,6 +2865,7 @@ module optimization_mod
 !
 ! Created       : J. Toulouse, 26 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

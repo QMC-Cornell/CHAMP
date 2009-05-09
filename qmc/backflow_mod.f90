@@ -147,6 +147,7 @@ contains
     !
     ! Created     : F. Petruzielo, 17 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need scalek, isc, nctype
@@ -424,6 +425,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 18 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -468,6 +470,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 3 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -512,6 +515,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 20 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -556,6 +560,7 @@ contains
     !
     ! Created     : F. Petruzielo, 22 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, nwalker
@@ -599,6 +604,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 5 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -642,6 +648,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 17 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -828,6 +835,7 @@ contains
     !
     ! Created     : F. Petruzielo, 23 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, nwalker
@@ -871,6 +879,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -915,6 +924,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 26 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -959,6 +969,7 @@ contains
     !
     ! Created     : F. Petruzielo, 23 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, nwalker, ncent
@@ -1003,6 +1014,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -1047,6 +1059,7 @@ contains
     !               for each walker.
     ! Created     : F. Petruzielo, 26 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nelec, ncent, nwalker
@@ -1194,6 +1207,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec
@@ -1252,6 +1266,7 @@ contains
     !
     ! Created     : F. Petruzielo, 4 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec
@@ -1310,6 +1325,7 @@ contains
     !
     ! Created     : F. Petruzielo, 17 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec
@@ -1462,6 +1478,7 @@ contains
     !
     ! Created     : F. Petruzielo, 10 Apr 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need ndim, nelec, nwalk
@@ -1531,6 +1548,7 @@ contains
     !
     ! Created     : F. Petruzielo, 10 Apr 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -1606,6 +1624,7 @@ contains
     !
     ! Created     : F. Petruzielo, 10 Apr 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -1694,6 +1713,7 @@ contains
     !
     ! Created     : F. Petruzielo, 10 Apr 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -1766,6 +1786,7 @@ contains
     !
     ! Created     : F. Petruzielo, 10 Apr 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -1850,6 +1871,7 @@ contains
     !
     ! Created     : F. Petruzielo, 21 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need ndim, nelec, nwalk
@@ -1895,6 +1917,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -1965,6 +1988,7 @@ contains
     !
     ! Created     : F. Petruzielo, 21 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -2016,6 +2040,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -2107,6 +2132,7 @@ contains
     !
     ! Created     : F. Petruzielo, 3 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -2169,6 +2195,7 @@ contains
     !
     ! Created     : F. Petruzielo, 4 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -2257,6 +2284,7 @@ contains
     !
     ! Created     : F. Petruzielo, 4 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -2320,6 +2348,7 @@ contains
     !
     ! Created     : F. Petruzielo, 3 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -2382,6 +2411,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -2434,6 +2464,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -2520,6 +2551,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -2590,6 +2622,7 @@ contains
     !
     ! Created     : F. Petruzielo, 20 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec
@@ -2660,6 +2693,7 @@ contains
     !
     ! Created     : F. Petruzielo, 22 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -2705,6 +2739,7 @@ contains
     !
     ! Created     : F. Petruzielo, 22 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, nup
@@ -2780,6 +2815,7 @@ contains
     !
     ! Created     : F. Petruzielo, 22 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -2836,6 +2872,7 @@ contains
     !
     ! Created     : F. Petruzielo, 22 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -2938,6 +2975,7 @@ contains
     !
     ! Created     : F. Petruzielo, 4 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3012,6 +3050,7 @@ contains
     !
     ! Created     : F. Petruzielo, 4 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3104,6 +3143,7 @@ contains
     !
     ! Created     : F. Petruzielo, 6 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3173,6 +3213,7 @@ contains
     !
     ! Created     : F. Petruzielo, 9 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -3238,6 +3279,7 @@ contains
     !
     ! Created     : F. Petruzielo, 6 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec
@@ -3302,6 +3344,7 @@ contains
     !
     ! Created     : F. Petruzielo, 17 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec
@@ -3381,6 +3424,7 @@ contains
     !
     ! Created     : F. Petruzielo, 17 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3442,6 +3486,7 @@ contains
     !
     ! Created     : F. Petruzielo, 18 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3530,6 +3575,7 @@ contains
     !
     ! Created     : F. Petruzielo, 17 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3591,6 +3637,7 @@ contains
     !
     ! Created     : F. Petruzielo, 18 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -3657,6 +3704,7 @@ contains
     !
     ! Created     : F. Petruzielo, 23 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -3704,6 +3752,7 @@ contains
     !
     ! Created     : F. Petruzielo, 23 Jul 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -3815,6 +3864,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -3936,6 +3986,7 @@ contains
     !
     ! Created     : F. Petruzielo, 12 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -3991,6 +4042,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -4057,6 +4109,7 @@ contains
     !
     ! Created     : F. Petruzielo, 13 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -4123,6 +4176,7 @@ contains
     ! Created     : F. Petruzielo, 13 Aug 2008
     !---------------------------------------------------------------------------
 
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -4236,6 +4290,7 @@ contains
     ! Created     : F. Petruzielo, 13 Aug 2008
     !---------------------------------------------------------------------------
 
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -4343,6 +4398,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -4410,6 +4466,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -4503,6 +4560,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -4589,6 +4647,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -4671,6 +4730,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -4774,6 +4834,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -4880,6 +4941,7 @@ contains
     !
     ! Created     : F. Petruzielo, 31 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -4940,6 +5002,7 @@ contains
     !
     ! Created     : F. Petruzielo, 31 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -5029,6 +5092,7 @@ contains
     !
     ! Created     : F. Petruzielo, 31 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -5130,6 +5194,7 @@ contains
     !
     ! Created     : F. Petruzielo, 31 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -5207,6 +5272,7 @@ contains
     !
     ! Created     : F. Petruzielo, 31 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -5302,6 +5368,7 @@ contains
     !
     ! Created     : F. Petruzielo, 31 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -5397,6 +5464,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -5488,6 +5556,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -5534,6 +5603,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -5644,6 +5714,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -5750,6 +5821,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -5804,6 +5876,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -5870,6 +5943,7 @@ contains
     ! Created     : F. Petruzielo, 14 Aug 2008
     !---------------------------------------------------------------------------
 
+    include 'modules.h'
     implicit none
 
     !need nctype
@@ -5966,6 +6040,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -6027,6 +6102,7 @@ contains
     !
     ! Created     : F. Petruzielo, 14 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -6120,6 +6196,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -6206,6 +6283,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim, ncent
@@ -6288,6 +6366,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -6391,6 +6470,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -6497,6 +6577,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -6553,6 +6634,7 @@ contains
     !
     ! Created     : F. Petruzielo, 26 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -6642,6 +6724,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -6743,6 +6826,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, nelec, ndim
@@ -6820,6 +6904,7 @@ contains
     !
     ! Created     : F. Petruzielo, 26 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -6915,6 +7000,7 @@ contains
     !
     ! Created     : F. Petruzielo, 26 Mar 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
@@ -7010,6 +7096,7 @@ contains
     !
     ! Created     : F. Petruzielo, 25 Feb 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup

@@ -1,13 +1,14 @@
       subroutine jastrow3(x,v,d2,div_vj,value)
 c Written by Claudia Filippi and Cyrus Umrigar
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
-      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0
-     &,half=.5d0,third=1.d0/3.d0)
+!JT      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0
+!JT     &,half=.5d0,third=1.d0/3.d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -19,8 +20,8 @@ c Written by Claudia Filippi and Cyrus Umrigar
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

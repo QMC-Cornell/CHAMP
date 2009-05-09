@@ -12,7 +12,7 @@ c 3) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions
 c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
 c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use control_mod
-
+      use atom_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -43,8 +43,8 @@ c     common /contr3/ mode
      &dvpdv(MDATA),ndata
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /atom2/ dist_cent(MCENT)
 
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere

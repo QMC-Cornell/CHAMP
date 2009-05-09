@@ -1,14 +1,15 @@
       subroutine jastrow3e(iel,x,v,value)
 c Written by Claudia Filippi by modifying jastrow3
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'pseudo.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'pseudo.h'
 
-      parameter (one=1.d0)
-      parameter (half=.5d0,third=1.d0/3.d0)
+!JT      parameter (one=1.d0)
+!JT      parameter (half=.5d0,third=1.d0/3.d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -21,8 +22,8 @@ c Written by Claudia Filippi by modifying jastrow3
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
       common /bparm/ nspin2b,nocuspb
 

@@ -64,6 +64,7 @@ CONTAINS
 ! Richard Hennig  4.2008 Read bwfn.data on master & bcast.                !
 !-------------------------------------------------------------------------!
  USE mpi_mod
+ include 'modules.h'
  IMPLICIT NONE
  include 'commons.h'
  INTEGER i,j,k,io,band,ig,ialloc,idum,ispin,num_spins,num_electrons,n1,n2,n3,ierr,nbasisbwf
@@ -414,6 +415,7 @@ CONTAINS
 ! NB: This routine will shortly be replaced when the standard PWFDET_SETUP   !
 ! will be used for both PWs and blips. MDT 3.2002                            !
 !----------------------------------------------------------------------------!
+ include 'modules.h'
  IMPLICIT NONE
  include 'commons.h'
  REAL(dp),INTENT(in) :: orb_norm

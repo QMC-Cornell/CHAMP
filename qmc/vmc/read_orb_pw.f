@@ -81,6 +81,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use bsplines_mod
       use all_tools_mod
       use orbital_grid_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
       character*20 fmt
@@ -121,8 +122,8 @@ c    &0:MGRID_ORB_PER-1),grid_orbz(0:MGRID_ORB_PER-1)
 c    &,orb_splines_explicit(4,4,4,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
 c    &MGRID_ORB_PER-1,MORB_OCC)
 c atom included just to be able to shift test pt. for checking orbs by cent(k,1).
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
      &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
@@ -863,13 +864,14 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use atom_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
-      include 'numorb.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'ewald.h'
+!JT      include 'numorb.h'
       parameter(eps=1.d-4)
 
       common /contr3/ mode
@@ -899,8 +901,8 @@ c combine coefs. of G and -G, whereas QMC code does.
      &,orb(MORB),dorb(3,MORB),ddorb(MORB)
      &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
      &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       dimension centx(3),gvec_dft(3),gvec_latt(3),rkvec_latt(3)
 

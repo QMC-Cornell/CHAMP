@@ -6,11 +6,12 @@
 !     routine 'sites' used in VMC
 !     Created: J. Toulouse, 18 Mar 2007
 !-----------------------------------------------------------------------
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
-      include 'dmc.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
+!JT      include 'dmc.h'
 
       dimension nsite(MCENT)
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -18,8 +19,8 @@
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /dim/ ndim
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
 
 !     sites

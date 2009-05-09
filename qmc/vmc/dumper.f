@@ -17,14 +17,16 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c Routine to pick up and dump everything needed to restart job where it left off.
 
-      implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'pseudo.h'
-      include 'numbas.h'
-      include '../fit/fit.h'
+      use atom_mod
+!JT      implicit real*8(a-h,o-z)
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'pseudo.h'
+!JT      include 'numbas.h'
+!JT      include '../fit/fit.h'
 
-      parameter(half=0.5d0,small=1.d-6)
+!JT      parameter(half=0.5d0,small=1.d-6)
+      parameter(small=1.d-6)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -35,8 +37,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
      &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
      &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)

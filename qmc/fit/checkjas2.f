@@ -60,14 +60,15 @@ c               db/ds>=0,                                            :::
 c               db/ds+db/du>=0,                                      :::
 c               db/ds+db/du+db/dt>=0.                                :::
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
 
       parameter (MDIM=9)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -76,7 +77,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       dimension diff(*)
       dimension cora(MDIM,MDIM,2),bota(MDIM,MDIM,2)
-      data zero,one/0.d0,1.d0/
+!JT      data zero,one/0.d0,1.d0/
       data itranp,smin,d1m1,eps,eps2/2,1.d-6,.1,.01,1.d-10/
 
 c  **Warning: Assume there is just one nucleus
@@ -284,18 +285,19 @@ c-----------------------------------------------------------------------------
 
       subroutine pade(u,s,t,cor,isp)
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      parameter (one=1.d0,half=0.5d0)
+!JT      parameter (one=1.d0,half=0.5d0)
 
-      include '../vmc/vmc.h'
+!JT      include '../vmc/vmc.h'
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      include '../vmc/force.h'
+!JT      include '../vmc/force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb

@@ -13,6 +13,7 @@ c returns secondary geom. nuclear positions, stretched electron positions and
 c jacobian of the transformation
 
       use nuclei_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
       character*64 filename
       character*16 mode
@@ -25,8 +26,8 @@ c jacobian of the transformation
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr3/ mode
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

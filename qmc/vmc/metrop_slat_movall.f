@@ -13,6 +13,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use montecarlo_mod ! JT
       use opt_lin_mod    ! JT
       use opt_ptb_mod    ! JT
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -57,8 +58,8 @@ c     character*23 fmt
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       dimension xaxis(3),yaxis(3),zaxis(3),costht(MELEC),div_vn(MELEC)
      &,sintht(MELEC),raver(MELEC),ravern(MELEC)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)

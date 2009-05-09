@@ -30,6 +30,7 @@ c polarized calculations were attempted.
       use print_mod            !JT
       use deriv_exp_mod        !JT
       use walkers_mod          !JT
+      use atom_mod
 
       implicit real*8(a-h,o-z)
       integer fflag
@@ -62,8 +63,8 @@ c     include '../fit/fit.h'
      &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
      &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)

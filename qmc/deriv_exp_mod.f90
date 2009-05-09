@@ -15,7 +15,7 @@ module deriv_exp_mod
   logical                        :: l_deloc_exp_num = .false.
   integer                        :: param_exp_nb = 0
   logical, allocatable           :: is_exp_opt (:)
-  logical, allocatable           :: orbital_depends_on_optimized_exponent (:,:)
+  logical, allocatable           :: orbital_depends_on_opt_exp (:,:)
   real(dp), allocatable          :: dnorm_basis_dz (:)
   real(dp), allocatable          :: dbasis_ovlp_dz (:,:,:)
   real(dp), allocatable          :: dbasis_ovlp_dz_in_eig_basis (:,:,:)
@@ -82,6 +82,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -203,6 +204,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 18 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -280,13 +282,14 @@ module deriv_exp_mod
   end subroutine exp_opt_lab_bld
 
 ! ==============================================================================
-  subroutine orbital_depends_on_optimized_exponent_bld
+  subroutine orbital_depends_on_opt_exp_bld
 ! ------------------------------------------------------------------------------
-! Description   : orbital_depends_on_optimized_exponent = true if the orbital
+! Description   : orbital_depends_on_opt_exp = true if the orbital
 ! Description   : depends on the exponents
 !
 ! Created       : J. Toulouse, 19 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -296,7 +299,7 @@ module deriv_exp_mod
 ! header
   if (header_exe) then
 
-   call object_create ('orbital_depends_on_optimized_exponent')
+   call object_create ('orbital_depends_on_opt_exp')
 
    call object_needed ('orb_occ_last_in_wf_lab')
    call object_needed ('param_exp_nb')
@@ -312,8 +315,8 @@ module deriv_exp_mod
 ! begin
 
 ! allocation
-  call object_alloc ('orbital_depends_on_optimized_exponent', orbital_depends_on_optimized_exponent, orb_occ_last_in_wf_lab, param_exp_nb)
-  orbital_depends_on_optimized_exponent (:, :) = .false.
+  call object_alloc ('orbital_depends_on_opt_exp', orbital_depends_on_opt_exp, orb_occ_last_in_wf_lab, param_exp_nb)
+  orbital_depends_on_opt_exp (:, :) = .false.
 
 ! warning: coef changes during orbital optimization
   do orb_i = 1, orb_occ_last_in_wf_lab
@@ -321,14 +324,14 @@ module deriv_exp_mod
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
         bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
         if (coef (bas_i, orb_i, iwf) /= 0.d0) then
-          orbital_depends_on_optimized_exponent (orb_i, dexp_i) = .true.
+          orbital_depends_on_opt_exp (orb_i, dexp_i) = .true.
           exit
         endif
       enddo ! dexp_to_bas_i
     enddo ! dexp_i
   enddo ! orb_i
 
-  end subroutine orbital_depends_on_optimized_exponent_bld
+  end subroutine orbital_depends_on_opt_exp_bld
 
 ! ==============================================================================
   subroutine dnorm_basis_dz_bld
@@ -338,6 +341,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -391,6 +395,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Mai 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -472,6 +477,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 30 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -520,6 +526,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -570,6 +577,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -621,6 +629,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -667,6 +676,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -717,6 +727,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -776,6 +787,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -827,6 +839,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -882,6 +895,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -952,6 +966,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1000,6 +1015,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1052,6 +1068,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! -------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1069,7 +1086,7 @@ module deriv_exp_mod
    call object_needed ('dexp_to_bas')
    call object_needed ('orb_occ_last_in_wf_lab')
    call object_needed ('nelec')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1087,7 +1104,7 @@ module deriv_exp_mod
   call object_provide_by_index (dorb_dexp_bld_index, coef_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
      do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
        bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
        dorb_dexp (:, orb_i, dexp_i) = dorb_dexp (:, orb_i, dexp_i) + coef (bas_i, orb_i, iwf) * dphin_dz (:, bas_i)
@@ -1100,7 +1117,7 @@ module deriv_exp_mod
   call object_provide_by_index (dorb_dexp_bld_index, coef_orb_on_norm_basis_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
      do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
        bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
        dorb_dexp (:, orb_i, dexp_i) = dorb_dexp (:, orb_i, dexp_i) + coef_orb_on_norm_basis (bas_i, orb_i, iwf) * dphin_norm_dz (:, bas_i)
@@ -1113,7 +1130,7 @@ module deriv_exp_mod
   call object_provide_by_index (dorb_dexp_bld_index, coef_orb_on_ortho_basis_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
      do bas_i = 1, nbasis
        dorb_dexp (:, orb_i, dexp_i) = dorb_dexp (:, orb_i, dexp_i) + coef_orb_on_ortho_basis (bas_i, orb_i, iwf) * dphin_ortho_dz (:, bas_i, dexp_i)
      enddo ! bas_i
@@ -1133,6 +1150,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! -------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1151,7 +1169,7 @@ module deriv_exp_mod
    call object_needed ('dexp_to_bas_nb')
    call object_needed ('dexp_to_bas')
    call object_needed ('orb_occ_last_in_wf_lab')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1170,7 +1188,7 @@ module deriv_exp_mod
   call object_provide_by_index (grd_dorb_dexp_bld_index, coef_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
         bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
         grd_dorb_dexp (:, :, orb_i, dexp_i)= grd_dorb_dexp (:, :, orb_i, dexp_i) + coef (bas_i, orb_i, iwf) * grd_dphin_dz (:, :, bas_i)
@@ -1183,7 +1201,7 @@ module deriv_exp_mod
   call object_provide_by_index (grd_dorb_dexp_bld_index, coef_orb_on_norm_basis_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
         bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
         grd_dorb_dexp (:, :, orb_i, dexp_i)= grd_dorb_dexp (:, :, orb_i, dexp_i) + coef_orb_on_norm_basis (bas_i, orb_i, iwf) * grd_dphin_norm_dz (:, :, bas_i)
@@ -1196,7 +1214,7 @@ module deriv_exp_mod
   call object_provide_by_index (grd_dorb_dexp_bld_index, coef_orb_on_ortho_basis_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
       do bas_i = 1, nbasis
         grd_dorb_dexp (:, :, orb_i, dexp_i)= grd_dorb_dexp (:, :, orb_i, dexp_i) + coef_orb_on_ortho_basis (bas_i, orb_i, iwf) * grd_dphin_ortho_dz (:, :, bas_i, dexp_i)
       enddo ! bas_i
@@ -1216,6 +1234,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! -------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1234,7 +1253,7 @@ module deriv_exp_mod
    call object_needed ('dexp_to_bas_nb')
    call object_needed ('dexp_to_bas')
    call object_needed ('orb_occ_last_in_wf_lab')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1252,7 +1271,7 @@ module deriv_exp_mod
   call object_provide_by_index (lap_dorb_dexp_bld_index, coef_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
         bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
         lap_dorb_dexp (:, orb_i, dexp_i)= lap_dorb_dexp (:, orb_i, dexp_i) + coef (bas_i, orb_i, iwf) * lap_dphin_dz (:, bas_i)
@@ -1265,7 +1284,7 @@ module deriv_exp_mod
   call object_provide_by_index (lap_dorb_dexp_bld_index, coef_orb_on_norm_basis_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
       do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
         bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
         lap_dorb_dexp (:, orb_i, dexp_i)= lap_dorb_dexp (:, orb_i, dexp_i) + coef_orb_on_norm_basis (bas_i, orb_i, iwf) * lap_dphin_norm_dz (:, bas_i)
@@ -1278,7 +1297,7 @@ module deriv_exp_mod
   call object_provide_by_index (lap_dorb_dexp_bld_index, coef_orb_on_ortho_basis_index)
   do dexp_i = 1, param_exp_nb
    do orb_i = 1, orb_occ_last_in_wf_lab
-    if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+    if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
       do bas_i = 1, nbasis
         lap_dorb_dexp (:, orb_i, dexp_i)= lap_dorb_dexp (:, orb_i, dexp_i) + coef_orb_on_ortho_basis (bas_i, orb_i, iwf) * lap_dphin_ortho_dz (:, bas_i, dexp_i)
       enddo ! bas_i
@@ -1300,6 +1319,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1329,7 +1349,7 @@ module deriv_exp_mod
    call object_needed ('dorb_dexp')
    call object_needed ('detu')
    call object_needed ('detd')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1355,7 +1375,7 @@ module deriv_exp_mod
      do col_i = 1, nup
 
        orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
        factor_up = 0.d0
        do i = 1, nup
@@ -1378,7 +1398,7 @@ module deriv_exp_mod
      do col_i = 1, ndn
 
        orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
        factor_dn = 0.d0
        do i = 1, ndn
@@ -1403,6 +1423,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1478,6 +1499,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 23 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1518,6 +1540,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 26 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1543,7 +1566,7 @@ module deriv_exp_mod
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('dorb_dexp')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1567,7 +1590,7 @@ module deriv_exp_mod
      do col_i = 1, nup
 
        orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
        do l = 1, nup
         ratio_up (l) = 0.d0
@@ -1598,7 +1621,7 @@ module deriv_exp_mod
      do col_i = 1, ndn
 
        orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
        do l = 1, ndn
         ratio_dn (l) = 0.d0
@@ -1633,6 +1656,7 @@ module deriv_exp_mod
 !!
 !! Created       : J. Toulouse, 18 May 2007
 !! ------------------------------------------------------------------------------
+!  include 'modules.h'
 !  implicit none
 !  include 'commons.h'
 !
@@ -1659,7 +1683,7 @@ module deriv_exp_mod
 !   call object_needed ('slater_mat_trans_inv_up')
 !   call object_needed ('slater_mat_trans_inv_dn')
 !   call object_needed ('dorb_dexp')
-!   call object_needed ('orbital_depends_on_optimized_exponent')
+!   call object_needed ('orbital_depends_on_opt_exp')
 !
 !   return
 !
@@ -1687,7 +1711,7 @@ module deriv_exp_mod
 !     do col_i = 1, nup
 !
 !       orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
-!       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+!       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 !
 !    do orb_i = 1, nup
 !      do elec_i = 1, nup
@@ -1720,7 +1744,7 @@ module deriv_exp_mod
 !     do col_i = 1, ndn
 !
 !       orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
-!       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+!       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 !
 !       slater_mat_exp_trans_dn (1:ndn, 1:ndn, col_i, det_unq_dn_i, dexp_i) = slater_mat_trans_inv_dn (1:ndn, 1:ndn, det_i)
 !       slater_mat_exp_trans_dn (1:ndn, col_i, col_i, det_unq_dn_i, dexp_i) = dorb_dexp (1:ndn, orb_i, dexp_i)
@@ -1748,6 +1772,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1779,7 +1804,7 @@ module deriv_exp_mod
    call object_needed ('grd_dorb_dexp')
    call object_needed ('ddet_dexp_col_unq_up')
    call object_needed ('ddet_dexp_col_unq_dn')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1810,7 +1835,7 @@ module deriv_exp_mod
       do col_i = 1, nup
 
        orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
 !      Sherman-Morison formula
        factor_up = 0.d0
@@ -1847,7 +1872,7 @@ module deriv_exp_mod
       do col_i = 1, ndn
 
        orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
 !      Sherman-Morison formula
        factor_dn = 0.d0
@@ -1884,6 +1909,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1914,7 +1940,7 @@ module deriv_exp_mod
    call object_needed ('lap_dorb_dexp')
    call object_needed ('ddet_dexp_col_unq_up')
    call object_needed ('ddet_dexp_col_unq_dn')
-   call object_needed ('orbital_depends_on_optimized_exponent')
+   call object_needed ('orbital_depends_on_opt_exp')
 
    return
 
@@ -1942,7 +1968,7 @@ module deriv_exp_mod
       do col_i = 1, nup
 
        orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
 !      Sherman-Morison formula
        factor_up = 0.d0
@@ -1975,7 +2001,7 @@ module deriv_exp_mod
       do col_i = 1, ndn
 
        orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
-       if (.not. orbital_depends_on_optimized_exponent (orb_i, dexp_i)) cycle
+       if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
 
 !      Sherman-Morison formula
        factor_dn = 0.d0
@@ -2010,6 +2036,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2122,6 +2149,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2223,6 +2251,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2269,6 +2298,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2310,6 +2340,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2349,6 +2380,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2381,6 +2413,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2431,6 +2464,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2468,6 +2502,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2502,6 +2537,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2543,6 +2579,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 23 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

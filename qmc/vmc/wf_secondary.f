@@ -5,6 +5,7 @@ c Read parameters for secondary wavefns.
       use control_mod
       use orbitals_mod
       use mpi_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -22,8 +23,8 @@ c Read parameters for secondary wavefns.
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)
@@ -259,6 +260,7 @@ c Written by Cyrus Umrigar
 c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
       use control_mod
       use orbitals_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
@@ -269,8 +271,8 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)
 ! Declare arrays upto o-orbitals (l=12)
        common /basis/ zex(MBASIS,MWF),betaq
@@ -406,6 +408,7 @@ c-----------------------------------------------------------------------
       use nuclei_mod
       use basis_mod
       use orbitals_mod
+      use atom_mod
 
 c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
@@ -415,8 +418,8 @@ c     common /contrl_per/ iperiodic,ibasis
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /dim/ ndim
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)
 ! The number of arrays for electron configurations depends on a angular momentum
 ! is increased up to l=12, o-orbital.
@@ -599,6 +602,7 @@ c-----------------------------------------------------------------------
       use orbitals_mod  !JT
       use basis_mod  !JT
       use optimization_mod !JT
+      use atom_mod
 
 c Written by Cyrus Umrigar
 c Saves the best wf yet and writes it out at end of run
@@ -612,8 +616,8 @@ c     common /contrl_per/ iperiodic,ibasis
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)
 ! The number of arrays for electron configurations depends on a angular momentum
 ! is increased up to l=12, o-orbital.

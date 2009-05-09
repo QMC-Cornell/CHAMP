@@ -2,18 +2,19 @@
 c Written by Cyrus Umrigar
 c Calculate all orbitals, orb, at position of nucleus icent
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
+!JT      include '../vmc/vmc.h'
 
-      include 'fit.h'
-      include '../vmc/force.h'
+!JT      include 'fit.h'
+!JT      include '../vmc/force.h'
 
       parameter(eps=1.d-99)
 
       common /dim/ ndim
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /atom2/ dist_cent(MCENT)
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)

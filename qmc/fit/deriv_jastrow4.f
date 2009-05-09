@@ -5,14 +5,16 @@ c scalek optimization by A.D.Guclu
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
+!JT      include 'fit.h'
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
-      parameter (zero=0.d0,one=1.d0,two=2.d0)
-      parameter (half=.5d0,third=1.d0/3.d0,eps=1.d-12)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
+!JT      parameter (half=.5d0,third=1.d0/3.d0,eps=1.d-12)
+      parameter (eps=1.d-12)
 
       common /dim/ ndim
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -20,8 +22,8 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /bparm/ nspin2b,nocuspb

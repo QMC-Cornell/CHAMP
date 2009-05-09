@@ -1,10 +1,11 @@
       subroutine cuspexact4(iprin,iwf)
 c Written by Cyrus Umrigar
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
 
 c For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
 c For Jastrow3 NEQSX=2*MORDJ should be sufficient.
@@ -43,8 +44,8 @@ c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc

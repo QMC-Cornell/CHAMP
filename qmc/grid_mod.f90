@@ -466,6 +466,7 @@ module grid_mod
 !
 ! Created       : J. Toulouse, 05 Jan 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -543,6 +544,7 @@ module grid_mod
 !
 ! Created       : J. Toulouse, 05 Jan 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

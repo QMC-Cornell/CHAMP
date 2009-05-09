@@ -5,6 +5,7 @@ c routine to accumulate estimators for energy etc.
 # if defined (MPI)
 
       use mpi_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
       character*16 mode
@@ -26,8 +27,8 @@ c routine to accumulate estimators for energy etc.
      &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
      &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
      &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)

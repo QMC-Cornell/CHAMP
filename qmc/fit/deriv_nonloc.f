@@ -5,6 +5,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use control_mod
       use deriv_orb_mod
       use periodic_jastrow_mod  !WAS
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 !JT   parameter (one=1.d0)
@@ -14,8 +15,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /slatn2/ deti_new(MPARMD)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
@@ -288,6 +289,7 @@ c-----------------------------------------------------------------------
 !WAS
       subroutine deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
       use control_mod
+      use atom_mod
 !
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -309,8 +311,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)

@@ -90,7 +90,8 @@ CHAMP_LD_END_MPI=
 
 CHAMP_EXE=champ.exe
 CHAMP_MPI_EXE=champ_mpi.exe
-CHAMP_DEBUG_EXE=champ_debug.exe
+#CHAMP_DEBUG_EXE=champ_debug.exe
+CHAMP_DEBUG_EXE=champ.exe
 
 # Export these for compiling the libraries
 export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE USE_GCC 

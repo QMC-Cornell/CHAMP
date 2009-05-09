@@ -10,7 +10,7 @@
           include 'commons/common_dorb.h'
           include 'commons/common_slater.h'
           include 'commons/common_numbas.h'
-          include 'commons/common_atom.h'
+!          include 'commons/common_atom.h'
           include 'commons/common_basis.h'
           include 'commons/common_basis2.h'
           include 'commons/common_contr2.h'

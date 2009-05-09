@@ -105,6 +105,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -269,6 +270,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 13 Jan 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -348,6 +350,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 28 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -415,6 +418,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 20 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -662,6 +666,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 07 Apr 2009
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -718,6 +723,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 13 Oct 2005
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -746,6 +752,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 01 Jan 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -772,6 +779,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -811,6 +819,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -867,6 +876,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jun 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -927,6 +937,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 22 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -987,6 +998,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1047,6 +1059,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jun 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1354,6 +1367,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1396,6 +1410,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1438,6 +1453,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1480,6 +1496,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1522,6 +1539,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 23 July 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1563,6 +1581,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1605,6 +1624,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 22 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1645,6 +1665,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 01 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1688,6 +1709,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 23 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1716,6 +1738,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1752,6 +1775,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1785,6 +1809,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1837,6 +1862,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1883,6 +1909,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 25 Oct 2005
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1932,6 +1959,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 09 Jan 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1986,6 +2014,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 25 Oct 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2031,6 +2060,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 25 Oct 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2061,7 +2091,6 @@ module orbitals_mod
 ! Created       : J. Toulouse, 25 Oct 2005
 ! ------------------------------------------------------------------------------
   implicit none
-!  include 'commons.h'
 
 ! local
   integer orb_opt_i, orb_opt
@@ -2196,6 +2225,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 06 Jan 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2257,6 +2287,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 06 Jan 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2313,6 +2344,7 @@ module orbitals_mod
 !!
 !! Created       : J. Toulouse, 06 Jan 2005
 !! ------------------------------------------------------------------------------
+!  include 'modules.h'
 !  implicit none
 !  include 'commons.h'
 !
@@ -2387,6 +2419,7 @@ module orbitals_mod
 !
 ! Created       : J. Toulouse, 06 Jan 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -2434,6 +2467,7 @@ module orbitals_mod
 !
 ! Created     : J. Toulouse, 26 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

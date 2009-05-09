@@ -757,7 +757,6 @@ c Compute the norm of the move
 c-----------------------------------------------------------------------
 
       subroutine update_params(iadd_diag,ipr_new,iflag)
-      use control_mod
 c Written by Cyrus Umrigar
 
 c Used to find the change in the wavefunction parameters.
@@ -766,6 +765,8 @@ c The required change in the parameters is -x.
 c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
+      use control_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -778,8 +779,8 @@ c            = 2 then we print new parameters with _new subscript
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /contrl_per/ iperiodic,ibasis
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is

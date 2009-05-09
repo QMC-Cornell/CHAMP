@@ -9,6 +9,7 @@ c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
       use all_tools_mod ! JT
+      use atom_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -52,8 +53,8 @@ c     common /contr3/ mode
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /forcepar/ deltot(MFORCE),nforce,istrech
 
       common /doefp/ nefp

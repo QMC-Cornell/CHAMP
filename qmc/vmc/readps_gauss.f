@@ -13,16 +13,17 @@ c          coefficient, power, exponent
 
 c NOTE: as usual power n means r**(n-2)
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'pseudo.h'
+!JT      include 'force.h'
 
       character*80 label
       character*20 filename,atomtyp
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
@@ -125,13 +126,14 @@ c-----------------------------------------------------------------------
 c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(r_en,iel)
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'pseudo.h'
+!JT      include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc

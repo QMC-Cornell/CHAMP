@@ -45,6 +45,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 27 Jul 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -92,6 +93,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 27 Jul 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -135,6 +137,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 27 Jul 2008
 ! -------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -188,6 +191,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 27 Jul 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -288,6 +292,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 27 Jul 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -359,6 +364,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 28 Jul 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -428,6 +434,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 28 Jul 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -544,6 +551,7 @@ module forces_pulay_mod
 !
 ! Created       : J. Toulouse, 04 Aug 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

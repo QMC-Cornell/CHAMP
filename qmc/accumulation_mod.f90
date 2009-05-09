@@ -19,6 +19,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -86,6 +87,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -200,6 +202,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -289,6 +292,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -611,6 +615,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

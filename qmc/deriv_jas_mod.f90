@@ -38,6 +38,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -80,6 +81,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -116,6 +118,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 19 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -218,6 +221,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -265,6 +269,7 @@ module deriv_jas_mod
 
 ! Created       : J. Toulouse, 16 May 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 !
@@ -312,6 +317,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -343,6 +349,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 18 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -376,6 +383,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -409,6 +417,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -444,6 +453,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -486,6 +496,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

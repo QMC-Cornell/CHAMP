@@ -40,16 +40,17 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include 'dmc.h'
-      include '../vmc/force.h'
-      include '../fit/fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'dmc.h'
+!JT      include '../vmc/force.h'
+!JT      include '../fit/fit.h'
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -80,8 +81,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /div_v_dmc/ div_vow(MELEC,MWALK)
       common /tmp/ eacc,enacc,macc,mnacc

@@ -5,14 +5,15 @@ c calculate interparticle distances
       use control_mod
       use deriv_orb_mod
       use eloc_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -141,6 +142,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c calculate distances of electron iel to all other particles
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -149,8 +151,8 @@ c calculate distances of electron iel to all other particles
       common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /distances_sav/ rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT),rvec_ee_sav(3,MELEC),r_ee_sav(MELEC)
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
@@ -218,14 +220,15 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
+!JT      include 'vmc.h'
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /distances_sav/ rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT),rvec_ee_sav(3,MELEC),r_ee_sav(MELEC)
 

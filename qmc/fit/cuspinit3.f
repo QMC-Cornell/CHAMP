@@ -109,10 +109,11 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine checkdepend3
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'fit.h'
 
       parameter(NEQSX=6*MORDJ)
 
@@ -127,8 +128,8 @@ c-----------------------------------------------------------------------
      &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
      &necn,nebase
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
      &,cdep(NEQSX,MPARMJ,MCTYPE)

@@ -1,13 +1,14 @@
       subroutine jastrow2(x,v,d2,div_vj,value)
 c Written by Cyrus Umrigar
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0
-     &,half=.5d0,third=1.d0/3.d0)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0
+!JT     &,half=.5d0,third=1.d0/3.d0)
 
       common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
@@ -31,8 +32,8 @@ c Written by Cyrus Umrigar
      &d2uphi20,d2stphi20,d2suphi20,d2utphi20,
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

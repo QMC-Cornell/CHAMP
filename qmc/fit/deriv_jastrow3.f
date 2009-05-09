@@ -1,13 +1,14 @@
       subroutine deriv_jastrow3(x,v,d2,value)
 c Written by Claudia Filippi
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
+!JT      include 'fit.h'
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
-      parameter (half=.5d0,third=1.d0/3.d0)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
+!JT      parameter (half=.5d0,third=1.d0/3.d0)
       parameter(NEQSX=6*MORDJ)
 
       common /dim/ ndim
@@ -25,8 +26,8 @@ c Written by Claudia Filippi
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
      &,cdep(NEQSX,MPARMJ,MCTYPE)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /bparm/ nspin2b,nocuspb
       common /focktmp/ fc,fu,fuu,fs,fss,ft,ftt,fst,fus,fut

@@ -1,19 +1,20 @@
       subroutine set_scale_dist(ipr,iw)
 c Written by Cyrus Umrigar
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      parameter (half=0.5d0,third=1.d0/3.d0)
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      parameter (half=0.5d0,third=1.d0/3.d0)
 
       common /dim/ ndim
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord

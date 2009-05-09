@@ -14,6 +14,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use opt_lin_mod
       use opt_ptb_mod
       use deriv_exp_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -58,8 +59,8 @@ c     common /contr3/ mode
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /doefp/ nefp

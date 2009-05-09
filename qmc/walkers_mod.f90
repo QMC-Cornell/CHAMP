@@ -8,11 +8,11 @@ module walkers_mod
   character (len=max_string_len_file)   :: file_mc_configs_in  = 'mc_configs'
   character (len=max_string_len_file)   :: file_mc_configs_out = 'mc_configs_new'
   logical :: l_check_initial_walkers = .false.
-  logical :: l_keep_only_walkers_with_elec_nb_closest_to_atom_input = .false.
-  real(dp), allocatable                 :: elec_nb_closest_to_atom_input (:)
-!  real(dp), allocatable                 :: elec_spin_nb_closest_to_atom_input (:)
-  real(dp), allocatable                 :: elec_up_nb_closest_to_atom_input (:)
-  real(dp), allocatable                 :: elec_dn_nb_closest_to_atom_input (:)
+  logical :: l_keep_only_walkers_with_elec_nb_close_atom_input = .false.
+  real(dp), allocatable                 :: elec_nb_close_atom_input (:)
+!  real(dp), allocatable                 :: elec_spin_nb_close_atom_input (:)
+  real(dp), allocatable                 :: elec_up_nb_close_atom_input (:)
+  real(dp), allocatable                 :: elec_dn_nb_close_atom_input (:)
   character (len=max_string_len_file)   :: file_walkers_out = ''
   logical :: l_write_walkers = .false.
   integer :: write_walkers_step = 1
@@ -28,14 +28,15 @@ module walkers_mod
 !
 ! Created     : J. Toulouse, 01 Apr 2007
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'walkers_menu'
-  integer elec_nb_closest_to_atom_input_nb
-  integer elec_up_nb_closest_to_atom_input_nb
-  integer elec_dn_nb_closest_to_atom_input_nb
+  integer elec_nb_close_atom_input_nb
+  integer elec_up_nb_close_atom_input_nb
+  integer elec_dn_nb_close_atom_input_nb
 
 ! begin
   write(6,*)
@@ -53,8 +54,8 @@ module walkers_mod
    write(6,'(a)') '  file_mc_configs_in  = [string] : input file for walkers (default=mc_configs).'
    write(6,'(a)') '  file_mc_configs_out = [string] : output file for walkers (default=mc_configs_new).'
    write(6,'(a)') '  check_initial_walkers = [string] : check electrons distribution on atoms in initial walkers (default=false).'
-   write(6,'(a)') '  elec_nb_closest_to_atom 6 2 5 end : keep only walkers with these electron numbers closest to each atom.'
-   write(6,'(a)') '  keep_only_walkers_with_elec_nb_closest_to_atom_input = [bool] : default = false.'
+   write(6,'(a)') '  elec_nb_close_atom 6 2 5 end : keep only walkers with these electron numbers closest to each atom.'
+   write(6,'(a)') '  keep_only_walkers_with_elec_nb_close_atom_input = [bool] : default = false.'
    write(6,'(a)') '  file_walkers_out  = [string] : output file for walkers in Scemama format'
    write(6,'(a)') '  write_walkers = [logical] write walkers in Scemama format (default=false)'
    write(6,'(a)') '  write_walkers_step = [integer] write walkers in Scemama format every X step? (default=1)'
@@ -71,32 +72,32 @@ module walkers_mod
   case ('check_initial_walkers')
    call get_next_value (l_check_initial_walkers)
 
-  case ('elec_nb_closest_to_atom')
-   call get_next_value_list_object ('elec_nb_closest_to_atom_input', elec_nb_closest_to_atom_input, elec_nb_closest_to_atom_input_nb)
+  case ('elec_nb_close_atom')
+   call get_next_value_list_object ('elec_nb_close_atom_input', elec_nb_close_atom_input, elec_nb_close_atom_input_nb)
    call object_provide ('ncent')
-   if (elec_nb_closest_to_atom_input_nb /= ncent) then
-    write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_nb_closest_to_atom_input_nb,' values read in list elec_nb_closest_to_atom while the expected number was the number of atom centers = ',ncent
+   if (elec_nb_close_atom_input_nb /= ncent) then
+    write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_nb_close_atom_input_nb,' values read in list elec_nb_close_atom while the expected number was the number of atom centers = ',ncent
    call die (lhere)
    endif
 
-  case ('elec_up_nb_closest_to_atom')
-   call get_next_value_list_object ('elec_up_nb_closest_to_atom_input', elec_up_nb_closest_to_atom_input, elec_up_nb_closest_to_atom_input_nb)
+  case ('elec_up_nb_close_atom')
+   call get_next_value_list_object ('elec_up_nb_close_atom_input', elec_up_nb_close_atom_input, elec_up_nb_close_atom_input_nb)
    call object_provide ('ncent')
-   if (elec_up_nb_closest_to_atom_input_nb /= ncent) then
-    write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_up_nb_closest_to_atom_input_nb,' values read in list elec_up_nb_closest_to_atom while the expected number was the number of atom centers = ',ncent
+   if (elec_up_nb_close_atom_input_nb /= ncent) then
+    write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_up_nb_close_atom_input_nb,' values read in list elec_up_nb_close_atom while the expected number was the number of atom centers = ',ncent
    call die (lhere)
    endif
 
-  case ('elec_dn_nb_closest_to_atom')
-   call get_next_value_list_object ('elec_dn_nb_closest_to_atom_input', elec_dn_nb_closest_to_atom_input, elec_dn_nb_closest_to_atom_input_nb)
+  case ('elec_dn_nb_close_atom')
+   call get_next_value_list_object ('elec_dn_nb_close_atom_input', elec_dn_nb_close_atom_input, elec_dn_nb_close_atom_input_nb)
    call object_provide ('ncent')
-   if (elec_dn_nb_closest_to_atom_input_nb /= ncent) then
-    write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_dn_nb_closest_to_atom_input_nb,' values read in list elec_dn_nb_closest_to_atom while the expected number was the number of atom centers = ',ncent
+   if (elec_dn_nb_close_atom_input_nb /= ncent) then
+    write(6,'(3a,i3,a,i3)') 'Fatal error in routine ',trim(lhere),': ',elec_dn_nb_close_atom_input_nb,' values read in list elec_dn_nb_close_atom while the expected number was the number of atom centers = ',ncent
    call die (lhere)
    endif
 
-  case ('keep_only_walkers_with_elec_nb_closest_to_atom_input')
-   call get_next_value (l_keep_only_walkers_with_elec_nb_closest_to_atom_input)
+  case ('keep_only_walkers_with_elec_nb_close_atom_input')
+   call get_next_value (l_keep_only_walkers_with_elec_nb_close_atom_input)
 
   case ('file_walkers_out')
    call get_next_value (file_walkers_out)
@@ -131,6 +132,7 @@ module walkers_mod
 !
 ! Created       : J. Toulouse, 22 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -250,6 +252,7 @@ module walkers_mod
 !                 and removed unecessary operations
 ! ------------------------------------------------------------------------------
   USE mpi_mod
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -264,18 +267,18 @@ module walkers_mod
   real(dp), allocatable :: coord_elec_wlk_read (:,:,:)
 ! arrays too large for petascale, work around implemented (RGH)
   real(dp)              :: dist_ee_wlk_read, dist_en_wlk_read, dist_en_wlk_read_closest
-  real(dp), allocatable :: elec_nb_closest_to_atom_wlk_read (:,:)
-  real(dp), allocatable :: elec_up_nb_closest_to_atom_wlk_read (:,:)
-  real(dp), allocatable :: elec_dn_nb_closest_to_atom_wlk_read (:,:)
-  real(dp), allocatable :: elec_nb_closest_to_atom_read (:,:)
-  real(dp), allocatable :: elec_up_nb_closest_to_atom_read (:,:)
-  real(dp), allocatable :: elec_dn_nb_closest_to_atom_read (:,:)
-  integer, allocatable  :: elec_nb_closest_to_atom_wlk_read_nb (:)
-  integer, allocatable  :: elec_up_nb_closest_to_atom_wlk_read_nb (:)
-  integer, allocatable  :: elec_dn_nb_closest_to_atom_wlk_read_nb (:)
-  integer               :: elec_nb_closest_to_atom_read_nb, elec_nb_closest_to_atom_read_i
-  integer               :: elec_up_nb_closest_to_atom_read_nb, elec_up_nb_closest_to_atom_read_i
-  integer               :: elec_dn_nb_closest_to_atom_read_nb, elec_dn_nb_closest_to_atom_read_i
+  real(dp), allocatable :: elec_nb_close_atom_wlk_read (:,:)
+  real(dp), allocatable :: elec_up_nb_close_atom_wlk_read (:,:)
+  real(dp), allocatable :: elec_dn_nb_close_atom_wlk_read (:,:)
+  real(dp), allocatable :: elec_nb_close_atom_read (:,:)
+  real(dp), allocatable :: elec_up_nb_close_atom_read (:,:)
+  real(dp), allocatable :: elec_dn_nb_close_atom_read (:,:)
+  integer, allocatable  :: elec_nb_close_atom_wlk_read_nb (:)
+  integer, allocatable  :: elec_up_nb_close_atom_wlk_read_nb (:)
+  integer, allocatable  :: elec_dn_nb_close_atom_wlk_read_nb (:)
+  integer               :: elec_nb_close_atom_read_nb, elec_nb_close_atom_read_i
+  integer               :: elec_up_nb_close_atom_read_nb, elec_up_nb_close_atom_read_i
+  integer               :: elec_dn_nb_close_atom_read_nb, elec_dn_nb_close_atom_read_i
   integer :: dim_i, elec_i, elec_j, walk_i, walk_mod_i, cent_closest_i, walk_j, cent_i
   integer nconf_read, nconf_missing, nconf_dropped, nconf_unique
   integer file_unit, iostat
@@ -415,12 +418,12 @@ module walkers_mod
 
 ! Check number of electrons closest to each atoms
   if (l_check_initial_walkers) then
-  call alloc ('elec_nb_closest_to_atom_wlk_read', elec_nb_closest_to_atom_wlk_read, ncent, nconf_read)
-  call alloc ('elec_up_nb_closest_to_atom_wlk_read', elec_up_nb_closest_to_atom_wlk_read, ncent, nconf_read)
-  call alloc ('elec_dn_nb_closest_to_atom_wlk_read', elec_dn_nb_closest_to_atom_wlk_read, ncent, nconf_read)
-  elec_nb_closest_to_atom_wlk_read (:,:) = 0
-  elec_up_nb_closest_to_atom_wlk_read (:,:) = 0
-  elec_dn_nb_closest_to_atom_wlk_read (:,:) = 0
+  call alloc ('elec_nb_close_atom_wlk_read', elec_nb_close_atom_wlk_read, ncent, nconf_read)
+  call alloc ('elec_up_nb_close_atom_wlk_read', elec_up_nb_close_atom_wlk_read, ncent, nconf_read)
+  call alloc ('elec_dn_nb_close_atom_wlk_read', elec_dn_nb_close_atom_wlk_read, ncent, nconf_read)
+  elec_nb_close_atom_wlk_read (:,:) = 0
+  elec_up_nb_close_atom_wlk_read (:,:) = 0
+  elec_dn_nb_close_atom_wlk_read (:,:) = 0
   do walk_i = 1, nconf_read
    do elec_i = 1, nelec
      cent_closest_i = 1
@@ -436,125 +439,125 @@ module walkers_mod
        endif
      enddo ! cent_i
      if (elec_i <= nup) then
-      elec_up_nb_closest_to_atom_wlk_read (cent_closest_i, walk_i) =  elec_up_nb_closest_to_atom_wlk_read (cent_closest_i, walk_i) + 1
+      elec_up_nb_close_atom_wlk_read (cent_closest_i, walk_i) =  elec_up_nb_close_atom_wlk_read (cent_closest_i, walk_i) + 1
      else
-      elec_dn_nb_closest_to_atom_wlk_read (cent_closest_i, walk_i) =  elec_dn_nb_closest_to_atom_wlk_read (cent_closest_i, walk_i) + 1
+      elec_dn_nb_close_atom_wlk_read (cent_closest_i, walk_i) =  elec_dn_nb_close_atom_wlk_read (cent_closest_i, walk_i) + 1
      endif
-      elec_nb_closest_to_atom_wlk_read (cent_closest_i, walk_i) =  elec_nb_closest_to_atom_wlk_read (cent_closest_i, walk_i) + 1
+      elec_nb_close_atom_wlk_read (cent_closest_i, walk_i) =  elec_nb_close_atom_wlk_read (cent_closest_i, walk_i) + 1
    enddo ! elec_i
   enddo ! walk_i
-  elec_nb_closest_to_atom_read_nb = 1
-  elec_up_nb_closest_to_atom_read_nb = 1
-  elec_dn_nb_closest_to_atom_read_nb = 1
-  call alloc ('elec_nb_closest_to_atom_read', elec_nb_closest_to_atom_read, ncent, elec_nb_closest_to_atom_read_nb)
-  call alloc ('elec_up_nb_closest_to_atom_read', elec_up_nb_closest_to_atom_read, ncent, elec_up_nb_closest_to_atom_read_nb)
-  call alloc ('elec_dn_nb_closest_to_atom_read', elec_dn_nb_closest_to_atom_read, ncent, elec_dn_nb_closest_to_atom_read_nb)
-  call alloc ('elec_nb_closest_to_atom_wlk_read_nb', elec_nb_closest_to_atom_wlk_read_nb, elec_nb_closest_to_atom_read_nb)
-  call alloc ('elec_up_nb_closest_to_atom_wlk_read_nb', elec_up_nb_closest_to_atom_wlk_read_nb, elec_up_nb_closest_to_atom_read_nb)
-  call alloc ('elec_dn_nb_closest_to_atom_wlk_read_nb', elec_dn_nb_closest_to_atom_wlk_read_nb, elec_dn_nb_closest_to_atom_read_nb)
-  elec_nb_closest_to_atom_read (:, elec_nb_closest_to_atom_read_nb) = elec_nb_closest_to_atom_wlk_read (:, 1)
-  elec_up_nb_closest_to_atom_read (:, elec_up_nb_closest_to_atom_read_nb) = elec_up_nb_closest_to_atom_wlk_read (:, 1)
-  elec_dn_nb_closest_to_atom_read (:, elec_dn_nb_closest_to_atom_read_nb) = elec_dn_nb_closest_to_atom_wlk_read (:, 1)
-  elec_nb_closest_to_atom_wlk_read_nb (elec_nb_closest_to_atom_read_nb) = 1
-  elec_up_nb_closest_to_atom_wlk_read_nb (elec_up_nb_closest_to_atom_read_nb) = 1
-  elec_dn_nb_closest_to_atom_wlk_read_nb (elec_dn_nb_closest_to_atom_read_nb) = 1
+  elec_nb_close_atom_read_nb = 1
+  elec_up_nb_close_atom_read_nb = 1
+  elec_dn_nb_close_atom_read_nb = 1
+  call alloc ('elec_nb_close_atom_read', elec_nb_close_atom_read, ncent, elec_nb_close_atom_read_nb)
+  call alloc ('elec_up_nb_close_atom_read', elec_up_nb_close_atom_read, ncent, elec_up_nb_close_atom_read_nb)
+  call alloc ('elec_dn_nb_close_atom_read', elec_dn_nb_close_atom_read, ncent, elec_dn_nb_close_atom_read_nb)
+  call alloc ('elec_nb_close_atom_wlk_read_nb', elec_nb_close_atom_wlk_read_nb, elec_nb_close_atom_read_nb)
+  call alloc ('elec_up_nb_close_atom_wlk_read_nb', elec_up_nb_close_atom_wlk_read_nb, elec_up_nb_close_atom_read_nb)
+  call alloc ('elec_dn_nb_close_atom_wlk_read_nb', elec_dn_nb_close_atom_wlk_read_nb, elec_dn_nb_close_atom_read_nb)
+  elec_nb_close_atom_read (:, elec_nb_close_atom_read_nb) = elec_nb_close_atom_wlk_read (:, 1)
+  elec_up_nb_close_atom_read (:, elec_up_nb_close_atom_read_nb) = elec_up_nb_close_atom_wlk_read (:, 1)
+  elec_dn_nb_close_atom_read (:, elec_dn_nb_close_atom_read_nb) = elec_dn_nb_close_atom_wlk_read (:, 1)
+  elec_nb_close_atom_wlk_read_nb (elec_nb_close_atom_read_nb) = 1
+  elec_up_nb_close_atom_wlk_read_nb (elec_up_nb_close_atom_read_nb) = 1
+  elec_dn_nb_close_atom_wlk_read_nb (elec_dn_nb_close_atom_read_nb) = 1
 
   do walk_i = 2, nconf_read
     found = .false.
-    do elec_nb_closest_to_atom_read_i = 1, elec_nb_closest_to_atom_read_nb
-      if (arrays_equal (elec_nb_closest_to_atom_wlk_read (:, walk_i), elec_nb_closest_to_atom_read (:, elec_nb_closest_to_atom_read_i))) then
-         elec_nb_closest_to_atom_wlk_read_nb (elec_nb_closest_to_atom_read_i) = elec_nb_closest_to_atom_wlk_read_nb (elec_nb_closest_to_atom_read_i) + 1
+    do elec_nb_close_atom_read_i = 1, elec_nb_close_atom_read_nb
+      if (arrays_equal (elec_nb_close_atom_wlk_read (:, walk_i), elec_nb_close_atom_read (:, elec_nb_close_atom_read_i))) then
+         elec_nb_close_atom_wlk_read_nb (elec_nb_close_atom_read_i) = elec_nb_close_atom_wlk_read_nb (elec_nb_close_atom_read_i) + 1
         found = .true.
         exit
       endif
     enddo
    if (.not. found) then
-     elec_nb_closest_to_atom_read_nb = elec_nb_closest_to_atom_read_nb + 1
-     call alloc ('elec_nb_closest_to_atom_read', elec_nb_closest_to_atom_read, ncent, elec_nb_closest_to_atom_read_nb)
-     call alloc ('elec_nb_closest_to_atom_wlk_read_nb', elec_nb_closest_to_atom_wlk_read_nb, elec_nb_closest_to_atom_read_nb)
-     elec_nb_closest_to_atom_read (:, elec_nb_closest_to_atom_read_nb) = elec_nb_closest_to_atom_wlk_read (:, walk_i)
-     elec_nb_closest_to_atom_wlk_read_nb (elec_nb_closest_to_atom_read_nb) = 1
+     elec_nb_close_atom_read_nb = elec_nb_close_atom_read_nb + 1
+     call alloc ('elec_nb_close_atom_read', elec_nb_close_atom_read, ncent, elec_nb_close_atom_read_nb)
+     call alloc ('elec_nb_close_atom_wlk_read_nb', elec_nb_close_atom_wlk_read_nb, elec_nb_close_atom_read_nb)
+     elec_nb_close_atom_read (:, elec_nb_close_atom_read_nb) = elec_nb_close_atom_wlk_read (:, walk_i)
+     elec_nb_close_atom_wlk_read_nb (elec_nb_close_atom_read_nb) = 1
    endif
   enddo ! walk_i
 
   do walk_i = 2, nconf_read
     found = .false.
-    do elec_up_nb_closest_to_atom_read_i = 1, elec_up_nb_closest_to_atom_read_nb
-      if (arrays_equal (elec_up_nb_closest_to_atom_wlk_read (:, walk_i), elec_up_nb_closest_to_atom_read (:, elec_up_nb_closest_to_atom_read_i))) then
-         elec_up_nb_closest_to_atom_wlk_read_nb (elec_up_nb_closest_to_atom_read_i) = elec_up_nb_closest_to_atom_wlk_read_nb (elec_up_nb_closest_to_atom_read_i) + 1
+    do elec_up_nb_close_atom_read_i = 1, elec_up_nb_close_atom_read_nb
+      if (arrays_equal (elec_up_nb_close_atom_wlk_read (:, walk_i), elec_up_nb_close_atom_read (:, elec_up_nb_close_atom_read_i))) then
+         elec_up_nb_close_atom_wlk_read_nb (elec_up_nb_close_atom_read_i) = elec_up_nb_close_atom_wlk_read_nb (elec_up_nb_close_atom_read_i) + 1
         found = .true.
         exit
       endif
     enddo
    if (.not. found) then
-     elec_up_nb_closest_to_atom_read_nb = elec_up_nb_closest_to_atom_read_nb + 1
-     call alloc ('elec_up_nb_closest_to_atom_read', elec_up_nb_closest_to_atom_read, ncent, elec_up_nb_closest_to_atom_read_nb)
-     call alloc ('elec_up_nb_closest_to_atom_wlk_read_nb', elec_up_nb_closest_to_atom_wlk_read_nb, elec_up_nb_closest_to_atom_read_nb)
-     elec_up_nb_closest_to_atom_read (:, elec_up_nb_closest_to_atom_read_nb) = elec_up_nb_closest_to_atom_wlk_read (:, walk_i)
-     elec_up_nb_closest_to_atom_wlk_read_nb (elec_up_nb_closest_to_atom_read_nb) = 1
+     elec_up_nb_close_atom_read_nb = elec_up_nb_close_atom_read_nb + 1
+     call alloc ('elec_up_nb_close_atom_read', elec_up_nb_close_atom_read, ncent, elec_up_nb_close_atom_read_nb)
+     call alloc ('elec_up_nb_close_atom_wlk_read_nb', elec_up_nb_close_atom_wlk_read_nb, elec_up_nb_close_atom_read_nb)
+     elec_up_nb_close_atom_read (:, elec_up_nb_close_atom_read_nb) = elec_up_nb_close_atom_wlk_read (:, walk_i)
+     elec_up_nb_close_atom_wlk_read_nb (elec_up_nb_close_atom_read_nb) = 1
    endif
   enddo ! walk_i
 
   do walk_i = 2, nconf_read
     found = .false.
-    do elec_dn_nb_closest_to_atom_read_i = 1, elec_dn_nb_closest_to_atom_read_nb
-      if (arrays_equal (elec_dn_nb_closest_to_atom_wlk_read (:, walk_i), elec_dn_nb_closest_to_atom_read (:, elec_dn_nb_closest_to_atom_read_i))) then
-         elec_dn_nb_closest_to_atom_wlk_read_nb (elec_dn_nb_closest_to_atom_read_i) = elec_dn_nb_closest_to_atom_wlk_read_nb (elec_dn_nb_closest_to_atom_read_i) + 1
+    do elec_dn_nb_close_atom_read_i = 1, elec_dn_nb_close_atom_read_nb
+      if (arrays_equal (elec_dn_nb_close_atom_wlk_read (:, walk_i), elec_dn_nb_close_atom_read (:, elec_dn_nb_close_atom_read_i))) then
+         elec_dn_nb_close_atom_wlk_read_nb (elec_dn_nb_close_atom_read_i) = elec_dn_nb_close_atom_wlk_read_nb (elec_dn_nb_close_atom_read_i) + 1
         found = .true.
         exit
       endif
     enddo
    if (.not. found) then
-     elec_dn_nb_closest_to_atom_read_nb = elec_dn_nb_closest_to_atom_read_nb + 1
-     call alloc ('elec_dn_nb_closest_to_atom_read', elec_dn_nb_closest_to_atom_read, ncent, elec_dn_nb_closest_to_atom_read_nb)
-     call alloc ('elec_dn_nb_closest_to_atom_wlk_read_nb', elec_dn_nb_closest_to_atom_wlk_read_nb, elec_dn_nb_closest_to_atom_read_nb)
-     elec_dn_nb_closest_to_atom_read (:, elec_dn_nb_closest_to_atom_read_nb) = elec_dn_nb_closest_to_atom_wlk_read (:, walk_i)
-     elec_dn_nb_closest_to_atom_wlk_read_nb (elec_dn_nb_closest_to_atom_read_nb) = 1
+     elec_dn_nb_close_atom_read_nb = elec_dn_nb_close_atom_read_nb + 1
+     call alloc ('elec_dn_nb_close_atom_read', elec_dn_nb_close_atom_read, ncent, elec_dn_nb_close_atom_read_nb)
+     call alloc ('elec_dn_nb_close_atom_wlk_read_nb', elec_dn_nb_close_atom_wlk_read_nb, elec_dn_nb_close_atom_read_nb)
+     elec_dn_nb_close_atom_read (:, elec_dn_nb_close_atom_read_nb) = elec_dn_nb_close_atom_wlk_read (:, walk_i)
+     elec_dn_nb_close_atom_wlk_read_nb (elec_dn_nb_close_atom_read_nb) = 1
    endif
   enddo ! walk_i
 
 !  do walk_i = 1, nconf_read
 !   do cent_i = 1, ncent
-!     write(6,'(2a,i5,a,i3,a,f7.0)') trim(lhere),': walker #', walk_i,', atom #',cent_i,', number of closest electrons =',elec_nb_closest_to_atom_wlk_read (cent_i, walk_i)
+!     write(6,'(2a,i5,a,i3,a,f7.0)') trim(lhere),': walker #', walk_i,', atom #',cent_i,', number of closest electrons =',elec_nb_close_atom_wlk_read (cent_i, walk_i)
 !   enddo
 !  enddo
 
-  do elec_nb_closest_to_atom_read_i = 1, elec_nb_closest_to_atom_read_nb
-     write(6,'(i5,a,100f7.0)') elec_nb_closest_to_atom_wlk_read_nb (elec_nb_closest_to_atom_read_i),' walkers have the following numbers of electrons closest to each atom:', elec_nb_closest_to_atom_read (:, elec_nb_closest_to_atom_read_i)
+  do elec_nb_close_atom_read_i = 1, elec_nb_close_atom_read_nb
+     write(6,'(i5,a,100f7.0)') elec_nb_close_atom_wlk_read_nb (elec_nb_close_atom_read_i),' walkers have the following numbers of electrons closest to each atom:', elec_nb_close_atom_read (:, elec_nb_close_atom_read_i)
   enddo
-  if (elec_nb_closest_to_atom_read_nb > 1) then
+  if (elec_nb_close_atom_read_nb > 1) then
      write(6,'(a)') 'Warning: all walkers do not have the same numbers of electrons closest to each atom.'
   endif
 
-  do elec_up_nb_closest_to_atom_read_i = 1, elec_up_nb_closest_to_atom_read_nb
-     write(6,'(i5,a,100f7.0)') elec_up_nb_closest_to_atom_wlk_read_nb (elec_up_nb_closest_to_atom_read_i), &
-   ' walkers have the following numbers of spin-up electrons closest to each atom:', elec_up_nb_closest_to_atom_read (:, elec_up_nb_closest_to_atom_read_i)
+  do elec_up_nb_close_atom_read_i = 1, elec_up_nb_close_atom_read_nb
+     write(6,'(i5,a,100f7.0)') elec_up_nb_close_atom_wlk_read_nb (elec_up_nb_close_atom_read_i), &
+   ' walkers have the following numbers of spin-up electrons closest to each atom:', elec_up_nb_close_atom_read (:, elec_up_nb_close_atom_read_i)
   enddo
-  if (elec_up_nb_closest_to_atom_read_nb > 1) then
+  if (elec_up_nb_close_atom_read_nb > 1) then
      write(6,'(a)') 'Warning: all walkers do not have the same numbers of spin-up electrons closest to each atom.'
   endif
 
-  do elec_dn_nb_closest_to_atom_read_i = 1, elec_dn_nb_closest_to_atom_read_nb
-     write(6,'(i5,a,100f7.0)') elec_dn_nb_closest_to_atom_wlk_read_nb (elec_dn_nb_closest_to_atom_read_i), &
-   ' walkers have the following numbers of spin-down electrons closest to each atom:', elec_dn_nb_closest_to_atom_read (:, elec_dn_nb_closest_to_atom_read_i)
+  do elec_dn_nb_close_atom_read_i = 1, elec_dn_nb_close_atom_read_nb
+     write(6,'(i5,a,100f7.0)') elec_dn_nb_close_atom_wlk_read_nb (elec_dn_nb_close_atom_read_i), &
+   ' walkers have the following numbers of spin-down electrons closest to each atom:', elec_dn_nb_close_atom_read (:, elec_dn_nb_close_atom_read_i)
   enddo
-  if (elec_dn_nb_closest_to_atom_read_nb > 1) then
+  if (elec_dn_nb_close_atom_read_nb > 1) then
      write(6,'(a)') 'Warning: all walkers do not have the same numbers of spin-down electrons closest to each atom.'
   endif
 
 ! Drop walkers with electron distributions on atoms different than requested in the input
-  if (l_keep_only_walkers_with_elec_nb_closest_to_atom_input) then
-   call object_provide ('elec_nb_closest_to_atom_input')
+  if (l_keep_only_walkers_with_elec_nb_close_atom_input) then
+   call object_provide ('elec_nb_close_atom_input')
    nconf_dropped = 0
    do walk_i = 1, nconf_read
-    if (.not. arrays_equal (elec_nb_closest_to_atom_wlk_read (:, walk_i), elec_nb_closest_to_atom_input (:))) then
+    if (.not. arrays_equal (elec_nb_close_atom_wlk_read (:, walk_i), elec_nb_close_atom_input (:))) then
       call remove_elt_in_array (coord_elec_wlk_read, walk_i - nconf_dropped)
       nconf_dropped = nconf_dropped + 1
-!      write(6,'(2a,i5,a,100f7.0)') trim(lhere),': drop walker #', walk_i,', number of closest electrons =',elec_nb_closest_to_atom_wlk_read (:, walk_i)
+!      write(6,'(2a,i5,a,100f7.0)') trim(lhere),': drop walker #', walk_i,', number of closest electrons =',elec_nb_close_atom_wlk_read (:, walk_i)
     endif
    enddo
    nconf_read = nconf_read - nconf_dropped
-   write (6, '(a, i5,a,100f7.0)') 'Warning:',nconf_dropped,' walkers are dropped that do not have the requested numbers of electrons closest to each atom:', elec_nb_closest_to_atom_input (:)
+   write (6, '(a, i5,a,100f7.0)') 'Warning:',nconf_dropped,' walkers are dropped that do not have the requested numbers of electrons closest to each atom:', elec_nb_close_atom_input (:)
   endif
   endif ! end l_check_initial_walkers
 

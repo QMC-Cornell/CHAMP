@@ -1,20 +1,21 @@
       subroutine cuspexact3(iprin)
 c Written by Claudia Filippi
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      parameter(zero=0.d0)
+!JT      parameter(zero=0.d0)
 
-      include '../vmc/vmc.h'
+!JT      include '../vmc/vmc.h'
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      include '../vmc/force.h'
+!JT      include '../vmc/force.h'
 
       parameter(NEQSX=6*MORDJ)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe

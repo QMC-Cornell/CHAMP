@@ -14,6 +14,7 @@ c:::  The number of these cusp conditions is ncent*norb              :::
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
 !                        : change a(i,j,1) -> a(i,j,iwf)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use atom_mod
       use orbitals_mod ! JT
       implicit real*8(a-h,o-z)
 
@@ -35,8 +36,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /coefs2/ coef2(MBASIS,MORB,MCENT)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)

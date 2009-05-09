@@ -171,11 +171,12 @@ c-----------------------------------------------------------------------
       subroutine psigm(r12,r1,r2,phi21,phi20,phi31,it)
 c Written by Cyrus Umrigar
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
+!JT      include 'vmc.h'
 
-      parameter(one=1.d0)
+!JT      parameter(one=1.d0)
 
       real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
@@ -191,8 +192,8 @@ c Written by Cyrus Umrigar
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       Zfock=znuc(it)
 
@@ -1102,21 +1103,22 @@ c Uses Fock expansion as described in:
 c Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
+!JT      include 'vmc.h'
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      include 'force.h'
+!JT      include 'force.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /focsav/ c4sav,c5sav,c7sav,c9sav
 
-      parameter(half=0.5d0,zero=0.d0,two=2.d0,four=4.d0)
+!JT      parameter(half=0.5d0,zero=0.d0,two=2.d0,four=4.d0)
       parameter(pi=3.141592653589793d0,const2=-(pi-2.d0)/(6.d0*pi))
 
 c Focks's terms are evaluated using scaled variables. Scaled variables in

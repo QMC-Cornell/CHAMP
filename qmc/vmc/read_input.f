@@ -9,6 +9,7 @@ c Written by Cyrus Umrigar
       use optimization_mod
       use fitdet_mod
       use orbital_grid_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -47,8 +48,8 @@ c Written by Cyrus Umrigar
       common /forcepar/ deltot(MFORCE),nforce,istrech
 
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
@@ -745,6 +746,8 @@ c read k-shift for generating k-vector lattice
       call object_modified ('nctype')  !JT
       call object_modified ('ncent')  !JT
 
+      call alloc ('iwctype', iwctype, ncent)
+
       read(5,*) (iwctype(i),i=1,ncent)
       write(6,'(''iwctype ='',t31,20i3,(20i3))') (iwctype(i),i=1,ncent)
       do 25 ic=1,ncent
@@ -757,6 +760,8 @@ c Determine the number of centers of each type
         ncentyp(it)=0
         do 30 ic=1,ncent
    30     if(iwctype(ic).eq.it) ncentyp(it)=ncentyp(it)+1
+
+      call alloc ('znuc', znuc, nctype)
 
       read(5,*) (znuc(i),i=1,nctype)
       write(6,'(''znuc='',t31,10f5.1,(10f5.1))') (znuc(i),i=1,nctype)
@@ -785,6 +790,7 @@ c       write(6,'(/,''center positions'')')
 c      else
 c       write(6,'(/,''center positions in primitive lattice vector units'')')
 c     endif
+      call alloc ('cent', cent, 3, ncent)
       if(iperiodic.eq.0) write(6,'(/,''center positions'')')
       do 50 ic=1,ncent
         read(5,*) (cent(k,ic),k=1,ndim)

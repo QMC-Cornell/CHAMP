@@ -8,6 +8,7 @@ c routine to print out final results
       use main_menu_mod
       use control_mod
       use mpi_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -26,8 +27,8 @@ c     common /force_dmc/ itausec,nwprod
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 c /config_dmc/ included to print out xoldw and voldw for old walkers
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
@@ -82,8 +83,8 @@ c statement functions for error calculation
 
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
-      errori(x,x2,w,w2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn_eff(w,w2)-1),
-     &0.d0))
+!JT      errori(x,x2,w,w2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn_eff(w,w2)-1),
+!JT     &0.d0))
       errc(x,x2)=error(x,x2,wcum,wcm2)
       errf(x,x2)=error(x,x2,wfcum,wfcm2)
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))

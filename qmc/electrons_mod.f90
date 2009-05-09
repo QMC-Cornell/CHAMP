@@ -20,27 +20,27 @@ module electrons_mod
   real(dp), allocatable     :: grd_dist_en (:,:,:)
   real(dp), allocatable     :: lap_dist_en (:,:)
 
-  real(dp), allocatable     :: elec_nb_closest_to_atom_wlk (:,:)
-  real(dp), allocatable     :: elec_spin_nb_closest_to_atom_wlk (:,:,:)
-  real(dp), allocatable     :: elec_up_nb_closest_to_atom_wlk (:,:)
-  real(dp), allocatable     :: elec_dn_nb_closest_to_atom_wlk (:,:)
-  real(dp), allocatable     :: elec_nb_closest_to_atom_av (:)
-  real(dp), allocatable     :: elec_spin_nb_closest_to_atom_av (:,:)
-  real(dp), allocatable     :: elec_up_nb_closest_to_atom_av (:)
-  real(dp), allocatable     :: elec_dn_nb_closest_to_atom_av (:)
-  real(dp), allocatable     :: frac_elec_nb_closest_to_atom_input_wlk (:)
-  real(dp), allocatable     :: frac_elec_spin_nb_closest_to_atom_input_wlk (:)
-  real(dp)                  :: frac_elec_nb_closest_to_atom_input_av
-  real(dp)                  :: frac_elec_spin_nb_closest_to_atom_input_av
+  real(dp), allocatable     :: elec_nb_close_atom_wlk (:,:)
+  real(dp), allocatable     :: elec_spin_nb_close_atom_wlk (:,:,:)
+  real(dp), allocatable     :: elec_up_nb_close_atom_wlk (:,:)
+  real(dp), allocatable     :: elec_dn_nb_close_atom_wlk (:,:)
+  real(dp), allocatable     :: elec_nb_close_atom_av (:)
+  real(dp), allocatable     :: elec_spin_nb_close_atom_av (:,:)
+  real(dp), allocatable     :: elec_up_nb_close_atom_av (:)
+  real(dp), allocatable     :: elec_dn_nb_close_atom_av (:)
+  real(dp), allocatable     :: frac_elec_nb_close_atom_input_wlk (:)
+  real(dp), allocatable     :: frac_elec_spin_nb_close_atom_input_wlk (:)
+  real(dp)                  :: frac_elec_nb_close_atom_input_av
+  real(dp)                  :: frac_elec_spin_nb_close_atom_input_av
 
-  integer                   :: elec_nb_closest_to_atom_encountered_nb = 0
-  real(dp), allocatable     :: elec_nb_closest_to_atom_encountered (:,:)
-  real(dp), allocatable     :: frac_elec_nb_closest_to_atom_encountered_wlk (:,:)
-  real(dp), allocatable     :: frac_elec_nb_closest_to_atom_encountered_av (:)
-  integer                   :: elec_spin_nb_closest_to_atom_encountered_nb = 0
-  real(dp), allocatable     :: elec_spin_nb_closest_to_atom_encountered (:,:,:)
-  real(dp), allocatable     :: frac_elec_spin_nb_closest_to_atom_encountered_wlk (:,:)
-  real(dp), allocatable     :: frac_elec_spin_nb_closest_to_atom_encountered_av (:)
+  integer                   :: elec_nb_close_atom_encount_nb = 0
+  real(dp), allocatable     :: elec_nb_close_atom_encount (:,:)
+  real(dp), allocatable     :: frac_elec_nb_close_atom_encount_wlk (:,:)
+  real(dp), allocatable     :: frac_elec_nb_close_atom_encount_av (:)
+  integer                   :: elec_spin_nb_close_atom_encount_nb = 0
+  real(dp), allocatable     :: elec_spin_nb_close_atom_encount (:,:,:)
+  real(dp), allocatable     :: frac_elec_spin_nb_close_atom_encount_wlk (:,:)
+  real(dp), allocatable     :: frac_elec_spin_nb_close_atom_encount_av (:)
 
   contains
 
@@ -51,6 +51,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 16 Nov 2006
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -94,6 +95,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 07 Nov 2006
 ! Modified      : J. Toulouse, 02 Oct 2008: add walkers for DMC
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -157,6 +159,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 16 Nov 2006, walkers
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -203,6 +206,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 16 Mar 2006, walkers
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -272,6 +276,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -318,6 +323,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -366,6 +372,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -409,6 +416,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -449,12 +457,13 @@ module electrons_mod
   end subroutine lap_dist_en_bld
 
 ! ==============================================================================
-  subroutine elec_nb_closest_to_atom_wlk_bld
+  subroutine elec_nb_close_atom_wlk_bld
 ! ------------------------------------------------------------------------------
 ! Description   : number of electons closest to each atom
 !
 ! Created       : J. Toulouse, 29 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -464,12 +473,12 @@ module electrons_mod
 ! header
   if (header_exe) then
 
-   call object_create ('elec_nb_closest_to_atom_wlk')
-   call object_create ('elec_up_nb_closest_to_atom_wlk')
-   call object_create ('elec_dn_nb_closest_to_atom_wlk')
-   call object_average_walk_define ('elec_nb_closest_to_atom_wlk', 'elec_nb_closest_to_atom_av')
-   call object_average_walk_define ('elec_up_nb_closest_to_atom_wlk', 'elec_up_nb_closest_to_atom_av')
-   call object_average_walk_define ('elec_dn_nb_closest_to_atom_wlk', 'elec_dn_nb_closest_to_atom_av')
+   call object_create ('elec_nb_close_atom_wlk')
+   call object_create ('elec_up_nb_close_atom_wlk')
+   call object_create ('elec_dn_nb_close_atom_wlk')
+   call object_average_walk_define ('elec_nb_close_atom_wlk', 'elec_nb_close_atom_av')
+   call object_average_walk_define ('elec_up_nb_close_atom_wlk', 'elec_up_nb_close_atom_av')
+   call object_average_walk_define ('elec_dn_nb_close_atom_wlk', 'elec_dn_nb_close_atom_av')
 
    call object_needed ('nwalk')
    call object_needed ('nelec')
@@ -485,16 +494,16 @@ module electrons_mod
 ! begin
 
 ! allocations
-  call object_alloc ('elec_nb_closest_to_atom_wlk', elec_nb_closest_to_atom_wlk, ncent, nwalk)
-  call object_alloc ('elec_up_nb_closest_to_atom_wlk', elec_up_nb_closest_to_atom_wlk, ncent, nwalk)
-  call object_alloc ('elec_dn_nb_closest_to_atom_wlk', elec_dn_nb_closest_to_atom_wlk, ncent, nwalk)
-  call object_alloc ('elec_nb_closest_to_atom_av', elec_nb_closest_to_atom_av, ncent)
-  call object_alloc ('elec_up_nb_closest_to_atom_av', elec_up_nb_closest_to_atom_av, ncent)
-  call object_alloc ('elec_dn_nb_closest_to_atom_av', elec_dn_nb_closest_to_atom_av, ncent)
+  call object_alloc ('elec_nb_close_atom_wlk', elec_nb_close_atom_wlk, ncent, nwalk)
+  call object_alloc ('elec_up_nb_close_atom_wlk', elec_up_nb_close_atom_wlk, ncent, nwalk)
+  call object_alloc ('elec_dn_nb_close_atom_wlk', elec_dn_nb_close_atom_wlk, ncent, nwalk)
+  call object_alloc ('elec_nb_close_atom_av', elec_nb_close_atom_av, ncent)
+  call object_alloc ('elec_up_nb_close_atom_av', elec_up_nb_close_atom_av, ncent)
+  call object_alloc ('elec_dn_nb_close_atom_av', elec_dn_nb_close_atom_av, ncent)
 
-  elec_nb_closest_to_atom_wlk (:,:) = 0.d0
-  elec_up_nb_closest_to_atom_wlk (:,:) = 0.d0
-  elec_dn_nb_closest_to_atom_wlk (:,:) = 0.d0
+  elec_nb_close_atom_wlk (:,:) = 0.d0
+  elec_up_nb_close_atom_wlk (:,:) = 0.d0
+  elec_dn_nb_close_atom_wlk (:,:) = 0.d0
 
   do walk_i = 1, nwalk
 
@@ -506,7 +515,7 @@ module electrons_mod
           cent_closest_i = cent_i
         endif
       enddo ! cent_i
-      elec_up_nb_closest_to_atom_wlk (cent_closest_i, walk_i) =  elec_up_nb_closest_to_atom_wlk (cent_closest_i, walk_i) + 1.d0
+      elec_up_nb_close_atom_wlk (cent_closest_i, walk_i) =  elec_up_nb_close_atom_wlk (cent_closest_i, walk_i) + 1.d0
     enddo ! elec_i
 
 ! spin dn
@@ -517,28 +526,29 @@ module electrons_mod
           cent_closest_i = cent_i
         endif
       enddo ! cent_i
-      elec_dn_nb_closest_to_atom_wlk (cent_closest_i, walk_i) =  elec_dn_nb_closest_to_atom_wlk (cent_closest_i, walk_i) + 1.d0
+      elec_dn_nb_close_atom_wlk (cent_closest_i, walk_i) =  elec_dn_nb_close_atom_wlk (cent_closest_i, walk_i) + 1.d0
     enddo ! elec_i
 
   enddo ! walk_i
 
-  elec_nb_closest_to_atom_wlk (:,:) = elec_up_nb_closest_to_atom_wlk (:,:) + elec_dn_nb_closest_to_atom_wlk (:,:)
+  elec_nb_close_atom_wlk (:,:) = elec_up_nb_close_atom_wlk (:,:) + elec_dn_nb_close_atom_wlk (:,:)
 
 !  do walk_i = 1, nwalk
 !    do cent_i = 1, ncent
-!      write(6,'(2a,i5,a,i3,a,f)') trim(here),': walker #', walk_i,', atom #',cent_i,', number of closest electrons =',elec_nb_closest_to_atom_wlk (cent_i, walk_i)
+!      write(6,'(2a,i5,a,i3,a,f)') trim(here),': walker #', walk_i,', atom #',cent_i,', number of closest electrons =',elec_nb_close_atom_wlk (cent_i, walk_i)
 !    enddo
 !  enddo
 
-  end subroutine elec_nb_closest_to_atom_wlk_bld
+  end subroutine elec_nb_close_atom_wlk_bld
 
 ! ==============================================================================
-  subroutine elec_spin_nb_closest_to_atom_wlk_bld
+  subroutine elec_spin_nb_close_atom_wlk_bld
 ! ------------------------------------------------------------------------------
 ! Description   : number of electons closest to each atom (including spins)
 !
 ! Created       : J. Toulouse, 09 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -548,8 +558,8 @@ module electrons_mod
 ! header
   if (header_exe) then
 
-   call object_create ('elec_spin_nb_closest_to_atom_wlk')
-   call object_average_walk_define ('elec_spin_nb_closest_to_atom_wlk', 'elec_spin_nb_closest_to_atom_av')
+   call object_create ('elec_spin_nb_close_atom_wlk')
+   call object_average_walk_define ('elec_spin_nb_close_atom_wlk', 'elec_spin_nb_close_atom_av')
 
    call object_needed ('nwalk')
    call object_needed ('nelec')
@@ -565,10 +575,10 @@ module electrons_mod
 ! begin
 
 ! allocations
-  call object_alloc ('elec_spin_nb_closest_to_atom_wlk', elec_spin_nb_closest_to_atom_wlk, spin_nb, ncent, nwalk)
-  call object_alloc ('elec_spin_nb_closest_to_atom_av', elec_spin_nb_closest_to_atom_av, spin_nb, ncent)
+  call object_alloc ('elec_spin_nb_close_atom_wlk', elec_spin_nb_close_atom_wlk, spin_nb, ncent, nwalk)
+  call object_alloc ('elec_spin_nb_close_atom_av', elec_spin_nb_close_atom_av, spin_nb, ncent)
 
-  elec_spin_nb_closest_to_atom_wlk (:,:,:) = 0.d0
+  elec_spin_nb_close_atom_wlk (:,:,:) = 0.d0
 
   do walk_i = 1, nwalk
 
@@ -580,7 +590,7 @@ module electrons_mod
           cent_closest_i = cent_i
         endif
       enddo ! cent_i
-      elec_spin_nb_closest_to_atom_wlk (1, cent_closest_i, walk_i) =  elec_spin_nb_closest_to_atom_wlk (1, cent_closest_i, walk_i) + 1.d0
+      elec_spin_nb_close_atom_wlk (1, cent_closest_i, walk_i) =  elec_spin_nb_close_atom_wlk (1, cent_closest_i, walk_i) + 1.d0
     enddo ! elec_i
 
 ! spin dn
@@ -591,21 +601,22 @@ module electrons_mod
           cent_closest_i = cent_i
         endif
       enddo ! cent_i
-      elec_spin_nb_closest_to_atom_wlk (2, cent_closest_i, walk_i) =  elec_spin_nb_closest_to_atom_wlk (2, cent_closest_i, walk_i) + 1.d0
+      elec_spin_nb_close_atom_wlk (2, cent_closest_i, walk_i) =  elec_spin_nb_close_atom_wlk (2, cent_closest_i, walk_i) + 1.d0
     enddo ! elec_i
 
   enddo ! walk_i
 
-  end subroutine elec_spin_nb_closest_to_atom_wlk_bld
+  end subroutine elec_spin_nb_close_atom_wlk_bld
 
 ! ==============================================================================
-  subroutine frac_elec_nb_closest_to_atom_input_wlk_bld
+  subroutine frac_elec_nb_close_atom_input_wlk_bld
 ! ------------------------------------------------------------------------------
 ! Description   : fraction of configurations with the number of electons closest to each atom
-! Description   : identical to the one given in the input, i.e. elec_nb_closest_to_atom_input
+! Description   : identical to the one given in the input, i.e. elec_nb_close_atom_input
 !
 ! Created       : J. Toulouse, 02 Apr 2007
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -615,12 +626,12 @@ module electrons_mod
 ! header
   if (header_exe) then
 
-   call object_create ('frac_elec_nb_closest_to_atom_input_wlk')
-   call object_average_walk_define ('frac_elec_nb_closest_to_atom_input_wlk', 'frac_elec_nb_closest_to_atom_input_av')
+   call object_create ('frac_elec_nb_close_atom_input_wlk')
+   call object_average_walk_define ('frac_elec_nb_close_atom_input_wlk', 'frac_elec_nb_close_atom_input_av')
 
    call object_needed ('nwalk')
-   call object_needed ('elec_nb_closest_to_atom_wlk')
-   call object_needed ('elec_nb_closest_to_atom_input')
+   call object_needed ('elec_nb_close_atom_wlk')
+   call object_needed ('elec_nb_close_atom_input')
 
    return
 
@@ -629,45 +640,46 @@ module electrons_mod
 ! begin
 
 ! allocations
-  call object_alloc ('frac_elec_nb_closest_to_atom_input_wlk', frac_elec_nb_closest_to_atom_input_wlk, nwalk)
-  call object_associate ('frac_elec_nb_closest_to_atom_input_av', frac_elec_nb_closest_to_atom_input_av)
+  call object_alloc ('frac_elec_nb_close_atom_input_wlk', frac_elec_nb_close_atom_input_wlk, nwalk)
+  call object_associate ('frac_elec_nb_close_atom_input_av', frac_elec_nb_close_atom_input_av)
 
   do walk_i = 1, nwalk
-    if (arrays_equal(elec_nb_closest_to_atom_wlk (:, walk_i), elec_nb_closest_to_atom_input (:))) then
-     frac_elec_nb_closest_to_atom_input_wlk (walk_i) = 1.d0
+    if (arrays_equal(elec_nb_close_atom_wlk (:, walk_i), elec_nb_close_atom_input (:))) then
+     frac_elec_nb_close_atom_input_wlk (walk_i) = 1.d0
     else
-     frac_elec_nb_closest_to_atom_input_wlk (walk_i) = 0.d0
+     frac_elec_nb_close_atom_input_wlk (walk_i) = 0.d0
     endif
   enddo ! walk_i
 
-  end subroutine frac_elec_nb_closest_to_atom_input_wlk_bld
+  end subroutine frac_elec_nb_close_atom_input_wlk_bld
 
 ! ==============================================================================
-  subroutine elec_nb_closest_to_atom_encountered_bld
+  subroutine elec_nb_close_atom_encount_bld
 ! ------------------------------------------------------------------------------
 ! Description   : configurations with the number of electons closest to each atom
 ! Description   : encountered in the calculation
 !
 ! Created       : J. Toulouse, 06 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
 ! local
-  integer walk_i, elec_nb_closest_to_atom_encountered_i
+  integer walk_i, elec_nb_close_atom_encount_i
   logical found
 
 ! header
   if (header_exe) then
 
-   call object_create ('elec_nb_closest_to_atom_encountered_nb')
-   call object_create ('elec_nb_closest_to_atom_encountered')
-   call object_create ('frac_elec_nb_closest_to_atom_encountered_wlk')
-   call object_average_walk_define ('frac_elec_nb_closest_to_atom_encountered_wlk', 'frac_elec_nb_closest_to_atom_encountered_av')
+   call object_create ('elec_nb_close_atom_encount_nb')
+   call object_create ('elec_nb_close_atom_encount')
+   call object_create ('frac_elec_nb_close_atom_encount_wlk')
+   call object_average_walk_define ('frac_elec_nb_close_atom_encount_wlk', 'frac_elec_nb_close_atom_encount_av')
 
    call object_needed ('ncent')
    call object_needed ('nwalk')
-   call object_needed ('elec_nb_closest_to_atom_wlk')
+   call object_needed ('elec_nb_close_atom_wlk')
 
    return
 
@@ -679,61 +691,62 @@ module electrons_mod
 # endif
 
 ! allocations
-  call object_alloc ('elec_nb_closest_to_atom_encountered', elec_nb_closest_to_atom_encountered, ncent, elec_nb_closest_to_atom_encountered_nb)
-  call object_alloc ('frac_elec_nb_closest_to_atom_encountered_wlk', frac_elec_nb_closest_to_atom_encountered_wlk, elec_nb_closest_to_atom_encountered_nb, nwalk)
-  call object_alloc ('frac_elec_nb_closest_to_atom_encountered_av', frac_elec_nb_closest_to_atom_encountered_av, elec_nb_closest_to_atom_encountered_nb)
+  call object_alloc ('elec_nb_close_atom_encount', elec_nb_close_atom_encount, ncent, elec_nb_close_atom_encount_nb)
+  call object_alloc ('frac_elec_nb_close_atom_encount_wlk', frac_elec_nb_close_atom_encount_wlk, elec_nb_close_atom_encount_nb, nwalk)
+  call object_alloc ('frac_elec_nb_close_atom_encount_av', frac_elec_nb_close_atom_encount_av, elec_nb_close_atom_encount_nb)
 
-  frac_elec_nb_closest_to_atom_encountered_wlk (:,:) = 0.d0
+  frac_elec_nb_close_atom_encount_wlk (:,:) = 0.d0
 
   do walk_i = 1, nwalk
     found = .false.
-    do elec_nb_closest_to_atom_encountered_i = 1, elec_nb_closest_to_atom_encountered_nb
-      if (arrays_equal(elec_nb_closest_to_atom_wlk (:, walk_i), elec_nb_closest_to_atom_encountered (:, elec_nb_closest_to_atom_encountered_i))) then
-        frac_elec_nb_closest_to_atom_encountered_wlk (elec_nb_closest_to_atom_encountered_i, walk_i) = 1.d0
+    do elec_nb_close_atom_encount_i = 1, elec_nb_close_atom_encount_nb
+      if (arrays_equal(elec_nb_close_atom_wlk (:, walk_i), elec_nb_close_atom_encount (:, elec_nb_close_atom_encount_i))) then
+        frac_elec_nb_close_atom_encount_wlk (elec_nb_close_atom_encount_i, walk_i) = 1.d0
         found = .true.
         exit
       endif
-    enddo ! elec_nb_closest_to_atom_encountered_i
+    enddo ! elec_nb_close_atom_encount_i
 
 !   add new configuration to the list of encountered configurations
     if (.not. found) then
-      elec_nb_closest_to_atom_encountered_nb = elec_nb_closest_to_atom_encountered_nb + 1
-      call object_alloc ('elec_nb_closest_to_atom_encountered', elec_nb_closest_to_atom_encountered, ncent, elec_nb_closest_to_atom_encountered_nb)
-      call object_alloc ('frac_elec_nb_closest_to_atom_encountered_wlk', frac_elec_nb_closest_to_atom_encountered_wlk, elec_nb_closest_to_atom_encountered_nb, nwalk)
-      call object_alloc ('frac_elec_nb_closest_to_atom_encountered_av', frac_elec_nb_closest_to_atom_encountered_av, elec_nb_closest_to_atom_encountered_nb)
-      elec_nb_closest_to_atom_encountered (:, elec_nb_closest_to_atom_encountered_nb) = elec_nb_closest_to_atom_wlk (:, walk_i)
-      frac_elec_nb_closest_to_atom_encountered_wlk (elec_nb_closest_to_atom_encountered_nb, walk_i) = 1.d0
+      elec_nb_close_atom_encount_nb = elec_nb_close_atom_encount_nb + 1
+      call object_alloc ('elec_nb_close_atom_encount', elec_nb_close_atom_encount, ncent, elec_nb_close_atom_encount_nb)
+      call object_alloc ('frac_elec_nb_close_atom_encount_wlk', frac_elec_nb_close_atom_encount_wlk, elec_nb_close_atom_encount_nb, nwalk)
+      call object_alloc ('frac_elec_nb_close_atom_encount_av', frac_elec_nb_close_atom_encount_av, elec_nb_close_atom_encount_nb)
+      elec_nb_close_atom_encount (:, elec_nb_close_atom_encount_nb) = elec_nb_close_atom_wlk (:, walk_i)
+      frac_elec_nb_close_atom_encount_wlk (elec_nb_close_atom_encount_nb, walk_i) = 1.d0
     endif
   enddo ! walk_i
 
-  end subroutine elec_nb_closest_to_atom_encountered_bld
+  end subroutine elec_nb_close_atom_encount_bld
 
 ! ==============================================================================
-  subroutine elec_spin_nb_closest_to_atom_encountered_bld
+  subroutine elec_spin_nb_close_atom_encount_bld
 ! ------------------------------------------------------------------------------
 ! Description   : configurations with the number of electons closest to each atom
 ! Description   : encountered in the calculation (including spins)
 !
 ! Created       : J. Toulouse, 09 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
 ! local
-  integer walk_i, elec_spin_nb_closest_to_atom_encountered_i
+  integer walk_i, elec_spin_nb_close_atom_encount_i
   logical found
 
 ! header
   if (header_exe) then
 
-   call object_create ('elec_spin_nb_closest_to_atom_encountered_nb')
-   call object_create ('elec_spin_nb_closest_to_atom_encountered')
-   call object_create ('frac_elec_spin_nb_closest_to_atom_encountered_wlk')
-   call object_average_walk_define ('frac_elec_spin_nb_closest_to_atom_encountered_wlk', 'frac_elec_spin_nb_closest_to_atom_encountered_av')
+   call object_create ('elec_spin_nb_close_atom_encount_nb')
+   call object_create ('elec_spin_nb_close_atom_encount')
+   call object_create ('frac_elec_spin_nb_close_atom_encount_wlk')
+   call object_average_walk_define ('frac_elec_spin_nb_close_atom_encount_wlk', 'frac_elec_spin_nb_close_atom_encount_av')
 
    call object_needed ('ncent')
    call object_needed ('nwalk')
-   call object_needed ('elec_spin_nb_closest_to_atom_wlk')
+   call object_needed ('elec_spin_nb_close_atom_wlk')
 
    return
 
@@ -745,44 +758,45 @@ module electrons_mod
 # endif
 
 ! allocations
-  call object_alloc ('elec_spin_nb_closest_to_atom_encountered', elec_spin_nb_closest_to_atom_encountered, spin_nb, ncent, elec_spin_nb_closest_to_atom_encountered_nb)
-  call object_alloc ('frac_elec_spin_nb_closest_to_atom_encountered_wlk', frac_elec_spin_nb_closest_to_atom_encountered_wlk, elec_spin_nb_closest_to_atom_encountered_nb, nwalk)
-  call object_alloc ('frac_elec_spin_nb_closest_to_atom_encountered_av', frac_elec_spin_nb_closest_to_atom_encountered_av, elec_spin_nb_closest_to_atom_encountered_nb)
+  call object_alloc ('elec_spin_nb_close_atom_encount', elec_spin_nb_close_atom_encount, spin_nb, ncent, elec_spin_nb_close_atom_encount_nb)
+  call object_alloc ('frac_elec_spin_nb_close_atom_encount_wlk', frac_elec_spin_nb_close_atom_encount_wlk, elec_spin_nb_close_atom_encount_nb, nwalk)
+  call object_alloc ('frac_elec_spin_nb_close_atom_encount_av', frac_elec_spin_nb_close_atom_encount_av, elec_spin_nb_close_atom_encount_nb)
 
-  frac_elec_spin_nb_closest_to_atom_encountered_wlk (:,:) = 0.d0
+  frac_elec_spin_nb_close_atom_encount_wlk (:,:) = 0.d0
 
   do walk_i = 1, nwalk
     found = .false.
-    do elec_spin_nb_closest_to_atom_encountered_i = 1, elec_spin_nb_closest_to_atom_encountered_nb
-      if (arrays_equal(elec_spin_nb_closest_to_atom_wlk (:,:, walk_i), elec_spin_nb_closest_to_atom_encountered (:,:, elec_spin_nb_closest_to_atom_encountered_i))) then
-        frac_elec_spin_nb_closest_to_atom_encountered_wlk (elec_spin_nb_closest_to_atom_encountered_i, walk_i) = 1.d0
+    do elec_spin_nb_close_atom_encount_i = 1, elec_spin_nb_close_atom_encount_nb
+      if (arrays_equal(elec_spin_nb_close_atom_wlk (:,:, walk_i), elec_spin_nb_close_atom_encount (:,:, elec_spin_nb_close_atom_encount_i))) then
+        frac_elec_spin_nb_close_atom_encount_wlk (elec_spin_nb_close_atom_encount_i, walk_i) = 1.d0
         found = .true.
         exit
       endif
-    enddo ! elec_spin_nb_closest_to_atom_encountered_i
+    enddo ! elec_spin_nb_close_atom_encount_i
 
 !   add new configuration to the list of encountered configurations
     if (.not. found) then
-      elec_spin_nb_closest_to_atom_encountered_nb = elec_spin_nb_closest_to_atom_encountered_nb + 1
-      call object_alloc ('elec_spin_nb_closest_to_atom_encountered', elec_spin_nb_closest_to_atom_encountered, spin_nb, ncent, elec_spin_nb_closest_to_atom_encountered_nb)
-      call object_alloc ('frac_elec_spin_nb_closest_to_atom_encountered_wlk', frac_elec_spin_nb_closest_to_atom_encountered_wlk, elec_spin_nb_closest_to_atom_encountered_nb, nwalk)
-      call object_alloc ('frac_elec_spin_nb_closest_to_atom_encountered_av', frac_elec_spin_nb_closest_to_atom_encountered_av, elec_spin_nb_closest_to_atom_encountered_nb)
-      elec_spin_nb_closest_to_atom_encountered (:,:, elec_spin_nb_closest_to_atom_encountered_nb) = elec_spin_nb_closest_to_atom_wlk (:,:, walk_i)
-      frac_elec_spin_nb_closest_to_atom_encountered_wlk (elec_spin_nb_closest_to_atom_encountered_nb, walk_i) = 1.d0
+      elec_spin_nb_close_atom_encount_nb = elec_spin_nb_close_atom_encount_nb + 1
+      call object_alloc ('elec_spin_nb_close_atom_encount', elec_spin_nb_close_atom_encount, spin_nb, ncent, elec_spin_nb_close_atom_encount_nb)
+      call object_alloc ('frac_elec_spin_nb_close_atom_encount_wlk', frac_elec_spin_nb_close_atom_encount_wlk, elec_spin_nb_close_atom_encount_nb, nwalk)
+      call object_alloc ('frac_elec_spin_nb_close_atom_encount_av', frac_elec_spin_nb_close_atom_encount_av, elec_spin_nb_close_atom_encount_nb)
+      elec_spin_nb_close_atom_encount (:,:, elec_spin_nb_close_atom_encount_nb) = elec_spin_nb_close_atom_wlk (:,:, walk_i)
+      frac_elec_spin_nb_close_atom_encount_wlk (elec_spin_nb_close_atom_encount_nb, walk_i) = 1.d0
     endif
   enddo ! walk_i
 
-  end subroutine elec_spin_nb_closest_to_atom_encountered_bld
+  end subroutine elec_spin_nb_close_atom_encount_bld
 
 ! ==============================================================================
-  subroutine frac_elec_spin_nb_closest_to_atom_input_wlk_bld
+  subroutine frac_elec_spin_nb_close_atom_input_wlk_bld
 ! ------------------------------------------------------------------------------
 ! Description   : fraction of configurations with the number of electons closest to each atom
-! Description   : identical to the one given in the input, i.e. elec_up_nb_closest_to_atom_input
-! Description   : and elec_dn_nb_closest_to_atom_input (including spin)
+! Description   : identical to the one given in the input, i.e. elec_up_nb_close_atom_input
+! Description   : and elec_dn_nb_close_atom_input (including spin)
 !
 ! Created       : J. Toulouse, 04 Apr 2007
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -792,14 +806,14 @@ module electrons_mod
 ! header
   if (header_exe) then
 
-   call object_create ('frac_elec_spin_nb_closest_to_atom_input_wlk')
-   call object_average_walk_define ('frac_elec_spin_nb_closest_to_atom_input_wlk', 'frac_elec_spin_nb_closest_to_atom_input_av')
+   call object_create ('frac_elec_spin_nb_close_atom_input_wlk')
+   call object_average_walk_define ('frac_elec_spin_nb_close_atom_input_wlk', 'frac_elec_spin_nb_close_atom_input_av')
 
    call object_needed ('nwalk')
-   call object_needed ('elec_up_nb_closest_to_atom_wlk')
-   call object_needed ('elec_dn_nb_closest_to_atom_wlk')
-   call object_needed ('elec_up_nb_closest_to_atom_input')
-   call object_needed ('elec_dn_nb_closest_to_atom_input')
+   call object_needed ('elec_up_nb_close_atom_wlk')
+   call object_needed ('elec_dn_nb_close_atom_wlk')
+   call object_needed ('elec_up_nb_close_atom_input')
+   call object_needed ('elec_dn_nb_close_atom_input')
 
    return
 
@@ -808,18 +822,18 @@ module electrons_mod
 ! begin
 
 ! allocations
-  call object_alloc ('frac_elec_spin_nb_closest_to_atom_input_wlk', frac_elec_spin_nb_closest_to_atom_input_wlk, nwalk)
-  call object_associate ('frac_elec_spin_nb_closest_to_atom_input_av', frac_elec_spin_nb_closest_to_atom_input_av)
+  call object_alloc ('frac_elec_spin_nb_close_atom_input_wlk', frac_elec_spin_nb_close_atom_input_wlk, nwalk)
+  call object_associate ('frac_elec_spin_nb_close_atom_input_av', frac_elec_spin_nb_close_atom_input_av)
 
   do walk_i = 1, nwalk
-    if (arrays_equal(elec_up_nb_closest_to_atom_wlk (:, walk_i), elec_up_nb_closest_to_atom_input (:)) .and. &
-        arrays_equal(elec_dn_nb_closest_to_atom_wlk (:, walk_i), elec_dn_nb_closest_to_atom_input (:)) ) then
-     frac_elec_spin_nb_closest_to_atom_input_wlk (walk_i) = 1.d0
+    if (arrays_equal(elec_up_nb_close_atom_wlk (:, walk_i), elec_up_nb_close_atom_input (:)) .and. &
+        arrays_equal(elec_dn_nb_close_atom_wlk (:, walk_i), elec_dn_nb_close_atom_input (:)) ) then
+     frac_elec_spin_nb_close_atom_input_wlk (walk_i) = 1.d0
     else
-     frac_elec_spin_nb_closest_to_atom_input_wlk (walk_i) = 0.d0
+     frac_elec_spin_nb_close_atom_input_wlk (walk_i) = 0.d0
     endif
   enddo ! walk_i
 
-  end subroutine frac_elec_spin_nb_closest_to_atom_input_wlk_bld
+  end subroutine frac_elec_spin_nb_close_atom_input_wlk_bld
 
 end module electrons_mod

@@ -4,14 +4,15 @@ c Note that if it is called from a 1-electron move routine then p=1 and only new
 c Hence it is not necessary to call grad_hess_jas_save.
 
       use mpi_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
      &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
@@ -295,13 +296,14 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine grad_hess_jas_save
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT      include '../fit/fit.h'
 
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
      &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
@@ -510,6 +512,7 @@ c-----------------------------------------------------------------------
       use deriv_mod !JT
       use opt_lin_mod  !JT
       use opt_nwt_mod  !JT
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -534,8 +537,8 @@ c-----------------------------------------------------------------------
      &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
      &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /contrl_opt2/ igradhess,iadd_diag_opt
 

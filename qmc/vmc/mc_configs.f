@@ -35,6 +35,7 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
 
       use all_tools_mod
       use walkers_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
@@ -47,8 +48,8 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
      &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
      &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
      &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),

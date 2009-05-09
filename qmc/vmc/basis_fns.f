@@ -58,6 +58,7 @@ c     and gaussian 3-d)
 
 !RM(1)
       use real_spherical_harmonics
+      use atom_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
@@ -65,8 +66,8 @@ c     and gaussian 3-d)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)
@@ -503,16 +504,17 @@ c n_bas2(irb,ict) > 0 : Slater basis
 c                 = 0 : asymptotic basis
 c                 < 0 : Gaussian basis
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'pseudo.h'
-      include 'numbas.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'pseudo.h'
+!JT      include 'numbas.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
        common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)

@@ -3,11 +3,12 @@ c Written by Claudia Filippi. Modified by Cyrus Umrigar
 c Reads in localized orbitals on a radial grid
 c If igrid(ic).eq.2 .and. (r0_bas(ic).le.0.d0 .or. exp_h_bas(ic).le.0.d0) then grid parameters are deduced later from r values
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'numbas.h'
-      include 'pseudo.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'numbas.h'
+!JT      include 'pseudo.h'
+!JT      include 'force.h'
 
       character*20 filename,wforce,atomtyp
       character*80 title
@@ -17,8 +18,8 @@ c     character*20 lcent
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)

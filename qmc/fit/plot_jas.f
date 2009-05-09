@@ -2,15 +2,16 @@
 c Written by Cyrus Umrigar
 c subroutine to plot e-n and e-e Jastrow
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
      &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
      &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
@@ -44,19 +45,20 @@ c Written by Cyrus Umrigar
 c Jastrow 4,5 must be used with one of isc=2,4,6,7
 c Jastrow 6   must be used with one of isc=6,7
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
 
-      parameter (half=.5d0)
+!JT      parameter (half=.5d0)
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is

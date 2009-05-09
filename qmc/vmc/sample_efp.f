@@ -1,16 +1,17 @@
       subroutine sample_efp(inew,x,ener,prob)
 c Written by Claudia Filippi
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
+!JT      include 'vmc.h'
       include 'fitefp.h'
-      include 'force.h'
+!JT      include 'force.h'
 
       parameter(NFITCX=MEFP_FIT*MCTYPE)
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
      &nsrbase(MCTYPE,MEFP_NL),nsrbast(MCTYPE),nsrbasx(MCTYPE),
@@ -187,12 +188,13 @@ c-----------------------------------------------------------------------
 
       subroutine readbas
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
+!JT      include 'vmc.h'
       include 'fitefp.h'
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
      &nsrbase(MCTYPE,MEFP_NL),nsrbast(MCTYPE),nsrbasx(MCTYPE),
@@ -254,16 +256,17 @@ c-----------------------------------------------------------------------
 
       subroutine writebas(passes,etot)
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
+!JT      include 'vmc.h'
       include 'fitefp.h'
-      include 'force.h'
+!JT      include 'force.h'
 
       parameter(NFITCX=MEFP_FIT*MCTYPE)
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
      &nsrbase(MCTYPE,MEFP_NL),nsrbast(MCTYPE),nsrbasx(MCTYPE),
@@ -352,15 +355,16 @@ c-----------------------------------------------------------------------
 
       subroutine nlocefp(i,ic,dx,dy,dz,r,oefp)
 
+      use atom_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
+!JT      include 'vmc.h'
       include 'fitefp.h'
-      include 'force.h'
+!JT      include 'force.h'
 
-      parameter (zero=0.d0,one=1.d0)
+!JT      parameter (zero=0.d0,one=1.d0)
 
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
