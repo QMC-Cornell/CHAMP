@@ -3,12 +3,13 @@ c If isite<=0 reads initial MC configuration from mc_configs_start
 c         >=1 gets initial MC configuration by calling subroutine sites
 c Write mc_configs_new.<iproc> at end of run to provide configurations for fit optimization
 
-      use walkers_mod
 
 # if defined (MPI)
 
+      use walkers_mod
       use mpi_mod
       use atom_mod
+      use config_mod
 
       implicit real*8(a-h,o-z)
 
@@ -16,12 +17,12 @@ c Write mc_configs_new.<iproc> at end of run to provide configurations for fit o
       common /dim/ ndim
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
+!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
+!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
+!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
+!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
+!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
+!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -44,6 +45,8 @@ c rnd itself is unused.
         do 95 id=1,(3*nelec)*idtask
    95     rnd=rannyu(0)
 
+      call alloc ('xold', xold, 3, nelec)
+
 c if isite=1 then get initial configuration from sites routine
         if(isite.ge.1) goto 393
           open(9,err=393,file='mc_configs_start')
@@ -63,7 +66,7 @@ c if isite=1 then get initial configuration from sites routine
   394       continue
           if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
           call sites(xold,nelec,nsite)
-          write(6,'(/,''initial configuration from sites'')')
+!JT          write(6,'(/,''initial configuration from sites'')')
   395 continue
 
 c fix the position of electron i=ifixe for pair-density calculation:

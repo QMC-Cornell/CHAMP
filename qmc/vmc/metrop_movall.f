@@ -5,6 +5,7 @@ c routine to move configuration by one step using a
 c force-bias type Monte Carlo.
 c Minor mods added by A.D.Guclu to include correlated sampling.
       use all_tools_mod ! JT
+      use config_mod
 
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
@@ -15,12 +16,12 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
+!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
+!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
+!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
+!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
+!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
+!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)

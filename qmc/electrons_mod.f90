@@ -51,7 +51,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 16 Nov 2006
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -95,7 +95,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 07 Nov 2006
 ! Modified      : J. Toulouse, 02 Oct 2008: add walkers for DMC
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -159,7 +159,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 16 Nov 2006, walkers
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -206,7 +206,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 16 Mar 2006, walkers
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

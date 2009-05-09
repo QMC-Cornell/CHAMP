@@ -3,7 +3,7 @@
           include 'commons/common_const.h'
           include 'commons/common_const2.h'
           include 'commons/common_dim.h'
-          include 'commons/common_config.h'
+!          include 'commons/common_config.h'
           include 'commons/common_orb.h'
           include 'commons/common_coefs.h'
           include 'commons/common_dets.h'

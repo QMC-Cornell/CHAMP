@@ -15,6 +15,7 @@
          call mc_configs_read_notmpi
       endif
 
+      return !JT
 c-----------------------------------------------------------------------
       entry mc_configs_write !JT
 
@@ -36,18 +37,19 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
       use all_tools_mod
       use walkers_mod
       use atom_mod
+      use config_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
 
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
+!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
+!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
+!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
+!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
+!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
+!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -61,6 +63,8 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
 c Truncate fbias so that it is never negative, and the quantity
 c sampled is never negative
 c     fbias=dmin1(two,dmax1(zero,fbias))
+
+      call alloc ('xold', xold, 3, nelec)
 
       if(irstar.ne.1) then
 

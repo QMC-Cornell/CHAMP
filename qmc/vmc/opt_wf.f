@@ -9,11 +9,13 @@ c Various types of Metropolis moves can be done, including a few
 c versions of directed Metropolis in spherical polar coordinates.
 c Also, one or all electrons can be moved at once.
 
-      use all_tools_mod    ! JT
-      use montecarlo_mod   ! JT
-      use optimization_mod ! JT
-      use eloc_mod ! JT
-      use mpi_mod ! JT
+      use all_tools_mod
+      use montecarlo_mod
+      use optimization_mod
+      use eloc_mod
+      use vmc_mod
+      use mpi_mod
+      use config_mod
 
       implicit real*8(a-h,o-z)
 
@@ -22,12 +24,12 @@ c Also, one or all electrons can be moved at once.
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
+!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
+!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
+!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
+!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
+!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
+!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
@@ -43,15 +45,10 @@ c Also, one or all electrons can be moved at once.
 
       dimension ene_var(3)
 
-      call my_second(0,'begin ')
-
       pi=four*datan(one)
 
-c     open(8,form='formatted',file='tape8')
-c     rewind 8
+      call vmc_init
 
-c     mode='vmc         '
-!JT      call read_input
 c If add_diag(1) <= 0 turn OFF add_diag optimization and use fixed, add_diag
 c equal to abs(add_diag) specified in input.  Usually you do NOT want to do this
 c because optimization of add_diag adds only about 20% to the time since the
@@ -63,29 +60,6 @@ c and because optimization of add_diag makes the method totally stable.
        else
         add_diag(1)=abs(add_diag(1))
         iadd_diag_opt=0
-      endif
-
-c     if(nefp.gt.0) call readbas
-
-      if(nforce.gt.1) then
-c force parameters
-        call readforce
-c parameters for secondary geometry wave function
-        call wf_secondary
-       else
-        nwftype=1
-        iwftype(1)=1
-      endif
-
-c Initialize starting MC configuration
-      call mc_configs_read
-
-c If we are moving one electron at a time, then we need to initialize
-c xnew, since only the first electron gets initialized in metrop
-      if(irstar.ne.1) then
-        do 400 i=1,nelec
-          do 400 k=1,ndim
-  400       xnew(k,i)=xold(k,i)
       endif
 
 c Do wavefunction optimization if nopt_iter>0

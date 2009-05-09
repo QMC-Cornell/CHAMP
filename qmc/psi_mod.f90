@@ -33,6 +33,7 @@ module psi_mod
 !
 ! Created     : J. Toulouse, 06 Apr 2008
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -150,6 +151,7 @@ module psi_mod
 ! Created       : J. Toulouse, 05 Dec 2005
 ! Modified      : J. Toulouse, 04 Jul 2007: unique determinants
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -225,6 +227,7 @@ module psi_mod
 ! Created       : J. Toulouse, 05 Dec 2005
 ! Modified      : J. Toulouse, 04 Jul 2007: unique determinants
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -295,6 +298,7 @@ module psi_mod
 ! Created       : J. Toulouse, 05 Dec 2005
 ! Modified      : J. Toulouse, 04 Jul 2007: unique determinants
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -379,6 +383,7 @@ module psi_mod
 ! Created       : J. Toulouse, 05 Dec 2005
 ! Modified      : J. Toulouse, 04 Jul 2007: unique determinants
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -455,6 +460,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -499,6 +505,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -537,6 +544,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -579,6 +587,7 @@ module psi_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 17 Nov 2006, walkers
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -628,6 +637,7 @@ module psi_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 17 Nov 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -672,6 +682,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -704,6 +715,7 @@ module psi_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 17 Nov 2006, walkers
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -747,6 +759,7 @@ module psi_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 17 Nov 2006, walkers
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -782,6 +795,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 06 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -889,6 +903,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 06 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -914,6 +929,7 @@ module psi_mod
 !
 ! Created       : J. Toulouse, 08 Apr 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

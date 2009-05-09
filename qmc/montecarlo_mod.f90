@@ -57,6 +57,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -97,6 +98,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -137,6 +139,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -190,6 +193,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -248,6 +252,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -279,6 +284,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 24 Sep 2007
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
 !  implicit none
 !  include 'commons.h'
 !
@@ -306,6 +312,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -337,6 +344,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -367,6 +375,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 14 Nov 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -414,6 +423,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 14 Nov 2006
 ! ------------------------------------------------------------------------------
+!  include 'modules.h'
 !  implicit none
 !  include 'commons.h'
 !

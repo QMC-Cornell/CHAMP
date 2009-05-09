@@ -10,6 +10,7 @@ c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
       use all_tools_mod ! JT
       use atom_mod
+      use config_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -38,12 +39,12 @@ c 2) Generalize to molecules. This requires geometric rejections.
 c     common /contr3/ mode
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
-      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
+!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
+!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
+!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
+!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
+!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
+!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)

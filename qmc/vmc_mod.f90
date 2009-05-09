@@ -13,15 +13,19 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
-! local
+  call object_provide ('nelec')
+  call object_provide ('nforce')
 
+! local
   call my_second(0,'begin ')
 
 ! EFP
   if (nefp >0 ) call readbas ! to remove
+
 
 ! correlated sampling
   if (nforce > 1) then
@@ -39,12 +43,32 @@ module vmc_mod
 
 ! If we are moving one electron at a time, then we need to initialize
 ! xnew, since only the first electron gets initialized in metrop
+  call alloc ('xnew', xnew, 3, nelec)
   if (irstar /= 1) then
      xnew (1:ndim,1:nelec) = xold (1:ndim,1:nelec)
   endif
 
 ! default: no gradient nor Hessian
   igradhess=0
+
+! various allocations for VMC
+  call alloc ('vold', vold, 3, nelec)
+  call alloc ('vnew', vnew, 3, nelec)
+  call alloc ('psi2o', psi2o, max(3,nforce))
+  call alloc ('psi2n', psi2n, max(3,nforce))
+  call alloc ('eold', eold, max(3,nforce))
+  call alloc ('enew', enew, max(3,nforce))
+  call alloc ('rmino', rmino, nelec)
+  call alloc ('rminn', rminn, nelec)
+  call alloc ('rvmino', rvmino, 3, nelec)
+  call alloc ('rvminn', rvminn, 3, nelec)
+  call alloc ('rminon', rminon, nelec)
+  call alloc ('rminno', rminno, nelec)
+  call alloc ('rvminon', rvminon, 3, nelec)
+  call alloc ('rvminno', rvminno, 3, nelec)
+  call alloc ('delttn', delttn, nelec)
+  call alloc ('nearesto', nearesto, nelec)
+  call alloc ('nearestn', nearestn, nelec)
 
   end subroutine vmc_init
 
@@ -71,6 +95,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -95,6 +120,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -119,6 +145,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

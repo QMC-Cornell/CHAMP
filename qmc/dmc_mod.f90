@@ -20,6 +20,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -49,6 +50,8 @@ module dmc_mod
     iwftype(1)=1
   endif
 
+! allocations for DMC
+  
   end subroutine dmc_init
 
 ! ==============================================================================

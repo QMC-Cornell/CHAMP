@@ -175,6 +175,7 @@ module extracule_mod
 !
 ! Created       : J. Toulouse, 05 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -328,6 +329,7 @@ module extracule_mod
 !
 ! Created        : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
