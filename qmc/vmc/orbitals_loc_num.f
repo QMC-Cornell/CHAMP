@@ -1,14 +1,15 @@
       subroutine orbitals_loc_num(iel,x,orb,dorb,ddorb)
 c Written by Cyrus Umrigar and Amit Ghosal
 c Calculate orbitals and derivatives for finite system by 2-dim cubic spline interpolation
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'numorb.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'numorb.h'
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
@@ -123,14 +124,15 @@ c-----------------------------------------------------------------------
       subroutine orbitals_loc_nume(x,orb)
 c Written by Cyrus Umrigar and Amit Ghosal
 c Calculate orbitals for finite system by 2-dim cubic spline interpolation
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'numorb.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'numorb.h'
 
 c     common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 

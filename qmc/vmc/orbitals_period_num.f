@@ -6,6 +6,7 @@ c by interpolating on a grid.
       use bsplines_mod
 
       use orbital_grid_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
@@ -14,7 +15,7 @@ c by interpolating on a grid.
 !     include 'numorb.h'
 
       common /dim/ ndim
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -185,6 +186,7 @@ c Calculate pw orbitals for electron iel by interpolating on a grid.
       use bsplines_mod
 
       use orbital_grid_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
@@ -193,7 +195,7 @@ c Calculate pw orbitals for electron iel by interpolating on a grid.
 !     include 'numorb.h'
 
       common /dim/ ndim
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

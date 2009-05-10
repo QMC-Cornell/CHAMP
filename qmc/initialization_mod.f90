@@ -11,6 +11,7 @@ module initialization_mod
 !
 ! Created       : J. Toulouse, 11 Mar 2009
 ! -----------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -157,6 +158,7 @@ module initialization_mod
 !
 ! Created       : J. Toulouse, 03 Oct 2006
 ! -----------------------------------------------------------------------------------
+  include 'modules.h'
   use orbitals_mod
   implicit none
   include 'commons.h'

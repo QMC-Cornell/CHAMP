@@ -6,13 +6,13 @@ include ../makefile.inc
 
 PROG =	$(CHAMP_EXE)
 
-SRCS =	commons/atom_mod.f90 commons/config_mod.f90 commons/cslatn_mod.f90 \
-	commons/dorb_mod.f90 commons/orb_mod.f90 commons/orbe_mod.f90 \
-	commons/slatn_mod.f90 commons/tempor_test_mod.f90 \
-	accumulation_mod.f90 all_tools_mod.f90 allocations_mod.f90 \
-	average_mod.f90 backflow_auxiliary_mod.f90 backflow_mod.f90 \
-	basic_tools_mod.f90 basis_mod.f90 bsplines_mod.f90 bwfdet_mod.f90 \
-	catalog_averages_mod.f90 catalog_objects_mod.f90 \
+SRCS =	commons/atom_mod.f90 commons/coefs_mod.f90 commons/config_mod.f90 \
+	commons/cslatn_mod.f90 commons/dorb_mod.f90 commons/orb_mod.f90 \
+	commons/orbe_mod.f90 commons/slatn_mod.f90 \
+	commons/tempor_test_mod.f90 accumulation_mod.f90 all_tools_mod.f90 \
+	allocations_mod.f90 average_mod.f90 backflow_auxiliary_mod.f90 \
+	backflow_mod.f90 basic_tools_mod.f90 basis_mod.f90 bsplines_mod.f90 \
+	bwfdet_mod.f90 catalog_averages_mod.f90 catalog_objects_mod.f90 \
 	catalog_routines_mod.f90 champ.f90 constants_mod.f90 control_mod.f90 \
 	crystal_symmetries_mod.f90 csfs_mod.f90 cslater_cf_mod.f90 \
 	cslater_mod.f90 cslaterw_mod.f90 debug_mod.f90 density_mod.f90 \
@@ -94,10 +94,10 @@ SRCS =	commons/atom_mod.f90 commons/config_mod.f90 commons/cslatn_mod.f90 \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.f \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f
 
-OBJS =	commons/atom_mod.o commons/config_mod.o commons/cslatn_mod.o \
-	commons/dorb_mod.o commons/orb_mod.o commons/orbe_mod.o \
-	commons/slatn_mod.o commons/tempor_test_mod.o accumulation_mod.o \
-	all_tools_mod.o allocations_mod.o average_mod.o \
+OBJS =	commons/atom_mod.o commons/coefs_mod.o commons/config_mod.o \
+	commons/cslatn_mod.o commons/dorb_mod.o commons/orb_mod.o \
+	commons/orbe_mod.o commons/slatn_mod.o commons/tempor_test_mod.o \
+	accumulation_mod.o all_tools_mod.o allocations_mod.o average_mod.o \
 	backflow_auxiliary_mod.o backflow_mod.o basic_tools_mod.o basis_mod.o \
 	bsplines_mod.o bwfdet_mod.o catalog_averages_mod.o \
 	catalog_objects_mod.o catalog_routines_mod.o champ.o constants_mod.o \
@@ -374,6 +374,7 @@ walkers_mod.o: all_tools_mod.o mpi_mod.o restart_mod.o vmc_mod.o commons.h \
 write_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o variables_mod.o \
 	commons.h
 commons/atom_mod.o: constants_mod.o
+commons/coefs_mod.o: constants_mod.o
 commons/config_mod.o: constants_mod.o
 commons/cslatn_mod.o: constants_mod.o
 commons/dorb_mod.o: constants_mod.o

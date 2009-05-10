@@ -5,7 +5,7 @@
           include 'commons/common_dim.h'
 !          include 'commons/common_config.h'
 !          include 'commons/common_orb.h'
-          include 'commons/common_coefs.h'
+!          include 'commons/common_coefs.h'
           include 'commons/common_dets.h'
 !          include 'commons/common_dorb.h'
           include 'commons/common_slater.h'

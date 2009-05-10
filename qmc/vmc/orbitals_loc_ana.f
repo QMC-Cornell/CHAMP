@@ -6,6 +6,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       use control_mod
       use orbitals_mod, only: orb_tot_nb
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
@@ -13,7 +14,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -76,15 +77,16 @@ c Written by Cyrus Umrigar
 c Calculate localized orbitals for electron iel
 
       use orbitals_mod, only: orb_tot_nb
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
       common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
@@ -114,6 +116,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
 
 
       use orbitals_mod, only: orb_tot_nb
+      use coefs_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -127,7 +130,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)

@@ -11,6 +11,7 @@ c any "exponent term" in coefficients for dots. maybe could be useful later?
 c also see basis_norm.dot for real wfs
 
       use all_tools_mod  !JT
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
@@ -36,7 +37,7 @@ c also see basis_norm.dot for real wfs
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /compferm/ emagv,nv,idot
       common /basisnorm/ anorm(MBASIS)
 

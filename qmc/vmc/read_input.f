@@ -11,6 +11,7 @@ c Written by Cyrus Umrigar
       use orbital_grid_mod
       use atom_mod
       use dorb_mod
+      use coefs_mod
 
       implicit real*8(a-h,o-z)
 
@@ -48,7 +49,7 @@ c Written by Cyrus Umrigar
 
       common /forcepar/ deltot(MFORCE),nforce,istrech
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -956,6 +957,8 @@ c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ng
 c     if(iperiodic.eq.0 .and. norb.gt.MORB) stop 'norb > MORB'
       if(norb.gt.MORB) stop 'norb > MORB'
       if(norb.lt.nup .or. norb.lt.ndn) stop 'norb must be >= nup and ndn'
+
+      call alloc ('coef', coef, nbasis, orb_tot_nb, max(3,nforce))
 
       if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
 c     if(ibasis.eq.1.and.numr.gt.0) call read_bas_num(1)

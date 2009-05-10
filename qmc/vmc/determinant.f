@@ -7,6 +7,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use orb_mod
       use dorb_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -45,7 +46,7 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c    &,d2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn

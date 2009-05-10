@@ -5,11 +5,12 @@ c Presently not used.
 
       use all_tools_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 
       common /dim/ ndim
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
      &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
@@ -87,6 +88,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use orbitals_mod, only: orb_tot_nb
       use tempor_test_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -100,7 +102,7 @@ c However, that causes problems when running with mpi, so comment out that part.
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contr_names/ iorb_format
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
@@ -488,6 +490,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use orbitals_mod
       use tempor_test_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-6)
       character*16 mode
@@ -495,7 +498,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       common /contr3/ mode
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
      &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
@@ -881,6 +884,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use atom_mod
       use orbitals_mod, only: orb_tot_nb
       use tempor_test_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -893,7 +897,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       common /contr3/ mode
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
      &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
@@ -1492,6 +1496,7 @@ c-----------------------------------------------------------------------
       use orbital_grid_mod
       use dorb_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -1509,7 +1514,7 @@ c-----------------------------------------------------------------------
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contr_names/ iorb_format
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET)
 

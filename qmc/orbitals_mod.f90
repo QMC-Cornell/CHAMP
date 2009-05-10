@@ -207,6 +207,7 @@ module orbitals_mod
   write(6,'(a,i5)') ' number of orbitals = ',norb
 
   call object_provide ('nbasis')
+  call object_provide ('coef')
   write(6,'(a)') ' orbital coefficients:'
   do orb_i=1,norb
      write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
@@ -677,9 +678,9 @@ module orbitals_mod
 
 ! begin
   call object_provide ('nbasis')
+  call object_provide ('nforce')
 
   orb_i = 0
-  coef(:,:,:)= 0.d0
 
   do
    read(unit_input,'(a)',iostat=iostat) line
@@ -700,6 +701,9 @@ module orbitals_mod
    if (orb_i > MORB) then
        call die (lhere, ' orb_i='+orb_i+' > MORB='+MORB)
    endif
+
+   call alloc ('coef', coef, nbasis, orb_i, max(3,nforce))
+
    read(line,*,iostat=iostat) (coef(bas_i,orb_i,1),bas_i=1,nbasis)
    if(iostat < 0) then
      call die (lhere, 'error while reading orbital coefficients')

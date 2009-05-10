@@ -8,6 +8,7 @@ c job where it left off
       use mpi_mod
       use atom_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       parameter (small=1.d-6)
@@ -25,7 +26,7 @@ c job where it left off
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere

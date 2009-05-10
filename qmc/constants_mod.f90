@@ -26,6 +26,7 @@ module constants_mod
   real(dp), parameter   :: four    = 4.d0
   real(dp), parameter   :: ten     = 10.d0
   real(dp), parameter   :: tenth   = 0.1d0
+  real(dp), parameter   :: sixth   = 1.d0/6.d0
 
 ! mathematical constants
   real(dp), parameter   :: pi1        = 3.141592653589793d0

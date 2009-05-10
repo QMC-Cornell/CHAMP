@@ -177,6 +177,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -229,6 +230,7 @@ contains
     !
     ! Created       : F. Petruzielo 10 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -273,6 +275,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -317,6 +320,7 @@ contains
     !
     ! Created       : F. Petruzielo 10 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -377,6 +381,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -437,6 +442,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -496,6 +502,7 @@ contains
     !
     ! Created     : F. Petruzielo, 15 Apr 2009
     !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -574,6 +581,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -621,6 +629,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -665,6 +674,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -716,6 +726,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -768,6 +779,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -808,6 +820,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -858,6 +871,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -912,6 +926,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -968,6 +983,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1019,6 +1035,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1068,6 +1085,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1177,6 +1195,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1317,6 +1336,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1504,6 +1524,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1579,6 +1600,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -1665,6 +1687,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 

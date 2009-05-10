@@ -11,6 +11,7 @@ c coefficients are real.
       use cslatn_mod
       use orbitals_mod, only: orb_tot_nb
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter(one=1.d0)
@@ -32,7 +33,7 @@ c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)

@@ -689,15 +689,16 @@ c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
 c normalization is taken care in (..)
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -770,15 +771,16 @@ c normalization is taken care in (..)
 
 c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
@@ -895,15 +897,16 @@ c Here, we do not normalize the wfs
 
 
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -1036,15 +1039,16 @@ c        xg3 and xg4 are gaussian width parameters.
 
 c Here, we do not normalize the wfs
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
@@ -1210,15 +1214,16 @@ c       (Note that xg3 and xg4 are the "omegas" (1/width)
 c         in units of we (or wire_w in case of wire)))
 
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -1300,15 +1305,16 @@ c         in units of we (or wire_w in case of wire)))
 
 c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)

@@ -5,14 +5,15 @@ c isortg could be used to map g-vectors from iv to ig and
 c isortk could be used to map k-vectors.
 c At present it is assumed that both g- and k-vectors are in the correct order.
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'ewald.h'
 
       common /dim/ ndim
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
      &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx

@@ -8,6 +8,7 @@ c Also, needs to be corrected for more than one atom or atom type or for
 c parameters that are negatives of each other
 c necn -> necoef
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -19,7 +20,7 @@ c      character*80 fmt
       character*10 lbasis(MBASIS)
 
       common /lbas/ lbasis !JT
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere

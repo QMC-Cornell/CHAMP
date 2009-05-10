@@ -6,12 +6,13 @@ c to zero otherwise.
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
 !
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'fit.h'
 !JT      include '../vmc/force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /coefs2/ coef2(MBASIS,MORB,MCENT)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

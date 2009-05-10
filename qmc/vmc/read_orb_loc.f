@@ -5,6 +5,7 @@ c Reads in either analytic or localized orbitals
       use mpi_mod
       use orbitals_mod, only: orb_tot_nb
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -15,7 +16,7 @@ c Reads in either analytic or localized orbitals
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
@@ -152,12 +153,13 @@ c i.e. the order in which we were reading in the p functions.
       use all_tools_mod  ! JT
       use atom_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -579,6 +581,7 @@ c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
 
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -589,7 +592,7 @@ c i.e. the order in which we were reading in the p functions.
 !JT      include 'numbas.h'
 !JT      include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -1007,6 +1010,7 @@ c 1s, 2s, 2px, 2py, ...          to
 c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
 
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -1017,7 +1021,7 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
 !JT      include 'numbas.h'
 !JT      include 'force.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -1497,6 +1501,7 @@ c Determine distinct radial basis functions
 
       use all_tools_mod
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -1504,7 +1509,7 @@ c Determine distinct radial basis functions
 
       common /contr3/ mode
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -1625,12 +1630,13 @@ c-----------------------------------------------------------------------
       subroutine read_orb_loc_num
 c Reads in numerical orbitals and V_ext on a grid.
 c At present V_ext that is read in is not used.
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'numorb.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'numorb.h'
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
@@ -1662,13 +1668,14 @@ c-----------------------------------------------------------------------
 
       subroutine spline_orb(num_orb_exist)
 c Spline numerical orbitals
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'numorb.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'numorb.h'
       parameter(MWORK=21)
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 

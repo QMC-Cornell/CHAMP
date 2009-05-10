@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar
 c Calculate all orbitals, orb, at position of nucleus icent
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -18,7 +19,7 @@ c Calculate all orbitals, orb, at position of nucleus icent
       common /atom2/ dist_cent(MCENT)
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension orb(*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)

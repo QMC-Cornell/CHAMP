@@ -246,6 +246,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use slatn_mod
       use orbe_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -261,7 +262,7 @@ c     common /dim/ ndim
       common /slatn2/ deti_new(MPARMD)
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

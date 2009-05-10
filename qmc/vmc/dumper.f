@@ -19,7 +19,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
 
       use atom_mod
       use config_mod
-!JT      implicit real*8(a-h,o-z)
+      use coefs_mod
+      implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'pseudo.h'
@@ -37,7 +38,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
 !JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 !JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 !JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere

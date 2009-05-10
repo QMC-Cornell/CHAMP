@@ -7,6 +7,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use all_tools_mod
       use atom_mod
       use config_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       parameter(small=1.d-6)
@@ -20,7 +21,7 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump
 !JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 !JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 !JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere

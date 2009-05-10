@@ -5,6 +5,7 @@ c We also verify that all the determinants have same angular momentum
 
       use control_mod
       use dorb_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -15,7 +16,7 @@ c We also verify that all the determinants have same angular momentum
       common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/   iworbd(MELEC,MDET)
-      common /coefs/  coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/  coef(MBASIS,MORB,MWF),nbasis,norb
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)

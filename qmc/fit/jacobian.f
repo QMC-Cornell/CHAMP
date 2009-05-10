@@ -5,6 +5,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use fitdet_mod
       use atom_mod
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -35,7 +36,7 @@ c      complex*16 cvd_sav,cvk_sav
      &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
      &necn,nebase
 
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere

@@ -3,14 +3,15 @@ c Written by Cyrus Umrigar
 c Calculate that part, orb2, of orbitals, orb2, at position of nucleus
 c icent coming from basis, ibas, and symmetry-related bases.
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include 'fit.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'fit.h'
+!JT      include '../vmc/force.h'
 
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /coefs2/ coef2(MBASIS,MORB,MCENT)
       dimension orb2(*)
 

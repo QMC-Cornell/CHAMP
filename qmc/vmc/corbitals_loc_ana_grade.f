@@ -3,10 +3,11 @@ c orbitals_loc_ana_grade adapted to complex orbitals by A.D.Guclu Feb2004
 c Calculate localized orbitals and derivatives for all or 1 electrons
 
       use orbitals_mod, only: orb_tot_nb
+      use coefs_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include 'numbas.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'numbas.h'
 
       complex*16 corb,cdorb,cddorb
       complex*16 cphin,cdphin,cd2phin
@@ -15,7 +16,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)

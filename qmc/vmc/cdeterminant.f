@@ -10,6 +10,7 @@ c coefficients are real.
       use dorb_mod
       use orbitals_mod, only: orb_tot_nb
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -53,7 +54,7 @@ c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
       common /contrl_opt2/ igradhess,iadd_diag_opt
       common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
@@ -299,6 +300,7 @@ c can deal only with spin polarized systems for the moment
       use dorb_mod
       use orbitals_mod, only: orb_tot_nb
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -343,7 +345,7 @@ c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
       common /contrl_opt2/ igradhess,iadd_diag_opt
       common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn

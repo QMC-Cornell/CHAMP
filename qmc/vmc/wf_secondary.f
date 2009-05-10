@@ -7,6 +7,7 @@ c Read parameters for secondary wavefns.
       use mpi_mod
       use atom_mod
       use dorb_mod
+      use coefs_mod
 
       implicit real*8(a-h,o-z)
 
@@ -23,7 +24,7 @@ c Read parameters for secondary wavefns.
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -262,6 +263,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use control_mod
       use orbitals_mod
       use atom_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
@@ -271,7 +273,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)
@@ -410,6 +412,7 @@ c-----------------------------------------------------------------------
       use basis_mod
       use orbitals_mod
       use atom_mod
+      use coefs_mod
 
 c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
@@ -418,7 +421,7 @@ c     common /contrl_per/ iperiodic,ibasis
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /dim/ ndim
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)
@@ -604,6 +607,7 @@ c-----------------------------------------------------------------------
       use basis_mod  !JT
       use optimization_mod !JT
       use atom_mod
+      use coefs_mod
 
 c Written by Cyrus Umrigar
 c Saves the best wf yet and writes it out at end of run
@@ -616,7 +620,7 @@ c     common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)

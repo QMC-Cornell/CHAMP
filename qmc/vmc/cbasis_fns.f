@@ -1,8 +1,8 @@
-	subroutine cbasis_fns_num(iel,rvec_en,r_en)
+      subroutine cbasis_fns_num(iel,rvec_en,r_en)
 c written by Amit Ghosal starting from basis_fns.f
 
       use atom_mod
-	implicit real*8(a-h,o-z)
+      implicit real*8(a-h,o-z)
 !JT	include 'vmc.h'
 !JT	include 'pseudo.h'
 !JT	include 'numbas.h'
@@ -199,10 +199,11 @@ c (part due to angular momentum excess cancels out )
 c In this version we replace we by zex*we for basis set optimization.
 
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
       complex*16 ctemp1,ctemp2
       complex*16 cphin,cdphin,cd2phin
@@ -227,7 +228,7 @@ c     common /dim/ ndim
      &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -349,10 +350,11 @@ c Laplacian is zero and ignored here
 
 c note: one complication here is that the orbitals depend on all electrons...
 
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 
       complex*16 zj,zk,zjk,djnflux,didjnflux
@@ -366,7 +368,7 @@ c note: one complication here is that the orbitals depend on all electrons...
 c     common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
-      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
+!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring

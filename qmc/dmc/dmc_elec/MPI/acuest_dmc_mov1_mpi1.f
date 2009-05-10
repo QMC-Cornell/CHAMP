@@ -9,6 +9,7 @@ c routine to accumulate estimators for energy etc.
       use montecarlo_mod
       use variables_mod
       use mpi_mod
+      use atom_mod
 
       implicit real*8(a-h,o-z)
 
@@ -26,8 +27,8 @@ c routine to accumulate estimators for energy etc.
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
-      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-     &,iwctype(MCENT),nctype,ncent
+!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
+!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /basis/ zex(MBASIS,MWF),betaq
      &,n1s(MCTYPE)
