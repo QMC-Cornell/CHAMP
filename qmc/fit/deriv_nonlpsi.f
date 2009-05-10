@@ -3,6 +3,7 @@
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 c minor modification by A.D.Guclu to add analytical scalek opt.
 
+      use dets_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -35,7 +36,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

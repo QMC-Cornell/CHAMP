@@ -356,6 +356,7 @@ c-----------------------------------------------------------------------
       subroutine nlocefp(i,ic,dx,dy,dz,r,oefp)
 
       use atom_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
       include 'fitefp.h'
@@ -373,7 +374,7 @@ c-----------------------------------------------------------------------
       common /efpqua/ xq0(MEFP_QUAD),yq0(MEFP_QUAD),zq0(MEFP_QUAD),wq(MEFP_QUAD),
      &nqefp
 
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
      &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)

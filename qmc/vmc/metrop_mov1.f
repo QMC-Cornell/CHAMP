@@ -13,6 +13,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use opt_ptb_mod
       use config_mod
 
+      use dets_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -40,7 +41,7 @@ c     common /contr3/ mode
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
       common /doefp/ nefp
       common /div_v/ div_vo(MELEC)

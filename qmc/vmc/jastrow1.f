@@ -1,16 +1,17 @@
       subroutine jastrow1(x,v,d2,div_vj,value)
 c Written by Cyrus Umrigar
 
+      use dets_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
-      parameter(zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
+!JT      parameter(zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

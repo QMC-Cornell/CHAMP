@@ -6,6 +6,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom_mod
 
       use coefs_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -62,7 +63,7 @@ c      complex*16 cvd_sav,cvk_sav
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /bparm/ nspin2b,nocuspb
       common /delocc/ denergy(MPARM)
 c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)

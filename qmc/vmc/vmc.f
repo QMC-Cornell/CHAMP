@@ -35,6 +35,7 @@ c polarized calculations were attempted.
       use dorb_mod
       use coefs_mod
 
+      use dets_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -85,7 +86,7 @@ c     include '../fit/fit.h'
      &,n12n(-11:11,MCTYPE)
      &,n13o(-12:12,MCTYPE)
      &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)

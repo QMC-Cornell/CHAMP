@@ -71,8 +71,12 @@ module initialization_mod
 
 ! csfs
   ncsf=1
+  call alloc ('csf_coef',csf_coef, ncsf, max(3,nforce))
+  call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
   csf_coef(1:ncsf,1) = 1.d0
   ndet_in_csf (1:ncsf) = 1
+  call alloc ('iwdet_in_csf', iwdet_in_csf, maxval(ndet_in_csf), ncsf)
+  call alloc ('cdet_in_csf', cdet_in_csf, maxval(ndet_in_csf), ncsf)
   iwdet_in_csf(1,1:ncsf) = 1
   cdet_in_csf(1,1:ncsf) = 1.d0
   call object_modified ('ncsf')

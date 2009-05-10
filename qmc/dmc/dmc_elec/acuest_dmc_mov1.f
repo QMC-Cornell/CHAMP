@@ -8,6 +8,7 @@ c routine to accumulate estimators for energy etc.
       use variables_mod
       use atom_mod
 
+      use dets_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
@@ -72,7 +73,7 @@ c routine to accumulate estimators for energy etc.
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /div_v_dmc/ div_vow(MELEC,MWALK)

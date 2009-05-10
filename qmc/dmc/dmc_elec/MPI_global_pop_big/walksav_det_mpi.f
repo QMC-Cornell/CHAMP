@@ -4,6 +4,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 # if  defined (MPI)
       use all_tools_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
 
 c     common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -11,7 +12,7 @@ c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 c     common /force_dmc/ itausec,nwprod
 
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
      &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)

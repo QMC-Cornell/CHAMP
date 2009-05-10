@@ -16,6 +16,7 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use atom_mod
       use dorb_mod
       use coefs_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -72,7 +73,7 @@ c     common /contr3/ mode
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
       common /basisnorm/ anorm(MBASIS)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)

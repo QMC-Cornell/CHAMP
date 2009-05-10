@@ -12,6 +12,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use atom_mod
       use config_mod
 
+      use dets_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -58,7 +59,7 @@ c 2) Generalize to molecules. This requires geometric rejections.
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /forcepar/ deltot(MFORCE),nforce,istrech

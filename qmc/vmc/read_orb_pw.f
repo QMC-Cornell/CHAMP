@@ -89,6 +89,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use tempor_test_mod
 
       use coefs_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -103,7 +104,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       common /contr3/ mode
       common /contr_names/ iorb_format
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
@@ -1497,6 +1498,7 @@ c-----------------------------------------------------------------------
       use dorb_mod
 
       use coefs_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -1515,7 +1517,7 @@ c-----------------------------------------------------------------------
       common /contr3/ mode
       common /contr_names/ iorb_format
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET)
 
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)

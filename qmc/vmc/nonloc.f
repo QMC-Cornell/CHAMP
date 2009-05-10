@@ -247,6 +247,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use orbe_mod
 
       use coefs_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -258,7 +259,7 @@ c     common /dim/ ndim
       common /contr3/ mode
       common /contrl_per/ iperiodic,ibasis
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /slatn2/ deti_new(MPARMD)
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
@@ -372,6 +373,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use control_mod
       use atom_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
@@ -382,7 +384,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

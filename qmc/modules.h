@@ -7,3 +7,4 @@
           use slatn_mod
           use cslatn_mod
           use coefs_mod
+          use dets_mod

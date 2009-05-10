@@ -34,6 +34,7 @@ module csfs_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'csfs_menu'
   integer elec_i, elec_j, det_i, csf_i, det_in_csf_i
+  real(dp), allocatable :: csf_coef_read (:)
 
 ! begin
   write(6,*)
@@ -61,7 +62,10 @@ module csfs_mod
     call determinants_rd 
 
   case ('csf_coef')
-   call get_next_value_list_noalloc ('csf_coef', csf_coef(:,1), ncsf)
+   call get_next_value_list ('csf_coef_read', csf_coef_read, ncsf)
+   call object_modified ('nforce')
+   call alloc ('csf_coef', csf_coef, ncsf, max(3,nforce))
+   csf_coef (:,1) = csf_coef_read (:)
    call object_modified ('ncsf')
    call object_modified ('csf_coef')
 
@@ -159,6 +163,8 @@ module csfs_mod
   call object_provide ('ncsf')
   call object_provide ('ndet')
 
+  call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
+
 ! If all the cdet_in_csf are inputted in integer format (no dots in those lines) then csf_coef are
 ! assumed to correspond to normalized CSF's and the cdet_in_csf are renormalized so that the
 ! CSF's are normalized.
@@ -177,6 +183,9 @@ module csfs_mod
    if (ndet_in_csf(csf_i) > MDET_CSF) then
      call die (lhere, 'ndet_in_csf='+ndet_in_csf(csf_i)+' > MDET_CSF='+MDET_CSF)
    endif
+
+   call alloc ('iwdet_in_csf', iwdet_in_csf, maxval(ndet_in_csf), ncsf)
+   call alloc ('cdet_in_csf', cdet_in_csf, maxval(ndet_in_csf), ncsf)
 
    read(line,*,iostat=iostat) (iwdet_in_csf(det_in_csf_i,csf_i),det_in_csf_i=1,ndet_in_csf(csf_i))
    if (iostat < 0) then
@@ -246,6 +255,7 @@ module csfs_mod
   call object_modified ('ndet_in_csf')
   call object_modified ('iwdet_in_csf')
   call object_modified ('cdet_in_csf')
+
 
   end subroutine dets_in_csfs_rd
 

@@ -13,6 +13,7 @@ c Written by Cyrus Umrigar
       use dorb_mod
       use coefs_mod
 
+      use dets_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -52,7 +53,7 @@ c Written by Cyrus Umrigar
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
@@ -1049,8 +1050,10 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
        write(6,*) trim(lhere),': ncsf =', ncsf, ' > MCSF=', MCSF !JT
        stop 'ncsf > MCSF'
       endif
+      call alloc ('csf_coef', csf_coef, ncsf, max(3,nforce))
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
+      call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
       read(5,*) (ndet_in_csf(icsf),icsf=1,ncsf)
       write(6,'(''ndet_in_csf='',20i4)') (ndet_in_csf(icsf),icsf=1,ncsf)
       do 75 idet=1,ndet
@@ -1066,6 +1069,8 @@ c If all the cdet_in_csf are inputted in integer format (no dots in those lines)
 c assumed to correspond to normalized CSF's and the cdet_in_csf are renormalized so that the
 c CSF's are normalized.
 c normalize_csf is reset to 0 if any of the cdet_in_csf's are in floating format.
+      call alloc ('iwdet_in_csf', iwdet_in_csf, maxval(ndet_in_csf), ncsf)
+      call alloc ('cdet_in_csf', cdet_in_csf, maxval(ndet_in_csf), ncsf)
       normalize_csf=1
       do 85 icsf=1,ncsf
         read(5,*) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
@@ -1788,12 +1793,13 @@ c Order iworbd for each determinant to be monotonically increasing for up and dn
 c and change signs of cdet_in_csf accordingly.  This is needed for orbital optimization.
 
       use dorb_mod
+      use dets_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
-      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
+!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       dimension iodd_permut(MDET)
