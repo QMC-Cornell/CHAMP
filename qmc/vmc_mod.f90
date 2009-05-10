@@ -1,6 +1,7 @@
 module vmc_mod
 
   use all_tools_mod
+  use allocations_mod
 
 ! Declaration of global variables and default values
 
@@ -69,6 +70,7 @@ module vmc_mod
   call alloc ('delttn', delttn, nelec)
   call alloc ('nearesto', nearesto, nelec)
   call alloc ('nearestn', nearestn, nelec)
+  call common_allocations
 
   end subroutine vmc_init
 

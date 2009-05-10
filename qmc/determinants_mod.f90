@@ -42,6 +42,7 @@ module determinants_mod
 !
 ! Created     : J. Toulouse, 07 Apr 2009
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -303,6 +304,7 @@ module determinants_mod
 !
 ! Created       : J. Toulouse, 12 Oct 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -366,6 +368,7 @@ module determinants_mod
 ! Created       : J. Toulouse, 29 Nov 2005
 ! Modified      : J. Toulouse, 04 Jul 2007: unique detertimants
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

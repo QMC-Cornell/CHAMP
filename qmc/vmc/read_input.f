@@ -10,6 +10,7 @@ c Written by Cyrus Umrigar
       use fitdet_mod
       use orbital_grid_mod
       use atom_mod
+      use dorb_mod
 
       implicit real*8(a-h,o-z)
 
@@ -80,8 +81,8 @@ c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
       common /atomtyp/ ncentyp(MCTYPE)
@@ -918,6 +919,10 @@ c       endif
       call object_modified ('ndet') !JT
       call object_modified ('nbasis') !JT
       call object_modified ('norb') !JT
+
+!     total number of orbitals
+      orb_tot_nb = norb
+      call object_modified ('orb_tot_nb')
 
       if(ndet.gt.MDET) then
        write(6,*) trim(lhere),': ndet =', ndet, ' > MDET=', MDET !JT
@@ -1779,14 +1784,15 @@ c Written by Cyrus Umrigar
 c Order iworbd for each determinant to be monotonically increasing for up and dn electrons separately
 c and change signs of cdet_in_csf accordingly.  This is needed for orbital optimization.
 
+      use dorb_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       dimension iodd_permut(MDET)
 
       do 20 i=1,ndet

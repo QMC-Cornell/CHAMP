@@ -7,6 +7,8 @@ c coefficients are real.
       use control_mod
       use basic_tools_mod
       use cslater_mod
+      use dorb_mod
+      use orbitals_mod, only: orb_tot_nb
 
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
@@ -34,7 +36,7 @@ c complex argument:
 
 c complex local:
       complex*16 cd2lndet,cdeterm,cterm,cdetinv
-      complex*16 corb(MELEC,MORB),cdorb(3,MELEC,MELEC,MORB),cddorb(MELEC,MORB)
+      complex*16 corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
       complex*16 cekinen(MELEC)
       complex*16 cauxx(MELEC,MELEC)
 
@@ -53,8 +55,8 @@ c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
 c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
@@ -294,6 +296,8 @@ c can deal only with spin polarized systems for the moment
       use control_mod
       use basic_tools_mod
       use cslater_cf_mod
+      use dorb_mod
+      use orbitals_mod, only: orb_tot_nb
 
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
@@ -319,7 +323,7 @@ c complex argument:
 
 c complex local:
       complex*16 cd2lndet,cdeterm
-      complex*16 corb(MELEC,MORB),cdorb(3,MELEC,MELEC,MORB),cddorb(MELEC,MORB)
+      complex*16 corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
       complex*16 cekinen(MELEC)
       complex*16 cterm,cdetinv
       complex*16 cauxx(MELEC,MELEC)
@@ -341,8 +345,8 @@ c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
       common /optim/ lo(MORB),npoint(MORB),

@@ -6,6 +6,7 @@ module dmc_mod
   use average_mod
   use print_mod
   use restart_mod
+  use allocations_mod
 
 ! Declaration of global variables and default values
 
@@ -51,6 +52,7 @@ module dmc_mod
   endif
 
 ! allocations for DMC
+  call common_allocations
   
   end subroutine dmc_init
 

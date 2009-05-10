@@ -32,6 +32,7 @@ c polarized calculations were attempted.
       use walkers_mod          !JT
       use atom_mod
       use config_mod
+      use dorb_mod
 
       implicit real*8(a-h,o-z)
       integer fflag
@@ -95,8 +96,8 @@ c     include '../fit/fit.h'
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)

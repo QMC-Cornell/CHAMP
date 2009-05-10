@@ -1,6 +1,10 @@
       subroutine determinante(iel,x,rvec_en,r_en,ddet_det,determ)
 c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use control_mod
+      use dorb_mod
+      use orbitals_mod, only: orb_tot_nb
+      use slatn_mod
+      use orbe_mod
 
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
@@ -19,22 +23,23 @@ c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c    &,d2phin(MBASIS,MELEC)
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ ekineo(MELEC),ekinen(MELEC)
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
      &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
      &,detu(MDETUD),detd(MDETUD)
      &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
      &,detij_det(MPARMD,MPARMD)
-      common /slatn/ slmin(MMAT_DIM,MDETUD),detn(MDETUD)
-     &,ddeti_detin(3,MELEC,MDETUD),d2edeti_detin(MELEC,MDETUD)
-     &,dorb(3,MORB),ddorb(MORB)
+!JT      common /slatn/ slmin(MMAT_DIM,MDETUD),detn(MDETUD)
+!JT     &,ddeti_detin(3,MELEC,MDETUD),d2edeti_detin(MELEC,MDETUD)
+!JT     &,dorb(3,MORB),ddorb(MORB)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension orb(MORB),ddet_det(3,*),ratio(MDET)
+!JT      dimension orbe(orb_tot_nb),ddet_det(3,*),ratio(MDET)
+      dimension ddet_det(3,*),ratio(MDET)
 
       do 10 i=1,nelec
         ddet_det(1,i)=0
@@ -46,17 +51,17 @@ c get orbitals and derivatives for all electron iel
       if(iperiodic.eq.0) then
 
         if(inum_orb.eq.0) then
-          call orbitals_loc_ana_grade(iel,rvec_en,r_en,orb,dorb,ddorb)
+          call orbitals_loc_ana_grade(iel,rvec_en,r_en,orbe,dorbe,ddorbe)
          else
-          call orbitals_loc_num_grade(iel,x,orb,dorb,ddorb)
+          call orbitals_loc_num_grade(iel,x,orbe,dorbe,ddorbe)
         endif
 
        else
 
         if(inum_orb.eq.0) then
-          call orbitals_pw_grade(x(1,iel),orb,dorb,ddorb)
+          call orbitals_pw_grade(x(1,iel),orbe,dorbe,ddorbe)
          else
-          call orbitals_period_num_grade(x(1,iel),orb,dorb,ddorb)
+          call orbitals_period_num_grade(x(1,iel),orbe,dorbe,ddorbe)
         endif
 
       endif
@@ -69,7 +74,7 @@ c get orbitals and derivatives for all electron iel
         do 30 idet=1,ndetup
           ratio(idet)=0
           do 30 j=1,nup
-   30       ratio(idet)=ratio(idet)+slmui(j+ikel,idet)*orb(iworbdup(j,idet))
+   30       ratio(idet)=ratio(idet)+slmui(j+ikel,idet)*orbe(iworbdup(j,idet))
 
         do 50 idet=1,ndetup
           detn(idet)=detu(idet)*ratio(idet)
@@ -78,7 +83,7 @@ c get orbitals and derivatives for all electron iel
               ik=nup*(i-1)
               sum=0
               do 35 j=1,nup
-   35           sum=sum+slmui(j+ik,idet)*orb(iworbdup(j,idet))
+   35           sum=sum+slmui(j+ik,idet)*orbe(iworbdup(j,idet))
               sum=sum/ratio(idet)
               do 40 j=1,nup
    40           slmin(j+ik,idet)=slmui(j+ik,idet)-slmui(j+ikel,idet)*sum
@@ -94,7 +99,7 @@ c get orbitals and derivatives for all electron iel
         do 55 idet=1,ndetdn
           ratio(idet)=0
           do 55 j=1,ndn
-   55       ratio(idet)=ratio(idet)+slmdi(j+ikel,idet)*orb(iworbddn(j,idet))
+   55       ratio(idet)=ratio(idet)+slmdi(j+ikel,idet)*orbe(iworbddn(j,idet))
 
         do 75 idet=1,ndetdn
           detn(idet)=detd(idet)*ratio(idet)
@@ -103,7 +108,7 @@ c get orbitals and derivatives for all electron iel
               ik=ndn*(i-1)
               sum=0
               do 60 j=1,ndn
-   60           sum=sum+slmdi(j+ik,idet)*orb(iworbddn(j,idet))
+   60           sum=sum+slmdi(j+ik,idet)*orbe(iworbddn(j,idet))
               sum=sum/ratio(idet)
               do 65 j=1,ndn
    65           slmin(j+ik,idet)=slmdi(j+ik,idet)-slmdi(j+ikel,idet)*sum
@@ -134,9 +139,9 @@ c         term=detn(idet)*detd(idet)*cdet(idet,iwf)
    82           ddeti_detin(3,i,idet)=ddeti_detin(3,i,idet)+slmin(j+ik,idet)*fpu(3,j+ik,idet)
              else
               do 84 j=1,nup
-                ddeti_detin(1,i,idet)=ddeti_detin(1,i,idet)+slmin(j+ik,idet)*dorb(1,iworbdup(j,idet))
-                ddeti_detin(2,i,idet)=ddeti_detin(2,i,idet)+slmin(j+ik,idet)*dorb(2,iworbdup(j,idet))
-   84           ddeti_detin(3,i,idet)=ddeti_detin(3,i,idet)+slmin(j+ik,idet)*dorb(3,iworbdup(j,idet))
+                ddeti_detin(1,i,idet)=ddeti_detin(1,i,idet)+slmin(j+ik,idet)*dorbe(1,iworbdup(j,idet))
+                ddeti_detin(2,i,idet)=ddeti_detin(2,i,idet)+slmin(j+ik,idet)*dorbe(2,iworbdup(j,idet))
+   84           ddeti_detin(3,i,idet)=ddeti_detin(3,i,idet)+slmin(j+ik,idet)*dorbe(3,iworbdup(j,idet))
             endif
    85     continue
 
@@ -158,9 +163,9 @@ c         term=detu(idet)*detn(idet)*cdet(idet,iwf)
    92           ddeti_detin(3,i,idet)=ddeti_detin(3,i,idet)+slmin(j+ik,idet)*fpd(3,j+ik,idet)
              else
               do 94 j=1,ndn
-                ddeti_detin(1,i,idet)=ddeti_detin(1,i,idet)+slmin(j+ik,idet)*dorb(1,iworbddn(j,idet))
-                ddeti_detin(2,i,idet)=ddeti_detin(2,i,idet)+slmin(j+ik,idet)*dorb(2,iworbddn(j,idet))
-   94           ddeti_detin(3,i,idet)=ddeti_detin(3,i,idet)+slmin(j+ik,idet)*dorb(3,iworbddn(j,idet))
+                ddeti_detin(1,i,idet)=ddeti_detin(1,i,idet)+slmin(j+ik,idet)*dorbe(1,iworbddn(j,idet))
+                ddeti_detin(2,i,idet)=ddeti_detin(2,i,idet)+slmin(j+ik,idet)*dorbe(2,iworbddn(j,idet))
+   94           ddeti_detin(3,i,idet)=ddeti_detin(3,i,idet)+slmin(j+ik,idet)*dorbe(3,iworbddn(j,idet))
             endif
    95     continue
 

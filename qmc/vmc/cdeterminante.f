@@ -7,6 +7,9 @@ c coefficients are real.
       use control_mod
       use basic_tools_mod
       use cslater_mod
+      use dorb_mod
+      use cslatn_mod
+      use orbitals_mod, only: orb_tot_nb
 
       implicit real*8(a-h,o-z)
 
@@ -14,13 +17,13 @@ c coefficients are real.
 
 c complex locals:
       complex*16 cddet_det(3,MELEC),cdeterm,cdetinv
-      complex*16 corb(MORB)
+      complex*16 corb(orb_tot_nb)
       complex*16 cratio(MDET),csum,cterm
 
 c complex commons:
 c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti
 c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
-      complex*16 cslmin,cdetn,cddeti_detin,cd2edeti_detin,cdorb,cddorb
+!JT      complex*16 cslmin,cdetn,cddeti_detin,cd2edeti_detin,cdorb,cddorb
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -30,16 +33,16 @@ c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
       common /contrl_per/ iperiodic,ibasis
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
 c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
 c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET),cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
-      common /cslatn/ cslmin(MMAT_DIM,MDETUD),cdetn(MDETUD)
-     &,cddeti_detin(3,MELEC,MDETUD),cd2edeti_detin(MELEC,MDETUD)
-     &,cdorb(3,MORB),cddorb(MORB)
+!JT      common /cslatn/ cslmin(MMAT_DIM,MDETUD),cdetn(MDETUD)
+!JT     &,cddeti_detin(3,MELEC,MDETUD),cd2edeti_detin(MELEC,MDETUD)
+!JT     &,cdorb(3,MORB),cddorb(MORB)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

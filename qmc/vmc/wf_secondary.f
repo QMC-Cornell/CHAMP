@@ -6,6 +6,7 @@ c Read parameters for secondary wavefns.
       use orbitals_mod
       use mpi_mod
       use atom_mod
+      use dorb_mod
 
       implicit real*8(a-h,o-z)
 
@@ -54,8 +55,8 @@ c Read parameters for secondary wavefns.
      &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
      &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /wfname/ filename
 

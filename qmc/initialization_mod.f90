@@ -1,7 +1,6 @@
 module initialization_mod
 
   use all_tools_mod
-  use orbitals_mod
 
   contains
 
@@ -154,10 +153,11 @@ module initialization_mod
 ! ===================================================================================
   subroutine initialization
 ! -----------------------------------------------------------------------------------
-! Description   : initialization of some global variables after reading Cyrus's input
+! Description   : initialization of some global variables after reading Cyrus' input
 !
 ! Created       : J. Toulouse, 03 Oct 2006
 ! -----------------------------------------------------------------------------------
+  use orbitals_mod
   implicit none
   include 'commons.h'
 
@@ -171,9 +171,9 @@ module initialization_mod
   nconf_total = nconf * nproc
 
 ! total number of orbitals
-  call object_provide ('norb')
-  orb_tot_nb = norb
-  call object_modified ('orb_tot_nb')
+!  call object_provide ('norb')
+!  orb_tot_nb = norb
+!  call object_modified ('orb_tot_nb')
 
 ! number of orbitals to compute
   call object_provide ('orb_occ_last_in_wf_lab')

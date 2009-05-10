@@ -242,6 +242,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use all_tools_mod
       use control_mod
       use eloc_mod
+      use dorb_mod
+      use slatn_mod
+      use orbe_mod
 
       implicit real*8(a-h,o-z)
 
@@ -259,8 +262,8 @@ c     common /dim/ ndim
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /optim/ lo(MORB),npoint(MORB),
      &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
@@ -271,7 +274,7 @@ c     common /dim/ ndim
      &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
      &necn,nebase
 
-     common /orbe/ orbe(MORB),detn(MDETUD) !JT
+!JT     common /orbe/ orbe(MORB),detn(MDETUD) !JT
       dimension x(3),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
      &,detu(MDETUD),detd(MDETUD),slmui(MMAT_DIM,*),slmdi(MMAT_DIM,*)
       dimension ratio(MDET)

@@ -1,7 +1,7 @@
 module control_mod
 
   use all_tools_mod
-  use walkers_mod
+!  use walkers_mod
 
 ! threshold on statistical error on energy
   character(len=max_string_len)  :: title = 'no title'

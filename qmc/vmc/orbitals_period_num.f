@@ -39,7 +39,7 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension x(3,*),r_basis(3)
-      dimension orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
+      dimension orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
       dimension orb_tmp(MORB),dorb_tmp(3,MORB),ddorb_tmp(MORB)
 
       dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),

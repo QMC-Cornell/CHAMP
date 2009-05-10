@@ -12,7 +12,9 @@ c 3) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions
 c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
 c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use control_mod
+      use allocations_mod
       use atom_mod
+      use dorb_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -70,8 +72,8 @@ c     common /contr3/ mode
       common /basisnorm/ anorm(MBASIS)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
@@ -168,6 +170,8 @@ c nparmf   no. of Jastrow fck parameters in complicated Jastrow
 c     mode='fit         '
 !JT      call read_input
       write(6,'(''returned to fit from read_input'')')
+
+      call common_allocations
 
 c Calculate distances of atoms from center for use in cusorb
       do 2 i=1,ncent

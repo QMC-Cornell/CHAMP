@@ -77,11 +77,15 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use all_tools_mod
       use bwfdet_mod
       use bsplines_mod
-      use all_tools_mod
       use orbital_grid_mod
       use atom_mod
+      use dorb_mod
+      use orbe_mod
+      use orbitals_mod, only: orb_tot_nb
+      use tempor_test_mod
 
       implicit real*8(a-h,o-z)
       character*20 fmt
@@ -98,8 +102,8 @@ c However, that causes problems when running with mpi, so comment out that part.
       common /contr_names/ iorb_format
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
@@ -125,14 +129,18 @@ c atom included just to be able to shift test pt. for checking orbs by cent(k,1)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
+!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
+!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
+!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
+!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
 
       dimension ipoint(MORB)
       real*8 r_basis(3),xi,yi,zi
+   
+      call alloc ('orb', orb, orb_tot_nb)
+      call alloc ('dorb', dorb, 3, orb_tot_nb)
+      call alloc ('ddorb', ddorb, orb_tot_nb)
 
       write(6,'(/,''Reading in orbitals for periodic system'',/)')
 
@@ -478,6 +486,7 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       use all_tools_mod
       use orbitals_mod
+      use tempor_test_mod
 
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-6)
@@ -505,11 +514,15 @@ c igvec_dft needs to be dimensioned with NGVEC_BIGX since in file orbitals_pw_tm
 c list of g vectors at the top is longer than what is actually used.
 c The other arrays are dimensioned NGVEC2X rather than NGVECX because planewave code does not
 c combine coefs. of G and -G, whereas QMC code does.
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
+!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
+!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
+!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
+!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
+
+      call alloc ('orb', orb, orb_tot_nb)
+      call alloc ('dorb', dorb, 3, orb_tot_nb)
+      call alloc ('ddorb', ddorb, orb_tot_nb)
 
       call file_exist_or_die (file_orbitals_pw_tm_in)
       open(30,file=file_orbitals_pw_tm_in,err=999)
@@ -864,7 +877,10 @@ c Also, I first write out a temporary fort.3 and then delete it just because
 c it is only after one has processed all the k-pts that one knows how big ngvec_orb is.
 c However, that causes problems when running with mpi, so comment out that part.
 
+      use all_tools_mod
       use atom_mod
+      use orbitals_mod, only: orb_tot_nb
+      use tempor_test_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -896,17 +912,21 @@ c igvec_dft needs to be dimensioned with NGVEC_BIGX since in file orbitals_pw_pw
 c list of g vectors at the top is longer than what is actually used.
 c The other arrays are dimensioned NGVEC2X rather than NGVECX because planewave code does not
 c combine coefs. of G and -G, whereas QMC code does.
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
+!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
+!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
+!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
+!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 
       dimension centx(3),gvec_dft(3),gvec_latt(3),rkvec_latt(3)
 
       complex*16 c_complex_tmp
+
+      call alloc ('orb', orb, orb_tot_nb)
+      call alloc ('dorb', dorb, 3, orb_tot_nb)
+      call alloc ('ddorb', ddorb, orb_tot_nb)
 
 c The current version of PWSCF does not exploit inversion symmetry to make the
 c PW coefs. real.  So, set icmplx=1.  Dario Alfe tells me that the older versions
@@ -1318,11 +1338,12 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c Note: This is the straightforward, expensive evaluation for checking purposes only.
 
+      use tempor_test_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
-      include 'ewald.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include 'ewald.h'
 
       common /dim/ ndim
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -1338,11 +1359,11 @@ c Note: This is the straightforward, expensive evaluation for checking purposes 
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
-      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
+!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
+!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
+!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
+!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
+!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
 
 c1    dimension r(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
@@ -1469,6 +1490,7 @@ c-----------------------------------------------------------------------
       use bwfdet_mod
       use bsplines_mod
       use orbital_grid_mod
+      use dorb_mod
 
       implicit real*8(a-h,o-z)
       character*20 fmt
@@ -1489,7 +1511,7 @@ c-----------------------------------------------------------------------
       common /contr_names/ iorb_format
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /dorb/ iworbd(MELEC,MDET)
+!JT      common /dorb/ iworbd(MELEC,MDET)
 
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)

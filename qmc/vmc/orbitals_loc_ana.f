@@ -4,6 +4,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
 
       use all_tools_mod
       use control_mod
+      use orbitals_mod, only: orb_tot_nb
 
       implicit real*8(a-h,o-z)
 
@@ -16,7 +17,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &,orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)
+     &,orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
 
 c Decide whether we are computing all or one electron
       if(iel.eq.0) then
@@ -74,6 +75,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate localized orbitals for electron iel
 
+      use orbitals_mod, only: orb_tot_nb
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -86,7 +88,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &,orb(MORB)
+     &,orb(orb_tot_nb)
 
 c get basis functions
       if(ndim.eq.3) then
@@ -111,6 +113,7 @@ c Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
 c Calculate localized orbitals, coo. and parameter derivatives for all electrons
 
 
+      use orbitals_mod, only: orb_tot_nb
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -128,7 +131,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-      dimension orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)
+      dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
       dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
       dimension ddporb(3,MOTYPE,MELEC,MORB),d2dporb(MOTYPE,MELEC,MORB)
 

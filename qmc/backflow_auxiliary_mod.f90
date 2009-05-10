@@ -66,6 +66,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -120,6 +121,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 

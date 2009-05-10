@@ -67,7 +67,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
 
-      dimension diff(*),orb(MORB),orb2(MORB)
+      dimension diff(*),orb(orb_tot_nb),orb2(orb_tot_nb)
 
 !      data zero,one,three/0.d0,1.d0,3.d0/
 !      data half,d1b4/0.5d0,.25d0/

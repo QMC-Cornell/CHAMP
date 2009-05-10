@@ -4,6 +4,8 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use all_tools_mod
       use control_mod
       use deriv_csf_mod
+      use orb_mod
+      use dorb_mod
 
       implicit real*8(a-h,o-z)
 
@@ -45,8 +47,8 @@ c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c    &,d2phin(MBASIS,MELEC)
       common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c Note: d2edeti_deti(MELEC,MDET) need not be in common
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
@@ -67,7 +69,7 @@ c Note: d2edeti_deti(MELEC,MDET) need not be in common
      &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
-      common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
+!JT      common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),ddet_det(3,*),div_vd(MELEC)
       dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
@@ -356,10 +358,12 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
 
 
 
+      use dorb_mod
+      use orbitals_mod, only: orb_tot_nb
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include '../fit/fit.h'
 
 c commons
       common /dim/ ndim
@@ -367,8 +371,8 @@ c commons
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
      &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
      &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
@@ -386,7 +390,7 @@ c commons
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
 c arguments:
-      dimension orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)
+      dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
       dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
       dimension ddporb(3,MOTYPE,MELEC,MORB),d2dporb(MOTYPE,MELEC,MORB)
 

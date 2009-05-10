@@ -27,6 +27,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 07 Apr 2009
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -141,6 +142,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 07 Apr 2009
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -254,6 +256,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 14 Dec 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -339,6 +342,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 29 Nov 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -409,6 +413,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 31 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -477,6 +482,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 31 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -520,6 +526,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 31 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -560,6 +567,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 29 Nov 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

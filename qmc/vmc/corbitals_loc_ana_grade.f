@@ -2,6 +2,7 @@
 c orbitals_loc_ana_grade adapted to complex orbitals by A.D.Guclu Feb2004
 c Calculate localized orbitals and derivatives for all or 1 electrons
 
+      use orbitals_mod, only: orb_tot_nb
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -21,7 +22,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &,corb(MORB),cdorb(3,MORB),cddorb(MORB)
+     &,corb(orb_tot_nb),cdorb(3,orb_tot_nb),cddorb(orb_tot_nb)
 
 c get basis functions
       if(numr.eq.0) then

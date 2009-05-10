@@ -3,12 +3,14 @@ c Written by Cyrus Umrigar
 c Reads in either analytic or localized orbitals
 
       use mpi_mod
+      use orbitals_mod, only: orb_tot_nb
 
       implicit real*8(a-h,o-z)
 
       character*16 mode
 
       common /dim/ ndim
+      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -26,7 +28,7 @@ c Reads in either analytic or localized orbitals
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /contr_ylm/ irecursion_ylm
 
-      dimension orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB),r(2)
+      dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb),r(2)
 
 c Check if orbitals_num exists.  If it does not exist, we will create it from analytic orbs.
 c Do not confuse analytic orbs with analytic basis fns.

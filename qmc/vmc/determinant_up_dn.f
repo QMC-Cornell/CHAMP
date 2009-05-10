@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 
       use all_tools_mod
+      use dorb_mod
 
       implicit real*8(a-h,o-z)
 
@@ -10,8 +11,8 @@ c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 c    &,iwctype(MCENT),nctype,ncent
       common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 
-      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
+!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
+!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
