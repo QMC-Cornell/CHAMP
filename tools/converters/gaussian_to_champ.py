@@ -49,9 +49,11 @@ basis_labels_without_number = []
 basis_labels_by_cent_type = []
 basis_labels_without_number_by_cent_type = []
 
+orbital_symmetry = True
 norb = 0
 orbital_indexes = []
 orbital_occupations = []
+orbital_symmetries = []
 orbital_eigenvalues = []
 orbital_coefficients = []
 det_up_orb_lab = []
@@ -217,7 +219,7 @@ def read_basis ():
   found = False
 
   for line in lines:
-    if re.search ("basis functions", line):
+    if re.search ("^\s+\d+\s+basis functions", line):
       object_splitted = string.split (line)
       nbasis = int(object_splitted [0])
       found = True
@@ -330,6 +332,20 @@ def read_orbitals ():
 #  print "orbital_occupations=",orbital_occupations
 #  print "orbital_eigenvalues=",orbital_eigenvalues
 
+# get orbital symmetries
+# example: (SGG)--O  (SGU)--O  (SGG)--O  (SGU)--O  (PIU)--O
+  for i in range(norb):
+   object_matched = re.search ("\(\S+\)", orbital_occupations[i])
+   if object_matched:
+      object = object_matched.group()
+      object = string.replace(object,'(','')
+      object = string.replace(object,')','')
+#      print object
+      orbital_symmetries.append (object)
+   else:
+      orbital_symmetries.append ('?')
+
+#  print "orbital_symmetries=",orbital_symmetries
 
 # keep only the basis atom indexes and basis labels of the first subsection
   basis_atom_indexes = basis_atom_indexes_allsubsection[0]
@@ -556,6 +572,11 @@ for i in range(norb):
   for j in range(nbasis):
     file_output.write(' %0.8e' % orbital_coefficients[i][j] + '  ')
 file_output.write('\n end\n')
+if (orbital_symmetry):
+  file_output.write('symmetry')
+  for i in range(norb):
+    file_output.write(' '+orbital_symmetries[i])
+  file_output.write(' end\n')
 file_output.write('end\n\n')
 
 file_output.write('csfs\n')
