@@ -42,6 +42,7 @@ module opt_nwt_mod
 !
 ! Created     : J. Toulouse, 24 Apr 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -99,6 +100,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -139,6 +141,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -185,6 +188,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -225,6 +229,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -278,6 +283,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -340,6 +346,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -417,6 +424,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -459,6 +467,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -503,6 +512,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -658,6 +668,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 20 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -687,6 +698,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

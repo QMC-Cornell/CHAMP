@@ -90,11 +90,15 @@ c     common /wfsec/ iwftype(MFORCE),iwf,nwftype
         do idet=1,ndet
          iwdetdn(idet)=1
         enddo
-        write(6,'(a,i1)') 'Warning: no spin-down determinants, but ndetdn is reset to ',ndetdn
+        write(6,'(a,i1)') ' Warning: no spin-down determinants, but ndetdn is reset to ',ndetdn
       endif
 
+! JT: introduce variable ndetupdn replacing MDETUD
+! JT: I am not sure if we really need ndetupdn
+      ndetupdn = max(ndetup, ndetdn)
       call object_modified ('ndetup')
       call object_modified ('ndetdn')
+      call object_modified ('ndetupdn')
       call object_modified ('iworbdup')
       call object_modified ('iworbddn')
       call object_modified ('iwdetup')

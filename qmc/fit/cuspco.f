@@ -15,9 +15,10 @@ c:::  The number of these cusp conditions is ncent*norb              :::
 !                        : change a(i,j,1) -> a(i,j,iwf)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use atom_mod
-      use orbitals_mod ! JT
+      use orbitals_mod
       use coefs_mod
       use dets_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
 
@@ -26,14 +27,14 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /coefs2/ coef2(MBASIS,MORB,MCENT)

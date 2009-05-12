@@ -1,14 +1,14 @@
       subroutine determinant(x,rvec_en,r_en,ddet_det,d2lndet,div_vd,determ)
 c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
-
       use all_tools_mod
       use control_mod
       use deriv_csf_mod
       use orb_mod
       use dorb_mod
-
       use coefs_mod
       use dets_mod
+      use slater_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -52,23 +52,23 @@ c    &,d2phin(MBASIS,MELEC)
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c Note: d2edeti_deti(MELEC,MDET) need not be in common
-      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-     &,detu(MDETUD),detd(MDETUD)
-     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-     &,detij_det(MPARMD,MPARMD)
+!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
+!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
+!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
+!JT     &,detu(MDETUD),detd(MDETUD)
+!JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
+!JT     &,detij_det(MPARMD,MPARMD)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT     common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
 !JT      common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
@@ -358,11 +358,11 @@ c                       in other words, second derivatives wrt iparm&jparm, but 
 c ddetui(1:3,ie,idet)= velocity of the current detui, iparm is not stored.
 c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
 
-
-
       use dorb_mod
       use orbitals_mod, only: orb_tot_nb
       use dets_mod
+      use slater_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -376,20 +376,20 @@ c commons
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-     &,detu(MDETUD),detd(MDETUD)
-     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-     &,detij_det(MPARMD,MPARMD)
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
+!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
+!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
+!JT     &,detu(MDETUD),detd(MDETUD)
+!JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
+!JT     &,detij_det(MPARMD,MPARMD)
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
 c arguments:

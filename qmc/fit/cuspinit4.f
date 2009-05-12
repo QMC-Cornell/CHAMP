@@ -73,6 +73,7 @@ c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
 
       use atom_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -85,14 +86,14 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

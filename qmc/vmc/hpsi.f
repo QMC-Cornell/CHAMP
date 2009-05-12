@@ -11,6 +11,8 @@ c wrt the wavefunction parameters.
       use fitdet_mod
       use eloc_mod
       use psi_mod
+      use slater_mod
+      use optim_mod
 !     use periodic_jastrow_mod  !WAS
 
       implicit real*8(a-h,o-z)
@@ -33,22 +35,22 @@ c     complex*16 cvd_sav,cvk_sav
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
-      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-     &,detu(MDETUD),detd(MDETUD)
-     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-     &,detij_det(MPARMD,MPARMD)
+!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
+!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
+!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
+!JT     &,detu(MDETUD),detd(MDETUD)
+!JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
+!JT     &,detij_det(MPARMD,MPARMD)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
      &,go(MELEC,MELEC,MPARMJ)

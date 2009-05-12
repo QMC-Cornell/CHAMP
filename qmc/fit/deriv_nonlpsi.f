@@ -4,6 +4,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 c minor modification by A.D.Guclu to add analytical scalek opt.
 
       use dets_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -40,14 +41,14 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
@@ -343,14 +344,14 @@ c-----------------------------------------------------------------------
       function deriv_psianl(rri,dk,gn,gns,it)
 c Returns the e-n Jastrow exponent as the function value and
 c the derivs. wrt the parameters in gn(*).
-
+      use optim_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
+!JT      include 'fit.h'
 
-      parameter(one=1.d0)
+!JT      parameter(one=1.d0)
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -363,14 +364,14 @@ c the derivs. wrt the parameters in gn(*).
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -441,12 +442,13 @@ c-----------------------------------------------------------------------
 c Returns the e-e Jastrow exponent as the function value and
 c the derivs. wrt the parameters in gn(*).
 
+      use optim_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
-      include 'fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
+!JT      include 'fit.h'
 
-      parameter(one=1.d0)
+!JT      parameter(one=1.d0)
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
@@ -460,14 +462,14 @@ c the derivs. wrt the parameters in gn(*).
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

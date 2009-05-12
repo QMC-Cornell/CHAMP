@@ -1,12 +1,12 @@
       subroutine deriv_nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,dvpsp)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-
       use all_tools_mod
       use control_mod
       use deriv_orb_mod
       use periodic_jastrow_mod  !WAS
       use atom_mod
-
+      use dets_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 !JT   parameter (one=1.d0)
 
@@ -35,17 +35,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &,detu(MDETUD),detd(MDETUD),slmui(MMAT_DIM,*),slmdi(MMAT_DIM,*)
+     &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
       dimension rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT),rr_en_sav(MCENT),rr_en2_sav(MCENT)
      &,xsav(3),rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT)
      &,vpot(MPS_L),dvpot(MPS_L,MPARM),dvpsp(MPARM),gn(MPARMJ)
@@ -285,15 +285,13 @@ cWAS
 c-----------------------------------------------------------------------
 
 
-!     subroutine deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
-!WAS
+!     subroutine deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn) ! WAS
       subroutine deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+c Written by Claudia Filippi, modified by Cyrus Umrigar
       use control_mod
       use atom_mod
-!
-c Written by Claudia Filippi, modified by Cyrus Umrigar
-
       use dets_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -327,14 +325,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
       common /pointer/ npointa(MPARMJ*NCTYP3X)
       common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
      &,go(MELEC,MELEC,MPARMJ)

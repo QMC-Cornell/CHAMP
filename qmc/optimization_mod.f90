@@ -531,6 +531,9 @@ module optimization_mod
     call object_modified ('param_geo_nb')
   endif
 
+  nparmd=nparmcsf
+  call object_modified ('nparmd')
+
 ! check consistency of options
   if (l_opt_ptb) then
    if (l_opt_jas .or. l_opt_csf) then

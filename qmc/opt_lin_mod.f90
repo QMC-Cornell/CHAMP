@@ -54,6 +54,7 @@ module opt_lin_mod
 !
 ! Created     : J. Toulouse, 24 Apr 2006
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -176,6 +177,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -265,6 +267,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 13 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -315,6 +318,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -463,6 +467,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -515,6 +520,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -556,6 +562,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 13 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -597,6 +604,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 24 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -661,6 +669,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse and Cyrus Umrigar, 10 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -993,6 +1002,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

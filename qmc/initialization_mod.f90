@@ -146,6 +146,8 @@ module initialization_mod
   nparmcsf=0
   nparms=0
   nparmg=0
+  nparmd=nparmcsf
+  call object_modified ('nparmd')
 
 ! initialize saved configuration indice iconfg (necessary for some compilers)
 !  isaved=0

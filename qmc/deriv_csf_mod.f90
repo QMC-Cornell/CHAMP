@@ -37,6 +37,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -79,6 +80,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -122,6 +124,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -162,6 +165,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -193,6 +197,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 27 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -232,6 +237,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 27 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -270,6 +276,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 18 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -303,6 +310,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -336,6 +344,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -368,6 +377,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -402,6 +412,7 @@ module deriv_csf_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

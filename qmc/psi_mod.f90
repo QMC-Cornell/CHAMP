@@ -88,12 +88,39 @@ module psi_mod
   write(6,'(a,i5)') ' numbers of spin-up   electrons = ', nup
   write(6,'(a,i5)') ' numbers of spin-down electrons = ', ndn
 
+! checkings
+  if (nelec <= 0) then
+    call die (lhere, 'number of electrons = '+nelec+' <= 0.')
+  endif
+! can nup be zero?
+  if (nup <= 0) then
+    call die (lhere, 'number of spin-up electrons = '+nup+' <= 0.')
+  endif
+  if (nup > nelec) then
+    call die (lhere, 'number of spin-up electrons = '+nup+' >  total number of electrons = '+nelec+'.')
+  endif
+  if (ndn < 0) then
+    call die (lhere, 'number of spin-down electrons = '+ndn+' < 0.')
+  endif
+  if (ndn > nelec) then
+    call die (lhere, 'number of spin-down electrons = '+ndn+' >  total number of electrons = '+nelec+'.')
+  endif
+! is it really required?
+  if (nup < ndn) then
+    call die (lhere, 'number of spin-up electrons = '+nup+' < number of spin-down electrons = '+ndn+'.')
+  endif
+
   if(nelec.gt.MELEC) stop 'nelec exceeds MELEC'
   if(nup.gt.MELECUD) stop 'nup exceeds MELECUD. Dimension of Slater matrices, slmui etc. exceeded'
   if(ndn.gt.MELECUD) stop 'ndn exceeds MELECUD. Dimension of Slater matrices, slmdi etc. exceeded'
-  if(nup.le.0) stop 'nup must be >=1'
-  if(nup.lt.ndn) stop 'nup must be >=ndn'
 
+  nupdn = max(nup, ndn)
+  nup_square = nup**2
+  ndn_square = ndn**2
+  nupdn_square = nupdn**2
+  call object_modified ('nup_square')
+  call object_modified ('ndn_square')
+  call object_modified ('nupdn_square')
 
   write(6,'(a)') 'End of wavefunction menu ---------------------------------------------------------------------------------'
 

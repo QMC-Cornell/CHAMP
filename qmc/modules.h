@@ -8,3 +8,6 @@
           use cslatn_mod
           use coefs_mod
           use dets_mod
+          use slater_mod
+          use optim_mod
+

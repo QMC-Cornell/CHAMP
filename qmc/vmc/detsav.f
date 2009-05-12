@@ -5,6 +5,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use slatn_mod
       use orbe_mod
       use dets_mod
+      use slater_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -12,12 +13,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-     &,detu(MDETUD),detd(MDETUD)
-     &,ddeti_deti(3,MELEC,MDET),d2edeti_deti(MELEC,MDET),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-     &,detij_det(MPARMD,MPARMD)
+!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
+!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
+!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
+!JT     &,detu(MDETUD),detd(MDETUD)
+!JT     &,ddeti_deti(3,MELEC,MDET),d2edeti_deti(MELEC,MDET),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
+!JT     &,detij_det(MPARMD,MPARMD)
 !JT      common /slatn/ slmin(MMAT_DIM,MDETUD),detn(MDETUD)
 !JT     &,ddeti_detin(3,MELEC,MDETUD),d2edeti_detin(MELEC,MDETUD)
 !JT     &,dorb(3,MORB),ddorb(MORB)

@@ -8,6 +8,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
       use eloc_mod
       use periodic_jastrow_mod  !WAS
       use atom_mod
+      use dets_mod
 
       implicit real*8(a-h,o-z)
 
@@ -19,7 +20,7 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &,detu(MDETUD),detd(MDETUD),slmui(MMAT_DIM,*),slmdi(MMAT_DIM,*)
+     &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
 
 c Calculate local and nonlocal pseudopotentials for all electrons, nuclei and l-components
 c and store in vps

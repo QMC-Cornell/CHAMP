@@ -9,13 +9,13 @@ c V' = A'/B - A*B'/B^2
 c The arrays in the routine are:
 c vpot = (1/N_quad) \sum_l (2l+1) (V_l-V_L) \sum_j^{N_quad} P_l(cos \theta_j) Psi(r_j,...)
 c vps  = (V_l-V_L)
-
       use control_mod
       use deriv_orb_mod
       use eloc_mod
       use periodic_jastrow_mod  !WAS
       use atom_mod
-
+      use dets_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
       common /contrl_per/ iperiodic,ibasis
@@ -25,20 +25,20 @@ c vps  = (V_l-V_L)
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
 
       common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
      &,go(MELEC,MELEC,MPARMJ)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-     &,detu(MDETUD),detd(MDETUD),deti_det(MPARMD),slmui(MMAT_DIM,*),slmdi(MMAT_DIM,*)
+     &,detu(*),detd(*),deti_det(MPARMD),slmui(nupdn_square,*),slmdi(nupdn_square,*)
      &,dvpsp(MPARM),dpe(MPARM)
 
       do 20 i=1,nelec

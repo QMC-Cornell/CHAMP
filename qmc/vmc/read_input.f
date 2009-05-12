@@ -12,8 +12,8 @@ c Written by Cyrus Umrigar
       use atom_mod
       use dorb_mod
       use coefs_mod
-
       use dets_mod
+      use optim_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -126,14 +126,14 @@ c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
 c These commons for reading fit input.  We should separate these into another
 c subroutine that is called both from fit and read_input.
-      common /optim/ lo(MORB),npoint(MORB),
-     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-     &imnbas(MCENT),
-     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-     &necn,nebase
+!JT      common /optim/ lo(MORB),npoint(MORB),
+!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
+!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
+!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
+!JT     &imnbas(MCENT),
+!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
+!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
+!JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /pointer/ npointa(MPARMJ*NCTYP3X)
       common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
@@ -670,6 +670,14 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       if(ndn.gt.MELECUD) stop 'ndn exceeds MELECUD. Dimension of Slater matrices, slmdi etc. exceeded'
       if(nup.le.0) stop 'nup must be >=1'
       if(nup.lt.ndn) stop 'nup must be >=ndn'
+
+      nupdn = max(nup, ndn)
+      nup_square = nup**2
+      ndn_square = ndn**2
+      nupdn_square = nupdn**2
+      call object_modified ('nup_square')
+      call object_modified ('ndn_square')
+      call object_modified ('nupdn_square')
 
       if(nloc.eq.-4) then ! values used for quantum wire
         wire_length2 = wire_length*wire_length
@@ -1615,6 +1623,10 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
         write(6,'(''nparmot+nparmcsf > MPARMD in an optimization run'')')
         stop 'nparmot+nparmcsf.gt.MPARMD'
       endif
+
+!     JT: nparmd to replace MPARMD
+      nparmd = nparmot+nparmcsf
+      call object_modified ('nparmd')
 
       if(nparmcsf.gt.ncsf) then
         write(6,'(a,i5,a,i5)') 'nparmcsf=',nparmcsf,' must be <= ncsf=',ncsf
