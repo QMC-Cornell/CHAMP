@@ -14,6 +14,7 @@ c Written by Cyrus Umrigar
       use coefs_mod
       use dets_mod
       use optim_mod
+      use basis1_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -968,6 +969,7 @@ c     if(iperiodic.eq.0 .and. norb.gt.MORB) stop 'norb > MORB'
       if(norb.lt.nup .or. norb.lt.ndn) stop 'norb must be >= nup and ndn'
 
       call alloc ('coef', coef, nbasis, orb_tot_nb, max(3,nforce))
+      call alloc ('zex', zex, nbasis, max(3,nforce))
 
       if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
 c     if(ibasis.eq.1.and.numr.gt.0) call read_bas_num(1)

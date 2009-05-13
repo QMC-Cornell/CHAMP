@@ -10,4 +10,5 @@
           use dets_mod
           use slater_mod
           use optim_mod
+          use basis1_mod
 

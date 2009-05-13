@@ -226,6 +226,7 @@ module basis_mod
 
     end select 
 
+    call alloc ('zex', zex, bas_i, max(3,nforce))
     zex (bas_i,1) = basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
     ictype_basis (bas_i)= cent_type_i
 

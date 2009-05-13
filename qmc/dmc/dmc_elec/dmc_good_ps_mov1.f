@@ -47,8 +47,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use control_mod
       use average_mod
       use atom_mod
-
       use dets_mod
+      use basis1_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
@@ -93,22 +93,22 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE)
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-     &,n5g(-4:4,MCTYPE)
-     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-     &,n9k(-8:8,MCTYPE)
-     &,n10l(-9:9,MCTYPE)
-     &,n11m(-10:10,MCTYPE)
-     &,n12n(-11:11,MCTYPE)
-     &,n13o(-12:12,MCTYPE)
-     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!JT      common /basis/ zex(MBASIS,MWF),betaq
+!JT     &,n1s(MCTYPE)
+!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
+!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+!JT     &,n5g(-4:4,MCTYPE)
+!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+!JT     &,n9k(-8:8,MCTYPE)
+!JT     &,n10l(-9:9,MCTYPE)
+!JT     &,n11m(-10:10,MCTYPE)
+!JT     &,n12n(-11:11,MCTYPE)
+!JT     &,n13o(-12:12,MCTYPE)
+!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /div_v_dmc/ div_vow(MELEC,MWALK)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),

@@ -150,10 +150,10 @@ c in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
 
-      use all_tools_mod  ! JT
+      use all_tools_mod
       use atom_mod
-
       use coefs_mod
+      use basis1_mod
       implicit real*8(a-h,o-z)
 
 
@@ -163,22 +163,22 @@ c i.e. the order in which we were reading in the p functions.
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-      common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE)
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-     &,n5g(-4:4,MCTYPE)
-     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-     &,n9k(-8:8,MCTYPE)
-     &,n10l(-9:9,MCTYPE)
-     &,n11m(-10:10,MCTYPE)
-     &,n12n(-11:11,MCTYPE)
-     &,n13o(-12:12,MCTYPE)
-     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!JT      common /basis/ zex(MBASIS,MWF),betaq
+!JT     &,n1s(MCTYPE)
+!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
+!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+!JT     &,n5g(-4:4,MCTYPE)
+!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+!JT     &,n9k(-8:8,MCTYPE)
+!JT     &,n10l(-9:9,MCTYPE)
+!JT     &,n11m(-10:10,MCTYPE)
+!JT     &,n12n(-11:11,MCTYPE)
+!JT     &,n13o(-12:12,MCTYPE)
+!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
@@ -232,6 +232,38 @@ c Note: the order that we read in the d functions is
 c 3z^-r^2, x^2-y^2, xy, xz, yz, in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
+
+!     allocations
+      allocate(n1s(nctype))
+      allocate(n2s(nctype),n2p(-1:1,nctype))
+      allocate(n3s(nctype),n3p(-1:1,nctype),n3d(-2:2,nctype))
+      allocate(n4s(nctype),n4p(-1:1,nctype),n4d(-2:2,nctype),n4f(-3:3,nctype))
+      allocate(n5s(nctype),n5p(-1:1,nctype),n5d(-2:2,nctype),n5f(-3:3,nctype),n5g(-4:4,nctype))
+      allocate(n6d(-2:2,nctype),n6f(-3:3,nctype),n6g(-4:4,nctype),n6h(-5:5,nctype))
+      allocate(n7g(-4:4,nctype),n7h(-5:5,nctype),n7i(-6:6,nctype))
+      allocate(n8i(-6:6,nctype),n8j(-7:7,nctype))
+      allocate(n9k(-8:8,nctype))
+      allocate(n10l(-9:9,nctype))
+      allocate(n11m(-10:10,nctype))
+      allocate(n12n(-11:11,nctype))
+      allocate(n13o(-12:12,nctype))
+      allocate(nsa(nctype),npa(-1:1,nctype),nda(-2:2,nctype))
+
+!     initializations
+      n1s=0
+      n2s=0; n2p=0
+      n3s=0; n3p=0; n3d=0
+      n4s=0; n4p=0; n4d=0; n4f=0
+      n5s=0; n5p=0; n5d=0; n5f=0; n5g=0
+      n6d=0; n6f=0; n6g=0; n6h=0
+      n7g=0; n7h=0; n7i=0;
+      n8i=0; n8j=0
+      n9k=0
+      n10l=0
+      n11m=0
+      n12n=0
+      n13o=0
+      nsa=0; npa=0; nda=0
 
       if(numr.le.0) then
 c Analytic radial basis
@@ -582,6 +614,7 @@ c i.e. the order in which we were reading in the p functions.
 
       use atom_mod
       use coefs_mod
+      use basis1_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -596,22 +629,22 @@ c i.e. the order in which we were reading in the p functions.
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE)
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-     &,n5g(-4:4,MCTYPE)
-     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-     &,n9k(-8:8,MCTYPE)
-     &,n10l(-9:9,MCTYPE)
-     &,n11m(-10:10,MCTYPE)
-     &,n12n(-11:11,MCTYPE)
-     &,n13o(-12:12,MCTYPE)
-     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!JT       common /basis/ zex(MBASIS,MWF),betaq
+!JT     &,n1s(MCTYPE)
+!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
+!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+!JT     &,n5g(-4:4,MCTYPE)
+!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+!JT     &,n9k(-8:8,MCTYPE)
+!JT     &,n10l(-9:9,MCTYPE)
+!JT     &,n11m(-10:10,MCTYPE)
+!JT     &,n12n(-11:11,MCTYPE)
+!JT     &,n13o(-12:12,MCTYPE)
+!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
@@ -1011,6 +1044,7 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
 
       use atom_mod
       use coefs_mod
+      use basis1_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -1025,22 +1059,22 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE)
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-     &,n5g(-4:4,MCTYPE)
-     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-     &,n9k(-8:8,MCTYPE)
-     &,n10l(-9:9,MCTYPE)
-     &,n11m(-10:10,MCTYPE)
-     &,n12n(-11:11,MCTYPE)
-     &,n13o(-12:12,MCTYPE)
-     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!JT       common /basis/ zex(MBASIS,MWF),betaq
+!JT     &,n1s(MCTYPE)
+!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
+!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+!JT     &,n5g(-4:4,MCTYPE)
+!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+!JT     &,n9k(-8:8,MCTYPE)
+!JT     &,n10l(-9:9,MCTYPE)
+!JT     &,n11m(-10:10,MCTYPE)
+!JT     &,n12n(-11:11,MCTYPE)
+!JT     &,n13o(-12:12,MCTYPE)
+!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
@@ -1502,6 +1536,7 @@ c Determine distinct radial basis functions
       use all_tools_mod
       use atom_mod
       use coefs_mod
+      use basis1_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -1513,22 +1548,22 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-       common /basis/ zex(MBASIS,MWF),betaq
-     &,n1s(MCTYPE)
-     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-     &,n5g(-4:4,MCTYPE)
-     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-     &,n9k(-8:8,MCTYPE)
-     &,n10l(-9:9,MCTYPE)
-     &,n11m(-10:10,MCTYPE)
-     &,n12n(-11:11,MCTYPE)
-     &,n13o(-12:12,MCTYPE)
-     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
+!JT       common /basis/ zex(MBASIS,MWF),betaq
+!JT     &,n1s(MCTYPE)
+!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
+!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
+!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
+!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
+!JT     &,n5g(-4:4,MCTYPE)
+!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
+!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
+!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
+!JT     &,n9k(-8:8,MCTYPE)
+!JT     &,n10l(-9:9,MCTYPE)
+!JT     &,n11m(-10:10,MCTYPE)
+!JT     &,n12n(-11:11,MCTYPE)
+!JT     &,n13o(-12:12,MCTYPE)
+!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
      &,icenter_basis(MBASIS),ictype_basis(MBASIS)
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
