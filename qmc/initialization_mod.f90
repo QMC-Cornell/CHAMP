@@ -215,6 +215,8 @@ module initialization_mod
 ! save number of Jastrow and CSF parameters in the input
   nparmj_input = nparmj
   nparmcsf_input = nparmcsf
+  nparmd=nparmcsf
+  call object_modified ('nparmd')
 
 ! correlated sampling
   iwf = 1

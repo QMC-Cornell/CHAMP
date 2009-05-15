@@ -138,10 +138,9 @@ c     write(6,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,ndim),ij=1,nelec
       end
 c-----------------------------------------------------------------------
       subroutine distancese(iel,x)
-      use control_mod
 c Written by Cyrus Umrigar
 c calculate distances of electron iel to all other particles
-
+      use control_mod
       use atom_mod
       implicit real*8(a-h,o-z)
 

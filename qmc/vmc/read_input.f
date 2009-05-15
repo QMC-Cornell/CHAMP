@@ -506,6 +506,8 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
 
 !     initializations
       nparm=0
+      nparmd = 0
+      call object_modified ('nparmd')
 
 c     read(5,'(a20,4x,4i4)') title,irn
       read(5,*) title
