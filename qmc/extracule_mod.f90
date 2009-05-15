@@ -180,11 +180,10 @@ module extracule_mod
   include 'commons.h'
 
 ! local
-  integer                       :: grid_i
-  integer                       :: elec_i, elec_j, dim_i
+  integer               :: grid_i
+  integer               :: elec_i, elec_j, dim_i
   real(dp)              :: rijcm, rijcm2, r
   real(dp)              :: dotproduct, extracule_temp
-  real(dp)              :: oneover2pi
 
 ! begin
 
@@ -207,8 +206,6 @@ module extracule_mod
   call object_alloc ('extracule_zv1', extracule_zv1, grid_extra_nb)
   call object_alloc ('extracule_zv1_av', extracule_zv1_av, grid_extra_nb)
   call object_alloc ('extracule_zv1_av_err', extracule_zv1_av_err, grid_extra_nb)
-
-  oneover2pi = 1.d0/(2.d0*pi)
 
   extracule_zv1 (:) = 0.d0
 
