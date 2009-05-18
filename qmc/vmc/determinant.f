@@ -9,6 +9,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use dets_mod
       use slater_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -36,7 +37,7 @@ c The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
 c So, we check in read_input that nup and ndn are each <= MELEC/2.
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -363,6 +364,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
       use dets_mod
       use slater_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -370,7 +372,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
 
 c commons
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

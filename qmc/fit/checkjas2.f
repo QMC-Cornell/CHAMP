@@ -286,6 +286,7 @@ c-----------------------------------------------------------------------------
       subroutine pade(u,s,t,cor,isp)
 
       use atom_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -298,7 +299,7 @@ c-----------------------------------------------------------------------------
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
 

@@ -15,6 +15,7 @@ c wrt the wavefunction parameters.
       use optim_mod
 !     use periodic_jastrow_mod  !WAS
 
+      use const_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -25,7 +26,7 @@ c common:
 c     complex*16 cvd_sav,cvk_sav
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

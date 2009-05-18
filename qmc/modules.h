@@ -1,4 +1,6 @@
 !         modules
+          use contrl_mod
+          use const_mod
           use atom_mod
           use config_mod
           use orb_mod

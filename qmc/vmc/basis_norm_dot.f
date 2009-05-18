@@ -13,12 +13,13 @@ c also see basis_norm.dot for real wfs
       use all_tools_mod  !JT
       use coefs_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
 !     include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 !JT      common /basis/ zex(MBASIS,MWF),betaq
 !JT     &,n1s(MCTYPE)

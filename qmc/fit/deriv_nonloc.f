@@ -7,12 +7,13 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom_mod
       use dets_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT   parameter (one=1.d0)
 
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -292,6 +293,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use atom_mod
       use dets_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -302,7 +304,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      parameter (half=.5d0)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is

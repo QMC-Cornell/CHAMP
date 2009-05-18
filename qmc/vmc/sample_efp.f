@@ -2,6 +2,7 @@
 c Written by Claudia Filippi
 
       use atom_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
       include 'fitefp.h'
@@ -9,7 +10,7 @@ c Written by Claudia Filippi
 
       parameter(NFITCX=MEFP_FIT*MCTYPE)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
@@ -130,10 +131,11 @@ c-----------------------------------------------------------------------
 
       function bset(ibase,dlrd,rad,alpha,rc)
 
+      use const_mod
       implicit real*8(a-h,o-z)
       include 'fitefp.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
 c same basis set used inn Xavier's code for vxc potential
 c alpha    = coefficient for generating modified pw's
@@ -257,6 +259,7 @@ c-----------------------------------------------------------------------
       subroutine writebas(passes,etot)
 
       use atom_mod
+      use contrl_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
       include 'fitefp.h'
@@ -264,7 +267,7 @@ c-----------------------------------------------------------------------
 
       parameter(NFITCX=MEFP_FIT*MCTYPE)
 
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
+!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),

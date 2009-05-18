@@ -8,6 +8,7 @@ c adapted to complex calculations by A.D.Guclu Feb2004
       use cslatn_mod
 
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 c complex commons:
@@ -16,7 +17,7 @@ c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 !JT      complex*16 cslmin,cdetn,cddeti_detin,cd2edeti_detin,cdorb,cddorb
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn

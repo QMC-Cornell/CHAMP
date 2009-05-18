@@ -4,12 +4,13 @@ c Written by Cyrus Umrigar
       use all_tools_mod
       use control_mod
 
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (zero=0.d0,two=2.d0,half=.5d0)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)

@@ -3,6 +3,7 @@
 c Written by Claudia Filippi by modifying hpsi
 c Calculates wavefunction and velocity contributions for electron iel
 
+      use const_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -12,7 +13,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 
       common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

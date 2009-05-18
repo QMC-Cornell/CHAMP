@@ -6,12 +6,13 @@ c Reads in either analytic or localized orbitals
       use orbitals_mod, only: orb_tot_nb
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -154,11 +155,12 @@ c i.e. the order in which we were reading in the p functions.
       use atom_mod
       use coefs_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

@@ -6,6 +6,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use control_mod
       use atom_mod
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -23,7 +24,7 @@ c Jastrow 6   must be used with one of isc=6,7
       common /contrl_per/ iperiodic,ibasis
 !!!
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /wfsec/ iwftype(MFORCE),iwf,nwftype

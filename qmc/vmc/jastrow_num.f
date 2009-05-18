@@ -6,6 +6,7 @@ c numerical Laplacian for periodic systems.
 
       use atom_mod
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
@@ -27,7 +28,7 @@ c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 c Warning: div_vj not yet implememnted
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

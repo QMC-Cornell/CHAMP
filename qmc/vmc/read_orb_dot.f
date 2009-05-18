@@ -52,12 +52,13 @@ c It serves as a multiplicatif optimization factor for the spring constant.
       use all_tools_mod ! ADG: not sure if this is needed or not? testing
       use coefs_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 c      include 'vmc.h'
 c      include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -137,12 +138,13 @@ c Reads in quantum dot orbitals in gaussian basis set
 c the witdh of gaussians is given by zex*we
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype

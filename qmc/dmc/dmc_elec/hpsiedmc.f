@@ -1,16 +1,17 @@
       subroutine hpsiedmc(iel,iw,coord,psid,psij,force)
 c Written by Claudia Filippi
 
+      use const_mod
       implicit real*8(a-h,o-z)
-      include '../../vmc/vmc.h'
-      include '../dmc.h'
-      include '../../vmc/force.h'
+!JT      include '../../vmc/vmc.h'
+!JT      include '../dmc.h'
+!JT      include '../../vmc/force.h'
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
 

@@ -226,6 +226,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 02 Oct 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -286,6 +287,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 07 Nov 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -358,6 +360,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 02 Oct 2008
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -506,6 +509,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 05 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -581,6 +585,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 07 Mar 2006
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -650,6 +655,7 @@ module density_mod
 ! Created       : J. Toulouse, 07 Mar 2006
 ! Modified      : J. Toulouse, 13 Aug 2008: walkers
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -990,6 +996,7 @@ module density_mod
 !
 ! Created        : J. Toulouse, 07 Nov 2006
 ! ------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -1043,6 +1050,7 @@ module density_mod
 !
 ! Created        : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

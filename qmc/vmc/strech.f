@@ -14,6 +14,7 @@ c jacobian of the transformation
 
       use nuclei_mod
       use atom_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       character*64 filename
       character*16 mode
@@ -24,7 +25,7 @@ c jacobian of the transformation
 !      parameter (zero=0.d0,one=1.d0)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr3/ mode
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

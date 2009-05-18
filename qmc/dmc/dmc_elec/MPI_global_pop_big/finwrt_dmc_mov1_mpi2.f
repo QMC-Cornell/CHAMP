@@ -10,6 +10,8 @@ c routine to print out final results
       use mpi_mod
       use atom_mod
 
+      use contrl_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
       common /dim/ ndim
@@ -17,9 +19,9 @@ c routine to print out final results
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 c     common /force_dmc/ itausec,nwprod
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
+!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

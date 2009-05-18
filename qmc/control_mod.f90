@@ -22,6 +22,7 @@ module control_mod
 !
 ! Created     : J. Toulouse, 24 Oct 2005
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -266,6 +267,7 @@ module control_mod
 !
 ! Created     : J. Toulouse, 12 Apr 2007
 !---------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

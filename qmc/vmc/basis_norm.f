@@ -28,9 +28,10 @@ c and, the same normal. for Gaussians as for Slaters.
       use orbitals_mod
       use coefs_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 c    &,iwctype(MCENT),nctype,ncent

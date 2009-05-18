@@ -13,6 +13,7 @@ c coefficients are real.
 
       use coefs_mod
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter(one=1.d0)
@@ -28,7 +29,7 @@ c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 !JT      complex*16 cslmin,cdetn,cddeti_detin,cd2edeti_detin,cdorb,cddorb
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

@@ -3,6 +3,7 @@ c Written by Claudia Filippi by modifying jastrow3
 
       use atom_mod
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -13,7 +14,7 @@ c Written by Claudia Filippi by modifying jastrow3
 !JT      parameter (half=.5d0,third=1.d0/3.d0)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)

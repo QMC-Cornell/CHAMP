@@ -1,9 +1,10 @@
       subroutine jastrow(x,v,d2,div_vj,value)
 c Written by Cyrus Umrigar
 
+      use const_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 !     ! WAS
       common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
@@ -11,9 +12,9 @@ c Written by Cyrus Umrigar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      include 'pseudo.h'
+!JT      include 'pseudo.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension x(3,*),v(3,*)
      &,div_vj(MELEC)

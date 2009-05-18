@@ -475,13 +475,14 @@ c  99 stop 'ierr.ne.0 in chlsky'
 c-----------------------------------------------------------------------
       subroutine linear_method(iadd_diag,ipr_eigs)
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include '../fit/fit.h'
       parameter(eps=1.d-9)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),

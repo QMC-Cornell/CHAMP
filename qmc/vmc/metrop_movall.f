@@ -8,6 +8,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use config_mod
 
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
 !JT      parameter (half=.5d0)
@@ -16,7 +17,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
 !JT      include '../fit/fit.h'
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 !JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo

@@ -46,6 +46,7 @@ c Jastrow 4,5 must be used with one of isc=2,4,6,7
 c Jastrow 6   must be used with one of isc=6,7
 
       use atom_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
@@ -56,7 +57,7 @@ c Jastrow 6   must be used with one of isc=6,7
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb

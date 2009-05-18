@@ -90,6 +90,7 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       use coefs_mod
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -97,7 +98,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       parameter(eps=1.d-3)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -492,13 +493,14 @@ c However, that causes problems when running with mpi, so comment out that part.
       use tempor_test_mod
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-6)
       character*16 mode
 
       common /contr3/ mode
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
      &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
@@ -886,6 +888,7 @@ c However, that causes problems when running with mpi, so comment out that part.
       use orbitals_mod, only: orb_tot_nb
       use tempor_test_mod
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -897,7 +900,7 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       common /contr3/ mode
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
      &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
@@ -1344,6 +1347,7 @@ c if not one could use isortk to map iorb.
 c Note: This is the straightforward, expensive evaluation for checking purposes only.
 
       use tempor_test_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1351,7 +1355,7 @@ c Note: This is the straightforward, expensive evaluation for checking purposes 
 !JT      include 'ewald.h'
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -1499,6 +1503,7 @@ c-----------------------------------------------------------------------
 
       use coefs_mod
       use dets_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
       character*16 mode,iorb_format
@@ -1510,7 +1515,7 @@ c-----------------------------------------------------------------------
       parameter(eps=1.d-3)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

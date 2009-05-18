@@ -27,6 +27,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -74,6 +75,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -110,6 +112,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 18 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -142,6 +145,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 18 May 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

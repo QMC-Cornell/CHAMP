@@ -19,6 +19,7 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use dets_mod
       use optim_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -48,7 +49,7 @@ c     common /contr3/ mode
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /atom2/ dist_cent(MCENT)

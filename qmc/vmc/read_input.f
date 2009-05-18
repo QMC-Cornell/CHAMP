@@ -15,6 +15,8 @@ c Written by Cyrus Umrigar
       use dets_mod
       use optim_mod
       use basis1_mod
+      use contrl_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -34,10 +36,10 @@ c Written by Cyrus Umrigar
      &   xm1,xm2,xm12,xms,xma,Zfock
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
       common /contrl_per/ iperiodic,ibasis
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
+!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt

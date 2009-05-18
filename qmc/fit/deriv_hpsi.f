@@ -9,6 +9,7 @@ c wrt the jastrow parameters.
       use fitdet_mod
       use slater_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !      include '../vmc/vmc.h'
@@ -22,7 +23,7 @@ c     complex*16 cvd_sav,cvk_sav
 
       common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

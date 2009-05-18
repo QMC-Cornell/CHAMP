@@ -118,6 +118,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -312,6 +313,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 27 Mar 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -344,6 +346,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -365,6 +368,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -386,6 +390,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -407,6 +412,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -428,6 +434,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -449,6 +456,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -478,6 +486,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -507,6 +516,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -536,6 +546,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -565,6 +576,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -594,6 +606,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 09 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -625,6 +638,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 09 Jul 2007
 ! ------------------------------------------------------------------------------
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

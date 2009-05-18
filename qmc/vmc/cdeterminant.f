@@ -12,6 +12,7 @@ c coefficients are real.
       use coefs_mod
       use dets_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -47,7 +48,7 @@ c     complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2
 c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -303,6 +304,7 @@ c can deal only with spin polarized systems for the moment
       use coefs_mod
       use dets_mod
       use optim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -339,7 +341,7 @@ c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

@@ -1,13 +1,14 @@
       subroutine jassav(iel)
 c Written by Claudia Filippi
 
+      use const_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
+!JT      include 'vmc.h'
 
-      include 'force.h'
+!JT      include 'force.h'
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
      &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)

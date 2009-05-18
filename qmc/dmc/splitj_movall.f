@@ -1,14 +1,15 @@
       subroutine splitj_movall
 c Written by Cyrus Umrigar
+      use const_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include 'dmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'dmc.h'
+!JT      include '../vmc/force.h'
 
-      parameter (zero=0.d0,two=2.d0,half=.5d0)
+!JT      parameter (zero=0.d0,two=2.d0,half=.5d0)
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),

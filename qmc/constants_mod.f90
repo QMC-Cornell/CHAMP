@@ -24,6 +24,11 @@ module constants_mod
   real(dp), parameter   :: two     = 2.d0
   real(dp), parameter   :: three   = 3.d0
   real(dp), parameter   :: four    = 4.d0
+  real(dp), parameter   :: five    = 5.d0
+  real(dp), parameter   :: six     = 6.d0
+  real(dp), parameter   :: seven   = 7.d0
+  real(dp), parameter   :: eight   = 8.d0
+  real(dp), parameter   :: nine    = 9.d0
   real(dp), parameter   :: ten     = 10.d0
   real(dp), parameter   :: tenth   = 0.1d0
   real(dp), parameter   :: sixth   = 1.d0/6.d0

@@ -4,6 +4,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
 
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -13,7 +14,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       complex*16 cphin,cdphin,cd2phin
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb

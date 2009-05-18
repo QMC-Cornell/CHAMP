@@ -8,6 +8,8 @@ c Also do other things that differ for serial and parallel runs, such as setting
       use dmc_mod
       use walkers_mod
       use dets_mod
+      use contrl_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -16,8 +18,8 @@ c Also do other things that differ for serial and parallel runs, such as setting
 
       common /dim/ ndim
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr3/ mode
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e

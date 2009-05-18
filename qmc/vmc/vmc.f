@@ -36,6 +36,8 @@ c polarized calculations were attempted.
       use coefs_mod
       use dets_mod
       use basis1_mod
+      use contrl_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -57,9 +59,9 @@ c     include '../fit/fit.h'
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /const2/ deltar,deltat
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
+!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 !JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
@@ -325,7 +327,7 @@ c       write out configuration for optimization/dmc/gfmc here
         if (l_write_walkers) then
          if(mod(l,write_walkers_step) == 0) then
           do jj = 1, nelec
-           write(file_walkers_out_unit,'(3es14.8)') (xold(k,jj),k=1,ndim)
+           write(file_walkers_out_unit,'(3es18.8)') (xold(k,jj),k=1,ndim)
           enddo
            write(file_walkers_out_unit,*) dexp(psijo)*psido
          endif

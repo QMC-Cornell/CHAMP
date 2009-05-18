@@ -38,6 +38,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     integer                              :: k,ieta, ie
     real(dp)                             :: sum
@@ -86,6 +87,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
 
     include "commons.h"
@@ -133,6 +135,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
 !JT    include "common_jasn.h"
@@ -199,6 +202,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
 !JT    include "common_jasn.h"
@@ -284,6 +288,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit  none
     include "commons.h"
     real(dp)                             :: x1(3), x2(3)
@@ -308,6 +313,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
     integer                              :: ije
@@ -348,6 +354,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
 
@@ -379,6 +386,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
     integer                              :: ist
@@ -414,6 +422,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
@@ -507,6 +516,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
@@ -587,6 +597,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 !JT    include 'common_jasn.h'
@@ -654,6 +665,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
     integer                              :: iel
@@ -767,6 +779,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
     integer                              :: iel
@@ -878,6 +891,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
     integer                              :: ie, i, k, n, je, ije

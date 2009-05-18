@@ -7,6 +7,7 @@ c does 3 conversions: a) ryd -> Har, b) r*v -> v and
 c c) subtracts out local part from all except highest l component.
 c Also eval pot. at r=0
       use atom_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -20,7 +21,7 @@ c Also eval pot. at r=0
 
       parameter (ncoef=5)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 

@@ -18,18 +18,20 @@ c  accept/reject on each electron and calculate taueff differently.
 c  He and Ceperley told me that they have also now switched to rejecting
 c  node crossing moves.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use contrl_mod
+      use const_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
-      include 'dmc.h'
-      include '../vmc/force.h'
-      include '../fit/fit.h'
+!JT      include '../vmc/vmc.h'
+!JT      include 'dmc.h'
+!JT      include '../vmc/force.h'
+!JT      include '../fit/fit.h'
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
@@ -48,7 +50,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &ricum,taucum(MFORCE)
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
-      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
+!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

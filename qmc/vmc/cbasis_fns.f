@@ -3,6 +3,7 @@ c written by Amit Ghosal starting from basis_fns.f
 
       use atom_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT	include 'vmc.h'
 !JT	include 'pseudo.h'
@@ -13,7 +14,7 @@ c New temporary variables defined ************************
       complex*16 temp_p,temp_n,cph,cdph,cphin,cdphin,cd2phin,ylm
 c Definition of new temporary variables ends here ********
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -201,6 +202,7 @@ c In this version we replace we by zex*we for basis set optimization.
 
       use coefs_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -210,7 +212,7 @@ c In this version we replace we by zex*we for basis set optimization.
       complex*16 cphin,cdphin,cd2phin
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 !JT       common /basis/ zex(MBASIS,MWF),betaq
 !JT     &,n1s(MCTYPE)
@@ -352,6 +354,7 @@ c Laplacian is zero and ignored here
 c note: one complication here is that the orbitals depend on all electrons...
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -367,7 +370,7 @@ c note: one complication here is that the orbitals depend on all electrons...
       complex*16 cphin,cdphin,cd2phin
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)

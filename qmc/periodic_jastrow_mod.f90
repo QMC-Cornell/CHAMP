@@ -31,6 +31,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 !JT    include 'common_pjase.h'
@@ -195,6 +196,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     integer                              :: i
@@ -306,6 +308,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -338,6 +341,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 
@@ -372,6 +376,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     integer                              :: ieta
     include 'commons.h'
@@ -417,6 +422,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     integer                              :: i, ifr
@@ -435,6 +441,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     integer i
@@ -451,6 +458,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     integer i
@@ -467,6 +475,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
 !JT    include "common_jasn.h"
@@ -502,6 +511,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include "commons.h"
 !JT    include "common_jasn.h"
@@ -535,6 +545,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
@@ -582,6 +593,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
@@ -631,6 +643,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit none
     include 'commons.h'
 !JT    include 'common_jasn.h'

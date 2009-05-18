@@ -60,13 +60,14 @@ c     and gaussian 3-d)
       use real_spherical_harmonics
       use atom_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
       common /contr_ylm/ irecursion_ylm
 
       common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -507,6 +508,7 @@ c                 < 0 : Gaussian basis
 
       use atom_mod
       use basis1_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -514,7 +516,7 @@ c                 < 0 : Gaussian basis
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
@@ -692,13 +694,14 @@ c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
 c normalization is taken care in (..)
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -774,13 +777,14 @@ c normalization is taken care in (..)
 c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -900,13 +904,14 @@ c Here, we do not normalize the wfs
 
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -1042,13 +1047,14 @@ c        xg3 and xg4 are gaussian width parameters.
 c Here, we do not normalize the wfs
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -1217,13 +1223,14 @@ c         in units of we (or wire_w in case of wire)))
 
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -1308,13 +1315,14 @@ c         in units of we (or wire_w in case of wire)))
 c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
 
       use coefs_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 c     common /dim/ ndim
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)

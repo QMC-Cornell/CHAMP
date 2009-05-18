@@ -255,9 +255,10 @@ c     electrons are collinear but not when u=0.
 c     The derivatives are not evaluated correctly in the 2nd part of
 c     the program even when the 2 electrons are collinear.
 
+      use const_mod
       implicit real*8(a-h,o-z)
-      real*8 hb,etrial,delta,deltai,fbias
-      integer nelec,ipr
+!JT      real*8 hb,etrial,delta,deltai,fbias
+!JT      integer nelec,ipr
       integer ijas,icusp,icusp2,isc,ifock,i3body,irewgt,iaver,istrch,
      &ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       real*8 xlob,dlnrr2,x
@@ -268,15 +269,15 @@ c     real*8 Y00
       real*8 psi1,psi21,psi20,psi2a,psi2b,psi2c
      &,psi2d,psi31,p1p21,phi21,phi20,phi31,ss1,ss2
       real*8 osix,otwe
-      include 'vmc.h'
+!JT      include 'vmc.h'
 
-      real*8 zero,one,two,three,four,five,six,eight
-      real*8 half,pi
-      parameter (zero = 0.d0)
-      parameter (one = 1.d0, two = 2.d0, three = 3.d0)
-      parameter (four = 4.d0, five = 5.d0, six = 6.d0)
-      parameter (eight = 8.0d0)
-      parameter (half = .5d0)
+!JT      real*8 zero,one,two,three,four,five,six,eight
+!JT    real*8 half,pi
+!JT      parameter (zero = 0.d0)
+!JT      parameter (one = 1.d0, two = 2.d0, three = 3.d0)
+!JT      parameter (four = 4.d0, five = 5.d0, six = 6.d0)
+!JT      parameter (eight = 8.0d0)
+!JT      parameter (half = .5d0)
 c     parameter (pi = 3.14159265358979323846d0)
 c     parameter (xln2 = 0.69314718055994530941d0)
 c     parameter (root2 = 1.41421356237309504880d0)
@@ -291,7 +292,7 @@ c     common /fflags/ fflag
      &   xm1,xm2,xm12,xms,xma,Zfock
 c     common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

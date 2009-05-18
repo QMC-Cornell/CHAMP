@@ -4,13 +4,14 @@ c Written by Claudia Filippi
 
 # if defined (MPI)
       use all_tools_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 
-      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC),d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
