@@ -491,8 +491,8 @@ c For MPI runs a different energy_sigma is calculated on each processor because 
             energy_sigma=sigma(egcum1(1),egcm21(1),wgcum1(1))
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
             if(dwt.gt.1+10*energy_sigma*tau) then
+              ipr_sav=ipr_sav+1
               if(ipr_sav.le.100) then
-                ipr_sav=ipr_sav+1
                 write(6,'(''Warning: dwt>1+10*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
      &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
                elseif(ipr_sav.eq.101) then
