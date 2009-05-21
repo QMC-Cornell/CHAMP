@@ -70,6 +70,7 @@ c give the one that is to be kept the additional wt of the other and put the oth
    10 continue
 
 c Figure out what weight walkers can be split without exceeding MWALK
+c Warning: MWALK can still be exceeded on very rare occasions if a walker gets split more than once.
       nwalk_after_join=nwalk-iunder
       nwalk_max_dupl=MWALK-nwalk_after_join
       do iw=1,nwalk

@@ -52,6 +52,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrl_mod
       use const_mod
       implicit real*8(a-h,o-z)
+      character*16 mode
 
       common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -61,6 +62,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       parameter (adrift=0.5d0)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
+      common /contr3/ mode
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
@@ -78,6 +80,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
      &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
      &ricum,taucum(MFORCE)
+      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
+     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
+     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
+     &tjfcm2(MFORCE),r2cm2,ricm2
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
@@ -135,6 +141,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       save ipr_sav
 
 c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
+      sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
       if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move
      &algorithm'
@@ -476,18 +483,24 @@ c               dwt=1+expon+0.5d0*expon**2
 
 c Warning: These lines were added to reduce the probability of population explosions.
 c These occur mostly for nonlocal psps.
-c A better solution would be to employ a better way of treating nonlocal psps. in DMC.
-c At minimum, if one uses this cutoff, instead of having the factor 5 below, one should replace it by a few times sigma.
-c Otherwise, this gives a DMC energy that is too high even in the tau->0 limit, actually especially in this limit,
-c if sigma is large.
-c         if(dwt.gt.1+5*tau) then
-c           if(ipr_sav.eq.0) then
-c             ipr_sav=1
-c             write(6,'(''Warning: dwt>1+5*tau, nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)')
-c    &        nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration
-c           endif
-c           dwt=1+5*tau
-c         endif
+c A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
+c We truncate wts that come from energies that are too low by more than 10*energy_sigma
+c This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
+c For MPI runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+          if(iblk.gt.2) then
+            energy_sigma=sigma(egcum1(1),egcm21(1),wgcum1(1))
+            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            if(dwt.gt.1+10*energy_sigma*tau) then
+              if(ipr_sav.le.100) then
+                ipr_sav=ipr_sav+1
+                write(6,'(''Warning: dwt>1+10*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
+     &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
+               elseif(ipr_sav.eq.101) then
+                write(6,'(''Warning: Additional warning msgs. of dwt>1+10*energy_sigma*tau suppressed'')')
+              endif
+              dwt=1+10*energy_sigma*tau
+            endif
+          endif
 
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
