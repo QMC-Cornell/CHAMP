@@ -16,6 +16,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
+      use doefp_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -63,7 +64,7 @@ c     common /contr3/ mode
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
 
       dimension xaxis(3),yaxis(3),zaxis(3),div_vn(MELEC)
 

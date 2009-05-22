@@ -16,6 +16,8 @@ c routine to print out final results
       use gradhess_mod
       use contrl_opt2_mod
       use forcepar_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 !JT      character*80 title,fmt
@@ -47,7 +49,7 @@ c routine to print out final results
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -65,8 +67,8 @@ c routine to print out final results
 
 !MS Jellium sphere
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
       err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
       err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)

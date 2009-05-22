@@ -14,6 +14,7 @@ c          coefficient, power, exponent
 c NOTE: as usual power n means r**(n-2)
 
       use atom_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -25,8 +26,8 @@ c NOTE: as usual power n means r**(n-2)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
       common /gauss_ecp/ necp_term(MPS_L,MCTYPE),necp_power(MGAUSS
      &     ,MPS_L,MCTYPE),ecp_coef(MGAUSS,MPS_L,MCTYPE)
@@ -127,6 +128,7 @@ c compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(r_en,iel)
 
       use atom_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -135,8 +137,8 @@ c compute gauss-pseudopotential for electron iel
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
       dimension r_en(MELEC,MCENT)
 

@@ -3,6 +3,7 @@
 c Written by Cyrus Umrigar
 c get nuclear potential energy
       use dim_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -11,8 +12,8 @@ c get nuclear potential energy
 
 !JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
 
       if(nloc.ge.0) then

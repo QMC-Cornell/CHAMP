@@ -11,6 +11,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use const_mod
       use dim_mod
       use forcepar_mod
+      use doefp_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
 !JT      parameter (half=.5d0)
@@ -33,7 +34,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 

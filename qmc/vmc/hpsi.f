@@ -14,12 +14,13 @@ c wrt the wavefunction parameters.
       use slater_mod
       use optim_mod
 !     use periodic_jastrow_mod  !WAS
-
       use const_mod
       use dim_mod
       use contr2_mod
       use contrl_opt2_mod
       use wfsec_mod
+      use vj_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -37,8 +38,8 @@ c     complex*16 cvd_sav,cvk_sav
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
 !JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
 !JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
@@ -68,7 +69,7 @@ c     common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDAT
 c    &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
 c    &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
-      common /vj/ vj(3,MELEC)  !JT
+!JT      common /vj/ vj(3,MELEC)  !JT
 c      dimension vd(3,MELEC),
       common /vd/ vd(3,MELEC)   !WAS
       dimension coord(3,*),velocity(3,MELEC)

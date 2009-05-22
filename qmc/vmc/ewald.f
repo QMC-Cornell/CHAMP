@@ -5,6 +5,7 @@ c Written by Cyrus Umrigar
       use atom_mod
       use const_mod
       use dim_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
@@ -20,8 +21,8 @@ c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)
       common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -1953,6 +1954,7 @@ c Written by Cyrus Umrigar
       use atom_mod
       use const_mod
       use dim_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1989,8 +1991,8 @@ c    &,peo,pen,tjfn,tjfo,psido,psijo
 c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)

@@ -25,6 +25,7 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use basis2_mod
       use basisnorm_mod
       use contr2_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -101,8 +102,8 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
       common /bparm/ nspin2b,nocuspb
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)

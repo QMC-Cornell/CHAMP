@@ -26,6 +26,8 @@ c Written by Cyrus Umrigar
       use contrl_opt2_mod
       use forcepar_mod
       use wfsec_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -81,8 +83,8 @@ c Written by Cyrus Umrigar
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
       common /bparm/ nspin2b,nocuspb
 
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
@@ -98,7 +100,7 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
       common /atomtyp/ ncentyp(MCTYPE)
 !JT      common /header/ title,date
 

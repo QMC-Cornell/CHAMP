@@ -21,6 +21,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 
@@ -66,9 +68,9 @@ c     common /contr3/ mode
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /doefp/ nefp
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /doefp/ nefp
       common /div_v/ div_vo(MELEC)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)

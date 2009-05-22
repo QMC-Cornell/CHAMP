@@ -164,6 +164,7 @@ c i.e. the order in which we were reading in the p functions.
       use dim_mod
       use numbas_mod
       use basis2_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 
@@ -196,8 +197,8 @@ c i.e. the order in which we were reading in the p functions.
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
 c     character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
 c    &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)

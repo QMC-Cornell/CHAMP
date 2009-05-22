@@ -27,6 +27,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use numbas_mod
       use forcepar_mod
       use wfsec_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -68,8 +70,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -87,7 +89,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
       common /div_v/ div_vo(MELEC)
 
       dimension irn(4)

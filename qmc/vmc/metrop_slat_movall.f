@@ -20,6 +20,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
@@ -67,9 +69,9 @@ c     character*23 fmt
 !JT     &,iwctype(MCENT),nctype,ncent
       dimension xaxis(3),yaxis(3),zaxis(3),costht(MELEC),div_vn(MELEC)
      &,sintht(MELEC),raver(MELEC),ravern(MELEC)
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /doefp/ nefp
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /doefp/ nefp
       common /div_v/ div_vo(MELEC) !!WAS
       dimension xstrech(3,MELEC)
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*

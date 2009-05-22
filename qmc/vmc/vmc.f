@@ -44,6 +44,8 @@ c polarized calculations were attempted.
       use contr2_mod
       use forcepar_mod
       use wfsec_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -108,15 +110,15 @@ c     include '../fit/fit.h'
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
 
 c common block variables:
 

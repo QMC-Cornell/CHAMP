@@ -7,6 +7,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use const_mod
       use dim_mod
       use forcepar_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0)
 !JT      include '../vmc/vmc.h'
@@ -30,8 +31,8 @@ c routine to accumulate estimators for energy etc.
       common /iterat/ ipass,iblk
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 c     common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
 c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),

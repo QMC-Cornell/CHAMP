@@ -22,6 +22,7 @@ c The prefered grid is 3.
 
       use atom_mod
       use const_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -36,8 +37,8 @@ c The prefered grid is 3.
 
       common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad

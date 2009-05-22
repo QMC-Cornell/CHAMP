@@ -13,6 +13,7 @@ c If iflag=0 then it computes diffs otherwise it just does sum of squares
       use basis2_mod
       use contr2_mod
       use contrl_opt2_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -75,8 +76,8 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
       common /bparm/ nspin2b,nocuspb
       common /fcn_calls/icalls
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)

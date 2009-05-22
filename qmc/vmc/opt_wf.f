@@ -25,6 +25,7 @@ c Also, one or all electrons can be moved at once.
       use contrl_opt2_mod
       use forcepar_mod
       use wfsec_mod
+      use doefp_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,four=4.d0)
@@ -40,7 +41,7 @@ c Also, one or all electrons can be moved at once.
 !JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),

@@ -15,6 +15,8 @@ c routine to accumulate estimators for energy etc.
       use dim_mod
       use contr2_mod
       use forcepar_mod
+      use doefp_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -40,8 +42,8 @@ c routine to accumulate estimators for energy etc.
 !JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /delocc/ denergy(MPARM)
@@ -52,7 +54,7 @@ c routine to accumulate estimators for energy etc.
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-      common /doefp/ nefp
+!JT      common /doefp/ nefp
       common /div_v/ div_vo(MELEC)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),

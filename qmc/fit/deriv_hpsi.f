@@ -13,6 +13,7 @@ c wrt the jastrow parameters.
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
 !      include '../vmc/vmc.h'
@@ -30,8 +31,8 @@ c     complex*16 cvd_sav,cvk_sav
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
+!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
+!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
 !JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
 !JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)

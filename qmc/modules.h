@@ -23,4 +23,7 @@
           use contrl_opt2_mod
           use forcepar_mod
           use wfsec_mod
+          use doefp_mod
+          use vj_mod
+          use pseudo_mod
 
