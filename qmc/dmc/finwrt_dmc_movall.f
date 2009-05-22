@@ -10,6 +10,7 @@ c routine to print out final results
       use gradhess_mod
       use forcepar_mod
       use contrl_per_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 !      include 'dmc.h'
 !      include '../vmc/vmc.h'
@@ -28,7 +29,7 @@ c routine to print out final results
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk
@@ -79,7 +80,6 @@ c /config_dmc/ included to print out xold and vold for old walkers
 !JT      character*80 title,fmt
       character*80 fmt
 !JT      character*24 date
-      character*16 mode
 
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2

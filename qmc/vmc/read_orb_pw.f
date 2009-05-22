@@ -88,15 +88,15 @@ c However, that causes problems when running with mpi, so comment out that part.
       use orbe_mod
       use orbitals_mod, only: orb_tot_nb
       use tempor_test_mod
-
       use coefs_mod
       use dets_mod
       use const_mod
       use dim_mod
       use contr2_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
-      character*16 mode,iorb_format
+      character*16 iorb_format
 
       parameter(eps=1.d-3)
 
@@ -105,7 +105,7 @@ c However, that causes problems when running with mpi, so comment out that part.
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
       common /contr_names/ iorb_format
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -498,11 +498,11 @@ c However, that causes problems when running with mpi, so comment out that part.
       use coefs_mod
       use const_mod
       use dim_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-6)
-      character*16 mode
 
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -894,8 +894,8 @@ c However, that causes problems when running with mpi, so comment out that part.
       use coefs_mod
       use const_mod
       use dim_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-      character*16 mode
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -903,7 +903,7 @@ c However, that causes problems when running with mpi, so comment out that part.
 !JT      include 'numorb.h'
       parameter(eps=1.d-4)
 
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -1506,15 +1506,15 @@ c-----------------------------------------------------------------------
       use bsplines_mod
       use orbital_grid_mod
       use dorb_mod
-
       use coefs_mod
       use dets_mod
       use const_mod
       use dim_mod
       use contr2_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
-      character*16 mode,iorb_format
+      character*16 iorb_format
 
 !     include 'vmc.h'
 !     include 'force.h'
@@ -1527,7 +1527,7 @@ c-----------------------------------------------------------------------
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
       common /contr_names/ iorb_format
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn

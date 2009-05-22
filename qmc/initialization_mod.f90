@@ -234,6 +234,7 @@ module initialization_mod
 !
 ! Created       : J. Toulouse, 13 Jun 2008
 ! -----------------------------------------------------------------------------------
+  use contr3_mod
   implicit none
   include 'commons.h'
 

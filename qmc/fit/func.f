@@ -17,8 +17,9 @@ c If iflag=0 then it computes diffs otherwise it just does sum of squares
       use jaspar_mod
       use jaspar3_mod
       use jaspar4_mod
+      use bparm_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-      character*16 mode
 
 !      parameter(zero=0.d0,one=1.d0)
 c     parameter(three=3.d0,half=0.5d0,d1b4=0.25d0)
@@ -30,7 +31,7 @@ c      complex*16 cvd_sav,cvk_sav
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
@@ -77,7 +78,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
       common /fcn_calls/icalls
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc

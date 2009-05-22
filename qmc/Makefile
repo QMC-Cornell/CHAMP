@@ -7,23 +7,25 @@ include ../makefile.inc
 PROG =	$(CHAMP_EXE)
 
 SRCS =	commons/atom_mod.f90 commons/basis1_mod.f90 commons/basis2_mod.f90 \
-	commons/basisnorm_mod.f90 commons/coefs_mod.f90 \
+	commons/basisnorm_mod.f90 commons/bparm_mod.f90 commons/coefs_mod.f90 \
 	commons/config_mod.f90 commons/const2_mod.f90 commons/const_mod.f90 \
-	commons/contr2_mod.f90 commons/contrl_mod.f90 \
+	commons/contr2_mod.f90 commons/contr3_mod.f90 commons/contrl_mod.f90 \
 	commons/contrl_opt2_mod.f90 commons/contrl_opt_mod.f90 \
 	commons/contrl_per_mod.f90 commons/cslatn_mod.f90 \
 	commons/delocc_mod.f90 commons/derivjas_mod.f90 commons/dets_mod.f90 \
-	commons/dim_mod.f90 commons/doefp_mod.f90 commons/dorb_mod.f90 \
-	commons/forcepar_mod.f90 commons/gradhess_mod.f90 \
+	commons/dim_mod.f90 commons/div_v_mod.f90 commons/doefp_mod.f90 \
+	commons/dorb_mod.f90 commons/forcepar_mod.f90 \
+	commons/gradhess_mod.f90 commons/gradhessj_nonlin_mod.f90 \
 	commons/jaspar3_mod.f90 commons/jaspar4_mod.f90 \
-	commons/jaspar6_mod.f90 commons/jaspar_mod.f90 commons/numbas_mod.f90 \
+	commons/jaspar6_mod.f90 commons/jaspar_mod.f90 \
+	commons/jasparread_mod.f90 commons/numbas_mod.f90 \
 	commons/optim_mod.f90 commons/orb_mod.f90 commons/orbe_mod.f90 \
-	commons/pseudo_mod.f90 commons/slater_mod.f90 commons/slatn_mod.f90 \
-	commons/tempor_test_mod.f90 commons/vj_mod.f90 commons/wfsec_mod.f90 \
-	accumulation_mod.f90 all_tools_mod.f90 allocations_mod.f90 \
-	average_mod.f90 backflow_auxiliary_mod.f90 backflow_mod.f90 \
-	basic_tools_mod.f90 basis_mod.f90 bsplines_mod.f90 bwfdet_mod.f90 \
-	catalog_averages_mod.f90 catalog_objects_mod.f90 \
+	commons/pointer_mod.f90 commons/pseudo_mod.f90 commons/slater_mod.f90 \
+	commons/slatn_mod.f90 commons/tempor_test_mod.f90 commons/vj_mod.f90 \
+	commons/wfsec_mod.f90 accumulation_mod.f90 all_tools_mod.f90 \
+	allocations_mod.f90 average_mod.f90 backflow_auxiliary_mod.f90 \
+	backflow_mod.f90 basic_tools_mod.f90 basis_mod.f90 bsplines_mod.f90 \
+	bwfdet_mod.f90 catalog_averages_mod.f90 catalog_objects_mod.f90 \
 	catalog_routines_mod.f90 champ.f90 constants_mod.f90 control_mod.f90 \
 	crystal_symmetries_mod.f90 csfs_mod.f90 cslater_cf_mod.f90 \
 	cslater_mod.f90 cslaterw_mod.f90 debug_mod.f90 density_mod.f90 \
@@ -107,19 +109,21 @@ SRCS =	commons/atom_mod.f90 commons/basis1_mod.f90 commons/basis2_mod.f90 \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f
 
 OBJS =	commons/atom_mod.o commons/basis1_mod.o commons/basis2_mod.o \
-	commons/basisnorm_mod.o commons/coefs_mod.o commons/config_mod.o \
-	commons/const2_mod.o commons/const_mod.o commons/contr2_mod.o \
-	commons/contrl_mod.o commons/contrl_opt2_mod.o \
-	commons/contrl_opt_mod.o commons/contrl_per_mod.o \
-	commons/cslatn_mod.o commons/delocc_mod.o commons/derivjas_mod.o \
-	commons/dets_mod.o commons/dim_mod.o commons/doefp_mod.o \
-	commons/dorb_mod.o commons/forcepar_mod.o commons/gradhess_mod.o \
-	commons/jaspar3_mod.o commons/jaspar4_mod.o commons/jaspar6_mod.o \
-	commons/jaspar_mod.o commons/numbas_mod.o commons/optim_mod.o \
-	commons/orb_mod.o commons/orbe_mod.o commons/pseudo_mod.o \
-	commons/slater_mod.o commons/slatn_mod.o commons/tempor_test_mod.o \
-	commons/vj_mod.o commons/wfsec_mod.o accumulation_mod.o \
-	all_tools_mod.o allocations_mod.o average_mod.o \
+	commons/basisnorm_mod.o commons/bparm_mod.o commons/coefs_mod.o \
+	commons/config_mod.o commons/const2_mod.o commons/const_mod.o \
+	commons/contr2_mod.o commons/contr3_mod.o commons/contrl_mod.o \
+	commons/contrl_opt2_mod.o commons/contrl_opt_mod.o \
+	commons/contrl_per_mod.o commons/cslatn_mod.o commons/delocc_mod.o \
+	commons/derivjas_mod.o commons/dets_mod.o commons/dim_mod.o \
+	commons/div_v_mod.o commons/doefp_mod.o commons/dorb_mod.o \
+	commons/forcepar_mod.o commons/gradhess_mod.o \
+	commons/gradhessj_nonlin_mod.o commons/jaspar3_mod.o \
+	commons/jaspar4_mod.o commons/jaspar6_mod.o commons/jaspar_mod.o \
+	commons/jasparread_mod.o commons/numbas_mod.o commons/optim_mod.o \
+	commons/orb_mod.o commons/orbe_mod.o commons/pointer_mod.o \
+	commons/pseudo_mod.o commons/slater_mod.o commons/slatn_mod.o \
+	commons/tempor_test_mod.o commons/vj_mod.o commons/wfsec_mod.o \
+	accumulation_mod.o all_tools_mod.o allocations_mod.o average_mod.o \
 	backflow_auxiliary_mod.o backflow_mod.o basic_tools_mod.o basis_mod.o \
 	bsplines_mod.o bwfdet_mod.o catalog_averages_mod.o \
 	catalog_objects_mod.o catalog_routines_mod.o champ.o constants_mod.o \
@@ -307,8 +311,9 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	montecarlo_mod.o nodes_mod.o nuclei_mod.o opt_lin_mod.o opt_nwt_mod.o \
 	opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
-champ.o: all_tools_mod.o catalog_routines_mod.o dmc_mod.o f2kcli.o \
-	initialization_mod.o main_menu_mod.o mpi_mod.o commons.h
+champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
+	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o \
+	commons.h
 constants_mod.o: types_mod.o dmc/dmc.h fit/fit.h vmc/MPI/mpi_qmc.h \
 	vmc/ewald.h vmc/force.h vmc/numbas.h vmc/numorb.h vmc/pseudo.h \
 	vmc/vmc.h
@@ -348,16 +353,17 @@ forces_mod.o: all_tools_mod.o electrons_mod.o forces_pulay_mod.o grid_mod.o \
 forces_pulay_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o \
 	jastrow_mod.o montecarlo_mod.o orbitals_mod.o commons.h modules.h
 grid_mod.o: all_tools_mod.o orbitals_mod.o commons.h modules.h
-initialization_mod.o: all_tools_mod.o orbitals_mod.o commons.h modules.h
+initialization_mod.o: all_tools_mod.o commons/contr3_mod.o orbitals_mod.o \
+	commons.h modules.h
 intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \
 	commons.h modules.h
 jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o commons.h modules.h
-main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o control_mod.o \
-	debug_mod.o density_mod.o dipole_moment_mod.o dmc_mod.o \
-	extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o jastrow_mod.o \
-	optimization_mod.o orbitals_mod.o periodic_jastrow_mod.o print_mod.o \
-	psi_mod.o testing_mod.o commons.h
+main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
+	commons/contr3_mod.o control_mod.o debug_mod.o density_mod.o \
+	dipole_moment_mod.o dmc_mod.o extracule_mod.o forces_mod.o grid_mod.o \
+	intracule_mod.o jastrow_mod.o optimization_mod.o orbitals_mod.o \
+	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o commons.h
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o
 montecarlo_mod.o: all_tools_mod.o commons.h modules.h
 mpi_mod.o: constants_mod.o
@@ -412,9 +418,11 @@ commons/cslatn_mod.o: constants_mod.o
 commons/delocc_mod.o: constants_mod.o
 commons/derivjas_mod.o: constants_mod.o
 commons/dets_mod.o: constants_mod.o
+commons/div_v_mod.o: constants_mod.o
 commons/dorb_mod.o: constants_mod.o
 commons/forcepar_mod.o: constants_mod.o
 commons/gradhess_mod.o: constants_mod.o
+commons/gradhessj_nonlin_mod.o: constants_mod.o
 commons/jaspar3_mod.o: constants_mod.o
 commons/jaspar4_mod.o: constants_mod.o
 commons/jaspar6_mod.o: constants_mod.o
@@ -422,6 +430,7 @@ commons/numbas_mod.o: constants_mod.o
 commons/optim_mod.o: constants_mod.o
 commons/orb_mod.o: constants_mod.o
 commons/orbe_mod.o: constants_mod.o
+commons/pointer_mod.o: constants_mod.o
 commons/pseudo_mod.o: constants_mod.o
 commons/slater_mod.o: constants_mod.o
 commons/slatn_mod.o: constants_mod.o

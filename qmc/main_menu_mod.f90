@@ -130,6 +130,7 @@ module main_menu_mod
 !
 ! Created     : J. Toulouse, 06 Oct 2005
 !---------------------------------------------------------------------------
+  use contr3_mod
   implicit none
   include 'commons.h'
 

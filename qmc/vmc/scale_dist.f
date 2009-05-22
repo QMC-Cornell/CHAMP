@@ -8,6 +8,7 @@ c Written by Cyrus Umrigar
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -31,7 +32,7 @@ c Written by Cyrus Umrigar
 !JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
 !JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
 !JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings

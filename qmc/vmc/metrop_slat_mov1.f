@@ -24,6 +24,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use doefp_mod
       use pseudo_mod
       use delocc_mod
+      use div_v_mod
       implicit real*8(a-h,o-z)
 
 
@@ -72,7 +73,7 @@ c     common /contr3/ mode
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 !JT      common /doefp/ nefp
-      common /div_v/ div_vo(MELEC)
+!JT      common /div_v/ div_vo(MELEC)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /jel_sph2/ zconst ! RM

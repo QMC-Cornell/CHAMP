@@ -34,4 +34,10 @@
           use jaspar3_mod
           use jaspar4_mod
           use jaspar6_mod
+          use bparm_mod
+          use jasparread_mod
+          use pointer_mod
+          use gradhessj_nonlin_mod
+          use contr3_mod
+          use div_v_mod
 

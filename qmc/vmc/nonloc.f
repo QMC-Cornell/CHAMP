@@ -257,15 +257,15 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contrl_opt2_mod
       use wfsec_mod
       use contrl_per_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 
-      character*16 mode
 
 c     common /dim/ ndim
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -387,6 +387,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dim_mod
       use contrl_per_mod
       use jaspar_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
@@ -402,7 +403,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big

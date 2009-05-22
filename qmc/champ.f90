@@ -8,13 +8,13 @@ program champ
   use initialization_mod
   use mpi_mod
   use dmc_mod
+  use contr3_mod
 
   implicit none
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'champ'
   character (len=max_string_len) :: date = ''
-  character*16                             :: mode
   integer            :: narg, iarg
   character(len=256) :: command_line_arguments
   character(len=256) :: executable_name
@@ -25,8 +25,6 @@ program champ
 # if defined (MPI)
   integer ierr
 # endif
-
-  common /contr3/ mode
 
 ! initialization
   mode = 'vmc_mov1'
@@ -219,7 +217,7 @@ end program champ
 ! Created     : J. Toulouse, 01 Apr 2007
 !---------------------------------------------------------------------------
   use main_menu_mod
-
+  use contr3_mod
   implicit none
   include 'commons.h'
 
@@ -257,7 +255,7 @@ end program champ
 ! Created     : J. Toulouse, 12 Feb 2008
 !---------------------------------------------------------------------------
   use main_menu_mod
-
+  use contr3_mod
   implicit none
   include 'commons.h'
 

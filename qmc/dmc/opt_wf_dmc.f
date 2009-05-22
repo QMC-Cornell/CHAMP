@@ -14,14 +14,13 @@ c Used both for all-electon and 1-electron move versions.
       use forcepar_mod
       use wfsec_mod
       use doefp_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-
-      character*16 mode
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contr3/ mode
+!JT      common /contr3/ mode
 c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 c    &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo

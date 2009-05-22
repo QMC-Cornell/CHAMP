@@ -16,10 +16,10 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use wfsec_mod
       use contrl_per_mod
       use contrl_opt_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
-      character*16 mode
 
 c Routine to calculate the value, gradient and Laplacian of the
 c determinantal part of the wavefunction.
@@ -47,7 +47,7 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt

@@ -18,13 +18,13 @@ c coefficients are real.
       use contrl_opt2_mod
       use wfsec_mod
       use contrl_per_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
 !      include 'fit.h'
 
 !      parameter (one=1.d0,half=0.5d0)
-      character*16 mode
 
 c routine to calculate the value, gradient and Laplacian of the
 c determinantal part of the wavefunction
@@ -57,7 +57,7 @@ c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -315,13 +315,13 @@ c can deal only with spin polarized systems for the moment
       use contrl_opt2_mod
       use wfsec_mod
       use contrl_per_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
 !      include 'fit.h'
 
 !      parameter (one=1.d0,half=0.5d0)
-      character*16 mode
 
 c cdeterm =  complex value of the determinants
 c determ  =  magnitude of cdeterm
@@ -355,7 +355,7 @@ c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn

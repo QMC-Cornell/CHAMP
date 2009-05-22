@@ -19,8 +19,8 @@ c routine to print out final results
       use doefp_mod
       use pseudo_mod
       use contrl_per_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-      character*16 mode
 !JT      character*80 title,fmt
       character*80 fmt
 !JT      character*24 date
@@ -34,7 +34,7 @@ c routine to print out final results
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

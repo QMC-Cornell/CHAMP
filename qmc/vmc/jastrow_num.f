@@ -13,6 +13,7 @@ c numerical Laplacian for periodic systems.
       use jaspar_mod
       use jaspar3_mod
       use jaspar6_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
@@ -39,7 +40,7 @@ c Warning: div_vj not yet implememnted
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)

@@ -9,8 +9,8 @@ c Calculates wavefunction and velocity contributions for electron iel
       use wfsec_mod
       use contrl_per_mod
       use jaspar4_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-      character*16 mode
 
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -22,7 +22,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 c Warning: jaspar4 put in just to have nordc for temporary fix
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 

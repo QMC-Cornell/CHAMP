@@ -32,6 +32,8 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use bparm_mod
+      use pointer_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -105,7 +107,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 !JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
 !JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
 !JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
 
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
@@ -122,7 +124,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /pointer/ npointa(MPARMJ*NCTYP3X)
+!JT      common /pointer/ npointa(MPARMJ*NCTYP3X)
       common /focsav/ a4sav,a5sav,a6sav,a7sav
 
       common /fcn_calls/icalls

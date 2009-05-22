@@ -291,6 +291,7 @@ c-----------------------------------------------------------------------------
       use contr2_mod
       use wfsec_mod
       use jaspar_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -305,7 +306,7 @@ c-----------------------------------------------------------------------------
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

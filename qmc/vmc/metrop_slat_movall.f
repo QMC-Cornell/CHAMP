@@ -23,6 +23,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use doefp_mod
       use pseudo_mod
       use delocc_mod
+      use div_v_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
@@ -73,7 +74,7 @@ c     character*23 fmt
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 !JT      common /doefp/ nefp
-      common /div_v/ div_vo(MELEC) !!WAS
+!JT      common /div_v/ div_vo(MELEC) !!WAS
       dimension xstrech(3,MELEC)
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**1.5d0*(two*(one-v*ri)/three+.4d0*v*r2)

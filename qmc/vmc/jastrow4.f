@@ -15,6 +15,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -37,7 +38,7 @@ c Jastrow 6   must be used with one of isc=6,7
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)

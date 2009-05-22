@@ -791,6 +791,7 @@ c            = 2 then we print new parameters with _new subscript
       use jaspar_mod
       use jaspar3_mod
       use jaspar4_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -811,7 +812,7 @@ c            = 2 then we print new parameters with _new subscript
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 !JT      common /basis/ zex(MBASIS,MWF),betaq
 !JT     &,n1s(MCTYPE)

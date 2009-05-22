@@ -20,6 +20,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use doefp_mod
       use contrl_per_mod
       use delocc_mod
+      use div_v_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -50,7 +51,7 @@ c     common /contr3/ mode
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /doefp/ nefp
-      common /div_v/ div_vo(MELEC)
+!JT      common /div_v/ div_vo(MELEC)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),

@@ -18,9 +18,9 @@ c jacobian of the transformation
       use dim_mod
       use forcepar_mod
       use wfsec_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
       character*64 filename
-      character*16 mode
 
 !      include 'vmc.h'
 !      include 'force.h'
@@ -29,7 +29,7 @@ c jacobian of the transformation
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech

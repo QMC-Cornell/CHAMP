@@ -23,9 +23,8 @@ c wrt the wavefunction parameters.
       use pseudo_mod
       use contrl_per_mod
       use derivjas_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-
-      character*16 mode
 
 c complex local:
       complex*16 cvd(3,MELEC),cvk(3,MELEC),cvelocity(3,MELEC)
@@ -38,7 +37,7 @@ c     complex*16 cvd_sav,cvk_sav
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc

@@ -11,9 +11,9 @@ c Also do other things that differ for serial and parallel runs, such as setting
       use contrl_mod
       use const_mod
       use dim_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 
-      character*16 mode
       character*27 fmt
       character*20 filename
 
@@ -21,7 +21,7 @@ c Also do other things that differ for serial and parallel runs, such as setting
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contr3/ mode
+!JT      common /contr3/ mode
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),

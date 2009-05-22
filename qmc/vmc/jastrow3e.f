@@ -9,6 +9,7 @@ c Written by Claudia Filippi by modifying jastrow3
       use wfsec_mod
       use jaspar_mod
       use jaspar3_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -32,7 +33,7 @@ c Written by Claudia Filippi by modifying jastrow3
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 
       common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
      &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)

@@ -3,10 +3,10 @@
 !-----------------------------------------------------------------------------
 !=============================================================================
 
+      use contr3_mod
       implicit none
 
-      character*16 mode
-      common /contr3/ mode
+!JT      common /contr3/ mode
 
 
       if(index(mode,'mpi').ne.0) then

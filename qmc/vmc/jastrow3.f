@@ -9,6 +9,7 @@ c Written by Claudia Filippi and Cyrus Umrigar
       use wfsec_mod
       use jaspar_mod
       use jaspar3_mod
+      use bparm_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -33,7 +34,7 @@ c Written by Claudia Filippi and Cyrus Umrigar
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 

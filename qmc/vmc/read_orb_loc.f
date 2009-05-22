@@ -12,16 +12,16 @@ c Reads in either analytic or localized orbitals
       use basis2_mod
       use contr2_mod
       use wfsec_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 
-      character*16 mode
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
@@ -1554,12 +1554,11 @@ c Determine distinct radial basis functions
       use numbas_mod
       use basis2_mod
       use wfsec_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 
-      character*16 mode
 
-
-      common /contr3/ mode
+!JT      common /contr3/ mode
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

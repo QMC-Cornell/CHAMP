@@ -22,7 +22,7 @@ c Written by Cyrus Umrigar
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /div_v/ div_vo(MELEC,MWALK)
+      common /div_v_dmc/ div_vow(MELEC,MWALK)
 
       common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
@@ -116,7 +116,7 @@ c then put the new walker in that location.  Otherwise put it at the end.
             do 12 ip=0,nwprod-1
    12         wthist(iw2,ip,ifr)=wthist(iw,ip,ifr)
             do 15 i=1,nelec
-              div_vo(i,iw2)=div_vo(i,iw)
+              div_vow(i,iw2)=div_vow(i,iw)
               do 15 k=1,ndim
                 voldw(k,i,iw2,ifr)=voldw(k,i,iw,ifr)
    15           xoldw(k,i,iw2,ifr)=xoldw(k,i,iw,ifr)
@@ -149,7 +149,7 @@ c the remaining walkers so that they are they occupy the first positions.
           do 25 ip=0,nwprod-1
    25       wthist(iw2,ip,ifr)=wthist(iw,ip,ifr)
           do 30 i=1,nelec
-            div_vo(i,iw2)=div_vo(i,iw)
+            div_vow(i,iw2)=div_vow(i,iw)
             do 30 k=1,ndim
               voldw(k,i,iw2,ifr)=voldw(k,i,iw,ifr)
    30         xoldw(k,i,iw2,ifr)=xoldw(k,i,iw,ifr)

@@ -34,6 +34,10 @@ c Written by Cyrus Umrigar
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use bparm_mod
+      use jasparread_mod
+      use pointer_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -45,7 +49,7 @@ c Written by Cyrus Umrigar
       character*30 section
 !JT      character*24 date
       character*10 eunit
-      character*16 mode,iorb_format
+      character*16 iorb_format
       character*80000 input_line
 
 !JT      common /dim/ ndim
@@ -64,7 +68,7 @@ c Written by Cyrus Umrigar
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
       common /contr_names/ iorb_format
       common /contr_ylm/ irecursion_ylm
 
@@ -87,7 +91,7 @@ c Written by Cyrus Umrigar
 !JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
 !JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
       common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
@@ -156,7 +160,7 @@ c subroutine that is called both from fit and read_input.
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-      common /pointer/ npointa(MPARMJ*NCTYP3X)
+!JT      common /pointer/ npointa(MPARMJ*NCTYP3X)
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
 !JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
@@ -171,7 +175,7 @@ c     namelist /opt_list/ igradhess
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
       common /jel_sph2/ zconst ! RM
-      common /jasparread/nparma_read,nparmb_read,nparmc_read         ! JT
+!JT      common /jasparread/nparma_read,nparmb_read,nparmc_read         ! JT
 
       dimension irn(4),cent_tmp(3),iflag(MDET)
 

@@ -19,6 +19,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use pseudo_mod
       use delocc_mod
       use jaspar_mod
+      use div_v_mod
       implicit real*8(a-h,o-z)
 
       parameter(small=1.d-6)
@@ -77,7 +78,7 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /forcjac/ ajacob
 !JT      common /doefp/ nefp
-      common /div_v/ div_vo(MELEC)
+!JT      common /div_v/ div_vo(MELEC)
 
       dimension irn(4,0:MPROC),istatus(MPI_STATUS_SIZE)
       dimension ircounts(0:MPROC),idispls(0:MPROC)

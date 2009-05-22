@@ -14,8 +14,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar_mod
       use jaspar3_mod
       use jaspar4_mod
+      use bparm_mod
+      use contr3_mod
       implicit real*8(a-h,o-z)
-      character*16 mode
 
 
 c epsder1f=sqrt(max(eps_diff,dbl_epsilon))
@@ -30,7 +31,7 @@ c      complex*16 cvd_sav,cvk_sav
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
@@ -71,7 +72,7 @@ c      complex*16 cvd_sav,cvk_sav
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 !JT      common /delocc/ denergy(MPARM)
 c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
 c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)

@@ -19,8 +19,9 @@ c routine to accumulate estimators for energy etc.
       use pseudo_mod
       use contrl_per_mod
       use delocc_mod
+      use contr3_mod
+      use div_v_mod
       implicit real*8(a-h,o-z)
-      character*16 mode
 
 !JT      parameter (half=.5d0)
 
@@ -35,7 +36,7 @@ c routine to accumulate estimators for energy etc.
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contr3/ mode
+!JT      common /contr3/ mode
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 !JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
@@ -57,7 +58,7 @@ c routine to accumulate estimators for energy etc.
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /doefp/ nefp
-      common /div_v/ div_vo(MELEC)
+!JT      common /div_v/ div_vo(MELEC)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),

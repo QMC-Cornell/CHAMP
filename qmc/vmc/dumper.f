@@ -30,6 +30,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use doefp_mod
       use pseudo_mod
       use delocc_mod
+      use div_v_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -91,7 +92,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 !JT      common /doefp/ nefp
-      common /div_v/ div_vo(MELEC)
+!JT      common /div_v/ div_vo(MELEC)
 
       dimension irn(4)
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT),znucx(MCTYPE)

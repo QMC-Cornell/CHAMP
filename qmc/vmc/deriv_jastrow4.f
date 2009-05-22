@@ -18,6 +18,9 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use bparm_mod
+      use pointer_mod
+      use gradhessj_nonlin_mod
       implicit real*8(a-h,o-z)
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
@@ -38,7 +41,7 @@ c Jastrow 6   must be used with one of isc=6,7
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /bparm/ nspin2b,nocuspb
+!JT      common /bparm/ nspin2b,nocuspb
 
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
@@ -58,7 +61,7 @@ c Jastrow 6   must be used with one of isc=6,7
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /gradhessj_nonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2),didk(MPARMJ)
+!JT      common /gradhessj_nonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2),didk(MPARMJ)
 
 c     common /jasnonloc/ fso(MELEC,MELEC),fsumo
 
@@ -70,7 +73,7 @@ c     common /jasnonloc/ fso(MELEC,MELEC),fsumo
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /pointer/ npointa(MPARMJ*NCTYP3X)
+!JT      common /pointer/ npointa(MPARMJ*NCTYP3X)
 !JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
 !JT     &,go(MELEC,MELEC,MPARMJ)
 
