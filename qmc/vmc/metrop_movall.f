@@ -12,6 +12,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use dim_mod
       use forcepar_mod
       use doefp_mod
+      use delocc_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
 !JT      parameter (half=.5d0)
@@ -27,7 +28,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
 !JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 !JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 !JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /delocc/ denergy(MPARM)
+!JT      common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),

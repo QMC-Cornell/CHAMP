@@ -10,6 +10,10 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use basis1_mod
       use contr2_mod
       use contrl_opt2_mod
+      use delocc_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -62,13 +66,13 @@ c      complex*16 cvd_sav,cvk_sav
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /bparm/ nspin2b,nocuspb
-      common /delocc/ denergy(MPARM)
+!JT      common /delocc/ denergy(MPARM)
 c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
 c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
 c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved

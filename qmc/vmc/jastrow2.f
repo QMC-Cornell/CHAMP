@@ -7,6 +7,8 @@ c Written by Cyrus Umrigar
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use jaspar_mod
+      use jaspar3_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -25,10 +27,10 @@ c Written by Cyrus Umrigar
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
      &                dsphi31,dtphi31,duphi31,d2sphi31,d2tphi31,

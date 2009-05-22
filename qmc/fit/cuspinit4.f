@@ -1,14 +1,15 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
 
 c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       if(nordc.eq.0) return
@@ -74,6 +75,7 @@ c-----------------------------------------------------------------------
 
       use atom_mod
       use optim_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -83,7 +85,7 @@ c-----------------------------------------------------------------------
 c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
 !JT      common /optim/ lo(MORB),npoint(MORB),

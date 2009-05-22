@@ -6,6 +6,7 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
       use contr2_mod
       use wfsec_mod
+      use jaspar3_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -29,8 +30,8 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
      &d2uphi20,d2stphi20,d2suphi20,d2utphi20,
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
 !JT      parameter(one=1.d0,two=2.d0,three=3.d0,four=4.d0,six=6.d0)
@@ -1109,6 +1110,7 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
       use atom_mod
       use contr2_mod
+      use jaspar3_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1119,8 +1121,8 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /focsav/ c4sav,c5sav,c7sav,c9sav
 
 !JT      parameter(half=0.5d0,zero=0.d0,two=2.d0,four=4.d0)

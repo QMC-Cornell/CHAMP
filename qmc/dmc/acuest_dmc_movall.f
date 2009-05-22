@@ -9,6 +9,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use forcepar_mod
       use pseudo_mod
       use contrl_per_mod
+      use delocc_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0)
 !JT      include '../vmc/vmc.h'
@@ -40,7 +41,7 @@ c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /stats/ dfus2ac,dfus2un(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
      &nbrnch,nodecr
-      common /delocc/ denergy(MPARM)
+!JT      common /delocc/ denergy(MPARM)
       common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
      &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
      &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),

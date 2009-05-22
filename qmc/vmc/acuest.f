@@ -18,6 +18,7 @@ c routine to accumulate estimators for energy etc.
       use doefp_mod
       use pseudo_mod
       use contrl_per_mod
+      use delocc_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -47,7 +48,7 @@ c routine to accumulate estimators for energy etc.
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /delocc/ denergy(MPARM)
+!JT      common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2

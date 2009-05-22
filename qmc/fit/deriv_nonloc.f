@@ -301,6 +301,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2_mod
       use contrl_per_mod
       use derivjas_mod
+      use jaspar_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -314,7 +315,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

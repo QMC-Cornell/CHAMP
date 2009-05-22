@@ -46,6 +46,9 @@ c polarized calculations were attempted.
       use wfsec_mod
       use doefp_mod
       use pseudo_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -97,12 +100,12 @@ c     include '../fit/fit.h'
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk

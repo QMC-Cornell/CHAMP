@@ -10,6 +10,9 @@ c numerical Laplacian for periodic systems.
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar6_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
@@ -33,18 +36,18 @@ c Warning: div_vj not yet implememnted
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /bparm/ nspin2b,nocuspb
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
-     &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
-     &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
-     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
-     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
-     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
+!JT     &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
+!JT     &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
+!JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
+!JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
+!JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

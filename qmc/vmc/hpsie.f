@@ -8,6 +8,7 @@ c Calculates wavefunction and velocity contributions for electron iel
       use contr2_mod
       use wfsec_mod
       use contrl_per_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -23,7 +24,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 c Warning: jaspar4 put in just to have nordc for temporary fix
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

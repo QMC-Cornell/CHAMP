@@ -29,4 +29,9 @@
           use contrl_per_mod
           use contrl_opt_mod
           use derivjas_mod
+          use delocc_mod
+          use jaspar_mod
+          use jaspar3_mod
+          use jaspar4_mod
+          use jaspar6_mod
 

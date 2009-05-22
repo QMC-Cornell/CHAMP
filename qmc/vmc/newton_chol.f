@@ -788,6 +788,9 @@ c            = 2 then we print new parameters with _new subscript
       use gradhess_mod
       use contrl_per_mod
       use contrl_opt_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -804,10 +807,10 @@ c            = 2 then we print new parameters with _new subscript
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /bparm/ nspin2b,nocuspb
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 !JT      common /basis/ zex(MBASIS,MWF),betaq

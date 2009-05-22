@@ -1,18 +1,19 @@
       subroutine cuspinit3(iprin)
 c Written by Claudia Filippi
 
+      use jaspar3_mod
       implicit real*8(a-h,o-z)
 
-      parameter(zero=0.d0,one=1.d0)
+!JT      parameter(zero=0.d0,one=1.d0)
 
-      include '../vmc/vmc.h'
-      include '../vmc/force.h'
+!JT      include '../vmc/vmc.h'
+!JT      include '../vmc/force.h'
 
       parameter(NEQSX=6*MORDJ)
       parameter(job=11)
 
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
 c     dimension q(2*MORDJ,NEQSX),qp(0:2*MORDJ,NEQSX)

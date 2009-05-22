@@ -3,6 +3,7 @@ c Written by Claudia Filippi
 
       use atom_mod
       use contr2_mod
+      use jaspar3_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter(zero=0.d0)
@@ -17,8 +18,8 @@ c Written by Claudia Filippi
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
       dimension o(2*MORDJ),op(0:2*MORDJ)

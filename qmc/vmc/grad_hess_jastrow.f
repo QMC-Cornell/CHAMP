@@ -8,6 +8,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use const_mod
       use contrl_opt2_mod
       use derivjas_mod
+      use delocc_mod
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
@@ -23,7 +24,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
 !JT     &,detij_det(MPARMD,MPARMD)
       common /bparm/ nspin2b,nocuspb
 
-      common /delocc/ denergy(MPARM)
+!JT      common /delocc/ denergy(MPARM)
 !JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
 !JT     &,go(MELEC,MELEC,MPARMJ)
 
@@ -306,6 +307,7 @@ c-----------------------------------------------------------------------
       use contrl_opt2_mod
       use contrl_opt_mod
       use derivjas_mod
+      use delocc_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -324,7 +326,7 @@ c-----------------------------------------------------------------------
       common /gradhessdero/ deti_det_old(MPARMD),gvalue_old(MPARMJ),denergy_old(MPARM)
      &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2),didk_old(MPARMJ)
      &,detij_det_old(MPARMD,MPARMD)
-      common /delocc/ denergy(MPARM)
+!JT      common /delocc/ denergy(MPARM)
 !JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
 !JT     &,go(MELEC,MELEC,MPARMJ)
       common /gradhessj_nonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2),didk(MPARMJ)

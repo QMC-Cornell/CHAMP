@@ -290,6 +290,7 @@ c-----------------------------------------------------------------------------
       use const_mod
       use contr2_mod
       use wfsec_mod
+      use jaspar_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -303,7 +304,7 @@ c-----------------------------------------------------------------------------
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype

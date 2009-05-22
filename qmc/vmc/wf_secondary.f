@@ -16,6 +16,9 @@ c Read parameters for secondary wavefns.
       use contr2_mod
       use wfsec_mod
       use contrl_per_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0)
@@ -54,10 +57,10 @@ c Read parameters for secondary wavefns.
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
       common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
@@ -280,6 +283,9 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use forcepar_mod
       use wfsec_mod
       use contrl_per_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
@@ -315,10 +321,10 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
 !JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /bparm/ nspin2b,nocuspb
@@ -436,6 +442,9 @@ c Written by Cyrus Umrigar
       use contr2_mod
       use forcepar_mod
       use wfsec_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -469,10 +478,10 @@ c     common /contrl_per/ iperiodic,ibasis
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
 !JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /bparm/ nspin2b,nocuspb
@@ -639,6 +648,9 @@ c Saves the best wf yet and writes it out at end of run
       use contr2_mod
       use forcepar_mod
       use wfsec_mod
+      use jaspar_mod
+      use jaspar3_mod
+      use jaspar4_mod
       implicit real*8(a-h,o-z)
 
       character*30 fmt
@@ -675,10 +687,10 @@ c     common /contrl_per/ iperiodic,ibasis
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
 !JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
+!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
+!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /bparm/ nspin2b,nocuspb

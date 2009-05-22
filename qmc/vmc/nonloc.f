@@ -386,6 +386,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use const_mod
       use dim_mod
       use contrl_per_mod
+      use jaspar_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
@@ -397,7 +398,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
+!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
