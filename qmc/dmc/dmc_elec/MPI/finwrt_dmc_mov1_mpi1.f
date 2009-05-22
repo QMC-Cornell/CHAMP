@@ -15,6 +15,7 @@ c routine to print out final results
       use contr2_mod
       use gradhess_mod
       use forcepar_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -23,7 +24,7 @@ c routine to print out final results
 c     common /force_dmc/ itausec,nwprod
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch

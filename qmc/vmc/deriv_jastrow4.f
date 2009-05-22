@@ -12,6 +12,8 @@ c Jastrow 6   must be used with one of isc=6,7
       use contr2_mod
       use contrl_opt2_mod
       use wfsec_mod
+      use contrl_per_mod
+      use derivjas_mod
       implicit real*8(a-h,o-z)
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
@@ -25,7 +27,7 @@ c Jastrow 6   must be used with one of isc=6,7
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -65,8 +67,8 @@ c     common /jasnonloc/ fso(MELEC,MELEC),fsumo
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
       common /pointer/ npointa(MPARMJ*NCTYP3X)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-     &,go(MELEC,MELEC,MPARMJ)
+!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
+!JT     &,go(MELEC,MELEC,MPARMJ)
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)

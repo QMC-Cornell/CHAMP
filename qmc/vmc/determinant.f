@@ -14,6 +14,8 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use contr2_mod
       use contrl_opt2_mod
       use wfsec_mod
+      use contrl_per_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -47,8 +49,8 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /contrl_per/ iperiodic,ibasis
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c    &,d2phin(MBASIS,MELEC)
@@ -371,6 +373,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
       use const_mod
       use dim_mod
       use wfsec_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -379,7 +382,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
 c commons
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)

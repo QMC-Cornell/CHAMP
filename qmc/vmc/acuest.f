@@ -17,6 +17,7 @@ c routine to accumulate estimators for energy etc.
       use forcepar_mod
       use doefp_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -28,7 +29,7 @@ c routine to accumulate estimators for energy etc.
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch

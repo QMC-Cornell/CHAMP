@@ -9,6 +9,7 @@ c We also verify that all the determinants have same angular momentum
       use dets_mod
       use numbas_mod
       use basis2_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -16,7 +17,7 @@ c We also verify that all the determinants have same angular momentum
 !JT      include 'numbas.h'
 
 
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/   iworbd(MELEC,MDET)
 !JT      common /coefs/  coef(MBASIS,MORB,MWF),nbasis,norb

@@ -7,13 +7,14 @@ c Written by Cyrus Umrigar
       use const_mod
       use dim_mod
       use forcepar_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (zero=0.d0,two=2.d0,half=.5d0)
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod

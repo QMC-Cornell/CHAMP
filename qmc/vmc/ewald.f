@@ -6,12 +6,13 @@ c Written by Cyrus Umrigar
       use const_mod
       use dim_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
 
 !JT      common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /constant/ twopi
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

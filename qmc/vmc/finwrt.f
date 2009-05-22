@@ -18,6 +18,7 @@ c routine to print out final results
       use forcepar_mod
       use doefp_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 !JT      character*80 title,fmt
@@ -34,7 +35,7 @@ c routine to print out final results
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

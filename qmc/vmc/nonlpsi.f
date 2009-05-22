@@ -9,6 +9,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -18,7 +19,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
 !JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,

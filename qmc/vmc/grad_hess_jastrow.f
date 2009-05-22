@@ -7,6 +7,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use optim_mod
       use const_mod
       use contrl_opt2_mod
+      use derivjas_mod
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
@@ -23,8 +24,8 @@ c Hence it is not necessary to call grad_hess_jas_save.
       common /bparm/ nspin2b,nocuspb
 
       common /delocc/ denergy(MPARM)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-     &,go(MELEC,MELEC,MPARMJ)
+!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
+!JT     &,go(MELEC,MELEC,MPARMJ)
 
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
      &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
@@ -303,11 +304,13 @@ c-----------------------------------------------------------------------
       use slater_mod
       use optim_mod
       use contrl_opt2_mod
+      use contrl_opt_mod
+      use derivjas_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
 
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
@@ -322,8 +325,8 @@ c-----------------------------------------------------------------------
      &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2),didk_old(MPARMJ)
      &,detij_det_old(MPARMD,MPARMD)
       common /delocc/ denergy(MPARM)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-     &,go(MELEC,MELEC,MPARMJ)
+!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
+!JT     &,go(MELEC,MELEC,MPARMJ)
       common /gradhessj_nonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2),didk(MPARMJ)
 
 !JT      common /optim/ lo(MORB),npoint(MORB),
@@ -367,11 +370,12 @@ c-----------------------------------------------------------------------
 
       use optim_mod
       use contrl_opt2_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
 
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
@@ -528,11 +532,12 @@ c-----------------------------------------------------------------------
       use optim_mod
       use gradhess_mod
       use contrl_opt2_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
       character*20 fmt
 
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
      &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
      &,w_i(MPARM),w_i_e(MPARM)

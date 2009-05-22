@@ -18,6 +18,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use dim_mod
       use forcepar_mod
       use doefp_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -31,7 +32,7 @@ c we never use it.
 
 !JT      common /dim/ ndim
 c     common /contr3/ mode
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)

@@ -12,9 +12,10 @@ c pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nl
 
       use const_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

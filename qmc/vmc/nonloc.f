@@ -10,13 +10,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use const_mod
       use dim_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (one=1.d0)
 
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
@@ -255,6 +256,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr2_mod
       use contrl_opt2_mod
       use wfsec_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -264,7 +266,7 @@ c     common /dim/ ndim
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /slatn2/ deti_new(MPARMD)
@@ -383,6 +385,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dets_mod
       use const_mod
       use dim_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
@@ -392,7 +395,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 

@@ -12,6 +12,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use derivjas_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
@@ -59,8 +60,8 @@ c Jastrow 6   must be used with one of isc=6,7
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
       common /pointer/ npointa(MPARMJ*NCTYP3X)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-     &,go(MELEC,MELEC,MPARMJ)
+!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
+!JT     &,go(MELEC,MELEC,MPARMJ)
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)

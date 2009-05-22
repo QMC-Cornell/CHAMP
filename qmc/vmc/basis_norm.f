@@ -34,13 +34,14 @@ c and, the same normal. for Gaussians as for Slaters.
       use basis2_mod
       use basisnorm_mod
       use contr2_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 c    &,iwctype(MCENT),nctype,ncent
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 !JT      common /basis/ zex(MBASIS,MWF),betaq
 !JT     &,n1s(MCTYPE)

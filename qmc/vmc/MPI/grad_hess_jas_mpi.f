@@ -5,6 +5,7 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
 
       use optim_mod
       use contrl_opt2_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc.h'
@@ -13,7 +14,7 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
 
       parameter(MPARM2=MPARM*MPARM)
 
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
      &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
 

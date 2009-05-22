@@ -26,6 +26,8 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use basisnorm_mod
       use contr2_mod
       use pseudo_mod
+      use contrl_per_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -45,8 +47,8 @@ c     parameter(MXJTJ=(MPARM*(MPARM+1))/2,MWORK=4*MDATA+5*MPARM+MXJTJ)
 !JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
-      common /contrl_per/ iperiodic,ibasis
-      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
+!JT      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

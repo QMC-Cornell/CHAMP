@@ -10,6 +10,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -24,7 +25,7 @@ c Jastrow 6   must be used with one of isc=6,7
 
 !!! added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

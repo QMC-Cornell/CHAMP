@@ -8,6 +8,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -16,7 +17,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !!!
 !JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,

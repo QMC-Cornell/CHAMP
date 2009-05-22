@@ -15,6 +15,7 @@ c routine to accumulate estimators for energy etc.
       use contr2_mod
       use forcepar_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -27,7 +28,7 @@ c routine to accumulate estimators for energy etc.
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /iterat/ ipass,iblk

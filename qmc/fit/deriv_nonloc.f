@@ -10,13 +10,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use const_mod
       use dim_mod
       use pseudo_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 !JT   parameter (one=1.d0)
 
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
@@ -298,6 +299,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use const_mod
       use dim_mod
       use contr2_mod
+      use contrl_per_mod
+      use derivjas_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -309,7 +312,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -340,8 +343,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
       common /pointer/ npointa(MPARMJ*NCTYP3X)
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-     &,go(MELEC,MELEC,MPARMJ)
+!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
+!JT     &,go(MELEC,MELEC,MPARMJ)
 
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)

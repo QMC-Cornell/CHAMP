@@ -7,6 +7,7 @@ c Calculates wavefunction and velocity contributions for electron iel
       use dim_mod
       use contr2_mod
       use wfsec_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -15,7 +16,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 !JT      include 'force.h'
 
 !JT      common /dim/ ndim
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch

@@ -18,9 +18,11 @@ c vps  = (V_l-V_L)
       use optim_mod
       use const_mod
       use pseudo_mod
+      use contrl_per_mod
+      use derivjas_mod
       implicit real*8(a-h,o-z)
 
-      common /contrl_per/ iperiodic,ibasis
+!JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
@@ -36,8 +38,8 @@ c vps  = (V_l-V_L)
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-     &,go(MELEC,MELEC,MPARMJ)
+!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
+!JT     &,go(MELEC,MELEC,MPARMJ)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
      &,detu(*),detd(*),deti_det(MPARMD),slmui(nupdn_square,*),slmdi(nupdn_square,*)

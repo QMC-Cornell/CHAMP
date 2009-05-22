@@ -26,4 +26,7 @@
           use doefp_mod
           use vj_mod
           use pseudo_mod
+          use contrl_per_mod
+          use contrl_opt_mod
+          use derivjas_mod
 
