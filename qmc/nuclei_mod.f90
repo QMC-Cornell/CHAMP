@@ -98,12 +98,13 @@ module nuclei_mod
   if(ndim.eq.2.and.imetro.ne.1.and.index(mode,'vmc').ne.0) stop 'imetro!=1 not yet implemented for ndim=2'
 
   write(6,'(a,i5)') ' type of external potential: nloc=',nloc
-  if(nloc.lt.-4 .or. nloc.gt.6) stop 'nloc must be between -4 and 6 inclusive'
+  if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
   if(nloc.ge.2) then
      write(6,'(a,i4)') ' number of quadrature points for pseudopotential = ', nquad
      if (nquad.gt.MPS_QUAD) stop 'nquad > MPS_QUAD'
 
-! warning quantum dots, wire,... stuff not added here
+! warning quantum dots, wire,... stuff not added here 
+!   .... and don't forget nloc.eq.-5 case whenever this is implemented
 !  elseif(nloc.eq.-1) then
 !        read(5,*) w0,bext,glande
 !        we=dsqrt(w0*w0+0.25d0*bext*bext)

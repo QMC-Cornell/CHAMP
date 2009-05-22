@@ -368,7 +368,8 @@ c Numerical radial basis
 c For the moment read basis info in new format for nloc=-1 only, but
 c eventually change to this always.  For the moment we assume that it is
 c single dot (ncent=nctype=1) and set nbasis_ctype=nbasis.
-        if(nloc.eq.-1) then
+c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
+        if((nloc.eq.-1).or.(nloc.eq.-5)) then
 
           nbasis_ctype(1)=nbasis
           write(6,'(''Reading iwrwf'')')
@@ -501,7 +502,7 @@ c single dot (ncent=nctype=1) and set nbasis_ctype=nbasis.
       endif ! end of nloc if
       endif
 
-      if(nloc.ne.-1 .and. numr.ne.-4) then
+      if(nloc.ne.-1 .and. numr.ne.-4 .and. nloc.ne.-5) then
       write(6,'(/,''center type'',(12i4))') (i,i=1,nctype)
       write(6,'(/,''1s'',t11,(12i4))') (n1s(i),i=1,nctype)
       if(numr.le.0) write(6,'(''2s'',t11,(12i4))') (n2s(i),i=1,nctype)

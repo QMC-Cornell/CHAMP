@@ -106,6 +106,7 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
      &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /periodic2/ rkvec_shift_latt(3)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -149,7 +150,7 @@ c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
       namelist /opt_list/ xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
-     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys
+     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
       common /jel_sph2/ zconst ! RM
@@ -206,6 +207,8 @@ c nfprod     number of products to undo for estimating population control bias i
 c tau        time-step in dmc
 c nloc       external potential (a positive value => nonlocal pseudopotential)
 c            -9 numerical dot potential read in from potential_num (not yet implemented)
+c            -5 quadratic dot potential 0.5*w0^2*r^2 with barrier at center
+c                (dot_bump_height)*exp(1 - 1/(1-(x/dot_bump_radius)^2))
 c            -4 finite quantum wire   Vwire(x) + 0.5 w0 * y^2
 c            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
 c            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
@@ -639,7 +642,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr
       write(6,'(''nforce,nefp ='',t31,4i5)') nforce,nefp
       if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
-      if(nloc.lt.-4 .or. nloc.gt.6) stop 'nloc must be between -4 and 6 inclusive'
+      if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
       if(nloc.ge.2) then
         read(5,*) nquad
         write(6,'(''nquad='',t31,i4)') nquad
@@ -657,7 +660,15 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
         read(5,*) wire_w,wire_length,wire_potential_cutoff
         we=wire_w  !  this is a quick fix:  needed for the subroutine basis_fns_2dgauss
         write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
-
+       elseif(nloc.eq.-5) then
+        read(5,*) w0,bext,glande
+        we=dsqrt(w0*w0+0.25d0*bext*bext)
+        dot_bump_height = we*100.0d0 ! default value, this is set in optional features
+        dot_bump_radius = 0.1d0 / dsqrt(we) ! default value, set in optional features
+        write(6,'(''spring const of dot pot., w0='',t31,f10.5)') w0
+        write(6,'(''applied magnetic field., bext='',t31,f10.5)') bext
+        write(6,'(''effective spring const., we='',t31,f10.5)') we
+        write(6,'(''Lande factor, glande='',t31,f10.5)') glande
       endif
 
       call object_modified ('nloc') ! JT
@@ -1362,6 +1373,8 @@ c   default values:
       nmeshr=NAX
       nmesht=NAX
       icoosys=1
+c     default values of dot_bump_height and dot_bump_radius are set above
+c        where w0, etc... are read in
 
 c Read optional variables if any:
 c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
@@ -1371,6 +1384,10 @@ c (also for 2D systems with numerical orbitals)
         write(6,'(/,a30,/)') section
         read(5,opt_list)
         write(6,opt_list)
+      endif
+
+      if(nloc.eq.-5) then ! ring with barrier in center
+         dot_bump_radius_inv2 = 1.0d0 / (dot_bump_radius * dot_bump_radius)
       endif
 
 c pair density calculation parameters:
@@ -1390,8 +1407,8 @@ c fourier transform :
       if(ifourier.lt.0 .or. ifourier.gt.3 ) stop 'ifourier must be 0,1,2, or 3'
       if(ifourier.gt.1) then
         if(index(mode,'vmc').ne.0 .and. imetro.ne.1) stop 'Fourier transform only possible for imetro=1 in vmc'
-        if(index(mode,'dmc').ne.0 .and. (abs(idmc).ne.2 .or. nloc.ne.-1))
-     &    stop 'Fourier transform calculation only possible for idmc=2,nloc=-1 in dmc'
+        if(index(mode,'dmc').ne.0 .and. (abs(idmc).ne.2 .or. (nloc.ne.-1 .and. nloc.ne.-5)))
+     &    stop 'Fourier transform calculation only possible for idmc=2,nloc=-1 or -5 in dmc'
         if(ndim.ne.2) stop 'Fourier transform not implemented for 3D systems'
       endif
       delk1=fmax1/NAK1

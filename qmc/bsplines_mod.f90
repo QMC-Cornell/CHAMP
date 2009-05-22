@@ -16,6 +16,7 @@ module bsplines_mod
   use mpi_mod
   use orbital_grid_mod, only: igrad_lap,ngrid_orbx,ngrid_orby,ngrid_orbz
 
+
 ! Declaration of global variables and default values
   logical                            :: l_need_phase = .false.
   integer                            :: norb_primitive

@@ -31,7 +31,7 @@ c So assumption is that system is not strongly polarized.
 c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
       pi=4*datan(1.d0)
 
-      if(nloc.eq.-1) then ! parabolic quantum dot
+      if((nloc.eq.-1).or.(nloc.eq.-5)) then ! parabolic quantum dot
         if(we.eq.0.d0) stop 'we should not be 0 in sites for quantum dots (nloc=-1)'
        elseif(nloc.eq.-3) then ! jellium RM
         if(zconst.eq.0.d0) stop 'zconst should not be 0 in sites for atoms in jellium (nloc=-3)'
@@ -40,7 +40,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
       ielec=0
       do 10 ispin=1,2
         do 10 i=1,ncent
-          if(nloc.eq.-1) then ! parabolic quantum dot
+          if((nloc.eq.-1).or.(nloc.eq.-5)) then ! parabolic quantum dot
             znucc=dsqrt(we)
            elseif(nloc.eq.-3) then ! jellium RM
             znucc=zconst
@@ -55,7 +55,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
           do 10 j=1,ju
             ielec=ielec+1
             if(ielec.gt.nelec) return
-            if(nloc.eq.-1) then
+            if(nloc.eq.-1 .or. nloc.eq.-5) then
               sitsca=1/znucc
              elseif(j.eq.1) then
               sitsca=1/max(znucc,1.d0)
@@ -72,7 +72,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
 
 c sample position from exponentials or gaussian around center
 c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots            
-            if(nloc.eq.-1 .and. rring.gt.0.d0) then
+            if((nloc.eq.-1 .or. nloc.eq.-5) .and. rring.gt.0.d0) then
               site=dsqrt(site)
               site=sign(site,(rannyu(0)-half))
               angle=2*pi*rannyu(0)
@@ -83,7 +83,7 @@ c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots
 c sample position from exponentials or gaussian around center
 c a.d.guclu: for wires distribute electrons linearly in y direction  
                  site=-dlog(rannyu(0))
-                 if(nloc.eq.-1 .or. nloc.eq.-4) site=dsqrt(site)
+                 if(nloc.eq.-1 .or. nloc.eq.-4 .or. nloc.eq.-5) site=dsqrt(site)
                  site=sign(site,(rannyu(0)-half))
 
                  if(nloc.eq.-4) then 

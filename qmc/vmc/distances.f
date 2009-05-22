@@ -19,6 +19,7 @@ c calculate interparticle distances
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
+      common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
       common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
 c     common /compferm/ emagv,nv,idot
@@ -46,10 +47,13 @@ c Calculate e-N inter-particle distances
             r_en(i,ic)=dsqrt(r_en(i,ic))
             if(nloc.eq.0) pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
 c           if(nloc.eq.-1) pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
-            if(nloc.eq.-1 .and. ic.eq.1) then  
+            if((nloc.eq.-1 .or. nloc.eq.-5) .and. ic.eq.1) then  
 c             pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
 c             emag=emag+0.125d0*(bext*r_en(i,ic))**2
               pe_en=pe_en+0.5d0*(we*(r_en(i,ic)-rring))**2
+              if(nloc.eq.-5 .and. r_en(i,ic).lt.dot_bump_radius) then
+                 pe_en = pe_en + dot_bump_height*dexp(1.0d0 - 1.0d0/(1.0d0 - dot_bump_radius_inv2*(r_en(i,ic)**2)))
+              endif
               if(iperturb.eq.1) then
 c note that the perturbation potential is defined only for -pi<theta<pi  (it's not periodic)
                 theta=datan2(x(2,i),x(1,i))
