@@ -7,6 +7,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use dets_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -21,9 +22,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
@@ -165,12 +166,13 @@ c-----------------------------------------------------------------------
 
       function psianl(rri,it)
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -205,12 +207,13 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
 c-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)

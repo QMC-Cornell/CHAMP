@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar
 c Calculate the weights due to the fact that we have sampled from
 c one probability distribution, but want to calculate the expectation
 c value with respect to another.
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include '../vmc/vmc.h'
@@ -11,9 +12,9 @@ c value with respect to another.
 
       include 'fit.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,

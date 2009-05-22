@@ -17,6 +17,7 @@ c                 = 0 : asymptotic basis
       use atom_mod
       use basis1_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
@@ -43,9 +44,9 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
@@ -307,6 +308,7 @@ c                 < 0 : Gaussian basis
       use atom_mod
       use basis1_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -335,9 +337,9 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
 !**EndMS(jellium03-1)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)

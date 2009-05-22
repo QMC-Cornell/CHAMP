@@ -10,10 +10,11 @@ c iflag is useless for the moment since we don't optimize in fit
 c any "exponent term" in coefficients for dots. maybe could be useful later?
 c also see basis_norm.dot for real wfs
 
-      use all_tools_mod  !JT
+      use all_tools_mod
+      use const_mod
       use coefs_mod
       use basis1_mod
-      use const_mod
+      use basisnorm_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
@@ -41,7 +42,7 @@ c also see basis_norm.dot for real wfs
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /compferm/ emagv,nv,idot
-      common /basisnorm/ anorm(MBASIS)
+!JT      common /basisnorm/ anorm(MBASIS)
 
       do 20 ib=1,nbasis
         n=n_fd(ib)

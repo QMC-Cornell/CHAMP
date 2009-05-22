@@ -3,13 +3,14 @@ c Written by Cyrus Umrigar
 c subroutine to plot e-n and e-e Jastrow
 
       use atom_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
@@ -47,15 +48,16 @@ c Jastrow 6   must be used with one of isc=6,7
 
       use atom_mod
       use const_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
 
 !JT      parameter (half=.5d0)
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

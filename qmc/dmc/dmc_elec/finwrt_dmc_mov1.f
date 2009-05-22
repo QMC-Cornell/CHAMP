@@ -10,6 +10,8 @@ c routine to print out final results
       use contrl_mod
       use const_mod
       use dim_mod
+      use contr2_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (one=1.d0,two=2.d0,half=.5d0)
@@ -22,9 +24,9 @@ c     common /force_dmc/ itausec,nwprod
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -58,9 +60,9 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 !JT      common /header/ title,date
       common /age/ iage(MWALK),ioldest,ioldestmx
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),

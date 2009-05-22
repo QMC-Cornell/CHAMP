@@ -9,6 +9,7 @@ c Used both for all-electon and 1-electron move versions.
       use contrl_mod
       use const_mod
       use dim_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -30,9 +31,9 @@ c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
       dimension ene_var(3)
 

@@ -4,12 +4,13 @@ c Uses Fock expansion as described in:
 c Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
@@ -256,11 +257,12 @@ c     The derivatives are not evaluated correctly in the 2nd part of
 c     the program even when the 2 electrons are collinear.
 
       use const_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      real*8 hb,etrial,delta,deltai,fbias
 !JT      integer nelec,ipr
-      integer ijas,icusp,icusp2,isc,ifock,i3body,irewgt,iaver,istrch,
-     &ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      integer ijas,icusp,icusp2,isc,ifock,i3body,irewgt,iaver,istrch,
+!JT     &ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       real*8 xlob,dlnrr2,x
       real*8 r1,r2,r12,s,t,rr2,term
       real*8 r,Y20,Y21,root,y,omega,alph,beta
@@ -294,9 +296,9 @@ c     common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -1105,12 +1107,13 @@ c Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
       use atom_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      include 'force.h'
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

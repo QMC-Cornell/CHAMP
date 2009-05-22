@@ -1,5 +1,6 @@
 !         modules
           use contrl_mod
+          use contr2_mod
           use const_mod
           use const2_mod
           use dim_mod
@@ -16,4 +17,7 @@
           use numbas_mod
           use optim_mod
           use basis1_mod
+          use basis2_mod
+          use basisnorm_mod
+          use gradhess_mod
 

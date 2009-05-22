@@ -20,6 +20,8 @@ c Also, one or all electrons can be moved at once.
       use contrl_mod
       use const_mod
       use dim_mod
+      use contr2_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,four=4.d0)
@@ -37,13 +39,13 @@ c Also, one or all electrons can be moved at once.
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap  !JT
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap  !JT
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 
       dimension ene_var(3)

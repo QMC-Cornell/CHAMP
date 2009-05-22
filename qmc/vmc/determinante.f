@@ -8,6 +8,7 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use dets_mod
       use slater_mod
       use const_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -16,9 +17,9 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
 
 c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)

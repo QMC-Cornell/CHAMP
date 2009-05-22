@@ -61,6 +61,7 @@ c               db/ds+db/du>=0,                                      :::
 c               db/ds+db/du+db/dt>=0.                                :::
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use atom_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -70,9 +71,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /chck/ bot
 
       dimension diff(*)
@@ -287,14 +288,15 @@ c-----------------------------------------------------------------------------
 
       use atom_mod
       use const_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
 
 !JT      include '../vmc/vmc.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      include '../vmc/force.h'
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

@@ -60,16 +60,17 @@ c Save grad_sav,hess_sav,ham_sav,ovlp_sav,renorm_ovlp
 c In grad_sav and hess_sav, use appropriate linear combination of energy and variance.
 c Evaluate the eigenvalues of the Hessian of the objective function (linear comb of energy and variance).
 c In fact we should also renormalize grad_sav and hess_sav.
+      use gradhess_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include '../fit/fit.h'
       parameter(MBUF=1024,MWORK=MBUF+MPARM*MPARM)
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /gradhess_sav/ hess_sav(MPARM,MPARM),grad_sav(MPARM)
       common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
       common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
@@ -227,16 +228,17 @@ c The required change in the parameters is -x.
 c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
+      use gradhess_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
+!JT      include '../fit/fit.h'
 
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /optim2/ dparm(MPARM)
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /gradhess_sav/ hess_sav(MPARM,MPARM),grad_sav(MPARM)
       common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
       dimension grad_cal(MPARM)
@@ -356,16 +358,17 @@ c The required change in the parameters is -x.
 c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
+      use gradhess_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT     include 'force.h'
+!JT      include '../fit/fit.h'
 
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /optim2/ dparm(MPARM)
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 c     common /gradhess_sav/ hess_sav(MPARM,MPARM),grad_sav(MPARM)
       common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
       common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
@@ -476,6 +479,7 @@ c-----------------------------------------------------------------------
       subroutine linear_method(iadd_diag,ipr_eigs)
       use optim_mod
       use const_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -494,9 +498,9 @@ c-----------------------------------------------------------------------
 !JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /optim2/ dparm(MPARM)
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
       common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
       common /linear_orig/ ovlp_orig(MPARM,MPARM)
@@ -773,6 +777,8 @@ c            = 2 then we print new parameters with _new subscript
       use dets_mod
       use optim_mod
       use basis1_mod
+      use contr2_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -780,9 +786,9 @@ c            = 2 then we print new parameters with _new subscript
       parameter(AMAX_NONLIN=100.d0)
       character*50 fmt
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /contrl_per/ iperiodic,ibasis
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -822,9 +828,9 @@ c            = 2 then we print new parameters with _new subscript
 !JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /optim2/ dparm(MPARM)
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
 c     dparm_norm=0
 c     do 30 i=1,nparm

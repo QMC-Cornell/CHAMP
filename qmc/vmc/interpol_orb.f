@@ -55,11 +55,12 @@ c-----------------------------------------------------------------------
       subroutine interpol_orb(nx,ny,nz,xi,yi,zi,orb,dorb,ddorb)
 c Written by Cyrus Umrigar
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       dimension orb(*),dorb(3,*),ddorb(*)
 
@@ -499,11 +500,12 @@ c-----------------------------------------------------------------------
 
       subroutine interpol_orbe(nx,ny,nz,xi,yi,zi,orb)
 c Written by Cyrus Umrigar
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       dimension orb(*)
 

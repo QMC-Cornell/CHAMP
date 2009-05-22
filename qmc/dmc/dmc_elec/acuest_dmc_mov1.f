@@ -12,6 +12,7 @@ c routine to accumulate estimators for energy etc.
       use contrl_mod
       use const_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -21,9 +22,9 @@ c routine to accumulate estimators for energy etc.
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e

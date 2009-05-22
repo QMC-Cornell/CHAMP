@@ -20,6 +20,9 @@ c Written by Cyrus Umrigar
       use const2_mod
       use dim_mod
       use numbas_mod
+      use basis2_mod
+      use contr2_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -47,9 +50,9 @@ c Written by Cyrus Umrigar
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /contrl_opt2/ igradhess,iadd_diag_opt
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contr_names/ iorb_format
       common /contr_ylm/ irecursion_ylm
@@ -127,9 +130,9 @@ c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDA
 c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
 c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
 c These commons for reading fit input.  We should separate these into another
 c subroutine that is called both from fit and read_input.
@@ -143,9 +146,9 @@ c subroutine that is called both from fit and read_input.
 !JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /pointer/ npointa(MPARMJ*NCTYP3X)
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata

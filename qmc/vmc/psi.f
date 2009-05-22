@@ -5,6 +5,7 @@ c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
       use dets_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -14,9 +15,9 @@ c periodic systems.
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
@@ -231,6 +232,7 @@ c     write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,u,rri,rrj
 c-----------------------------------------------------------------------
       function psia(ri,it)
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -250,9 +252,9 @@ c-----------------------------------------------------------------------
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       psia=zero
       if(ijas.lt.3.or.ijas.gt.6) return
@@ -281,6 +283,7 @@ c-----------------------------------------------------------------------
 
       function psib(rij,isb,ipar)
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'force.h'
@@ -299,9 +302,9 @@ c-----------------------------------------------------------------------
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       psib=zero
       if(ijas.lt.3.or.ijas.gt.6) return

@@ -520,6 +520,7 @@ c-----------------------------------------------------------------------
       use opt_nwt_mod
       use atom_mod
       use optim_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 
       character*20 fmt
@@ -548,9 +549,9 @@ c-----------------------------------------------------------------------
 
       common /contrl_opt2/ igradhess,iadd_diag_opt
 
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
 
 

@@ -8,6 +8,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dets_mod
       use optim_mod
       use basis1_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -21,9 +22,9 @@ c      complex*16 cvd_sav,cvk_sav
 
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_opt2/ igradhess,iadd_diag_opt
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),

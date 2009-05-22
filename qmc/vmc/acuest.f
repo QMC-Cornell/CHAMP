@@ -13,6 +13,7 @@ c routine to accumulate estimators for energy etc.
       use contrl_mod
       use const_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -26,9 +27,9 @@ c routine to accumulate estimators for energy etc.
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)

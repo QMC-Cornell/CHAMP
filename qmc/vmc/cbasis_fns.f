@@ -5,6 +5,7 @@ c written by Amit Ghosal starting from basis_fns.f
       use basis1_mod
       use const_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 !JT	include 'vmc.h'
 !JT	include 'pseudo.h'
@@ -35,9 +36,9 @@ c Definition of new temporary variables ends here ********
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c     &,d2phin(MBASIS,MELEC)

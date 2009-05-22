@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 
       use const_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -9,9 +10,9 @@ c Written by Cyrus Umrigar
       common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 !!!
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      include 'pseudo.h'
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

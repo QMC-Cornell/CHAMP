@@ -10,6 +10,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use optim_mod
       use const_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
@@ -21,9 +22,9 @@ c Jastrow 6   must be used with one of isc=6,7
       parameter (eps=1.d-12)
 
 !JT      common /dim/ ndim
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

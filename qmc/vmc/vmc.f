@@ -41,6 +41,7 @@ c polarized calculations were attempted.
       use const2_mod
       use dim_mod
       use numbas_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -53,9 +54,9 @@ c     include '../fit/fit.h'
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 
       common /forcepar/ deltot(MFORCE),nforce,istrech

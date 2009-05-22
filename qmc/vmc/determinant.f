@@ -11,6 +11,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use optim_mod
       use const_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -39,9 +40,9 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_opt2/ igradhess,iadd_diag_opt
       common /contrl_per/ iperiodic,ibasis

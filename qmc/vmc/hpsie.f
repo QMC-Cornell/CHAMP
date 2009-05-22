@@ -5,6 +5,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 
       use const_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -15,9 +16,9 @@ c Calculates wavefunction and velocity contributions for electron iel
 !JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 c Warning: jaspar4 put in just to have nordc for temporary fix
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc

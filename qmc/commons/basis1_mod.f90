@@ -1,6 +1,8 @@
 module basis1_mod
 
  use constants_mod
+ implicit none
+ save
 
  real(dp)              :: betaq
  real(dp), allocatable :: zex(:,:)

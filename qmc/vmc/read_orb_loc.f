@@ -9,20 +9,22 @@ c Reads in either analytic or localized orbitals
       use const_mod
       use dim_mod
       use numbas_mod
+      use basis2_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
@@ -160,6 +162,7 @@ c i.e. the order in which we were reading in the p functions.
       use const_mod
       use dim_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 
 
@@ -185,9 +188,9 @@ c i.e. the order in which we were reading in the p functions.
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
@@ -622,6 +625,7 @@ c i.e. the order in which we were reading in the p functions.
       use atom_mod
       use coefs_mod
       use basis1_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -652,9 +656,9 @@ c i.e. the order in which we were reading in the p functions.
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
       character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
      &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
@@ -1052,6 +1056,7 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
       use atom_mod
       use coefs_mod
       use basis1_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -1082,9 +1087,9 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
       character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
      &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
@@ -1545,6 +1550,7 @@ c Determine distinct radial basis functions
       use coefs_mod
       use basis1_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -1572,9 +1578,9 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
 
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)

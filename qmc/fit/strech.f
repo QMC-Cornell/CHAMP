@@ -12,6 +12,7 @@ c rigidly with that nucleus
       use atom_mod
       use const_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -20,9 +21,9 @@ c rigidly with that nucleus
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),

@@ -12,6 +12,7 @@ c necn -> necoef
       use optim_mod
       use basis1_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -43,9 +44,9 @@ c      character*80 fmt
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)

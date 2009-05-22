@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar
 
       use atom_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -10,9 +11,9 @@ c Written by Cyrus Umrigar
 !JT      parameter (half=0.5d0,third=1.d0/3.d0)
 
 !JT      common /dim/ ndim
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
@@ -236,13 +237,14 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -408,13 +410,14 @@ c Scale interparticle distances and calculate the 1st derivative
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -609,13 +612,14 @@ c Scale interparticle distances and calculate the 1st and 2nd derivs
 c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
 
@@ -836,14 +840,15 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
@@ -874,14 +879,15 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
@@ -914,14 +920,15 @@ c Written by Cyrus Umrigar
 c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)

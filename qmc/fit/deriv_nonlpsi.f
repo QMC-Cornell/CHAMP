@@ -6,6 +6,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       use dets_mod
       use optim_mod
       use dim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -22,9 +23,9 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 !JT      include '../vmc/force.h'
 !JT      include 'fit.h'
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
@@ -346,6 +347,7 @@ c-----------------------------------------------------------------------
 c Returns the e-n Jastrow exponent as the function value and
 c the derivs. wrt the parameters in gn(*).
       use optim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -374,9 +376,9 @@ c the derivs. wrt the parameters in gn(*).
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       dimension gn(*)
 
@@ -444,6 +446,7 @@ c Returns the e-e Jastrow exponent as the function value and
 c the derivs. wrt the parameters in gn(*).
 
       use optim_mod
+      use contr2_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
@@ -472,9 +475,9 @@ c the derivs. wrt the parameters in gn(*).
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       dimension gn(*)
 

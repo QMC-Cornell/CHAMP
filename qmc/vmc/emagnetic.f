@@ -8,6 +8,7 @@ c We also verify that all the determinants have same angular momentum
       use coefs_mod
       use dets_mod
       use numbas_mod
+      use basis2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -19,9 +20,9 @@ c We also verify that all the determinants have same angular momentum
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/   iworbd(MELEC,MDET)
 !JT      common /coefs/  coef(MBASIS,MORB,MWF),nbasis,norb
-      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
+!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
+!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
       common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)

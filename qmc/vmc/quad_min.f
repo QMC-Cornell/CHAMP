@@ -10,16 +10,17 @@ c combination of energy and variance.  This results in add_diag gettting large i
 c start from a energy-minimized psi and then optimize the variance.  So, I should fit
 c to the right linear combination.
 c Written by Cyrus Umrigar
+      use gradhess_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include '../fit/fit.h'
+!JT      include 'vmc.h'
+!JT      include '../fit/fit.h'
 
       parameter(MFUNC=3)
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
 c     dimension energy(npts),energy_err(npts),force(npts),force_err(npts),ene_var(npts),
 c    &add_diag(npts),add_diag_log(npts),a(MFUNC,MFUNC),b(MFUNC)

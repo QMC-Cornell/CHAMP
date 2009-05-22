@@ -12,6 +12,8 @@ c routine to print out final results
       use contrl_mod
       use const_mod
       use dim_mod
+      use contr2_mod
+      use gradhess_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 !JT      character*80 title,fmt
@@ -24,9 +26,9 @@ c routine to print out final results
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-     &,ifock,i3body,irewgt,iaver,istrch
-     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
+!JT     &,ifock,i3body,irewgt,iaver,istrch
+!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_per/ iperiodic,ibasis
       common /contrl_opt2/ igradhess,iadd_diag_opt
@@ -55,9 +57,9 @@ c routine to print out final results
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
-      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
+!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
+!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
+!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
 !MS Jellium sphere
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
