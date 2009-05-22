@@ -9,6 +9,7 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use slater_mod
       use const_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -38,7 +39,7 @@ c     common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT     &,ddeti_detin(3,MELEC,MDETUD),d2edeti_detin(MELEC,MDETUD)
 !JT     &,dorb(3,MORB),ddorb(MORB)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 !JT      dimension orbe(orb_tot_nb),ddet_det(3,*),ratio(MDET)

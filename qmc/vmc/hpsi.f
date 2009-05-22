@@ -18,6 +18,8 @@ c wrt the wavefunction parameters.
       use const_mod
       use dim_mod
       use contr2_mod
+      use contrl_opt2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -34,7 +36,7 @@ c     complex*16 cvd_sav,cvk_sav
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
@@ -44,7 +46,7 @@ c     complex*16 cvd_sav,cvk_sav
 !JT     &,detu(MDETUD),detd(MDETUD)
 !JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
 !JT     &,detij_det(MPARMD,MPARMD)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),

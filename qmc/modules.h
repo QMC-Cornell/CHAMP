@@ -20,4 +20,7 @@
           use basis2_mod
           use basisnorm_mod
           use gradhess_mod
+          use contrl_opt2_mod
+          use forcepar_mod
+          use wfsec_mod
 

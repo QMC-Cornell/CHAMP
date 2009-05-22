@@ -16,6 +16,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use dets_mod
       use const_mod
       use dim_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -47,7 +48,7 @@ c     common /contr3/ mode
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
       common /doefp/ nefp
       common /div_v/ div_vo(MELEC)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),

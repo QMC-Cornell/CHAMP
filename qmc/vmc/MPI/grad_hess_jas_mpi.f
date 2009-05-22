@@ -4,6 +4,7 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
 # if defined (MPI)
 
       use optim_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc.h'
@@ -30,7 +31,7 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       dimension collect(MPARM),collect2(MPARM,MPARM)
 

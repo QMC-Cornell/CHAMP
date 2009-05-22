@@ -14,6 +14,7 @@ c Read parameters for secondary wavefns.
       use dim_mod
       use numbas_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0)
@@ -63,7 +64,7 @@ c Read parameters for secondary wavefns.
 
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /wfname/ filename
 
       do 400   iwt=2,nwftype
@@ -275,6 +276,8 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use numbas_mod
       use basis2_mod
       use contr2_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
@@ -317,8 +320,8 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /bparm/ nspin2b,nocuspb
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
@@ -429,6 +432,8 @@ c Written by Cyrus Umrigar
       use dim_mod
       use basis2_mod
       use contr2_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -469,8 +474,8 @@ c     common /contrl_per/ iperiodic,ibasis
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /bparm/ nspin2b,nocuspb
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
       dimension csf_coef_sav(MCSF),a4_sav(MORDJ1,MCTYPE),b_sav(MORDJ1,2),c_sav(MPARMJ,MCTYPE)
       dimension oparm_sav(MOTYPE,MBASIS)
@@ -630,6 +635,8 @@ c Saves the best wf yet and writes it out at end of run
       use dim_mod
       use basis2_mod
       use contr2_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       character*30 fmt
@@ -673,8 +680,8 @@ c     common /contrl_per/ iperiodic,ibasis
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /bparm/ nspin2b,nocuspb
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
 !JT      dimension csf_coef_best(MCSF),a4_best(MORDJ1,MCTYPE),b_best(MORDJ1,2),c_best(MPARMJ,MCTYPE)
       dimension oparm_best(MOTYPE,MBASIS)

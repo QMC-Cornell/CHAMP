@@ -46,6 +46,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrl_mod
       use const_mod
       use dim_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -53,7 +54,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      include '../fit/fit.h'
 
 !JT      common /dim/ ndim
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)

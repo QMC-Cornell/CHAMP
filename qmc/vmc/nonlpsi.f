@@ -8,6 +8,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dets_mod
       use dim_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -38,7 +39,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /chck/ bot
 
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ),rshifti(3),rshiftj(3)
@@ -167,9 +168,10 @@ c-----------------------------------------------------------------------
       function psianl(rri,it)
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -183,7 +185,7 @@ c-----------------------------------------------------------------------
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f
@@ -208,9 +210,10 @@ c-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -225,7 +228,7 @@ c-----------------------------------------------------------------------
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f

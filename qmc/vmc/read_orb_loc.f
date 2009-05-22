@@ -11,6 +11,7 @@ c Reads in either analytic or localized orbitals
       use numbas_mod
       use basis2_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -31,7 +32,7 @@ c Reads in either analytic or localized orbitals
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /contr_ylm/ irecursion_ylm
 
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb),r(2)
@@ -1551,6 +1552,7 @@ c Determine distinct radial basis functions
       use basis1_mod
       use numbas_mod
       use basis2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -1581,7 +1583,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
 !JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
 
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)

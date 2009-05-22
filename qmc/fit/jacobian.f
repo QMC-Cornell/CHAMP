@@ -9,6 +9,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use optim_mod
       use basis1_mod
       use contr2_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -26,7 +27,7 @@ c      complex*16 cvd_sav,cvk_sav
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata

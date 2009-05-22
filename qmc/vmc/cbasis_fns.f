@@ -6,6 +6,7 @@ c written by Amit Ghosal starting from basis_fns.f
       use const_mod
       use numbas_mod
       use basis2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT	include 'vmc.h'
 !JT	include 'pseudo.h'
@@ -46,7 +47,7 @@ c     &,d2phin(MBASIS,MELEC)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
 
@@ -205,6 +206,7 @@ c In this version we replace we by zex*we for basis set optimization.
       use coefs_mod
       use basis1_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -237,7 +239,7 @@ c     common /dim/ ndim
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

@@ -8,6 +8,7 @@ c routine to print out final results
       use dim_mod
       use contr2_mod
       use gradhess_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 !      include 'dmc.h'
 !      include '../vmc/vmc.h'
@@ -17,7 +18,7 @@ c routine to print out final results
 !JT      parameter (one=1.d0,two=2.d0,half=.5d0)
 
 !JT      common /dim/ ndim
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

@@ -42,6 +42,8 @@ c polarized calculations were attempted.
       use dim_mod
       use numbas_mod
       use contr2_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -59,7 +61,7 @@ c     include '../fit/fit.h'
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
@@ -113,7 +115,7 @@ c     include '../fit/fit.h'
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
 
 c common block variables:

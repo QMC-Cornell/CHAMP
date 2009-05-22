@@ -4,6 +4,7 @@ c Written by Cyrus Umrigar
       use dets_mod
       use const_mod
       use dim_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -16,7 +17,7 @@ c Written by Cyrus Umrigar
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

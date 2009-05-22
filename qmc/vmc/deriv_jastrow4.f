@@ -10,6 +10,8 @@ c Jastrow 6   must be used with one of isc=6,7
       use const_mod
       use dim_mod
       use contr2_mod
+      use contrl_opt2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
@@ -28,7 +30,7 @@ c Jastrow 6   must be used with one of isc=6,7
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /bparm/ nspin2b,nocuspb
 
@@ -49,7 +51,7 @@ c Jastrow 6   must be used with one of isc=6,7
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
      &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /gradhessj_nonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2),didk(MPARMJ)
 
 c     common /jasnonloc/ fso(MELEC,MELEC),fsumo

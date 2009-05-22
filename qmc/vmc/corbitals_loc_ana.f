@@ -7,6 +7,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       use const_mod
       use dim_mod
       use numbas_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -24,7 +25,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
      &,corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)

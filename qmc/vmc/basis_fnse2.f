@@ -18,6 +18,7 @@ c                 = 0 : asymptotic basis
       use basis1_mod
       use numbas_mod
       use basis2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
@@ -53,7 +54,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -309,6 +310,7 @@ c                 < 0 : Gaussian basis
       use basis1_mod
       use numbas_mod
       use basis2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -346,7 +348,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

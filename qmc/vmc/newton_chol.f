@@ -61,13 +61,14 @@ c In grad_sav and hess_sav, use appropriate linear combination of energy and var
 c Evaluate the eigenvalues of the Hessian of the objective function (linear comb of energy and variance).
 c In fact we should also renormalize grad_sav and hess_sav.
       use gradhess_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include '../fit/fit.h'
       parameter(MBUF=1024,MWORK=MBUF+MPARM*MPARM)
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
 !JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max

@@ -6,6 +6,7 @@ c routine to print out final results
 
       use mpi_mod
 
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 c     character*80 title
@@ -20,7 +21,7 @@ c     parameter (one=1.d0,half=.5d0)
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD), !JT
      &ekin(NRAD),ekin2(NRAD)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fcum(MFORCE),fcm2(MFORCE)
 c     common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 c     common /forcjac/ ajacob

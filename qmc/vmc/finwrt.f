@@ -14,6 +14,8 @@ c routine to print out final results
       use dim_mod
       use contr2_mod
       use gradhess_mod
+      use contrl_opt2_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 !JT      character*80 title,fmt
@@ -31,7 +33,7 @@ c routine to print out final results
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
       common /contrl_per/ iperiodic,ibasis
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
@@ -41,7 +43,7 @@ c routine to print out final results
 !JT      common /header/ title,date
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)

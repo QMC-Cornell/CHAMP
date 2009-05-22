@@ -23,6 +23,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use const_mod
       use basis2_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 
@@ -72,7 +73,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
 
       dimension diff(*),orb(orb_tot_nb),orb2(orb_tot_nb)
 

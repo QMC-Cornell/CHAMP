@@ -6,6 +6,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use slater_mod
       use optim_mod
       use const_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
@@ -45,7 +46,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
       common /pointer/ npointa(MPARMJ*NCTYP3X)
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       dimension wi_w(MPARM)
 
@@ -238,6 +239,7 @@ c-----------------------------------------------------------------------
       subroutine grad_hess_jas_cum(wsum,enow)
 
       use optim_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -259,7 +261,7 @@ c-----------------------------------------------------------------------
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       dimension dj_e_b(MPARMJ),dj_b(MPARMJ)
 
@@ -300,6 +302,7 @@ c-----------------------------------------------------------------------
       use atom_mod
       use slater_mod
       use optim_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -332,7 +335,7 @@ c-----------------------------------------------------------------------
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
       common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       if(igradhess.eq.0) return
 
@@ -363,12 +366,13 @@ c-----------------------------------------------------------------------
       subroutine grad_hess_jas_init
 
       use optim_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
 
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
      &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
@@ -428,6 +432,7 @@ c-----------------------------------------------------------------------
       subroutine grad_hess_jas_dump(iu)
 
       use optim_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -450,7 +455,7 @@ c-----------------------------------------------------------------------
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       if(igradhess.eq.0) return
 c to do: write out which parameters are being varied -> check for restart
@@ -471,6 +476,7 @@ c-----------------------------------------------------------------------
       subroutine grad_hess_jas_rstrt(iu)
 
       use optim_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -492,7 +498,7 @@ c-----------------------------------------------------------------------
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       if(igradhess.eq.0) return
 
@@ -521,6 +527,7 @@ c-----------------------------------------------------------------------
       use atom_mod
       use optim_mod
       use gradhess_mod
+      use contrl_opt2_mod
       implicit real*8(a-h,o-z)
 
       character*20 fmt
@@ -547,7 +554,7 @@ c-----------------------------------------------------------------------
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),

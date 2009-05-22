@@ -12,6 +12,7 @@ c by A.D.Guclu, Oct2005.
       use dets_mod
       use const_mod
       use dim_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 
 c complex locals:
@@ -21,7 +22,7 @@ c complex commons:
 c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti
 c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 

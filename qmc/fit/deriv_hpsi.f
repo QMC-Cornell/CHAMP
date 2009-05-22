@@ -12,6 +12,7 @@ c wrt the jastrow parameters.
       use const_mod
       use dim_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !      include '../vmc/vmc.h'
@@ -38,7 +39,7 @@ c     complex*16 cvd_sav,cvk_sav
 !JT     &,detu(MDETUD),detd(MDETUD)
 !JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
 !JT     &,detij_det(MPARMD,MPARMD)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),

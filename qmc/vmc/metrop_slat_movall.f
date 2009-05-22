@@ -19,6 +19,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const_mod
       use const2_mod
       use dim_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
@@ -30,7 +31,7 @@ c     parameter (g3b2=.886226925452758d0)
 c g3b2, g5b2 are gamma(3/2), gamma(5/2)
 
 !JT      common /dim/ ndim
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
 c The moves are being made in local r,theta phi coordinates.

@@ -64,6 +64,7 @@ c     and gaussian 3-d)
       use dim_mod
       use numbas_mod
       use basis2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
@@ -100,7 +101,7 @@ c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -514,6 +515,7 @@ c                 < 0 : Gaussian basis
       use const_mod
       use numbas_mod
       use basis2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -551,7 +553,7 @@ c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -700,6 +702,7 @@ c normalization is taken care in (..)
 
       use coefs_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -712,7 +715,7 @@ c     common /dim/ ndim
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -783,6 +786,7 @@ c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
 
       use coefs_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -798,7 +802,7 @@ c     common /dim/ ndim
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -910,6 +914,7 @@ c Here, we do not normalize the wfs
 
       use coefs_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -922,7 +927,7 @@ c     common /dim/ ndim
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -1053,6 +1058,7 @@ c Here, we do not normalize the wfs
 
       use coefs_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1068,7 +1074,7 @@ c     common /dim/ ndim
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -1229,6 +1235,7 @@ c         in units of we (or wire_w in case of wire)))
 
       use coefs_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1241,7 +1248,7 @@ c     common /dim/ ndim
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 
@@ -1321,6 +1328,7 @@ c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
 
       use coefs_mod
       use const_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1336,7 +1344,7 @@ c     common /dim/ ndim
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

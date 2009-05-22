@@ -10,6 +10,7 @@ c job where it left off
       use const_mod
       use dim_mod
       use numbas_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -22,7 +23,7 @@ c job where it left off
       parameter (small=1.d-6)
 
 !JT      common /dim/ ndim
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

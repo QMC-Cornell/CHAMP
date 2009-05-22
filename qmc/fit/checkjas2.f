@@ -289,6 +289,7 @@ c-----------------------------------------------------------------------------
       use atom_mod
       use const_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -305,7 +306,7 @@ c-----------------------------------------------------------------------------
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       iwf=1
 

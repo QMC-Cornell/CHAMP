@@ -5,6 +5,7 @@ c Calculate all orbitals, orb, at position of nucleus icent
       use atom_mod
       use coefs_mod
       use dim_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -21,7 +22,7 @@ c Calculate all orbitals, orb, at position of nucleus icent
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension orb(*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
 

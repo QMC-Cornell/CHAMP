@@ -25,6 +25,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use const_mod
       use dim_mod
       use numbas_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -81,8 +83,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /doefp/ nefp

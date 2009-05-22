@@ -7,6 +7,7 @@ c Reads in 2-dimensional basis fns info for circular quantum dots.
       use dim_mod
       use numbas_mod
       use contr2_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 
 
@@ -15,7 +16,7 @@ c Reads in 2-dimensional basis fns info for circular quantum dots.
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contrl_per/ iperiodic,ibasis
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)

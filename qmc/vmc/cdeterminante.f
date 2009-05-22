@@ -16,6 +16,7 @@ c coefficients are real.
       use const_mod
       use dim_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter(one=1.d0)
@@ -49,7 +50,7 @@ c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET),cdeti_det(MCSF),cdde
 !JT     &,cddeti_detin(3,MELEC,MDETUD),cd2edeti_detin(MELEC,MDETUD)
 !JT     &,cdorb(3,MORB),cddorb(MORB)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),ddet_det(3,*)
 

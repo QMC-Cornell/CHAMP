@@ -238,15 +238,17 @@ c Written by Cyrus Umrigar
 c Scale interparticle distances.
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+!JT      parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+      parameter (d4b3=4.d0/3.d0)
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -256,7 +258,7 @@ c Scale interparticle distances.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings
@@ -411,15 +413,17 @@ c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+!JT      parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+      parameter (d4b3=4.d0/3.d0)
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -429,7 +433,7 @@ c gradient and laplacian.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings
@@ -613,15 +617,17 @@ c of the scaled distances wrt the unscaled ones for calculating the
 c gradient and laplacian.
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+      parameter (d4b3=4.d0/3.d0)
 
       common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
@@ -631,7 +637,7 @@ c gradient and laplacian.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings
@@ -841,10 +847,11 @@ c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist.
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
@@ -857,7 +864,7 @@ c that appropriate for C terms, for dist.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       if(iflag.eq.1.or.iflag.eq.3) then
         c1_jas6=c1_jas6_en(iwf)
@@ -880,10 +887,11 @@ c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st deriv.
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
@@ -896,7 +904,7 @@ c that appropriate for C terms, for dist and 1st deriv.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       if(iflag.eq.1.or.iflag.eq.3) then
         c1_jas6=c1_jas6_en(iwf)
@@ -921,10 +929,11 @@ c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
 c that appropriate for C terms, for dist and 1st two derivs.
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'force.h'
 
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
@@ -937,7 +946,7 @@ c that appropriate for C terms, for dist and 1st two derivs.
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       if(iflag.eq.1.or.iflag.eq.3) then
         c1_jas6=c1_jas6_en(iwf)

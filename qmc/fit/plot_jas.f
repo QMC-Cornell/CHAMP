@@ -49,6 +49,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use atom_mod
       use const_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
@@ -74,7 +75,7 @@ c Jastrow 6   must be used with one of isc=6,7
      &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
      &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
      &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
      &,rrj(-2:MORDJ),fen(MCENT),fee(2)

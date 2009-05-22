@@ -15,6 +15,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const_mod
       use const2_mod
       use dim_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -60,7 +61,7 @@ c     common /contr3/ mode
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
       common /doefp/ nefp
 

@@ -8,6 +8,7 @@ c to zero otherwise.
       use atom_mod
       use coefs_mod
       use optim_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'fit.h'
@@ -27,7 +28,7 @@ c to zero otherwise.
 !JT     &necn,nebase
 
 c     common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
 
       do 10 icent=1,ncent
         do 10 iorb=1,norb

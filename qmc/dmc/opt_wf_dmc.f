@@ -10,6 +10,9 @@ c Used both for all-electon and 1-electron move versions.
       use const_mod
       use dim_mod
       use gradhess_mod
+      use contrl_opt2_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
@@ -27,10 +30,10 @@ c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /force_dmc/ itausec,nwprod
-      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
 !JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max

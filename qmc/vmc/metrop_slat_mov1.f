@@ -20,6 +20,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const_mod
       use const2_mod
       use dim_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 
 
@@ -69,7 +70,7 @@ c     common /contr3/ mode
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /doefp/ nefp
       common /div_v/ div_vo(MELEC)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /jel_sph2/ zconst ! RM
 

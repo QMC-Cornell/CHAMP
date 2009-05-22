@@ -5,9 +5,10 @@ c Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
+!JT      include 'vmc.h'
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -16,9 +17,9 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
 
-      include 'force.h'
+!JT      include 'force.h'
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -32,7 +33,7 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
      &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-      parameter(one=1.d0,two=2.d0,three=3.d0,four=4.d0,six=6.d0)
+!JT      parameter(one=1.d0,two=2.d0,three=3.d0,four=4.d0,six=6.d0)
 
       dimension u(*),s(*),t(*)
 

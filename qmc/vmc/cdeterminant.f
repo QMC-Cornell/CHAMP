@@ -15,6 +15,8 @@ c coefficients are real.
       use const_mod
       use dim_mod
       use contr2_mod
+      use contrl_opt2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -55,7 +57,7 @@ c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -69,7 +71,7 @@ c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 c     &,cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
@@ -309,6 +311,8 @@ c can deal only with spin polarized systems for the moment
       use const_mod
       use dim_mod
       use contr2_mod
+      use contrl_opt2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -350,14 +354,14 @@ c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /contrl_per/ iperiodic,ibasis
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),

@@ -23,6 +23,9 @@ c Written by Cyrus Umrigar
       use basis2_mod
       use contr2_mod
       use gradhess_mod
+      use contrl_opt2_mod
+      use forcepar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -49,7 +52,7 @@ c Written by Cyrus Umrigar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -57,7 +60,7 @@ c Written by Cyrus Umrigar
       common /contr_names/ iorb_format
       common /contr_ylm/ irecursion_ylm
 
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -94,7 +97,7 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
       common /atomtyp/ ncentyp(MCTYPE)
 !JT      common /header/ title,date

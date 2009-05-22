@@ -12,6 +12,8 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use const_mod
       use dim_mod
       use contr2_mod
+      use contrl_opt2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -44,7 +46,7 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       common /contr3/ mode
-      common /contrl_opt2/ igradhess,iadd_diag_opt
+!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
       common /contrl_per/ iperiodic,ibasis
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
@@ -62,7 +64,7 @@ c Note: d2edeti_deti(MELEC,MDET) need not be in common
 !JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
 !JT     &,detij_det(MPARMD,MPARMD)
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
 !JT     common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
@@ -368,6 +370,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
       use optim_mod
       use const_mod
       use dim_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -378,7 +381,7 @@ c commons
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 !JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)

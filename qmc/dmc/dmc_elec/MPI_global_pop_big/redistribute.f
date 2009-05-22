@@ -18,8 +18,9 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use control_mod
       use dmc_mod
       use const_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
-      common /forcepar/ deltot(MFORCE),nforce,istrech
+!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod
 

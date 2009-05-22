@@ -6,6 +6,7 @@ c Calculates wavefunction and velocity contributions for electron iel
       use const_mod
       use dim_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 
@@ -23,7 +24,7 @@ c Calculates wavefunction and velocity contributions for electron iel
 c Warning: jaspar4 put in just to have nordc for temporary fix
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
 
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 

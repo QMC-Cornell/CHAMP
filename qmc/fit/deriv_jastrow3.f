@@ -6,6 +6,7 @@ c Written by Claudia Filippi
       use const_mod
       use dim_mod
       use contr2_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -33,7 +34,7 @@ c Written by Claudia Filippi
 
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /wfsec/ iwftype(MFORCE),iwf,nwftype
+!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /bparm/ nspin2b,nocuspb
       common /focktmp/ fc,fu,fuu,fs,fss,ft,ftt,fst,fus,fut
       common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
