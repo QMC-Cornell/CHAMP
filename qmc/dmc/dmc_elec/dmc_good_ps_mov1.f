@@ -487,8 +487,11 @@ c A better solution would be to employ a better way of treating nonlocal psps. i
 c We truncate wts that come from energies that are too low by more than 10*energy_sigma
 c This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
 c For MPI runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+c It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
           if(iblk.gt.2) then
             energy_sigma=sigma(egcum1(1),egcm21(1),wgcum1(1))
+c           energy_sigma=sigma(ecum1,ecm21,wcum1)
+            write(6,'(''energy_sigma='',f10.5)') energy_sigma
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
             if(dwt.gt.1+10*energy_sigma*tau) then
               ipr_sav=ipr_sav+1
