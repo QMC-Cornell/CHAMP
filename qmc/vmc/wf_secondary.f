@@ -11,6 +11,8 @@ c Read parameters for secondary wavefns.
       use dets_mod
       use basis1_mod
       use const_mod
+      use dim_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0)
@@ -23,7 +25,7 @@ c Read parameters for secondary wavefns.
       character*20 filename,wfile,fmt
       character*30 section
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
@@ -54,9 +56,9 @@ c Read parameters for secondary wavefns.
       common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /jaspar/ nspin1,nspin2,sspin,sspinn,is
       common /bparm/ nspin2b,nocuspb
-      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
@@ -268,11 +270,13 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use coefs_mod
       use dets_mod
       use basis1_mod
+      use dim_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
@@ -312,9 +316,9 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       common /bparm/ nspin2b,nocuspb
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 c     common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 c    &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
@@ -419,12 +423,13 @@ c Written by Cyrus Umrigar
       use coefs_mod
       use dets_mod
       use basis1_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
@@ -617,12 +622,13 @@ c Saves the best wf yet and writes it out at end of run
       use coefs_mod
       use dets_mod
       use basis1_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       character*30 fmt
 
 c     common /contrl_per/ iperiodic,ibasis
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

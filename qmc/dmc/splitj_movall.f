@@ -1,6 +1,7 @@
       subroutine splitj_movall
 c Written by Cyrus Umrigar
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -8,7 +9,7 @@ c Written by Cyrus Umrigar
 
 !JT      parameter (zero=0.d0,two=2.d0,half=.5d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod

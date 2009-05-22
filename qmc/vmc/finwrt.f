@@ -11,6 +11,7 @@ c routine to print out final results
 
       use contrl_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
       character*16 mode
 !JT      character*80 title,fmt
@@ -20,7 +21,7 @@ c routine to print out final results
 
 !      parameter (one=1.d0,half=.5d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

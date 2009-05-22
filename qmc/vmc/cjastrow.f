@@ -4,6 +4,7 @@ c written by A.D.Guclu jul2004
 c calculates composite fermion jastrow factor (vortices, e^k) related quantities.
 
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -11,7 +12,7 @@ c      include 'force.h'
 
       complex*16 cv
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot

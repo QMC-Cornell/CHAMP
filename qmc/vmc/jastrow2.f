@@ -4,6 +4,7 @@ c Written by Cyrus Umrigar
       use atom_mod
       use dets_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -12,7 +13,7 @@ c Written by Cyrus Umrigar
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0
 !JT     &,half=.5d0,third=1.d0/3.d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
 

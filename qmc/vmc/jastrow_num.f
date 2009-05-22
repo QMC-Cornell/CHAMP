@@ -7,6 +7,7 @@ c numerical Laplacian for periodic systems.
       use atom_mod
       use dets_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
@@ -19,7 +20,7 @@ c numerical Laplacian for periodic systems.
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt

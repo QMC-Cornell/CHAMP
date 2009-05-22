@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar
 
       use dets_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -10,7 +11,7 @@ c Written by Cyrus Umrigar
 
 !JT      parameter(zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)

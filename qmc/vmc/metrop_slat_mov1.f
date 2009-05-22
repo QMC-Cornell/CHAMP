@@ -16,9 +16,10 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use deriv_exp_mod
       use atom_mod
       use config_mod
-
       use dets_mod
       use const_mod
+      use const2_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 
@@ -43,10 +44,10 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 c     common /contr3/ mode
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /const2/ deltar,deltat
+!JT      common /const2/ deltar,deltat
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 !JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo

@@ -4,11 +4,11 @@ c Calculate pw orbitals, gradient and laplacian
 c by interpolating on a grid.
       use bwfdet_mod
       use bsplines_mod
-
       use orbital_grid_mod
       use coefs_mod
       use dets_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
@@ -16,7 +16,7 @@ c by interpolating on a grid.
 !     include 'ewald.h'
 !     include 'numorb.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -190,6 +190,7 @@ c Calculate pw orbitals for electron iel by interpolating on a grid.
       use orbital_grid_mod
       use coefs_mod
       use dets_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !     include 'vmc.h'
@@ -197,7 +198,7 @@ c Calculate pw orbitals for electron iel by interpolating on a grid.
 !     include 'ewald.h'
 !     include 'numorb.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

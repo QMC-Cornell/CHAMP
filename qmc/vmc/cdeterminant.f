@@ -13,6 +13,7 @@ c coefficients are real.
       use dets_mod
       use optim_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -47,7 +48,7 @@ c following complex are now defined in module cslater_mod
 c     complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti
 c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -305,6 +306,7 @@ c can deal only with spin polarized systems for the moment
       use dets_mod
       use optim_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !      include 'vmc.h'
 !      include 'force.h'
@@ -340,7 +342,7 @@ c     &,cfpu(3,MMAT_DIM,MELEC,MDET),cfpd(3,MMAT_DIM,MELEC,MDET)
 c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

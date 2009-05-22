@@ -11,13 +11,14 @@ c Stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
       use atom_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
 !JT      include 'fit.h'
 !JT      include '../vmc/force.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

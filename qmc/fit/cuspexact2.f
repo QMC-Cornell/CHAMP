@@ -1,13 +1,14 @@
       subroutine cuspexact2(a,b)
 c Written by Cyrus Umrigar
       use atom_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
 !JT      include '../vmc/force.h'
 !JT      include 'fit.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),

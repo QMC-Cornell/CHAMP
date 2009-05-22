@@ -12,13 +12,14 @@ c replace in the input the longest lattice vector by the shortest found.  If it 
 c more than one shorter lattice vector the user should do the replacement one at a time
 c otherwise one can end up with a linearly dependent set and a zero volume.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'force.h'
       parameter (eps=1.d-12)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
      &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
      &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
@@ -124,12 +125,13 @@ c combinations of half. simul. lattice vectors.)
 c Warning: I have modified it so it removes only even multiples of simulation
 c cell vectors. This could cause problems for e-e-n terms in J.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
       include 'vmc.h'
       include 'ewald.h'
       parameter(eps=1.d-9)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -175,9 +177,10 @@ c rlatt   = lattice vectors
 c r       = rlatt * r_basis
 c r_basis = rlatt_inv * r
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension r(3),r_basis(3),i_basis(3),rlatt_inv(3,3)
 
 c Find vector in basis coordinates
@@ -196,9 +199,10 @@ c Written by Cyrus Umrigar
 c For any vector (from one particle to another) it finds the
 c image that is closest.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 
@@ -262,9 +266,10 @@ c For any electron positions in lattice coordinates, it finds the
 c image that is closest.
 c Needs precomputed r_basis1,r_basis2,i_basis1,i_basis2.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension r(3),rlatt(3,3)
      &,r_basis1(3),r_basis2(3),i_basis1(3),i_basis2(3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
@@ -312,9 +317,10 @@ c Written by Cyrus Umrigar
 c For any vector r (from one particle to another) it replaces the vector
 c by its closest image and finds its norm
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 
@@ -391,9 +397,10 @@ c cell is the primitive cell, then rshift is always zero.  The shift is
 c used to make sure that two electrons are close to the same nucleus in
 c the simulation cell and not just to the same nucleus in the primitive cell.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension r(3),r_basis(3),rshift(3),rlatt(3,3),rlatt_inv(3,3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 

@@ -2,11 +2,12 @@
 c Written by Claudia Filippi
 
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include '../../vmc/vmc.h'
 !JT      include '../dmc.h'
 !JT      include '../../vmc/force.h'
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
       common /force_dmc/ itausec,nwprod

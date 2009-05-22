@@ -3,12 +3,13 @@ c Written by Cyrus Umrigar and Amit Ghosal
 c Calculate orbitals and derivatives for finite system by 2-dim cubic spline interpolation
       use coefs_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'numorb.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)

@@ -9,15 +9,16 @@ c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
-      use all_tools_mod  ! JT
-      use montecarlo_mod ! JT
-      use opt_lin_mod    ! JT
-      use opt_ptb_mod    ! JT
+      use all_tools_mod  
+      use montecarlo_mod 
+      use opt_lin_mod    
+      use opt_ptb_mod    
       use atom_mod
       use config_mod
-
       use dets_mod
       use const_mod
+      use const2_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
@@ -28,7 +29,7 @@ c     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma(3/2), gamma(5/2)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
@@ -46,7 +47,7 @@ c    Last 2 are prob. best
 c     character*23 fmt
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /const2/ deltar,deltat
+!JT      common /const2/ deltar,deltat
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 !JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo

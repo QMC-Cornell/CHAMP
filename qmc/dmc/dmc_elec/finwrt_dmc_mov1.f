@@ -9,11 +9,12 @@ c routine to print out final results
 
       use contrl_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (one=1.d0,two=2.d0,half=.5d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 c     common /force_dmc/ itausec,nwprod

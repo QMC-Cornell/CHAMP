@@ -29,8 +29,10 @@ c and, the same normal. for Gaussians as for Slaters.
       use coefs_mod
       use basis1_mod
       use const_mod
+      use dim_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -58,9 +60,9 @@ c    &,iwctype(MCENT),nctype,ncent
      &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
       common /basisnorm/ anorm(MBASIS)
-      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap       !JT
      &,ifock,i3body,irewgt,iaver,istrch                                !JT
      &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt   !JT

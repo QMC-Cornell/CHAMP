@@ -4,11 +4,12 @@ c Written by Cyrus Umrigar
       use control_mod
       use atom_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
       common /constant/ twopi
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -708,11 +709,12 @@ c Written by Cyrus Umrigar
 c icell = 0  primitive cell
 c         1  simulation cell
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension glatt(3,*),gdist(3),igvec(3,*),gvec(3,*),gnorm(*),igmult(*),ng1d(*)
       dimension gnorm_tmp(NGVEC_SIM_BIGX)
 
@@ -771,6 +773,7 @@ c         do 10 i3=-ng1d(3),ng1d(3)
 c-----------------------------------------------------------------------
 
       subroutine sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
+      use dim_mod
       implicit real*8(a-h,o-z)
 c Written by Cyrus Umrigar
 c Use Shell-Metzger sort to put g-vectors in some standard order, so that
@@ -780,7 +783,7 @@ c the order they appear in is independent of cutg_sim_big.
 
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension igvec(3,*),gvec(3,*),gnorm_tmp(*),gnorm(*),igmult(*)
 
 c     cost(igv1,igv2,igv3,gn)=igv3+10.d0**4*igv2+10.d0**8*igv1+10.d0**12*gn
@@ -883,11 +886,12 @@ c a symmetry one could use later on.
 
       use all_tools_mod
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-6)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -1004,11 +1008,12 @@ c Written by Cyrus Umrigar
 c Use Shell-Metzger sort to put k-vectors in some standard order, so that
 c the order they appear in is independent of cutg_sim_big.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension k_inv(*),kvec(3,*),rkvec(3,*),rknorm(*)
       cost(kv1,kv2,kv3,rk)=kv3+10.d0**4*kv2+10.d0**8*kv1+10.d0**12*rk
 
@@ -1801,6 +1806,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald_old(cent,znuc,iwctype,ncent,pecent)
 c Written by Cyrus Umrigar
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -1808,7 +1814,7 @@ c Written by Cyrus Umrigar
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -1861,6 +1867,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald(cent,znuc,iwctype,ncent,pecent)
 c Written by Cyrus Umrigar
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
@@ -1868,7 +1875,7 @@ c Written by Cyrus Umrigar
       include 'ewald.h'
       include 'pseudo.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -1945,6 +1952,7 @@ c Written by Cyrus Umrigar
 
       use atom_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1952,7 +1960,7 @@ c Written by Cyrus Umrigar
 !JT      include 'ewald.h'
 !JT      include 'pseudo.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
@@ -2038,6 +2046,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -2045,7 +2054,7 @@ c Written by Cyrus Umrigar
 !JT      include 'ewald.h'
 !JT      include 'pseudo.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
      &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
      &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -2111,12 +2120,13 @@ c-----------------------------------------------------------------------
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
 c Written by Cyrus Umrigar
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(MELEC,*),sin_g(MELEC,*)
      &,ng1d(3)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
@@ -2163,12 +2173,13 @@ c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positio
 c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
      &,cos_g(MELEC,*),sin_g(MELEC,*)
      &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
@@ -2239,12 +2250,13 @@ c Written by Cyrus Umrigar
 c Calculate cos(gr) and sin(gr) and first 2 derivs at electron position r.
 c Needed for orbitals and their Laplacian.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 c     dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(MELEC,*),sin_g(MELEC,*)
 c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
@@ -2334,12 +2346,13 @@ c Written by Cyrus Umrigar
 c Needed for orbitals and their Laplacian.
 c For the k-vectors do it straightforwardly since there are few of them
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 c     dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(MELEC,*),sin_g(MELEC,*)
 c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
@@ -2377,12 +2390,13 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
 
@@ -2427,12 +2441,13 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
@@ -2481,12 +2496,13 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       include 'vmc.h'
       include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,MELEC),sin_gr(-NG1DX:NG1DX,3,MELEC)
 

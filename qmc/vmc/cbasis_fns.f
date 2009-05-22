@@ -4,6 +4,7 @@ c written by Amit Ghosal starting from basis_fns.f
       use atom_mod
       use basis1_mod
       use const_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
 !JT	include 'vmc.h'
 !JT	include 'pseudo.h'
@@ -40,9 +41,9 @@ c Definition of new temporary variables ends here ********
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c     &,d2phin(MBASIS,MELEC)
-      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)

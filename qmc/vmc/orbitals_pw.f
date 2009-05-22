@@ -9,13 +9,14 @@ c and calculating the k-independent part of the orbital just once.
 
       use coefs_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
@@ -212,13 +213,14 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 
       use coefs_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)

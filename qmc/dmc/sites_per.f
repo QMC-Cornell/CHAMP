@@ -5,6 +5,7 @@ c mesh if nothing else is available.  Do not make random part eps too
 c small otherwise in parallel mode configurations on different processors
 c will be close to each other.
 
+      use dim_mod
       implicit real*8(a-h,o-z)
       include '../vmc/vmc.h'
 
@@ -12,7 +13,7 @@ c will be close to each other.
 
       character*26 fmt
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 
       dimension xoldw(3,*),rlatt_sim(3,3),ilat(3),frac(3)
 

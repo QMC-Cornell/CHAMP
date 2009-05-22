@@ -1,6 +1,7 @@
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
       use atom_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -13,7 +14,7 @@ c configuration if nothing else is available.  It is better to put them
 c too close than to put them too far away because they equilibrate faster
 c when they are too close.
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent

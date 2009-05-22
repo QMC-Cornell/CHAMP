@@ -8,9 +8,10 @@ c calculate interparticle distances
       use atom_mod
 
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -148,12 +149,13 @@ c calculate distances of electron iel to all other particles
       use control_mod
       use atom_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
@@ -227,11 +229,12 @@ c restore interparticle distances (called if move rejected)
 
       use atom_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

@@ -2,13 +2,14 @@
       use control_mod
 c Written by Cyrus Umrigar
 c get nuclear potential energy
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
 !JT      include 'force.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
       common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc

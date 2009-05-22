@@ -38,6 +38,9 @@ c polarized calculations were attempted.
       use basis1_mod
       use contrl_mod
       use const_mod
+      use const2_mod
+      use dim_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*16 mode
@@ -45,7 +48,7 @@ c polarized calculations were attempted.
 
 c     include '../fit/fit.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /fflags/ fflag
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
@@ -60,7 +63,7 @@ c     include '../fit/fit.h'
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /const2/ deltar,deltat
+!JT      common /const2/ deltar,deltat
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
@@ -106,9 +109,9 @@ c     include '../fit/fit.h'
      &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
       common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /doefp/ nefp
 

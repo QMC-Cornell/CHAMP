@@ -15,6 +15,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
 
       use dets_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -26,7 +27,7 @@ c     character*16 mode
 c Warning: program has a bug, but it does not matter much since
 c we never use it.
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 c     common /contr3/ mode
       common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

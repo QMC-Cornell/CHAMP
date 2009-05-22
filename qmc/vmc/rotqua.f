@@ -1,11 +1,12 @@
       subroutine gesqua(nq,xq,yq,zq,wq)
 c Written by Lubos Mitas
 
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       parameter (ncase=10,npoint=86,ntype=4,ntypm=6)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       dimension wq(*),xq(*),yq(*),zq(*),
      &iocta(ntype),icosa(ntype),ww(ncase,ntypm),iq(ncase),
      &itetr(ntype),i20(ntype),i24(ntype),i86(ntypm)

@@ -5,6 +5,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 
       use dets_mod
       use optim_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -15,7 +16,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       common /jas_c_cut/ cutjasc,icutjasc
       common /contrl_per/ iperiodic,ibasis
 !!!
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
 !JT      include '../vmc/force.h'

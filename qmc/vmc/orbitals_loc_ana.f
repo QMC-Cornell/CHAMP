@@ -8,9 +8,10 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
 
       use coefs_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
@@ -79,11 +80,12 @@ c Calculate localized orbitals for electron iel
 
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
      &,d2phin(MBASIS,MELEC)
@@ -119,11 +121,12 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)

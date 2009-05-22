@@ -6,6 +6,7 @@ c     function psinl(u,rshifti,rshiftj,rri,rrj,it)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use dets_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -17,7 +18,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /jas_c_cut/ cutjasc,icutjasc
       common /contrl_per/ iperiodic,ibasis
 !!!
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

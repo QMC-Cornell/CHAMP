@@ -5,6 +5,7 @@ c routine to print out final results
       use atom_mod
       use contrl_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !      include 'dmc.h'
 !      include '../vmc/vmc.h'
@@ -13,7 +14,7 @@ c routine to print out final results
 
 !JT      parameter (one=1.d0,two=2.d0,half=.5d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
 

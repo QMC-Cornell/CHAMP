@@ -87,13 +87,14 @@ c If function is tabulated on half-period then this routine needs modification.
 
       use orbital_grid_mod
       use coefs_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'numorb.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
@@ -149,13 +150,14 @@ c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimen
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
       use coefs_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /periodic2/ rkvec_shift_latt(3)
 
@@ -223,13 +225,14 @@ c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimen
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
       use coefs_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /periodic2/ rkvec_shift_latt(3)
 

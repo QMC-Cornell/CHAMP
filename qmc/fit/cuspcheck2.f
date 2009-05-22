@@ -7,13 +7,14 @@ c those of (s**n/2)*log(s**2/2), rather than (s**n)*log(s**2)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       use atom_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
 
 !JT      include 'fit.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
      &   xm1,xm2,xm12,xms,xma,Zfock
 

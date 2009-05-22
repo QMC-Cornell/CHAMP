@@ -10,6 +10,7 @@ c wrt the jastrow parameters.
       use slater_mod
       use optim_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !      include '../vmc/vmc.h'
@@ -21,7 +22,7 @@ c complex
       complex*16 cvd(3,MELEC),cvk(3,MELEC),cvelocity(3,MELEC)
 c     complex*16 cvd_sav,cvk_sav
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /contrl_per/ iperiodic,ibasis
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

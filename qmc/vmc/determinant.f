@@ -10,6 +10,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use slater_mod
       use optim_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -36,7 +37,7 @@ c Note that the first dimension of the slater matrices is MMAT_DIM = (MELEC/2)**
 c The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
 c So, we check in read_input that nup and ndn are each <= MELEC/2.
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch
@@ -365,13 +366,14 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
       use slater_mod
       use optim_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 !JT      include '../fit/fit.h'
 
 c commons
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn

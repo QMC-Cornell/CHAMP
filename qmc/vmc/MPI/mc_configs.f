@@ -13,10 +13,11 @@ c Write mc_configs_new.<iproc> at end of run to provide configurations for fit o
 
       use contrl_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)

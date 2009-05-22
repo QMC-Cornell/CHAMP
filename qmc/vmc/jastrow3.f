@@ -4,6 +4,7 @@ c Written by Claudia Filippi and Cyrus Umrigar
       use atom_mod
       use dets_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -12,7 +13,7 @@ c Written by Claudia Filippi and Cyrus Umrigar
 !JT      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0
 !JT     &,half=.5d0,third=1.d0/3.d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
      &,ifock,i3body,irewgt,iaver,istrch

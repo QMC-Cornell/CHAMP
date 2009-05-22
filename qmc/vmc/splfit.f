@@ -4,16 +4,17 @@ c get spline_fit at r of basis fn irb of center ic and force iwf
 c 1st and 2nd derivs also calculated if ider=1.
 c ref0 is the nearest point smaller than r and ref1 the nearest one larger.
 
+      use numbas_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'numbas.h'
-      include 'force.h'
+!JT      include 'vmc.h'
+!JT      include 'numbas.h'
+!JT      include 'force.h'
 
       parameter(NCOEF=5)
 
-      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
+!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
+!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
+!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
 
       dimension wfv(3)

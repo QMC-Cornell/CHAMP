@@ -20,13 +20,14 @@ c  node crossing moves.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrl_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
 !JT      include '../vmc/force.h'
 !JT      include '../fit/fit.h'
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
       common /forcepar/ deltot(MFORCE),nforce,istrech
       common /force_dmc/ itausec,nwprod
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)

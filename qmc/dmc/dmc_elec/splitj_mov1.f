@@ -5,11 +5,12 @@ c Written by Cyrus Umrigar
       use control_mod
 
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (zero=0.d0,two=2.d0,half=.5d0)
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /contrl_per/ iperiodic,ibasis
       common /forcepar/ deltot(MFORCE),nforce,istrech

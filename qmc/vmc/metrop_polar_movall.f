@@ -8,12 +8,13 @@ c    C.J. Umrigar, in {\it Quantum Monte Carlo Methods in Physics and Chemistry}
 c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use all_tools_mod ! JT
+      use all_tools_mod
       use atom_mod
       use config_mod
-
       use dets_mod
       use const_mod
+      use const2_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -44,9 +45,9 @@ c    Last 2 are prob. best. Slater has been done and si minor improvement
 c 2) Generalize to molecules. This requires geometric rejections.
 
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /const2/ deltar,deltat
+!JT      common /const2/ deltar,deltat
 !JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 !JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 !JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo

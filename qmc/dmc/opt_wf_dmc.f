@@ -8,11 +8,12 @@ c Used both for all-electon and 1-electron move versions.
       use dmc_mod
       use contrl_mod
       use const_mod
+      use dim_mod
       implicit real*8(a-h,o-z)
 
       character*16 mode
 
-      common /dim/ ndim
+!JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contr3/ mode
