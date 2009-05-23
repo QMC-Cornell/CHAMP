@@ -5,6 +5,8 @@ c Written by Cyrus Umrigar
       use forcepar_mod
       use force_dmc_mod
       use jacobsave_mod
+      use config_dmc_mod
+      use branch_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -16,14 +18,14 @@ c Written by Cyrus Umrigar
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 !JT      common /force_dmc/ itausec,nwprod
-      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
+!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
+!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
       common /stats/ dfus2ac,dfus2un(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
      &nbrnch,nodecr
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
+!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /div_v_dmc/ div_vow(MELEC,MWALK)
 
 !JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)

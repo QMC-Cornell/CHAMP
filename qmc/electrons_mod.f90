@@ -616,7 +616,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 02 Apr 2007
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+  include 'modules.h'
   implicit none
   include 'commons.h'
 
@@ -796,7 +796,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 04 Apr 2007
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+  include 'modules.h'
   implicit none
   include 'commons.h'
 

@@ -9,6 +9,7 @@ c Written by Claudia Filippi
       use force_dmc_mod
       use forcest_dmc_mod
       use jaso_mod
+      use branch_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -17,9 +18,9 @@ c Written by Claudia Filippi
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC),d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
+!JT!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       common /mpitype/ jas_type1,jas_type2
 

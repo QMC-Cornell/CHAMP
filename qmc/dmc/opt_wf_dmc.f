@@ -16,6 +16,7 @@ c Used both for all-electon and 1-electron move versions.
       use doefp_mod
       use contr3_mod
       use force_dmc_mod
+      use config_dmc_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -28,8 +29,8 @@ c    &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
 c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
+!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
+!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
 !JT      common /force_dmc/ itausec,nwprod
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype

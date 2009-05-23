@@ -66,4 +66,8 @@
           use jaspar1_mod
           use jaspar2_mod
           use ncusp_mod
+          use config_dmc_mod
+          use branch_mod
+          use estsum_dmc_mod
+          use estcum_dmc_mod
 

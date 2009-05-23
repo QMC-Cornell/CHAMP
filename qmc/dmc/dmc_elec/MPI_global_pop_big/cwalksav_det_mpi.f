@@ -15,6 +15,7 @@ c by A.D.Guclu, Oct2005.
       use forcepar_mod
       use force_dmc_mod
       use forcest_dmc_mod
+      use branch_mod
       implicit real*8(a-h,o-z)
 
 c complex locals:
@@ -38,9 +39,9 @@ c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
 c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET),cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
+!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
 c      dimension cslmuiw(MMAT_DIM,MDET,MWALK)
 c     &,cslmdiw(MMAT_DIM,MDET,MWALK)

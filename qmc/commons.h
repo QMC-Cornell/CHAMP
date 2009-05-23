@@ -67,10 +67,10 @@
 !          include 'commons/common_ncusp.h'
 
 ! for dmc
-          include 'commons/common_config_dmc.h'
-          include 'commons/common_branch.h'
-          include 'commons/common_estsum_dmc.h'
-          include 'commons/common_estcum_dmc.h'
+!          include 'commons/common_config_dmc.h'
+!          include 'commons/common_branch.h'
+!          include 'commons/common_estsum_dmc.h'
+!          include 'commons/common_estcum_dmc.h'
           include 'commons/common_div_v_dmc.h'
           include 'commons/common_contrldmc.h'
           include 'commons/common_estcm2.h'

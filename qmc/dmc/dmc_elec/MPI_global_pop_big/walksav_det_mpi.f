@@ -7,6 +7,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dets_mod
       use slater_mod
       use const_mod
+      use branch_mod
       implicit real*8(a-h,o-z)
 
 c     common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -21,9 +22,9 @@ c     common /force_dmc/ itausec,nwprod
 !JT     &,detu(MDETUD),detd(MDETUD)
 !JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
 !JT     &,detij_det(MPARMD,MPARMD)
-      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
+!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
+!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
+!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       common /slaterw/ slmuiw(MMAT_DIM,MDETUD,MWALK),slmdiw(MMAT_DIM,MDETUD,MWALK)
      &,fpuw(3,MMAT_DIM,MDETUD,MWALK),fpdw(3,MMAT_DIM,MDETUD,MWALK)
