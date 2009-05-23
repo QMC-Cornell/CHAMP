@@ -73,7 +73,7 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /stats/ rejmax
+      common /stats_vmc/ rejmax
 !JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
 !JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)

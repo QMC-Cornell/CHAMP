@@ -70,4 +70,9 @@
           use branch_mod
           use estsum_dmc_mod
           use estcum_dmc_mod
+          use div_v_dmc_mod
+          use contrldmc_mod
+          use estcm2_mod
+          use stats_mod
+          use age_mod
 

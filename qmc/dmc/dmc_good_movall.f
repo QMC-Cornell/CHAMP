@@ -56,6 +56,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use div_v_dmc_mod
+      use contrldmc_mod
+      use stats_mod
+      use age_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -71,9 +75,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
 !JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /stats/ dfus2ac,dfus2un(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
-     &nbrnch,nodecr
+!JT      common /age/ iage(MWALK),ioldest,ioldestmx
+!JT      common /stats/ dfus2ac,dfus2unf(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
+!JT     &nbrnch,nodecr
 !JT      common /delocc/ denergy(MPARM)
 !JT      common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
 !JT     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
@@ -90,8 +94,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !JT      common /iterat/ ipass,iblk
 !JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
 !JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
@@ -99,7 +103,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
-      common /div_v_dmc/ div_vow(MELEC,MWALK)
+!JT      common /div_v_dmc/ div_vow(MELEC,MWALK)
       common /tmp/ eacc,enacc,macc,mnacc
 
       dimension rmino(MELEC),rminn(MELEC),rvmin(3)
@@ -504,11 +508,11 @@ c otherwise
           p=dmin1(one,p)
   210     q=one-p
 
-          dfus2un(ifr)=dfus2un(ifr)+dfus2o
+          dfus2unf(ifr)=dfus2unf(ifr)+dfus2o
 
 c Set taunow for branching.  Note that for primary walk taueff(1) always
-c is tau*dfus2ac/dfus2un so if itau_eff.le.0 then we reset taunow to tau
-c On the other hand, secondary walk only has dfus2ac/dfus2un if
+c is tau*dfus2ac/dfus2unf so if itau_eff.le.0 then we reset taunow to tau
+c On the other hand, secondary walk only has dfus2ac/dfus2unf if
 c itau_eff.ge.1 so there is no need to reset taunow.
           if(ifr.eq.1) then
             acc=acc+p
@@ -516,7 +520,7 @@ c itau_eff.ge.1 so there is no need to reset taunow.
             dfus2ac=dfus2ac+p*dfus2o
             dr2ac=dr2ac+p*dr2
             dr2un=dr2un+dr2
-            tautot=tautot+tau*dfus2ac/dfus2un(1)
+            tautot=tautot+tau*dfus2ac/dfus2unf(1)
 
 c If we are using weights rather than accept/reject
             if(iacc_rej.le.0) then

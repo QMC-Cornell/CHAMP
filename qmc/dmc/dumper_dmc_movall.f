@@ -26,6 +26,11 @@ c job where it left off
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use div_v_dmc_mod
+      use contrldmc_mod
+      use estcm2_mod
+      use stats_mod
+      use age_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -43,8 +48,8 @@ c job where it left off
 !JT      common /force_dmc/ itausec,nwprod
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !JT      common /iterat/ ipass,iblk
 !JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
 !JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
@@ -89,12 +94,12 @@ c job where it left off
 !JT     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
 !JT     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
 !JT     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
-      common /stats/ dfus2ac,dfus2un(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
-     &nbrnch,nodecr
+!JT      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
+!JT     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
+!JT     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
+!JT     &tjfcm2(MFORCE),r2cm2,ricm2
+!JT      common /stats/ dfus2ac,dfus2unf(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
+!JT     &nbrnch,nodecr
       common /tmp/ eacc,enacc,macc,mnacc
 !JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
 !JT     &ekin(NRAD),ekin2(NRAD)
@@ -102,9 +107,9 @@ c job where it left off
 !JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
 !JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
 !JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-      common /age/ iage(MWALK),ioldest,ioldestmx
+!JT      common /age/ iage(MWALK),ioldest,ioldestmx
 !JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
-      common /div_v_dmc/ div_vow(MELEC,MWALK)
+!JT      common /div_v_dmc/ div_vow(MELEC,MWALK)
 
       dimension irn(4)
       dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,MCENT),znucx(MCENT)
@@ -146,9 +151,9 @@ c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)
      &,(tpbcm2(i),i=1,nforce),(tjfcm2(i),i=1,nforce),r2cm2,ricm2
       write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
       write(10) (rprob(i),rprobup(i),rprobdn(i),i=1,NRAD)
-      write(10) dfus2ac,dfus2un(1),dr2ac,dr2un,acc
+      write(10) dfus2ac,dfus2unf(1),dr2ac,dr2un,acc
      &,acc_int,try_int,nbrnch,nodecr
-      if(nforce.gt.1) write(10) (dfus2un(i),i=2,nforce)
+      if(nforce.gt.1) write(10) (dfus2unf(i),i=2,nforce)
       write(10) eacc,enacc,macc,mnacc
       if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
 
@@ -219,9 +224,9 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
      &,(tpbcm2(i),i=1,nforce),(tjfcm2(i),i=1,nforce),r2cm2,ricm2
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
       read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,NRAD)
-      read(10) dfus2ac,dfus2un(1),dr2ac,dr2un,acc
+      read(10) dfus2ac,dfus2unf(1),dr2ac,dr2un,acc
      &,acc_int,try_int,nbrnch,nodecr
-      if(nforce.gt.1) read(10) (dfus2un(i),i=2,nforce)
+      if(nforce.gt.1) read(10) (dfus2unf(i),i=2,nforce)
       read(10) eacc,enacc,macc,mnacc
       if(nloc.gt.0) then
         read(10) nqx,(xq(i),yq(i),zq(i),wq(i),i=1,nqx)

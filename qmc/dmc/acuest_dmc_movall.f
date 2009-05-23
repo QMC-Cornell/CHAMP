@@ -20,6 +20,11 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use div_v_dmc_mod
+      use contrldmc_mod
+      use estcm2_mod
+      use stats_mod
+      use age_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0)
 !JT      include '../vmc/vmc.h'
@@ -38,8 +43,8 @@ c routine to accumulate estimators for energy etc.
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /contrl_per/ iperiodic,ibasis
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !JT      common /iterat/ ipass,iblk
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
@@ -49,8 +54,8 @@ c     common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
 c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
 !JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-      common /stats/ dfus2ac,dfus2un(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
-     &nbrnch,nodecr
+!JT      common /stats/ dfus2ac,dfus2unf(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
+!JT     &nbrnch,nodecr
 !JT      common /delocc/ denergy(MPARM)
 !JT      common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
 !JT     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
@@ -62,10 +67,10 @@ c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
 !JT     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
 !JT     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
+!JT      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
+!JT     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
+!JT     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
+!JT     &tjfcm2(MFORCE),r2cm2,ricm2
 !JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
 !JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
@@ -73,8 +78,8 @@ c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
 !JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /div_v_dmc/ div_vow(MELEC,MWALK)
+!JT      common /age/ iage(MWALK),ioldest,ioldestmx
+!JT      common /div_v_dmc/ div_vow(MELEC,MWALK)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -494,17 +499,17 @@ c **Warning** taueff temporarily set low.  Not any more
           endif
    86   continue
        else
-        taueff(1)=tau*dfus2ac/dfus2un(1)
+        taueff(1)=tau*dfus2ac/dfus2unf(1)
         write(6,'(''various possibilities for mult tau are:'',3f9.5)')
-     &  acc/try_int,dfus2ac/dfus2un(1),dr2ac/dr2un
+     &  acc/try_int,dfus2ac/dfus2unf(1),dr2ac/dr2un
         write(6,'(''taueff set equal to tau*'',f7.5,'' ='',f9.5)')
-     &  dfus2ac/dfus2un(1),taueff(1)
+     &  dfus2ac/dfus2unf(1),taueff(1)
         if(itausec.eq.1) then
           do 87 ifr=2,nforce
             if(itau_eff.ge.1) then
-              taueff(ifr)=taueff(1)*dfus2un(ifr)/dfus2un(1)
+              taueff(ifr)=taueff(1)*dfus2unf(ifr)/dfus2unf(1)
              else
-              taueff(ifr)=tau*dfus2un(ifr)/dfus2un(1)
+              taueff(ifr)=tau*dfus2unf(ifr)/dfus2unf(1)
             endif
    87     continue
           write(6,'(''secondary taueff set equal to '',20f9.5)')
@@ -518,7 +523,7 @@ c **Warning** taueff temporarily set low.  Not any more
       dr2un=zero
       dfus2ac=zero
       do 89 ifr=1,nforce
-   89   dfus2un(ifr)=zero
+   89   dfus2unf(ifr)=zero
       tautot=zero
       try_int=0
       acc=0

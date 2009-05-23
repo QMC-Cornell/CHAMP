@@ -49,6 +49,7 @@ c Written by Cyrus Umrigar
       use jaspar1_mod
       use jaspar2_mod
       use ncusp_mod
+      use contrldmc_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -72,8 +73,8 @@ c Written by Cyrus Umrigar
 !JT      common /const2/ deltar,deltat
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

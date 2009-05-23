@@ -65,7 +65,7 @@ c     common /contr3/ mode
 !JT      common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /stats/ rejmax
+      common /stats_vmc/ rejmax
 !JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
 !JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)

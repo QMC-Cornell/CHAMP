@@ -23,6 +23,10 @@ c routine to print out final results
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use contrldmc_mod
+      use estcm2_mod
+      use stats_mod
+      use age_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (one=1.d0,two=2.d0,half=.5d0)
@@ -39,16 +43,16 @@ c     common /force_dmc/ itausec,nwprod
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      common /contr3/ mode
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !JT      common /iterat/ ipass,iblk
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 c /config_dmc/ included to print out xoldw and voldw for old walkers
 !JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
 !JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
-     &nbrnch,nodecr
+!JT      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
+!JT     &nbrnch,nodecr
 !JT      common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
 !JT     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
 !JT     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
@@ -59,10 +63,10 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
 !JT     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
 !JT     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
 !JT     &ricum,taucum(MFORCE)
-      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
-     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
-     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
-     &tjfcm2(MFORCE),r2cm2,ricm2
+!JT      common /estcm2/ wcm2,wfcm2,wgcm2(MFORCE),wdcm2,wgdcm2, wcm21,
+!JT     &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
+!JT     &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
+!JT     &tjfcm2(MFORCE),r2cm2,ricm2
 !JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
 !JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
@@ -70,7 +74,7 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
 !JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
 !JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 !JT      common /header/ title,date
-      common /age/ iage(MWALK),ioldest,ioldestmx
+!JT      common /age/ iage(MWALK),ioldest,ioldestmx
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
 !JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max

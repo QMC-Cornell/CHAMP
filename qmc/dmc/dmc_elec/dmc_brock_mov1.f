@@ -38,6 +38,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use div_v_dmc_mod
+      use contrldmc_mod
+      use stats_mod
+      use age_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -50,9 +54,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
 !JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
-     &nbrnch,nodecr
+!JT      common /age/ iage(MWALK),ioldest,ioldestmx
+!JT      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
+!JT     &nbrnch,nodecr
 !JT      common /delocc/ denergy(MPARM)
 !JT      common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
 !JT     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
@@ -68,8 +72,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /contrl_per/ iperiodic,ibasis
-      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
+!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !JT      common /iterat/ ipass,iblk
 !JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
 !JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
@@ -95,7 +99,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
 !JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
-      common /div_v_dmc/ div_vow(MELEC,MWALK)
+!JT      common /div_v_dmc/ div_vow(MELEC,MWALK)
 
       dimension xnew(3),vnew(3,MELEC),xbac(3),xstrech(3,MELEC)
 c     dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)

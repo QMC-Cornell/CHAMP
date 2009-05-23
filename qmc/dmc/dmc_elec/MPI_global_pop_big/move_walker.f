@@ -10,6 +10,8 @@ c Written by Claudia Filippi
       use forcest_dmc_mod
       use config_dmc_mod
       use branch_mod
+      use stats_mod
+      use age_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -20,9 +22,9 @@ c Written by Claudia Filippi
 !JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
 !JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
-      common /age/ iage(MWALK),ioldest,ioldestmx
-      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
-     &nbrnch,nodecr
+!JT      common /age/ iage(MWALK),ioldest,ioldestmx
+!JT      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
+!JT     &nbrnch,nodecr
 !JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
 !JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
 !JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
