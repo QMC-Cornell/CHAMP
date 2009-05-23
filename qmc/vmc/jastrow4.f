@@ -17,6 +17,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar6_mod
       use bparm_mod
       use distance_mod
+      use jaso_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -55,8 +56,8 @@ c Jastrow 6   must be used with one of isc=6,7
 
 !JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
+!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       dimension x(3,*),v(3,*),div_vj(*)
       dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)

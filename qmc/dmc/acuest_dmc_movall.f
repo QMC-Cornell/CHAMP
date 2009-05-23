@@ -14,6 +14,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use iterat_mod
       use jacobsave_mod
       use forcest_dmc_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0)
 !JT      include '../vmc/vmc.h'
@@ -60,9 +62,9 @@ c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
-      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk

@@ -50,4 +50,11 @@
           use jacobsave_mod
           use mpiblk_mod
           use forcest_dmc_mod
+          use denupdn_mod
+          use stepv_mod
+          use lbas_mod
+          use jaso_mod
+          use jasn_mod
+          use vd_mod
+          use pjase_mod
 

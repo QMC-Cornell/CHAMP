@@ -22,6 +22,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use pointer_mod
       use gradhessj_nonlin_mod
       use distance_mod
+      use jaso_mod
       implicit real*8(a-h,o-z)
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
@@ -58,8 +59,8 @@ c Jastrow 6   must be used with one of isc=6,7
 
 !JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
+!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 !JT      common /gradhessj_nonlin/ d1d2a(MCTYPE),d2d2a(MCTYPE),d1d2b(2),d2d2b(2),didk(MPARMJ)

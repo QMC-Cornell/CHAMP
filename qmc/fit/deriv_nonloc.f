@@ -307,6 +307,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use bparm_mod
       use pointer_mod
       use periodic_mod
+      use jaso_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -352,8 +353,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
 !JT     &,go(MELEC,MELEC,MPARMJ)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
+!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
      &,gn(*),fsn(MELEC,MELEC),dx(3)

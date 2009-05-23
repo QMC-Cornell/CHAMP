@@ -33,6 +33,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use iterat_mod
       use jacobsave_mod
       use forcest_dmc_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -59,8 +60,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
      &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
      &ricum,taucum(MFORCE)
-      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
+!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq

@@ -17,6 +17,8 @@ c Jastrow 6   must be used with one of isc=6,7
       use jaspar6_mod
       use bparm_mod
       use distance_mod
+      use jaso_mod
+      use jasn_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -50,10 +52,10 @@ c Jastrow 6   must be used with one of isc=6,7
 !JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
-     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
+!JT     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
+!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

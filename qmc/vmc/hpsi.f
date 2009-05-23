@@ -25,6 +25,7 @@ c wrt the wavefunction parameters.
       use derivjas_mod
       use contr3_mod
       use distance_mod
+      use vd_mod
       implicit real*8(a-h,o-z)
 
 c complex local:
@@ -73,7 +74,7 @@ c    &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
 !JT      common /vj/ vj(3,MELEC)  !JT
 c      dimension vd(3,MELEC),
-      common /vd/ vd(3,MELEC)   !WAS
+!JT      common /vd/ vd(3,MELEC)   !WAS
       dimension coord(3,*),velocity(3,MELEC)
       dimension div_vj(MELEC),div_vk(MELEC),div_vd(MELEC)
      &,div_v(MELEC),dpe(MPARM),denergy(MPARM)

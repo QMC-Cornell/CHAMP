@@ -7,6 +7,8 @@ c routine to print out final results
       use mpi_mod
 
       use forcepar_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 c     character*80 title
@@ -19,13 +21,13 @@ c     parameter (one=1.d0,half=.5d0)
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD), !JT
-     &ekin(NRAD),ekin2(NRAD)
+!JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD), !JT
+!JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fcum(MFORCE),fcm2(MFORCE)
 c     common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 c     common /forcjac/ ajacob
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),

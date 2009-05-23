@@ -4,6 +4,7 @@ c Written by Claudia Filippi by modifying jastrow
       use const_mod
       use contr2_mod
       use distance_mod
+      use pjase_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -17,7 +18,7 @@ c Written by Claudia Filippi by modifying jastrow
 
 !! WAS
 !JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
+!JT      common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
 !!!
 
       dimension x(3,*),v(3,*)

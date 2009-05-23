@@ -629,6 +629,7 @@ c i.e. the order in which we were reading in the p functions.
       use coefs_mod
       use basis1_mod
       use basis2_mod
+      use lbas_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -670,8 +671,8 @@ c    &,l4s(nprime),l4p(nprime,-1:1)
      &,lsa,lpa(-1:1),lda(-2:2)
       character*2 lmbas
       character*4 lcent,l4f(nprime),l5g(nprime),l6h(nprime)
-      character*10 lbasis(MBASIS)
-      common /lbas/ lbasis !JT
+!JT      character*10 lbasis(MBASIS)
+!JT      common /lbas/ lbasis !JT
 
       data l1s /'    1s','   1s''','   1s"','  1s"''','  1s""'/
       data l2s /'    2s','   2s''','   2s"','  2s"''','  2s""'/
@@ -1060,6 +1061,7 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
       use coefs_mod
       use basis1_mod
       use basis2_mod
+      use lbas_mod
       implicit real*8(a-h,o-z)
 
       parameter(nprime=5)
@@ -1101,8 +1103,8 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
      &,lsa,lpa(-1:1),lda(-2:2)
       character*2 lmbas
       character*4 lcent,l4f(nprime),l5f(nprime),l5g(nprime),l6h(nprime)
-      character*10 lbasis(MBASIS)
-      common /lbas/ lbasis !JT
+!JT      character*10 lbasis(MBASIS)
+!JT      common /lbas/ lbasis !JT
 
       data l1s /'    1s','   1s''','   1s"','  1s"''','  1s""'/
       data l2s /'    2s','   2s''','   2s"','  2s"''','  2s""'/

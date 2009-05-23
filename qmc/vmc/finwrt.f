@@ -21,6 +21,8 @@ c routine to print out final results
       use contrl_per_mod
       use contr3_mod
       use forcest_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 !JT      character*80 title,fmt
       character*80 fmt
@@ -45,12 +47,12 @@ c routine to print out final results
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
 !JT      common /header/ title,date
-      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
+!JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 !JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /doefp/ nefp
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),

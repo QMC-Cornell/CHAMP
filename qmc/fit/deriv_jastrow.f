@@ -4,6 +4,7 @@ c Written by Claudia Filippi
       use const_mod
       use contr2_mod
       use distance_mod
+      use pjase_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0)
 
@@ -11,7 +12,7 @@ c Written by Claudia Filippi
 !JT      include '../vmc/force.h'
 !JT      include '../vmc/pseudo.h'
 !     ! WAS
-      common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
+!JT      common /pjase/ ido_pjasen, ido_pjasee, ido_pjas
 !JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 !!!
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

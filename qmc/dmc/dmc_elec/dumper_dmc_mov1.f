@@ -21,6 +21,8 @@ c job where it left off
       use qua_mod
       use jacobsave_mod
       use forcest_dmc_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 !JT      include '../../vmc/vmc.h'
 !JT      include '../dmc.h'
@@ -92,9 +94,9 @@ c job where it left off
      &tjfcm2(MFORCE),r2cm2,ricm2
       common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
      &nbrnch,nodecr
-      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk

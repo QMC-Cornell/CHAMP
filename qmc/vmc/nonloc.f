@@ -392,6 +392,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar_mod
       use bparm_mod
       use periodic_mod
+      use jaso_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'ewald.h'
@@ -420,8 +421,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
 !JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
-      common /jaso/ fso(MELEC,MELEC),fij(3,MELEC,MELEC)
-     &,d2ij(MELEC,MELEC),d2,fsum,fjo(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fij(3,MELEC,MELEC)
+!JT     &,d2ij(MELEC,MELEC),d2,fsum,fjo(3,MELEC)
 
       dimension x(3,*),rshift(3,MELEC,MCENT),rr_en(MELEC,MCENT),rr_en2(MELEC,MCENT)
      &,fsn(MELEC,MELEC),dx(3)

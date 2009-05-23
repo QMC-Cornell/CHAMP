@@ -12,6 +12,7 @@ c Written by Claudia Filippi
       use jaspar3_mod
       use bparm_mod
       use distance_mod
+      use jaso_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -42,8 +43,8 @@ c Written by Claudia Filippi
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /bparm/ nspin2b,nocuspb
       common /focktmp/ fc,fu,fuu,fs,fss,ft,ftt,fst,fus,fut
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
+!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),

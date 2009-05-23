@@ -33,6 +33,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use div_v_mod
       use qua_mod
       use forcest_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -86,9 +88,9 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats/ rejmax
-      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 !JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)

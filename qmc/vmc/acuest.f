@@ -23,6 +23,8 @@ c routine to accumulate estimators for energy etc.
       use distance_mod
       use qua_mod
       use forcest_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (half=.5d0)
@@ -56,9 +58,9 @@ c routine to accumulate estimators for energy etc.
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /doefp/ nefp
 !JT      common /div_v/ div_vo(MELEC)
 !JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)

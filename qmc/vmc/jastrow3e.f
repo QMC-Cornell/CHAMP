@@ -11,6 +11,8 @@ c Written by Claudia Filippi by modifying jastrow3
       use jaspar3_mod
       use bparm_mod
       use distance_mod
+      use jaso_mod
+      use jasn_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -36,11 +38,11 @@ c Written by Claudia Filippi by modifying jastrow3
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 !JT      common /bparm/ nspin2b,nocuspb
 
-      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
-     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
+!JT      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
+!JT     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
 
-      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
+!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

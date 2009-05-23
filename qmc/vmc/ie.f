@@ -13,6 +13,7 @@ c necn -> necoef
       use basis1_mod
       use numbas_mod
       use basis2_mod
+      use lbas_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -21,9 +22,9 @@ c necn -> necoef
       parameter(eps=1.d-5)
 
 c      character*80 fmt
-      character*10 lbasis(MBASIS)
+!JT      character*10 lbasis(MBASIS)
 
-      common /lbas/ lbasis !JT
+!JT      common /lbas/ lbasis !JT
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent

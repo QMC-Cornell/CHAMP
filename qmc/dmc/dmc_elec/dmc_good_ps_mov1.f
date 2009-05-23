@@ -61,6 +61,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use iterat_mod
       use jacobsave_mod
       use forcest_dmc_mod
+      use denupdn_mod
+      use stepv_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -93,9 +95,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &wfcm21,wgcm21(MFORCE),wdcm21, ecm2,efcm2,egcm2(MFORCE), ecm21,
      &efcm21,egcm21(MFORCE),ei1cm2,ei2cm2,ei3cm2, pecm2(MFORCE),peicm2(MFORCE),tpbcm2(MFORCE),
      &tjfcm2(MFORCE),r2cm2,ricm2
-      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-     &ekin(NRAD),ekin2(NRAD)
-      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
+!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
+!JT     &ekin(NRAD),ekin2(NRAD)
+!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
 !JT      common /contrl_per/ iperiodic,ibasis
