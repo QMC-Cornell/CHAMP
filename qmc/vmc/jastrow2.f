@@ -10,6 +10,8 @@ c Written by Cyrus Umrigar
       use jaspar_mod
       use jaspar3_mod
       use distance_mod
+      use pars_mod
+      use jaspar2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -19,8 +21,8 @@ c Written by Cyrus Umrigar
 !JT     &,half=.5d0,third=1.d0/3.d0)
 
 !JT      common /dim/ ndim
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
@@ -29,7 +31,7 @@ c Written by Cyrus Umrigar
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,

@@ -66,10 +66,11 @@ c     and gaussian 3-d)
       use basis2_mod
       use wfsec_mod
       use phifun_mod
+      use contr_ylm_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
-      common /contr_ylm/ irecursion_ylm
+!JT      common /contr_ylm/ irecursion_ylm
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

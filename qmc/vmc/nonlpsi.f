@@ -14,6 +14,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use pars_mod
+      use jaspar1_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -26,14 +28,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /contrl_per/ iperiodic,ibasis
 !!!
 !JT      common /dim/ ndim
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc

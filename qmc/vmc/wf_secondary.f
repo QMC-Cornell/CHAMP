@@ -20,6 +20,8 @@ c Read parameters for secondary wavefns.
       use jaspar3_mod
       use jaspar4_mod
       use bparm_mod
+      use jaspar1_mod
+      use jaspar2_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0)
@@ -56,8 +58,8 @@ c Read parameters for secondary wavefns.
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
@@ -288,6 +290,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use jaspar3_mod
       use jaspar4_mod
       use bparm_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
@@ -328,7 +331,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /bparm/ nspin2b,nocuspb
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -448,6 +451,7 @@ c Written by Cyrus Umrigar
       use jaspar3_mod
       use jaspar4_mod
       use bparm_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -486,7 +490,7 @@ c     common /contrl_per/ iperiodic,ibasis
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /bparm/ nspin2b,nocuspb
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
@@ -655,6 +659,7 @@ c Saves the best wf yet and writes it out at end of run
       use jaspar3_mod
       use jaspar4_mod
       use bparm_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
       character*30 fmt
@@ -696,7 +701,7 @@ c     common /contrl_per/ iperiodic,ibasis
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /bparm/ nspin2b,nocuspb
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech

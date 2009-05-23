@@ -97,9 +97,9 @@ c However, that causes problems when running with mpi, so comment out that part.
       use contr2_mod
       use contr3_mod
       use periodic_mod
+      use contr_names_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
-      character*16 iorb_format
 
       parameter(eps=1.d-3)
 
@@ -109,7 +109,7 @@ c However, that causes problems when running with mpi, so comment out that part.
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      common /contr3/ mode
-      common /contr_names/ iorb_format
+!JT      common /contr_names/ iorb_format
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
@@ -1521,9 +1521,9 @@ c-----------------------------------------------------------------------
       use contr2_mod
       use contr3_mod
       use periodic_mod
+      use contr_names_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
-      character*16 iorb_format
 
 !     include 'vmc.h'
 !     include 'force.h'
@@ -1537,7 +1537,7 @@ c-----------------------------------------------------------------------
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      common /contr3/ mode
-      common /contr_names/ iorb_format
+!JT      common /contr_names/ iorb_format
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /dorb/ iworbd(MELEC,MDET)

@@ -53,6 +53,9 @@ c polarized calculations were attempted.
       use contr3_mod
       use qua_mod
       use forcest_mod
+      use pars_mod
+      use jaspar1_mod
+      use jaspar2_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*25 fmt
@@ -61,8 +64,8 @@ c     include '../fit/fit.h'
 
 !JT      common /dim/ ndim
       common /fflags/ fflag
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
 !JT     &,ifock,i3body,irewgt,iaver,istrch
@@ -104,8 +107,8 @@ c     include '../fit/fit.h'
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc

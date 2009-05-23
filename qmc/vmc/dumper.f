@@ -35,6 +35,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use forcest_mod
       use denupdn_mod
       use stepv_mod
+      use jaspar1_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -81,7 +82,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
 !JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
 !JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 !JT      common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk

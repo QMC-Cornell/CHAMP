@@ -27,6 +27,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use div_v_mod
       use denupdn_mod
       use stepv_mod
+      use jel_sph2_mod
       implicit real*8(a-h,o-z)
 
 
@@ -78,7 +79,7 @@ c     common /contr3/ mode
 !JT      common /div_v/ div_vo(MELEC)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
-      common /jel_sph2/ zconst ! RM
+!JT      common /jel_sph2/ zconst ! RM
 
       dimension xaxis(3),yaxis(3),zaxis(3),idist(MELEC)
 

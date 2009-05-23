@@ -34,6 +34,10 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use jaspar6_mod
       use bparm_mod
       use pointer_mod
+      use pars_mod
+      use jaspar1_mod
+      use jaspar2_mod
+      use ncusp_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -51,8 +55,8 @@ c     parameter(MXJTJ=(MPARM*(MPARM+1))/2,MWORK=4*MDATA+5*MPARM+MXJTJ)
 !JT      parameter(zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
 !JT      common /dim/ ndim
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
@@ -96,8 +100,8 @@ c     common /contr3/ mode
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
@@ -108,7 +112,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 !JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
 !JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
 !JT      common /bparm/ nspin2b,nocuspb
-      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
+!JT      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
 
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc

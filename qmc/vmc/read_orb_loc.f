@@ -14,6 +14,7 @@ c Reads in either analytic or localized orbitals
       use wfsec_mod
       use contr3_mod
       use distance_mod
+      use contr_ylm_mod
       implicit real*8(a-h,o-z)
 
 
@@ -34,7 +35,7 @@ c Reads in either analytic or localized orbitals
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 !JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-      common /contr_ylm/ irecursion_ylm
+!JT      common /contr_ylm/ irecursion_ylm
 
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb),r(2)
 

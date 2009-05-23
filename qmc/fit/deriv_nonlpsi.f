@@ -13,6 +13,9 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
+      use pars_mod
+      use jaspar1_mod
+      use jaspar2_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -24,8 +27,8 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 !JT      common /contrl_per/ iperiodic,ibasis
 !!!
 !JT      common /dim/ ndim
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 !JT      include '../vmc/force.h'
 !JT      include 'fit.h'
 
@@ -34,8 +37,8 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc

@@ -26,6 +26,7 @@ c wrt the wavefunction parameters.
       use contr3_mod
       use distance_mod
       use vd_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
 c complex local:
@@ -60,7 +61,7 @@ c     complex*16 cvd_sav,cvk_sav
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
 !JT     &,go(MELEC,MELEC,MPARMJ)
 

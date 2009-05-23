@@ -12,6 +12,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use bparm_mod
       use pointer_mod
       use gradhessj_nonlin_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
@@ -48,7 +49,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /pointer/ npointa(MPARMJ*NCTYP3X)
 
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
@@ -313,6 +314,7 @@ c-----------------------------------------------------------------------
       use delocc_mod
       use bparm_mod
       use gradhessj_nonlin_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -344,7 +346,7 @@ c-----------------------------------------------------------------------
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       if(igradhess.eq.0) return
@@ -378,6 +380,7 @@ c-----------------------------------------------------------------------
       use optim_mod
       use contrl_opt2_mod
       use contrl_opt_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include '../fit/fit.h'
@@ -402,7 +405,7 @@ c-----------------------------------------------------------------------
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
       if(igradhess.eq.0) return
 
@@ -540,6 +543,7 @@ c-----------------------------------------------------------------------
       use gradhess_mod
       use contrl_opt2_mod
       use contrl_opt_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
       character*20 fmt
@@ -562,7 +566,7 @@ c-----------------------------------------------------------------------
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 

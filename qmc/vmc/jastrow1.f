@@ -6,6 +6,7 @@ c Written by Cyrus Umrigar
       use dim_mod
       use wfsec_mod
       use distance_mod
+      use jaspar1_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -16,7 +17,7 @@ c Written by Cyrus Umrigar
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 

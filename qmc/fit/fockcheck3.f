@@ -4,6 +4,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use atom_mod
       use contr2_mod
       use jaspar3_mod
+      use pars_mod
+      use ncusp_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -12,8 +14,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
@@ -29,7 +31,7 @@ c    &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
+!JT      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
 
       dimension o(2*MORDJ),op(0:2*MORDJ),diff(*)
 

@@ -17,6 +17,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use contrl_per_mod
       use contrl_opt_mod
       use contr3_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (one=1.d0,half=0.5d0)
@@ -76,7 +77,7 @@ c Note: d2edeti_deti(MELEC,MDET) need not be in common
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
 !JT      common /orb/ orb(MELEC,MORB),dorb(3,MELEC,MORB),ddorb(MELEC,MORB)  !JT
 
@@ -374,6 +375,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
       use dim_mod
       use wfsec_mod
       use contrl_opt_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -401,7 +403,7 @@ c commons
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 
 c arguments:
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)

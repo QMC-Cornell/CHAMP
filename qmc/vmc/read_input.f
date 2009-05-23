@@ -40,6 +40,15 @@ c Written by Cyrus Umrigar
       use contr3_mod
       use periodic_mod
       use qua_mod
+      use optimo_mod
+      use jel_sph2_mod
+      use atomtyp_mod
+      use contr_names_mod
+      use contr_ylm_mod
+      use pars_mod
+      use jaspar1_mod
+      use jaspar2_mod
+      use ncusp_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -51,12 +60,12 @@ c Written by Cyrus Umrigar
       character*30 section
 !JT      character*24 date
       character*10 eunit
-      character*16 iorb_format
+!JT      character*16 iorb_format
       character*80000 input_line
 
 !JT      common /dim/ ndim
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -71,8 +80,8 @@ c Written by Cyrus Umrigar
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 !JT      common /contr3/ mode
-      common /contr_names/ iorb_format
-      common /contr_ylm/ irecursion_ylm
+!JT      common /contr_names/ iorb_format
+!JT      common /contr_ylm/ irecursion_ylm
 
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
@@ -81,8 +90,8 @@ c Written by Cyrus Umrigar
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
 !JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
 !JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 !JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
@@ -92,7 +101,7 @@ c Written by Cyrus Umrigar
 !JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
 !JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
 !JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
+!JT      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
 !JT      common /bparm/ nspin2b,nocuspb
 
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
@@ -113,7 +122,7 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /doefp/ nefp
-      common /atomtyp/ ncentyp(MCTYPE)
+!JT      common /atomtyp/ ncentyp(MCTYPE)
 !JT      common /header/ title,date
 
 !JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
@@ -161,7 +170,7 @@ c subroutine that is called both from fit and read_input.
 !JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
 !JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
 !JT     &necn,nebase
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /pointer/ npointa(MPARMJ*NCTYP3X)
 !JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
 !JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
@@ -176,7 +185,7 @@ c     namelist /opt_list/ igradhess
      &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
-      common /jel_sph2/ zconst ! RM
+!JT      common /jel_sph2/ zconst ! RM
 !JT      common /jasparread/nparma_read,nparmb_read,nparmc_read         ! JT
 
       dimension irn(4),cent_tmp(3),iflag(MDET)

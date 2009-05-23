@@ -7,6 +7,7 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
       use contr2_mod
       use wfsec_mod
       use jaspar3_mod
+      use pars_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -14,9 +15,9 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 !JT     &,ifock,i3body,irewgt,iaver,istrch
 !JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 
 !JT      include 'force.h'
 
@@ -175,16 +176,17 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use atom_mod
+      use pars_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
 
 !JT      parameter(one=1.d0)
 
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
+!JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -260,6 +262,7 @@ c     the program even when the 2 electrons are collinear.
 
       use const_mod
       use contr2_mod
+      use pars_mod
       implicit real*8(a-h,o-z)
 !JT      real*8 hb,etrial,delta,deltai,fbias
 !JT      integer nelec,ipr
@@ -289,11 +292,11 @@ c     parameter (Zfock = 2.0d0)
 c     parameter (E = -2.903724d0)
 
 c     integer fflag
-      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
+!JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
 c     common /fflags/ fflag
-      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-     &   xm1,xm2,xm12,xms,xma,Zfock
+!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
+!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 c     common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

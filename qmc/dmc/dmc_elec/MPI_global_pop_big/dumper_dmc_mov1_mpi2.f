@@ -27,6 +27,7 @@ c job where it left off
       use forcest_dmc_mod
       use denupdn_mod
       use stepv_mod
+      use jaspar1_mod
       implicit real*8(a-h,o-z)
       parameter (small=1.d-6)
 
@@ -71,7 +72,7 @@ c job where it left off
 !JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
 !JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-      common /jaspar1/ cjas1(MWF),cjas2(MWF)
+!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
 !JT      common /delocc/ denergy(MPARM)
       common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,

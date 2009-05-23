@@ -146,6 +146,7 @@ c the witdh of gaussians is given by zex*we
       use coefs_mod
       use const_mod
       use contrl_per_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -154,7 +155,7 @@ c the witdh of gaussians is given by zex*we
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /contrl_per/ iperiodic,ibasis
 
       write(6,'(/,''Reading floating gaussian orbitals for dots'')')

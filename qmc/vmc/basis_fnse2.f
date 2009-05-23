@@ -20,10 +20,11 @@ c                 = 0 : asymptotic basis
       use basis2_mod
       use wfsec_mod
       use phifun_mod
+      use contr_ylm_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
-      common /contr_ylm/ irecursion_ylm
+!JT      common /contr_ylm/ irecursion_ylm
 !**EndRM(7)
 
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

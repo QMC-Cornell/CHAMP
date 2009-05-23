@@ -130,6 +130,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use wfsec_mod
       use contrl_per_mod
       use phifun_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -142,7 +143,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
-      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
+!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
