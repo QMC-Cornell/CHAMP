@@ -40,4 +40,8 @@
           use gradhessj_nonlin_mod
           use contr3_mod
           use div_v_mod
+          use phifun_mod
+          use distance_mod
+          use periodic_mod
+          use pworbital_mod
 

@@ -11,13 +11,14 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       use dim_mod
       use wfsec_mod
       use contrl_per_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl_per/ iperiodic,ibasis
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -84,14 +85,15 @@ c Calculate localized orbitals for electron iel
       use coefs_mod
       use dim_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
 
 !JT      common /dim/ ndim
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -127,6 +129,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use dim_mod
       use wfsec_mod
       use contrl_per_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'force.h'
@@ -134,8 +137,8 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl_per/ iperiodic,ibasis
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)

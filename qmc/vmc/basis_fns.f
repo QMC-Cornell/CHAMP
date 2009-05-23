@@ -65,6 +65,7 @@ c     and gaussian 3-d)
       use numbas_mod
       use basis2_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
@@ -95,8 +96,8 @@ c     and gaussian 3-d)
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
 !JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
@@ -516,6 +517,7 @@ c                 < 0 : Gaussian basis
       use numbas_mod
       use basis2_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -547,8 +549,8 @@ c     common /dim/ ndim
 !JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
 !JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
@@ -703,6 +705,7 @@ c normalization is taken care in (..)
       use coefs_mod
       use const_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -712,8 +715,8 @@ c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -787,6 +790,7 @@ c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
       use coefs_mod
       use const_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -796,8 +800,8 @@ c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
@@ -915,6 +919,7 @@ c Here, we do not normalize the wfs
       use coefs_mod
       use const_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -924,8 +929,8 @@ c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -1059,6 +1064,7 @@ c Here, we do not normalize the wfs
       use coefs_mod
       use const_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1068,8 +1074,8 @@ c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
@@ -1236,6 +1242,7 @@ c         in units of we (or wire_w in case of wire)))
       use coefs_mod
       use const_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1245,8 +1252,8 @@ c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
@@ -1329,6 +1336,7 @@ c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       use coefs_mod
       use const_mod
       use wfsec_mod
+      use phifun_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -1338,8 +1346,8 @@ c     common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-     &,d2phin(MBASIS,MELEC)
+!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
+!JT     &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)

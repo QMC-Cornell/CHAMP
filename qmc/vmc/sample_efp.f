@@ -361,6 +361,7 @@ c-----------------------------------------------------------------------
       use atom_mod
       use dets_mod
       use slater_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
       include 'fitefp.h'
@@ -385,7 +386,7 @@ c-----------------------------------------------------------------------
 !JT     &,detu(MDETUD),detd(MDETUD)
 !JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
 !JT     &,detij_det(MPARMD,MPARMD)
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension oefp(*),xn(3)
 

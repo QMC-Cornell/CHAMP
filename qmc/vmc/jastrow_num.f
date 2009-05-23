@@ -14,6 +14,7 @@ c numerical Laplacian for periodic systems.
       use jaspar3_mod
       use jaspar6_mod
       use bparm_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
@@ -52,7 +53,7 @@ c Warning: div_vj not yet implememnted
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*),v(3,*),div_vj(MELEC)
       dimension rp(3,MELEC,MCENT),rm(3,MELEC,MCENT)

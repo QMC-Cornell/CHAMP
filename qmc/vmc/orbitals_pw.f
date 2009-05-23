@@ -10,6 +10,8 @@ c and calculating the k-independent part of the orbital just once.
       use coefs_mod
       use const_mod
       use dim_mod
+      use periodic_mod
+      use pworbital_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -19,19 +21,19 @@ c and calculating the k-independent part of the orbital just once.
 !JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
-     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+!JT      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
+!JT     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
+!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension x(3,*),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
       dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
@@ -214,6 +216,8 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use coefs_mod
       use const_mod
       use dim_mod
+      use periodic_mod
+      use pworbital_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -223,19 +227,19 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
 !JT      common /dim/ ndim
 !JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
-     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+!JT      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
+!JT     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
+!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension x(3),orb(*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)

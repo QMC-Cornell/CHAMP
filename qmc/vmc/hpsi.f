@@ -24,6 +24,7 @@ c wrt the wavefunction parameters.
       use contrl_per_mod
       use derivjas_mod
       use contr3_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
 c complex local:
@@ -62,7 +63,7 @@ c     complex*16 cvd_sav,cvk_sav
 !JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
 !JT     &,go(MELEC,MELEC,MPARMJ)
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 c Now this common is passed with use fitdet_mod

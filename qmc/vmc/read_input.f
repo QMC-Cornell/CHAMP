@@ -38,6 +38,7 @@ c Written by Cyrus Umrigar
       use jasparread_mod
       use pointer_mod
       use contr3_mod
+      use periodic_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
@@ -114,17 +115,17 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /atomtyp/ ncentyp(MCTYPE)
 !JT      common /header/ title,date
 
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /periodic2/ rkvec_shift_latt(3)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2

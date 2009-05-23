@@ -21,6 +21,7 @@ c routine to accumulate estimators for energy etc.
       use delocc_mod
       use contr3_mod
       use div_v_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (half=.5d0)
@@ -59,7 +60,7 @@ c routine to accumulate estimators for energy etc.
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /doefp/ nefp
 !JT      common /div_v/ div_vo(MELEC)
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),

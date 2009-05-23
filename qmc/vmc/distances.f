@@ -11,6 +11,7 @@ c calculate interparticle distances
       use dim_mod
       use pseudo_mod
       use contrl_per_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
@@ -20,7 +21,7 @@ c calculate interparticle distances
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
@@ -153,6 +154,8 @@ c calculate distances of electron iel to all other particles
       use const_mod
       use dim_mod
       use contrl_per_mod
+      use distance_mod
+      use periodic_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -163,19 +166,19 @@ c calculate distances of electron iel to all other particles
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /distances_sav/ rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT),rvec_ee_sav(3,MELEC),r_ee_sav(MELEC)
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension x(3,*)
 
@@ -233,6 +236,7 @@ c restore interparticle distances (called if move rejected)
       use atom_mod
       use const_mod
       use dim_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -241,7 +245,7 @@ c restore interparticle distances (called if move rejected)
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /distances_sav/ rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT),rvec_ee_sav(3,MELEC),r_ee_sav(MELEC)
 
 c Restore e-N inter-particle distances

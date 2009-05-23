@@ -10,6 +10,7 @@ c Calculates wavefunction and velocity contributions for electron iel
       use contrl_per_mod
       use jaspar4_mod
       use contr3_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -28,7 +29,7 @@ c Warning: jaspar4 put in just to have nordc for temporary fix
 
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension coord(3,*),velocity(3,*),vj(3,MELEC),vd(3,MELEC)
 

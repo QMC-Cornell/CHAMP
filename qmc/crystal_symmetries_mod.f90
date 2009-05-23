@@ -31,6 +31,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
+    include 'modules.h'
     implicit  none
     include 'commons.h'
 

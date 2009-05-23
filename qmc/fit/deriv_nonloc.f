@@ -11,6 +11,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dim_mod
       use pseudo_mod
       use contrl_per_mod
+      use periodic_mod
       implicit real*8(a-h,o-z)
 !JT   parameter (one=1.d0)
 
@@ -27,17 +28,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
      &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
@@ -304,6 +305,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar_mod
       use bparm_mod
       use pointer_mod
+      use periodic_mod
       implicit real*8(a-h,o-z)
 
 !JT      include '../vmc/vmc.h'
@@ -325,17 +327,17 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /bparm/ nspin2b,nocuspb
-      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
+!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
+!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
+!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
+!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
+!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
+!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
+!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
+!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
+!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
+!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
 !JT      common /optim/ lo(MORB),npoint(MORB),
 !JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
