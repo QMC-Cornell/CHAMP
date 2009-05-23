@@ -42,7 +42,6 @@ contains
     implicit none
     integer                              :: k,ieta, ie
     real(dp)                             :: sum
-    include 'commons.h'
 !JT    include 'common_vd.h'
     ! header
     if (header_exe) then
@@ -90,7 +89,6 @@ contains
     include 'modules.h'
     implicit none
 
-    include "commons.h"
 
     real(dp)                             :: xvec (3, melec*(melec-1)/2)
     integer                              :: ie, ist , ije, je
@@ -137,7 +135,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
     real(dp)                             :: xcoord (3,melec)
@@ -204,7 +201,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
     real(dp)                             :: xcoord (3,melec)
@@ -260,7 +256,6 @@ contains
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
 !!$    implicit  none
-!!$    include "commons.h"
 !!$
 !!$    real (dp)                         :: rvecee(3,melec*(melec-1)/2)
 !!$
@@ -290,7 +285,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit  none
-    include "commons.h"
     real(dp)                             :: x1(3), x2(3)
     real(dp)                             :: rvecee(3), norm
     integer                              :: k
@@ -315,7 +309,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
     integer                              :: ije
     real(dp)                             :: c_s_fac, grad_c_s_fac (ndim_pj)
     integer                              :: ist
@@ -356,7 +349,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
 
     integer                              :: ist
     real(dp)                             ::  sum
@@ -388,7 +380,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
     integer                              :: ist
     real(dp)                             :: sum (ndim_pj)
     integer                              :: i, i1, i2, k , ij
@@ -424,7 +415,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
     real (dp)                            :: pjasv (3, melec)
     real (dp)                            :: pjasfsum, pjasd2
@@ -518,7 +508,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
     real (dp)                            :: pjasv (3, melec)
     real (dp)                            :: pjasfsum, pjasd2
@@ -599,7 +588,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 !JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
@@ -667,7 +655,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
     integer                              :: iel
     integer                              :: i, k, n , jj, u, v, ij
     real(dp)                             :: rvec (3, melec), xvec (3)
@@ -781,7 +768,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
     integer                              :: iel
     integer                              :: i, k, n , jj, u, v, ij
     real(dp)                             :: rvec (3, melec*(melec-1)/2), xvec (3)
@@ -893,7 +879,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
     integer                              :: ie, i, k, n, je, ije
     real(dp)                             :: xvec (3,  melec * (melec-1)/2 )
     real(dp)                             :: dot, cos_tmp, sin_tmp

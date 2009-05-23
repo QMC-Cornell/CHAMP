@@ -151,7 +151,6 @@ contains
     implicit none
 
     !need scalek, isc, nctype
-    include 'commons.h'
 
     ! local
     character(len=max_string_len_rout), save :: lhere = 'backflow_menu'
@@ -429,7 +428,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -474,7 +472,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -519,7 +516,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -564,7 +560,6 @@ contains
     implicit none
 
     !need nelec, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -608,7 +603,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -652,7 +646,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -839,7 +832,6 @@ contains
     implicit none
 
     !need nelec, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -883,7 +875,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -928,7 +919,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -973,7 +963,6 @@ contains
     implicit none
 
     !need nelec, nwalker, ncent
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -1018,7 +1007,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -1063,7 +1051,6 @@ contains
     implicit none
 
     !need nelec, ncent, nwalker
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -1211,7 +1198,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec
-    include 'commons.h'
 
     !local
     integer  :: elec_i, cent_i, walk_i
@@ -1270,7 +1256,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec
-    include 'commons.h'
 
     !local
     integer  :: elec_i, cent_i, walk_i
@@ -1329,7 +1314,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec
-    include 'commons.h'
 
     !local
     integer  :: elec_i, cent_i, walk_i
@@ -1482,7 +1466,6 @@ contains
     implicit none
 
     !need ndim, nelec, nwalk
-    include 'commons.h'
 
     !local
     character(len=max_string_len_rout), save :: lhere = 'xi_bld'
@@ -1552,7 +1535,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j
@@ -1628,7 +1610,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -1717,7 +1698,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j
@@ -1790,7 +1770,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -1875,7 +1854,6 @@ contains
     implicit none
 
     !need ndim, nelec, nwalk
-    include 'commons.h'
 
     !local
     integer  :: dim_i
@@ -1921,7 +1899,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: cent_i, order_p
@@ -1992,7 +1969,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p
@@ -2044,7 +2020,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p, d_param_nb
@@ -2136,7 +2111,6 @@ contains
     implicit none
 
     !need nwalk, ncent, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: dim_i, dim_j
@@ -2199,7 +2173,6 @@ contains
     implicit none
 
     !need nwalk, ncent, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, dim_i, dim_j
@@ -2288,7 +2261,6 @@ contains
     implicit none
 
     !need nwalk, ncent, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: cent_i, dim_i
@@ -2352,7 +2324,6 @@ contains
     implicit none
 
     !need nwalk, ncent, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: cent_i, order_p
@@ -2415,7 +2386,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: dim_j
@@ -2468,7 +2438,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_i, dim_j
@@ -2555,7 +2524,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: cent_i, dim_i
@@ -2626,7 +2594,6 @@ contains
     implicit none
 
     !need nwalk, nelec
-    include 'commons.h'
 
     !local
     integer  :: order_p, cent_i
@@ -2697,7 +2664,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: dim_i
@@ -2743,7 +2709,6 @@ contains
     implicit none
 
     !need nwalk, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, order_p
@@ -2819,7 +2784,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p
@@ -2876,7 +2840,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: c_param_nb
@@ -2979,7 +2942,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_i, dim_j
@@ -3054,7 +3016,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -3147,7 +3108,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_i
@@ -3217,7 +3177,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_l, dim_i
@@ -3283,7 +3242,6 @@ contains
     implicit none
 
     !need nwalk, nelec
-    include 'commons.h'
 
     !local
     integer  :: order_p
@@ -3348,7 +3306,6 @@ contains
     implicit none
 
     !need nwalk, nelec
-    include 'commons.h'
 
     !local
     integer  :: order_p, elec_i
@@ -3428,7 +3385,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_j
@@ -3490,7 +3446,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -3579,7 +3534,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j
@@ -3641,7 +3595,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_l, dim_i
@@ -3708,7 +3661,6 @@ contains
     implicit none
 
     !need nwalk, ncent, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: dim_i
@@ -3756,7 +3708,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, cent_i, order_p, order_k, order_l, param_i
@@ -3868,7 +3819,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: dep_a_param_i, ctype_i, spin_dependency_i, a_param_nb
@@ -3990,7 +3940,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p, order_k, order_l, order_l_max
@@ -4046,7 +3995,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer :: nb_dep_a_param_phi_parallel
@@ -4113,7 +4061,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer :: nb_dep_a_param_phi_anti_parallel
@@ -4180,7 +4127,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p, order_k, order_l, order_l_max, param_i
@@ -4294,7 +4240,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p, order_k, order_l, order_l_max, param_i
@@ -4402,7 +4347,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_i, dim_j
@@ -4470,7 +4414,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -4564,7 +4507,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, dim_i
@@ -4651,7 +4593,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_l, cent_i, dim_i
@@ -4734,7 +4675,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -4838,7 +4778,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -4945,7 +4884,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_j
@@ -5006,7 +4944,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -5096,7 +5033,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_l, dim_i, cent_i
@@ -5198,7 +5134,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, cent_i
@@ -5276,7 +5211,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -5372,7 +5306,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -5468,7 +5401,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -5560,7 +5492,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: dim_i
@@ -5607,7 +5538,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, cent_i, order_p, order_k, order_l, param_i
@@ -5718,7 +5648,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: b_param_nb, dep_b_param_i, ctype_i, spin_dependency_i
@@ -5825,7 +5754,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p, order_k, order_l, order_l_max
@@ -5880,7 +5808,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer :: nb_dep_b_param_theta
@@ -5947,7 +5874,6 @@ contains
     implicit none
 
     !need nctype
-    include 'commons.h'
 
     !local
     integer  :: order_p, order_k, order_l, order_l_max, param_i
@@ -6044,7 +5970,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_i, dim_j
@@ -6106,7 +6031,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -6200,7 +6124,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, dim_i
@@ -6287,7 +6210,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim, ncent
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_l, cent_i, dim_i
@@ -6370,7 +6292,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -6474,7 +6395,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -6581,7 +6501,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, dim_j
@@ -6638,7 +6557,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_i, elec_j, dim_i, dim_j
@@ -6728,7 +6646,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_l, dim_i, cent_i
@@ -6830,7 +6747,6 @@ contains
     implicit none
 
     !need nwalk, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: elec_j, cent_i
@@ -6908,7 +6824,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -7004,7 +6919,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i
@@ -7100,7 +7014,6 @@ contains
     implicit none
 
     !need nwalk, ncent, iwctype, nelec, nup
-    include 'commons.h'
 
     !local
     integer  :: elec_j, elec_i, cent_i, order_p, order_k, order_l, param_i

@@ -35,7 +35,6 @@ module psi_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'wavefunction_menu'
@@ -180,7 +179,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i, det_unq_dn_i, dim_i, i, j
@@ -256,7 +254,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i, det_unq_dn_i, i, j
@@ -327,7 +324,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i, det_unq_up_i, det_unq_dn_i
@@ -412,7 +408,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i, det_unq_up_i, det_unq_dn_i
@@ -489,7 +484,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i
@@ -534,7 +528,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i
@@ -573,7 +566,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i
@@ -616,7 +608,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 
 ! header
@@ -666,7 +657,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, elec_i, walk_i
@@ -711,7 +701,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -744,7 +733,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -788,7 +776,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -824,7 +811,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   real(dp) psi2, psi2_tol, psi2_best
@@ -932,7 +918,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   real(dp), intent(in) :: coord_elec_vec (ndim*nelec)
@@ -958,7 +943,6 @@ module psi_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   real(dp), intent(in) :: coord_elec_vec (ndim*nelec)

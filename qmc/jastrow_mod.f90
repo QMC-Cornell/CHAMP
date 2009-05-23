@@ -30,7 +30,6 @@ module jastrow_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'jastrow_menu'
@@ -301,7 +300,6 @@ module jastrow_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'jastrow_parameters_rd'
@@ -388,7 +386,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   real(dp), intent(in) :: dist
@@ -429,7 +426,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   real(dp), intent(in) :: dist
@@ -466,7 +462,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   real(dp), intent(in) :: dist
@@ -503,7 +498,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   real(dp), intent(in) :: dist
@@ -540,7 +534,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, cent_i, walk_i
@@ -584,7 +577,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, cent_i, walk_i
@@ -628,7 +620,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, cent_i, walk_i
@@ -672,7 +663,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, elec_j, walk_i
@@ -716,7 +706,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, cent_i, walk_i
@@ -760,7 +749,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, elec_j, walk_i
@@ -804,7 +792,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer cent_i, elec_i, cent_type_i, order_i
@@ -859,7 +846,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, cent_i, dim_i, elec_i, cent_type_i, order_i
@@ -920,7 +906,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, elec_j, cent_i, cent_type_i
@@ -1003,7 +988,6 @@ module jastrow_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, elec_j, cent_i, cent_type_i, force_i, dim_i

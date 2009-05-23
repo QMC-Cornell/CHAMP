@@ -44,7 +44,6 @@ module determinants_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_coefs_rd'
@@ -98,7 +97,6 @@ module determinants_mod
 !! Created       : J. Toulouse, 28 Oct 2005
 !! ------------------------------------------------------------------------------
 !  implicit none
-!  include 'commons.h'
 !
 !! local
 !  integer det_i
@@ -162,7 +160,6 @@ module determinants_mod
 !! Created       : J. Toulouse, 14 Dec 2006
 !! ------------------------------------------------------------------------------
 !  implicit none
-!  include 'commons.h'
 !
 !! local
 !  integer det_i
@@ -306,7 +303,6 @@ module determinants_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i, det_unq_dn_i, orb_i
@@ -370,7 +366,6 @@ module determinants_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i,  det_unq_dn_i, orb_i

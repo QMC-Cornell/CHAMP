@@ -13,7 +13,6 @@ module initialization_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 !  write(6,*)
 !  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
@@ -167,7 +166,6 @@ module initialization_mod
   include 'modules.h'
   use orbitals_mod
   implicit none
-  include 'commons.h'
 
   write(6,*)
   write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
@@ -236,7 +234,6 @@ module initialization_mod
 ! -----------------------------------------------------------------------------------
   use contr3_mod
   implicit none
-  include 'commons.h'
 
 
   l_mode_mpi = .false.

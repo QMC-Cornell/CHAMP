@@ -177,7 +177,6 @@ module extracule_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer               :: grid_i
@@ -328,7 +327,6 @@ module extracule_mod
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                                    :: unit

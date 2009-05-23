@@ -16,7 +16,6 @@ module vmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   call object_provide ('nelec')
   call object_provide ('nforce')
@@ -99,7 +98,6 @@ module vmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer l
@@ -124,7 +122,6 @@ module vmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer l
@@ -149,7 +146,6 @@ module vmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer l

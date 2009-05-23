@@ -140,7 +140,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  ex_i, orb_i
@@ -403,7 +402,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j, dorb_i, orb_i
@@ -1157,7 +1155,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, orb_1st, orb_2nd
@@ -1365,7 +1362,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_ex_unq_up_i, det_ex_unq_dn_i
@@ -1454,7 +1450,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i
@@ -1570,7 +1565,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, ex_rev_i
@@ -1682,7 +1676,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i, orb_i, elec_i
@@ -1801,7 +1794,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_up_i, det_dn_i
@@ -1932,7 +1924,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_up_i, det_dn_i
@@ -2047,7 +2038,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i, dim_i, i, j
@@ -2138,7 +2128,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i, i, j
@@ -2208,7 +2197,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i
@@ -2312,7 +2300,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i
@@ -2413,7 +2400,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, ex_rev_i
@@ -2534,7 +2520,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, ex_rev_i
@@ -2650,7 +2635,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, elec_i, ex_i
@@ -2697,7 +2681,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, ex_i
@@ -2739,7 +2722,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i
@@ -2779,7 +2761,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -2812,7 +2793,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, elec_i, ex_i
@@ -2865,7 +2845,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, ex_rev_i
@@ -3090,7 +3069,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -3124,7 +3102,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 
 ! header
@@ -3172,7 +3149,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -3206,7 +3182,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -3240,7 +3215,6 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i

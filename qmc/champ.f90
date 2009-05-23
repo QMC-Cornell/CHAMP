@@ -219,7 +219,6 @@ end program champ
   use main_menu_mod
   use contr3_mod
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save  :: lhere = 'run'
@@ -257,7 +256,6 @@ end program champ
   use main_menu_mod
   use contr3_mod
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save  :: lhere = 'run'

@@ -68,7 +68,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: orb_i, elec_i
@@ -123,7 +122,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: orb_i, elec_i, dim_i
@@ -179,7 +177,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: orb_i
@@ -232,7 +229,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -277,7 +273,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -322,7 +317,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     character(len=max_string_len_rout), save :: lhere = 'bas_funcs_bf_bld'
@@ -383,7 +377,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     character(len=max_string_len_rout), save :: lhere = 'd_bas_funcs_d_x_beta_bf_bld'
@@ -444,7 +437,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     character(len=max_string_len_rout), save :: lhere = 'd2_bas_funcs_d_x_beta_d_x_gamma_bf_bld'
@@ -506,7 +498,6 @@ contains
     implicit none
 
     !need nwalk, ncent, nelec, ndim
-    include 'commons.h'
 
     !local
     integer  :: dim_i, dim_j
@@ -583,7 +574,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     character(len=max_string_len_rout), save :: lhere = 'bas_funcs_normalization_bf_bld'
@@ -631,7 +621,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
 
@@ -676,7 +665,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: dim_i
@@ -728,7 +716,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: dim_i, dim_j
@@ -781,7 +768,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     ! header
     if (header_exe) then
@@ -822,7 +808,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -873,7 +858,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i, dim_i
@@ -928,7 +912,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i, dim_i, dim_j
@@ -985,7 +968,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1037,7 +1019,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1087,7 +1068,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1197,7 +1177,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1338,7 +1317,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1526,7 +1504,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1602,7 +1579,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i
@@ -1689,7 +1665,6 @@ contains
     ! ------------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     !local
     integer :: bas_i

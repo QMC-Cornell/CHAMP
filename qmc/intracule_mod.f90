@@ -120,7 +120,6 @@
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   character(len=max_string_len_rout), save :: lhere = 'intra_menu'
 
@@ -326,7 +325,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: elec_i, elec_j
@@ -380,7 +378,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -445,7 +442,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -523,7 +519,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -596,7 +591,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -698,7 +692,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -783,7 +776,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer               :: grid_i
@@ -887,7 +879,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -1053,7 +1044,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer               :: walk_i, elec_i, elec_j, grid_i
@@ -1136,7 +1126,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i
@@ -1243,7 +1232,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -1329,7 +1317,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -1436,7 +1423,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -1524,7 +1510,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -1622,7 +1607,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -1969,7 +1953,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -2046,7 +2029,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -2118,7 +2100,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: grid_i
@@ -2242,7 +2223,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout) :: here
@@ -2316,7 +2296,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout) :: here
@@ -2481,7 +2460,6 @@
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout)         :: here
@@ -2566,7 +2544,6 @@
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                                    :: unit
@@ -2622,7 +2599,6 @@
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                                    :: unit
@@ -2687,7 +2663,6 @@
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                                    :: unit

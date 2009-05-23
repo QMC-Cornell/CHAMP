@@ -30,7 +30,6 @@ module walkers_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'walkers_menu'
@@ -134,7 +133,6 @@ module walkers_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'get_initial_walkers'
@@ -254,7 +252,6 @@ module walkers_mod
   USE mpi_mod
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 
 

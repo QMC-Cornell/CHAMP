@@ -84,7 +84,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, dexp_i, exp_opt_lab_i !, exp_opt_lab_j
@@ -206,7 +205,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, orb_i
@@ -291,7 +289,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, dexp_i, dexp_to_bas_i, bas_i
@@ -343,7 +340,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, n
@@ -397,7 +393,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, dexp_i, dexp_j
@@ -479,7 +474,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, bas_k, bas_l, dexp_i
@@ -528,7 +522,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, bas_k, bas_l, dexp_i
@@ -579,7 +572,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, cent_i, dexp_i, dexp_to_bas_i
@@ -631,7 +623,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, dexp_i, dexp_to_bas_i
@@ -678,7 +669,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_k, dexp_i
@@ -729,7 +719,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, bas_i, dim_i, cent_i, dexp_i, dexp_to_bas_i
@@ -789,7 +778,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, bas_i, dim_i, dexp_i, dexp_to_bas_i
@@ -841,7 +829,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, bas_i, bas_k, dim_i, dexp_i
@@ -897,7 +884,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, bas_i, cent_i, dim_i, dexp_i, dexp_to_bas_i
@@ -968,7 +954,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, elec_i, dexp_i, dexp_to_bas_i
@@ -1017,7 +1002,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_k, elec_i, dexp_i
@@ -1070,7 +1054,6 @@ module deriv_exp_mod
 ! -------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i, bas_i, orb_i, dexp_to_bas_i
@@ -1152,7 +1135,6 @@ module deriv_exp_mod
 ! -------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i, bas_i, orb_i, dexp_to_bas_i
@@ -1236,7 +1218,6 @@ module deriv_exp_mod
 ! -------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i, bas_i, orb_i, dexp_to_bas_i
@@ -1321,7 +1302,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i, det_unq_dn_i
@@ -1425,7 +1405,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -1501,7 +1480,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i, bas_i
@@ -1542,7 +1520,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -1658,7 +1635,6 @@ module deriv_exp_mod
 !! ------------------------------------------------------------------------------
 !  include 'modules.h'
 !  implicit none
-!  include 'commons.h'
 !
 !! local
 !  integer dexp_i
@@ -1774,7 +1750,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -1911,7 +1886,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -2038,7 +2012,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -2151,7 +2124,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -2253,7 +2225,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, elec_i, dexp_i
@@ -2300,7 +2271,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, dexp_i
@@ -2342,7 +2312,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i
@@ -2382,7 +2351,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -2415,7 +2383,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, elec_i, dexp_i
@@ -2466,7 +2433,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -2504,7 +2470,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -2539,7 +2504,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i, dexp_to_bas_i, bas_i
@@ -2581,7 +2545,6 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dexp_i, bas_i

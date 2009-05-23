@@ -33,7 +33,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 !JT    include 'common_pjase.h'
 !JT    include 'commons_jaspar6.h'
     integer                              :: icutjasc
@@ -198,7 +197,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     integer                              :: i
 
     if (header_exe) then
@@ -310,7 +308,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     ! local
     integer ist
@@ -343,7 +340,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 
     if (header_exe) then
        call object_create ('dpsi_pjas', dpsi_pjas_index)
@@ -379,7 +375,6 @@ contains
     include 'modules.h'
     implicit none
     integer                              :: ieta
-    include 'commons.h'
     ! header
     if (header_exe) then
        call object_create ('deloc_pjas',deloc_pjas_index)
@@ -424,7 +419,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     integer                              :: i, ifr
     do ifr =2 , nforce
        do i=1, param_pjas_nb !param_pjasen_nb
@@ -443,7 +437,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     integer i
     call object_alloc ('pjas_parms_sav', pjas_parms_sav, param_pjas_nb)
     do i=1, param_pjas_nb
@@ -460,7 +453,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     integer i
 
     do i=1, param_pjas_nb
@@ -477,7 +469,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
 !JT    include "common_jasn.h"
 
     integer                              :: iel
@@ -513,7 +504,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include "commons.h"
 !JT    include "common_jasn.h"
     real(dp)                             :: rvec (3,melec)
     integer                              :: iel
@@ -547,7 +537,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
     real (dp)                            :: xvec (3, melec)
     real (dp)                            :: v (3,melec)
@@ -595,7 +584,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
     real (dp)                            :: rvec (3, melec*(melec-1)/2)
     real (dp)                            :: xvec (3, melec)
     real (dp)                            :: v (3,melec), div_vj (melec)
@@ -645,7 +633,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    include 'commons.h'
 !JT    include 'common_jasn.h'
     integer                              :: iel
     real (dp)                            :: rvec (3, melec*(melec-1)/2)

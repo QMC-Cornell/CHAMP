@@ -59,7 +59,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -100,7 +99,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -141,7 +139,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i
@@ -195,7 +192,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i
@@ -254,7 +250,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -286,7 +281,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
 !  include 'modules.h'
 !  implicit none
-!  include 'commons.h'
 !
 !! header
 !  if (header_exe) then
@@ -314,7 +308,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -346,7 +339,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -377,7 +369,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i
@@ -425,7 +416,6 @@ module montecarlo_mod
 ! ------------------------------------------------------------------------------
 !  include 'modules.h'
 !  implicit none
-!  include 'commons.h'
 !
 !! local
 !  integer walk_i

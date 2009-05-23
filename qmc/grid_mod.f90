@@ -468,7 +468,6 @@ module grid_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: here = 'orb_on_x_bld'
@@ -546,7 +545,6 @@ module grid_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_file) file

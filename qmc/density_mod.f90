@@ -228,7 +228,6 @@ module density_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer               :: grid_i
@@ -289,7 +288,6 @@ module density_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer grid_i, elec_i, dim_i, walk_i
@@ -362,7 +360,6 @@ module density_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer               :: grid_i
@@ -511,7 +508,6 @@ module density_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer grid_i, grid_x_i, grid_y_i, grid_z_i
@@ -587,7 +583,6 @@ module density_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer grid_i, elec_i, dim_i, walk_i
@@ -657,7 +652,6 @@ module density_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer grid_i, elec_i, dim_i, walk_i
@@ -998,7 +992,6 @@ module density_mod
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer unit, grid_i
@@ -1052,7 +1045,6 @@ module density_mod
 ! ------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                                    :: unit

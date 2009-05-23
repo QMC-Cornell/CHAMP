@@ -18,7 +18,6 @@ module deriv_geo_mod
 ! Created       : J. Toulouse, 26 Jul 2007
 ! ------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
 

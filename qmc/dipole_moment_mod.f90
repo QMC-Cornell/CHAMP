@@ -66,7 +66,6 @@
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dipole_moment_menu'
@@ -221,7 +220,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! begin
 
@@ -252,7 +250,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, cent_i
@@ -296,7 +293,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer elec_i, dim_i, walk_i
@@ -349,7 +345,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer param_i, dim_i
@@ -402,7 +397,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer param_i, dim_i
@@ -445,7 +439,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer pair_i, dim_i
@@ -488,7 +481,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer param_i, dim_i
@@ -530,7 +522,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer param_i, dim_i
@@ -572,7 +563,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i, param_j
@@ -617,7 +607,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i, param_j
@@ -661,7 +650,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i
@@ -704,7 +692,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i
@@ -751,7 +738,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! begin
 
@@ -786,7 +772,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! begin
 
@@ -821,7 +806,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i, param_j
@@ -870,7 +854,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i
@@ -912,7 +895,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i, param_j
@@ -968,7 +950,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i
@@ -1011,7 +992,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i
@@ -1058,7 +1038,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i, param_j
@@ -1126,7 +1105,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, param_i, param_j, pair
@@ -1178,7 +1156,6 @@
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i

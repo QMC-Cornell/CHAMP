@@ -29,7 +29,6 @@ module eloc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, elec_i
@@ -77,7 +76,6 @@ module eloc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -114,7 +112,6 @@ module eloc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -147,7 +144,6 @@ module eloc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then

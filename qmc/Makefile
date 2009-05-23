@@ -310,26 +310,24 @@ mpi_debug:
 	make "CHAMP_EXE=${CHAMP_MPI_EXE}" "CHAMP_F95=${CHAMP_MPIF95}" "CHAMP_F77=${CHAMP_MPIF77}" "CHAMP_F77_FLAGS=${CHAMP_F77_MPI_FLAGSDEBUG}" "CHAMP_F95_FLAGS=${CHAMP_F95_MPI_FLAGSDEBUG}" "CHAMP_LD=${CHAMP_LD_MPI}" "CHAMP_LD_END=${CHAMP_LD_END_MPI}"
 
 accumulation_mod.o: all_tools_mod.o average_mod.o control_mod.o \
-	montecarlo_mod.o print_mod.o commons.h modules.h
+	montecarlo_mod.o print_mod.o modules.h
 all_tools_mod.o: average_mod.o basic_tools_mod.o catalog_averages_mod.o \
 	catalog_objects_mod.o constants_mod.o files_tools_mod.o indexes_mod.o \
 	matrix_tools_mod.o mpi_mod.o nodes_mod.o objects_mod.o \
 	parser_tools_mod.o routines_mod.o strings_tools_mod.o types_mod.o \
 	variables_mod.o write_mod.o
-allocations_mod.o: all_tools_mod.o orbitals_mod.o commons.h modules.h
+allocations_mod.o: all_tools_mod.o orbitals_mod.o modules.h
 average_mod.o: basic_tools_mod.o constants_mod.o indexes_mod.o objects_mod.o \
-	parser_tools_mod.o strings_tools_mod.o variables_mod.o commons.h \
-	modules.h
+	parser_tools_mod.o strings_tools_mod.o variables_mod.o modules.h
 backflow_auxiliary_mod.o: basic_tools_mod.o basis_mod.o constants_mod.o \
-	electrons_mod.o nodes_mod.o objects_mod.o commons.h modules.h
+	electrons_mod.o nodes_mod.o objects_mod.o modules.h
 backflow_mod.o: basic_tools_mod.o constants_mod.o electrons_mod.o nodes_mod.o \
 	objects_mod.o parser_tools_mod.o strings_tools_mod.o variables_mod.o \
-	commons.h modules.h
-basic_tools_mod.o: constants_mod.o mpi_mod.o types_mod.o variables_mod.o
-basis_mod.o: all_tools_mod.o control_mod.o commons.h modules.h
-bsplines_mod.o: basic_tools_mod.o mpi_mod.o orbital_grid_mod.o commons.h \
 	modules.h
-bwfdet_mod.o: constants_mod.o mpi_mod.o commons.h modules.h
+basic_tools_mod.o: constants_mod.o mpi_mod.o types_mod.o variables_mod.o
+basis_mod.o: all_tools_mod.o control_mod.o modules.h
+bsplines_mod.o: basic_tools_mod.o mpi_mod.o orbital_grid_mod.o modules.h
+bwfdet_mod.o: constants_mod.o mpi_mod.o modules.h
 catalog_averages_mod.o: average_mod.o basic_tools_mod.o constants_mod.o \
 	objects_mod.o variables_mod.o
 catalog_objects_mod.o: basic_tools_mod.o constants_mod.o indexes_mod.o \
@@ -342,102 +340,90 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
-	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o \
-	commons.h
+	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
 constants_mod.o: types_mod.o dmc/dmc.h fit/fit.h vmc/MPI/mpi_qmc.h \
 	vmc/ewald.h vmc/force.h vmc/numbas.h vmc/numorb.h vmc/pseudo.h \
 	vmc/vmc.h
-control_mod.o: all_tools_mod.o commons.h modules.h
-crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o commons.h \
-	modules.h
-csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o commons.h \
-	modules.h
+control_mod.o: all_tools_mod.o modules.h
+crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
+csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h
 debug_mod.o: all_tools_mod.o
 density_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o grid_mod.o \
-	psi_mod.o commons.h modules.h
+	psi_mod.o modules.h
 deriv_csf_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o \
-	commons.h modules.h
+	modules.h
 deriv_exp_mod.o: all_tools_mod.o basis_mod.o csfs_mod.o deriv_orb_mod.o \
 	determinants_mod.o electrons_mod.o eloc_mod.o orbitals_mod.o \
-	psi_mod.o commons.h modules.h
-deriv_geo_mod.o: all_tools_mod.o forces_pulay_mod.o commons.h
-deriv_jas_mod.o: all_tools_mod.o montecarlo_mod.o commons.h modules.h
+	psi_mod.o modules.h
+deriv_geo_mod.o: all_tools_mod.o forces_pulay_mod.o
+deriv_jas_mod.o: all_tools_mod.o montecarlo_mod.o modules.h
 deriv_mod.o: all_tools_mod.o deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o \
-	deriv_jas_mod.o deriv_orb_mod.o periodic_jastrow_mod.o commons.h \
-	modules.h
+	deriv_jas_mod.o deriv_orb_mod.o periodic_jastrow_mod.o modules.h
 deriv_orb_mod.o: all_tools_mod.o csfs_mod.o determinants_mod.o eloc_mod.o \
-	montecarlo_mod.o orbitals_mod.o commons.h modules.h
-determinants_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o commons.h \
-	modules.h
+	montecarlo_mod.o orbitals_mod.o modules.h
+determinants_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o modules.h
 dipole_moment_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o nuclei_mod.o \
-	opt_lin_mod.o commons.h modules.h
+	opt_lin_mod.o modules.h
 dmc_mod.o: all_tools_mod.o allocations_mod.o average_mod.o control_mod.o \
-	montecarlo_mod.o print_mod.o restart_mod.o commons.h modules.h
-electrons_mod.o: all_tools_mod.o walkers_mod.o commons.h modules.h
-eloc_mod.o: all_tools_mod.o montecarlo_mod.o psi_mod.o commons.h modules.h
-extracule_mod.o: all_tools_mod.o commons.h modules.h
+	montecarlo_mod.o print_mod.o restart_mod.o modules.h
+electrons_mod.o: all_tools_mod.o walkers_mod.o modules.h
+eloc_mod.o: all_tools_mod.o montecarlo_mod.o psi_mod.o modules.h
+extracule_mod.o: all_tools_mod.o modules.h
 files_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	strings_tools_mod.o
 forces_mod.o: all_tools_mod.o electrons_mod.o forces_pulay_mod.o grid_mod.o \
-	montecarlo_mod.o nuclei_mod.o opt_lin_mod.o psi_mod.o commons.h \
-	modules.h
+	montecarlo_mod.o nuclei_mod.o opt_lin_mod.o psi_mod.o modules.h
 forces_pulay_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o \
-	jastrow_mod.o montecarlo_mod.o orbitals_mod.o commons.h modules.h
-grid_mod.o: all_tools_mod.o orbitals_mod.o commons.h modules.h
+	jastrow_mod.o montecarlo_mod.o orbitals_mod.o modules.h
+grid_mod.o: all_tools_mod.o orbitals_mod.o modules.h
 initialization_mod.o: all_tools_mod.o commons/contr3_mod.o orbitals_mod.o \
-	commons.h modules.h
+	modules.h
 intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \
-	commons.h modules.h
+	modules.h
 jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
-	montecarlo_mod.o orbitals_mod.o commons.h modules.h
+	montecarlo_mod.o orbitals_mod.o modules.h
 main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
 	commons/contr3_mod.o control_mod.o debug_mod.o density_mod.o \
 	dipole_moment_mod.o dmc_mod.o extracule_mod.o forces_mod.o grid_mod.o \
 	intracule_mod.o jastrow_mod.o optimization_mod.o orbitals_mod.o \
-	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o commons.h
+	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o
-montecarlo_mod.o: all_tools_mod.o commons.h modules.h
+montecarlo_mod.o: all_tools_mod.o modules.h
 mpi_mod.o: constants_mod.o
 nodes_mod.o: basic_tools_mod.o constants_mod.o strings_tools_mod.o
-nuclei_mod.o: all_tools_mod.o commons.h modules.h
+nuclei_mod.o: all_tools_mod.o modules.h
 objects_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o routines_mod.o \
 	strings_tools_mod.o types_mod.o
 opt_common_mod.o: all_tools_mod.o
-opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o commons.h \
-	modules.h
-opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o commons.h modules.h
-opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o \
-	commons.h
+opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o modules.h
+opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o modules.h
+opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o
 optimization_mod.o: all_tools_mod.o control_mod.o deriv_mod.o \
 	montecarlo_mod.o nuclei_mod.o opt_common_mod.o opt_lin_mod.o \
 	opt_nwt_mod.o opt_ptb_mod.o orbitals_mod.o periodic_jastrow_mod.o \
-	vmc_mod.o commons.h modules.h
+	vmc_mod.o modules.h
 orbital_grid_mod.o: types_mod.o
-orbitals_mod.o: all_tools_mod.o basis_mod.o commons.h modules.h
+orbitals_mod.o: all_tools_mod.o basis_mod.o modules.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
-	pjasee_mod.o pjasen_mod.o commons.h modules.h
-pjas_interface.o: periodic_jastrow_mod.o pjasee_mod.o pjasen_mod.o commons.h \
-	modules.h
+	pjasee_mod.o pjasen_mod.o modules.h
+pjas_interface.o: periodic_jastrow_mod.o pjasee_mod.o pjasen_mod.o modules.h
 pjas_setup_mod.o: all_tools_mod.o
 pjasee_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
-	pjasen_mod.o commons.h modules.h
-pjasen_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o commons.h \
-	modules.h
+	pjasen_mod.o modules.h
+pjasen_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o modules.h
 print_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	parser_tools_mod.o variables_mod.o
 psi_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o orbitals_mod.o \
-	commons.h modules.h
-restart_mod.o: all_tools_mod.o commons.h
+	modules.h
+restart_mod.o: all_tools_mod.o
 routines_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o
 strings_tools_mod.o: basic_tools_mod.o constants_mod.o
 testing_mod.o: all_tools_mod.o
 variables_mod.o: constants_mod.o
-vmc_mod.o: all_tools_mod.o allocations_mod.o commons.h modules.h
-walkers_mod.o: all_tools_mod.o mpi_mod.o restart_mod.o vmc_mod.o commons.h \
-	modules.h
-write_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o variables_mod.o \
-	commons.h
+vmc_mod.o: all_tools_mod.o allocations_mod.o modules.h
+walkers_mod.o: all_tools_mod.o mpi_mod.o restart_mod.o vmc_mod.o modules.h
+write_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o variables_mod.o
 commons/age_mod.o: constants_mod.o
 commons/atom_mod.o: constants_mod.o
 commons/atomtyp_mod.o: constants_mod.o

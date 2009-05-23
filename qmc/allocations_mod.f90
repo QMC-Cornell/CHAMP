@@ -14,7 +14,6 @@ module allocations_mod
   use orbitals_mod, only: orb_tot_nb
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   call object_provide ('nelec')
   call object_provide ('orb_tot_nb')

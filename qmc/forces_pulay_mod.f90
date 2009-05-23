@@ -47,7 +47,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, cent_i, bas_i
@@ -95,7 +94,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, elec_i, dim_i
@@ -139,7 +137,6 @@ module forces_pulay_mod
 ! -------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, dim_i, bas_i, orb_i, force_to_bas_i
@@ -193,7 +190,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i, det_unq_dn_i
@@ -294,7 +290,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i
@@ -366,7 +361,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -436,7 +430,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, cent_i, dim_i
@@ -553,7 +546,6 @@ module forces_pulay_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, cent_i, dim_i

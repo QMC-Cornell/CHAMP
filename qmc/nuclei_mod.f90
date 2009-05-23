@@ -27,7 +27,6 @@ module nuclei_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'nuclei_menu'
@@ -326,7 +325,6 @@ module nuclei_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'geometry_rd'
@@ -391,7 +389,6 @@ module nuclei_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer cent_i
@@ -437,7 +434,6 @@ module nuclei_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer cent_i
@@ -474,7 +470,6 @@ module nuclei_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer dim_i, cent_i
@@ -519,7 +514,6 @@ module nuclei_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  cent_i, cent_j, dim_i

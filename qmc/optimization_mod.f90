@@ -81,7 +81,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'optimization_menu'
@@ -640,7 +639,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'optimization'
@@ -1130,7 +1128,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! output
   integer, intent(out) :: is_bad_move, is_bad_move_exp
@@ -1549,7 +1546,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'adjust_diag_stab'
@@ -1829,7 +1825,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, cent_i, dim_i
@@ -1973,7 +1968,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, cent_i, dim_i
@@ -2100,7 +2094,6 @@ module optimization_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, cent_i, dim_i
@@ -2228,7 +2221,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len), save :: lhere = 'delta_param_bld'
@@ -2336,7 +2328,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i
@@ -2387,7 +2378,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer iparmcsf, jparmcsf
@@ -2447,7 +2437,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer iparmcsf, jparmcsf
@@ -2505,7 +2494,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, i, j, k, dorb_i
@@ -2719,7 +2707,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, dorb_i, ex_i, orb_1st, orb_2nd
@@ -2769,7 +2756,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, dorb_i, ex_i, orb_1st, orb_2nd
@@ -2819,7 +2805,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, dorb_i, ex_i, orb_1st, orb_2nd
@@ -2870,7 +2855,6 @@ module optimization_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ex_i, orb_i

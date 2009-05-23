@@ -23,7 +23,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -120,7 +119,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, istep, jj, k
@@ -315,7 +313,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'dmc_algorithm'
@@ -348,7 +345,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -370,7 +366,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -392,7 +387,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -414,7 +408,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -436,7 +429,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -458,7 +450,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -488,7 +479,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -518,7 +508,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -548,7 +537,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -578,7 +566,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -608,7 +595,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
 # if defined (MPI)
@@ -640,7 +626,6 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
 # if defined (MPI)

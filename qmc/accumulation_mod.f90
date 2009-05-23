@@ -21,7 +21,6 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, iw, ifr, ie, k, ip
@@ -89,7 +88,6 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ifr, i
@@ -204,7 +202,6 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ifr, ipmod
@@ -294,7 +291,6 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   real(dp) :: rn_eff, w, w2
@@ -617,7 +613,6 @@ module accumulation_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, j, k, ifr

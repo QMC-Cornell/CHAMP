@@ -8,7 +8,6 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
   use pjasee_mod
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   real(dp)                               :: rvec(3,melec*(melec-1)/2)
   real (dp)                              :: x, v, div_vj, value, d2
@@ -64,7 +63,6 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
   use pjasee_mod
   include 'modules.h'
   implicit none
-  include 'commons.h'
   real(dp)                               :: rvec(3,melec*(melec-1)/2)
   real (dp)                              :: x, v, value, d2 ,div_vj(melec)
   dimension x(3,melec),v(3,melec)
@@ -120,7 +118,6 @@ subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
   use pjasee_mod
   include 'modules.h'
   implicit none
-  include 'commons.h'
   real(dp)                               :: rvec(3,melec*(melec-1)/2)
   integer                                :: iel
   real (dp)                              :: x, v, value

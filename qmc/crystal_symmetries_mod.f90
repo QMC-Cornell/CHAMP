@@ -33,7 +33,6 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit  none
-    include 'commons.h'
 
     integer                              :: prim_sim
 

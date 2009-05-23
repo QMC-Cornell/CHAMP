@@ -107,7 +107,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orbitals_menu'
@@ -273,7 +272,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout),save :: lhere = 'orb_cusp_menu'
@@ -353,7 +351,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_unq_up_i, det_unq_dn_i
@@ -421,7 +418,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer det_i, det_unq_up_i, det_unq_dn_i, orb_i
@@ -669,7 +665,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_coefs_rd'
@@ -729,7 +724,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_energies_rd'
@@ -758,7 +752,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_sym_lab_rd'
@@ -785,7 +778,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -825,7 +817,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, orb_i, orb_j
@@ -882,7 +873,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_cls_in_wf_i, orb_cls_in_wf_j, bas_i, bas_j
@@ -943,7 +933,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_occ_in_wf_i, orb_occ_in_wf_j, bas_i, bas_j
@@ -1004,7 +993,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_act_in_wf_i, orb_act_in_wf_j, bas_i, bas_j
@@ -1065,7 +1053,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_vir_in_wf_i, orb_vir_in_wf_j, bas_i, bas_j
@@ -1373,7 +1360,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_k
@@ -1416,7 +1402,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_k
@@ -1459,7 +1444,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j, orb_k
@@ -1502,7 +1486,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_cls_in_wf_i, orb_cls_i
@@ -1545,7 +1528,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_act_in_wf_i, orb_act_i
@@ -1587,7 +1569,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_act_in_wf_i, orb_act_i
@@ -1630,7 +1611,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_vir_in_wf_i, orb_vir_i
@@ -1671,7 +1651,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_vir_in_wf_i, orb_vir_i
@@ -1715,7 +1694,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! orthonormalize orbitals
   write (6,'(a)') 'Orthonormalizing orbitals.'
@@ -1744,7 +1722,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: iwf_from
@@ -1781,7 +1758,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: iwf_from
@@ -1815,7 +1791,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: iwf_from
@@ -1868,7 +1843,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: iwf_from
@@ -1915,7 +1889,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_opt_lab_rd'
@@ -1965,7 +1938,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i
@@ -2020,7 +1992,6 @@ module orbitals_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'orb_ex_forbidden_rd'
@@ -2066,7 +2037,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -2231,7 +2201,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, bas_i, l_i
@@ -2293,7 +2262,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, bas_i, l_i
@@ -2350,7 +2318,6 @@ module orbitals_mod
 !! ------------------------------------------------------------------------------
 !  include 'modules.h'
 !  implicit none
-!  include 'commons.h'
 !
 !! local
 !  character(len=max_string_len_rout), save :: here
@@ -2425,7 +2392,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   real(dp), allocatable :: diff (:)
@@ -2473,7 +2439,6 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer file_unit

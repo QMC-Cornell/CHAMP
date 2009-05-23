@@ -41,7 +41,6 @@ module bsplines_mod
   include 'modules.h'
   implicit none
 ! need ndim, norb, nband
-  include 'commons.h'
 
 ! local
   integer                             :: idum
@@ -1641,7 +1640,6 @@ module bsplines_mod
   include 'modules.h'
   implicit none
   !need rlatt_inv,nkvec,rkvec,rkvec_shift,nband
-  include 'commons.h'
 
 ! input
   real(dp),intent(in)                 :: r_cart(ndim)
@@ -1711,7 +1709,6 @@ module bsplines_mod
   include 'modules.h'
   implicit none
   !need ndim,rlatt_inv,rkvec,nkvec,glatt_sim,rknorm,rkvec,kvec,ng1d_sim,rkvec_shift,ireal_imag
-  include 'commons.h'
 
 ! input
   real(dp), intent(in)                :: r_cart(ndim)
@@ -1974,7 +1971,6 @@ module bsplines_mod
   implicit none
   !need ndim,ngvec,glatt,gnorm,igmult,ngnorm_orb,gvec,igvec,ngvec_orb,ng1d,
   !     rkvec_shift,k_inv,ireal_imag,nband
-  include 'commons.h'
 
 ! input
   real(dp),intent(in)     :: x(ndim)

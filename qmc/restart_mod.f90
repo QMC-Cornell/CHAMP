@@ -14,7 +14,6 @@ module restart_mod
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
 
@@ -43,7 +42,6 @@ module restart_mod
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
 

@@ -53,7 +53,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -97,7 +96,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: walk_i, elec_i, dim_i
@@ -161,7 +159,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: elec_i, elec_j, dim_i, walk_i
@@ -208,7 +205,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: elec_i, elec_j, dim_i, walk_i
@@ -278,7 +274,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: elec_i, cent_i, dim_i, walk_i
@@ -325,7 +320,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer  :: elec_i, cent_i, dim_i, walk_i
@@ -374,7 +368,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: cent_i, elec_i, dim_i
@@ -418,7 +411,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer                       :: cent_i, elec_i, dim_i
@@ -465,7 +457,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i, elec_i, cent_i, cent_closest_i
@@ -550,7 +541,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i, elec_i, cent_i, cent_closest_i
@@ -618,7 +608,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i
@@ -663,7 +652,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i, elec_nb_close_atom_encount_i
@@ -730,7 +718,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i, elec_spin_nb_close_atom_encount_i
@@ -798,7 +785,6 @@ module electrons_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer walk_i

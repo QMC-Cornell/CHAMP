@@ -36,7 +36,6 @@ module main_menu_mod
 ! Revised     : J. Toulouse, 13 Oct 2005: improve parser
 !---------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save  :: lhere = 'main_menu'
@@ -132,7 +131,6 @@ module main_menu_mod
 !---------------------------------------------------------------------------
   use contr3_mod
   implicit none
-  include 'commons.h'
 
   character (len=max_string_len_rout), save :: lhere = 'mode_menu'
 

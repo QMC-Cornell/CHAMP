@@ -56,7 +56,6 @@ module opt_lin_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'opt_lin_menu'
@@ -179,7 +178,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, j
@@ -269,7 +267,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, j
@@ -320,7 +317,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'ham_lin_energy_bld'
@@ -469,7 +465,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, j
@@ -522,7 +517,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'ham_lin_bld'
@@ -564,7 +558,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i, j
@@ -606,7 +599,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer i
@@ -671,7 +663,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'delta_lin_bld'
@@ -1004,7 +995,6 @@ module opt_lin_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer param_i, param_j, pair

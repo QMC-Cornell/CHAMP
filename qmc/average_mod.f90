@@ -952,7 +952,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer object_ind, object_av_ind
@@ -1047,7 +1046,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer object_ind, object_av_ind
@@ -1164,7 +1162,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer object_ind, object_av_ind
@@ -1283,7 +1280,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind, object_bav_ind
@@ -1370,7 +1366,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind, object_bav_ind
@@ -1480,7 +1475,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind, object_bav_ind
@@ -1591,7 +1585,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_bav_ind, object_av_ind
@@ -1643,7 +1636,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_bav_ind, object_av_ind
@@ -1708,7 +1700,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) ::  object_bav_ind, object_av_ind
@@ -1775,7 +1766,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av_ind, object_var_ind
@@ -1836,7 +1826,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av_ind, object_var_ind
@@ -1912,7 +1901,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av_ind, object_var_ind
@@ -1989,7 +1977,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
@@ -2050,7 +2037,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
@@ -2126,7 +2112,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
@@ -2202,7 +2187,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
@@ -2281,7 +2265,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_av1_ind, object_av2_ind, object_covar_ind
@@ -2372,7 +2355,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_var_ind, object_err_ind
@@ -2420,7 +2402,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_var_ind, object_err_ind
@@ -2480,7 +2461,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_var_ind, object_err_ind
@@ -2540,7 +2520,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind
@@ -2574,7 +2553,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind
@@ -2611,7 +2589,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind
@@ -2649,7 +2626,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind, object_bav_ind, object_av_ind
@@ -2718,7 +2694,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind, object_bav_ind, object_av_ind
@@ -2789,7 +2764,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in) :: object_ind, object_bav_ind, object_av_ind
@@ -3088,7 +3062,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_variances'
@@ -3146,7 +3119,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_covariances'
@@ -3220,7 +3192,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_errors'

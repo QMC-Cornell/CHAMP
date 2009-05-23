@@ -20,7 +20,6 @@ module opt_ptb_mod
 ! Created     : J. Toulouse, 24 Apr 2006
 !---------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'opt_ptb_menu'
@@ -72,7 +71,6 @@ module opt_ptb_mod
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
   integer i
@@ -114,7 +112,6 @@ module opt_ptb_mod
 ! Created     : J. Toulouse, 24 May 2006
 !---------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'delta_e_ptb_rd'
@@ -143,7 +140,6 @@ module opt_ptb_mod
 ! Created       : J. Toulouse, 04 Feb 2005
 ! ------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'delta_e_ptb_bld'
@@ -188,7 +184,6 @@ module opt_ptb_mod
 ! Created       : J. Toulouse, 04 Feb 2006
 ! ------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'delta_ptb_bld'

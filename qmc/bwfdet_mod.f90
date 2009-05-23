@@ -66,7 +66,6 @@ CONTAINS
  USE mpi_mod
  include 'modules.h'
  IMPLICIT NONE
- include 'commons.h'
  INTEGER i,j,k,io,band,ig,ialloc,idum,ispin,num_spins,num_electrons,n1,n2,n3,ierr,nbasisbwf
  INTEGER,DIMENSION(:),ALLOCATABLE :: atno
  REAL(dp) teionion,pa1(3),pa2(3),pa3(3),plane_wave_cutoff,total_energy,&
@@ -417,7 +416,6 @@ CONTAINS
 !----------------------------------------------------------------------------!
  include 'modules.h'
  IMPLICIT NONE
- include 'commons.h'
  REAL(dp),INTENT(in) :: orb_norm
  INTEGER, PARAMETER :: mdet_max_mods=15,lsize=500,num_g=lsize+lsize-1, &
   &twonum_g=num_g*2,sixnum_g=num_g*6,fournum_gp2=twonum_g+twonum_g+2

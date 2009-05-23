@@ -29,7 +29,6 @@ module csfs_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'csfs_menu'
@@ -148,7 +147,6 @@ module csfs_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dets_in_csfs_rd'
@@ -268,7 +266,6 @@ module csfs_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer csf_i, det_i, det_in_csf_i
@@ -354,7 +351,6 @@ module csfs_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer csf_i, csf_j
@@ -425,7 +421,6 @@ module csfs_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer csf_i, csf_j
@@ -494,7 +489,6 @@ module csfs_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer csf_i, csf_j
@@ -538,7 +532,6 @@ module csfs_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer csf_i
@@ -579,7 +572,6 @@ module csfs_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer orb_i, orb_j

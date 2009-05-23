@@ -103,7 +103,6 @@
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'forces_menu'
@@ -331,7 +330,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'forces_list_rd'
@@ -371,7 +369,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, cent_i
@@ -434,7 +431,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, dim_i, cent_i, cent_j
@@ -488,7 +484,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, elec_i, cent_i, dim_i
@@ -544,7 +539,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, elec_i, cent_i, dim_i, dim_k
@@ -847,7 +841,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, elec_i, cent_i, dim_i
@@ -945,7 +938,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! begin
 
@@ -1036,7 +1028,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, cent_i, dim_i
@@ -1102,7 +1093,6 @@
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer force_i, elec_i, cent_i, dim_i

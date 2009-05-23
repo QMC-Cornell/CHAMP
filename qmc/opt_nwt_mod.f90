@@ -44,7 +44,6 @@ module opt_nwt_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   character(len=max_string_len_rout), save :: lhere = 'opt_nwt_menu'
 
@@ -102,7 +101,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
 
@@ -143,7 +141,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
 
@@ -190,7 +187,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
 
@@ -231,7 +227,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
 
@@ -285,7 +280,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
 
@@ -348,7 +342,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
   real(dp) sumD, sumBpD, sumBpD_over_sumD
@@ -426,7 +419,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
   integer i, j
 
@@ -469,7 +461,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -514,7 +505,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -670,7 +660,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then
@@ -700,7 +689,6 @@ module opt_nwt_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! header
   if (header_exe) then

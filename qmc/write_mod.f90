@@ -102,7 +102,6 @@ module write_mod
 ! Created       : J. Toulouse, 20 Oct 2005
 ! -----------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
 # if defined (DEBUG)
@@ -138,7 +137,6 @@ module write_mod
 ! Created       : J. Toulouse, 23 Jul 2008
 ! -----------------------------------------------------------------------------------
   implicit none
-  include 'commons.h'
 
 ! local
 # if defined (DEBUG)

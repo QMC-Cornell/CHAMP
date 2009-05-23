@@ -39,7 +39,6 @@ module basis_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'basis_menu'
@@ -297,7 +296,6 @@ module basis_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'basis_functions'
@@ -434,7 +432,6 @@ module basis_mod
 !---------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'basis_functions'
@@ -534,7 +531,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ib, n, l, m, n1
@@ -605,7 +601,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i
@@ -644,7 +639,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_k
@@ -686,7 +680,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer ib, ic, ict, ib2
@@ -735,7 +728,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i
@@ -828,7 +820,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i
@@ -867,7 +858,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! input
   integer, intent(in)  :: n1, l1, m1, n2, l2, m2
@@ -899,7 +889,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j
@@ -974,7 +963,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, lin_dep_nb
@@ -1033,7 +1021,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, bas_k
@@ -1076,7 +1063,6 @@ module basis_mod
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
-  include 'commons.h'
 
 ! local
   integer bas_i, bas_j, bas_k
