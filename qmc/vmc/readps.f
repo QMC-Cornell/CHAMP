@@ -4,6 +4,7 @@ c Read pseudopotential in Fahy format
 
       use atom_mod
       use pseudo_mod
+      use qua_mod
       implicit real*8(a-h,o-z)
 
 !JT      include 'vmc.h'
@@ -21,8 +22,8 @@ c Read pseudopotential in Fahy format
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 c nquad = number of quadrature points
 c nlang = number of non-local potentials

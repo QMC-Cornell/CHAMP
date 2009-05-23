@@ -10,6 +10,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use pseudo_mod
       use contrl_per_mod
       use delocc_mod
+      use force_dmc_mod
+      use iterat_mod
+      use jacobsave_mod
+      use forcest_dmc_mod
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0)
 !JT      include '../vmc/vmc.h'
@@ -20,8 +24,8 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
 !JT      common /dim/ ndim
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
+!JT      common /force_dmc/ itausec,nwprod
 
 c routine to accumulate estimators for energy etc.
 
@@ -30,7 +34,7 @@ c routine to accumulate estimators for energy etc.
 !JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
+!JT      common /iterat/ ipass,iblk
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
@@ -76,7 +80,7 @@ c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 c     common /compferm/ emagv,nv,idot
 
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
+!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2

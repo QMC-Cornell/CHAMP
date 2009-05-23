@@ -17,13 +17,15 @@ c routine to accumulate estimators for energy etc.
       use contr3_mod
       use div_v_mod
       use distance_mod
+      use qua_mod
+      use forcest_mod
       implicit real*8(a-h,o-z)
 
 !JT      parameter (half=.5d0)
 
 !JT      common /dim/ ndim
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
+!JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /forcjac/ ajacob
 
@@ -40,8 +42,8 @@ c routine to accumulate estimators for energy etc.
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /estsum/ esum1,eaverage(MFORCE+6)
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2

@@ -11,6 +11,8 @@ c routine to print out final results
       use forcepar_mod
       use contrl_per_mod
       use contr3_mod
+      use iterat_mod
+      use forcest_dmc_mod
       implicit real*8(a-h,o-z)
 !      include 'dmc.h'
 !      include '../vmc/vmc.h'
@@ -21,7 +23,7 @@ c routine to print out final results
 
 !JT      common /dim/ ndim
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl_per/ iperiodic,ibasis
@@ -32,7 +34,7 @@ c routine to print out final results
 !JT      common /contr3/ mode
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
+!JT      common /iterat/ ipass,iblk
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 c /config_dmc/ included to print out xold and vold for old walkers

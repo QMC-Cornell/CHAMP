@@ -51,6 +51,8 @@ c polarized calculations were attempted.
       use jaspar4_mod
       use bparm_mod
       use contr3_mod
+      use qua_mod
+      use forcest_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*25 fmt
@@ -68,7 +70,7 @@ c     include '../fit/fit.h'
 !JT      common /contr3/ mode
 
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
+!JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
@@ -116,8 +118,8 @@ c     include '../fit/fit.h'
 !JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
 !JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)

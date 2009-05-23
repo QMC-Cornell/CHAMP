@@ -29,12 +29,16 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use forcepar_mod
       use contrl_per_mod
       use delocc_mod
+      use force_dmc_mod
+      use iterat_mod
+      use jacobsave_mod
+      use forcest_dmc_mod
       implicit real*8(a-h,o-z)
 
 !JT      common /dim/ ndim
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
+!JT      common /force_dmc/ itausec,nwprod
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (eps=1.d-10)
 
@@ -61,7 +65,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /contrl_per/ iperiodic,ibasis
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
+!JT      common /iterat/ ipass,iblk
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
@@ -85,7 +89,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT     &,n12n(-11:11,MCTYPE)
 !JT     &,n13o(-12:12,MCTYPE)
 !JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
+!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /div_v_dmc/ div_vow(MELEC,MWALK)
 
       dimension xnew(3),vnew(3,MELEC),xbac(3),xstrech(3,MELEC)

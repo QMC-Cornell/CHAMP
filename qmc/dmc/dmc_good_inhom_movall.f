@@ -47,6 +47,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use dim_mod
       use forcepar_mod
       use delocc_mod
+      use force_dmc_mod
+      use iterat_mod
+      use jacobsave_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -54,7 +57,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      include '../fit/fit.h'
 !JT      common /dim/ ndim
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /force_dmc/ itausec,nwprod
+!JT      common /force_dmc/ itausec,nwprod
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
 
@@ -82,13 +85,13 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
       common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
      &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-      common /iterat/ ipass,iblk
+!JT      common /iterat/ ipass,iblk
       common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
+!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
       common /div_v_dmc/ div_vow(MELEC,MWALK)
       common /tmp/ eacc,enacc,macc,mnacc
 

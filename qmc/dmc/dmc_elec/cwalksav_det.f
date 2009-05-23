@@ -6,11 +6,11 @@ c by A.D.Guclu, Feb2004.
       use cslater_mod
       use cslaterw_mod
       use dorb_mod
-
       use dets_mod
       use const_mod
       use dim_mod
       use forcepar_mod
+      use force_dmc_mod
       implicit real*8(a-h,o-z)
 
 c complex locals:
@@ -22,8 +22,8 @@ c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
 c following commons don't seem to be used?
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+c      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
+!JT      common /force_dmc/ itausec,nwprod
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

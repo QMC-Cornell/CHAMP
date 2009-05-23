@@ -7,6 +7,8 @@ c Written by Cyrus Umrigar
       use dim_mod
       use forcepar_mod
       use contrl_per_mod
+      use force_dmc_mod
+      use jacobsave_mod
       implicit real*8(a-h,o-z)
 
 !JT   parameter (zero=0.d0,two=2.d0,half=.5d0)
@@ -15,8 +17,8 @@ c Written by Cyrus Umrigar
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /contrl_per/ iperiodic,ibasis
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+c     common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
+!JT      common /force_dmc/ itausec,nwprod
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
@@ -27,7 +29,7 @@ c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
      &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
+!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension iwundr(MWALK),wt_sav(MWALK)
 

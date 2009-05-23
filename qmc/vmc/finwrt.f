@@ -20,6 +20,7 @@ c routine to print out final results
       use pseudo_mod
       use contrl_per_mod
       use contr3_mod
+      use forcest_mod
       implicit real*8(a-h,o-z)
 !JT      character*80 title,fmt
       character*80 fmt
@@ -47,7 +48,7 @@ c routine to print out final results
       common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
      &ekin(NRAD),ekin2(NRAD)
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
+!JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /doefp/ nefp

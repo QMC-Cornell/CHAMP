@@ -10,7 +10,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
 c     common /forcepar/ deltot(MFORCE),nforce,istrech
-c     common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
+c     common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
 c     common /force_dmc/ itausec,nwprod
 
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

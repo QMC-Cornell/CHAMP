@@ -3,6 +3,8 @@ c Written by Cyrus Umrigar
       use const_mod
       use dim_mod
       use forcepar_mod
+      use force_dmc_mod
+      use jacobsave_mod
       implicit real*8(a-h,o-z)
 !JT      include '../vmc/vmc.h'
 !JT      include 'dmc.h'
@@ -13,7 +15,7 @@ c Written by Cyrus Umrigar
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /force_dmc/ itausec,nwprod
+!JT      common /force_dmc/ itausec,nwprod
       common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
      &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /age/ iage(MWALK),ioldest,ioldestmx
@@ -24,7 +26,7 @@ c Written by Cyrus Umrigar
      &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /div_v_dmc/ div_vow(MELEC,MWALK)
 
-      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
+!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension iwundr(MWALK),wt_sav(MWALK)
 

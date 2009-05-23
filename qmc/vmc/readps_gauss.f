@@ -15,6 +15,7 @@ c NOTE: as usual power n means r**(n-2)
 
       use atom_mod
       use pseudo_mod
+      use qua_mod
       implicit real*8(a-h,o-z)
 !JT      include 'vmc.h'
 !JT      include 'pseudo.h'
@@ -33,8 +34,8 @@ c NOTE: as usual power n means r**(n-2)
      &     ,MPS_L,MCTYPE),ecp_coef(MGAUSS,MPS_L,MCTYPE)
      &     ,ecp_exponent(MGAUSS,MPS_L,MCTYPE)
 
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       do 100 ict=1,nctype
 

@@ -44,4 +44,10 @@
           use distance_mod
           use periodic_mod
           use pworbital_mod
+          use force_dmc_mod
+          use iterat_mod
+          use qua_mod
+          use jacobsave_mod
+          use mpiblk_mod
+          use forcest_dmc_mod
 

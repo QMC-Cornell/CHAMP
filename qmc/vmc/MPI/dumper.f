@@ -20,6 +20,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use delocc_mod
       use jaspar_mod
       use div_v_mod
+      use qua_mod
+      use forcest_mod
       implicit real*8(a-h,o-z)
 
       parameter(small=1.d-6)
@@ -58,8 +60,8 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump
 !JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 !JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
       common /jaspar1/ cjas1(MWF),cjas2(MWF)
 !JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
@@ -74,7 +76,7 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump
       common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
+!JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /forcjac/ ajacob
 !JT      common /doefp/ nefp

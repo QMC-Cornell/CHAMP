@@ -13,6 +13,8 @@ c by A.D.Guclu, Oct2005.
       use const_mod
       use dim_mod
       use forcepar_mod
+      use force_dmc_mod
+      use forcest_dmc_mod
       implicit real*8(a-h,o-z)
 
 c complex locals:
@@ -23,8 +25,8 @@ c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd
 c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /forcest/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /force_dmc/ itausec,nwprod
+!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
+!JT      common /force_dmc/ itausec,nwprod
 
 !JT      common /dim/ ndim
 !JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr

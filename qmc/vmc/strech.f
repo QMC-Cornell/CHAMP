@@ -19,6 +19,7 @@ c jacobian of the transformation
       use forcepar_mod
       use wfsec_mod
       use contr3_mod
+      use force_dmc_mod
       implicit real*8(a-h,o-z)
       character*64 filename
 
@@ -33,7 +34,7 @@ c jacobian of the transformation
 !JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
 !JT     &,iwctype(MCENT),nctype,ncent
 !JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-      common /force_dmc/ itausec,nwprod
+!JT      common /force_dmc/ itausec,nwprod
 !JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /wfname/ filename
 

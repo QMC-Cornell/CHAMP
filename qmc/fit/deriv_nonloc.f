@@ -12,6 +12,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use pseudo_mod
       use contrl_per_mod
       use periodic_mod
+      use qua_mod
       implicit real*8(a-h,o-z)
 !JT   parameter (one=1.d0)
 
@@ -25,8 +26,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       common /slatn2/ deti_new(MPARMD)
 !JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
 !JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
 !JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
 !JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)

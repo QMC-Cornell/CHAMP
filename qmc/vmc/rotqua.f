@@ -314,11 +314,12 @@ c-----------------------------------------------------------------------
 
       subroutine rotqua
 c Written by Lubos Mitas
+      use qua_mod
       implicit real*8(a-h,o-z)
 
-      include 'pseudo.h'
-      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
+!JT      include 'pseudo.h'
+!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
+!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
     2 x1=1.d0-2.d0*rannyu(0)
       x2=1.d0-2.d0*rannyu(0)
