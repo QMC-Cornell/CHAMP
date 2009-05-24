@@ -10,7 +10,6 @@ c coefficients are real.
       use dorb_mod
       use cslatn_mod
       use orbitals_mod, only: orb_tot_nb
-
       use coefs_mod
       use dets_mod
       use const_mod
@@ -65,6 +64,10 @@ c allocate memory:
       call alloc('cdetd',cdetd,ndetdn)
       call alloc('cddeti_deti',cddeti_deti,ndim,nelec,ndet)
       call alloc('cd2edeti_deti',cd2edeti_deti,nelec,ndet)
+      call alloc('cslmin',cslmin,n2,ndetupdn) !JT
+      call alloc('cdetn',cdetn,ndetupdn) !JT
+      call alloc('cddeti_detin',cddeti_detin,ndim,nelec,ndet) !JT
+      call alloc('cd2edeti_detin',cd2edeti_detin,nelec,ndet) !JT
 
       do 10 i=1,nelec
         do 10 idim=1,ndim

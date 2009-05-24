@@ -38,6 +38,11 @@ module allocations_mod
   call alloc ('ddeti_deti', ddeti_deti, 3, nelec, ndetupdn)
   call alloc ('d2edeti_deti', d2edeti_deti, nelec, ndetupdn)
 
+  call alloc ('slmin', slmin, nupdn_square, ndetupdn)
+  call alloc ('detn', detn, ndetupdn)
+  call alloc ('ddeti_detin', ddeti_detin, 3, nelec, ndetupdn)
+  call alloc ('d2edeti_detin', d2edeti_detin, nelec, ndetupdn)
+
   call object_provide ('nparmd')
   call alloc ('deti_det', deti_det, nparmd)
   call alloc ('ddeti_det', ddeti_det, 3, nelec, nparmd)

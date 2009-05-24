@@ -6,7 +6,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use periodic_jastrow_mod !WAS
       use atom_mod
       use dets_mod
-
       use const_mod
       use dim_mod
       use pseudo_mod
@@ -262,7 +261,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr3_mod
       use phifun_mod
       implicit real*8(a-h,o-z)
-
 
 c     common /dim/ ndim
 !JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap

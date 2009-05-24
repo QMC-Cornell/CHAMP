@@ -6,7 +6,6 @@ c adapted to complex calculations by A.D.Guclu Feb2004
       use cslater_mod
       use dorb_mod
       use cslatn_mod
-
       use dets_mod
       use const_mod
       use dim_mod

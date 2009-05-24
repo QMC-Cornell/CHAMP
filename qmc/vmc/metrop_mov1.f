@@ -12,7 +12,6 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use opt_lin_mod
       use opt_ptb_mod
       use config_mod
-
       use dets_mod
       use const_mod
       use dim_mod

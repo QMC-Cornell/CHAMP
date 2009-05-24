@@ -51,6 +51,17 @@ module dmc_mod
   endif
 
 ! allocations for DMC
+  call object_provide ('nforce')
+  call object_provide ('nelec')
+  call alloc ('iage', iage, MWALK)
+!  call alloc ('xoldw', xoldw, 3, nelec, MWALK, max(3,nforce))
+!  call alloc ('voldw', voldw, 3, nelec, MWALK, max(3,nforce))
+!  call alloc ('psidow', psidow, MWALK, max(3,nforce))
+!  call alloc ('psijow', ,psijow, MWALK, max(3,nforce))
+!  call alloc ('peow', peow, MWALK, max(3,nforce))
+!  call alloc ('peiow', peiow, MWALK, max(3,nforce))
+!  call alloc ('d2ow', d2ow, MWALK, max(3,nforce))
+
   call common_allocations
   
   end subroutine dmc_init
