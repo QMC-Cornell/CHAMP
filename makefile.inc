@@ -517,8 +517,8 @@ ifeq ($(hostname),babel1)
   CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpixlc
   CHAMP_C_MPI_FLAGS = -O3 -qstrict
-  LAPACK=-L/bglocal/prod/tools_ibm/lib -llapack -L/opt/ibmmath/essl/4.3/lib -lesslbg
-  BLAS=-L/opt/ibmmath/essl/4.3/lib -lesslbg
+  LAPACK=-L/bglocal/prod/tools_ibm/lib -llapack -L/opt/ibmmath/essl/4.4/lib -lesslbg
+  BLAS=-L/opt/ibmmath/essl/4.4/lib -lesslbg
   QUENCH=
   EINSPLINE=
   CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
