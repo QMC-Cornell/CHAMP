@@ -15,25 +15,15 @@ c rigidly with that nucleus
       use contr2_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include 'fit.h'
-!JT      include '../vmc/force.h'
-
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
 
-      dimension delc(3,MCENT),wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3)
-     &,oldcent(3,MCENT)
+      dimension delc(3,ncent),wt(ncent),dvol(3,3),dwt(3,ncent),dwtsm(3)
+     &,oldcent(3,ncent)
 
-      save alfstr,delc
+!JT      save alfstr,delc
+      save alfstr
 
       read(5,*) alfstr
       write(6,'(''istrch,alfstr'',i5,f7.2)') istrch,alfstr

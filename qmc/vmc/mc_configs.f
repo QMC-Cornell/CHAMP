@@ -6,7 +6,6 @@
       use contr3_mod
       implicit none
 
-!JT      common /contr3/ mode
 
 
       if(index(mode,'mpi').ne.0) then
@@ -43,25 +42,14 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
 
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
 
-      dimension nsite(MCENT)
+      dimension nsite(ncent)
 
 c Truncate fbias so that it is never negative, and the quantity
 c sampled is never negative

@@ -4,13 +4,7 @@ c Written by Cyrus Umrigar
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include '../vmc/force.h'
-!JT      include 'fit.h'
 
-!JT      common /dim/ ndim
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata

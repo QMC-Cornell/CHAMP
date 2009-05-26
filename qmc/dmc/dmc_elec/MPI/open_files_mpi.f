@@ -20,28 +20,8 @@ c Also do other things that differ for serial and parallel runs, such as setting
       character*27 fmt
       character*20 filename
 
-!JT      common /dim/ ndim
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /contr3/ mode
-!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
 c set the random number seed, setrn already called in read_input
       if(irstar.ne.1) then

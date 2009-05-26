@@ -22,18 +22,8 @@ c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd
 c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
 c following commons don't seem to be used?
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 c      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-!JT      common /force_dmc/ itausec,nwprod
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
 c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)

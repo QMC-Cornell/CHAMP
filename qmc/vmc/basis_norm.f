@@ -36,40 +36,7 @@ c and, the same normal. for Gaussians as for Slaters.
       use contr2_mod
       use contrl_per_mod
       implicit real*8(a-h,o-z)
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-c     common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-c    &,iwctype(MCENT),nctype,ncent
-!JT      common /contrl_per/ iperiodic,ibasis
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT      common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
-!JT      common /basisnorm/ anorm(MBASIS)
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap       !JT
-!JT     &,ifock,i3body,irewgt,iaver,istrch                                !JT
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt   !JT
 
       do 20 ib=1,nbasis
         n=n_bas(ib)

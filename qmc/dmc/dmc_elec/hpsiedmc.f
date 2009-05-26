@@ -8,17 +8,7 @@ c Written by Claudia Filippi
       use forcest_dmc_mod
       use config_dmc_mod
       implicit real*8(a-h,o-z)
-!JT      include '../../vmc/vmc.h'
-!JT      include '../dmc.h'
-!JT      include '../../vmc/force.h'
-!JT      common /dim/ ndim
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-!JT      common /force_dmc/ itausec,nwprod
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
 
       dimension coord(3),force(3,*),x(3,MELEC)
 

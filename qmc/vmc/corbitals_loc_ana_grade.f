@@ -1,32 +1,22 @@
       subroutine corbitals_loc_ana_grade(iel,rvec_en,r_en,corb,cdorb,cddorb)
 c orbitals_loc_ana_grade adapted to complex orbitals by A.D.Guclu Feb2004
 c Calculate localized orbitals and derivatives for all or 1 electrons
-
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
       use dim_mod
       use numbas_mod
       use wfsec_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numbas.h'
 
       complex*16 corb,cdorb,cddorb
       complex*16 cphin,cdphin,cd2phin
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
      &,cd2phin(MBASIS,MELEC)
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,corb(orb_tot_nb),cdorb(3,orb_tot_nb),cddorb(orb_tot_nb)
 
 c get basis functions

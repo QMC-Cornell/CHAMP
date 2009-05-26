@@ -3,7 +3,7 @@ c same subroutine as determinant() adapted to complex orbitals/determinants
 c by A.D.Guclu Feb2004
 c can deal with any complex determinant, provided that the determinantal
 c coefficients are real.
-
+      use constants_mod
       use control_mod
       use basic_tools_mod
       use cslater_mod
@@ -19,7 +19,6 @@ c coefficients are real.
       use contrl_per_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(one=1.d0)
 
 c complex locals:
       complex*16 cddet_det(3,MELEC),cdeterm,cdetinv
@@ -31,28 +30,14 @@ c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd
 c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 !JT      complex*16 cslmin,cdetn,cddeti_detin,cd2edeti_detin,cdorb,cddorb
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
 c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
 c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET),cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
-!JT      common /cslatn/ cslmin(MMAT_DIM,MDETUD),cdetn(MDETUD)
-!JT     &,cddeti_detin(3,MELEC,MDETUD),cd2edeti_detin(MELEC,MDETUD)
-!JT     &,cdorb(3,MORB),cddorb(MORB)
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),ddet_det(3,*)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*)
 
 c allocate memory:
       n2=nelec*nelec

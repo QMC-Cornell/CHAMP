@@ -18,24 +18,8 @@ c Reads in either analytic or localized orbitals
       implicit real*8(a-h,o-z)
 
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /contr_ylm/ irecursion_ylm
 
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb),r(2)
 
@@ -170,37 +154,6 @@ c i.e. the order in which we were reading in the p functions.
       implicit real*8(a-h,o-z)
 
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT      common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
 c     character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
 c    &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
@@ -635,35 +588,6 @@ c i.e. the order in which we were reading in the p functions.
 
       parameter(nprime=5)
 
-!JT      include 'vmc.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
-!JT      include 'numbas.h'
-!JT      include 'force.h'
-
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
       character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
      &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
@@ -672,8 +596,6 @@ c    &,l4s(nprime),l4p(nprime,-1:1)
      &,lsa,lpa(-1:1),lda(-2:2)
       character*2 lmbas
       character*4 lcent,l4f(nprime),l5g(nprime),l6h(nprime)
-!JT      character*10 lbasis(MBASIS)
-!JT      common /lbas/ lbasis !JT
 
       data l1s /'    1s','   1s''','   1s"','  1s"''','  1s""'/
       data l2s /'    2s','   2s''','   2s"','  2s"''','  2s""'/
@@ -1067,35 +989,6 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
 
       parameter(nprime=5)
 
-!JT      include 'vmc.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
-!JT      include 'numbas.h'
-!JT      include 'force.h'
-
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
       character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
      &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
@@ -1104,8 +997,6 @@ c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
      &,lsa,lpa(-1:1),lda(-2:2)
       character*2 lmbas
       character*4 lcent,l4f(nprime),l5f(nprime),l5g(nprime),l6h(nprime)
-!JT      character*10 lbasis(MBASIS)
-!JT      common /lbas/ lbasis !JT
 
       data l1s /'    1s','   1s''','   1s"','  1s"''','  1s""'/
       data l2s /'    2s','   2s''','   2s"','  2s"''','  2s""'/
@@ -1562,46 +1453,6 @@ c Determine distinct radial basis functions
       implicit real*8(a-h,o-z)
 
 
-!JT      common /contr3/ mode
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
-
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-
-c     common /optim/ lo(MORB),npoint(MORB),
-c    &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-c    &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-c    &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-c    &imnbas(MCENT),
-c    &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-c    &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-c    &necn,nebase
-
 c If an analytical basis is used find out how many distinct radial orbitals there are
 c and store n and zex for each of these.
 c This is done so that only the unique analytic radial wavefns. are evaluated in basis_fns.f and basis_fnse.f
@@ -1687,11 +1538,7 @@ c Reads in numerical orbitals and V_ext on a grid.
 c At present V_ext that is read in is not used.
       use coefs_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
@@ -1725,12 +1572,8 @@ c-----------------------------------------------------------------------
 c Spline numerical orbitals
       use coefs_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
       parameter(MWORK=21)
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 

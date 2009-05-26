@@ -1,7 +1,7 @@
       subroutine wf_secondary
 c Written by Claudia Filippi and Cyrus Umrigar
 c Read parameters for secondary wavefns.
-
+      use constants_mod
       use control_mod
       use orbitals_mod
       use mpi_mod
@@ -24,54 +24,9 @@ c Read parameters for secondary wavefns.
       use jaspar2_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0)
-
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-
-
       character*20 filename,wfile,fmt
       character*30 section
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT      common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /bparm/ nspin2b,nocuspb
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /wfname/ filename
 
       do 400   iwt=2,nwftype
@@ -295,51 +250,7 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
 
       parameter(NCOEF=5)
 
-!JT      common /dim/ ndim
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!**MS(jellium03-1;6Mar08)
-! Declare arrays upto o-orbitals (l=12)
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!**EndMS(jellium03-1)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /bparm/ nspin2b,nocuspb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-c     common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-c    &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
 
       nparma_read=2+max(0,norda-1)
@@ -454,46 +365,7 @@ c Written by Cyrus Umrigar
       use optimo_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /dim/ ndim
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!**MS(jellium03-1;6Mar08)
-! The number of arrays for electron configurations depends on a angular momentum
-! is increased up to l=12, o-orbital.
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!**EndMS(jellium03-1)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /bparm/ nspin2b,nocuspb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 
       dimension csf_coef_sav(MCSF),a4_sav(MORDJ1,MCTYPE),b_sav(MORDJ1,2),c_sav(MPARMJ,MCTYPE)
       dimension oparm_sav(MOTYPE,MBASIS)
@@ -665,50 +537,8 @@ c Saves the best wf yet and writes it out at end of run
       character*30 fmt
 
 c     common /contrl_per/ iperiodic,ibasis
-!JT      common /dim/ ndim
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!**MS(jellium03-1;6Mar08)
-! The number of arrays for electron configurations depends on a angular momentum
-! is increased up to l=12, o-orbital.
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!**EndMS(jellium03-1)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /bparm/ nspin2b,nocuspb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-
-!JT      dimension csf_coef_best(MCSF),a4_best(MORDJ1,MCTYPE),b_best(MORDJ1,2),c_best(MPARMJ,MCTYPE)
       dimension oparm_best(MOTYPE,MBASIS)
-!JT      save csf_coef_best,scalek_best,a4_best,b_best,c_best,nparma_read,nparmb_read,nparmc_read
       save oparm_best
 
       nparma_read=2+max(0,norda-1)

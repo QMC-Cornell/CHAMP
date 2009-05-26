@@ -15,48 +15,19 @@ c Written by Claudia Filippi
       use jaso_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include '../vmc/force.h'
-!JT      include 'fit.h'
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
 !JT      parameter (half=.5d0,third=1.d0/3.d0)
       parameter(NEQSX=6*MORDJ)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
      &,cdep(NEQSX,MPARMJ,MCTYPE)
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /bparm/ nspin2b,nocuspb
       common /focktmp/ fc,fu,fuu,fs,fss,ft,ftt,fst,fus,fut
-!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
-!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-!JT     &,go(MELEC,MELEC,MPARMJ)
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*),v(3,*)
       dimension u(-2:MORDJ),s(-2:MORDJ),t(-2:MORDJ)

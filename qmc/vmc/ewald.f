@@ -12,30 +12,12 @@ c Written by Cyrus Umrigar
 
       parameter (eps=1.d-12)
 
-!JT      common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
       common /constant/ twopi
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
 c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
 c    &,nlrad(MCTYPE)
       common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /periodic2/ rkvec_shift_latt(3)
       common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
      &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
@@ -717,7 +699,6 @@ c         1  simulation cell
 
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension glatt(3,*),gdist(3),igvec(3,*),gvec(3,*),gnorm(*),igmult(*),ng1d(*)
       dimension gnorm_tmp(NGVEC_SIM_BIGX)
 
@@ -786,7 +767,6 @@ c the order they appear in is independent of cutg_sim_big.
 
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension igvec(3,*),gvec(3,*),gnorm_tmp(*),gnorm(*),igmult(*)
 
 c     cost(igv1,igv2,igv3,gn)=igv3+10.d0**4*igv2+10.d0**8*igv1+10.d0**12*gn
@@ -888,25 +868,12 @@ c other vectors.  We should come back to the issue of whether that is
 c a symmetry one could use later on.
 
       use all_tools_mod
-
       use dim_mod
       use periodic_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-6)
 
-!JT      common /dim/ ndim
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension rkvec_try(3),rkvec_latt(3)
 
@@ -1017,7 +984,6 @@ c the order they appear in is independent of cutg_sim_big.
 
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension k_inv(*),kvec(3,*),rkvec(3,*),rknorm(*)
       cost(kv1,kv2,kv3,rk)=kv3+10.d0**4*kv2+10.d0**8*kv1+10.d0**12*rk
 
@@ -1629,7 +1595,6 @@ c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
 !JR      include 'ewald.h'
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1658,8 +1623,6 @@ c Written by Cyrus Umrigar
       use const_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'ewald.h'
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1814,23 +1777,7 @@ c Written by Cyrus Umrigar
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
 
-!JT      common /dim/ ndim
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
      &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
      &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
@@ -1839,7 +1786,7 @@ c Written by Cyrus Umrigar
      &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
      &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-      dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
+      dimension znuc(MCTYPE),cent(3,ncent),iwctype(ncent)
       dimension r(3)
 
       lowest_pow=-1
@@ -1876,23 +1823,7 @@ c Written by Cyrus Umrigar
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
 
-!JT      common /dim/ ndim
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
      &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
      &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
@@ -1901,7 +1832,7 @@ c Written by Cyrus Umrigar
      &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
      &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-      dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
+      dimension znuc(MCTYPE),cent(3,ncent),iwctype(ncent)
       dimension r(3)
 
 c short-range sum
@@ -1964,25 +1895,7 @@ c Written by Cyrus Umrigar
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
 
-!JT      common /dim/ ndim
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
      &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
      &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
@@ -1991,16 +1904,12 @@ c Written by Cyrus Umrigar
      &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
      &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 c    &,peo,pen,tjfn,tjfo,psido,psijo
 c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)
 
@@ -2060,23 +1969,7 @@ c Written by Cyrus Umrigar
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'ewald.h'
-!JT      include 'pseudo.h'
 
-!JT      common /dim/ ndim
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
      &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
      &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
@@ -2085,14 +1978,12 @@ c Written by Cyrus Umrigar
      &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
      &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 c    &,peo,pen,tjfn,tjfo,psido,psijo
 c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*)
 
@@ -2137,7 +2028,6 @@ c Written by Cyrus Umrigar
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(MELEC,*),sin_g(MELEC,*)
      &,ng1d(3)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
@@ -2190,7 +2080,6 @@ c Presently using cossin_psi_g and cossin_psi_k instead.
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
      &,cos_g(MELEC,*),sin_g(MELEC,*)
      &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
@@ -2267,7 +2156,6 @@ c Needed for orbitals and their Laplacian.
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
 c     dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(MELEC,*),sin_g(MELEC,*)
 c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
@@ -2363,7 +2251,6 @@ c For the k-vectors do it straightforwardly since there are few of them
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
 c     dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
 c    &,cos_g(MELEC,*),sin_g(MELEC,*)
 c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
@@ -2407,9 +2294,8 @@ c Calculate cos_sum and sin_sum for nuclei
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
+      dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2458,10 +2344,9 @@ c Calculate cos_sum and sin_sum for pseudopotentials
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MCENT),sin_gr(-NG1DX:NG1DX,3,MCENT)
+      dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
@@ -2513,7 +2398,6 @@ c Calculate cos_sum and sin_sum for electrons
       include 'vmc.h'
       include 'ewald.h'
 
-!JT      common /dim/ ndim
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,MELEC),sin_gr(-NG1DX:NG1DX,3,MELEC)
 

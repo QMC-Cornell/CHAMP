@@ -8,13 +8,9 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
       use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc.h'
-!JT      include '../../fit/fit.h'
-!JT      include 'mpif.h'
 
       parameter(MPARM2=MPARM*MPARM)
 
-!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
      &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
 
@@ -23,16 +19,7 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
 
-!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
 
       dimension collect(MPARM),collect2(MPARM,MPARM)
 

@@ -1349,6 +1349,7 @@ module optimization_mod
    call object_modified ('cent2')
 
 !  recalculating nuclear potential energy
+   call alloc ('pecentn', pecentn, max(3,nforce))
    call pot_nn(cent2(:,:,iwf),znuc,iwctype,ncent,pecentn(iwf))
    call object_modified ('pecentn')
 
@@ -1632,6 +1633,8 @@ module optimization_mod
     call object_provide ('ndim')
     call object_provide ('ncent')
     call object_provide ('cent2')
+    call alloc ('cent_ref', cent_ref, 3, ncent)
+    call alloc ('delc', delc, 3, ncent, max(3, nforce))
     cent_ref (1:ndim,1:ncent) = cent2 (1:ndim,1:ncent,1)
     delc (1:ndim,1:ncent,2) = cent2 (1:ndim,1:ncent,2) - cent_ref (1:ndim,1:ncent)
     delc (1:ndim,1:ncent,3) = cent2 (1:ndim,1:ncent,3) - cent_ref (1:ndim,1:ncent)

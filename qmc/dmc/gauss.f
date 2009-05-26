@@ -9,7 +9,6 @@ c backward compatibility generate just 1.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use const_mod
       implicit real*8(a-h,o-z)
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       gauss=dcos(2*pi*rannyu(0))
       gauss=gauss*sqrt(-2*dlog(rannyu(0)))

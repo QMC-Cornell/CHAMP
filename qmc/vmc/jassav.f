@@ -6,15 +6,8 @@ c Written by Claudia Filippi
       use jasn_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
 
-!JT      include 'force.h'
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
-!JT     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
-!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
       fsumo=fsumn
       do 10 i=1,nelec

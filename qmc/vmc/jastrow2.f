@@ -14,26 +14,11 @@ c Written by Cyrus Umrigar
       use jaspar2_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
 
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0
-!JT     &,half=.5d0,third=1.d0/3.d0)
 
-!JT      common /dim/ ndim
-!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
      &                dsphi31,dtphi31,duphi31,d2sphi31,d2tphi31,
@@ -42,13 +27,9 @@ c Written by Cyrus Umrigar
      &d2uphi20,d2stphi20,d2suphi20,d2utphi20,
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
 
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
+
       dimension x(3,*),v(3,*),div_vj(*)
 
       fsum=zero

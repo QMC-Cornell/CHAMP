@@ -11,7 +11,7 @@ c stretch space so that electrons close to a nucleus move almost
 c rigidly with that nucleus
 c returns secondary geom. nuclear positions, stretched electron positions and
 c jacobian of the transformation
-
+      use constants_mod
       use nuclei_mod
       use atom_mod
       use const_mod
@@ -23,23 +23,10 @@ c jacobian of the transformation
       implicit real*8(a-h,o-z)
       character*64 filename
 
-!      include 'vmc.h'
-!      include 'force.h'
-
-!      parameter (zero=0.d0,one=1.d0)
-
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr3/ mode
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /force_dmc/ itausec,nwprod
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /wfname/ filename
 
       dimension x(3,MELEC),xstrech(3,MELEC)
-      dimension wt(MCENT),dvol(3,3),dwt(3,MCENT),dwtsm(3),cent_str(3,MCENT)
+      dimension wt(ncent),dvol(3,3),dwt(3,ncent),dwtsm(3),cent_str(3,ncent)
 
 !     JT: cent_ref, delc and pecentn used to be local, now there are in nuclei module
 
@@ -123,6 +110,7 @@ c read force parameters and set up n-n potential energy at displaced positions
       read(3,*) istrech,alfstr
       write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
+      call alloc ('delc', delc, 3, ncent, max(3, nforce))
       do 60 ifl=1,nforce
         do 60 ic=1,ncent
           read(3,*)  (delc(k,ic,ifl),k=1,ndim)
@@ -144,6 +132,7 @@ c read force parameters and set up n-n potential energy at displaced positions
 
       close(3)
 
+      call alloc ('cent_ref', cent_ref, 3, ncent)
       do 65 k=1,ndim
         do 65 icent=1,ncent
    65     cent_ref(k,icent)=cent(k,icent)
@@ -161,6 +150,7 @@ c         r=dsqrt(r2)
 c  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
 
 !      write(6,'(''pecentn(ifl)1'',9f9.4)') (pecentn(ifl),ifl=1,nforce)
+      call alloc ('pecentn', pecentn, max(3,nforce))
       do 80 ifl=1,nforce
         do 70 i=1,ncent
             do 70 k=1,ndim
@@ -196,12 +186,15 @@ c-----------------------------------------------------------------------
 c For wf. optim. copy first geometry info to next two
       entry wf_copy2
 
+      call alloc ('pecentn', pecentn, max(3,nforce))
+      call alloc ('delc', delc, 3, ncent, max(3, nforce))
       do 160 ifl=1,nforce
         pecentn(ifl)=pecent
         do 160 ic=1,ncent
           do 160 k=1,ndim
   160       delc(k,ic,ifl)=0
 
+       call alloc ('cent_ref', cent_ref, 3, ncent)
         do 165 ic=1,ncent
           do 165 k=1,ndim
   165       cent_ref(k,ic)=cent(k,ic)

@@ -16,6 +16,8 @@ module allocations_mod
   implicit none
 
   call object_provide ('nelec')
+  call object_provide ('nelec_pair')
+  call object_provide ('ncent')
   call object_provide ('orb_tot_nb')
 
   call alloc ('orb', orb, nelec, orb_tot_nb)
@@ -48,6 +50,18 @@ module allocations_mod
   call alloc ('ddeti_det', ddeti_det, 3, nelec, nparmd)
   call alloc ('d2deti_det', d2deti_det, nparmd)
   call alloc ('detij_det', detij_det, nparmd, nparmd)
+
+  call alloc ('rshift', rshift, 3, nelec, ncent)
+  call alloc ('rvec_en', rvec_en, 3, nelec, ncent)
+  call alloc ('r_en', r_en, nelec, ncent)
+  call alloc ('rvec_ee', rvec_ee, 3, nelec_pair)
+  call alloc ('r_ee', r_ee, nelec_pair)
+
+  call alloc ('rshift_sav', rshift_sav, 3, ncent)
+  call alloc ('rvec_en_sav', rvec_en_sav, 3, ncent)
+  call alloc ('r_en_sav', r_en_sav, ncent)
+  call alloc ('rvec_ee_sav', rvec_ee_sav, 3, nelec)
+  call alloc ('r_ee_sav', r_ee_sav, nelec)
 
   if(ibasis.eq.3) then
    call alloc ('cdorb', cdorb, 3, orb_tot_nb)

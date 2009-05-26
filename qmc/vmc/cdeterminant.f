@@ -3,7 +3,7 @@ c same subroutine as determinant() adapted to complex orbitals/determinants
 c by A.D.Guclu Feb2004
 c can deal with any complex determinant, provided that the determinantal
 c coefficients are real.
-
+      use constants_mod
       use control_mod
       use basic_tools_mod
       use cslater_mod
@@ -20,11 +20,7 @@ c coefficients are real.
       use contrl_per_mod
       use contr3_mod
       implicit real*8(a-h,o-z)
-!      include 'vmc.h'
-!      include 'force.h'
-!      include 'fit.h'
 
-!      parameter (one=1.d0,half=0.5d0)
 
 c routine to calculate the value, gradient and Laplacian of the
 c determinantal part of the wavefunction
@@ -52,19 +48,7 @@ c following complex are now defined in module cslater_mod
 c     complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti
 c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
 c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
@@ -72,18 +56,9 @@ c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 c     &,cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),div_vd(MELEC)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(MELEC)
 
 c allocate memory (maybe better to allocate in read_input ?) :
       n2=nelec*nelec
@@ -300,7 +275,7 @@ c same subroutine as cdeterminant() adapted to composite fermions
 c laplacian (LLL wfs are analytical) is zero and ignored here.
 c by A.D.Guclu sep2004
 c can deal only with spin polarized systems for the moment
-
+      use constants_mod
       use control_mod
       use basic_tools_mod
       use cslater_cf_mod
@@ -317,11 +292,6 @@ c can deal only with spin polarized systems for the moment
       use contrl_per_mod
       use contr3_mod
       implicit real*8(a-h,o-z)
-!      include 'vmc.h'
-!      include 'force.h'
-!      include 'fit.h'
-
-!      parameter (one=1.d0,half=0.5d0)
 
 c cdeterm =  complex value of the determinants
 c determ  =  magnitude of cdeterm
@@ -350,31 +320,10 @@ c     &,cfpu(3,MMAT_DIM,MELEC,MDET),cfpd(3,MMAT_DIM,MELEC,MDET)
 c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
       common /dojasderiv/ ijasderiv
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),div_vd(MELEC)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(MELEC)
 
 c allocate memory:
       n2=nelec*nelec

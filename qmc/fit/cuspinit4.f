@@ -3,13 +3,10 @@ c Written by Cyrus Umrigar
       use jaspar4_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include '../vmc/force.h'
 
 c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       if(nordc.eq.0) return
@@ -78,27 +75,13 @@ c-----------------------------------------------------------------------
       use jaspar4_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include 'fit.h'
-!JT      include '../vmc/force.h'
 
 c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
       parameter(NEQSX=6*MORDJ,MTERMS=55)
 
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
      &,cdep(NEQSX,MPARMJ,MCTYPE)

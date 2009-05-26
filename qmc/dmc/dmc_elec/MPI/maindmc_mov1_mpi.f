@@ -7,7 +7,6 @@ c MPI version created by Claudia Filippi and Cyrus Umrigar
       use contr3_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /contr3/ mode
       dimension iblocklen(MELEC),idispl(MELEC)
 
       call MPI_ATTR_GET(MPI_COMM_WORLD,MPI_TAG_UB,ivalue,flag,ierr)

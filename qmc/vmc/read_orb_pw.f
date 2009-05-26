@@ -4,29 +4,11 @@ c Reads in pw basis orbitals that have already been converted to be real.
 c Presently not used.
 
       use all_tools_mod
-
       use coefs_mod
       use dim_mod
       use periodic_mod
       use pworbital_mod
       implicit real*8(a-h,o-z)
-
-
-!JT      common /dim/ ndim
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
-!JT     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension rkvec_tmp(3)
 
@@ -102,48 +84,6 @@ c However, that causes problems when running with mpi, so comment out that part.
       character*20 fmt
 
       parameter(eps=1.d-3)
-
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /contr_names/ iorb_format
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-c    &,orb_splines(8,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
-c    &MGRID_ORB_PER-1,MORB_OCC)
-c    &,grid_orbx(0:MGRID_ORB_PER-1),grid_orby(
-c    &0:MGRID_ORB_PER-1),grid_orbz(0:MGRID_ORB_PER-1)
-c    &,orb_splines_explicit(4,4,4,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
-c    &MGRID_ORB_PER-1,MORB_OCC)
-c atom included just to be able to shift test pt. for checking orbs by cent(k,1).
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-
-!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
 
       dimension ipoint(MORB)
       real*8 r_basis(3),xi,yi,zi
@@ -507,33 +447,11 @@ c However, that causes problems when running with mpi, so comment out that part.
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-6)
 
-!JT      common /contr3/ mode
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
-!JT     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
 c igvec_dft needs to be dimensioned with NGVEC_BIGX since in file orbitals_pw_tm the
 c list of g vectors at the top is longer than what is actually used.
 c The other arrays are dimensioned NGVEC2X rather than NGVECX because planewave code does not
 c combine coefs. of G and -G, whereas QMC code does.
-!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
 
       call alloc ('orb', orb, orb_tot_nb)
       call alloc ('dorb', dorb, 3, orb_tot_nb)
@@ -904,41 +822,8 @@ c However, that causes problems when running with mpi, so comment out that part.
       use pworbital_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'ewald.h'
-!JT      include 'numorb.h'
       parameter(eps=1.d-4)
 
-!JT      common /contr3/ mode
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /pworbital/c_rp(NGVECX,MORB_OCC),c_rm(NGVECX,MORB_OCC),c_ip(NGVECX,MORB_OCC)
-!JT     &,c_im(NGVECX,MORB_OCC),ngorb(MORB),isortg(NGVECX,MORB),isortk(MKPTS),icmplx
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-
-c igvec_dft needs to be dimensioned with NGVEC_BIGX since in file orbitals_pw_pwscf the
-c list of g vectors at the top is longer than what is actually used.
-c The other arrays are dimensioned NGVEC2X rather than NGVECX because planewave code does not
-c combine coefs. of G and -G, whereas QMC code does.
-!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       dimension centx(3),gvec_dft(3),gvec_latt(3),rkvec_latt(3)
 
@@ -1364,29 +1249,8 @@ c Note: This is the straightforward, expensive evaluation for checking purposes 
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'ewald.h'
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
-!JT      common /tempor_test/ igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X),c_real(NGVEC2X),c_imag(NGVEC2X)
-!JT     &,map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
-!JT     &,orb(MORB),dorb(3,MORB),ddorb(MORB)
-!JT     &,orb_si(MORB),dorb_si(3,MORB),ddorb_si(MORB),iflag(MORB),rnorm,r(3)
-!JT     &,rkvec_tmp(3),rkvec_tmp2(3),ngg(MKPTS),ngvec_dft
 
 c1    dimension r(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
@@ -1531,32 +1395,11 @@ c-----------------------------------------------------------------------
 !     include 'numorb.h'
       parameter(eps=1.d-3)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /contr_names/ iorb_format
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /dorb/ iworbd(MELEC,MDET)
 
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 c    &,orb_splines(8,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
 c    &MGRID_ORB_PER-1,MORB_OCC)
 c    &,grid_orbx(0:MGRID_ORB_PER-1),grid_orby(

@@ -34,38 +34,9 @@ c complex local:
 c common:
 c     complex*16 cvd_sav,cvk_sav
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
-!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-!JT     &,detu(MDETUD),detd(MDETUD)
-!JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-!JT     &,detij_det(MPARMD,MPARMD)
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
-!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /derivjas/ gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
-!JT     &,go(MELEC,MELEC,MPARMJ)
 
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 c Now this common is passed with use fitdet_mod
@@ -73,9 +44,7 @@ c     common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDAT
 c    &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
 c    &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
 
-!JT      common /vj/ vj(3,MELEC)  !JT
 c      dimension vd(3,MELEC),
-!JT      common /vd/ vd(3,MELEC)   !WAS
       dimension coord(3,*),velocity(3,MELEC)
       dimension div_vj(MELEC),div_vk(MELEC),div_vd(MELEC)
      &,div_v(MELEC),dpe(MPARM),denergy(MPARM)

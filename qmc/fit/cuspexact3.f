@@ -8,18 +8,9 @@ c Written by Claudia Filippi
 
 !JT      parameter(zero=0.d0)
 
-!JT      include '../vmc/vmc.h'
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      include '../vmc/force.h'
 
       parameter(NEQSX=6*MORDJ)
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
       dimension o(2*MORDJ),op(0:2*MORDJ)

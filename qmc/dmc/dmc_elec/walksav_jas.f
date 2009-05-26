@@ -4,11 +4,7 @@ c Written by Claudia Filippi
       use const_mod
       use jaso_mod
       implicit real*8(a-h,o-z)
-!JT      include '../../vmc/vmc.h'
-!JT      include '../dmc.h'
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC),d2ijo(MELEC,MELEC),d2ow,fsumo,fjo(3,MELEC)
 
       common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK),fsumow(MWALK),fjow(3,MELEC,MWALK)
 

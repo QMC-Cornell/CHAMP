@@ -19,26 +19,12 @@ c Used both for all-electon and 1-electron move versions.
       use config_dmc_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /contr3/ mode
 c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
 c    &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
 c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
 c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
 c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-!JT      common /force_dmc/ itausec,nwprod
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /doefp/ nefp
-!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
 
       dimension ene_var(3)
 

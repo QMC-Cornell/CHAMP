@@ -16,17 +16,8 @@ c otherwise one can end up with a linearly dependent set and a zero volume.
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
       parameter (eps=1.d-12)
 
-!JT      common /dim/ ndim
-!JT      common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
-!JT     &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
-!JT     &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
-!JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
-!JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
-!JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
 
       dimension rlatt(3,3),imax(3)
 
@@ -129,22 +120,8 @@ c cell vectors. This could cause problems for e-e-n terms in J.
       use dim_mod
       use periodic_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'ewald.h'
       parameter(eps=1.d-9)
 
-!JT      common /dim/ ndim
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
 c     dimension r(3),r_basis(3),rlatt_sim(3,3),rlatt_sim_inv(3,3)
       dimension r(3),r_basis(3)
@@ -182,7 +159,6 @@ c r_basis = rlatt_inv * r
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
       dimension r(3),r_basis(3),i_basis(3),rlatt_inv(3,3)
 
 c Find vector in basis coordinates
@@ -204,7 +180,6 @@ c image that is closest.
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
       dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 
@@ -271,7 +246,6 @@ c Needs precomputed r_basis1,r_basis2,i_basis1,i_basis2.
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
       dimension r(3),rlatt(3,3)
      &,r_basis1(3),r_basis2(3),i_basis1(3),i_basis2(3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
@@ -322,7 +296,6 @@ c by its closest image and finds its norm
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
       dimension r(3),r_basis(3),rlatt(3,3),rlatt_inv(3,3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 
@@ -402,7 +375,6 @@ c the simulation cell and not just to the same nucleus in the primitive cell.
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
       dimension r(3),r_basis(3),rshift(3),rlatt(3,3),rlatt_inv(3,3)
      &,r1_try(3),r2_try(3),r3_try(3),i_sav(3),isign(3)
 

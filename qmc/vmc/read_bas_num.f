@@ -9,10 +9,6 @@ c If igrid(ic).eq.2 .and. (r0_bas(ic).le.0.d0 .or. exp_h_bas(ic).le.0.d0) then g
       use numbas_mod
       use pseudo_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'numbas.h'
-!JT      include 'pseudo.h'
-!JT      include 'force.h'
 
       character*20 filename,wforce,atomtyp
       character*80 title
@@ -20,15 +16,6 @@ c     character*20 lcent
 
       parameter(NCOEF=5)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 

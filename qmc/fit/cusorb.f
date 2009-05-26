@@ -7,25 +7,12 @@ c Calculate all orbitals, orb, at position of nucleus icent
       use dim_mod
       use wfsec_mod
       use phifun_mod
+      use const_mod
       implicit real*8(a-h,o-z)
-
-!JT      include '../vmc/vmc.h'
-
-!JT      include 'fit.h'
-!JT      include '../vmc/force.h'
 
       parameter(eps=1.d-99)
 
-!JT      common /dim/ ndim
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-      common /atom2/ dist_cent(MCENT)
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      dimension orb(*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension orb(*),rvec_en(3,nelec,ncent),r_en(nelec,ncent)
 
 !JT    iwf=1
 

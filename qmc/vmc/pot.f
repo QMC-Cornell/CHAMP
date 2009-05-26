@@ -1,21 +1,13 @@
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
-      use control_mod
 c Written by Cyrus Umrigar
 c get nuclear potential energy
+      use control_mod
       use dim_mod
       use pseudo_mod
       use contrl_per_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'pseudo.h'
-!JT      include 'force.h'
-
-!JT      common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-      dimension znuc(MCTYPE),cent(3,MCENT),iwctype(MCENT)
+      dimension znuc(MCTYPE),cent(3,ncent),iwctype(ncent)
 
       if(nloc.ge.0) then
         if(iperiodic.eq.0) then

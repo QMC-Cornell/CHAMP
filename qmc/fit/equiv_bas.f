@@ -4,31 +4,17 @@ c Set coef2=coef for basis fns. related by symmetry to basis ibas, and
 c to zero otherwise.
 
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
-!
+      use all_tools_mod
       use atom_mod
       use coefs_mod
+      use coefs2_mod
       use optim_mod
       use wfsec_mod
       implicit real*8(a-h,o-z)
-!JT      include '../vmc/vmc.h'
-!JT      include 'fit.h'
-!JT      include '../vmc/force.h'
-
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-      common /coefs2/ coef2(MBASIS,MORB,MCENT)
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
 
 c     common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype !JT
+
+      call alloc ('coef2', coef2, nbasis, norb, ncent)
 
       do 10 icent=1,ncent
         do 10 iorb=1,norb

@@ -1,7 +1,7 @@
       subroutine read_input
 c Written by Cyrus Umrigar
-
       use all_tools_mod
+      use constants_mod
       use variables_mod
       use control_mod
       use montecarlo_mod
@@ -52,91 +52,16 @@ c Written by Cyrus Umrigar
       use contrldmc_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,eps=1.d-4)
       parameter (eps=1.d-4)
 
 
-!JT      character*80 title,fmt
       character*80 fmt
       character*30 section
-!JT      character*24 date
       character*10 eunit
-!JT      character*16 iorb_format
       character*80000 input_line
 
-!JT      common /dim/ ndim
-!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-!JT     &   xm1,xm2,xm12,xms,xma,Zfock
       common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /const2/ deltar,deltat
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-!JT      common /contrl_opt2/ igradhess,iadd_diag_opt
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contr3/ mode
-!JT      common /contr_names/ iorb_format
-!JT      common /contr_ylm/ irecursion_ylm
-
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar1/ cjas1(MWF),cjas2(MWF)
-!JT      common /jaspar2/ a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /jaspar4/ a4(MORDJ1,MCTYPE,MWF),norda,nordb,nordc
-!JT      common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
-!JT     &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
-!JT     &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
-!JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
-!JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
-!JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
-!JT      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
-!JT      common /bparm/ nspin2b,nocuspb
-
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
-
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-!JT      common /doefp/ nefp
-!JT      common /atomtyp/ ncentyp(MCTYPE)
-!JT      common /header/ title,date
-
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
       common /periodic2/ rkvec_shift_latt(3)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
@@ -152,30 +77,9 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
       common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
       common /compferm/ emagv,nv,idot
-c      complex*16 cvd_sav,cvk_sav
-c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
-c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
-c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
-
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
 
 c These commons for reading fit input.  We should separate these into another
 c subroutine that is called both from fit and read_input.
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
-!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /pointer/ npointa(MPARMJ*NCTYP3X)
-!JT      common /gradhess/ grad(MPARM),grad_var(MPARM),hess(MPARM,MPARM),hess_var(MPARM,MPARM),gerr(MPARM),
-!JT     &add_diag(3),energy(3),energy_sigma(3),energy_err(3),force(3),force_err(3),
-!JT     &eig_min,eig_max,p_var,tol_energy,nopt_iter,nblk_max
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
@@ -186,8 +90,6 @@ c     namelist /opt_list/ igradhess
      &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
-!JT      common /jel_sph2/ zconst ! RM
-!JT      common /jasparread/nparma_read,nparmb_read,nparmc_read         ! JT
 
       dimension irn(4),cent_tmp(3),iflag(MDET)
 
@@ -724,9 +626,11 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       nup_square = nup**2
       ndn_square = ndn**2
       nupdn_square = nupdn**2
+      nelec_pair = nelec*(nelec-1)/2
       call object_modified ('nup_square')
       call object_modified ('ndn_square')
       call object_modified ('nupdn_square')
+      call object_modified ('nelec_pair')
 
       if(nloc.eq.-4) then ! values used for quantum wire
         wire_length2 = wire_length*wire_length
@@ -801,7 +705,6 @@ c read k-shift for generating k-vector lattice
       read(5,*) nctype,ncent
       write(6,'(/,''nctype,ncent ='',t31,i3,i5)') nctype,ncent
       if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
-      if(ncent.gt.MCENT) stop 'ncent > MCENT'
 
       call object_modified ('nctype')  !JT
       call object_modified ('ncent')  !JT
@@ -878,6 +781,7 @@ c Convert center positions from primitive lattice vector units to cartesian coor
 
       if(nloc.gt.0) then
         write(6,'(/,''pseudopotential calculation'')')
+        call alloc ('vps', vps, nelec, ncent, MPS_L)
         if(nloc.eq.1) then
           call readps
          elseif(nloc.eq.2.or.nloc.eq.3) then
@@ -1571,7 +1475,6 @@ c if doing fit, allocate memory for saved configurations
       endif
 
 !JT      if(mod(iopt,10).ne.2 .and. p_var.ne.0.d0) stop 'For Newton method one can optimize linear combination of energy and variance,
-!JT     & but for linear method and perturbation theory one can optimize the energy only.  So set p_var=0'
 
       if(index(mode,'mc').ne.0 .and. nopt_iter.gt.0) then
 !        if(mod(iopt,10).eq.1) write(6,'(/,''Optimizing wave function using linear method'',/)')
@@ -1585,7 +1488,8 @@ c if doing fit, allocate memory for saved configurations
 ! JT beg: checking e-N cusp condition on orbitals -> moved to orbitals_mod
 !      if (index(mode,'vmc').ne.0 .and. icusp.ge.0) then
 !
-!       imnbas(1)=1
+!      call alloc ('imnbas', imnbas, ncent)
+!      imnbas(1)=1
 !      do i=1,ncent-1
 !        it=iwctype(i)
 !        imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
@@ -1864,12 +1768,7 @@ c and change signs of cdet_in_csf accordingly.  This is needed for orbital optim
       use dets_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
 
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
       dimension iodd_permut(MDET)
 
       do 20 i=1,ndet

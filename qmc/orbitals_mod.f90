@@ -329,6 +329,8 @@ module orbitals_mod
 !   initilization for cusp
     call object_provide ('nbasis_ctype')
     call object_provide ('iwctype')
+    call object_provide ('ncent')
+    call alloc ('imnbas', imnbas, ncent)
     imnbas(1)=1
     do i=1,ncent-1
        it=iwctype(i)

@@ -15,38 +15,17 @@ c Written by Claudia Filippi by modifying jastrow3
       use jasn_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'pseudo.h'
 
 !JT      parameter (one=1.d0)
 !JT      parameter (half=.5d0,third=1.d0/3.d0)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
 
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
-!JT      common /bparm/ nspin2b,nocuspb
 
-!JT      common /jasn/ fsn(MELEC,MELEC),fijn(3,MELEC,MELEC)
-!JT     &,d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
 
-!JT      common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC)
-!JT     &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*),v(3,*)
       dimension u(-2:MORDJ),s(-2:MORDJ),t(-2:MORDJ)

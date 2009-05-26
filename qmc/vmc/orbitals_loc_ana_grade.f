@@ -1,27 +1,18 @@
       subroutine orbitals_loc_ana_grade(iel,rvec_en,r_en,orb,dorb,ddorb)
-      use control_mod
-      use orbitals_mod, only: orb_tot_nb
 c Written by Cyrus Umrigar
 c Calculate localized orbitals and derivatives for all or 1 electrons
-
+      use control_mod
+      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use dim_mod
       use wfsec_mod
       use contrl_per_mod
       use phifun_mod
+      use const_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
 
-!JT      common /dim/ ndim
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,orb(orb_tot_nb),dorb(3,orb_tot_nb),ddorb(orb_tot_nb)
 
 c get basis functions

@@ -21,13 +21,9 @@ c     parameter (one=1.d0,half=.5d0)
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-!JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD), !JT
-!JT     &ekin(NRAD),ekin2(NRAD)
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
 c     common /forcest/ fcum(MFORCE),fcm2(MFORCE)
 c     common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 c     common /forcjac/ ajacob
-!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),

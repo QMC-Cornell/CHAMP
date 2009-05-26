@@ -11,27 +11,10 @@ c Written by Cyrus Umrigar
       use stats_mod
       use age_mod
       implicit real*8(a-h,o-z)
-!JT      include '../vmc/vmc.h'
-!JT      include 'dmc.h'
-!JT      include '../vmc/force.h'
 
 !JT      parameter (zero=0.d0,two=2.d0,half=.5d0)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /force_dmc/ itausec,nwprod
-!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
-!JT      common /age/ iage(MWALK),ioldest,ioldestmx
-!JT      common /stats/ dfus2ac,dfus2unf(MFORCE),dr2ac,dr2un,acc,acc_int,try_int,
-!JT     &nbrnch,nodecr
-!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
-!JT      common /div_v_dmc/ div_vow(MELEC,MWALK)
 
-!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension iwundr(MWALK),wt_sav(MWALK)
 

@@ -58,9 +58,6 @@ c Written by Cyrus Umrigar
       use contr2_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       dimension orb(*),dorb(3,*),ddorb(*)
 
@@ -91,12 +88,7 @@ c If function is tabulated on half-period then this routine needs modification.
       use dim_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 
-!JT      common /dim/ ndim
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
@@ -153,13 +145,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use coefs_mod
       use dim_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-!JT      common /dim/ ndim
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*),
@@ -228,13 +215,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use coefs_mod
       use dim_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-!JT      common /dim/ ndim
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*),
@@ -304,12 +286,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use coefs_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
@@ -503,9 +481,6 @@ c Written by Cyrus Umrigar
       use contr2_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       dimension orb(*)
 
@@ -535,11 +510,7 @@ c If function is tabulated on half-period then this routine needs modification.
       use coefs_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
@@ -591,12 +562,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
 
       use coefs_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),
@@ -658,12 +625,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
 
       use coefs_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),
@@ -727,12 +690,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use coefs_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'numorb.h'
 !JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
 c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)

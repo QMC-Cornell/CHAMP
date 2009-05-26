@@ -1,12 +1,10 @@
       subroutine distances(x,pe,pei)
 c Written by Cyrus Umrigar
 c calculate interparticle distances
-
       use control_mod
       use deriv_orb_mod
       use eloc_mod
       use atom_mod
-
       use const_mod
       use dim_mod
       use pseudo_mod
@@ -14,14 +12,6 @@ c calculate interparticle distances
       use distance_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
@@ -30,10 +20,7 @@ c     common /compferm/ emagv,nv,idot
       common /jel_sph1/ dn_background,rs_jel,radius_b !RM
 
 c Warning: temporary
-!JT      common /tempor2/ pe_en,pe_ee
 
-c     dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),
-c    &rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
       dimension x(3,*)
 
 c  pe from nucleus-nucleus repulsion
@@ -155,30 +142,9 @@ c calculate distances of electron iel to all other particles
       use dim_mod
       use contrl_per_mod
       use distance_mod
+      use distance_sav_mod
       use periodic_mod
       implicit real*8(a-h,o-z)
-
-!JT      include 'vmc.h'
-!JT      include 'ewald.h'
-
-!JT      common /dim/ ndim
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /distances_sav/ rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT),rvec_ee_sav(3,MELEC),r_ee_sav(MELEC)
-!JT      common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-!JT     &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-!JT     &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-!JT     &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-!JT     &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-!JT     &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-!JT     &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-!JT     &,znuc_sum,znuc2_sum,vcell,vcell_sim
-!JT     &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-!JT     &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-!JT     &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
 
       dimension x(3,*)
 
@@ -232,21 +198,13 @@ c-----------------------------------------------------------------------
       subroutine distancese_restore(iel)
 c Written by Cyrus Umrigar
 c restore interparticle distances (called if move rejected)
-
       use atom_mod
       use const_mod
       use dim_mod
       use distance_mod
+      use distance_sav_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
-      common /distances_sav/ rshift_sav(3,MCENT),rvec_en_sav(3,MCENT),r_en_sav(MCENT),rvec_ee_sav(3,MELEC),r_ee_sav(MELEC)
 
 c Restore e-N inter-particle distances
       do 25 ic=1,ncent

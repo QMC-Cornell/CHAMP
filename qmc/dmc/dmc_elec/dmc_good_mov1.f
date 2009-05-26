@@ -72,66 +72,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-!JT      common /force_dmc/ itausec,nwprod
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /config_dmc/ xoldw(3,MELEC,MWALK,MFORCE),voldw(3,MELEC,MWALK,MFORCE),
-!JT     &psidow(MWALK,MFORCE),psijow(MWALK,MFORCE),peow(MWALK,MFORCE),peiow(MWALK,MFORCE),d2ow(MWALK,MFORCE)
       common /velratio/ fratio(MWALK,MFORCE)
-!JT      common /age/ iage(MWALK),ioldest,ioldestmx
-!JT      common /stats/ dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,
-!JT     &nbrnch,nodecr
-!JT      common /delocc/ denergy(MPARM)
-!JT      common /estsum_dmc/ wsum,w_acc_sum,wfsum,wgsum(MFORCE),wg_acc_sum,wdsum,
-!JT     &wgdsum, wsum1(MFORCE),w_acc_sum1,wfsum1,wgsum1(MFORCE),wg_acc_sum1,
-!JT     &wdsum1, esum,efsum,egsum(MFORCE),esum1(MFORCE),efsum1,egsum1(MFORCE),
-!JT     &ei1sum,ei2sum,ei3sum, pesum(MFORCE),peisum(MFORCE),tpbsum(MFORCE),tjfsum(MFORCE),r2sum,
-!JT     &risum,tausum(MFORCE)
-!JT      common /estcum_dmc/ wcum,w_acc_cum,wfcum,wgcum(MFORCE),wg_acc_cum,wdcum,
-!JT     &wgdcum, wcum1,w_acc_cum1,wfcum1,wgcum1(MFORCE),wg_acc_cum1,
-!JT     &wdcum1, ecum,efcum,egcum(MFORCE),ecum1,efcum1,egcum1(MFORCE),
-!JT     &ei1cum,ei2cum,ei3cum, pecum(MFORCE),peicum(MFORCE),tpbcum(MFORCE),tjfcum(MFORCE),r2cum,
-!JT     &ricum,taucum(MFORCE)
-!JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-!JT     &ekin(NRAD),ekin2(NRAD)
-!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /contrldmc/ tau,rttau,taueff(MFORCE),tautot,nfprod,idmc,ipq
-!JT     &,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-!JT      common /contrl_opt/ nparm,nsig,ncalls,iopt,ipr_opt
-!JT      common /iterat/ ipass,iblk
-!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
       common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 !MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT      common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /div_v_dmc/ div_vow(MELEC,MWALK)
-!JT      common /jacobsave/ ajacob,ajacold(MWALK,MFORCE)
 
       dimension rvmino(3),rvminn(3),xstrech(3,MELEC)
       dimension xnew(3),vnew(3,MELEC)
@@ -776,12 +722,9 @@ c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
 
 !JT            if(dabs((enew-etrial)/etrial).gt.1.0d+0) then
 !JT             write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,
-!JT     &       enew-etrial,psidn,psijn,(xnew(k),k=1,ndim)
 !JT            endif
 
 !JT            if(wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw,
-!JT     &      wt(iw),enew-etrial,eoldw(iw,ifr)-etrial,
-!JT     &      (xnew(k),k=1,ndim)
 
             eoldw(iw,ifr)=enew
             do 272 iparm=1,nparm
@@ -827,7 +770,6 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
   300 continue
 
 !JT      if(wsum1(1).gt.1.1d0*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
-!JT     &fprod/ff(ipmod2),wsum1(1),wgdsumo
 
       if(idmc.gt.0.or.iacc_rej.eq.0) then
         wfsum1=wsum1(1)*ffn

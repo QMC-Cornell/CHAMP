@@ -21,44 +21,16 @@ c                 = 0 : asymptotic basis
       use wfsec_mod
       use phifun_mod
       use contr_ylm_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       real(dp) :: aux1
       integer :: itemp1
-!JT      common /contr_ylm/ irecursion_ylm
 !**EndRM(7)
 
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-!JT      common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
 
       dimension wfv(3,MRWF),xc(3)
      &,th(0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS)
@@ -314,46 +286,16 @@ c                 < 0 : Gaussian basis
       use basis2_mod
       use wfsec_mod
       use phifun_mod
+      use const_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'pseudo.h'
-!JT      include 'numbas.h'
-!JT      include 'force.h'
 
 c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 !**MS(jellium03-1;6Mar08)
 ! Declare arrays upto o-orbitals (l=12)
-!JT       common /basis/ zex(MBASIS,MWF),betaq
-!JT     &,n1s(MCTYPE)
-!JT     &,n2s(MCTYPE),n2p(-1:1,MCTYPE)
-!JT     &,n3s(MCTYPE),n3p(-1:1,MCTYPE),n3d(-2:2,MCTYPE)
-!JT     &,n4s(MCTYPE),n4p(-1:1,MCTYPE),n4d(-2:2,MCTYPE),n4f(-3:3,MCTYPE)
-!JT     &,n5s(MCTYPE),n5p(-1:1,MCTYPE),n5d(-2:2,MCTYPE),n5f(-3:3,MCTYPE)
-!JT     &,n5g(-4:4,MCTYPE)
-!JT     &,n6d(-2:2,MCTYPE),n6f(-3:3,MCTYPE),n6g(-4:4,MCTYPE),n6h(-5:5,MCTYPE)
-!JT     &,n7g(-4:4,MCTYPE),n7h(-5:5,MCTYPE),n7i(-6:6,MCTYPE)
-!JT     &,n8i(-6:6,MCTYPE),n8j(-7:7,MCTYPE)
-!JT     &,n9k(-8:8,MCTYPE)
-!JT     &,n10l(-9:9,MCTYPE)
-!JT     &,n11m(-10:10,MCTYPE)
-!JT     &,n12n(-11:11,MCTYPE)
-!JT     &,n13o(-12:12,MCTYPE)
-!JT     &,nsa(MCTYPE),npa(-1:1,MCTYPE),nda(-2:2,MCTYPE)
 !**EndMS(jellium03-1)
-!JT      common /basis2/ zex2(MRWF,MCTYPE,MWF),n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
-!JT     &,icenter_basis(MBASIS),ictype_basis(MBASIS)
-!JT     &,nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
-!JT      common /numbas/ exp_h_bas(MCTYPE),r0_bas(MCTYPE)
-!JT     &,rwf(MRWF_PTS,MRWF,MCTYPE,MWF),d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
-!JT     &,numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE),iwrwf(MBASIS_CTYPE,MCTYPE)
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
 
       dimension wfv(3,MRWF),xc(3)
      &,ph(-ML_BAS:ML_BAS)

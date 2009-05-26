@@ -10,6 +10,7 @@ c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
 
       use all_tools_mod  
+      use constants_mod
       use montecarlo_mod 
       use opt_lin_mod    
       use opt_ptb_mod    
@@ -28,16 +29,12 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use stepv_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
-!JT      parameter (half=.5d0)
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
       parameter (eps=1.d-10)
 c     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma(3/2), gamma(5/2)
 
-!JT      common /dim/ ndim
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
 c The moves are being made in local r,theta phi coordinates.
@@ -53,30 +50,11 @@ c    Last 2 are prob. best
 
 c     character*23 fmt
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /const2/ deltar,deltat
-!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats_vmc/ rejmax
-!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-!JT     &ekin(NRAD),ekin2(NRAD)
-!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       dimension xaxis(3),yaxis(3),zaxis(3),costht(MELEC),div_vn(MELEC)
      &,sintht(MELEC),raver(MELEC),ravern(MELEC)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /doefp/ nefp
-!JT      common /div_v/ div_vo(MELEC) !!WAS
       dimension xstrech(3,MELEC)
 c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 c    &(r2**1.5d0*(two*(one-v*ri)/three+.4d0*v*r2)

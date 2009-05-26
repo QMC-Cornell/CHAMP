@@ -1,5 +1,6 @@
       subroutine determinante(iel,x,rvec_en,r_en,ddet_det,determ)
 c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
+      use constants_mod
       use control_mod
       use dorb_mod
       use orbitals_mod, only: orb_tot_nb
@@ -12,38 +13,15 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use wfsec_mod
       use contrl_per_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-
-!JT      parameter(one=1.d0)
 
 c     common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
 c    &,d2phin(MBASIS,MELEC)
 c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /kinet/ ekineo(MELEC),ekinen(MELEC)
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
-!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-!JT     &,detu(MDETUD),detd(MDETUD)
-!JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-!JT     &,detij_det(MPARMD,MPARMD)
-!JT      common /slatn/ slmin(MMAT_DIM,MDETUD),detn(MDETUD)
-!JT     &,ddeti_detin(3,MELEC,MDETUD),d2edeti_detin(MELEC,MDETUD)
-!JT     &,dorb(3,MORB),ddorb(MORB)
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      dimension x(3,*),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
-!JT      dimension orbe(orb_tot_nb),ddet_det(3,*),ratio(MDET)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*)
       dimension ddet_det(3,*),ratio(MDET)
 
       do 10 i=1,nelec

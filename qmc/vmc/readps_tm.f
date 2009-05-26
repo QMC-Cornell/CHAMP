@@ -11,9 +11,6 @@ c Also eval pot. at r=0
       use pseudo_mod
       use qua_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'pseudo.h'
-!JT      include 'force.h'
 
       character*2 icorr,nameat
       character*3 irel
@@ -23,17 +20,9 @@ c Also eval pot. at r=0
 
       parameter (ncoef=5)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-
-!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
       dimension r(MPS_GRID),y(ncoef),ce(ncoef),dmatr(ncoef*ncoef)
       dimension work(MPS_GRID)
@@ -310,21 +299,14 @@ c-----------------------------------------------------------------------
 c compute pseudopotential for electron iel
 
       use atom_mod
+      use const_mod
       use pseudo_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'pseudo.h'
-!JT      include 'force.h'
-
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
 
-      dimension r_en(MELEC,MCENT)
+      dimension r_en(nelec,ncent)
 
       do 10 ic=1,ncent
         ict=iwctype(ic)
@@ -364,14 +346,6 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
       use atom_mod
       use pseudo_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'pseudo.h'
-!JT      include 'force.h'
-
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
       common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
      &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
 

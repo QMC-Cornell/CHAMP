@@ -13,7 +13,6 @@ c will be close to each other.
 
       character*26 fmt
 
-!JT      common /dim/ ndim
 
       dimension xoldw(3,*),rlatt_sim(3,3),ilat(3),frac(3)
 

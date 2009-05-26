@@ -25,37 +25,13 @@ c routine to accumulate estimators for energy etc.
 
 !JT      parameter (half=.5d0)
 
-!JT      common /dim/ ndim
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /forcest/ fcum(MFORCE),fcm2(MFORCE)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /forcjac/ ajacob
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /contr3/ mode
-!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-!JT     &,peo,pen,tjfn,tjfo,psido,psijo
-!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /estsum/ esum1,eaverage(MFORCE+6)
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-!JT      common /stepv/try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD), !JT
-!JT     &ekin(NRAD),ekin2(NRAD)
-!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-!JT      common /doefp/ nefp
-!JT      common /div_v/ div_vo(MELEC)
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
 
       dimension xstrech(3,MELEC),ecollect(MFORCE+6),wcollect(MFORCE)

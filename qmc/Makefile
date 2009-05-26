@@ -9,7 +9,7 @@ PROG =	$(CHAMP_EXE)
 SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
 	commons/basis1_mod.f90 commons/basis2_mod.f90 \
 	commons/basisnorm_mod.f90 commons/bparm_mod.f90 \
-	commons/branch_mod.f90 commons/coefs_mod.f90 \
+	commons/branch_mod.f90 commons/coefs2_mod.f90 commons/coefs_mod.f90 \
 	commons/config_dmc_mod.f90 commons/config_mod.f90 \
 	commons/const2_mod.f90 commons/const_mod.f90 commons/contr2_mod.f90 \
 	commons/contr3_mod.f90 commons/contr_names_mod.f90 \
@@ -18,15 +18,15 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
 	commons/contrl_per_mod.f90 commons/contrldmc_mod.f90 \
 	commons/cslatn_mod.f90 commons/delocc_mod.f90 commons/denupdn_mod.f90 \
 	commons/derivjas_mod.f90 commons/dets_mod.f90 commons/dim_mod.f90 \
-	commons/distance_mod.f90 commons/div_v_dmc_mod.f90 \
-	commons/div_v_mod.f90 commons/doefp_mod.f90 commons/dorb_mod.f90 \
-	commons/estcm2_mod.f90 commons/estcum_dmc_mod.f90 \
-	commons/estsum_dmc_mod.f90 commons/force_dmc_mod.f90 \
-	commons/forcepar_mod.f90 commons/forcest_dmc_mod.f90 \
-	commons/forcest_mod.f90 commons/gradhess_mod.f90 \
-	commons/gradhessj_nonlin_mod.f90 commons/iterat_mod.f90 \
-	commons/jacobsave_mod.f90 commons/jasn_mod.f90 commons/jaso_mod.f90 \
-	commons/jaspar1_mod.f90 commons/jaspar2_mod.f90 \
+	commons/distance_mod.f90 commons/distance_sav_mod.f90 \
+	commons/div_v_dmc_mod.f90 commons/div_v_mod.f90 commons/doefp_mod.f90 \
+	commons/dorb_mod.f90 commons/estcm2_mod.f90 \
+	commons/estcum_dmc_mod.f90 commons/estsum_dmc_mod.f90 \
+	commons/force_dmc_mod.f90 commons/forcepar_mod.f90 \
+	commons/forcest_dmc_mod.f90 commons/forcest_mod.f90 \
+	commons/gradhess_mod.f90 commons/gradhessj_nonlin_mod.f90 \
+	commons/iterat_mod.f90 commons/jacobsave_mod.f90 commons/jasn_mod.f90 \
+	commons/jaso_mod.f90 commons/jaspar1_mod.f90 commons/jaspar2_mod.f90 \
 	commons/jaspar3_mod.f90 commons/jaspar4_mod.f90 \
 	commons/jaspar6_mod.f90 commons/jaspar_mod.f90 \
 	commons/jasparread_mod.f90 commons/jel_sph2_mod.f90 \
@@ -126,15 +126,16 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
 
 OBJS =	commons/age_mod.o commons/atom_mod.o commons/atomtyp_mod.o \
 	commons/basis1_mod.o commons/basis2_mod.o commons/basisnorm_mod.o \
-	commons/bparm_mod.o commons/branch_mod.o commons/coefs_mod.o \
-	commons/config_dmc_mod.o commons/config_mod.o commons/const2_mod.o \
-	commons/const_mod.o commons/contr2_mod.o commons/contr3_mod.o \
-	commons/contr_names_mod.o commons/contr_ylm_mod.o \
-	commons/contrl_mod.o commons/contrl_opt2_mod.o \
-	commons/contrl_opt_mod.o commons/contrl_per_mod.o \
-	commons/contrldmc_mod.o commons/cslatn_mod.o commons/delocc_mod.o \
-	commons/denupdn_mod.o commons/derivjas_mod.o commons/dets_mod.o \
-	commons/dim_mod.o commons/distance_mod.o commons/div_v_dmc_mod.o \
+	commons/bparm_mod.o commons/branch_mod.o commons/coefs2_mod.o \
+	commons/coefs_mod.o commons/config_dmc_mod.o commons/config_mod.o \
+	commons/const2_mod.o commons/const_mod.o commons/contr2_mod.o \
+	commons/contr3_mod.o commons/contr_names_mod.o \
+	commons/contr_ylm_mod.o commons/contrl_mod.o \
+	commons/contrl_opt2_mod.o commons/contrl_opt_mod.o \
+	commons/contrl_per_mod.o commons/contrldmc_mod.o commons/cslatn_mod.o \
+	commons/delocc_mod.o commons/denupdn_mod.o commons/derivjas_mod.o \
+	commons/dets_mod.o commons/dim_mod.o commons/distance_mod.o \
+	commons/distance_sav_mod.o commons/div_v_dmc_mod.o \
 	commons/div_v_mod.o commons/doefp_mod.o commons/dorb_mod.o \
 	commons/estcm2_mod.o commons/estcum_dmc_mod.o \
 	commons/estsum_dmc_mod.o commons/force_dmc_mod.o \

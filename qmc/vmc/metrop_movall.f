@@ -18,27 +18,9 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       implicit real*8(a-h,o-z)
 !JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
 !JT      parameter (half=.5d0)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include '../fit/fit.h'
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-!JT     &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-!JT     &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-!JT     &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-!JT     &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-!JT     &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-!JT      common /delocc/ denergy(MPARM)
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-!JT      common /stepv/ try(NRAD),suc(NRAD),trunfb(NRAD),rprob(NRAD),
-!JT     &ekin(NRAD),ekin2(NRAD)
-!JT      common /denupdn/ rprobup(NRAD),rprobdn(NRAD)
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /doefp/ nefp
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),

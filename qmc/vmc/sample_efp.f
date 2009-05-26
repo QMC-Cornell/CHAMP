@@ -4,15 +4,10 @@ c Written by Claudia Filippi
       use atom_mod
       use const_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
       include 'fitefp.h'
-!JT      include 'force.h'
 
       parameter(NFITCX=MEFP_FIT*MCTYPE)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
      &nsrbase(MCTYPE,MEFP_NL),nsrbast(MCTYPE),nsrbasx(MCTYPE),
@@ -135,7 +130,6 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
       include 'fitefp.h'
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
 c same basis set used inn Xavier's code for vxc potential
 c alpha    = coefficient for generating modified pw's
@@ -192,11 +186,8 @@ c-----------------------------------------------------------------------
 
       use atom_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
       include 'fitefp.h'
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
      &nsrbase(MCTYPE,MEFP_NL),nsrbast(MCTYPE),nsrbasx(MCTYPE),
@@ -261,22 +252,17 @@ c-----------------------------------------------------------------------
       use atom_mod
       use contrl_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
       include 'fitefp.h'
-!JT      include 'force.h'
 
       parameter(NFITCX=MEFP_FIT*MCTYPE)
 
-!JT      common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
      &nsrbase(MCTYPE,MEFP_NL),nsrbast(MCTYPE),nsrbasx(MCTYPE),
      &nlrbase(MCTYPE),nlrfix(MCTYPE),nbpoint(MCTYPE),nbftot
       common /efpave/ rhoav(NFITCX),erhoav(NFITCX),rho2av(NFITCX,NFITCX)
 
-      dimension vbase(MEFP_FIT),y(NFITCX),ipvt(NFITCX),v(MCENT,MEFP_NL)
+      dimension vbase(MEFP_FIT),y(NFITCX),ipvt(NFITCX),v(ncent,MEFP_NL)
 
       if(idump.eq.1) then
         open(11,file='tape11',status='unknown',form='unformatted')
@@ -358,19 +344,14 @@ c-----------------------------------------------------------------------
 
       subroutine nlocefp(i,ic,dx,dy,dz,r,oefp)
 
+      use constants_mod
       use atom_mod
       use dets_mod
       use slater_mod
       use distance_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
       include 'fitefp.h'
-!JT      include 'force.h'
 
-!JT      parameter (zero=0.d0,one=1.d0)
-
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),
      &dlrfixd(MEFP_FIT,MCTYPE),alpha(MCTYPE),rc(MCTYPE),nlefp(MCTYPE),
@@ -379,14 +360,6 @@ c-----------------------------------------------------------------------
       common /efpqua/ xq0(MEFP_QUAD),yq0(MEFP_QUAD),zq0(MEFP_QUAD),wq(MEFP_QUAD),
      &nqefp
 
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /slater/ slmui(MMAT_DIM,MDETUD),slmdi(MMAT_DIM,MDETUD)
-!JT     &,fpu(3,MMAT_DIM,MDETUD),fpd(3,MMAT_DIM,MDETUD)
-!JT     &,fppu(MMAT_DIM,MDETUD),fppd(MMAT_DIM,MDETUD)
-!JT     &,detu(MDETUD),detd(MDETUD)
-!JT     &,ddeti_deti(3,MELEC,MDETUD),d2edeti_deti(MELEC,MDETUD),deti_det(MPARMD),ddeti_det(3,MELEC,MPARMD),d2deti_det(MPARMD),d2det_det
-!JT     &,detij_det(MPARMD,MPARMD)
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension oefp(*),xn(3)
 

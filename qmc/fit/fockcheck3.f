@@ -8,18 +8,10 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use ncusp_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include 'fit.h'
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
-!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-!JT     &   xm1,xm2,xm12,xms,xma,Zfock
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
      &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
      &dvpdv(MDATA),ndata
-!JT      include '../vmc/force.h'
 
 !JT      parameter(half=0.5d0,two=2.d0,three=3.d0
       parameter(d1b24=1.d0/24.d0,d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
@@ -27,11 +19,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,const1=(1.d0-dln2)/12.d0)
 c    &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /ncusp/ norbc,ncuspc,nfockc,nfock,ncnstr
 
       dimension o(2*MORDJ),op(0:2*MORDJ),diff(*)
 

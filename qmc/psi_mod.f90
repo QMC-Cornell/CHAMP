@@ -117,9 +117,11 @@ module psi_mod
   nup_square = nup**2
   ndn_square = ndn**2
   nupdn_square = nupdn**2
+  nelec_pair = nelec*(nelec-1)/2
   call object_modified ('nup_square')
   call object_modified ('ndn_square')
   call object_modified ('nupdn_square')
+  call object_modified ('nelec_pair')
 
   write(6,'(a)') 'End of wavefunction menu ---------------------------------------------------------------------------------'
 

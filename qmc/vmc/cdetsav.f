@@ -16,20 +16,12 @@ c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd
 c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
 !JT      complex*16 cslmin,cdetn,cddeti_detin,cd2edeti_detin,cdorb,cddorb
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /dorb/ iworbd(MELEC,MDET),iworbdup(MELECUD,MDETUD),iworbddn(MELECUD,MDETUD)
-!JT     &,iwdetup(MDET),iwdetdn(MDET),ndetup,ndetdn
 c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
 c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
 c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
 c     &,cdetu(MDET),cdetd(MDET)
 c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET),cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
 c cd2edeti_detin and cddorb dont need to be in common?
-!JT      common /cslatn/ cslmin(MMAT_DIM,MDETUD),cdetn(MDETUD)
-!JT     &,cddeti_detin(3,MELEC,MDETUD),cd2edeti_detin(MELEC,MDETUD)
-!JT     &,cdorb(3,MORB),cddorb(MORB)
 
 c allocate memory (will allocate only if it is not already allocated):
       n2=nelec*nelec

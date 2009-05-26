@@ -6,7 +6,6 @@ c Written by Lubos Mitas
 
       parameter (ncase=10,npoint=86,ntype=4,ntypm=6)
 
-!JT      common /dim/ ndim
       dimension wq(*),xq(*),yq(*),zq(*),
      &iocta(ntype),icosa(ntype),ww(ncase,ntypm),iq(ncase),
      &itetr(ntype),i20(ntype),i24(ntype),i86(ntypm)
@@ -317,9 +316,6 @@ c Written by Lubos Mitas
       use qua_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'pseudo.h'
-!JT      common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-!JT     &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
 
     2 x1=1.d0-2.d0*rannyu(0)
       x2=1.d0-2.d0*rannyu(0)

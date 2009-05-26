@@ -1,29 +1,19 @@
       subroutine sites(x,nelec,nsite)
 c Written by Cyrus Umrigar
+      use constants_mod
       use atom_mod
       use dim_mod
       use pseudo_mod
       use jel_sph2_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-!JT      include 'pseudo.h'
-
-!JT      parameter(half=0.5d0)
 
 c Routine to put electrons down around centers for a VERY crude initial
 c configuration if nothing else is available.  It is better to put them
 c too close than to put them too far away because they equilibrate faster
 c when they are too close.
 
-!JT      common /dim/ ndim
-!JT      common /pseudo/ vps(MELEC,MCENT,MPS_L),vpso(MELEC,MCENT,MPS_L,MFORCE)
-!JT     &,npotd(MCTYPE),lpotp1(MCTYPE),nloc
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
        common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
-!JT      common /jel_sph2/ zconst  ! RM
 
       dimension x(3,*),nsite(*)
 

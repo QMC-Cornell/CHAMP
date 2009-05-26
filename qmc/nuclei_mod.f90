@@ -12,9 +12,9 @@ module nuclei_mod
   real(dp), allocatable     :: cent_sav (:,:)
   real(dp), allocatable     :: cent_best (:,:)
 
-  real(dp)                  :: cent_ref(3,MCENT)
-  real(dp)                  :: delc(3,MCENT,MFORCE)
-  real(dp)                  :: pecentn(MFORCE)
+  real(dp), allocatable     :: cent_ref(:,:)
+  real(dp), allocatable     :: delc(:,:,:)
+  real(dp), allocatable     :: pecentn(:)
 
   contains
 
@@ -166,7 +166,6 @@ module nuclei_mod
       write(6,'(a,i3)') ' number of atomic center types = ', nctype
       write(6,'(a,i5)') ' number of atomic centers = ', ncent
       if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
-      if(ncent.gt.MCENT) stop 'ncent > MCENT'
 
       call object_provide ('iwctype')
       do ic=1,ncent
@@ -353,10 +352,6 @@ module nuclei_mod
    if (index(line,'end') /= 0) exit
 
    cent_i = cent_i + 1
-   if (cent_i > MCENT) then
-       call die (lhere, ' cent_i='+cent_i+' > MCENT='+MCENT)
-   endif
-
    call alloc ('cent', cent, 3, cent_i)
    call alloc ('iwctype', iwctype, cent_i)
 

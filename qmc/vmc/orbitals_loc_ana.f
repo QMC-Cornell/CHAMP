@@ -1,28 +1,19 @@
       subroutine orbitals_loc_ana(iel,rvec_en,r_en,orb,dorb,ddorb)
 c Written by Cyrus Umrigar
 c Calculate localized orbitals and derivatives for all or 1 electrons
-
       use all_tools_mod
       use control_mod
       use orbitals_mod, only: orb_tot_nb
-
       use coefs_mod
       use const_mod
       use dim_mod
       use wfsec_mod
       use contrl_per_mod
       use phifun_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
 
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
 
 c Decide whether we are computing all or one electron
@@ -80,24 +71,16 @@ c-----------------------------------------------------------------------
       subroutine orbitals_loc_anae(iel,rvec_en,r_en,orb)
 c Written by Cyrus Umrigar
 c Calculate localized orbitals for electron iel
-
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use dim_mod
       use wfsec_mod
       use phifun_mod
+      use atom_mod
+      use const_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
 
-!JT      common /dim/ ndim
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
-
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,orb(orb_tot_nb)
 
 c get basis functions
@@ -118,11 +101,9 @@ c---------------------------------------------------------------------------
 
       subroutine deriv_orbitals(rvec_en,r_en,orb,dorb,ddorb,dporb,d2porb
      &          ,ddporb,d2dporb)
-      use control_mod
 c Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
 c Calculate localized orbitals, coo. and parameter derivatives for all electrons
-
-
+      use control_mod
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
@@ -131,23 +112,13 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use contrl_per_mod
       use phifun_mod
       use optimo_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
-!JT      include 'vmc.h'
-!JT      include 'force.h'
-
-!JT      common /dim/ ndim
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-!JT     &,d2phin(MBASIS,MELEC)
       common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
      &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
      &,d2dparam(MOTYPE,MBASIS,MELEC)
-!JT      common /optimo/ iwo(MORB,MOTYPE),nparmo(MOTYPE),nparmot,notype
-!JT      common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-      dimension rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT)
+      dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
       dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
       dimension ddporb(3,MOTYPE,MELEC,MORB),d2dporb(MOTYPE,MELEC,MORB)

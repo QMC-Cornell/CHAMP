@@ -24,40 +24,18 @@ c numerical Laplacian for periodic systems.
       parameter (d1b12=8.333333333333333d-2,d2b3=0.666666666666667d0,
      &d4b3=1.333333333333333d0)
 
-!JT      include 'vmc.h'
-!JT      include 'force.h'
 
-!JT      common /dim/ ndim
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 c Warning: div_vj not yet implememnted
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-!JT      common /jaspar/ nspin1,nspin2,sspin,sspinn,is
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /bparm/ nspin2b,nocuspb
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
-!JT      common /jaspar6/ asymp_jasa(MCTYPE,MWF),asymp_jasb(2,MWF)
-!JT     &,dasymp_jasa(MCTYPE,MWF),dasymp_jasb(2,MWF),d2asymp_jasa(MCTYPE,MWF),d2asymp_jasb(2,MWF)
-!JT     &,asymp_r_en(MWF),dasymp_r_en(MWF),d2asymp_r_en(MWF)
-!JT     &,asymp_r_ee(MWF),dasymp_r_ee(MWF),d2asymp_r_ee(MWF)
-!JT     &,cutjas_en,cutjasi_en,c1_jas6_en(MWF),c2_jas6_en(MWF)
-!JT     &,cutjas_ee,cutjasi_ee,c1_jas6_ee(MWF),c2_jas6_ee(MWF)
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
-!JT      common /distance/ rshift(3,MELEC,MCENT),rvec_en(3,MELEC,MCENT),r_en(MELEC,MCENT),rvec_ee(3,MMAT_DIM2),r_ee(MMAT_DIM2)
 
       dimension x(3,*),v(3,*),div_vj(MELEC)
-      dimension rp(3,MELEC,MCENT),rm(3,MELEC,MCENT)
-     &,rp2(3,MELEC,MCENT),rm2(3,MELEC,MCENT)
+      dimension rp(3,nelec,ncent),rm(3,nelec,ncent)
+     &,rp2(3,nelec,ncent),rm2(3,nelec,ncent)
      &,rrp(3,MMAT_DIM2),rrm(3,MMAT_DIM2),rrp2(3,MMAT_DIM2),rrm2(3,MMAT_DIM2)
 
       do 10 i=1,nelec

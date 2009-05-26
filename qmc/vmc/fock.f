@@ -10,18 +10,10 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
       use pars_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
 !JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
-!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 
-!JT      include 'force.h'
 
-!JT      common /wfsec/ iwftype(MFORCE),iwf,nwftype
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -31,8 +23,6 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
      &d2uphi20,d2stphi20,d2suphi20,d2utphi20,
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
 !JT      parameter(one=1.d0,two=2.d0,three=3.d0,four=4.d0,six=6.d0)
@@ -179,14 +169,11 @@ c Written by Cyrus Umrigar
       use pars_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
 
 !JT      parameter(one=1.d0)
 
 !JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
-!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -197,8 +184,6 @@ c Written by Cyrus Umrigar
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       Zfock=znuc(it)
 
@@ -267,7 +252,6 @@ c     the program even when the 2 electrons are collinear.
 !JT      real*8 hb,etrial,delta,deltai,fbias
 !JT      integer nelec,ipr
 !JT      integer ijas,icusp,icusp2,isc,ifock,i3body,irewgt,iaver,istrch,
-!JT     &ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
       real*8 xlob,dlnrr2,x
       real*8 r1,r2,r12,s,t,rr2,term
       real*8 r,Y20,Y21,root,y,omega,alph,beta
@@ -276,7 +260,6 @@ c     real*8 Y00
       real*8 psi1,psi21,psi20,psi2a,psi2b,psi2c
      &,psi2d,psi31,p1p21,phi21,phi20,phi31,ss1,ss2
       real*8 osix,otwe
-!JT      include 'vmc.h'
 
 !JT      real*8 zero,one,two,three,four,five,six,eight
 !JT    real*8 half,pi
@@ -295,15 +278,9 @@ c     integer fflag
 !JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
 
 c     common /fflags/ fflag
-!JT      common /pars/ a00,a20,a21,eps_fock,c0000,c1110,c2000,
-!JT     &   xm1,xm2,xm12,xms,xma,Zfock
 c     common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -1116,16 +1093,7 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
       use jaspar3_mod
       implicit real*8(a-h,o-z)
 
-!JT      include 'vmc.h'
-!JT      common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-!JT     &,ifock,i3body,irewgt,iaver,istrch
-!JT     &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-!JT      include 'force.h'
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /focsav/ c4sav,c5sav,c7sav,c9sav
 
 !JT      parameter(half=0.5d0,zero=0.d0,two=2.d0,four=4.d0)

@@ -6,14 +6,10 @@ c Written by Claudia Filippi
 
 !JT      parameter(zero=0.d0,one=1.d0)
 
-!JT      include '../vmc/vmc.h'
-!JT      include '../vmc/force.h'
 
       parameter(NEQSX=6*MORDJ)
       parameter(job=11)
 
-!JT      common /jaspar3/ a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF)
-!JT     &,fck(15,MCTYPE,MWF),scalek(MWF),nord
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
 c     dimension q(2*MORDJ,NEQSX),qp(0:2*MORDJ,NEQSX)
@@ -114,24 +110,12 @@ c-----------------------------------------------------------------------
       use optim_mod
       implicit real*8(a-h,o-z)
 
-!JT      include '../vmc/vmc.h'
-!JT      include 'fit.h'
 
       parameter(NEQSX=6*MORDJ)
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
-!JT      common /optim/ lo(MORB),npoint(MORB),
-!JT     &iwjasa(MPARMJ,NCTYP3X),iwjasb(MPARMJ,3),iwjasc(MPARMJ,MCTYPE),
-!JT     &iwjasf(15,MCTYPE),iwbase(MBASIS),iwbasi(MPARM),iworb(MPARM),
-!JT     &iwcsf(MCSF),iebase(2,MBASIS),iebasi(2,MPARM),ieorb(2,MPARM),
-!JT     &imnbas(MCENT),
-!JT     &nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj,
-!JT     &nparma(NCTYP3X),nparmb(3),nparmc(MCTYPE),nparmf(MCTYPE),
-!JT     &necn,nebase
 
-!JT      common /atom/ znuc(MCTYPE),cent(3,MCENT),pecent
-!JT     &,iwctype(MCENT),nctype,ncent
 
       common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
      &,cdep(NEQSX,MPARMJ,MCTYPE)

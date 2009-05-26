@@ -24,15 +24,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use forcest_dmc_mod
       use branch_mod
       implicit real*8(a-h,o-z)
-!JT      common /forcepar/ deltot(MFORCE),nforce,istrech
-!JT      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-!JT      common /force_dmc/ itausec,nwprod
 
-!JT      common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!JT      common /contrl_per/ iperiodic,ibasis
-!JT      common /branch/ wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE),
-!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-!JT     &wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod,nwalk
 
       dimension nwalk_all(0:MPROC),icommunicate_all(0:MPROC),
      &iwalk_stack(MPROC)
