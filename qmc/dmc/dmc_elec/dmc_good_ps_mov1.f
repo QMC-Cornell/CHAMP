@@ -453,8 +453,6 @@ c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
           if(ipass-nstep*2*nblkeq .gt. 5) then
 c           energy_sigma=sigma(egcum1(1),egcm21(1),wgcum1(1))
             energy_sigma=sigma(ecum1,ecm21,wcum1)
-            energy_sigma=sigma(egcum1(1),egcm21(1),wgcum1(1))
-c           energy_sigma=sigma(ecum1,ecm21,wcum1)
             write(6,'(''energy_sigma='',f10.5)') energy_sigma
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
             if(dwt.gt.1+10*energy_sigma*tau) then
