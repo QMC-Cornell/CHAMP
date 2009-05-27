@@ -210,6 +210,7 @@ c i.e. the order in which we were reading in the p functions.
       allocate(n12n(-11:11,nctype))
       allocate(n13o(-12:12,nctype))
       allocate(nsa(nctype),npa(-1:1,nctype),nda(-2:2,nctype))
+      call alloc ('nbasis_ctype', nbasis_ctype, nctype)
 
 !     initializations
       n1s=0
@@ -290,7 +291,6 @@ c    &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
           endif
    10   continue
 
-        call alloc ('nbasis_ctype', nbasis_ctype, nctype)
         nbas_tot=0
         do 24 ic=1,ncent
           ict=iwctype(ic)
@@ -538,7 +538,7 @@ c latter is the order from GAMESS when doing all-electron calculations.
 
       endif ! end of if(nloc.ne.-1)
 
-      call object_modified ('nbasis_ctype') !JT
+      call object_modified ('nbasis_ctype')
 
       write(6,*)
       write(6,'(''orbital coefficients'')')
