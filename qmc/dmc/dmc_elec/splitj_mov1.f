@@ -71,13 +71,38 @@ c Warning: MWALK can still be exceeded on very rare occasions if a walker gets s
         wt_sav(iw)=wt(iw)
       enddo
       call shell(wt_sav,nwalk)
-      wt_split=wt_sav(max(1,nwalk-nwalk_max_dupl))
+      wt_split=max(2.d0,wt_sav(max(1,nwalk-nwalk_max_dupl)))
+
+c Figure out the number of walkers that could get split more than once.
+c Whether it actually gets split again or not depends on where the duplicated walker gets placed in the list of walkers.
+c When there is a split, one walker stays where it was and the other fills an empty slot.  It is only the one in the
+c empty slot that will get split again (it will split again only if it is put in a higher indexed position than the current walker),
+c so the number to add is 1,2,3,... rather than 1,3,7,...
+      n_split_more_than_once=0
+      do iw=max(1,nwalk-nwalk_max_dupl),nwalk
+        if(wt_sav(iw)/wt_split.ge.8.d0) then
+          n_split_more_than_once=n_split_more_than_once+3
+         elseif(wt_sav(iw)/wt_split.ge.4.d0) then
+          n_split_more_than_once=n_split_more_than_once+2
+         elseif(wt_sav(iw)/wt_split.ge.2.d0) then
+          n_split_more_than_once=n_split_more_than_once+1
+        endif
+      enddo
+      if(n_split_more_than_once.gt.0) write(6,'(''Warning: Number of walkers split more than once='',i4)') n_split_more_than_once
+c Adjust what weight walkers can be split without exceeding MWALK
+c If nwalk_max_dupl<n_split_more_than_once then set wt_split to huge number.
+c This is not the best choice but it is a conservative choice.
+      if(nwalk-nwalk_max_dupl+n_split_more_than_once.lt.nwalk) then
+        wt_split=max(2.d0,wt_sav(max(1,nwalk-nwalk_max_dupl+n_split_more_than_once)))
+       else
+        wt_split=1.d99
+      endif
 
 c Split the walkers whose wt is >max(two,wt_split).  If there are walkers that were eliminated, so that iunder>0
 c then put the new walker in that location.  Otherwise put it at the end.
       nwalk2=nwalk
       do 20 iw=1,nwalk
-        if(wt(iw).gt.max(two,wt_split)) then
+        if(wt(iw).gt.wt_split) then
           nbrnch=nbrnch+1
           if(iunder.gt.0) then
             iw2=iwundr(iunder)
