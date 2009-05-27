@@ -239,7 +239,6 @@ module basis_mod
    
   nbasis = bas_i
   write(6,'(a,i5)') ' number of basis functions = ',nbasis
-  if(nbasis > MBASIS) stop 'nbasis > MBASIS'
 
   call object_modified ('nbasis')
   call object_modified ('n_bas')

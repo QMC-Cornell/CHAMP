@@ -4,7 +4,7 @@ module lbas_mod
  implicit none
  save
 
- character*10 lbasis(MBASIS)
+ character(len=max_string_len), allocatable :: lbasis(:)
 
 end module lbas_mod
 

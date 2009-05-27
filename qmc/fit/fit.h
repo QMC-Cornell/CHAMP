@@ -1,3 +1,3 @@
       parameter(MDATA=4000, MPARM=max(200,MPARMD,MPARMJ))
-      parameter(MEBASE=MBASIS*MDET, MECN=MORB*MEBASE, ICSFX=MDET)
+      parameter(ICSFX=MDET)
       parameter(ICX=2*ICSFX,NCTYP3X=max(3,MCTYPE))

@@ -9,12 +9,10 @@ c We also verify that all the determinants have same angular momentum
       use dets_mod
       use numbas_mod
       use basis2_mod
+      use basis3_mod
       use contrl_per_mod
       implicit real*8(a-h,o-z)
 
-
-
-      common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
       common /dot/    w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       write(6,'(''l_bas'',20i4)') (l_bas(ibas),ibas=1,nbasis)

@@ -39,10 +39,9 @@ c job where it left off
       parameter (small=1.d-6)
 
       common /velratio/ fratio(MWALK,MFORCE)
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 
       dimension irn(4)
-      dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,ncent),znucx(ncent)
+      dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(ncent)
      &,n1sx(MCTYPE),n2sx(MCTYPE),n2px(-1:1,MCTYPE)
      &,n3sx(MCTYPE),n3px(-1:1,MCTYPE),n3dx(-2:2,MCTYPE)
 c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)

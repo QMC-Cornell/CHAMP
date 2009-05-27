@@ -16,7 +16,6 @@
       subroutine dumper_serial
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c Routine to pick up and dump everything needed to restart job where it left off.
-
       use atom_mod
       use config_mod
       use coefs_mod
@@ -50,7 +49,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       dimension irn(4)
-      dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,ncent),znucx(MCTYPE)
+      dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(MCTYPE)
      &,n1sx(MCTYPE),n2sx(MCTYPE),n2px(-1:1,MCTYPE)
      &,n3sx(MCTYPE),n3px(-1:1,MCTYPE),n3dx(-2:2,MCTYPE)
 c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)

@@ -13,7 +13,6 @@ c Reads in 2-dimensional basis fns info for circular quantum dots.
       implicit real*8(a-h,o-z)
 
 
-
 c do some debugging. not sure if all these are necessary to check
 c but take no chance for now
       if(ndim.ne.2) stop 'ndim must be 2 for quantum dots'
@@ -43,19 +42,18 @@ c (for Fock-Darwin), for projected composite fermions we use n_cf
 c just for convenience.
 c For Fock-Darwin states, zex is more than an exponential parameter.
 c It serves as a multiplicatif optimization factor for the spring constant.
-
-      use all_tools_mod ! ADG: not sure if this is needed or not? testing
+      use all_tools_mod
       use coefs_mod
       use basis1_mod
       use const_mod
+      use basis3_mod
       implicit real*8(a-h,o-z)
 
-c      include 'vmc.h'
-c      include 'force.h'
-
-      common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /compferm/ emagv,nv,idot
+
+      call alloc ('n_fd', n_fd, nbasis)
+      call alloc ('m_fd', m_fd, nbasis)
+      call alloc ('n_cf', n_cf, nbasis)
 
 c read the total number of "quasi-Landau" levels:
       read(5,*) nlandau
@@ -77,7 +75,7 @@ c      1 2 1 2
         icount=icount+nm
    10 enddo
       if(icount.ne.nbasis) stop 'nbasis doesnt match the basis set'
-      if(ncfmax.gt.MBASIS) stop 'ncfmax.gt.MBASIS. this is a problem in cbasis_fns.f'
+!JT      if(ncfmax.gt.MBASIS) stop 'ncfmax.gt.MBASIS. this is a problem in cbasis_fns.f'
 c      if(ncfmax.gt.6 .and. idot.eq.3)
       if(ncfmax.gt.6)   ! idot not defined at this point
      &  write(6,'(''WARNING: landau levels 7 and 8 can cause numerical problems in projected cfs'')')
@@ -118,12 +116,13 @@ c the witdh of gaussians is given by zex*we
       use const_mod
       use contrl_per_mod
       use optimo_mod
+      use forcepar_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 
 
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-
       write(6,'(/,''Reading floating gaussian orbitals for dots'')')
+      call alloc ('oparm', oparm, notype, nbasis, nwf)
       do it=1,notype
         read(5,*)  (oparm(it,ib,1),ib=1,nbasis)
         if(ibasis.eq.4) then

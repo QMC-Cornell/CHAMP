@@ -14,12 +14,6 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use contrl_per_mod
       implicit real*8(a-h,o-z)
 
-c     common /dim/ ndim
-c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-c    &,d2phin(MBASIS,MELEC)
-c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-c     common /kinet/ ekineo(MELEC),ekinen(MELEC)
-
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*)
       dimension ddet_det(3,*),ratio(MDET)

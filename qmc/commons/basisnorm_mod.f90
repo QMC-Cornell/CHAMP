@@ -4,6 +4,6 @@ module basisnorm_mod
  implicit none
  save
 
- double precision anorm(MBASIS)
+ double precision, allocatable :: anorm(:)
 
 end module basisnorm_mod

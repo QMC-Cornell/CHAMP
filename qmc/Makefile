@@ -7,7 +7,7 @@ include ../makefile.inc
 PROG =	$(CHAMP_EXE)
 
 SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
-	commons/basis1_mod.f90 commons/basis2_mod.f90 \
+	commons/basis1_mod.f90 commons/basis2_mod.f90 commons/basis3_mod.f90 \
 	commons/basisnorm_mod.f90 commons/bparm_mod.f90 \
 	commons/branch_mod.f90 commons/coefs2_mod.f90 commons/coefs_mod.f90 \
 	commons/config_dmc_mod.f90 commons/config_mod.f90 \
@@ -16,7 +16,8 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
 	commons/contr_ylm_mod.f90 commons/contrl_mod.f90 \
 	commons/contrl_opt2_mod.f90 commons/contrl_opt_mod.f90 \
 	commons/contrl_per_mod.f90 commons/contrldmc_mod.f90 \
-	commons/cslatn_mod.f90 commons/delocc_mod.f90 commons/denupdn_mod.f90 \
+	commons/cphifun_mod.f90 commons/cslatn_mod.f90 commons/delocc_mod.f90 \
+	commons/denupdn_mod.f90 commons/deriv_phifun_mod.f90 \
 	commons/derivjas_mod.f90 commons/dets_mod.f90 commons/dim_mod.f90 \
 	commons/distance_mod.f90 commons/distance_sav_mod.f90 \
 	commons/div_v_dmc_mod.f90 commons/div_v_mod.f90 commons/doefp_mod.f90 \
@@ -32,9 +33,9 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
 	commons/jasparread_mod.f90 commons/jel_sph2_mod.f90 \
 	commons/lbas_mod.f90 commons/mpiblk_mod.f90 commons/ncusp_mod.f90 \
 	commons/numbas_mod.f90 commons/optim_mod.f90 commons/optimo_mod.f90 \
-	commons/orb_mod.f90 commons/orbe_mod.f90 commons/pars_mod.f90 \
-	commons/periodic_mod.f90 commons/phifun_mod.f90 commons/pjase_mod.f90 \
-	commons/pointer_mod.f90 commons/pseudo_mod.f90 \
+	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbpar_mod.f90 \
+	commons/pars_mod.f90 commons/periodic_mod.f90 commons/phifun_mod.f90 \
+	commons/pjase_mod.f90 commons/pointer_mod.f90 commons/pseudo_mod.f90 \
 	commons/pworbital_mod.f90 commons/qua_mod.f90 commons/slater_mod.f90 \
 	commons/slatn_mod.f90 commons/stats_mod.f90 commons/stepv_mod.f90 \
 	commons/tempor_test_mod.f90 commons/vd_mod.f90 commons/vj_mod.f90 \
@@ -124,19 +125,20 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/atomtyp_mod.f90 \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f
 
 OBJS =	commons/age_mod.o commons/atom_mod.o commons/atomtyp_mod.o \
-	commons/basis1_mod.o commons/basis2_mod.o commons/basisnorm_mod.o \
-	commons/bparm_mod.o commons/branch_mod.o commons/coefs2_mod.o \
-	commons/coefs_mod.o commons/config_dmc_mod.o commons/config_mod.o \
-	commons/const2_mod.o commons/const_mod.o commons/contr2_mod.o \
-	commons/contr3_mod.o commons/contr_names_mod.o \
+	commons/basis1_mod.o commons/basis2_mod.o commons/basis3_mod.o \
+	commons/basisnorm_mod.o commons/bparm_mod.o commons/branch_mod.o \
+	commons/coefs2_mod.o commons/coefs_mod.o commons/config_dmc_mod.o \
+	commons/config_mod.o commons/const2_mod.o commons/const_mod.o \
+	commons/contr2_mod.o commons/contr3_mod.o commons/contr_names_mod.o \
 	commons/contr_ylm_mod.o commons/contrl_mod.o \
 	commons/contrl_opt2_mod.o commons/contrl_opt_mod.o \
-	commons/contrl_per_mod.o commons/contrldmc_mod.o commons/cslatn_mod.o \
-	commons/delocc_mod.o commons/denupdn_mod.o commons/derivjas_mod.o \
-	commons/dets_mod.o commons/dim_mod.o commons/distance_mod.o \
-	commons/distance_sav_mod.o commons/div_v_dmc_mod.o \
-	commons/div_v_mod.o commons/doefp_mod.o commons/dorb_mod.o \
-	commons/estcm2_mod.o commons/estcum_dmc_mod.o \
+	commons/contrl_per_mod.o commons/contrldmc_mod.o \
+	commons/cphifun_mod.o commons/cslatn_mod.o commons/delocc_mod.o \
+	commons/denupdn_mod.o commons/deriv_phifun_mod.o \
+	commons/derivjas_mod.o commons/dets_mod.o commons/dim_mod.o \
+	commons/distance_mod.o commons/distance_sav_mod.o \
+	commons/div_v_dmc_mod.o commons/div_v_mod.o commons/doefp_mod.o \
+	commons/dorb_mod.o commons/estcm2_mod.o commons/estcum_dmc_mod.o \
 	commons/estsum_dmc_mod.o commons/force_dmc_mod.o \
 	commons/forcepar_mod.o commons/forcest_dmc_mod.o \
 	commons/forcest_mod.o commons/gradhess_mod.o \
@@ -147,13 +149,13 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/atomtyp_mod.o \
 	commons/jasparread_mod.o commons/jel_sph2_mod.o commons/lbas_mod.o \
 	commons/mpiblk_mod.o commons/ncusp_mod.o commons/numbas_mod.o \
 	commons/optim_mod.o commons/optimo_mod.o commons/orb_mod.o \
-	commons/orbe_mod.o commons/pars_mod.o commons/periodic_mod.o \
-	commons/phifun_mod.o commons/pjase_mod.o commons/pointer_mod.o \
-	commons/pseudo_mod.o commons/pworbital_mod.o commons/qua_mod.o \
-	commons/slater_mod.o commons/slatn_mod.o commons/stats_mod.o \
-	commons/stepv_mod.o commons/tempor_test_mod.o commons/vd_mod.o \
-	commons/vj_mod.o commons/wfsec_mod.o accumulation_mod.o \
-	all_tools_mod.o allocations_mod.o average_mod.o \
+	commons/orbe_mod.o commons/orbpar_mod.o commons/pars_mod.o \
+	commons/periodic_mod.o commons/phifun_mod.o commons/pjase_mod.o \
+	commons/pointer_mod.o commons/pseudo_mod.o commons/pworbital_mod.o \
+	commons/qua_mod.o commons/slater_mod.o commons/slatn_mod.o \
+	commons/stats_mod.o commons/stepv_mod.o commons/tempor_test_mod.o \
+	commons/vd_mod.o commons/vj_mod.o commons/wfsec_mod.o \
+	accumulation_mod.o all_tools_mod.o allocations_mod.o average_mod.o \
 	backflow_auxiliary_mod.o backflow_mod.o basic_tools_mod.o basis_mod.o \
 	bsplines_mod.o bwfdet_mod.o catalog_averages_mod.o \
 	catalog_objects_mod.o catalog_routines_mod.o champ.o constants_mod.o \

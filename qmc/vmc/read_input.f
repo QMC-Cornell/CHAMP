@@ -919,7 +919,6 @@ c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ng
         endif
       endif
 
-      if(nbasis.gt.MBASIS) stop 'nbasis > MBASIS'
 c     if(iperiodic.eq.0 .and. norb.gt.MORB) stop 'norb > MORB'
       if(norb.gt.MORB) stop 'norb > MORB'
       if(norb.lt.nup .or. norb.lt.ndn) stop 'norb must be >= nup and ndn'
@@ -1692,18 +1691,20 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
         enddo
       enddo
 
+      call alloc ('iworb', iworb, nparml)
+      call alloc ('iwbasi', iwbasi, nparml)
       read(5,*) (iworb(iparm),iwbasi(iparm),iparm=1,nparml)
-      write(6,'(''lin. coefs. of orbs varied='',10(2i3,2x))')
-     &(iworb(iparm),iwbasi(iparm),iparm=1,nparml)
+      write(6,'(''lin. coefs. of orbs varied='',10(2i3,2x))') (iworb(iparm),iwbasi(iparm),iparm=1,nparml)
 
+      call alloc ('iwbase', iwbase, nparme)
       read(5,*) (iwbase(iparm),iparm=1,nparme)
-      write(6,'(''exponents varied='',20i3)') (iwbase(iparm),iparm=1,
-     &nparme)
+      write(6,'(''exponents varied='',20i3)') (iwbase(iparm),iparm=1,nparme)
 
 c     read(5,*) (iwdet(iparm),iparm=1,nparmd)
 c     write(6,'(''determinantal coefs varied='',20i3)')
 c    &(iwdet(iparm),iparm=1,nparmd)
 
+      call alloc ('iwcsf', iwcsf, nparmcsf)
       read(5,*) (iwcsf(iparm),iparm=1,nparmcsf)
       write(6,'(''CSF coefs varied='',20i3)')
      &(iwcsf(iparm),iparm=1,nparmcsf)
@@ -1739,6 +1740,7 @@ c    &(iwdet(iparm),iparm=1,nparmd)
      &    nparmc(it))
         if(ifock.gt.0) then
           do 430 it=1,nctype
+            call alloc ('iwjasf', iwjasf, 15, nctype)
             read(5,*) (iwjasf(iparm,it),iparm=1,nparmf(it))
   430       write(6,'(''f: '',30i3)') (iwjasf(iparm,it),iparm=1,
      &      nparmf(it))

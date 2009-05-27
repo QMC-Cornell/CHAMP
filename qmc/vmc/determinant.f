@@ -42,8 +42,6 @@ c Note that the first dimension of the slater matrices is MMAT_DIM = (MELEC/2)**
 c The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
 c So, we check in read_input that nup and ndn are each <= MELEC/2.
 
-c     common /phifun/ phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC)
-c    &,d2phin(MBASIS,MELEC)
       common /kinet/ ekineo(MELEC),ekinen(MELEC)
 c Note: d2edeti_deti(MELEC,MDET) need not be in common
 

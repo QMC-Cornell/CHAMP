@@ -6,15 +6,12 @@ c written by Amit Ghosal starting from basis_fns.f
       use numbas_mod
       use basis2_mod
       use wfsec_mod
+      use cphifun_mod
       implicit real*8(a-h,o-z)
 
 c New temporary variables defined ************************
-      complex*16 temp_p,temp_n,cph,cdph,cphin,cdphin,cd2phin,ylm
+      complex*16 temp_p,temp_n,cph,cdph,ylm
 c Definition of new temporary variables ends here ********
-
-
-      common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
-     &,cd2phin(MBASIS,MELEC)
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
@@ -172,17 +169,13 @@ c In this version we replace we by zex*we for basis set optimization.
       use basis1_mod
       use const_mod
       use wfsec_mod
+      use basis3_mod
+      use cphifun_mod
       implicit real*8(a-h,o-z)
 
-
       complex*16 ctemp1,ctemp2
-      complex*16 cphin,cdphin,cd2phin
 
 c     common /dim/ ndim
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-      common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
-      common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
-     &,cd2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -303,22 +296,17 @@ c note: one complication here is that the orbitals depend on all electrons...
 
       use coefs_mod
       use const_mod
+      use basis3_mod
+      use cphifun_mod
       implicit real*8(a-h,o-z)
 
-
-
       complex*16 zj,zk,zjk,djnflux,didjnflux
-      complex*16 djnkj(MBASIS+1)
-      complex*16 didjnkj(MBASIS+1,MELEC)
-      complex*16 df(0:MBASIS+1),ddf(0:MBASIS+1,MELEC)
+      complex*16 djnkj(nbasis+1)
+      complex*16 didjnkj(nbasis+1,nelec)
+      complex*16 df(0:nbasis+1),ddf(0:nbasis+1,nelec)
       complex*16 ctemp1,ctemp2,zjpowmn1,zjpowmn
 
-      complex*16 cphin,cdphin,cd2phin
-
 c     common /dim/ ndim
-      common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
-      common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
-     &,cd2phin(MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -406,13 +394,13 @@ c calculates (d^n/dj^n e^k)/e^k for given d^n/dj^n k
 c code not well optimized. the powers of dk's should be
 c precalculated for faster processing.
 
-      include 'vmc.h'
+      use coefs_mod
 
       complex*16 djnflux
 
 c arguments:
       integer in
-      complex*16 dk(MBASIS+1)
+      complex*16 dk(nbasis+1)
 
 c locals:
       complex*16 df
@@ -494,14 +482,15 @@ c written by A.D.Guclu, sep 2004
 c calculates d/di ((d^n/dj^n e^k)/e^k) for given d/di d^n/dj^n k and d^n/dj^n k
 
 c far from being optimized. too risky!
-
-      include 'vmc.h'
+     
+      use coefs_mod
+      use const_mod
 
       complex*16 didjnflux
 
 c arguments:
       integer in,ie,je
-      complex*16 dk(MBASIS+1),ddk(MBASIS+1,MELEC)
+      complex*16 dk(nbasis+1),ddk(nbasis+1,nelec)
 
 c locals:
       complex*16 ddf

@@ -159,7 +159,6 @@ c    &,l4s(nprime),l4p(nprime,-1:1)
 c    &,lsa,lpa(-1:1),lda(-2:2)
 c     character*2 lmbas
 c     character*4 lcent,l4f(nprime),l5g(nprime),l6h(nprime)
-c     character*10 lbasis(MBASIS)
 
 c     data l1s /'    1s','   1s''','   1s"','  1s"''','  1s""'/
 c     data l2s /'    2s','   2s''','   2s"','  2s"''','  2s""'/
@@ -635,6 +634,7 @@ c 2px'(3) for the second 2px function on the third center
       call alloc ('m_bas', m_bas, nbasis)
       call alloc ('icenter_basis', icenter_basis, nbasis)
       call alloc ('ictype_basis', ictype_basis, nbasis)
+      call alloc ('lbasis', lbasis, nbasis)
 
       ib=0
       do 250 ic=1,ncent
@@ -1052,6 +1052,7 @@ c 2px'(3) for the second 2px function on the third center
       call alloc ('m_bas', m_bas, nbasis)
       call alloc ('icenter_basis', icenter_basis, nbasis)
       call alloc ('ictype_basis', ictype_basis, nbasis)
+      call alloc ('lbasis', lbasis, nbasis)
 
       ib=0
       do 250 ic=1,ncent

@@ -1687,6 +1687,7 @@ cwparker Stop with appropriate message
 c-----------------------------------------------------------------------
 c     subroutine energy_test
 
+c     use coefs_mod
 c     implicit real*8(a-h,o-z)
 c     character*20 fmt
 c     character*16 mode,iorb_format
@@ -1704,7 +1705,6 @@ c    &,ifock,i3body,irewgt,iaver,istrch
 c    &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
 c     common /contr3/ mode
 c     common /contr_names/ iorb_format
-c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
 c     common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
 c     common /dorb/ iworbd(MELEC,MDET)
 

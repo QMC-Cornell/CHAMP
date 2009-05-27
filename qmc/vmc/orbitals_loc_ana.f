@@ -113,10 +113,8 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use phifun_mod
       use optimo_mod
       use atom_mod
+      use deriv_phifun_mod
       implicit real*8(a-h,o-z)
-      common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
-     &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
-     &,d2dparam(MOTYPE,MBASIS,MELEC)
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
@@ -125,6 +123,12 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
 
       nelec1=1
       nelec2=nelec
+
+!     JT: should move these allocations outside the subroutine for efficiency?
+      call alloc ('dparam', dparam, notype, nbasis, nelec)
+      call alloc ('d2param', d2param, notype, notype, nbasis, nelec)
+      call alloc ('ddparam', ddparam, 3, notype, nbasis, nelec)
+      call alloc ('d2dparam', d2dparam, notype, nbasis, nelec)
 
 c get basis functions
       if(ndim.ne.2) stop 'deriv_orbitals: ndim must be 2'

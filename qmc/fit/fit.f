@@ -11,6 +11,7 @@ c    ed. by D.P. Landau, K.K. Mon and H.B. Schuttler (Springer-Verlag 1988).
 c 3) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
 c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
 c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
+      use all_tools_mod
       use control_mod
       use allocations_mod
       use atom_mod
@@ -340,8 +341,9 @@ c     write(6,'(''nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme='',9i5)') npar
       read(5,*) necn,nebase
       write(6,'(''No of linear coefs, exponents set equal='',3i5)') necn,nebase
       if(necn.gt.MPARM) stop 'fit: necn>MPARM'
-      if(nebase.gt.MBASIS) stop 'fit: nebase>MBASIS'
 
+      call alloc ('ieorb', ieorb, 2, necn)
+      call alloc ('iebasi', iebasi, 2, necn)
       read(5,*) ((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
       write(6,'(''lin. coefs of orbs set equal='',5(2(2i3,2x),2x))')
      &((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
@@ -351,6 +353,7 @@ c     write(6,'(''nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme='',9i5)') npar
           if(ieorb(i,j).gt.norb) stop 'ieorb(i,j).gt.norb'
    27     if(iebasi(i,j).gt.nbasis) stop 'iebasi(i,j).gt.nbasis'
 
+      call alloc ('iebase', iebase, 2, nbasis)
       read(5,*) ((iebase(i,j),i=1,2),j=1,nebase)
       write(6,'(''expon. set equal='',10(2i3,2x))')
      &((iebase(i,j),i=1,2),j=1,nebase)

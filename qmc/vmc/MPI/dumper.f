@@ -42,7 +42,7 @@ c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump
       dimension irn(4,0:MPROC),istatus(MPI_STATUS_SIZE)
       dimension ircounts(0:MPROC),idispls(0:MPROC)
 
-      dimension coefx(MBASIS,MORB),zexx(MBASIS),centx(3,ncent),znucx(MCTYPE)
+      dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(MCTYPE)
      &,n1sx(MCTYPE),n2sx(MCTYPE),n2px(-1:1,MCTYPE)
      &,n3sx(MCTYPE),n3px(-1:1,MCTYPE),n3dx(-2:2,MCTYPE)
 c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)

@@ -753,11 +753,11 @@ c            = 2 then we print new parameters with _new subscript
       use jaspar4_mod
       use bparm_mod
       use optimo_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
       parameter(AMAX_NONLIN=100.d0)
       character*50 fmt
 
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /optim2/ dparm(MPARM)
 
 c     dparm_norm=0

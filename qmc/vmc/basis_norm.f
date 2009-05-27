@@ -22,7 +22,6 @@ c Whether one is using Slater or gaussian basis fns. is inputted by having
 c n1s,n2s etc. be either > 0 or < 0.
 c The two old versions of the code used unnormalized Gaussian and asymptotic functions,
 c and, the same normal. for Gaussians as for Slaters.
-
       use all_tools_mod
       use control_mod
       use orbitals_mod
@@ -37,6 +36,8 @@ c and, the same normal. for Gaussians as for Slaters.
       use contrl_per_mod
       implicit real*8(a-h,o-z)
 c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
+
+      call alloc ('anorm', anorm, nbasis)
 
       do 20 ib=1,nbasis
         n=n_bas(ib)

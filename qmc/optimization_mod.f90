@@ -383,6 +383,7 @@ module optimization_mod
   call object_provide ('ncsf')
   nparmcsf_input=ncsf-1
   if(nparmcsf_input > MPARMD) call die (lhere, ' nparmcsf > MPARMD')
+  call alloc ('iwcsf', iwcsf, nparmcsf_input)
   do param_i = 1, nparmcsf_input
     iwcsf(param_i) = param_i + 1
   enddo

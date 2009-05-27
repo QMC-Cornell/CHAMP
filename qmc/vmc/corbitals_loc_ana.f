@@ -1,23 +1,27 @@
       subroutine corbitals_loc_ana(iel,rvec_en,r_en,corb,cdorb,cddorb)
 c orbitals_loc_ana adapted to complex orbitals by A.D.Guclu, Feb2004
 c Calculate localized orbitals and derivatives for all or 1 electrons
+      use all_tools_mod
       use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
       use dim_mod
       use numbas_mod
       use wfsec_mod
+      use cphifun_mod
       implicit real*8(a-h,o-z)
 
       complex*16 corb,cdorb,cddorb
-      complex*16 cphin,cdphin,cd2phin
 
-      common /cphifun/ cphin(MBASIS,MELEC),cdphin(3,MBASIS,MELEC,MELEC)
-     &,cd2phin(MBASIS,MELEC)
       common /compferm/ emagv,nv,idot
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
      &,corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
+
+!     JT: should move these allocations outside the subroutine for efficiency?
+      call alloc ('cphin', cphin, nbasis, nelec)
+      call alloc ('cdphin', cdphin, 3, nbasis, nelec, nelec)
+      call alloc ('cd2phin', cd2phin, nbasis, nelec)
 
 c Decide whether we are computing all or one electron
       if(iel.eq.0) then

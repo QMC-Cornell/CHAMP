@@ -4,7 +4,6 @@
 ! MELECUD        up or dn electrons
 ! MORB           orbitals
 ! MORB_OCC       occupied orbitals
-! MBASIS         basis functions for finite systems
 ! MBASIS_CTYPE   basis function on a single center type
 ! MDET           determinants
 ! MDETUD         up or dn determinants
@@ -25,13 +24,13 @@
 ! Cyrus:
 ! I have set MPARMD>= MCSF but if this is not an optimization run it could be less.
 !      parameter(MCTYPE=2, MELECUD=25, MELEC=MAX(42,MELECUD))
-!      parameter(MORB_OCC=24, MORB=MAX(64,MORB_OCC), MBASIS_CTYPE=102, MBASIS=(272,MBASIS_CTYPE))
+!      parameter(MORB_OCC=24, MORB=MAX(64,MORB_OCC), MBASIS_CTYPE=102)
 !!     parameter(MCSF=165, MDET_CSF=140, MDETUD=190, MDET=MAX(660,MDET_CSF,MDETUD))
 !      parameter(MCSF=60, MDET_CSF=132, MDETUD=162, MDET=MAX(350,MDET_CSF,MDETUD))
 !      parameter(MOTYPE=5, MPARMD=MAX(770,MCSF), ML_BAS=4)
 !      parameter(MCTYPE=2, MELECUD=30, MELEC=MAX(60,MELECUD))
        parameter(MCTYPE=2, MELECUD=35, MELEC=MAX(70,MELECUD))
-       parameter(MORB_OCC=42, MORB=MAX(80,MORB_OCC), MBASIS_CTYPE=44, MBASIS=(100,MBASIS_CTYPE))
+       parameter(MORB_OCC=42, MORB=MAX(80,MORB_OCC), MBASIS_CTYPE=44)
 !      parameter(MCSF=165, MDET_CSF=140, MDETUD=190, MDET=MAX(660,MDET_CSF,MDETUD))
 !      parameter(MCSF=60, MDET_CSF=132, MDETUD=162, MDET=MAX(350,MDET_CSF,MDETUD))
 !      parameter(MCSF=20, MDET_CSF=32, MDETUD=10, MDET=MAX(50,MDET_CSF,MDETUD))
@@ -40,19 +39,19 @@
 
 ! Julien:
 !      parameter(MCTYPE=2, MELECUD=15, MELEC=MAX(30,MELECUD))
-!      parameter(MORB_OCC=10, MORB=MAX(68,MORB_OCC), MBASIS_CTYPE=66, MBASIS=(120,MBASIS_CTYPE))
+!      parameter(MORB_OCC=10, MORB=MAX(68,MORB_OCC), MBASIS_CTYPE=66)
        parameter(MCSF=165, MDET_CSF=80, MDETUD=100, MDET=MAX(660,MDET_CSF,MDETUD))
        parameter(MOTYPE=5, MPARMD=MAX(170,MCSF), ML_BAS=4)
 
 ! Ryo, Masayoshi:
 !     parameter(MCTYPE=1, MELECUD=90, MELEC=MAX(180,MELECUD))
-!     parameter(MORB_OCC=90, MORB=MAX(90,MORB_OCC), MBASIS_CTYPE=180, MBASIS=(180,MBASIS_CTYPE))
+!     parameter(MORB_OCC=90, MORB=MAX(90,MORB_OCC), MBASIS_CTYPE=180)
 !     parameter(MCSF=30, MDET_CSF=20, MDETUD=10, MDET=MAX(100,MDET_CSF,MDETUD))
 !     parameter(MOTYPE=5, MPARMD=MAX(170,MCSF), ML_BAS=6)
 
 ! Wissam:
 !     parameter(MCTYPE=4, MELECUD=40, MELEC=MAX(70,MELECUD))
-!     parameter(MORB_OCC=34, MORB=MAX(50,MORB_OCC), MBASIS_CTYPE=50, MBASIS=(62,MBASIS_CTYPE))
+!     parameter(MORB_OCC=34, MORB=MAX(50,MORB_OCC), MBASIS_CTYPE=50)
 !     parameter(MCSF=2, MDET_CSF=2, MDETUD=30, MDET=MAX(2,MDET_CSF,MDETUD))
 !     parameter(MOTYPE=5, MPARMD=MAX(170,MCSF), ML_BAS=4)
 

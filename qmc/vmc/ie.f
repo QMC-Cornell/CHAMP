@@ -7,6 +7,7 @@ c know about pivoting and cusp conditions yet.
 c Also, needs to be corrected for more than one atom or atom type or for
 c parameters that are negatives of each other
 c necn -> necoef
+      use all_tools_mod
       use atom_mod
       use coefs_mod
       use optim_mod
@@ -18,11 +19,6 @@ c necn -> necoef
       parameter(eps=1.d-5)
 
 c      character*80 fmt
-!JT      character*10 lbasis(MBASIS)
-
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-
-
 
 
 !      read(5,*) nctype,ncent
@@ -39,7 +35,6 @@ c      character*80 fmt
 !      read(5,*) norb,nbasis
 !JT      write(6,'(''norb,nbasis='',9i5)') norb,nbasis
 !      if(norb.gt.MORB) stop 'norb>MORB'
-!      if(nbasis.gt.MBASIS) stop 'nbasis>MBASIS'
 
 !      if(numr.eq.0 .or. numr.eq.1) then
 !        call read_orb_loc_ana(lbasis)
@@ -69,6 +64,8 @@ c 1st basis function is not varied because normalization not relevant
               if(lbasis(i)(indexi+1:indexi+2).eq.lbasis(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
                 if( ((i.ne.j).or.(k.ne.l)) .and. abs(coef(i,k,1)-coef(j,l,1)).le.eps .and. abs(coef(i,k,1)).gt.eps ) then
                   necn=necn+1
+                  call alloc ('iebasi', iebasi, 2, necn)
+                  call alloc ('ieorb', ieorb, 2, necn)
                   iebasi(1,necn)=i
                   iebasi(2,necn)=j
                   ieorb(1,necn)=k
@@ -76,6 +73,8 @@ c 1st basis function is not varied because normalization not relevant
                   goto 20
                 elseif( ((i.ne.j).or.(k.ne.l)) .and. abs(coef(i,k,1)+coef(j,l,1)).le.eps .and. abs(coef(i,k,1)).gt.eps ) then
                   necn=necn+1
+                  call alloc ('iebasi', iebasi, 2, necn)
+                  call alloc ('ieorb', ieorb, 2, necn)
                   iebasi(1,necn)=i
                   iebasi(2,necn)=j
                   ieorb(1,necn)=k
@@ -100,6 +99,7 @@ c 1st basis function is not varied because normalization not relevant
 !JT      write(6,fmt) ((ieorb(k,i),iebasi(k,i),k=1,2),i=1,necn),' ((ieorb(k,i),iebasi(k,i),k=1,2),i=1,necn)'
 
       nparme=1
+      call alloc ('iwbase', iwbase, nparme)
       iwbase(1)=1
       nebase=0
       do 40 i=2,nbasis
@@ -108,12 +108,14 @@ c 1st basis function is not varied because normalization not relevant
           indexj=index(lbasis(j),' ',.true.)
           if(lbasis(i)(indexi+1:indexi+2).eq.lbasis(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
             nebase=nebase+1
+            call alloc ('iebase', iebase, 2, nebase)
             iebase(1,nebase)=i
             iebase(2,nebase)=j
             goto 40
           endif
    30   continue
         nparme=nparme+1
+        call alloc ('iwbase', iwbase, nparme)
         iwbase(nparme)=i
    40 continue
 

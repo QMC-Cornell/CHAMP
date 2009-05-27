@@ -9,21 +9,18 @@ c           coef updated if iflag=1
 c iflag is useless for the moment since we don't optimize in fit
 c any "exponent term" in coefficients for dots. maybe could be useful later?
 c also see basis_norm.dot for real wfs
-
       use all_tools_mod
       use const_mod
       use coefs_mod
       use basis1_mod
       use basisnorm_mod
+      use basis3_mod
       implicit real*8(a-h,o-z)
 
-!     include 'vmc.h'
-!     include 'force.h'
-
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-      common /basis3/ n_fd(MBASIS),m_fd(MBASIS),n_cf(MBASIS),ncfmax
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
+
+      call alloc ('anorm', anorm, nbasis)
 
       do 20 ib=1,nbasis
         n=n_fd(ib)

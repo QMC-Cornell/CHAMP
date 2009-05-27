@@ -246,11 +246,11 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use jaspar4_mod
       use bparm_mod
       use optimo_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 
       parameter(NCOEF=5)
 
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
 
       nparma_read=2+max(0,norda-1)
@@ -363,14 +363,14 @@ c Written by Cyrus Umrigar
       use jaspar4_mod
       use bparm_mod
       use optimo_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
 
       dimension csf_coef_sav(MCSF),a4_sav(MORDJ1,MCTYPE),b_sav(MORDJ1,2),c_sav(MPARMJ,MCTYPE)
-      dimension oparm_sav(MOTYPE,MBASIS)
+      dimension oparm_sav(notype,nbasis)
       save csf_coef_sav,scalek_sav,a4_sav,b_sav,c_sav,nparma_read,nparmb_read,nparmc_read
-      save oparm_sav
+!JT      save oparm_sav
 
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
@@ -532,14 +532,14 @@ c Saves the best wf yet and writes it out at end of run
       use jaspar4_mod
       use bparm_mod
       use optimo_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 
       character*30 fmt
 
 c     common /contrl_per/ iperiodic,ibasis
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      dimension oparm_best(MOTYPE,MBASIS)
-      save oparm_best
+      dimension oparm_best(notype,nbasis)
+!JT      save oparm_best
 
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)

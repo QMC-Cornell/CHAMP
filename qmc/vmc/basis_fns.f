@@ -70,10 +70,6 @@ c     and gaussian 3-d)
       real(dp) :: aux1
       integer :: itemp1
 
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
       dimension wfv(3,MRWF),xc(3)
@@ -490,11 +486,6 @@ c                 < 0 : Gaussian basis
       use phifun_mod
       implicit real*8(a-h,o-z)
 
-c     common /dim/ ndim
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-c     common /coefs/ coef(MBASIS,MORB,MWF),nbasis,norb
-
-
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
       dimension wfv(3,MRWF),xc(3)
@@ -644,11 +635,11 @@ c normalization is taken care in (..)
       use const_mod
       use wfsec_mod
       use phifun_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 
 
 c     common /dim/ ndim
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -722,14 +713,12 @@ c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
       use const_mod
       use wfsec_mod
       use phifun_mod
+      use orbpar_mod
+      use deriv_phifun_mod
       implicit real*8(a-h,o-z)
 
 
 c     common /dim/ ndim
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
-     &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
-     &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -844,11 +833,11 @@ c Here, we do not normalize the wfs
       use const_mod
       use wfsec_mod
       use phifun_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 
 
 c     common /dim/ ndim
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -982,14 +971,12 @@ c Here, we do not normalize the wfs
       use const_mod
       use wfsec_mod
       use phifun_mod
+      use orbpar_mod
+      use deriv_phifun_mod
       implicit real*8(a-h,o-z)
 
 
 c     common /dim/ ndim
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
-     &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
-     &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -1153,11 +1140,11 @@ c         in units of we (or wire_w in case of wire)))
       use const_mod
       use wfsec_mod
       use phifun_mod
+      use orbpar_mod
       implicit real*8(a-h,o-z)
 
 
 c     common /dim/ ndim
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -1235,19 +1222,16 @@ c       (Note that xg3 and xg4 are the "omegas" (1/width)
 c         in units of we (or wire_w in case of wire)))
 
 c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
-
       use coefs_mod
       use const_mod
       use wfsec_mod
       use phifun_mod
+      use orbpar_mod
+      use deriv_phifun_mod
       implicit real*8(a-h,o-z)
 
 
 c     common /dim/ ndim
-      common /orbpar/ oparm(MOTYPE,MBASIS,MWF)
-      common /deriv_phifun/ dparam(MOTYPE,MBASIS,MELEC)
-     &,d2param(MOTYPE,MOTYPE,MBASIS,MELEC),ddparam(3,MOTYPE,MBASIS,MELEC)
-     &,d2dparam(MOTYPE,MBASIS,MELEC)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
