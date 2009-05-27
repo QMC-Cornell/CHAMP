@@ -4,6 +4,6 @@ module phifun_mod
  implicit none
  save
 
- double precision phin(MBASIS,MELEC),dphin(3,MBASIS,MELEC),d2phin(MBASIS,MELEC)
+ double precision, allocatable :: phin(:,:), dphin(:,:,:), d2phin(:,:)
 
 end module phifun_mod

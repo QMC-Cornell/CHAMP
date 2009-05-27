@@ -110,7 +110,7 @@ c read force parameters and set up n-n potential energy at displaced positions
       read(3,*) istrech,alfstr
       write(6,'(''istrech,alfstr ='',i4,2f10.5)') istrech,alfstr
 
-      call alloc ('delc', delc, 3, ncent, max(3, nforce))
+      call alloc ('delc', delc, 3, ncent, nwf)
       do 60 ifl=1,nforce
         do 60 ic=1,ncent
           read(3,*)  (delc(k,ic,ifl),k=1,ndim)
@@ -150,7 +150,7 @@ c         r=dsqrt(r2)
 c  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
 
 !      write(6,'(''pecentn(ifl)1'',9f9.4)') (pecentn(ifl),ifl=1,nforce)
-      call alloc ('pecentn', pecentn, max(3,nforce))
+      call alloc ('pecentn', pecentn, nwf)
       do 80 ifl=1,nforce
         do 70 i=1,ncent
             do 70 k=1,ndim
@@ -186,8 +186,8 @@ c-----------------------------------------------------------------------
 c For wf. optim. copy first geometry info to next two
       entry wf_copy2
 
-      call alloc ('pecentn', pecentn, max(3,nforce))
-      call alloc ('delc', delc, 3, ncent, max(3, nforce))
+      call alloc ('pecentn', pecentn, nwf)
+      call alloc ('delc', delc, 3, ncent, nwf)
       do 160 ifl=1,nforce
         pecentn(ifl)=pecent
         do 160 ic=1,ncent

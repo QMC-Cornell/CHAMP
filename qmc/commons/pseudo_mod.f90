@@ -4,8 +4,9 @@ module pseudo_mod
  implicit none
  save
 
+ integer nloc
  double precision, allocatable ::  vps(:,:,:)
 ! double precision vpso(MELEC,MCENT,MPS_L,MFORCE)
- integer npotd(MCTYPE),lpotp1(MCTYPE),nloc
+ integer, allocatable ::  npotd(:), lpotp1(:)
      
 end module pseudo_mod

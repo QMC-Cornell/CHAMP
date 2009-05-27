@@ -1,10 +1,8 @@
       subroutine read_orb_loc
 c Written by Cyrus Umrigar
 c Reads in either analytic or localized orbitals
-
       use mpi_mod
       use orbitals_mod, only: orb_tot_nb
-
       use coefs_mod
       use const_mod
       use dim_mod
@@ -141,7 +139,6 @@ c 3z^-r^2, x^2-y^2, xy, xz, yz, which is m=0,2,-2,1,-1,
 c in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
-
       use all_tools_mod
       use atom_mod
       use coefs_mod
@@ -294,6 +291,7 @@ c    &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
           endif
    10   continue
 
+        call alloc ('nbasis_ctype', nbasis_ctype, nctype)
         nbas_tot=0
         do 24 ic=1,ncent
           ict=iwctype(ic)
@@ -578,7 +576,7 @@ c 3z^-r^2, x^2-y^2, xy, xz, yz, which is m=0,2,-2,1,-1,
 c in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
-
+      use all_tools_mod
       use atom_mod
       use coefs_mod
       use basis1_mod
@@ -631,6 +629,12 @@ c the following sets up character strings that identify basis
 c functions on centers for the printout of coefficients and
 c screening constants. Character strings are of form
 c 2px'(3) for the second 2px function on the third center
+
+      call alloc ('n_bas', n_bas, nbasis)
+      call alloc ('l_bas', l_bas, nbasis)
+      call alloc ('m_bas', m_bas, nbasis)
+      call alloc ('icenter_basis', icenter_basis, nbasis)
+      call alloc ('ictype_basis', ictype_basis, nbasis)
 
       ib=0
       do 250 ic=1,ncent
@@ -979,7 +983,7 @@ c This routine differs from read_orb_loc_ana in that the order of the fns.
 c is changed from
 c 1s, 2s, 2px, 2py, ...          to
 c 1s, 2s, 3s, 4s,  2px, 2py, 2pz, 3px, ... ., 4pz,  3d, 4f, 5g, 6h
-
+      use all_tools_mod
       use atom_mod
       use coefs_mod
       use basis1_mod
@@ -1042,6 +1046,12 @@ c the following sets up character strings that identify basis
 c functions on centers for the printout of coefficients and
 c screening constants. Character strings are of form
 c 2px'(3) for the second 2px function on the third center
+
+      call alloc ('n_bas', n_bas, nbasis)
+      call alloc ('l_bas', l_bas, nbasis)
+      call alloc ('m_bas', m_bas, nbasis)
+      call alloc ('icenter_basis', icenter_basis, nbasis)
+      call alloc ('ictype_basis', ictype_basis, nbasis)
 
       ib=0
       do 250 ic=1,ncent
@@ -1441,7 +1451,6 @@ c-----------------------------------------------------------------------
       subroutine distinct_radial_bas
 c Written by Cyrus Umrigar
 c Determine distinct radial basis functions
-
       use all_tools_mod
       use atom_mod
       use coefs_mod
@@ -1450,8 +1459,8 @@ c Determine distinct radial basis functions
       use basis2_mod
       use wfsec_mod
       use contr3_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
-
 
 c If an analytical basis is used find out how many distinct radial orbitals there are
 c and store n and zex for each of these.
@@ -1474,6 +1483,9 @@ c but at present nparme is being set after the call to this routine.
 c One could easily make it foolproof by just regarding each basis function
 c as having a different radial function when nparme.ne.0, but this is even more
 c inefficient during the optimization process.
+ 
+      call alloc ('iwrwf2', iwrwf2, nbasis)
+      call alloc ('zex2', zex2, MRWF, nctype, nwf)
 
       if(numr.le.0) then
 !JT        write(6,'(''n_bas(ib),l_bas(ib)'',50(i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)
@@ -1496,6 +1508,7 @@ c inefficient during the optimization process.
             nrbas(ict)=nrbas(ict)+1
             irb=nrbas(ict)
             if(irb.gt.MRWF) stop 'nbas > MRWF'
+            call alloc ('n_bas2', n_bas2, MRWF, nctype)
             n_bas2(irb,ict)=n_bas(ib)
             zex2(irb,ict,iwf)=zex(ib,iwf) ! JT: 1 -> iwf
   275       iwrwf2(ib)=irb

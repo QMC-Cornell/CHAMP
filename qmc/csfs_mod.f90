@@ -62,8 +62,8 @@ module csfs_mod
 
   case ('csf_coef')
    call get_next_value_list ('csf_coef_read', csf_coef_read, ncsf)
-   call object_modified ('nforce')
-   call alloc ('csf_coef', csf_coef, ncsf, max(3,nforce))
+   call object_modified ('nwf')
+   call alloc ('csf_coef', csf_coef, ncsf, nwf)
    csf_coef (:,1) = csf_coef_read (:)
    call object_modified ('ncsf')
    call object_modified ('csf_coef')

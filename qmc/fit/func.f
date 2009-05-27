@@ -1,7 +1,7 @@
       function func(ndata2,nparm,parm,diff,iflag)
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c If iflag=0 then it computes diffs otherwise it just does sum of squares
-
+      use constants_mod
       use basic_tools_mod
       use fitdet_mod
       use atom_mod
@@ -25,9 +25,6 @@ c If iflag=0 then it computes diffs otherwise it just does sum of squares
       use ncusp_mod
       implicit real*8(a-h,o-z)
 
-!      parameter(zero=0.d0,one=1.d0)
-c     parameter(three=3.d0,half=0.5d0,d1b4=0.25d0)
-
 c      complex*16 cvd_sav,cvk_sav
 
       common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
@@ -36,7 +33,6 @@ c      complex*16 cvd_sav,cvk_sav
 
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /fcn_calls/icalls
 c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
 c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)

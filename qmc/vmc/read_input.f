@@ -576,6 +576,8 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       read(5,*) nloc,numr,nforce,nefp
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr
       write(6,'(''nforce,nefp ='',t31,4i5)') nforce,nefp
+      nwf = max(3,nforce)
+      call object_modified ('nwf')
       if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
       if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
       if(nloc.ge.2) then
@@ -742,6 +744,7 @@ c Determine the number of centers of each type
 
 c Read in which is the local component of the potential
       if(nloc.gt.0) then
+        call alloc ('lpotp1', lpotp1, nctype)
         read(5,*) (lpotp1(i),i=1,nctype)
         write(6,'(''lpotp1='',t31,20i3,(20i3))') (lpotp1(i),i=1,nctype)
         do 35 i=1,nctype
@@ -782,6 +785,7 @@ c Convert center positions from primitive lattice vector units to cartesian coor
       if(nloc.gt.0) then
         write(6,'(/,''pseudopotential calculation'')')
         call alloc ('vps', vps, nelec, ncent, MPS_L)
+        call alloc ('npotd', npotd, nctype)
         if(nloc.eq.1) then
           call readps
          elseif(nloc.eq.2.or.nloc.eq.3) then
@@ -920,8 +924,8 @@ c     if(iperiodic.eq.0 .and. norb.gt.MORB) stop 'norb > MORB'
       if(norb.gt.MORB) stop 'norb > MORB'
       if(norb.lt.nup .or. norb.lt.ndn) stop 'norb must be >= nup and ndn'
 
-      call alloc ('coef', coef, nbasis, orb_tot_nb, max(3,nforce))
-      call alloc ('zex', zex, nbasis, max(3,nforce))
+      call alloc ('coef', coef, nbasis, orb_tot_nb, nwf)
+      call alloc ('zex', zex, nbasis, nwf)
 
       if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
 c     if(ibasis.eq.1.and.numr.gt.0) call read_bas_num(1)
@@ -1012,7 +1016,7 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
        write(6,*) trim(lhere),': ncsf =', ncsf, ' > MCSF=', MCSF !JT
        stop 'ncsf > MCSF'
       endif
-      call alloc ('csf_coef', csf_coef, ncsf, max(3,nforce))
+      call alloc ('csf_coef', csf_coef, ncsf, nwf)
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
       call alloc ('ndet_in_csf', ndet_in_csf, ncsf)

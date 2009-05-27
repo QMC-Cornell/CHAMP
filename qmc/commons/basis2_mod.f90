@@ -4,9 +4,9 @@ module basis2_mod
  implicit none
  save
 
- double precision zex2(MRWF,MCTYPE,MWF)
- integer n_bas(MBASIS),l_bas(MBASIS),m_bas(MBASIS)
- integer icenter_basis(MBASIS),ictype_basis(MBASIS)
- integer nbasis_ctype(MCTYPE),n_bas2(MRWF,MCTYPE),iwrwf2(MBASIS)
+ double precision, allocatable :: zex2(:,:,:)
+ integer, allocatable :: n_bas(:), l_bas(:), m_bas(:)
+ integer, allocatable :: icenter_basis(:), ictype_basis(:)
+ integer, allocatable :: nbasis_ctype(:), n_bas2(:,:), iwrwf2(:)
 
 end module basis2_mod

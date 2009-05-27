@@ -675,7 +675,7 @@ module orbitals_mod
 
 ! begin
   call object_provide ('nbasis')
-  call object_provide ('nforce')
+  call object_provide ('nwf')
 
   orb_i = 0
 
@@ -699,7 +699,7 @@ module orbitals_mod
        call die (lhere, ' orb_i='+orb_i+' > MORB='+MORB)
    endif
 
-   call alloc ('coef', coef, nbasis, orb_i, max(3,nforce))
+   call alloc ('coef', coef, nbasis, orb_i, nwf)
 
    read(line,*,iostat=iostat) (coef(bas_i,orb_i,1),bas_i=1,nbasis)
    if(iostat < 0) then

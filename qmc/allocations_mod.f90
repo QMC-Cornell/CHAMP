@@ -18,7 +18,12 @@ module allocations_mod
   call object_provide ('nelec')
   call object_provide ('nelec_pair')
   call object_provide ('ncent')
+  call object_provide ('nbasis')
   call object_provide ('orb_tot_nb')
+
+  call alloc ('phin', phin, nbasis, nelec)
+  call alloc ('dphin', dphin, 3, nbasis, nelec)
+  call alloc ('d2phin', d2phin, nbasis, nelec)
 
   call alloc ('orb', orb, nelec, orb_tot_nb)
   call alloc ('dorb', dorb, 3, nelec, orb_tot_nb)

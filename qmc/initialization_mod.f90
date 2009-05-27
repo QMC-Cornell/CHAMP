@@ -60,6 +60,8 @@ module initialization_mod
   call object_modified ('numr')
   nforce=1
   call object_modified ('nforce')
+  nwf = max(3,nforce)
+  call object_modified ('nwf')
   nefp=0
   nquad=6
   ndim=3
@@ -70,7 +72,7 @@ module initialization_mod
 
 ! csfs
   ncsf=1
-  call alloc ('csf_coef',csf_coef, ncsf, max(3,nforce))
+  call alloc ('csf_coef',csf_coef, ncsf, nwf)
   call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
   csf_coef(1:ncsf,1) = 1.d0
   ndet_in_csf (1:ncsf) = 1

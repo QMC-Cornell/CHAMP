@@ -34,6 +34,9 @@ module nuclei_mod
 
 ! initialization
   l_convert_from_angstrom_to_bohr = .false.
+  if (use_parser) then
+    nforce = 1
+  endif
 
   write(6,*)
   write(6,'(a)') 'Beginning of nuclei menu ---------------------------------------------------------------------------------'
@@ -91,6 +94,8 @@ module nuclei_mod
   enddo ! end loop over menu lines
 
   if (use_parser) then
+  nwf = max(3,nforce)
+  call object_modified ('nwf')
   write(6,'(a,i1)') ' system of dimension ', ndim
   if(ndim.ne.2.and.ndim.ne.3) stop 'ndim must be 2 or 3'
   if(ndim.eq.2.and.iperiodic.gt.0) stop 'ndim=2 not yet implemented for periodic systems'
