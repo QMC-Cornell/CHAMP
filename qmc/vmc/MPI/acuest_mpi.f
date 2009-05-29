@@ -12,7 +12,6 @@ c routine to accumulate estimators for energy etc.
       use const_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
       use pseudo_mod
       use contr3_mod
       use div_v_mod

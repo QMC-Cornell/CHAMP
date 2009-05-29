@@ -2,25 +2,24 @@
 c Written by Claudia Filippi. Modified by Cyrus Umrigar
 c Reads in localized orbitals on a radial grid
 c If igrid(ic).eq.2 .and. (r0_bas(ic).le.0.d0 .or. exp_h_bas(ic).le.0.d0) then grid parameters are deduced later from r values
-
+      use all_tools_mod
       use atom_mod
       use const_mod
       use dim_mod
       use numbas_mod
       use pseudo_mod
+      use forcepar_mod
+      use numexp_mod
       implicit real*8(a-h,o-z)
 
       character*20 filename,wforce,atomtyp
       character*80 title
 c     character*20 lcent
 
-      parameter(NCOEF=5)
-
-      common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF)
-     &,l(MRWF),icusp(MCTYPE)
+     &,l(MRWF),icusp(nctype)
 
 c nrbas = number of radial basis functions for each center
 
@@ -36,6 +35,16 @@ c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
        else
         stop 'read_bas_num, wforce >= 100'
       endif
+
+      call alloc ('exp_h_bas', exp_h_bas, nctype)
+      call alloc ('r0_bas', r0_bas, nctype)
+      call alloc ('rwf', rwf, MRWF_PTS, MRWF, nctype, nwf)
+      call alloc ('d2rwf', d2rwf, MRWF_PTS, MRWF, nctype, nwf)
+      call alloc ('nrbas', nrbas, nctype)
+      call alloc ('igrid', igrid, nctype)
+      call alloc ('nr', nr, nctype)
+      call alloc ('ce', ce, NCOEF, MRWF, nctype, nwf)
+      call alloc ('ae', ae, 2, MRWF, nctype, nwf)
 
       write(6,'(/,''Reading numerical radial basis functions'')')
       do 100 ic=1,nctype

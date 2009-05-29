@@ -1,5 +1,6 @@
       subroutine deriv_jastrow3(x,v,d2,value)
 c Written by Claudia Filippi
+      use constants_mod
       use atom_mod
       use dets_mod
       use optim_mod
@@ -13,18 +14,13 @@ c Written by Claudia Filippi
       use bparm_mod
       use distance_mod
       use jaso_mod
+      use vardep_mod
       implicit real*8(a-h,o-z)
 
-
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0,four=4.d0)
-!JT      parameter (half=.5d0,third=1.d0/3.d0)
       parameter(NEQSX=6*MORDJ)
 
 
-
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
-     &,cdep(NEQSX,MPARMJ,MCTYPE)
 
       common /focktmp/ fc,fu,fuu,fs,fss,ft,ftt,fst,fus,fut
 

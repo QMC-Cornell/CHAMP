@@ -106,8 +106,10 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine checkdepend3
 
+      use all_tools_mod
       use atom_mod
       use optim_mod
+      use vardep_mod
       implicit real*8(a-h,o-z)
 
 
@@ -115,10 +117,9 @@ c-----------------------------------------------------------------------
 
       common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
-
-
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
-     &,cdep(NEQSX,MPARMJ,MCTYPE)
+      call alloc ('nvdepend', nvdepend, neqs, nctype)
+      call alloc ('iwdepend', iwdepend, neqs, nparmj, nctype)
+      call alloc ('cdep', cdep, neqs, nparmj, nctype)
 
       nvar=neqs
 

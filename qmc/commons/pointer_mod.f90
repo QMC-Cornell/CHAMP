@@ -4,6 +4,6 @@ module pointer_mod
  implicit none
  save
 
- integer npointa(MPARMJ*NCTYP3X) 
+ integer, allocatable :: npointa(:) 
 
 end module pointer_mod

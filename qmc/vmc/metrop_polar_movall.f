@@ -16,7 +16,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use delocc_mod
       use denupdn_mod
       use stepv_mod
@@ -394,10 +394,10 @@ c form expected values of e, pe, etc.
       do 210 k=1,ndim
         do 210 i=1,nelec
   210     r2sum=r2sum+p*xnew(k,i)**2+q*xold(k,i)**2
-      if(nefp.gt.0) then
-        call sample_efp(0,xold,eold(1),q)
-        call sample_efp(1,xnew,enew(1),p)
-      endif
+!      if(nefp.gt.0) then
+!        call sample_efp(0,xold,eold(1),q)
+!        call sample_efp(1,xnew,enew(1),p)
+!      endif
       call acues1
 
 c Calculate as a function of the distance to the nucleus
@@ -460,7 +460,7 @@ c move is accepted so update positions etc.
         psido=psidn
         psijo=psijn
 
-        if(nefp.gt.0) call efpsav
+!        if(nefp.gt.0) call efpsav
       endif
 
       call object_modified_by_index (xold_index)  !JT

@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
 
       use all_tools_mod
+      use constants_mod
       use control_mod
       use montecarlo_mod
       use variables_mod
@@ -14,7 +15,7 @@ c routine to accumulate estimators for energy etc.
       use dim_mod
       use contr2_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use pseudo_mod
       use contrl_per_mod
       use delocc_mod
@@ -390,11 +391,11 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
       tjfo=d2
       tjfo=-tjfo*half*hb
 
-      if(nefp.gt.0) then
-        call startefp
-        call sample_efp(1,xold,eold(1),0.d0)
-        call efpsav
-      endif
+!      if(nefp.gt.0) then
+!        call startefp
+!        call sample_efp(1,xold,eold(1),0.d0)
+!        call efpsav
+!      endif
 
       call grad_hess_jas_save
 

@@ -310,6 +310,7 @@ c    &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
   123       nbas_tot=nbas_tot + iabs(n5g(m,ict))
 
    24     nbasis_ctype(ict)=nbas_typ
+        mbasis_ctype = maxval(nbasis_ctype)
         if (numr.ne.-4) then ! JT: do not stop if numr=-4, basis information will be read in later
          if(nbas_tot.ne.nbasis) then
           write(6,'(''nbas_tot,nbasis='',9i4)') nbas_tot,nbasis
@@ -333,6 +334,8 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
         if((nloc.eq.-1).or.(nloc.eq.-5)) then
 
           nbasis_ctype(1)=nbasis
+          mbasis_ctype = maxval(nbasis_ctype)
+          call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
           write(6,'(''Reading iwrwf'')')
           read(5,*) ((iwrwf(ib,ict),ib=1,nbasis),ict=1,nctype)
           write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))')
@@ -420,10 +423,11 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
             if(n13o(m,ict).ne.0 .and. ML_BAS.lt.12) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n13o(m,ict))
           enddo
-          if(nbas.gt.MBASIS_CTYPE) stop 'nbas > MBASIS_CTYPE'
           nbasis_ctype(ict)=nbas
+          mbasis_ctype = maxval(nbasis_ctype)
 
           write(6,'(''Reading iwrwf'')')
+          call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
           read(5,*) (iwrwf(ib,ict),ib=1,nbas)
           write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))')
      &    ict,(iwrwf(ib,ict),ib=1,nbas)
@@ -539,6 +543,7 @@ c latter is the order from GAMESS when doing all-electron calculations.
       endif ! end of if(nloc.ne.-1)
 
       call object_modified ('nbasis_ctype')
+      call object_modified ('mbasis_ctype')
 
       write(6,*)
       write(6,'(''orbital coefficients'')')
@@ -1487,6 +1492,8 @@ c inefficient during the optimization process.
  
       call alloc ('iwrwf2', iwrwf2, nbasis)
       call alloc ('zex2', zex2, MRWF, nctype, nwf)
+      call alloc ('nrbas', nrbas, nctype)
+      call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
 
       if(numr.le.0) then
 !JT        write(6,'(''n_bas(ib),l_bas(ib)'',50(i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)

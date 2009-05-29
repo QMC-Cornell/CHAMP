@@ -72,7 +72,6 @@ module control_mod
    write(6,'(a)') ' icut_e = [integer]'
    write(6,'(a)') ' nfprod = [integer] number of products undone for population-control bias correction'
    write(6,'(a)') ' tau = [real] time step for DMC (default: 0.01)'
-   write(6,'(a)') ' nefp = [integer] (default: 0)'
    write(6,'(a)') ' vmc ... end : control menu for vmc'
    write(6,'(a)') ' error_threshold = [real] : montecarlo run until statistical error on energy reaches error_threshold'
    write(6,'(a)') ' nstep_total = [real]: For MPI, total number of steps per block for all CPUs'
@@ -113,7 +112,6 @@ module control_mod
   case ('icut_e');  call get_next_value (icut_e)
   case ('nfprod');  call get_next_value (nfprod)
   case ('tau');  call get_next_value (tau)
-  case ('nefp');  call get_next_value (nefp)
 
   case ('vmc')
    call vmc_menu

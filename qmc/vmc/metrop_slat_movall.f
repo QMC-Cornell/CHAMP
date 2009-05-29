@@ -21,7 +21,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use pseudo_mod
       use delocc_mod
       use div_v_mod
@@ -507,10 +507,10 @@ c form expected values of e, pe, etc.
       do 210 k=1,ndim
         do 210 i=1,nelec
   210     r2sum=r2sum+p*xnew(k,i)**2+q*xold(k,i)**2
-      if(nefp.gt.0) then
-        call sample_efp(0,xold,eold(1),q)
-        call sample_efp(1,xnew,enew(1),p)
-      endif
+!      if(nefp.gt.0) then
+!        call sample_efp(0,xold,eold(1),q)
+!        call sample_efp(1,xnew,enew(1),p)
+!      endif
 
       call grad_hess_jas_sum(p,q,enew(1),eold(1),1.d0,0.d0)
 
@@ -604,7 +604,7 @@ c          write(19,fmt) ((xnew(k,jj),k=1,ndim),jj=1,nelec),psin,
 c    &     enew(1),ipass
 c       endif
 
-        if(nefp.gt.0) call efpsav
+!        if(nefp.gt.0) call efpsav
 
         call grad_hess_jas_save
 

@@ -22,7 +22,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use pseudo_mod
       use delocc_mod
       use div_v_mod
@@ -596,10 +596,10 @@ c form expected values of e, pe, etc.
       peisum=peisum+peio
       tpbsum=tpbsum+(eold(1)-peo)
       tjfsum=tjfsum+tjfo
-      if(nefp.gt.0) then
-        call sample_efp(1,xold,eold(1),1.d0)
-        call efpsav
-      endif
+!      if(nefp.gt.0) then
+!        call sample_efp(1,xold,eold(1),1.d0)
+!        call efpsav
+!      endif
 
       call grad_hess_jas_sum(1.d0,0.d0,eold(1),eold(1),1.d0,0.d0)
 

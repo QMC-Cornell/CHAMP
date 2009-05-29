@@ -1,5 +1,6 @@
       subroutine set_scale_dist(ipr,iw)
 c Written by Cyrus Umrigar
+      use all_tools_mod
       use constants_mod
       use atom_mod
       use dim_mod
@@ -9,6 +10,7 @@ c Written by Cyrus Umrigar
       use jaspar4_mod
       use jaspar6_mod
       use bparm_mod
+      use forcepar_mod
       implicit real*8(a-h,o-z)
 
 c isc = 2,3 are exponential scalings
@@ -37,6 +39,18 @@ c for primary and secondary wavefns.  Otherwise c1_jas6i, c1_jas6, c2_jas6
 c should be dimensioned to MWF
 c Note val_cutjas is set isc=6,7 when isc=16,17 because isc=6,7 scalings are
 c used for J_en and J_ee when isc=16,17.
+       
+      call alloc ('asymp_r_en', asymp_r_en, nwf)
+      call alloc ('dasymp_r_en', dasymp_r_en, nwf)
+      call alloc ('d2asymp_r_en', d2asymp_r_en, nwf)
+      call alloc ('asymp_r_ee', asymp_r_ee, nwf)
+      call alloc ('dasymp_r_ee', dasymp_r_ee, nwf)
+      call alloc ('d2asymp_r_ee', d2asymp_r_ee, nwf)
+      call alloc ('c1_jas6_en', c1_jas6_en, nwf)
+      call alloc ('c2_jas6_en', c2_jas6_en, nwf)
+      call alloc ('c1_jas6_ee', c1_jas6_ee, nwf)
+      call alloc ('c2_jas6_ee', c2_jas6_ee, nwf)
+
       if(isc.eq.6 .or. isc.eq.16) then
 
         scalek2=scalek(iw)*scalek(iw)
@@ -133,6 +147,13 @@ c used for J_en and J_ee when isc=16,17.
         d2asymp_r_ee(iw)=d2asymp_r_en(iw)
 
       endif
+
+      call alloc ('asymp_jasa', asymp_jasa, nctype, nwf)
+      call alloc ('asymp_jasb', asymp_jasb, 2, nwf)
+      call alloc ('dasymp_jasa', dasymp_jasa, nctype, nwf)
+      call alloc ('dasymp_jasb', dasymp_jasb, 2, nwf)
+      call alloc ('d2asymp_jasa', d2asymp_jasa, nctype, nwf)
+      call alloc ('d2asymp_jasb', d2asymp_jasb, 2, nwf)
 
 c Calculate asymptotic value of A and B terms
       do 10 it=1,nctype

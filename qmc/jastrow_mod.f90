@@ -91,6 +91,8 @@ module jastrow_mod
    call get_next_value (ianalyt_lap)
 
   case ('scalek')
+   call object_provide ('nwf')
+   call alloc ('scalek', scalek, nwf)
    call get_next_value (scalek(1))
    call object_modified ('scalek')
 
@@ -331,16 +333,20 @@ module jastrow_mod
     nparm_read=2
     nparmc_read=(nord**3+5*nord)/6+nord**2+nord
 !    write(6,'(a,3i5)') ' nparm_read, nparmc_read=', nparm_read,nparmc_read
+    call alloc ('a', a, nparm_read, nwf)
     read(5,*) (a(iparm,1),iparm=1,nparm_read)
+    call alloc ('b', b, nparm_read, nspin2b-nspin1+1,nwf)
     do isp=nspin1,nspin2b
        read(5,*) (b(iparm,isp,1),iparm=1,nparm_read)
     enddo
+    call alloc ('c', c, nparmc_read, nctype, nwf)
     do it=1,nctype
        read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
     enddo
     if(ifock.gt.0) then
       nfock=9
       if(ifock.eq.2) nfock=15
+         call alloc ('fck', fck, nfock, nctype, nwf)
          do it=1,nctype
            read(5,*) (fck(iparm,it,1),iparm=1,nfock)
          enddo
@@ -353,13 +359,16 @@ module jastrow_mod
        if(norda.gt.MORDJ) stop 'norda>MORDJ'
        if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
        if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
+       call alloc ('a4', a4, nparma_read, nctype, nwf)
        do it=1,nctype
           read(5,*) (a4(iparm,it,1),iparm=1,nparma_read)
        enddo     
        call object_modified ('a4')
+       call alloc ('b', b, nparmb_read, nspin2b-nspin1+1,nwf)
        do isp=nspin1,nspin2b
          read(5,*) (b(iparm,isp,1),iparm=1,nparmb_read)
        enddo    
+       call alloc ('c', c, nparmc_read, nctype, nwf)
        do it=1,nctype
          read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
       enddo

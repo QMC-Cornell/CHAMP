@@ -8,7 +8,8 @@ c    C.J. Umrigar, in {\it Quantum Monte Carlo Methods in Physics and Chemistry}
 c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
 c    Mathematical and Physical Sciences, Vol. C-525,
 c    (Kluwer Academic Publishers, Boston, 1999)
-      use all_tools_mod ! JT
+      use all_tools_mod
+      use constants_mod
       use atom_mod
       use config_mod
       use dets_mod
@@ -16,7 +17,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use const2_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use delocc_mod
       use denupdn_mod
       use stepv_mod
@@ -24,9 +25,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 c     character*16 mode
 
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,three=3.d0)
-!JT      parameter (half=.5d0,third=1.d0/3.d0)
-!JT      parameter (d3b2=1.5d0)
+      parameter (d3b2=1.5d0)
       parameter (eps=1.d-10)
       parameter (g3b2=.886226925452758d0)
 c     parameter (g5b2=1.329340388179137d0)
@@ -381,10 +380,10 @@ c form expected values of e, pe, etc.
       do 210 k=1,ndim
 c       do 210 i=1,nelec
   210     r2sum=r2sum+p*xnew(k,i)**2+q*xold(k,i)**2
-      if(nefp.gt.0) then
-        call sample_efp(0,xold,eold(1),q)
-        call sample_efp(1,xnew,enew(1),p)
-      endif
+!      if(nefp.gt.0) then
+!        call sample_efp(0,xold,eold(1),q)
+!        call sample_efp(1,xnew,enew(1),p)
+!      endif
       call acues1
 
 c Calculate as a function of the distance to the nucleus
@@ -449,7 +448,7 @@ c move is accepted so update positions etc.
         psijo=psijn
         ekineo(i)=ekinen(i)
 
-        if(nefp.gt.0) call efpsav
+!        if(nefp.gt.0) call efpsav
       endif
 
   300 continue

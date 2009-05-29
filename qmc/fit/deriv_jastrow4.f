@@ -4,7 +4,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 c scalek optimization by A.D.Guclu
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
-
+      use constants_mod
       use atom_mod
       use dets_mod
       use optim_mod
@@ -21,22 +21,16 @@ c Jastrow 6   must be used with one of isc=6,7
       use pointer_mod
       use distance_mod
       use jaso_mod
+      use vardep_mod
       implicit real*8(a-h,o-z)
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
-!JT      parameter (half=.5d0,third=1.d0/3.d0,eps=1.d-12)
       parameter (eps=1.d-12)
-
 
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-
-
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
-     &,cdep(NEQSX,MPARMJ,MCTYPE)
 
       dimension x(3,*),v(3,*)
       dimension uu(-3:MORDJ),ss(-3:MORDJ),tt(-3:MORDJ),rri(-3:MORDJ)

@@ -170,21 +170,11 @@ module nuclei_mod
       call object_provide ('ncent')
       write(6,'(a,i3)') ' number of atomic center types = ', nctype
       write(6,'(a,i5)') ' number of atomic centers = ', ncent
-      if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
 
       call object_provide ('iwctype')
       do ic=1,ncent
         if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
       enddo
-
-!     Determine the number of centers of each type
-      do it=1,nctype
-        ncentyp(it)=0
-        do ic=1,ncent
-          if(iwctype(ic).eq.it) ncentyp(it)=ncentyp(it)+1
-        enddo
-      enddo
-
 
 !     warning Jellium stuff not added yet
       if(nloc.eq.-3) then ! Jellium RM
@@ -366,7 +356,6 @@ module nuclei_mod
    endif
 
    nctype = maxval(iwctype)
-   if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
    call alloc ('znuc', znuc, nctype)
    znuc(iwctype(cent_i)) = nuclear_charge
   enddo

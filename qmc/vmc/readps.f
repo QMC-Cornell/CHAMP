@@ -1,25 +1,29 @@
       subroutine readps
 c Written by Claudia Filippi
 c Read pseudopotential in Fahy format
-
+      use all_tools_mod
       use atom_mod
       use pseudo_mod
       use qua_mod
+      use pseudo_fahy_mod
       implicit real*8(a-h,o-z)
 
-
       character*20 filename,atomtyp
-
-
-      common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-     &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-     &,nlrad(MCTYPE)
 
 c nquad = number of quadrature points
 c nlang = number of non-local potentials
 c rcmax = cutoff radius for non-local potential
 c npotl = number of mesh point for local potential
 c dradl = spacing of uniform mesh for local potential
+
+      call alloc ('potl', potl, MPS_GRID, nctype)
+      call alloc ('ptnlc', ptnlc, MPS_GRID, nctype, MPS_L)
+      call alloc ('ptnlc', ptnlc, MPS_GRID, nctype, MPS_L)
+      call alloc ('dradl', dradl, nctype)
+      call alloc ('drad', drad, nctype)
+      call alloc ('rcmax', rcmax, nctype)
+      call alloc ('npotl', npotl, nctype)
+      call alloc ('nlrad', nlrad, nctype)
 
       do 20 ic=1,nctype
 
@@ -91,15 +95,11 @@ c-----------------------------------------------------------------------
       subroutine getvps_fahy(rad,iel)
 c Written by Claudia Filippi
 c compute Fahy-pseudopotential for electron iel
-
       use atom_mod
       use const_mod
       use pseudo_mod
+      use pseudo_fahy_mod
       implicit real*8(a-h,o-z)
-
-      common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-     &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-     &,nlrad(MCTYPE)
 
       dimension rad(nelec,ncent)
 

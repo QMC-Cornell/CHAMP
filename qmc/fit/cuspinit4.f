@@ -70,9 +70,11 @@ c cdep is the constant of proportionality between dependent and independent vari
 c-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
 
+      use all_tools_mod
       use atom_mod
       use optim_mod
       use jaspar4_mod
+      use vardep_mod
       implicit real*8(a-h,o-z)
 
 
@@ -81,12 +83,11 @@ c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
 
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
-
-
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
-     &,cdep(NEQSX,MPARMJ,MCTYPE)
-
       neqs=2*(nordc-1)
+
+      call alloc ('nvdepend', nvdepend, neqs, nctype)
+      call alloc ('iwdepend', iwdepend, neqs, nparmj, nctype)
+      call alloc ('cdep', cdep, neqs, nparmj, nctype)
 
       do 2 i=1,neqs
         do 2 it=1,nctype

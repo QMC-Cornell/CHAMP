@@ -6,10 +6,12 @@ c reads in r*v in ryd.
 c does 3 conversions: a) ryd -> Har, b) r*v -> v and
 c c) subtracts out local part from all except highest l component.
 c Also eval pot. at r=0
+      use all_tools_mod
       use atom_mod
       use const_mod
       use pseudo_mod
       use qua_mod
+      use pseudo_tm_mod
       implicit real*8(a-h,o-z)
 
       character*2 icorr,nameat
@@ -20,15 +22,20 @@ c Also eval pot. at r=0
 
       parameter (ncoef=5)
 
-
-      common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-
       dimension r(MPS_GRID),y(ncoef),ce(ncoef),dmatr(ncoef*ncoef)
       dimension work(MPS_GRID)
 
 c Warning temp:
       dimension vpot(2)
+
+      call alloc ('rmax_coul', rmax_coul, nctype)
+      call alloc ('rmax_nloc', rmax_nloc, nctype)
+      call alloc ('exp_h_ps', exp_h_ps, nctype)
+      call alloc ('r0_ps', r0_ps, nctype)
+      call alloc ('vpseudo', vpseudo, MPS_GRID, nctype, MPS_L)
+      call alloc ('d2pot', d2pot, MPS_GRID, nctype, MPS_L)
+      call alloc ('igrid_ps', igrid_ps, nctype)
+      call alloc ('nr_ps', nr_ps, nctype)
 
       do 200 ict=1,nctype
 
@@ -301,10 +308,8 @@ c compute pseudopotential for electron iel
       use atom_mod
       use const_mod
       use pseudo_mod
+      use pseudo_tm_mod
       implicit real*8(a-h,o-z)
-
-      common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
 
       dimension r_en(nelec,ncent)
 
@@ -345,9 +350,8 @@ c We assume that rmax_nloc(ict) <= rmax_coul(ict).
 
       use atom_mod
       use pseudo_mod
+      use pseudo_tm_mod
       implicit real*8(a-h,o-z)
-      common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
 
       if(r.lt.rmax_coul(ict)) then
 

@@ -4,7 +4,10 @@ module jaspar3_mod
  implicit none
  save
 
- double precision a(MORDJ1,MWF),b(MORDJ1,2,MWF),c(MPARMJ,MCTYPE,MWF),fck(15,MCTYPE,MWF),scalek(MWF)
  integer nord
+ double precision, allocatable :: a(:,:),b(:,:,:),c(:,:,:),fck(:,:,:),scalek(:)
+ double precision, allocatable :: b_sav(:,:),c_sav(:,:)
+ double precision, allocatable :: b_best(:,:),c_best(:,:)
+ double precision              :: scalek_best
            
 end module jaspar3_mod

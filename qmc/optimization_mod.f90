@@ -63,13 +63,6 @@ module optimization_mod
   logical                 :: do_add_diag_mult_exp = .false.
   logical                 :: l_last_run = .true.
 
-! best parameters to be dynamically allocatable
-  real(dp)                :: csf_coef_best(MCSF)
-  real(dp)                :: a4_best(MORDJ1,MCTYPE)
-  real(dp)                :: b_best(MORDJ1,2)
-  real(dp)                :: c_best(MPARMJ,MCTYPE)
-  real(dp)                :: scalek_best
-
   contains
 
 !===========================================================================
@@ -405,12 +398,15 @@ module optimization_mod
    na2=nctype
   endif
   nparmot=0
+  call alloc ('nparma', nparma, na2-na1+1)
   do ia=na1,na2
    nparma(ia)=4
   enddo
+  call alloc ('nparmb', nparmb, nspin2b-nspin1+1)
   do isp=nspin1,nspin2b
    nparmb(isp)=5
   enddo
+  call alloc ('nparmc', nparmc, nctype)
   do it=1,nctype
    nparmc(it)=15
   enddo
@@ -454,29 +450,35 @@ module optimization_mod
         enddo
       endif
 ! compute nparmj
-      nparmj_input=0
+      nparmj=0
+      call alloc ('npointa', npointa, na2)
       npointa(1)=0
       do ia=na1,na2
         if(ia.gt.1) npointa(ia)=npointa(ia-1)+nparma(ia-1)
-        nparmj_input=nparmj_input+nparma(ia)
+        nparmj=nparmj+nparma(ia)
       enddo
       do isp=nspin1,nspin2b
-        nparmj_input=nparmj_input+nparmb(isp)
+        nparmj=nparmj+nparmb(isp)
       enddo
-      npoint(1)=nparmj_input
+      npoint(1)=nparmj
       do it=1,nctype
         if(it.gt.1) npoint(it)=npoint(it-1)+nparmc(it-1)
-        nparmj_input=nparmj_input+nparmc(it)
+        nparmj=nparmj+nparmc(it)
       enddo
-      if(nparmj_input.gt.MPARMJ) stop 'nparmj > MPARMJ'
+      nparmjs=nparmj+nparms
+      call object_modified ('nparmjs')
+      if(nparmjs.gt.MPARMJ) stop 'nparmjs > MPARMJ'
 
       if(ijas.ge.4.and.ijas.le.6) then
+        call alloc ('iwjasa', iwjasa, nparmj, nctype)
         do it=1,nctype 
           iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
         enddo
+        call alloc ('iwjasb', iwjasb, nparmj, nspin2b-nspin1+1)
         do isp=nspin1,nspin2b
           iwjasb(1:nparmb(isp),isp) = (/2, 3, 4, 5, 6/)
         enddo
+        call alloc ('iwjasc', iwjasc, nparmj, nctype)
         do  it=1,nctype
           iwjasc(1:nparmc(it),it) = (/ 3,  5,  7, 8, 9,   11,  13, 14, 15, 16, 17, 18,  20, 21,  23/)
         enddo
@@ -494,7 +496,7 @@ module optimization_mod
   endif ! if use_parser
 
 ! set numbers parameters to zero if not optimized
-  nparmj = nparmj_input
+!JT  nparmj = nparmj_input
   nparmcsf = nparmcsf_input
   call object_modified ('nparmj')
   call object_modified ('nparmcsf')

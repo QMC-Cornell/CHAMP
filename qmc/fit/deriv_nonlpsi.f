@@ -2,7 +2,7 @@
       use control_mod
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 c minor modification by A.D.Guclu to add analytical scalek opt.
-
+      use constants_mod
       use dets_mod
       use optim_mod
       use dim_mod
@@ -16,23 +16,17 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       use pars_mod
       use jaspar1_mod
       use jaspar2_mod
+      use vardep_mod
       implicit real*8(a-h,o-z)
 
       parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (eps=1.d-12)
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
 !!!
 
-
-
-
-
       common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-      common /vardep/ nvdepend(NEQSX,MCTYPE),iwdepend(NEQSX,MPARMJ,MCTYPE)
-     &,cdep(NEQSX,MPARMJ,MCTYPE)
 
       dimension rshifti(3),rshiftj(3),gn(*)
       dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ),rrri(0:MORDJ),rrrj(0:MORDJ)

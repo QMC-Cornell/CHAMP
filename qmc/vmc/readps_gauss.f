@@ -13,19 +13,20 @@ c          coefficient, power, exponent
 
 c NOTE: as usual power n means r**(n-2)
 
+      use all_tools_mod
       use atom_mod
       use pseudo_mod
       use qua_mod
+      use gauss_ecp_mod
       implicit real*8(a-h,o-z)
 
       character*80 label
       character*20 filename,atomtyp
 
-
-      common /gauss_ecp/ necp_term(MPS_L,MCTYPE),necp_power(MGAUSS
-     &     ,MPS_L,MCTYPE),ecp_coef(MGAUSS,MPS_L,MCTYPE)
-     &     ,ecp_exponent(MGAUSS,MPS_L,MCTYPE)
-
+      call alloc ('necp_term', necp_term, MPS_L, nctype)
+      call alloc ('necp_power', necp_power, MGAUSS, MPS_L, nctype)
+      call alloc ('ecp_coef', ecp_coef, MGAUSS, MPS_L, nctype)
+      call alloc ('ecp_exponent', ecp_exponent, MGAUSS, MPS_L, nctype)
 
       do 100 ict=1,nctype
 
@@ -137,12 +138,8 @@ c compute gauss-pseudopotential for electron iel
       end
 c-----------------------------------------------------------------------
       subroutine gauss_pot(r,l,ict,vpot)
+      use gauss_ecp_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'pseudo.h'
-      common /gauss_ecp/ necp_term(MPS_L,MCTYPE),necp_power(MGAUSS
-     &     ,MPS_L,MCTYPE),ecp_coef(MGAUSS,MPS_L,MCTYPE)
-     &     ,ecp_exponent(MGAUSS,MPS_L,MCTYPE)
 
       v=0
       rsq=r**2

@@ -10,13 +10,13 @@ c versions of directed Metropolis in spherical polar coordinates.
 c Also, one or all electrons can be moved at once.
 
       use all_tools_mod
+      use constants_mod
       use montecarlo_mod
       use optimization_mod
       use eloc_mod
       use vmc_mod
       use mpi_mod
       use config_mod
-
       use contrl_mod
       use const_mod
       use dim_mod
@@ -25,13 +25,8 @@ c Also, one or all electrons can be moved at once.
       use contrl_opt2_mod
       use forcepar_mod
       use wfsec_mod
-      use doefp_mod
+!      use doefp_mod
       implicit real*8(a-h,o-z)
-
-!JT      parameter (one=1.d0,four=4.d0)
-
-
-
 
       dimension ene_var(3)
 

@@ -4,9 +4,9 @@ module numbas_mod
  implicit none
  save
 
- double precision exp_h_bas(MCTYPE),r0_bas(MCTYPE),rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
- double precision d2rwf(MRWF_PTS,MRWF,MCTYPE,MWF)
- integer numr,nrbas(MCTYPE),igrid(MCTYPE),nr(MCTYPE)
- integer iwrwf(MBASIS_CTYPE,MCTYPE)
+ integer numr
+ double precision, allocatable :: exp_h_bas(:),r0_bas(:),rwf(:,:,:,:),d2rwf(:,:,:,:)
+ integer, allocatable :: nrbas(:),igrid(:),nr(:)
+ integer, allocatable :: iwrwf(:,:)
 
 end module numbas_mod

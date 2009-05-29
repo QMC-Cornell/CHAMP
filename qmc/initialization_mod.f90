@@ -95,6 +95,7 @@ module initialization_mod
   nspin2=1
   nord=5
   ifock=0
+  call alloc ('scalek', scalek, nwf)
   scalek(1)=0.5d0
   call object_modified ('scalek')
   a21=0.d0
@@ -145,7 +146,10 @@ module initialization_mod
   nparmc=15
   nparmf=0
   nparmcsf=0
+  nparmj=0
   nparms=0
+  nparmjs=nparmj+nparms
+  call object_modified ('nparmjs')
   nparmg=0
   nparmd=nparmcsf
   call object_modified ('nparmd')
@@ -213,7 +217,7 @@ module initialization_mod
   iter_opt_max_nb = nopt_iter
 
 ! save number of Jastrow and CSF parameters in the input
-  nparmj_input = nparmj
+!JT  nparmj_input = nparmj
   nparmcsf_input = nparmcsf
   nparmd=nparmcsf
   call object_modified ('nparmd')

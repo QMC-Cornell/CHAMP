@@ -13,7 +13,7 @@ c Used both for all-electon and 1-electron move versions.
       use contrl_opt2_mod
       use forcepar_mod
       use wfsec_mod
-      use doefp_mod
+!      use doefp_mod
       use contr3_mod
       use force_dmc_mod
       use config_dmc_mod

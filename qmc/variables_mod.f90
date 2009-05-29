@@ -108,7 +108,7 @@ module variables_mod
   integer :: iter_opt_max_nb = 100
 
 ! number of Jastrow and CSF parameters given in input
-  integer :: nparmj_input = 0
+!JT  integer :: nparmj_input = 0
   integer :: nparmcsf_input = 0
 
 ! forces

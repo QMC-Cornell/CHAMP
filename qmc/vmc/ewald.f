@@ -8,24 +8,14 @@ c Written by Cyrus Umrigar
       use pseudo_mod
       use contrl_per_mod
       use periodic_mod
+      use pseudo_tm_mod
+      use ewald_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
 
       common /constant/ twopi
-c     common /pseudo_fahy/ potl(MPS_GRID,MCTYPE),ptnlc(MPS_GRID,MCTYPE,MPS_L)
-c    &,dradl(MCTYPE),drad(MCTYPE),rcmax(MCTYPE),npotl(MCTYPE)
-c    &,nlrad(MCTYPE)
-      common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
       common /periodic2/ rkvec_shift_latt(3)
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
       common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
      &,vbare_psp(NGNORM_BIGX)
@@ -38,6 +28,23 @@ c      dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
 
 c Temporary
       dimension r_tmp(3)
+
+      call alloc ('b_coul', b_coul, NCOEFX)
+      call alloc ('y_coul', y_coul, NGNORMX)
+      call alloc ('b_coul_sim', b_coul_sim, NCOEFX)
+      call alloc ('y_coul_sim', y_coul_sim, NGNORM_SIMX)
+      call alloc ('b_psp', b_psp, NCOEFX, nctype)
+      call alloc ('y_psp', y_psp, NGNORMX, nctype)
+      call alloc ('b_jas', b_jas, NCOEFX)
+      call alloc ('y_jas', y_jas, NGNORM_SIMX)
+      call alloc ('cos_n_sum', cos_n_sum, NGVECX)
+      call alloc ('sin_n_sum', sin_n_sum, NGVECX)
+      call alloc ('cos_e_sum', cos_e_sum, NGVECX)
+      call alloc ('sin_e_sum', sin_e_sum, NGVECX)
+      call alloc ('cos_e_sum_sim', cos_e_sum_sim, NGVEC_SIMX)
+      call alloc ('sin_e_sum_sim', sin_e_sum_sim, NGVEC_SIMX)
+      call alloc ('cos_p_sum', cos_p_sum, NGVECX)
+      call alloc ('sin_p_sum', sin_p_sum, NGVECX)
 
       pi=4.d0*datan(1.d0)
       twopi=2*pi
@@ -1775,18 +1782,10 @@ c Written by Cyrus Umrigar
 
       use dim_mod
       use periodic_mod
+      use ewald_mod
       implicit real*8(a-h,o-z)
 
-
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
-
-      dimension znuc(MCTYPE),cent(3,ncent),iwctype(ncent)
+      dimension znuc(*),cent(3,ncent),iwctype(ncent)
       dimension r(3)
 
       lowest_pow=-1
@@ -1821,18 +1820,10 @@ c Written by Cyrus Umrigar
 
       use dim_mod
       use periodic_mod
+      use ewald_mod
       implicit real*8(a-h,o-z)
 
-
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
-
-      dimension znuc(MCTYPE),cent(3,ncent),iwctype(ncent)
+      dimension znuc(*),cent(3,ncent),iwctype(ncent)
       dimension r(3)
 
 c short-range sum
@@ -1893,16 +1884,10 @@ c Written by Cyrus Umrigar
       use pseudo_mod
       use distance_mod
       use periodic_mod
+      use ewald_mod
       implicit real*8(a-h,o-z)
 
 
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
 c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
@@ -1967,16 +1952,9 @@ c Written by Cyrus Umrigar
       use dim_mod
       use distance_mod
       use periodic_mod
+      use ewald_mod
       implicit real*8(a-h,o-z)
 
-
-      common /ewald/ b_coul(NCOEFX),y_coul(NGNORMX)
-     &,b_coul_sim(NCOEFX),y_coul_sim(NGNORM_SIMX)
-     &,b_psp(NCOEFX,MCTYPE),y_psp(NGNORMX,MCTYPE)
-     &,b_jas(NCOEFX),y_jas(NGNORM_SIMX)
-     &,cos_n_sum(NGVECX),sin_n_sum(NGVECX),cos_e_sum(NGVECX),sin_e_sum(NGVECX)
-     &,cos_e_sum_sim(NGVEC_SIMX),sin_e_sum_sim(NGVEC_SIMX)
-     &,cos_p_sum(NGVECX),sin_p_sum(NGVECX)
 
 c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
 c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
@@ -2344,7 +2322,7 @@ c Calculate cos_sum and sin_sum for pseudopotentials
       include 'vmc.h'
       include 'ewald.h'
 
-      dimension y_psp(NGNORMX,MCTYPE),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
+      dimension y_psp(NGNORMX,*),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
 

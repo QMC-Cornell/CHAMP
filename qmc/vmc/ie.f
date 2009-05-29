@@ -23,7 +23,6 @@ c      character*80 fmt
 
 !      read(5,*) nctype,ncent
 !JT      write(6,'(''nctype,ncent='',2i3)') nctype,ncent
-!      if(nctype.gt.MCTYPE) stop 'ctype>MCTYPE'
 !      read(5,*) (iwctype(icent),icent=1,ncent)
 !JT      write(6,'(''iwctype='',20i3)') (iwctype(icent),icent=1,ncent)
 !      read(5,*) numr

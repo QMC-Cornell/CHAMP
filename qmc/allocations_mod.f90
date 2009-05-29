@@ -8,6 +8,7 @@ module allocations_mod
   subroutine common_allocations
 ! -----------------------------------------------------------------------------------
 ! Description   : allocate arrays used in FIT, VMC and DMC
+! To improved   : allocate only when necessary!
 !
 ! Created       : J. Toulouse, 09 May 2009
 ! -----------------------------------------------------------------------------------
@@ -20,6 +21,8 @@ module allocations_mod
   call object_provide ('ncent')
   call object_provide ('nbasis')
   call object_provide ('orb_tot_nb')
+  call object_provide ('nctype')
+  call object_provide ('nparmjs')
 
   call alloc ('phin', phin, nbasis, nelec)
   call alloc ('dphin', dphin, 3, nbasis, nelec)
@@ -67,6 +70,12 @@ module allocations_mod
   call alloc ('r_en_sav', r_en_sav, ncent)
   call alloc ('rvec_ee_sav', rvec_ee_sav, 3, nelec)
   call alloc ('r_ee_sav', r_ee_sav, nelec)
+
+  call alloc ('d1d2a', d1d2a, nctype)
+  call alloc ('d2d2a', d2d2a, nctype)
+  call alloc ('d1d2b', d1d2b, 2)
+  call alloc ('d2d2b', d2d2b, 2)
+  call alloc ('didk', didk, nparmjs)
 
   if(ibasis.eq.3) then
    call alloc ('cdorb', cdorb, 3, orb_tot_nb)

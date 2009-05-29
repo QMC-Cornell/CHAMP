@@ -8,7 +8,6 @@ c routine to print out final results
       use main_menu_mod
       use mpi_mod
       use atom_mod
-
       use contrl_mod
       use const_mod
       use dim_mod
@@ -16,7 +15,7 @@ c routine to print out final results
       use gradhess_mod
       use contrl_opt2_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use pseudo_mod
       use contrl_per_mod
       use contr3_mod
@@ -149,7 +148,7 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
   100     write(6,'(f8.4,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
       endif
 
-      if(nefp.gt.0) call writebas(passes,ecum1)
+!      if(nefp.gt.0) call writebas(passes,ecum1)
 
       write(fmt,'(''(/,a12,2x,a'',i3,'')'')') len_trim(title)
       write(6,fmt) mode,title

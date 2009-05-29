@@ -4,20 +4,18 @@ c Written by Cyrus Umrigar
 c routine to move configuration by one step using a
 c force-bias type Monte Carlo.
 c Minor mods added by A.D.Guclu to include correlated sampling.
-      use all_tools_mod ! JT
+      use all_tools_mod
+      use constants_mod
       use config_mod
-
       use dets_mod
       use const_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use delocc_mod
       use denupdn_mod
       use stepv_mod
       implicit real*8(a-h,o-z)
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
-!JT      parameter (half=.5d0)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
@@ -129,10 +127,10 @@ c form expected values of e, pe, etc.
       do 25 k=1,ndim
         do 25 i=1,nelec
    25     r2sum=r2sum+p*xnew(k,i)**2+q*xold(k,i)**2
-      if(nefp.gt.0) then
-        call sample_efp(0,xold,eold(1),q)
-        call sample_efp(1,xnew,enew(1),p)
-      endif
+!      if(nefp.gt.0) then
+!        call sample_efp(0,xold,eold(1),q)
+!        call sample_efp(1,xnew,enew(1),p)
+!      endif
 
       call grad_hess_jas_sum(p,q,enew(1),eold(1),1.d0,0.d0)
 
@@ -216,7 +214,7 @@ c move is accepted so update positions etc.
         psido=psidn
         psijo=psijn
 
-        if(nefp.gt.0) call efpsav
+!        if(nefp.gt.0) call efpsav
 
         call grad_hess_jas_save
 

@@ -247,11 +247,8 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       use bparm_mod
       use optimo_mod
       use orbpar_mod
+      use numexp_mod
       implicit real*8(a-h,o-z)
-
-      parameter(NCOEF=5)
-
-      common /numexp/ce(NCOEF,MRWF,MCTYPE,MFORCE),ae(2,MRWF,MCTYPE,MFORCE)
 
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
@@ -294,6 +291,7 @@ c  40   cdet(i,iadd_diag)=cdet(i,1)
 
 
 c Numerical radial basis functions
+      if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) then
       do 45 iadd_diag=2,nwftype
         do 45 ic=1,nctype
           do 45 irb=1,nrbas(ic)
@@ -308,6 +306,8 @@ c Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I t
             do 50 icoef=1,NCOEF
               if(icoef.le.2) ae(icoef,irb,ic,ifr)=ae(icoef,irb,ic,1)
    50         ce(icoef,irb,ic,ifr)=ce(icoef,irb,ic,1)
+
+      endif
 
 c Jastrow
       do 90 iadd_diag=2,3
@@ -367,10 +367,7 @@ c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
 
-      dimension csf_coef_sav(MCSF),a4_sav(MORDJ1,MCTYPE),b_sav(MORDJ1,2),c_sav(MPARMJ,MCTYPE)
-      dimension oparm_sav(notype,nbasis)
-      save csf_coef_sav,scalek_sav,a4_sav,b_sav,c_sav,nparma_read,nparmb_read,nparmc_read
-!JT      save oparm_sav
+      save scalek_sav,nparma_read,nparmb_read,nparmc_read
 
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
@@ -392,14 +389,19 @@ c     endif
 c     do 40 i=1,ndet
 c  40 cdet(i,iadd_diag)=cdet(i,1)
 
+      call alloc ('csf_coef_sav', csf_coef_sav, ncsf)
       do 50 i=1,ncsf
    50   csf_coef_sav(i)=csf_coef(i,1)
 
+      call alloc ('oparm_sav', oparm_sav, notype, nbasis)
       do 51 it=1,notype
         do 51 ip=1,nbasis
    51     oparm_sav(it,ip)=oparm(it,ip,1)
 
 c Jastrow
+      call alloc ('a4_sav', a4_sav, nparma_read, nctype)
+      call alloc ('b_sav', b_sav, nparmb_read, nspin2b-nspin1+1)
+      call alloc ('c_sav', c_sav, nparmc_read, nctype)
       scalek_sav=scalek(1)
       do 52 ict=1,nctype
         do 52 i=1,nparma_read
@@ -513,7 +515,6 @@ c-----------------------------------------------------------------------
 
 c Written by Cyrus Umrigar
 c Saves the best wf yet and writes it out at end of run
-
       use all_tools_mod
       use orbitals_mod
       use basis_mod
@@ -538,8 +539,6 @@ c Saves the best wf yet and writes it out at end of run
       character*30 fmt
 
 c     common /contrl_per/ iperiodic,ibasis
-      dimension oparm_best(notype,nbasis)
-!JT      save oparm_best
 
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
@@ -561,16 +560,21 @@ c     endif
 c     do 40 i=1,ndet
 c  40 cdet(i,iadd_diag)=cdet(i,1)
 
+      call alloc ('csf_coef_best', csf_coef_best, ncsf)
       do 50 i=1,ncsf
    50   csf_coef_best(i)=csf_coef(i,1)
 
       call object_modified ('csf_coef_best')
 
+      call alloc ('oparm_best', oparm_best, notype, nbasis)
       do 51 it=1,notype
         do 51 ip=1,nbasis
    51     oparm_best(it,ip)=oparm(it,ip,1)
 
 c Jastrow
+      call alloc ('a4_best', a4_best, nparma_read, nctype)
+      call alloc ('b_best', b_best, nparmb_read, nspin2b-nspin1+1) 
+      call alloc ('c_best', c_best, nparmc_read, nctype)
       scalek_best=scalek(1)
       do 52 ict=1,nctype
         do 52 i=1,nparma_read

@@ -46,12 +46,12 @@ c job where it left off
 
       dimension irn(4,0:MPROC),istatus(MPI_STATUS_SIZE)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(ncent)
-     &,n1sx(MCTYPE),n2sx(MCTYPE),n2px(-1:1,MCTYPE)
-     &,n3sx(MCTYPE),n3px(-1:1,MCTYPE),n3dx(-2:2,MCTYPE)
-c    &,n4sx(MCTYPE),n4px(-1:1,MCTYPE),n4dx(-2:2,MCTYPE)
-     &,n4sx(MCTYPE),n4px(-1:1,MCTYPE)
-     &,n4fx(-3:3,MCTYPE),n5gx(-4:4,MCTYPE),n6hx(-5:5,MCTYPE)
-     &,nsax(MCTYPE),npax(-1:1,MCTYPE),ndax(-2:2,MCTYPE)
+     &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
+     &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
+c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
+     &,n4sx(nctype),n4px(-1:1,nctype)
+     &,n4fx(-3:3,nctype),n5gx(-4:4,nctype),n6hx(-5:5,nctype)
+     &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
      &,csf_coefx(MDET)
 
       if(nforce.gt.1) call strech(xoldw,xoldw,ajacob,1,0)

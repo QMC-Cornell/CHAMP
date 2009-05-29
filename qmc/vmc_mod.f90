@@ -24,7 +24,7 @@ module vmc_mod
   call my_second(0,'begin ')
 
 ! EFP
-  if (nefp >0 ) call readbas ! to remove
+!  if (nefp >0 ) call readbas ! to remove
 
 
 ! correlated sampling

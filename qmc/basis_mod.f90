@@ -360,7 +360,9 @@ module basis_mod
 
   call alloc ('nbasis_ctype', nbasis_ctype, nctype)
   nbasis_ctype (1:nctype) = basis_fns_by_center_type_nb (1:nctype)
+  mbasis_ctype = maxval (nbasis_ctype)
   call object_modified ('nbasis_ctype')
+  call object_modified ('mbasis_ctype')
   call object_modified ('basis_fns_by_center_type_nb')
   call object_modified ('basis_fns_type_by_center_type')
   call object_modified ('basis_fns_expo_by_center_type')

@@ -42,7 +42,6 @@ c Written by Cyrus Umrigar
       use qua_mod
       use optimo_mod
       use jel_sph2_mod
-      use atomtyp_mod
       use contr_names_mod
       use contr_ylm_mod
       use pars_mod
@@ -448,6 +447,10 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
       nparm=0
       nparmd = 0
       call object_modified ('nparmd')
+      nparmj=0
+      nparms=0
+      nparmjs=nparmj+nparms
+      call object_modified ('nparmjs')
 
 c     read(5,'(a20,4x,4i4)') title,irn
       read(5,*) title
@@ -706,13 +709,10 @@ c read k-shift for generating k-vector lattice
 
       read(5,*) nctype,ncent
       write(6,'(/,''nctype,ncent ='',t31,i3,i5)') nctype,ncent
-      if(nctype.gt.MCTYPE) stop 'nctype > MCTYPE'
-
-      call object_modified ('nctype')  !JT
-      call object_modified ('ncent')  !JT
+      call object_modified ('nctype')
+      call object_modified ('ncent')
 
       call alloc ('iwctype', iwctype, ncent)
-
       read(5,*) (iwctype(i),i=1,ncent)
       write(6,'(''iwctype ='',t31,20i3,(20i3))') (iwctype(i),i=1,ncent)
       do 25 ic=1,ncent
@@ -721,10 +721,11 @@ c read k-shift for generating k-vector lattice
       call object_modified ('iwctype')  !JT
 
 c Determine the number of centers of each type
-      do 30 it=1,nctype
-        ncentyp(it)=0
-        do 30 ic=1,ncent
-   30     if(iwctype(ic).eq.it) ncentyp(it)=ncentyp(it)+1
+!JT: commented out because not used
+!JT      do 30 it=1,nctype
+!JT        ncentyp(it)=0
+!JT        do 30 ic=1,ncent
+!JT   30     if(iwctype(ic).eq.it) ncentyp(it)=ncentyp(it)+1
 
       call alloc ('znuc', znuc, nctype)
 
@@ -1129,8 +1130,11 @@ c Jastrow section
      &  cjas1(1),cjas2(1)
        elseif(ijas.eq.2) then
         nparm_read=69
-        if(isc.ge.2) read(5,*) scalek(1),a21
-        write(6,'(''scalek,a21='',t31,9f10.5)') scalek(1),a21
+        if(isc.ge.2) then
+          call alloc ('scalek', scalek, nwf)
+          read(5,*) scalek(1),a21
+          write(6,'(''scalek,a21='',t31,9f10.5)') scalek(1),a21
+        endif
         do 270 isp=nspin1,nspin2
           read(5,*) (a1(iparm,isp,1),iparm=1,nparm_read)
           if(ncent.gt.1.and.a1(2,isp,1).ne.zero)
@@ -1149,15 +1153,19 @@ c Jastrow section
         nparmc_read=(nord**3+5*nord)/6+nord**2+nord
         write(6,'(''nparm_read,nparmc_read='',3i5)') nparm_read,nparmc_read
         if(isc.ge.2) then
+          call alloc ('scalek', scalek, nwf)
           read(5,*) scalek(1),a21
           write(6,'(''scalek(1),a21='',2f10.5)') scalek(1),a21
         endif
+        call alloc ('a', a, nparm_read, nwf)
         read(5,*) (a(iparm,1),iparm=1,nparm_read)
         write(6,'(''a='',x,7f10.6,(8f10.6))')(a(iparm,1),iparm=1,nparm_read)
+        call alloc ('b', b, nparm_read, nspin2b-nspin1+1,nwf)
         do 280 isp=nspin1,nspin2b
           read(5,*) (b(iparm,isp,1),iparm=1,nparm_read)
   280     write(6,'(''b='',x,7f10.6,(8f10.6))')
      &                (b(iparm,isp,1),iparm=1,nparm_read)
+        call alloc ('c', c, nparmc_read, nctype, nwf)
         do 290 it=1,nctype
           read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
   290     write(6,'(''c='',x,7f10.6,(8f10.6))') (c(iparm,it,1),
@@ -1165,6 +1173,7 @@ c Jastrow section
         if(ifock.gt.0) then
           nfock=9
           if(ifock.eq.2) nfock=15
+          call alloc ('fck', fck, nfock, nctype, nwf)
           do 300 it=1,nctype
             read(5,*) (fck(iparm,it,1),iparm=1,nfock)
             if(ifock.gt.2) then
@@ -1190,6 +1199,7 @@ c WAS
         if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
 ccWAS
         if(isc.ge.2) then
+          call alloc ('scalek', scalek, nwf)
           read(5,*) scalek(1),a21
           write(6,'(''scalek(1),a21='',2f10.5)') scalek(1),a21
         endif
@@ -1198,6 +1208,7 @@ ccWAS
         else
           parm2min=-1.d0
         endif
+        call alloc ('a4', a4, nparma_read, nctype, nwf)
         do 301 it=1,nctype
            read(5,*) (a4(iparm,it,1),iparm=1,nparma_read)
            write(6,'(''a='',x,7f10.6,(8f10.6))') (a4(iparm,it,1),iparm=1,nparma_read)
@@ -1207,6 +1218,7 @@ ccWAS
              else
            endif
   301   continue
+        call alloc ('b', b, nparmb_read, nspin2b-nspin1+1,nwf)
         do 302 isp=nspin1,nspin2b
           read(5,*) (b(iparm,isp,1),iparm=1,nparmb_read)
           write(6,'(''b='',x,7f10.6,(8f10.6))') (b(iparm,isp,1),iparm=1,nparmb_read)
@@ -1215,6 +1227,7 @@ ccWAS
              stop 'b(2,isp,1) too low, Jastrow denom could become negative'
            endif
   302   continue
+        call alloc ('c', c, nparmc_read, nctype, nwf)
         do 303 it=1,nctype
           read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
   303     write(6,'(''c='',x,7f10.6,(8f10.6))') (c(iparm,it,1),
@@ -1565,6 +1578,10 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
       endif
 
       nparmot=0
+      call alloc ('nparma', nparma, na2-na1+1)
+      call alloc ('nparmb', nparmb, nspin2b-nspin1+1)
+      call alloc ('nparmc', nparmc, nctype)
+      call alloc ('nparmf', nparmf, nctype)
       if(ibasis.le.3) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
@@ -1650,6 +1667,7 @@ c For the b coefs. we assume that b(1) is fixed by the cusp-cond.
 
 c compute nparmj and nparme
       nparmj=0
+      call alloc ('npointa', npointa, na2)
       npointa(1)=0
       do 407 ia=na1,na2
         if(ia.gt.1) npointa(ia)=npointa(ia-1)+nparma(ia-1)
@@ -1674,6 +1692,8 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
       if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmcsf.lt.0 .or. nparms.lt.0 .or.nparmg.lt.0)
      &stop 'nparm? must be >= 0'
       if(nparms.gt.1) stop 'nparms must be 0 or 1'
+      nparmjs=nparmj+nparms !JT
+      call object_modified ('nparmjs')
       if(nparmj+nparms.gt.MPARMJ) stop 'nparmj+nparms > MPARMJ'
 !JT      if(nparmcsf.ge.ncsf) then
 !JT        write(6,'(''Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'')')
@@ -1682,8 +1702,7 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
 
       do it=1,notype
         read(5,*) (iwo(iparm,it),iparm=1,nparmo(it))
-        write(6,'(''orbital parameters varied='',10(2i3,2x))')
-     &(iwo(iparm,it),iparm=1,nparmo(it))
+        write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
         do iparm=1,nparmo(it)
           if(iwo(iparm,it).lt.0 .or. iwo(iparm,it).gt.norb) then
             stop 'Incorrect value for iwo.'
@@ -1715,25 +1734,30 @@ c    &(iwdet(iparm),iparm=1,nparmd)
 
       if(ijas.eq.2.or.ijas.eq.3) then
         write(6,'(''Correl. params. that are varied are:'')')
+        call alloc ('iwjasa', iwjasa, nparmj, nspin2-nspin1+1)
         do 414 isp=nspin1,nspin2
           read(5,*) (iwjasa(iparm,isp),iparm=1,nparma(isp))
   414     write(6,'(''a: '',30i3)') (iwjasa(iparm,isp),iparm=1,
      &    nparma(isp))
+        call alloc ('iwjasb', iwjasb, nparmj, nspin2b-nspin1+1)
         do 416 isp=nspin1,nspin2b
           read(5,*) (iwjasb(iparm,isp),iparm=1,nparmb(isp))
   416     write(6,'(''b: '',30i3)') (iwjasb(iparm,isp),iparm=1,
      &    nparmb(isp))
        elseif(ijas.ge.4.and.ijas.le.6) then
+        call alloc ('iwjasa', iwjasa, nparmj, nctype)
         do 418 it=1,nctype
           read(5,*) (iwjasa(iparm,it),iparm=1,nparma(it))
   418     write(6,'(''a: '',30i3)') (iwjasa(iparm,it),iparm=1,
      &    nparma(it))
+        call alloc ('iwjasb', iwjasb, nparmj, nspin2b-nspin1+1)
         do 420 isp=nspin1,nspin2b
           read(5,*) (iwjasb(iparm,isp),iparm=1,nparmb(isp))
   420     write(6,'(''b: '',30i3)') (iwjasb(iparm,isp),iparm=1,
      &    nparmb(isp))
       endif
       if(ijas.ge.3.and.ijas.le.6) then
+        call alloc ('iwjasc', iwjasc, nparmj, nctype)
         do 425 it=1,nctype
           read(5,*) (iwjasc(iparm,it),iparm=1,nparmc(it))
   425     write(6,'(''c: '',60i3)') (iwjasc(iparm,it),iparm=1,

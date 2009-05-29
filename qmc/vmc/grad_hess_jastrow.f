@@ -13,21 +13,14 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use pointer_mod
       use gradhessj_nonlin_mod
       use optimo_mod
+      use gradhessdero_mod
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
 
-
-
       common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
      &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
      &,w_i(MPARM),w_i_e(MPARM)
-      common /gradhessdero/ deti_det_old(MPARMD),gvalue_old(MPARMJ),denergy_old(MPARM)
-     &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2),didk_old(MPARMJ)
-     &,detij_det_old(MPARMD,MPARMD)
-
-
-
 
       dimension wi_w(MPARM)
 
@@ -268,7 +261,7 @@ c-----------------------------------------------------------------------
       end
 c-----------------------------------------------------------------------
       subroutine grad_hess_jas_save
-
+      use all_tools_mod
       use atom_mod
       use slater_mod
       use optim_mod
@@ -279,15 +272,20 @@ c-----------------------------------------------------------------------
       use bparm_mod
       use gradhessj_nonlin_mod
       use optimo_mod
+      use gradhessdero_mod
       implicit real*8(a-h,o-z)
 
-
-      common /gradhessdero/ deti_det_old(MPARMD),gvalue_old(MPARMJ),denergy_old(MPARM)
-     &,d1d2a_old(MCTYPE),d2d2a_old(MCTYPE),d1d2b_old(2),d2d2b_old(2),didk_old(MPARMJ)
-     &,detij_det_old(MPARMD,MPARMD)
-
-
       if(igradhess.eq.0) return
+
+      call alloc ('deti_det_old', deti_det_old, nparmd)
+      call alloc ('gvalue_old', gvalue_old, nparmjs)
+      call alloc ('denergy_old', denergy_old, nparm)
+      call alloc ('d1d2a_old', d1d2a_old, nctype)
+      call alloc ('d2d2a_old', d2d2a_old, nctype)
+      call alloc ('d1d2b_old', d1d2b_old, 2)
+      call alloc ('d2d2b_old', d2d2b_old, 2)
+      call alloc ('didk_old', didk_old, nparmjs)
+      call alloc ('detij_det_old', detij_det_old, nparmd, nparmd)
 
       do 5 i=1,nparmcsf+nparmot
         deti_det_old(i)=deti_det(i)

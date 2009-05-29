@@ -7,6 +7,7 @@ c This routine has been changed to move one electron at a time and
 c to keep track of the acceptance prob. as a function of delta
 c Minor mods by A.D.Guclu to include pair-density function calculation
       use all_tools_mod
+      use constants_mod
       use control_mod
       use montecarlo_mod
       use opt_lin_mod
@@ -16,7 +17,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use const_mod
       use dim_mod
       use forcepar_mod
-      use doefp_mod
+!      use doefp_mod
       use contrl_per_mod
       use delocc_mod
       use div_v_mod
@@ -24,9 +25,6 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use stepv_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
-
-
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0)
 
       logical vgreater
 
@@ -281,10 +279,10 @@ c form expected values of e, pe, etc.
       peisum=peisum+peio
       tpbsum=tpbsum+(eold(1)-peo)
       tjfsum=tjfsum+tjfo
-      if(nefp.gt.0) then
-        call sample_efp(1,xold,eold(1),1.d0)
-        call efpsav
-      endif
+!      if(nefp.gt.0) then
+!        call sample_efp(1,xold,eold(1),1.d0)
+!        call efpsav
+!      endif
 
       call grad_hess_jas_sum(1.d0,0.d0,eold(1),eold(1),1.d0,0.d0)
 

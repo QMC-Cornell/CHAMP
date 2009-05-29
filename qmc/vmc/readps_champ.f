@@ -19,21 +19,27 @@ c igrid_ps=1, linear,              r(i)=r0_ps+(i-1)*h_ps
 c         =2, exponential,         r(i)=r0_ps*exp((i-1)*h_ps)
 c         =3, shifted exponential, r(i)=r0_ps*(exp((i-1)*h_ps)-1)
 c The prefered grid is 3.
-
+      use all_tools_mod
       use atom_mod
       use const_mod
       use pseudo_mod
       use qua_mod
+      use pseudo_tm_mod
       implicit real*8(a-h,o-z)
 
       character*20 filename,atomtyp
       character*80 title
 
-
-      common /pseudo_tm/ rmax_coul(MCTYPE),rmax_nloc(MCTYPE),exp_h_ps(MCTYPE),r0_ps(MCTYPE)
-     &,vpseudo(MPS_GRID,MCTYPE,MPS_L),d2pot(MPS_GRID,MCTYPE,MPS_L),igrid_ps(MCTYPE),nr_ps(MCTYPE)
-
       dimension r(MPS_GRID),work(MPS_GRID)
+
+      call alloc ('rmax_coul', rmax_coul, nctype)
+      call alloc ('rmax_nloc', rmax_nloc, nctype)
+      call alloc ('exp_h_ps', exp_h_ps, nctype)
+      call alloc ('r0_ps', r0_ps, nctype)
+      call alloc ('vpseudo', vpseudo, MPS_GRID, nctype, MPS_L)
+      call alloc ('d2pot', d2pot, MPS_GRID, nctype, MPS_L)
+      call alloc ('igrid_ps', igrid_ps, nctype)
+      call alloc ('nr_ps', nr_ps, nctype)
 
       do 200 ict=1,nctype
 

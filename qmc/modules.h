@@ -60,7 +60,6 @@
           use pjase_mod
           use optimo_mod
           use jel_sph2_mod
-          use atomtyp_mod
           use contr_names_mod
           use contr_ylm_mod
           use pars_mod

@@ -7,7 +7,7 @@ c get nuclear potential energy
       use contrl_per_mod
       implicit real*8(a-h,o-z)
 
-      dimension znuc(MCTYPE),cent(3,ncent),iwctype(ncent)
+      dimension znuc(*),cent(3,ncent),iwctype(ncent)
 
       if(nloc.ge.0) then
         if(iperiodic.eq.0) then

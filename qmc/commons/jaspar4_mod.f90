@@ -4,7 +4,10 @@ module jaspar4_mod
  implicit none
  save
 
- double precision a4(MORDJ1,MCTYPE,MWF)
  integer norda,nordb,nordc
+ double precision, allocatable :: a4(:,:,:)
+
+ double precision, allocatable :: a4_sav(:,:)
+ double precision, allocatable :: a4_best(:,:)
 
 end module jaspar4_mod
