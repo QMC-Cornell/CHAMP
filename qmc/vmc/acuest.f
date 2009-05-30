@@ -1,7 +1,6 @@
       subroutine acuest
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
-
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -28,8 +27,6 @@ c routine to accumulate estimators for energy etc.
       use stepv_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (half=.5d0)
-
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
@@ -47,7 +44,7 @@ c routine to accumulate estimators for energy etc.
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
-      dimension xstrech(3,MELEC)
+      dimension xstrech(3,nelec)
 
 c statement function for error calculation
 c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)

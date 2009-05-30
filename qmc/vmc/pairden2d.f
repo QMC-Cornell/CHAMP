@@ -20,7 +20,7 @@ c (not impossible, can be optimized)
      &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
      &delxi,xmax,xfix(3),ifixe
 
-      dimension xold(3,MELEC),xnew(3,MELEC)
+      dimension xold(3,nelec),xnew(3,nelec)
 
       do 30 ier=1,nelec      ! reference electron
 

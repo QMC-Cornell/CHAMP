@@ -54,7 +54,6 @@ module determinants_mod
   call object_provide ('nelec')
 
   det_i = 0
-  iworbd(:,:) = 0.d0
 
   do
    read(unit_input,'(a)',iostat=iostat) line
@@ -76,6 +75,7 @@ module determinants_mod
        call die (lhere, ' det_i='+det_i+' > MDET='+MDET)
    endif
 
+   call alloc ('iworbd', iworbd, nelec, det_i)
    read(line,*,iostat=iostat) (iworbd(elec_i,det_i),elec_i=1,nelec)
    if(iostat < 0) then
      call die (lhere, 'error while reading determinants')

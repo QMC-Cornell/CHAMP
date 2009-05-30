@@ -1,17 +1,13 @@
       subroutine cuspexact2(a,b)
 c Written by Cyrus Umrigar
+      use constants_mod
       use atom_mod
       use dim_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
-
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 
       dimension a(*),b(*)
 
-!JT      parameter(half=0.5d0)
       parameter(d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
      &,d1b24=1.d0/24.d0,rt2i=0.707106781186547d0
      &,dln2=0.6931471805599453d0, pi=3.141592653589793d0

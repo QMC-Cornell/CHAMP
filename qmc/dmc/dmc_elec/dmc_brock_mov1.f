@@ -19,6 +19,7 @@ c  He and Ceperley told me that they have also now switched to rejecting
 c  node crossing moves.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use all_tools_mod
+      use constants_mod
       use control_mod
       use average_mod
       use atom_mod
@@ -44,13 +45,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (eps=1.d-10)
 
       common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 
-      dimension xnew(3),vnew(3,MELEC),xbac(3),xstrech(3,MELEC)
+      dimension xnew(3),vnew(3,nelec),xbac(3),xstrech(3,nelec)
 c     dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)
 
 

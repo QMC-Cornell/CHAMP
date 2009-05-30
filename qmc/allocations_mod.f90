@@ -77,6 +77,28 @@ module allocations_mod
   call alloc ('d2d2b', d2d2b, 2)
   call alloc ('didk', didk, nparmjs)
 
+  call alloc ('vd', vd, 3, nelec)
+  call alloc ('vj', vj, 3, nelec)
+  call alloc ('div_vo', div_vo, nelec)
+
+  call alloc ('ekineo', ekineo, nelec)
+  call alloc ('ekinen', ekinen, nelec)
+
+! jastrow
+  call alloc ('fso', fso, nelec, nelec)
+  call alloc ('fijo', fijo, 3, nelec, nelec)
+  call alloc ('d2ijo', d2ijo, nelec, nelec)
+  call alloc ('fjo', fjo, 3, nelec)
+  call alloc ('fsn', fsn, nelec, nelec)
+  call alloc ('fijn', fijn, 3, nelec, nelec)
+  call alloc ('d2ijn', d2ijn, nelec, nelec)
+  call alloc ('fjn', fjn, 3, nelec)
+
+  call alloc ('gvalue', gvalue, nparmjs)
+  call alloc ('g', g, 3, nelec, nparmjs)
+  call alloc ('d2g', d2g, nparmjs)
+  call alloc ('go', go, nelec, nelec, nparmjs)
+
   if(ibasis.eq.3) then
    call alloc ('cdorb', cdorb, 3, orb_tot_nb)
    call alloc ('cddorb', cddorb, orb_tot_nb)

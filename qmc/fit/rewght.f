@@ -3,19 +3,12 @@ c Written by Cyrus Umrigar
 c Calculate the weights due to the fact that we have sampled from
 c one probability distribution, but want to calculate the expectation
 c value with respect to another.
+      use constants_mod
       use contr2_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
 
-      include '../vmc/vmc.h'
-
-      parameter (zero=0.d0,one=1.d0,biglog=500.d0)
-
-      include 'fit.h'
-
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
+      parameter (biglog=500.d0)
 
       dimension diff(*)
 

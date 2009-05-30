@@ -14,6 +14,7 @@
           use coefs_mod
           use dets_mod
           use slater_mod
+          use slaterw_mod
           use numbas_mod
           use optim_mod
           use basis1_mod
@@ -55,6 +56,7 @@
           use stepv_mod
           use lbas_mod
           use jaso_mod
+          use jasow_mod
           use jasn_mod
           use vd_mod
           use pjase_mod
@@ -75,4 +77,6 @@
           use estcm2_mod
           use stats_mod
           use age_mod
+          use kinet_mod
+          use config_dmc_mod
 

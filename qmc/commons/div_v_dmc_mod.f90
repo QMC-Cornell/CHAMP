@@ -4,6 +4,6 @@ module div_v_dmc_mod
  implicit none
  save
 
- double precision div_vow(MELEC,MWALK)
+ double precision, allocatable :: div_vow(:,:)
 
 end module div_v_dmc_mod

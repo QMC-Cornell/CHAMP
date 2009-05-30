@@ -109,10 +109,6 @@ module psi_mod
     call die (lhere, 'number of spin-up electrons = '+nup+' < number of spin-down electrons = '+ndn+'.')
   endif
 
-  if(nelec.gt.MELEC) stop 'nelec exceeds MELEC'
-  if(nup.gt.MELECUD) stop 'nup exceeds MELECUD. Dimension of Slater matrices, slmui etc. exceeded'
-  if(ndn.gt.MELECUD) stop 'ndn exceeds MELECUD. Dimension of Slater matrices, slmdi etc. exceeded'
-
   nupdn = max(nup, ndn)
   nup_square = nup**2
   ndn_square = ndn**2

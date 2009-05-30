@@ -19,13 +19,6 @@ c Used both for all-electon and 1-electron move versions.
       use config_dmc_mod
       implicit real*8(a-h,o-z)
 
-c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-c    &,peo,pen,peio,pein,tjfn,tjfo,psido,psijo
-c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-
       dimension ene_var(3)
 
       call my_second(0,'optim ')

@@ -10,7 +10,7 @@ c Written by Claudia Filippi
       implicit real*8(a-h,o-z)
 
 
-      dimension coord(3),force(3,*),x(3,MELEC)
+      dimension coord(3),force(3,*),x(3,nelec)
 
       do 10 k=1,ndim
       do 10 i=1,iel-1

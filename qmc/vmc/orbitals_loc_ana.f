@@ -118,8 +118,8 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
-      dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
-      dimension ddporb(3,MOTYPE,MELEC,MORB),d2dporb(MOTYPE,MELEC,MORB)
+      dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
+      dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
 
       nelec1=1
       nelec2=nelec

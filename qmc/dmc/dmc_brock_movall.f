@@ -18,6 +18,7 @@ c  accept/reject on each electron and calculate taueff differently.
 c  He and Ceperley told me that they have also now switched to rejecting
 c  node crossing moves.
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use constants_mod
       use contrl_mod
       use const_mod
       use dim_mod
@@ -37,12 +38,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
-
-
-      dimension xnew(3,MELEC,MFORCE),vnew(3,MELEC,MFORCE),enew(MFORCE)
-     &,psidn(MFORCE),psijn(MFORCE),d2n(MFORCE),pen(MFORCE),pein(MFORCE),xbac(3)
-      dimension ajacnew(MFORCE),div_vn(MELEC)
+      dimension xnew(3,nelec,nforce),vnew(3,nelec,nforce),enew(nforce)
+     &,psidn(nforce),psijn(nforce),d2n(nforce),pen(nforce),pein(nforce),xbac(3)
+      dimension ajacnew(nforce),div_vn(nelec)
 
 
       gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))

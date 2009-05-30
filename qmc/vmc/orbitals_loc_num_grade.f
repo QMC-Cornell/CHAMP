@@ -9,8 +9,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
-      dimension x(3,MELEC),orb(*),dorb(3,*),ddorb(*)
-     &,splineval(6)
+      dimension x(3,*),orb(*),dorb(3,*),ddorb(*),splineval(6)
 
 c Warning: At present for simplicity a separate call is made to evaluate
 c the splines for each electron and orbital.  However it would be more a bit

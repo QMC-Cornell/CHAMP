@@ -67,7 +67,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
         call mpi_isend(nwalk,1,mpi_integer,0
      &  ,1,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(xoldw,3*MELEC*nwalk,mpi_double_precision,0
+        call mpi_isend(xoldw,3*nelec*nwalk,mpi_double_precision,0
      &  ,2,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
         call mpi_isend(wt,nwalk,mpi_double_precision,0
@@ -126,7 +126,7 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         do 450 id=1,nproc-1
           call mpi_recv(nwalk,1,mpi_integer,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xoldw,3*MELEC*nwalk,mpi_double_precision,id
+          call mpi_recv(xoldw,3*nelec*nwalk,mpi_double_precision,id
      &    ,2,MPI_COMM_WORLD,istatus,ierr)
           call mpi_recv(wt,nwalk,mpi_double_precision,id
      &    ,3,MPI_COMM_WORLD,istatus,ierr)

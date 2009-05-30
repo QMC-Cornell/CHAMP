@@ -5,29 +5,20 @@ c impose cusp-conditions via a penalty.
 c note that for the log terms from the e-e cusp, the coefficients are
 c those of (s**n/2)*log(s**2/2), rather than (s**n)*log(s**2)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
+      use constants_mod
       use atom_mod
       use dim_mod
       use contr2_mod
       use pars_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
 
-
-
-
-
-!JT      parameter (zero=0.d0,two=2.d0,four=4.d0
       parameter(d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
      &,d1b24=1.d0/24.d0, rt22=2.82842712474619d0,rt2i=rt22/4.d0
      &,dln2=0.6931471805599453d0, pi=3.141592653589793d0
      &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
       common /focsav/ a4sav,a5sav,a6sav,a7sav
-
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 
       dimension a(*),b(*),diff(*)
 

@@ -23,6 +23,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use div_v_mod
       use denupdn_mod
       use stepv_mod
+      use kinet_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -34,7 +35,6 @@ c we never use it.
 c     common /contr3/ mode
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /kinet/ ekineo(MELEC),ekinen(MELEC)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -46,8 +46,8 @@ c     common /contr3/ mode
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
-      dimension dx(3,MELEC),idist(MELEC),ixo(3),ixn(3)
-      dimension xstrech(3,MELEC)
+      dimension dx(3,nelec),idist(nelec),ixo(3),ixn(3)
+      dimension xstrech(3,nelec)
 
 c     write(6,'(''entering metrop_mov1'')')
 

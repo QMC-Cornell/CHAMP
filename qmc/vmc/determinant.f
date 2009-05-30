@@ -19,6 +19,7 @@ c Written by Cyrus Umrigar starting from Kevin Schmidt's routine
       use contrl_opt_mod
       use contr3_mod
       use optimo_mod
+      use kinet_mod
       implicit real*8(a-h,o-z)
 
 c Routine to calculate the value, gradient and Laplacian of the
@@ -42,15 +43,12 @@ c Note that the first dimension of the slater matrices is MMAT_DIM = (MELEC/2)**
 c The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
 c So, we check in read_input that nup and ndn are each <= MELEC/2.
 
-      common /kinet/ ekineo(MELEC),ekinen(MELEC)
-c Note: d2edeti_deti(MELEC,MDET) need not be in common
-
       common /dojasderiv/ ijasderiv
 
 
-      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*),div_vd(MELEC)
-      dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
-      dimension ddporb(3,MOTYPE,MELEC,MORB),d2dporb(MOTYPE,MELEC,MORB)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*),div_vd(nelec)
+      dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
+      dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
 
 c initialize the derivative arrays to zero
       do 10 i=1,nelec
@@ -343,21 +341,22 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
       use wfsec_mod
       use contrl_opt_mod
       use optimo_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
 
 c commons
 
 c arguments:
       dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
-      dimension dporb(MOTYPE,MELEC,MORB),d2porb(MOTYPE,MOTYPE,MELEC,MORB)
-      dimension ddporb(3,MOTYPE,MELEC,MORB),d2dporb(MOTYPE,MELEC,MORB)
+      dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
+      dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
 
 c local arrays:
       dimension detui(MPARMD,MDETUD),detdi(MPARMD,MDETUD)
       dimension detuij(MPARMD,MDETUD),detdij(MPARMD,MDETUD)
-      dimension ddetui(3,MELEC,MDETUD),ddetdi(3,MELEC,MDETUD)
+      dimension ddetui(3,nelec,ndetup),ddetdi(3,nelec,ndetdn)
       dimension d2detui(MDETUD),d2detdi(MDETUD)
-      dimension zvec(MELEC),anewi(MELEC,MELEC)
+      dimension zvec(nelec),anewi(nelec,nelec)
 
       logical found
 

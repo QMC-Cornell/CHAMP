@@ -3,11 +3,8 @@ c Written by Claudia Filippi and Cyrus Umrigar
 # if defined (MPI)
 
       use all_tools_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 
       common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 

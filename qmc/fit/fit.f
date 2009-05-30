@@ -12,6 +12,7 @@ c 3) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions
 c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
 c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use all_tools_mod
+      use constants_mod
       use control_mod
       use allocations_mod
       use atom_mod
@@ -39,6 +40,7 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use jaspar1_mod
       use jaspar2_mod
       use ncusp_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -48,12 +50,8 @@ c      character*30 section
       external func,jacobian
 
 c     parameter(MXJTJ=(MPARM*(MPARM+1))/2,MWORK=4*MDATA+5*MPARM+MXJTJ)
-!JT      parameter(zero=0.d0,one=1.d0,two=2.d0,four=4.d0)
 
 c     common /contr3/ mode
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
@@ -125,6 +123,14 @@ c     mode='fit         '
       write(6,'(''returned to fit from read_input'')')
 
       call common_allocations
+
+      call alloc ('psid', psid, ndata)
+      call alloc ('psij', psij, ndata)
+      call alloc ('psio', psio, ndata)
+      call alloc ('eold', eold, ndata)
+      call alloc ('uwdiff', uwdiff, ndata)
+      call alloc ('wght', wght, ndata)
+      call alloc ('dvpdv', dvpdv, ndata)
 
 c Calculate distances of atoms from center for use in cusorb
 !JT comment out because dist_cent is not used
@@ -563,6 +569,7 @@ c     if(nparmg.eq.1) parm(nparml+nparme+nparmd+nparms+1)=a21
 
       open(1,file='mc_configs',status='old',form='formatted')
       rewind 1
+      call alloc ('x', x, 3, nelec, ndata)
       do 67 k=1,ndata
         if(irewgt.ne.0) then
           read(1,*,err=999) ((x(i,j,k),i=1,ndim),j=1,nelec),isgn,psio(k),eold(k)

@@ -44,6 +44,7 @@ c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use all_tools_mod
+      use constants_mod
       use control_mod
       use average_mod
       use atom_mod
@@ -74,12 +75,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)
 
       common /velratio/ fratio(MWALK,MFORCE)
       common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -90,11 +89,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
-      dimension xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC)
+      dimension xstrech(3,nelec)
+      dimension xnew(3),vnew(3,nelec)
       dimension xbac(3)
-      dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
-      dimension xnc(3,MELEC),xoc(3,MELEC),xnci(3,MELEC,MELEC),xoci(3,MELEC,MELEC)
+      dimension itryo(nelec),itryn(nelec),unacp(nelec)
+      dimension xnc(3,nelec),xoc(3,nelec),xnci(3,nelec,nelec),xoci(3,nelec,nelec)
       dimension ixo(3),ixn(3)
       dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)
 

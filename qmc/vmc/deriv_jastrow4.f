@@ -36,9 +36,6 @@ c Jastrow 6   must be used with one of isc=6,7
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-c     common /jasnonloc/ fso(MELEC,MELEC),fsumo
-
-
       common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       dimension x(3,*),v(3,*)

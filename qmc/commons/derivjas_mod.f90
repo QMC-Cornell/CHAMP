@@ -4,7 +4,6 @@ module derivjas_mod
  implicit none
  save
 
- double precision gvalue(MPARMJ),g(3,MELEC,MPARMJ),d2g(MPARMJ)
- double precision go(MELEC,MELEC,MPARMJ)
+ double precision, allocatable :: gvalue(:),g(:,:,:),d2g(:),go(:,:,:)
 
 end module derivjas_mod

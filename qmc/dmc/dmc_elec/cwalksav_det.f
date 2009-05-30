@@ -14,28 +14,6 @@ c by A.D.Guclu, Feb2004.
       use branch_mod
       implicit real*8(a-h,o-z)
 
-c complex locals:
-c      complex*16 cslmuiw,cslmdiw,cfpuw,cfpdw,cdetuw,cdetdw,cddeti_detiw
-
-c complex commons:
-c      complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti
-c      complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
-
-c following commons don't seem to be used?
-c      common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-
-c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
-c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
-c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
-c     &,cdetu(MDET),cdetd(MDET)
-c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET),cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
-
-c      dimension cslmuiw(MMAT_DIM,MDET,MWALK)
-c     &,cslmdiw(MMAT_DIM,MDET,MWALK)
-c     &,cfpuw(3,MMAT_DIM,MDET,MWALK),cfpdw(3,MMAT_DIM,MDET,MWALK)
-c     &,cdetuw(MDET,MWALK),cdetdw(MDET,MWALK)
-c     &,cddeti_detiw(3,MELEC,MDET,MWALK)
-
 c allocate memory (will allocate only if it is not already allocated):
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)

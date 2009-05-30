@@ -41,6 +41,7 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use constants_mod
       use atom_mod
       use dets_mod
       use contrl_mod
@@ -63,7 +64,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (adrift=0.5d0)
 
       common /tmp/ eacc,enacc,macc,mnacc
@@ -76,13 +76,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
-      dimension xnc(3,MELEC),xoc(3,MELEC)
+      dimension xnc(3,nelec),xoc(3,nelec)
       dimension ixo(3),ixn(3)
 
-      dimension xnew(3,MELEC,MFORCE),vnew(3,MELEC,MFORCE),psidn(MFORCE),
-     &psijn(MFORCE),enew(MFORCE),pen(MFORCE),pein(MFORCE),d2n(MFORCE),div_vn(MELEC)
-      dimension xbac(3),ajacnew(MFORCE)
-
+      dimension xnew(3,nelec,nforce),vnew(3,nelec,nforce),psidn(nforce),
+     &psijn(nforce),enew(nforce),pen(nforce),pein(nforce),d2n(nforce),div_vn(nelec)
+      dimension xbac(3),ajacnew(nforce)
 
       gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
 

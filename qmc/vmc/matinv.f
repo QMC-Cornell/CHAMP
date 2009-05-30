@@ -4,14 +4,12 @@ c Written by Kevin Schmidt or from some standard library?
       implicit real*8(a-h,o-z)
       parameter (zero=0.d0,one=1.d0)
 
-      include 'vmc.h'
-
 c routine to calculate inverse and determinant of matrix a
 c assumed to be dimensioned a(nsub,nsub).
 c the matrix a is replaced by its inverse.
 
       dimension a(*)
-      dimension ipivot(MELEC),atemp(MELEC)
+      dimension ipivot(nsub),atemp(nsub)
 
       n=nsub
       do 5 i=1,n

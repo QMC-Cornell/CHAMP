@@ -42,8 +42,8 @@ c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icu
 c Another reasonable choice is:
 c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
       use all_tools_mod
+      use constants_mod
       use control_mod
       use average_mod
       use atom_mod
@@ -72,17 +72,15 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=.5d0)
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
 
       common /velratio/ fratio(MWALK,MFORCE)
       common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
 
-      dimension rvmino(3),rvminn(3),xstrech(3,MELEC)
-      dimension xnew(3),vnew(3,MELEC)
+      dimension rvmino(3),rvminn(3),xstrech(3,nelec)
+      dimension xnew(3),vnew(3,nelec)
       dimension xaxis(3),zaxis(3),xbac(3)
-      dimension itryo(MELEC),itryn(MELEC),unacp(MELEC)
+      dimension itryo(nelec),itryn(nelec),unacp(nelec)
       dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)
 
       data ncall,ipr_sav /0,0/

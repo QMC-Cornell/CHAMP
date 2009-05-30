@@ -49,6 +49,7 @@ c Written by Cyrus Umrigar
       use jaspar2_mod
       use ncusp_mod
       use contrldmc_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-4)
@@ -79,9 +80,6 @@ c Written by Cyrus Umrigar
 
 c These commons for reading fit input.  We should separate these into another
 c subroutine that is called both from fit and read_input.
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
@@ -621,9 +619,6 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       read(5,*) nelec,nup
       ndn=nelec-nup
       write(6,'(/,''no. of electrons (all,up,dn) ='',t31,3i5)') nelec,nup,ndn
-      if(nelec.gt.MELEC) stop 'nelec exceeds MELEC'
-      if(nup.gt.MELECUD) stop 'nup exceeds MELECUD. Dimension of Slater matrices, slmui etc. exceeded'
-      if(ndn.gt.MELECUD) stop 'ndn exceeds MELECUD. Dimension of Slater matrices, slmdi etc. exceeded'
       if(nup.le.0) stop 'nup must be >=1'
       if(nup.lt.ndn) stop 'nup must be >=ndn'
 
@@ -986,6 +981,7 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
 
       write(6,'(/,''orbitals in determinants'')')
 !      norb_used=0
+      call alloc ('iworbd', iworbd, nelec, ndet)
       do 72 i=1,ndet
         read(5,*) (iworbd(j,i),j=1,nelec)
         do 70 j=1,nelec

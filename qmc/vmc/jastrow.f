@@ -6,12 +6,8 @@ c Written by Cyrus Umrigar
       use distance_mod
       use pjase_mod
       implicit real*8(a-h,o-z)
-!     ! WAS
-!!!
 
-
-      dimension x(3,*),v(3,*)
-     &,div_vj(MELEC)
+      dimension x(3,*),v(3,*),div_vj(nelec)
 
       do 10 i=1,nelec
         div_vj(i)=0
@@ -21,7 +17,7 @@ c Written by Cyrus Umrigar
       d2=0
 
       if(ijas.eq.1) then
-	call jastrow1(x,v,d2,div_vj,value)
+        call jastrow1(x,v,d2,div_vj,value)
        elseif(ijas.eq.2) then
         call jastrow2(x,v,d2,div_vj,value)
        elseif(ijas.eq.3) then

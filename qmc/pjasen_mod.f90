@@ -106,7 +106,7 @@ contains
     include 'modules.h'
     implicit none
     integer                              :: ie, ist,  istt
-    real(dp)                             :: xvec (3,  melec )
+    real(dp)                             :: xvec (3,  nelec )
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
 
 
@@ -579,10 +579,10 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    real (dp)                            :: xvec (3, melec)
-    real (dp)                            :: pjasv (3,melec)
+    real (dp)                            :: xvec (3, nelec)
+    real (dp)                            :: pjasv (3,nelec)
     real (dp)                            :: pjasfsum
-    real (dp)                            :: pjasdiv_vj (melec), pjasd2
+    real (dp)                            :: pjasdiv_vj (nelec), pjasd2
     real (dp)                            :: gen,  gradt (3)
     integer                              :: ist, i
 
@@ -655,10 +655,10 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    real (dp)                            :: xvec (3, melec)
-    real (dp)                            :: pjasv (3,melec)
+    real (dp)                            :: xvec (3, nelec)
+    real (dp)                            :: pjasv (3,nelec)
     real (dp)                            :: pjasfsum
-    real (dp)                            :: pjasdiv_vj (melec), pjasd2
+    real (dp)                            :: pjasdiv_vj (nelec), pjasd2
     real (dp)                            :: fen
     integer                              :: ist, i
 
@@ -719,7 +719,7 @@ contains
     implicit none
 !JT    include 'common_jasn.h'
     integer                              :: iel
-    real (dp)                            :: xvec (3, melec)
+    real (dp)                            :: xvec (3, nelec)
     real (dp)                            :: fen , fen1 (3), fsum
     integer                              :: ist, istt
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
@@ -855,7 +855,7 @@ contains
     include 'modules.h'
     implicit none
     integer                              :: ie, i, k, n
-    real(dp)                             :: xvec (3,  melec )
+    real(dp)                             :: xvec (3,  nelec )
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:,:),  sin_temp(:,:,:)
 

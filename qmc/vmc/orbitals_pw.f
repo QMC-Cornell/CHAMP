@@ -14,8 +14,6 @@ c and calculating the k-independent part of the orbital just once.
       use pworbital_mod
       implicit real*8(a-h,o-z)
 
-
-
       dimension x(3,*),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
       dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
 c    &,cos_g(MELEC,NGVECX),sin_g(MELEC,NGVECX),dcos_g(3,MELEC,NGVECX),dsin_g(3,MELEC,NGVECX)

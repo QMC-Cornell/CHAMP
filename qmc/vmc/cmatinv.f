@@ -1,17 +1,14 @@
-
       subroutine cmatinv(a,n,det)
 
 c from Wolfgang's qdot.f
 c invert a complex nxn matrix using gauss elimination
 c with row pivoting. Note matrix must be dimension (n,n) or equivalently
-
+      use const_mod
       implicit double precision (a-h,o-z)
-
-      include 'vmc.h'
 
       parameter (nmax=100)
       complex*16 det,adiag,adiagi,t,cone,czero,atemp
-      complex*16 a(MELEC,MELEC)
+      complex*16 a(nelec,nelec)
 
       dimension atemp(nmax),ipvt(nmax)
       cone=dcmplx(1.d0,0.d0)

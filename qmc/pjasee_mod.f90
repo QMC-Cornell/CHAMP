@@ -90,7 +90,7 @@ contains
     implicit none
 
 
-    real(dp)                             :: xvec (3, melec*(melec-1)/2)
+    real(dp)                             :: xvec (3, nelec*(nelec-1)/2)
     integer                              :: ie, ist , ije, je
 
     call object_alloc ("grad_cos_star_ee ", grad_cos_star_ee, ndim_pj, nelec * (nelec-1)/2,  nstar_ee)
@@ -137,7 +137,7 @@ contains
     implicit none
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
-    real(dp)                             :: xcoord (3,melec)
+    real(dp)                             :: xcoord (3,nelec)
     real(dp)                             :: value1, temp , cosstar
 
     !    call  find_rvec_ee (xcoord, rvec)
@@ -203,7 +203,7 @@ contains
     implicit none
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
-    real(dp)                             :: xcoord (3,melec)
+    real(dp)                             :: xcoord (3,nelec)
     real(dp)                             :: value1, temp
 
 
@@ -257,9 +257,9 @@ contains
 !---------------------------------------------------------------------------
 !!$    implicit  none
 !!$
-!!$    real (dp)                         :: rvecee(3,melec*(melec-1)/2)
+!!$    real (dp)                         :: rvecee(3,nelec*(nelec-1)/2)
 !!$
-!!$    real(dp)                          :: x(3,melec), norm
+!!$    real(dp)                          :: x(3,nelec), norm
 !!$
 !!$    integer ij, i,j, k
 !!$
@@ -415,10 +415,10 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    real (dp)                            :: rvec (3, melec*(melec-1)/2)
-    real (dp)                            :: pjasv (3, melec)
+    real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
+    real (dp)                            :: pjasv (3, nelec)
     real (dp)                            :: pjasfsum, pjasd2
-    real (dp)                            :: pjasdiv_vj (melec)
+    real (dp)                            :: pjasdiv_vj (nelec)
     real (dp)                            :: gen, fen, gradl (3), lap2, pgradl (3)
     integer                              :: ist, i, ij , j , ist_s
 
@@ -508,10 +508,10 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    real (dp)                            :: rvec (3, melec*(melec-1)/2)
-    real (dp)                            :: pjasv (3, melec)
+    real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
+    real (dp)                            :: pjasv (3, nelec)
     real (dp)                            :: pjasfsum, pjasd2
-    real (dp)                            :: pjasdiv_vj (melec)
+    real (dp)                            :: pjasdiv_vj (nelec)
     real (dp)                            :: fen, gradl (3), pgradl (3)
     integer                              :: ist, i, ij , j , ist_s
 
@@ -590,7 +590,7 @@ contains
     implicit none
 !JT    include 'common_jasn.h'
     integer                              :: iel
-    real (dp)                            :: rvec (3, melec*(melec-1)/2)
+    real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
     real (dp)                            :: fen , fen1(3), temp (3), fsum
     integer                              :: ist, i,j, ij , jj , ist_s
 
@@ -657,17 +657,17 @@ contains
     implicit none
     integer                              :: iel
     integer                              :: i, k, n , jj, u, v, ij
-    real(dp)                             :: rvec (3, melec), xvec (3)
+    real(dp)                             :: rvec (3, nelec), xvec (3)
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:,:),  sin_temp(:,:,:)
 
 
-    call object_alloc ('cos_pjasee_e',  cos_pjasee_e, nbasis_pw_sim, melec*melec/2)
-    call object_alloc ('sin_pjasee_e',  sin_pjasee_e, nbasis_pw_sim, melec*melec/2)
+    call object_alloc ('cos_pjasee_e',  cos_pjasee_e, nbasis_pw_sim, nelec*nelec/2)
+    call object_alloc ('sin_pjasee_e',  sin_pjasee_e, nbasis_pw_sim, nelec*nelec/2)
 
 
-    allocate( cos_temp (-maxkv_sim:maxkv_sim,ndim, melec*melec/2 ))
-    allocate( sin_temp (-maxkv_sim:maxkv_sim,ndim, melec*melec/2))
+    allocate( cos_temp (-maxkv_sim:maxkv_sim,ndim, nelec*nelec/2 ))
+    allocate( sin_temp (-maxkv_sim:maxkv_sim,ndim, nelec*nelec/2))
 
 
     do jj = 1, nelec
@@ -770,18 +770,18 @@ contains
     implicit none
     integer                              :: iel
     integer                              :: i, k, n , jj, u, v, ij
-    real(dp)                             :: rvec (3, melec*(melec-1)/2), xvec (3)
+    real(dp)                             :: rvec (3, nelec*(nelec-1)/2), xvec (3)
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:,:),  sin_temp(:,:,:)
 
 
 
-    call object_alloc ('cos_pjasee_e',  cos_pjasee_e, nbasis_pw_sim, melec*melec/2)
-    call object_alloc ('sin_pjasee_e',  sin_pjasee_e, nbasis_pw_sim, melec*melec/2)
+    call object_alloc ('cos_pjasee_e',  cos_pjasee_e, nbasis_pw_sim, nelec*nelec/2)
+    call object_alloc ('sin_pjasee_e',  sin_pjasee_e, nbasis_pw_sim, nelec*nelec/2)
 
 
-    allocate( cos_temp (-maxkv_sim:maxkv_sim,ndim, melec*melec/2 ))
-    allocate( sin_temp (-maxkv_sim:maxkv_sim,ndim, melec*melec/2))
+    allocate( cos_temp (-maxkv_sim:maxkv_sim,ndim, nelec*nelec/2 ))
+    allocate( sin_temp (-maxkv_sim:maxkv_sim,ndim, nelec*nelec/2))
 
 
     do jj = 1, nelec
@@ -880,7 +880,7 @@ contains
     include 'modules.h'
     implicit none
     integer                              :: ie, i, k, n, je, ije
-    real(dp)                             :: xvec (3,  melec * (melec-1)/2 )
+    real(dp)                             :: xvec (3,  nelec * (nelec-1)/2 )
     real(dp)                             :: dot, cos_tmp, sin_tmp
     real (dp), allocatable               :: cos_temp(:,:,:),  sin_temp(:,:,:)
 

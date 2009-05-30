@@ -5,9 +5,10 @@ c MPI version created by Claudia Filippi and Cyrus Umrigar
       use all_tools_mod
       use dmc_mod
       use contr3_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
-      dimension iblocklen(MELEC),idispl(MELEC)
+      dimension iblocklen(nelec),idispl(nelec)
 
       call MPI_ATTR_GET(MPI_COMM_WORLD,MPI_TAG_UB,ivalue,flag,ierr)
 c     write(6,*) 'In main.f from MPI_ATTR_GET',ivalue
@@ -21,13 +22,13 @@ c elements of matrix
       if(mode.eq.'dmc_mov1_mpi3') then
         do 1 i=1,nelec
           iblocklen(i)=nelec-(i-1)
-   1      idispl(i)=MELEC*(i-1)+(i-1)
+   1      idispl(i)=nelec*(i-1)+(i-1)
         call mpi_type_indexed(nelec,iblocklen,idispl,mpi_double_precision,jas_type1,ierr)
         call mpi_type_commit(jas_type1,ierr)
 
         do 2 i=1,nelec
           iblocklen(i)=ndim*nelec
-   2      idispl(i)=ndim*MELEC*(i-1)
+   2      idispl(i)=ndim*nelec*(i-1)
         call mpi_type_indexed(nelec,iblocklen,idispl,mpi_double_precision,jas_type2,ierr)
         call mpi_type_commit(jas_type2,ierr)
       endif

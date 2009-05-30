@@ -5,7 +5,6 @@ c adapted to complex wavefunctions by A.D.Guclu, Feb2004.
 c Calculates determinantal and Jastrow parts of psi, velocity, divergence of V,
 c Laplacian of psi, potential energy, total energy and derivatives of the energy
 c wrt the wavefunction parameters.
-
       use all_tools_mod
       use control_mod
       use fitdet_mod
@@ -13,7 +12,6 @@ c wrt the wavefunction parameters.
       use psi_mod
       use slater_mod
       use optim_mod
-!     use periodic_jastrow_mod  !WAS
       use const_mod
       use dim_mod
       use contr2_mod
@@ -30,24 +28,12 @@ c wrt the wavefunction parameters.
       implicit real*8(a-h,o-z)
 
 c complex local:
-      complex*16 cvd(3,MELEC),cvk(3,MELEC),cvelocity(3,MELEC)
-c common:
-c     complex*16 cvd_sav,cvk_sav
-
-
-
+      complex*16 cvd(3,nelec),cvk(3,nelec),cvelocity(3,nelec)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
-c Now this common is passed with use fitdet_mod
-c     common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
-c    &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
-c    &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
-
-c      dimension vd(3,MELEC),
-      dimension coord(3,*),velocity(3,MELEC)
-      dimension div_vj(MELEC),div_vk(MELEC),div_vd(MELEC)
-     &,div_v(MELEC),dpe(MPARM),denergy(MPARM)
+      dimension coord(3,*),velocity(3,nelec)
+      dimension div_vj(nelec),div_vk(nelec),div_vd(nelec),div_v(nelec),dpe(MPARM),denergy(MPARM)
 
       iwf=iwftype(ifr)
 
@@ -75,6 +61,7 @@ c       if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
           stop 'cannot do derivatives wrt wavefn. parameters when doing numerical laplacian'
         endif
       endif
+
 
       call object_modified_by_index (vj_index)  !JT
       sum_lap_lnj = d2j            !JT

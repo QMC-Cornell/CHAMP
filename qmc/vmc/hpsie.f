@@ -13,12 +13,7 @@ c Calculates wavefunction and velocity contributions for electron iel
       use distance_mod
       implicit real*8(a-h,o-z)
 
-
-c Warning: jaspar4 put in just to have nordc for temporary fix
-
-
-
-      dimension coord(3,*),velocity(3,*),vj(3,MELEC),vd(3,MELEC)
+      dimension coord(3,*),velocity(3,*),vj(3,nelec),vd(3,nelec)
 
       iwf=iwftype(1)
 

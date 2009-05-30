@@ -19,27 +19,13 @@ c wrt the jastrow parameters.
       use distance_mod
       implicit real*8(a-h,o-z)
 
-!      include '../vmc/vmc.h'
-!      include '../vmc/pseudo.h'
-!      include '../vmc/force.h'
-!      include 'fit.h'
-
 c complex
-      complex*16 cvd(3,MELEC),cvk(3,MELEC),cvelocity(3,MELEC)
-c     complex*16 cvd_sav,cvk_sav
-
-
-
-
+      complex*16 cvd(3,nelec),cvk(3,nelec),cvelocity(3,nelec)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
-c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
-c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
-c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
-
-      dimension coord(3,MELEC),velocity(3,MELEC)
-      dimension vj(3,MELEC),vd(3,MELEC),div_vj(MELEC),div_vd(MELEC),div_vk(MELEC)
+      dimension coord(3,nelec),velocity(3,nelec)
+      dimension vj(3,nelec),vd(3,nelec),div_vj(nelec),div_vd(nelec),div_vk(nelec)
      &,dpe(MPARM),denergy(MPARM)
 
       stop 'deriv_hpsi in fit should no longer be called (check, copied from Cyrus version)'

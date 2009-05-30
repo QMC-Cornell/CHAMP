@@ -19,6 +19,7 @@ c coefficients are real.
       use wfsec_mod
       use contrl_per_mod
       use contr3_mod
+      use kinet_mod
       implicit real*8(a-h,o-z)
 
 
@@ -41,24 +42,12 @@ c complex argument:
 c complex local:
       complex*16 cd2lndet,cdeterm,cterm,cdetinv
       complex*16 corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
-      complex*16 cekinen(MELEC)
-      complex*16 cauxx(MELEC,MELEC)
-
-c following complex are now defined in module cslater_mod
-c     complex*16 cslmui,cslmdi,cfpu,cfpd,cfppu,cfppd,cdetu,cdetd,cddeti_deti,cd2edeti_deti
-c     complex*16 cdeti_det,cddeti_det,cd2deti_det,cd2det_det
-
-      common /kinet/ ekineo(MELEC),ekinen(MELEC)
-c      common /cslater/ cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
-c     &,cfpu(3,MMAT_DIM,MDET),cfpd(3,MMAT_DIM,MDET)
-c     &,cfppu(MMAT_DIM,MDET),cfppd(MMAT_DIM,MDET)
-c     &,cdetu(MDET),cdetd(MDET)
-c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
-c     &,cdeti_det(MCSF),cddeti_det(3,MELEC,MCSF),cd2deti_det(MCSF),cd2det_det
+      complex*16 cekinen(nelec)
+      complex*16 cauxx(nelec,nelec)
 
       common /dojasderiv/ ijasderiv
 
-      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(MELEC)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(nelec)
 
 c allocate memory (maybe better to allocate in read_input ?) :
       n2=nelec*nelec
@@ -291,6 +280,7 @@ c can deal only with spin polarized systems for the moment
       use wfsec_mod
       use contrl_per_mod
       use contr3_mod
+      use kinet_mod
       implicit real*8(a-h,o-z)
 
 c cdeterm =  complex value of the determinants
@@ -310,20 +300,13 @@ c complex argument:
 c complex local:
       complex*16 cd2lndet,cdeterm
       complex*16 corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
-      complex*16 cekinen(MELEC)
+      complex*16 cekinen(nelec)
       complex*16 cterm,cdetinv
-      complex*16 cauxx(MELEC,MELEC)
+      complex*16 cauxx(nelec,nelec)
 
-c following are defined now defined in cslater_cf_mod for dynamic allo
-c      complex*16 cslmui(MMAT_DIM,MDET),cslmdi(MMAT_DIM,MDET)
-c     &,cfpu(3,MMAT_DIM,MELEC,MDET),cfpd(3,MMAT_DIM,MELEC,MDET)
-c     &,cdetu(MDET),cdetd(MDET)
-c     &,cddeti_deti(3,MELEC,MDET),cd2edeti_deti(MELEC,MDET)
-
-      common /kinet/ ekineo(MELEC),ekinen(MELEC)
       common /dojasderiv/ ijasderiv
 
-      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(MELEC)
+      dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(nelec)
 
 c allocate memory:
       n2=nelec*nelec

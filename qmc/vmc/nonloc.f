@@ -121,7 +121,7 @@ cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
 
 !WAS
               if (do_pjas) then
-                 call nonloc_pjas (iel, x(:,1:melec), value)
+                 call nonloc_pjas (iel, x(:,1:nelec), value)
               endif
 !WAS
 

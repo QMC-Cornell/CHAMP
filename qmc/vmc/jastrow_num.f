@@ -3,7 +3,7 @@ c Written by Cyrus Umrigar
 c **Warning** This routine needs to be upgraded to calculate distances
 c correctly for periodic systems if we add in capability to use
 c numerical Laplacian for periodic systems.
-
+      use constants_mod
       use atom_mod
       use dets_mod
       use const_mod
@@ -17,26 +17,19 @@ c numerical Laplacian for periodic systems.
       use distance_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,third=1.d0/3.d0)
-!JT      parameter (half=.5d0)
       parameter (eps=.5d-4,eps2=2.d0*eps,eps4=4.d0*eps,epssq=eps**2
      &,eps2sq=eps2**2)
       parameter (d1b12=8.333333333333333d-2,d2b3=0.666666666666667d0,
      &d4b3=1.333333333333333d0)
 
-
-
 c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 c Warning: div_vj not yet implememnted
 
-
-
-
-      dimension x(3,*),v(3,*),div_vj(MELEC)
+      dimension x(3,*),v(3,*),div_vj(nelec)
       dimension rp(3,nelec,ncent),rm(3,nelec,ncent)
      &,rp2(3,nelec,ncent),rm2(3,nelec,ncent)
-     &,rrp(3,MMAT_DIM2),rrm(3,MMAT_DIM2),rrp2(3,MMAT_DIM2),rrm2(3,MMAT_DIM2)
+     &,rrp(3,nelec_pair),rrm(3,nelec_pair),rrp2(3,nelec_pair),rrm2(3,nelec_pair)
 
       do 10 i=1,nelec
       v(1,i)=zero

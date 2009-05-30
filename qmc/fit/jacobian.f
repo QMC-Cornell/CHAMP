@@ -19,31 +19,18 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use pars_mod
       use jaspar1_mod
       use jaspar2_mod
+      use confg_mod
+      use const_mod
       implicit real*8(a-h,o-z)
-
 
 c epsder1f=sqrt(max(eps_diff,dbl_epsilon))
 c     parameter (eps_diff=1.d-15,dbl_epsilon=2.2204460492503131d-16
 c    &,epsder1f=3.16227766016838d-8)
 
-c complex common:
-c      complex*16 cvd_sav,cvk_sav
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
-
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
-c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
-c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
-c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
-
-
       common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
 c     dimension parm(nparm),ajac(ndata2,nparm),denergy(MPARM)
-      dimension parm(nparm),ajac(ndata2,nparm)
-     &,velocity(3,MELEC),div_v(MELEC)
+      dimension parm(nparm),ajac(ndata2,nparm),velocity(3,nelec),div_v(nelec)
 
       do 10 iparm=1,nparml
    10   coef(iwbasi(iparm),iworb(iparm),1)=parm(iparm)

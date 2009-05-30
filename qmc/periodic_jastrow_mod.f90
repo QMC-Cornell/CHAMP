@@ -472,7 +472,7 @@ contains
 !JT    include "common_jasn.h"
 
     integer                              :: iel
-    real(dp)                             :: rvec (3,melec)
+    real(dp)                             :: rvec (3,nelec)
     real(dp)                             :: xvec (3), value1, value2, value
 
     call object_alloc ("gn_pjas", gn_pjas, param_pjas_nb)
@@ -505,7 +505,7 @@ contains
     include 'modules.h'
     implicit none
 !JT    include "common_jasn.h"
-    real(dp)                             :: rvec (3,melec)
+    real(dp)                             :: rvec (3,nelec)
     integer                              :: iel
     real(dp)                             :: xvec (3), value1, value2, value
 
@@ -537,11 +537,11 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    real (dp)                            :: rvec (3, melec*(melec-1)/2)
-    real (dp)                            :: xvec (3, melec)
-    real (dp)                            :: v (3,melec)
+    real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
+    real (dp)                            :: xvec (3, nelec)
+    real (dp)                            :: v (3,nelec)
     real (dp)                            :: fsum, d2
-    real (dp)                            :: div_vj (melec)
+    real (dp)                            :: div_vj (nelec)
     real(dp)                             :: pjasd2o_l, pjasfsumo_l
 
 !!! common block variables
@@ -584,9 +584,9 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-    real (dp)                            :: rvec (3, melec*(melec-1)/2)
-    real (dp)                            :: xvec (3, melec)
-    real (dp)                            :: v (3,melec), div_vj (melec)
+    real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
+    real (dp)                            :: xvec (3, nelec)
+    real (dp)                            :: v (3,nelec), div_vj (nelec)
     real (dp)                            :: fsum, d2
     real(dp)                             :: pjasd2o_l, pjasfsumo_l
 
@@ -633,11 +633,10 @@ contains
 !---------------------------------------------------------------------------
     include 'modules.h'
     implicit none
-!JT    include 'common_jasn.h'
     integer                              :: iel
-    real (dp)                            :: rvec (3, melec*(melec-1)/2)
-    real (dp)                            :: xvec (3, melec)
-    real (dp)                            :: v (3,melec)
+    real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
+    real (dp)                            :: xvec (3, nelec)
+    real (dp)                            :: v (3,nelec)
     real (dp)                            :: fsum, value
     integer                              :: i
 

@@ -1,8 +1,8 @@
       subroutine acuest_dmc_mov1
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to accumulate estimators for energy etc.
-
       use all_tools_mod
+      use constants_mod
       use control_mod
       use montecarlo_mod
       use variables_mod
@@ -35,8 +35,6 @@ c routine to accumulate estimators for energy etc.
       use age_mod
       implicit real*8(a-h,o-z)
 
-
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -367,13 +365,13 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
 
       do 70 i=0,MFPRD1
         wtgen(i)=nconf_global
-   70   ff(i)=one
+  70    ff(i)=one
 
 ! JT: it seems that the code remains stuck around here runs when compiled with ifort 10.1 with optimization option -O3.
 ! It works with optimization option -O2. It also works when a write statement is added in the loop as done below!
-      write(6,'(/,''These lines are printed out just because otherwise it gets stuck here with ifort 10.1 -O3'')')
+!      write(6,'(/,''These lines are printed out just because otherwise it gets stuck here with ifort 10.1 -O3'')')
       do 80 iw=1,nconf
-        write(6,'(''iw='',i4)') iw
+!        write(6,'(''iw='',i4)') iw
         wt(iw)=one
         if(istrech.eq.0) then
           do 71 ifr=2,nforce

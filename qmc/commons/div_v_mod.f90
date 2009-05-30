@@ -4,6 +4,6 @@ module div_v_mod
  implicit none
  save
 
- double precision div_vo(MELEC)
+ double precision, allocatable :: div_vo(:)
 
 end module div_v_mod

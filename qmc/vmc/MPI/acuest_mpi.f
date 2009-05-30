@@ -33,7 +33,7 @@ c routine to accumulate estimators for energy etc.
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
 
 
-      dimension xstrech(3,MELEC),ecollect(MFORCE+6),wcollect(MFORCE)
+      dimension xstrech(3,nelec),ecollect(MFORCE+6),wcollect(MFORCE)
 
 c statement function for error calculation
 c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)

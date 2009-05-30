@@ -4,6 +4,7 @@ module jasn_mod
  implicit none
  save
 
- double precision fsn(MELEC,MELEC),fijn(3,MELEC,MELEC),d2ijn(MELEC,MELEC),d2n,fsumn,fjn(3,MELEC)
+ double precision :: d2n,fsumn
+ double precision, allocatable :: fsn(:,:),fijn(:,:,:),d2ijn(:,:),fjn(:,:)
 
 end module jasn_mod

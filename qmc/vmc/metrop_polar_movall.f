@@ -51,8 +51,8 @@ c 2) Generalize to molecules. This requires geometric rejections.
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats_vmc/ rejmax
 
-      dimension xaxis(3),yaxis(3),zaxis(3),costht(MELEC),div_vn(MELEC)
-     &,sintht(MELEC),raver(MELEC)
+      dimension xaxis(3),yaxis(3),zaxis(3),costht(nelec),div_vn(nelec)
+     &,sintht(nelec),raver(nelec)
 
       area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
      &(r2**1.5d0*(two*(one-v*ri)/three+.4d0*v*r2)

@@ -1681,12 +1681,10 @@ c-----------------------------------------------------------------------
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
 c Written by Cyrus Umrigar
 
+      use const_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
-
-      dimension znuc(*),iwctype(*),igmult(*),cos_g(MELEC,*),sin_g(MELEC,*),y(*)
+      dimension znuc(*),iwctype(*),igmult(*),cos_g(nelec,*),sin_g(nelec,*),y(*)
 
       ivec=1
       vl=0
@@ -1711,10 +1709,7 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
-
-      dimension igmult(*),cos_g(MELEC,*),sin_g(MELEC,*),y(*)
+      dimension igmult(*),cos_g(nelec,*),sin_g(nelec,*),y(*)
 
       ivec=1
       vl=0
@@ -1887,15 +1882,6 @@ c Written by Cyrus Umrigar
       use ewald_mod
       implicit real*8(a-h,o-z)
 
-
-
-c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-c    &,peo,pen,tjfn,tjfo,psido,psijo
-c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-
       dimension x(3,*)
 
 c short-range sum
@@ -1955,14 +1941,6 @@ c Written by Cyrus Umrigar
       use ewald_mod
       implicit real*8(a-h,o-z)
 
-
-c     common /config/ xold(3,MELEC),xnew(3,MELEC),vold(3,MELEC)
-c    &,vnew(3,MELEC),psi2o(MFORCE),psi2n(MFORCE),eold(MFORCE),enew(MFORCE)
-c    &,peo,pen,tjfn,tjfo,psido,psijo
-c    &,rmino(MELEC),rminn(MELEC),rvmino(3,MELEC),rvminn(3,MELEC)
-c    &,rminon(MELEC),rminno(MELEC),rvminon(3,MELEC),rvminno(3,MELEC)
-c    &,nearesto(MELEC),nearestn(MELEC),delttn(MELEC)
-
       dimension x(3,*)
 
 c short-range sum
@@ -2001,12 +1979,10 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       use dim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
-
-      dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(MELEC,*),sin_g(MELEC,*)
+      dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(nelec,*),sin_g(nelec,*)
      &,ng1d(3)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
@@ -2053,15 +2029,14 @@ c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
       use dim_mod
+      use dim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
-
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-     &,cos_g(MELEC,*),sin_g(MELEC,*)
-     &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
-     &,ddcos_g(MELEC,*),ddsin_g(MELEC,*),g_shift(*)
+     &,cos_g(nelec,*),sin_g(nelec,*)
+     &,dcos_g(3,nelec,*),dsin_g(3,nelec,*)
+     &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
 c Calculate cosines and sines for recip. lattice vectors along axes first.
@@ -2134,10 +2109,6 @@ c Needed for orbitals and their Laplacian.
       include 'vmc.h'
       include 'ewald.h'
 
-c     dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-c    &,cos_g(MELEC,*),sin_g(MELEC,*)
-c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
-c    &,ddcos_g(MELEC,*),ddsin_g(MELEC,*),g_shift(*)
       dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
      &,cos_g(*),sin_g(*)
      &,dcos_g(3,*),dsin_g(3,*)
@@ -2226,13 +2197,6 @@ c For the k-vectors do it straightforwardly since there are few of them
       use dim_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
-
-c     dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
-c    &,cos_g(MELEC,*),sin_g(MELEC,*)
-c    &,dcos_g(3,MELEC,*),dsin_g(3,MELEC,*)
-c    &,ddcos_g(MELEC,*),ddsin_g(MELEC,*),g_shift(*)
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
      &,cos_g(*),sin_g(*)
      &,dcos_g(3,*),dsin_g(3,*)
@@ -2371,13 +2335,11 @@ c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for electrons
 
       use dim_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
-      include 'ewald.h'
-
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
-      dimension cos_gr(-NG1DX:NG1DX,3,MELEC),sin_gr(-NG1DX:NG1DX,3,MELEC)
+      dimension cos_gr(-NG1DX:NG1DX,3,nelec),sin_gr(-NG1DX:NG1DX,3,nelec)
 
 c Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr

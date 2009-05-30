@@ -9,7 +9,7 @@ c Calculate orbitals and derivatives for finite system by 2-dim cubic spline int
       common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
      &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
-      dimension x(3,MELEC),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
+      dimension x(3,*),orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
      &,splineval(6)
 
 c Warning: At present for simplicity a separate call is made to evaluate

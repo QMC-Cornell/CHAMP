@@ -9,14 +9,9 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
   include 'modules.h'
   implicit none
 
-  real(dp)                               :: rvec(3,melec*(melec-1)/2)
+  real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
   real (dp)                              :: x, v, div_vj, value, d2
-  dimension x(3,melec),v(3,melec),div_vj(melec)
-
-
-!JT  real(dp)                               :: fso , fijo , d2ijo, d2o, fsumo, fjo
-!JT  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
-!JT       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+  dimension x(3,nelec),v(3,nelec),div_vj(nelec)
 
   integer                                :: i, j, k
 
@@ -63,14 +58,9 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
   use pjasee_mod
   include 'modules.h'
   implicit none
-  real(dp)                               :: rvec(3,melec*(melec-1)/2)
-  real (dp)                              :: x, v, value, d2 ,div_vj(melec)
-  dimension x(3,melec),v(3,melec)
-
-
-!JT  real(dp)                               :: fso , fijo , d2ijo, d2o, fsumo, fjo
-!JT  common /jaso/ fso(MELEC,MELEC),fijo(3,MELEC,MELEC) &
-!JT       &,d2ijo(MELEC,MELEC),d2o,fsumo,fjo(3,MELEC)
+  real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
+  real (dp)                              :: x, v, value, d2 ,div_vj(nelec)
+  dimension x(3,nelec),v(3,nelec)
 
   integer                                :: i, j, k
 
@@ -118,10 +108,10 @@ subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
   use pjasee_mod
   include 'modules.h'
   implicit none
-  real(dp)                               :: rvec(3,melec*(melec-1)/2)
+  real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
   integer                                :: iel
   real (dp)                              :: x, v, value
-  dimension x(3,melec),v(3,melec)
+  dimension x(3,nelec),v(3,nelec)
 !JT  real (dp)                              :: fsn, fijn, d2ijn, d2n , fsumn, fjn
 
   call pjas_jas_e (iel, x, rvec, v, value)

@@ -1,9 +1,8 @@
 module vj_mod
 
- use constants_mod
  implicit none
  save
 
- double precision vj(3,MELEC)
+ double precision, allocatable :: vj(:,:)
 
 end module vj_mod

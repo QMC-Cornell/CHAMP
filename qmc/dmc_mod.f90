@@ -50,20 +50,42 @@ module dmc_mod
     iwftype(1)=1
   endif
 
+  call common_allocations
+
 ! allocations for DMC
   call object_provide ('nforce')
   call object_provide ('nelec')
-  call alloc ('iage', iage, MWALK)
-!  call alloc ('xoldw', xoldw, 3, nelec, MWALK, max(3,nforce))
-!  call alloc ('voldw', voldw, 3, nelec, MWALK, max(3,nforce))
-!  call alloc ('psidow', psidow, MWALK, max(3,nforce))
-!  call alloc ('psijow', ,psijow, MWALK, max(3,nforce))
-!  call alloc ('peow', peow, MWALK, max(3,nforce))
-!  call alloc ('peiow', peiow, MWALK, max(3,nforce))
-!  call alloc ('d2ow', d2ow, MWALK, max(3,nforce))
+  call object_provide ('ndetup')
+  call object_provide ('ndetdn')
+  call object_provide ('ndetupdn')
+  call object_provide ('nup_square')
+  call object_provide ('ndn_square')
 
-  call common_allocations
+  call alloc ('iage', iage, MWALK)
+  call alloc ('xoldw', xoldw, 3, nelec, MWALK, nforce)
+  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
+  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
+  call alloc ('psidow', psidow, MWALK, nforce)
+  call alloc ('psijow', psijow, MWALK, nforce)
+  call alloc ('peow', peow, MWALK, nforce)
+  call alloc ('peiow', peiow, MWALK, nforce)
+  call alloc ('d2ow', d2ow, MWALK, nforce)
+
+  call alloc ('div_vow', div_vow, nelec, MWALK)
   
+  call alloc ('slmuiw', slmuiw, nup_square, ndetup, MWALK)
+  call alloc ('slmdiw', slmdiw, ndn_square, ndetdn, MWALK)
+  call alloc ('fpuw', fpuw, 3, nup_square, ndetup, MWALK)
+  call alloc ('fpdw', fpdw, 3, ndn_square, ndetdn, MWALK)
+  call alloc ('detuw', detuw, ndetup, MWALK)
+  call alloc ('detdw', detdw, ndetdn, MWALK)
+  call alloc ('ddeti_detiw', ddeti_detiw, 3, nelec, ndetupdn, MWALK)
+  
+  call alloc ('fsow', fsow, nelec, nelec, MWALK)
+  call alloc ('fijow', fijow, 3, nelec, nelec, MWALK)
+  call alloc ('fsumow', fsumow, MWALK)
+  call alloc ('fjow', fjow, 3, nelec, MWALK)
+
   end subroutine dmc_init
 
 ! ==============================================================================

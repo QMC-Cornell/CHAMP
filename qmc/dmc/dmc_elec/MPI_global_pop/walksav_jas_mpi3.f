@@ -9,18 +9,15 @@ c Written by Claudia Filippi
       use force_dmc_mod
       use forcest_dmc_mod
       use jaso_mod
+      use jasow_mod
       use branch_mod
       implicit real*8(a-h,o-z)
 
 
-!JT!JT     &pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE),
-
       common /mpitype/ jas_type1,jas_type2
 
-      common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK),fsumow(MWALK),fjow(3,MELEC,MWALK)
 c     dimension istatus(MPI_STATUS_SIZE),idispl(MELEC),iblocklen(MELEC)
       dimension istatus(MPI_STATUS_SIZE)
-
 
       entry send_jas_mpi3(irecv)
 

@@ -3,10 +3,8 @@ c Written by Claudia Filippi
 
       use const_mod
       use jaso_mod
+      use jasow_mod
       implicit real*8(a-h,o-z)
-
-
-      common /jasow/ fsow(MELEC,MELEC,MWALK),fijow(3,MELEC,MELEC,MWALK),fsumow(MWALK),fjow(3,MELEC,MWALK)
 
       fsumow(iw)=fsumo
 

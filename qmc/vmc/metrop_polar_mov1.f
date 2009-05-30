@@ -21,6 +21,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use delocc_mod
       use denupdn_mod
       use stepv_mod
+      use kinet_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -44,10 +45,9 @@ c     common /contr3/ mode
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats_vmc/ rejmax
-      common /kinet/ ekineo(MELEC),ekinen(MELEC)
 
 
-      dimension xaxis(3),yaxis(3),zaxis(3),div_vn(MELEC)
+      dimension xaxis(3),yaxis(3),zaxis(3),div_vn(nelec)
 
       area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
      &(r2**d3b2*(two*(one-v*ri)/three+.4d0*v*r2)

@@ -158,7 +158,7 @@ c WAS
 
 cWAS
               if (l_opt_pjas) then
-                 call deriv_nonloc_pjas ( iel, x(:,1:melec), value )
+                 call deriv_nonloc_pjas ( iel, x(:,1:nelec), value )
               endif
 cWAS
 

@@ -31,8 +31,8 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
-      dimension dx(3,MELEC),div_vn(MELEC),ixo(3),ixn(3)
-      dimension xstrech(3,MELEC)
+      dimension dx(3,nelec),div_vn(nelec),ixo(3),ixn(3)
+      dimension xstrech(3,nelec)
 
 c Sample transition probability from current state to new state
 c and record value of probability in fxop.

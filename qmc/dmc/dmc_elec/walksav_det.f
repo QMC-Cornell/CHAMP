@@ -4,18 +4,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use dorb_mod
       use dets_mod
       use slater_mod
+      use slaterw_mod
       use const_mod
       implicit real*8(a-h,o-z)
-c     common /forcepar/ deltot(MFORCE),nforce,istrech
-c     common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-c     common /force_dmc/ itausec,nwprod
-
-
-      common /slaterw/ slmuiw(MMAT_DIM,MDETUD,MWALK),slmdiw(MMAT_DIM,MDETUD,MWALK)
-     &,fpuw(3,MMAT_DIM,MDETUD,MWALK),fpdw(3,MMAT_DIM,MDETUD,MWALK)
-     &,detuw(MDETUD,MWALK),detdw(MDETUD,MWALK)
-     &,ddeti_detiw(3,MELEC,MDETUD,MWALK)
-c     save slmuiw,slmdiw,fpuw,fpdw,detuw,detdw,ddeti_detiw
 
       do 45 idet=1,ndetup
         detuw(idet,iw)=detu(idet)

@@ -23,26 +23,17 @@ c If iflag=0 then it computes diffs otherwise it just does sum of squares
       use jaspar1_mod
       use jaspar2_mod
       use ncusp_mod
+      use confg_mod
+      use const_mod
       implicit real*8(a-h,o-z)
-
-c      complex*16 cvd_sav,cvk_sav
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
       common /fcn_calls/icalls
-c      common /fitdet/ cvd_sav(3,MELEC,MDATA),vd_sav(3,MELEC,MDATA),psid_sav(MDATA)
-c     &               ,d2d_sav(MDATA),div_vd_sav(MELEC,MDATA),cvk_sav(3,MELEC,MDATA),psik_sav(MDATA)
-c     &               ,div_vk_sav(MELEC,MDATA),d2k_sav(MDATA),iconfg,isaved
-
 
       common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
-      dimension velocity(3,MELEC)
-     &,div_v(MELEC)
+      dimension velocity(3,nelec),div_v(nelec)
 
       dimension parm(*),diff(*)
 

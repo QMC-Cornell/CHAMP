@@ -56,7 +56,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,n4fx(-3:3,nctype),n5gx(-4:4,nctype),n6hx(-5:5,nctype)
      &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
      &,csf_coefx(MDET)
-      dimension xstrech(3,MELEC)
+      dimension xstrech(3,nelec)
 
       call savern(irn)
       rewind 10

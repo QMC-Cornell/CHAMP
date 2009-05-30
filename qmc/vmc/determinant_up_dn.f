@@ -5,12 +5,18 @@ c Written by Cyrus Umrigar
       use dets_mod
       implicit real*8(a-h,o-z)
 
+      call alloc ('iwdetup', iwdetup, ndet)
+      call alloc ('iwdetdn', iwdetdn, ndet)
+
+      call alloc ('iworbdup', iworbdup, nup, 1)
+      call alloc ('iworbddn', iworbddn, ndn, 1)
 
       ndetup=0
       ndetdn=0
       if(nup.ge.1) then
         ndetup=1
         iwdetup(1)=1
+        call alloc ('iworbdup', iworbdup, nup, 1)
         do 10  iup=1,nup
    10     iworbdup(iup,1)=iworbd(iup,1)
       endif
@@ -18,6 +24,7 @@ c Written by Cyrus Umrigar
       if(ndn.ge.1) then
         ndetdn=1
         iwdetdn(1)=1
+        call alloc ('iworbddn', iworbddn, ndn, 1)
         do 20  idn=1,ndn
    20     iworbddn(idn,1)=iworbd(nup+idn,1)
       endif
@@ -37,6 +44,7 @@ c Written by Cyrus Umrigar
           stop 'ndetup>MDETUD in determinant_up_dn'
         endif
         iwdetup(idet)=ndetup
+        call alloc ('iworbdup', iworbdup, nup, ndetup)
         do 45 iup=1,nup
    45     iworbdup(iup,ndetup)=iworbd(iup,idet)
 
@@ -55,11 +63,13 @@ c Written by Cyrus Umrigar
           stop 'ndetdn>MDETUD in determinant_up_dn'
         endif
         iwdetdn(idet)=ndetdn
+        call alloc ('iworbddn', iworbddn, ndn, ndetdn)
         do 75 idn=1,ndn
    75     iworbddn(idn,ndetdn)=iworbd(nup+idn,idet)
 
 
-   80 write(6,'(''idet,ndetup,iwdetup(idet),ndetdn,iwdetdn(idet)'',9i5)') idet,ndetup,iwdetup(idet),ndetdn,iwdetdn(idet)
+   80   continue
+!JT   80 write(6,'(''idet,ndetup,iwdetup(idet),ndetdn,iwdetdn(idet)'',9i5)') idet,ndetup,iwdetup(idet),ndetdn,iwdetdn(idet)
 
 
       write(6,'(a,i5)') ' number of unique spin-up   determinants = ', ndetup
@@ -76,6 +86,7 @@ c Written by Cyrus Umrigar
 !     this is useful for orbital optimization
       if (ndetdn .eq. 0) then
         ndetdn = 1
+        call alloc ('iworbddn', iworbddn, ndn, ndetdn)
         do idet=1,ndet
          iwdetdn(idet)=1
         enddo

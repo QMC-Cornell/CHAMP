@@ -13,11 +13,8 @@ c rigidly with that nucleus
       use const_mod
       use dim_mod
       use contr2_mod
+      use confg_mod
       implicit real*8(a-h,o-z)
-
-      common /confg/ x(3,MELEC,MDATA),eguess,psid(MDATA),psij(MDATA),
-     &psio(MDATA),eold(MDATA),uwdiff(MDATA),wght(MDATA),wghtsm,cuspwt,
-     &dvpdv(MDATA),ndata
 
       dimension delc(3,ncent),wt(ncent),dvol(3,3),dwt(3,ncent),dwtsm(3)
      &,oldcent(3,ncent)

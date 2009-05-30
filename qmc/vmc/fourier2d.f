@@ -32,7 +32,7 @@ c FT(r,k=0)= electronic density
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
-      dimension xold(3,MELEC),xnew(3,MELEC)
+      dimension xold(3,nelec),xnew(3,nelec)
       dimension fcos_uo(NAX),fcos_do(NAX)
       dimension fsin_uo(NAX),fsin_do(NAX)
       dimension fcos_un(NAX),fcos_dn(NAX)
@@ -147,7 +147,7 @@ c FT(r,k=0)= electronic density
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
-      dimension xold(3,MELEC),xnew(3,MELEC)
+      dimension xold(3,nelec),xnew(3,nelec)
       dimension fcos_uo(NAX),fcos_do(NAX)
       dimension fsin_uo(NAX),fsin_do(NAX)
       dimension fcos_un(NAX),fcos_dn(NAX)
@@ -242,7 +242,7 @@ c Fourier[Delta]=cos + i sin
      &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
      &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
 
-      dimension xold(3,MELEC),xnew(3,MELEC)
+      dimension xold(3,nelec),xnew(3,nelec)
 
       twopi=2.d0*pi
 

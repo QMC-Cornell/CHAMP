@@ -1,18 +1,13 @@
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
 c Written by Claudia Filippi
-
+      use constants_mod
       use const_mod
       use contr2_mod
       use distance_mod
       use pjase_mod
       implicit real*8(a-h,o-z)
-!JT      parameter (zero=0.d0)
 
-!     ! WAS
-!!!
-
-
-      dimension x(3,*),v(3,*),div_vj(MELEC)
+      dimension x(3,*),v(3,*),div_vj(nelec)
 
       do 10 i=1,nelec
         v(1,i)=zero

@@ -25,7 +25,7 @@ c jacobian of the transformation
 
       common /wfname/ filename
 
-      dimension x(3,MELEC),xstrech(3,MELEC)
+      dimension x(3,nelec),xstrech(3,nelec)
       dimension wt(ncent),dvol(3,3),dwt(3,ncent),dwtsm(3),cent_str(3,ncent)
 
 !     JT: cent_ref, delc and pecentn used to be local, now there are in nuclei module
