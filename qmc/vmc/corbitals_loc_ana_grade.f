@@ -2,7 +2,6 @@
 c orbitals_loc_ana_grade adapted to complex orbitals by A.D.Guclu Feb2004
 c Calculate localized orbitals and derivatives for all or 1 electrons
       use all_tools_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
       use dim_mod
@@ -15,7 +14,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       complex*16 corb,cdorb,cddorb
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-     &,corb(orb_tot_nb),cdorb(3,orb_tot_nb),cddorb(orb_tot_nb)
+     &,corb(norb),cdorb(3,norb),cddorb(norb)
 
 !     JT: should move these allocations outside the subroutine for efficiency?
       call alloc ('cphin', cphin, nbasis, nelec)

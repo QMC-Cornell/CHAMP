@@ -332,7 +332,6 @@ c ddetui(1:3,ie,idet)= velocity of the current detui, iparm is not stored.
 c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
 
       use dorb_mod
-      use orbitals_mod, only: orb_tot_nb
       use dets_mod
       use slater_mod
       use optim_mod
@@ -347,7 +346,7 @@ c d2detui(idet)      = laplacian of the current detui, iparm is not stored.
 c commons
 
 c arguments:
-      dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
+      dimension orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb)
       dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
       dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
 

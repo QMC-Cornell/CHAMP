@@ -3,7 +3,6 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use constants_mod
       use control_mod
       use dorb_mod
-      use orbitals_mod, only: orb_tot_nb
       use slatn_mod
       use orbe_mod
       use dets_mod

@@ -2,7 +2,7 @@ module optim_mod
 
  use constants_mod
 
- integer               :: lo(MORB),npoint(MORB)
+ integer, allocatable  :: lo(:),npoint(:)
  integer, allocatable  :: iwjasa(:,:),iwjasb(:,:),iwjasc(:,:)
  integer, allocatable  :: iwjasf(:,:),iwbase(:),iwbasi(:),iworb(:)
  integer, allocatable  :: iwcsf(:),iebase(:,:),iebasi(:,:),ieorb(:,:)

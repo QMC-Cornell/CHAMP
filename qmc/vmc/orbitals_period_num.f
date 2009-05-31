@@ -13,24 +13,13 @@ c by interpolating on a grid.
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!     include 'vmc.h'
-!     include 'force.h'
-!     include 'ewald.h'
-!     include 'numorb.h'
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension x(3,*),r_basis(3)
       dimension orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
-      dimension orb_tmp(MORB),dorb_tmp(3,MORB),ddorb_tmp(MORB)
+      dimension orb_tmp(norb),dorb_tmp(3,norb),ddorb_tmp(norb)
 
-      dimension orb_blip_tmp(MORB_OCC,ndet),dorb_blip_tmp(3,MORB_OCC,ndet),
-     &     ddorb_blip_tmp(MORB_OCC,ndet)
+      dimension orb_blip_tmp(norb,ndet),dorb_blip_tmp(3,norb,ndet),ddorb_blip_tmp(norb,ndet)
 
 
 cwparker Set up the ict array to tell PSPLINE to return the value
@@ -179,22 +168,11 @@ c Calculate pw orbitals for electron iel by interpolating on a grid.
       use periodic_mod
       implicit real*8(a-h,o-z)
 
-!     include 'vmc.h'
-!     include 'force.h'
-!     include 'ewald.h'
-!     include 'numorb.h'
-
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension x(3),orb(*),r_basis(3)
 
-      dimension orb_blip_tmp(MORB_OCC,ndet),dorb_blip_tmp(3,MORB_OCC,ndet),
-     &     ddorb_blip_tmp(MORB_OCC,ndet)
+      dimension orb_blip_tmp(norb,ndet),dorb_blip_tmp(3,norb,ndet),ddorb_blip_tmp(norb,ndet)
 
 c Determine position in lattice coordinates
 c Find vector in basis coordinates

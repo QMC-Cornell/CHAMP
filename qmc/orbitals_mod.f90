@@ -695,9 +695,6 @@ module orbitals_mod
    if (index(line,'end') /= 0) exit
 
    orb_i = orb_i + 1
-   if (orb_i > MORB) then
-       call die (lhere, ' orb_i='+orb_i+' > MORB='+MORB)
-   endif
 
    call alloc ('coef', coef, nbasis, orb_i, nwf)
 

@@ -448,6 +448,7 @@ module optimization_mod
       endif
 ! compute nparmj
       nparmj=0
+      call alloc ('npoint', npoint, nctype)
       call alloc ('npointa', npointa, na2)
       npointa(1)=0
       do ia=na1,na2

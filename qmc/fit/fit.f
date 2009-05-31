@@ -60,7 +60,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
       common /fcn_calls/icalls
       common /update/ ichange
 
-      dimension parm(MPARM),diff(MDATA),ipivot(MORB)
+      dimension parm(MPARM),diff(MDATA),ipivot(norb)
 c For zxssq
 c     dimension,popt(4),xjac(MDATA,MPARM),xjtj(MXJTJ),work(MWORK)
 

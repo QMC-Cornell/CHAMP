@@ -8,7 +8,6 @@ c coefficients are real.
       use basic_tools_mod
       use cslater_mod
       use dorb_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use dets_mod
       use optim_mod
@@ -41,7 +40,7 @@ c complex argument:
 
 c complex local:
       complex*16 cd2lndet,cdeterm,cterm,cdetinv
-      complex*16 corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
+      complex*16 corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
       complex*16 cekinen(nelec)
       complex*16 cauxx(nelec,nelec)
 
@@ -269,7 +268,6 @@ c can deal only with spin polarized systems for the moment
       use basic_tools_mod
       use cslater_cf_mod
       use dorb_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use dets_mod
       use optim_mod
@@ -299,7 +297,7 @@ c complex argument:
 
 c complex local:
       complex*16 cd2lndet,cdeterm
-      complex*16 corb(nelec,orb_tot_nb),cdorb(3,nelec,nelec,orb_tot_nb),cddorb(nelec,orb_tot_nb)
+      complex*16 corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
       complex*16 cekinen(nelec)
       complex*16 cterm,cdetinv
       complex*16 cauxx(nelec,nelec)

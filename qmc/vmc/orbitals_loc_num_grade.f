@@ -3,11 +3,8 @@ c Written by Cyrus Umrigar and Amit Ghosal
 c Calculate orbitals for finite system by 2-dim cubic spline interpolation
       use coefs_mod
       use dim_mod
+      use orbital_num_mod
       implicit real*8(a-h,o-z)
-
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-      common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
-     &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
       dimension x(3,*),orb(*),dorb(3,*),ddorb(*),splineval(6)
 

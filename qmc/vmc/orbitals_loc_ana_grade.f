@@ -2,7 +2,6 @@
 c Written by Cyrus Umrigar
 c Calculate localized orbitals and derivatives for all or 1 electrons
       use control_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use dim_mod
       use wfsec_mod
@@ -13,7 +12,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       implicit real*8(a-h,o-z)
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-     &,orb(orb_tot_nb),dorb(3,orb_tot_nb),ddorb(orb_tot_nb)
+     &,orb(norb),dorb(3,norb),ddorb(norb)
 
 c get basis functions
       if(ndim.eq.3) then

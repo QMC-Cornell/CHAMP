@@ -16,6 +16,7 @@ c Presently not used.
       read(3,*) nkvec,ngvec
       if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw'
 
+
       jorb=0
       jorba=0
       do 50 ikv=1,nkvec
@@ -36,6 +37,10 @@ c Presently not used.
           read(3,*) ib,eig
           if(ib.ne.iband) stop 'ib.ne.iband in read_orb_pw_real'
           write(6,'(''iband,eig='',i3,f9.5)') ib,eig
+          call alloc ('c_rp', c_rp, ngvec, jorb)
+          call alloc ('c_rm', c_rm, ngvec, jorb)
+          call alloc ('c_ip', c_ip, ngvec, jorb)
+          call alloc ('c_im', c_im, ngvec, jorb)
    50     read(3,*) (c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb),igv=1,ngvec)
 
 c Note that jorba can be > nord if ndet>1
@@ -70,7 +75,6 @@ c However, that causes problems when running with mpi, so comment out that part.
       use atom_mod
       use dorb_mod
       use orbe_mod
-      use orbitals_mod, only: orb_tot_nb
       use tempor_test_mod
       use coefs_mod
       use dets_mod
@@ -85,12 +89,9 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       parameter(eps=1.d-3)
 
-      dimension ipoint(MORB)
+      dimension ipoint(norb)
       real*8 r_basis(3),xi,yi,zi
    
-      call alloc ('orb', orb, orb_tot_nb)
-      call alloc ('dorb', dorb, 3, orb_tot_nb)
-      call alloc ('ddorb', ddorb, orb_tot_nb)
 
       write(6,'(/,''Reading in orbitals for periodic system'',/)')
 
@@ -107,6 +108,7 @@ c Flag the orbitals in orbitals_pw_tm that are actually used
 c norb in the input file is >= norb actually used, since some may be skipped.
 c Reset norb to the number actually used
 c JT: if iorb_used=0, then use all orbitals
+      call alloc ('iflag', iflag, norb)
       do 4 i=1,norb
         if (iorb_used.eq.0) then
          iflag(i)=1
@@ -142,6 +144,9 @@ c JT: if iorb_used=0, then use all orbitals
         norb=norb_used
       endif
 
+      call alloc ('orb', orb, norb)
+      call alloc ('dorb', dorb, 3, norb)
+      call alloc ('ddorb', ddorb, norb)
 
 c Set coordinates of test point
       r(1)=.1d0+cent(1,1)
@@ -437,7 +442,6 @@ c However, that causes problems when running with mpi, so comment out that part.
       use all_tools_mod
       use orbitals_mod
       use tempor_test_mod
-
       use coefs_mod
       use const_mod
       use dim_mod
@@ -453,9 +457,14 @@ c list of g vectors at the top is longer than what is actually used.
 c The other arrays are dimensioned NGVEC2X rather than NGVECX because planewave code does not
 c combine coefs. of G and -G, whereas QMC code does.
 
-      call alloc ('orb', orb, orb_tot_nb)
-      call alloc ('dorb', dorb, 3, orb_tot_nb)
-      call alloc ('ddorb', ddorb, orb_tot_nb)
+      call alloc ('orb', orb, norb)
+      call alloc ('dorb', dorb, 3, norb)
+      call alloc ('ddorb', ddorb, norb)
+      call alloc ('orb_si', orb_si, norb)
+      call alloc ('dorb_si', dorb_si, 3, norb)
+      call alloc ('ddorb_si', ddorb_si, norb)
+
+      call alloc ('ireal_imag', ireal_imag, norb)
 
       call file_exist_or_die (file_orbitals_pw_tm_in)
       open(30,file=file_orbitals_pw_tm_in,err=999)
@@ -575,7 +584,7 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
         nband_tmp=0
         do 80 iband=1,nband(ikv)
           iorba=iorba+k_inv(ikv)
-          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
+!JT          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
           read(30,*) ibandx,eig
           if(ibandx.ne.iband) stop 'ibandx.ne.iband in read_orb_pw_tm'
           if(icmplx.ne.0) then
@@ -616,7 +625,7 @@ c         endif
           eigmax=max(eigmax,eig)
           jorb=jorb+1
           jorba=jorba+k_inv(ikv)
-          if(jorba.gt.MORB_OCC) stop 'jorba > MORB_OCC in read_orb_pw_tm'
+!JT          if(jorba.gt.MORB_OCC) stop 'jorba > MORB_OCC in read_orb_pw_tm'
           nband_tmp=nband_tmp+1
 
 c If there is only one linearly indep. state formed from psi_k and psi_-k then
@@ -647,6 +656,10 @@ c so redo it later using values of orbitals at some point.
 
 c Set ngvec of them to 0 because we do not know until we have processed all k-pts
 c what the final value of ngvec_orb will be, and ngvec is an upper bound to ngvec_orb.
+          call alloc ('c_rp', c_rp, ngvec, jorb)
+          call alloc ('c_rm', c_rm, ngvec, jorb)
+          call alloc ('c_ip', c_ip, ngvec, jorb)
+          call alloc ('c_im', c_im, ngvec, jorb)
           do 45 igv=1,ngvec
             c_rp(igv,jorb)=0
             c_rm(igv,jorb)=0
@@ -812,7 +825,6 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       use all_tools_mod
       use atom_mod
-      use orbitals_mod, only: orb_tot_nb
       use tempor_test_mod
       use coefs_mod
       use const_mod
@@ -829,9 +841,14 @@ c However, that causes problems when running with mpi, so comment out that part.
 
       complex*16 c_complex_tmp
 
-      call alloc ('orb', orb, orb_tot_nb)
-      call alloc ('dorb', dorb, 3, orb_tot_nb)
-      call alloc ('ddorb', ddorb, orb_tot_nb)
+      call alloc ('orb', orb, norb)
+      call alloc ('dorb', dorb, 3, norb)
+      call alloc ('ddorb', ddorb, norb)
+      call alloc ('orb_si', orb_si, norb)
+      call alloc ('dorb_si', dorb_si, 3, norb)
+      call alloc ('ddorb_si', ddorb_si, norb)
+
+      call alloc ('ireal_imag', ireal_imag, norb)
 
 c The current version of PWSCF does not exploit inversion symmetry to make the
 c PW coefs. real.  So, set icmplx=1.  Dario Alfe tells me that the older versions
@@ -1017,7 +1034,7 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
         write(6,*)'ngvec_dftorb=',ngvec_dftorb
         do 80 iband=1,nband(ikv)
           iorba=iorba+k_inv(ikv)
-          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
+!JT          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
           read(30,*)
 c         write(6,*) 'Skipped "Band, spin, eigenvalue (au)" line'
           read(30,*) ibandx,ispin,eig
@@ -1070,7 +1087,7 @@ c         endif
           eigmax=max(eigmax,eig)
           jorb=jorb+1
           jorba=jorba+k_inv(ikv)
-          if(jorba.gt.MORB_OCC) stop 'jorba > MORB_OCC in read_orb_pw_pwscf'
+!JT          if(jorba.gt.MORB_OCC) stop 'jorba > MORB_OCC in read_orb_pw_pwscf'
           nband_tmp=nband_tmp+1
 
 c If there is only one linearly indep. state formed from psi_k and psi_-k then
@@ -1101,6 +1118,10 @@ c so redo it later using values of orbitals at some point.
 
 c Set ngvec of them to 0 because we do not know until we have processed all k-pts
 c what the final value of ngvec_orb will be, and ngvec is an upper bound to ngvec_orb.
+          call alloc ('c_rp', c_rp, ngvec, jorb)
+          call alloc ('c_rm', c_rm, ngvec, jorb)
+          call alloc ('c_ip', c_ip, ngvec, jorb)
+          call alloc ('c_im', c_im, ngvec, jorb)
           do 45 igv=1,ngvec
             c_rp(igv,jorb)=0
             c_rm(igv,jorb)=0
@@ -1330,10 +1351,10 @@ c       if(ireal_imag(iorb).eq.0 .or. ireal_imag(iorb).eq.2) then
 c This routine is just used for testing and the dimensioning is such that
 c if norb=MORB then iorb could be MORB+1, because even if one is kept, both are
 c calculated in order to decide which to keep.  So do the foll. check:
-        if(iorb.gt.MORB) then
-          write(6,*)'iorb,MORB=',iorb,morb
-          stop 'iorb>MORB in orbitals_pw2'
-        endif
+!JT        if(iorb.gt.MORB) then
+!JT          write(6,*)'iorb,MORB=',iorb,morb
+!JT          stop 'iorb>MORB in orbitals_pw2'
+!JT        endif
 
         orb_si(iorb)=0
         ddorb_si(iorb)=0
@@ -1389,34 +1410,19 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
       character*20 fmt
 
-!     include 'vmc.h'
-!     include 'force.h'
-!     include 'ewald.h'
-!     include 'numorb.h'
       parameter(eps=1.d-3)
 
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-c    &,orb_splines(8,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
-c    &MGRID_ORB_PER-1,MORB_OCC)
-c    &,grid_orbx(0:MGRID_ORB_PER-1),grid_orby(
-c    &0:MGRID_ORB_PER-1),grid_orbz(0:MGRID_ORB_PER-1)
-c    &,orb_splines_explicit(4,4,4,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
-c    &MGRID_ORB_PER-1,MORB_OCC)
 
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension r(3),r_basis(3),r_test(3,ngrid_orbx*ngrid_orby*ngrid_orbz)
-      dimension orb(MORB_OCC),dorb(3,MORB_OCC),ddorb(MORB_OCC)
+      dimension orb(norb),dorb(3,norb),ddorb(norb)
 c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
-      dimension orb_tmp(MORB_OCC),dorb_tmp(3,MORB_OCC),
-     &          ddorb_tmp(MORB_OCC)
-      dimension orb_blip_tmp(MORB_OCC,ndet),
-     &          dorb_blip_tmp(3,MORB_OCC,ndet),
-     &          ddorb_blip_tmp(MORB_OCC,ndet)
+      dimension orb_tmp(norb),dorb_tmp(3,norb),
+     &          ddorb_tmp(norb)
+      dimension orb_blip_tmp(norb,ndet),
+     &          dorb_blip_tmp(3,norb,ndet),
+     &          ddorb_blip_tmp(norb,ndet)
 
 
       integer i,k,ix,iy,iz,iorb,ier,isgn,npts,npts_max,xfac,yfac,zfac

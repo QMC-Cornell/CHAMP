@@ -14,6 +14,7 @@ c:::  The number of these cusp conditions is ncent*norb              :::
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
 !                        : change a(i,j,1) -> a(i,j,iwf)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+      use constants_mod
       use atom_mod
       use orbitals_mod
       use coefs_mod
@@ -31,10 +32,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use jaspar2_mod
       implicit real*8(a-h,o-z)
 
-      dimension diff(*),orb(orb_tot_nb),orb2(orb_tot_nb)
+      dimension diff(*),orb(norb),orb2(norb)
 
-!      data zero,one,three/0.d0,1.d0,3.d0/
-!      data half,d1b4/0.5d0,.25d0/
       data d1b4/.25d0/
 
 c     write(6,'(''n_bas,l_bas='',30(2i2,2x))') (n_bas(i),l_bas(i),i=1,nbasis)

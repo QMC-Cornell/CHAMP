@@ -5,7 +5,8 @@ module periodic_mod
  save
 
  integer igvec(3,NGVEC_BIGX),igmult(NGNORM_BIGX),igvec_sim(3,NGVEC_SIM_BIGX)
- integer igmult_sim(NGNORM_SIM_BIGX),kvec(3,MKPTS),k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
+ integer, allocatable :: ireal_imag(:)
+ integer igmult_sim(NGNORM_SIM_BIGX),kvec(3,MKPTS),k_inv(MKPTS),nband(MKPTS)
  integer ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
  integer ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
  integer ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange

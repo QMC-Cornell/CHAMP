@@ -3,7 +3,6 @@ c Written by Cyrus Umrigar
 c Calculate localized orbitals and derivatives for all or 1 electrons
       use all_tools_mod
       use control_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
       use dim_mod
@@ -14,7 +13,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       implicit real*8(a-h,o-z)
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-     &,orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
+     &,orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb)
 
 c Decide whether we are computing all or one electron
       if(iel.eq.0) then
@@ -71,7 +70,6 @@ c-----------------------------------------------------------------------
       subroutine orbitals_loc_anae(iel,rvec_en,r_en,orb)
 c Written by Cyrus Umrigar
 c Calculate localized orbitals for electron iel
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use dim_mod
       use wfsec_mod
@@ -81,7 +79,7 @@ c Calculate localized orbitals for electron iel
       implicit real*8(a-h,o-z)
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-     &,orb(orb_tot_nb)
+     &,orb(norb)
 
 c get basis functions
       if(ndim.eq.3) then
@@ -104,7 +102,6 @@ c---------------------------------------------------------------------------
 c Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
 c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use control_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
       use dim_mod
@@ -117,7 +114,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       implicit real*8(a-h,o-z)
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-      dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb)
+      dimension orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb)
       dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
       dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
 

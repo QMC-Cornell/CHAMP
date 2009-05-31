@@ -473,7 +473,7 @@ module grid_mod
   character(len=max_string_len_rout), save :: here = 'orb_on_x_bld'
   integer orb_i, grd_i
   integer iel
-  real(dp) orbl(MORB)
+  real(dp), allocatable :: orbl(:)
 
 ! header
   if (header_exe) then
@@ -489,7 +489,6 @@ module grid_mod
   endif
 
 ! begin
-!  write(6,*) trim(here),': entering'
 
 ! requirements
   if (nbasis <= 0) then
@@ -518,6 +517,7 @@ module grid_mod
 
 ! allocations
   call alloc ('orb_on_x', orb_on_x, orb_tot_nb, grid_on_x_nb)
+  call alloc ('orbl', orbl, orb_tot_nb)
 
   iel = 1
   rvec_en = 0.d0

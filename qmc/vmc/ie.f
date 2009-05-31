@@ -33,7 +33,6 @@ c      character*80 fmt
       endif
 !      read(5,*) norb,nbasis
 !JT      write(6,'(''norb,nbasis='',9i5)') norb,nbasis
-!      if(norb.gt.MORB) stop 'norb>MORB'
 
 !      if(numr.eq.0 .or. numr.eq.1) then
 !        call read_orb_loc_ana(lbasis)

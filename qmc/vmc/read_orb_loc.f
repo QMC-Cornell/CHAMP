@@ -1,8 +1,8 @@
       subroutine read_orb_loc
 c Written by Cyrus Umrigar
 c Reads in either analytic or localized orbitals
+      use all_tools_mod
       use mpi_mod
-      use orbitals_mod, only: orb_tot_nb
       use coefs_mod
       use const_mod
       use dim_mod
@@ -13,13 +13,10 @@ c Reads in either analytic or localized orbitals
       use contr3_mod
       use distance_mod
       use contr_ylm_mod
+      use orbital_num_mod
       implicit real*8(a-h,o-z)
 
-
-      common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
-     &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
-
-      dimension orb(nelec,orb_tot_nb),dorb(3,nelec,orb_tot_nb),ddorb(nelec,orb_tot_nb),r(2)
+      dimension orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb),r(2)
 
 c Check if orbitals_num exists.  If it does not exist, we will create it from analytic orbs.
 c Do not confuse analytic orbs with analytic basis fns.
@@ -66,6 +63,8 @@ c Check that irecursion_ylm=1 if l of basis function >=4
 
 c Set grid info.  Grid extends from -sizex to sizex, etc.
       if(inum_orb.ne.0) then
+        call alloc ('xorb_grid',  xorb_grid, ngrid_orbx)
+        call alloc ('yorb_grid',  yorb_grid, ngrid_orby)
         hx=2*sizex/(ngrid_orbx-1)
         hy=2*sizey/(ngrid_orby-1)
         hxi=1/hx
@@ -78,6 +77,8 @@ c Set grid info.  Grid extends from -sizex to sizex, etc.
 
 c Calculate orbitals on grid and spline them
       if(inum_orb.ne.0 .and. num_orb_exist.eq.0) then
+  
+        call alloc ('orb_num',  orb_num, 4, ngrid_orbx, ngrid_orby, norb)
 
         do 76 ix=1,ngrid_orbx
           r(1)=-sizex+(ix-1)*hx
@@ -1557,11 +1558,10 @@ c-----------------------------------------------------------------------
       subroutine read_orb_loc_num
 c Reads in numerical orbitals and V_ext on a grid.
 c At present V_ext that is read in is not used.
+      use all_tools_mod
       use coefs_mod
+      use orbital_num_mod
       implicit real*8(a-h,o-z)
-
-      common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
-     &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
 c     dimension v_ext(MGRID_ORB,MGRID_ORB)
 
@@ -1575,9 +1575,9 @@ c     dimension v_ext(MGRID_ORB,MGRID_ORB)
       if(mod(ngrid_orbx,2).ne.1) stop 'ngrid_orbx must be odd in read_orb_loc_num'
       if(mod(ngrid_orby,2).ne.1) stop 'ngrid_orby must be odd in read_orb_loc_num'
       if(norba.lt.norb) stop 'norba not large enough in read_orb_loc_num'
-      if(norba.gt.MORB) stop 'norba > MORB in read_orb_loc_num'
 
 c     read(4,*) ((v_ext(i,j),i=1,ngrid_orbx),j=1,ngrid_orby)
+      call alloc ('orb_num', orb_num, 4, ngrid_orbx, ngrid_orby, norba)
       do 10 iorb=1,norba
    10   read(4,*) ((orb_num(1,i,j,iorb),i=1,ngrid_orbx),j=1,ngrid_orby)
 
@@ -1592,11 +1592,9 @@ c-----------------------------------------------------------------------
       subroutine spline_orb(num_orb_exist)
 c Spline numerical orbitals
       use coefs_mod
+      use orbital_num_mod
       implicit real*8(a-h,o-z)
       parameter(MWORK=21)
-
-      common /orbital_num/ orb_num(4,MGRID_ORB,MGRID_ORB,MORB_OCC),xorb_grid(MGRID_ORB),yorb_grid(MGRID_ORB)
-     &,sizex,sizey,hx,hy,hxi,hyi,ngrid_orbx,ngrid_orby,ict(6)
 
       dimension bcxmin(MGRID_ORB),bcxmax(MGRID_ORB),bcymin(MGRID_ORB),bcymax(MGRID_ORB),
      &wk(MWORK*MGRID_ORB*MGRID_ORB)

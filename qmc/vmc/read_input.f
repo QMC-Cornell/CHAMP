@@ -911,8 +911,6 @@ c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ng
         endif
       endif
 
-c     if(iperiodic.eq.0 .and. norb.gt.MORB) stop 'norb > MORB'
-      if(norb.gt.MORB) stop 'norb > MORB'
       if(norb.lt.nup .or. norb.lt.ndn) stop 'norb must be >= nup and ndn'
 
       call alloc ('coef', coef, nbasis, orb_tot_nb, nwf)
@@ -1545,6 +1543,7 @@ c 404   wght(i)=one
 
       if(icusp.ge.0) write(6,'(''Nuclear cusp constraint is imposed'')')
 
+      call alloc ('lo', lo, norb)
       read(5,*) (lo(iorb),iorb=1,norb)
 ! JT constuct lo internally instead
 !      call object_provide ('lo') !JT
@@ -1647,6 +1646,7 @@ c For the b coefs. we assume that b(1) is fixed by the cusp-cond.
 
 c compute nparmj and nparme
       nparmj=0
+      call alloc ('npoint', npoint, nctype)
       call alloc ('npointa', npointa, na2)
       npointa(1)=0
       do 407 ia=na1,na2

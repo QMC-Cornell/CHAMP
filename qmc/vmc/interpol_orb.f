@@ -88,12 +88,6 @@ c If function is tabulated on half-period then this routine needs modification.
       use dim_mod
       implicit real*8(a-h,o-z)
 
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-
       dimension orb(*),dorb(3,*),ddorb(*)
 
 c     if(xi.ge.0) then
@@ -142,15 +136,15 @@ c grid, but this routine is specialized to make it fast.
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use constants_mod
       use coefs_mod
       use dim_mod
       implicit real*8(a-h,o-z)
-!JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
       common /periodic2/ rkvec_shift_latt(3)
 
-      dimension orb(*),dorb(3,*),ddorb(*),
-     &orb1(MORB),dorb1(3,MORB),ddorb1(MORB),term(4),iz(4),isgn(4)
+      dimension orb(*),dorb(3,*),ddorb(*)
+      dimension orb1(norb),dorb1(3,norb),ddorb1(norb),term(4),iz(4),isgn(4)
 
       do 3 i=1,4
     3   isgn(i)=1
@@ -212,15 +206,15 @@ c Written by Cyrus Umrigar
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use constants_mod
       use coefs_mod
       use dim_mod
       implicit real*8(a-h,o-z)
-!JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
       common /periodic2/ rkvec_shift_latt(3)
 
-      dimension orb(*),dorb(3,*),ddorb(*),
-     &orb1(MORB),dorb1(3,MORB),ddorb1(MORB),term(4),iy(4),isgn(4)
+      dimension orb(*),dorb(3,*),ddorb(*)
+      dimension orb1(norb),dorb1(3,norb),ddorb1(norb),term(4),iy(4),isgn(4)
 
       do 3 i=1,4
     3   isgn(i)=1
@@ -282,16 +276,11 @@ c Written by Cyrus Umrigar
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use constants_mod
       use orbital_grid_mod
       use coefs_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*)
@@ -510,12 +499,6 @@ c If function is tabulated on half-period then this routine needs modification.
       use coefs_mod
       implicit real*8(a-h,o-z)
 
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
-
       dimension orb(*)
 
 c     if(xi.ge.0) then
@@ -560,14 +543,13 @@ c grid, but this routine is specialized to make it fast.
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use constants_mod
       use coefs_mod
       implicit real*8(a-h,o-z)
-!JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
       common /periodic2/ rkvec_shift_latt(3)
 
-      dimension orb(*),
-     &orb1(MORB),term(4),iz(4),isgn(4)
+      dimension orb(*),orb1(norb),term(4),iz(4),isgn(4)
 
       do 3 i=1,4
     3   isgn(i)=1
@@ -623,14 +605,13 @@ c Written by Cyrus Umrigar
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use constants_mod
       use coefs_mod
       implicit real*8(a-h,o-z)
-!JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
 
       common /periodic2/ rkvec_shift_latt(3)
 
-      dimension orb(*),
-     &orb1(MORB),term(4),iy(4),isgn(4)
+      dimension orb(*),orb1(norb),term(4),iy(4),isgn(4)
 
       do 3 i=1,4
     3   isgn(i)=1
@@ -686,16 +667,11 @@ c Written by Cyrus Umrigar
 c If rkvec_shift_latt(k) =0 function is tabulated on entire period in this dimension
 c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimension
 
+      use constants_mod
       use orbital_grid_mod
       use coefs_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(half=0.5d0,sixth=1.d0/6.d0)
-
-c     common /orbital_per_num/ orb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,dorb_num(3,MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ddorb_num(MORB_OCC,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1)
-c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*)
