@@ -88,7 +88,8 @@ c     namelist /opt_list/ igradhess
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
 
-      dimension irn(4),cent_tmp(3),iflag(MDET)
+      dimension irn(4),cent_tmp(3)
+      integer, allocatable :: iflag(:)
 
       character*25 lhere
 
@@ -887,11 +888,6 @@ c       endif
       orb_tot_nb = norb
       call object_modified ('orb_tot_nb')
 
-      if(ndet.gt.MDET) then
-       write(6,*) trim(lhere),': ndet =', ndet, ' > MDET=', MDET !JT
-       stop 'ndet > MDET'
-      endif
-
 c For Lagrange interpolation allocate orb, dorb and ddorb; for interpolating splines allocate just orb
 c For the moment, interpolating splines are being done in the bsplines_mode module, so allocate nothing for them.
 c     if(abs(inum_orb).eq.4 .or. abs(inum_orb).eq.8) then
@@ -1008,24 +1004,15 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
       read(5,*) ncsf
       write(6,'(/,''ncsf='',i5)') ncsf
 
-      if(ncsf.gt.MCSF) then
-       write(6,*) trim(lhere),': ncsf =', ncsf, ' > MCSF=', MCSF !JT
-       stop 'ncsf > MCSF'
-      endif
       call alloc ('csf_coef', csf_coef, ncsf, nwf)
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
       call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
       read(5,*) (ndet_in_csf(icsf),icsf=1,ncsf)
       write(6,'(''ndet_in_csf='',20i4)') (ndet_in_csf(icsf),icsf=1,ncsf)
+      call alloc ('iflag', iflag, ndet)
       do 75 idet=1,ndet
    75   iflag(idet)=0
-      do icsf=1,ncsf
-        if(ndet_in_csf(icsf).gt.MDET_CSF) then
-             write(6,*) 'ndet_in_csf(icsf) =',ndet_in_csf(icsf), ' > MDET_CSF=',MDET_CSF
-             stop 'ndet_in_csf(icsf) > MDET_CSF'
-        endif
-      enddo
 
 c If all the cdet_in_csf are inputted in integer format (no dots in those lines) then csf_coef are
 c assumed to correspond to normalized CSF's and the cdet_in_csf are renormalized so that the
@@ -1578,6 +1565,7 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
       call alloc ('nparmb', nparmb, nspin2b-nspin1+1)
       call alloc ('nparmc', nparmc, nctype)
       call alloc ('nparmf', nparmf, nctype)
+      call alloc ('nparmo', nparmo, notype)
       if(ibasis.le.3) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
@@ -1594,10 +1582,6 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
             stop 'nparmo must be between 0 and norb'
           endif
         enddo
-      endif
-      if(nopt_iter.gt.0 .and. nparmot+nparmcsf.gt.MPARMD) then
-        write(6,'(''nparmot+nparmcsf > MPARMD in an optimization run'')')
-        stop 'nparmot+nparmcsf.gt.MPARMD'
       endif
 
 !     JT: nparmd to replace MPARMD
@@ -1696,6 +1680,7 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
 !JT        stop 'Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'
 !JT      endif
 
+      call alloc ('iwo', iwo, norb, notype)
       do it=1,notype
         read(5,*) (iwo(iparm,it),iparm=1,nparmo(it))
         write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
@@ -1795,7 +1780,7 @@ c and change signs of cdet_in_csf accordingly.  This is needed for orbital optim
       implicit real*8(a-h,o-z)
 
 
-      dimension iodd_permut(MDET)
+      dimension iodd_permut(ndet)
 
       do 20 i=1,ndet
         iodd_permut(i)=1

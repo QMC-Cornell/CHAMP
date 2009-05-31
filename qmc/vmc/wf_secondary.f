@@ -112,8 +112,6 @@ c     read(3,*) (ndet_in_csf(icsf),icsf=1,ncsf)
 c     write(6,'(''ndet_in_csf='',20i4)') (ndet_in_csf(icsf),icsf=1,ncsf)
 c     do 75 idet=1,ndet
 c  75   iflag(idet)=0
-c     do 80 icsf=1,ncsf
-c  80   if(ndet_in_csf(icsf).gt.MDET_CSF) stop 'ndet_in_csf(icsf) > MDET_CSF'
       do 85 icsf=1,ncsf
 c       read(3,*) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         read(3,*)

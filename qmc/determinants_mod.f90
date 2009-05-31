@@ -71,9 +71,6 @@ module determinants_mod
    if (index(line,'end') /= 0) exit
 
    det_i = det_i + 1
-   if (det_i > MDET) then
-       call die (lhere, ' det_i='+det_i+' > MDET='+MDET)
-   endif
 
    call alloc ('iworbd', iworbd, nelec, det_i)
    read(line,*,iostat=iostat) (iworbd(elec_i,det_i),elec_i=1,nelec)

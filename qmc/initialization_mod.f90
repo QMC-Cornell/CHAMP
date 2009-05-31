@@ -218,7 +218,7 @@ module initialization_mod
 
 ! save number of Jastrow and CSF parameters in the input
 !JT  nparmj_input = nparmj
-  nparmcsf_input = nparmcsf
+!JT  nparmcsf_input = nparmcsf
   nparmd=nparmcsf
   call object_modified ('nparmd')
 

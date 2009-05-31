@@ -14,10 +14,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contrl_per_mod
       use periodic_mod
       use qua_mod
+      use slatn2_mod
       implicit real*8(a-h,o-z)
-
-
-      common /slatn2/ deti_new(MPARMD)
 
       dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)

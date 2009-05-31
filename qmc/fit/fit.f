@@ -55,8 +55,6 @@ c     common /contr3/ mode
 
 c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
-
-
       common /focsav/ a4sav,a5sav,a6sav,a7sav
 
       common /fcn_calls/icalls

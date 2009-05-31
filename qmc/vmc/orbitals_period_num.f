@@ -29,8 +29,8 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
       dimension orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
       dimension orb_tmp(MORB),dorb_tmp(3,MORB),ddorb_tmp(MORB)
 
-      dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),
-     &     ddorb_blip_tmp(MORB_OCC,MDET)
+      dimension orb_blip_tmp(MORB_OCC,ndet),dorb_blip_tmp(3,MORB_OCC,ndet),
+     &     ddorb_blip_tmp(MORB_OCC,ndet)
 
 
 cwparker Set up the ict array to tell PSPLINE to return the value
@@ -193,8 +193,8 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
       dimension x(3),orb(*),r_basis(3)
 
-      dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),
-     &     ddorb_blip_tmp(MORB_OCC,MDET)
+      dimension orb_blip_tmp(MORB_OCC,ndet),dorb_blip_tmp(3,MORB_OCC,ndet),
+     &     ddorb_blip_tmp(MORB_OCC,ndet)
 
 c Determine position in lattice coordinates
 c Find vector in basis coordinates

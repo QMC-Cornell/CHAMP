@@ -12,8 +12,6 @@ c to zero otherwise.
       use wfsec_mod
       implicit real*8(a-h,o-z)
 
-c     common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-
       call alloc ('coef2', coef2, nbasis, norb, ncent)
 
       do 10 icent=1,ncent

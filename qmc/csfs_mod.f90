@@ -178,9 +178,6 @@ module csfs_mod
    endif
    
    ndet_in_csf (csf_i) = words_number_in_string (line)
-   if (ndet_in_csf(csf_i) > MDET_CSF) then
-     call die (lhere, 'ndet_in_csf='+ndet_in_csf(csf_i)+' > MDET_CSF='+MDET_CSF)
-   endif
 
    call alloc ('iwdet_in_csf', iwdet_in_csf, maxval(ndet_in_csf), ncsf)
    call alloc ('cdet_in_csf', cdet_in_csf, maxval(ndet_in_csf), ncsf)

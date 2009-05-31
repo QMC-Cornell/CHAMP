@@ -23,7 +23,7 @@ c vps  = (V_l-V_L)
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-     &,detu(*),detd(*),deti_det(MPARMD),slmui(nupdn_square,*),slmdi(nupdn_square,*)
+     &,detu(*),detd(*),deti_det(nparmd),slmui(nupdn_square,*),slmdi(nupdn_square,*)
      &,dvpsp(MPARM),dpe(MPARM)
 
       do 20 i=1,nelec

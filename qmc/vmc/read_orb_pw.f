@@ -1414,9 +1414,9 @@ c    &MGRID_ORB_PER-1,MORB_OCC)
 c     dimension orb_splines_tmp(10),ict(10),ddorb_splines_tmp(3)
       dimension orb_tmp(MORB_OCC),dorb_tmp(3,MORB_OCC),
      &          ddorb_tmp(MORB_OCC)
-      dimension orb_blip_tmp(MORB_OCC,MDET),
-     &          dorb_blip_tmp(3,MORB_OCC,MDET),
-     &          ddorb_blip_tmp(MORB_OCC,MDET)
+      dimension orb_blip_tmp(MORB_OCC,ndet),
+     &          dorb_blip_tmp(3,MORB_OCC,ndet),
+     &          ddorb_blip_tmp(MORB_OCC,ndet)
 
 
       integer i,k,ix,iy,iz,iorb,ier,isgn,npts,npts_max,xfac,yfac,zfac
@@ -1687,7 +1687,15 @@ cwparker Stop with appropriate message
 c-----------------------------------------------------------------------
 c     subroutine energy_test
 
+c     use dim_mod
+c     use const_mod
+c     use contr2_mod
+c     use contr3_mod
+c     use contr_names_mod
+c     use dorb_mod
 c     use coefs_mod
+c     use dets_mod
+c     use periodic_mod
 c     implicit real*8(a-h,o-z)
 c     character*20 fmt
 c     character*16 mode,iorb_format
@@ -1697,31 +1705,6 @@ c     include 'force.h'
 c     include 'ewald.h'
 c     include 'numorb.h'
 c     parameter(eps=1.d-3)
-
-c     common /dim/ ndim
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-c     common /contr2/ ijas,icusp,icusp2,isc,inum_orb,ianalyt_lap
-c    &,ifock,i3body,irewgt,iaver,istrch
-c    &,ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
-c     common /contr3/ mode
-c     common /contr_names/ iorb_format
-c     common /dets/ csf_coef(MCSF,MWF),cdet_in_csf(MDET_CSF,MCSF),ndet_in_csf(MCSF),iwdet_in_csf(MDET_CSF,MCSF),ncsf,ndet,nup,ndn
-c     common /dorb/ iworbd(MELEC,MDET)
-
-c     common /periodic/ rlatt(3,3),glatt(3,3),rlatt_sim(3,3),glatt_sim(3,3)
-c    &,rlatt_inv(3,3),glatt_inv(3,3),rlatt_sim_inv(3,3),glatt_sim_inv(3,3)
-c    &,cutr,cutr_sim,cutg,cutg_sim,cutg_big,cutg_sim_big
-c    &,igvec(3,NGVEC_BIGX),gvec(3,NGVEC_BIGX),gnorm(NGNORM_BIGX),igmult(NGNORM_BIGX)
-c    &,igvec_sim(3,NGVEC_SIM_BIGX),gvec_sim(3,NGVEC_SIM_BIGX),gnorm_sim(NGNORM_SIM_BIGX),igmult_sim(NGNORM_SIM_BIGX)
-c    &,rkvec_shift(3),kvec(3,MKPTS),rkvec(3,MKPTS),rknorm(MKPTS)
-c    &,k_inv(MKPTS),nband(MKPTS),ireal_imag(MORB)
-c    &,znuc_sum,znuc2_sum,vcell,vcell_sim
-c    &,ngnorm,ngvec,ngnorm_sim,ngvec_sim,ngnorm_orb,ngvec_orb,nkvec
-c    &,ngnorm_big,ngvec_big,ngnorm_sim_big,ngvec_sim_big
-c    &,ng1d(3),ng1d_sim(3),npoly,ncoef,np,isrange
-c    &,orb_splines(8,0:MGRID_ORB_PER-1,0:MGRID_ORB_PER-1,0:
-c    &MGRID_ORB_PER-1,MORB_OCC),grid_orbx(0:MGRID_ORB_PER-1),grid_orby(
-c    &0:MGRID_ORB_PER-1),grid_orbz(0:MGRID_ORB_PER-1)
 
 c     common /periodic2/ rkvec_shift_latt(3)
 

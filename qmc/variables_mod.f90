@@ -109,7 +109,7 @@ module variables_mod
 
 ! number of Jastrow and CSF parameters given in input
 !JT  integer :: nparmj_input = 0
-  integer :: nparmcsf_input = 0
+!JT  integer :: nparmcsf_input = 0
 
 ! forces
   integer                                     :: forces_nb = 0

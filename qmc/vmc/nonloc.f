@@ -220,7 +220,6 @@ c-----------------------------------------------------------------------
 
       subroutine nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,determ)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
-
       use all_tools_mod
       use control_mod
       use eloc_mod
@@ -237,12 +236,12 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contr3_mod
       use phifun_mod
       use const_mod
+      use slatn2_mod
       implicit real*8(a-h,o-z)
 
-      common /slatn2/ deti_new(MPARMD)
       dimension x(3),rvec_en(3,nelec,*),r_en(nelec,*)
      &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
-      dimension ratio(MDET)
+      dimension ratio(ndet)
 
 c     determ=0
 

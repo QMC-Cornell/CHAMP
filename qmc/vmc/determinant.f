@@ -352,10 +352,10 @@ c arguments:
       dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
 
 c local arrays:
-      dimension detui(MPARMD,MDETUD),detdi(MPARMD,MDETUD)
-      dimension detuij(MPARMD,MDETUD),detdij(MPARMD,MDETUD)
+      dimension detui(nparmd,ndetup),detdi(nparmd,ndetdn)
+      dimension detuij(nparmd,ndetup),detdij(nparmd,ndetdn)
       dimension ddetui(3,nelec,ndetup),ddetdi(3,nelec,ndetdn)
-      dimension d2detui(MDETUD),d2detdi(MDETUD)
+      dimension d2detui(ndetup),d2detdi(ndetdn)
       dimension zvec(nelec),anewi(nelec,nelec)
 
       logical found

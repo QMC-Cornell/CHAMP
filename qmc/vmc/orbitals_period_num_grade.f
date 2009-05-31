@@ -4,7 +4,6 @@ c Calculate pw orbitals, gradient and laplacian for electron at x
 c by interpolating on a grid.
       use bwfdet_mod
       use bsplines_mod
-
       use orbital_grid_mod
       use coefs_mod
       use dets_mod
@@ -27,8 +26,8 @@ c    &,ngrid_orbx,ngrid_orby,ngrid_orbz
 
       dimension x(3),r_basis(3),orb(*),dorb(3,*),ddorb(*)
 
-      dimension orb_blip_tmp(MORB_OCC,MDET),dorb_blip_tmp(3,MORB_OCC,MDET),
-     &     ddorb_blip_tmp(MORB_OCC,MDET)
+      dimension orb_blip_tmp(MORB_OCC,ndet),dorb_blip_tmp(3,MORB_OCC,ndet),
+     &     ddorb_blip_tmp(MORB_OCC,ndet)
 
 c Determine position in lattice coordinates
 c Find vector in basis coordinates

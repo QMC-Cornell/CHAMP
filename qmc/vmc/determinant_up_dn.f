@@ -39,10 +39,6 @@ c Written by Cyrus Umrigar
         goto 50
    40   continue
         ndetup=ndetup+1
-        if(ndetup.gt.MDETUD) then
-          write(6,'(''ndetup>MDETUD in determinant_up_dn'')')
-          stop 'ndetup>MDETUD in determinant_up_dn'
-        endif
         iwdetup(idet)=ndetup
         call alloc ('iworbdup', iworbdup, nup, ndetup)
         do 45 iup=1,nup
@@ -58,10 +54,6 @@ c Written by Cyrus Umrigar
         goto 80
    70   continue
         ndetdn=ndetdn+1
-        if(ndetdn.gt.MDETUD) then
-          write(6,'(''ndetdn>MDETUD in determinant_up_dn'')')
-          stop 'ndetdn>MDETUD in determinant_up_dn'
-        endif
         iwdetdn(idet)=ndetdn
         call alloc ('iworbddn', iworbddn, ndn, ndetdn)
         do 75 idn=1,ndn

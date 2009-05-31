@@ -10,7 +10,6 @@ c Currently this program contains
 c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater or gaussian basis functions.
 c and sa, pa, da asymptotic functions
 c MELEC must be >= number of electrons
-c MDET must be >= number of determinants used
 
 c The dimension of the Slater matrices in determinant is taken from
 c above assuming equal number of up and down spins.

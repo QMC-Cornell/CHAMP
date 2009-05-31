@@ -58,6 +58,8 @@ module allocations_mod
   call alloc ('ddeti_det', ddeti_det, 3, nelec, nparmd)
   call alloc ('d2deti_det', d2deti_det, nparmd)
   call alloc ('detij_det', detij_det, nparmd, nparmd)
+! only for pseudo?
+  call alloc ('deti_new', deti_new, nparmd)
 
   call alloc ('rshift', rshift, 3, nelec, ncent)
   call alloc ('rvec_en', rvec_en, 3, nelec, ncent)
@@ -98,6 +100,7 @@ module allocations_mod
   call alloc ('g', g, 3, nelec, nparmjs)
   call alloc ('d2g', d2g, nparmjs)
   call alloc ('go', go, nelec, nelec, nparmjs)
+
 
   if(ibasis.eq.3) then
    call alloc ('cdorb', cdorb, 3, orb_tot_nb)

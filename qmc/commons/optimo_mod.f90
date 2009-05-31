@@ -4,6 +4,7 @@ module optimo_mod
  implicit none
  save
 
- integer iwo(MORB,MOTYPE), nparmo(MOTYPE),nparmot,notype
+ integer nparmot,notype
+ integer, allocatable :: iwo(:,:), nparmo(:)
 
 end module optimo_mod

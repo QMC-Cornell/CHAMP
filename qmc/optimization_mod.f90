@@ -374,18 +374,15 @@ module optimization_mod
 
 ! default csf parameters to optimize
   call object_provide ('ncsf')
-  nparmcsf_input=ncsf-1
-  if(nparmcsf_input > MPARMD) call die (lhere, ' nparmcsf > MPARMD')
-  call alloc ('iwcsf', iwcsf, nparmcsf_input)
-  do param_i = 1, nparmcsf_input
+  nparmcsf=ncsf-1
+ 
+  call alloc ('iwcsf', iwcsf, nparmcsf)
+  do param_i = 1, nparmcsf
     iwcsf(param_i) = param_i + 1
   enddo
   call object_modified ('iwcsf')
-  if(nparmcsf_input.gt.ncsf) then
-      stop 'nparmcsf must be <= ncsf'
-   endif
-  if(nparmcsf_input.eq.ncsf) then
-     write(6,'(a,i5,a,i5)') ' Warning: since normalization of wavefn. is arb. nparmcsf=',nparmcsf_input,' should be <= ncsf-1=',ncsf-1
+  if(nparmcsf == ncsf) then
+     write(6,'(a,i5,a,i5)') ' Warning: since normalization of wavefn. is arb. nparmcsf=',nparmcsf,' should be <= ncsf-1=',ncsf-1
   endif
 
 
@@ -497,7 +494,7 @@ module optimization_mod
 
 ! set numbers parameters to zero if not optimized
 !JT  nparmj = nparmj_input
-  nparmcsf = nparmcsf_input
+!JT  nparmcsf = nparmcsf_input
   call object_modified ('nparmj')
   call object_modified ('nparmcsf')
   if (.not. l_opt_jas) then

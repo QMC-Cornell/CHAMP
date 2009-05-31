@@ -16,7 +16,7 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
 
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*)
-      dimension ddet_det(3,*),ratio(MDET)
+      dimension ddet_det(3,*),ratio(ndet)
 
       do 10 i=1,nelec
         ddet_det(1,i)=0

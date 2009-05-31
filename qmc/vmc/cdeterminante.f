@@ -23,7 +23,7 @@ c coefficients are real.
 c complex locals:
       complex*16 cddet_det(3,nelec),cdeterm,cdetinv
       complex*16 corb(orb_tot_nb)
-      complex*16 cratio(MDET),csum,cterm
+      complex*16 cratio(ndet),csum,cterm
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*)
 

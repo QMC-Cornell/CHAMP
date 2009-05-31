@@ -79,4 +79,4 @@
           use age_mod
           use kinet_mod
           use config_dmc_mod
-
+          use slatn2_mod
