@@ -58,7 +58,6 @@ c polarized calculations were attempted.
 
 
       common /fflags/ fflag
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum

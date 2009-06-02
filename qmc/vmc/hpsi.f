@@ -25,6 +25,7 @@ c wrt the wavefunction parameters.
       use distance_mod
       use vd_mod
       use optimo_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
 c complex local:
@@ -33,7 +34,7 @@ c complex local:
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
       dimension coord(3,*),velocity(3,nelec)
-      dimension div_vj(nelec),div_vk(nelec),div_vd(nelec),div_v(nelec),dpe(MPARM),denergy(MPARM)
+      dimension div_vj(nelec),div_vk(nelec),div_vd(nelec),div_v(nelec),dpe(nparm),denergy(nparm)
 
       iwf=iwftype(ifr)
 

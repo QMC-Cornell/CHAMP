@@ -6,6 +6,7 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use slater_mod
       use optim_mod
       use const_mod
+      use contrl_opt_mod
       use contrl_opt2_mod
       use derivjas_mod
       use delocc_mod
@@ -13,16 +14,13 @@ c Hence it is not necessary to call grad_hess_jas_save.
       use pointer_mod
       use gradhessj_nonlin_mod
       use optimo_mod
+      use gradhessder_mod
       use gradhessdero_mod
       implicit real*8(a-h,o-z)
 
       parameter(factor_max=1.d2,ratio_max=1.1d0)
 
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-     &,w_i(MPARM),w_i_e(MPARM)
-
-      dimension wi_w(MPARM)
+      dimension wi_w(nparm)
 
       save wt_tot
 
@@ -214,19 +212,13 @@ c-----------------------------------------------------------------------
 
       use optim_mod
       use contrl_opt2_mod
+      use gradhessder_mod
+      use gradjerr_mod
       implicit real*8(a-h,o-z)
 
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-     &,w_i(MPARM),w_i_e(MPARM)
-
-      common /gradjerr/ grad_jas_bcum(MPARMJ),grad_jas_bcm2(MPARMJ),
-     &dj_e_bsum(MPARMJ),dj_bsum(MPARMJ),dj_e_save(MPARMJ),dj_save(MPARMJ),e_bsum
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-
-
-      dimension dj_e_b(MPARMJ),dj_b(MPARMJ)
+      dimension dj_e_b(nparmjs),dj_b(nparmjs)
 
       if(igradhess.eq.0.or.ngrad_jas_blocks.eq.0) return
 
@@ -313,24 +305,35 @@ c-----------------------------------------------------------------------
 c-----------------------------------------------------------------------
       subroutine grad_hess_jas_init
 
+      use all_tools_mod
       use optim_mod
       use contrl_opt2_mod
       use contrl_opt_mod
       use optimo_mod
+      use gradhessder_mod
+      use gradjerr_mod
       implicit real*8(a-h,o-z)
 
-
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-     &,w_i(MPARM),w_i_e(MPARM)
-
-      common /gradjerr/ grad_jas_bcum(MPARMJ),grad_jas_bcm2(MPARMJ),
-     &dj_e_bsum(MPARMJ),dj_bsum(MPARMJ),dj_e_save(MPARMJ),dj_save(MPARMJ),e_bsum
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
 
       if(igradhess.eq.0) return
+
+      call alloc ('dj', dj, nparm)
+      call alloc ('dj_e', dj_e, nparm)
+      call alloc ('dj_de', dj_de, nparm, nparm)
+      call alloc ('dj_dj', dj_dj, nparm, nparm)
+      call alloc ('dj_dj_e', dj_dj_e, nparm, nparm)
+      call alloc ('de', de, nparm)
+      call alloc ('d2j', d2j, nparm, nparm)
+      call alloc ('d2j_e', d2j_e, nparm, nparm)
+      call alloc ('de_e', de_e, nparm)
+      call alloc ('e2', e2, nparm)
+      call alloc ('dj_e2', dj_e2, nparm)
+      call alloc ('de_de', de_de, nparm, nparm)
+      call alloc ('w_i', w_i, nparm)
+      call alloc ('w_i_e', w_i_e, nparm)
 
       do 10 i=1,nparm
         dj(i)=0
@@ -351,6 +354,12 @@ c-----------------------------------------------------------------------
    10     de_de(i,j)=0
 
       e_bsum=0
+      call alloc ('grad_jas_bcum', grad_jas_bcum, nparmjs)
+      call alloc ('grad_jas_bcm2', grad_jas_bcm2, nparmjs)
+      call alloc ('dj_e_bsum', dj_e_bsum, nparmjs)
+      call alloc ('dj_bsum', dj_bsum, nparmjs)
+      call alloc ('dj_e_save', dj_e_save, nparmjs)
+      call alloc ('dj_save', dj_save, nparmjs)
       do 20 i=1,nparmj+nparms
         grad_jas_bcum(i)=0
         grad_jas_bcm2(i)=0
@@ -370,14 +379,9 @@ c-----------------------------------------------------------------------
 
       use optim_mod
       use contrl_opt2_mod
+      use gradhessder_mod
+      use gradjerr_mod
       implicit real*8(a-h,o-z)
-
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-     &,w_i(MPARM),w_i_e(MPARM)
-
-      common /gradjerr/ grad_jas_bcum(MPARMJ),grad_jas_bcm2(MPARMJ),
-     &dj_e_bsum(MPARMJ),dj_bsum(MPARMJ),dj_e_save(MPARMJ),dj_save(MPARMJ),e_bsum
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
@@ -401,32 +405,44 @@ c     write(iu) ((dj_dj(i,j),dj_dj_e(i,j),j=1,i),i=1,nparmj)
 c-----------------------------------------------------------------------
       subroutine grad_hess_jas_rstrt(iu)
 
+      use all_tools_mod
       use optim_mod
       use contrl_opt2_mod
+      use gradhessder_mod
+      use gradjerr_mod
       implicit real*8(a-h,o-z)
 
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-
-      common /gradjerr/ grad_jas_bcum(MPARMJ),grad_jas_bcm2(MPARMJ),
-     &dj_e_bsum(MPARMJ),dj_bsum(MPARMJ),dj_e_save(MPARMJ),dj_save(MPARMJ),e_bsum
-
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
-
-
 
       if(igradhess.eq.0) return
 
       read(iu) nparmj
+      call alloc ('dj', dj, nparmj)
+      call alloc ('dj_e', dj_e, nparmj)
+      call alloc ('dj_de', dj_de, nparmj, nparmj)
+      call alloc ('dj_dj', dj_dj, nparmj, nparmj)
+      call alloc ('dj_dj_e', dj_dj_e, nparmj, nparmj)
+      call alloc ('de', de, nparmj)
+      call alloc ('d2j', d2j, nparmj, nparmj)
+      call alloc ('d2j_e', d2j_e, nparmj, nparmj)
+      call alloc ('de_e', de_e, nparmj)
+      call alloc ('e2', e2, nparmj)
+      call alloc ('dj_e2', dj_e2, nparmj)
+      call alloc ('de_de', de_de, nparmj, nparmj)
       read(iu) (dj(i),de(i),dj_e(i),de_e(i),dj_e2(i),e2(i),i=1,nparmj)
       read(iu) ((dj_de(i,j),j=1,nparmj),i=1,nparmj)
 c     read(iu) ((dj_dj(i,j),dj_dj_e(i,j),j=1,i),i=1,nparmj)
       read(iu) ((dj_dj(i,j),dj_dj_e(i,j),j=1,nparmj),i=1,nparmj)
       read(iu) ((d2j(i,j),d2j_e(i,j),j=1,nparmj),i=1,nparmj)
       read(iu) ((de_de(i,j),j=1,nparmj),i=1,nparmj)
-      if(ngrad_jas_blocks.gt.0)
-     & read(iu) (grad_jas_bcum(i),grad_jas_bcm2(i),i=1,nparmj),ngrad_jas_bcum
+      if(ngrad_jas_blocks.gt.0) then
+      call alloc ('grad_jas_bcum', grad_jas_bcum, nparmj)
+      call alloc ('grad_jas_bcm2', grad_jas_bcm2, nparmj)
+       read(iu) (grad_jas_bcum(i),grad_jas_bcm2(i),i=1,nparmj),ngrad_jas_bcum
+      endif
 
+      call alloc ('dj_e_save', dj_e_save, nparmj)
+      call alloc ('dj_save', dj_save, nparmj)
       do 10 i=1,nparmj
         dj_e_save(i)=dj_e(i)
    10   dj_save(i)=dj(i)
@@ -436,6 +452,7 @@ c     read(iu) ((dj_dj(i,j),dj_dj_e(i,j),j=1,i),i=1,nparmj)
 c-----------------------------------------------------------------------
       subroutine grad_hess_jas_fin(passes,eave)
 
+      use all_tools_mod
       use deriv_mod
       use opt_lin_mod
       use opt_nwt_mod
@@ -445,27 +462,24 @@ c-----------------------------------------------------------------------
       use contrl_opt2_mod
       use contrl_opt_mod
       use optimo_mod
+      use gradhessder_mod
+      use gradjerr_mod
+      use linear_mod
       implicit real*8(a-h,o-z)
 
       character*20 fmt
 
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-     &,w_i(MPARM),w_i_e(MPARM)
-
-      common /gradjerr/ grad_jas_bcum(MPARMJ),grad_jas_bcm2(MPARMJ),
-     &dj_e_bsum(MPARMJ),dj_bsum(MPARMJ),dj_e_save(MPARMJ),dj_save(MPARMJ),e_bsum
-
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
-
-
-
-      common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
-
 
       errn(x,x2,n)=dsqrt(dabs(x2/dble(n)-(x/dble(n))**2)/dble(n))
 
       if(igradhess.eq.0) return
+      
+      call alloc ('grad', grad, nparm)
+      call alloc ('grad_var', grad_var, nparm)
+      call alloc ('hess', hess, nparm, nparm)
+      call alloc ('hess_var', hess_var, nparm, nparm)
+      call alloc ('gerr', gerr, nparm)
 
 c Compute gradient.  For the gradient of the variance, grad_var, try both unweighted and weighted.
       grad_norm=0
@@ -613,6 +627,7 @@ casym write(21,'(''hess'',(1p5g22.14))') ((hess(i,j),j=1,nparm),i=1,nparm)
 c compute <dj H dj> and <dj dj> for "linear method"
       open(22,file='lin_jas.dat',status='unknown')
       write(6,'(''opening lin_jas.dat'')')
+      call alloc ('ham', ham, nparm+1, nparm+1)
 c here, ham = <dj H dj>
       ham(1,1)=eave
       do 45 i=1,nparm
@@ -668,6 +683,7 @@ c         ham(i+1,j+1)=(dj_de(i,j)-dj(i)*de(j)/passes+dj_dj_e(i,j))/passes
 c 52      ham(j+1,i+1)=(dj_de(j,i)-dj(j)*de(i)/passes+dj_dj_e(i,j))/passes
 
 c here, ovlp = <dj dj>
+      call alloc ('ovlp', ovlp, nparm+1, nparm+1)
       ovlp(1,1)=1
       do 55 i=1,nparm
   55    ovlp(i+1,1)=dj(i)/passes

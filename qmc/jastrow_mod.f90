@@ -203,7 +203,6 @@ module jastrow_mod
 !        write(6,'(a,3i5)') ' nparma_read,nparmb_read,nparmc_read=', nparma_read,nparmb_read,nparmc_read
         if(norda.gt.MORDJ) stop 'norda>MORDJ'
         if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
-        if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
         if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
         if(isc.ge.2) then
           write(6,'(a,f10.5)') ' scale factor: scalek=',scalek(1)
@@ -323,9 +322,11 @@ module jastrow_mod
     read(5,*) cjas1(1),cjas2(1)
   elseif(ijas.eq.2) then
     nparm_read=69
+    call alloc ('a1', a1, nparm_read, nspin2-nspin1+1, nwf)
     do isp=nspin1,nspin2
-       read(unit_input,*) (a1(iparm,isp,1),iparm=1,nparm_read)
+       read(5,*) (a1(iparm,isp,1),iparm=1,nparm_read)
     enddo
+    call alloc ('a2', a2, nparm_read, nspin2-nspin1+1, nwf)
     do isp=nspin1,nspin2
        read(5,*) (a2(iparm,isp,1),iparm=1,nparm_read)
     enddo
@@ -358,7 +359,6 @@ module jastrow_mod
 !       write(6,'(a,3i5)') ' nparma_read,nparmb_read,nparmc_read=', nparma_read,nparmb_read,nparmc_read
        if(norda.gt.MORDJ) stop 'norda>MORDJ'
        if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
-       if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
        call alloc ('a4', a4, nparma_read, nctype, nwf)
        do it=1,nctype
           read(5,*) (a4(iparm,it,1),iparm=1,nparma_read)

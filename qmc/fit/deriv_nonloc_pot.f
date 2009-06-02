@@ -20,11 +20,12 @@ c vps  = (V_l-V_L)
       use pseudo_mod
       use contrl_per_mod
       use derivjas_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,detu(*),detd(*),deti_det(nparmd),slmui(nupdn_square,*),slmdi(nupdn_square,*)
-     &,dvpsp(MPARM),dpe(MPARM)
+     &,dvpsp(nparm),dpe(nparm)
 
       do 20 i=1,nelec
         if(nloc.eq.1) then

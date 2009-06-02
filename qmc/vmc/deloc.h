@@ -1,1 +1,0 @@
-      common /deloc/ denergy(MPARM)

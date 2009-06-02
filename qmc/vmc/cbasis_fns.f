@@ -15,8 +15,7 @@ c Definition of new temporary variables ends here ********
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-      dimension wfv(3,MRWF),xc(3)
-     &,cph(-ML_BAS:ML_BAS),cdph(3,-ML_BAS:ML_BAS)
+      dimension wfv(3,MRWF),xc(3),cph(-ML_BAS:ML_BAS),cdph(3,-ML_BAS:ML_BAS)
 
       ider=1
 

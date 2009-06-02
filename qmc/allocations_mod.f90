@@ -22,6 +22,7 @@ module allocations_mod
   call object_provide ('nbasis')
   call object_provide ('orb_tot_nb')
   call object_provide ('nctype')
+  call object_provide ('nparm')
   call object_provide ('nparmjs')
 
   call alloc ('phin', phin, nbasis, nelec)
@@ -101,6 +102,8 @@ module allocations_mod
   call alloc ('d2g', d2g, nparmjs)
   call alloc ('go', go, nelec, nelec, nparmjs)
 
+! optimization
+  call alloc ('denergy', denergy, nparm)
 
   if(ibasis.eq.3) then
    call alloc ('cdorb', cdorb, 3, orb_tot_nb)

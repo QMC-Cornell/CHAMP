@@ -6,25 +6,18 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
       use optim_mod
       use contrl_opt2_mod
       use contrl_opt_mod
+      use gradhessder_mod
+      use gradjerr_mod
       implicit real*8(a-h,o-z)
-
-
-      parameter(MPARM2=MPARM*MPARM)
-
-      common /gradhessder/ dj(MPARM),dj_e(MPARM),dj_de(MPARM,MPARM),dj_dj(MPARM,MPARM),dj_dj_e(MPARM,MPARM)
-     &,de(MPARM),d2j(MPARM,MPARM),d2j_e(MPARM,MPARM),de_e(MPARM),e2(MPARM),dj_e2(MPARM),de_de(MPARM,MPARM)
-
-      common /gradjerr/ grad_jas_bcum(MPARMJ),grad_jas_bcm2(MPARMJ),
-     &dj_e_bsum(MPARMJ),dj_bsum(MPARMJ),dj_e_save(MPARMJ),dj_save(MPARMJ),e_bsum
+      integer MPARM2
 
       common /gradjerrb/ ngrad_jas_blocks,ngrad_jas_bcum,nb_current
 
-
-
-      dimension collect(MPARM),collect2(MPARM,MPARM)
+      dimension collect(nparm),collect2(nparm,nparm)
 
       if(igradhess.eq.0) return
 
+      MPARM2=nparm*nparm
 c Note, to do: error is not collected
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
@@ -134,7 +127,7 @@ c only the master writes to output and dumper
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-c     write(6,'(''MPARMJ='',10i5)') MPARM,MPARM2
+c     write(6,'(''nparm='',10i5)') nparm,MPARM2
 c     write(6,'(''dj='',10f14.5)') (dj(i),i=1,nparm)
 c     write(6,'(''de='',10f14.5)') (de(i),i=1,nparm)
 c     do i=1,nparm

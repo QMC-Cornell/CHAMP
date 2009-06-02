@@ -41,6 +41,7 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use jaspar2_mod
       use ncusp_mod
       use confg_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
       character*80 fmt
@@ -48,8 +49,6 @@ c      character*30 section
       character*10 mesg
       logical converg,analytic,cholesky
       external func,jacobian
-
-c     parameter(MXJTJ=(MPARM*(MPARM+1))/2,MWORK=4*MDATA+5*MPARM+MXJTJ)
 
 c     common /contr3/ mode
 
@@ -60,9 +59,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
       common /fcn_calls/icalls
       common /update/ ichange
 
-      dimension parm(MPARM),diff(MDATA),ipivot(norb)
-c For zxssq
-c     dimension,popt(4),xjac(MDATA,MPARM),xjtj(MXJTJ),work(MWORK)
+      dimension parm(nparm),diff(MDATA),ipivot(norb)
 
 c Inputs are:
 c 1) ndata,nparm,ijas,icusp,icusp2,isc,nsig,ncalls,iopt,ipr_opt
@@ -167,7 +164,6 @@ c     read(5,*) ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,
 c    &idbdu,idbdt
 
 c     if(ndata.gt.MDATA) stop 'MDATA exceeded'
-c     if(nparm.gt.MPARM) stop 'MPARM exceeded'
 
 c     if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt
 c    &.gt.0.and.(ijas.ne.2))
@@ -344,7 +340,6 @@ c     write(6,'(''nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme='',9i5)') npar
 
       read(5,*) necn,nebase
       write(6,'(''No of linear coefs, exponents set equal='',3i5)') necn,nebase
-      if(necn.gt.MPARM) stop 'fit: necn>MPARM'
 
       call alloc ('ieorb', ieorb, 2, necn)
       call alloc ('iebasi', iebasi, 2, necn)

@@ -43,17 +43,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrldmc_mod
       use stats_mod
       use age_mod
+      use branch_dmc_opt_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10)
 
-      common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
-
       dimension xnew(3),vnew(3,nelec),xbac(3),xstrech(3,nelec)
-c     dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)
-
-
-c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
 
       stop 'dmc_brock not yet updated for new /contrldmc/ variables'
 

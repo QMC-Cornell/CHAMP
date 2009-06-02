@@ -3,17 +3,12 @@ c Written by Cyrus Umrigar
 c Uses Fock expansion as described in:
 c Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
-
+      use constants_mod
       use contr2_mod
       use wfsec_mod
       use jaspar3_mod
       use pars_mod
       implicit real*8(a-h,o-z)
-
-
-!JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
-
-
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -24,8 +19,6 @@ c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
      &                dsy21,dty21,duy21,d2sy21,d2ty21,
      &d2uy21,d2sty21,d2suy21,d2uty21
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
-
-!JT      parameter(one=1.d0,two=2.d0,three=3.d0,four=4.d0,six=6.d0)
 
       dimension u(*),s(*),t(*)
 
@@ -165,15 +158,10 @@ c-----------------------------------------------------------------------
       subroutine psigm(r12,r1,r2,phi21,phi20,phi31,it)
 c Written by Cyrus Umrigar
 
+      use constants_mod
       use atom_mod
       use pars_mod
       implicit real*8(a-h,o-z)
-
-
-!JT      parameter(one=1.d0)
-
-!JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
-
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -245,42 +233,18 @@ c     electrons are collinear but not when u=0.
 c     The derivatives are not evaluated correctly in the 2nd part of
 c     the program even when the 2 electrons are collinear.
 
+      use constants_mod
       use const_mod
       use contr2_mod
       use pars_mod
       implicit real*8(a-h,o-z)
-!JT      real*8 hb,etrial,delta,deltai,fbias
-!JT      integer nelec,ipr
-!JT      integer ijas,icusp,icusp2,isc,ifock,i3body,irewgt,iaver,istrch,
       real*8 xlob,dlnrr2,x
       real*8 r1,r2,r12,s,t,rr2,term
       real*8 r,Y20,Y21,root,y,omega,alph,beta
-c     real*8 Y00
 
       real*8 psi1,psi21,psi20,psi2a,psi2b,psi2c
      &,psi2d,psi31,p1p21,phi21,phi20,phi31,ss1,ss2
       real*8 osix,otwe
-
-!JT      real*8 zero,one,two,three,four,five,six,eight
-!JT    real*8 half,pi
-!JT      parameter (zero = 0.d0)
-!JT      parameter (one = 1.d0, two = 2.d0, three = 3.d0)
-!JT      parameter (four = 4.d0, five = 5.d0, six = 6.d0)
-!JT      parameter (eight = 8.0d0)
-!JT      parameter (half = .5d0)
-c     parameter (pi = 3.14159265358979323846d0)
-c     parameter (xln2 = 0.69314718055994530941d0)
-c     parameter (root2 = 1.41421356237309504880d0)
-c     parameter (Zfock = 2.0d0)
-c     parameter (E = -2.903724d0)
-
-c     integer fflag
-!JT      real*8 a00,a20,a21,eps_fock,c0000,c1110,c2000, xm1,xm2,xm12,xms,xma,Zfock
-
-c     common /fflags/ fflag
-c     common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
-
-
 
       common /gamder/ dsphi21,dtphi21,duphi21,d2sphi21,d2tphi21,
      &d2uphi21,d2stphi21,d2suphi21,d2utphi21,
@@ -1007,6 +971,7 @@ c Uses Fock expansion as described in:
 c Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 c C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
+      use rlobxy_mod
 c     implicit none
       implicit real*8(a-h,o-z)
       real*8 xeval,yeval,xpi,xlobpi,eps2,eps22,ysing7,xlob
@@ -1019,12 +984,6 @@ c     implicit none
       parameter (xsp = 1.29d0, xpow = 1.32d0)
       parameter (o18 = .05555555555555555d0, o900 = .1111111111111111d-2
      & ,o19845 = 1.d0/19845.d0)
-
-      include 'vmc.h'
-
-      real*8 rlobx, rloby, rloby2
-
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
       A(x) = 1.d0 + x*x*(-3.d0 + x*(2.d0))
 

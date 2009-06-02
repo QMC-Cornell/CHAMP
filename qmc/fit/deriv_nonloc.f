@@ -15,13 +15,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use periodic_mod
       use qua_mod
       use slatn2_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
       dimension rr_en(nelec,ncent),rr_en2(nelec,ncent),rr_en_sav(ncent),rr_en2_sav(ncent)
      &,xsav(3),rshift_sav(3,ncent),rvec_en_sav(3,ncent),r_en_sav(ncent)
-     &,vpot(MPS_L),dvpot(MPS_L,MPARM),dvpsp(MPARM),gn(MPARMJ)
+     &,vpot(MPS_L),dvpot(MPS_L,nparm),dvpsp(nparm),gn(nparmjs)
       dimension dk_en(nelec,ncent),dk_en2(nelec,ncent),dk_en_sav(ncent),dk_en2_sav(ncent)
 
       do 10 i=1,nelec

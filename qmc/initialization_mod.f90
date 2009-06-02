@@ -114,6 +114,7 @@ module initialization_mod
  
 ! optimization
   nparm=0
+  call object_modified ('nparm')
   nblk_max=10000
   increase_blocks_limit=nblk_max
   add_diag(1) = 1.d-8
@@ -142,8 +143,6 @@ module initialization_mod
 !  idbdr=0
 !  idbdt=0
   nparml=0
-  nparmb=5
-  nparmc=15
   nparmf=0
   nparmcsf=0
   nparmj=0

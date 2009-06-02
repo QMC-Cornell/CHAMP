@@ -44,10 +44,6 @@ c Do not confuse analytic orbs with analytic basis fns.
 
 c Check that irecursion_ylm=1 if l of basis function >=4
       do 20 ibasis=1,nbasis
-        if(l_bas(ibasis).gt.ML_BAS) then
-          write(6,'(''(l_bas(ibasis) > ML_BAS'')')
-          stop 'l_bas(ibasis) > ML_BAS'
-        endif
         if(l_bas(ibasis).ge.5 .and. irecursion_ylm.eq.0) then
           write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
           stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
@@ -341,22 +337,15 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
           read(5,*) ((iwrwf(ib,ict),ib=1,nbasis),ict=1,nctype)
           write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))')
      &    (ict,(iwrwf(ib,ict),ib=1,nbasis),ict=1,nctype)
+          ML_BAS = 0
           if(ndim.eq.3) then
             read(5,*) (l_bas(ib),ib=1,nbasis)
             write(6,'(/,''l for basis functions:'',/,100i5)') (l_bas(ib),ib=1,nbasis)
+            ML_BAS = max(4, maxval(l_bas))
           endif
           read(5,*) (m_bas(ib),ib=1,nbasis)
           write(6,'(/,''m for basis functions:'',/,100i5)') (m_bas(ib),ib=1,nbasis)
-          do 30 ib=1,nbasis
-            if(abs(m_bas(ib)).gt.ML_BAS) then
-              write(6,'(''abs(m_bas(ib)) > ML_BAS, m_bas(ib),ML_BAS='',9i3)') m_bas(ib),ML_BAS
-              stop 'abs(m_bas(ib)) > ML_BAS'
-            endif
-            if(l_bas(ib).gt.ML_BAS) then
-              write(6,'(''l_bas(ib) > ML_BAS, l_bas(ib),ML_BAS='',9i3)') l_bas(ib),ML_BAS
-              stop 'l_bas(ib) > ML_BAS'
-            endif
-   30     continue
+          ML_BAS = max (4, max (ML_BAS, maxval(abs(m_bas))))
 
          else
 
@@ -381,47 +370,35 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
           do 41 m=-1,1
             n3p(m,ict)=0
             n4p(m,ict)=0
-            if(n2p(m,ict).ne.0 .and. ML_BAS.lt.1) stop 'ML_BAS in vmc.h too small'
    41       nbas=nbas+ iabs(n2p(m,ict))
           do 42 m=-2,2
             n4d(m,ict)=0
-            if(n3d(m,ict).ne.0 .and. ML_BAS.lt.2) stop 'ML_BAS in vmc.h too small'
    42       nbas=nbas+ iabs(n3d(m,ict))
           do 43 m=-3,3
-            if(n4f(m,ict).ne.0 .and. ML_BAS.lt.3) stop 'ML_BAS in vmc.h too small'
    43       nbas=nbas+ iabs(n4f(m,ict))
           do 44 m=-4,4
-            if(n5g(m,ict).ne.0 .and. ML_BAS.lt.4) stop 'ML_BAS in vmc.h too small'
    44       nbas=nbas+ iabs(n5g(m,ict))
           do 45 m=-5,5
-            if(n6h(m,ict).ne.0 .and. ML_BAS.lt.5) stop 'ML_BAS in vmc.h too small'
    45       nbas=nbas+ iabs(n6h(m,ict))
           do m=-6,6
-            if(n7i(m,ict).ne.0 .and. ML_BAS.lt.6) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n7i(m,ict))
           enddo
           do m=-7,7
-            if(n8j(m,ict).ne.0 .and. ML_BAS.lt.7) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n8j(m,ict))
           enddo
           do m=-8,8
-            if(n9k(m,ict).ne.0 .and. ML_BAS.lt.8) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n9k(m,ict))
           enddo
           do m=-9,9
-            if(n10l(m,ict).ne.0 .and. ML_BAS.lt.9) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n10l(m,ict))
           enddo
           do m=-10,10
-            if(n11m(m,ict).ne.0 .and. ML_BAS.lt.10) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n11m(m,ict))
           enddo
           do m=-11,11
-            if(n12n(m,ict).ne.0 .and. ML_BAS.lt.11) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n12n(m,ict))
           enddo
           do m=-12,12
-            if(n13o(m,ict).ne.0 .and. ML_BAS.lt.12) stop 'ML_BAS in vmc.h too small'
             nbas=nbas+ iabs(n13o(m,ict))
           enddo
           nbasis_ctype(ict)=nbas
@@ -952,6 +929,9 @@ c           if(iabs(nda(-m,i)).gt.nprime) stop 'number of da basis fns > nprime'
 
   250 continue
 
+!     for now, ML_BAS needs to be at least 4 because of the code in basis_fns.f
+      ML_BAS = max(4, maxval(l_bas))
+
       write(6,'(/,(12a10))') (lbasis(j),j=1,nbasis)
 c     write(6,'(''orbital coefficients'')')
 c     do 260 i=1,norb
@@ -1435,6 +1415,8 @@ c           if(iabs(nda(-m,i)).gt.nprime) stop 'number of da basis fns > nprime'
   235     continue
 
   250 continue
+
+      ML_BAS = max(4, maxval(l_bas))
 
       write(6,'(/,(12a10))') (lbasis(j),j=1,nbasis)
 c     write(6,'(''orbital coefficients'')')

@@ -84,7 +84,6 @@ c 1st basis function is not varied because normalization not relevant
    15     continue
 !JT        if(abs(coef(i,k,1)).ge.eps) then
 !JT          nparml=nparml+1
-!JT          if(nparml.gt.MPARM) stop 'nparml > MPARM'
 !JT          iwbasi(nparml)=i
 !JT          iworb(nparml)=k
 !JT        endif

@@ -70,18 +70,18 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrldmc_mod
       use stats_mod
       use age_mod
+      use branch_dmc_opt_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
 
       common /velratio/ fratio(MWALK,MFORCE)
-      common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
 
       dimension rvmino(3),rvminn(3),xstrech(3,nelec)
       dimension xnew(3),vnew(3,nelec)
       dimension xaxis(3),zaxis(3),xbac(3)
       dimension itryo(nelec),itryn(nelec),unacp(nelec)
-      dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)
+      dimension dewto(nparm),dewtn(nparm),dexponent(nparm)
 
       data ncall,ipr_sav /0,0/
       save ipr_sav

@@ -73,12 +73,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use estcm2_mod
       use stats_mod
       use age_mod
+      use branch_dmc_opt_mod
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
 
       common /velratio/ fratio(MWALK,MFORCE)
-      common /branch_dmc_opt/ denergy_old_dmc(MPARM,MWALK),wi_w(MPARM,MWALK)
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
@@ -95,7 +95,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       dimension itryo(nelec),itryn(nelec),unacp(nelec)
       dimension xnc(3,nelec),xoc(3,nelec),xnci(3,nelec,nelec),xoci(3,nelec,nelec)
       dimension ixo(3),ixn(3)
-      dimension dewto(MPARM),dewtn(MPARM),dexponent(MPARM)
+      dimension dewto(nparm),dewtn(nparm),dexponent(nparm)
 
       data ncall,ipr_sav /0,0/
       save ipr_sav

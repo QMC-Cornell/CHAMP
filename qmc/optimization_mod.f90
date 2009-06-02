@@ -465,7 +465,6 @@ module optimization_mod
       enddo
       nparmjs=nparmj+nparms
       call object_modified ('nparmjs')
-      if(nparmjs.gt.MPARMJ) stop 'nparmjs > MPARMJ'
 
       if(ijas.ge.4.and.ijas.le.6) then
         call alloc ('iwjasa', iwjasa, nparmj, nctype)
@@ -617,9 +616,8 @@ module optimization_mod
 ! set nparm if new input
   if (use_parser) then
    nparm = nparmj+nparmcsf
-   if(nparm > MPARM) stop 'nparm > MPARM'
+   call object_modified ('nparm')
   endif
-
 
   write(6,'(a)') 'End of optimization menu ---------------------------------------------------------------------------------'
 

@@ -50,6 +50,7 @@ c Written by Cyrus Umrigar
       use ncusp_mod
       use contrldmc_mod
       use confg_mod
+      use rlobxy_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-4)
@@ -59,8 +60,6 @@ c Written by Cyrus Umrigar
       character*30 section
       character*10 eunit
       character*80000 input_line
-
-      common /rlobxy/ rlobx(nsplin), rloby(nsplin), rloby2(nsplin)
 
       common /periodic2/ rkvec_shift_latt(3)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -445,6 +444,7 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
 !     initializations
       nparm=0
       nparmd = 0
+      call object_modified ('nparm')
       call object_modified ('nparmd')
       nparmj=0
       nparms=0
@@ -1116,6 +1116,7 @@ c Jastrow section
           read(5,*) scalek(1),a21
           write(6,'(''scalek,a21='',t31,9f10.5)') scalek(1),a21
         endif
+        call alloc ('a1', a1, nparm_read, nspin2-nspin1+1, nwf)
         do 270 isp=nspin1,nspin2
           read(5,*) (a1(iparm,isp,1),iparm=1,nparm_read)
           if(ncent.gt.1.and.a1(2,isp,1).ne.zero)
@@ -1125,6 +1126,7 @@ c Jastrow section
           write(6,'(''a='',x,7f10.6,(8f10.6))')
      &                 (a1(iparm,isp,1),iparm=1,nparm_read)
   270   continue
+        call alloc ('a2', a2, nparm_read, nspin2-nspin1+1, nwf)
         do 275 isp=nspin1,nspin2
           read(5,*) (a2(iparm,isp,1),iparm=1,nparm_read)
   275     write(6,'(''b='',x,7f10.6,(8f10.6))')
@@ -1175,7 +1177,6 @@ c Jastrow section
      &  nparmc_read
         if(norda.gt.MORDJ) stop 'norda>MORDJ'
         if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
-        if(nparmc_read.gt.MPARMJ) stop 'nparmc_read>MPARMJ'
 c WAS
         if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
 ccWAS
@@ -1280,7 +1281,11 @@ c       call wfpars
           open(11, file =
      &    '/afs/theory.cornell.edu/user/tc/cyrus/qmc/vmc/lob.dat')
           rewind 11
+          nsplin = 1001
+          call alloc ('rlobx', rlobx, nsplin)
+          call alloc ('rloby', rloby, nsplin)
           read(11,*) (rlobx(i),rloby(i),i=1,nsplin)
+          call alloc ('rloby2', rloby2, nsplin)
           call spline(rlobx,rloby,nsplin,0.d0,0.d0,rloby2)
         endif
       endif
@@ -1450,10 +1455,10 @@ c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
       if(nopt_iter.ne.0 .and. (MWF.lt.3 .or. MFORCE.lt.3)) stop 'if nopt_iter!=0 then MWF and MFORCE should be >=3'
 
       read(5,*) ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
+      call object_modified ('nparm')
       write(6,'(/,''ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt=''
      &,6i4,i6,20i4)') ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
       if(index(mode, 'fit') /=0 .and. ndata.gt.MDATA) stop 'ndata > MDATA'
-      if(nparm.gt.MPARM) stop 'nparm > MPARM'
 
 c initialize saved configuration indice iconfg (necessary for some compilers)
       isaved=0
@@ -1674,7 +1679,6 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
       if(nparms.gt.1) stop 'nparms must be 0 or 1'
       nparmjs=nparmj+nparms !JT
       call object_modified ('nparmjs')
-      if(nparmj+nparms.gt.MPARMJ) stop 'nparmj+nparms > MPARMJ'
 !JT      if(nparmcsf.ge.ncsf) then
 !JT        write(6,'(''Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'')')
 !JT        stop 'Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'

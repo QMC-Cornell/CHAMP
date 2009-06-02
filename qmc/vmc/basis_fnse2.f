@@ -32,8 +32,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
 
-      dimension wfv(3,MRWF),xc(3)
-     &,th(0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS)
+      dimension wfv(3,MRWF),xc(3),th(0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS)
 
 c Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
 c The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
@@ -297,8 +296,7 @@ c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
 
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
 
-      dimension wfv(3,MRWF),xc(3)
-     &,ph(-ML_BAS:ML_BAS)
+      dimension wfv(3,MRWF),xc(3),ph(-ML_BAS:ML_BAS)
 
       ider=0
 

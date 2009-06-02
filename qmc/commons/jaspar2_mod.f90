@@ -4,6 +4,6 @@ module jaspar2_mod
  implicit none
  save
 
- double precision a1(MPARMJ,3,MWF),a2(MPARMJ,3,MWF)
+ double precision, allocatable :: a1(:,:,:),a2(:,:,:)
 
 end module jaspar2_mod

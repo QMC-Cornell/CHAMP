@@ -22,6 +22,7 @@ module dmc_mod
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
   include 'modules.h'
+  use branch_dmc_opt_mod
   implicit none
 
 ! local
@@ -60,6 +61,7 @@ module dmc_mod
   call object_provide ('ndetupdn')
   call object_provide ('nup_square')
   call object_provide ('ndn_square')
+  call object_provide ('nparm')
 
   call alloc ('iage', iage, MWALK)
   call alloc ('xoldw', xoldw, 3, nelec, MWALK, nforce)
@@ -85,6 +87,9 @@ module dmc_mod
   call alloc ('fijow', fijow, 3, nelec, nelec, MWALK)
   call alloc ('fsumow', fsumow, MWALK)
   call alloc ('fjow', fjow, 3, nelec, MWALK)
+
+  call alloc ('denergy_old_dmc', denergy_old_dmc, nparm, MWALK)
+  call alloc ('wi_w', wi_w, nparm, MWALK)
 
   end subroutine dmc_init
 

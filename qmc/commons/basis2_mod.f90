@@ -9,5 +9,6 @@ module basis2_mod
  integer, allocatable :: icenter_basis(:), ictype_basis(:)
  integer, allocatable :: nbasis_ctype(:), n_bas2(:,:), iwrwf2(:)
  integer              :: mbasis_ctype !JT
+ integer              :: ML_BAS !JT
 
 end module basis2_mod

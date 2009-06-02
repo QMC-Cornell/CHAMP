@@ -29,7 +29,6 @@ c    &,epsder1f=3.16227766016838d-8)
 
       common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
-c     dimension parm(nparm),ajac(ndata2,nparm),denergy(MPARM)
       dimension parm(nparm),ajac(ndata2,nparm),velocity(3,nelec),div_v(nelec)
 
       do 10 iparm=1,nparml

@@ -1,14 +1,10 @@
       subroutine optim_options
 c Written by Cyrus Umrigar
+      use all_tools_mod
       use contrl_opt_mod
+      use linear_mod
+      use linear_orig_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
-
-      common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
-c     common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
-      common /linear_orig/ ovlp_orig(MPARM,MPARM)
 
       if(mod(iopt,10).eq.1) then
         nparmp1=nparm+1
@@ -17,6 +13,7 @@ c initialize superdiagonal elements of ovlp
           do 10 j=1,i-1
    10       ovlp(j,i)=ovlp(i,j)
 
+        call alloc ('ovlp_orig', ovlp_orig, nparmp1, nparmp1)
         do 15 i=1,nparmp1
           do 15 j=1,nparmp1
    15       ovlp_orig(i,j)=ovlp(i,j)
@@ -60,19 +57,23 @@ c Save grad_sav,hess_sav,ham_sav,ovlp_sav,renorm_ovlp
 c In grad_sav and hess_sav, use appropriate linear combination of energy and variance.
 c Evaluate the eigenvalues of the Hessian of the objective function (linear comb of energy and variance).
 c In fact we should also renormalize grad_sav and hess_sav.
+      use all_tools_mod
       use gradhess_mod
       use contrl_opt2_mod
       use contrl_opt_mod
+      use linear_mod
+      use linear_sav_mod
+      use gradhess_sav_mod
       implicit real*8(a-h,o-z)
-      parameter(MBUF=1024,MWORK=MBUF+MPARM*MPARM)
-      common /gradhess_sav/ hess_sav(MPARM,MPARM),grad_sav(MPARM)
-      common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
-      common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
-      dimension work(MWORK),eigv(MPARM)
+      parameter(MBUF=1024)
+      dimension eigv(nparm)
+      double precision, allocatable :: work(:)
+
 
 c Needed for both linear and Newton methods
 
       nparmp1=nparm+1
+      call alloc ('renorm_ovlp', renorm_ovlp, nparmp1)
       do 10 i=1,nparmp1
    10   renorm_ovlp(i)=sqrt(ovlp(i,i))
       if(ipr_opt.ge.1)  write(6,'(/,''renorm_ovlp='',100d12.4)') (renorm_ovlp(i),i=1,nparmp1)
@@ -107,6 +108,8 @@ c set the superdiag elements of ovlp
         do 100 j=1,i-1
   100     ovlp(j,i)=ovlp(i,j)
 
+      call alloc ('ham_sav', ham_sav, nparmp1, nparmp1)
+      call alloc ('ovlp_sav', ovlp_sav, nparmp1, nparmp1)
       do 110 i=1,nparmp1
         do 110 j=1,nparmp1
           ham_sav(i,j)=ham(i,j)
@@ -137,6 +140,8 @@ c in order to see the eigenvalues of the Hessian.
 
       q_var=1-p_var
       grad_opt_norm=0
+      call alloc ('grad_sav', grad_sav, nparm)
+      call alloc ('hess_sav', hess_sav, nparm, nparm)
       do 210 i=1,nparm
         grad_sav(i)=(p_var*grad_var(i)+q_var*grad(i))/renorm_ovlp(i+1)
         grad_opt_norm=grad_opt_norm+grad_sav(i)**2
@@ -160,8 +165,8 @@ c     stop 'Warning: work on newton to be completed'
 
 c Calculate eigenvalues of Hessian
       lwork=nparm**2+MBUF
-      if(nparm.gt.MPARM) stop 'nparm > MPARM'
-      call dsyev('V','U',nparm,hess,MPARM,eigv,work,lwork,info)
+      call alloc ('work', work, lwork)
+      call dsyev('V','U',nparm,hess,nparm,eigv,work,lwork,info)
       if(ipr_opt.ge.-1) write(6,'(''eigs='',(1p90d9.1))') (eigv(i),i=1,nparm)
 
       eig_min=1.d99
@@ -222,14 +227,15 @@ c The required change in the parameters is -x.
 c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
+      use all_tools_mod
       use gradhess_mod
       use contrl_opt_mod
+      use optim2_mod
+      use gradhess_sav_mod
+      use linear_sav_mod
       implicit real*8(a-h,o-z)
 
-      common /optim2/ dparm(MPARM)
-      common /gradhess_sav/ hess_sav(MPARM,MPARM),grad_sav(MPARM)
-      common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
-      dimension grad_cal(MPARM)
+      dimension grad_cal(nparm)
 
       if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i1,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
 
@@ -257,7 +263,7 @@ c Foll. lines are just to check change of eigenvals due to adding to diag
 c     added=max(-eig_min,0.d0)+add_diag(iadd_diag)
 c     eig_min_sav=eig_min
 c     eig_max_sav=eig_max
-c     call dsyev('V','U',nparm,hess,MPARM,eigv,work,lwork,info)
+c     call dsyev('V','U',nparm,hess,nparm,eigv,work,lwork,info)
 c     write(6,'(''eigs='',(1p20d9.1))') (eigv(i),i=1,nparm)
 
 c     eig_min=1.d99
@@ -279,7 +285,7 @@ c     enddo
 
 
 c Do cholesky decomposition
-      call chlsky(hess,nparm,MPARM,ierr)
+      call chlsky(hess,nparm,nparm,ierr)
       if(ierr.ne.0) goto 99
 
 c Symmetrize decomposed matrix (needs to be done before calling uxb
@@ -289,8 +295,8 @@ c or need to modify uxb)
    20     hess(i,j)=hess(j,i)
 
 c Solve linear equations
-      call lxb(hess,nparm,MPARM,grad)
-      call uxb(hess,nparm,MPARM,grad)
+      call lxb(hess,nparm,nparm,grad)
+      call uxb(hess,nparm,nparm,grad)
 
 c calculate rms change and test solution by checking that the Hessian multiplying the
 c solution (which overwrites the gradient in array grad) gives the gradient
@@ -306,6 +312,7 @@ c           hess(i,j)=hess_sav(i,j)+2*max(-eig_min,0.d0)+add_diag(iadd_diag)
    28     continue
 
       dparm_norm=0
+      call alloc ('dparm', dparm, nparm)
       do 30 i=1,nparm
         dparm(i)=-grad(i)
         dparm_norm=dparm_norm+dparm(i)**2
@@ -346,16 +353,15 @@ c The required change in the parameters is -x.
 c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
+      use all_tools_mod
       use gradhess_mod
       use contrl_opt_mod
+      use optim2_mod
+      use linear_mod
+      use linear_sav_mod
       implicit real*8(a-h,o-z)
 
-      common /optim2/ dparm(MPARM)
-c     common /gradhess_sav/ hess_sav(MPARM,MPARM),grad_sav(MPARM)
-      common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
-      common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
-      dimension e_diag(MPARM)
-c     dimension aa(MPARM,MPARM)
+      dimension e_diag(nparm)
 
       write(6,'(''using perturbation theory'')')
       if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i1,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
@@ -373,6 +379,8 @@ c of the Hamiltonian.
 c We are resetting ovlp because it was destroyed by call to matinv
 c We are resetting ham diagonal because it had add_diag(iadd_diag) added to it.
 c We are resetting only the diagonal part of ham because that is all that is needed.
+      call alloc ('ham_sav', ham_sav, nparmp1, nparmp1)
+      call alloc ('ovlp_sav', ovlp_sav, nparmp1, nparmp1)
       do 6 i=1,nparmp1
         ham_sav(i,i)=ham(i,i)
         if(i.gt.1) then
@@ -396,7 +404,7 @@ c Warning: cannot use matinv because it assumes matrix is dimensioned same as fi
 c     call matinv(ovlp,nparmp1,det)
 
 ccDo cholesky decomposition
-c     call chlsky(ovlp,nparmp1,MPARM,ierr)
+c     call chlsky(ovlp,nparmp1,nparm,ierr)
 c     if(ierr.ne.0) goto 99
 
 ccSymmetrize decomposed matrix (needs to be done before calling uxb
@@ -407,13 +415,13 @@ c  20     ovlp(i,j)=ovlp(j,i)
 
 ccSolve linear equations
 c     do 30 i=1,nparmp1
-c       call lxb(ovlp,nparm,MPARM,ovlp_inv()
-c  30   call uxb(ovlp,nparm,MPARM,grad)
+c       call lxb(ovlp,nparm,nparm,ovlp_inv()
+c  30   call uxb(ovlp,nparm,nparm,grad)
 
 c Do cholesky decomposition using lower diagonal matrix
-      call dpotrf('l',nparmp1,ovlp,MPARM,info)
+      call dpotrf('l',nparmp1,ovlp,nparm,info)
 c Invert using lower diagonal matrix.  ovlp is overwritten by its inverse.
-      call dpotri('l',nparmp1,ovlp,MPARM,info)
+      call dpotri('l',nparmp1,ovlp,nparm,info)
 
 c Symmetrize inverted matrix by copying lower part to upper
       do 15 i=1,nparmp1
@@ -429,6 +437,7 @@ c  55     aa(i,j)=aa(i,j)+ovlp_sav(i,k)*ovlp(k,j)
 c  60   write(6,'(''aa='',50f12.4)') (aa(i,j),j=1,nparmp1)
 
 c multiply grad by inverse overlap
+      call alloc ('dparm', dparm, nparm)
       do 25 i=1,nparm
         dparm(i)=0
         do 20 j=1,nparm
@@ -459,28 +468,23 @@ c  99 stop 'ierr.ne.0 in chlsky'
       end
 c-----------------------------------------------------------------------
       subroutine linear_method(iadd_diag,ipr_eigs)
+      use all_tools_mod
       use optim_mod
       use const_mod
       use gradhess_mod
       use contrl_opt_mod
       use optimo_mod
+      use optim2_mod
+      use linear_mod
+      use linear_orig_mod
+      use linear_sav_mod
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-9)
 
-      common /optim2/ dparm(MPARM)
-      common /linear/ ham(MPARM,MPARM),ovlp(MPARM,MPARM),coef(MPARM,MPARM)
-      common /linear_sav/ ham_sav(MPARM,MPARM),ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM)
-      common /linear_orig/ ovlp_orig(MPARM,MPARM)
+      integer MWORK
+      double precision, allocatable :: work(:)
+      dimension eigv(nparm+1),eigvi(nparm+1),eig_denom(nparm+1)
 
-c     dimension coef(MPARM,MPARM)
-c     dimension ovlp_sav(MPARM,MPARM),renorm_ovlp(MPARM),coef(MPARM,MPARM)
-
-      parameter(MWORK=MPARM*MPARM+1024)
-c     dimension scratch(MPARM,MPARM)
-      dimension work(MWORK),eigv(MPARM),eigvi(MPARM),eig_denom(MPARM)
-
-c Since the first fn. is the current function nparm should not exceed MPARM-1
-      if(nparm.gt.MPARM-1) stop 'nparm>MPARM-1'
 
 c for high printout, set idebug=1
 c     idebug=1
@@ -492,6 +496,9 @@ c     e_target=0
       if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i1,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
 
       nparmp1=nparm+1
+      call alloc ('ham', ham, nparmp1, nparmp1)
+      call alloc ('ovlp', ovlp, nparmp1, nparmp1)
+      call alloc ('coef', coef, nparmp1, nparmp1)
 
       do 1 i=1,nparmp1
         do 1 j=1,nparmp1
@@ -531,24 +538,26 @@ c       write(6,*)
 c     endif
 
 
-      call dggev('N','V',nparmp1, ham, MPARM, ovlp, MPARM, eigv, eigvi,
-     &                  eig_denom, eigl, MPARM, coef, MPARM, work, -1, info )
+      MWORK=nparmp1*nparmp1+1024
+      call alloc ('work', work, MWORK)
+      call dggev('N','V',nparmp1, ham, nparmp1, ovlp, nparmp1, eigv, eigvi,
+     &                  eig_denom, eigl, nparmp1, coef, nparmp1, work, -1, info )
       if(work(1).gt.MWORK) stop 'work(1).gt.MWORK'
       if(info.ne.0) stop 'info from dggev != 0'
       lwork=int(work(1))
       write(6,'(''optimal lwork='',i6)') lwork
-      call dggev('N','V',nparmp1, ham, MPARM, ovlp, MPARM, eigv, eigvi,
-     &                  eig_denom, eigl, MPARM, coef, MPARM, work, lwork, info )
+      call dggev('N','V',nparmp1, ham, nparmp1, ovlp, nparmp1, eigv, eigvi,
+     &                  eig_denom, eigl, nparmp1, coef, nparmp1, work, lwork, info )
       if(info.ne.0) write(6,*) 'Warning dggev: info =', info
       if(info.ne.0) stop 'info from dggev != 0'
 
 c First check that MWORK is large enough
-c     call dgeev('N','V',nparmp1,product,MPARM,eigv,eigvi,scratch, MPARM,
-c    &            coef, MPARM, work, -1,info)
+c     call dgeev('N','V',nparmp1,product,nparmp1,eigv,eigvi,scratch, nparmp1,
+c    &            coef, nparmp1, work, -1,info)
 c     write(6,'(''optimal MWORK='',f8.1)') work(1)
 c     if(work(1).gt.MWORK) stop 'work(1).gt.MWORK'
-c     call dgeev('N','V',nparmp1,product,MPARM,eigv,eigvi,scratch, MPARM,
-c    &            coef, MPARM, work, MWORK,info)
+c     call dgeev('N','V',nparmp1,product,nparmp1,eigv,eigvi,scratch, nparmp1,
+c    &            coef, nparmp1, work, MWORK,info)
 c     if(info.ne.0) write(6,*) 'Warning dgeev: info =', info
 
       write(6,'(''eigenvalue_denominators in dggev='',20d10.2)') (eig_denom(i),i=1,nparmp1)
@@ -687,6 +696,8 @@ c    &      coef(j,i0),ovlp_orig(i,j),ovlp_orig(1,j),coef(j,i0)*ovlp_orig(i,j),t
       write(6,'(''coef0,dnorm1,dnorm2 '',9f16.11)') coef(1,i0),dnorm1,dnorm2
 c     write(6,'(''dparm '',100f10.6)') (coef(i,i0)*dnorm1,i=2,nparmp1)
       write(6,*)
+     
+      call alloc ('dparm', dparm, nparm)
 
 c     dparm_norm=0
       if(mod(iopt/10000,10).le.2 .or. mod(iopt/10000,10).eq.4 .or. mod(iopt/10000,10).eq.5) then
@@ -738,6 +749,7 @@ c The required change in the parameters is -x.
 c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
+      use all_tools_mod
       use control_mod
       use atom_mod
       use coefs_mod
@@ -754,11 +766,12 @@ c            = 2 then we print new parameters with _new subscript
       use bparm_mod
       use optimo_mod
       use orbpar_mod
+      use optim2_mod
       implicit real*8(a-h,o-z)
       parameter(AMAX_NONLIN=100.d0)
       character*50 fmt
 
-      common /optim2/ dparm(MPARM)
+      call alloc ('dparm', dparm, nparm)
 
 c     dparm_norm=0
 c     do 30 i=1,nparm

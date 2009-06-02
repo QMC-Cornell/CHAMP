@@ -229,6 +229,7 @@ module basis_mod
 
     end select 
 
+
     call alloc ('zex', zex, bas_i, nwf)
     zex (bas_i,1) = basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
     call alloc ('ictype_basis', ictype_basis, bas_i)
@@ -237,6 +238,9 @@ module basis_mod
     enddo
   enddo
    
+! for now, ML_BAS needs to be at least 4 because of the code in basis_fns.f
+  ML_BAS = max (4, maxval(l_bas))
+
   nbasis = bas_i
   write(6,'(a,i5)') ' number of basis functions = ',nbasis
 
@@ -275,10 +279,6 @@ module basis_mod
 
 ! Check that irecursion_ylm=1 if l of basis function >=4
       do bas_i=1,nbasis
-        if(l_bas(bas_i).gt.ML_BAS) then
-          write(6,'(''(l_bas(bas_i) > ML_BAS'')')
-          stop 'l_bas(bas_i) > ML_BAS'
-        endif
         if(l_bas(bas_i).ge.5 .and. irecursion_ylm.eq.0) then
           write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
           stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'

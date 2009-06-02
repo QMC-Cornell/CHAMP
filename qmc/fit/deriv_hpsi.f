@@ -17,6 +17,7 @@ c wrt the jastrow parameters.
       use contrl_per_mod
       use derivjas_mod
       use distance_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
 
 c complex
@@ -26,7 +27,7 @@ c complex
       common /compferm/ emagv,nv,idot
       dimension coord(3,nelec),velocity(3,nelec)
       dimension vj(3,nelec),vd(3,nelec),div_vj(nelec),div_vd(nelec),div_vk(nelec)
-     &,dpe(MPARM),denergy(MPARM)
+     &,dpe(nparm),denergy(nparm)
 
       stop 'deriv_hpsi in fit should no longer be called (check, copied from Cyrus version)'
 

@@ -4,6 +4,6 @@ module delocc_mod
  implicit none
  save
 
- double precision denergy(MPARM)
+ double precision, allocatable :: denergy(:)
 
 end module delocc_mod
