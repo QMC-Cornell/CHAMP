@@ -200,9 +200,6 @@ c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
       use contrl_opt_mod
       implicit real*8(a-h,o-z)
-      include 'vmc.h'
-      include 'force.h'
-      include '../fit/fit.h'
 
       if(mod(iopt,10).eq.1) then
         call linear_method(iadd_diag,ipr_eigs)

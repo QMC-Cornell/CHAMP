@@ -29,8 +29,6 @@ c Routine to pick up and dump everything needed to restart job where it left off
 
       parameter(small=1.d-6)
 
-c     common /contrl/ nstep,nblk,nblkeq,nconf,nconf_global,nconf_new,isite,idump,irstar
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
       common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
@@ -202,6 +200,14 @@ c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     6   read(10) ecum1s(i),ecm21s(i)
 
       read(10) rejmax
+      call alloc ('try', try, NRAD)
+      call alloc ('suc', suc, NRAD)
+      call alloc ('trunfb', trunfb, NRAD)
+      call alloc ('rprob', rprob, NRAD)
+      call alloc ('rprobup', rprobup, NRAD)
+      call alloc ('rprobdn', rprobdn, NRAD)
+      call alloc ('ekin', ekin, NRAD)
+      call alloc ('ekin2', ekin2, NRAD)
       read(10) (try(i),suc(i),trunfb(i),rprob(i),
      &rprobup(i),rprobdn(i),
      &ekin(i),ekin2(i),i=1,NRAD)

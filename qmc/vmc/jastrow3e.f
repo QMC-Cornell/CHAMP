@@ -1,6 +1,7 @@
       subroutine jastrow3e(iel,x,v,value)
 c Written by Claudia Filippi by modifying jastrow3
 
+      use constants_mod
       use atom_mod
       use dets_mod
       use const_mod
@@ -15,20 +16,10 @@ c Written by Claudia Filippi by modifying jastrow3
       use jasn_mod
       implicit real*8(a-h,o-z)
 
-
-!JT      parameter (one=1.d0)
-!JT      parameter (half=.5d0,third=1.d0/3.d0)
-
-
-
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-
-
-
-
       dimension x(3,*),v(3,*)
-      dimension u(-2:MORDJ),s(-2:MORDJ),t(-2:MORDJ)
+      dimension u(-2:nord),s(-2:nord),t(-2:nord)
 
       u(-2)=0
       s(-2)=0

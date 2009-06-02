@@ -4,6 +4,7 @@ c **Warning** This routine needs to be upgraded to check rshifts
 c if we add in the capability to use numerical Laplacian for
 c periodic systems.
 
+      use constants_mod 
       use dets_mod
       use contr2_mod
       use wfsec_mod
@@ -16,13 +17,9 @@ c periodic systems.
       use jaspar2_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0)
-
-
-
       common /chck/ bot
 
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ)
+      dimension uu(0:nord),ss(0:nord),tt(0:nord)
 
       dlogs4(x) = 2*dlog((one-dexp(-a1(41,is,iwf)*x))/a1(41,is,iwf))
 

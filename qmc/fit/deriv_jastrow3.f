@@ -15,18 +15,13 @@ c Written by Claudia Filippi
       use distance_mod
       use jaso_mod
       use vardep_mod
+      use cuspmat_mod
       implicit real*8(a-h,o-z)
-
-      parameter(NEQSX=6*MORDJ)
-
-
-      common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
       common /focktmp/ fc,fu,fuu,fs,fss,ft,ftt,fst,fus,fut
 
-
       dimension x(3,*),v(3,*)
-      dimension u(-2:MORDJ),s(-2:MORDJ),t(-2:MORDJ)
+      dimension u(-2:nord),s(-2:nord),t(-2:nord)
 
       ndim1=ndim-1
 

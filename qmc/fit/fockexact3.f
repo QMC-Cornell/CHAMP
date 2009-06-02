@@ -13,7 +13,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,pi=3.141592653589793d0
      &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
-      dimension o(2*MORDJ),op(0:2*MORDJ)
+      dimension o(2*nord),op(0:2*nord)
 
       if(ifock.eq.4) then
         zfock=znuc(iwctype(it))

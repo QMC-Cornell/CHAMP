@@ -1,20 +1,15 @@
       subroutine cuspexact3(iprin)
 c Written by Claudia Filippi
 
+      use constants_mod
       use atom_mod
       use contr2_mod
       use jaspar3_mod
+      use cuspmat_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(zero=0.d0)
-
-
-      parameter(NEQSX=6*MORDJ)
-
-      common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
-
-      dimension o(2*MORDJ),op(0:2*MORDJ)
-      dimension bm(NEQSX),xn(NEQSX)
+      dimension o(2*nord),op(0:2*nord)
+      dimension bm(neqs),xn(neqs)
 
       nvar=neqs
 

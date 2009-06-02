@@ -25,9 +25,9 @@ c Jastrow 6   must be used with one of isc=6,7
       use distance_mod
       use jaso_mod
       use vardep_mod
+      use cuspmat4_mod
       implicit real*8(a-h,o-z)
 
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (eps=1.d-12)
 
 !!!   added WAS
@@ -36,11 +36,9 @@ c Jastrow 6   must be used with one of isc=6,7
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-
       dimension x(3,*),v(3,*)
-      dimension uu(-3:MORDJ),ss(-3:MORDJ),tt(-3:MORDJ),rri(-3:MORDJ)
-     &,rrj(-3:MORDJ)
+      dimension uu(-3:nord),ss(-3:nord),tt(-3:nord),rri(-3:nord)
+     &,rrj(-3:nord)
 
       ndim1=ndim-1
 

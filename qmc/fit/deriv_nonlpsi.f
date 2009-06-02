@@ -17,19 +17,16 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       use jaspar1_mod
       use jaspar2_mod
       use vardep_mod
+      use cuspmat_mod
+      use cuspmat4_mod
       implicit real*8(a-h,o-z)
 
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
       parameter (eps=1.d-12)
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
 !!!
-
-      common /cuspmat/ cm(NEQSX,NEQSX),iwc3(NEQSX),neqs,ishe
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
-
       dimension rshifti(3),rshiftj(3),gn(*)
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ),rrri(0:MORDJ),rrrj(0:MORDJ)
+      dimension uu(0:nord),ss(0:nord),tt(0:nord),rrri(0:nord),rrrj(0:nord)
 
       dlogs4(x) = 2*dlog((one-dexp(-a1(41,is,iwf)*x))/a1(41,is,iwf))
 
@@ -149,7 +146,7 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
                 p=pc*ss(js)*tt(jt)
                 deriv_psinl=deriv_psinl+c(ll,it,iwf)*p
                 ideriv=0
-                if(ll.eq.iwc3(jj)) then
+                if(ll.eq.iwc(jj)) then
                   if(nvdepend(jj,it).gt.0) then
                     ideriv=1
                    else

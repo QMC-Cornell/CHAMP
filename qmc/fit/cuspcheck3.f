@@ -1,19 +1,15 @@
       subroutine cuspcheck3(diff,iprin)
 c Written by Claudia Filippi
 
+      use constants_mod
       use atom_mod
       use contr2_mod
       use jaspar3_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(zero=0.d0)
-
       character*1 ipw,ipw1,ipw2
 
-
-
-
-      dimension diff(*),o(2*MORDJ),op(0:2*MORDJ)
+      dimension diff(*),o(2*nord),op(0:2*nord)
 
       isht=0
       do 200 it=1,nctype

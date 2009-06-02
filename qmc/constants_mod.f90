@@ -2,6 +2,12 @@ module constants_mod
 
   use types_mod
 
+! DBLMIN, DBLMAX should be the smallest and largest double precision numbers
+! that can be represented, but approximate values are OK.
+!JT   parameter(DBLMIN=1.d-300,DBLMAX=1.d+300)
+  double precision, parameter :: DBLMIN=1.d-30
+  double precision, parameter :: DBLMAX=1.d+30
+
 ! string lengths
   integer, parameter    ::  max_string_len      = 100
   integer, parameter    ::  max_string_len_obj  = 50  ! important for speed!
@@ -58,7 +64,6 @@ module constants_mod
   include 'vmc/pseudo.h'
   include 'vmc/ewald.h'
   include 'vmc/force.h'
-  include 'fit/fit.h'
   include 'dmc/dmc.h'
   include 'vmc/numbas.h'
   include 'vmc/numorb.h'

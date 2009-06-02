@@ -1175,8 +1175,6 @@ c Jastrow section
         nparmc_read=nterms4(nordc)
         write(6,'(''nparma_read,nparmb_read,nparmc_read='',3i5)') nparma_read,nparmb_read,
      &  nparmc_read
-        if(norda.gt.MORDJ) stop 'norda>MORDJ'
-        if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
 c WAS
         if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
 ccWAS
@@ -1458,7 +1456,6 @@ c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
       call object_modified ('nparm')
       write(6,'(/,''ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt=''
      &,6i4,i6,20i4)') ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
-      if(index(mode, 'fit') /=0 .and. ndata.gt.MDATA) stop 'ndata > MDATA'
 
 c initialize saved configuration indice iconfg (necessary for some compilers)
       isaved=0

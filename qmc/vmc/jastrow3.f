@@ -1,6 +1,7 @@
       subroutine jastrow3(x,v,d2,div_vj,value)
 c Written by Claudia Filippi and Cyrus Umrigar
 
+      use constants_mod
       use atom_mod
       use dets_mod
       use const_mod
@@ -14,17 +15,10 @@ c Written by Claudia Filippi and Cyrus Umrigar
       use jaso_mod
       implicit real*8(a-h,o-z)
 
-
-!JT      parameter (one=1.d0,two=2.d0,three=3.d0,four=4.d0
-
-
-
-
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-
       dimension x(3,*),v(3,*),div_vj(*)
-      dimension u(-2:MORDJ),s(-2:MORDJ),t(-2:MORDJ)
+      dimension u(-2:nord),s(-2:nord),t(-2:nord)
 
       fsum=0
       u(-2)=0

@@ -36,8 +36,6 @@ c routine to accumulate estimators for energy etc.
       use age_mod
       implicit real*8(a-h,o-z)
 
-
-!MS Declare arrays upto o-orbitals (l=12) for Jellium sphere
       common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
      &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),

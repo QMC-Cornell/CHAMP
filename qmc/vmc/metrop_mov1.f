@@ -25,7 +25,6 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use stepv_mod
       use kinet_mod
       implicit real*8(a-h,o-z)
-c     character*16 mode
 
       logical vgreater
 

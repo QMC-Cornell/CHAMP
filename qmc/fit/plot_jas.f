@@ -34,6 +34,7 @@ c Written by Cyrus Umrigar
 c Jastrow 4,5 must be used with one of isc=2,4,6,7
 c Jastrow 6   must be used with one of isc=6,7
 
+      use constants_mod
       use atom_mod
       use const_mod
       use contr2_mod
@@ -45,13 +46,9 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (half=.5d0)
 
-
-
-
-      dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
-     &,rrj(-2:MORDJ),fen(ncent),fee(2)
+      dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord)
+     &,rrj(-2:nord),fen(ncent),fee(2)
 
       fsum=0
       do 5 i=-2,-1

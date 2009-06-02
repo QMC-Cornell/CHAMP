@@ -201,8 +201,6 @@ module jastrow_mod
 !        nparmb_read=2+max(0,nordb-1)
 !        nparmc_read=nterms4(nordc)
 !        write(6,'(a,3i5)') ' nparma_read,nparmb_read,nparmc_read=', nparma_read,nparmb_read,nparmc_read
-        if(norda.gt.MORDJ) stop 'norda>MORDJ'
-        if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
         if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
         if(isc.ge.2) then
           write(6,'(a,f10.5)') ' scale factor: scalek=',scalek(1)
@@ -357,8 +355,6 @@ module jastrow_mod
        nparmb_read=2+max(0,nordb-1)
        nparmc_read=nterms4(nordc)
 !       write(6,'(a,3i5)') ' nparma_read,nparmb_read,nparmc_read=', nparma_read,nparmb_read,nparmc_read
-       if(norda.gt.MORDJ) stop 'norda>MORDJ'
-       if(nordb.gt.MORDJ) stop 'nordb>MORDJ'
        call alloc ('a4', a4, nparma_read, nctype, nwf)
        do it=1,nctype
           read(5,*) (a4(iparm,it,1),iparm=1,nparma_read)

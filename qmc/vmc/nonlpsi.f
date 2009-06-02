@@ -1,10 +1,11 @@
 c     function psinl(u,rshifti,rshiftj,rri,rrj,it)
 !WAS
       function psinl(u,rshifti,rshiftj,ri, rj, rri,rrj,it)
-      use control_mod
 !
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
+      use constants_mod
+      use control_mod
       use dets_mod
       use dim_mod
       use contr2_mod
@@ -18,16 +19,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar1_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (one=1.d0,two=2.d0,half=0.5d0,eps=1.d-12)
       parameter (eps=1.d-12)
 
 !!!   added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-!!!
 
       common /chck/ bot
 
-      dimension uu(0:MORDJ),ss(0:MORDJ),tt(0:MORDJ),rshifti(3),rshiftj(3)
+      dimension uu(0:nord),ss(0:nord),tt(0:nord),rshifti(3),rshiftj(3)
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f

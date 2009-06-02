@@ -1,6 +1,7 @@
       subroutine finwrt_dmc_movall
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
+      use constants_mod
       use control_mod 
       use atom_mod
       use contrl_mod
@@ -24,13 +25,6 @@ c routine to print out final results
       use stats_mod
       use age_mod
       implicit real*8(a-h,o-z)
-!      include 'dmc.h'
-!      include '../vmc/vmc.h'
-!      include '../vmc/force.h'
-!      include '../fit/fit.h'
-
-!JT      parameter (one=1.d0,two=2.d0,half=.5d0)
-
 
 c /config_dmc/ included to print out xold and vold for old walkers
       common /tmp/ eacc,enacc,macc,mnacc

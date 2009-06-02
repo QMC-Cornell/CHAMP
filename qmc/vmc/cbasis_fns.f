@@ -1,5 +1,6 @@
       subroutine cbasis_fns_num(iel,rvec_en,r_en)
 c written by Amit Ghosal starting from basis_fns.f
+      use constants_mod
       use atom_mod
       use basis1_mod
       use const_mod

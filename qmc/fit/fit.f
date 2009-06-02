@@ -59,7 +59,7 @@ c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
       common /fcn_calls/icalls
       common /update/ ichange
 
-      dimension parm(nparm),diff(MDATA),ipivot(norb)
+      dimension parm(nparm),diff(ndata),ipivot(norb)
 
 c Inputs are:
 c 1) ndata,nparm,ijas,icusp,icusp2,isc,nsig,ncalls,iopt,ipr_opt
@@ -162,8 +162,6 @@ c     read(5,*) ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
 c     read(5,*) i3body,irewgt,iaver,istrch
 c     read(5,*) ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,
 c    &idbdu,idbdt
-
-c     if(ndata.gt.MDATA) stop 'MDATA exceeded'
 
 c     if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt
 c    &.gt.0.and.(ijas.ne.2))
@@ -464,7 +462,6 @@ c isp=1, it is only to determine ncnstr
      &   ndata,ncuspc*(nspin2-nspin1+1)+ncent*norbc+nfockc,
      &   ncnstr*(nspin2-nspin1+1)
       write(6,'(''ndata2'',i5)') ndata2
-      if(ndata2.gt.mdata) stop 'ndata2 exceeds mdata'
 
       call alloc ('imnbas', imnbas, ncent)
       imnbas(1)=1
@@ -583,7 +580,7 @@ c  If nucleii have been moved, move electrons
       if(iopt.le.1) then
 
 c       if(ncalls.gt.0) call zxssq2(func,ndata2,nparm,nsig,zero,zero,
-c    &  ncalls,iopt,popt,parm,err2,diff,xjac,MDATA,xjtj,work,infer,ier)
+c    &  ncalls,iopt,popt,parm,err2,diff,xjac,ndata,xjtj,work,infer,ier)
 
 c       write(6,'(/,''nsig, infer, ier='',3i5)') nsig,infer,ier
 c       write(6,'(''if infer=1 then the param. estim. agree on 2 '',

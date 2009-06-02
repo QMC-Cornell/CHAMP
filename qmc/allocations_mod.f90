@@ -105,6 +105,15 @@ module allocations_mod
 ! optimization
   call alloc ('denergy', denergy, nparm)
 
+  call alloc ('try', try, NRAD)
+  call alloc ('suc', suc, NRAD)
+  call alloc ('trunfb', trunfb, NRAD)
+  call alloc ('rprob', rprob, NRAD)
+  call alloc ('rprobup', rprobup, NRAD)
+  call alloc ('rprobdn', rprobdn, NRAD)
+  call alloc ('ekin', ekin, NRAD)
+  call alloc ('ekin2', ekin2, NRAD)
+
   if(ibasis.eq.3) then
    call alloc ('cdorb', cdorb, 3, orb_tot_nb)
    call alloc ('cddorb', cddorb, orb_tot_nb)

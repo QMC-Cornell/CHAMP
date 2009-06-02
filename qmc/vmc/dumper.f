@@ -16,6 +16,7 @@
       subroutine dumper_serial
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c Routine to pick up and dump everything needed to restart job where it left off.
+      use all_tools_mod
       use constants_mod
       use atom_mod
       use config_mod
@@ -152,6 +153,14 @@ c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
 c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     6   read(10) ecum1s(i),ecm21s(i)
       read(10) rejmax
+      call alloc ('try', try, NRAD)
+      call alloc ('suc', suc, NRAD)
+      call alloc ('trunfb', trunfb, NRAD)
+      call alloc ('rprob', rprob, NRAD)
+      call alloc ('rprobup', rprobup, NRAD)
+      call alloc ('rprobdn', rprobdn, NRAD)
+      call alloc ('ekin', ekin, NRAD)
+      call alloc ('ekin2', ekin2, NRAD)
       read(10) (try(i),suc(i),trunfb(i),rprob(i),
      &rprobup(i),rprobdn(i),
      &ekin(i),ekin2(i),i=1,NRAD)

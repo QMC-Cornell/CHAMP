@@ -265,6 +265,7 @@ module main_menu_mod
 !
 ! Created     : J. Toulouse, 22 Oct 2005
 !---------------------------------------------------------------------------
+  use stepv_mod
   implicit none
 
   character (len=max_string_len_rout), save :: lhere = 'radial_probability_menu'
@@ -275,10 +276,10 @@ module main_menu_mod
   call get_next_word (word)
 
   if(trim(word) == 'help') then
-   write(6,*) 'radial_probability-h: menu for radial probability:'
-   write(6,*) 'radial_probability-h: radial_probability'
-   write(6,*) 'radial_probability-h:  print = [boolean] print radial probability?'
-   write(6,*) 'radial_probability-h: end'
+   write(6,'(a)') 'menu for radial probability:'
+   write(6,'(a)') ' radial_probability'
+   write(6,'(a)') ' print = [boolean] print radial probability?'
+   write(6,'(a)') 'end'
 
   elseif(trim(word) == 'print') then
    call get_next_value (print_radial_probability)
@@ -287,15 +288,10 @@ module main_menu_mod
    exit
 
   else
-
-   write(6,*) trim(lhere),': unknown word = ',trim(word)
-   call die (lhere)
-
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
   endif
 
-
   enddo ! end loop over menu lines
-
 
   end subroutine radial_probability_menu
 

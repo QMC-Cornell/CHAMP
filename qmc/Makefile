@@ -17,33 +17,34 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/contr_ylm_mod.f90 commons/contrl_mod.f90 \
 	commons/contrl_opt2_mod.f90 commons/contrl_opt_mod.f90 \
 	commons/contrl_per_mod.f90 commons/contrldmc_mod.f90 \
-	commons/cphifun_mod.f90 commons/cslatn_mod.f90 commons/delocc_mod.f90 \
-	commons/denupdn_mod.f90 commons/deriv_phifun_mod.f90 \
-	commons/derivjas_mod.f90 commons/dets_mod.f90 commons/dim_mod.f90 \
-	commons/distance_mod.f90 commons/distance_sav_mod.f90 \
-	commons/div_v_dmc_mod.f90 commons/div_v_mod.f90 commons/doefp_mod.f90 \
-	commons/dorb_mod.f90 commons/estcm2_mod.f90 \
-	commons/estcum_dmc_mod.f90 commons/estsum_dmc_mod.f90 \
-	commons/ewald_mod.f90 commons/force_dmc_mod.f90 \
-	commons/forcepar_mod.f90 commons/forcest_dmc_mod.f90 \
-	commons/forcest_mod.f90 commons/gauss_ecp_mod.f90 \
-	commons/gradhess_mod.f90 commons/gradhess_sav_mod.f90 \
-	commons/gradhessder_mod.f90 commons/gradhessdero_mod.f90 \
-	commons/gradhessj_nonlin_mod.f90 commons/gradjerr_mod.f90 \
-	commons/iterat_mod.f90 commons/jacobsave_mod.f90 commons/jasn_mod.f90 \
-	commons/jaso_mod.f90 commons/jasow_mod.f90 commons/jaspar1_mod.f90 \
-	commons/jaspar2_mod.f90 commons/jaspar3_mod.f90 \
-	commons/jaspar4_mod.f90 commons/jaspar6_mod.f90 \
-	commons/jaspar_mod.f90 commons/jasparread_mod.f90 \
-	commons/jel_sph2_mod.f90 commons/kinet_mod.f90 commons/lbas_mod.f90 \
-	commons/linear_mod.f90 commons/linear_orig_mod.f90 \
-	commons/linear_sav_mod.f90 commons/mpiblk_mod.f90 \
-	commons/ncusp_mod.f90 commons/numbas_mod.f90 commons/numexp_mod.f90 \
-	commons/optim2_mod.f90 commons/optim_mod.f90 commons/optimo_mod.f90 \
-	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
-	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
-	commons/pars_mod.f90 commons/periodic_mod.f90 commons/phifun_mod.f90 \
-	commons/pjase_mod.f90 commons/pointer_mod.f90 \
+	commons/cphifun_mod.f90 commons/cslatn_mod.f90 \
+	commons/cuspmat4_mod.f90 commons/cuspmat_mod.f90 \
+	commons/delocc_mod.f90 commons/denupdn_mod.f90 \
+	commons/deriv_phifun_mod.f90 commons/derivjas_mod.f90 \
+	commons/dets_mod.f90 commons/dim_mod.f90 commons/distance_mod.f90 \
+	commons/distance_sav_mod.f90 commons/div_v_dmc_mod.f90 \
+	commons/div_v_mod.f90 commons/doefp_mod.f90 commons/dorb_mod.f90 \
+	commons/estcm2_mod.f90 commons/estcum_dmc_mod.f90 \
+	commons/estsum_dmc_mod.f90 commons/ewald_mod.f90 \
+	commons/force_dmc_mod.f90 commons/forcepar_mod.f90 \
+	commons/forcest_dmc_mod.f90 commons/forcest_mod.f90 \
+	commons/gauss_ecp_mod.f90 commons/gradhess_mod.f90 \
+	commons/gradhess_sav_mod.f90 commons/gradhessder_mod.f90 \
+	commons/gradhessdero_mod.f90 commons/gradhessj_nonlin_mod.f90 \
+	commons/gradjerr_mod.f90 commons/iterat_mod.f90 \
+	commons/jacobsave_mod.f90 commons/jasn_mod.f90 commons/jaso_mod.f90 \
+	commons/jasow_mod.f90 commons/jaspar1_mod.f90 commons/jaspar2_mod.f90 \
+	commons/jaspar3_mod.f90 commons/jaspar4_mod.f90 \
+	commons/jaspar6_mod.f90 commons/jaspar_mod.f90 \
+	commons/jasparread_mod.f90 commons/jel_sph2_mod.f90 \
+	commons/kinet_mod.f90 commons/lbas_mod.f90 commons/linear_mod.f90 \
+	commons/linear_orig_mod.f90 commons/linear_sav_mod.f90 \
+	commons/mpiblk_mod.f90 commons/ncusp_mod.f90 commons/numbas_mod.f90 \
+	commons/numexp_mod.f90 commons/optim2_mod.f90 commons/optim_mod.f90 \
+	commons/optimo_mod.f90 commons/orb_mod.f90 commons/orbe_mod.f90 \
+	commons/orbital_grid_mod.f90 commons/orbital_num_mod.f90 \
+	commons/orbpar_mod.f90 commons/pars_mod.f90 commons/periodic_mod.f90 \
+	commons/phifun_mod.f90 commons/pjase_mod.f90 commons/pointer_mod.f90 \
 	commons/pseudo_fahy_mod.f90 commons/pseudo_mod.f90 \
 	commons/pseudo_tm_mod.f90 commons/pworbital_mod.f90 \
 	commons/qua_mod.f90 commons/rlobxy_mod.f90 commons/slater_mod.f90 \
@@ -146,7 +147,8 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/contrl_mod.o commons/contrl_opt2_mod.o \
 	commons/contrl_opt_mod.o commons/contrl_per_mod.o \
 	commons/contrldmc_mod.o commons/cphifun_mod.o commons/cslatn_mod.o \
-	commons/delocc_mod.o commons/denupdn_mod.o commons/deriv_phifun_mod.o \
+	commons/cuspmat4_mod.o commons/cuspmat_mod.o commons/delocc_mod.o \
+	commons/denupdn_mod.o commons/deriv_phifun_mod.o \
 	commons/derivjas_mod.o commons/dets_mod.o commons/dim_mod.o \
 	commons/distance_mod.o commons/distance_sav_mod.o \
 	commons/div_v_dmc_mod.o commons/div_v_mod.o commons/doefp_mod.o \
@@ -362,9 +364,8 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
-constants_mod.o: types_mod.o dmc/dmc.h fit/fit.h vmc/MPI/mpi_qmc.h \
-	vmc/ewald.h vmc/force.h vmc/numbas.h vmc/numorb.h vmc/pseudo.h \
-	vmc/vmc.h
+constants_mod.o: types_mod.o dmc/dmc.h vmc/MPI/mpi_qmc.h vmc/ewald.h \
+	vmc/force.h vmc/numbas.h vmc/numorb.h vmc/pseudo.h vmc/vmc.h
 control_mod.o: all_tools_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h
@@ -405,10 +406,11 @@ intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \
 jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o modules.h
 main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
-	commons/contr3_mod.o control_mod.o debug_mod.o density_mod.o \
-	dipole_moment_mod.o dmc_mod.o extracule_mod.o forces_mod.o grid_mod.o \
-	intracule_mod.o jastrow_mod.o optimization_mod.o orbitals_mod.o \
-	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o
+	commons/contr3_mod.o commons/stepv_mod.o control_mod.o debug_mod.o \
+	density_mod.o dipole_moment_mod.o dmc_mod.o extracule_mod.o \
+	forces_mod.o grid_mod.o intracule_mod.o jastrow_mod.o \
+	optimization_mod.o orbitals_mod.o periodic_jastrow_mod.o print_mod.o \
+	psi_mod.o testing_mod.o
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o
 montecarlo_mod.o: all_tools_mod.o modules.h
 mpi_mod.o: constants_mod.o

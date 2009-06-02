@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to pick up and dump everything needed to restart
 c job where it left off
+      use all_tools_mod
       use constants_mod
       use atom_mod
       use coefs_mod
@@ -150,6 +151,9 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
      &,ei1cm2,ei2cm2,ei3cm2, (pecm2(i),i=1,nforce)
      &,(tpbcm2(i),i=1,nforce),(tjfcm2(i),i=1,nforce),r2cm2,ricm2
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
+      call alloc ('rprob', rprob, NRAD)
+      call alloc ('rprobup', rprobup, NRAD)
+      call alloc ('rprobdn', rprobdn, NRAD)
       read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,NRAD)
       read(10) dfus2ac,dfus2unf(1),dr2ac,dr2un,acc
      &,acc_int,try_int,nbrnch,nodecr

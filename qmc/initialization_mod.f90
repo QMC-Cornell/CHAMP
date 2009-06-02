@@ -143,7 +143,6 @@ module initialization_mod
 !  idbdr=0
 !  idbdt=0
   nparml=0
-  nparmf=0
   nparmcsf=0
   nparmj=0
   nparms=0

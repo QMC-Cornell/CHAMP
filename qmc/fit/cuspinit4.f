@@ -1,22 +1,24 @@
       subroutine cuspinit4(iprin)
 c Written by Cyrus Umrigar
+      use all_tools_mod
       use jaspar4_mod
+      use cuspmat4_mod
       implicit real*8(a-h,o-z)
 
-
-c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
-
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
+      parameter(MTERMS=55)
 
       if(nordc.eq.0) return
-
+      
 c iwc4 contains the indices of the dependent C terms resulting from
 c   the e-e and e-n cusp conditions for each order, starting at 2nd order.
 c   So, the number of dependent C terms is 2*(nordc-1)
 c nvdepend(i,it) is the number of independent variables that the ith
 c   dependent variable, of center-type it, depends on.
 c cdep is the constant of proportionality between dependent and independent variables.
+
+      call alloc ('iwc4', iwc4, 2*(nordc-1))
+      call alloc ('d', d, 2*(nordc-1), MTERMS)
+
       do 10 n=1,2*(nordc-1)
         iwc4(n)=0
         do 10 i=1,MTERMS
@@ -75,13 +77,8 @@ c-----------------------------------------------------------------------
       use optim_mod
       use jaspar4_mod
       use vardep_mod
+      use cuspmat4_mod
       implicit real*8(a-h,o-z)
-
-
-c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
-
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       neqs=2*(nordc-1)
 

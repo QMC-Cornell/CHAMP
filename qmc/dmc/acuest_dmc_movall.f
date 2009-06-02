@@ -1,5 +1,6 @@
       subroutine acuest_dmc_movall
 c Written by Cyrus Umrigar and Claudia Filippi
+      use constants_mod
       use control_mod
       use atom_mod
       use dets_mod
@@ -26,8 +27,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use stats_mod
       use age_mod
       implicit real*8(a-h,o-z)
-!JT      parameter (zero=0.d0,one=1.d0)
-
 
 c routine to accumulate estimators for energy etc.
 

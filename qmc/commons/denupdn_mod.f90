@@ -4,6 +4,6 @@ module denupdn_mod
  implicit none
  save
 
- double precision rprobup(NRAD),rprobdn(NRAD)
+ double precision, allocatable :: rprobup(:),rprobdn(:)
 
 end module denupdn_mod

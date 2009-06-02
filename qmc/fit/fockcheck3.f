@@ -14,8 +14,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
      &,const1=(1.d0-dln2)/12.d0)
 c    &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
-
-      dimension o(2*MORDJ),op(0:2*MORDJ),diff(*)
+      dimension o(2*nord),op(0:2*nord),diff(*)
 
 c f2e o(s^2) from phi20(r12=0)
 c f2n o(r^2) from phi20(r1=0)

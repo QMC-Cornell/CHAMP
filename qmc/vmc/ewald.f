@@ -1813,6 +1813,7 @@ c-----------------------------------------------------------------------
       subroutine pot_nn_ewald(cent,znuc,iwctype,ncent,pecent)
 c Written by Cyrus Umrigar
 
+      use constants_mod
       use dim_mod
       use periodic_mod
       use ewald_mod

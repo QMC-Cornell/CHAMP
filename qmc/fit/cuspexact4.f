@@ -4,6 +4,7 @@ c Written by Cyrus Umrigar
       use atom_mod
       use jaspar3_mod
       use jaspar4_mod
+      use cuspmat4_mod
       implicit real*8(a-h,o-z)
 
 
@@ -11,8 +12,6 @@ c For Jastrow4 NEQSX=2*(MORDJ-1) is sufficient.
 c For Jastrow3 NEQSX=2*MORDJ should be sufficient.
 c I am setting NEQSX=6*MORDJ simply because that is how it was for
 c Jastrow3 for reasons I do not understand.
-c     parameter(NEQSX=2*(MORDJ-1),MTERMS=55)
-      parameter(NEQSX=6*MORDJ,MTERMS=55)
 
 c The last 2 columns are what we care about in the foll. table
 c------------------------------------------------------------------------------
@@ -43,8 +42,6 @@ c All the dependent variables, except one (the one from the 2nd order
 c e-n cusp) depend only on independent variables.  On the other hand
 c the one from the 2nd order e-n cusp depends only on other dependent
 c variables.
-
-      common /cuspmat4/ d(NEQSX,MTERMS),iwc4(NEQSX),nterms
 
       do 100 it=1,nctype
 

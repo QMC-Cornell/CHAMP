@@ -11,8 +11,8 @@ c n_bas2(irb,ict) > 0 : Slater basis
 c                 < 0 : Gaussian basis
 c                 = 0 : asymptotic basis
 
-      use all_tools_mod !JT
-!**RM(7)
+      use all_tools_mod
+      use constants_mod
       use real_spherical_harmonics
       use atom_mod
       use basis1_mod

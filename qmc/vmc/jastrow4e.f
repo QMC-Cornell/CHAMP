@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
+      use constants_mod
       use control_mod
       use atom_mod
       use dets_mod
@@ -21,7 +22,6 @@ c Jastrow 6   must be used with one of isc=6,7
       use jasn_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (half=.5d0,third=1.d0/3.d0,eps=1.d-12)
       parameter (eps=1.d-12)
 
 !!! added WAS
@@ -30,12 +30,9 @@ c Jastrow 6   must be used with one of isc=6,7
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
-
-
-
       dimension x(3,*),v(3,*)
-      dimension uu(-2:MORDJ),ss(-2:MORDJ),tt(-2:MORDJ),rri(-2:MORDJ)
-     &,rrj(-2:MORDJ)
+      dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord)
+     &,rrj(-2:nord)
 
       do 5 i=-2,-1
         uu(i)=0

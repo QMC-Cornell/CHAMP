@@ -243,6 +243,9 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
      &,ecm21,efcm21,(egcm21(i),i=1,nforce)
      &,ei1cm2,ei2cm2,ei3cm2,r2cm2,ricm2
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
+      call alloc ('rprob', rprob, NRAD)
+      call alloc ('rprobup', rprobup, NRAD)
+      call alloc ('rprobdn', rprobdn, NRAD)
       read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,NRAD)
       read(10) dfus2ac,dfus2un,dr2ac,dr2un,acc
      &,acc_int,try_int,nbrnch,nodecr

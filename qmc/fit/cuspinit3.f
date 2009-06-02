@@ -1,23 +1,21 @@
       subroutine cuspinit3(iprin)
 c Written by Claudia Filippi
-
+      use all_tools_mod
+      use constants_mod
       use jaspar3_mod
+      use cuspmat_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(zero=0.d0,one=1.d0)
-
-
-      parameter(NEQSX=6*MORDJ)
       parameter(job=11)
 
-      common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
-
-c     dimension q(2*MORDJ,NEQSX),qp(0:2*MORDJ,NEQSX)
-      dimension qp(0:2*MORDJ,NEQSX)
-      dimension ipvt(NEQSX),work(NEQSX),det(2),cs(NEQSX,NEQSX)
+      dimension qp(0:2*nord,neqs)
+      dimension ipvt(neqs),work(neqs),det(2),cs(neqs,neqs)
 
       ishe=nord
       neqs=2*nord
+
+      call alloc ('cm', cm, neqs, neqs)
+      call alloc ('iwc', iwc, neqs)
 
 c Put the i^th dependent variable in iwc(i)
       jj=1
@@ -76,9 +74,9 @@ c             q(jp,jj)=jsg
   65      write(6,'(i3,'')'',30f8.2)') ii,(cs(ii,jj),jj=1,nvar)
       endif
 
-      call dgefa(cs,NEQSX,nvar,ipvt,info)
+      call dgefa(cs,nvar,nvar,ipvt,info)
       write(6,'(''dgefa status='',i5)') info
-      call dgedi(cs,NEQSX,nvar,ipvt,det,work,job)
+      call dgedi(cs,nvar,nvar,ipvt,det,work,job)
       determinant=det(1)*10.d0**det(2)
       if(iprin.eq.1) write(6,'(''determinat='',3f12.4)')
      &determinant,(det(k),k=1,2)
@@ -110,12 +108,8 @@ c-----------------------------------------------------------------------
       use atom_mod
       use optim_mod
       use vardep_mod
+      use cuspmat_mod
       implicit real*8(a-h,o-z)
-
-
-      parameter(NEQSX=6*MORDJ)
-
-      common /cuspmat/ cm(NEQSX,NEQSX),iwc(NEQSX),neqs,ishe
 
       call alloc ('nvdepend', nvdepend, neqs, nctype)
       call alloc ('iwdepend', iwdepend, neqs, nparmj, nctype)

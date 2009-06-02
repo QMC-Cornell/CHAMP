@@ -56,6 +56,7 @@ c     and gaussian 3-d)
 
 
       use all_tools_mod
+      use constants_mod
       use real_spherical_harmonics
       use atom_mod
       use basis1_mod
