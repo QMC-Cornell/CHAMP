@@ -8,7 +8,6 @@ c by A.D.Guclu, Oct2005.
       use cslater_mod
       use cslaterw_mod
       use dorb_mod
-
       use dets_mod
       use const_mod
       use dim_mod

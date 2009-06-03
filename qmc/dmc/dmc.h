@@ -1,1 +1,0 @@
-      parameter (MWALK=150)

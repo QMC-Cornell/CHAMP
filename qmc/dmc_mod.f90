@@ -102,6 +102,9 @@ module dmc_mod
   call object_modified ('nwprod')
   allocate(wthist(MWALK,0:nwprod,nforce))
 
+  call alloc ('ajacold', ajacold, MWALK, nforce)
+  call alloc ('fratio', fratio, MWALK, nforce)
+
   end subroutine dmc_init
 
 ! ==============================================================================

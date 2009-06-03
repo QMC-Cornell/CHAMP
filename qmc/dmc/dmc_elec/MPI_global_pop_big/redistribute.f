@@ -26,7 +26,6 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       use branch_mod
       implicit real*8(a-h,o-z)
 
-
       dimension nwalk_all(0:nproc),icommunicate_all(0:nproc),
      &iwalk_stack(nproc)
 

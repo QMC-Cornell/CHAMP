@@ -8,5 +8,6 @@ module branch_mod
  double precision, allocatable :: pwt(:,:),wthist(:,:,:), wt(:)
  double precision eigv,eest,wdsumo,wgdsumo,fprod
  integer nwalk
+ integer :: MWALK = 0
 
 end module branch_mod

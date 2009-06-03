@@ -1,5 +1,6 @@
       subroutine splitj_movall
 c Written by Cyrus Umrigar
+      use constants_mod
       use const_mod
       use dim_mod
       use forcepar_mod
@@ -11,10 +12,6 @@ c Written by Cyrus Umrigar
       use stats_mod
       use age_mod
       implicit real*8(a-h,o-z)
-
-!JT      parameter (zero=0.d0,two=2.d0,half=.5d0)
-
-
 
       dimension iwundr(MWALK),wt_sav(MWALK)
 

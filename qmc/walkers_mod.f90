@@ -50,6 +50,7 @@ module walkers_mod
    write(6,*)
    write(6,'(a)') 'HELP for walkers menu:'
    write(6,'(a)') ' walkers'
+   write(6,'(a)') '  MWALK = [integer] max number of walkers (default=150)'
    write(6,'(a)') '  file_mc_configs_in  = [string] : input file for walkers (default=mc_configs).'
    write(6,'(a)') '  file_mc_configs_out = [string] : output file for walkers (default=mc_configs_new).'
    write(6,'(a)') '  check_initial_walkers = [string] : check electrons distribution on atoms in initial walkers (default=false).'
@@ -61,6 +62,7 @@ module walkers_mod
    write(6,'(a)') '  generate_from_vmc = [bool] generate walkers from a VMC run (default=false)'
    write(6,'(a)') ' end'
    write(6,*)
+
 
   case ('file_mc_configs_in')
    call get_next_value (file_mc_configs_in)

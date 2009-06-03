@@ -12,10 +12,8 @@ c Written by Claudia Filippi
       use branch_mod
       use stats_mod
       use age_mod
+      use velratio_mod
       implicit real*8(a-h,o-z)
-
-
-      common /velratio/ fratio(MWALK,MFORCE)
 
       dimension istatus(MPI_STATUS_SIZE)
 

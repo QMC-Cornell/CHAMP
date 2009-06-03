@@ -63,7 +63,6 @@ module constants_mod
   include 'vmc/pseudo.h'
   include 'vmc/ewald.h'
   include 'vmc/force.h'
-  include 'dmc/dmc.h'
   include 'vmc/numbas.h'
   include 'vmc/numorb.h'
 

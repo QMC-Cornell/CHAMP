@@ -53,6 +53,7 @@ c Written by Cyrus Umrigar
       use rlobxy_mod
       use pairden_mod
       use fourier_mod
+      use branch_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-4)
@@ -494,6 +495,7 @@ c    & system run dmc or dmc.mov1 with idmc < 0'
         write(6,'(''no. of steps/block ='',t31,i10)') nstep
         write(6,'(''no. of blocks after eq.='',t31,i10)') nblk
         write(6,'(''no. of blocks before eq. ='',t31,i10)') nblkeq
+        MWALK = nconf+50 ! default value of MWALK
         if(index(mode,'dmc').ne.0) then
           write(6,'(''target walker population/processor='',t36,i5)') nconf
           if(nconf.le.0) stop 'target population <= 0'

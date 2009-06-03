@@ -38,10 +38,9 @@ c job where it left off
       use estcm2_mod
       use stats_mod
       use age_mod
+      use velratio_mod
       implicit real*8(a-h,o-z)
       parameter (small=1.d-6)
-
-      common /velratio/ fratio(MWALK,MFORCE)
 
       character*13 filename
 

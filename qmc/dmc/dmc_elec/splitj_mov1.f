@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 
       use all_tools_mod
+      use constants_mod
       use control_mod
       use const_mod
       use dim_mod
@@ -13,13 +14,8 @@ c Written by Cyrus Umrigar
       use branch_mod
       use stats_mod
       use age_mod
+      use velratio_mod
       implicit real*8(a-h,o-z)
-
-!JT   parameter (zero=0.d0,two=2.d0,half=.5d0)
-
-c     common /forcest_dmc/ fgcum(MFORCE),fgcm2(MFORCE)
-      common /velratio/ fratio(MWALK,MFORCE)
-
 
       dimension iwundr(MWALK),wt_sav(MWALK)
 

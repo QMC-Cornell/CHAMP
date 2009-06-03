@@ -4,6 +4,7 @@ module jacobsave_mod
  implicit none
  save
 
- double precision ajacob,ajacold(MWALK,MFORCE)
+ double precision              :: ajacob
+ double precision, allocatable :: ajacold(:,:)
 
 end module jacobsave_mod

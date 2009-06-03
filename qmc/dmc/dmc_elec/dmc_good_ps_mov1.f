@@ -76,11 +76,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch_dmc_opt_mod
       use pairden_mod
       use fourier_mod
+      use velratio_mod
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
 
-      common /velratio/ fratio(MWALK,MFORCE)
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
 
       dimension xstrech(3,nelec)

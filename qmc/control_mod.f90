@@ -33,6 +33,9 @@ module control_mod
   write(6,*)
   write(6,'(a)') 'Beginning of control menu --------------------------------------------------------------------------------'
 
+! initialization
+  MWALK=-1
+
 ! loop over menu lines
   do
   call get_next_word (word)
@@ -50,7 +53,7 @@ module control_mod
    write(6,'(a)') ' nblk = [integer]: number of blocks'
    write(6,'(a)') ' nblkeq = [integer]: number of equilibration blocks'
    write(6,'(a)') ' nconf = [integer]: target walker population (default=100)'
-!   write(6,'(a)') ' mwalk = [integer]: max number walkers (default=nconf+50)'
+   write(6,'(a)') ' mwalk = [integer]: max number walkers (default=nconf+50)'
    write(6,'(a)') ' nconf_new = [integer]: number of walkers to write out'
    write(6,'(a)') ' idump = [integer]: write dump file for restart (default: 0)'
    write(6,'(a)') ' irstar = [integer]: restart from dump file (default: 0)'
@@ -92,6 +95,7 @@ module control_mod
   case ('nblkeq'); call get_next_value (nblkeq)
   case ('nconf');  call get_next_value (nconf); call object_modified ('nconf')
   case ('nconf_new'); call get_next_value (nconf_new)
+  case ('mwalk');  call get_next_value (MWALK)
   case ('idump');  call get_next_value (idump)
   case ('irstar'); call get_next_value (irstar)
   case ('isite');  call get_next_value (isite)
@@ -101,17 +105,17 @@ module control_mod
   case ('deltar'); call get_next_value (deltar)
   case ('deltat'); call get_next_value (deltat)
   case ('fbias');  call get_next_value (fbias)
-  case ('idmc');  call get_next_value (idmc)
-  case ('ipq');  call get_next_value (ipq)
+  case ('idmc');   call get_next_value (idmc)
+  case ('ipq');    call get_next_value (ipq)
   case ('itau_eff');  call get_next_value (itau_eff)
   case ('iacc_rej');  call get_next_value (iacc_rej)
   case ('icross');  call get_next_value (icross)
   case ('icuspg');  call get_next_value (icuspg)
   case ('idiv_v');  call get_next_value (idiv_v)
-  case ('icut_br');  call get_next_value (icut_br)
+  case ('icut_br'); call get_next_value (icut_br)
   case ('icut_e');  call get_next_value (icut_e)
   case ('nfprod');  call get_next_value (nfprod); call object_modified ('nfprod')
-  case ('tau');  call get_next_value (tau)
+  case ('tau');     call get_next_value (tau)
 
   case ('vmc')
    call vmc_menu
@@ -160,6 +164,14 @@ module control_mod
   end select
 
   enddo ! end loop over menu lines
+
+! default value of MWALK
+  if (MWALK == -1) then
+    MWALK = nconf + 50
+  endif
+  if (MWALK < nconf) then
+    call die (lhere, 'MWALK='+MWALK+' < nconf='+nconf)
+  endif
 
 ! printing
   if (use_parser) then

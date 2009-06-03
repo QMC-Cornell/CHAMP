@@ -71,11 +71,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use stats_mod
       use age_mod
       use branch_dmc_opt_mod
+      use velratio_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
-
-      common /velratio/ fratio(MWALK,MFORCE)
 
       dimension rvmino(3),rvminn(3),xstrech(3,nelec)
       dimension xnew(3),vnew(3,nelec)
