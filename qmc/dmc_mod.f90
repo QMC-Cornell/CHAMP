@@ -73,6 +73,10 @@ module dmc_mod
   call alloc ('peiow', peiow, MWALK, nforce)
   call alloc ('d2ow', d2ow, MWALK, nforce)
 
+  call alloc ('eoldw', eoldw, MWALK, nforce)
+  call alloc ('pwt', pwt, MWALK, nforce)
+  call alloc ('wt', wt, MWALK)
+
   call alloc ('div_vow', div_vow, nelec, MWALK)
   
   call alloc ('slmuiw', slmuiw, nup_square, ndetup, MWALK)
@@ -90,6 +94,13 @@ module dmc_mod
 
   call alloc ('denergy_old_dmc', denergy_old_dmc, nparm, MWALK)
   call alloc ('wi_w', wi_w, nparm, MWALK)
+
+  call object_modified ('nfprod')
+  allocate(wtgen(0:nfprod))
+  allocate(ff(0:nfprod))
+
+  call object_modified ('nwprod')
+  allocate(wthist(MWALK,0:nwprod,nforce))
 
   end subroutine dmc_init
 

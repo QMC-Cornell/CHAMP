@@ -110,7 +110,7 @@ module control_mod
   case ('idiv_v');  call get_next_value (idiv_v)
   case ('icut_br');  call get_next_value (icut_br)
   case ('icut_e');  call get_next_value (icut_e)
-  case ('nfprod');  call get_next_value (nfprod)
+  case ('nfprod');  call get_next_value (nfprod); call object_modified ('nfprod')
   case ('tau');  call get_next_value (tau)
 
   case ('vmc')

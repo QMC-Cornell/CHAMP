@@ -40,9 +40,10 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/jel_sph2_mod.f90 commons/kinet_mod.f90 commons/lbas_mod.f90 \
 	commons/linear_mod.f90 commons/linear_orig_mod.f90 \
 	commons/linear_sav_mod.f90 commons/mpiblk_mod.f90 \
-	commons/ncusp_mod.f90 commons/numbas_mod.f90 commons/numexp_mod.f90 \
-	commons/optim2_mod.f90 commons/optim_mod.f90 commons/optimo_mod.f90 \
-	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
+	commons/mpioffset_mod.f90 commons/ncusp_mod.f90 \
+	commons/numbas_mod.f90 commons/numexp_mod.f90 commons/optim2_mod.f90 \
+	commons/optim_mod.f90 commons/optimo_mod.f90 commons/orb_mod.f90 \
+	commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
 	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
 	commons/pairden_mod.f90 commons/pars_mod.f90 commons/periodic_mod.f90 \
 	commons/phifun_mod.f90 commons/pjase_mod.f90 commons/pointer_mod.f90 \
@@ -166,10 +167,10 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/jaspar6_mod.o commons/jaspar_mod.o commons/jasparread_mod.o \
 	commons/jel_sph2_mod.o commons/kinet_mod.o commons/lbas_mod.o \
 	commons/linear_mod.o commons/linear_orig_mod.o \
-	commons/linear_sav_mod.o commons/mpiblk_mod.o commons/ncusp_mod.o \
-	commons/numbas_mod.o commons/numexp_mod.o commons/optim2_mod.o \
-	commons/optim_mod.o commons/optimo_mod.o commons/orb_mod.o \
-	commons/orbe_mod.o commons/orbital_grid_mod.o \
+	commons/linear_sav_mod.o commons/mpiblk_mod.o commons/mpioffset_mod.o \
+	commons/ncusp_mod.o commons/numbas_mod.o commons/numexp_mod.o \
+	commons/optim2_mod.o commons/optim_mod.o commons/optimo_mod.o \
+	commons/orb_mod.o commons/orbe_mod.o commons/orbital_grid_mod.o \
 	commons/orbital_num_mod.o commons/orbpar_mod.o commons/pairden_mod.o \
 	commons/pars_mod.o commons/periodic_mod.o commons/phifun_mod.o \
 	commons/pjase_mod.o commons/pointer_mod.o commons/pseudo_fahy_mod.o \
@@ -367,8 +368,8 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
-constants_mod.o: types_mod.o dmc/dmc.h vmc/MPI/mpi_qmc.h vmc/ewald.h \
-	vmc/force.h vmc/numbas.h vmc/numorb.h vmc/pseudo.h
+constants_mod.o: types_mod.o dmc/dmc.h vmc/ewald.h vmc/force.h vmc/numbas.h \
+	vmc/numorb.h vmc/pseudo.h
 control_mod.o: all_tools_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h

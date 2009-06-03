@@ -567,6 +567,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
         read(5,*)
         read(5,*)
       endif
+      call object_modified ('nfprod')
 
       read(5,*) nloc,numr,nforce,nefp
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr

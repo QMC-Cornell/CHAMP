@@ -9,9 +9,9 @@ c Richard Hennig also fixed the load balancing.
 
       use all_tools_mod
       use confg_mod
+      use mpi_mod
+      use mpioffset_mod
       implicit real*8(a-h,o-z)
-
-      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension diff(*)
 

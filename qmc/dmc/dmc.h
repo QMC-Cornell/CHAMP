@@ -1,2 +1,1 @@
-!      parameter (MWALK=250,MFPROD=1000,MFPRD1=MFPROD-1)
-      parameter (MWALK=150,MFPROD=1000,MFPRD1=MFPROD-1)
+      parameter (MWALK=150)

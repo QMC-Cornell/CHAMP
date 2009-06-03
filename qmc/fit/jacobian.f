@@ -21,13 +21,13 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaspar2_mod
       use confg_mod
       use const_mod
+      use mpi_mod
+      use mpioffset_mod
       implicit real*8(a-h,o-z)
 
 c epsder1f=sqrt(max(eps_diff,dbl_epsilon))
 c     parameter (eps_diff=1.d-15,dbl_epsilon=2.2204460492503131d-16
 c    &,epsder1f=3.16227766016838d-8)
-
-      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension parm(nparm),ajac(ndata2,nparm),velocity(3,nelec),div_v(nelec)
 

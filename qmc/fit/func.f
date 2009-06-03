@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar, modified by Claudia Filippi
 c If iflag=0 then it computes diffs otherwise it just does sum of squares
       use constants_mod
+      use mpi_mod
       use basic_tools_mod
       use fitdet_mod
       use atom_mod
@@ -25,13 +26,10 @@ c If iflag=0 then it computes diffs otherwise it just does sum of squares
       use ncusp_mod
       use confg_mod
       use const_mod
+      use mpioffset_mod
       implicit real*8(a-h,o-z)
 
-c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
-
       common /fcn_calls/icalls
-
-      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension velocity(3,nelec),div_v(nelec)
 

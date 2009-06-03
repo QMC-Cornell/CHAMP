@@ -40,7 +40,7 @@ module accumulation_mod
 
   call object_modified_by_index (nwalk_index)
 
-  do i=0,MFPRD1
+  do i=0,nfprod
      wtgen(i)=nconf
      ff(i)=one
   enddo

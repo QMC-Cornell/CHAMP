@@ -15,6 +15,7 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
 # if defined (MPI)
       use all_tools_mod
+      use mpi_mod
       use control_mod
       use dmc_mod
       use const_mod
@@ -26,8 +27,8 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       implicit real*8(a-h,o-z)
 
 
-      dimension nwalk_all(0:MPROC),icommunicate_all(0:MPROC),
-     &iwalk_stack(MPROC)
+      dimension nwalk_all(0:nproc),icommunicate_all(0:nproc),
+     &iwalk_stack(nproc)
 
 c Use all_gather rather than gather, so that all processors can do this
 c computation and there is no need to scatter the computed information to processors.

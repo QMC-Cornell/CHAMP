@@ -357,7 +357,7 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
 
       call object_modified ('nwalk')
 
-      do 70 i=0,MFPRD1
+      do 70 i=0,nfprod
         wtgen(i)=nconf_global
   70    ff(i)=one
 

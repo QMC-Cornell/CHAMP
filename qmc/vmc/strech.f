@@ -125,9 +125,9 @@ c read force parameters and set up n-n potential energy at displaced positions
       if(index(mode,'dmc').ne.0) then
         read(3,*) nwprod,itausec
         write(6,'(''nwprod,itausec='',2i4)') nwprod,itausec
-        if(nwprod.gt.MFORCE_WT_PRD) stop 'nwprod gt MFORCE_WT_PRD'
         if(nwprod.lt.1) stop 'nwprod must be 1 or more'
         if(itausec.ne.0.and.itausec.ne.1) stop 'itausec must be 0 or 1'
+        call object_modified ('nwprod')
       endif
 
       close(3)

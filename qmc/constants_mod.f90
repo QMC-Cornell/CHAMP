@@ -66,7 +66,6 @@ module constants_mod
   include 'dmc/dmc.h'
   include 'vmc/numbas.h'
   include 'vmc/numorb.h'
-  include 'vmc/MPI/mpi_qmc.h'
 
 # if defined (MPI)
    include 'mpif.h'

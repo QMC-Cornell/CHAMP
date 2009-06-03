@@ -12,6 +12,7 @@ c 3) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions
 c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
 c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use all_tools_mod
+      use mpi_mod
       use constants_mod
       use control_mod
       use allocations_mod
@@ -42,17 +43,12 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       use ncusp_mod
       use confg_mod
       use contrl_opt_mod
+      use mpioffset_mod
       implicit real*8(a-h,o-z)
-c     character*16 mode
       character*80 fmt
-c      character*30 section
       character*10 mesg
       logical converg,analytic,cholesky
       external func,jacobian
-
-c     common /contr3/ mode
-
-c     common /wcsf/ frac(ICX,MDET),icsf(ICSFX)
 
       common /focsav/ a4sav,a5sav,a6sav,a7sav
 
@@ -126,6 +122,9 @@ c     mode='fit         '
       call alloc ('uwdiff', uwdiff, ndata)
       call alloc ('wght', wght, ndata)
       call alloc ('dvpdv', dvpdv, ndata)
+
+      allocate(ircounts(0:nproc))
+      allocate(idispls(0:nproc))
 
 c Calculate distances of atoms from center for use in cusorb
 !JT comment out because dist_cent is not used

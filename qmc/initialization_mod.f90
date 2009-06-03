@@ -53,6 +53,7 @@ module initialization_mod
   icut_br=0
   icut_e=0
   nfprod=50
+  call object_modified ('nfprod')
   tau=0.01
   nloc=0
   call object_modified ('nloc')

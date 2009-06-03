@@ -4,9 +4,9 @@ module branch_mod
  implicit none
  save
 
- double precision wtgen(0:MFPRD1),ff(0:MFPRD1),eoldw(MWALK,MFORCE)
- double precision pwt(MWALK,MFORCE),wthist(MWALK,0:MFORCE_WT_PRD,MFORCE)
- double precision wt(MWALK),eigv,eest,wdsumo,wgdsumo,fprod
+ double precision, allocatable :: wtgen(:),ff(:),eoldw(:,:)
+ double precision, allocatable :: pwt(:,:),wthist(:,:,:), wt(:)
+ double precision eigv,eest,wdsumo,wgdsumo,fprod
  integer nwalk
 
 end module branch_mod

@@ -4,9 +4,9 @@ c Written by Claudia Filippi and Cyrus Umrigar
 
       use all_tools_mod
       use confg_mod
+      use mpi_mod
+      use mpioffset_mod
       implicit real*8(a-h,o-z)
-
-      common /mpioffset/ ircounts(0:MPROC),idispls(0:MPROC)
 
       dimension ajac(ndata2,nparm)
 

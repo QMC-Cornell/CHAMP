@@ -25,6 +25,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use denupdn_mod
       use stepv_mod
       use jaspar1_mod
+      use mpi_mod
       implicit real*8(a-h,o-z)
 
       parameter(small=1.d-6)
@@ -37,8 +38,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /forcjac/ ajacob
 
-      dimension irn(4,0:MPROC),istatus(MPI_STATUS_SIZE)
-      dimension ircounts(0:MPROC),idispls(0:MPROC)
+      dimension irn(4,0:nproc),istatus(MPI_STATUS_SIZE)
+      dimension ircounts(0:nproc),idispls(0:nproc)
 
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(nctype)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
@@ -49,6 +50,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
      &,csf_coefx(ndet)
       dimension xstrech(3,nelec)
+      integer nprocx
 
       rewind 10
       if(idtask.eq.0) write(10) nproc

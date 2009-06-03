@@ -45,10 +45,6 @@ program champ
    call die (lhere, 'error in mpi_comm_size.')
   endif
 
-  if(nproc > MPROC) then
-   call die (lhere, 'nproc > MPROC.')
-  endif
-
 ! Close standard output if not the master
   if (idtask.ne.0) then
    close(6)

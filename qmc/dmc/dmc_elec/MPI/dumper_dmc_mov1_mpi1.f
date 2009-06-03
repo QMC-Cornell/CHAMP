@@ -45,7 +45,7 @@ c job where it left off
 
       character*13 filename
 
-      dimension irn(4,0:MPROC)
+      dimension irn(4,0:nproc)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(ncent)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
@@ -55,6 +55,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
      &,csf_coefx(ndet)
       dimension istatus(MPI_STATUS_SIZE)
+      integer nprocx
 
       if(nforce.gt.1) call strech(xoldw,xoldw,ajacob,1,0)
 
