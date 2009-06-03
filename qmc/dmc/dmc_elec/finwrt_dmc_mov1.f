@@ -3,10 +3,10 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c routine to print out final results
 
       use all_tools_mod
+      use constants_mod
       use control_mod
       use main_menu_mod
       use atom_mod
-
       use contrl_mod
       use const_mod
       use dim_mod
@@ -27,27 +27,17 @@ c routine to print out final results
       use estcm2_mod
       use stats_mod
       use age_mod
+      use pairden_mod
+      use fourier_mod
       implicit real*8(a-h,o-z)
-
-!JT   parameter (one=1.d0,two=2.d0,half=.5d0)
 
 c     common /force_dmc/ itausec,nwprod
 
 c /config_dmc/ included to print out xoldw and voldw for old walkers
-      common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
-     &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
-     &delxi,xmax,xfix(3),ifixe
-      common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
-     &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
-     &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
       character*80 fmt
-!JT      character*80 title,fmt
-!JT      character*24 date
 
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2

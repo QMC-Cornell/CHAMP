@@ -99,7 +99,6 @@
 !      subroutine fitbasis(rad,vbase,it)
 !
 !      implicit real*8(a-h,o-z)
-!      include 'vmc.h'
 !      include 'fitefp.h'
 !
 !      common /efpbasis/ dlrdesc(MEFP_FIT,MCTYPE),dlrfixc(MEFP_FIT,MCTYPE),

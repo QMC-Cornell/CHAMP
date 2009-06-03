@@ -60,7 +60,6 @@ module constants_mod
   integer, parameter    :: max_objects_nb = 1500
 
 ! dimension parameters
-  include 'vmc/vmc.h'
   include 'vmc/pseudo.h'
   include 'vmc/ewald.h'
   include 'vmc/force.h'

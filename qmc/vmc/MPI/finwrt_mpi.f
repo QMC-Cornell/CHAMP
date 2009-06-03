@@ -5,17 +5,12 @@ c routine to print out final results
 # if defined (MPI)
 
       use mpi_mod
-
+      use constants_mod
       use forcepar_mod
       use denupdn_mod
       use stepv_mod
+      use pairden_mod
       implicit real*8(a-h,o-z)
-c     character*16 mode
-c     character*80 title
-c     character*24 date
-
-
-c     parameter (one=1.d0,half=.5d0)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
@@ -24,11 +19,6 @@ c     parameter (one=1.d0,half=.5d0)
 c     common /forcest/ fcum(MFORCE),fcm2(MFORCE)
 c     common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 c     common /forcjac/ ajacob
-      common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
-     &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
-     &delxi,xmax,xfix(3),ifixe
 
 c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)

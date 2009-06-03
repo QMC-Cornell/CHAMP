@@ -7,7 +7,6 @@ c will be close to each other.
 
       use dim_mod
       implicit real*8(a-h,o-z)
-      include '../vmc/vmc.h'
 
       parameter(half=0.5d0,eps=1.d-1)
 

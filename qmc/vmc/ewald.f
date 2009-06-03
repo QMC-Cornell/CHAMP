@@ -1733,7 +1733,6 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'ewald.h'
 
       dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*),y(*)
@@ -1755,7 +1754,6 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'ewald.h'
 
       dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*)
@@ -2107,7 +2105,6 @@ c Needed for orbitals and their Laplacian.
       use dim_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'ewald.h'
 
       dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
@@ -2234,7 +2231,6 @@ c Calculate cos_sum and sin_sum for nuclei
       use dim_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'ewald.h'
 
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
@@ -2284,7 +2280,6 @@ c Calculate cos_sum and sin_sum for pseudopotentials
       use dim_mod
       implicit real*8(a-h,o-z)
 
-      include 'vmc.h'
       include 'ewald.h'
 
       dimension y_psp(NGNORMX,*),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)

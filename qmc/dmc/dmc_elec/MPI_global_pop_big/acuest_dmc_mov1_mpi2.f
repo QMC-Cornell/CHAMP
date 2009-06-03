@@ -34,13 +34,9 @@ c routine to accumulate estimators for energy etc.
       use estcm2_mod
       use stats_mod
       use age_mod
+      use pairden_mod
       implicit real*8(a-h,o-z)
 
-      common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
-     &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
-     &delxi,xmax,xfix(3),ifixe
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
@@ -607,6 +603,16 @@ c Zero out estimators for charge density of atom.
    90   rprob(i)=zero
 
 c Zero out estimators for pair densities:
+      if (ifixe.ne.0) then
+      allocate (den2d_t(-NAX:NAX,-NAX:NAX))
+      allocate (den2d_u(-NAX:NAX,-NAX:NAX))
+      allocate (den2d_d(-NAX:NAX,-NAX:NAX))
+      allocate (xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probut(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probud(0:NAX,-NAX:NAX,-NAX:NAX))
       do 100 i2=-NAX,NAX
         do 100 i3=-NAX,NAX
           den2d_t(i2,i3)=0
@@ -619,7 +625,7 @@ c Zero out estimators for pair densities:
             xx0probut(i1,i2,i3)=0
             xx0probuu(i1,i2,i3)=0
   100       xx0probud(i1,i2,i3)=0
-
+      endif
 
       call grad_hess_jas_save
 # endif

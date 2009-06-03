@@ -33,16 +33,10 @@ c routine to accumulate estimators for energy etc.
       use estcm2_mod
       use stats_mod
       use age_mod
+      use pairden_mod
+      use fourier_mod
       implicit real*8(a-h,o-z)
 
-      common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
-     &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
-     &delxi,xmax,xfix(3),ifixe
-      common /fourier/ fourierrk_u(0:NAX,0:NAK1),fourierrk_d(0:NAX,0:NAK1)
-     &,fourierrk_t(0:NAX,0:NAK1),fourierkk_u(-NAK2:NAK2,-NAK2:NAK2),fourierkk_d(-NAK2:NAK2,-NAK2:NAK2)
-     &,fourierkk_t(-NAK2:NAK2,-NAK2:NAK2),delk1,delk2,fmax1,fmax2,ifourier
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -508,6 +502,16 @@ c Zero out estimators for charge density of atom.
    90   rprob(i)=zero
 
 c Zero out estimators for pair densities:
+      if (ifixe.ne.0) then
+      allocate (den2d_t(-NAX:NAX,-NAX:NAX))
+      allocate (den2d_u(-NAX:NAX,-NAX:NAX))
+      allocate (den2d_d(-NAX:NAX,-NAX:NAX))
+      allocate (xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probut(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX))
+      allocate (xx0probud(0:NAX,-NAX:NAX,-NAX:NAX))
       do 100 i2=-NAX,NAX
         do 100 i3=-NAX,NAX
           den2d_t(i2,i3)=0
@@ -520,6 +524,14 @@ c Zero out estimators for pair densities:
             xx0probut(i1,i2,i3)=0
             xx0probuu(i1,i2,i3)=0
   100       xx0probud(i1,i2,i3)=0
+      endif
+      if (ifourier.ne.0) then
+      allocate(fourierrk_t(0:NAX,0:NAK1))
+      allocate(fourierrk_u(0:NAX,0:NAK1))
+      allocate(fourierrk_d(0:NAX,0:NAK1))
+      allocate(fourierkk_t(-NAK2:NAK2,-NAK2:NAK2))
+      allocate(fourierkk_u(-NAK2:NAK2,-NAK2:NAK2))
+      allocate(fourierkk_d(-NAK2:NAK2,-NAK2:NAK2))
       do 110 i1=0,NAX
         do 110 i2=0,NAK1
           fourierrk_t(i1,i2)=0
@@ -530,6 +542,7 @@ c Zero out estimators for pair densities:
           fourierkk_t(i1,i2)=0
           fourierkk_u(i1,i2)=0
   120     fourierkk_d(i1,i2)=0
+      endif
 
       call grad_hess_jas_save
 

@@ -12,13 +12,8 @@ c (not impossible, can be optimized)
       use dets_mod
       use const_mod
       use dim_mod
+      use pairden_mod
       implicit real*8(a-h,o-z)
-
-      common /pairden/ xx0probut(0:NAX,-NAX:NAX,-NAX:NAX),xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probud(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX),
-     &xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX),xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX),
-     &den2d_t(-NAX:NAX,-NAX:NAX),den2d_d(-NAX:NAX,-NAX:NAX),den2d_u(-NAX:NAX,-NAX:NAX),
-     &delxi,xmax,xfix(3),ifixe
 
       dimension xold(3,nelec),xnew(3,nelec)
 
