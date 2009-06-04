@@ -27,11 +27,7 @@ c                 = 0 : asymptotic basis
       integer :: itemp1
 !**EndRM(7)
 
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-
-
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-
       dimension wfv(3,MRWF),xc(3),th(0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS)
 
 c Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
@@ -288,14 +284,7 @@ c                 < 0 : Gaussian basis
       use const_mod
       implicit real*8(a-h,o-z)
 
-c     common /const/ pi,hb,etrial,delta,deltai,fbias,nelec,imetro,ipr
-!**MS(jellium03-1;6Mar08)
-! Declare arrays upto o-orbitals (l=12)
-!**EndMS(jellium03-1)
-
-
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
-
       dimension wfv(3,MRWF),xc(3),ph(-ML_BAS:ML_BAS)
 
       ider=0

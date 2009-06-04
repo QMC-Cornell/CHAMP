@@ -18,8 +18,9 @@ c     character*20 lcent
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
-      dimension x(MRWF_PTS),work(MRWF_PTS),y(NCOEF),dmatr(NCOEF*NCOEF)
-     &,l(MRWF),icusp(nctype)
+      double precision, allocatable :: x(:),work(:)
+      integer, allocatable :: l(:)
+      dimension y(NCOEF),dmatr(NCOEF*NCOEF),icusp(nctype)
 
 c nrbas = number of radial basis functions for each center
 
@@ -27,6 +28,9 @@ c igrid = 1 linear              r(i+1)=h_bas+r(i), r(1)=r0_bas
 c         2 exponential         r(i+1)=exp_h_bas*r(i), r(1)=r0_bas
 c         3 shifted exponential r(i+1)=r0_bas*(exp_h_bas**(i-1)-1)
 c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
+
+      MRWF = 0
+      MRWF_PTS = 0
 
       if(iwf.lt.10) then
         write(wforce,'(i1)') iwf
@@ -38,13 +42,9 @@ c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
 
       call alloc ('exp_h_bas', exp_h_bas, nctype)
       call alloc ('r0_bas', r0_bas, nctype)
-      call alloc ('rwf', rwf, MRWF_PTS, MRWF, nctype, nwf)
-      call alloc ('d2rwf', d2rwf, MRWF_PTS, MRWF, nctype, nwf)
       call alloc ('nrbas', nrbas, nctype)
       call alloc ('igrid', igrid, nctype)
       call alloc ('nr', nr, nctype)
-      call alloc ('ce', ce, NCOEF, MRWF, nctype, nwf)
-      call alloc ('ae', ae, 2, MRWF, nctype, nwf)
 
       write(6,'(/,''Reading numerical radial basis functions'')')
       do 100 ic=1,nctype
@@ -75,8 +75,9 @@ c       read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
         write(6,'(''ic,nrbas,igrid,nr,exp_h_bas,r0_bas,icusp=''i3,3i5,2f10.6,i3)')
      &  ic,nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
 
-        if(nrbas(ic).gt.MRWF) stop 'nrbas gt MRWF'
-        if(nr(ic).gt.MRWF_PTS) stop 'nr gt MRWF_PTS'
+        MRWF = max (MRWF, nrbas(ic))
+        MRWF_PTS = max (MRWF_PTS, nr(ic))
+
         if(igrid(ic).ne.1.and.igrid(ic).ne.2.and.igrid(ic).ne.3)
      &  stop 'grid not implemented'
         if(igrid(ic).eq.3 .and. r0_bas(ic).gt.0.d0 .and. r0_bas(ic).lt.1.d0)
@@ -84,8 +85,11 @@ c       read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
         if(igrid(ic).eq.2 .and. r0_bas(ic).gt.0.d0 .and. r0_bas(ic).gt.1.d0)
      &  stop 'For igrid=2 r0_bas should be the last point not the first point on the grid'
 
+        call alloc ('l', l, MRWF)
         if(nloc.eq.0) read(21,*) (l(irb),irb=1,nrbas(ic))
 
+        call alloc ('x', x, MRWF_PTS)
+        call alloc ('rwf', rwf, MRWF_PTS, MRWF, nctype, nwf)
         do 10 ir=1,nr(ic)
           read(21,*) x(ir),(rwf(ir,irb,ic,iwf),irb=1,nrbas(ic))
    10     continue
@@ -105,6 +109,9 @@ c         r0_bas(ic)=x(nr(ic))
           write(6,'(''Grid parameters deduced from grid values are, r0_bas(ic),exp_h_bas(ic)='',9f10.5)')
      &    r0_bas(ic),exp_h_bas(ic)
         endif
+
+        call alloc ('ce', ce, NCOEF, MRWF, nctype, nwf)
+        call alloc ('ae', ae, 2, MRWF, nctype, nwf)
 
         do 100 irb=1,nrbas(ic)
 
@@ -223,8 +230,9 @@ c     &    stop 'fit of radial function at large radii not good'
    40   enddo
         if(ipr.ge.1) write(6,*) 'dwf1,dwfn',dwf1,dwfn
 
-        call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,
-     &  d2rwf(1,irb,ic,iwf),work)
+        call alloc ('d2rwf', d2rwf, MRWF_PTS, MRWF, nctype, nwf)
+        call alloc ('work', work, MRWF_PTS)
+        call spline2(x,rwf(1,irb,ic,iwf),nr(ic),dwf1,dwfn,d2rwf(1,irb,ic,iwf),work)
 
       close(21)
   100 continue

@@ -269,9 +269,11 @@ c Analytical basis functions
    20     coef(j,i,iadd_diag)=coef(j,i,1)
         do 30 j=1,nbasis
    30     zex(j,iadd_diag)=zex(j,1)
+        if(numr.le.0) then
         do 35 ictype=1,nctype
           do 35 irwf=1,MRWF
    35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
+        endif
       endif
       if(ibasis.ge.4 .and. ibasis.le.6) then
         do 37 i=1,orb_tot_nb
@@ -362,6 +364,7 @@ c Written by Cyrus Umrigar
       use bparm_mod
       use optimo_mod
       use orbpar_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
 c     common /contrl_per/ iperiodic,ibasis
 
@@ -434,13 +437,15 @@ c Jastrow
        endif
        
 !      save exponents
-       call object_provide ('nctype')
-       call object_alloc ('zex_sav', zex_sav, nbasis)
-       call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
-       zex_sav (1:nbasis) = zex (1:nbasis,1)
-       zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
-       call object_modified ('zex_sav')
-       call object_modified ('zex2_sav')
+       if (numr.le.0) then
+         call object_provide ('nctype')
+         call object_alloc ('zex_sav', zex_sav, nbasis)
+         call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
+         zex_sav (1:nbasis) = zex (1:nbasis,1)
+         zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
+         call object_modified ('zex_sav')
+         call object_modified ('zex2_sav')
+       endif
       endif
 
 !     save nuclear coordinates
@@ -493,12 +498,14 @@ c-----------------------------------------------------------------------
        endif
        
 !      restore exponents (must restore only for iwf=1 to avoid problems)
-       call object_valid_or_die ('zex_sav')
-       call object_valid_or_die ('zex2_sav')
-       zex (1:nbasis,1) = zex_sav (1:nbasis)
-       zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
-       call object_modified ('zex')
-       call object_modified ('zex2')
+       if (numr.le.0) then
+         call object_valid_or_die ('zex_sav')
+         call object_valid_or_die ('zex2_sav')
+         zex (1:nbasis,1) = zex_sav (1:nbasis)
+         zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
+         call object_modified ('zex')
+         call object_modified ('zex2')
+       endif
       endif
 
 !     restore nuclear coordinates
@@ -532,6 +539,7 @@ c Saves the best wf yet and writes it out at end of run
       use bparm_mod
       use optimo_mod
       use orbpar_mod
+      use numbas_mod
       implicit real*8(a-h,o-z)
 
       character*30 fmt
@@ -598,10 +606,12 @@ c Jastrow
        call object_modified ('coef_orb_on_norm_basis_best')
        
 !      save exponents
-       call object_provide ('nctype')
-       call object_alloc ('zex_best', zex_best, nbasis)
-       zex_best (1:nbasis) = zex (1:nbasis,1)
-       call object_modified ('zex_best')
+       if (numr.le.0) then
+         call object_provide ('nctype')
+         call object_alloc ('zex_best', zex_best, nbasis)
+         zex_best (1:nbasis) = zex (1:nbasis,1)
+         call object_modified ('zex_best')
+       endif
       endif
 
 !     save nuclear coordinates

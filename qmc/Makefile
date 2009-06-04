@@ -368,8 +368,8 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
-constants_mod.o: types_mod.o vmc/ewald.h vmc/force.h vmc/numbas.h \
-	vmc/numorb.h vmc/pseudo.h
+constants_mod.o: types_mod.o vmc/ewald.h vmc/force.h vmc/numorb.h \
+	vmc/pseudo.h
 control_mod.o: all_tools_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h

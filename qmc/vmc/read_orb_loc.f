@@ -424,7 +424,8 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
    47         if(iwrwf(ib2,ict).eq.iwrwf(ib,ict)) goto 48
             nrwf=nrwf+1
    48     continue
-   49     if(nrwf.gt.MRWF) stop 'nrwf > MRWF'
+!JT          if(nrwf.gt.MRWF) stop 'nrwf > MRWF'
+   49     continue
 
         nbas_tot=0
         do 55 ic=1,ncent
@@ -1472,14 +1473,15 @@ c but at present nparme is being set after the call to this routine.
 c One could easily make it foolproof by just regarding each basis function
 c as having a different radial function when nparme.ne.0, but this is even more
 c inefficient during the optimization process.
+
  
       call alloc ('iwrwf2', iwrwf2, nbasis)
-      call alloc ('zex2', zex2, MRWF, nctype, nwf)
       call alloc ('nrbas', nrbas, nctype)
       call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
 
       if(numr.le.0) then
 !JT        write(6,'(''n_bas(ib),l_bas(ib)'',50(i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)
+        MRWF = 0
         ib=0
         ib4=0
         do 290 ic=1,ncent
@@ -1498,8 +1500,10 @@ c inefficient during the optimization process.
   270       continue
             nrbas(ict)=nrbas(ict)+1
             irb=nrbas(ict)
-            if(irb.gt.MRWF) stop 'nbas > MRWF'
+!JT            if(irb.gt.MRWF) stop 'nbas > MRWF'
+            MRWF = max (MRWF, nrbas(ict))
             call alloc ('n_bas2', n_bas2, MRWF, nctype)
+            call alloc ('zex2', zex2, MRWF, nctype, nwf)
             n_bas2(irb,ict)=n_bas(ib)
             zex2(irb,ict,iwf)=zex(ib,iwf) ! JT: 1 -> iwf
   275       iwrwf2(ib)=irb
