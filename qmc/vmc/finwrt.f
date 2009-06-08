@@ -28,10 +28,10 @@ c routine to print out final results
       use est2cm_mod
       use estsig_mod
       use estcum_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
       character*80 fmt
 
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -95,6 +95,7 @@ c reflected when we get Tcorr < 1.
       r2err=err(r2cum,r2cm2,1)
 c     tcsq=eerr/eerr1
       tcsq=eerr/eer1s
+      call alloc ('eloc_tc', eloc_tc, nforce)
       eloc_tc (1) = tcsq**2 !JT
       sigma=eer1s*rtpass
 
@@ -174,6 +175,7 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
       endif
 
       wcum(1)=passes
+      call alloc ('eloc_tc', eloc_tc, nforce)
       do 110 ifr=2,nforce
         efin=ecum(ifr)/wcum(ifr)
         eerr=err(ecum(ifr),ecm2(ifr),ifr)

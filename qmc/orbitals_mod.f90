@@ -1731,13 +1731,14 @@ module orbitals_mod
 ! begin
 
 ! objects needed
+  call object_provide ('nwf')
   call object_provide ('nbasis')
   call object_provide ('orb_tot_nb')
   call object_provide ('norm_basis')
   call object_provide ('coef')
 
 ! allocations
-  call object_alloc ('coef_orb_on_norm_basis', coef_orb_on_norm_basis, nbasis, orb_tot_nb, MFORCE)
+  call object_alloc ('coef_orb_on_norm_basis', coef_orb_on_norm_basis, nbasis, orb_tot_nb, nwf)
 
   do bas_i = 1, nbasis
     coef_orb_on_norm_basis (bas_i, 1:orb_tot_nb, iwf) = coef (bas_i, 1:orb_tot_nb, iwf_from) / norm_basis (bas_i)
@@ -1806,13 +1807,14 @@ module orbitals_mod
    call routine_enter (lhere)
 # endif
 
-! allocations
-  call object_alloc ('coef_orb_on_ortho_basis', coef_orb_on_ortho_basis, nbasis, orb_tot_nb, MFORCE)
-
+  call object_provide ('nwf')
   call object_provide ('orb_tot_nb')
   call object_provide ('nbasis')
   call object_provide ('coef')
   call object_provide ('basis_ovlp_12')
+
+! allocations
+  call object_alloc ('coef_orb_on_ortho_basis', coef_orb_on_ortho_basis, nbasis, orb_tot_nb, nwf)
 
   coef_orb_on_ortho_basis (:,:,:) = 0.d0
 

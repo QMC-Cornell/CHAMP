@@ -28,6 +28,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use fourier_mod
       use forcewt_mod
       use estsig_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
       logical vgreater
@@ -36,7 +37,6 @@ c Warning: program has a bug, but it does not matter much since
 c we never use it.
 
 c     common /contr3/ mode
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
 
       dimension dx(3,nelec),idist(nelec),ixo(3),ixn(3)

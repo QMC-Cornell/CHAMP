@@ -43,11 +43,11 @@ c routine to accumulate estimators for energy etc.
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
-      dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),peicollect(MFORCE),
-     &tpbcollect(MFORCE),tjfcollect(MFORCE),eg2collect(MFORCE),wg2collect(MFORCE),
-     &pe2collect(MFORCE),pei2collect(MFORCE),tpb2collect(MFORCE),tjf2collect(MFORCE),fsum(MFORCE),
-     &f2sum(MFORCE),eg2sum(MFORCE),wg2sum(MFORCE),pe2sum(MFORCE),pei2sum(MFORCE),tpb2sum(MFORCE),
-     &tjf2sum(MFORCE),taucollect(MFORCE)
+      dimension egcollect(nforce),wgcollect(nforce),pecollect(nforce),peicollect(nforce),
+     &tpbcollect(nforce),tjfcollect(nforce),eg2collect(nforce),wg2collect(nforce),
+     &pe2collect(nforce),pei2collect(nforce),tpb2collect(nforce),tjf2collect(nforce),fsum(nforce),
+     &f2sum(nforce),eg2sum(nforce),wg2sum(nforce),pe2sum(nforce),pei2sum(nforce),tpb2sum(nforce),
+     &tjf2sum(nforce),taucollect(nforce)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2
@@ -114,11 +114,11 @@ c       wgnow=wgsum(ifr)/nstep
         endif
   10  continue
 
-      call mpi_allreduce(wgsum,wgcollect,MFORCE
+      call mpi_allreduce(wgsum,wgcollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(egsum,egcollect,MFORCE
+      call mpi_allreduce(egsum,egcollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tausum,taucollect,MFORCE
+      call mpi_allreduce(tausum,taucollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       do 12 ifr=1,nforce
@@ -136,31 +136,31 @@ c Warning temp fix
       call object_modified_by_index (walker_weights_sum_block_index) !JT
       call object_modified_by_index (walker_weights_sum_index) !JT
 
-      call mpi_allreduce(pesum,pecollect,MFORCE
+      call mpi_allreduce(pesum,pecollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(peisum,peicollect,MFORCE
+      call mpi_allreduce(peisum,peicollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tpbsum,tpbcollect,MFORCE
+      call mpi_allreduce(tpbsum,tpbcollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tjfsum,tjfcollect,MFORCE
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-
-      call mpi_allreduce(wg2sum,wg2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(eg2sum,eg2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(pe2sum,pe2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(pei2sum,pei2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tpb2sum,tpb2collect,MFORCE
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tjf2sum,tjf2collect,MFORCE
+      call mpi_allreduce(tjfsum,tjfcollect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(fsum,fcollect,MFORCE
+      call mpi_allreduce(wg2sum,wg2collect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(f2sum,f2collect,MFORCE
+      call mpi_allreduce(eg2sum,eg2collect,nforce
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pe2sum,pe2collect,nforce
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pei2sum,pei2collect,nforce
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tpb2sum,tpb2collect,nforce
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tjf2sum,tjf2collect,nforce
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+
+      call mpi_allreduce(fsum,fcollect,nforce
+     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(f2sum,f2collect,nforce
      &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       call mpi_allreduce(esum,ecollect,1

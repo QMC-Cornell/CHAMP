@@ -38,8 +38,8 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
-      dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
-     &,wg21collect(MFORCE),rprobcollect(NRAD)
+      dimension eg1collect(nforce),eg21collect(nforce),wg1collect(nforce)
+     &,wg21collect(nforce),rprobcollect(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)
 
       character*80 fmt
@@ -121,13 +121,13 @@ c For the next 15 calls we switched from using mpi_reduce to mpi_allreduce
        efcm21=ef21collect
        wfcm21=wf21collect
 
-      call mpi_allreduce(egcum1,eg1collect,MFORCE,mpi_double_precision
+      call mpi_allreduce(egcum1,eg1collect,nforce,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(egcm21,eg21collect,MFORCE,mpi_double_precision
+      call mpi_allreduce(egcm21,eg21collect,nforce,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wgcum1,wg1collect,MFORCE,mpi_double_precision
+      call mpi_allreduce(wgcum1,wg1collect,nforce,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wgcm21,wg21collect,MFORCE,mpi_double_precision
+      call mpi_allreduce(wgcm21,wg21collect,nforce,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
 
       do 1 ifr=1,nforce

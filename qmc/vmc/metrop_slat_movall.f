@@ -29,6 +29,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use stepv_mod
       use forcewt_mod
       use estsig_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -50,7 +51,6 @@ c    Last 2 are prob. best
 
 c     character*23 fmt
 
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /stats_vmc/ rejmax
       dimension xaxis(3),yaxis(3),zaxis(3),costht(nelec),div_vn(nelec)
      &,sintht(nelec),raver(nelec),ravern(nelec)

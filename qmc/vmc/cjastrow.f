@@ -8,8 +8,6 @@ c calculates composite fermion jastrow factor (vortices, e^k) related quantities
       use distance_mod
       implicit real*8(a-h,o-z)
 
-c      include 'force.h'
-
       complex*16 cv
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring

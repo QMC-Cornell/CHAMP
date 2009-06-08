@@ -335,11 +335,11 @@ module accumulation_mod
   real(dp) :: ecollect, efcollect, e2collect, ef2collect
   real(dp) :: wcollect, wfcollect, w2collect, wf2collect
   real(dp) :: fcollect, f2collect
-  real(dp) :: egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE)
-  real(dp) :: tpbcollect(MFORCE),tjfcollect(MFORCE),eg2collect(MFORCE),wg2collect(MFORCE)
-  real(dp) :: pe2collect(MFORCE),tpb2collect(MFORCE),tjf2collect(MFORCE),fsum(MFORCE)
-  real(dp) :: f2sum(MFORCE),eg2sum(MFORCE),wg2sum(MFORCE),pe2sum(MFORCE),tpb2sum(MFORCE)
-  real(dp) :: tjf2sum(MFORCE),taucollect(MFORCE)
+  real(dp) :: egcollect(nforce),wgcollect(nforce),pecollect(nforce)
+  real(dp) :: tpbcollect(nforce),tjfcollect(nforce),eg2collect(nforce),wg2collect(nforce)
+  real(dp) :: pe2collect(nforce),tpb2collect(nforce),tjf2collect(nforce),fsum(nforce)
+  real(dp) :: f2sum(nforce),eg2sum(nforce),wg2sum(nforce),pe2sum(nforce),tpb2sum(nforce)
+  real(dp) :: tjf2sum(nforce),taucollect(nforce)
 # endif
 
 ! begin
@@ -442,9 +442,9 @@ module accumulation_mod
   10  continue
 
 
-      call mpi_allreduce(wgsum,wgcollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(egsum,egcollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tausum,taucollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wgsum,wgcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(egsum,egcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       do 12 ifr=1,nforce
 ! Warning temp fix
@@ -465,18 +465,18 @@ module accumulation_mod
 !      call compute_averages_walk_block !JT
 !      call compute_errors  !JT
 
-      call mpi_allreduce(pesum,pecollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tpbsum,tpbcollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tjfsum,tjfcollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pesum,pecollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tpbsum,tpbcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tjfsum,tjfcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(wg2sum,wg2collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(eg2sum,eg2collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(pe2sum,pe2collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tpb2sum,tpb2collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tjf2sum,tjf2collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wg2sum,wg2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(eg2sum,eg2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pe2sum,pe2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tpb2sum,tpb2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tjf2sum,tjf2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(fsum,fcollect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(f2sum,f2collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(fsum,fcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(f2sum,f2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       call mpi_allreduce(esum,ecollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(wsum,wcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -675,7 +675,7 @@ module accumulation_mod
   real(dp) :: w1collect, w21collect, wf21collect, wf1collect
   integer  :: nodecr_collect
   real(dp) :: try_int_collect, acc_collect, acc_int_collect
-  real(dp) :: eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE),wg21collect(MFORCE),rprobcollect(NRAD)
+  real(dp) :: eg1collect(nforce),eg21collect(nforce),wg1collect(nforce),wg21collect(nforce),rprobcollect(NRAD)
 # endif
 
 ! statement functions for error calculation
@@ -746,10 +746,10 @@ module accumulation_mod
        wfcm21=wf21collect
 
 
-      call mpi_allreduce(egcum1,eg1collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(egcm21,eg21collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wgcum1,wg1collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wgcm21,wg21collect,MFORCE,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(egcum1,eg1collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(egcm21,eg21collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wgcum1,wg1collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wgcm21,wg21collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       do 1 ifr=1,nforce
         egcum1(ifr)=eg1collect(ifr)

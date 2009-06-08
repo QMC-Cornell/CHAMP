@@ -44,7 +44,7 @@ module montecarlo_mod
   real(dp)    :: error_sigma
 
 ! autocorrelation time on energy
-  real(dp)    :: eloc_tc (MFORCE)
+  real(dp), allocatable    :: eloc_tc (:)
 
 !  real(dp)                  :: e2_eloc_av
 

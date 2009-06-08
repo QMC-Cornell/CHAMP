@@ -23,9 +23,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use stepv_mod
       use kinet_mod
       use estsig_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
-c     character*16 mode
-
 
       parameter (d3b2=1.5d0)
       parameter (eps=1.d-10)
@@ -42,8 +41,6 @@ c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best. Slater has been done and si minor improvement
 c 2) Generalize to molecules. This requires geometric rejections.
 
-c     common /contr3/ mode
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /stats_vmc/ rejmax
 
 
@@ -52,8 +49,6 @@ c     common /contr3/ mode
       area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
      &(r2**d3b2*(two*(one-v*ri)/three+.4d0*v*r2)
      &-r1**d3b2*(two*(one-v*ri)/three+.4d0*v*r1)))
-
-c     mode='vmc_mov1    '
 
       deltri=one/deltar
 c The transition probability is an approximation to psi(new)/psi(old)

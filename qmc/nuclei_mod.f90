@@ -72,7 +72,6 @@ module nuclei_mod
    call get_next_value (nforce)
    call object_modified ('nforce')
    write(6,'(a,i5)') ' number of geometries for correlated sampling calculation = ',nforce
-   call require (lhere, 'nforce <= MFORCE', nforce <= MFORCE)
 
   case ('ndim')
    call get_next_value (ndim)

@@ -40,9 +40,9 @@ c routine to accumulate estimators for energy etc.
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
-      dimension egcollect(MFORCE),wgcollect(MFORCE),pecollect(MFORCE),peicollect(MFORCE),
-     &tpbcollect(MFORCE),tjfcollect(MFORCE),taucollect(MFORCE),
-     &collect(2*MFORCE+5),collect_t(2*MFORCE+5)
+      dimension egcollect(nforce),wgcollect(nforce),pecollect(nforce),peicollect(nforce),
+     &tpbcollect(nforce),tjfcollect(nforce),taucollect(nforce),
+     &collect(2*nforce+5),collect_t(2*nforce+5)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2
@@ -61,15 +61,15 @@ c xerr = current error of x
 
       npass=iblk*nstep
 
-      call mpi_reduce(pesum,pecollect,MFORCE
+      call mpi_reduce(pesum,pecollect,nforce
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(peisum,peicollect,MFORCE
+      call mpi_reduce(peisum,peicollect,nforce
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tpbsum,tpbcollect,MFORCE
+      call mpi_reduce(tpbsum,tpbcollect,nforce
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjfsum,tjfcollect,MFORCE
+      call mpi_reduce(tjfsum,tjfcollect,nforce
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tausum,taucollect,MFORCE
+      call mpi_reduce(tausum,taucollect,nforce
      &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldest,ioldest_collect,1
      &,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
@@ -338,9 +338,9 @@ c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 c     call mpi_reduce(wfsum1,wfcollect,1
 c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-c     call mpi_reduce(wgsum1,wgcollect,MFORCE
+c     call mpi_reduce(wgsum1,wgcollect,nforce
 c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(egsum1,egcollect,MFORCE
+c     call mpi_reduce(egsum1,egcollect,nforce
 c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 c     call mpi_reduce(tausum(1),taublock,1
 c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)

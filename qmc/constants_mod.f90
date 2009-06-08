@@ -62,7 +62,6 @@ module constants_mod
 ! dimension parameters
   include 'vmc/pseudo.h'
   include 'vmc/ewald.h'
-  include 'vmc/force.h'
   include 'vmc/numorb.h'
 
 # if defined (MPI)

@@ -13,15 +13,14 @@ c routine to print out final results
       use est2cm_mod
       use estsig_mod
       use estcum_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
 c     common /forcjac/ ajacob
 
 c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)
-      dimension rprobt(NRAD),tryt(NRAD),suct(NRAD)
-     &,work(MFORCE)
+      dimension rprobt(NRAD),tryt(NRAD),suct(NRAD),work(nforce)
 
 
 c     err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)

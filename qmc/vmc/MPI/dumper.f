@@ -30,11 +30,11 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use est2cm_mod
       use estsig_mod
       use estcum_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
       parameter(small=1.d-6)
 
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /stats_vmc/ rejmax
       common /forcjac/ ajacob
 
@@ -364,6 +364,7 @@ c set n-coord and n-n potential
       call alloc ('wsum', wsum, nforce)
       call alloc ('wsum1s', wsum1s, nforce)
       call alloc ('esum1s', esum1s, nforce)
+      call alloc ('esum', esum, nforce)
       do 87 ifr=1,nforce
         esum1s(ifr)=0
         wsum1s(ifr)=0

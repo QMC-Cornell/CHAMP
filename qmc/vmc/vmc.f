@@ -56,10 +56,8 @@ c polarized calculations were attempted.
       integer fflag
       character*25 fmt
 
-
       common /fflags/ fflag
 
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
 
 c common block variables:

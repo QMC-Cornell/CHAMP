@@ -31,9 +31,9 @@ c routine to accumulate estimators for energy etc.
       use est2cm_mod
       use estsig_mod
       use estcum_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -329,6 +329,7 @@ c     ecm21s=0
       call alloc ('ecum1s', ecum1s, nforce)
       call alloc ('ecm21s', ecm21s, nforce)
       call alloc ('ecum', ecum, nforce)
+      call alloc ('esum', esum, nforce)
       do 65 ifr=1,nforce
         ecum1s(ifr)=0
         ecm21s(ifr)=0

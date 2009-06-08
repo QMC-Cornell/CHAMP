@@ -610,7 +610,6 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       call object_modified ('numr') ! JT
       call object_modified ('nforce') ! JT
 
-      if(nforce.gt.MFORCE) stop 'nforce > MFORCE'
       if(nloc.ge.2 .and. nquad.gt.MPS_QUAD) stop 'nquad > MPS_QUAD'
 
       read(5,*) nelec,nup
@@ -1449,7 +1448,7 @@ c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
 
       if(index(mode,'fit').eq.0 .and. nopt_iter.eq.0) return
 
-      if(nopt_iter.ne.0 .and. (nwf.lt.3 .or. MFORCE.lt.3)) stop 'if nopt_iter!=0 then nwf and MFORCE should be >=3'
+      if(nopt_iter.ne.0 .and. (nwf.lt.3)) stop 'if nopt_iter!=0 then nwf should be >=3'
 
       read(5,*) ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
       call object_modified ('nparm')

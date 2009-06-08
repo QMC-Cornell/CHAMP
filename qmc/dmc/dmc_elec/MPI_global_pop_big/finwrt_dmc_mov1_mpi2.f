@@ -32,14 +32,10 @@ c routine to print out final results
       use pairden_mod
       implicit real*8(a-h,o-z)
 
-c     common /force_dmc/ itausec,nwprod
-
 c /config_dmc/ included to print out xoldw and voldw for old walkers
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
-c     dimension eg1collect(MFORCE),eg21collect(MFORCE),wg1collect(MFORCE)
-c    &,wg21collect(MFORCE),rprobcollect(NRAD)
       dimension rprobcollect(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)
 

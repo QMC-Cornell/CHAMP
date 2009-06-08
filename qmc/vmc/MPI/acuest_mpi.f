@@ -21,13 +21,11 @@ c routine to accumulate estimators for energy etc.
       use denupdn_mod
       use stepv_mod
       use forcewt_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
-      common /forcjac/ ajacob
-
-      common /estsum/ esum1,eaverage(MFORCE+6)
-
-      dimension xstrech(3,nelec),ecollect(MFORCE+6),wcollect(MFORCE)
+      real(dp) :: esum_collect(nforce), wcollect(nforce)
+      real(dp) :: pesum_collect, peisum_collect, tpbsum_collect, tjfsum_collect, r2sum_collect, accsum_collect
 
 c statement function for error calculation
 c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
@@ -54,19 +52,36 @@ c they are not printed out from acuest.  So we just cumulate the
 c quantities on individual processors, and reduce the cumulated
 c quantities in finwrt_mpi
 
-      call mpi_allreduce(eaverage,ecollect,MFORCE+6
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+!JT      call mpi_allreduce(eaverage,ecollect,MFORCE+6,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(wsum,wcollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+!JT: break down eaverage into its pieces because the variables are now in a module
+      call mpi_allreduce(esum,esum_collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pesum,pesum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(peisum,peisum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tpbsum,tpbsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tjfsum,tjfsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(accsum,accsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+
+      call mpi_allreduce(wsum,wcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
 c Warning this flush and barrier should not be necessary
       call systemflush(6)
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      do 10 ifr=1,MFORCE+6
-        eaverage(ifr)=ecollect(ifr)
-   10   if(ifr.le.nforce) wsum(ifr)=wcollect(ifr)
+!JT      do 10 ifr=1,MFORCE+6
+!JT        eaverage(ifr)=ecollect(ifr)
+!JT   10   if(ifr.le.nforce) wsum(ifr)=wcollect(ifr)
+
+      esum(1:nforce) = esum_collect (1:nforce)
+      wsum(1:nforce) = wcollect (1:nforce)
+      pesum = pesum_collect
+      peisum = peisum_collect
+      tpbsum = tpbsum_collect
+      tjfsum = tjfsum_collect
+      r2sum = r2sum_collect
+      accsum = accsum_collect
+
 c     pesum=ecollect(MFORCE+1)
 c     peisum=ecollect(MFORCE+2)
 c     tpbsum=ecollect(MFORCE+3)

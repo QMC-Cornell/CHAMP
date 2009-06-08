@@ -1706,7 +1706,6 @@ c     implicit real*8(a-h,o-z)
 c     character*20 fmt
 c     character*16 mode,iorb_format
 
-c     include 'force.h'
 c     include 'ewald.h'
 c     include 'numorb.h'
 c     parameter(eps=1.d-3)

@@ -27,25 +27,25 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/est2cm_mod.f90 commons/estcm2_mod.f90 \
 	commons/estcum_dmc_mod.f90 commons/estcum_mod.f90 \
 	commons/estsig_mod.f90 commons/estsum_dmc_mod.f90 \
-	commons/ewald_mod.f90 commons/force_dmc_mod.f90 \
-	commons/forcepar_mod.f90 commons/forcest_dmc_mod.f90 \
-	commons/forcest_mod.f90 commons/forcewt_mod.f90 \
-	commons/fourier_mod.f90 commons/gauss_ecp_mod.f90 \
-	commons/gradhess_mod.f90 commons/gradhess_sav_mod.f90 \
-	commons/gradhessder_mod.f90 commons/gradhessdero_mod.f90 \
-	commons/gradhessj_nonlin_mod.f90 commons/gradjerr_mod.f90 \
-	commons/iterat_mod.f90 commons/jacobsave_mod.f90 commons/jasn_mod.f90 \
-	commons/jaso_mod.f90 commons/jasow_mod.f90 commons/jaspar1_mod.f90 \
-	commons/jaspar2_mod.f90 commons/jaspar3_mod.f90 \
-	commons/jaspar4_mod.f90 commons/jaspar6_mod.f90 \
-	commons/jaspar_mod.f90 commons/jasparread_mod.f90 \
-	commons/jel_sph2_mod.f90 commons/kinet_mod.f90 commons/lbas_mod.f90 \
-	commons/linear_mod.f90 commons/linear_orig_mod.f90 \
-	commons/linear_sav_mod.f90 commons/mpiblk_mod.f90 \
-	commons/mpioffset_mod.f90 commons/ncusp_mod.f90 \
-	commons/numbas_mod.f90 commons/numexp_mod.f90 commons/optim2_mod.f90 \
-	commons/optim_mod.f90 commons/optimo_mod.f90 commons/orb_mod.f90 \
-	commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
+	commons/estsum_mod.f90 commons/ewald_mod.f90 \
+	commons/force_dmc_mod.f90 commons/forcepar_mod.f90 \
+	commons/forcest_dmc_mod.f90 commons/forcest_mod.f90 \
+	commons/forcewt_mod.f90 commons/fourier_mod.f90 \
+	commons/gauss_ecp_mod.f90 commons/gradhess_mod.f90 \
+	commons/gradhess_sav_mod.f90 commons/gradhessder_mod.f90 \
+	commons/gradhessdero_mod.f90 commons/gradhessj_nonlin_mod.f90 \
+	commons/gradjerr_mod.f90 commons/iterat_mod.f90 \
+	commons/jacobsave_mod.f90 commons/jasn_mod.f90 commons/jaso_mod.f90 \
+	commons/jasow_mod.f90 commons/jaspar1_mod.f90 commons/jaspar2_mod.f90 \
+	commons/jaspar3_mod.f90 commons/jaspar4_mod.f90 \
+	commons/jaspar6_mod.f90 commons/jaspar_mod.f90 \
+	commons/jasparread_mod.f90 commons/jel_sph2_mod.f90 \
+	commons/kinet_mod.f90 commons/lbas_mod.f90 commons/linear_mod.f90 \
+	commons/linear_orig_mod.f90 commons/linear_sav_mod.f90 \
+	commons/mpiblk_mod.f90 commons/mpioffset_mod.f90 \
+	commons/ncusp_mod.f90 commons/numbas_mod.f90 commons/numexp_mod.f90 \
+	commons/optim2_mod.f90 commons/optim_mod.f90 commons/optimo_mod.f90 \
+	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
 	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
 	commons/pairden_mod.f90 commons/pars_mod.f90 commons/periodic_mod.f90 \
 	commons/phifun_mod.f90 commons/pjase_mod.f90 commons/pointer_mod.f90 \
@@ -158,10 +158,10 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/div_v_dmc_mod.o commons/div_v_mod.o commons/doefp_mod.o \
 	commons/dorb_mod.o commons/est2cm_mod.o commons/estcm2_mod.o \
 	commons/estcum_dmc_mod.o commons/estcum_mod.o commons/estsig_mod.o \
-	commons/estsum_dmc_mod.o commons/ewald_mod.o commons/force_dmc_mod.o \
-	commons/forcepar_mod.o commons/forcest_dmc_mod.o \
-	commons/forcest_mod.o commons/forcewt_mod.o commons/fourier_mod.o \
-	commons/gauss_ecp_mod.o commons/gradhess_mod.o \
+	commons/estsum_dmc_mod.o commons/estsum_mod.o commons/ewald_mod.o \
+	commons/force_dmc_mod.o commons/forcepar_mod.o \
+	commons/forcest_dmc_mod.o commons/forcest_mod.o commons/forcewt_mod.o \
+	commons/fourier_mod.o commons/gauss_ecp_mod.o commons/gradhess_mod.o \
 	commons/gradhess_sav_mod.o commons/gradhessder_mod.o \
 	commons/gradhessdero_mod.o commons/gradhessj_nonlin_mod.o \
 	commons/gradjerr_mod.o commons/iterat_mod.o commons/jacobsave_mod.o \
@@ -371,8 +371,7 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
-constants_mod.o: types_mod.o vmc/ewald.h vmc/force.h vmc/numorb.h \
-	vmc/pseudo.h
+constants_mod.o: types_mod.o vmc/ewald.h vmc/numorb.h vmc/pseudo.h
 control_mod.o: all_tools_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h

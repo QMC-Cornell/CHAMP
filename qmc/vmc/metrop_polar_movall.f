@@ -22,8 +22,8 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use denupdn_mod
       use stepv_mod
       use estsig_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
-
 
 c     parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
       parameter (d3b2=1.5d0)
@@ -46,8 +46,6 @@ c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best. Slater has been done and si minor improvement
 c 2) Generalize to molecules. This requires geometric rejections.
 
-
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /stats_vmc/ rejmax
 
       dimension xaxis(3),yaxis(3),zaxis(3),costht(nelec),div_vn(nelec)

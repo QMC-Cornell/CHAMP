@@ -32,6 +32,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use kinet_mod
       use forcewt_mod
       use estsig_mod
+      use estsum_mod
       implicit real*8(a-h,o-z)
 
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -39,7 +40,6 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 c     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
 c g3b2, g5b2 are gamma3/2), gamma(5/2)
-
 
 c The moves are now being made in local r,theta phi coordinates.
 
@@ -52,8 +52,6 @@ c The foll. still need to be tried:
 c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
 c    Last 2 are prob. best
 
-c     common /contr3/ mode
-      common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
       common /stats_vmc/ rejmax
 
       dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
@@ -65,8 +63,6 @@ c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
 c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
 
       thetamx(r,z)=deltat+(two-deltat)/(one+(z*r)**2)
-
-c     mode='vmc_mov1    '
 
       deltri=one/deltar
 
