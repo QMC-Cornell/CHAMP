@@ -4,6 +4,6 @@ module forcest_dmc_mod
  implicit none
  save
 
- double precision fgcum(MFORCE),fgcm2(MFORCE)
+ double precision, allocatable :: fgcum(:),fgcm2(:)
 
 end module forcest_dmc_mod

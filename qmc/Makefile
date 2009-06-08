@@ -24,10 +24,12 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/dets_mod.f90 commons/dim_mod.f90 commons/distance_mod.f90 \
 	commons/distance_sav_mod.f90 commons/div_v_dmc_mod.f90 \
 	commons/div_v_mod.f90 commons/doefp_mod.f90 commons/dorb_mod.f90 \
-	commons/estcm2_mod.f90 commons/estcum_dmc_mod.f90 \
-	commons/estsum_dmc_mod.f90 commons/ewald_mod.f90 \
-	commons/force_dmc_mod.f90 commons/forcepar_mod.f90 \
-	commons/forcest_dmc_mod.f90 commons/forcest_mod.f90 \
+	commons/est2cm_mod.f90 commons/estcm2_mod.f90 \
+	commons/estcum_dmc_mod.f90 commons/estcum_mod.f90 \
+	commons/estsig_mod.f90 commons/estsum_dmc_mod.f90 \
+	commons/ewald_mod.f90 commons/force_dmc_mod.f90 \
+	commons/forcepar_mod.f90 commons/forcest_dmc_mod.f90 \
+	commons/forcest_mod.f90 commons/forcewt_mod.f90 \
 	commons/fourier_mod.f90 commons/gauss_ecp_mod.f90 \
 	commons/gradhess_mod.f90 commons/gradhess_sav_mod.f90 \
 	commons/gradhessder_mod.f90 commons/gradhessdero_mod.f90 \
@@ -154,19 +156,20 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/derivjas_mod.o commons/dets_mod.o commons/dim_mod.o \
 	commons/distance_mod.o commons/distance_sav_mod.o \
 	commons/div_v_dmc_mod.o commons/div_v_mod.o commons/doefp_mod.o \
-	commons/dorb_mod.o commons/estcm2_mod.o commons/estcum_dmc_mod.o \
+	commons/dorb_mod.o commons/est2cm_mod.o commons/estcm2_mod.o \
+	commons/estcum_dmc_mod.o commons/estcum_mod.o commons/estsig_mod.o \
 	commons/estsum_dmc_mod.o commons/ewald_mod.o commons/force_dmc_mod.o \
 	commons/forcepar_mod.o commons/forcest_dmc_mod.o \
-	commons/forcest_mod.o commons/fourier_mod.o commons/gauss_ecp_mod.o \
-	commons/gradhess_mod.o commons/gradhess_sav_mod.o \
-	commons/gradhessder_mod.o commons/gradhessdero_mod.o \
-	commons/gradhessj_nonlin_mod.o commons/gradjerr_mod.o \
-	commons/iterat_mod.o commons/jacobsave_mod.o commons/jasn_mod.o \
-	commons/jaso_mod.o commons/jasow_mod.o commons/jaspar1_mod.o \
-	commons/jaspar2_mod.o commons/jaspar3_mod.o commons/jaspar4_mod.o \
-	commons/jaspar6_mod.o commons/jaspar_mod.o commons/jasparread_mod.o \
-	commons/jel_sph2_mod.o commons/kinet_mod.o commons/lbas_mod.o \
-	commons/linear_mod.o commons/linear_orig_mod.o \
+	commons/forcest_mod.o commons/forcewt_mod.o commons/fourier_mod.o \
+	commons/gauss_ecp_mod.o commons/gradhess_mod.o \
+	commons/gradhess_sav_mod.o commons/gradhessder_mod.o \
+	commons/gradhessdero_mod.o commons/gradhessj_nonlin_mod.o \
+	commons/gradjerr_mod.o commons/iterat_mod.o commons/jacobsave_mod.o \
+	commons/jasn_mod.o commons/jaso_mod.o commons/jasow_mod.o \
+	commons/jaspar1_mod.o commons/jaspar2_mod.o commons/jaspar3_mod.o \
+	commons/jaspar4_mod.o commons/jaspar6_mod.o commons/jaspar_mod.o \
+	commons/jasparread_mod.o commons/jel_sph2_mod.o commons/kinet_mod.o \
+	commons/lbas_mod.o commons/linear_mod.o commons/linear_orig_mod.o \
 	commons/linear_sav_mod.o commons/mpiblk_mod.o commons/mpioffset_mod.o \
 	commons/ncusp_mod.o commons/numbas_mod.o commons/numexp_mod.o \
 	commons/optim2_mod.o commons/optim_mod.o commons/optimo_mod.o \

@@ -4,6 +4,6 @@ module jaspar1_mod
  implicit none
  save
 
- double precision cjas1(MWF),cjas2(MWF)
+ double precision, allocatable :: cjas1(:),cjas2(:)
 
 end module jaspar1_mod

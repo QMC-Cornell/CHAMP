@@ -61,7 +61,7 @@ module initialization_mod
   call object_modified ('numr')
   nforce=1
   call object_modified ('nforce')
-  nwf = max(3,nforce)
+  nwf = 3 ! for optimization runs
   call object_modified ('nwf')
   nefp=0
   nquad=6
@@ -110,6 +110,7 @@ module initialization_mod
 ! correlated sampling index
   iwf = 1
   nwftype=1
+  call alloc ('iwftype', iwftype, nforce)
   iwftype(1)=1
   call object_modified ('iwf')
  
@@ -224,6 +225,8 @@ module initialization_mod
 ! correlated sampling
   iwf = 1
   nwftype=1
+  call object_provide ('nforce')
+  call alloc ('iwftype', iwftype, nforce)
   iwftype(1)=1
 
   write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'

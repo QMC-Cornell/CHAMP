@@ -17,11 +17,11 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use stepv_mod
       use pairden_mod
       use fourier_mod
+      use forcewt_mod
+      use estsig_mod
       implicit real*8(a-h,o-z)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
 

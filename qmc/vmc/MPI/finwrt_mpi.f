@@ -10,14 +10,12 @@ c routine to print out final results
       use denupdn_mod
       use stepv_mod
       use pairden_mod
+      use est2cm_mod
+      use estsig_mod
+      use estcum_mod
       implicit real*8(a-h,o-z)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-c     common /forcest/ fcum(MFORCE),fcm2(MFORCE)
-c     common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 c     common /forcjac/ ajacob
 
 c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)

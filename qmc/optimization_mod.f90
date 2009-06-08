@@ -318,7 +318,7 @@ module optimization_mod
 
   if(iter_opt_max_nb /= 0) igradhess=1
   if(iter_opt_max_nb /= 0 .and. nforce > 1) stop 'nforce > 1 not allowed in optimization. At present can optim 1 wf only'
-  if(iter_opt_max_nb /= 0 .and. (MWF.lt.3 .or. MFORCE.lt.3)) stop 'for optimization MWF and MFORCE should be >=3'
+  if(iter_opt_max_nb /= 0 .and. (nwf.lt.3 .or. MFORCE.lt.3)) stop 'for optimization nwf and MFORCE should be >=3'
 
 ! set some default values
   if (decrease_error_limit == 0.d0 ) then

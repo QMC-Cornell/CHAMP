@@ -30,12 +30,10 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use stepv_mod
       use jel_sph2_mod
       use kinet_mod
+      use forcewt_mod
+      use estsig_mod
       implicit real*8(a-h,o-z)
 
-
-c     character*16 mode
-
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,four=4.d0,half=0.5d0)
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
       parameter (eps=1.d-10)
 c     parameter (g3b2=.886226925452758d0)
@@ -56,9 +54,7 @@ c    Last 2 are prob. best
 
 c     common /contr3/ mode
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats_vmc/ rejmax
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
 

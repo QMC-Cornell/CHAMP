@@ -146,6 +146,32 @@ module accumulation_mod
 
       call grad_hess_jas_init
 
+      call alloc ('fgcum', fgcum, nforce)
+      call alloc ('fgcm2', fgcm2, nforce)
+      call alloc ('wgcm2', wgcm2, nforce)
+      call alloc ('wgcm21', wgcm21, nforce)
+      call alloc ('egcm2', egcm2, nforce)
+      call alloc ('egcm21', egcm21, nforce)
+      call alloc ('pecm2', pecm2, nforce)
+      call alloc ('tpbcm2', tpbcm2, nforce)
+      call alloc ('tjfcm2', tjfcm2, nforce)
+      call alloc ('wgcum', wgcum, nforce)
+      call alloc ('wgcum1', wgcum1, nforce)
+      call alloc ('egcum', egcum, nforce)
+      call alloc ('egcum1', egcum1, nforce)
+      call alloc ('pecum', pecum, nforce)
+      call alloc ('tpbcum', tpbcum, nforce)
+      call alloc ('tjfcum', tjfcum, nforce)
+      call alloc ('taucum', taucum, nforce)
+      call alloc ('wgsum', wgsum, nforce)
+      call alloc ('wsum1', wsum1, nforce)
+      call alloc ('wgsum1', wgsum1, nforce)
+      call alloc ('egsum', egsum, nforce)
+      call alloc ('egsum1', egsum1, nforce)
+      call alloc ('pesum', pesum, nforce)
+      call alloc ('tpbsum', tpbsum, nforce)
+      call alloc ('tjfsum', tjfsum, nforce)
+      call alloc ('tausum', tausum, nforce)
       do 85 ifr=1,nforce
         tausum(ifr)=zero
         taucum(ifr)=zero

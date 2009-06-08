@@ -4,10 +4,10 @@ c routine to accumulate estimators for energy etc.
 
 # if defined (MPI)
 
+      use constants_mod
       use mpi_mod
       use atom_mod
       use config_mod
-
       use contrl_mod
       use const_mod
       use dim_mod
@@ -20,18 +20,12 @@ c routine to accumulate estimators for energy etc.
       use forcest_mod
       use denupdn_mod
       use stepv_mod
+      use forcewt_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter (half=.5d0)
-
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /forcjac/ ajacob
 
       common /estsum/ esum1,eaverage(MFORCE+6)
-      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-
 
       dimension xstrech(3,nelec),ecollect(MFORCE+6),wcollect(MFORCE)
 

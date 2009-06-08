@@ -444,6 +444,8 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
       nparms=0
       nparmjs=nparmj+nparms
       call object_modified ('nparmjs')
+      nwf = 3 ! for optimization runs
+      call object_modified ('nwf')
 
 c     read(5,'(a20,4x,4i4)') title,irn
       read(5,*) title
@@ -574,8 +576,6 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       read(5,*) nloc,numr,nforce,nefp
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr
       write(6,'(''nforce,nefp ='',t31,4i5)') nforce,nefp
-      nwf = max(3,nforce)
-      call object_modified ('nwf')
       if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
       if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
       if(nloc.ge.2) then
@@ -829,6 +829,7 @@ c TEMPORARY: Warning: we are not calling readforce and only using one geometry
       if(index(mode,'fit').ne.0) then
         nforce=1
         nwftype=1
+        call alloc ('iwftype', iwftype, nforce)
         iwftype(1)=1
       endif
 
@@ -1102,6 +1103,8 @@ c Jastrow section
       endif
 
       if(ijas.eq.1) then
+        call alloc ('cjas1', cjas1, nwf)
+        call alloc ('cjas2', cjas2, nwf)
         read(5,*) cjas1(1),cjas2(1)
         write(6,'(''jastrow numerator,denominator ='',2f10.5)')
      &  cjas1(1),cjas2(1)
@@ -1446,7 +1449,7 @@ c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
 
       if(index(mode,'fit').eq.0 .and. nopt_iter.eq.0) return
 
-      if(nopt_iter.ne.0 .and. (MWF.lt.3 .or. MFORCE.lt.3)) stop 'if nopt_iter!=0 then MWF and MFORCE should be >=3'
+      if(nopt_iter.ne.0 .and. (nwf.lt.3 .or. MFORCE.lt.3)) stop 'if nopt_iter!=0 then nwf and MFORCE should be >=3'
 
       read(5,*) ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
       call object_modified ('nparm')

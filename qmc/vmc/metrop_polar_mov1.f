@@ -22,6 +22,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use denupdn_mod
       use stepv_mod
       use kinet_mod
+      use estsig_mod
       implicit real*8(a-h,o-z)
 c     character*16 mode
 
@@ -43,7 +44,6 @@ c 2) Generalize to molecules. This requires geometric rejections.
 
 c     common /contr3/ mode
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats_vmc/ rejmax
 
 

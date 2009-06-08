@@ -37,16 +37,16 @@ c Routine to pick up and dump everything needed to restart job where it left off
       use denupdn_mod
       use stepv_mod
       use jaspar1_mod
+      use forcewt_mod
+      use est2cm_mod
+      use estsig_mod
+      use estcum_mod
       implicit real*8(a-h,o-z)
 
       parameter(small=1.d-6)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /stats_vmc/ rejmax
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       dimension irn(4)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(nctype)
@@ -75,6 +75,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       write(10) iblk
       write(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
      &tjfcm2,r2cm2
+      call alloc ('wcum', wcum, nforce)
       if(nforce.gt.0) write(10) (wcum(i),fcum(i),fcm2(i),i=1,nforce)
       do 3 i=1,nforce
 c   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
@@ -143,12 +144,19 @@ c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
       read(10) (rmino(i),i=1,nelec)
       read(10) (nearesto(i),i=1,nelec)
       read(10) (psi2o(i),eold(i),i=1,nforce),peo,tjfo
+      call alloc ('ecum', ecum, nforce)
       read(10) ecum1,(ecum(i),i=1,nforce),pecum,tpbcum,
      &tjfcum,r2cum,acccum
       read(10) iblk
+      call alloc ('ecm2', ecm2, nforce)
       read(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
      &tjfcm2,r2cm2
+      call alloc ('fcum', fcum, nforce)
+      call alloc ('fcm2', fcm2, nforce)
+      call alloc ('wcum', wcum, nforce)
       if(nforce.gt.0) read(10) (wcum(i),fcum(i),fcm2(i),i=1,nforce)
+      call alloc ('ecum1s', ecum1s, nforce)
+      call alloc ('ecm21s', ecm21s, nforce)
       do 6 i=1,nforce
 c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     6   read(10) ecum1s(i),ecm21s(i)
@@ -312,6 +320,9 @@ c set n-coord and n-n potential
         do 86 k=1,ndim
    86     rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
 
+      call alloc ('wsum', wsum, nforce)
+      call alloc ('wsum1s', wsum1s, nforce)
+      call alloc ('esum1s', esum1s, nforce)
       do 87 ifr=1,nforce
         esum1s(ifr)=0
         wsum1s(ifr)=0

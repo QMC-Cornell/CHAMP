@@ -24,14 +24,14 @@ c routine to print out final results
       use stepv_mod
       use pairden_mod
       use fourier_mod
+      use forcewt_mod
+      use est2cm_mod
+      use estsig_mod
+      use estcum_mod
       implicit real*8(a-h,o-z)
       character*80 fmt
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 

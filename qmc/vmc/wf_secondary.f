@@ -310,6 +310,7 @@ c Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I t
       endif
 
 c Jastrow
+      call alloc ('iwftype', iwftype, max(3,nforce))
       do 90 iadd_diag=2,3
       iwftype(iadd_diag)=iadd_diag
       scalek(iadd_diag)=scalek(1)

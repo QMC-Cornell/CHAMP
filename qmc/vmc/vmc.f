@@ -58,11 +58,8 @@ c polarized calculations were attempted.
 
 
       common /fflags/ fflag
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
 
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
 
 c common block variables:

@@ -222,7 +222,7 @@ contains
 
     param_pjas_nb = param_pjasee_nb + param_pjasen_nb
 
-    call object_alloc ("pjas_parms", pjas_parms, param_pjas_nb, mwf )
+    call object_alloc ("pjas_parms", pjas_parms, param_pjas_nb, nwf)
     pjas_parms = 0
 
     if (i_pjas_en_read >0) then

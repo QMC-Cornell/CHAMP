@@ -117,9 +117,11 @@ c read force parameters and set up n-n potential energy at displaced positions
    60     write(6,'(''center '',i2,'' conf '',i2,'' displace '',
      &    3f10.2)') ic,ifl,(delc(k,ic,ifl),k=1,ndim)
 
+      call alloc ('iwftype', iwftype, nforce)
       read(3,*) nwftype,(iwftype(i),i=1,nforce),filename
+      
       if(nwftype.gt.nforce) stop 'nwftype gt nforce'
-      if(nwftype.gt.MWF) stop 'nwftype gt MWF'
+!JT      if(nwftype.gt.MWF) stop 'nwftype gt MWF'
       if(iwftype(1).ne.1) stop 'iwftype(1) ne 1'
 
       if(index(mode,'dmc').ne.0) then
@@ -158,9 +160,9 @@ c  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
    80     call pot_nn(cent_str,znuc,iwctype,ncent,pecentn(ifl))
       write(6,'(''pecentn(ifl)2'',9f9.4)') (pecentn(ifl),ifl=1,nforce)
 
-      write(6,'(''n-n potential energies '',10f10.5)')
-     &(pecentn(ifl),ifl=1,nforce)
+      write(6,'(''n-n potential energies '',10f10.5)')(pecentn(ifl),ifl=1,nforce)
 
+      call alloc ('deltot', deltot, nforce)
       do 110 ifl=1,nforce
         deltot(ifl)=zero
         rsq=zero
@@ -194,6 +196,9 @@ c For wf. optim. copy first geometry info to next two
           do 160 k=1,ndim
   160       delc(k,ic,ifl)=0
 
+      call alloc ('deltot', deltot, nforce)
+      deltot (:) = 0.d0
+
        call alloc ('cent_ref', cent_ref, 3, ncent)
         do 165 ic=1,ncent
           do 165 k=1,ndim
@@ -201,6 +206,7 @@ c For wf. optim. copy first geometry info to next two
 
 c     do 170 iwf=2,nwftype
 c 170   call basis_norm(iwf,1)
+
 
       return
       end

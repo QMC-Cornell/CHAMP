@@ -27,14 +27,13 @@ c routine to accumulate estimators for energy etc.
       use stepv_mod
       use pairden_mod
       use fourier_mod
+      use forcewt_mod
+      use est2cm_mod
+      use estsig_mod
+      use estcum_mod
       implicit real*8(a-h,o-z)
 
-      common /forcewt/ wsum(MFORCE),wcum(MFORCE)
-
       common /estsum/ esum1,esum(MFORCE),pesum,peisum,tpbsum,tjfsum,r2sum,accsum
-      common /estcum/ ecum1,ecum(MFORCE),pecum,peicum,tpbcum,tjfcum,r2cum,acccum,iblk
-      common /est2cm/ ecm21,ecm2(MFORCE),pecm2,peicm2,tpbcm2,tjfcm2,r2cm2
-      common /estsig/ wsum1s(MFORCE),esum1s(MFORCE),ecum1s(MFORCE),ecm21s(MFORCE)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -280,6 +279,11 @@ c entry point to zero out all averages etc.
 c the initial values of energy psi etc. is also calculated here
 c although that really only needs to be done before the equil. blocks.
 
+
+!     allocations
+      call alloc ('wsum1s', wsum1s, nforce)
+      call alloc ('esum1s', esum1s, nforce)
+
       iblk=0
 
 c set quadrature points
@@ -317,6 +321,14 @@ c     ecm21s=0
 
       call grad_hess_jas_init
 
+      call alloc ('fcum', fcum, nforce)
+      call alloc ('fcm2', fcm2, nforce)
+      call alloc ('wcum', wcum, nforce)
+      call alloc ('wsum', wsum, nforce)
+      call alloc ('ecm2', ecm2, nforce)
+      call alloc ('ecum1s', ecum1s, nforce)
+      call alloc ('ecm21s', ecm21s, nforce)
+      call alloc ('ecum', ecum, nforce)
       do 65 ifr=1,nforce
         ecum1s(ifr)=0
         ecm21s(ifr)=0
@@ -439,6 +451,7 @@ c  86     rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
    85     continue
         do 86  k=1,ndim
    86     rvmino(k,i)=rvec_en(k,i,nearesto(i))
+
 
       return
       end

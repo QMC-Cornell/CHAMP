@@ -260,6 +260,18 @@ c    &  i=1,nforce)
 c     if(nforce.gt.1) read(10) nwprod
 c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
 c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+      call alloc ('wgcm2', wgcm2, nforce)
+      call alloc ('egcm2', egcm2, nforce)
+      call alloc ('pecm2', pecm2, nforce)
+      call alloc ('tpbcm2', tpbcm2, nforce)
+      call alloc ('tjfcm2', tjfcm2, nforce)
+      call alloc ('wgcum', wgcum, nforce)
+      call alloc ('egcum', egcum, nforce)
+      call alloc ('pecum', pecum, nforce)
+      call alloc ('peicum', peicum, nforce)
+      call alloc ('tpbcum', tpbcum, nforce)
+      call alloc ('tjfcum', tjfcum, nforce)
+      call alloc ('taucum', taucum, nforce)
       read(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i),
      &wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i),
      &i=1,nforce)
@@ -272,15 +284,21 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if(dabs(taux-tau).gt.small) stop 'tau'
       if(nelecx.ne.nelec) stop 'nelec'
       read(10) (wtgen(i),i=0,nfprod),wgdsumo
+      call alloc ('wgcum1', wgcum1, nforce)
+      call alloc ('egcum1', egcum1, nforce)
       read(10) wcum,wfcum,wdcum,wgdcum,wcum1
      &,wfcum1,(wgcum1(i),i=1,nforce),wdcum1, ecum,efcum
      &,ecum1,efcum1,(egcum1(i),i=1,nforce)
      &,ei1cum,ei2cum,ei3cum, r2cum,ricum
       read(10) ipass,iblk,iblk_proc
+      call alloc ('wgcm21', wgcm21, nforce)
+      call alloc ('egcm21', egcm21, nforce)
       read(10) wcm2,wfcm2,wdcm2,wgdcm2,wcm21
      &,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2,efcm2
      &,ecm21,efcm21,(egcm21(i),i=1,nforce)
      &,ei1cm2,ei2cm2,ei3cm2,r2cm2,ricm2
+      call alloc ('fgcum', fgcum, nforce)
+      call alloc ('fgcm2', fgcm2, nforce)
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
       call alloc ('rprob', rprob, NRAD)
       call alloc ('rprobup', rprobup, NRAD)
@@ -427,6 +445,13 @@ c zero out xsum variables
       r2sum=zero
       risum=zero
 
+      call alloc ('wgsum', wgsum, nforce)
+      call alloc ('egsum', egsum, nforce)
+      call alloc ('pesum', pesum, nforce)
+      call alloc ('peisum', peisum, nforce)
+      call alloc ('tpbsum', tpbsum, nforce)
+      call alloc ('tjfsum', tjfsum, nforce)
+      call alloc ('tausum', tausum, nforce)
       do 80 ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero

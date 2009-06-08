@@ -67,6 +67,14 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       write(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
       write(10) (((xoldw(k,i,iw,1),k=1,ndim),i=1,nelec),iw=1,nwalk)
       write(10) ((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
+      call alloc ('wgcum', wgcum, nforce)
+      call alloc ('wgcum1', wgcum1, nforce)
+      call alloc ('egcum', egcum, nforce)
+      call alloc ('egcum1', egcum1, nforce)
+      call alloc ('pecum', pecum, nforce)
+      call alloc ('tpbcum', tpbcum, nforce)
+      call alloc ('tjfcum', tjfcum, nforce)
+      call alloc ('taucum', taucum, nforce)
       write(10) wcum,wfcum,(wgcum(i),i=1,nforce),wdcum,wgdcum,wcum1
      &,wfcum1,(wgcum1(i),i=1,nforce),wdcum1, ecum,efcum
      &,(egcum(i),i=1,nforce), ecum1,efcum1,(egcum1(i),i=1,nforce)
@@ -74,6 +82,13 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,(tpbcum(i),i=1,nforce),(tjfcum(i),i=1,nforce),r2cum,ricum
      &,(taucum(i),i=1,nforce)
       write(10) ipass,iblk
+      call alloc ('wgcm2', wgcm2, nforce)
+      call alloc ('wgcm21', wgcm21, nforce)
+      call alloc ('egcm2', egcm2, nforce)
+      call alloc ('egcm21', egcm21, nforce)
+      call alloc ('pecm2', pecm2, nforce)
+      call alloc ('tpbcm2', tpbcm2, nforce)
+      call alloc ('tjfcm2', tjfcm2, nforce)
       write(10) wcm2,wfcm2,(wgcm2(i),i=1,nforce),wdcm2,wgdcm2,wcm21
      &,wfcm21,(wgcm21(i),i=1,nforce),wdcm21, ecm2,efcm2
      &,(egcm2(i),i=1,nforce), ecm21,efcm21,(egcm21(i),i=1,nforce)
@@ -125,6 +140,7 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       read(10) irn
       call setrn(irn)
       read(10) hbx
+      call alloc ('taueff', taueff, 1)
       read(10) taux,rttau,taueff(1),tautot,idmc,nfprod
       read(10) nelecx,nconf_global,nforce
       if(dabs(hbx-hb).gt.small) stop 'hb'
@@ -133,7 +149,10 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       read(10) nwalk
       read(10) (wtgen(i),ff(i),i=0,nfprod),(wt(i),i=1,nwalk)
      &,eigv,eest,wdsumo,wgdsumo,fprod
-      if(nforce.gt.1) read(10) (taueff(i),i=2,nforce)
+      if(nforce.gt.1) then 
+        call alloc ('taueff', taueff, nforce)
+        read(10) (taueff(i),i=2,nforce)
+      endif
       if(nforce.gt.1) read(10) nwprod
      &,((pwt(i,j),i=1,nwalk),j=1,nforce)
      &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
@@ -152,6 +171,8 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
      &,(egcm2(i),i=1,nforce), ecm21,efcm21,(egcm21(i),i=1,nforce)
      &,ei1cm2,ei2cm2,ei3cm2, (pecm2(i),i=1,nforce)
      &,(tpbcm2(i),i=1,nforce),(tjfcm2(i),i=1,nforce),r2cm2,ricm2
+      call alloc ('fgcum', fgcum, nforce)
+      call alloc ('fgcm2', fgcm2, nforce)
       read(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
       call alloc ('rprob', rprob, NRAD)
       call alloc ('rprobup', rprobup, NRAD)
@@ -298,6 +319,11 @@ c zero out xsum variables
       r2sum=0
       risum=0
 
+      call alloc ('wgsum', wgsum, nforce)
+      call alloc ('egsum', egsum, nforce)
+      call alloc ('peisum', peisum, nforce)
+      call alloc ('tpbsum', tpbsum, nforce)
+      call alloc ('tjfsum', tjfsum, nforce)
       do 75 ifr=1,nforce
         egsum(ifr)=0
         wgsum(ifr)=0

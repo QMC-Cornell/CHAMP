@@ -317,6 +317,8 @@ module jastrow_mod
   endif
 
   if(ijas.eq.1) then
+    call alloc ('cjas1', cjas1, nwf)
+    call alloc ('cjas2', cjas2, nwf)
     read(5,*) cjas1(1),cjas2(1)
   elseif(ijas.eq.2) then
     nparm_read=69

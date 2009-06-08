@@ -1,1 +1,1 @@
-      parameter (MFORCE=5,MWF=3)
+      parameter (MFORCE=5)
