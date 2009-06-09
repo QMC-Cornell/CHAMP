@@ -23,7 +23,6 @@ c Note vbare_coul is used both for prim. and simul. cells, so dimension it for s
 
       common /tempor/ dist_nn
 
-c      dimension r(MPS_GRID),vps_short(MPS_GRID),work(MPS_GRID)
       dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3)
 
 c Temporary
@@ -1030,10 +1029,8 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
+      use pseudo_mod
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
-      include 'pseudo.h'
 
       common /constant/ twopi
 

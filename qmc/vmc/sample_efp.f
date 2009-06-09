@@ -1,3 +1,5 @@
+!vmc/fitefp.h:      parameter (MEFP_FIT=50,MEFP_NL=3,MEFP_QUAD=6)
+!
 !      subroutine sample_efp(inew,x,ener,prob)
 !c Written by Claudia Filippi
 !

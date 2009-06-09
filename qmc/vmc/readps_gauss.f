@@ -22,11 +22,11 @@ c NOTE: as usual power n means r**(n-2)
 
       character*80 label
       character*20 filename,atomtyp
+      integer MGAUSS
 
       call alloc ('necp_term', necp_term, MPS_L, nctype)
-      call alloc ('necp_power', necp_power, MGAUSS, MPS_L, nctype)
-      call alloc ('ecp_coef', ecp_coef, MGAUSS, MPS_L, nctype)
-      call alloc ('ecp_exponent', ecp_exponent, MGAUSS, MPS_L, nctype)
+
+      MGAUSS=0
 
       do 100 ict=1,nctype
 
@@ -75,9 +75,13 @@ c         if(l.eq.lpotp1(ict))then
             idx=l-1
           endif
           read(1,*,err=999,end=1000) necp_term(idx,ict)
+          MGAUSS = max(MGAUSS, necp_term(idx,ict)) !JT
 
-          if(necp_term(idx,ict).gt.MGAUSS) stop 'necp_term(idx,ict) > MGAUSS'
+!JT          if(necp_term(idx,ict).gt.MGAUSS) stop 'necp_term(idx,ict) > MGAUSS'
           write(6,'(''L component, #terms='',2i4)') l,necp_term(idx,ict)
+          call alloc ('ecp_coef', ecp_coef, MGAUSS, MPS_L, nctype)
+          call alloc ('necp_power', necp_power, MGAUSS, MPS_L, nctype)
+          call alloc ('ecp_exponent', ecp_exponent, MGAUSS, MPS_L, nctype)
           do 50 i=1,necp_term(idx,ict)
             read(1,*,err=999,end=1000) ecp_coef(i,idx,ict),
      &        necp_power(i,idx,ict),ecp_exponent(i,idx,ict)

@@ -60,9 +60,7 @@ module constants_mod
   integer, parameter    :: max_objects_nb = 1500
 
 ! dimension parameters
-  include 'vmc/pseudo.h'
   include 'vmc/ewald.h'
-  include 'vmc/numorb.h'
 
 # if defined (MPI)
    include 'mpif.h'

@@ -44,7 +44,7 @@ c  yscaled=0 @yorb_grid(iy)  yscaled=1 @yorb_grid(iy+1)
 
 c Evaluate spline function at (xget,yget) using the spline coeff's orb_num(1-4,1-ngrid_orbx,1-ngrid_orby,iorb)
           call r8fvbicub(ict,1,1,splineval,ix,iy,xscaled,yscaled,hx,hxi,hy,hyi
-     &    ,orb_num(1,1,1,iorb),MGRID_ORB,ngrid_orby)
+     &    ,orb_num(1,1,1,iorb),ngrid_orbx,ngrid_orby)
 
           if(iflag.eq.1) then
 

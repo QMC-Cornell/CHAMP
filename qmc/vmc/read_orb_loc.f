@@ -53,8 +53,8 @@ c Check that irecursion_ylm=1 if l of basis function >=4
       if(inum_orb.ne.0 .and. num_orb_exist.eq.0) then
         read(5,*) ngrid_orbx,ngrid_orby,sizex,sizey
         write(6,'(''ngrid_orbx,ngrid_orby,sizex,sizey='',2i5,2f8.3)') ngrid_orbx,ngrid_orby,sizex,sizey
-        if(ngrid_orbx.gt.MGRID_ORB) stop 'ngrid_orbx > MGRID_ORB in read_orb_loc'
-        if(ngrid_orby.gt.MGRID_ORB) stop 'ngrid_orby > MGRID_ORB in read_orb_loc'
+!JT        if(ngrid_orbx.gt.MGRID_ORB) stop 'ngrid_orbx > MGRID_ORB in read_orb_loc'
+!JT        if(ngrid_orby.gt.MGRID_ORB) stop 'ngrid_orby > MGRID_ORB in read_orb_loc'
       endif
 
 c Set grid info.  Grid extends from -sizex to sizex, etc.
@@ -1554,10 +1554,10 @@ c     dimension v_ext(MGRID_ORB,MGRID_ORB)
       open(4,file='orbitals_num',form='formatted',status='old')
 
       read(4,*) ngrid_orbx,ngrid_orby,sizex,sizey,norba
-      if(ngrid_orbx.gt.MGRID_ORB .or. ngrid_orby.gt.MGRID_ORB) then
-          write(6,'(a,i10,a,i10,a)') 'ngrid_orbx=',ngrid_orbx,' ngrid_orby=',ngrid_orby,' > MGRID_ORB'
-          stop 'ngrid_orbx,ngrid_orby for numerical orbitals must be < MGRID_ORB'
-      endif
+!JT      if(ngrid_orbx.gt.MGRID_ORB .or. ngrid_orby.gt.MGRID_ORB) then
+!JT          write(6,'(a,i10,a,i10,a)') 'ngrid_orbx=',ngrid_orbx,' ngrid_orby=',ngrid_orby,' > MGRID_ORB'
+!JT          stop 'ngrid_orbx,ngrid_orby for numerical orbitals must be < MGRID_ORB'
+!JT      endif
       if(mod(ngrid_orbx,2).ne.1) stop 'ngrid_orbx must be odd in read_orb_loc_num'
       if(mod(ngrid_orby,2).ne.1) stop 'ngrid_orby must be odd in read_orb_loc_num'
       if(norba.lt.norb) stop 'norba not large enough in read_orb_loc_num'
@@ -1582,8 +1582,8 @@ c Spline numerical orbitals
       implicit real*8(a-h,o-z)
       parameter(MWORK=21)
 
-      dimension bcxmin(MGRID_ORB),bcxmax(MGRID_ORB),bcymin(MGRID_ORB),bcymax(MGRID_ORB),
-     &wk(MWORK*MGRID_ORB*MGRID_ORB)
+      dimension bcxmin(ngrid_orby),bcxmax(ngrid_orby),bcymin(ngrid_orbx),bcymax(ngrid_orbx),
+     &wk(MWORK*ngrid_orbx*ngrid_orby)
 
       nwk=MWORK*ngrid_orbx*ngrid_orby
 
@@ -1618,7 +1618,7 @@ c coeff's in orb_num(2-4,ix,iy,iorb)
             bcymin(ix)=orb_num(3,ix,1,iorb)
    20       bcymax(ix)=orb_num(3,ix,ngrid_orbx,iorb)
         endif
-        call r8mkbicubw(xorb_grid,ngrid_orbx,yorb_grid,ngrid_orby,orb_num(1,1,1,iorb),MGRID_ORB,
+        call r8mkbicubw(xorb_grid,ngrid_orbx,yorb_grid,ngrid_orby,orb_num(1,1,1,iorb),ngrid_orbx,
      &    ibcxmin,bcxmin,ibcxmax,bcxmax,
      &    ibcymin,bcymin,ibcymax,bcymax,
      &    wk,nwk,ilinx,iliny,ier)

@@ -407,6 +407,8 @@ c 2  2  2  2  2  2  2  2
 c 4 3    5 3   6 3    7 3    8 3   9 3   10 9  11 9 ((iedet(j,i),j=1,2),i=1,nedet)
 c 1. -1.  1. .5  1. -.5  1. -.5  1. .5  1. -1.1547005 1. .5  1. -.5
 c 0 0 0 0 0 0 0 0 0  (ipivot(j),j=1,norb)
+! MGRID_ORB_PER for 3d periodic system part of code (not needed since now it is allocated)
+! MGRID_ORB     for 2d localised system part of code (not needed since now it is allocated)
 
 ! JT  13 Sep 2005 beg
       lhere = 'read_input'
@@ -800,6 +802,13 @@ c Convert center positions from primitive lattice vector units to cartesian coor
           endif
           if(npotd(ict).ge.6) write(6,'(''Warning: We are not ensuring the right number of quadrature points for npotd >=6'')')
    67   continue
+        call alloc ('xq0', xq0, MPS_QUAD)
+        call alloc ('yq0', yq0, MPS_QUAD)
+        call alloc ('zq0', zq0, MPS_QUAD)
+        call alloc ('xq', xq, MPS_QUAD)
+        call alloc ('yq', yq, MPS_QUAD)
+        call alloc ('zq', zq, MPS_QUAD)
+        call alloc ('wq', wq, MPS_QUAD)
         call gesqua(nquad,xq0,yq0,zq0,wq)
         if(ipr.ge.0) then
           write(6,'(''Quadrature points for nonlocal pseudopotential'')')
@@ -863,12 +872,6 @@ c If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
              stop 'igrad_lap must equal 0, 1 or 2'
            endif
          endif
-c       if(((ngrid_orbx .gt. MGRID_ORB_PER) .or.
-c    &      (ngrid_orby .gt. MGRID_ORB_PER) .or.
-c    &      (ngrid_orbz .gt. MGRID_ORB_PER)) .and.
-c    &     ((inum_orb .eq. 4). or. (inum_orb .eq. 5))) then
-c          stop 'ngrid_orbx, ngrid_orby and ngrid_orbz must be <= MGRID_ORB_PER (in vmc/numorb.h) for Lagrange and pp-splines'
-c       endif
       endif
 
       read(5,*) ndet,nbasis,norb

@@ -1707,7 +1707,6 @@ c     character*20 fmt
 c     character*16 mode,iorb_format
 
 c     include 'ewald.h'
-c     include 'numorb.h'
 c     parameter(eps=1.d-3)
 
 c     common /periodic2/ rkvec_shift_latt(3)

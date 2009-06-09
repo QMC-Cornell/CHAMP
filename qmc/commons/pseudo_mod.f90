@@ -7,5 +7,7 @@ module pseudo_mod
  integer nloc
  double precision, allocatable ::  vps(:,:,:)
  integer, allocatable ::  npotd(:), lpotp1(:)
+ integer :: MPS_L=4
+ integer :: MPS_GRID=2501
      
 end module pseudo_mod

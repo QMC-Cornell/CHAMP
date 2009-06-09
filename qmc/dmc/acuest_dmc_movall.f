@@ -32,8 +32,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
 c routine to accumulate estimators for energy etc.
 
-c     common /qua/ xq0(MPS_QUAD),yq0(MPS_QUAD),zq0(MPS_QUAD)
-c    &,xq(MPS_QUAD),yq(MPS_QUAD),zq(MPS_QUAD),wq(MPS_QUAD),nquad
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 c     common /compferm/ emagv,nv,idot
 
