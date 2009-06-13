@@ -59,9 +59,6 @@ module constants_mod
 ! maximun numbers of objects
   integer, parameter    :: max_objects_nb = 1500
 
-! dimension parameters
-  include 'vmc/ewald.h'
-
 # if defined (MPI)
    include 'mpif.h'
 # endif

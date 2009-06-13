@@ -8,14 +8,15 @@ module tempor_test_mod
 ! list of g vectors at the top is longer than what is actually used.
 ! The other arrays are dimensioned NGVEC2X rather than NGVECX because planewave code does not
 ! combine coefs. of G and -G, whereas QMC code does.
- integer               :: igvec_dft(3,NGVEC_BIGX),iwgvec(NGVEC2X)
- real(dp)              :: c_real(NGVEC2X),c_imag(NGVEC2X)
- integer               :: map_gvecdft_gvec(NGVEC2X),isign_gvecdft_gvec(NGVEC2X)
+ integer, allocatable  :: igvec_dft(:,:),iwgvec(:)
+ real(dp), allocatable :: c_real(:),c_imag(:)
+ integer, allocatable  :: map_gvecdft_gvec(:),isign_gvecdft_gvec(:)
  real(dp), allocatable :: orb(:), dorb(:,:), ddorb(:)
  real(dp), allocatable :: orb_si(:),dorb_si(:,:),ddorb_si(:)
  integer, allocatable  :: iflag(:)
  real(dp)              :: rnorm,r(3),rkvec_tmp(3),rkvec_tmp2(3)
- integer               :: ngg(MKPTS),ngvec_dft
+ integer               :: ngvec_dft
+ integer, allocatable  :: ngg(:)
 
 
 

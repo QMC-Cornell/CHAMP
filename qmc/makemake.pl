@@ -24,7 +24,7 @@ print MAKEFILE "PROG =\t\$(CHAMP_EXE)\n\n";
 # Source listing
 #
 print MAKEFILE "SRCS =\t";
-@srcs = <commons/*.f90 *.f90 *.f95 *.f *.F *.c fit/*.f fit/MPI/*f vmc/*.f vmc/MPI/*.f dmc/*.f dmc/dmc_elec/*.f dmc/dmc_elec/MPI/*.f dmc/dmc_elec/MPI_global_pop/*.f dmc/dmc_elec/MPI_global_pop_big/*.f>;
+@srcs = <commons/*.f90 *.f90 *.f95 *.f *.F *.c fit/*.f fit/MPI/*f vmc/*.f vmc/*.f90 vmc/MPI/*.f dmc/*.f dmc/dmc_elec/*.f dmc/dmc_elec/MPI/*.f dmc/dmc_elec/MPI_global_pop/*.f dmc/dmc_elec/MPI_global_pop_big/*.f>;
 &PrintWords(8, 0, @srcs);
 print MAKEFILE "\n\n";
 #

@@ -10,9 +10,8 @@ c by interpolating on a grid.
       use dim_mod
       use contr2_mod
       use periodic_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension x(3),r_basis(3),orb(*),dorb(3,*),ddorb(*)
 

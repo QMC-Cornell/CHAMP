@@ -38,6 +38,9 @@ c and, the same normal. for Gaussians as for Slaters.
 c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
 
       call alloc ('anorm', anorm, nbasis)
+      call alloc ('n_bas', n_bas, nbasis)
+      call alloc ('l_bas', l_bas, nbasis)
+      call alloc ('m_bas', m_bas, nbasis)
 
       do 20 ib=1,nbasis
         n=n_bas(ib)

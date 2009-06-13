@@ -139,9 +139,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use constants_mod
       use coefs_mod
       use dim_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*)
       dimension orb1(norb),dorb1(3,norb),ddorb1(norb),term(4),iz(4),isgn(4)
@@ -209,9 +208,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use constants_mod
       use coefs_mod
       use dim_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*)
       dimension orb1(norb),dorb1(3,norb),ddorb1(norb),term(4),iy(4),isgn(4)
@@ -279,9 +277,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use constants_mod
       use orbital_grid_mod
       use coefs_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),dorb(3,*),ddorb(*)
      &,term(4),ix(4),isgn(4)
@@ -545,9 +542,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
 
       use constants_mod
       use coefs_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),orb1(norb),term(4),iz(4),isgn(4)
 
@@ -607,9 +603,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
 
       use constants_mod
       use coefs_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*),orb1(norb),term(4),iy(4),isgn(4)
 
@@ -670,9 +665,8 @@ c If rkvec_shift_latt(k)!=0 function is tabulated on half period in this dimensi
       use constants_mod
       use orbital_grid_mod
       use coefs_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension orb(*)
      &,term(4),ix(4),isgn(4)

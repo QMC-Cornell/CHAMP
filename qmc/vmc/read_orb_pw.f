@@ -14,9 +14,10 @@ c Presently not used.
 
       open(3,file='orbitals_pw')
       read(3,*) nkvec,ngvec
-      if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw'
+!JT      if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw'
 
 
+      call alloc ('nband', nband, nkvec)
       jorb=0
       jorba=0
       do 50 ikv=1,nkvec
@@ -460,19 +461,19 @@ c combine coefs. of G and -G, whereas QMC code does.
       call alloc ('orb', orb, norb)
       call alloc ('dorb', dorb, 3, norb)
       call alloc ('ddorb', ddorb, norb)
-      call alloc ('orb_si', orb_si, norb)
-      call alloc ('dorb_si', dorb_si, 3, norb)
-      call alloc ('ddorb_si', ddorb_si, norb)
-
+!JT      call alloc ('orb_si', orb_si, norb)
+!JT      call alloc ('dorb_si', dorb_si, 3, norb)
+!JT      call alloc ('ddorb_si', ddorb_si, norb)
       call alloc ('ireal_imag', ireal_imag, norb)
 
       call file_exist_or_die (file_orbitals_pw_tm_in)
       open(30,file=file_orbitals_pw_tm_in,err=999)
       read(30,*) icmplx,ngvec_dft
-      if(ngvec_dft.gt.NGVEC_BIGX) then
-        write(6,'(''ngvec_dft,NGVEC_BIGX,NGVECX,NGNORMX'',9i10)') ngvec_dft,NGVEC_BIGX,NGVECX,NGNORMX
-        stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'
-      endif
+!JT      if(ngvec_dft.gt.NGVEC_BIGX) then
+!JT        write(6,'(''ngvec_dft,NGVEC_BIGX,NGVECX,NGNORMX'',9i10)') ngvec_dft,NGVEC_BIGX,NGVECX,NGNORMX
+!JT        stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'
+!JT      endif
+      call alloc ('igvec_dft', igvec_dft, 3, ngvec_dft)
       do 20 i=1,ngvec_dft
    20   read(30,*) (igvec_dft(k,i),k=1,ndim)
 c  20   write(6,*) (igvec_dft(k,i),k=1,ndim)
@@ -485,7 +486,7 @@ c  20   write(6,*) (igvec_dft(k,i),k=1,ndim)
 
       if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) write(3,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
       if(ipr.ge.1) write(6,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
-      if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw_tm'
+!JT      if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw_tm'
 
       call my_second(1,'orb_si')
 
@@ -501,13 +502,16 @@ c       orbs by combining Psi_k with Psi_-k.
       ngvec_orb=0
       eigmax=-1.d99
       eigmin=1.d99
+      call alloc ('ngg', ngg, nkvec)
+      call alloc ('nband', nband, nkvec)
       do 90 ikv=1,nkvec
         read(30,*) ikvec,nband(ikv),ngvec_dftorb,(rkvec_tmp(k),k=1,ndim)
         call object_modified ('nband')
         if(ikvec.ne.ikv) stop 'ikvec.ne.ikv in read_orb_pw_tm'
-        if(ngvec_dftorb.gt.NGVEC2X) stop 'ngvec_dftorb>NGVEC2X in read_orb_pw_tm'
+!JT        if(ngvec_dftorb.gt.NGVEC2X) stop 'ngvec_dftorb>NGVEC2X in read_orb_pw_tm'
         ngg(ikv)=ngvec_dftorb
         if(icmplx.eq.0) then
+          call alloc ('c_imag', c_imag, ngvec_dftorb)
           do 21 ig=1,ngvec_dftorb
    21       c_imag(ig)=0
         endif
@@ -538,11 +542,14 @@ c    &  write(3,'(2i4,3f9.5'' ikvec, nband, rkvec(in cartesian units)'')') ikv,n
           endif
    24   continue
 c       if(ngvec_dftorb.gt.NGVEC2X) stop 'ngvec_dftorb>NGVEC2X in read_orb_pw_tm'
+        call alloc ('iwgvec', iwgvec, ngvec_dftorb)
         read(30,*) (iwgvec(j),j=1,ngvec_dftorb)
 
 c Establish the mapping between DFT and QMC g-vectors.
 c Note that the DFT g-vectors for each k-pt are different and are themselves mapped
 c to the list of gvectors at beginning of orbitals_pw_tm file.
+        call alloc ('map_gvecdft_gvec', map_gvecdft_gvec, ngvec_dftorb)
+        call alloc ('isign_gvecdft_gvec', isign_gvecdft_gvec, ngvec_dftorb)
         ngvec_found=0
         do 35 igv=1,ngvec
           if(igvec(1,igv).eq.0 .and. igvec(2,igv).eq.0 .and. igvec(3,igv).eq.0) then
@@ -584,10 +591,17 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
         nband_tmp=0
         do 80 iband=1,nband(ikv)
           iorba=iorba+k_inv(ikv)
+          if(iorba > norb) then
+             call alloc ('iflag', iflag, iorba)
+             iflag(norb+1:iorba)=0
+          endif
 !JT          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
+          morb = max (morb, iorba) !JT
           read(30,*) ibandx,eig
           if(ibandx.ne.iband) stop 'ibandx.ne.iband in read_orb_pw_tm'
+          call alloc ('c_real', c_real, ngvec_dftorb)
           if(icmplx.ne.0) then
+            call alloc ('c_imag', c_imag, ngvec_dftorb)
             read(30,*) (c_real(ig),c_imag(ig),ig=1,ngvec_dftorb)
            else
             read(30,*) (c_real(ig),ig=1,ngvec_dftorb)
@@ -626,6 +640,7 @@ c         endif
           jorb=jorb+1
           jorba=jorba+k_inv(ikv)
 !JT          if(jorba.gt.MORB_OCC) stop 'jorba > MORB_OCC in read_orb_pw_tm'
+          morb = max (morb, jorba+1) !JT
           nband_tmp=nband_tmp+1
 
 c If there is only one linearly indep. state formed from psi_k and psi_-k then
@@ -844,9 +859,9 @@ c However, that causes problems when running with mpi, so comment out that part.
       call alloc ('orb', orb, norb)
       call alloc ('dorb', dorb, 3, norb)
       call alloc ('ddorb', ddorb, norb)
-      call alloc ('orb_si', orb_si, norb)
-      call alloc ('dorb_si', dorb_si, 3, norb)
-      call alloc ('ddorb_si', ddorb_si, norb)
+!JT      call alloc ('orb_si', orb_si, norb)
+!JT      call alloc ('dorb_si', dorb_si, 3, norb)
+!JT      call alloc ('ddorb_si', ddorb_si, norb)
 
       call alloc ('ireal_imag', ireal_imag, norb)
 
@@ -882,12 +897,13 @@ c Skip over reading primitive lattice vectors etc
    16   read(30,*)
 
       read(30,*) ngvec_dft
-      if(ngvec_dft.gt.NGVEC_BIGX) stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'
+!JT      if(ngvec_dft.gt.NGVEC_BIGX) stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'
 c In orbitals_pw_tm ngvec_dftorb depends on k vector and can be smaller than ngvec_dft.
 c Here it is the same.
       ngvec_dftorb=ngvec_dft
 
       read(30,*)
+      call alloc ('igvec_dft', igvec_dft, 3, ngvec_dft)
       do 19 igv=1,ngvec_dft
         read(30,*) (gvec_dft(k),k=1,ndim)
 c  19   write(6,*) (igvec_dft(k,igv),k=1,ndim)
@@ -914,7 +930,7 @@ c  19   write(6,*) (igvec_dft(k,igv),k=1,ndim)
 
       if(ipr.ge.0) write(6,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
       if(ipr.ge.1 .and. (index(mode,'mpi').eq.0 .or. idtask.eq.0)) write(3,'(2i6,'' nkvec,ngvec'')') nkvec,ngvec
-      if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw_pwscf'
+!JT      if(nkvec.gt.MKPTS) stop 'nkvec>MKPTS in read_orb_pw_pwscf'
 
       call my_second(1,'orb_si')
 
@@ -932,6 +948,12 @@ c In CHAMP I do not make a distinction between up and down at this stage, so I j
       ngvec_orb=0
       eigmax=-1.d99
       eigmin=1.d99
+      call alloc ('ngg', ngg, nkvec)
+      call alloc ('nband', nband, nkvec)
+      call alloc ('k_inv', k_inv, nkvec)
+      call alloc ('kvec', kvec, 3, nkvec)
+      call alloc ('rkvec', rkvec, 3, nkvec)
+      call alloc ('rknorm', rknorm, nkvec)
       do 90 ikv=1,nkvec
         read(30,*)
         read(30,*) ikvec,nband(ikv),nband_dn,(rkvec(k,ikv),k=1,ndim)
@@ -942,6 +964,7 @@ c In CHAMP I do not make a distinction between up and down at this stage, so I j
         if(ikvec.ne.ikv) stop 'ikvec.ne.ikv in read_orb_pw_pwscf'
         ngg(ikv)=ngvec_dftorb
         if(icmplx.eq.0) then
+          call alloc ('c_imag', c_imag, ngvec_dftorb)
           do 21 ig=1,ngvec_dftorb
    21       c_imag(ig)=0
         endif
@@ -986,13 +1009,17 @@ c Figure out k-vector in reciprocal simulation-cell lattice vector units with k-
 
 c I map iwgvec(j)=j in order to keep most of the code the same for orbitals read from TM and other PW codes.
 c       read(30,*) (iwgvec(j),j=1,ngvec_dftorb)
+        call alloc ('iwgvec', iwgvec, ngvec_dftorb)
         do j=1,ngvec_dftorb
           iwgvec(j)=j
         enddo
 
+
 c Establish the mapping between DFT and QMC g-vectors.
 c Note that the DFT g-vectors for each k-pt are different and are themselves mapped
 c to the list of gvectors at beginning of orbitals_pw_tm file but not for orbitals_pw_pwscf
+        call alloc ('map_gvecdft_gvec', map_gvecdft_gvec, ngvec_dftorb)
+        call alloc ('isign_gvecdft_gvec', isign_gvecdft_gvec, ngvec_dftorb)
         ngvec_found=0
         do 35 igv=1,ngvec
           if(igvec(1,igv).eq.0 .and. igvec(2,igv).eq.0 .and. igvec(3,igv).eq.0) then
@@ -1034,7 +1061,12 @@ c    & igv,jorb,c_rp(igv,jorb),c_rm(igv,jorb),c_ip(igv,jorb),c_im(igv,jorb)
         write(6,*)'ngvec_dftorb=',ngvec_dftorb
         do 80 iband=1,nband(ikv)
           iorba=iorba+k_inv(ikv)
+          if(iorba > norb) then
+             call alloc ('iflag', iflag, iorba)
+             iflag(norb+1:iorba)=0
+          endif
 !JT          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
+          morb = max (morb, iorba) !JT
           read(30,*)
 c         write(6,*) 'Skipped "Band, spin, eigenvalue (au)" line'
           read(30,*) ibandx,ispin,eig
@@ -1044,7 +1076,9 @@ c         write(6,*) 'Skipped "Eigenvector coefficients" line'
 c I am commenting out the next line because pwscf numbers the band index separately for up and down spins, when the orbitals for these are not the same.
 c         if(ibandx.ne.iband) stop 'ibandx.ne.iband in read_orb_pw_pwscf'
           if(ispin.ne.1 .and. ispin.ne.2) stop 'ispin.ne.1 or 2 in read_orb_pw_pwscf'
+          call alloc ('c_real', c_real, ngvec_dftorb)
           if(icmplx.ne.0) then
+            call alloc ('c_imag', c_imag, ngvec_dftorb)
             do ig=1,ngvec_dftorb
                read(30,*) c_complex_tmp
 c              write(6,*) ig,c_complex_tmp
@@ -1088,6 +1122,7 @@ c         endif
           jorb=jorb+1
           jorba=jorba+k_inv(ikv)
 !JT          if(jorba.gt.MORB_OCC) stop 'jorba > MORB_OCC in read_orb_pw_pwscf'
+          morb = max (morb, jorba+1) !JT
           nband_tmp=nband_tmp+1
 
 c If there is only one linearly indep. state formed from psi_k and psi_-k then
@@ -1264,13 +1299,13 @@ c At present it is assumed that k-vectors are in the correct order, but
 c if not one could use isortk to map iorb.
 c Note: This is the straightforward, expensive evaluation for checking purposes only.
 
+      use basic_tools_mod, only: alloc
       use tempor_test_mod
       use const_mod
       use dim_mod
       use periodic_mod
+      use coefs_mod
       implicit real*8(a-h,o-z)
-
-
 
 
 c1    dimension r(3),orb(MELEC,*),dorb(3,MELEC,*),ddorb(MELEC,*)
@@ -1279,7 +1314,7 @@ c    &,cos_g(MELEC,NGVECX),sin_g(MELEC,NGVECX),dcos_g(3,MELEC,NGVECX),dsin_g(3,M
 c    &,ddcos_g(MELEC,NGVECX),ddsin_g(MELEC,NGVECX)
 c    &,cos_k(MELEC,MKPTS),sin_k(MELEC,MKPTS),dcos_k(3,MELEC,MKPTS),dsin_k(3,MELEC,MKPTS)
 c    &,ddcos_k(MELEC,MKPTS),ddsin_k(MELEC,MKPTS)
-      dimension gvec_dft(3,NGVEC_BIGX),gnorm_dft(NGVEC_BIGX)
+      dimension gvec_dft(3,ngvec_dft),gnorm_dft(ngvec_dft)
 
 c     write(6,'(''nelec,norb,nkvec in orbitals_pw2'',9i5)') nelec,norb,nkvec
 
@@ -1317,6 +1352,9 @@ c Calculate psi_+ orbital if that is the one kept or if both are kept
 c       if(ireal_imag(iorb).eq.0 .or. ireal_imag(iorb).eq.1) then
 
         iorb=iorb+1
+        call alloc ('orb_si', orb_si, morb)
+        call alloc ('dorb_si', dorb_si, 3, morb)
+        call alloc ('ddorb_si', ddorb_si, morb)
         orb_si(iorb)=0
         ddorb_si(iorb)=0
         do 29 k=1,ndim
@@ -1407,13 +1445,11 @@ c-----------------------------------------------------------------------
       use contr3_mod
       use periodic_mod
       use contr_names_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
       character*20 fmt
 
       parameter(eps=1.d-3)
-
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension r(3),r_basis(3),r_test(3,ngrid_orbx*ngrid_orby*ngrid_orbz)
       dimension orb(norb),dorb(3,norb),ddorb(norb)
@@ -1702,14 +1738,12 @@ c     use dorb_mod
 c     use coefs_mod
 c     use dets_mod
 c     use periodic_mod
+c     use periodic2_mod
 c     implicit real*8(a-h,o-z)
 c     character*20 fmt
 c     character*16 mode,iorb_format
 
-c     include 'ewald.h'
 c     parameter(eps=1.d-3)
-
-c     common /periodic2/ rkvec_shift_latt(3)
 
 c     dimension r(3),r_basis(3)
 c     integer i,k,ix,iy,iz,iorb

@@ -11,9 +11,8 @@ c by interpolating on a grid.
       use dim_mod
       use contr2_mod
       use periodic_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension x(3,*),r_basis(3)
       dimension orb(nelec,*),dorb(3,nelec,*),ddorb(nelec,*)
@@ -159,16 +158,14 @@ c Written by Cyrus Umrigar
 c Calculate pw orbitals for electron iel by interpolating on a grid.
       use bwfdet_mod
       use bsplines_mod
-
       use orbital_grid_mod
       use coefs_mod
       use dets_mod
       use dim_mod
       use contr2_mod
       use periodic_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
-
-      common /periodic2/ rkvec_shift_latt(3)
 
       dimension x(3),orb(*),r_basis(3)
 

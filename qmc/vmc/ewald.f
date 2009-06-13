@@ -10,45 +10,38 @@ c Written by Cyrus Umrigar
       use periodic_mod
       use pseudo_tm_mod
       use ewald_mod
+      use periodic2_mod
+      use ewald2_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
 
       common /constant/ twopi
-      common /periodic2/ rkvec_shift_latt(3)
-c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
-      common /test/ f,vbare_coul(NGNORM_SIM_BIGX),vbare_jas(NGNORM_SIM_BIGX)
-     &,vbare_psp(NGNORM_BIGX)
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
+!JT      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
 
       common /tempor/ dist_nn
 
       dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3)
 
+c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
+      double precision, allocatable :: vbare_coul(:),vbare_jas(:),vbare_psp(:)
+      double precision f
+
 c Temporary
       dimension r_tmp(3)
 
-      call alloc ('b_coul', b_coul, NCOEFX)
-      call alloc ('y_coul', y_coul, NGNORMX)
-      call alloc ('b_coul_sim', b_coul_sim, NCOEFX)
-      call alloc ('y_coul_sim', y_coul_sim, NGNORM_SIMX)
-      call alloc ('b_psp', b_psp, NCOEFX, nctype)
-      call alloc ('y_psp', y_psp, NGNORMX, nctype)
-      call alloc ('b_jas', b_jas, NCOEFX)
-      call alloc ('y_jas', y_jas, NGNORM_SIMX)
-      call alloc ('cos_n_sum', cos_n_sum, NGVECX)
-      call alloc ('sin_n_sum', sin_n_sum, NGVECX)
-      call alloc ('cos_e_sum', cos_e_sum, NGVECX)
-      call alloc ('sin_e_sum', sin_e_sum, NGVECX)
-      call alloc ('cos_e_sum_sim', cos_e_sum_sim, NGVEC_SIMX)
-      call alloc ('sin_e_sum_sim', sin_e_sum_sim, NGVEC_SIMX)
-      call alloc ('cos_p_sum', cos_p_sum, NGVECX)
-      call alloc ('sin_p_sum', sin_p_sum, NGVECX)
+      integer, allocatable :: testob (:)
 
       pi=4.d0*datan(1.d0)
       twopi=2*pi
 
       ncoef=npoly+1
+
+      call alloc ('b_coul', b_coul, ncoef)
+      call alloc ('b_coul_sim', b_coul_sim, ncoef)
+      call alloc ('b_psp', b_psp, ncoef, nctype)
+      call alloc ('b_jas', b_jas, ncoef)
+
 
 c Check that the lattice vectors are the smallest possible ones and return the smallest
 c which is used to set the range of the real-space Ewald sums so that only one image
@@ -90,6 +83,8 @@ c Note glatt = 2*pi*rlatt_inv^{transpose} and
 c      rlatt = 2*pi*glatt_inv^{transpose}
 c Warning: make sure that there are no errors pertaining to transposes when the
 c rlatt is not a symmetric matrix.
+      call alloc ('rlatt_inv', rlatt_inv, 3, 3)
+      call alloc ('rlatt_sim_inv', rlatt_sim_inv, 3, 3)
       do 5 i=1,ndim
         do 5 k=1,ndim
           rlatt_inv(k,i)=rlatt(k,i)
@@ -107,6 +102,7 @@ c    &   +rlatt(3,1)*rlatt(1,2)*rlatt(2,3)
 c    &   -rlatt(3,1)*rlatt(2,2)*rlatt(1,3)
 c    &   -rlatt(1,1)*rlatt(3,2)*rlatt(2,3)
 c    &   -rlatt(2,1)*rlatt(1,2)*rlatt(3,3)
+      call alloc ('glatt', glatt, 3, 3)
       det1=twopi/det
       glatt(1,1)=det1*(rlatt(2,2)*rlatt(3,3)-rlatt(2,3)*rlatt(3,2))
       glatt(2,1)=det1*(rlatt(3,2)*rlatt(1,3)-rlatt(3,3)*rlatt(1,2))
@@ -131,6 +127,7 @@ c    &   +rlatt_sim(3,1)*rlatt_sim(1,2)*rlatt_sim(2,3)
 c    &   -rlatt_sim(3,1)*rlatt_sim(2,2)*rlatt_sim(1,3)
 c    &   -rlatt_sim(1,1)*rlatt_sim(3,2)*rlatt_sim(2,3)
 c    &   -rlatt_sim(2,1)*rlatt_sim(1,2)*rlatt_sim(3,3)
+      call alloc ('glatt_sim', glatt_sim, 3, 3)
       det1=twopi/det_sim
       glatt_sim(1,1)=det1*(rlatt_sim(2,2)*rlatt_sim(3,3)-rlatt_sim(2,3)*rlatt_sim(3,2))
       glatt_sim(2,1)=det1*(rlatt_sim(3,2)*rlatt_sim(1,3)-rlatt_sim(3,3)*rlatt_sim(1,2))
@@ -166,6 +163,8 @@ c     endif
 
 c Calculate inverse transformation for reciprocal lattice (from lattice coordinates to real coordinates)
 c Needed to transform k-vectors
+      call alloc ('glatt_inv', glatt_inv, 3, 3)
+      call alloc ('glatt_sim_inv', glatt_sim_inv, 3, 3)
       do 7 i=1,ndim
         do 7 k=1,ndim
           glatt_inv(k,i)=glatt(k,i)
@@ -218,20 +217,21 @@ c generate shells of primitive cell g-vectors
    20 write(6,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
       write(6,'(/,''Vects. within cutg_big,cutg'',2i8)') ngvec_big,ngvec
       write(6,'(/,''ng1d for primitive cell'',3i4)') (ng1d(k),k=1,ndim)
-      if(ngvec.gt.NGVECX) then
-        write(6,'(''ngvec,NGVECX='',2i8)') ngvec,NGVECX
-        stop 'ngvec>NGVECX in set_ewald'
-      endif
-      if(ngnorm.gt.NGNORMX) then
-        write(6,'(''ngnorm,NGNORMX='',2i8)') ngnorm,NGNORMX
-        stop 'ngnorm>NGNORMX in set_ewald'
-      endif
-      do 30 k=1,ndim
-        if(ng1d(k).gt.NG1DX) then
-          write(6,'(''k,ng1d(k),NG1DX='',i1,2i8)') k,ng1d(k),NG1DX
-          stop 'ng1d(k)>NG1DX in set_ewald'
-        endif
-   30 continue
+!JT      if(ngvec.gt.NGVECX) then
+!JT        write(6,'(''ngvec,NGVECX='',2i8)') ngvec,NGVECX
+!JT        stop 'ngvec>NGVECX in set_ewald'
+!JT      endif
+!JT      if(ngnorm.gt.NGNORMX) then
+!JT        write(6,'(''ngnorm,NGNORMX='',2i8)') ngnorm,NGNORMX
+!JT        stop 'ngnorm>NGNORMX in set_ewald'
+!JT      endif
+      NG1DX = maxval (ng1d(1:ndim)) !JT
+!JT      do 30 k=1,ndim
+!JT        if(ng1d(k).gt.NG1DX) then
+!JT          write(6,'(''k,ng1d(k),NG1DX='',i1,2i8)') k,ng1d(k),NG1DX
+!JT          stop 'ng1d(k)>NG1DX in set_ewald'
+!JT        endif
+!JT   30 continue
 
       if(ipr.ge.1) then
         open(1,file='gvectors_qmc')
@@ -240,6 +240,15 @@ c generate shells of primitive cell g-vectors
         close(1)
       endif
 
+      call alloc ('y_coul', y_coul, ngnorm)
+      call alloc ('y_psp', y_psp, ngnorm, nctype)
+      call alloc ('cos_n_sum', cos_n_sum, ngvec)
+      call alloc ('sin_n_sum', sin_n_sum, ngvec)
+      call alloc ('cos_e_sum', cos_e_sum, ngvec)
+      call alloc ('sin_e_sum', sin_e_sum, ngvec)
+      call alloc ('cos_p_sum', cos_p_sum, ngvec)
+      call alloc ('sin_p_sum', sin_p_sum, ngvec)
+       
 c generate shells of simulation cell g-vectors
       call shells(cutg_sim_big,glatt_sim,gdist_sim,igvec_sim,gvec_sim,gnorm_sim,igmult_sim,ngvec_sim_big,
      & ngnorm_sim_big,ng1d_sim,1)
@@ -257,12 +266,19 @@ c generate shells of simulation cell g-vectors
    50 write(6,'(/,''Shells within cutg_sim_big,cutg_sim'',2i8)') ngnorm_sim_big,ngnorm_sim
       write(6,'(/,''Vects. within cutg_sim_big,cutg_sim'',2i8)') ngvec_sim_big,ngvec_sim
       write(6,'(/,''ng1d for simulation cell'',3i4)') (ng1d_sim(k),k=1,ndim)
-      if(ngvec_sim.gt.NGVEC_SIMX) stop 'ngvec_sim>NGVEC_SIMX in set_ewald'
-      if(ngnorm_sim.gt.NGNORM_SIMX) stop 'ngnorm_sim>NGNORM_SIMX in set_ewald'
-      do 60 k=1,ndim
-   60   if(ng1d_sim(k).gt.NG1DX) stop 'ng1d_sim(k)>NG1DX in shells'
+!JT      if(ngvec_sim.gt.NGVEC_SIMX) stop 'ngvec_sim>NGVEC_SIMX in set_ewald'
+!JT      if(ngnorm_sim.gt.NGNORM_SIMX) stop 'ngnorm_sim>NGNORM_SIMX in set_ewald'
+      NG1DX = max (NG1DX, maxval (ng1d_sim(1:ndim))) !JT
+!JT      do 60 k=1,ndim
+!JT   60   if(ng1d_sim(k).gt.NG1DX) stop 'ng1d_sim(k)>NG1DX in shells'
+
+      call alloc ('cos_e_sum_sim', cos_e_sum_sim, ngvec_sim)
+      call alloc ('sin_e_sum_sim', sin_e_sum_sim, ngvec_sim)
+      call alloc ('y_coul_sim', y_coul_sim, ngnorm_sim)
+      call alloc ('y_jas', y_jas, ngnorm_sim)
 
 c Convert k-vector shift from simulation-cell recip. lattice vector units to cartesian coordinates
+      call alloc ('rkvec_shift', rkvec_shift, 3)
       do 65 k=1,ndim
         rkvec_shift(k)=0
         do 65 i=1,ndim
@@ -288,6 +304,7 @@ c     isrange=0
 
 c n-n, e-n interactions (primitive cell)
 c put in uniform background by setting k=0 term to zero
+      call alloc ('vbare_coul', vbare_coul, ngnorm_big)
       vbare_coul(1)=0.d0
       do 70 k=2,ngnorm_big
 c Fourier transfom of 1/r
@@ -374,13 +391,17 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
 
 c e-e interactions (simulation cell) (we can reuse vbare_coul)
 c put in uniform background by setting k=0 term to zero
+      call release ('vbare_coul', vbare_coul)
+      call alloc ('vbare_coul', vbare_coul, ngnorm_sim_big)
+      call alloc ('vbare_jas', vbare_jas, ngnorm_sim_big)
       vbare_coul(1)=0.d0
       vbare_jas(1)=0.d0
       do 80 k=2,ngnorm_sim_big
 c Fourier transfom of 1/r
         vbare_coul(k)=2*twopi/(vcell_sim*gnorm_sim(k)**2)
 c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
-   80   vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2)
+   80 continue !JT
+!JT   80   vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2) ! JT: comment this out because f is not initialized!
 
       call separate(vbare_coul,b0,lowest_pow,ngnorm_sim_big,igmult_sim,gnorm_sim,ngnorm_sim
      &,cutr_sim,vcell_sim,ncoef,np,b_coul_sim,y_coul_sim,chisq,nconstraint,isrange)
@@ -563,6 +584,8 @@ c If sim cell is not primitive cell, vbare_coul has been overwritten, so restore
 c n-n, e-n interactions (primitive cell)
 c put in uniform background by setting k=0 term to zero
       if(vcell_sim.ne.vcell) then
+        call release ('vbare_coul', vbare_coul)
+        call alloc ('vbare_coul', vbare_coul, ngnorm_big)
         vbare_coul(1)=0.d0
         do 185 k=2,ngnorm_big
 c Fourier transfom of 1/r
@@ -583,6 +606,7 @@ c         rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
 c         if(isrange.eq.4) vs=vsrange4(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpotp1(ict))
 c         vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_psp(1,ict))
 c         test=vs+vl
+c         call alloc ('vbare_psp', vbare_psp, ngnorm_big)
 cc        true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
 c         true=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell,ict,lpotp1(ict),znuc(ict))
 c         ewa=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell,ict,lpotp1(ict),znuc(ict))
@@ -693,177 +717,6 @@ c evaluates the cross-product of v1 and v2 and puts it in v3
       end
 c-----------------------------------------------------------------------
 
-      subroutine shells(cutg,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,
-     & ngnorm_big,ng1d,icell)
-c Written by Cyrus Umrigar
-
-c icell = 0  primitive cell
-c         1  simulation cell
-
-      use dim_mod
-      implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
-
-      dimension glatt(3,*),gdist(3),igvec(3,*),gvec(3,*),gnorm(*),igmult(*),ng1d(*)
-      dimension gnorm_tmp(NGVEC_SIM_BIGX)
-
-      do 1 k=1,ndim
-    1   ng1d(k)=int(cutg/gdist(k))
-
-      cutg2=cutg**2
-      ngvec_big=0
-c     do 10 i1=-ng1d(1),ng1d(1)
-      do 10 i1=0,ng1d(1)
-        if(i1.ne.0) then
-          i2min=-ng1d(2)
-         else
-          i2min=0
-        endif
-c       do 10 i2=-ng1d(2),ng1d(2)
-        do 10 i2=i2min,ng1d(2)
-          if(i2.ne.0.or.i1.ne.0) then
-            i3min=-ng1d(3)
-           else
-            i3min=0
-          endif
-c         do 10 i3=-ng1d(3),ng1d(3)
-          do 10 i3=i3min,ng1d(3)
-
-            gx=i1*glatt(1,1)+i2*glatt(1,2)+i3*glatt(1,3)
-            gy=i1*glatt(2,1)+i2*glatt(2,2)+i3*glatt(2,3)
-            gz=i1*glatt(3,1)+i2*glatt(3,2)+i3*glatt(3,3)
-
-            glen2=gx*gx+gy*gy+gz*gz
-
-            if(glen2.le.cutg2) then
-              ngvec_big=ngvec_big+1
-              if(icell.eq.0 .and. ngvec_big.gt.NGVEC_BIGX) then
-                stop 'ngvec_big > NGVEC_BIGX in shells'
-               elseif(icell.eq.1 .and. ngvec_big.gt.NGVEC_SIM_BIGX) then
-                stop 'ngvec_big > NGVEC_SIM_BIGX in shells'
-              endif
-
-              igvec(1,ngvec_big)=i1
-              igvec(2,ngvec_big)=i2
-              igvec(3,ngvec_big)=i3
-
-              gvec(1,ngvec_big)=gx
-              gvec(2,ngvec_big)=gy
-              gvec(3,ngvec_big)=gz
-
-              gnorm_tmp(ngvec_big)=dsqrt(glen2)
-            endif
-   10 continue
-
-      call sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
-
-      return
-      end
-c-----------------------------------------------------------------------
-
-      subroutine sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
-      use dim_mod
-      implicit real*8(a-h,o-z)
-c Written by Cyrus Umrigar
-c Use Shell-Metzger sort to put g-vectors in some standard order, so that
-c the order they appear in is independent of cutg_sim_big.
-
-      parameter(eps=1.d-12)
-
-      include 'ewald.h'
-
-      dimension igvec(3,*),gvec(3,*),gnorm_tmp(*),gnorm(*),igmult(*)
-
-c     cost(igv1,igv2,igv3,gn)=igv3+10.d0**4*igv2+10.d0**8*igv1+10.d0**12*gn
-c     cost(igv1,igv2,igv3,gn)=((igv3+10.d0**4*igv2)+10.d0**8*igv1)+10.d0**14*gn
-      cost(igv1,igv2,igv3,gn)=((igv3+10.d0**2*igv2)+10.d0**4*igv1)+10.d0**14*gn
-
-      lognb2=int(dlog(dfloat(ngvec_big))/dlog(2.d0)+1.d-14)
-      m=ngvec_big
-      do 20 nn=1,lognb2
-        m=m/2
-        k=ngvec_big-m
-        do 20 j=1,k
-          do 10 i=j,1,-m
-            l=i+m
-c           if(gnorm_tmp(l).gt.gnorm_tmp(i)-eps) goto 20
-            if(cost(igvec(1,l),igvec(2,l),igvec(3,l),gnorm_tmp(l)).gt.cost(igvec(1,i),igvec(2,i),igvec(3,i),gnorm_tmp(i))) goto 20
-            t=gnorm_tmp(i)
-            gnorm_tmp(i)=gnorm_tmp(l)
-            gnorm_tmp(l)=t
-            do 10 k=1,ndim
-              it=igvec(k,i)
-              igvec(k,i)=igvec(k,l)
-              igvec(k,l)=it
-              t=gvec(k,i)
-              gvec(k,i)=gvec(k,l)
-   10         gvec(k,l)=t
-   20     continue
-
-c figure out the multiplicities and convert gnorm from being ngvec_big long to being ngnorm_big long
-      ngnorm_big=1
-      icount=0
-      do 30 i=2,ngvec_big
-        icount=icount+1
-        if(gnorm_tmp(i)-gnorm_tmp(i-1).gt.eps) then
-          igmult(ngnorm_big)=icount
-          gnorm(ngnorm_big)=gnorm_tmp(i-1)
-          ngnorm_big=ngnorm_big+1
-          if(icell.eq.0 .and. ngnorm_big.gt.NGNORM_BIGX) then
-            write(6,'(''ngnorm_big,NGNORM_BIGX='',2i8)') ngnorm_big,NGNORM_BIGX
-            stop 'ngnorm_big > NGNORM_BIGX in sort'
-           elseif(icell.eq.1 .and. ngnorm_big.gt.NGNORM_SIM_BIGX) then
-            write(6,'(''ngnorm_sim_big,NGNORM_SIM_BIGX='',2i8)') ngnorm_big,NGNORM_SIM_BIGX
-            stop 'ngnorm_sim_big > NGNORM_SIM_BIGX in sort'
-          endif
-          icount=0
-        endif
-   30 continue
-      igmult(ngnorm_big)=icount+1
-      gnorm(ngnorm_big)=gnorm_tmp(ngvec_big)
-
-c Check that looping over norms and using multiplicities we get the right number
-      icheck=0
-      do 40 i=1,ngnorm_big
-   40   icheck=icheck+igmult(i)
-      if(icheck.ne.ngvec_big) stop 'problem in sort'
-
-c Since vectors are sorted not just by norm but by 3 components also, make sure that
-c norms are monotonically ascending within a tolerance.  I do not stop unless the violation
-c is large because for lattice vectors that are very nearly equal, the norms may violate this.
-      do 50 i=2,ngvec_big
-        if(gnorm_tmp(i)+1.d-12.lt.gnorm_tmp(i-1)) then
-          write(6,'(''Warning: gnorm_tmps are not monotonic, i,gnorm(i-1),gnorm(i),diff='',i5,3d12.4)')
-     &    i,gnorm_tmp(i-1),gnorm_tmp(i),gnorm_tmp(i)-gnorm_tmp(i-1)
-        if(gnorm_tmp(i)+1.d-8.lt.gnorm_tmp(i-1)) stop 'gnorm_tmps are not monotonic'
-        endif
-   50 continue
-      do 60 i=2,ngnorm_big
-        if(gnorm(i)+1.d-12.lt.gnorm(i-1)) then
-          write(6,'(''Warning: gnorms are not monotonic, i,gnorm(i-1),gnorm(i),diff='',i5,3d12.4)')
-     &    i,gnorm(i-1),gnorm(i),gnorm(i)-gnorm(i-1)
-        if(gnorm(i)+1.d-8.lt.gnorm(i-1)) stop 'gnorms are not monotonic'
-        endif
-   60 continue
-
-c     if(icell.eq.0) then
-c       write(6,'(''shells and vectors in primitive cell'')')
-c      else
-c       write(6,'(''shells and vectors in simulation cell'')')
-c     endif
-c     j=0
-c     do 100 i=1,ngnorm_big
-c       do 100 im=1,igmult(i)
-c         j=j+1
-c 100     write(6,'(''CHECK '',i5,i4,i3,x,3i3,9f10.4)')
-c    &    j,i,igmult(i),(igvec(k,j),k=1,ndim),gnorm(i),(gvec(k,j),k=1,ndim)
-c     write(6,*)
-
-      return
-      end
-c-----------------------------------------------------------------------
-
       subroutine k_vectors
 c Written by Cyrus Umrigar
 c Generate the unique k-vectors, i.e., those that are not related by a
@@ -880,9 +733,11 @@ c a symmetry one could use later on.
 
       parameter (eps=1.d-6)
 
-
       dimension rkvec_try(3),rkvec_latt(3)
 
+      call alloc ('k_inv', k_inv, 1)
+      call alloc ('kvec', kvec, 3, 1)
+      call alloc ('rkvec', rkvec, 3, 1)
       k_inv(1)=1
       do 10 k=1,ndim
         kvec(k,1)=0
@@ -931,7 +786,11 @@ c If yes, then k and -k give only one indep. state, else they give two.
    80   continue
 c Voila, found a new one
         nkvec=nkvec+1
-        if(nkvec.gt.MKPTS) stop 'nkvec > MKPTS in k_vectors'
+!JT        if(nkvec.gt.MKPTS) stop 'nkvec > MKPTS in k_vectors'
+        call alloc ('k_inv', k_inv, nkvec)
+        call alloc ('kvec', kvec, 3, nkvec)
+        call alloc ('rkvec', rkvec, 3, nkvec)
+        call alloc ('rknorm', rknorm, nkvec)
         k_inv(nkvec)=1
         rknorm(nkvec)=0
         do 110 k=1,ndim
@@ -980,6 +839,7 @@ c 150 write(6,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt
       return
       end
 c-----------------------------------------------------------------------
+
       subroutine sort_kvec(k_inv,kvec,rkvec,rknorm,nkvec)
 c Written by Cyrus Umrigar
 c Use Shell-Metzger sort to put k-vectors in some standard order, so that
@@ -987,8 +847,6 @@ c the order they appear in is independent of cutg_sim_big.
 
       use dim_mod
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension k_inv(*),kvec(3,*),rkvec(3,*),rknorm(*)
       cost(kv1,kv2,kv3,rk)=kv3+10.d0**4*kv2+10.d0**8*kv1+10.d0**12*rk
@@ -1029,14 +887,19 @@ c Note: vps_short overwritten
 c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
 c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
+      use basic_tools_mod, only: alloc
       use pseudo_mod
       implicit real*8(a-h,o-z)
 
       common /constant/ twopi
 
-      dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
+!JT      dimension r(*),vps_short(*),gnorm(*),y(MPS_GRID),vbare_psp(NGNORM_BIGX)
+      dimension r(*),vps_short(*),gnorm(*),vbare_psp(*) !JT
+      double precision, allocatable :: y(:)
 
       anorm=2*twopi/vcell
+
+      call alloc ('y', y, nr)
 
 c shifted exponential grid
       h_ps=dlog(exp_h_ps)
@@ -1068,7 +931,6 @@ c Written by Cyrus Umrigar and Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
-c     parameter(NPX=6)
       parameter(d15b8=15.d0/8.d0,d5b4=5.d0/4.d0,d3b8=3.d0/8.d0)
       parameter(d35b16=35.d0/16.d0,d21b16=21.d0/16.d0,d5b16=5.d0/16.d0)
       parameter(d693b256=693.d0/256.d0,d1155b256=1155.d0/256.d0,d693b128=693.d0/128.d0
@@ -1083,12 +945,8 @@ c                 256           256
 
       common /constant/ twopi
 
-      include 'ewald.h'
-
-      dimension a(NCOEFX,NCOEFX),c(NCOEFX+NPX),work(NCOEFX)
+      dimension a(ncoef,ncoef),c(max(16,ncoef+np)),work(ncoef)
       dimension v(*),b(*),y(*),igmult(*),gnorm(*)
-
-      if(ncoef+np.gt.NCOEFX+NPX) stop 'ncoef+np > NCOEFX+NPX in separate'
 
       anorm=2*twopi*cutr**3/vcell
 
@@ -1159,7 +1017,7 @@ c     write(6,'(''b='',10d14.5)') (b(i),i=i0,ncoef)
 
 c factor matrix a
       if(nfree.gt.0) then
-        call dpoco(a(i0,i0),NCOEFX,nfree,rcond,work,info)
+        call dpoco(a(i0,i0),ncoef,nfree,rcond,work,info)
         write(6,'(''condition #, rcond, after return from dpoco'',d12.4)') rcond
         if(info.ne.0) write(6,'(''the leading minor of order'',i3,'' is singular'')') info
         if(rcond.lt.1.d-14) stop 'rcond too small in dpoco'
@@ -1172,7 +1030,7 @@ c make a spare copy of right hand side
 
 
 c solve linear equations
-      if(nfree.gt.0) call dposl(a(i0,i0),NCOEFX,nfree,b(i0))
+      if(nfree.gt.0) call dposl(a(i0,i0),ncoef,nfree,b(i0))
 c     write(6,*) (b(i),i=i0,ncoef)
 
 c b is now the solution (t in Ceperley's paper)
@@ -1222,7 +1080,7 @@ c       b(5)=d5b16*cutri
           b(7)=d63b256*cutri
         endif
       endif
-
+       
       write(6,*) (b(i),i=1,ncoef)
 
 c subtract effect of short range potential on fourier components
@@ -1341,10 +1199,9 @@ c output coefficients c
       implicit real*8(a-h,o-z)
       complex*16 ti,et,em
 
-      include 'ewald.h'
       parameter(NPTS=1001)
 
-      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
+!JT      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*)
 c     dimension c(*),y(NPTS)
 
@@ -1369,7 +1226,7 @@ c       do 30 i=1,ncoef+np-k
         do 30 i=1,ncoef+np-k-1
    30     c(i)=c(i)-c(i+1)
 
-      if(ncoef.gt.0) c(ncoef)=vps_basis_fourier(ig)
+!JT      if(ncoef.gt.0) c(ncoef)=vps_basis_fourier(ig) !JT : WARNING vps_basis_fourier is never initialized!!!
 
 c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
 
@@ -1495,8 +1352,6 @@ c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
-
       dimension b(*)
 
       x=r/cutr
@@ -1520,8 +1375,6 @@ c Written by Cyrus Umrigar
 c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension b(*)
 
@@ -1555,8 +1408,6 @@ c Aside from the potential itself, the rest has only even powers at r=0
 c as required by analyticity.
 
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension b(*)
 
@@ -1597,8 +1448,6 @@ c Written by Cyrus Umrigar
 
       use const_mod
       implicit real*8(a-h,o-z)
-
-!JR      include 'ewald.h'
 
       dimension rvec(3),gvec(3,*),gnorm(*),igmult(*),y(*)
 
@@ -1654,8 +1503,6 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension rvec(3),gvec(3,*),igmult(*),y(*)
 c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_SIM_BIGX)
@@ -1730,8 +1577,6 @@ c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
-
       dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*),y(*)
 
       ivec=1
@@ -1750,8 +1595,6 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension igmult(*),cos1_sum(*),cos2_sum(*),sin1_sum(*),sin2_sum(*)
 
@@ -1976,6 +1819,7 @@ c Written by Cyrus Umrigar
 
       use dim_mod
       use const_mod
+      use ewald_mod, only: NG1DX
       implicit real*8(a-h,o-z)
 
       dimension glatt(3,3),igvec(3,*),r(3,*),cos_g(nelec,*),sin_g(nelec,*)
@@ -2025,8 +1869,8 @@ c Needed for orbitals and their Laplacian.
 c Presently using cossin_psi_g and cossin_psi_k instead.
 
       use dim_mod
-      use dim_mod
       use const_mod
+      use ewald_mod, only: NG1DX
       implicit real*8(a-h,o-z)
 
       dimension glatt(3,3),gnorm(*),gvec(3,*),igvec(3,*),r(3,*),ng1d(3)
@@ -2100,9 +1944,8 @@ c Calculate cos(gr) and sin(gr) and first 2 derivs at electron position r.
 c Needed for orbitals and their Laplacian.
 
       use dim_mod
+      use ewald_mod, only: NG1DX
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension glatt(3,3),gnorm(*),igmult(*),gvec(3,*),igvec(3,*),r(3),ng1d(3)
      &,cos_g(*),sin_g(*)
@@ -2127,6 +1970,7 @@ c     do 30 ir=1,nr
           sin_gr(n,i)=sin_gr(n-1,i)*cos_gr(1,i)+cos_gr(n-1,i)*sin_gr(1,i)
           cos_gr(-n,i)=cos_gr(n,i)
    20     sin_gr(-n,i)=-sin_gr(n,i)
+
 
 c If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
 c     if(iflag.eq.0) then
@@ -2226,9 +2070,8 @@ c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for nuclei
 
       use dim_mod
+      use ewald_mod, only: NG1DX
       implicit real*8(a-h,o-z)
-
-      include 'ewald.h'
 
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
@@ -2275,11 +2118,10 @@ c Written by Cyrus Umrigar
 c Calculate cos_sum and sin_sum for pseudopotentials
 
       use dim_mod
+      use ewald_mod, only: NG1DX
       implicit real*8(a-h,o-z)
 
-      include 'ewald.h'
-
-      dimension y_psp(NGNORMX,*),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
+      dimension y_psp(ngnorm,*),iwctype(*),glatt(3,3),igvec(3,*),igmult(*),r(3,*)
      &,ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
 
@@ -2329,6 +2171,7 @@ c Calculate cos_sum and sin_sum for electrons
 
       use dim_mod
       use const_mod
+      use ewald_mod, only: NG1DX
       implicit real*8(a-h,o-z)
 
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)

@@ -135,7 +135,6 @@ module nuclei_mod
 !        endif
 !
 !        ncoef=npoly+1
-!        if(ncoef.gt.NCOEFX) stop 'ncoef gt NCOEFX'
 !
 !        read(5,*) alattice
 !        do 10 i=1,ndim

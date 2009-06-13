@@ -18,12 +18,12 @@ c and calculating the k-independent part of the orbital just once.
       dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
 c    &,cos_g(MELEC,NGVECX),sin_g(MELEC,NGVECX),dcos_g(3,MELEC,NGVECX),dsin_g(3,MELEC,NGVECX)
 c    &,ddcos_g(MELEC,NGVECX),ddsin_g(MELEC,NGVECX)
-c    &,cos_k(MELEC,MKPTS),sin_k(MELEC,MKPTS),dcos_k(3,MELEC,MKPTS),dsin_k(3,MELEC,MKPTS)
-c    &,ddcos_k(MELEC,MKPTS),ddsin_k(MELEC,MKPTS)
-     &,cos_g(NGVECX),sin_g(NGVECX),dcos_g(3,NGVECX),dsin_g(3,NGVECX)
-     &,ddcos_g(NGVECX),ddsin_g(NGVECX)
-     &,cos_k(MKPTS),sin_k(MKPTS),dcos_k(3,MKPTS),dsin_k(3,MKPTS)
-     &,ddcos_k(MKPTS),ddsin_k(MKPTS),dterm1(3),dterm2(3)
+c    &,cos_k(MELEC,nkvec),sin_k(MELEC,nkvec),dcos_k(3,MELEC,nkvec),dsin_k(3,MELEC,nkvec)
+c    &,ddcos_k(MELEC,nkvec),ddsin_k(MELEC,nkvec)
+     &,cos_g(ngvec),sin_g(ngvec),dcos_g(3,ngvec),dsin_g(3,ngvec)
+     &,ddcos_g(ngvec),ddsin_g(ngvec)
+     &,cos_k(nkvec),sin_k(nkvec),dcos_k(3,nkvec),dsin_k(3,nkvec)
+     &,ddcos_k(nkvec),ddsin_k(nkvec),dterm1(3),dterm2(3)
 
 c     do 5 iorb=1,norb
 c       do 5 iel=1,nelec
@@ -199,18 +199,16 @@ c At present it is assumed that both g- and k-vectors are in the correct order.
       use pworbital_mod
       implicit real*8(a-h,o-z)
 
-
-
       dimension x(3),orb(*)
 c     dimension dcos_rp(3),dsin_rm(3),dcos_ip(3),dsin_im(3)
 c    &,cos_g(MELEC,NGVECX),sin_g(MELEC,NGVECX),dcos_g(3,MELEC,NGVECX),dsin_g(3,MELEC,NGVECX)
 c    &,ddcos_g(MELEC,NGVECX),ddsin_g(MELEC,NGVECX)
-c    &,cos_k(MELEC,MKPTS),sin_k(MELEC,MKPTS),dcos_k(3,MELEC,MKPTS),dsin_k(3,MELEC,MKPTS)
-c    &,ddcos_k(MELEC,MKPTS),ddsin_k(MELEC,MKPTS)
-      dimension cos_g(NGVECX),sin_g(NGVECX),dcos_g(3,NGVECX),dsin_g(3,NGVECX)
-     &,ddcos_g(NGVECX),ddsin_g(NGVECX)
-     &,cos_k(MKPTS),sin_k(MKPTS),dcos_k(3,MKPTS),dsin_k(3,MKPTS)
-     &,ddcos_k(MKPTS),ddsin_k(MKPTS)
+c    &,cos_k(MELEC,nkvec),sin_k(MELEC,nkvec),dcos_k(3,MELEC,nkvec),dsin_k(3,MELEC,nkvec)
+c    &,ddcos_k(MELEC,nkvec),ddsin_k(MELEC,nkvec)
+      dimension cos_g(ngvec),sin_g(ngvec),dcos_g(3,ngvec),dsin_g(3,ngvec)
+     &,ddcos_g(ngvec),ddsin_g(ngvec)
+     &,cos_k(nkvec),sin_k(nkvec),dcos_k(3,nkvec),dsin_k(3,nkvec)
+     &,ddcos_k(nkvec),ddsin_k(nkvec)
 
 c     do 5 iorb=1,norb
 c   5     orb(iorb)=0

@@ -47,7 +47,8 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/optim2_mod.f90 commons/optim_mod.f90 commons/optimo_mod.f90 \
 	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
 	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
-	commons/pairden_mod.f90 commons/pars_mod.f90 commons/periodic_mod.f90 \
+	commons/pairden_mod.f90 commons/pars_mod.f90 \
+	commons/periodic2_mod.f90 commons/periodic_mod.f90 \
 	commons/phifun_mod.f90 commons/pjase_mod.f90 commons/pointer_mod.f90 \
 	commons/pseudo_fahy_mod.f90 commons/pseudo_mod.f90 \
 	commons/pseudo_tm_mod.f90 commons/pworbital_mod.f90 \
@@ -66,8 +67,8 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	deriv_csf_mod.f90 deriv_exp_mod.f90 deriv_geo_mod.f90 \
 	deriv_jas_mod.f90 deriv_mod.f90 deriv_orb_mod.f90 \
 	determinants_mod.f90 dipole_moment_mod.f90 dmc_mod.f90 \
-	electrons_mod.f90 eloc_mod.f90 extracule_mod.f90 f2kcli.f90 \
-	files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 \
+	electrons_mod.f90 eloc_mod.f90 ewald2_mod.f90 extracule_mod.f90 \
+	f2kcli.f90 files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 \
 	forces_pulay_mod.f90 grid_mod.f90 indexes_mod.f90 \
 	initialization_mod.f90 intracule_mod.f90 jastrow_mod.f90 \
 	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
@@ -175,23 +176,24 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/optim2_mod.o commons/optim_mod.o commons/optimo_mod.o \
 	commons/orb_mod.o commons/orbe_mod.o commons/orbital_grid_mod.o \
 	commons/orbital_num_mod.o commons/orbpar_mod.o commons/pairden_mod.o \
-	commons/pars_mod.o commons/periodic_mod.o commons/phifun_mod.o \
-	commons/pjase_mod.o commons/pointer_mod.o commons/pseudo_fahy_mod.o \
-	commons/pseudo_mod.o commons/pseudo_tm_mod.o commons/pworbital_mod.o \
-	commons/qua_mod.o commons/rlobxy_mod.o commons/slater_mod.o \
-	commons/slaterw_mod.o commons/slatn2_mod.o commons/slatn_mod.o \
-	commons/stats_mod.o commons/stepv_mod.o commons/tempor_test_mod.o \
-	commons/vardep_mod.o commons/vd_mod.o commons/velratio_mod.o \
-	commons/vj_mod.o commons/wfsec_mod.o accumulation_mod.o \
-	all_tools_mod.o allocations_mod.o average_mod.o \
-	backflow_auxiliary_mod.o backflow_mod.o basic_tools_mod.o basis_mod.o \
-	bsplines_mod.o bwfdet_mod.o catalog_averages_mod.o \
-	catalog_objects_mod.o catalog_routines_mod.o champ.o constants_mod.o \
-	control_mod.o crystal_symmetries_mod.o csfs_mod.o cslater_cf_mod.o \
-	cslater_mod.o cslaterw_mod.o debug_mod.o density_mod.o \
-	deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o deriv_jas_mod.o \
-	deriv_mod.o deriv_orb_mod.o determinants_mod.o dipole_moment_mod.o \
-	dmc_mod.o electrons_mod.o eloc_mod.o extracule_mod.o f2kcli.o \
+	commons/pars_mod.o commons/periodic2_mod.o commons/periodic_mod.o \
+	commons/phifun_mod.o commons/pjase_mod.o commons/pointer_mod.o \
+	commons/pseudo_fahy_mod.o commons/pseudo_mod.o \
+	commons/pseudo_tm_mod.o commons/pworbital_mod.o commons/qua_mod.o \
+	commons/rlobxy_mod.o commons/slater_mod.o commons/slaterw_mod.o \
+	commons/slatn2_mod.o commons/slatn_mod.o commons/stats_mod.o \
+	commons/stepv_mod.o commons/tempor_test_mod.o commons/vardep_mod.o \
+	commons/vd_mod.o commons/velratio_mod.o commons/vj_mod.o \
+	commons/wfsec_mod.o accumulation_mod.o all_tools_mod.o \
+	allocations_mod.o average_mod.o backflow_auxiliary_mod.o \
+	backflow_mod.o basic_tools_mod.o basis_mod.o bsplines_mod.o \
+	bwfdet_mod.o catalog_averages_mod.o catalog_objects_mod.o \
+	catalog_routines_mod.o champ.o constants_mod.o control_mod.o \
+	crystal_symmetries_mod.o csfs_mod.o cslater_cf_mod.o cslater_mod.o \
+	cslaterw_mod.o debug_mod.o density_mod.o deriv_csf_mod.o \
+	deriv_exp_mod.o deriv_geo_mod.o deriv_jas_mod.o deriv_mod.o \
+	deriv_orb_mod.o determinants_mod.o dipole_moment_mod.o dmc_mod.o \
+	electrons_mod.o eloc_mod.o ewald2_mod.o extracule_mod.o f2kcli.o \
 	files_tools_mod.o fitdet_mod.o forces_mod.o forces_pulay_mod.o \
 	grid_mod.o indexes_mod.o initialization_mod.o intracule_mod.o \
 	jastrow_mod.o main_menu_mod.o matrix_tools_mod.o montecarlo_mod.o \
@@ -371,7 +373,7 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
-constants_mod.o: types_mod.o vmc/ewald.h
+constants_mod.o: types_mod.o
 control_mod.o: all_tools_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h
@@ -397,6 +399,7 @@ dmc_mod.o: all_tools_mod.o allocations_mod.o average_mod.o \
 	print_mod.o restart_mod.o modules.h
 electrons_mod.o: all_tools_mod.o walkers_mod.o modules.h
 eloc_mod.o: all_tools_mod.o montecarlo_mod.o psi_mod.o modules.h
+ewald2_mod.o: basic_tools_mod.o commons/dim_mod.o
 extracule_mod.o: all_tools_mod.o modules.h
 files_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	strings_tools_mod.o

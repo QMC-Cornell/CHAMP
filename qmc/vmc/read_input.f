@@ -54,6 +54,7 @@ c Written by Cyrus Umrigar
       use pairden_mod
       use fourier_mod
       use branch_mod
+      use periodic2_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-4)
@@ -63,7 +64,6 @@ c Written by Cyrus Umrigar
       character*10 eunit
       character*80000 input_line
 
-      common /periodic2/ rkvec_shift_latt(3)
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
@@ -410,6 +410,33 @@ c 0 0 0 0 0 0 0 0 0  (ipivot(j),j=1,norb)
 ! MGRID_ORB_PER for 3d periodic system part of code (not needed since now it is allocated)
 ! MGRID_ORB     for 2d localised system part of code (not needed since now it is allocated)
 
+! former ewald.h:
+! NCOEFX     max number of coefficients in short-range polynomial for optimal Ewald (not used anymore)
+! NPX        is the number of factors of (r/cutr-1) we multiply polynomial by (not used anymore)
+! MKPTS      maximum number of k-pts.  This can be at most the ratio of the simulation to primitive cell,
+!            volumes, V_sim/V.  However, since some k-pts have two indep. states (most if V_sim/V>>1)
+!            the number of k-pts is between V_sim/(2V) and V_sim/V.  I have not tried to distinguish
+!            between arrays that could be dimensioned to nkpts and those that need V_sim/V, but
+!            have used the larger number for all.
+! IVOL_RATIO is the ratio of the simulation to primitive cell volumes
+!            However, since (cutg_sim/cutg) and (cutg_sim_big/cutg_big) can be chosen to
+!            be (V_sim/V)^(-1/3), this ratio can just be set to 1 and I could remove this parameter.
+! IBIG_RATIO is the ratio of the number of vectors or norms before the optimal Ewald separation
+!            to the number after the separation. This ratio is (cutg_big/cutg)^3
+!            and (cutg_sim_big/cutg_sim)^3 for the primitive and simulation cells resp.
+!            This ratio is accurate for vectors and an overestimate for norms.
+! NSYM       is the ratio of the number of vectors to the number of norms
+!            and depends on the symmetry of the lattice.  Since many stars have less
+!            vectors than the number of symmetry operations, this number can be set
+!            somewhat smaller than the number of sym. ops.  e.g., for cubic one can
+!            try 32 instead of 48.
+!      parameter(NCOEFX=20, NPX=4, MKPTS=32, IVOL_RATIO=1, IBIG_RATIO=15, NSYM=32)
+!      parameter(NGNORMX=700, NGVECX=NGNORMX*NSYM, NGVEC2X=2*NGVECX, NG1DX=60)
+!      parameter(NGNORM_SIMX=NGNORMX*IVOL_RATIO, NGVEC_SIMX=NGVECX*IVOL_RATIO)
+!      parameter(NGNORM_BIGX=IBIG_RATIO*NGNORMX, NGVEC_BIGX=IBIG_RATIO*NGVECX)
+!      parameter(NGNORM_SIM_BIGX=IBIG_RATIO*NGNORM_SIMX, NGVEC_SIM_BIGX=IBIG_RATIO*NGVEC_SIMX)
+
+
 ! JT  13 Sep 2005 beg
       lhere = 'read_input'
 ! JT  13 Sep 2005 end
@@ -672,9 +699,9 @@ c npoly is the polynomial order for short-range part
         endif
 
         ncoef=npoly+1
-        if(ncoef.gt.NCOEFX) stop 'ncoef gt NCOEFX'
 
         read(5,*) alattice
+        call alloc ('rlatt', rlatt, 3, 3)
         do 10 i=1,ndim
           read(5,*) (rlatt(k,i),k=1,ndim)
           do 10 k=1,ndim
@@ -684,6 +711,7 @@ c npoly is the polynomial order for short-range part
      &   ((rlatt(k,j),k=1,ndim),j=1,ndim)
 
 c read the dimensions of the simulation 'cube'
+        call alloc ('rlatt_sim', rlatt_sim, 3, 3)
         do 20 i=1,ndim
           read(5,*) (rlatt_sim(k,i),k=1,ndim)
           do 20 k=1,ndim
@@ -693,6 +721,7 @@ c read the dimensions of the simulation 'cube'
      &   ((rlatt_sim(k,j),k=1,ndim),j=1,ndim)
 
 c read k-shift for generating k-vector lattice
+        call alloc ('rkvec_shift_latt', rkvec_shift_latt, 3)
         read(5,*) (rkvec_shift_latt(k),k=1,ndim)
         do 22 k=1,ndim
    22     if(rkvec_shift_latt(k).ne.0.d0 .and. rkvec_shift_latt(k).ne..5d0)

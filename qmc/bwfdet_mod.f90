@@ -430,15 +430,13 @@ CONTAINS
   &average_real_part,average_imaginary_part,pb1(3),pb2(3),pb3(3),              &
   &b1(3),b2(3),b3(3),           &
   &a1b(3),a2b(3),a3b(3),           &
-  &rkvec_shift_latt,glatt_inv_squared(3),r,z,           &
+  &glatt_inv_squared(3),r,z,           &
   &glatt_sim_inv_squared(3)
  REAL(dp),ALLOCATABLE,DIMENSION(:) :: eigtemp,temp_r,low_array,high_array,d
  REAL(dp),ALLOCATABLE,DIMENSION(:,:) :: pr_lattice,sr_lattice
  COMPLEX(dp),ALLOCATABLE :: sum_orbs(:,:)
  LOGICAL :: metal=.false.
  LOGICAL,ALLOCATABLE :: ltemp(:)
-
- common /periodic2/ rkvec_shift_latt(3)
 
 !Set local variables equal to common block equivalents
 
