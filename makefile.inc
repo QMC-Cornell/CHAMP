@@ -514,7 +514,7 @@ endif
 ifeq ($(hostname),jugene1)
 # MPI
   CHAMP_MPIF95 = mpixlf2003
-  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpixlc
   CHAMP_C_MPI_FLAGS = -O3 -qstrict
@@ -523,16 +523,19 @@ endif
 # BlueGene P at IDRIS (Paris)
 ifeq ($(hostname),babel1)
 
- CHAMP_F95=mpixlf2003
+# -qarch=450d makes the code crash with BE_MPI (ERROR):   "killed with signal 7"
+# -qhot or -O5 does not seem to improve performance at all
+
+ CHAMP_F95=mpixlf2003_r
  CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
- CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+ CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
 
 # MPI
   CHAMP_MPIF95 = mpixlf2003_r
   CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpixlc
-  CHAMP_C_MPI_FLAGS = -O3 -qstrict
+  CHAMP_C_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
   LAPACK=-L/bglocal/prod/tools_ibm/lib -llapack -L/opt/ibmmath/essl/4.4/lib -lesslbg
   BLAS=-L/opt/ibmmath/essl/4.4/lib -lesslbg
   QUENCH=
