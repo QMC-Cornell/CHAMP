@@ -3237,24 +3237,25 @@ sub print_new_input{
      printf NEWFILE " nquad=6\n";
     }
 
-    %atom_type_index=();
-    for(my $i=0; $i<= $#atom_symbols; $i++){
-       $atom_type_index{$atom_types[$i]}=$i;
-    }
-
 # lpotp1: print default values for now
 
-    if($ecp){     #JT
-    foreach my $i (@atom_types){
+    if($ecp){
+      printf NEWFILE " lpotp1 ";
+      foreach my $i (@atom_types){
         if( exists $zcore{$i} ){
             $z=$lpotp1{$i};
         } else {
             $z=0;
         }
         printf NEWFILE "%d ",$z;
+      }
+    printf NEWFILE " end\n";
     }
-    printf NEWFILE "(lpotp1(i),i=1,nctype)\n";
-   }
+
+    %atom_type_index=();
+    for(my $i=0; $i<= $#atom_symbols; $i++){
+       $atom_type_index{$atom_types[$i]}=$i;
+    }
 
     printf NEWFILE " geometry\n";
     for(my $i=0; $i<= $#atom_symbols; $i++){
@@ -3281,13 +3282,14 @@ sub print_new_input{
      printf NEWFILE " numr=1\n";
     }
 
-# make list of basis functions by atom type for new input
-   process_basis_functions_by_atom_type(); 
-   process_slater_exponents_by_atom_type();
+
 
     printf NEWFILE " basis_functions";
 
-    if($analytic_basis){ #JT
+    if($analytic_basis){
+#     make list of basis functions by atom type for new input
+      process_basis_functions_by_atom_type(); 
+      process_slater_exponents_by_atom_type();
       foreach my $a (@atom_types){
         printf NEWFILE "\n%d",$atom_type_index{$a}+1;
         $i=-1;
@@ -3297,8 +3299,22 @@ sub print_new_input{
         }
       }
     }
-    printf NEWFILE "\n end\n";
+    else{
+      process_basis_functions_by_atom_type(); 
+      foreach my $a (@atom_types){
+        @c=();
+        @r=();
+        basis_info_cyrus($a,\@c,\@r);
+        printf NEWFILE "\n%d",$atom_type_index{$a}+1;
+        $i=-1;
+        foreach my $b (@{$basis_functions_by_atom_type{$a}}){
+        $i=$i+1; 
+        printf NEWFILE "\n$b  $r[$i]";
+        }
+      }
+    }
 
+    printf NEWFILE "\n end\n";
 
 #    printf NEWFILE " exponents\n";
 #    if($analytic_basis){
@@ -3476,11 +3492,7 @@ sub print_new_input{
       }
       printf NEWFILE " end\n";
 
-      # num dets in each csf
-      for($i=1; $i<=$ncsf; $i++){
-        printf NEWFILE "%d ",$csf_ndet[$i];
-      }
-      printf NEWFILE " (ndet_in_csf(icsf),icsf=1,ncsf)\n";
+      printf NEWFILE " dets_in_csfs\n";
 
       # print csf
       for($i=1; $i<=$ncsf; $i++){
@@ -3495,16 +3507,17 @@ sub print_new_input{
           }
           printf NEWFILE "%2d ",$kdet;
         }
-        printf NEWFILE " (iwdet_in_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
+        printf NEWFILE "\n";
 
         # print coefs
         foreach $d (@{$csf_trial[$i]}){
 
           printf NEWFILE "%s ",$$d{coef}*$phase_factors[$$d{det}]*$qmc_phase[$$d{det}];
         }
-        printf NEWFILE " (cdet_csf(idet_in_csf,%d),idet_in_csf=1,ndet_in_csf(%d))\n",$i,$i;
+        printf NEWFILE "\n";
 
       }
+      printf NEWFILE " end\n";
 
     }
 
@@ -4097,6 +4110,7 @@ sub process_basis_functions_by_atom_type{
         @r=();
         basis_info_cyrus($a,\@c,\@r);
 #        printf "\n %d \n",$atom_type_index{$a}+1;
+        if($analytic_basis){
         for(my $i=1; $i<= $n1s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "1S";}
         for(my $i=1; $i<= $n2s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "2S";}
         for(my $i=1; $i<= $n3s{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "3S";}
@@ -4152,6 +4166,19 @@ sub process_basis_functions_by_atom_type{
         for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G-1";}
         for(my $i=1; $i<= $n5g{$a}; $i++){push @{$basis_functions_by_atom_type{$a}}, "5G0";}
 #        printf "basis_functions_by_atom_type=@{$basis_functions_by_atom_type{$a}}\n";
+        }
+        else{
+        for(my $i=1; $i<= $c[0]; $i++){push @{$basis_functions_by_atom_type{$a}}, "S";}
+        for(my $i=1; $i<= $c[1]; $i++){push @{$basis_functions_by_atom_type{$a}}, "PX";}
+        for(my $i=1; $i<= $c[2]; $i++){push @{$basis_functions_by_atom_type{$a}}, "PY";}
+        for(my $i=1; $i<= $c[3]; $i++){push @{$basis_functions_by_atom_type{$a}}, "PZ";}
+        for(my $i=1; $i<= $c[4]; $i++){push @{$basis_functions_by_atom_type{$a}}, "D0";}
+        for(my $i=1; $i<= $c[5]; $i++){push @{$basis_functions_by_atom_type{$a}}, "D+2";}
+        for(my $i=1; $i<= $c[6]; $i++){push @{$basis_functions_by_atom_type{$a}}, "D-2";}
+        for(my $i=1; $i<= $c[7]; $i++){push @{$basis_functions_by_atom_type{$a}}, "D+1";}
+        for(my $i=1; $i<= $c[8]; $i++){push @{$basis_functions_by_atom_type{$a}}, "D-1";}
+#        printf "basis_functions_by_atom_type=@{$basis_functions_by_atom_type{$a}}\n";
+        }
 
    }
 }
