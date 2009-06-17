@@ -30,7 +30,7 @@ module nuclei_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'nuclei_menu'
-  integer cent_i, dim_i, i, ic, it
+  integer cent_i, dim_i, i, ic, it, ict, lpotp1_nb
 
 ! initialization
   l_convert_from_angstrom_to_bohr = .false.
@@ -50,10 +50,11 @@ module nuclei_mod
    write(6,*)
    write(6,'(a)') ' HELP for nuclei menu:'
    write(6,'(a)') '  nuclei'
-   write(6,'(a)') '   nloc = [integer] type of external potential (default: 0)'
-   write(6,'(a)') '   nquad = [integer] number of quadrature points for pseudopotential (default: 0)'
-   write(6,'(a)') '   nforce = [integer] number of geometries for correlated sampling (default: 1)'
    write(6,'(a)') '   ndim = [integer] number of dimensions (default: 3)'
+   write(6,'(a)') '   nloc = [integer] type of external potential (default: 0, i.e. -Z/r)'
+   write(6,'(a)') '   nquad = [integer] number of quadrature points for pseudopotential (default: 6)'
+   write(6,'(a)') '   lpotp1 2 1 ... end : local components of the pseudopotential for each atom type'
+   write(6,'(a)') '   nforce = [integer] number of geometries for correlated sampling (default: 1)'
    write(6,'(a)') '   geometry ... end: atom types, nuclear charges and cartesian coordinates. Example for H2O:'
    write(6,'(a)') '    geometry'
    write(6,'(a)') '     1 8.0   0.00000000   0.00000000   0.00000000'
@@ -64,18 +65,27 @@ module nuclei_mod
    write(6,'(a)') '  end'
    write(6,*)
 
+  case ('ndim')
+   call get_next_value (ndim)
+   call object_modified ('ndim')
+
   case ('nloc')
    call get_next_value (nloc)
    call object_modified ('nloc')
+
+  case ('nquad')
+   call get_next_value (nquad)
+   call object_modified ('nquad')
+
+  case ('lpotp1')
+   call get_next_value_list ('lpotp1', lpotp1, lpotp1_nb)
+   call object_modified ('lpotp1')
 
   case ('nforce')
    call get_next_value (nforce)
    call object_modified ('nforce')
    write(6,'(a,i5)') ' number of geometries for correlated sampling calculation = ',nforce
 
-  case ('ndim')
-   call get_next_value (ndim)
-   call object_modified ('ndim')
 
   case ('geometry')
    call geometry_rd
@@ -98,179 +108,110 @@ module nuclei_mod
   if(ndim.eq.2.and.iperiodic.gt.0) stop 'ndim=2 not yet implemented for periodic systems'
   if(ndim.eq.2.and.imetro.ne.1.and.index(mode,'vmc').ne.0) stop 'imetro!=1 not yet implemented for ndim=2'
 
-  write(6,'(a,i5)') ' type of external potential: nloc=',nloc
-  if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
-  if(nloc.ge.2) then
-     write(6,'(a,i4)') ' number of quadrature points for pseudopotential = ', nquad
-     if (nquad.gt.MPS_QUAD) stop 'nquad > MPS_QUAD'
+  call object_provide ('nctype')
+  call object_provide ('ncent')
+  write(6,'(a,i3)') ' number of atomic center types = ', nctype
+  write(6,'(a,i5)') ' number of atomic centers = ', ncent
+  call object_provide ('iwctype')
+  do ic=1,ncent
+    if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
+  enddo
 
-! warning quantum dots, wire,... stuff not added here 
-!   .... and don't forget nloc.eq.-5 case whenever this is implemented
-!  elseif(nloc.eq.-1) then
-!        read(5,*) w0,bext,glande
-!        we=dsqrt(w0*w0+0.25d0*bext*bext)
-!        write(6,'(''spring const of dot pot., w0='',t31,f10.5)') w0
-!        write(6,'(''applied magnetic field., bext='',t31,f10.5)') bext
-!        write(6,'(''effective spring const., we='',t31,f10.5)') we
-!        write(6,'(''Lande factor, glande='',t31,f10.5)') glande
-!       elseif(nloc.eq.-2) then
-!        read(5,*) p1,p2,p3,p4
-!        write(6,'(''quartic dot pot. p1,p2,p3,p4='',t31,9f9.6)') p1,p2,p3,p4
-!       elseif(nloc.eq.-4) then 
-!        read(5,*) wire_w,wire_length,wire_potential_cutoff
-!        we=wire_w  !  this is a quick fix:  needed for the subroutine basis_fns_2dgauss
-!        write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
+  call object_provide ('cent')
+  call object_provide ('znuc')
+  write(6,'(a)')' geometry:'
+  write(6,'(a)')'                  type  charge            cartesian coordinates'
+  do cent_i=1,ncent
+    write(6,'(a,i4,a,i4,3x,f5.1,4x,3f12.6)') ' nucleus # ', cent_i,': ', iwctype(cent_i), znuc(iwctype(cent_i)), (cent(dim_i,cent_i),dim_i=1,ndim)
+  enddo
+
+  write(6,*)
+  write(6,'(a,i5)') ' type of external potential: nloc=',nloc
+  if (nloc > 0) then
+    write(6,'(a)') ' this is a pseudopotential calculation'
+  endif
+
+  if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
+
+  if(nloc.ge.2) then
+    call object_provide ('nquad')
+    write(6,'(a,i4)') ' number of quadrature points for pseudopotential = ', nquad
+    if (nquad > MPS_QUAD) call die (lhere, 'nquad='+nquad+' > MPS_QUAD='+MPS_QUAD)
+  elseif(nloc.eq.-1) then
+    call die (lhere, 'nloc=-1 not yet implemented for new input')
+  elseif(nloc.eq.-2) then
+    call die (lhere, 'nloc=-2 not yet implemented for new input')
+  elseif(nloc.eq.-4) then
+    call die (lhere, 'nloc=-4 not yet implemented for new input')
+  elseif(nloc.eq.-5) then
+    call die (lhere, 'nloc=-5 not yet implemented for new input')
+  endif
+
+  if(iperiodic.ne.0) then
+    call die (lhere, 'new input not yet implemented for periodic calculations.')
+  endif
+
+  if(nloc.eq.-3) then
+    call die (lhere, 'new input not implemented for Jellium calculations.')
+   else
+    zconst = 0  ! normal case
+  endif
+
+! local components of the pseudopotential
+  if(nloc.gt.0) then
+    call object_provide ('lpotp1')
+    call require (lhere, 'lpotp1_nb = nctype', lpotp1_nb == nctype)
+    write(6,'(a,20i3)') ' local components of pseudopotential: ',lpotp1(1:nctype)
+    do i=1,nctype
+       if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
+    enddo
+  endif
+
+  if(nloc > 0) then
+    call alloc ('vps', vps, nelec, ncent, MPS_L)
+    call alloc ('npotd', npotd, nctype)
+    if(nloc.eq.1) then
+      call readps
+    elseif(nloc.eq.2.or.nloc.eq.3) then
+      call readps_tm
+    elseif(nloc.eq.4 .or. nloc.eq.5) then
+      call readps_champ
+    elseif(nloc.eq.6) then
+      call readps_gauss
+    else
+      stop 'nloc >= 7'
+    endif
+    do ict=1,nctype
+      if(npotd(ict).ge.4 .and. nquad.lt.12) then
+        nquad=12
+        write(6,'(a,i2)') ' number of quadrature points for pseudopotential reset to nquad=12 because npotd=',npotd(ict)
+      endif
+      if(npotd(ict).ge.5 .and. nquad.lt.24) then
+        nquad=24
+        write(6,'(''Number of quadrature points, nquad, reset to 24 because npotd='',i2)') npotd(ict)
+        write(6,'(a,i2)') ' number of quadrature points for pseudopotential reset to nquad=24 because npotd=',npotd(ict)
+      endif
+      if(npotd(ict).ge.6) then
+        write(6,'(a)') ' Warning: we are not ensuring the right number of quadrature points for npotd >=6'
+      endif
+     enddo
+     if (nquad > MPS_QUAD) call die (lhere, 'nquad='+nquad+' > MPS_QUAD='+MPS_QUAD)
+     call alloc ('xq0', xq0, MPS_QUAD)
+     call alloc ('yq0', yq0, MPS_QUAD)
+     call alloc ('zq0', zq0, MPS_QUAD)
+     call alloc ('xq', xq, MPS_QUAD)
+     call alloc ('yq', yq, MPS_QUAD)
+     call alloc ('zq', zq, MPS_QUAD)
+     call alloc ('wq', wq, MPS_QUAD)
+     call gesqua(nquad,xq0,yq0,zq0,wq)
+     if(ipr.ge.0) then
+       write(6,'(a)') ' quadrature points for nonlocal pseudopotential:'
+       do i=1,nquad
+         write(6,'(a,4f10.5)') ' x,y,z,w : ',xq0(i),yq0(i),zq0(i),wq(i)
+       enddo
+     endif
    endif
 
-! Warning: periodic stuff not added yet
-!      if(iperiodic.ne.0) then
-!
-!c npoly is the polynomial order for short-range part
-!        read(5,*) npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
-!        write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
-!     &   npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
-!        if(npoly.ne.7) then
-!          write(6,'(''present version works best with npoly=7'')')
-!          stop 'present version works best with npoly=7'
-!        endif
-!
-!        ncoef=npoly+1
-!
-!        read(5,*) alattice
-!        do 10 i=1,ndim
-!          read(5,*) (rlatt(k,i),k=1,ndim)
-!          do 10 k=1,ndim
-!   10       rlatt(k,i)=rlatt(k,i)*alattice
-!
-!        write(6,'(/,''Lattice basis vectors'',3(/,3f10.6))')
-!     &   ((rlatt(k,j),k=1,ndim),j=1,ndim)
-!
-!c read the dimensions of the simulation 'cube'
-!        do 20 i=1,ndim
-!          read(5,*) (rlatt_sim(k,i),k=1,ndim)
-!          do 20 k=1,ndim
-!   20       rlatt_sim(k,i)=rlatt_sim(k,i)*alattice
-!
-!        write(6,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
-!    &   ((rlatt_sim(k,j),k=1,ndim),j=1,ndim)
-!
-!c read k-shift for generating k-vector lattice
-!        read(5,*) (rkvec_shift_latt(k),k=1,ndim)
-!        do 22 k=1,ndim
-!   22     if(rkvec_shift_latt(k).ne.0.d0 .and. rkvec_shift_latt(k).ne..5d0)
-!     &    stop 'rkvec_shift_latt components must be 0 or 1/2 to have real orbs'
-!
-!      endif
-
-      call object_provide ('nctype')
-      call object_provide ('ncent')
-      write(6,'(a,i3)') ' number of atomic center types = ', nctype
-      write(6,'(a,i5)') ' number of atomic centers = ', ncent
-
-      call object_provide ('iwctype')
-      do ic=1,ncent
-        if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
-      enddo
-
-!     warning Jellium stuff not added yet
-      if(nloc.eq.-3) then ! Jellium RM
-!!MS Jellium sphere plus charge at center
-!        dn_background = nelec - znuc(1)
-!        rs_jel = 1.d0
-!        radius_b = (dn_background*(rs_jel)**3)**(1.d0/3.d0)
-!        zconst = 20 !* 27Aug06
-       else
-        zconst = 0  ! normal case
-      endif
-
-! warning pseudo stuff not added yet
-!c Read in which is the local component of the potential
-!      if(nloc.gt.0) then
-!        read(5,*) (lpotp1(i),i=1,nctype)
-!        write(6,'(''lpotp1='',t31,20i3,(20i3))') (lpotp1(i),i=1,nctype)
-!        do 35 i=1,nctype
-!   35     if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
-!      endif
-
-      call object_provide ('cent')
-      call object_provide ('znuc')
-      write(6,'(a)')' geometry:'
-      if(iperiodic.eq.0) then
-       write(6,'(a)')'                  type  charge            cartesian coordinates'
-       do cent_i=1,ncent
-        write(6,'(a,i4,a,i4,3x,f5.1,4x,3f12.6)') ' nucleus # ', cent_i,': ', iwctype(cent_i), znuc(iwctype(cent_i)), (cent(dim_i,cent_i),dim_i=1,ndim)
-       enddo
-      endif
-
-
-! Convert center positions from primitive lattice vector units to cartesian coordinates
-!     if(iperiodic.ne.0) then
-!       write(6,'(/,''center positions in primitive lattice vector units and in cartesian coordinates'')')
-!       do 66 ic=1,ncent
-!         do 62 k=1,ndim
-!  62       cent_tmp(k)=cent(k,ic)
-!         do 65 k=1,ndim
-!           cent(k,ic)=0
-!           do 65 i=1,ndim
-!  65         cent(k,ic)=cent(k,ic)+cent_tmp(i)*rlatt(k,i)
-!  66     write(6,'(''center'',i4,1x,''('',3f9.5,'')'',1x,''('',3f9.5,'')'')') ic, (cent_tmp(k),k=1,ndim),(cent(k,ic),k=1,ndim)
-!     endif
-!     write(6,*)
-
-!     if(nloc.gt.0) then
-!       write(6,'(/,''pseudopotential calculation'')')
-!       if(nloc.eq.1) then
-!         call readps
-!        elseif(nloc.eq.2.or.nloc.eq.3) then
-!         call readps_tm
-!        elseif(nloc.eq.4 .or. nloc.eq.5) then
-!         call readps_champ
-!        elseif(nloc.eq.6) then
-!         call readps_gauss
-!        else
-!         stop 'nloc >= 7'
-!       endif
-!       do 67 ict=1,nctype
-!         if(npotd(ict).ge.4 .and. nquad.lt.12) then
-!           nquad=12
-!           write(6,'(''Number of quadrature points, nquad, reset to 12 because npotd='',i2)') npotd(ict)
-!         endif
-!         if(npotd(ict).ge.5 .and. nquad.lt.24) then
-!           nquad=24
-!           write(6,'(''Number of quadrature points, nquad, reset to 24 because npotd='',i2)') npotd(ict)
-!         endif
-!         if(npotd(ict).ge.6) write(6,'(''Warning: We are not ensuring the right number of quadrature points for npotd >=6'')')
-!  67   continue
-!       call gesqua(nquad,xq0,yq0,zq0,wq)
-!        if(ipr.ge.0) then
-!          write(6,'(''Quadrature points for nonlocal pseudopotential'')')
-!          do 68 i=1,nquad
-!   68       write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
-!        endif
-!      endif
-!
-!      if(iperiodic.ne.0) call set_ewald 
-!
-! Compute total nuclear charge and compare to number of electrons
-! Warn if not equal, stop if they differ by more than 2.
-!      znuc_tot=0
-!      do 69 ic=1,ncent
-!        ict=iwctype(ic)
-!   69   znuc_tot=znuc_tot+znuc(ict)
-!      if(iperiodic.ne.0) znuc_tot=znuc_tot*vcell_sim/vcell
-!      if(znuc_tot.ne.dfloat(nelec)) write(6,'(''znuc_tot='',f6.1,'' != nelec='',i4)') znuc_tot,nelec
-!JT      if(abs(znuc_tot-dfloat(nelec)).gt.3) stop 'abs(znuc_tot - nelec) > 3'
-
-!      if(nloc.ne.-3) then ! RM
-!        if(abs(znuc_tot-dfloat(nelec)).gt.6) stop 'abs(znuc_tot - nelec) > 6'
-!      endif
-
-! TEMPORARY: Warning: we are not calling readforce and only using one geometry
-!     if(index(mode,'fit').ne.0) then 
-!       nforce=1
-!       nwftype=1
-!       iwftype(1)=1
-!     endif
 
   endif ! if use_parser
 

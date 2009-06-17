@@ -267,9 +267,9 @@ c Analytical basis functions
         do 20 i=1,orb_tot_nb
           do 20 j=1,nbasis
    20     coef(j,i,iadd_diag)=coef(j,i,1)
+        if(numr.le.0) then
         do 30 j=1,nbasis
    30     zex(j,iadd_diag)=zex(j,1)
-        if(numr.le.0) then
         do 35 ictype=1,nctype
           do 35 irwf=1,MRWF
    35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)

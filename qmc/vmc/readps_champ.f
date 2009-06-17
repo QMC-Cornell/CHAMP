@@ -55,14 +55,14 @@ c The prefered grid is 3.
         open(1,file=filename,status='old',form='formatted',err=999)
 
         if(nloc.eq.4) then
-          write(6,'(''Reading CHAMP format pseudopotential file '',a20)') filename
+          write(6,'(/3a)') ' Reading CHAMP format pseudopotential file >',trim(filename),'<'
 
 c position file to skip an arbitrary number of comment lines but write out the first one
 c if it exists
           title(1:1)='#'
           i=0
           do while(title(1:1).eq.'#')
-            if(i.eq.1) write(6,'(a)') trim(title)
+            if(i.eq.1) write(6,'(x,a)') trim(title)
             i=i+1
             read(1,'(a80)') title
           enddo
@@ -71,7 +71,7 @@ c The TM psp. format has npotd and npotu for down and up, but we just use one of
 c They are the number of different l components of the psp.
 
           read(title,*) npotd(ict),zion,r_asymp
-          write(6,'(''ict,npotd(ict),zion,r_asymp'',2i2,f4.0,f8.3)') ict,npotd(ict),zion,r_asymp
+          write(6,'(a,i2,a,i2,a,f4.0,a,f8.3)') ' ict=',ict,', npotd(ict)=',npotd(ict),', zion=',zion, ', r_asymp=',r_asymp
           if(npotd(ict).le.0 .or. npotd(ict).gt.MPS_L) stop 'npotd must be > 0 and <= MPS_L'
 
           if(lpotp1(ict).gt.npotd(ict)) then
@@ -83,10 +83,10 @@ c They are the number of different l components of the psp.
 c If the local pseudopot component is not set in input, set it here
           if(lpotp1(ict).le.0) then
             lpotp1(ict)=npotd(ict)
-            write(6,'(''Center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpotp1(ict)
+            write(6,'('' center type'',i4,'' local pseudopot component reset to'',i3)') ict,lpotp1(ict)
           endif
 
-          write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
+          write(6,'('' center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
      &    ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
 
           if(znuc(ict).ne.zion) then
@@ -96,8 +96,8 @@ c If the local pseudopot component is not set in input, set it here
 
           read(1,*) igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
           nr=nr_ps(ict)
-          write(6,'(''igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps='',i2,i5,1pd22.15,0pf8.5)')
-     &    igrid_ps(ict),nr_ps(ict),r0_ps(ict),h_ps
+          write(6,'(a,i2,a,i5,a,1pd22.15,a,0pf8.5)') ' igrid_ps(ict)=',igrid_ps(ict),', nr_ps(ict)='
+     &    ,nr_ps(ict),', r0_ps(ict)=',r0_ps(ict),', h_ps=',h_ps
           exp_h_ps(ict)=exp(h_ps)
 
           if(igrid_ps(ict).lt.1 .or. igrid_ps(ict).gt.3) stop 'igrid_ps(ict) must be 1 or 2 or 3'
@@ -128,12 +128,12 @@ c If the local pseudopot component is not set in input, set it here
               r0_ps(ict)=r(2)
               exp_h_ps(ict)=r(3)/r(2)
               h_ps=dlog(exp_h_ps(ict))
-              write(6,'(''Grid parameters deduced from grid values are, r0_ps(ict),h_ps,exp_h_ps(ict)='',9f10.5)')
+              write(6,'('' Grid parameters deduced from grid values are, r0_ps(ict),h_ps,exp_h_ps(ict)='',9f10.5)')
      &        r0_ps(ict),h_ps,exp_h_ps(ict)
             endif
             do 30 i=1,npotd(ict)
               call intpol(r(2),vpseudo(2,ict,i),nrm1,r(1),vpseudo(1,ict,i),1,3)
-   30         write(6,'(''Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
+   30         write(6,'('' Interpolated psp'',9f16.12)') (vpseudo(ir,ict,i),ir=1,5)
           endif
 
          elseif(nloc.eq.5) then
@@ -271,7 +271,7 @@ c so irmax_coul must be >= irmax_nloc.
         irmax_coul=max(irmax_coul,irmax_nloc)
         rmax_coul(ict)=r(irmax_coul)
 
-        write(6,'(''center '',i3,'' pseudopot rmax_coul,irmax_coul,rmax_nloc,irmax_nloc= '',2(f6.2,i5))')
+        write(6,'('' center '',i3,'' pseudopot rmax_coul,irmax_coul,rmax_nloc,irmax_nloc= '',2(f6.2,i5))')
      &  ict,rmax_coul(ict),irmax_coul,rmax_nloc(ict),irmax_nloc
 
         if(ipr.ge.1) then
@@ -309,7 +309,7 @@ c Set derivative at end point equal to 0 for nonlocal components and Z/r^2 for l
           if(i.eq.lpotp1(ict)) dpotn=zion/r(irmax_coul)**2
 c         if(i.eq.lpotp1(ict)) call deriv_intpol(r,vpseudo(1,ict,i),nr,r(irmax_coul),dpotn,irmax_coul,3)
 
-          write(6,'(''dpot1,dpotn'',1p2e15.5)') dpot1,dpotn
+          write(6,'(a,1p1e15.5,a,1p1e15.5)') ' dpot1=',dpot1,',dpotn=',dpotn
 
 c get second derivative for spline fit
           call spline2(r,vpseudo(1,ict,i),irmax_coul,dpot1,dpotn,d2pot(1,ict,i),work)

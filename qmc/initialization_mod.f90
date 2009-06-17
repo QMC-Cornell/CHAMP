@@ -13,6 +13,7 @@ module initialization_mod
 ! -----------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
+  character(len=max_string_len_rout), save :: lhere = 'initialization_before_parser'
 
 !  write(6,*)
 !  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
@@ -65,6 +66,8 @@ module initialization_mod
   call object_modified ('nwf')
   nefp=0
   nquad=6
+  if (nquad > MPS_QUAD) call die (lhere, 'nquad='+nquad+' > MPS_QUAD='+MPS_QUAD)
+  call object_modified ('nquad')
   ndim=3
   call object_modified ('ndim')
   inum_orb=0

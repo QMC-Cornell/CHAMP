@@ -31,7 +31,7 @@ c Find closest number of points to 4,6,12,18,20,24,26,32,50,86
     2 continue
       icase=icasem
       nq=iq(icase)
-      write(6,'(''Number of quadrature points, nquad, actually used for nonloc. psp='',i5)') nq
+      write(6,'('' Number of quadrature points actually used for nonlocal pseudopotential nquad='',i5)') nq
 
       do 5 ic=1,ncase
         do 5 k=1,ntypm

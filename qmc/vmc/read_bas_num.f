@@ -46,7 +46,6 @@ c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
       call alloc ('igrid', igrid, nctype)
       call alloc ('nr', nr, nctype)
 
-      write(6,'(/,''Reading numerical radial basis functions'')')
       do 100 ic=1,nctype
 
         if(ic.lt.10) then
@@ -63,7 +62,7 @@ c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
         open(21,file=filename,status='old',err=999)
 
 c position file to skip comments
-        write(6,'(''Reading numerical basis function file'')')
+        write(6,'(/3a)') ' Reading numerical radial basis function file >',trim(filename),'<'
         title(1:1)='#'
         do while(title(1:1).eq.'#')
           read(21,'(a80)') title
@@ -72,7 +71,7 @@ c         write(6,'(a80)') title
 
 c       read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
         read(title,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
-        write(6,'(''ic,nrbas,igrid,nr,exp_h_bas,r0_bas,icusp=''i3,3i5,2f10.6,i3)')
+        write(6,'('' ic,nrbas,igrid,nr,exp_h_bas,r0_bas,icusp=''i3,3i5,2f10.6,i3)')
      &  ic,nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
 
         MRWF = max (MRWF, nrbas(ic))
@@ -95,7 +94,7 @@ c       read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
    10     continue
 
         do 12 irb=1,nrbas(ic)
-   12     write(6,'(''center'',i3,'' numerical radial basis'',i3,'' has l='',9f8.5)')
+   12     write(6,'('' center'',i3,'' numerical radial basis'',i3,'' has l='',9f8.5)')
      &    ic,irb,log(rwf(2,irb,ic,iwf)/rwf(1,irb,ic,iwf))/log(x(2)/x(1)),
      &    log(rwf(3,irb,ic,iwf)/rwf(2,irb,ic,iwf))/log(x(3)/x(2))
 
@@ -106,7 +105,7 @@ c       read(21,*) nrbas(ic),igrid(ic),nr(ic),exp_h_bas(ic),r0_bas(ic),icusp(ic)
           r0_bas(ic)=x(1)
 c         r0_bas(ic)=x(nr(ic))
           exp_h_bas(ic)=x(2)/x(1)
-          write(6,'(''Grid parameters deduced from grid values are, r0_bas(ic),exp_h_bas(ic)='',9f10.5)')
+          write(6,'('' Grid parameters deduced from grid values are, r0_bas(ic),exp_h_bas(ic)='',9f10.5)')
      &    r0_bas(ic),exp_h_bas(ic)
         endif
 
@@ -152,10 +151,10 @@ c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
         endif
 
         if(ipr.ge.1) then
-          write(6,'(''coefficients'',1p10d22.10)')
+          write(6,'('' coefficients'',1p10d22.10)')
      &             (ce(iff,irb,ic,iwf),iff=1,ncoef)
-          write(6,'(''check the small radius expansion of radial basis fn'',i3)') irb
-          write(6,'(''irad, rad, extrapolated value, correct value'')')
+          write(6,'('' check the small radius expansion of radial basis fn'',i3)') irb
+          write(6,'('' irad, rad, extrapolated value, correct value'')')
         endif
         do 30 ir=1,10
           val=ce(1,irb,ic,iwf)
@@ -164,8 +163,8 @@ c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
           if(ipr.ge.1) write(6,'(i2,1p3d22.14,1pd8.0)')ir,x(ir),val,rwf(ir,irb,ic,iwf)
      &    ,val-rwf(ir,irb,ic,iwf)
           if(abs(val-rwf(ir,irb,ic,iwf))/rwf(ir,irb,ic,iwf).gt.1.d-2 .and. rwf(ir,irb,ic,iwf).ne.0.d0) then
-            write(6,'(''irb,ir,val,rwf(ir,irb,ic,iwf)'',2i5,9d12.4)') irb,ir,val,rwf(ir,irb,ic,iwf)
-            write(6,'(''Warning: fit of radial function at small radii not good'')')
+            write(6,'('' irb,ir,val,rwf(ir,irb,ic,iwf)'',2i5,9d12.4)') irb,ir,val,rwf(ir,irb,ic,iwf)
+            write(6,'('' Warning: fit of radial function at small radii not good'')')
 c           stop 'fit of radial function at small radii not good'
           endif
    30   continue
@@ -208,10 +207,10 @@ c            ae(2,irb,ic,iwf)=we/2   !  correct expression for parabolic confine
         endif
 
         if(ipr.ge.1) then
-          write(6,'(''a0,ak'',1p2d22.10)')
+          write(6,'('' a0,ak'',1p2d22.10)')
      &                ae(1,irb,ic,iwf),ae(2,irb,ic,iwf)
-          write(6,'(''check the large radius expansion'')')
-          write(6,'(''irad, rad, extrapolated value, correct value'')')
+          write(6,'('' check the large radius expansion'')')
+          write(6,'('' irad, rad, extrapolated value, correct value'')')
         endif
         do 40 ir=1,10
           if(ndim.eq.3) then

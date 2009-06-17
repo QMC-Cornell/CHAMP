@@ -119,6 +119,11 @@ module allocations_mod
    call alloc ('cddorb', cddorb, orb_tot_nb)
   endif
 
+! for pseudo
+  if(nloc > 0) then
+    call alloc ('vps', vps, nelec, ncent, MPS_L)
+  endif
+
  end subroutine common_allocations
 
 end module allocations_mod

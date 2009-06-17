@@ -213,28 +213,6 @@ module orbitals_mod
   enddo
 
 
-!   write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
-!     if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.abs(inum_orb).ne.4.and.abs(inum_orb).ne.5.and.abs(inum_orb).ne.6
-!    &   .and.abs(inum_orb).ne.8)) then
-!        stop 'abs(inum_orb) must be 0, 4 or 6 or 8'
-!     endif
-! If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
-!     if(inum_orb .ne. 0 .and. ndim.eq.3) then
-!       read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap
-!       write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
-!        if(abs(inum_orb).eq.8) then
-!          if(igrad_lap .eq. 0) then
-!            write(6,'(''Interpolate orbitals, calculate gradient and Laplacian from interpolated orbitals'')')
-!           elseif(igrad_lap .eq. 1) then
-!            write(6,'(''Interpolate orbitals and Laplacian, calculate gradient from interpolated orbitals'')')
-!           elseif(igrad_lap .eq. 2) then
-!            write(6,'(''Interpolate orbitals, gradient and Laplacian'')')
-!           else
-!            stop 'igrad_lap must equal 0, 1 or 2'
-!          endif
-!        endif
-!     endif
-
 ! get normalization for basis functions
   if(ibasis.eq.3.and.numr.eq.0) then
     call basis_norm_dot(1,1)
