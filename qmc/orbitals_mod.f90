@@ -206,6 +206,9 @@ module orbitals_mod
   write(6,'(a,i5)') ' number of orbitals = ',norb
 
   call object_provide ('nbasis')
+  if (norb > nbasis) then
+    call die (lhere, ' number of orbitals ='+norb+' > number of basis functions ='+nbasis)
+  endif
   call object_provide ('coef')
   write(6,'(a)') ' orbital coefficients:'
   do orb_i=1,norb

@@ -40,10 +40,10 @@ c NOTE: as usual power n means r**(n-2)
 
         filename='pseudopot'//atomtyp(1:index(atomtyp,' ')-1)
         open(1,file=filename,status='old',form='formatted',err=999)
-        write(6,'(''Reading gaussian pseudopotential file '',a)') filename
+        write(6,'(/3a)') ' Reading gaussian pseudopotential file >', trim(filename),'<'
 
         read(1,'(a100)',err=1000,end=1001) label
-        write(6,'(''ECP for center type'',i4,'' label= '',a80)') ict,label
+        write(6,'('' ECP for center type'',i4,'' label= '',a80)') ict,label
 
 c Number of l components
         read(1,*,err=1000,end=1001) npotd(ict)
@@ -51,10 +51,10 @@ c Number of l components
 c If the local pseudopot component is not set in input, set it here
         if(lpotp1(ict).lt.0) then
           lpotp1(ict)=npotd(ict)
-          write(6,'(''Center type'',i4,'' local pseudopot component is'',i3)') ict,lpotp1(ict)
+          write(6,'('' Center type'',i4,'' local pseudopot component is'',i3)') ict,lpotp1(ict)
         endif
 
-        write(6,'(''Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
+        write(6,'('' Center type'',i2,'' has'',i2,'' pseudopotential L components, and component''
      &  ,i2,'' is chosen to be local'')') ict,npotd(ict),lpotp1(ict)
 
         if(lpotp1(ict).gt.npotd(ict)) then
@@ -78,14 +78,14 @@ c         if(l.eq.lpotp1(ict))then
           MGAUSS = max(MGAUSS, necp_term(idx,ict)) !JT
 
 !JT          if(necp_term(idx,ict).gt.MGAUSS) stop 'necp_term(idx,ict) > MGAUSS'
-          write(6,'(''L component, #terms='',2i4)') l,necp_term(idx,ict)
+          write(6,'('' L component, #terms='',2i4)') l,necp_term(idx,ict)
           call alloc ('ecp_coef', ecp_coef, MGAUSS, MPS_L, nctype)
           call alloc ('necp_power', necp_power, MGAUSS, MPS_L, nctype)
           call alloc ('ecp_exponent', ecp_exponent, MGAUSS, MPS_L, nctype)
           do 50 i=1,necp_term(idx,ict)
             read(1,*,err=999,end=1000) ecp_coef(i,idx,ict),
      &        necp_power(i,idx,ict),ecp_exponent(i,idx,ict)
-            write(6,'(''Psp coef, power, expo'',f16.8,i2,f16.8)') ecp_coef(i,idx,ict),necp_power(i,idx,ict)
+            write(6,'('' Psp coef, power, expo'',f16.8,i2,f16.8)') ecp_coef(i,idx,ict),necp_power(i,idx,ict)
      &        ,ecp_exponent(i,idx,ict)
 
    50   continue
@@ -102,7 +102,7 @@ c less the computational expense per MC step.
             endif
    70   r=r-0.01d0
    80   rmax_nloc=r
-  100 write(6,'(''center '',i3,'' pseudopot rmax_nloc= '',f6.2)') ict,rmax_nloc
+  100 write(6,'('' center '',i3,'' pseudopot rmax_nloc= '',f6.2)') ict,rmax_nloc
 
 c     call gesqua(nquad,xq0,yq0,zq0,wq)
 
