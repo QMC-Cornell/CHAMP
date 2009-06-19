@@ -129,3 +129,54 @@ c     gamm=dexp(gammln)
       gamm=stp*ser*tmp
       return
       end
+
+
+c-----------------------------------------------------------------------
+
+      function gammai_u0(x)
+c     Written by Abhijit Mehta
+c     Calculates the upper incomplete gamma function for a = 0
+c       \int_x^\inf  (t^(a-1) exp(-t)) dt
+c     Based on routine for Exponential integral E_1(x) in NR
+c     Uses a partial fraction expansion for x > 1
+c     and uses a series for 0 < x < 1.
+
+      implicit real*8(a-h,o-z)
+      parameter (itmax=100,eps=1.d-14,bignum=1.d40,euler=0.577215664902)
+      if(x.le.0)then
+         write(6,*) 'x must be greater than 0 in gammai(0,x)'
+         stop 'x must be greater than 0 in gammai(0,x)'
+      else if(x.gt.1)then
+         b = x+1
+         c = bignum
+         d = 1./b
+         h = d
+         do i=1,itmax
+            a = -i*i
+            b = b+2
+            d = 1./(a*d+b)
+            c = b+a/c
+            del = c*d
+            h = h*del
+            if(abs(del-1.).lt.eps)then
+               gammai0 = h*dexp(-x)
+               return
+            endif
+         enddo
+         write(6,*) 'gammai0(x) failed in continued fraction (x>1)'
+         stop 'gammai0(x) failed in continued fraction (x>1)'
+      else
+         gammai0 = -dlog(x) - euler
+         f = 1
+         do i=1,itmax
+            f = -f*x/i
+            gammai0 = gammai0 - f/i
+            if(abs(f/i).lt.abs(gammai0)*eps) return
+         enddo
+         write(6,*) 'gammai0(x) failed in series (x<=1)'
+         stop 'gammai0(x) failed in series (x<=1)'
+      endif
+      return
+      end
+
+
