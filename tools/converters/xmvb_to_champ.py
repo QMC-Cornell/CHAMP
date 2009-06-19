@@ -35,6 +35,7 @@ orbital_indexes = []
 orbital_occupations = []
 orbital_eigenvalues = []
 orbital_coefficients = []
+orbital_symmetries = []
 det_up_orb_lab = []
 det_dn_orb_lab = []
 
@@ -59,6 +60,7 @@ def help_menu():
   print "USAGE: %s" % sys.argv[0], "-i xmvb_output_file -o champ_input_file"
   print "the script overwrites orbital and CSF information in champ_input_file"
   print "options: -h: print this menu"
+  print "options: -d file.xdat: get orbitals (including virtual orbitals) from xdat file"
   
   sys.exit(0)
 
@@ -308,7 +310,7 @@ def read_orbitals ():
       break
        
   if not found:
-    print "\nERROR: orbital coefficients not found"
+    print "\nERROR: orbital coefficients not found in xmvb output file"
     sys.exit(0)
 
 #  print "orbitals read"
@@ -319,10 +321,139 @@ def read_orbitals ():
 #  print "orbital_coefficients=",orbital_coefficients
 
 # ========================================================
+def read_orbitals_from_xdat ():
+  "read molecular orbitals from xdat file."
+  global norb
+  global nbasis
+  global orbital_coefficients
+  orbital_coefficients_subsection = []
+  found = False
+  j = 0
+  subsection = 0
+  begin_subsection = False
+  orbital_indexes = []
+  orbital_coefficients = []
+
+  for i in range(len(lines)):
+
+#   begin of orbital section
+    if re.search ("ORBITALS IN TERMS OF BASIS FUNCTIONS", lines[i]):
+      found = True
+      j = i + 1
+      while j <len(lines): 
+
+#       read orbital indexes
+#       example: 1          2          3          4          5
+        if re.search ("^(\s+\d+)+$", lines[j]):
+          
+          orbital_indexes.extend (string.split(lines[j]))
+#          print "line ",j,", orbital indexes:",lines[j]
+
+          subsection = subsection + 1
+          if (subsection >= 2):
+            orbital_coefficients.extend ((transpose(orbital_coefficients_subsection)).tolist())
+            orbital_coefficients_subsection = []
+
+#       read normal line of orbital coefficients
+#       example: 1     0.207568   0.208271   0.018863   0.000000   0.000000
+        elif re.search ("^\s+\d+\s+(\s+[\d\-]+)+",lines[j]):
+#          print "line ",j,", orbital coefficient:",lines[j]
+          line_splitted = filter (not_empty_string,string.split(lines[j],' '))
+#          print "line_splitted=",line_splitted
+#          print "line_splitted[1:]=",line_splitted[1:]
+          orbital_coefficients_subsection.append (map(float,map(string.strip,line_splitted[1:])))
+
+#       Dipole moment marks the end of the orbital section
+#        elif re.search ("Dipole moment", lines[j]):
+#          orbital_coefficients.extend ((transpose(orbital_coefficients_subsection)).tolist())
+#          break
+
+        j = j + 1
+      break
+  orbital_coefficients.extend ((transpose(orbital_coefficients_subsection)).tolist())
+       
+  if not found:
+    print "\nERROR: orbital coefficients not found in xdat file"
+    sys.exit(0)
+
+#  print "orbitals read"
+
+  norb = len(orbital_indexes)
+  nbasis = len(orbital_coefficients[0])
+#  print "norb=",norb
+#  print "nbasis=",nbasis
+#  print "orbital_indexes=", orbital_indexes
+#  print "orbital_coefficients=",orbital_coefficients
+
+# ========================================================
+def determine_orbitals_sym ():
+  "determine orbitals symmetry classes."
+  global orbital_symmetries
+
+  
+# determine occupied orbitals
+  orbital_occupied = zeros([norb], Int)
+  for det_i in range(ndet):
+    for elec_i in range(nelec):
+       orbital_occupied[int(determinants[det_i][elec_i])-1]=1
+#  print "orbital_occupied=",orbital_occupied
+
+# determine orbital "symmetry" classes
+  orbital_sym_classes = []
+  orb_sym_nb = 0
+  for orb_i in range(norb):
+    orbital_sym_class = zeros([nbasis], Int)
+    for bas_i in range(nbasis):
+       if (not orbital_coefficients[orb_i][bas_i] == 0):
+         orbital_sym_class[bas_i]=1
+#    print "orbital_sym_class=",orbital_sym_class
+    
+    found = False
+    for orb_sym in range(orb_sym_nb):
+      found = True
+      for bas_i in range(nbasis):
+        if (orbital_occupied[orb_i] == 1):
+          if (not orbital_sym_class[bas_i] == orbital_sym_classes [orb_sym][bas_i]):
+            found = False
+            break
+#       for virtual orbital, check only that orbital_sym_class is "included" in one the orbital_sym_classes
+        elif (orbital_occupied[orb_i] == 0):
+          if (orbital_sym_class[bas_i] == 1 and not orbital_sym_class[bas_i] == orbital_sym_classes [orb_sym][bas_i]):
+            found = False
+            break
+      if (found):
+        break
+    if (found):
+#      print "existing class ",orb_sym+1
+      orbital_symmetries.append (orb_sym+1)
+    else:
+      orb_sym_nb = orb_sym_nb + 1
+#      print "new class ",orb_sym_nb
+      orbital_symmetries.append (orb_sym_nb)
+      orbital_sym_classes.append (orbital_sym_class)
+
+# check that two symmetry classes do not share the same basis functions
+# and that any basis function is in a symmetry class
+  orbital_sym_class_sum = zeros([nbasis], Int)
+  for orb_sym in range(orb_sym_nb):
+#    print orb_sym+1,orbital_sym_classes[orb_sym]
+    for bas_i in range(nbasis):
+      orbital_sym_class_sum[bas_i] = orbital_sym_class_sum[bas_i] + orbital_sym_classes [orb_sym][bas_i]
+  for bas_i in range(nbasis):
+    if (orbital_sym_class_sum[bas_i] < 1):
+      print "\nERROR: basis function #", bas_i+1," is not in any symmetry class!\n"
+      sys.exit(0)
+    if (orbital_sym_class_sum[bas_i] > 1):
+      print "\nERROR: basis function #", bas_i+1," is in more than one symmetry class!\n"
+      sys.exit(0)
+
+#  print "orbital_sym_class_sum=",orbital_sym_class_sum
+       
+
+# ========================================================
 def dets_in_csfs ():
   "determine determinants in csfs."
   current_det_label_in_csf = []
-  orb_occ = []
   structures_orb_occ = zeros([ncsf,norb], Int)
   determinants_orb_occ = zeros([ndet,norb], Int)
 
@@ -401,7 +532,9 @@ if len(sys.argv) <= 1:
 #file_output_string = sys.argv[2]
 
 # command line arguments
-options, extra = getopt.getopt(sys.argv[1:],'i:o:hs')
+options, extra = getopt.getopt(sys.argv[1:],'i:o:d:hs')
+
+l_xdat = False
 
 for opt, val in options:
   if opt == "-h":
@@ -410,14 +543,15 @@ for opt, val in options:
    file_input_string = val
   elif opt == "-o":
    file_output_string = val
+  elif opt == "-d":
+   file_xdat_string = val
+   l_xdat = True
   else:
      print "\nERROR: unknown option:", opt, val
 
-# open and read input file
+# read xmvb input file
 file_input = open(file_input_string,'r')
 lines = file_input.readlines()
-
-# read
 sys.stdout.write('reading XMVB file >'+ str(file_input_string) +'< ... ')
 read_energy ()
 read_structure_number ()
@@ -425,9 +559,18 @@ read_structures ()
 read_determinants ()
 read_orbitals ()
 sys.stdout.write('done\n')
-
-# close input file
 file_input.close()
+
+# read xdat file
+if l_xdat:
+  file_xdat = open(file_xdat_string,'r')
+  lines = file_xdat.readlines()
+  sys.stdout.write('reading xdat file >'+ str(file_xdat_string) +'< ... ')
+  read_orbitals_from_xdat ()
+  sys.stdout.write('done\n')
+  file_xdat.close()
+
+determine_orbitals_sym();
 
 # calculate
 dets_in_csfs ()
@@ -474,6 +617,10 @@ for l in range(len(lines)):
       for j in range(nbasis):
         file_output.write(' %0.8e' % orbital_coefficients[i][j] + '  ')
     file_output.write('\n end\n')
+    file_output.write(' symmetry')
+    for i in range(norb):
+      file_output.write(' '+str(orbital_symmetries[i]))
+    file_output.write(' end\n')
     file_output.write('end\n')
     continue
 

@@ -42,6 +42,15 @@ module jastrow_mod
   write(6,*)
   write(6,'(a)') 'Beginning of jastrow menu --------------------------------------------------------------------------------'
 
+! initialization
+  nord=5
+  norda=5
+  nordb=5
+  nordc=5
+  call object_modified ('norda')
+  call object_modified ('nordb')
+  call object_modified ('nordc')
+
 ! loop over menu lines
   do
   call get_next_word (word)

@@ -97,18 +97,26 @@ module initialization_mod
   call object_modified ('isc')
   nspin1=1
   nspin2=1
-  nord=5
   ifock=0
   call alloc ('scalek', scalek, nwf)
   scalek(1)=0.5d0
   call object_modified ('scalek')
   a21=0.d0
-  norda=5
-  nordb=5
-  nordc=5
+  nord=0
+  norda=0
+  nordb=0
+  nordc=0
   call object_modified ('norda')
   call object_modified ('nordb')
   call object_modified ('nordc')
+! must allocate first!
+!  a1(:,:,:)=0.d0
+!  a2(:,:,:)=0.d0
+!  a(:,:)=0.d0
+!  b(:,:,:)=0.d0
+!  c(:,:,:)=0.d0
+!  fck(:,:,:)=0.d0
+!  a4(:,:,:)=0.d0
 
 ! correlated sampling index
   iwf = 1
