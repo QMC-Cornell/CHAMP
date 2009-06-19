@@ -5,6 +5,24 @@ c adapted to complex wavefunctions by A.D.Guclu, Feb2004.
 c Calculates determinantal and Jastrow parts of psi, velocity, divergence of V,
 c Laplacian of psi, potential energy, total energy and derivatives of the energy
 c wrt the wavefunction parameters.
+
+c Note that for a nonlocal psp. the potential energy at a given MC config depends on the wavefn. params. So:
+c For a non-optimization run
+c --------------------------
+c       jastrow
+c hpsi /                    nonlocd
+c      \nonloc_pot - nonloc/
+c                          \nonlocj
+c 
+c For an optimization run
+c -----------------------
+c       deriv_jastrow
+c hpsi /                                 nonlocd
+c      \deriv_nonloc_pot - deriv_nonloc/
+c                                      \_deriv_nonlocj
+c 
+c Note there is no deriv_nonlocd because the additional object needed for CSF optimization is calculated in nonlocd.
+
       use all_tools_mod
       use control_mod
       use fitdet_mod
