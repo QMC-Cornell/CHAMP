@@ -84,20 +84,20 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	tools.f address_tools.c fit/checkjas2.f fit/cusorb.f \
 	fit/cusorb_equiv.f fit/cuspcheck2.f fit/cuspcheck3.f fit/cuspco.f \
 	fit/cuspexact2.f fit/cuspexact3.f fit/cuspexact4.f fit/cuspinit3.f \
-	fit/cuspinit4.f fit/deriv_hpsi.f fit/deriv_jastrow.f \
-	fit/deriv_jastrow3.f fit/deriv_jastrow4.f fit/deriv_nonloc.f \
-	fit/deriv_nonloc_pot.f fit/deriv_nonlpsi.f fit/deriv_scale.f \
-	fit/dummy_newton.f fit/equiv_bas.f fit/fit.f fit/fockcheck3.f \
-	fit/fockexact3.f fit/func.f fit/jacobian.f fit/piksrt.f \
-	fit/plot_jas.f fit/rewght.f fit/strech.f fit/MPI/func_mpi.f \
-	fit/MPI/jacobian_mpi.f vmc/acuest.f vmc/basis_fns.f vmc/basis_fnse2.f \
-	vmc/basis_norm.f vmc/basis_norm_dot.f vmc/cbasis_fns.f \
-	vmc/cdeterminant.f vmc/cdeterminante.f vmc/cdetsav.f vmc/cjastrow.f \
-	vmc/cmatinv.f vmc/corbitals_loc_ana.f vmc/corbitals_loc_ana_grade.f \
-	vmc/den2dwrt.f vmc/deriv_jastrow4.f vmc/determinant.f \
-	vmc/determinant_up_dn.f vmc/determinante.f vmc/detsav.f vmc/dgelg.f \
-	vmc/distances.f vmc/dumper.f vmc/emagnetic.f vmc/ewald.f \
-	vmc/find_image.f vmc/finwrt.f vmc/fock.f vmc/fourier2d.f vmc/gammai.f \
+	fit/cuspinit4.f fit/deriv_jastrow.f fit/deriv_jastrow3.f \
+	fit/deriv_nonloc.f fit/deriv_nonloc_pot.f fit/deriv_nonlpsi.f \
+	fit/deriv_scale.f fit/dummy_newton.f fit/equiv_bas.f fit/fit.f \
+	fit/fockcheck3.f fit/fockexact3.f fit/func.f fit/jacobian.f \
+	fit/piksrt.f fit/plot_jas.f fit/rewght.f fit/strech.f \
+	fit/MPI/func_mpi.f fit/MPI/jacobian_mpi.f vmc/acuest.f \
+	vmc/basis_fns.f vmc/basis_fnse2.f vmc/basis_norm.f \
+	vmc/basis_norm_dot.f vmc/cbasis_fns.f vmc/cdeterminant.f \
+	vmc/cdeterminante.f vmc/cdetsav.f vmc/cjastrow.f vmc/cmatinv.f \
+	vmc/corbitals_loc_ana.f vmc/corbitals_loc_ana_grade.f vmc/den2dwrt.f \
+	vmc/deriv_jastrow4.f vmc/determinant.f vmc/determinant_up_dn.f \
+	vmc/determinante.f vmc/detsav.f vmc/dgelg.f vmc/distances.f \
+	vmc/dumper.f vmc/emagnetic.f vmc/ewald.f vmc/find_image.f \
+	vmc/finwrt.f vmc/fock.f vmc/fourier2d.f vmc/gammai.f \
 	vmc/grad_hess_jastrow.f vmc/hpsi.f vmc/hpsie.f vmc/ie.f \
 	vmc/interpol_orb.f vmc/jassav.f vmc/jastrow.f vmc/jastrow1.f \
 	vmc/jastrow2.f vmc/jastrow3.f vmc/jastrow3e.f vmc/jastrow4.f \
@@ -208,20 +208,20 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	svdcmp.o tools.o address_tools.o fit/checkjas2.o fit/cusorb.o \
 	fit/cusorb_equiv.o fit/cuspcheck2.o fit/cuspcheck3.o fit/cuspco.o \
 	fit/cuspexact2.o fit/cuspexact3.o fit/cuspexact4.o fit/cuspinit3.o \
-	fit/cuspinit4.o fit/deriv_hpsi.o fit/deriv_jastrow.o \
-	fit/deriv_jastrow3.o fit/deriv_jastrow4.o fit/deriv_nonloc.o \
-	fit/deriv_nonloc_pot.o fit/deriv_nonlpsi.o fit/deriv_scale.o \
-	fit/dummy_newton.o fit/equiv_bas.o fit/fit.o fit/fockcheck3.o \
-	fit/fockexact3.o fit/func.o fit/jacobian.o fit/piksrt.o \
-	fit/plot_jas.o fit/rewght.o fit/strech.o fit/MPI/func_mpi.o \
-	fit/MPI/jacobian_mpi.o vmc/acuest.o vmc/basis_fns.o vmc/basis_fnse2.o \
-	vmc/basis_norm.o vmc/basis_norm_dot.o vmc/cbasis_fns.o \
-	vmc/cdeterminant.o vmc/cdeterminante.o vmc/cdetsav.o vmc/cjastrow.o \
-	vmc/cmatinv.o vmc/corbitals_loc_ana.o vmc/corbitals_loc_ana_grade.o \
-	vmc/den2dwrt.o vmc/deriv_jastrow4.o vmc/determinant.o \
-	vmc/determinant_up_dn.o vmc/determinante.o vmc/detsav.o vmc/dgelg.o \
-	vmc/distances.o vmc/dumper.o vmc/emagnetic.o vmc/ewald.o \
-	vmc/find_image.o vmc/finwrt.o vmc/fock.o vmc/fourier2d.o vmc/gammai.o \
+	fit/cuspinit4.o fit/deriv_jastrow.o fit/deriv_jastrow3.o \
+	fit/deriv_nonloc.o fit/deriv_nonloc_pot.o fit/deriv_nonlpsi.o \
+	fit/deriv_scale.o fit/dummy_newton.o fit/equiv_bas.o fit/fit.o \
+	fit/fockcheck3.o fit/fockexact3.o fit/func.o fit/jacobian.o \
+	fit/piksrt.o fit/plot_jas.o fit/rewght.o fit/strech.o \
+	fit/MPI/func_mpi.o fit/MPI/jacobian_mpi.o vmc/acuest.o \
+	vmc/basis_fns.o vmc/basis_fnse2.o vmc/basis_norm.o \
+	vmc/basis_norm_dot.o vmc/cbasis_fns.o vmc/cdeterminant.o \
+	vmc/cdeterminante.o vmc/cdetsav.o vmc/cjastrow.o vmc/cmatinv.o \
+	vmc/corbitals_loc_ana.o vmc/corbitals_loc_ana_grade.o vmc/den2dwrt.o \
+	vmc/deriv_jastrow4.o vmc/determinant.o vmc/determinant_up_dn.o \
+	vmc/determinante.o vmc/detsav.o vmc/dgelg.o vmc/distances.o \
+	vmc/dumper.o vmc/emagnetic.o vmc/ewald.o vmc/find_image.o \
+	vmc/finwrt.o vmc/fock.o vmc/fourier2d.o vmc/gammai.o \
 	vmc/grad_hess_jastrow.o vmc/hpsi.o vmc/hpsie.o vmc/ie.o \
 	vmc/interpol_orb.o vmc/jassav.o vmc/jastrow.o vmc/jastrow1.o \
 	vmc/jastrow2.o vmc/jastrow3.o vmc/jastrow3e.o vmc/jastrow4.o \
