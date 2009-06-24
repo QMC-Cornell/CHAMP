@@ -97,6 +97,8 @@ module catalog_routines_mod
   call catalog_one_node ('elec_spin_nb_close_atom_encount_bld', elec_spin_nb_close_atom_encount_bld)
   call catalog_one_node ('eloc_pot_en_bld', eloc_pot_en_bld)
   call catalog_one_node ('eloc_pot_ee_bld', eloc_pot_ee_bld)
+  call catalog_one_node ('eloc_kin_jas_bld', eloc_kin_jas_bld)
+  call catalog_one_node ('eloc_kin_jas_pot_ee_av_bld', eloc_kin_jas_pot_ee_av_bld)
   call catalog_one_node ('dist_nn_bld', dist_nn_bld)
   call catalog_one_node ('mass_nucl_bld', mass_nucl_bld)
   call catalog_one_node ('mass_nucl_total_bld', mass_nucl_total_bld)

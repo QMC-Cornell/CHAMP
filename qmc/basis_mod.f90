@@ -10,7 +10,7 @@ module basis_mod
   integer, allocatable            :: basis_fns_by_center_type_nb (:)
   type (type_string_row), allocatable      :: basis_fns_type_by_center_type (:)
   type (type_real_row), allocatable        :: basis_fns_expo_by_center_type (:)
-  type (type_integer_row), allocatable        :: basis_fns_rad_by_center_type (:)
+  type (type_integer_row), allocatable     :: basis_fns_rad_by_center_type (:)
   character(len=max_string_len), allocatable :: basis_fns_type (:)
   character(len=max_string_len), allocatable :: basis_fns_name (:)
   real(dp), allocatable           :: basis_ovlp (:,:)

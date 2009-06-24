@@ -17,6 +17,12 @@ module eloc_mod
   real(dp)                       :: eloc_pot_en_av
   real(dp)                       :: eloc_pot_ee
   real(dp)                       :: eloc_pot_ee_av
+  real(dp)                       :: eloc_pot_ee_av_err
+  real(dp)                       :: eloc_kin_jas
+  real(dp)                       :: eloc_kin_jas_av
+  real(dp)                       :: eloc_kin_jas_av_err
+  real(dp)                       :: eloc_kin_jas_pot_ee_av
+  real(dp)                       :: eloc_kin_jas_pot_ee_av_err
 
   contains
 
@@ -150,6 +156,7 @@ module eloc_mod
 
    call object_create ('eloc_pot_ee')
    call object_average_define ('eloc_pot_ee', 'eloc_pot_ee_av')
+   call object_error_define ('eloc_pot_ee_av', 'eloc_pot_ee_av_err')
 
    call object_needed ('pe_ee')
 
@@ -162,9 +169,88 @@ module eloc_mod
 ! allocations
   call object_associate ('eloc_pot_ee', eloc_pot_ee)
   call object_associate ('eloc_pot_ee_av', eloc_pot_ee_av)
+  call object_associate ('eloc_pot_ee_av_err', eloc_pot_ee_av_err)
 
   eloc_pot_ee = pe_ee
 
  end subroutine eloc_pot_ee_bld
+
+! ==============================================================================
+  subroutine eloc_kin_jas_bld
+! ------------------------------------------------------------------------------
+! Description   : (1/2) \sum_i [Grad_i (Jastrow) / Jastrow] . [Grad_i (Jastrow) / Jastrow]
+!
+! Created       : J. Toulouse, 22 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+  integer dim_i, elec_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_kin_jas')
+   call object_average_define ('eloc_kin_jas', 'eloc_kin_jas_av')
+   call object_error_define ('eloc_kin_jas_av', 'eloc_kin_jas_av_err')
+
+   call object_needed ('nelec')
+   call object_needed ('ndim')
+   call object_needed ('vj')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_associate ('eloc_kin_jas', eloc_kin_jas)
+  call object_associate ('eloc_kin_jas_av', eloc_kin_jas_av)
+  call object_associate ('eloc_kin_jas_av_err', eloc_kin_jas_av_err)
+
+  eloc_kin_jas = 0.d0
+
+  do elec_i = 1, nelec
+    do dim_i = 1, ndim 
+      eloc_kin_jas = eloc_kin_jas + vj (dim_i, elec_i) * vj (dim_i, elec_i)
+    enddo
+  enddo
+
+  eloc_kin_jas = 0.5d0 * eloc_kin_jas
+  
+ end subroutine eloc_kin_jas_bld
+
+! ==============================================================================
+  subroutine eloc_kin_jas_pot_ee_av_bld
+! ------------------------------------------------------------------------------
+! Description   : 
+!
+! Created       : J. Toulouse, 22 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_kin_jas_pot_ee_av')
+   call object_error_define ('eloc_kin_jas_pot_ee_av', 'eloc_kin_jas_pot_ee_av_err')
+
+   call object_needed ('eloc_kin_jas_av')
+   call object_needed ('eloc_pot_ee_av')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_associate ('eloc_kin_jas_pot_ee_av', eloc_kin_jas_pot_ee_av)
+  call object_associate ('eloc_kin_jas_pot_ee_av_err', eloc_kin_jas_pot_ee_av_err)
+
+  eloc_kin_jas_pot_ee_av = eloc_kin_jas_av + eloc_pot_ee_av
+  
+ end subroutine eloc_kin_jas_pot_ee_av_bld
 
 end module eloc_mod

@@ -77,6 +77,11 @@ module deriv_exp_mod
 ! Description   :                 and all basis exponents to be updated including those 
 ! Description   :                 not directly involved in the optimization but updated
 ! Description   :                 because of symmetry constraints
+! Description   :                 (for instance, if there is no pz occupied orbitals
+! Description   :                  only px and py basis functions will be involved in the optimization,
+! Description   :                  the derivative wrt the pz exponent will be zero,
+! Description   :                  but pz exponent will also be updated to keep the same exponents for px,py,pz)
+! Description   :           
 ! Description   : dexp_to_bas     is the correspondence between exponent parameters
 ! Description   :                 and only the basis exponents directly involved in the optimization
 !
