@@ -97,6 +97,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
       sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
+c     rn_eff(w,w2)=w**2/w2
+c     error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+c     errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
+
       if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move
      &algorithm'
 
@@ -438,21 +442,22 @@ c               dwt=1+expon+0.5d0*expon**2
 c Warning: These lines were added to reduce the probability of population explosions.
 c These occur mostly for nonlocal psps.
 c A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
-c We truncate wts that come from energies that are too low by more than 10*energy_sigma
+c We truncate wts that come from energies that are too low by more than 10*energy_sigma.
 c This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
-c For MPI runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+c For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+c For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
+c So, multiply energy_sigma by sqrt(float(nproc)).
 c It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
 c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
           if(ipass-nstep*2*nblkeq .gt. 5) then
-c           energy_sigma=sigma(egcum1(1),egcm21(1),wgcum1(1))
             energy_sigma=sigma(ecum1,ecm21,wcum1)
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
             if(dwt.gt.1+10*energy_sigma*tau) then
               ipr_sav=ipr_sav+1
-              if(ipr_sav.le.100) then
+              if(ipr_sav.le.10) then
                 write(6,'(''Warning: dwt>1+10*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
      &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
-               elseif(ipr_sav.eq.101) then
+               elseif(ipr_sav.eq.11) then
                 write(6,'(''Warning: Additional warning msgs. of dwt>1+10*energy_sigma*tau suppressed'')')
               endif
               dwt=1+10*energy_sigma*tau
@@ -465,13 +470,9 @@ c Exercise population control if dmc or vmc with weights
 c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
-c Temporarily hard-wire the damping of wts to .9
-c           rlambda_tau=0.9d0
-            rlambda_tau=1.0d0
-c           wt(iw)=wt(iw)*dwt
-            wt(iw)=(wt(iw)**rlambda_tau)*dwt
+            wt(iw)=wt(iw)*dwt
             do 266 iparm=1,nparm
-  266         wi_w(iparm,iw)=rlambda_tau*wi_w(iparm,iw)+dexponent(iparm)
+  266         wi_w(iparm,iw)=wi_w(iparm,iw)+dexponent(iparm)
             wtnow=wt(iw)
             pwt(iw,ifr)=pwt(iw,ifr)*dwt/wthist(iw,iwmod,ifr)
             wthist(iw,iwmod,ifr)=dwt

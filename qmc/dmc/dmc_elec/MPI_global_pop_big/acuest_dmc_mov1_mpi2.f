@@ -3,6 +3,7 @@ c MPI version created by Claudia Filippi starting from serial version
 c routine to accumulate estimators for energy etc.
 
 # if defined (MPI)
+
       use all_tools_mod
       use control_mod
       use montecarlo_mod
@@ -37,6 +38,8 @@ c routine to accumulate estimators for energy etc.
       use pairden_mod
       implicit real*8(a-h,o-z)
 
+
+
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
@@ -61,27 +64,20 @@ c xerr = current error of x
 
       npass=iblk*nstep
 
-      call mpi_reduce(pesum,pecollect,nforce
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(peisum,peicollect,nforce
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tpbsum,tpbcollect,nforce
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tjfsum,tjfcollect,nforce
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_reduce(tausum,taucollect,nforce
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(ioldest,ioldest_collect,1
-     &,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(ioldestmx,ioldestmx_collect,1
-     &,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(pesum,pecollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(peisum,peicollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tpbsum,tpbcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tjfsum,tjfcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(ioldest,ioldest_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(ioldestmx,ioldestmx_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
 
       ioldest=ioldest_collect
       ioldestmx=ioldestmx_collect
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(idtask.ne.0) goto 17
+!     if(idtask.ne.0) goto 17 ! The slaves also have to calculate egerr so that they can stop when egerr < error_threshold
 
 c     wnow=wsum/nstep
 c     wfnow=wfsum/nstep
@@ -289,8 +285,8 @@ c zero out xsum variables for metrop
       risum=zero
 
       do 20 ifr=1,nforce
-        egsum(ifr)=zero
         wgsum(ifr)=zero
+        egsum(ifr)=zero
         pesum(ifr)=zero
         peisum(ifr)=zero
         tpbsum(ifr)=zero
@@ -326,28 +322,22 @@ c Put all variable in one array, so we can do a single MPI call
         collect(5+ifr)=wgsum1(ifr)
    22   collect(5+nforce+ifr)=egsum1(ifr)
 
-      call mpi_reduce(collect,collect_t,2*nforce+5
-     &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c Need mpi_allreduce so that all processors can put upper bounds on weights for psp. calculations
+c     call mpi_reduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-c     call mpi_reduce(esum1(1),ecollect,1
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(wsum1(1),wcollect,1
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(efsum1,efcollect,1
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(wfsum1,wfcollect,1
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(esum1(1),ecollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(wsum1(1),wcollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(efsum1,efcollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(wfsum1,wfcollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
-c     call mpi_reduce(wgsum1,wgcollect,nforce
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(egsum1,egcollect,nforce
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(tausum(1),taublock,1
-c    &,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(wgsum1,wgcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(egsum1,egcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+c     call mpi_reduce(tausum(1),taublock,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(idtask.ne.0) goto 36
+!     if(idtask.ne.0) goto 36 ! The slaves also have to calculate either wcum1,ecum1,ecm21 or wgcum1,egcum1,egcm21 to put bounds on branching in psp. calcul.
 
 c Warning: The tausum is being done in an ugly way, and should be cleaned up
       esum1(1)=collect_t(1)
@@ -390,7 +380,7 @@ c  28   egsum1(ifr)=egcollect(ifr)
         endif
    30 continue
 
-c sum1 block averages
+c collect block averages
       wsum=wsum+wsum1(1)
       wfsum=wfsum+wfsum1
       wdsum=wdsum+wdsum1

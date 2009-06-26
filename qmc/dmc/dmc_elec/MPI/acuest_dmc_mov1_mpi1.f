@@ -114,12 +114,9 @@ c       wgnow=wgsum(ifr)/nstep
         endif
   10  continue
 
-      call mpi_allreduce(wgsum,wgcollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(egsum,egcollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tausum,taucollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wgsum,wgcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(egsum,egcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       do 12 ifr=1,nforce
 c Warning temp fix
@@ -136,50 +133,30 @@ c Warning temp fix
       call object_modified_by_index (walker_weights_sum_block_index) !JT
       call object_modified_by_index (walker_weights_sum_index) !JT
 
-      call mpi_allreduce(pesum,pecollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(peisum,peicollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tpbsum,tpbcollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tjfsum,tjfcollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pesum,pecollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(peisum,peicollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tpbsum,tpbcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tjfsum,tjfcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(wg2sum,wg2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(eg2sum,eg2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(pe2sum,pe2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(pei2sum,pei2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tpb2sum,tpb2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tjf2sum,tjf2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wg2sum,wg2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(eg2sum,eg2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pe2sum,pe2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(pei2sum,pei2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tpb2sum,tpb2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(tjf2sum,tjf2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(fsum,fcollect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(f2sum,f2collect,nforce
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(fsum,fcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(f2sum,f2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(esum,ecollect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wsum,wcollect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(efsum,efcollect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wfsum,wfcollect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(esum,ecollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wsum,wcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(efsum,efcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wfsum,wfcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(e2sum,e2collect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(w2sum,w2collect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(ef2sum,ef2collect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(wf2sum,wf2collect,1
-     &,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(e2sum,e2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(w2sum,w2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(ef2sum,ef2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(wf2sum,wf2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
 !JT   if(idtask.ne.0) goto 17 ! The slaves also have to calculate egerr so that they can stop when egerr < error_threshold
 
@@ -353,8 +330,8 @@ c zero out xsum variables for metrop
       risum=zero
 
       do 20 ifr=1,nforce
-        egsum(ifr)=zero
         wgsum(ifr)=zero
+        egsum(ifr)=zero
         pesum(ifr)=zero
         peisum(ifr)=zero
         tpbsum(ifr)=zero

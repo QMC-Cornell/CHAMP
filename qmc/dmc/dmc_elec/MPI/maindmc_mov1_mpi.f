@@ -8,6 +8,8 @@ c MPI version created by Claudia Filippi and Cyrus Umrigar
       use const_mod
       implicit real*8(a-h,o-z)
 
+      common /mpitype/ jas_type1,jas_type2
+
       dimension iblocklen(nelec),idispl(nelec)
 
       call MPI_ATTR_GET(MPI_COMM_WORLD,MPI_TAG_UB,ivalue,flag,ierr)

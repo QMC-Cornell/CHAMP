@@ -54,14 +54,15 @@ c       write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line
       call get_initial_walkers
 
 c initialize sums and averages and reset nconf_global if there is one global population on all processors
-      if(irstar.ne.1 .and. (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3')) then
-        call my_second(1,'zeres0')
-        call zeres0_dmc
-c This is now done in read_input
-c       if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
-c         nconf_global=nconf_global*nproc
-c       endif
-      endif
+c I do not see why another call to zeres0_dmc is needed for a global population.  I am commenting it out so mpi1 and mpi2,mpi3 give same energies for 1 processor.
+c     if(irstar.ne.1 .and. (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3')) then
+c       call my_second(1,'zeres0')
+c       call zeres0_dmc
+ccThis is now done in read_input
+cc      if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+cc        nconf_global=nconf_global*nproc
+cc      endif
+c     endif
 
 c If nconf_new > 0 then we want to dump configurations for a future
 c optimization or dmc calculation. So figure out how often we need to write a
