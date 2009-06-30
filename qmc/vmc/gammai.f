@@ -159,22 +159,22 @@ c     and uses a series for 0 < x < 1.
             del = c*d
             h = h*del
             if(abs(del-1.).lt.eps)then
-               gammai0 = h*dexp(-x)
+               gammai_u0 = h*dexp(-x)
                return
             endif
          enddo
-         write(6,*) 'gammai0(x) failed in continued fraction (x>1)'
-         stop 'gammai0(x) failed in continued fraction (x>1)'
+         write(6,*) 'gammai_u0(x) failed in continued fraction (x>1)'
+         stop 'gammai_u0(x) failed in continued fraction (x>1)'
       else
-         gammai0 = -dlog(x) - euler
+         gammai_u0 = -dlog(x) - euler
          f = 1
          do i=1,itmax
             f = -f*x/i
-            gammai0 = gammai0 - f/i
-            if(abs(f/i).lt.abs(gammai0)*eps) return
+            gammai_u0 = gammai_u0 - f/i
+            if(abs(f/i).lt.abs(gammai_u0)*eps) return
          enddo
-         write(6,*) 'gammai0(x) failed in series (x<=1)'
-         stop 'gammai0(x) failed in series (x<=1)'
+         write(6,*) 'gammai_u0(x) failed in series (x<=1)'
+         stop 'gammai_u0(x) failed in series (x<=1)'
       endif
       return
       end
