@@ -48,13 +48,13 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
 	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
 	commons/pairden_mod.f90 commons/pars_mod.f90 \
-	commons/periodic2_mod.f90 commons/periodic_mod.f90 \
-	commons/phifun_mod.f90 commons/pjase_mod.f90 commons/pointer_mod.f90 \
-	commons/pseudo_fahy_mod.f90 commons/pseudo_mod.f90 \
-	commons/pseudo_tm_mod.f90 commons/pworbital_mod.f90 \
-	commons/qua_mod.f90 commons/rlobxy_mod.f90 commons/slater_mod.f90 \
-	commons/slaterw_mod.f90 commons/slatn2_mod.f90 commons/slatn_mod.f90 \
-	commons/stats_mod.f90 commons/stepv_mod.f90 \
+	commons/periodic2_mod.f90 commons/periodic_1d_mod.f90 \
+	commons/periodic_mod.f90 commons/phifun_mod.f90 commons/pjase_mod.f90 \
+	commons/pointer_mod.f90 commons/pseudo_fahy_mod.f90 \
+	commons/pseudo_mod.f90 commons/pseudo_tm_mod.f90 \
+	commons/pworbital_mod.f90 commons/qua_mod.f90 commons/rlobxy_mod.f90 \
+	commons/slater_mod.f90 commons/slaterw_mod.f90 commons/slatn2_mod.f90 \
+	commons/slatn_mod.f90 commons/stats_mod.f90 commons/stepv_mod.f90 \
 	commons/tempor_test_mod.f90 commons/vardep_mod.f90 commons/vd_mod.f90 \
 	commons/velratio_mod.f90 commons/vj_mod.f90 commons/wfsec_mod.f90 \
 	accumulation_mod.f90 all_tools_mod.f90 allocations_mod.f90 \
@@ -176,9 +176,9 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/optim2_mod.o commons/optim_mod.o commons/optimo_mod.o \
 	commons/orb_mod.o commons/orbe_mod.o commons/orbital_grid_mod.o \
 	commons/orbital_num_mod.o commons/orbpar_mod.o commons/pairden_mod.o \
-	commons/pars_mod.o commons/periodic2_mod.o commons/periodic_mod.o \
-	commons/phifun_mod.o commons/pjase_mod.o commons/pointer_mod.o \
-	commons/pseudo_fahy_mod.o commons/pseudo_mod.o \
+	commons/pars_mod.o commons/periodic2_mod.o commons/periodic_1d_mod.o \
+	commons/periodic_mod.o commons/phifun_mod.o commons/pjase_mod.o \
+	commons/pointer_mod.o commons/pseudo_fahy_mod.o commons/pseudo_mod.o \
 	commons/pseudo_tm_mod.o commons/pworbital_mod.o commons/qua_mod.o \
 	commons/rlobxy_mod.o commons/slater_mod.o commons/slaterw_mod.o \
 	commons/slatn2_mod.o commons/slatn_mod.o commons/stats_mod.o \
@@ -499,6 +499,7 @@ commons/optimo_mod.o: constants_mod.o
 commons/orb_mod.o: constants_mod.o
 commons/orbe_mod.o: constants_mod.o
 commons/orbital_grid_mod.o: types_mod.o
+commons/periodic_1d_mod.o: constants_mod.o
 commons/periodic_mod.o: constants_mod.o
 commons/phifun_mod.o: constants_mod.o
 commons/pointer_mod.o: constants_mod.o

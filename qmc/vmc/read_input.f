@@ -55,6 +55,7 @@ c Written by Cyrus Umrigar
       use fourier_mod
       use branch_mod
       use periodic2_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-4)
@@ -92,8 +93,11 @@ c title      title
 c irn        random number seeds (four 4-digit integers)
 c ijas       form of Jastrow. (between 1 and 6, mostly we use 4)
 c isc        form of scaling function for ri,rj,rij in Jastrow (between 1 and 10, mostly use 2,4,6,7,16,17)
-c iperiodic  0  finite system
-c            >0 periodic system
+c iperiodic  0  finite system, 
+c            >0: numer of dimensions in which system is periodic 
+c            =1 system periodic in one dimension
+c            =3 system periodic in three dimensions
+
 c ibasis     =1 localized Slater or gaussian or numerical basis
 c            =2 planewave basis, also for extended orbitals on grid
 c            =3 complex basis for 2D quantum dots / composite fermions
@@ -184,7 +188,8 @@ c            a) must be large enough that all plane-wave components in wf. are c
 c            b) controls quality of Ewald fit for -Z/r and pseudopot. in primitive cell
 c cutg_sim   max g-vector in simulation cell.
 c            Controls quality of Ewald fit for 1/r in simulation cell
-c alattice   lattice constant to multiply rlatt
+c alattice   lattice constant to multiply rlatt 
+c            (i.e., length of system if iperiodic=1)
 c rlatt      lattice vectors of primitive cell
 c rlatt_sim  lattice vectors of simulation cell
 c rkvec_shift_latt k-shift for generating k-vector lattice, in reciprocal simulation cell units
@@ -484,7 +489,7 @@ c     read(5,'(a20,4x,4i4)') title,irn
       read(5,'(4i4)') irn
       read(5,*) iperiodic,ibasis
       if(iperiodic.gt.0) then
-        write(6,'(''Periodic solid'')')
+        write (6,'(''System periodic in '',i1,'' dimensions'')') iperiodic
        else
         write(6,'(''Finite system'')')
       endif
@@ -681,14 +686,18 @@ c Geometrical section
       read(5,*) ndim
       write(6,'(i1,'' dimensional system'')') ndim
       if(ndim.ne.2.and.ndim.ne.3) stop 'ndim must be 2 or 3'
-      if(ndim.eq.2.and.iperiodic.gt.0) stop 'ndim=2 not yet implemented for periodic systems'
+      if(ndim.lt.iperiodic) stop 'iperiodic must be less than or equal to ndim'
+      if(iperiodic.eq.2) stop 'systems periodic in 2d not yet implemented'
       if(ndim.eq.2.and.imetro.ne.1.and.index(mode,'vmc').ne.0)
      &stop 'imetro!=1 not yet implemented for ndim=2'
 
       call object_modified ('ndim') ! JT
-
-      if(iperiodic.ne.0) then
-
+      
+      if(iperiodic.eq.1) then
+        read(5,*) alattice
+        write(6,'(''Length of 1d periodic system, alattice='',t31,f10.5)') alattice
+      else if(iperiodic.eq.3) then
+       
 c npoly is the polynomial order for short-range part
         read(5,*) npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
         write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
@@ -846,7 +855,8 @@ c Convert center positions from primitive lattice vector units to cartesian coor
         endif
       endif
 
-      if(iperiodic.ne.0) call set_ewald
+      if(iperiodic.eq.3) call set_ewald
+      if(iperiodic.eq.1) call set_ewald_1d
 
 c Compute total nuclear charge and compare to number of electrons
 c Warn if not equal, stop if they differ by more than 2.

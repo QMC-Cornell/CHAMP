@@ -26,7 +26,7 @@ c Written by Cyrus Umrigar
 c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
       double precision, allocatable :: vbare_coul(:),vbare_jas(:),vbare_psp(:)
       double precision f
-
+ 
 c Temporary
       dimension r_tmp(3)
 
@@ -2213,3 +2213,76 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
       return
       end
 c-----------------------------------------------------------------------
+
+
+      subroutine set_ewald_1d
+c     Written by Abhijit Mehta
+c       does initial calculations for 1d ewald sum
+c       - calculates g-vectors (reciprocal lattice vectors)
+c       - calculates Gamma(0,g^2/4 G^2) for these lattice vector
+
+      use periodic_1d_mod
+      implicit real*8(a-h,o-z)
+      parameter(itmax = 20, eps=1d-12, cutoff_factor=5.1d0)
+
+c     erfc(cutoff_factor) should be small (< eps) to make ewald_1d_cutoff
+c     large enough that erfc(ewald_1d_cutoff*alattice) is very small
+c     note that erfc(5.1) = 5.49e-13
+      ewald_1d_cutoff = cutoff_factor/alattice
+      gamma_coeff = Pi**2 / (cutoff_factor**2)
+      series_eps = eps*gammai_u0(gamma_coeff)
+c     Calculate reciprocal lattice vectors and gamma functions
+      do i = 1,itmax
+         gvec_1d(i) = 2.*Pi/ewald_1d_length
+         gamma_gvec(i) = gammai_u0(gamma_coeff*i*i)
+         if (gamma_gvec(i).lt.series_eps)then 
+            ngvecs_1d = i
+            exit
+         endif
+      enddo
+      write(6,*) 'Reciprocal space sum failed to converge in set_ewald_1d'
+      stop 'Reciprocal space sum failed to converge in set_ewald_1d'
+      return
+      end
+
+c-----------------------------------------------------------------------
+
+      subroutine pot_ee_ewald_1d(x,pe_ee)
+c     Written by Abhijit Mehta
+c       calculates e-e interaction energy for 1d periodic system
+c     WARNING: STILL NEED TO RECOMPUTE DISTANCES USING MODULO MATH
+c     MIGHT ALSO NEED DIMENSION COMMAND
+      use distance_mod
+      use periodic_1d_mod
+      use dim_mod
+      implicit real*8(a-h,o-z)     
+
+
+      pe_ee=0.d0
+      ij = 0
+      do i = 2,nelec
+        do j = 1,i-1
+          ij = ij+1
+          do k=1,ndim
+            rvec_ee(k,ij)=x(k,i)-x(k,j)
+          enddo
+          do l = 1,ngvecs_1d
+            pe_ee = pe_ee + gamma_gvec(l)*dcos(gvec_1d(l)*rvec_ee(1,ij))
+          enddo
+        enddo
+      enddo
+      pe_ee = pe_ee*2.*nelec/alattice
+      do m = 1,ij
+        r_e2 = 0
+        do k = 2,ndim
+          r_e2 = r_e2 + rvec_ee(k,m)**2
+        enddo
+c  Temporary
+        do n = -1,1
+          rad_ee = dsqrt(r_e2 + (rvec_ee(1,m) + alattice*n)**2)
+          pe_ee = pe_ee + derfc(ewald_1d_cutoff*rad_ee)/rad_ee
+        enddo
+      enddo
+         
+      return
+      end
