@@ -49,7 +49,7 @@ CHAMP_C_MPI_FLAGS=$(CHAMP_C_FLAGS)
 CHAMP_F95=ifort
 CHAMP_MPIF95=mpif77
 
-CHAMP_F95_FAST= -zero -r8 -pad -align all -xT -fpp -ip 
+CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip 
 CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg 
 CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 
@@ -145,7 +145,7 @@ ifeq ($(hostname),qmc2)
   CHAMP_MPIC=mpicc
   CHAMP_F95=gfortran
   CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -xT -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
   CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
   CHAMP_LD=gfortran
   CHAMP_LD_FLAGS=-O3
@@ -161,7 +161,7 @@ ifeq ($(hostname),jasmine)
   CHAMP_MPIC=mpicc
   CHAMP_F95=gfortran
   CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -xT -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
   CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
   CHAMP_LD=gfortran
   CHAMP_LD_FLAGS=-O3
@@ -191,7 +191,7 @@ ifeq ($(hostname),clastos)
 # CHAMP_CXX=icpc
  CHAMP_CXX=/usr/local/bin/mpicxx_64
  CHAMP_F95=/usr/local/bin/mpif90_64
- CHAMP_F95_FAST=-zero -r8 -pad -align all -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
+ CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
  EINSPLINE=
  CHAMP_MPIF95=/usr/local/bin/mpif90_64
