@@ -2,6 +2,7 @@ module eloc_mod
 
   use all_tools_mod
   use montecarlo_mod
+  use electrons_mod
   use psi_mod
 
 ! Declaration of global variables and default values
@@ -18,6 +19,9 @@ module eloc_mod
   real(dp)                       :: eloc_pot_ee
   real(dp)                       :: eloc_pot_ee_av
   real(dp)                       :: eloc_pot_ee_av_err
+  real(dp)                       :: eloc_pot_ee_zv
+  real(dp)                       :: eloc_pot_ee_zv_av
+  real(dp)                       :: eloc_pot_ee_zv_av_err
   real(dp)                       :: eloc_kin_jas
   real(dp)                       :: eloc_kin_jas_av
   real(dp)                       :: eloc_kin_jas_av_err
@@ -174,6 +178,68 @@ module eloc_mod
   eloc_pot_ee = pe_ee
 
  end subroutine eloc_pot_ee_bld
+
+! ==============================================================================
+  subroutine eloc_pot_ee_zv_bld
+! ------------------------------------------------------------------------------
+! Description   : zero-variance estimator of electron-electron local potential energy
+! Description   : -(1/2) sim_{i!=j} (grad_j Psi)/Psi . r_ij / |r_ij|
+!
+! Created       : J. Toulouse, 03 Jul 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+  integer elec_i, elec_j, dim_i
+  real(dp) dij, dotproduct
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_pot_ee_zv')
+   call object_average_define ('eloc_pot_ee_zv', 'eloc_pot_ee_zv_av')
+   call object_error_define ('eloc_pot_ee_zv_av', 'eloc_pot_ee_zv_av_err')
+
+   call object_needed ('nelec')
+   call object_needed ('ndim')
+   call object_needed ('grd_psi_over_psi_wlk')
+   call object_needed ('vec_ee_xyz_wlk')
+   call object_needed ('dist_ee_wlk')
+
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_associate ('eloc_pot_ee_zv', eloc_pot_ee_zv)
+  call object_associate ('eloc_pot_ee_zv_av', eloc_pot_ee_zv_av)
+  call object_associate ('eloc_pot_ee_zv_av_err', eloc_pot_ee_zv_av_err)
+
+  eloc_pot_ee_zv = 0.d0
+
+  do elec_j = 1, nelec
+    do elec_i = 1, nelec
+
+      if (elec_i == elec_j) cycle
+
+!     distance e-e
+      dij = dist_ee_wlk (elec_i, elec_j, 1)
+
+!     dot product: drift_j . (rj - ri)
+      dotproduct = 0.d0
+      do dim_i = 1, ndim
+        dotproduct = dotproduct +  grd_psi_over_psi_wlk (dim_i, elec_j, 1) * vec_ee_xyz_wlk (dim_i, elec_j, elec_i, 1)
+      enddo
+
+      eloc_pot_ee_zv = eloc_pot_ee_zv - (dotproduct / dij) * 0.5d0
+
+    enddo !elec_j
+  enddo !elec_i
+
+ end subroutine eloc_pot_ee_zv_bld
 
 ! ==============================================================================
   subroutine eloc_kin_jas_bld

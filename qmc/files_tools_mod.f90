@@ -133,7 +133,6 @@ module files_tools_mod
   logical :: opened
 
 ! begin
-
   inquire(file=trim(filename), opened=opened)
 
   if (opened) then
