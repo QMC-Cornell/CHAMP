@@ -578,6 +578,7 @@ module basis_mod
   implicit none
 
 ! local
+  character(len=max_string_len_rout), save :: lhere = 'norm_basis_bld'
   integer ib, n, l, m, n1
 
 ! header
@@ -603,8 +604,11 @@ module basis_mod
 ! allocation
   call object_alloc ('norm_basis', norm_basis, nbasis)
 
+! provide zex for analytic basis functions
+! must use object_provide_in_node and not object_provide 
+! because the dependency of norm_basis on zex must be recorded
   if(numr <= 0) then
-   call object_provide ('zex')
+   call object_provide_in_node (lhere, 'zex')
   endif
 
   do ib = 1, nbasis

@@ -1481,7 +1481,6 @@ c inefficient during the optimization process.
 
       if(numr.le.0) then
 !JT        write(6,'(''n_bas(ib),l_bas(ib)'',50(i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)
-        MRWF = 0
         ib=0
         ib4=0
         do 290 ic=1,ncent
@@ -1501,6 +1500,10 @@ c inefficient during the optimization process.
             nrbas(ict)=nrbas(ict)+1
             irb=nrbas(ict)
 !JT            if(irb.gt.MRWF) stop 'nbas > MRWF'
+!           MRWF is initilized to 0 in numbas_mod
+!           it cannot be initialized in this routine because
+!           this routine is called several times for the correlated sampling part
+!           of optimization runs, and this would destroy zex2
             MRWF = max (MRWF, nrbas(ict))
             call alloc ('n_bas2', n_bas2, MRWF, nctype)
             call alloc ('zex2', zex2, MRWF, nctype, nwf)

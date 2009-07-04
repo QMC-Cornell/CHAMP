@@ -9,6 +9,6 @@ module numbas_mod
  integer, allocatable :: nrbas(:),igrid(:),nr(:)
  integer, allocatable :: iwrwf(:,:)
  integer :: MRWF_PTS
- integer :: MRWF
+ integer :: MRWF = 0 ! must be initialized to zero, actual value is calculated at execution
 
 end module numbas_mod
