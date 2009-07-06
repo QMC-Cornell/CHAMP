@@ -440,9 +440,10 @@ def determine_orbitals_sym ():
     for bas_i in range(nbasis):
       orbital_sym_class_sum[bas_i] = orbital_sym_class_sum[bas_i] + orbital_sym_classes [orb_sym][bas_i]
   for bas_i in range(nbasis):
-    if (orbital_sym_class_sum[bas_i] < 1):
-      print "\nERROR: basis function #", bas_i+1," is not in any symmetry class!\n"
-      sys.exit(0)
+#    comment this out because some basis functions may not be used (e.g., some d functions)
+#    if (orbital_sym_class_sum[bas_i] < 1):
+#      print "\nWARNING: basis function #", bas_i+1," is not in any symmetry class!\n"
+#      sys.exit(0)
     if (orbital_sym_class_sum[bas_i] > 1):
       print "\nERROR: basis function #", bas_i+1," is in more than one symmetry class!\n"
       sys.exit(0)
