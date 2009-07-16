@@ -1021,8 +1021,8 @@ module density_mod
   write(unit,'(a,3e25.15)') 'grid_r_min                =',grid_r_min
   write(unit,'(a,3e25.15)') 'grid_r_max                =',grid_r_max
   write(unit,'(a,i25)')     'grid_r_nb                 =',grid_r_nb
-  write(unit,'(a,es15.8)')       'dist_e_min                =',dist_e_min
-  write(unit,'(a,es15.8)')       'dist_e_max                =',dist_e_max
+  write(unit,'(a,es15.8)')  'dist_e_min                =',dist_e_min
+  write(unit,'(a,es15.8)')  'dist_e_max                =',dist_e_max
 
 
   write(unit,*) ''

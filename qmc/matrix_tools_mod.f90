@@ -2,6 +2,7 @@ module matrix_tools_mod
 
   use basic_tools_mod
   use strings_tools_mod
+  use variables_mod
 
   contains
 
@@ -174,10 +175,12 @@ module matrix_tools_mod
      if(abs(matrix_check-matrix(i,j)) > 1.d-7) then
        write(6,'(''Warning: low accuracy in diagonalization; the error on a matrix element'',2i4,'' is'',d12.4)') &
          i,j,matrix_check-matrix(i,j)
+       l_warning = .true.
      endif
-     if(abs(matrix_check-matrix(i,j)) > 1.d-2) then
-       call die (lhere, 'low accuracy in diagonalization; the error on a matrix element is '+abs(matrix_check-matrix(i,j)))
-     endif
+! JT: Warning: comment out this stop for now
+!     if(abs(matrix_check-matrix(i,j)) > 1.d-2) then
+!       call die (lhere, 'low accuracy in diagonalization; the error on a matrix element is '+abs(matrix_check-matrix(i,j)))
+!     endif
    enddo ! j
   enddo ! i
 

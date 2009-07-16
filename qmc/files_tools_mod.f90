@@ -39,8 +39,8 @@ module files_tools_mod
    if (trim(filename) == trim(file_names (file_i)) ) then
 !    if file_unit > 0, check that file_unit agrees with the previously attributed one
      if (file_unit > 0 .and. file_unit /= file_units (file_i)) then
-      write(6,'(4a,i3)') trim(lhere),': the file ',trim(filename),' is asked to be catalogued with file unit ',file_unit
-      write(6,'(3a,i3)') trim(lhere),': but it has already been catalogued with file unit ',file_units (file_i)
+      write(6,'(4a,i5)') trim(lhere),': the file >',trim(filename),'< is asked to be catalogued with file unit ',file_unit
+      write(6,'(3a,i5)') trim(lhere),': but it has already been catalogued with file unit ',file_units (file_i)
       call die (lhere, 'a file is catalogued twice with different file units')
      endif
      file_unit = file_units (file_i)
@@ -52,8 +52,8 @@ module files_tools_mod
    if (file_unit > 0) then
     do file_i = 1, files_nb
      if (file_unit == file_units (file_i) .and. trim(filename) /= trim(file_names (file_i))) then
-      write(6,'(4a,i3)') trim(lhere),': the file ',trim(filename),' is asked to be catalogued with file unit ',file_unit
-      write(6,'(3a,i3)') trim(lhere),': but the file unit is already associated to the file',trim(file_names (file_i))
+      write(6,'(4a,i5)') trim(lhere),': the file >',trim(filename),'< is asked to be catalogued with file unit ',file_unit
+      write(6,'(4a)') trim(lhere),': but this file unit is already associated to the file >',trim(file_names (file_i)),'<'
       call die (lhere, 'two different files are catalogued with the same file unit')
      endif
     enddo
