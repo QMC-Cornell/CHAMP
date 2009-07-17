@@ -134,7 +134,7 @@ module grid_mod
   call require (lhere, 'grid_r_max > 0', grid_r_max > 0.d0 )
   call require (lhere, 'grid_r_min >= 0', grid_r_min >= 0.d0 )
 
-  grid_r_nb = int((grid_r_max-grid_r_min)/grid_r_step) + 1
+  grid_r_nb = nint((grid_r_max-grid_r_min)/grid_r_step) + 1
   call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0 )
 
   write (6,'(a)') ' Parameters for radial grid:'
