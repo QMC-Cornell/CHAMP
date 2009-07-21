@@ -10,6 +10,7 @@ c calculate interparticle distances
       use pseudo_mod
       use contrl_per_mod
       use distance_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -108,6 +109,31 @@ c Calculate e-e inter-particle distances
         pe=pe+pe_en+pe_ee !JT
         pei=pe_ee
 
+       elseif(iperiodic.eq.1)then ! periodic in 1d
+         pe_en=0.d0
+         do ic=1,ncent
+          do i=1,nelec
+            r_en(i,ic)=0.d0
+            do k=1,ndim
+              rvec_en(k,i,ic)=x(k,i)-cent(k,ic)
+              if(k.eq.1)then    ! modulo math to compute distances w/periodic bc's
+                 rvec_en(k,i,ic) = modulo(rvec_en(k,i,ic), alattice)
+                 if (rvec_en(k,i,ic).gt.(alattice/2.)) rvec_en(k,i,ic) = alattice-rvec_en(k,i,ic)
+              endif 
+              r_en(i,ic)=r_en(i,ic)+rvec_en(k,i,ic)**2
+            enddo
+            r_en(i,ic)=dsqrt(r_en(i,ic))
+c     Don't forget to add in perturbation for periodic wire!!
+            if(nloc.eq.-4) then  !  quantum wire
+              pe_y=0.5d0*(wire_w*x(2,i))**2  !  y-direction
+              pe_en=pe_en+pe_y
+            endif
+          enddo
+         enddo
+         call pot_ee_ewald(x,pe_ee)
+         pe = pe+pe_en+pe_ee
+         pei = pe_ee
+
        else
 
         call pot_en_ewald(x,pe_en)
@@ -160,7 +186,17 @@ c Calculate e-N inter-particle distances
           do 20 k=1,ndim
    20       r_en(iel,ic)=r_en(iel,ic)+rvec_en(k,iel,ic)**2
           r_en(iel,ic)=dsqrt(r_en(iel,ic))
-         else
+        elseif(iperiodic.eq.1)then
+          r_en(iel,ic)=0.d0
+          do k=1,ndim
+            if(k.eq.1)then      ! modulo math to compute distances w/periodic bc's
+              rvec_en(k,iel,ic) = modulo(rvec_en(k,iel,ic), alattice)
+              if (rvec_en(k,iel,ic).gt.(alattice/2.)) rvec_en(k,iel,ic) = alattice-rvec_en(k,iel,ic)
+            endif 
+            r_en(iel,ic)=r_en(iel,ic)+rvec_en(k,iel,ic)**2
+          enddo 
+          r_en(iel,ic)=dsqrt(r_en(iel,ic))
+        else
           call find_image4(rshift(1,iel,ic),rvec_en(1,iel,ic),r_en(iel,ic),rlatt,rlatt_inv)
         endif
    30 continue
@@ -182,7 +218,11 @@ c Calculate e-e inter-particle distances
         do 40 k=1,ndim
           rvec_ee_sav(k,jj)=rvec_ee(k,ij)
    40     rvec_ee(k,ij)=x(k,i)-x(k,j)
-        if(iperiodic.eq.0) then
+          if(iperiodic.eq.1 .and. k.eq.1) then
+            rvec_ee(k,ij) = modulo(rvec_ee(k,ij), alattice)
+            if (rvec_ee(k,ij).gt.(alattice/2.)) rvec_ee(k,ij) = alattice-rvec_ee(k,ij)
+          endif 
+        if(iperiodic.eq.0 .or. iperiodic.eq.1) then
           r_ee(ij)=0
           do 50 k=1,ndim
    50       r_ee(ij)=r_ee(ij)+rvec_ee(k,ij)**2
