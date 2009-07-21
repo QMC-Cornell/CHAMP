@@ -2233,7 +2233,7 @@ c     note that erfc(5.1) = 5.49e-13
       series_eps = eps*gammai_u0(gamma_coeff)
 c     Calculate reciprocal lattice vectors and gamma functions
       do i = 1,itmax
-         gvec_1d(i) = 2.*Pi/ewald_1d_length
+         gvec_1d(i) = 2.d0*Pi/alattice
          gamma_gvec(i) = gammai_u0(gamma_coeff*i*i)
          if (gamma_gvec(i).lt.series_eps)then 
             ngvecs_1d = i
@@ -2250,8 +2250,6 @@ c-----------------------------------------------------------------------
       subroutine pot_ee_ewald_1d(x,pe_ee)
 c     Written by Abhijit Mehta
 c       calculates e-e interaction energy for 1d periodic system
-c     WARNING: STILL NEED TO RECOMPUTE DISTANCES USING MODULO MATH
-c     MIGHT ALSO NEED DIMENSION COMMAND
       use distance_mod
       use periodic_1d_mod
       use dim_mod
@@ -2259,30 +2257,28 @@ c     MIGHT ALSO NEED DIMENSION COMMAND
 
 
       pe_ee=0.d0
+      pe_ee_gammapart = 0.d0
       ij = 0
       do i = 2,nelec
         do j = 1,i-1
           ij = ij+1
+          r_ee(ij) = 0.d0
           do k=1,ndim
             rvec_ee(k,ij)=x(k,i)-x(k,j)
+            if(k.eq.1)then   ! modulo math to compute distances w/periodic bc's
+              rvec_ee(k,ij) = modulo(rvec_ee(k,ij), alattice)
+              if (rvec_ee(k,ij).gt.(alattice/2.)) rvec_ee(k,ij) = alattice-rvec_ee(k,ij)
+            endif
+            r_ee(ij) = r_ee(ij) + rvec_ee(k,ij)**2
           enddo
-          do l = 1,ngvecs_1d
-            pe_ee = pe_ee + gamma_gvec(l)*dcos(gvec_1d(l)*rvec_ee(1,ij))
+          r_ee(ij) = dsqrt(r_ee(ij))
+          pe_ee = pe_ee + derfc(ewald_1d_cutoff*r_ee(ij))/r_ee(ij)
+          do m = 1,ngvecs_1d
+            pe_ee_gammapart = pe_ee_gammapart + gamma_gvec(m)*dcos(gvec_1d(m)*rvec_ee(1,ij))
           enddo
         enddo
       enddo
-      pe_ee = pe_ee*2.*nelec/alattice
-      do m = 1,ij
-        r_e2 = 0
-        do k = 2,ndim
-          r_e2 = r_e2 + rvec_ee(k,m)**2
-        enddo
-c  Temporary
-        do n = -1,1
-          rad_ee = dsqrt(r_e2 + (rvec_ee(1,m) + alattice*n)**2)
-          pe_ee = pe_ee + derfc(ewald_1d_cutoff*rad_ee)/rad_ee
-        enddo
-      enddo
-         
+      pe_ee = pe_ee + pe_ee_gammapart*2.*nelec/alattice
+               
       return
       end
