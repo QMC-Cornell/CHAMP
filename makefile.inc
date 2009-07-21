@@ -542,3 +542,5 @@ ifeq ($(hostname),babel1)
   EINSPLINE=
   CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
 endif
+
+# Mac OS for Intel Core2 machines with Intel Fortran compiler
