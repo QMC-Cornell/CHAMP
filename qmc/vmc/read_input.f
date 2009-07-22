@@ -626,9 +626,16 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
         read(5,*) p1,p2,p3,p4
         write(6,'(''quartic dot pot. p1,p2,p3,p4='',t31,9f9.6)') p1,p2,p3,p4
        elseif(nloc.eq.-4) then 
-        read(5,*) wire_w,wire_length,wire_potential_cutoff
+        if(iperiodic.eq.0)then
+         read(5,*) wire_w,wire_length,wire_potential_cutoff
+         write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
+        else
+         read(5,*) wire_w
+         write(6,'(''wire_w='',t31,f10.5)') wire_w
+        endif
+        
         we=wire_w  !  this is a quick fix:  needed for the subroutine basis_fns_2dgauss
-        write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
+       
        elseif(nloc.eq.-5) then
         read(5,*) w0,bext,glande
         we=dsqrt(w0*w0+0.25d0*bext*bext)
@@ -662,7 +669,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       call object_modified ('nupdn_square')
       call object_modified ('nelec_pair')
 
-      if(nloc.eq.-4) then ! values used for quantum wire
+      if(nloc.eq.-4 .and. iperiodic.eq.0) then ! values used for quantum wire
         wire_length2 = wire_length*wire_length
         wire_radius2 = 1 / (2 * wire_w)
         wire_prefactor = nelec / (wire_radius2 * wire_length) 
