@@ -2220,11 +2220,16 @@ c     Written by Abhijit Mehta
 c       does initial calculations for 1d ewald sum
 c       - calculates g-vectors (reciprocal lattice vectors)
 c       - calculates Gamma(0,g^2/4 G^2) for these lattice vector
-
+      
+      use const_mod
       use periodic_1d_mod
+      use atom_mod
       implicit real*8(a-h,o-z)
       parameter(itmax = 20, eps=1d-12, cutoff_factor=5.1d0)
-
+c     quick fix for seg fault:
+      allocate(gvec_1d(itmax), gamma_gvec(itmax))
+c     pecent (n-n potential energy) set to 0, since it's just a constant
+      pecent=0.d0
 c     erfc(cutoff_factor) should be small (< eps) to make ewald_1d_cutoff
 c     large enough that erfc(ewald_1d_cutoff*alattice) is very small
 c     note that erfc(5.1) = 5.49e-13
@@ -2233,11 +2238,11 @@ c     note that erfc(5.1) = 5.49e-13
       series_eps = eps*gammai_u0(gamma_coeff)
 c     Calculate reciprocal lattice vectors and gamma functions
       do i = 1,itmax
-         gvec_1d(i) = 2.d0*Pi/alattice
+         gvec_1d(i) = 2.d0*pi/alattice
          gamma_gvec(i) = gammai_u0(gamma_coeff*i*i)
          if (gamma_gvec(i).lt.series_eps)then 
             ngvecs_1d = i
-            exit
+            return
          endif
       enddo
       write(6,*) 'Reciprocal space sum failed to converge in set_ewald_1d'
@@ -2253,8 +2258,10 @@ c       calculates e-e interaction energy for 1d periodic system
       use distance_mod
       use periodic_1d_mod
       use dim_mod
+      use const_mod
       implicit real*8(a-h,o-z)     
 
+      dimension x(3,*)
 
       pe_ee=0.d0
       pe_ee_gammapart = 0.d0

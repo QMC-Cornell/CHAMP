@@ -790,23 +790,23 @@ c Read in which is the local component of the potential
    35     if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
       endif
 
-c     if(iperiodic.eq.0) then
+c     if(iperiodic.eq.0 .or iperiodic.eq.1) then
 c       write(6,'(/,''center positions'')')
 c      else
 c       write(6,'(/,''center positions in primitive lattice vector units'')')
 c     endif
       call alloc ('cent', cent, 3, ncent)
-      if(iperiodic.eq.0) write(6,'(/,''center positions'')')
+      if(iperiodic.eq.0 .or. iperiodic.eq.1) write(6,'(/,''center positions'')')
       do 50 ic=1,ncent
         read(5,*) (cent(k,ic),k=1,ndim)
-c       if(iperiodic.ne.0) then
+c       if(iperiodic.eq.3) then
 c         do 40 k=1,ndim
 c  40       cent(k,ic)=cent(k,ic)*alattice
 c       endif
-   50   if(iperiodic.eq.0) write(6,'(''center'',i4,1x,''('',3f8.5,'')'')') ic,(cent(k,ic),k=1,ndim)
+   50   if(iperiodic.eq.0 .or. iperiodic.eq.1) write(6,'(''center'',i4,1x,''('',3f8.5,'')'')') ic,(cent(k,ic),k=1,ndim)
 
 c Convert center positions from primitive lattice vector units to cartesian coordinates
-      if(iperiodic.ne.0) then
+      if(iperiodic.eq.3) then
         write(6,'(/,''center positions in primitive lattice vector units and in cartesian coordinates'')')
         do 66 ic=1,ncent
           do 62 k=1,ndim
@@ -861,17 +861,17 @@ c Convert center positions from primitive lattice vector units to cartesian coor
    68       write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
         endif
       endif
-
+  
       if(iperiodic.eq.3) call set_ewald
       if(iperiodic.eq.1) call set_ewald_1d
-
+      
 c Compute total nuclear charge and compare to number of electrons
 c Warn if not equal, stop if they differ by more than 2.
       znuc_tot=0
       do 69 ic=1,ncent
         ict=iwctype(ic)
    69   znuc_tot=znuc_tot+znuc(ict)
-      if(iperiodic.ne.0) znuc_tot=znuc_tot*vcell_sim/vcell
+      if(iperiodic.eq.3) znuc_tot=znuc_tot*vcell_sim/vcell
       if(znuc_tot.ne.dfloat(nelec)) write(6,'(''znuc_tot='',f6.1,'' != nelec='',i4)') znuc_tot,nelec
 !JT      if(abs(znuc_tot-dfloat(nelec)).gt.3) stop 'abs(znuc_tot - nelec) > 3'
 
@@ -1096,7 +1096,7 @@ c Check if all the determinants are used in CSFs
       call object_modified ('iworbd')  !JT
       write(6,'(''Determine unique up and dn determinants'')')
       call determinant_up_dn
-
+      
       call object_modified ('ncsf')         !JT
       call object_modified ('csf_coef')     !JT
       call object_modified ('ndet_in_csf')  !JT
@@ -1108,7 +1108,7 @@ c Check if all the determinants are used in CSFs
         write(6,'(''L_tot='',i3)') ltot
       endif
 c     if((ibasis.eq.1.or.ibasis.eq.3).and.inum_orb.eq.0) call emagnetic(ltot)
-      if(ndim.eq.2) call emagnetic(ltot)
+      if(ndim.eq.2 .and. iperiodic.eq.0) call emagnetic(ltot)
 c     if(ibasis.eq.2) call read_orb_pw_real
       if(ibasis.eq.2) call read_orb_pw
 c     if(iperiodic.eq.0 .and. inum_orb.gt.0) call read_orb_num
@@ -1282,38 +1282,43 @@ c Warning: At present we are assuming that the same scalek is used
 c for primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
 c should be dimensioned to MWF
       if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
-        read(5,*) cutjas_en_tmp,cutjas_ee_tmp
-        if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
-          write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
-     &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
-         else
-          if(cutjas_en_tmp.lt.cutjas_en-eps) then
-            write(6,'(''Warning: Could use larger cutjas_en='',f9.5,
-     &      '' instead of the input value='',f9.5)') cutjas_en,cutjas_en_tmp
+        if(iperiodic.eq.1)then
+          cutjas_en = alattice/2.
+          cutjas_ee = alattice/2.
+        else
+          read(5,*) cutjas_en_tmp,cutjas_ee_tmp
+          if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
+           write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
+     &      cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+          else
+            if(cutjas_en_tmp.lt.cutjas_en-eps) then
+               write(6,'(''Warning: Could use larger cutjas_en='',f9.5,
+     &         '' instead of the input value='',f9.5)') cutjas_en,cutjas_en_tmp
+            endif
+            write(6,'(''input cutjas_en='',d12.5)') cutjas_en_tmp
+            cutjas_en=cutjas_en_tmp
           endif
-          write(6,'(''input cutjas_en='',d12.5)') cutjas_en_tmp
-          cutjas_en=cutjas_en_tmp
-        endif
-        if(iperiodic.ne.0 .and. cutjas_ee_tmp.gt.cutjas_ee+eps) then
-          write(6,'(''Warning: input cutjas > half shortest simulation cell lattice vector;
-     &    cutjas_ee reset from'',f9.5,'' to'',f9.5)') cutjas_ee_tmp,cutjas_ee
-         else
-          if(cutjas_ee_tmp.lt.cutjas_ee-eps) then
-            write(6,'(''Warning: Could use larger cutjas_ee='',f9.5,
-     &      '' instead of the input value='',f9.5)') cutjas_ee,cutjas_ee_tmp
+          if(iperiodic.ne.0 .and. cutjas_ee_tmp.gt.cutjas_ee+eps) then
+            write(6,'(''Warning: input cutjas > half shortest simulation cell lattice vector;
+     &      cutjas_ee reset from'',f9.5,'' to'',f9.5)') cutjas_ee_tmp,cutjas_ee
+          else
+            if(cutjas_ee_tmp.lt.cutjas_ee-eps) then
+              write(6,'(''Warning: Could use larger cutjas_ee='',f9.5, 
+     &        '' instead of the input value='',f9.5)') cutjas_ee,cutjas_ee_tmp
+            endif
+            write(6,'(''input cutjas_ee='',d12.5)') cutjas_ee_tmp
+            cutjas_ee=cutjas_ee_tmp
           endif
-          write(6,'(''input cutjas_ee='',d12.5)') cutjas_ee_tmp
-          cutjas_ee=cutjas_ee_tmp
+          if(cutjas_en_tmp.le.0.d0) then
+            write(6,'(''cutjas_en reset to infinity'')')
+            cutjas_en=1.d99
+          endif
+          if(cutjas_ee_tmp.le.0.d0) then
+            write(6,'(''cutjas_ee reset to infinity'')')
+            cutjas_ee=1.d99
+          endif
         endif
-        if(cutjas_en_tmp.le.0.d0) then
-          write(6,'(''cutjas_en reset to infinity'')')
-          cutjas_en=1.d99
-        endif
-        if(cutjas_ee_tmp.le.0.d0) then
-          write(6,'(''cutjas_ee reset to infinity'')')
-          cutjas_ee=1.d99
-        endif
-      endif
+       endif
       call set_scale_dist(1,1)
 
       if(ifock.gt.0) then

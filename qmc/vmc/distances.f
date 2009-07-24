@@ -130,7 +130,7 @@ c     Don't forget to add in perturbation for periodic wire!!
             endif
           enddo
          enddo
-         call pot_ee_ewald(x,pe_ee)
+         call pot_ee_ewald_1d(x,pe_ee)
          pe = pe+pe_en+pe_ee
          pei = pe_ee
 

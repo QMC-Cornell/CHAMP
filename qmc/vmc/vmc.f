@@ -150,9 +150,9 @@ c                 sites routine
       call object_associate ('eloc_av', eloc_av) !JT
       call object_associate ('eloc_av_var', eloc_av_var) !JT
       call object_variance_request ('eloc_av_var')
-
+    
       call print_list_of_averages_and_errors
-
+      
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
       nparmc_read=nterms4(nordc)
@@ -175,7 +175,7 @@ c xnew, since only the first electron gets initialized in metrop
           do 400 k=1,ndim
   400       xnew(k,i)=xold(k,i)
       endif
-
+     
 c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
 c optimization or dmc calculation. So figure out how often we need to write a
 c configuration to produce nconf_new configurations. If nconf_new = 0
@@ -185,13 +185,13 @@ c then set up so no configurations are written.
        else
         ngfmc=max(1,(nstep*nblk)/nconf_new)
       endif
-
+    
 c zero out estimators and averages
       if(irstar.ne.1) then
 !JT        call my_second(1,'zerest')
          call zerest
       endif
-
+      
 c check if restart flag is on. If so then read input from
 c dumped data to restart
 
@@ -203,7 +203,7 @@ c dumped data to restart
         call startr
         close(unit=10)
       endif
-
+  
 ! Start equilibration steps
       call print_cpu_time_in_seconds ('Beginning of equilibration')
 
