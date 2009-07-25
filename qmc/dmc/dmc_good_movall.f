@@ -61,6 +61,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrldmc_mod
       use stats_mod
       use age_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -689,8 +690,6 @@ c     wgdsum1=wgdsumo
 
 c Do split-join
 !JT      call splitj ! moved outside the routine
-      if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5)') ipass,ffn,
-     &wsum1(1),esum1(1)/wsum1(1),nwalk
 
 c Estimate eigenvalue of G from the energy
       eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))

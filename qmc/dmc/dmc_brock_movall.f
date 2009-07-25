@@ -36,6 +36,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use contrldmc_mod
       use stats_mod
       use age_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
       dimension xnew(3,nelec,nforce),vnew(3,nelec,nforce),enew(nforce)
@@ -302,8 +303,6 @@ c     wgdsum1=wgdsumo
       eisum=eisum+wfsum1/wdsumo
 
 !JT      call splitj ! moved outside the routine
-      if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5)') ipass,ffn,
-     &wsum1(1),esum1(1)/wsum1(1),nwalk
 
       nfpro=min(nfprod,ipass)
       eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)

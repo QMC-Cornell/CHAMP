@@ -44,6 +44,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use stats_mod
       use age_mod
       use branch_dmc_opt_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10)
@@ -314,8 +315,6 @@ c Set weights and product of weights over last nwprod steps
       call object_modified_by_index (fprod_index) !JT
 
 !JT      call splitj ! moved outside the routine
-      if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5)') ipass,ffn,
-     &wsum1(1),esum1(1)/wsum1(1),nwalk
 
       nfpro=min(nfprod,ipass)
       eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)

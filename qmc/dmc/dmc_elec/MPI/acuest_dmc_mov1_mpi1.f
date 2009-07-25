@@ -38,6 +38,7 @@ c routine to accumulate estimators for energy etc.
       use stats_mod
       use age_mod
       use pairden_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
@@ -342,6 +343,12 @@ c zero out xsum variables for metrop
 
       entry acues1_dmc_mov1_mpi1
 c statistical fluctuations without blocking
+
+      if(ipr.gt.-2) then
+         write(11,'(i8,f11.8,f15.8,f13.8,i5)') ipass,ffn,wsum1(1),esum1(1)/wsum1(1),nwalk
+      end if
+
+
       wdsum1=wdsumo
       wgdsum1=wgdsumo
 

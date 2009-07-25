@@ -28,6 +28,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use age_mod
       use pairden_mod
       use fourier_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
 c routine to accumulate estimators for energy etc.
@@ -239,6 +240,11 @@ c zero out xsum variables
 
       entry acues1_dmc_movall
 c statistical fluctuations without blocking
+
+      if(ipr.gt.-2) then
+         write(11,'(i8,f11.8,f15.8,f13.8,i5)') ipass,ffn,wsum1(1),esum1(1)/wsum1(1),nwalk
+      end if
+
       wcum1=wcum1+wsum1(1)
       wfcum1=wfcum1+wfsum1
       ecum1=ecum1+esum1(1)

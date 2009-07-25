@@ -72,6 +72,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       use branch_dmc_opt_mod
       use velratio_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -788,9 +789,6 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
       call object_modified_by_index (fprod_index) !JT
 
 !JT      call splitj ! moved outside the routine
-      if(ipr.gt.-2) write(11,'(i8,f9.6,f12.5,f11.6,i5)') ipass,ffn,
-     &wsum1(1),esum1(1)/wsum1(1),nwalk
-
 
       return
       end

@@ -11,7 +11,7 @@ c Also do other things that differ for serial and parallel runs, such as setting
       use contrl_mod
       use const_mod
       use dim_mod
-      use contr3_mod
+      use contr3_mod, only : mode
       use periodic_mod
       use config_dmc_mod
       use contrldmc_mod
@@ -30,25 +30,35 @@ c set the random number seed, setrn already called in read_input
       endif
 
       if(ipr.gt.-2 .and. irstar.eq.0) then
-        if(idtask.le.9) then
-          write(filename,'(''walkalize.'',i1)') idtask
-         elseif(idtask.le.99) then
-          write(filename,'(''walkalize.'',i2)') idtask
-         elseif(idtask.le.999) then
-          write(filename,'(''walkalize.'',i3)') idtask
-         elseif(idtask.le.9999) then
-          write(filename,'(''walkalize.'',i4)') idtask
-         elseif(idtask.le.99999) then
-          write(filename,'(''walkalize.'',i5)') idtask
-         elseif(idtask.le.999999) then
-          write(filename,'(''walkalize.'',i6)') idtask
+         if (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+            if (idtask == 0) then 
+               filename='walkalize'
+               open(11,file=filename)
+               rewind 11
+               write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
+            end if
          else
-          stop 'idtask > 999999'
-        endif
-        open(11,file=filename)
-        rewind 11
-c       write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
-        write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
+            if(idtask.le.9) then
+               write(filename,'(''walkalize.'',i1)') idtask
+            elseif(idtask.le.99) then
+               write(filename,'(''walkalize.'',i2)') idtask
+            elseif(idtask.le.999) then
+               write(filename,'(''walkalize.'',i3)') idtask
+            elseif(idtask.le.9999) then
+               write(filename,'(''walkalize.'',i4)') idtask
+            elseif(idtask.le.99999) then
+               write(filename,'(''walkalize.'',i5)') idtask
+            elseif(idtask.le.999999) then
+               write(filename,'(''walkalize.'',i6)') idtask
+            else
+               stop 'idtask > 999999'
+            endif
+            open(11,file=filename)
+            rewind 11
+c     write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
+            write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
+         end if
+
       endif
 
       call get_initial_walkers

@@ -36,6 +36,7 @@ c routine to accumulate estimators for energy etc.
       use stats_mod
       use age_mod
       use pairden_mod
+      use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
 
@@ -345,6 +346,11 @@ c Warning: The tausum is being done in an ugly way, and should be cleaned up
       efsum1=collect_t(3)
       wfsum1=collect_t(4)
 c     tausum(1)=collect_t(5)
+
+      if(ipr.gt.-2 .and. idtask .eq. 0) then
+         write(11,'(i8,f11.8,f15.8,f13.8)') ipass,ffn,wsum1(1),esum1(1)/wsum1(1)
+      end if
+
       do 24 ifr=1,nforce
         wgsum1(ifr)=collect_t(5+ifr)
    24   egsum1(ifr)=collect_t(5+nforce+ifr)
