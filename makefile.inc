@@ -10,6 +10,7 @@ hostname := $(shell uname -n)
 # Libraries --------------------------------------------------------------
 
 LIBHOME=../lib
+# LIBHOME=/home/cyrus/champ/lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
@@ -99,10 +100,16 @@ export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE USE_
 
 # New dft cluster at Cornell
 ifeq ($(hostname),gauss)
-  CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT 
-  CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg -extend_source -mtune=core2 -march=core2 -xT
-  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -extend_source -mtune=core2 -march=core2 -xT -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+  CHAMP_F95_FAST=-zero -w -r8 -pad -align all -O3 -fpp -ip -mtune=core2 -march=core2 -xT -DNOEINSPLINE
+  CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source 
+  CHAMP_C_FAST=-O3 -DUNDERSCORE -mtune=core2 -march=core2 -xT 
+  CHAMP_MPIC=mpicc
+  CHAMP_MPIF95=mpif90
+  CHAMP_LD_FAST=$(CHAMP_F95_FAST)
+  EINSPLINE=
+  CHAMP_LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
+
 
 # nanolab at Cornell
 ifeq ($(findstring cnf.cornell,$(hostname)),cnf.cornell)

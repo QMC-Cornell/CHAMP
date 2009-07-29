@@ -44,7 +44,7 @@ c routine to accumulate estimators for energy etc.
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
       common /compferm/ emagv,nv,idot
 
-      dimension egcollect(nforce),wgcollect(nforce),pecollect(nforce),peicollect(nforce),
+      dimension pecollect(nforce),peicollect(nforce),
      &tpbcollect(nforce),tjfcollect(nforce),taucollect(nforce),
      &collect(2*nforce+5),collect_t(2*nforce+5)
 
@@ -230,33 +230,25 @@ c         ipeerr=ipeerr+iemerr
         if(ifr.eq.1) then
           if(ndim.eq.2) then
             write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)')
-c    &      egcollect(ifr)/wgcollect(ifr),
      &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,
-c    &      npass,nint(wgcollect(ifr)/nproc),ioldest
      &      npass,nint(wgsum(ifr)/nproc),ioldest
            else
             write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
-c    &      egcollect(ifr)/wgcollect(ifr),
      &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-c    &      npass,nint(wgcollect(ifr)/nproc),ioldest
      &      npass,nint(wgsum(ifr)/nproc),ioldest
           endif
          else
           if(ndim.eq.2) then
             write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)')
-c    &      egcollect(ifr)/wgcollect(ifr),
      &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-c    &      emave,iemerr,fgave,ifgerr,nint(wgcollect(ifr)/nproc)
      &      emave,iemerr,fgave,ifgerr,nint(wgsum(ifr)/nproc)
            else
             write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)')
-c    &      egcollect(ifr)/wgcollect(ifr),
      &      egsum(ifr)/wgsum(ifr),
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-c    &      fgave,ifgerr,nint(wgcollect(ifr)/nproc)
      &      fgave,ifgerr,nint(wgsum(ifr)/nproc)
           endif
         endif
@@ -265,10 +257,10 @@ c    &      fgave,ifgerr,nint(wgcollect(ifr)/nproc)
 c If we remove the dwt limit in the dmc routines then there is no need for these warning msgs.
 c The dwt limit is there to prevent population explosions with nonlocal psps. but there are
 c better solutions than dwt limits.
-      if(wgsum(1).gt.1.5d0*nstep*nwalk*nproc)
+      if(iblk.gt.2*nblkeq+5 .and. etrial .gt. egave+20*egerr) 
      &write(6,'(''Warning: etrial too high? It should be reasonably close to DMC energy because of dwt in dmc'')')
-      if(wgsum(1).lt.0.7d0*nstep*nwalk*nproc)
-     &write(6,'(''Warning: etrial too low? It should be reasonably close to DMC energy because of dwt in dmc'')')
+      if(iblk.gt.2*nblkeq+5 .and. etrial .lt. egave-20*egerr) 
+     &write(6,'(''Warning: etrial too low?  It should be reasonably close to DMC energy because of dwt in dmc'')')
 
       call systemflush(6)
 
@@ -327,15 +319,6 @@ c Need mpi_allreduce so that all processors can put upper bounds on weights for 
 c     call mpi_reduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-c     call mpi_reduce(esum1(1),ecollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(wsum1(1),wcollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(efsum1,efcollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(wfsum1,wfcollect,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-
-c     call mpi_reduce(wgsum1,wgcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(egsum1,egcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-c     call mpi_reduce(tausum(1),taublock,1,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
 !     if(idtask.ne.0) goto 36 ! The slaves also have to calculate either wcum1,ecum1,ecm21 or wgcum1,egcum1,egcm21 to put bounds on branching in psp. calcul.
@@ -354,14 +337,6 @@ c     tausum(1)=collect_t(5)
       do 24 ifr=1,nforce
         wgsum1(ifr)=collect_t(5+ifr)
    24   egsum1(ifr)=collect_t(5+nforce+ifr)
-
-c     wsum1(1)=wcollect
-c     esum1(1)=ecollect
-c     efsum1=efcollect
-c     wfsum1=wfcollect
-c     do 28 ifr=1,nforce
-c       wgsum1(ifr)=wgcollect(ifr)
-c  28   egsum1(ifr)=egcollect(ifr)
 
       wcum1=wcum1+wsum1(1)
       wfcum1=wfcum1+wfsum1
@@ -584,7 +559,7 @@ c zero out estimators
 c Do it for MFORCE rather than nforce because in optimization at the start nforce=1 but later nforce=3
 !JT: this should not be necessary and it is annoying for dynamic allocation!
       do 85 ifr=1,nforce
-!JT     do 85 ifr=1,MFORCE
+!JT   do 85 ifr=1,MFORCE
         tausum(ifr)=zero
         taucum(ifr)=zero
         wgcum1(ifr)=zero

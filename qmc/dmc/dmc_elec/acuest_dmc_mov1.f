@@ -237,10 +237,10 @@ c         ipeerr=ipeerr+iemerr
 c If we remove the dwt limit in the dmc routines then there is no need for these warning msgs.
 c The dwt limit is there to prevent population explosions with nonlocal psps. but there are
 c better solutions than dwt limits.
-      if(wgsum(1).gt.1.5d0*nstep*nwalk)
+      if(iblk.gt.2*nblkeq+5 .and. etrial .gt. egave+20*egerr) 
      &write(6,'(''Warning: etrial too high? It should be reasonably close to DMC energy because of dwt in dmc'')')
-      if(wgsum(1).lt.0.7d0*nstep*nwalk)
-     &write(6,'(''Warning: etrial too low? It should be reasonably close to DMC energy because of dwt in dmc'')')
+      if(iblk.gt.2*nblkeq+5 .and. etrial .lt. egave-20*egerr) 
+     &write(6,'(''Warning: etrial too low?  It should be reasonably close to DMC energy because of dwt in dmc'')')
 
 c     call systemflush(6)
 
