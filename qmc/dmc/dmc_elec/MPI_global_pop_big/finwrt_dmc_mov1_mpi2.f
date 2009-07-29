@@ -177,7 +177,7 @@ c     write(11,'(4i5,f11.5,f7.4,f10.7,
 c    &'' nstep,nblk,nblkeq,nconf_global,etrial,tau,taueff'')')
 c    &nstep,nblk,nblkeq,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
-      if(ipr.gt.-2)
+      if(ipr.gt.-2 .and. idtask .eq. 0)
      &  write(11,'(3i5,f11.5,f7.4,f10.7,
      &  '' nstep,nblk,nconf_global,etrial,tau,taueff'')')
      &  nstep,iblk,nconf_global,etrial,tau,taucum(1)/wgcum(1)
