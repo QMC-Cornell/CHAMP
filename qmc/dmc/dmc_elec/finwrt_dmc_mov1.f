@@ -44,8 +44,7 @@ c statement functions for error calculation
 
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errorn(x,x2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn-1),0.d0))
-      errori(x,x2,w,w2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn_eff(w,w2)-1),
-     &0.d0))
+      errori(x,x2,w,w2,rn)=dsqrt(max((x2/rn-(x/rn)**2)/(rn_eff(w,w2)-1),0.d0))
       errc(x,x2)=error(x,x2,wcum,wcm2)
       errf(x,x2)=error(x,x2,wfcum,wfcm2)
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
@@ -84,8 +83,7 @@ c Write out radial charge density for atoms
         delr=one/delri
         term=one/(wgcum(1)*delr)
         do 5 i=1,NRAD
-    5     write(6,'(f12.8,3f10.6)') delr*(i-half),rprob(i)*term,
-     &    rprobup(i)*term,rprobdn(i)*term
+    5     write(6,'(f12.8,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
       endif
 
       if(idmc.ge.0) then
@@ -93,21 +91,17 @@ c Write out radial charge density for atoms
         write(6,'(10i4)') (iage(i),i=1,nwalk)
         do 10 i=1,nwalk
           if(iage(i).gt.50) then
-            write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eoldw(i,1),
-     &      ((xoldw(k,j,i,1),k=1,ndim),j=1,nelec)
+            write(6,'(i4,i6,f10.4,99f8.4)') i,iage(i),eoldw(i,1),((xoldw(k,j,i,1),k=1,ndim),j=1,nelec)
             write(6,'(99f8.4)') ((voldw(k,j,i,1),k=1,ndim),j=1,nelec)
           endif
    10   continue
 
-        write(6,'(''age of oldest walker (this generation, any gen)='',
-     &   3i9)') ioldest,ioldestmx
+        write(6,'(''age of oldest walker (this generation, any gen)='',3i9)') ioldest,ioldestmx
       endif
 
-      write(6,'(''average of the squares of the accepted step-size='',
-     & f10.5)') dr2ac/try_int
+      write(6,'(''average of the squares of the accepted step-size='',f10.5)') dr2ac/try_int
 
-      write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),
-     & ifr=1,nforce)
+      write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),ifr=1,nforce)
 
       accav=acc/try_int
       accavn=acc_int/try_int
@@ -164,33 +158,26 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
       write(fmt,'(''(/,a16,2x,a'',i3,'')'')') len_trim(title)
       write(6,fmt) mode,title
 
-      write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')
-     &nodecr,dfloat(nodecr)/try_int,accav,accavn
+      write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)') nodecr,dfloat(nodecr)/try_int,accav,accavn
       if(idmc.lt.0.and.accav.lt.0.3) write(6,'(''Warning: Low acceptance, reduce time-step tau'')')
       if(idmc.ge.0.and.accav.lt.0.7) write(6,'(''Warning: Low acceptance, reduce time-step tau'')')
       if(idmc.ge.0) then
-        write(6,'(''Actual, expected # of branches for 0, inf corr time='',
-     &  i6,2f9.0)') nbrnch
+        write(6,'(''Actual, expected # of branches for 0, inf corr time='',i6,2f9.0)') nbrnch
      &  ,nconf_global*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2
      &  ,nconf_global*passes*(dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
-        write(6,'(''nwalk_eff/nwalk         ='',2f6.3)')
-     &  rn_eff(wcum1,wcm21)/passes,rn_eff(wcum,wcm2)/iblk
-        write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)')
-     &  rn_eff(wfcum1,wfcm21)/passes,rn_eff(wfcum,wfcm2)/iblk
-        write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)')
-     &  rn_eff(wgcum1(1),wgcm21(1))/passes,rn_eff(wgcum(1),wgcm2(1))/iblk
+        write(6,'(''nwalk_eff/nwalk         ='',2f6.3)') rn_eff(wcum1,wcm21)/passes,rn_eff(wcum,wcm2)/iblk
+        write(6,'(''nwalk_eff/nwalk with f  ='',2f6.3)') rn_eff(wfcum1,wfcm21)/passes,rn_eff(wfcum,wfcm2)/iblk
+        write(6,'(''nwalk_eff/nwalk with fs ='',2f6.3)') rn_eff(wgcum1(1),wgcm21(1))/passes,rn_eff(wgcum(1),wgcm2(1))/iblk
       endif
 
       write(6,'(''nconf*passes     passes   nconf nstep  nblk nblkeq  tau    taueff'',/,
      & 2f12.0,2i6,i7,i5,2f9.5)') eval,passes,nconf_global,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
-        write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
-     &  wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
-        write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
-     &  wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
+        write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
+        write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
         do 20 ifr=1,nforce
           wgave=wgcum(ifr)/passes
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
@@ -199,12 +186,10 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
      &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
   20    continue
 c Mixed energy estimators
-        write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,
-     &  2f9.5,f8.2)') eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,
-     &  (eerr/eerr1)**2
-        write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,
-     &  2f9.5,f8.2)') efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,
-     &  (eferr/eferr1)**2
+        write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &  eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,(eerr/eerr1)**2
+        write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &  efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,(eferr/eferr1)**2
       endif
       do 30 ifr=1,nforce
         egave=egcum(ifr)/wgcum(ifr)
@@ -215,23 +200,18 @@ c save energy, energy_sigma and energy_err for optimization
         energy_sigma(ifr)=egerr1*rtevalg_eff1
         energy_err(ifr)=egerr
         if(nforce.eq.1) then
-          write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',
-     &    f11.7,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_eff1,
-     &    egerr1*rtevalg_eff1,(egerr/egerr1)**2
+          write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &    nfprod,egave,egerr,egerr*rtevalg_eff1,egerr1*rtevalg_eff1,(egerr/egerr1)**2
          else
-          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',
-     &    f11.7,2f9.5,f8.2)') nfprod,ifr,egave,egerr,egerr*rtevalg_eff1,
-     &    egerr1*rtevalg_eff1,(egerr/egerr1)**2
+          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+     &    nfprod,ifr,egave,egerr,egerr*rtevalg_eff1,egerr1*rtevalg_eff1,(egerr/egerr1)**2
         endif
   30  continue
 c Growth energy estimators
       if(idmc.ge.0) then
-        write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,
-     &  f9.5)') e1ave,e1err,e1err*rteval_eff1
-        write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,
-     &  f9.5)') nfprod-1,e2ave,e2err,e2err*rtevalg_eff1
-        write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,
-     &  f9.5)') e3ave,e3err,e3err*rteval_eff1
+        write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f9.5)') e1ave,e1err,e1err*rteval_eff1
+        write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f9.5)') nfprod-1,e2ave,e2err,e2err*rtevalg_eff1
+        write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval_eff1
       endif
       do 40 ifr=1,nforce
         peave=pecum(ifr)/wgcum(ifr)
@@ -254,18 +234,13 @@ c         peerr=peerr+tmerr     ! is this correct?
           peerr=peerr*(1-temp)+peierr*temp
         endif
 
-        write(6,'(''potential energy ='',t22,f14.7,'' +-''
-     &  ,f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
-        write(6,'(''interaction energy ='',t22,f14.7,'' +-''
-     &  ,f11.7,f9.5)') peiave,peierr,peierr*rtevalg_eff1
-        write(6,'(''jf kinetic energy ='',t22,f14.7,'' +-''
-     &  ,f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
-        write(6,'(''pb kinetic energy ='',t22,f14.7,'' +-''
-     &  ,f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
+        write(6,'(''potential energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') peave,peerr,peerr*rtevalg_eff1
+        write(6,'(''interaction energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') peiave,peierr,peierr*rtevalg_eff1
+        write(6,'(''jf kinetic energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_eff1
+        write(6,'(''pb kinetic energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_eff1
 
         if(ndim.eq.2) then
-          write(6,'(''radial mag. energy ='',t22,f14.7,'' +-'',
-     &    f11.7,f9.5)') tmave,tmerr,tmerr*rtevalg_eff1
+          write(6,'(''radial mag. energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') tmave,tmerr,tmerr*rtevalg_eff1
           write(6,'(''orbital mag. energy ='',t22,f14.7)') emaglz+emagv
           write(6,'(''Zeeman energy ='',t22,f14.7)') emagsz
         endif
@@ -279,20 +254,15 @@ c       fgerr=fgerr/abs(deltot(ifr))
 c save energy difference and error in energy difference for optimization
         force(ifr)=fgave
         force_err(ifr)=fgerr
-        write(6,'(''total energy diff'',i2,t22,f14.7
-     &  ,'' +-'',f11.7,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
+        write(6,'(''total energy diff'',i2,t22,f14.7,'' +-'',f11.7,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
   50  continue
 
       if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(6,'(''<r2>_av ='',t22,f14.7,'' +-''
-     &  ,f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_eff1
-        write(6,'(''<ri>_av ='',t22,f14.7,'' +-''
-     &  ,f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
+        write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_eff1
+        write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
       endif
 
-      if(ipr.gt.-2)
-     &  write(11,'(3i5,f11.5,f7.4,f10.7,
-     &  '' nstep,nblk,nconf,etrial,tau,taueff'')')
+      if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')')
      &  nstep,iblk,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))

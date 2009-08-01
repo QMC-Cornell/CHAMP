@@ -184,16 +184,12 @@ c write out header first time
 
         if(iblk.eq.1.and.ifr.eq.1) then
           if(ndim.eq.2) then
-            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
-     &      ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &      ,''tjfave'',t72,''(tjferr)'',t83,''emave'',t89,''(emerr)'',t100
-     &      ,''fgave'',t106,''(fgerr)'',
+            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
+     &      ,''tjfave'',t72,''(tjferr)'',t83,''emave'',t89,''(emerr)'',t100,''fgave'',t106,''(fgerr)'',
      &      t118,''npass'',t128,''wgsum'',t138,''ioldest'')')
            else
-            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
-     &      ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &      ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',
-     &      t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
+            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
+     &      ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
           endif
         endif
 
@@ -229,27 +225,19 @@ c         ipeerr=ipeerr+iemerr
 
         if(ifr.eq.1) then
           if(ndim.eq.2) then
-            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)')
-     &      egsum(ifr)/wgsum(ifr),
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,
-     &      npass,nint(wgsum(ifr)/nproc),ioldest
+            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egsum(ifr)/wgsum(ifr),
+     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,npass,nint(wgsum(ifr)/nproc),ioldest
            else
-            write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)')
-     &      egsum(ifr)/wgsum(ifr),
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      npass,nint(wgsum(ifr)/nproc),ioldest
+            write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egsum(ifr)/wgsum(ifr),
+     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,nint(wgsum(ifr)/nproc),ioldest
           endif
          else
           if(ndim.eq.2) then
-            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)')
-     &      egsum(ifr)/wgsum(ifr),
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      emave,iemerr,fgave,ifgerr,nint(wgsum(ifr)/nproc)
+            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egsum(ifr)/wgsum(ifr),
+     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,fgave,ifgerr,nint(wgsum(ifr)/nproc)
            else
-            write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)')
-     &      egsum(ifr)/wgsum(ifr),
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      fgave,ifgerr,nint(wgsum(ifr)/nproc)
+            write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)') egsum(ifr)/wgsum(ifr),
+     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,fgave,ifgerr,nint(wgsum(ifr)/nproc)
           endif
         endif
    15 continue
@@ -257,9 +245,9 @@ c         ipeerr=ipeerr+iemerr
 c If we remove the dwt limit in the dmc routines then there is no need for these warning msgs.
 c The dwt limit is there to prevent population explosions with nonlocal psps. but there are
 c better solutions than dwt limits.
-      if(wgsum(1).gt.1.5d0*nstep*nconf .or. (iblk.gt.2*nblkeq+5 .and. etrial .gt. egave+200*egerr))
+      if(wgsum(1).gt.1.5d0*nstep*nconf*nproc .or. (iblk.gt.2*nblkeq+5 .and. etrial .gt. egave+200*egerr))
      &write(6,'(''Warning: etrial too high? It should be reasonably close to DMC energy because of dwt in dmc'')')
-      if(wgsum(1).lt.0.7d0*nstep*nconf .or. (iblk.gt.2*nblkeq+5 .and. etrial .lt. egave-200*egerr))
+      if(wgsum(1).lt.0.7d0*nstep*nconf*nproc .or. (iblk.gt.2*nblkeq+5 .and. etrial .lt. egave-200*egerr))
      &write(6,'(''Warning: etrial too low?  It should be reasonably close to DMC energy because of dwt in dmc'')')
 
       call systemflush(6)
@@ -381,10 +369,8 @@ c Estimate eigenvalue of G from the energy
        else
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
 c       eigv=dexp((etrial-eest)*(taucum(1)+taublock)/
-        eigv=dexp((etrial-eest)*(taucum(1)+collect_t(5))/
-     &                          (wgcum(1)+wgsum(1)))
-        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,
-     &  egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
+        eigv=dexp((etrial-eest)*(taucum(1)+collect_t(5))/(wgcum(1)+wgsum(1)))
+        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif
 
       wdsumo=wsum1(1)
@@ -393,8 +379,7 @@ c       eigv=dexp((etrial-eest)*(taucum(1)+taublock)/
 
    36 call mpi_bcast(eigv,1,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
       call mpi_bcast(eest,1,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
-      call mpi_bcast(wdsumo,1,mpi_double_precision,0,MPI_COMM_WORLD
-     &,ierr)
+      call mpi_bcast(wdsumo,1,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 

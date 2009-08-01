@@ -140,23 +140,18 @@ c       wgnow=wgsum(ifr)/nstep
           endif
         endif
 
-c       if(iblk.eq.1) write(6,*) ecum,ecm2,dsqrt(ecm2),wcum,
-c    &  ecm2/wcum,(ecum/wcum)**2
+c       if(iblk.eq.1) write(6,*) ecum,ecm2,dsqrt(ecm2),wcum,ecm2/wcum,(ecum/wcum)**2
 
 c write out header first time
 
         if(iblk.eq.1.and.ifr.eq.1) then
           if(ibasis.eq.3) then
-            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
-     &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ,''tjfave'',t72,''(tjferr)'',t83,''emave'',t89,''(emave)'',t100
-     &  ,''fgave'',t106,''(fgerr)'',
+            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
+     &  ,''tjfave'',t72,''(tjferr)'',t83,''emave'',t89,''(emave)'',t100,''fgave'',t106,''(fgerr)'',
      &  t118,''npass'',t128,''wgsum'',t138,''ioldest'')')
            else
-            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32
-     &  ,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
-     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',
-     &  t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
+            write(6,'(t5,''egnow'',t15,''egave'',t21,''(egerr)'' ,t32,''peave'',t38,''(peerr)'',t49,''tpbave'',t55,''(tpberr)'',t66
+     &  ,''tjfave'',t72,''(tjferr)'',t83,''fgave'',t89,''(fgerr)'',t101,''npass'',t111,''wgsum'',t121,''ioldest'')')
           endif
         endif
 
@@ -192,22 +187,18 @@ c         ipeerr=ipeerr+iemerr
 
         if(ifr.eq.1) then
           if(ndim.eq.2) then
-            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egnow,
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr,
-     &      npass,nint(wgsum(ifr)),ioldest
+            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+     &      emave,iemerr,npass,nint(wgsum(ifr)),ioldest
            else
-            write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egnow,
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+            write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &      npass,nint(wgsum(ifr)),ioldest
           endif
          else
           if(ndim.eq.2) then
-            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egnow,
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &      emave,iemerr,nint(wgsum(ifr))
            else
-            write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,i10)') egnow,
-     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+            write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &      fgave,ifgerr,nint(wgsum(ifr))
           endif
         endif
@@ -477,10 +468,8 @@ c **Warning** taueff temporarily set low.  Not any more
    86   continue
        else
         taueff(1)=tau*dfus2ac/dfus2unf(1)
-        write(6,'(''various possibilities for mult tau are:'',3f9.5)')
-     &  acc/try_int,dfus2ac/dfus2unf(1),dr2ac/dr2un
-        write(6,'(''taueff set equal to tau*'',f7.5,'' ='',f9.5)')
-     &  dfus2ac/dfus2unf(1),taueff(1)
+        write(6,'(''various possibilities for mult tau are:'',3f9.5)') acc/try_int,dfus2ac/dfus2unf(1),dr2ac/dr2un
+        write(6,'(''taueff set equal to tau*'',f7.5,'' ='',f9.5)') dfus2ac/dfus2unf(1),taueff(1)
         if(itausec.eq.1) then
           do 87 ifr=2,nforce
             if(itau_eff.ge.1) then
@@ -489,8 +478,7 @@ c **Warning** taueff temporarily set low.  Not any more
               taueff(ifr)=tau*dfus2unf(ifr)/dfus2unf(1)
             endif
    87     continue
-          write(6,'(''secondary taueff set equal to '',20f9.5)')
-     &    (taueff(ifr),ifr=2,nforce)
+          write(6,'(''secondary taueff set equal to '',20f9.5)') (taueff(ifr),ifr=2,nforce)
          else
           do 88 ifr=2,nforce
    88       taueff(ifr)=taueff(1)
