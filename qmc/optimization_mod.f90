@@ -604,13 +604,13 @@ module optimization_mod
   call object_provide ('param_geo_nb')
   call object_provide ('param_nb')
   write(6,*)
-  write(6,'(a,i3)') ' Number of Jastrow parameters:   ', nparmj
-  write(6,'(a,i3)') ' Number of periodic Jastrow parameters: ', param_pjas_nb
-  write(6,'(a,i3)') ' Number of CSF parameters:       ', nparmcsf
-  write(6,'(a,i3)') ' Number of orbital parameters:   ', param_orb_nb
-  write(6,'(a,i3)') ' Number of exponent parameters:  ', param_exp_nb
-  write(6,'(a,i3)') ' Number of geometry parameters:  ', param_geo_nb
-  write(6,'(a,i3)') ' Total number of parameters:     ', param_nb
+  write(6,'(a,i5)') ' Number of Jastrow parameters:   ', nparmj
+  write(6,'(a,i5)') ' Number of periodic Jastrow parameters: ', param_pjas_nb
+  write(6,'(a,i5)') ' Number of CSF parameters:       ', nparmcsf
+  write(6,'(a,i5)') ' Number of orbital parameters:   ', param_orb_nb
+  write(6,'(a,i5)') ' Number of exponent parameters:  ', param_exp_nb
+  write(6,'(a,i5)') ' Number of geometry parameters:  ', param_geo_nb
+  write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
 
 ! set nparm if new input
