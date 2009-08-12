@@ -230,7 +230,7 @@ module initialization_mod
 ! save number of Jastrow and CSF parameters in the input
 !JT  nparmj_input = nparmj
 !JT  nparmcsf_input = nparmcsf
-  nparmd=nparmcsf
+  if (ibasis.le.3) nparmd=nparmcsf
   call object_modified ('nparmd')
 
 ! correlated sampling

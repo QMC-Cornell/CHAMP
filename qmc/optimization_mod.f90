@@ -529,8 +529,8 @@ module optimization_mod
     param_geo_nb  = 0
     call object_modified ('param_geo_nb')
   endif
-
-  nparmd=nparmcsf
+  
+  if (ibasis.le.3) nparmd=nparmcsf
   call object_modified ('nparmd')
 
 ! check consistency of options
@@ -596,7 +596,7 @@ module optimization_mod
   endif ! l_opt_exp
 
 ! Print number of parameters to optimized
-  call object_provide ('nparmj')
+  call object_provide ('nparm')
   call object_provide ('nparmcsf')
   call object_provide ('param_pjas_nb')
   call object_provide ('param_orb_nb')
