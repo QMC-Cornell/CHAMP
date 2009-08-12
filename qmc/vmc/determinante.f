@@ -24,7 +24,7 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
 c     determ=0
 
 c get orbitals and derivatives for all electron iel
-      if(iperiodic.eq.0) then
+      if(iperiodic.eq.0 .or. iperiodic.eq.1) then
 
         if(inum_orb.eq.0) then
           call orbitals_loc_ana_grade(iel,rvec_en,r_en,orbe,dorbe,ddorbe)

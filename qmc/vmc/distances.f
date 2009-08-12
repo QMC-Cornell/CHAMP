@@ -170,6 +170,7 @@ c calculate distances of electron iel to all other particles
       use distance_mod
       use distance_sav_mod
       use periodic_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
 
       dimension x(3,*)
