@@ -1107,8 +1107,8 @@ c Check if all the determinants are used in CSFs
         read(5,*) ltot
         write(6,'(''L_tot='',i3)') ltot
       endif
-c     if((ibasis.eq.1.or.ibasis.eq.3).and.inum_orb.eq.0) call emagnetic(ltot)
-      if(ndim.eq.2 .and. (iperiodic.eq.0 .and. nloc.ne.-4)) call emagnetic(ltot)
+      if((ibasis.eq.1.or.ibasis.eq.3).and.inum_orb.eq.0) call emagnetic(ltot)
+c      if(ndim.eq.2 .and. (iperiodic.eq.0 .and. nloc.ne.-4)) call emagnetic(ltot)
 c     if(ibasis.eq.2) call read_orb_pw_real
       if(ibasis.eq.2) call read_orb_pw
 c     if(iperiodic.eq.0 .and. inum_orb.gt.0) call read_orb_num
