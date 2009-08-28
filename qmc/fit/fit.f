@@ -451,14 +451,15 @@ c so if analytic is true set ndata2=ndata
       endif
 
 c isp=1, it is only to determine ncnstr
+      mdata=ndata2+100 !JT: max value for ndata2
       ncnstr=0
       ishft=ndata2+1
-      call alloc ('diff', diff, ndata2)
+      call alloc ('diff', diff, mdata) !JT
       if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. ijas.eq.2) then
         call checkjas2(scalek(1),1,ncnstr,diff(ishft),ipr_opt,0)
       endif
       ndata2=ndata2+ncnstr*(nspin2-nspin1+1)
-      call alloc ('diff', diff, ndata2)
+      if(ndata2.gt.mdata) stop 'ndata2.gt.mdata' !JT
 
       write(6,'(''No of data points fitted to, # of cusp cond='',3i5)')
      &   ndata,ncuspc*(nspin2-nspin1+1)+ncent*norbc+nfockc,
