@@ -55,7 +55,8 @@ c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
       common /fcn_calls/icalls
       common /update/ ichange
 
-      dimension parm(nparm),diff(ndata),ipivot(norb)
+      dimension parm(nparm),ipivot(norb)
+      real(dp), allocatable :: diff (:)
 
 c Inputs are:
 c 1) ndata,nparm,ijas,icusp,icusp2,isc,nsig,ncalls,iopt,ipr_opt
@@ -452,10 +453,12 @@ c so if analytic is true set ndata2=ndata
 c isp=1, it is only to determine ncnstr
       ncnstr=0
       ishft=ndata2+1
-      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt
-     &.gt.0 .and. ijas.eq.2)
-     &call checkjas2(scalek(1),1,ncnstr,diff(ishft),ipr_opt,0)
+      call alloc ('diff', diff, ndata2)
+      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. ijas.eq.2) then
+        call checkjas2(scalek(1),1,ncnstr,diff(ishft),ipr_opt,0)
+      endif
       ndata2=ndata2+ncnstr*(nspin2-nspin1+1)
+      call alloc ('diff', diff, ndata2)
 
       write(6,'(''No of data points fitted to, # of cusp cond='',3i5)')
      &   ndata,ncuspc*(nspin2-nspin1+1)+ncent*norbc+nfockc,

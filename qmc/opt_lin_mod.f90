@@ -250,7 +250,7 @@ module opt_lin_mod
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
   do i = 1, param_aug_nb
-    write(6,'(a,i3,a,es15.8)') 'overlap eigenvalue # ',i,': ',ovlp_lin_eigval(i)
+    write(6,'(a,i4,a,es15.8)') 'overlap eigenvalue # ',i,': ',ovlp_lin_eigval(i)
   enddo
 
   end subroutine ovlp_lin_bld
