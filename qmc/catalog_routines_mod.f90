@@ -122,6 +122,7 @@ module catalog_routines_mod
   call catalog_one_node ('grd_dphin_ortho_dz_bld', grd_dphin_ortho_dz_bld)
   call catalog_one_node ('lap_dphin_norm_dz_bld', lap_dphin_norm_dz_bld)
   call catalog_one_node ('lap_dphin_ortho_dz_bld', lap_dphin_ortho_dz_bld)
+  call catalog_one_node ('exp_opt_lab_read_bld', exp_opt_lab_read_bld)
   call catalog_one_node ('exp_opt_lab_bld', exp_opt_lab_bld)
 
 ! orbitals

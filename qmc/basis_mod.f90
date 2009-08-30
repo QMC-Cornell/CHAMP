@@ -22,8 +22,8 @@ module basis_mod
   real(dp), allocatable           :: zex2_sav (:,:)
   real(dp), allocatable           :: zex_best (:)
   real(dp), allocatable           :: norm_basis (:)
-  integer                         :: exp_opt_lab_nb
-  integer, allocatable            :: exp_opt_lab (:)
+  integer                         :: exp_opt_lab_read_nb
+  integer, allocatable            :: exp_opt_lab_read (:)
   character(len=max_string_len)   :: basis_functions_varied = 'normalized'
   logical                         :: l_optimize_log_exp = .false.
 
@@ -112,12 +112,12 @@ module basis_mod
    call get_next_value (l_optimize_log_exp)
 
   case ('optimized_exponents')
-   call get_next_value_list_object ('exp_opt_lab', exp_opt_lab, exp_opt_lab_nb)
+   call get_next_value_list_object ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
    call object_provide ('nbasis')
-   if (exp_opt_lab_nb > nbasis) then
-    call die (lhere, 'number of optimized exponents read = '+exp_opt_lab_nb+' > number of basis functions nbasis ='+nbasis)
+   if (exp_opt_lab_read_nb > nbasis) then
+    call die (lhere, 'number of optimized exponents read = '+exp_opt_lab_read_nb+' > number of basis functions nbasis ='+nbasis)
    endif
-   call object_modified ('exp_opt_lab_nb')
+   call object_modified ('exp_opt_lab_read_nb')
 
   case ('end')
    exit

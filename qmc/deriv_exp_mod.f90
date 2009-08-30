@@ -14,6 +14,8 @@ module deriv_exp_mod
   logical                        :: l_exp_opt_restrict = .true.
   logical                        :: l_deloc_exp_num = .false.
   integer                        :: param_exp_nb = 0
+  integer                        :: exp_opt_lab_nb
+  integer, allocatable           :: exp_opt_lab (:)
   logical, allocatable           :: is_exp_opt (:)
   logical, allocatable           :: orbital_depends_on_opt_exp (:,:)
   real(dp), allocatable          :: dnorm_basis_dz (:)
@@ -202,9 +204,45 @@ module deriv_exp_mod
   end subroutine param_exp_nb_bld
 
 ! ==============================================================================
-  subroutine exp_opt_lab_bld
+  subroutine exp_opt_lab_read_bld
 ! ------------------------------------------------------------------------------
 ! Description   : build list of exponents to be optimized if not read
+!
+! Created       : J. Toulouse, 30 Aug 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer bas_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('exp_opt_lab_read_nb')
+   call object_create ('exp_opt_lab_read')
+
+   call object_needed ('nbasis')
+
+   return
+
+  endif
+
+! begin
+  exp_opt_lab_read_nb = nbasis
+  call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
+  
+  do bas_i = 1, nbasis
+   exp_opt_lab_read (bas_i) = bas_i
+  enddo
+
+  end subroutine exp_opt_lab_read_bld
+
+! ==============================================================================
+  subroutine exp_opt_lab_bld
+! ------------------------------------------------------------------------------
+! Description   : build list of exponents to be optimized
+! Description   : taking into account orbital coefficients
 !
 ! Created       : J. Toulouse, 18 Apr 2008
 ! ------------------------------------------------------------------------------
@@ -212,7 +250,7 @@ module deriv_exp_mod
   implicit none
 
 ! local
-  integer bas_i, orb_i
+  integer exp_opt_i, bas_i, orb_i
   character(len=max_string_len_rout), save :: lhere = 'exp_opt_lab_bld' !fp
 
 ! header
@@ -226,6 +264,8 @@ module deriv_exp_mod
    call object_needed ('orb_tot_nb')
 !   call object_needed ('orb_occ_last_in_wf_lab')
    call object_needed ('orb_occ_in_wf_lab')
+   call object_needed ('exp_opt_lab_read_nb')
+   call object_needed ('exp_opt_lab_read')
 
    return
 
@@ -253,7 +293,10 @@ module deriv_exp_mod
     call object_provide ('orb_mix_lab')
   endif
 
-  do bas_i = 1, nbasis
+  do exp_opt_i = 1, exp_opt_lab_read_nb
+    
+   bas_i = exp_opt_lab_read (exp_opt_i)
+
    do orb_i = 1, orb_tot_nb
 
 !    occupied orbital with non zero coefficient
