@@ -43,6 +43,7 @@ module opt_lin_mod
   logical                         :: l_select_eigvec_smallest_norm = .false.
 
   integer                         :: target_state = 0
+  integer                         :: target_state_above_groundstate = 0
   real(dp)                        :: add_diag_mult_exp = 1.d0
 
   contains
@@ -61,6 +62,8 @@ module opt_lin_mod
   character(len=max_string_len_rout), save :: lhere = 'opt_lin_menu'
 
 ! begin
+  target_state = 0
+  target_state_above_groundstate = 0
 
 ! loop over menu lines
   do
@@ -86,7 +89,8 @@ module opt_lin_mod
    write(6,'(a)') '    select_eigvec_lowest = [bool] : select lowest reasonable eigenvector for ground state optimization(default=true)'
    write(6,'(a)') '    select_eigvec_largest_1st_coef = [bool] : select eigenvector with largest first coefficient for ground state optimization(default=false)'
    write(6,'(a)') '    select_eigvec_smallest_norm = [bool] : select eigenvector with smallest norm(Psi_lin-Psi_)) for nonlinear params for ground state optimization(default=false)'
-   write(6,'(a)') '    target_state = [integer] : index of target state to optimize (default is ground-state)'
+   write(6,'(a)') '    target_state = [integer] : index of target state to optimize (default is the most reasonable ground-state)'
+   write(6,'(a)') '    target_state_above_groundstate = [integer] : index of target state above the ground state to optimize (default=0 for ground-state)'
    write(6,'(a)') '    print_eigenvector_norm = [bool] : print norm of all eigenvectors? (default=false)'
    write(6,'(a)') ' end'
 
@@ -145,6 +149,10 @@ module opt_lin_mod
    call get_next_value(target_state)
    call require (lhere, 'target_state >= 0', target_state >= 0)
 
+  case ('target_state_above_groundstate')
+   call get_next_value(target_state_above_groundstate)
+   call require (lhere, 'target_state_above_groundstate >= 0', target_state_above_groundstate >= 0)
+
   case ('print_eigenvector_norm')
    call get_next_value (l_print_eigenvector_norm)
 
@@ -164,6 +172,12 @@ module opt_lin_mod
   else
    write(6,'(a)') ' update of nonlinear parameters in linear optimization method will be done using semiorthogonal derivatives:'
    write(6,'(a,es15.8)') ' the derivatives will be orthogonalized to [xi Psi_0 +(1-xi) Psi_lin], with xi=',xi
+  endif
+
+  if (target_state /=0 .and. target_state_above_groundstate /=0) then
+   target_state = 0
+   write(6,'(a)') ' Warning: target_state_above_groundstate /= 0, thus target_state is ignored (reset to 0)'
+   l_warning = .true.
   endif
 
   end subroutine opt_lin_menu
@@ -931,6 +945,13 @@ module opt_lin_mod
      eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
    endif
    l_warning = .true.
+  endif
+
+! possibility of selecting an eigenvector above the most reasonable ground state for excited states
+  if (target_state_above_groundstate /= 0) then
+    write(6,'(a,t87,i4,a,2(f10.4,a))') 'The most reasonable ground state is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+    eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate)
+    write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate,' above this ground state will be selected'
   endif
 
   write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
