@@ -357,6 +357,7 @@ c Written by Cyrus Umrigar
       use dim_mod
       use basis2_mod
       use contr2_mod
+      use contrl_per_mod
       use forcepar_mod
       use wfsec_mod
       use jaspar_mod
@@ -438,7 +439,7 @@ c Jastrow
        endif
        
 !      save exponents
-       if (numr.le.0) then
+       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
          call object_provide ('nctype')
          call object_alloc ('zex_sav', zex_sav, nbasis)
          call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
@@ -499,7 +500,7 @@ c-----------------------------------------------------------------------
        endif
        
 !      restore exponents (must restore only for iwf=1 to avoid problems)
-       if (numr.le.0) then
+       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
          call object_valid_or_die ('zex_sav')
          call object_valid_or_die ('zex2_sav')
          zex (1:nbasis,1) = zex_sav (1:nbasis)

@@ -66,6 +66,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
 c sample position from exponentials or gaussian around center
 c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots            
             if((nloc.eq.-1 .or. nloc.eq.-5) .and. rring.gt.0.d0) then
+              site=-dlog(rannyu(0))
               site=dsqrt(site)
               site=sign(site,(rannyu(0)-half))
               angle=2*pi*rannyu(0)

@@ -938,18 +938,20 @@ c orbital parameters (type 1,2,3 and 4)
      &,i1,f9.2,'' iflag=1 because dparm_norm>2 for otype 3 params'')') iadd_diag,dparm_norm
         endif
       endif
-      if(nparmo(4).gt.0) then
-        dparm_norm=0
-        do i=1,nparmo(4)
-          iparm=iparm+1
-          dparm_norm=dparm_norm+dparm(iparm)**2
-c          write(*,*) 'test: dparm(iparm)=',dparm(iparm)
-        enddo
-        dparm_norm=sqrt(dparm_norm/nparmo(4))
-        if(dparm_norm.gt.3.d0) then
-          iflag=1
-          write(6,'(''iadd_diag,dparm_norm=''
+      if(ibasis.eq.5 .or. ibasis.eq.6) then
+        if(nparmo(4).gt.0) then
+          dparm_norm=0
+          do i=1,nparmo(4)
+            iparm=iparm+1
+            dparm_norm=dparm_norm+dparm(iparm)**2
+c           write(*,*) 'test: dparm(iparm)=',dparm(iparm)
+          enddo
+          dparm_norm=sqrt(dparm_norm/nparmo(4))
+          if(dparm_norm.gt.3.d0) then
+            iflag=1
+            write(6,'(''iadd_diag,dparm_norm=''
      &,i1,f9.2,'' iflag=1 because dparm_norm>1 for otype 4 params'')') iadd_diag,dparm_norm
+          endif
         endif
       endif
 c scalek
@@ -1005,14 +1007,16 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
         enddo
       endif
 
-      if(nparmo(4).gt.0) then
-        do ib=1,nbasis
-          if(oparm(4,ib,iadd_diag).le.0.d0) then
-            write(6,'(''iadd_diag='',i1,
-     &         '' iflag=1 because oparm(4,..) < 0'')') iadd_diag
-            iflag=1
-          endif
-        enddo
+      if(ibasis.eq.5 .or. ibasis.eq.6) then
+        if(nparmo(4).gt.0) then
+          do ib=1,nbasis
+            if(oparm(4,ib,iadd_diag).le.0.d0) then
+              write(6,'(''iadd_diag='',i1,
+     &           '' iflag=1 because oparm(4,..) < 0'')') iadd_diag
+              iflag=1
+            endif
+          enddo
+        endif
       endif
 
       if(isc.ne.8 .and. isc.ne.10) then

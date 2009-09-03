@@ -66,7 +66,7 @@ c initialize the determinant arrays to one
 c     determ=0
 
 c get orbitals and derivatives for all electrons
-      if(iperiodic.eq.0) then
+      if(iperiodic.eq.0 .or. iperiodic.eq.1) then
 
         if(inum_orb.eq.0) then
           if(nparmot.eq.0 .or. igradhess.eq.0) then
