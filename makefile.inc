@@ -550,4 +550,35 @@ ifeq ($(hostname),babel1)
   CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
 endif
 
+# BlueGene P at MPG Garching, Munich
+ifeq ($(hostname),genius1)
+
+# -qarch=450d makes the code crash with BE_MPI (ERROR):   "killed with signal 7"
+# -qhot or -O5 does not seem to improve performance at all
+
+ CHAMP_F95=mpixlf2003_r
+ CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEIN
+SPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+ CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCO
+RE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+
+# MPI
+  CHAMP_MPIF95 = mpixlf2003_r
+  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI
+,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-D
+UNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-04
+7
+  CHAMP_MPIC = mpixlc
+  CHAMP_C_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
+# no lapack in Garching
+  LAPACK= -L/opt/ibmmath/essl/4.4/lib -lesslbg -L../lib/lib2/lapack -llapack
+  BLAS=-L/opt/ibMmath/essl/4.4/lib -lesslbg
+  QUENCH=
+  EINSPLINE=
+  CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIB
+HOME)/lib2/pspline/pspline/libpspline.a
+endif
+
+
 # Mac OS for Intel Core2 machines with Intel Fortran compiler
