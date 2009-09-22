@@ -68,8 +68,7 @@ c             q(jp,jj)=jsg
   40      cs(jp,jj)=qp(jp-1,jj)
 
       if(iprin.eq.1) then
-        write(6,'(''dependent variables'',40i3)')
-     &  (iwc(jj),jj=1,nvar)
+        write(6,'(''dependent variables'',40i3)') (iwc(jj),jj=1,nvar)
         do 65 ii=1,nvar
   65      write(6,'(i3,'')'',30f8.2)') ii,(cs(ii,jj),jj=1,nvar)
       endif
@@ -78,8 +77,7 @@ c             q(jp,jj)=jsg
       write(6,'(''dgefa status='',i5)') info
       call dgedi(cs,nvar,nvar,ipvt,det,work,job)
       determinant=det(1)*10.d0**det(2)
-      if(iprin.eq.1) write(6,'(''determinat='',3f12.4)')
-     &determinant,(det(k),k=1,2)
+      if(iprin.eq.1) write(6,'(''determinat='',3f12.4)') determinant,(det(k),k=1,2)
 
       do 70 i=1,nvar
         do 70 j=1,nvar
@@ -149,8 +147,7 @@ c-----------------------------------------------------------------------
                           cdep(i,nvdepend(i,it),it)=-cm(i,j)
                         endif
   10                continue
-c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)')
-c    &              i,-cm(i,j),ll
+c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-cm(i,j),ll
                   endif
                   if(j.le.ishe.and.js-jt.ne.0) then
                     if(mod(jt,2).ne.0) jsg=-1
@@ -162,8 +159,7 @@ c    &              i,-cm(i,j),ll
                           cdep(i,nvdepend(i,it),it)=-jsg*(js-jt)*cm(i,j)
                         endif
   20                continue
-c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)')
-c    &              i,-jsg*(js-jt)*cm(i,j),ll
+c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-jsg*(js-jt)*cm(i,j),ll
                   endif
                 endif
   30        continue

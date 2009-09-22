@@ -889,6 +889,7 @@ c    & i6,f9.6,3(1x,g12.6))') istep_sav,acceptance,pmarquardt,efo,err
         write(6,*)
 c       if(ising.ne.0) write(6,'(''Quench: detected '',i6,
 c    &  '' numerical singularities; see fullrankQ'')') ising
+        call systemflush(6)
       endif
 
 c save relevant information in common block quench_info
@@ -901,6 +902,8 @@ c restore some input parameters
       epsg=epsg_sav
       epsp=epsp_sav
       noutput=noutput_sav
+      write(6,'(''Returning from quench'')')
+      call systemflush(6)
       return
       end
 c-----------------------------------------------------------------------
@@ -1040,7 +1043,7 @@ c common /quenchsim_pr/ to communicate amount of output
         write(6,'(''changeo,changen'',9d12.4)') changeo,changen
       endif
       write(6,*)
-!      call systemflush(6) !JT
+      call systemflush(6) !JT
       return
       end
 c-----------------------------------------------------------------------
@@ -1083,7 +1086,7 @@ c common /quenchsim_pr/ to communicate amount of output
         write(6,'(''cosold cos_on'',9d12.4)') cosold,cos_on
       endif
       write(6,*)
-!      call systemflush(6) !JT
+      call systemflush(6) !JT
       return
       end
 c-----------------------------------------------------------------------

@@ -3,7 +3,7 @@ c
 c     applies a plane rotation.
 c     jack dongarra, linpack, 3/11/78.
 c
-      double precision dx(1),dy(1),dtemp,c,s
+      double precision dx(*),dy(*),dtemp,c,s
       integer i,incx,incy,ix,iy,n
 c
       if(n.le.0)return

@@ -34,11 +34,9 @@ c Warning: temporarily assume only one nucleus type
 c f2e    o(s^2) from phi20(r12=0)
 c f2elog o(s^2 log(s)) from phi21(r12=0)
 c f2n    o(r^2) from phi20(r1=0)
-      f2e=-d1b12*eguess
-     &+ (const1-d1b4*znuc(iwctype(1)))*znuc(iwctype(1))
+      f2e=-d1b12*eguess + (const1-d1b4*znuc(iwctype(1)))*znuc(iwctype(1))
       f2elog=const2*znuc(iwctype(1))
-      f2n=-d1b6*(eguess+znuc(iwctype(1))*(znuc(iwctype(1))-dln2))
-     &- d1b24
+      f2n=-d1b6*(eguess+znuc(iwctype(1))*(znuc(iwctype(1))-dln2)) - d1b24
 
 c Focks's terms are evaluated using scaled variables. Scaled variables
 c in phi10 originate a 2nd order in the real variables that has to be

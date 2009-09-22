@@ -1,4 +1,4 @@
-      subroutine checkjas2(scalek,isp,ncnstr,diff,ipr,iprin)
+      subroutine checkjas2(scalek,isp,ncnstr,diff,ipr,iprin,icalcul_diff)
 c Written by Cyrus Umrigar
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 c Prints out the values of the Jastrow factor and various partial    :::
@@ -8,6 +8,7 @@ c The normalization is such that the value when both electrons are   :::
 c at the nucleus is 1.                                               :::
 c Note: |t| <= u <= s  is the allowed range of the variables and     :::
 c the wf must be even in t (non-spin polarized system)               :::
+c The penalty diffs are calculated only if icalcul_diff>=1.          :::
 c                                                                    :::
 c CONDITIONS IMPOSED ON JASTROW                                      :::
 c Note that the u-dependence of psi comes only from the Jastrow      :::
@@ -86,8 +87,7 @@ c             2        3
       if(iprin.ge.1) then
         write(6,*) 'smin,smax,step,scalep,scalek,itrank'
         write(6,'(5f10.5,i5)') smin,smax,step,scalep,scalek,itrank
-        write(6,*) '  s     u    t     pade     bot     -dcds   dcdu
-     &dcdt    ds+dt   ds-dt'
+        write(6,*) '  s     u    t     pade     bot     -dcds   dcdu    dcdt    ds+dt   ds-dt'
       endif
 
       ncnstr=0
@@ -128,9 +128,9 @@ c Transform from print scaled variable to physical variable
             ncnstr=ncnstr+1
             if(ijas.eq.2.or.ijas.eq.3) then
               if(bot.lt.one) then
-                 diff(ncnstr)=push*0.01d0*(exp(10*(one-bot))-one)*ipos
+                 if(icalcul_diff.ge.1) diff(ncnstr)=push*0.01d0*(exp(10*(one-bot))-one)*ipos
                else
-                diff(ncnstr)=zero
+                if(icalcul_diff.ge.1) diff(ncnstr)=zero
               endif
             endif
           endif
@@ -139,7 +139,7 @@ c Transform from print scaled variable to physical variable
             if(is.gt.iu) then
               ncnstr=ncnstr+1
               dcds=cor-cora(it,iu,1)
-              diff(ncnstr)=push*dmin1(-dcds,zero)*idcds
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(-dcds,zero)*idcds
              else
               dcds=zero
             endif
@@ -148,7 +148,7 @@ c Transform from print scaled variable to physical variable
             if(is.gt.iu) then
               ncnstr=ncnstr+1
               dbds=bot-bota(it,iu,1)
-              diff(ncnstr)=push*dmin1(dbds,zero)*idbds
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(dbds,zero)*idbds
              else
               dbds=zero
             endif
@@ -157,9 +157,8 @@ c Transform from print scaled variable to physical variable
           if(id2cds.ne.0) then
             if(is.gt.iu+1) then
               ncnstr=ncnstr+1
-              d2cds=(cor-cora(it,iu,1))/(s-sold1)-(cora(it,iu,1)-
-     &        cora(it,iu,2))/(sold1-sold2)
-              diff(ncnstr)=push*dmin1(d2cds,zero)*id2cds
+              d2cds=(cor-cora(it,iu,1))/(s-sold1)-(cora(it,iu,1)-cora(it,iu,2))/(sold1-sold2)
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(d2cds,zero)*id2cds
              else
               d2cds=zero
             endif
@@ -169,7 +168,7 @@ c Transform from print scaled variable to physical variable
             if(iu.gt.it) then
               ncnstr=ncnstr+1
               dcdu=cor-cora(it,iu-1,1)
-              diff(ncnstr)=push*dmin1(dcdu,zero)*idcdu
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(dcdu,zero)*idcdu
              else
               dcdu=zero
             endif
@@ -178,7 +177,7 @@ c Transform from print scaled variable to physical variable
             if(iu.gt.it) then
               ncnstr=ncnstr+1
               dbdu=bot-bota(it,iu-1,1)
-              diff(ncnstr)=push*dmin1(dbdu,zero)*idbdu
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(dbdu,zero)*idbdu
              else
               dbdu=zero
             endif
@@ -187,9 +186,8 @@ c Transform from print scaled variable to physical variable
           if(id2cdu.ne.0) then
             if(iu.gt.it+1) then
               ncnstr=ncnstr+1
-              d2cdu=(cor-cora(it,iu-1,1))/(u-uold1)-(cora(it,iu-1,1)-
-     &        cora(it,iu-2,1))/(uold1-uold2)
-              diff(ncnstr)=push*dmin1(-d2cdu,zero)*id2cdu
+              d2cdu=(cor-cora(it,iu-1,1))/(u-uold1)-(cora(it,iu-1,1)-cora(it,iu-2,1))/(uold1-uold2)
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(-d2cdu,zero)*id2cdu
              else
               d2cdu=zero
             endif
@@ -199,7 +197,7 @@ c Transform from print scaled variable to physical variable
             if(it.gt.1) then
               ncnstr=ncnstr+1
               dcdt=cor-cora(it-1,iu,1)
-              diff(ncnstr)=push*dmin1(dcdt,zero)*idcdt
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(dcdt,zero)*idcdt
              else
               dcdt=zero
             endif
@@ -208,7 +206,7 @@ c Transform from print scaled variable to physical variable
             if(it.gt.1) then
               ncnstr=ncnstr+1
               dbdt=bot-bota(it-1,iu,1)
-              diff(ncnstr)=push*dmin1(dbdt,zero)*idbdt
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(dbdt,zero)*idbdt
              else
               dbdt=zero
             endif
@@ -217,9 +215,8 @@ c Transform from print scaled variable to physical variable
           if(id2cdt.ne.0) then
             if(it.gt.2) then
               ncnstr=ncnstr+1
-              d2cdt=(cor-cora(it-1,iu,1))/(t-told1)-(cora(it-1,iu,1)-
-     &        cora(it-2,iu,1))/(told1-told2)
-              diff(ncnstr)=push*dmin1(d2cdt,zero)*id2cdt
+              d2cdt=(cor-cora(it-1,iu,1))/(t-told1)-(cora(it-1,iu,1)-cora(it-2,iu,1))/(told1-told2)
+              if(icalcul_diff.ge.1) diff(ncnstr)=push*dmin1(d2cdt,zero)*id2cdt
              else
               d2cdt=zero
             endif
@@ -234,28 +231,17 @@ c Transform from print scaled variable to physical variable
           endif
 
           if(iprin.ge.1.and.ipr.ge.-1) then
-          if((ijas.eq.2.or.ijas.eq.3).and. bot.lt.1.)
-     &    write(6,'(''**Warning bot<1'',4f9.3)')s,u,t,bot
-          if(-dcds.lt.0.) write(6,'(''**Warning-dcds<0'',3f9.3,d9.2)')
-     &    s,u,t,-dcds
-          if( dcdu.lt.0.) write(6,'(''**Warning dcdu<0'',3f9.3,d9.2)')
-     &    s,u,t,dcdu
-          if( dcdt.lt.0.) write(6,'(''**Warning dcdt<0'',3f9.3,d9.2)')
-     &    s,u,t,dcdt
-          if( d2cds.lt.0.) write(6,'(''**Warning d2cds<0'',3f9.3,d9.2)')
-     &    s,u,t,d2cds
-          if(-d2cdu.lt.0.) write(6,'(''**Warning-d2cdu<0'',3f9.3,d9.2)')
-     &    s,u,t,-d2cdu
-          if( d2cdt.lt.0.) write(6,'(''**Warning d2cdt<0'',3f9.3,d9.2)')
-     &    s,u,t,d2cdt
-          if( dbds.lt.0.) write(6,'(''**Warning dbds<0'',3f9.3,d9.2)')
-     &    s,u,t,dbds
-          if( dbdu.lt.0.) write(6,'(''**Warning dbdu<0'',3f9.3,d9.2)')
-     &    s,u,t,dbdu
-          if( dbdt.lt.0.) write(6,'(''**Warning dbdt<0'',3f9.3,d9.2)')
-     &    s,u,t,dbdt
-          write(6,'(3f6.2,1x,f9.5,6f8.4)') s,u,t,cor,bot,-dcds,dcdu,dcdt
-     &    ,-dspdt,-dsmdt
+            if((ijas.eq.2.or.ijas.eq.3).and. bot.lt.1.) write(6,'(''**Warning bot<1'',4f9.3)')s,u,t,bot
+            if(-dcds.lt.0.) write(6,'(''**Warning-dcds<0'',3f9.3,d9.2)') s,u,t,-dcds
+            if( dcdu.lt.0.) write(6,'(''**Warning dcdu<0'',3f9.3,d9.2)') s,u,t,dcdu
+            if( dcdt.lt.0.) write(6,'(''**Warning dcdt<0'',3f9.3,d9.2)') s,u,t,dcdt
+            if( d2cds.lt.0.) write(6,'(''**Warning d2cds<0'',3f9.3,d9.2)') s,u,t,d2cds
+            if(-d2cdu.lt.0.) write(6,'(''**Warning-d2cdu<0'',3f9.3,d9.2)') s,u,t,-d2cdu
+            if( d2cdt.lt.0.) write(6,'(''**Warning d2cdt<0'',3f9.3,d9.2)') s,u,t,d2cdt
+            if( dbds.lt.0.) write(6,'(''**Warning dbds<0'',3f9.3,d9.2)') s,u,t,dbds
+            if( dbdu.lt.0.) write(6,'(''**Warning dbdu<0'',3f9.3,d9.2)') s,u,t,dbdu
+            if( dbdt.lt.0.) write(6,'(''**Warning dbdt<0'',3f9.3,d9.2)') s,u,t,dbdt
+            write(6,'(3f6.2,1x,f9.5,6f8.4)') s,u,t,cor,bot,-dcds,dcdu,dcdt,-dspdt,-dsmdt
           endif
 
           if(is.gt.1) then

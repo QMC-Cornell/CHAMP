@@ -60,10 +60,8 @@ c Written by Claudia Filippi
         do 80 jp=1,nord
           write(ipw1,'(i1)') jp-1
           write(ipw2,'(i1)') jp
-          write(6,'(''e-n op('',a1,'')'',f12.6,4x,''o('',a1,'')'',
-     &    f12.6)') ipw1,op(jp-1),ipw2,o(jp)
-  80      write(6,'(''e-e op('',a1,'')'',f12.6,4x,''o('',a1,'')'',
-     &    f12.6)') ipw1,op(jp+nord-1),ipw2,o(jp+nord)
+          write(6,'(''e-n op('',a1,'')'',f12.6,4x,''o('',a1,'')'',f12.6)') ipw1,op(jp-1),ipw2,o(jp)
+  80      write(6,'(''e-e op('',a1,'')'',f12.6,4x,''o('',a1,'')'',f12.6)') ipw1,op(jp+nord-1),ipw2,o(jp+nord)
       endif
 
  200  isht=isht+2*ishe

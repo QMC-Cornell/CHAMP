@@ -4,7 +4,7 @@ c     interchanges two vectors.
 c     uses unrolled loops for increments equal one.
 c     jack dongarra, linpack, 3/11/78.
 c
-      double precision dx(1),dy(1),dtemp
+      double precision dx(*),dy(*),dtemp
       integer i,incx,incy,ix,iy,m,mp1,n
 c
       if(n.le.0)return

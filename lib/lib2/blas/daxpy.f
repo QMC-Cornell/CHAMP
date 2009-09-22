@@ -4,7 +4,7 @@ c     constant times a vector plus a vector.
 c     uses unrolled loops for increments equal to one.
 c     jack dongarra, linpack, 3/11/78.
 c
-      double precision dx(1),dy(1),da
+      double precision dx(*),dy(*),da
       integer i,incx,incy,ix,iy,m,mp1,n
 c
       if(n.le.0)return

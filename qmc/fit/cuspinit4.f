@@ -90,8 +90,7 @@ c-----------------------------------------------------------------------
         do 2 it=1,nctype
           do 2 l=1,nparmc(it)
             if(iwjasc(l,it) .eq. iwc4(i)) then
-              write(6,'(''Error: J_een parameter'',i3,
-     &        '' is dependent and should not be varied'')') iwjasc(l,it)
+              write(6,'(''Error: J_een parameter'',i3,'' is dependent and should not be varied'')') iwjasc(l,it)
               stop 'You are trying to vary a dependent J_een parameter'
             endif
     2 continue
@@ -140,8 +139,7 @@ c indirectly on all the independent variables that are being varied.
           do 60 it=1,nctype
             do 60 l=1,nparmc(it)
               if(j.eq.iwjasc(l,it)) then
-                cdep(nordc,l,it)= cdep(nordc,l,it)-
-     &          factor*(d(i,j)/d(i,iwc4(i)))
+                cdep(nordc,l,it)=cdep(nordc,l,it)-factor*(d(i,j)/d(i,iwc4(i)))
               endif
    60   continue
    70 continue
@@ -150,10 +148,8 @@ c indirectly on all the independent variables that are being varied.
        write(6,'(''i  it nvdepend iwdepend or cdep'')')
        do 80 i=1,neqs
          do 80 it=1,nctype
-           write(6,'(i2,2i4,2x,15i4)') i,it,nvdepend(i,it),
-     &    (iwdepend(i,j,it),j=1,nvdepend(i,it))
-   80      write(6,'(i2,2i4,2x,15f4.0)') i,it,nvdepend(i,it),
-     &    (cdep(i,j,it),j=1,nvdepend(i,it))
+           write(6,'(i2,2i4,2x,15i4)') i,it,nvdepend(i,it),(iwdepend(i,j,it),j=1,nvdepend(i,it))
+   80      write(6,'(i2,2i4,2x,15f4.0)') i,it,nvdepend(i,it),(cdep(i,j,it),j=1,nvdepend(i,it))
       endif
 
       return

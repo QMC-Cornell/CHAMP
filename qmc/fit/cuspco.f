@@ -7,7 +7,9 @@ c:::  atoms but iteratively for molecules.                           :::
 c:::  In any case calculate cusp penalty for 0th order e-N cusp.     :::
 c:::  If icusp.ge.0 then this just serves to confirm that we imposed :::
 c:::  the cusp exactly.                                              :::
-c:::  The number of these cusp conditions is ncent*norb              :::
+c:::  The number of these cusp conditions is ncent*norbc             :::
+c:::  where norbc is the number of s-like orbitals (occup or total   :::
+c:::  depending on whether l_impose_cusp_en_occ = true or not.       :::
 !
 ! J. Toulouse - 06 Jan 05:
 ! l_impose_cusp_en_occ = true : impose cusp conditions only on occupied orbitals
@@ -142,12 +144,10 @@ c     write(6,'(''ibas,imnbas(icent),imxbas'',9i5)') ibas,imnbas(icent),imxbas
                  if(l_bas(ib).eq.0) then
                   if(n_bas(ib).eq.0) then
                     beta=betaq/zex(ib,iwf)-one
-                    term=term+(znuc(iwctype(icent))+aa1
-     &              -(zex(ib,iwf)-beta))*coef(ib,iorb,iwf)
+                    term=term+(znuc(iwctype(icent))+aa1-(zex(ib,iwf)-beta))*coef(ib,iorb,iwf)
                     orbsam=orbsam+coef(ib,iorb,iwf)
                    elseif(n_bas(ib).eq.1) then
-                    term=term+(znuc(iwctype(icent))+aa1-zex(ib,iwf))*
-     &              coef(ib,iorb,iwf)
+                    term=term+(znuc(iwctype(icent))+aa1-zex(ib,iwf))*coef(ib,iorb,iwf)
                     orbsam=orbsam+coef(ib,iorb,iwf)
                    elseif(n_bas(ib).eq.2) then
                     term=term+coef(ib,iorb,iwf)
@@ -167,8 +167,7 @@ c                  write(6,'(''ibas,iorb,coef(ibas,iorb,iwf)'',2i5,9f9.5)') ibas
                  endif
 c           write(6,'(''coef(ibas,iorb,iwf)1'',9f9.5)') coef(ibas,iorb,iwf)
 c           write(6,'(''zex(ibas,iwf),znuc(iwctype(icent)),aa1,term2'',9f9.5)') zex(ibas,iwf),znuc(iwctype(icent)),aa1,term2
-                 coef(ibas,iorb,iwf)=
-     &           (term+(znuc(iwctype(icent))+aa1)*other_atom_ineqv_bas)
+                 coef(ibas,iorb,iwf)=(term+(znuc(iwctype(icent))+aa1)*other_atom_ineqv_bas)
      &           /(zex(ibas,iwf)-(znuc(iwctype(icent))+aa1)*(1+term2))
 c           write(6,'(''coef(ibas,iorb,iwf)2'',9f9.5)') coef(ibas,iorb,iwf)
              endif
@@ -177,8 +176,7 @@ c    &       coef(ibas,iorb,iwf),other_atom,orb(iorb),orb2(iorb),
 c    &       other_atom_equiv_bas,other_atom_ineqv_bas
            endif
            do 22 i=1,necn
-   22        coef(iebasi(1,i),ieorb(1,i),iwf)=sign(one,dfloat(ieorb(2,i)))
-     &       *coef(iebasi(2,i),iabs(ieorb(2,i)),iwf)
+   22        coef(iebasi(1,i),ieorb(1,i),iwf)=sign(one,dfloat(ieorb(2,i)))*coef(iebasi(2,i),iabs(ieorb(2,i)),iwf)
    35     continue
         endif
 
@@ -217,17 +215,10 @@ c If icusp.ge.0 then all the diffs should be 0.
                endif
  40          continue
              differ=top+orb(iorb)*(znuc(iwctype(icent))+aa1)
-c      write(6,'(''top,bot,orb(iorb),znuc(iwctype(icent)),aa1'',9d12.4)')
-c    & top,bot,orb(iorb),znuc(iwctype(icent)),aa1
 
-!             if (iprin.ge.1) then
-!              write(6,'(''coef  of cnst - znuc'',5x,f12.6
-!     &       ,4x,''orb'',i2,3x,''atom'',i2)')
-!     &             differ, iorb,icent
-!             endif
-!             if(abs(differ).ge.1.d-13) write(6,'(''differ'',2i2,d12.4)')
-!     &       icent,iorb,differ
-             write(6,'(a,i2,a,i2,a,f12.6)') 'atom # ',icent,' orbital # ',iorb,' : log_deriv + znuc =',differ
+             if (iprin.ge.1) then
+               write(6,'(''atom '',i3, '' orbital'',i3,'': log_deriv + znuc ='',f12.6)') icent,iorb,differ
+             endif
              diff(ishft+1) = differ
 
              ishft=ishft+1

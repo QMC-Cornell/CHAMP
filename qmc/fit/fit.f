@@ -66,7 +66,11 @@ c    ijas   = form of wavefunction
 c    icusp  = <= -1  zeroth order e-N cusp not imposed
 c             >=  0  zeroth order e-N cusp imposed "exactly"
 c    icusp2   is for imposing e-N and e-e cusps
-c             <= -2 impose cusps via penalty
+c             >=  1 impose cusps exactly
+c             <= -2 impose/check cusps via penalty (used mostly for ijas=2 for which exact imposition is difficult)
+c                The penalty wt. cuspwt depends on whether icusp2 is divisible by 3 or not.
+c                e.g. icusp2=-101 gives a wt of 100, icusp2=-102 gives a wt of .01
+c                     icusp2=-1001 gives a wt of 1000, icusp2=-1002 gives a wt of .001
 c    isc      is used for 3 purposes
 c             a) for using spq rather than srt variables
 c             b) for calling numerical (jastrow_num,psi) rather than analytical (jastrow)
@@ -108,11 +112,10 @@ c nparmb   no. of Jastrow b parameters in complicated Jastrow
 c nparmc   no. of Jastrow c parameters in complicated Jastrow
 c nparmf   no. of Jastrow fck parameters in complicated Jastrow
 
-      call my_second(0,'begin ')
+      call my_second(0,'fit   ')
 
 c     mode='fit         '
 !JT      call read_input
-      write(6,'(''returned to fit from read_input'')')
 
       call common_allocations
 
@@ -342,8 +345,7 @@ c     write(6,'(''nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme='',9i5)') npar
       call alloc ('ieorb', ieorb, 2, necn)
       call alloc ('iebasi', iebasi, 2, necn)
       read(5,*) ((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
-      write(6,'(''lin. coefs of orbs set equal='',5(2(2i3,2x),2x))')
-     &((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
+      write(6,'(''lin. coefs of orbs set equal='',5(2(2i3,2x),2x))') ((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
 
       do 27 j=1,necn
         do 27 i=1,2
@@ -352,8 +354,7 @@ c     write(6,'(''nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme='',9i5)') npar
 
       call alloc ('iebase', iebase, 2, nbasis)
       read(5,*) ((iebase(i,j),i=1,2),j=1,nebase)
-      write(6,'(''expon. set equal='',10(2i3,2x))')
-     &((iebase(i,j),i=1,2),j=1,nebase)
+      write(6,'(''expon. set equal='',10(2i3,2x))') ((iebase(i,j),i=1,2),j=1,nebase)
 
       do 28 j=1,nebase
         do 28 i=1,2
@@ -387,8 +388,7 @@ c     endif
       write(6,'(''eguess='',f12.6)') eguess
 
       read(5,*) pmarquardt,tau,noutput,nstep,ibold
-      write(6,'(''pmarquardt,tau,ibold '',2g8.2,i3)')
-     &pmarquardt,tau,ibold
+      write(6,'(''pmarquardt,tau,ibold '',2g8.2,i3)') pmarquardt,tau,ibold
       read(5,'(2l2)') analytic,cholesky
       write(6,'(''analytic,cholesky'',2l2)') analytic,cholesky
 
@@ -412,15 +412,23 @@ c the analytic ones.
      & and there is more than one atom type.  For one atom type program needs modification to do this.'
       endif
 
-c norbc = nuclear cusp conditions
+c norbc = number of e-n cusp conditions.  At each nucleus there is one for every s-like occupied orbital.
+c But some orbitals can have an s component at some nuclei and not others.
+c We are calling cuspco from func not jacobian, but func is called whether analytic is true or not
       norbc=0
       do 34 iorb=1,norb
-c  34   if(lo(iorb).eq.0) norbc=norbc+1
-   34   if(lo(iorb).eq.0 .and. .not.analytic) norbc=norbc+1
-      if(numr.gt.0) norbc=0
+c  34   if(lo(iorb).eq.0 .and. numr.le.0 .and. .not.analytic) norbc=norbc+1
+   34   if(lo(iorb).eq.0 .and. numr.le.0) norbc=norbc+1
 
-c ncuspc = number of cusp conditions from Jastrow
-c nfockc = number of cusp conditions from Fock terms (ijas=3)
+c The penalties can come from
+c a) imposing en cusp on s orbitals,
+c b) imposing cusp conds. on analyt. een terms in Jastrow (ijas=2,3)
+c c) imposing cusp conds. on Fock een terms in Jastrow (ijas=3)
+c d) imposing shape conditions on Jastrow (ijas=2)
+c cent*norbc = number of en cusp conds. on s orbitals
+c ncuspc = number of cusp conditions from Jastrow (actual # of conds. is ncuspc*(nspin2-nspin1+1)) for ijas=2,3
+c nfockc = number of cusp conditions from Fock terms for ijas=3
+c ncnstr = number of shape conditions, (actual # of conds. is ncnstr*(nspin2-nspin1+1)) for ijas=2
       nfock=0
       nfockc=0
       ncuspc=0
@@ -434,37 +442,30 @@ c nfockc = number of cusp conditions from Fock terms (ijas=3)
           nfockc=nfock*nctype
           write(6,'(''nfock,nfockc'',3i5)') nfock,nfockc
         endif
-        ndata2=ndata+ncuspc*(nspin2-nspin1+1)+ncent*norbc+nfockc
+        ndata2=ndata+ncent*norbc+ncuspc*(nspin2-nspin1+1)+nfockc
         if(mod(icusp2,3).ne.0) then
           cuspwt=    dfloat(iabs(icusp2)-1)
          else
           cuspwt=one/dfloat(iabs(icusp2)-2)
         endif
        else
-c We are presently calculating a penalty in func but not in jacobian
-c so if analytic is true set ndata2=ndata
-        if(analytic) then
-          ndata2=ndata
-         else
-          ndata2=ndata+ncent*norbc
-        endif
+        ndata2=ndata+ncent*norbc
       endif
 
-c isp=1, it is only to determine ncnstr
-      mdata=ndata2+100 !JT: max value for ndata2
+c The call to checkjas2 here is only to calculate ncnstr; the diffs are not calculated and so do not need correct dimension
+c After the call to checkjas2, diff is reallocated correctly.
       ncnstr=0
       ishft=ndata2+1
-      call alloc ('diff', diff, mdata) !JT
+      call alloc ('diff', diff, ishft) !JT
       if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. ijas.eq.2) then
-        call checkjas2(scalek(1),1,ncnstr,diff(ishft),ipr_opt,0)
+        icalcul_diff=0
+        call checkjas2(scalek(1),1,ncnstr,diff(ishft),ipr_opt,0,icalcul_diff)
       endif
       ndata2=ndata2+ncnstr*(nspin2-nspin1+1)
-      if(ndata2.gt.mdata) stop 'ndata2.gt.mdata' !JT
+      call alloc ('diff', diff, ndata2)
 
-      write(6,'(''No of data points fitted to, # of cusp cond='',3i5)')
-     &   ndata,ncuspc*(nspin2-nspin1+1)+ncent*norbc+nfockc,
-     &   ncnstr*(nspin2-nspin1+1)
-      write(6,'(''ndata2'',i5)') ndata2
+      write(6,'(''ndata, ndata2, # of s-orb. cusp cond., # of analyt. cusp cond., # of Fock cond., # of shape cond. ='',6i5)')
+     &   ndata,ndata2,ncent*norbc,ncuspc*(nspin2-nspin1+1),nfockc,ncnstr*(nspin2-nspin1+1)
 
       call alloc ('imnbas', imnbas, ncent)
       imnbas(1)=1
@@ -472,18 +473,14 @@ c isp=1, it is only to determine ncnstr
         it=iwctype(i)
    36   imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
 
-      if(iabs(icusp2).ge.2) then
-        if(ijas.eq.2) then
-          do 37 isp=nspin1,nspin2
-            ishft=ncuspc*(isp-nspin1)
-            if(nspin2.eq.2 .and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
-            if(nspin2.eq.3 .and. isp.eq.nspin2)
-     &      a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
-   37       call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1),
-     &      diff(ndata+ishft+1),isp,nspin1,ncuspc,1)
-         elseif(ijas.eq.3) then
-          call cuspcheck3(diff(ndata+1),1)
-        endif
+      if(ijas.eq.2. and. iabs(icusp2).ge.2) then
+        do 37 isp=nspin1,nspin2
+          ishft=ncuspc*(isp-nspin1)
+          if(nspin2.eq.2 .and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
+          if(nspin2.eq.3 .and. isp.eq.nspin2) a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
+   37     call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1), diff(ndata+ishft+1),isp,nspin1,ncuspc,1)
+       elseif(ijas.eq.3) then
+        call cuspcheck3(diff(ndata+1),1)
       endif
 
 c Moved to read_input.f
@@ -492,6 +489,10 @@ c     if(icusp2.ge.1.and.ijas.eq.4.and.isc.le.7) call cuspinit4(1)
 
       ishft=ncuspc*(nspin2-nspin1+1)+nfockc
 
+c If we are doing an all-electron calculation or using a chemistry pseudopotential, some of which
+c have a negative divergence, and using analytical basis functions then compute
+c the cusp violation for each occupied s-like orbital at each nucleus.
+c If icusp.ge.0 then impose the cusp condition.  In that case the computed cusp violation must be 0.
       if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) then
 c Calculate coefs to construct the piece of the orbital that comes
 c from basis fns that are related by symmetry.  This is needed to
@@ -579,7 +580,6 @@ c     if(nparmg.eq.1) parm(nparml+nparme+nparmd+nparms+1)=a21
 c  If nucleii have been moved, move electrons
       if(istrch.ge.1) call strech_fit !JT
 
-      write(6,'(''iopt='',i3)') iopt
       if(iopt.le.1) then
 
 c       if(ncalls.gt.0) call zxssq2(func,ndata2,nparm,nsig,zero,zero,
@@ -598,12 +598,14 @@ c    &  param. ='',2f6.0,f5.1)') work(2),work(5),work(3)
 
        else
 
+c Of the nparm parameters, quench computes the elements of the Jacobian matrix
+c for the first nparm-nanalytic, numerically in a call to func
+c for the last nanalytic, analytically in a call to jacobian.
         epsp=0.01d0*10.d0**(-nsig)
         epsg=epsp
         epsch2=epsp
         ichange=1
         rot_wt=1.d0
-c       parmarmin=1.d-16
         eps_diff=1.d-15
         if(ianalyt_lap.eq.0) eps_diff=1.d-8
         if(analytic) then
@@ -613,30 +615,27 @@ c       parmarmin=1.d-16
           nanalytic=0
         endif
         call systemflush(6)
-c       call quench(func,jacobian,analytic,parm,pmarquardt,tau,noutput,
-c    &  nstep,ndata2,nparm,ipr_opt,diff,err2,epsg,epsp,converg,mesg,
-c    &  ibold,cholesky,rot_wt,parmarmin,eps_diff)
-c       call quench(func,jacobian,analytic,parm,pmarquardt,tau,noutput,
-c    &  nstep,ndata2,nparm,ipr_opt,diff,err2,epsg,epsp,epsch2,converg,mesg,
-c    &  ibold,cholesky,rot_wt,eps_diff)
 
 #ifndef NOQUENCH
+c Warning tmp
+        write(6,'(''ndata,ndata2='',9i5)') ndata,ndata2
+c       ndata2=ndata
         call quench(func,jacobian,nanalytic,parm,pmarquardt,tau,noutput,
      &  nstep,ndata2,nparm,ipr_opt,diff,err2,epsg,epsp,epsch2,converg,mesg,
      &  ibold,cholesky,rot_wt,eps_diff)
+        call systemflush(6)
 #else
         stop 'needs quench library'
 #endif
 
         if(converg) then
-          write(6,'(''chisq='',d12.6,i5,'' func evals, convergence: '',
-     &    a10)') err2,icalls,mesg
+          write(6,'(''chisq='',es12.6,i5,'' func evals, convergence: '',a10)') err2,icalls,mesg
          else
-          write(6,'(''chisq='',d12.6,i5,'' func evals, no convergence''
-     &    )') err2,icalls
+          write(6,'(''chisq='',es12.6,i5,'' func evals, no convergence'')') err2,icalls
         endif
 
       endif
+
 
 c The foll. call to func is no longer needed since quench takes care of it.
 c Warning: I am almost but not completely sure about this. It may be needed for dependent parms.
@@ -655,10 +654,8 @@ c     dum_func=func(ndata2,nparm,parm,diff,1)
           do 100 isp=nspin1,nspin2
             ishft=ncuspc*(isp-nspin1)
             if(nspin2.eq.2 .and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
-            if(nspin2.eq.3 .and. isp.eq.nspin2)
-     &      a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
-  100       call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1),
-     &      diff(ndata+ishft+1),isp,nspin1,ncuspc,1)
+            if(nspin2.eq.3 .and. isp.eq.nspin2) a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
+  100       call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1),diff(ndata+ishft+1),isp,nspin1,ncuspc,1)
          elseif(ijas.eq.3) then
           call cuspcheck3(diff(ndata+1),1)
         endif
@@ -714,8 +711,7 @@ c Pivot to make some coefs. zero
              if((ipij.eq.0.and.indexi.gt.0).and.iorb.ne.jorb) then
                rat=coef(jb,jorb,1)/coef(jb,iorb,1)
                do 180 kbasis=1,nbasis
-  180            coef(kbasis,jorb,1)=coef(kbasis,jorb,1)
-     &                          -rat*coef(kbasis,iorb,1)
+  180            coef(kbasis,jorb,1)=coef(kbasis,jorb,1) - rat*coef(kbasis,iorb,1)
              endif
   190       continue
           endif
@@ -823,7 +819,7 @@ c           write(fmt,'(''(''i2,''f16.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')
   260     write(6,fmt) (a1(i,isp,1),i=1,nparm_read),' (a(iparmj),iparmj=1,nparma)'
         do 265 isp=nspin1,nspin2
           if(nparm_read.gt.0) then
-            write(fmt,'(''(''i2,''f16.8,a27'')') nparm_read
+            write(fmt,'(''(''i2,''f19.11,a27'')') nparm_read
            else
 c           write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
             write(fmt,'(''(a28)'')')
@@ -832,10 +828,10 @@ c           write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
 
        elseif(ijas.ge.3.and.ijas.le.6) then
         if(ijas.eq.3) then
-c         write(6,'(''Jastrow a='',7f16.8,/,(8f16.8))') (a(i,1),i=1,nparm_read)
+c         write(6,'(''Jastrow a='',7f19.11,/,(8f19.11))') (a(i,1),i=1,nparm_read)
           if(nparm_read.gt.0) then
-c           write(fmt,'(''(''i2,''f16.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparm_read
-            write(fmt,'(''(''i2,''f16.8,a28)'')') nparm_read
+c           write(fmt,'(''(''i2,''f19.11,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparm_read
+            write(fmt,'(''(''i2,''f19.11,a28)'')') nparm_read
            else
 c           write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
             write(fmt,'(''(a28)'')')
@@ -845,10 +841,10 @@ c           write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
          elseif(ijas.ge.4.and.ijas.le.6) then
           nparma_read=2+max(0,norda-1)
           do 267 it=1,nctype
-c 267       write(6,'(''Jastrow a='',7f16.8,/,(8f16.8))') (a4(i,it,1),i=1,nparma_read)
+c 267       write(6,'(''Jastrow a='',7f19.11,/,(8f19.11))') (a4(i,it,1),i=1,nparma_read)
             if(nparma_read.gt.0) then
-c             write(fmt,'(''(''i2,''f16.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
-              write(fmt,'(''(''i2,''f16.8,a28)'')') nparma_read
+c             write(fmt,'(''(''i2,''f19.11,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
+              write(fmt,'(''(''i2,''f19.11,a28)'')') nparma_read
              else
 c             write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
               write(fmt,'(''(a28)'')')
@@ -859,10 +855,10 @@ c             write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
         endif
 
         do 270 isp=nspin1,nspin2b
-c 270     write(6,'(''Jastrow b='',7f16.8,/,(8f16.8))') (b(i,isp,1),i=1,nparm_read)
+c 270     write(6,'(''Jastrow b='',7f19.11,/,(8f19.11))') (b(i,isp,1),i=1,nparm_read)
           if(nparm_read.gt.0) then
-c           write(fmt,'(''(''i2,''f16.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparm_read
-            write(fmt,'(''(''i2,''f16.8,a28)'')') nparm_read
+c           write(fmt,'(''(''i2,''f19.11,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparm_read
+            write(fmt,'(''(''i2,''f19.11,a28)'')') nparm_read
            else
 c           write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
             write(fmt,'(''(a28)'')')
@@ -870,9 +866,9 @@ c           write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
   270     write(6,fmt) (b(i,isp,1),i=1,nparm_read),' (b(iparmj),iparmj=1,nparmb)'
 
         do 280 it=1,nctype
-c 280     write(6,'(''Jastrow c='',7f16.8,/,(8f16.8))') (c(i,it,1),i=1,nparmc_read)
+c 280     write(6,'(''Jastrow c='',7f19.11,/,(8f19.11))') (c(i,it,1),i=1,nparmc_read)
           if(nparmc_read.gt.0) then
-            write(fmt,'(''(''i2,''f16.8,a28)'')') nparmc_read
+            write(fmt,'(''(''i2,''f19.11,a28)'')') nparmc_read
            else
             write(fmt,'(''(a28)'')')
           endif
@@ -880,8 +876,8 @@ c 280     write(6,'(''Jastrow c='',7f16.8,/,(8f16.8))') (c(i,it,1),i=1,nparmc_re
 
         if(ifock.gt.0) then
           do 285 it=1,nctype
-c           write(6,'(''Jastrow f='',7f16.8,/,(8f16.8))')(fck(i,it,1),i=1,15)
-  285       write(6,'(15f16.8,'' (f(iparmj),iparmj=1,nparmf)'')') (fck(i,it,1),i=1,15)
+c           write(6,'(''Jastrow f='',7f19.11,/,(8f19.11))')(fck(i,it,1),i=1,15)
+  285       write(6,'(15f19.11,'' (f(iparmj),iparmj=1,nparmf)'')') (fck(i,it,1),i=1,15)
         endif
       endif
 
@@ -910,19 +906,16 @@ c           write(6,'(''Jastrow f='',7f16.8,/,(8f16.8))')(fck(i,it,1),i=1,15)
 
       if(iabs(icusp2).ge.2) then
         if(mod(icusp2,3).eq.0) then
-          write(6,'(''rms fit error,errc/'',i5,2d12.4,'' ndata,ndata2''
-     &    ,2i5)') iabs(icusp2)-2,err,errc,ndata,ndata2
+          write(6,'(''rms fit error,errc/'',i5,2es12.4,'' ndata,ndata2'',2i5)') iabs(icusp2)-2,err,errc,ndata,ndata2
          else
-          write(6,'(''rms fit error,errc*'',i5,2d12.4,'' ndata,ndata2''
-     &    ,2i5)') nint(cuspwt),err,errc,ndata,ndata2
+          write(6,'(''rms fit error,errc*'',i5,2es12.4,'' ndata,ndata2'',2i5)') nint(cuspwt),err,errc,ndata,ndata2
         endif
        else
-        write(6,'(''rms fit error,errc='',2d12.4,'' ndata,ndata2=''
-     &  ,2i5)') err,errc,ndata,ndata2
+        write(6,'(''rms fit error,errc='',2es12.4,'' ndata,ndata2='',2i5)') err,errc,ndata,ndata2
       endif
 
-      if(ipr_opt.ge.2) write(6,'(/,''config #,   etrial,   efit,      diff
-     &  relerr,   wght,     rmin,  rmax,  r12min'')')
+      if(ipr_opt.ge.2) write(6,'(/,''config #,   etrial,       efit,      diff,       relerr,    wght,     rmin,      rmax,      r12
+     &min'')')
       if(ipr_opt.ge.2) rewind 2
 
       rminav=zero
@@ -972,23 +965,21 @@ c           write(6,'(''Jastrow f='',7f16.8,/,(8f16.8))')(fck(i,it,1),i=1,15)
           reldif=reldif+yfit-eold(i)
           relerr=relerr+(yfit-eold(i))**2
         endif
-c       if(ipr_opt.ge.0) write(6,'(i5,2f10.5,d13.5,2f9.3,2f12.6,f9.3)')
-        if(ipr_opt.ge.2) write(6,'(i5,2f15.5,d13.5,2f9.3,2f12.6,f9.3)')
+        if(ipr_opt.ge.2) write(6,'(i5,2f15.5,es12.4,2f9.3,2f12.6,f9.3)')
      &  i,eguess,yfit, uwdiff(i),yfit-eold(i),wght(i),rmin,rmax,r12min
          if(ipr_opt.ge.2) then
            if(ndim*nelec.lt.100) then
-             write(fmt,'(a1,i2,a18)') '(',ndim*nelec,'f8.4,3d14.6,f12.5)'
+             write(fmt,'(a1,i2,a19)') '(',ndim*nelec,'f8.4,3es14.6,f12.5)'
             elseif(ndim*nelec.lt.1000) then
-             write(fmt,'(a1,i3,a18)') '(',ndim*nelec,'f8.4,3d14.6,f12.5)'
+             write(fmt,'(a1,i3,a19)') '(',ndim*nelec,'f8.4,3es14.6,f12.5)'
            endif
-           write(2,fmt)((x(k,j,i),k=1,ndim),j=1,nelec),psid(i),psij(i),
-     &     psid(i)*exp(psij(i)),yfit
+           write(2,fmt)((x(k,j,i),k=1,ndim),j=1,nelec),psid(i),psij(i),psid(i)*exp(psij(i)),yfit
          endif
   320 continue
 
       if(iabs(icusp2).ge.2 .and. ipr_opt.ge.0) then
         do 330 i=ndata+1,ndata2
-  330     write(6,'(i5,20x,d13.5)') i,diff(i)
+  330     write(6,'(i5,20x,es13.5)') i,diff(i)
       endif
 
       rminav=rminav/ndata
@@ -1009,11 +1000,11 @@ c       if(ipr_opt.ge.0) write(6,'(i5,2f10.5,d13.5,2f9.3,2f12.6,f9.3)')
       if(eguess.lt.eav-0.3*err)
      &write(6,'(''*** Warning: eguess is less than average energy on fit pts - 0.3*std. Increase eguess'')')
 
-      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt
-     &.gt.0) then
+      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. ijas.eq.2) then
         ishft=ndata+ncuspc*(nspin2-nspin1+1)+nfockc+ncent*norbc+1
+        icalcul_diff=1
         do 340 isp=nspin1,nspin2
-          call checkjas2(scalek(1),isp,ncnstr,diff(ishft),ipr_opt,1)
+          call checkjas2(scalek(1),isp,ncnstr,diff(ishft),ipr_opt,1,icalcul_diff)
   340     ishft=ishft+ncnstr
       endif
 

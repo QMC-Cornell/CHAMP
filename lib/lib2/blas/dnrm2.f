@@ -1,6 +1,6 @@
       double precision function dnrm2 ( n, dx, incx)
       integer i, incx, ix, j, n, next
-      double precision   dx(1), cutlo, cuthi, hitest, sum, xmax,zero,one
+      double precision   dx(*), cutlo, cuthi, hitest, sum, xmax,zero,one
       data   zero, one /0.0d0, 1.0d0/
 c
 c     euclidean norm of the n-vector stored in dx() with storage

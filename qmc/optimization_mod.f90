@@ -152,6 +152,7 @@ module optimization_mod
    write(6,'(a)') ' print_orbital_excitations = [bool] print orbital excitation information? (default=false)'
    write(6,'(a)') ' orthonormalize_orbitals = [bool] orthonormalize orbitals at each optimization step? (default=false)'
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
+   write(6,'(a)') ' do_add_diag_mult_exp = [bool] : allow the basis exponents to change only by 20% by increasing add_diag_mult_exp if change > 5% (default=false)'
    write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
    write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function wrt parameters? (default=false)'
    write(6,'(a)') ' deriv_bound_value = [real] : value of the bound mentioned above (default=10.d0)'
@@ -314,7 +315,7 @@ module optimization_mod
   write(6,'(a,i4)') ' maximum number of iterations = ', iter_opt_max_nb
   write(6,'(a,1pd9.1)') ' stabilization constant: add_diag=',add_diag(1)
   write(6,'(a,f12.4)') ' fraction of variance: p_var=',p_var
-  write(6,'(a,e12.4)') ' energy threshold for convergence =',energy_threshold
+  write(6,'(a,es12.4)') ' energy threshold for convergence =',energy_threshold
 
   if(iter_opt_max_nb /= 0) igradhess=1
   if(iter_opt_max_nb /= 0 .and. nforce > 1) stop 'nforce > 1 not allowed in optimization. At present can optim 1 wf only'
@@ -1916,13 +1917,13 @@ module optimization_mod
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
 # if defined (PATHSCALE)
-     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
+     write(6,'(1000es16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
 # else
-   write(fmt,"( '(', i8, 'e16.8,a)' )") nbasis
+   write(fmt,"( '(', i8, 'es16.8,a)' )") nbasis
    write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf), ' (coef(i,j),j=1,nbasis)'
 # endif
     else
-       write(fmt,"( '(', i8, 'e16.8)' )") nbasis
+       write(fmt,"( '(', i8, 'es16.8)' )") nbasis
        write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf)
     endif
    enddo
@@ -2043,13 +2044,13 @@ module optimization_mod
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
 # if defined (PATHSCALE)
-     write(6,'(1000e16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
+     write(6,'(1000es16.8)') coef_orb_on_norm_basis (1:nbasis, orb_i, iwf) ! for pathscale compiler
 # else
-   write(fmt,"( '(', i8, 'e16.8,a)' )") nbasis
+   write(fmt,"( '(', i8, 'es16.8,a)' )") nbasis
    write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf), ' (coef_new(i,j),j=1,nbasis)'
 # endif
     else
-       write(fmt,"( '(', i8, 'e16.8)' )") nbasis
+       write(fmt,"( '(', i8, 'es16.8)' )") nbasis
        write(6,fmt) coef_orb_on_norm_basis(1:nbasis, orb_i, iwf)
     endif
    enddo
@@ -2069,7 +2070,7 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
 # else
-   write(fmt,"( '(', i8, 'f10.6,a)' )") nbasis
+   write(fmt,"( '(', i8, 'f12.8,a)' )") nbasis
    write(6,fmt) zex(1:nbasis, iwf), ' (zex_new(i),i=1,nbasis)'
 # endif
   endif ! l_opt_exp
@@ -2170,13 +2171,13 @@ module optimization_mod
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
 # if defined (PATHSCALE)
-     write(6,'(1000e16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i) ! for pathscale compiler
+     write(6,'(1000es16.8)') coef_orb_on_norm_basis_best (1:nbasis, orb_i) ! for pathscale compiler
 # else
-   write(fmt,"( '(', i8, 'e16.8,a)' )") nbasis
+   write(fmt,"( '(', i8, 'es16.8,a)' )") nbasis
    write(6,fmt) coef_orb_on_norm_basis_best(1:nbasis, orb_i), ' (coef_best(i,j),j=1,nbasis)'
 # endif
     else
-     write(fmt,"( '(', i8, 'e16.8)' )") nbasis
+     write(fmt,"( '(', i8, 'es16.8)' )") nbasis
      write(6,fmt) coef_orb_on_norm_basis_best(1:nbasis, orb_i)
     endif
    enddo
@@ -2196,7 +2197,7 @@ module optimization_mod
 # if defined (PATHSCALE)
    write(6,'(1000f10.6)') zex_best (1:nbasis) ! for pathscale compiler
 # else
-   write(fmt,"( '(', i8, 'f10.6,a)' )") nbasis
+   write(fmt,"( '(', i8, 'f12.8,a)' )") nbasis
    write(6,fmt) zex_best(1:nbasis), ' (zex_best(i),i=1,nbasis)'
 # endif
   endif ! l_opt_exp

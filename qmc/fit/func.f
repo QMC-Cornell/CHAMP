@@ -145,7 +145,7 @@ c     endif
 
 c If we are varying scalek, a or b parms reset dependent constants
 c      if((ijas.eq.4.or.ijas.eq.5).and.(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17)) then
-        call set_scale_dist(0,1)    ! always call this in the analytical scalek opt
+        call set_scale_dist(-1,1)    ! always call this in the analytical scalek opt
 c      endif
 
       if(icusp2.ge.1.and.isc.le.7) then
@@ -155,22 +155,18 @@ c      endif
         if(ijas.ge.4.and.ijas.le.6) call cuspexact4(0,1)
       endif
 
-      if(iabs(icusp2).ge.2) then
-        if(ijas.eq.2) then
+      if(ijas.eq.2 .and. iabs(icusp2).ge.2) then
           do 46 isp=nspin1,nspin2
             ishft=ncuspc*(isp-nspin1)
             if(nspin2.eq.2. and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
-            if(nspin2.eq.3 .and. isp.eq.nspin2)
-     &      a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
-            call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1),
-     &      diff(ndata+ishft+1),isp,nspin1,ncuspc,0)
+            if(nspin2.eq.3 .and. isp.eq.nspin2) a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
+            call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1),diff(ndata+ishft+1),isp,nspin1,ncuspc,0)
             do 46 i=1,ncuspc
    46         diff(ndata+ishft+i)=diff(ndata+ishft+i)*cuspwt
          elseif(ijas.eq.3) then
           call cuspcheck3(diff(ndata+1),0)
           do 47 i=1,ncuspc+nfockc
    47       diff(ndata+i)=diff(ndata+i)*cuspwt
-        endif
       endif
 
 c If icusp>=0 impose cusp condition for each s orbital.
@@ -181,8 +177,7 @@ c In any case calculate cusp-violation penalty. Should be 0 if icusp>=0.
       do 50 i=1,ncent*norbc
    50   diff(ndata+ishft+i)=diff(ndata+ishft+i)*cuspwt
       do 60 i=1,necn
-   60   coef(iebasi(1,i),ieorb(1,i),1)=sign(one,dfloat(ieorb(2,i)))*
-     &  coef(iebasi(2,i),iabs(ieorb(2,i)),1)
+   60   coef(iebasi(1,i),ieorb(1,i),1)=sign(one,dfloat(ieorb(2,i))) * coef(iebasi(2,i),iabs(ieorb(2,i)),1)
       do 70 i=1,nebase
         zex(iebase(1,i),1)=zex(iebase(2,i),1)
         ict=ictype_basis(iebase(1,i))
@@ -195,11 +190,11 @@ c       do 80 j=2,icsf(i)
 c  80     cdet(iedet(1,i),1)=cdet(iedet(1,i),1)+frac(j,i)*
 c    &    sign(one,dfloat(iedet(j,i)))*cdet(iabs(iedet(j,i)),1)
 
-      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.
-     &gt.0) then
+      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. ijas.eq.2) then
         ishft=ndata+ncuspc*(nspin2-nspin1+1)+nfockc+ncent*norbc+1
+        icalcul_diff=1
         do 121 isp=nspin1,nspin2
-          call checkjas2(scalek(1),isp,ncnstr,diff(ishft),0,0)
+          call checkjas2(scalek(1),isp,ncnstr,diff(ishft),0,0,icalcul_diff)
   121     ishft=ishft+ncnstr
       endif
 

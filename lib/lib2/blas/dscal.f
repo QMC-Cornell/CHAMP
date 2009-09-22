@@ -5,7 +5,7 @@ c     uses unrolled loops for increment equal to one.
 c     jack dongarra, linpack, 3/11/78.
 c     modified 3/93 to return if incx .le. 0.
 c
-      double precision da,dx(1)
+      double precision da,dx(*)
       integer i,incx,m,mp1,n,nincx
 c
       if( n.le.0 .or. incx.le.0 )return

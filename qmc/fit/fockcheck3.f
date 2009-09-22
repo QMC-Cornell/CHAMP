@@ -30,8 +30,7 @@ c f2elog o(s^2 log(s)) from phi21(r12=0)
        else
         o(2) =o(2)+fck(4,it,1)+fck(5,it,1)+fck(6,it,1)
      &            +fck(7,it,1)+fck(8,it,1)+fck(9,it,1)
-        op(1)=op(1)+fck(5,it,1)+three*fck(7,it,1)+fck(8,it,1)
-     &             +two*fck(9,it,1)
+        op(1)=op(1)+fck(5,it,1)+three*fck(7,it,1)+fck(8,it,1)+two*fck(9,it,1)
         o(2+nord) =o(2+nord) +rt2*(half*fck(5,it,1)+fck(7,it,1))
         op(1+nord)=op(1+nord)+rt2*(half*fck(4,it,1)+fck(9,it,1))
       endif
