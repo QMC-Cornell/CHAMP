@@ -318,8 +318,10 @@ clean_all:
 
 slamch.o: slamch.f
 	$(FORTRAN) $(NOOPT) -c $<
-dlamch.o: dlamch.f
-	$(FC) -c $<
+
+# commented out for BlueGene
+#dlamch.o: dlamch.f
+#	$(FC) -c $<
 
 .f.o: 
 	$(FC) $(FFLAGS) -c $<
