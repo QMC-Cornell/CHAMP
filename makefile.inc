@@ -518,13 +518,29 @@ CHAMP_LD_END_MPI=
 endif
 
 # Julich BlueGene P
-ifeq ($(hostname),jugene1)
+ifeq ($(hostname),jugene5)
 # MPI
-  CHAMP_MPIF95 = mpixlf2003
-  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+#  CHAMP_MPIF95 = mpixlf2003
+#  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+#  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+#  CHAMP_MPIC = mpixlc
+#  CHAMP_C_MPI_FLAGS = -O3 -qstrict
+
+ CHAMP_F95=mpixlf2003_r
+ CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+ CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+
+# MPI
+  CHAMP_MPIF95 = mpixlf2003_r
+  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
   CHAMP_MPIC = mpixlc
-  CHAMP_C_MPI_FLAGS = -O3 -qstrict
+  CHAMP_C_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
+# no lapack in Julich
+  BLAS=-L/opt/ibmmath/essl/4.4/lib -lesslbg
+  QUENCH=
+  EINSPLINE=
+  CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
 endif
 
 # BlueGene P at IDRIS (Paris)
