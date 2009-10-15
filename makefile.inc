@@ -152,10 +152,13 @@ ifeq ($(hostname),qmc2)
   CHAMP_MPIC=mpicc
   CHAMP_F95=gfortran
   CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
-  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
+  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
+  CHAMP_F95_DEBUG=$(CHAMP_F95_FAST) -g -fbounds-check
+  CHAMP_F77_DEBUG=$(CHAMP_F77_FAST) -g -fbounds-check
   CHAMP_LD=gfortran
   CHAMP_LD_FLAGS=-O3
+  CHAMP_LD_DEBUG=-Wall -g -fbounds-check
   CHAMP_LD_MPI=mpif90
   EINSPLINE=
   CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a

@@ -147,8 +147,6 @@ c i.e. the order in which we were reading in the p functions.
       use pseudo_mod
       implicit real*8(a-h,o-z)
 
-
-
 c     character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
 c    &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
 cc   &,l4s(nprime),l4p(nprime,-1:1),l4d(nprime,-2:2)
@@ -1459,21 +1457,13 @@ c zex2 is used in func when optimizing the exponents.
 c ib  goes up to the total number of basis functions
 c ib2 goes up to the number of basis functions on each center type
 c irb goes up to the number of radial basis functions on each center type
-c Warning: If this is being called from fit then it is possible that exponents
-c that start out being equal may not end that way.
+c Warning: If this is an optimization run (either fit or new optimization) that optimizes exponents
+c then it is possible that exponents that start out being equal may not end that way.
 c In particular this happens because GAMESS creates an s function out
 c of d functions and these start off with the same exponent.
-c So, if it is being called from fit then at present I check also that the l
-c values are the same to guard against different l functions starting with same
-c exponent and then becoming different.
-c Warning:  This is a little inefficient and more importantly it is not fool proof.
-c e.g. one may start with px,py,pz having the same exponents but then optimize
-c them separately.  One could make it a bit more efficient by checking if nparme.ne.0
-c but at present nparme is being set after the call to this routine.
-c One could easily make it foolproof by just regarding each basis function
-c as having a different radial function when nparme.ne.0, but this is even more
-c inefficient during the optimization process.
-
+c To be correct and efficient, one could check for equality of just n_bas and zex when exponents are not being optimized
+c and check in addition for equality of l_bas when exponents are being optimized.
+c The problem is that one does not know this until later in the input.  So, always check for equality of all 3 things.
  
       call alloc ('iwrwf2', iwrwf2, nbasis)
       call alloc ('nrbas', nrbas, nctype)
@@ -1491,8 +1481,9 @@ c inefficient during the optimization process.
             ib=ib+1
             if(ib.ne.ib2+ib4) stop 'ib .ne. ib2+ib4'
             do 270 ib3=1,ib2-1
-              if((index(mode,'fit').eq.0 .and. n_bas(ib).eq.n_bas(ib3+ib4) .and. zex(ib,1).eq.zex(ib3+ib4,1)) .or.
-     &        (l_bas(ib).eq.l_bas(ib3+ib4) .and. n_bas(ib).eq.n_bas(ib3+ib4) .and. zex(ib,1).eq.zex(ib3+ib4,1))) then
+c             if((index(mode,'fit').eq.0 .and. n_bas(ib).eq.n_bas(ib3+ib4) .and. zex(ib,1).eq.zex(ib3+ib4,1)) .or.
+c    &        (l_bas(ib).eq.l_bas(ib3+ib4) .and. n_bas(ib).eq.n_bas(ib3+ib4) .and. zex(ib,1).eq.zex(ib3+ib4,1))) then
+              if (l_bas(ib).eq.l_bas(ib3+ib4) .and. n_bas(ib).eq.n_bas(ib3+ib4) .and. zex(ib,1).eq.zex(ib3+ib4,1)) then
                 irb=iwrwf2(ib3+ib4)
                 goto 275
               endif
@@ -1518,27 +1509,6 @@ c inefficient during the optimization process.
       endif
 
       call object_modified ('zex2')
-
-c     if(numr.le.0) then
-c       ib=0
-c       ib4=0
-c       do 290 ict=1,nctype
-c         irb=0
-c         do 290 ib2=1,nbasis_ctype(ict)
-c           ib=ib+1
-c           do 270 ib3=1,ib2-1
-c             write(6,'(''ict,ib2,ib3,ib4,ib='',9i5)') ict,ib2,ib3,ib4,ib
-c 270         if(n_bas(ib)-l_bas(ib).eq.n_bas(ib3+ib4)-l_bas(ib3+ib4)
-c    &        .and. zex(ib,1).eq.zex(ib3+ib4,1)) goto 280
-c           irb=irb+1
-c           n_bas2(irb,ict)=n_bas(ib)
-c           zex2(irb,ict,1)=zex(ib,1)
-c           iwrwf2(ib)=irb
-c 280       iwrwf(ib2,ict)=irb
-c           if(irb.gt.MRWF) stop 'nbas > MRWF'
-c           nrbas(ict)=irb
-c 290       ib4=ib4+nbasis_ctype(ict)
-c     endif
 
       return
       end

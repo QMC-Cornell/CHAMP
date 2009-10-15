@@ -114,8 +114,8 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	vmc/psi.f vmc/quad_min.f vmc/rannyu.f vmc/read_bas_num.f \
 	vmc/read_input.f vmc/read_orb_dot.f vmc/read_orb_loc.f \
 	vmc/read_orb_pw.f vmc/readps.f vmc/readps_champ.f vmc/readps_gauss.f \
-	vmc/readps_tm.f vmc/rotqua.f vmc/sample_efp.f vmc/scale_dist.f \
-	vmc/sites.f vmc/splfit.f vmc/spline.f vmc/spline2.f vmc/strech.f \
+	vmc/readps_tm.f vmc/rotqua.f vmc/scale_dist.f vmc/sites.f \
+	vmc/splfit.f vmc/spline.f vmc/spline2.f vmc/strech.f \
 	vmc/systemflush.f vmc/vmc.f vmc/wf_secondary.f vmc/MPI/acuest_mpi.f \
 	vmc/MPI/dumper.f vmc/MPI/finwrt_mpi.f vmc/MPI/grad_hess_jas_mpi.f \
 	vmc/MPI/mc_configs.f dmc/acuest_dmc_movall.f dmc/dmc_brock_movall.f \
@@ -239,8 +239,8 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	vmc/psi.o vmc/quad_min.o vmc/rannyu.o vmc/read_bas_num.o \
 	vmc/read_input.o vmc/read_orb_dot.o vmc/read_orb_loc.o \
 	vmc/read_orb_pw.o vmc/readps.o vmc/readps_champ.o vmc/readps_gauss.o \
-	vmc/readps_tm.o vmc/rotqua.o vmc/sample_efp.o vmc/scale_dist.o \
-	vmc/sites.o vmc/splfit.o vmc/spline.o vmc/spline2.o vmc/strech.o \
+	vmc/readps_tm.o vmc/rotqua.o vmc/scale_dist.o vmc/sites.o \
+	vmc/splfit.o vmc/spline.o vmc/spline2.o vmc/strech.o \
 	vmc/systemflush.o vmc/vmc.o vmc/wf_secondary.o vmc/MPI/acuest_mpi.o \
 	vmc/MPI/dumper.o vmc/MPI/finwrt_mpi.o vmc/MPI/grad_hess_jas_mpi.o \
 	vmc/MPI/mc_configs.o dmc/acuest_dmc_movall.o dmc/dmc_brock_movall.o \

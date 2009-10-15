@@ -142,7 +142,8 @@ c                (dot_bump_height)*exp(1 - 1/(1-(x/dot_bump_radius)^2))
 c            -4 finite quantum wire   Vwire(x) + 0.5 w0 * y^2
 c            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
 c            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
-c            -1 quadratic dot potential .5*w0*r^2
+c            -1 quadratic dot potential .5*w0*(r-rring)^2
+c               If rring=0 then it is a dot, if it is not 0 it is a ring.
 c            0  local, -Z/r
 c            1  in Fahy format
 c            2  in Troullier-Martins format (unformatted)
@@ -1027,8 +1028,13 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
 !          norb_used=max(norb_used,iworbd(j,i))
    70     if(iworbd(j,i).gt.norb) stop 'iworbd(j,i) > norb'
         if(nup+ndn.lt.60) then
-          write(fmt,'(''('',i2,''i3,3x,'',i2,''i3)'')') nup,ndn
-          write(6,fmt) (iworbd(j,i),j=1,nup),(iworbd(j+nup,i),j=1,ndn)
+          if(ndn.gt.0) then
+            write(fmt,'(''('',i2,''i3,3x,'',i2,''i3)'')') nup,ndn
+            write(6,fmt) (iworbd(j,i),j=1,nup),(iworbd(j+nup,i),j=1,ndn)
+           else
+            write(fmt,'(''('',i2,''i3)'')') nup
+            write(6,fmt) (iworbd(j,i),j=1,nup)
+          endif
          else
           write(6,'(30i4)') (iworbd(j,i),j=1,nup)
           write(6,'(30i4)') (iworbd(j+nup,i),j=1,ndn)
@@ -1107,8 +1113,8 @@ c Check if all the determinants are used in CSFs
         read(5,*) ltot
         write(6,'(''L_tot='',i3)') ltot
       endif
-c      if((ibasis.eq.1.or.ibasis.eq.3).and.inum_orb.eq.0) call emagnetic(ltot)
-      if(ndim.eq.2 .and. (iperiodic.eq.0 .and. nloc.ne.-4)) call emagnetic(ltot)
+      if(ndim.eq.2.and.(ibasis.eq.1.or.ibasis.eq.3).and.inum_orb.eq.0) call emagnetic(ltot)
+c     if(ndim.eq.2 .and. (iperiodic.eq.0 .and. nloc.ne.-4)) call emagnetic(ltot)
 c     if(ibasis.eq.2) call read_orb_pw_real
       if(ibasis.eq.2) call read_orb_pw
 c     if(iperiodic.eq.0 .and. inum_orb.gt.0) call read_orb_num

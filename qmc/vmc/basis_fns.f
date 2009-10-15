@@ -50,10 +50,7 @@ c n_bas2(irb,ict) > 0 : Slater basis
 c                 < 0 : Gaussian basis
 c                 = 0 : asymptotic basis
 
-c !fp
-c     For notes on basis functions in QMC see fp notes (contain slater
-c     and gaussian 3-d)
-
+c     For notes on basis functions in QMC see fp notes (contain slater and gaussian 3-d)
 
       use all_tools_mod
       use constants_mod

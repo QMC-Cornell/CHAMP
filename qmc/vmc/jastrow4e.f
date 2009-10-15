@@ -31,8 +31,9 @@ c Jastrow 6   must be used with one of isc=6,7
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
       dimension x(3,*),v(3,*)
-      dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord)
-     &,rrj(-2:nord)
+c     dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord),rrj(-2:nord)
+      dimension uu(-2:max(nord,nordb,nordc)),ss(-2:max(nord,norda,nordc)),tt(-2:max(nord,norda,nordc)),rri(-2:max(nord,norda,nordc))
+     &,rrj(-2:max(nord,norda,nordc))
 
       do 5 i=-2,-1
         uu(i)=0

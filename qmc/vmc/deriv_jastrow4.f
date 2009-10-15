@@ -37,8 +37,9 @@ c Jastrow 6   must be used with one of isc=6,7
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
       dimension x(3,*),v(3,*)
-      dimension uu(-3:nord),ss(-3:nord),tt(-3:nord),rri(-3:nord)
-     &,rrj(-3:nord)
+c     dimension uu(-3:nord),ss(-3:nord),tt(-3:nord),rri(-3:nord),rrj(-3:nord)
+      dimension uu(-3:max(nord,nordb,nordc)),ss(-3:max(nord,norda,nordc)),tt(-3:max(nord,norda,nordc)),rri(-3:max(nord,norda,nordc))
+     &,rrj(-3:max(nord,norda,nordc))
 
       ndim1=ndim-1
 
@@ -514,16 +515,18 @@ c ideriv = 0 parameter is not varied and is not dependent
 c        = 1 parameter is a dependent parameter
 c        = 2 parameter is an independent parameter that is varied
                 ideriv=0
-                if(ll.eq.iwjasc(jparm,it)) then
-                  ideriv=2
-                 else
-                  do 31 id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
-                    if(ll.eq.iwc4(id)) then
-                      jj=id
-                      if(nvdepend(jj,it).gt.0) ideriv=1
-                    endif
-   31             continue
-                endif
+                if(nparmj.gt.0) then
+                  if(ll.eq.iwjasc(jparm,it)) then
+                    ideriv=2
+                   else
+                    do 31 id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
+                      if(ll.eq.iwc4(id)) then
+                        jj=id
+                        if(nvdepend(jj,it).gt.0) ideriv=1
+                      endif
+   31               continue
+                  endif ! ll
+                endif ! nparmj
 
                 if(ideriv.gt.0) then
                   gp=pc
