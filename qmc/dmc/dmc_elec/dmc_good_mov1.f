@@ -66,6 +66,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use estcm2_mod
       use div_v_dmc_mod
       use contrldmc_mod
       use stats_mod
@@ -87,12 +88,10 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       save ipr_sav
 
 c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
+      sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
-
-      if(icuspg.ge.1) stop 'exact cusp in G not implemented yet in 1-el
-     &ectron move algorithm'
-      if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move
-     &algorithm'
+      if(icuspg.ge.1) stop 'exact cusp in G not implemented yet in 1-electron move algorithm'
+      if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move algorithm'
 
       term=(sqrt(two*pi*tau))**3/pi
 
@@ -653,18 +652,29 @@ c               dwt=1+expon+0.5d0*expon**2
 
 c Warning: These lines were added to reduce the probability of population explosions.
 c These occur mostly for nonlocal psps.
-c A better solution would be to employ a better way of treating nonlocal psps. in DMC.
-c At minimum, if one uses this cutoff, instead of having the factor 5 below, one should replace it by a few times sigma.
-c Otherwise, this gives a DMC energy that is too high even in the tau->0 limit, actually especially in this limit,
-c if sigma is large.
-c         if(dwt.gt.1+5*tau) then
-c           if(ipr_sav.eq.0) then
-c             ipr_sav=1
-c             write(6,'(''Warning: dwt>1+5*tau, nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)')
-c    &        nwalk,dwt,ewto,ewtn,fratio(iw,ifr),fration
-c           endif
-c           dwt=1+5*tau
-c         endif
+c A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
+c We truncate wts that come from energies that are too low by more than 10*energy_sigma.
+c This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
+c For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+c For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
+c So, multiply energy_sigma by sqrt(float(nproc)).
+c It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
+c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
+          if(ipass-nstep*2*nblkeq .gt. 5) then
+            energy_sigma=sigma(ecum1,ecm21,wcum1)
+            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            if(dwt.gt.1+10*energy_sigma*tau) then
+              ipr_sav=ipr_sav+1
+              if(ipr_sav.le.3) then
+                write(6,'(''Warning: dwt>1+10*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
+     &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
+                if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
+               elseif(ipr_sav.eq.4) then
+                write(6,'(''Warning: Additional warning msgs. of dwt>1+10*energy_sigma*tau suppressed'')')
+              endif
+              dwt=1+10*energy_sigma*tau
+            endif
+          endif
 
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi

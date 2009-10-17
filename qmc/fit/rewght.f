@@ -23,7 +23,7 @@ c renormalize the old wavefn. and recompute weights.
    20   av=av+psij(i)+dlog(dabs(psid(i)))-psio(i)
       av=av/ndata
       if(abs(av).gt.biglog) then
-        write(6,'(''Warning: normalization of old wavefn. is being reset'')')
+        write(6,'(''Warning: normalization of old wavefn. is being reset by '',d12.4)') exp(av)
         do 30 i=1,ndata
    30     psio(i)=psio(i)+av
       endif

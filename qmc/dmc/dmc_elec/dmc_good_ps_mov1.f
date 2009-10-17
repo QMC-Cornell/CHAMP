@@ -68,9 +68,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch_mod
       use estsum_dmc_mod
       use estcum_dmc_mod
+      use estcm2_mod
       use div_v_dmc_mod
       use contrldmc_mod
-      use estcm2_mod
       use stats_mod
       use age_mod
       use branch_dmc_opt_mod
@@ -102,8 +102,7 @@ c     rn_eff(w,w2)=w**2/w2
 c     error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
 c     errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
-      if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move
-     &algorithm'
+      if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move algorithm'
 
 c     term=(sqrt(two*pi*tau))**3/pi
 
@@ -455,10 +454,11 @@ c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
             if(dwt.gt.1+10*energy_sigma*tau) then
               ipr_sav=ipr_sav+1
-              if(ipr_sav.le.10) then
+              if(ipr_sav.le.3) then
                 write(6,'(''Warning: dwt>1+10*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
      &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
-               elseif(ipr_sav.eq.11) then
+                if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
+               elseif(ipr_sav.eq.4) then
                 write(6,'(''Warning: Additional warning msgs. of dwt>1+10*energy_sigma*tau suppressed'')')
               endif
               dwt=1+10*energy_sigma*tau

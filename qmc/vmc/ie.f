@@ -28,8 +28,8 @@ c      character*80 fmt
 !      read(5,*) numr
 !JT      write(6,'(''numr='',i2)') numr
       if(numr.eq.1) then
-!        read(5,*) (nrbas(ic),ic=1,nctype)
-!JT        write(6,'(''nrbas='',20i3)') (nrbas(ic),ic=1,nctype)
+!        read(5,*) (nrbas(ict),ict=1,nctype)
+!JT        write(6,'(''nrbas='',20i3)') (nrbas(ict),ict=1,nctype)
       endif
 !      read(5,*) norb,nbasis
 !JT      write(6,'(''norb,nbasis='',9i5)') norb,nbasis

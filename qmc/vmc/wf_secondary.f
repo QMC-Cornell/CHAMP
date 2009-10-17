@@ -293,19 +293,19 @@ c  40   cdet(i,iadd_diag)=cdet(i,1)
 c Numerical radial basis functions
       if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) then
       do 45 iadd_diag=2,nwftype
-        do 45 ic=1,nctype
-          do 45 irb=1,nrbas(ic)
-            do 45 ir=1,nr(ic)
-              rwf(ir,irb,ic,iadd_diag)=rwf(ir,irb,ic,1)
-   45         d2rwf(ir,irb,ic,iadd_diag)=d2rwf(ir,irb,ic,1)
+        do 45 ict=1,nctype
+          do 45 irb=1,nrbas(ict)
+            do 45 ir=1,nr(ict)
+              rwf(ir,irb,ict,iadd_diag)=rwf(ir,irb,ict,1)
+   45         d2rwf(ir,irb,ict,iadd_diag)=d2rwf(ir,irb,ict,1)
 
 c Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I think they should be MWF
       do 50 ifr=2,nforce
-        do 50 ic=1,nctype
-          do 50 irb=1,nrbas(ic)
+        do 50 ict=1,nctype
+          do 50 irb=1,nrbas(ict)
             do 50 icoef=1,NCOEF
-              if(icoef.le.2) ae(icoef,irb,ic,ifr)=ae(icoef,irb,ic,1)
-   50         ce(icoef,irb,ic,ifr)=ce(icoef,irb,ic,1)
+              if(icoef.le.2) ae(icoef,irb,ict,ifr)=ae(icoef,irb,ict,1)
+   50         ce(icoef,irb,ict,ifr)=ce(icoef,irb,ict,1)
 
       endif
 

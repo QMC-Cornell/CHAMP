@@ -25,12 +25,12 @@ c dradl = spacing of uniform mesh for local potential
       call alloc ('npotl', npotl, nctype)
       call alloc ('nlrad', nlrad, nctype)
 
-      do 20 ic=1,nctype
+      do 20 ict=1,nctype
 
-      if(ic.lt.10) then
-        write(atomtyp,'(i1)') ic
-       elseif(ic.lt.100) then
-        write(atomtyp,'(i2)') ic
+      if(ict.lt.10) then
+        write(atomtyp,'(i1)') ict
+       elseif(ict.lt.100) then
+        write(atomtyp,'(i2)') ict
        else
         stop 'readps_tm, problem atomtyp'
       endif
@@ -41,41 +41,41 @@ c dradl = spacing of uniform mesh for local potential
       read(3,*) nquad
       write(6,'(''quadrature points'',i4)') nquad
 
-      read(3,*) nlang,rcmax(ic)
+      read(3,*) nlang,rcmax(ict)
 c If the local pseudopot component is not set in input, set it here
-      if(lpotp1(ic).lt.0) then
-        lpotp1(ic)=nlang+1
-        write(6,'(''local pseudopot component is'',i3)') lpotp1(ic)
+      if(lpotp1(ict).lt.0) then
+        lpotp1(ict)=nlang+1
+        write(6,'(''local pseudopot component is'',i3)') lpotp1(ict)
       endif
 
 c local potential
       read(3,*)
-      read(3,*) npotl(ic),nzion,dradl(ic)
-      if(npotl(ic).gt.MPS_GRID) stop 'npotl gt MPS_GRID'
-      if(nzion.ne.int(znuc(iwctype(ic)))) stop 'nzion ne znuc'
+      read(3,*) npotl(ict),nzion,dradl(ict)
+      if(npotl(ict).gt.MPS_GRID) stop 'npotl gt MPS_GRID'
+      if(nzion.ne.int(znuc(iwctype(ict)))) stop 'nzion ne znuc'
 
-      read(3,*) (potl(i,ic),i=1,npotl(ic))
+      read(3,*) (potl(i,ict),i=1,npotl(ict))
 
-      do 5 i=1,npotl(ic)
-  5     write(33,*) (i-1)*dradl(ic),potl(i,ic)
+      do 5 i=1,npotl(ict)
+  5     write(33,*) (i-1)*dradl(ict),potl(i,ict)
 
 c non-local potential
       read(3,*)
-      read(3,*) nlrad(ic),drad(ic)
-      if(nlrad(ic).gt.MPS_GRID) stop 'nlrad gt MPS_GRID'
+      read(3,*) nlrad(ict),drad(ict)
+      if(nlrad(ict).gt.MPS_GRID) stop 'nlrad gt MPS_GRID'
 
-      if(drad(ic)*(nlrad(ic)-1).le.rcmax(ic)) then
+      if(drad(ict)*(nlrad(ict)-1).le.rcmax(ict)) then
         write(6,'(''non-local table max radius = '',
      &  f10.5,'' too small for cut-off = '',f10.5)')
-     &  drad(ic)*(nlrad(ic)-1),rcmax(ic)
+     &  drad(ict)*(nlrad(ict)-1),rcmax(ict)
         stop
       endif
 
       do 10 l=1,nlang
         read(3,*)
-        read(3,*) (ptnlc(i,ic,l),i=1,nlrad(ic))
-      do 10 i=1,nlrad(ic)
- 10     write(34,*) (i-1)*drad(ic),ptnlc(i,ic,l)
+        read(3,*) (ptnlc(i,ict,l),i=1,nlrad(ict))
+      do 10 i=1,nlrad(ict)
+ 10     write(34,*) (i-1)*drad(ict),ptnlc(i,ict,l)
 
       close(3)
  20   continue
