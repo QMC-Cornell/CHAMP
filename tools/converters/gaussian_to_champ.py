@@ -538,7 +538,7 @@ file_output = open(file_output_string,'w')
 file_output.write('control\n')
 file_output.write(' seed=1837465927472523\n')
 file_output.write(' etrial=%.1f' %energy+ '\n')
-file_output.write(' nstep=100 nblk=10 nblkeq=1 nconf=100 nconf_new=0\n')
+file_output.write(' nstep=100 nblk=10 nblkeq=1 nconf=100\n')
 file_output.write(' tau=0.01\n')
 file_output.write('end\n\n')
 
