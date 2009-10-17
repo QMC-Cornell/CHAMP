@@ -3220,7 +3220,7 @@ sub print_new_input{
     printf NEWFILE "control\n";
     printf NEWFILE " seed = 1837465927472523\n";
     printf NEWFILE " etrial=%7.2f\n",$total_energy;
-    printf NEWFILE " nstep=100 nblk=100 nblkeq=1 nconf=100 nconf_new=0\n";
+    printf NEWFILE " nstep=100 nblk=100 nblkeq=1 nconf=100\n";
     if($ecp){
     printf NEWFILE " tau=0.1\n";
     }
