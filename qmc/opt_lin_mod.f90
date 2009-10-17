@@ -253,7 +253,7 @@ module opt_lin_mod
 
 ! derivative-derivative part
   do i = 1, param_nb
-   do j = 1, param_nb
+   do j = i, param_nb
 
 !   diagonal-only approximation for orbital-orbital part
     if (l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j) then
@@ -268,6 +268,11 @@ module opt_lin_mod
     else
      ovlp_lin(i+1,j+1) = dpsi_dpsi_covar(i,j)
 
+    endif
+   
+!   force symmetrization of overlap matrix (important for numerics?)
+    if (i /= j) then
+     ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
     endif
 
    enddo

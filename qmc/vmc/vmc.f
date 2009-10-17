@@ -295,6 +295,11 @@ c       write out configuration for optimization/dmc/gfmc here
       call objects_print_at_each_block
       call routines_write_block !JT
 
+!     save walkers for DMC run
+      if (l_generate_walkers_from_vmc) then
+        call save_vmc_walkers_for_dmc
+      endif
+
 !     exit loop if nblk and threshold on statistical error reached
 !JT      if (block_iterations_nb .ge. nblk .and. eloc_av_err .gt. 0 .and. eloc_av_err .le. error_threshold) then    !JT
 !     eloc_av_err .ne. eloc_av_err is true if eloc_av_err is NaN

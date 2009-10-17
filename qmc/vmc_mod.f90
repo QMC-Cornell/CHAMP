@@ -69,9 +69,41 @@ module vmc_mod
   call alloc ('delttn', delttn, nelec)
   call alloc ('nearesto', nearesto, nelec)
   call alloc ('nearestn', nearestn, nelec)
+
   call common_allocations
 
   end subroutine vmc_init
+
+! ==============================================================================
+  subroutine vmc_release
+! ------------------------------------------------------------------------------
+! Description   : release arrays allocated for VMC
+!
+! Created       : J. Toulouse, 16 Oct 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+  call release ('xnew', xnew)
+  call release ('vold', vold)
+  call release ('vnew', vnew)
+  call release ('psi2o', psi2o)
+  call release ('psi2n', psi2n)
+  call release ('eold', eold)
+  call release ('enew', enew)
+  call release ('rmino', rmino)
+  call release ('rminn', rminn)
+  call release ('rvmino', rvmino)
+  call release ('rvminn', rvminn)
+  call release ('rminon', rminon)
+  call release ('rminno', rminno)
+  call release ('rvminon', rvminon)
+  call release ('rvminno', rvminno)
+  call release ('delttn', delttn)
+  call release ('nearesto', nearesto)
+  call release ('nearestn', nearestn)
+
+  end subroutine vmc_release
 
 ! ==============================================================================
   subroutine vmc_run

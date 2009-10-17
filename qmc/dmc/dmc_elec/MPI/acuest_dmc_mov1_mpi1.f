@@ -294,7 +294,6 @@ c         ipeerr=ipeerr+iemerr
 !      eloc_av = egave                                 !JT
 !      call object_modified_by_index (eloc_av_index)   !JT
 
-
 c I have changed the dwt limit in the dmc routines so it does not depend on etrial so  there is no need for these warning msgs.
 c The dwt limit is there to prevent population explosions with nonlocal psps. but there are
 c better solutions than dwt limits.

@@ -457,7 +457,8 @@ strings_tools_mod.o: basic_tools_mod.o constants_mod.o
 testing_mod.o: all_tools_mod.o
 variables_mod.o: constants_mod.o
 vmc_mod.o: all_tools_mod.o allocations_mod.o modules.h
-walkers_mod.o: all_tools_mod.o mpi_mod.o restart_mod.o vmc_mod.o modules.h
+walkers_mod.o: all_tools_mod.o control_mod.o initialization_mod.o mpi_mod.o \
+	restart_mod.o vmc_mod.o modules.h
 write_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o variables_mod.o
 commons/age_mod.o: constants_mod.o
 commons/atom_mod.o: constants_mod.o

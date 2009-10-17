@@ -3,6 +3,8 @@ module walkers_mod
   use all_tools_mod
   use restart_mod
   use vmc_mod
+  use initialization_mod
+  use control_mod
 
 ! Declaration of global variables and default values
   character (len=max_string_len_file)   :: file_mc_configs_in  = 'mc_configs'
@@ -17,7 +19,8 @@ module walkers_mod
   logical :: l_write_walkers = .false.
   integer :: write_walkers_step = 1
   integer :: file_walkers_out_unit
-  logical :: l_generate_walkers = .false.
+  integer :: nconf_saved
+  logical :: l_generate_walkers_from_vmc = .false.
 
   contains
 
@@ -59,7 +62,7 @@ module walkers_mod
    write(6,'(a)') '  file_walkers_out  = [string] : output file for walkers in Scemama format'
    write(6,'(a)') '  write_walkers = [logical] write walkers in Scemama format (default=false)'
    write(6,'(a)') '  write_walkers_step = [integer] write walkers in Scemama format every X step? (default=1)'
-   write(6,'(a)') '  generate_from_vmc = [bool] generate walkers from a VMC run (default=false)'
+   write(6,'(a)') '  generate_walkers_from_vmc = [bool] generate walkers from a short VMC run (default=false)'
    write(6,'(a)') ' end'
    write(6,*)
 
@@ -110,8 +113,8 @@ module walkers_mod
   case ('write_walkers_step')
    call get_next_value (write_walkers_step)
 
-  case ('generate_from_vmc')
-   call get_next_value (l_generate_walkers)
+  case ('generate_walkers_from_vmc')
+   call get_next_value (l_generate_walkers_from_vmc)
 
   case ('end')
    exit
@@ -141,32 +144,14 @@ module walkers_mod
   integer walk_i, elec_i, elec_j, dim_i
   real(dp) dist
   logical ok
-  integer nstep_save, nblk_save, nstep_total_save, nwalk_save
-  character(len=max_string_len) :: mode_save
 
 ! begin
   write(6,*)
   write(6,'(a)') 'Initial walkers:'
 
 ! generate walkers from a VMC run
-  if (l_generate_walkers) then
-    call die (lhere, 'generate_walkers does not work!')
-    write(6,'(a)') 'Generating initial walkers from a VMC run...'
-    mode_save = mode
-    nstep_save = nstep
-    nblk_save = nblk
-    nstep_total_save = nstep_total
-    nwalk_save = nwalk
-    mode = 'vmc_mov1'
-    nstep = 100
-    nblk = 100
-    nwalk = 1
-    nstep_total = nstep * nproc
-    call vmc_run
-    nstep = nstep_save
-    nblk = nblk_save
-    nstep_total = nstep_total_save
-    nwalk = nwalk_save
+  if (l_generate_walkers_from_vmc) then
+    call generate_walkers_from_vmc
 
 ! walkers from restart file
   elseif (irstar.eq.1) then
@@ -212,7 +197,9 @@ module walkers_mod
        write(6,'(a)') 'Warning: walker file does not exist. Generate randomly one walker.'
        call sites_per (xoldw,nelec,nup,ndn,rlatt_sim)
      else
-       call die (lhere, 'Walker file does not exist >'+trim(file_mc_configs_in)+'<. First run in vmc mode to generate it.')
+!       call die (lhere, 'Walker file does not exist >'+trim(file_mc_configs_in)+'<. First run in vmc mode to generate it.')
+       l_generate_walkers_from_vmc = .true.
+       call generate_walkers_from_vmc
      endif ! if idmc <0
 
   endif
@@ -231,6 +218,8 @@ module walkers_mod
          if (dist < 1.d-24) then
             dist=sqrt(dist)
             write(6,'(a,i5,a,i3,a,i3,a)') 'Error: in walker # ',walk_i,', electrons ',elec_i,' and ',elec_j, ' are too close.'
+            write(6,'(a,i3,a,3f12.6)') 'electron ',elec_i,' : ',xoldw(1:ndim,elec_i,walk_i,1)
+            write(6,'(a,i3,a,3f12.6)') 'electron ',elec_j,' : ',xoldw(1:ndim,elec_j,walk_i,1)
             call die (lhere, 'two electrons are close in a walker.')
          endif
        enddo ! elec_j
@@ -575,5 +564,83 @@ module walkers_mod
   call object_modified ('xoldw')
 
   end subroutine read_initial_walkers
+
+! ==============================================================================
+  subroutine generate_walkers_from_vmc
+! ------------------------------------------------------------------------------
+! Description   : generate initial walkers from a VMC run
+!
+! Created       : J. Toulouse, 16 Oct 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  character (len=max_string_len_rout), save :: lhere = 'generate_walkers_from_vmc'
+  integer nstep_save, nblk_save, nstep_total_save, nwalk_save
+  real(dp) error_threshold_save
+  character(len=max_string_len) :: mode_save
+
+! begin
+  write(6,'(a)') 'Generating initial walkers from a VMC run (one walker will be saved after every block of 10 steps).'
+  write(6,*)
+  mode_save = mode
+  nstep_save = nstep
+  nblk_save = nblk
+  nstep_total_save = nstep_total
+  nwalk_save = nwalk
+  error_threshold_save = error_threshold
+  if (l_mode_mpi) then
+   mode = 'vmc_mov1_mpi'
+  else
+   mode = 'vmc_mov1'
+  endif
+  call set_mode
+  nstep = 10
+  nblk = nconf
+  error_threshold = 1.d99
+  nwalk = 1
+  nstep_total = nstep * nproc
+  nconf_saved = 0
+  call vmc_run
+  call vmc_release
+  nstep = nstep_save
+  nblk = nblk_save
+  nstep_total = nstep_total_save
+  nwalk = nwalk_save
+  error_threshold = error_threshold_save
+  mode = mode_save
+  call set_mode
+  write(6,*)
+  write(6,'(i5,a)') nconf, ' walkers have been generated from the VMC run.'
+
+  end subroutine generate_walkers_from_vmc
+
+! ==============================================================================
+  subroutine save_vmc_walkers_for_dmc
+! ------------------------------------------------------------------------------
+! Description   : save walkers of a VMC run for a subsequent DMC run
+! Description   : without writing out a file
+!
+! Created       : J. Toulouse, 16 Oct 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  character (len=max_string_len_rout), save :: lhere = 'save_vmc_walkers_for_dmc'
+  
+! begin
+  nconf_saved = nconf_saved + 1
+  if (nconf_saved > nconf) then
+   return
+  endif
+
+  call alloc ('xoldw', xoldw, 3, nelec, MWALK, nforce)
+  xoldw (1:ndim, 1:nelec, nconf_saved, 1) = xold (1:ndim,1:nelec) 
+
+!  write(6,*) "nconf_saved=",nconf_saved
+
+  end subroutine save_vmc_walkers_for_dmc
 
 end module walkers_mod
