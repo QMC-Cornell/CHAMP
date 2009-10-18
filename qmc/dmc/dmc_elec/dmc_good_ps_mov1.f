@@ -51,13 +51,13 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use dets_mod
       use basis1_mod
       use contrl_mod
+      use contr3_mod, only : mode
       use const_mod
       use dim_mod
       use forcepar_mod
       use contrl_per_mod
       use contrl_opt_mod
       use delocc_mod
-      use contr3_mod, only : mode
       use force_dmc_mod
       use iterat_mod
       use jacobsave_mod

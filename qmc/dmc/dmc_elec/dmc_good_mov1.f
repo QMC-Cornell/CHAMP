@@ -50,6 +50,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use dets_mod
       use basis1_mod
       use contrl_mod
+      use contr3_mod, only : mode
       use const_mod
       use dim_mod
       use forcepar_mod
