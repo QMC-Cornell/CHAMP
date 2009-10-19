@@ -108,14 +108,14 @@ export F77 F77_FLAGS LD_FLAGS CC CXX EINSPLINE USE_GCC
 # -------------------------------------------------^
 # For some reason these error msgs. have disappeared, so remove the -w
 ifeq ($(hostname),gauss)
+  CC_MPI=mpicc
+  F95_MPI=mpif90
+  CC_FAST_FLAGS=-O3 -DUNDERSCORE -mtune=core2 -march=core2 -xT 
 # F95_FAST_FLAGS=-zero -w -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -DNOEINSPLINE
   F95_FAST_FLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -DNOEINSPLINE
   F77_FAST_FLAGS=$(F95_FAST_FLAGS) -extend_source 
   F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
   F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
-  CC_FAST_FLAGS=-O3 -DUNDERSCORE -mtune=core2 -march=core2 -xT 
-  CC_MPI=mpicc
-  F95_MPI=mpif90
   LD_FAST_FLAGS=$(F95_FAST_FLAGS)
   EINSPLINE=
   LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
@@ -263,6 +263,28 @@ ifeq ($(hostname),p4fe1)
   LD_END_MPI=-nothread -lmpi -lpthread
 endif
 
+# NNIN cluster at Stanford
+ifeq ($(hostname),exiton)
+ CC=icc
+ CXX=icc
+ F95=ifort
+ CC_MPI=mpicc
+ F95_MPI=mpif90
+ F95_FAST_FLAGS=-O3 -ip -align all -fpp -DNOEINSPLINE
+ F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+ EINSPLINE=
+endif
+
+ifeq ($(hostname),cpstar)
+ CC=icc
+ CXX=icc
+ F95=ifort
+ CC_MPI=mpicc
+ F95_MPI=mpif90
+ F95_FAST_FLAGS=-O3 -ip -align all -fpp -DNOEINSPLINE
+ F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+ EINSPLINE=
+endif
 
 # OSC Itanium cluster, requires Intel compiler >9.0
 ifeq ($(hostname),ipf-login1)
