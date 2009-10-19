@@ -9,7 +9,7 @@ hostname := $(shell uname -n)
 
 # Libraries --------------------------------------------------------------
 
-LIBHOME=../lib
+LIBHOME=/home/cyrus/champ/lib
 # LIBHOME=/home/cyrus/champ/lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
@@ -28,245 +28,252 @@ PSPLINE=-L$(LIBHOME)/lib2/pspline/pspline -lpspline
 
 EINSPLINE=-L$(LIBHOME)/lib2/einspline/lib -leinspline
 
-CHAMP_LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
+LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
 
-CHAMP_LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/einspline/lib/libeinspline.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/einspline/lib/libeinspline.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 
 # C compilation ------------------------------------------------------------
 
-CHAMP_C=icc
-CHAMP_CXX=icpc
-CHAMP_MPIC=icc
+CC=icc
+CXX=icpc
+CC_MPI=icc
 
-CHAMP_C_FAST=-O3 -DUNDERSCORE
-CHAMP_C_PROF=-O3 -DUNDERSCORE -pg
-CHAMP_C_DEBUG=-DUNDERSCORE
-CHAMP_C_FLAGS=$(CHAMP_C_FAST)
-CHAMP_C_MPI_FLAGS=$(CHAMP_C_FLAGS)
+CC_FAST_FLAGS=-O3 -DUNDERSCORE
+CC_PROF_FLAGS=-O3 -DUNDERSCORE -pg
+CC_DEBUG_FLAGS=-DUNDERSCORE
+
+CC_FLAGS=$(CC_FAST_FLAGS)
+CC_MPI_FLAGS=$(CC_FLAGS)
 
 # Fortran compilation ------------------------------------------------------
 
 # These are defaults using the ifort compiler and are used e.g. on the old AMD cluster dft, and on nanolab
-CHAMP_F95=ifort
-CHAMP_MPIF95=mpif77
+F95=ifort
+F95_MPI=mpif77
 
-CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip 
-CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg 
-CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+F95_FAST_FLAGS= -zero -r8 -pad -align all -fpp -ip -O3
+F95_PROF_FLAGS= -zero -r8 -pad -align all -fpp -pg -O3
+F95_DEBUG_FLAGS=-zero -r8 -pad -align all -fpp -ip -O0 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 
 # by default, compilation for f77 is the same than for f95
-CHAMP_F77=$(CHAMP_F95)
-CHAMP_MPIF77=$(CHAMP_MPIF95)
-CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
-CHAMP_F77_DEBUG=$(CHAMP_F95_DEBUG) -extend_source
-CHAMP_F77_PROF=$(CHAMP_F95_PROF) -extend_source
+F77=$(F95)
+F77_MPI=$(F95_MPI)
+F77_FAST_FLAGS=$(F95_FAST_FLAGS) -extend_source
+F77_DEBUG_FLAGS=$(F95_DEBUG_FLAGS) -extend_source
+F77_PROF_FLAGS=$(F95_PROF_FLAGS) -extend_source
 
 # by default, fast options
-CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-CHAMP_F77_FLAGS=$(CHAMP_F77_FAST) 
+F95_FLAGS=$(F95_FAST_FLAGS)
+F77_FLAGS=$(F77_FAST_FLAGS) 
 
 # by default, same options for MPI
-CHAMP_F95_MPI_FLAGS=$(CHAMP_F95_FLAGS) -DMPI
-CHAMP_F77_MPI_FLAGS=$(CHAMP_F77_FLAGS) -DMPI
+F95_MPI_FLAGS=$(F95_FLAGS) -DMPI
+F77_MPI_FLAGS=$(F77_FLAGS) -DMPI
+F95_DEBUG_MPI_FLAGS=$(F95_DEBUG_FLAGS) -DMPI
+F77_DEBUG_MPI_FLAGS=$(F77_DEBUG_FLAGS) -DMPI
 
 # Linking  ------------------------------------------------------------------
 
 # by default, linker is f95 compiler
-CHAMP_LD=$(CHAMP_F95)
-CHAMP_LD_MPI=$(CHAMP_MPIF95)
+LD=$(F95)
+LD_MPI=$(F95_MPI)
 
-CHAMP_LD_FAST=$(CHAMP_F95_FLAGS)
-CHAMP_LD_PROF=-O3 -pg
-CHAMP_LD_DEBUG=-align all
-CHAMP_LD_IPO=-O3 -ipo -fast -align all
+LD_FAST_FLAGS=$(F95_FLAGS)
+LD_PROF_FLAGS=-O3 -pg
+# LD_DEBUG_FLAGS=-align all
+LD_DEBUG_FLAGS=$(LD_FAST_FLAGS)
 
 # by default, fast options
-CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+LD_FLAGS=$(LD_FAST_FLAGS)
 
-CHAMP_LD_END=
-#CHAMP_LD_END_MPI=-lmpi -lpthread
-CHAMP_LD_END_MPI=
+LD_END=
+#LD_END_MPI=-lmpi -lpthread
+LD_END_MPI=
 
 # Executables -------------------------------------------------------------
 
-CHAMP_EXE=champ.exe
-CHAMP_MPI_EXE=champ_mpi.exe
-#CHAMP_DEBUG_EXE=champ_debug.exe
-CHAMP_DEBUG_EXE=champ.exe
+EXE=champ.exe
+MPI_EXE=champ_mpi.exe
+#DEBUG_EXE=champ_debug.exe
+DEBUG_EXE=champ.exe
 
 # Export these for compiling the libraries
-export CHAMP_F77 CHAMP_F77_FLAGS CHAMP_LD_FLAGS CHAMP_C CHAMP_CXX EINSPLINE USE_GCC 
+export F77 F77_FLAGS LD_FLAGS CC CXX EINSPLINE USE_GCC 
 ####################### MACHINES ########################################
 
 # New dft cluster at Cornell
+# We used to use -w to suppress warnings because otherwise the compilation of parser_tools fails after priting 10 error msgs. such as
+#  Error: parser_tools_mod.f90, line 581: The dimensions of this array have been defined more than once.   [VALUE_LIST]
+#    character(len=*), allocatable, intent(out) :: value_list (:)
+# -------------------------------------------------^
+# For some reason these error msgs. have disappeared, so remove the -w
 ifeq ($(hostname),gauss)
-  CHAMP_F95_FAST=-zero -w -r8 -pad -align all -O3 -fpp -ip -mtune=core2 -march=core2 -xT -DNOEINSPLINE
-  CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source 
-  CHAMP_C_FAST=-O3 -DUNDERSCORE -mtune=core2 -march=core2 -xT 
-  CHAMP_MPIC=mpicc
-  CHAMP_MPIF95=mpif90
-  CHAMP_LD_FAST=$(CHAMP_F95_FAST)
+# F95_FAST_FLAGS=-zero -w -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -DNOEINSPLINE
+  F95_FAST_FLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -DNOEINSPLINE
+  F77_FAST_FLAGS=$(F95_FAST_FLAGS) -extend_source 
+  F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+  F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+  CC_FAST_FLAGS=-O3 -DUNDERSCORE -mtune=core2 -march=core2 -xT 
+  CC_MPI=mpicc
+  F95_MPI=mpif90
+  LD_FAST_FLAGS=$(F95_FAST_FLAGS)
   EINSPLINE=
-  CHAMP_LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+  LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 
 # nanolab at Cornell
 ifeq ($(findstring cnf.cornell,$(hostname)),cnf.cornell)
-  CHAMP_LD_FAST=$(CHAMP_F95_FLAGS)
-  CHAMP_LD_PROF=-O3 -pg
-  CHAMP_LD_DEBUG=-align all
-  CHAMP_LD_IPO=-O3 -ipo -align all -fast
+  LD_FAST_FLAGS=$(F95_FLAGS)
+  LD_PROF_FLAGS=-O3 -pg
+  LD_DEBUG_FLAGS=-align all
+  LD_IPO=-O3 -ipo -align all -fast
 endif
 
 #qmc1 at cornell
 ifeq ($(hostname),qmc1)
-  CHAMP_F95=ifort
-  CHAMP_C=gcc
-  CHAMP_CXX=g++
-  CHAMP_MPIC=mpicc
+  F95=ifort
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
 
-  CHAMP_F95_FAST= -zero -r8 -pad -align all -O3 -fpp -ip
-  CHAMP_F95_PROF= -zero -r8 -pad -align all -O3 -fpp -pg
-  CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+  F95_FAST_FLAGS= -zero -r8 -pad -align all -O3 -fpp -ip
+  F95_PROF_FLAGS= -zero -r8 -pad -align all -O3 -fpp -pg
+  F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 
 # by default, compilation for f77 is the same than for f95
-  CHAMP_F77=$(CHAMP_F95)
-  CHAMP_F77_FAST=$(CHAMP_F95_FAST) -extend_source
-  CHAMP_F77_DEBUG=$(CHAMP_F95_DEBUG) -extend_source
-  CHAMP_F77_PROF=$(CHAMP_F95_PROF) -extend_source
+  F77=$(F95)
+  F77_FAST_FLAGS=$(F95_FAST_FLAGS) -extend_source
+  F77_DEBUG_FLAGS=$(F95_DEBUG_FLAGS) -extend_source
+  F77_PROF_FLAGS=$(F95_PROF_FLAGS) -extend_source
 
 # by default, fast options
-  CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-  CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-
-  CHAMP_LD=ifort
+  F95_FLAGS=$(F95_FAST_FLAGS)
+  F77_FLAGS=$(F77_FAST_FLAGS)
 
   USE_GCC=yes
 endif
 
 #qmc2 at cornell
 ifeq ($(hostname),qmc2)
-  CHAMP_C=gcc
-  CHAMP_CXX=g++
-  CHAMP_MPIC=mpicc
-  CHAMP_F95=gfortran
-  CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
-  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
-  CHAMP_F95_DEBUG=$(CHAMP_F95_FAST) -g -fbounds-check
-  CHAMP_F77_DEBUG=$(CHAMP_F77_FAST) -g -fbounds-check
-  CHAMP_LD=gfortran
-  CHAMP_LD_FLAGS=-O3
-  CHAMP_LD_DEBUG=-Wall -g -fbounds-check
-  CHAMP_LD_MPI=mpif90
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
+  F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check
+  F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check
+  LD_FLAGS=-O3
+  LD_DEBUG_FLAGS=-Wall -g -fbounds-check
   EINSPLINE=
-  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 #jasmine at cornell
 ifeq ($(hostname),jasmine)
-  CHAMP_C=gcc
-  CHAMP_CXX=g++
-  CHAMP_MPIC=mpicc
-  CHAMP_F95=gfortran
-  CHAMP_MPIF95=mpif90
-  CHAMP_F95_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
-  CHAMP_F77_FAST=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
-  CHAMP_LD=gfortran
-  CHAMP_LD_FLAGS=-O3
-  CHAMP_LD_MPI=mpif90
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  LD=gfortran
+  LD_FLAGS=-O3
+  LD_MPI=mpif90
   EINSPLINE=
-  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # zippy2 at home
 ifeq ($(hostname),zippy2)
-#CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
- CHAMP_C=gcc
+#F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
+ CC=gcc
 #EINSPLINE=
 endif
 
 # Theory Center's linux cluster
 # ifeq ($(hostname),linuxlogin1.tc.cornell.edu)
 ifeq ($(findstring linuxlogin,$(hostname)), linuxlogin)
- CHAMP_MPIF95=mpif90
- CHAMP_LD_MPI=mpif90
+ F95_MPI=mpif90
+ LD_MPI=mpif90
 endif
 
 # clastos in Paris
 ifeq ($(hostname),clastos)
-# CHAMP_C=icc
- CHAMP_C=/usr/local/bin/mpicc_64
-# CHAMP_CXX=icpc
- CHAMP_CXX=/usr/local/bin/mpicxx_64
- CHAMP_F95=/usr/local/bin/mpif90_64
- CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
- CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
+# CC=icc
+ CC=/usr/local/bin/mpicc_64
+# CXX=icpc
+ CXX=/usr/local/bin/mpicxx_64
+ F95=/usr/local/bin/mpif90_64
+ F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
+ F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
  EINSPLINE=
- CHAMP_MPIF95=/usr/local/bin/mpif90_64
- CHAMP_MPIC=/usr/local/bin/mpicc_64
- CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+ F95_MPI=/usr/local/bin/mpif90_64
+ CC_MPI=/usr/local/bin/mpicc_64
+ LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # hydrogene in Paris
 ifeq ($(hostname),hydrogene)
- CHAMP_F95_FAST=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
- CHAMP_C=gcc
+ F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
+ CC=gcc
  EINSPLINE=
- CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+ LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # NASA Ames Columbia Itanium cluster
 ifeq ($(hostname),cfe2)
- CHAMP_C=icc
- CHAMP_CXX=icc
- CHAMP_MPIF95=ifort
- CHAMP_MPIF77=ifort
- CHAMP_LD_MPI=ifort
- CHAMP_F95_FAST=-O3 -ip  -align all -fpp -DNOEINSPLINE
- CHAMP_LD_FAST=-O3 -ip -align all -fpp -DNOEINSPLINE
- CHAMP_F95_DEBUG=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
- CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
+ CC=icc
+ CXX=icc
+ F95_MPI=ifort
+ F77_MPI=ifort
+ LD_MPI=ifort
+ F95_FAST_FLAGS=-O3 -ip  -align all -fpp -DNOEINSPLINE
+ LD_FAST_FLAGS=-O3 -ip -align all -fpp -DNOEINSPLINE
+ F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
+ LD_END_MPI=-nothread -lmpi -lpthread
  EINSPLINE=
- CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+ LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # Pleiades at NASA
 ifeq ($(hostname),p4fe1)
-  CHAMP_C=icc
-  CHAMP_CXX=icc
-  CHAMP_MPIF95=mpiifort
-  CHAMP_MPIF77=mpiifort
-  CHAMP_LD_MPI=mpiifort
-#  CHAMP_MPIF95=ifort
-#  CHAMP_MPIF77=ifort
-#  CHAMP_LD_MPI=ifort
-#  CHAMP_MPIF95=mpif90
-#  CHAMP_MPIF77=mpif90
-#  CHAMP_LD_MPI=mpif90
+  CC=icc
+  CXX=icc
+  F95_MPI=mpiifort
+  F77_MPI=mpiifort
+  LD_MPI=mpiifort
+#  F95_MPI=ifort
+#  F77_MPI=ifort
+#  LD_MPI=ifort
+#  F95_MPI=mpif90
+#  F77_MPI=mpif90
+#  LD_MPI=mpif90
   EINSPLINE=
-  CHAMP_LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a
-  CHAMP_F95_FAST=-O3 -ip -align all -fpp -DNOEINSPLINE -mcmodel medium
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a
+  F95_FAST_FLAGS=-O3 -ip -align all -fpp -DNOEINSPLINE -mcmodel medium
 -shared-intel
-  CHAMP_LD_FAST=-O3 -ip -align all -fpp -DNOEINSPLINE -mcmodel medium
+  LD_FAST_FLAGS=-O3 -ip -align all -fpp -DNOEINSPLINE -mcmodel medium
 -shared-intel
-#  CHAMP_F95_FAST=-O3 -ip  -fpe0 -traceback -align all -fpp -DNOEINSPLINE
-#  CHAMP_LD_FAST=-O3 -ip -fpe0 -traceback -align all -fpp -DNOEINSPLINE
-  CHAMP_LD_END_MPI=-nothread -lmpi -lpthread
+#  F95_FAST_FLAGS=-O3 -ip  -fpe0 -traceback -align all -fpp -DNOEINSPLINE
+#  LD_FAST_FLAGS=-O3 -ip -fpe0 -traceback -align all -fpp -DNOEINSPLINE
+  LD_END_MPI=-nothread -lmpi -lpthread
 endif
 
 
 # OSC Itanium cluster, requires Intel compiler >9.0
 ifeq ($(hostname),ipf-login1)
-  CHAMP_MPIF95=mpif90
+  F95_MPI=mpif90
   LAPACK=-L/usr/local/mkl-7.0.1.6/mkl701/lib/64 -lmkl_lapack -lmkl_ipf -lguide -lpthread
   BLAS=-L/usr/local/mkl-7.0.1.6/mkl701/lib/64 -lmkl_ipf -lguide -lpthread
 endif
 
 # OSC Pentium IV cluster, requires Intel compiler >9.0
 ifeq ($(hostname),piv-login1)
-  CHAMP_MPIF95=mpif90
+  F95_MPI=mpif90
   LAPACK=-L/usr/local/mkl-7.0.17/mkl70/lib/32 -lmkl_lapack -lmkl_ia32 -lguide -lpthread -Vaxlib
   BLAS=-L/usr/local/mkl-7.0.17/mkl70/lib/32 -lmkl_ia32 -lguide -lpthread
 endif
@@ -280,29 +287,29 @@ ifeq ($(hostname),opt-login01.osc.edu)
 # module load acml-intel
 # module swap mpi mvapich-0.9.8-intel
 
-  CHAMP_MPIF95 = mpif77 -fc=ifort
-  CHAMP_MPIC = mpicc -cc=icc
-  CHAMP_LD_MPI = mpif77 -fc=ifort
-  CHAMP_LD_FAST=-O3 -align all
+  F95_MPI = mpif77 -fc=ifort
+  CC_MPI = mpicc -cc=icc
+  LD_MPI = mpif77 -fc=ifort
+  LD_FAST_FLAGS=-O3 -align all
 
 # Serial (Portland compiler), requires ACML module
 # module load acml
-# CHAMP_F95 = pgf95
-# CHAMP_C = pgcc
-# CHAMP_LD = pgf95
-# CHAMP_F77_FAST = -Mpreprocess -Mextend -O2 -tp amd64e
-# CHAMP_F95_FAST = -Mpreprocess -O2 -tp amd64 -DPGI
-# CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
-# CHAMP_LD_FAST = -O2 -tp amd64e
+# F95 = pgf95
+# CC = pgcc
+# LD = pgf95
+# F77_FAST_FLAGS = -Mpreprocess -Mextend -O2 -tp amd64e
+# F95_FAST_FLAGS = -Mpreprocess -O2 -tp amd64 -DPGI
+# CC_FAST_FLAGS = -DUNDERSCORE -O2 -tp amd64e
+# LD_FAST_FLAGS = -O2 -tp amd64e
 
 # Parallel (Portland compiler), requires ACML module
 # module load acml
-# CHAMP_MPIF95 = mpif90
-# CHAMP_MPIC = mpicc
-# CHAMP_LD_MPI = mpif90
-# CHAMP_F77_MPI_FLAGS = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
-# CHAMP_F95_MPI_FLAGS = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
-# CHAMP_C_MPI_FLAGS = -DMPI -DUNDERSCORE -O2 -tp amd64e
+# F95_MPI = mpif90
+# CC_MPI = mpicc
+# LD_MPI = mpif90
+# F77_MPI_FLAGS = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
+# F95_MPI_FLAGS = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
+# CC_MPI_FLAGS = -DMPI -DUNDERSCORE -O2 -tp amd64e
 
   LAPACK=${ACML}
   BLAS=${ACML}
@@ -318,7 +325,7 @@ endif
 ifeq ($(hostname),devon)
  LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
  BLAS=-L${MKL_HOME}/lib/32 -lmkl_ia32 -lguide -lpthread
- CHAMP_C=icc
+ CC=icc
 endif
 ifeq ($(hostname),kunoy)
  LAPACK=-L${MKL_HOME}/lib/32 -lmkl_lapack
@@ -349,36 +356,36 @@ endif
 ifeq ($(hostname),login1)
 
 # serial
-  CHAMP_F77 = xlf
-  CHAMP_F77_FAST = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95 = xlf95
-  CHAMP_F95_FAST = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90 -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_C = xlc
-  CHAMP_C_FAST = -O5
-  CHAMP_LD = xlf95
-  CHAMP_LD_FAST =
+  F77 = xlf
+  F77_FAST_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  F95 = xlf95
+  F95_FAST_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90 -qsuppress=1512-039 -qsuppress=1512-047
+  CC = xlc
+  CC_FAST_FLAGS = -O5
+  LD = xlf95
+  LD_FAST_FLAGS =
 
 # serial debug
-  CHAMP_F77_DEBUG = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f -WF,-DDEBUG,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_DEBUG = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f90 -WF,-DDEBUG -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_C_DEBUG =
-  CHAMP_LD_DEBUG =
+  F77_DEBUG_FLAGS = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f -WF,-DDEBUG,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  F95_DEBUG_FLAGS = -C -g -qsigtrap -qlinedebug -qsuffix=cpp=f90 -WF,-DDEBUG -qsuppress=1512-039 -qsuppress=1512-047
+  CC_DEBUG_FLAGS =
+  LD_DEBUG_FLAGS =
 
 # MPI debug
-  CHAMP_MPIF95 = mpif90.ibm
-  CHAMP_F77_MPI_FLAGS = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_MPI_FLAGS = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_MPIC = mpicc.ibm
-  CHAMP_C_MPI_FLAGS =  -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide
-  CHAMP_LD_MPI = mpif90.ibm
+  F95_MPI = mpif90.ibm
+  F77_MPI_FLAGS = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  F95_MPI_FLAGS = -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CC_MPI = mpicc.ibm
+  CC_MPI_FLAGS =  -C -g -qsigtrap -qlinedebug -qflttrap=enable:inexact:invalid:overflow:underflow:zerodivide
+  LD_MPI = mpif90.ibm
 
 # MPI
-  CHAMP_MPIF95 = mpif90.ibm
-  CHAMP_F77_MPI_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F95_MPI_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_MPIC = mpicc.ibm
-  CHAMP_C_MPI_FLAGS = -O5
-  CHAMP_LD_MPI = mpif90.ibm
+  F95_MPI = mpif90.ibm
+  F77_MPI_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -Ifit -Ivmc -Ivmc/MPI -Idmc -Idmc/dmc_elec -Idmc/dmc_elec/MPI -qsuppress=1512-039 -qsuppress=1512-047
+  F95_MPI_FLAGS = -O5 -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+  CC_MPI = mpicc.ibm
+  CC_MPI_FLAGS = -O5
+  LD_MPI = mpif90.ibm
 endif
 
 # Jaguar at NCCS Oak Ridge
@@ -389,21 +396,21 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
 # Serial compilation
 # the following configuration compiles but the code segm. faults
-# CHAMP_F95 = pgf95
-# CHAMP_C = pgcc
-# CHAMP_LD = pgf95
-# CHAMP_F77_FAST = -Mpreprocess -Mextend -O2 -tp amd64e
-# CHAMP_F95_FAST = -Mpreprocess -O2 -tp amd64 -DPGI
-# CHAMP_C_FAST = -DUNDERSCORE -O2 -tp amd64e
-# CHAMP_LD_FAST = -O2 -tp amd64e
+# F95 = pgf95
+# CC = pgcc
+# LD = pgf95
+# F77_FAST_FLAGS = -Mpreprocess -Mextend -O2 -tp amd64e
+# F95_FAST_FLAGS = -Mpreprocess -O2 -tp amd64 -DPGI
+# CC_FAST_FLAGS = -DUNDERSCORE -O2 -tp amd64e
+# LD_FAST_FLAGS = -O2 -tp amd64e
 
 # MPI compilation
-# CHAMP_MPIF95 = mpif90
-# CHAMP_MPIC = mpicc
-# CHAMP_LD_MPI = mpif90
-# CHAMP_F77_MPI_FLAGS = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
-# CHAMP_F95_MPI_FLAGS = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
-# CHAMP_C_MPI_FLAGS = -DMPI -DUNDERSCORE -O2 -tp amd64e
+# F95_MPI = mpif90
+# CC_MPI = mpicc
+# LD_MPI = mpif90
+# F77_MPI_FLAGS = -Mpreprocess -Mextend -DMPI -O2 -tp amd64e
+# F95_MPI_FLAGS = -Mpreprocess -DMPI -O2 -tp amd64e -DPGI
+# CC_MPI_FLAGS = -DMPI -DUNDERSCORE -O2 -tp amd64e
 
 #  LAPACK=${ACML}
 #  BLAS=${ACML}
@@ -414,21 +421,21 @@ ifeq ($(findstring jaguar,$(hostname)), jaguar)
 # The "-Wl,-z,muldefs" tells it to not stop if it encounters multiple definitions of e.g. __exp
 
 # Serial compilation
- CHAMP_F95 = ftn -target=linux
- CHAMP_C = cc -target=linux
- CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
- CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
- CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
- CHAMP_LD = ftn -target=linux -Wl,-z,muldefs
- CHAMP_LD_FAST = -O2
+ F95 = ftn -target=linux
+ CC = cc -target=linux
+ F77_FAST_FLAGS = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ F95_FAST_FLAGS = -cpp -DPATHSCALE -O2 -r8 -zerouv
+ CC_FAST_FLAGS =  -DPATHSCALE -DUNDERSCORE -O2
+ LD = ftn -target=linux -Wl,-z,muldefs
+ LD_FAST_FLAGS = -O2
 
 # MPI compilation
- CHAMP_MPIF95 = ftn -target=linux
- CHAMP_MPIC = cc -target=linux
- CHAMP_F77_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
- CHAMP_F95_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
- CHAMP_C_MPI_FLAGS = -DPATHSCALE -DMPI -DUNDERSCORE -O2
- CHAMP_LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
+ F95_MPI = ftn -target=linux
+ CC_MPI = cc -target=linux
+ F77_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
+ F95_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
+ CC_MPI_FLAGS = -DPATHSCALE -DMPI -DUNDERSCORE -O2
+ LD_MPI = ftn -target=linux -O2 -Wl,-z,muldefs
 
 # acml has both the LAPACK and the BLAS
  LAPACK=-lacml
@@ -440,23 +447,23 @@ endif
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
 # Serial compilation
-#CHAMP_F95 = ftn -target=linux
- CHAMP_F95 = pathf90
-#CHAMP_C = cc -target=linux
- CHAMP_C = pathf90
- CHAMP_F77_FAST = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
- CHAMP_F95_FAST = -cpp -DPATHSCALE -O2 -r8 -zerouv
- CHAMP_C_FAST =  -DPATHSCALE -DUNDERSCORE -O2
- CHAMP_LD = pathf90 -Wl,-z,muldefs
- CHAMP_LD_FAST = -O2
+#F95 = ftn -target=linux
+ F95 = pathf90
+#CC = cc -target=linux
+ CC = pathf90
+ F77_FAST_FLAGS = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
+ F95_FAST_FLAGS = -cpp -DPATHSCALE -O2 -r8 -zerouv
+ CC_FAST_FLAGS =  -DPATHSCALE -DUNDERSCORE -O2
+ LD = pathf90 -Wl,-z,muldefs
+ LD_FAST_FLAGS = -O2
 
 # MPI compilation
- CHAMP_MPIF95 = pathf90
- CHAMP_MPIC = pathf90
- CHAMP_F77_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
- CHAMP_F95_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
- CHAMP_C_MPI_FLAGS = -DPATHSCALE -DMPI -DUNDERSCORE -O2
- CHAMP_LD_MPI = pathf90 -O2 -Wl,-z,muldefs
+ F95_MPI = pathf90
+ CC_MPI = pathf90
+ F77_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -extend-source -zerouv
+ F95_MPI_FLAGS = -cpp -DPATHSCALE -DMPI -O2 -r8 -zerouv
+ CC_MPI_FLAGS = -DPATHSCALE -DMPI -DUNDERSCORE -O2
+ LD_MPI = pathf90 -O2 -Wl,-z,muldefs
 
 # acml has both the LAPACK and the BLAS
  LAPACK=-L/opt/acml-3.6.0/pathscale64/lib -lacml
@@ -467,52 +474,52 @@ endif
 # AMD Opteron cluster with Intel compiler on school1.fysik at Lyngby, Denmark
 ifeq ($(findstring school,$(hostname)), school)
 
-#CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
-#CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
-#CHAMP_F95_FAST=-O3 -ip -align all -fpp -mtune=core2 -march=core2 -xT
-#CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
-#CHAMP_LD_FAST=-O3 -align all -mtune=core2 -march=core2 -xT
-#CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
-#CHAMP_MPIC=mpicc
-#CHAMP_MPIF95=mpif90
-#CHAMP_MPIF77=mpif90
-#CHAMP_LD_MPI=mpif90
-#CHAMP_F77_MPI_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
-#CHAMP_F95_MPI_FLAGS=-O3 -ip -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
+#F77_FAST_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -mtune=core2 -march=core2 -xT
+#F77_FLAGS=$(F77_FAST_FLAGS)
+#F95_FAST_FLAGS=-O3 -ip -align all -fpp -mtune=core2 -march=core2 -xT
+#F95_FLAGS=$(F95_FAST_FLAGS)
+#LD_FAST_FLAGS=-O3 -align all -mtune=core2 -march=core2 -xT
+#LD_FLAGS=$(LD_FAST_FLAGS)
+#CC_MPI=mpicc
+#F95_MPI=mpif90
+#F77_MPI=mpif90
+#LD_MPI=mpif90
+#F77_MPI_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI -mtune=core2 -march=core2 -xT
+#F95_MPI_FLAGS=-O3 -ip -align all -fpp -DMPI -mtune=core2 -march=core2 -xT
 
-CHAMP_F95=ifort
-CHAMP_MPIF95=mpif77
+F95=ifort
+F95_MPI=mpif77
 
-CHAMP_F77_FAST=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
-CHAMP_F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
-CHAMP_F77_DEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
-CHAMP_F77_PROF=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
-CHAMP_F77_MPI_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
-CHAMP_F77_MPI_FLAGSDEBUG=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
-CHAMP_F77_FLAGS=$(CHAMP_F77_FAST)
+F77_FAST_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp
+F77_IPO=-zero -extend_source -w -r8 -O3 -pad -ipo -fpp
+F77_DEBUG_FLAGS=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+F77_PROF_FLAGS=-zero -extend_source -w -r8 -O3 -pad -pg -fpp
+F77_MPI_FLAGS=-zero -extend_source -w -r8 -O3 -pad -ip -fpp -DMPI
+F77_DEBUG_MPI_FLAGS=-zero -extend_source -r8 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+F77_FLAGS=$(F77_FAST_FLAGS)
 
-CHAMP_F95_FAST=-O3 -ip -align all -fpp
-CHAMP_F95_IPO=-O3 -ipo -align all -fast -fpp
-CHAMP_F95_DEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
-CHAMP_F95_PROF=-O3 -pg -fpp
-CHAMP_F95_MPI_FLAGS=-O3 -ip -align all -fpp -DMPI
-CHAMP_F95_MPI_FLAGSDEBUG=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
-CHAMP_F95_FLAGS=$(CHAMP_F95_FAST)
+F95_FAST_FLAGS=-O3 -ip -align all -fpp
+F95_IPO=-O3 -ipo -align all -fast -fpp
+F95_DEBUG_FLAGS=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DDEBUG
+F95_PROF_FLAGS=-O3 -pg -fpp
+F95_MPI_FLAGS=-O3 -ip -align all -fpp -DMPI
+F95_DEBUG_MPI_FLAGS=-check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -fpp -DMPI -DDEBUG
+F95_FLAGS=$(F95_FAST_FLAGS)
 
 # Linking  ------------------------------------------------------------------
 
-CHAMP_LD=ifort
-CHAMP_LD_MPI=mpif77
+LD=ifort
+LD_MPI=mpif77
 
-CHAMP_LD_FAST=-O3 -align all
-CHAMP_LD_IPO=-O3 -ipo -align all -fast
-CHAMP_LD_DEBUG=
-CHAMP_LD_PROF=-O3 -pg
-CHAMP_LD_FLAGS=$(CHAMP_LD_FAST)
+LD_FAST_FLAGS=-O3 -align all
+LD_IPO=-O3 -ipo -align all -fast
+LD_DEBUG_FLAGS=
+LD_PROF_FLAGS=-O3 -pg
+LD_FLAGS=$(LD_FAST_FLAGS)
 
-CHAMP_LD_END=
-#CHAMP_LD_END_MPI=-lmpi -lpthread
-CHAMP_LD_END_MPI=
+LD_END=
+#LD_END_MPI=-lmpi -lpthread
+LD_END_MPI=
 
 # acml has both the LAPACK and the BLAS
  LAPACK=-L/opt/acml-3.6.0/ifort64/lib -lacml
@@ -523,27 +530,27 @@ endif
 # Julich BlueGene P
 ifeq ($(hostname),jugene5)
 # MPI
-#  CHAMP_MPIF95 = mpixlf2003
-#  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
-#  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
-#  CHAMP_MPIC = mpixlc
-#  CHAMP_C_MPI_FLAGS = -O3 -qstrict
+#  F95_MPI = mpixlf2003
+#  F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+#  F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI -qsuppress=1512-039 -qsuppress=1512-047
+#  CC_MPI = mpixlc
+#  CC_MPI_FLAGS = -O3 -qstrict
 
- CHAMP_F95=mpixlf2003_r
- CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
- CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+ F95=mpixlf2003_r
+ F95_FAST_FLAGS=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+ F77_FAST_FLAGS=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
 
 # MPI
-  CHAMP_MPIF95 = mpixlf2003_r
-  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_MPIC = mpixlc
-  CHAMP_C_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
+  F95_MPI = mpixlf2003_r
+  F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+  CC_MPI = mpixlc
+  CC_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
 # no lapack in Julich
   BLAS=-L/opt/ibmmath/essl/4.4/lib -lesslbg
   QUENCH=
   EINSPLINE=
-  CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
+  LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
 endif
 
 # BlueGene P at IDRIS (Paris)
@@ -552,21 +559,21 @@ ifeq ($(hostname),babel1)
 # -qarch=450d makes the code crash with BE_MPI (ERROR):   "killed with signal 7"
 # -qhot or -O5 does not seem to improve performance at all
 
- CHAMP_F95=mpixlf2003_r
- CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
- CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+ F95=mpixlf2003_r
+ F95_FAST_FLAGS=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+ F77_FAST_FLAGS=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
 
 # MPI
-  CHAMP_MPIF95 = mpixlf2003_r
-  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_MPIC = mpixlc
-  CHAMP_C_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
+  F95_MPI = mpixlf2003_r
+  F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+  CC_MPI = mpixlc
+  CC_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
   LAPACK=-L/bglocal/prod/tools_ibm/lib -llapack -L/opt/ibmmath/essl/4.4/lib -lesslbg
   BLAS=-L/opt/ibmmath/essl/4.4/lib -lesslbg
   QUENCH=
   EINSPLINE=
-  CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
+  LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
 endif
 
 # BlueGene P at MPG Garching, Munich
@@ -575,21 +582,21 @@ ifeq ($(hostname),genius1)
 # -qarch=450d makes the code crash with BE_MPI (ERROR):   "killed with signal 7"
 # -qhot or -O5 does not seem to improve performance at all
 
- CHAMP_F95=mpixlf2003_r
- CHAMP_F95_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
- CHAMP_F77_FAST=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+ F95=mpixlf2003_r
+ F95_FAST_FLAGS=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+ F77_FAST_FLAGS=-O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
 
 # MPI
-  CHAMP_MPIF95 = mpixlf2003_r
-  CHAMP_F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
-  CHAMP_MPIC = mpixlc
-  CHAMP_C_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
+  F95_MPI = mpixlf2003_r
+  F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+  CC_MPI = mpixlc
+  CC_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
 # no lapack in Garching
   BLAS=-L/opt/ibmmath/essl/4.4/lib -lesslbg
   QUENCH=
   EINSPLINE=
-  CHAMP_LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
+  LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a
 endif
 
 # Mac OS for Intel Core2 machines with Intel Fortran compiler
