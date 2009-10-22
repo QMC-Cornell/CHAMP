@@ -100,9 +100,9 @@ c            =3 system periodic in three dimensions
 
 c ibasis     =1 localized Slater or gaussian or numerical basis
 c            =2 planewave basis, also for extended orbitals on grid
-c            =3 complex basis for 2D quantum dots / composite fermions
+c            =3 complex basis for 2D quantum dots / composite fermions (if numr=0 then Fock-Darwin basis)
 c            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
-c            =5 2d localized gloating gaussians in circular coord. (wigner crystal)
+c            =5 2d localized floating gaussians in circular coord. (wigner crystal)
 c            =6 2d localized non-circular floating gaussians in cartesian coord. (wigner crystal)
 c            Warning I would like to be able to use for dots a gaussian radial basis with complex
 c            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
@@ -761,12 +761,13 @@ c read k-shift for generating k-vector lattice
 
       call object_modified ('iwctype')  !JT
 
-c Determine the number of centers of each type
-!JT: commented out because not used
-!JT      do 30 it=1,nctype
-!JT        ncentyp(it)=0
-!JT        do 30 ic=1,ncent
-!JT   30     if(iwctype(ic).eq.it) ncentyp(it)=ncentyp(it)+1
+c Store the number of centers of each center type in ncent_ctype()
+      call alloc ('ncent_ctype', ncent_ctype, nctype)
+      do 26 ict=1,nctype
+   26   ncent_ctype(ict)=0
+      do 27 ic=1,ncent
+   27   ncent_ctype(iwctype(ic))=ncent_ctype(iwctype(ic))+1
+      write(6,'(''Number of centers of each centertype:'',20i3)') (ncent_ctype(ict),ict=1,nctype)
 
       call alloc ('znuc', znuc, nctype)
 
@@ -1416,7 +1417,7 @@ c composite fermions:
       emagv=0.d0
       if(idot.lt.0 .or. idot.gt.3) stop 'idot must be 0,1,2 or 3'
       if(idot.gt.0) then
-	if(numr.ne.0) write(6,*) 'numerical orbitals not tested with comp fermions'
+        if(numr.ne.0) write(6,*) 'numerical orbitals not tested with comp fermions'
         if(nv.lt.0) stop 'nv must be zero or positive'
         if(idot.eq.2) then
           write(6,'(''Ignoring determinantal part for Laughlin wave functions'')')

@@ -1,6 +1,6 @@
       subroutine read_orb_loc
 c Written by Cyrus Umrigar
-c Reads in either analytic or localized orbitals
+c Reads in either analytic or numerical orbitals for finite systems (molecules, Je spheres, quantum dots)
       use all_tools_mod
       use mpi_mod
       use coefs_mod
@@ -26,23 +26,23 @@ c Do not confuse analytic orbs with analytic basis fns.
         num_orb_exist=1
       endif
 
-   10 if(inum_orb.ne.0 .and. num_orb_exist.eq.1) then
+   10 if(inum_orb.ne.0 .and. num_orb_exist.eq.1) then ! numerical orbs
         call my_second(1,'read_o')
         call read_orb_loc_num
         write(6,'(''read in numerical orbitals'')')
         close(4)
         call my_second(2,'read_o')
-       else
-        if(numr.eq.0 .or. numr.eq.1 .or. numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3 .or. numr.eq.-4) then
+       else ! analytical orbitals (basis functions can be either analytical or numerical)
+        if(numr.ge.-3 .and. numr .le. 1) then
           call read_orb_loc_ana
          else
-          stop 'numr must be between -4 and 1'
+          stop 'numr must be between -3 and 1'
         endif
         call distinct_radial_bas
         write(6,'(''read in analytical orbitals'')')
       endif
 
-c Check that irecursion_ylm=1 if l of basis function >=4
+c Check that irecursion_ylm=1 if l of basis function >=5
       do 20 ibasis=1,nbasis
         if(l_bas(ibasis).ge.5 .and. irecursion_ylm.eq.0) then
           write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
@@ -50,6 +50,8 @@ c Check that irecursion_ylm=1 if l of basis function >=4
         endif
    20 continue
 
+c The rest of this routine is for numerical orbs and so we could have one big if statement
+c Generate grid and orbitals on grid if using numerical orbitals that do not already exist on disk
       if(inum_orb.ne.0 .and. num_orb_exist.eq.0) then
         read(5,*) ngrid_orbx,ngrid_orby,sizex,sizey
         write(6,'(''ngrid_orbx,ngrid_orby,sizex,sizey='',2i5,2f8.3)') ngrid_orbx,ngrid_orby,sizex,sizey
@@ -147,44 +149,6 @@ c i.e. the order in which we were reading in the p functions.
       use pseudo_mod
       implicit real*8(a-h,o-z)
 
-c     character*6 l1s(nprime),l2s(nprime),l2p(nprime,-1:1)
-c    &,l3s(nprime),l3p(nprime,-1:1),l3d(nprime,-2:2)
-cc   &,l4s(nprime),l4p(nprime,-1:1),l4d(nprime,-2:2)
-c    &,l4s(nprime),l4p(nprime,-1:1)
-c    &,lsa,lpa(-1:1),lda(-2:2)
-c     character*2 lmbas
-c     character*4 lcent,l4f(nprime),l5g(nprime),l6h(nprime)
-
-c     data l1s /'    1s','   1s''','   1s"','  1s"''','  1s""'/
-c     data l2s /'    2s','   2s''','   2s"','  2s"''','  2s""'/
-c     data l3s /'    3s','   3s''','   3s"','  3s"''','  3s""'/
-c     data l4s /'    4s','   4s''','   4s"','  4s"''','  4s""'/
-c     data l2p /'   2py','  2py''','  2py"',' 2py"''',' 2py""'
-c    &         ,'   2pz','  2pz''','  2pz"',' 2pz"''',' 2pz""'
-c    &         ,'   2px','  2px''','  2px"',' 2px"''',' 2px""'/
-c     data l3p /'   3py','  3py''','  3py"',' 3py"''',' 3py""'
-c    &         ,'   3pz','  3pz''','  3pz"',' 3pz"''',' 3pz""'
-c    &         ,'   3px','  3px''','  3px"',' 3px"''',' 3px""'/
-c     data l4p /'   4py','  4py''','  4py"',' 4py"''',' 4py""'
-c    &         ,'   4pz','  4pz''','  4pz"',' 4pz"''',' 4pz""'
-c    &         ,'   4px','  4px''','  4px"',' 4px"''',' 4px""'/
-c     data l3d /'  3dxy',' 3dxy''',' 3dxy"','3dxy"''','3dxy""'
-c    &         ,'  3dyz',' 3dyz''',' 3dyz"','3dyz"''','3dyz""'
-c    &         ,'  3dzr',' 3dzr''',' 3dzr"','3dzr"''','3dzr""'
-c    &         ,'  3dxz',' 3dxz''',' 3dxz"','3dxz"''','3dxz""'
-c    &         ,'  3dx2',' 3dx2''',' 3dx2"','3dx2"''','3dx2""'/
-c     data l4d /'  4dxy',' 4dxy''',' 4dxy"','4dxy"''','4dxy""'
-c    &         ,'  4dyz',' 4dyz''',' 4dyz"','4dyz"''','4dyz""'
-c    &         ,'  4dzr',' 4dzr''',' 4dzr"','4dzr"''','4dzr""'
-c    &         ,'  4dxz',' 4dxz''',' 4dxz"','4dxz"''','4dxz""'
-c    &         ,'  4dx2',' 4dx2''',' 4dx2"','4dx2"''','4dx2""'/
-c     data l4f /' f','f''','f"','f"''','f""'/
-c     data l5g /' g','g''','g"','g"''','g""'/
-c     data l6h /' h','h''','h"','h"''','h""'/
-c     data lsa /'    sa'/
-c     data lpa /'   pya','   pza','   pxa'/
-c     data lda /'   dxy','   dyz','   dzr','   dxz','   dx2'/
-
 c Note: the order that we read in the d functions is
 c 3z^-r^2, x^2-y^2, xy, xz, yz, in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
@@ -246,48 +210,48 @@ c Analytic radial basis
     4         n5g(m,ict)=0
             do 5 m=-4,4
     5         n6h(m,ict)=0
-           else
+           elseif(ndim.eq.3) then
 ! JT: if numr = -2, allows up to 4f functions
-           if(numr.eq.-2) then
-            read(5,*) n1s(ict)
-     &      ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
-     &      ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
-     &      ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
-     &      ,n4s(ict),n4p(1,ict),n4p(-1,ict),n4p(0,ict)
-     &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
-     &      ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
-     &      ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
-     &      ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
+            if(numr.eq.-2) then
+              read(5,*) n1s(ict)
+     &        ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
+     &        ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
+     &        ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
+     &        ,n4s(ict),n4p(1,ict),n4p(-1,ict),n4p(0,ict)
+     &        ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
+     &        ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
+     &        ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
+     &        ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
 ! JT: if numr = -3, allows up to 5g functions
-           elseif(numr.eq.-3 .or. numr.eq.-4) then
-            read(5,*) n1s(ict)
-     &      ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
-     &      ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
-     &      ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
-     &      ,n4s(ict),n4p(1,ict),n4p(-1,ict),n4p(0,ict)
-     &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
-     &      ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
-     &      ,n5s(ict),n5p(1,ict),n5p(-1,ict),n5p(0,ict)
-     &      ,n5d(0,ict),(n5d(m,ict),n5d(-m,ict),m=2,1,-1)
-     &      ,(n5f(m,ict),n5f(-m,ict),m=3,1,-1),n5f(0,ict)
-     &      ,(n5g(m,ict),n5g(-m,ict),m=4,1,-1),n5g(0,ict)
-     &      ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
-     &      ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
-           else
-            read(5,*) n1s(ict)
-     &      ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
-     &      ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
-     &      ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
-     &      ,n4s(ict),n4p(1,ict),n4p(-1,ict),n4p(0,ict)
-c    &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
-     &      ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
-     &      ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
-           endif
+             elseif(numr.eq.-3 .or. numr.eq.-4) then
+              read(5,*) n1s(ict)
+     &        ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
+     &        ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
+     &        ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
+     &        ,n4s(ict),n4p(1,ict),n4p(-1,ict),n4p(0,ict)
+     &        ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
+     &        ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
+     &        ,n5s(ict),n5p(1,ict),n5p(-1,ict),n5p(0,ict)
+     &        ,n5d(0,ict),(n5d(m,ict),n5d(-m,ict),m=2,1,-1)
+     &        ,(n5f(m,ict),n5f(-m,ict),m=3,1,-1),n5f(0,ict)
+     &        ,(n5g(m,ict),n5g(-m,ict),m=4,1,-1),n5g(0,ict)
+     &        ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
+     &        ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
+             else
+              read(5,*) n1s(ict)
+     &        ,n2s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
+     &        ,n3s(ict),n3p(1,ict),n3p(-1,ict),n3p(0,ict)
+     &        ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
+     &        ,n4s(ict),n4p(1,ict),n4p(-1,ict),n4p(0,ict)
+c    &        ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
+     &        ,nsa(ict),npa(1,ict),npa(-1,ict),npa(0,ict)
+     &        ,nda(0,ict),(nda(m,ict),nda(-m,ict),m=2,1,-1)
+            endif
           endif
    10   continue
 
         nbas_tot=0
-        do 24 ic=1,ncent
+        do 26 ic=1,ncent
           ict=iwctype(ic)
           nbas_typ=           iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
           nbas_tot=nbas_tot + iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
@@ -300,22 +264,20 @@ c    &      ,n4d(0,ict),(n4d(m,ict),n4d(-m,ict),m=2,1,-1)
           do 23 m=-3,3
             nbas_typ=nbas_typ + iabs(n4f(m,ict)) + iabs(n5f(m,ict))
    23       nbas_tot=nbas_tot + iabs(n4f(m,ict)) + iabs(n5f(m,ict))
-          do 123 m=-4,4
+          do 24 m=-4,4
             nbas_typ=nbas_typ + iabs(n5g(m,ict))
-  123       nbas_tot=nbas_tot + iabs(n5g(m,ict))
+   24       nbas_tot=nbas_tot + iabs(n5g(m,ict))
 
-   24     nbasis_ctype(ict)=nbas_typ
+   26     nbasis_ctype(ict)=nbas_typ
         mbasis_ctype = maxval(nbasis_ctype)
-        if (numr.ne.-4) then ! JT: do not stop if numr=-4, basis information will be read in later
-         if(nbas_tot.ne.nbasis) then
+        if(nbas_tot.ne.nbasis) then
           write(6,'(''nbas_tot,nbasis='',9i4)') nbas_tot,nbasis
           stop 'nbas_tot not equal to nbasis'
-         endif
         endif
 
         betaq=0
-        do 25 ic=1,ncent
-   25     betaq=betaq+znuc(iwctype(ic))
+        do 30 ic=1,ncent
+   30     betaq=betaq+znuc(iwctype(ic))
         betaq=betaq-nelec+1
 
        else
@@ -333,8 +295,7 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
           call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
           write(6,'(''Reading iwrwf'')')
           read(5,*) ((iwrwf(ib,ict),ib=1,nbasis),ict=1,nctype)
-          write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))')
-     &    (ict,(iwrwf(ib,ict),ib=1,nbasis),ict=1,nctype)
+          write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))') (ict,(iwrwf(ib,ict),ib=1,nbasis),ict=1,nctype)
           ML_BAS = 0
           if(ndim.eq.3) then
             read(5,*) (l_bas(ib),ib=1,nbasis)
@@ -347,177 +308,176 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
 
          else
 
-        do 49 ict=1,nctype
-          write(6,'(/,''center type'',i3)') ict
-          read(5,*) n1s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
-     &    ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
-     &    ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
-     &    ,(n5g(m,ict),n5g(-m,ict),m=4,1,-1),n5g(0,ict)
-     &    ,(n6h(m,ict),n6h(-m,ict),m=5,1,-1),n6h(0,ict)
-          write(6,'(''number of basis fns. for each l:'',100i2)')
-     &    n1s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
-     &    ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
-     &    ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
-     &    ,(n5g(m,ict),n5g(-m,ict),m=4,1,-1),n5g(0,ict)
-     &    ,(n6h(m,ict),n6h(-m,ict),m=5,1,-1),n6h(0,ict)
+          do 49 ict=1,nctype
+            write(6,'(/,''center type'',i3)') ict
+            read(5,*) n1s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
+     &      ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
+     &      ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
+     &      ,(n5g(m,ict),n5g(-m,ict),m=4,1,-1),n5g(0,ict)
+     &      ,(n6h(m,ict),n6h(-m,ict),m=5,1,-1),n6h(0,ict)
+            write(6,'(''number of basis fns. for each l:'',100i2)')
+     &      n1s(ict),n2p(1,ict),n2p(-1,ict),n2p(0,ict)
+     &      ,n3d(0,ict),(n3d(m,ict),n3d(-m,ict),m=2,1,-1)
+     &      ,(n4f(m,ict),n4f(-m,ict),m=3,1,-1),n4f(0,ict)
+     &      ,(n5g(m,ict),n5g(-m,ict),m=4,1,-1),n5g(0,ict)
+     &      ,(n6h(m,ict),n6h(-m,ict),m=5,1,-1),n6h(0,ict)
 
-          nbas=iabs(n1s(ict))
-          n2s(ict)=0
-          n3s(ict)=0
-          n4s(ict)=0
-          do 41 m=-1,1
-            n3p(m,ict)=0
-            n4p(m,ict)=0
-   41       nbas=nbas+ iabs(n2p(m,ict))
-          do 42 m=-2,2
-            n4d(m,ict)=0
-   42       nbas=nbas+ iabs(n3d(m,ict))
-          do 43 m=-3,3
-   43       nbas=nbas+ iabs(n4f(m,ict))
-          do 44 m=-4,4
-   44       nbas=nbas+ iabs(n5g(m,ict))
-          do 45 m=-5,5
-   45       nbas=nbas+ iabs(n6h(m,ict))
-          do m=-6,6
-            nbas=nbas+ iabs(n7i(m,ict))
-          enddo
-          do m=-7,7
-            nbas=nbas+ iabs(n8j(m,ict))
-          enddo
-          do m=-8,8
-            nbas=nbas+ iabs(n9k(m,ict))
-          enddo
-          do m=-9,9
-            nbas=nbas+ iabs(n10l(m,ict))
-          enddo
-          do m=-10,10
-            nbas=nbas+ iabs(n11m(m,ict))
-          enddo
-          do m=-11,11
-            nbas=nbas+ iabs(n12n(m,ict))
-          enddo
-          do m=-12,12
-            nbas=nbas+ iabs(n13o(m,ict))
-          enddo
-          nbasis_ctype(ict)=nbas
-          mbasis_ctype = maxval(nbasis_ctype)
+            nbas=iabs(n1s(ict))
+            n2s(ict)=0
+            n3s(ict)=0
+            n4s(ict)=0
+            do 41 m=-1,1
+              n3p(m,ict)=0
+              n4p(m,ict)=0
+   41         nbas=nbas+ iabs(n2p(m,ict))
+            do 42 m=-2,2
+              n4d(m,ict)=0
+   42         nbas=nbas+ iabs(n3d(m,ict))
+            do 43 m=-3,3
+   43         nbas=nbas+ iabs(n4f(m,ict))
+            do 44 m=-4,4
+   44         nbas=nbas+ iabs(n5g(m,ict))
+            do 45 m=-5,5
+   45         nbas=nbas+ iabs(n6h(m,ict))
+            do m=-6,6
+              nbas=nbas+ iabs(n7i(m,ict))
+            enddo
+            do m=-7,7
+              nbas=nbas+ iabs(n8j(m,ict))
+            enddo
+            do m=-8,8
+              nbas=nbas+ iabs(n9k(m,ict))
+            enddo
+            do m=-9,9
+              nbas=nbas+ iabs(n10l(m,ict))
+            enddo
+            do m=-10,10
+              nbas=nbas+ iabs(n11m(m,ict))
+            enddo
+            do m=-11,11
+              nbas=nbas+ iabs(n12n(m,ict))
+            enddo
+            do m=-12,12
+              nbas=nbas+ iabs(n13o(m,ict))
+            enddo
+            nbasis_ctype(ict)=nbas
+            mbasis_ctype = maxval(nbasis_ctype)
 
-          write(6,'(''Reading iwrwf'')')
-          call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
-          read(5,*) (iwrwf(ib,ict),ib=1,nbas)
-          write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))')
-     &    ict,(iwrwf(ib,ict),ib=1,nbas)
+            write(6,'(''Reading iwrwf'')')
+            call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
+            read(5,*) (iwrwf(ib,ict),ib=1,nbas)
+            write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))') ict,(iwrwf(ib,ict),ib=1,nbas)
 
-          do 46 ib=1,nbas
-            if(iwrwf(ib,ict).gt.nrbas(ict)) then
-              write(6,'(''ict,ib,iwrwf(ib,ict),nrbas(ict)'',9i3)')
-     &        ict,ib,iwrwf(ib,ict),nrbas(ict)
-              stop 'iwrwf(ib,ict) > nrbas(ict)'
-            endif
-   46     continue
+            write(6,'(''ict,nrbas(ict)='',9i5)') ict,nrbas(ict)
+            do 46 ib=1,nbas
+              if(iwrwf(ib,ict).gt.nrbas(ict)) then
+                write(6,'(''ict,ib,iwrwf(ib,ict),nrbas(ict)'',9i3)') ict,ib,iwrwf(ib,ict),nrbas(ict)
+                stop 'iwrwf(ib,ict) > nrbas(ict)'
+              endif
+   46       continue
 
-          nrwf=1
-          do 48 ib=2,nbas
-            do 47 ib2=1,ib
-   47         if(iwrwf(ib2,ict).eq.iwrwf(ib,ict)) goto 48
-            nrwf=nrwf+1
-   48     continue
-!JT          if(nrwf.gt.MRWF) stop 'nrwf > MRWF'
+            nrwf=1
+            do 48 ib=2,nbas
+              do 47 ib2=1,ib
+   47           if(iwrwf(ib2,ict).eq.iwrwf(ib,ict)) goto 48
+              nrwf=nrwf+1
+   48       continue
+!JT         if(nrwf.gt.MRWF) stop 'nrwf > MRWF'
    49     continue
 
-        nbas_tot=0
-        do 55 ic=1,ncent
-          ict=iwctype(ic)
-          nbas_tot=nbas_tot+ iabs(n1s(ict))
-          do 51 m=-1,1
-   51       nbas_tot=nbas_tot+ iabs(n2p(m,ict))
-          do 52 m=-2,2
-   52       nbas_tot=nbas_tot+ iabs(n3d(m,ict))
-          do 53 m=-3,3
-   53       nbas_tot=nbas_tot+ iabs(n4f(m,ict))
-          do 54 m=-4,4
-   54       nbas_tot=nbas_tot+ iabs(n5g(m,ict))
-          do 55 m=-5,5
-   55       nbas_tot=nbas_tot+ iabs(n6h(m,ict))
-        if(nbas_tot.ne.nbasis) stop 'nbas_tot not equal to nbasis'
+          nbas_tot=0
+          do 55 ic=1,ncent
+            ict=iwctype(ic)
+            nbas_tot=nbas_tot+ iabs(n1s(ict))
+            do 51 m=-1,1
+   51         nbas_tot=nbas_tot+ iabs(n2p(m,ict))
+            do 52 m=-2,2
+   52         nbas_tot=nbas_tot+ iabs(n3d(m,ict))
+            do 53 m=-3,3
+   53         nbas_tot=nbas_tot+ iabs(n4f(m,ict))
+            do 54 m=-4,4
+   54         nbas_tot=nbas_tot+ iabs(n5g(m,ict))
+            do 55 m=-5,5
+   55         nbas_tot=nbas_tot+ iabs(n6h(m,ict))
+          if(nbas_tot.ne.nbasis) stop 'nbas_tot not equal to nbasis'
 
-      endif ! end of nloc if
-      endif
+        endif ! end of nloc if
+      endif ! numr
 
-      if(nloc.ne.-1 .and. numr.ne.-4 .and. nloc.ne.-5) then
-      write(6,'(/,''center type'',(12i4))') (i,i=1,nctype)
-      write(6,'(/,''1s'',t11,(12i4))') (n1s(i),i=1,nctype)
-      if(numr.le.0) write(6,'(''2s'',t11,(12i4))') (n2s(i),i=1,nctype)
-      write(6,'(''2px'',t11,(12i4))') (n2p(1,i),i=1,nctype)
-      write(6,'(''2py'',t11,(12i4))') (n2p(-1,i),i=1,nctype)
-      write(6,'(''2pz'',t11,(12i4))') (n2p(0,i),i=1,nctype)
-      if(numr.le.0) then
-        write(6,'(''3s'',t11,(12i4))') (n3s(i),i=1,nctype)
-        write(6,'(''3px'',t11,(12i4))') (n3p(1,i),i=1,nctype)
-        write(6,'(''3py'',t11,(12i4))') (n3p(-1,i),i=1,nctype)
-        write(6,'(''3pz'',t11,(12i4))') (n3p(0,i),i=1,nctype)
-      endif
-      write(6,'(''3dzr'',t11,(12i4))') (n3d(0,i),i=1,nctype)
-      write(6,'(''3dx2'',t11,(12i4))') (n3d(2,i),i=1,nctype)
-      write(6,'(''3dxy'',t11,(12i4))') (n3d(-2,i),i=1,nctype)
-      write(6,'(''3dxz'',t11,(12i4))') (n3d(1,i),i=1,nctype)
-      write(6,'(''3dyz'',t11,(12i4))') (n3d(-1,i),i=1,nctype)
-      if(numr.le.0) then
-        write(6,'(''4s'',t11,(12i4))') (n4s(i),i=1,nctype)
-        write(6,'(''4px'',t11,(12i4))') (n4p(1,i),i=1,nctype)
-        write(6,'(''4py'',t11,(12i4))') (n4p(-1,i),i=1,nctype)
-        write(6,'(''4pz'',t11,(12i4))') (n4p(0,i),i=1,nctype)
-        write(6,'(''4dzr'',t11,(12i4))') (n4d(0,i),i=1,nctype)
-        write(6,'(''4dx2'',t11,(12i4))') (n4d(2,i),i=1,nctype)
-        write(6,'(''4dxy'',t11,(12i4))') (n4d(-2,i),i=1,nctype)
-        write(6,'(''4dxz'',t11,(12i4))') (n4d(1,i),i=1,nctype)
-        write(6,'(''4dyz'',t11,(12i4))') (n4d(-1,i),i=1,nctype)
-       endif
-       do 60 m=-3,3
+      if(nloc.ne.-1 .and. nloc.ne.-5) then
+        write(6,'(/,''center type'',(12i4))') (i,i=1,nctype)
+        write(6,'(/,''1s'',t11,(12i4))') (n1s(i),i=1,nctype)
+        if(numr.le.0) write(6,'(''2s'',t11,(12i4))') (n2s(i),i=1,nctype)
+        write(6,'(''2px'',t11,(12i4))') (n2p(1,i),i=1,nctype)
+        write(6,'(''2py'',t11,(12i4))') (n2p(-1,i),i=1,nctype)
+        write(6,'(''2pz'',t11,(12i4))') (n2p(0,i),i=1,nctype)
+        if(numr.le.0) then
+          write(6,'(''3s'',t11,(12i4))') (n3s(i),i=1,nctype)
+          write(6,'(''3px'',t11,(12i4))') (n3p(1,i),i=1,nctype)
+          write(6,'(''3py'',t11,(12i4))') (n3p(-1,i),i=1,nctype)
+          write(6,'(''3pz'',t11,(12i4))') (n3p(0,i),i=1,nctype)
+        endif
+        write(6,'(''3dzr'',t11,(12i4))') (n3d(0,i),i=1,nctype)
+        write(6,'(''3dx2'',t11,(12i4))') (n3d(2,i),i=1,nctype)
+        write(6,'(''3dxy'',t11,(12i4))') (n3d(-2,i),i=1,nctype)
+        write(6,'(''3dxz'',t11,(12i4))') (n3d(1,i),i=1,nctype)
+        write(6,'(''3dyz'',t11,(12i4))') (n3d(-1,i),i=1,nctype)
+        if(numr.le.0) then
+          write(6,'(''4s'',t11,(12i4))') (n4s(i),i=1,nctype)
+          write(6,'(''4px'',t11,(12i4))') (n4p(1,i),i=1,nctype)
+          write(6,'(''4py'',t11,(12i4))') (n4p(-1,i),i=1,nctype)
+          write(6,'(''4pz'',t11,(12i4))') (n4p(0,i),i=1,nctype)
+          write(6,'(''4dzr'',t11,(12i4))') (n4d(0,i),i=1,nctype)
+          write(6,'(''4dx2'',t11,(12i4))') (n4d(2,i),i=1,nctype)
+          write(6,'(''4dxy'',t11,(12i4))') (n4d(-2,i),i=1,nctype)
+          write(6,'(''4dxz'',t11,(12i4))') (n4d(1,i),i=1,nctype)
+          write(6,'(''4dyz'',t11,(12i4))') (n4d(-1,i),i=1,nctype)
+        endif
+        do 60 m=-3,3
    60     write(6,'(''4f('',i2,'')'',t11,(12i4))') m,(n4f(m,i),i=1,nctype)
-      if(numr.le.0) then
-        write(6,'(''5s'',t11,(12i4))') (n5s(i),i=1,nctype)
-        write(6,'(''5px'',t11,(12i4))') (n5p(1,i),i=1,nctype)
-        write(6,'(''5py'',t11,(12i4))') (n5p(-1,i),i=1,nctype)
-        write(6,'(''5pz'',t11,(12i4))') (n5p(0,i),i=1,nctype)
-        write(6,'(''5dzr'',t11,(12i4))') (n5d(0,i),i=1,nctype)
-        write(6,'(''5dx2'',t11,(12i4))') (n5d(2,i),i=1,nctype)
-        write(6,'(''5dxy'',t11,(12i4))') (n5d(-2,i),i=1,nctype)
-        write(6,'(''5dxz'',t11,(12i4))') (n5d(1,i),i=1,nctype)
-        write(6,'(''5dyz'',t11,(12i4))') (n5d(-1,i),i=1,nctype)
-        do 61 m=-3,3
+        if(numr.le.0) then
+          write(6,'(''5s'',t11,(12i4))') (n5s(i),i=1,nctype)
+          write(6,'(''5px'',t11,(12i4))') (n5p(1,i),i=1,nctype)
+          write(6,'(''5py'',t11,(12i4))') (n5p(-1,i),i=1,nctype)
+          write(6,'(''5pz'',t11,(12i4))') (n5p(0,i),i=1,nctype)
+          write(6,'(''5dzr'',t11,(12i4))') (n5d(0,i),i=1,nctype)
+          write(6,'(''5dx2'',t11,(12i4))') (n5d(2,i),i=1,nctype)
+          write(6,'(''5dxy'',t11,(12i4))') (n5d(-2,i),i=1,nctype)
+          write(6,'(''5dxz'',t11,(12i4))') (n5d(1,i),i=1,nctype)
+          write(6,'(''5dyz'',t11,(12i4))') (n5d(-1,i),i=1,nctype)
+          do 61 m=-3,3
    61     write(6,'(''5f('',i2,'')'',t11,(12i4))') m,(n5f(m,i),i=1,nctype)
-       endif
-       do 70 m=-4,4
+        endif
+        do 70 m=-4,4
    70     write(6,'(''5g('',i2,'')'',t11,(12i4))') m,(n5g(m,i),i=1,nctype)
-       do 80 m=-5,5
+        do 80 m=-5,5
    80     write(6,'(''6h('',i2,'')'',t11,(12i4))') m,(n6h(m,i),i=1,nctype)
 
-      write(6,'(''sa'',t11,(12i4))') (nsa(i),i=1,nctype)
-      write(6,'(''pxa'',t11,(12i4))') (npa(1,i),i=1,nctype)
-      write(6,'(''pya'',t11,(12i4))') (npa(-1,i),i=1,nctype)
-      write(6,'(''pza'',t11,(12i4))') (npa(0,i),i=1,nctype)
-      write(6,'(''dzra'',t11,(12i4))') (nda(0,i),i=1,nctype)
-      write(6,'(''dx2a'',t11,(12i4))') (nda(2,i),i=1,nctype)
-      write(6,'(''dxya'',t11,(12i4))') (nda(-2,i),i=1,nctype)
-      write(6,'(''dxza'',t11,(12i4))') (nda(1,i),i=1,nctype)
-      write(6,'(''dyza'',t11,(12i4))') (nda(-1,i),i=1,nctype)
+        write(6,'(''sa'',t11,(12i4))') (nsa(i),i=1,nctype)
+        write(6,'(''pxa'',t11,(12i4))') (npa(1,i),i=1,nctype)
+        write(6,'(''pya'',t11,(12i4))') (npa(-1,i),i=1,nctype)
+        write(6,'(''pza'',t11,(12i4))') (npa(0,i),i=1,nctype)
+        write(6,'(''dzra'',t11,(12i4))') (nda(0,i),i=1,nctype)
+        write(6,'(''dx2a'',t11,(12i4))') (nda(2,i),i=1,nctype)
+        write(6,'(''dxya'',t11,(12i4))') (nda(-2,i),i=1,nctype)
+        write(6,'(''dxza'',t11,(12i4))') (nda(1,i),i=1,nctype)
+        write(6,'(''dyza'',t11,(12i4))') (nda(-1,i),i=1,nctype)
 
-      write(6,'(/,''charge'',t12,(12f5.0))')(znuc(i),i=1,nctype)
-      write(6,*)
+        write(6,'(/,''charge'',t12,(12f5.0))')(znuc(i),i=1,nctype)
+        write(6,*)
 
 c The basis fns. in the LCAO coefs. are either in the atomic filling order
 c or in order of increasing l.  The former is the order I used to use the
 c latter is the order from GAMESS when doing all-electron calculations.
-       if(numr.eq.0 .or. numr.eq.1) then
-         call orb_loc_ana_original_order
-        elseif(numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
-         call orb_loc_ana_gamess_order
-        else
-         stop 'numr must be between -3 and 1'
-       endif
+        if(numr.eq.0 .or. numr.eq.1) then
+          call orb_loc_ana_original_order
+         elseif(numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
+          call orb_loc_ana_gamess_order
+         else
+          stop 'numr must be between -3 and 1'
+        endif
 
-      endif ! end of if(nloc.ne.-1)
+      endif ! end of if(nloc.ne.-1 etc.)
 
       call object_modified ('nbasis_ctype')
       call object_modified ('mbasis_ctype')
@@ -528,16 +488,15 @@ c latter is the order from GAMESS when doing all-electron calculations.
         read(5,*) (coef(j,i,1),j=1,nbasis)
   260   write(6,'(12f10.6)') (coef(j,i,1),j=1,nbasis)
 
-c Warning: Foll. "if" commented out till I modify change_input to work without the zex
-c     if(inumr.ge.1) then
-        write(6,'(''screening constants'')')
-        read(5,*) (zex(i,1),i=1,nbasis)
-        write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
-        if (numr.ne.-4) then
-         do 262 i=1,nbasis
-  262      if(zex(i,1).le.0.d0) stop 'exponent zex should be > 0'
+      write(6,'(''screening constants'')')
+      read(5,*) (zex(i,1),i=1,nbasis)
+      write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
+      do 262 i=1,nbasis
+        if(zex(i,1).le.0.d0) then
+          write(6,'(''read_orb_loc: basis exponents zex must be >0 for analytic basis'')')
+          stop 'read_orb_loc: basis exponents zex must be >0 for analytic basis'
         endif
-c     endif
+  262 continue
 
       return
       end
@@ -932,19 +891,6 @@ c           if(iabs(nda(-m,i)).gt.nprime) stop 'number of da basis fns > nprime'
       ML_BAS = max(4, maxval(l_bas))
 
       write(6,'(/,(12a10))') (lbasis(j),j=1,nbasis)
-c     write(6,'(''orbital coefficients'')')
-c     do 260 i=1,norb
-c       read(5,*) (coef(j,i,1),j=1,nbasis)
-c 260   write(6,'(12f10.6)') (coef(j,i,1),j=1,nbasis)
-
-ccWarning: Foll. "if" commented out till I modify change_input to work without the zex
-cc    if(inumr.ge.1) then
-c       write(6,'(''screening constants'')')
-c       read(5,*) (zex(i,1),i=1,nbasis)
-c       write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
-c       do 262 i=1,nbasis
-c 262     if(zex(i,1).le.0.d0) stop 'exponent zex should be > 0'
-cc    endif
 
       return
       end
@@ -1418,19 +1364,6 @@ c           if(iabs(nda(-m,i)).gt.nprime) stop 'number of da basis fns > nprime'
       ML_BAS = max(4, maxval(l_bas))
 
       write(6,'(/,(12a10))') (lbasis(j),j=1,nbasis)
-c     write(6,'(''orbital coefficients'')')
-c     do 260 i=1,norb
-c       read(5,*) (coef(j,i,1),j=1,nbasis)
-c 260   write(6,'(12f10.6)') (coef(j,i,1),j=1,nbasis)
-
-ccWarning: Foll. "if" commented out till I modify change_input to work without the zex
-cc    if(inumr.ge.1) then
-c       write(6,'(''screening constants'')')
-c       read(5,*) (zex(i,1),i=1,nbasis)
-c       write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
-c       do 262 i=1,nbasis
-c 262     if(zex(i,1).le.0.d0) stop 'exponent zex should be > 0'
-cc    endif
 
       return
       end
@@ -1463,8 +1396,9 @@ c In particular this happens because GAMESS creates an s function out
 c of d functions and these start off with the same exponent.
 c To be correct and efficient, one could check for equality of just n_bas and zex when exponents are not being optimized
 c and check in addition for equality of l_bas when exponents are being optimized.
-c The problem is that one does not know this until later in the input.  So, always check for equality of all 3 things.
+c The problem is that one does not know this until later in the input.  So, at present we always check for equality of all 3 things.
  
+      write(6,'(''beg of distinct_radial_bas'')')
       call alloc ('iwrwf2', iwrwf2, nbasis)
       call alloc ('nrbas', nrbas, nctype)
       call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
@@ -1509,6 +1443,29 @@ c    &        (l_bas(ib).eq.l_bas(ib3+ib4) .and. n_bas(ib).eq.n_bas(ib3+ib4) .an
       endif
 
       call object_modified ('zex2')
+
+      return
+      end
+c-----------------------------------------------------------------------
+      subroutine copy_zex_zex2
+c Written by Cyrus Umrigar, 21 Oct 09
+c Copy zex to zex2
+c zex and zex2 are the same, but indexed differently.
+      use atom_mod,   only : nctype, ncent_ctype
+      use basis1_mod, only : zex
+      use basis2_mod, only : zex2, nbasis_ctype
+      use numbas_mod, only : iwrwf
+      use wfsec_mod,  only : iwf
+      implicit real*8(a-h,o-z)
+
+      ib=0
+      do 20 ict=1,nctype
+        do 10 ibct=1,nbasis_ctype(ict)
+          ib=ib+1
+          irb=iwrwf(ibct,ict)
+          write(6,'(''zex2('',2i3,'')=zex('',i3,'')'')') irb,ict,ib
+   10     zex2(irb,ict,iwf)=zex(ib,iwf)
+   20   ib=ib+(ncent_ctype(ict)-1)*nbasis_ctype(ict)
 
       return
       end

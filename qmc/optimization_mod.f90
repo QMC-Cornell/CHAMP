@@ -1246,7 +1246,7 @@ module optimization_mod
    call object_modified ('zex')
 
 !  recompute exponents zex2
-   call distinct_radial_bas
+   call copy_zex_zex2
 
 !  update orbital coefficients due to exponent variations
    select case (trim(basis_functions_varied))

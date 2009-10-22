@@ -101,7 +101,7 @@ module basis_mod
    write(6,'(a,500f12.6)')  ' exponents: ', exponents (:)
    zex (1:nbasis,1) = exponents (:)
    call object_modified ('zex')
-   call distinct_radial_bas
+   call copy_zex_zex2
 !   write(6,'(a,500f12.6)')  'zex2: ', zex2
 
 

@@ -2568,7 +2568,7 @@ module deriv_exp_mod
   enddo ! dexp_to_bas_i
 
   call object_modified ('zex')
-  call distinct_radial_bas
+  call copy_zex_zex2
 
 ! update orbital coefficients
   select case (trim(basis_functions_varied))
