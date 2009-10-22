@@ -287,7 +287,7 @@ module parser_tools_mod
   implicit none
 
 ! input
-  character(len=max_string_len), intent(in) :: string
+  character(len=*), intent(in) :: string
 
 ! output
   integer :: words_number_in_string

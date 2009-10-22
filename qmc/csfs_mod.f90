@@ -203,6 +203,7 @@ module csfs_mod
    if (ndet_in_csf_check /= ndet_in_csf (csf_i)) then
     write(6,'(a,i5,a)') ' in CSF # ',csf_i,':'
     write(6,'(a,i4,a,i4)') ' the number of determinants = ' ,ndet_in_csf (csf_i),' is different from the number of coefficients =',ndet_in_csf_check
+    write(6,'(2a)') ' last line read in was >',trim(line),'<'
     call die (lhere, ' number of determinants /= number of coefficients in a CSF')
    endif
 
