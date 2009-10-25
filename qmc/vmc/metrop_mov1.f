@@ -132,6 +132,10 @@ c 1) acceptance,  2) force-bias truncation probability,
 c 3) kinetic energy and it's fluctuation
 c The K.E. is not quite correct, since we should use p times new
 c and q times old, and keep track of which bin the old was in
+c The reason why I changed
+c itryo=min(int(delri*rold)+1,NRAD)  to
+c itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+c is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
           rold=0
           rnew=0
           do 100 idim=1,ndim
@@ -139,8 +143,8 @@ c and q times old, and keep track of which bin the old was in
   100       rnew=rnew+xnew(idim,i)**2
           rold=dsqrt(rold)
           rnew=dsqrt(rnew)
-          itryo=min(int(delri*rold)+1,NRAD)
-          itryn=min(int(delri*rnew)+1,NRAD)
+          itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+          itryn=int(min(delri*rnew+1,dfloat(NRAD))+eps)
           try(itryo)=try(itryo)+1
           suc(itryo)=suc(itryo)+p
 c this was for ndim=3

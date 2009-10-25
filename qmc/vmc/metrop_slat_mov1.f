@@ -477,14 +477,19 @@ c 1) acceptance,  2) force-bias truncation probability,
 c 3) kinetic energy and it's fluctuation
 c The K.E. is not quite correct, since we should use p times new
 c and q times old, and keep track of which bin the old was in
+c The reason why I changed
+c itryo=min(int(delri*rold)+1,NRAD)  to
+c itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+c is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
       rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
       rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
-      itryo=min(int(delri*rold)+1,NRAD)
-      itryn=min(int(delri*rnew)+1,NRAD)
+c     itryo=min(int(delri*rold)+1,NRAD)
+c     itryn=min(int(delri*rnew)+1,NRAD)
+      itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+      itryn=int(min(delri*rnew+1,dfloat(NRAD))+eps)
       try(itryo)=try(itryo)+1
       suc(itryo)=suc(itryo)+p
-      if(try(itryo).lt.0.d0) write(6,'(''itryo,try'',i5,d13.5)')itryo,
-     &try(itryo)
+      if(try(itryo).lt.0.d0) write(6,'(''itryo,try'',i5,d13.5)')itryo,try(itryo)
 c     if(suc(itryo).lt.0.d0) write(6,'(''itryo,suc'',i5,9d13.5)')itryo,
 c    &suc(itryo),rratio,psi2n(1),psi2o(1),fxnp,areao,fxop,arean
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1

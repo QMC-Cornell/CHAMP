@@ -94,8 +94,8 @@ c       read(21,*) nrbas(ict),igrid(ict),nr(ict),exp_h_bas(ict),r0_bas(ict),icus
    10     continue
 
         do 12 irb=1,nrbas(ict)
-   12     write(6,'('' center'',i3,'' numerical radial basis'',i3,'' has l='',9f8.5)')
-     &    ict,irb,log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1)),
+   12     write(6,'('' center'',i3,'' numerical radial basis'',i3,'' has l='',9f8.5)') ict,irb,
+c    &    log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1)),
      &    log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
 
         if(igrid(ict).eq.2.and.exp_h_bas(ict).le.1.d0) exp_h_bas(ict)=x(2)/x(1)
@@ -109,6 +109,15 @@ c         r0_bas(ict)=x(nr(ict))
      &    r0_bas(ict),exp_h_bas(ict)
         endif
 
+c Moved here from read_orb_loc_ana
+            write(6,'(''ict,nrbas(ict)='',9i5)') ict,nrbas(ict)
+            do 18 ib=1,nbas
+              if(iwrwf(ib,ict).gt.nrbas(ict)) then
+                write(6,'(''ict,ib,iwrwf(ib,ict),nrbas(ict)'',9i3)') ict,ib,iwrwf(ib,ict),nrbas(ict)
+                stop 'iwrwf(ib,ict) > nrbas(ict)'
+              endif
+   18       continue
+
         call alloc ('ce', ce, NCOEF, MRWF, nctype, nwf)
         call alloc ('ae', ae, 2, MRWF, nctype, nwf)
 
@@ -117,15 +126,15 @@ c         r0_bas(ict)=x(nr(ict))
         if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ict).eq.1) then
 
 c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
-          do 15 ii=1,ncoef-1
-   15       dmatr(ii)=1.d0-znuc(ict)*x(ii)
+          do 19 ii=1,ncoef-1
+   19       dmatr(ii)=1.d0-znuc(ict)*x(ii)
           y(1)=rwf(1,irb,ict,iwf)
           ll=ncoef-1
-          do 16 jj=2,ncoef-1
+          do 20 jj=2,ncoef-1
             y(jj)=rwf(jj,irb,ict,iwf)
-            do 16 ii=2,ncoef-1
+            do 20 ii=2,ncoef-1
               ll=ll+1
-   16         dmatr(ll)=x(ii)**jj
+   20         dmatr(ll)=x(ii)**jj
 
           call dgelg(y,dmatr,ncoef-1,1,1.d-8,ier)
           ce(1,irb,ict,iwf)=y(1)

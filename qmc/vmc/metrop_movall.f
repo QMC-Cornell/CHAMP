@@ -135,11 +135,17 @@ c form expected values of e, pe, etc.
         esum(ifr)=esum(ifr)+p*enew(ifr)*wstrn+q*eold(ifr)*wstro
  26     wsum(ifr)=wsum(ifr)+p*wstrn+q*wstro
 
+c The reason why I changed
+c itryo=min(int(delri*rold)+1,NRAD)  to
+c itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+c is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
       do 28 i=1,nelec
         rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
         rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
-        itryo=min(int(delri*rold)+1,NRAD)
-        itryn=min(int(delri*rnew)+1,NRAD)
+c       itryo=min(int(delri*rold)+1,NRAD)
+c       itryn=min(int(delri*rnew)+1,NRAD)
+        itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+        itryn=int(min(delri*rnew+1,dfloat(NRAD))+eps)
         if(i.le.nup) then
           rprobup(itryo)=rprobup(itryo)+q
           rprobup(itryn)=rprobup(itryn)+p

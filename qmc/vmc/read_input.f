@@ -3,6 +3,7 @@ c Written by Cyrus Umrigar
       use all_tools_mod
       use constants_mod
       use variables_mod
+!tmp  use basis_mod, only : which_analytical_basis
       use control_mod
       use montecarlo_mod
       use orbitals_mod
@@ -163,7 +164,7 @@ c              The basis functions read in are: 1s,2s,2p,3s,3p,3d,4s,4p,sa,pa,da
 c           -2 same as -1 but read in up to 4f functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,sa,pa,da
 c           -3 same as -2 but read in up to 5g functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
 c           -4 same as -3 but allows incorrect values to be replaced by the values from the new-style menu
-c            1 numerical radial functions read in from file basis.<ictype>
+c            1 numerical radial functions read in from file basis.<ictype>.  Used also for mixed analytical and numerical radial basis
 c            Whether one is using Slater or gaussian basis fns. is inputted by having n1s,n2s etc. be either > 0 or < 0.
 c nforce     number of geometries (i.e. # of forces +1)
 c nefp       effective fluctuation potential for optimizing wf.
@@ -443,6 +444,10 @@ c 0 0 0 0 0 0 0 0 0  (ipivot(j),j=1,norb)
 !      parameter(NGNORM_SIM_BIGX=IBIG_RATIO*NGNORM_SIMX, NGVEC_SIM_BIGX=IBIG_RATIO*NGVEC_SIMX)
 
 
+!!tmp  which_analytical_basis='gauss-slater'
+!tmp  which_analytical_basis='gaussian'
+!!tmp  which_analytical_basis='slater'
+
 ! JT  13 Sep 2005 beg
       lhere = 'read_input'
 ! JT  13 Sep 2005 end
@@ -512,6 +517,9 @@ c     read(5,'(a20,4x,4i4)') title,irn
        elseif(ibasis.eq.6) then
         write(6,'(''Floating, non-circular Gaussian basis for 2D Wigner crystals'')')
         notype=4
+       else
+        write(6,'(''read_input: ibasis must be between 1 and 6'')')
+        stop 'read_input: ibasis must be between 1 and 6'
       endif
 
 c     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC calculation for periodic
@@ -905,7 +913,7 @@ c Determinantal section
       write(6,'(''inum_orb,iorb_used,iorb_format ='',t31,i10,i5,1x,a16)') inum_orb,iorb_used,iorb_format
       if(iperiodic.gt.0 .and. (inum_orb.ne.0.and.abs(inum_orb).ne.4.and.abs(inum_orb).ne.5.and.abs(inum_orb).ne.6
      &   .and.abs(inum_orb).ne.8)) then
-         stop 'abs(inum_orb) must be 0, 4 or 6 or 8'
+         stop 'abs(inum_orb) must be 0, 4 or 5 or 6 or 8'
       endif
 c If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
       if(inum_orb .ne. 0 .and. ndim.eq.3) then
@@ -965,35 +973,23 @@ c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ng
       call alloc ('coef', coef, nbasis, orb_tot_nb, nwf)
       call alloc ('zex', zex, nbasis, nwf)
 
-      if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
-c     if(ibasis.eq.1.and.numr.gt.0) call read_bas_num(1)
-c     if(ibasis.eq.1.and.inum_orb.eq.0) call read_orb_loc
-c     if(ibasis.eq.3.and.numr.gt.0) stop 'Warning: ibasis.eq.3.and.numr.gt.0 never tested'
-      if(ibasis.eq.3.and.numr.gt.0) write(6,'(''Warning: ibasis.eq.3.and.numr.gt.0 never tested'')')
-      if(ibasis.eq.3.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
-      if(ibasis.eq.3.and.numr.eq.1) call read_orb_loc
-      if(ibasis.eq.3.and.numr.eq.0) call read_orb_dot
-      if(ibasis.eq.4.and.numr.eq.0) call read_orb_dot
-      if(ibasis.eq.5.and.numr.eq.0) call read_orb_dot
-      if(ibasis.eq.6.and.numr.eq.0) call read_orb_dot
-      if(ibasis.eq.4.and.numr.ne.0) stop 'numr must be 0 for ibasis=4'
-      if(ibasis.eq.5.and.numr.ne.0) stop 'numr must be 0 for ibasis=5'
-      if(ibasis.eq.6.and.numr.ne.0) stop 'numr must be 0 for ibasis=6'
-
-      if(ibasis.eq.1) then
-c irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
+c---swapped
+c Call setup routines for Ylm's if we are using recursion to generate them
+c irecursion_ylm=0 use Cyrus' and John's spherical harmonics (upto g functions (L=4))
 c irecursion_ylm=1 use Ryo' spherical harmonics (any L)
 c Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
 c Change it to calculate upto largest l actually used.
-        irecursion_ylm=0
-c       irecursion_ylm=1
-c       write(6,'(''Warning temporarily set irecursion_ylm=1'')')
-        call read_orb_loc
-!MS Jellium sphere
-        if(nloc.eq.-3) irecursion_ylm=1
+      if(ibasis.eq.1) then
+        if(nloc.eq.-3) then ! Je spheres
+          irecursion_ylm=1
+         else
+          irecursion_ylm=0
+c         irecursion_ylm=1
+c         write(6,'(''Warning temporarily set irecursion_ylm=1'')')
+        endif
         if(irecursion_ylm.eq.0)then
           write(6,*) 'Not using recursion for Ylm'
-         elseif(irecursion_ylm.eq.1) then
+         elseif(irecursion_ylm.eq.1) then ! Ryo Maezono's recursion for high order Ylm
           write(6,*) 'Using recursion for Ylm'
           call setup_spherical_harmonics
           call setup_coefficients_ylm
@@ -1002,13 +998,33 @@ c       write(6,'(''Warning temporarily set irecursion_ylm=1'')')
         endif
       endif
 
-      call object_modified ('n_bas') !JT
-      call object_modified ('l_bas') !JT
-      call object_modified ('m_bas') !JT
-      call object_modified ('ictype_basis') !JT
-      call object_modified ('zex')   !JT
+c Read in analytical or numerical orbitals
+      if(ibasis.eq.1) then
+        call read_orb_loc
+       elseif(ibasis.eq.3.and.numr.eq.1) then
+        write(6,'(''Warning: ibasis.eq.3.and.numr.eq.1 never tested'')')
+        call read_orb_loc
+       elseif((ibasis.ge.3.and.ibasis.le.6).and.numr.eq.0) then
+        call read_orb_dot
+       elseif(ibasis.ge.4) then
+        write(6,'(''read_input: This combination of ibasis='',i2,'' and numr='',i2,'' not allowed'')') ibasis,numr
+        write(6,'(''read_input: numr must be 0 for ibasis=4,5,6'')')
+        stop 'read_input: This combination of ibasis and numr not allowed'
+      endif
 
-      write(6,'(''done reading local orbitals'')')
+      if(inum_orb.eq.0) then
+        call object_modified ('n_bas') !JT
+        call object_modified ('l_bas') !JT
+        call object_modified ('m_bas') !JT
+        call object_modified ('ictype_basis') !JT
+        call object_modified ('zex')   !JT
+      endif
+ 
+c Read in numerical radial basis
+c This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
+c to compactify the radial basis functions in read_bas_num.
+      if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
+c---
 
 c get normalization for basis functions
 c Devrims note: moved down; basis_norm_dot need idot to be defined
@@ -1427,8 +1443,7 @@ c composite fermions:
           lv=nv*nelec*(nelec-1)
         endif
         emagv=-0.5d0*bext*lv
-        if(ibasis.ne.3) stop 'ibasis must be 3 for composite fermions. set nv to zero if not
-     &                        dealing with composite fermions.'
+        if(ibasis.ne.3) stop 'ibasis must be 3 for composite fermions. set nv to zero if not dealing with composite fermions.'
         if(ndim.ne.2) stop 'ndim must be 2 for composite fermions'
         write(6,*) 'mode=',mode
         if(index(mode,'mov1').ne.0) stop '1 electron move not yet implemented for composite fermions'
@@ -1442,19 +1457,14 @@ c Quantum rings:
       if(bext.ne.0.d0 .and. rring.ne.0.d0) stop 'Quantum rings in magnetic field not yet implemented'
       if(iperturb.ne.0) then
         if (rring.eq.0.d0) stop 'Perturbation only possible for quantum rings'
-        if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) 
-     &     stop 'shrp_perturb must be between 0 and 100'
-        if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) 
-     &     stop 'ang_perturb must be between 0 and 4pi'
+        if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) stop 'shrp_perturb must be between 0 and 100'
+        if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) stop 'ang_perturb must be between 0 and 4pi'
       endif
 
 c circular coordinates
-      if(icoosys.lt.1 .or. icoosys.gt.2)
-     &  stop 'icoosys must be 1 or 2' 
-      if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) 
-     &  stop 'we must have 0<rmin<rmax'
-      if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1)
-     &  stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
+      if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2' 
+      if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) stop 'we must have 0<rmin<rmax'
+      if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1) stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
       delti=(2*nmesht+1)/(2*pi)
       delradi=(2*nmeshr+1)/(rmax-rmin)
       rmean=(rmin+rmax)*0.5d0

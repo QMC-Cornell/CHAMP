@@ -3,16 +3,16 @@ c Written by Cyrus Umrigar
 c Reads in either analytic or numerical orbitals for finite systems (molecules, Je spheres, quantum dots)
       use all_tools_mod
       use mpi_mod
-      use coefs_mod
       use const_mod
-      use dim_mod
-      use numbas_mod
-      use basis2_mod
       use contr2_mod
-      use wfsec_mod
       use contr3_mod
-      use distance_mod
       use contr_ylm_mod
+      use dim_mod
+      use basis2_mod
+      use numbas_mod
+      use coefs_mod
+      use wfsec_mod
+      use distance_mod
       use orbital_num_mod
       implicit real*8(a-h,o-z)
 
@@ -139,13 +139,13 @@ c in order to be able to use old inputs.
 c All others are read in the foll. order: l, -l, l-1, -(l-1), ..., 0,
 c i.e. the order in which we were reading in the p functions.
       use all_tools_mod
-      use atom_mod
-      use coefs_mod
-      use basis1_mod
       use const_mod
       use dim_mod
-      use numbas_mod
+      use atom_mod
+      use basis1_mod
       use basis2_mod
+      use numbas_mod
+      use coefs_mod
       use pseudo_mod
       implicit real*8(a-h,o-z)
 
@@ -368,13 +368,14 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
             read(5,*) (iwrwf(ib,ict),ib=1,nbas)
             write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))') ict,(iwrwf(ib,ict),ib=1,nbas)
 
-            write(6,'(''ict,nrbas(ict)='',9i5)') ict,nrbas(ict)
-            do 46 ib=1,nbas
-              if(iwrwf(ib,ict).gt.nrbas(ict)) then
-                write(6,'(''ict,ib,iwrwf(ib,ict),nrbas(ict)'',9i3)') ict,ib,iwrwf(ib,ict),nrbas(ict)
-                stop 'iwrwf(ib,ict) > nrbas(ict)'
-              endif
-   46       continue
+c Warning: move to read_bas_num since it is now called after this routine
+c           write(6,'(''ict,nrbas(ict)='',9i5)') ict,nrbas(ict)
+c           do 46 ib=1,nbas
+c             if(iwrwf(ib,ict).gt.nrbas(ict)) then
+c               write(6,'(''ict,ib,iwrwf(ib,ict),nrbas(ict)'',9i3)') ict,ib,iwrwf(ib,ict),nrbas(ict)
+c               stop 'iwrwf(ib,ict) > nrbas(ict)'
+c             endif
+c  46       continue
 
             nrwf=1
             do 48 ib=2,nbas
@@ -466,6 +467,7 @@ c (Do same for nloc = -5, since this is almost the same as nloc = -1 -ACM)
         write(6,'(/,''charge'',t12,(12f5.0))')(znuc(i),i=1,nctype)
         write(6,*)
 
+c Asign character labels, n_bas, l_bas, m_bas, centers and center types to each of the basis functions
 c The basis fns. in the LCAO coefs. are either in the atomic filling order
 c or in order of increasing l.  The former is the order I used to use the
 c latter is the order from GAMESS when doing all-electron calculations.
@@ -492,9 +494,9 @@ c latter is the order from GAMESS when doing all-electron calculations.
       read(5,*) (zex(i,1),i=1,nbasis)
       write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
       do 262 i=1,nbasis
-        if(zex(i,1).le.0.d0) then
-          write(6,'(''read_orb_loc: basis exponents zex must be >0 for analytic basis'')')
-          stop 'read_orb_loc: basis exponents zex must be >0 for analytic basis'
+        if(zex(i,1).lt.0.d0) then
+          write(6,'(''read_orb_loc: basis exponents zex must be >=0'')')
+          stop 'read_orb_loc: basis exponents zex must be >=0'
         endif
   262 continue
 

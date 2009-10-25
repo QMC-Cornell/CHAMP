@@ -1,10 +1,8 @@
 include ../makefile.inc
 
-FC     = $(CHAMP_F77)
-FFLAGS = $(CHAMP_F77_FLAGS)
-LDFLAGS= $(CHAMP_LD_FLAGS)
-CC     = $(CHAMP_C)
-CXX    = $(CHAMP_CXX)
+FC     = $(F77)
+FFLAGS = $(F77_FLAGS)
+LDFLAGS= $(LD_FLAGS)
 
 export FC FFLAGS LDFLAGS CC CXX
 
@@ -24,7 +22,7 @@ export FC FFLAGS LDFLAGS CC CXX
 #all: lib/libcyrus.a lib2/blas/libblas.a lib2/lapack/liblapack.a lib2/linpack/liblinpack.a lib2/pspline/pspline/libpspline.a SimulatedAnnealing/quench_anneal/lib/libquench.a
 #endif
 
-all: $(CHAMP_LIBS_MAKE)
+all: $(LIBS_MAKE)
 
 ../lib/lib/libcyrus.a:
 	cd lib ; $(MAKE)
@@ -48,12 +46,12 @@ ifdef EINSPLINE
 ifndef USE_GCC
 ../lib/lib2/einspline/lib/libeinspline.a:
 #	cd einspline ; configure_my ; $(MAKE) ; $(MAKE) install
-#	cd einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/einspline/ "--enable-sse" ; $(MAKE) ; $(MAKE) install
-	cd lib2/einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
+#	cd einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(F77)" "F77=$(F77)" --prefix=$(shell pwd)/einspline/ "--enable-sse" ; $(MAKE) ; $(MAKE) install
+	cd lib2/einspline ; ./configure "CC=$(CC) -std=c99" "CXX=$(CXX) -std=c99" "FC=$(F77)" "F77=$(F77)" --prefix=$(shell pwd)/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
 endif
 ifdef USE_GCC
 lib2/einspline/lib/libeinspline.a:
-	cd lib2/einspline ; ./configure "CC=$(CC)" "FC=$(CHAMP_F77)" "F77=$(CHAMP_F77)" --prefix=$(shell pwd)/lib2/einspline/ --exec-prefix=$(shell pwd)/lib2/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
+	cd lib2/einspline ; ./configure "CC=$(CC)" "FC=$(F77)" "F77=$(F77)" --prefix=$(shell pwd)/lib2/einspline/ --exec-prefix=$(shell pwd)/lib2/einspline/ ; $(MAKE) ; $(MAKE) install ; rm lib/*.so*
 endif
 endif
 
