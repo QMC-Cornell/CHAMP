@@ -27,8 +27,10 @@ module indexes_mod
   integer     :: detd_index
   integer     :: electron_index
   integer     :: vpsp_ex_index
+  integer     :: dvpsp_exp_index !fp
   integer     :: orbe_index
   integer     :: detn_index
+  integer     :: slmin_index !fp
   integer     :: eloc_bav_index
   integer     :: eloc_av_index
   integer     :: eloc_av_err_index
@@ -52,6 +54,7 @@ module indexes_mod
   integer     :: eloc_pot_index
   integer     :: eloc_pot_loc_index
   integer     :: eloc_pot_nloc_ex_index
+  integer     :: eloc_pot_nloc_exp_index !fp
   integer     :: jas_pairs_nb_index
   integer     :: d2psi_jas_index
   integer     :: d2eloc_jas_index
@@ -162,6 +165,7 @@ module indexes_mod
   integer     :: d2psi_nwt_bld_index
   integer     :: d2eloc_nwt_bld_index
   integer     :: eloc_pot_ex_bld_index
+  integer     :: eloc_pot_exp_bld_index
   integer     :: gradient_bld_index
   integer     :: intra_sp_bld_index
   integer     :: hess_nwt_energy_bld_index

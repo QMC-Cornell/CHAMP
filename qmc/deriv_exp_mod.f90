@@ -43,9 +43,14 @@ module deriv_exp_mod
 
   real(dp), allocatable          :: ddet_dexp_unq_up (:,:)
   real(dp), allocatable          :: ddet_dexp_unq_dn (:,:)
+  real(dp), allocatable          :: ddet_dexp_unq_up_in_x (:,:) !fp
+  real(dp), allocatable          :: ddet_dexp_unq_dn_in_x (:,:) !fp
   real(dp), allocatable          :: ddet_dexp_col_unq_up (:,:,:)
   real(dp), allocatable          :: ddet_dexp_col_unq_dn (:,:,:)
   real(dp), allocatable          :: dpsid_exp (:)
+  real(dp), allocatable          :: dpsid_exp_in_x (:) !fp
+  real(dp), allocatable          :: slater_mat_trans_inv_up_in_x (:, :, :) !fp
+  real(dp), allocatable          :: slater_mat_trans_inv_dn_in_x (:, :, :) !fp
   real(dp), allocatable          :: dpsi_exp (:)
   real(dp), allocatable          :: dpsi_lnexp (:)
   real(dp), allocatable          :: grd_ddet_dexp_unq_up (:,:,:,:)
@@ -58,7 +63,11 @@ module deriv_exp_mod
   real(dp), allocatable          :: sum_lap_ln_dpsid_exp (:)
   real(dp), allocatable          :: grd_dpsi_exp_over_dpsi_exp (:,:,:)
   real(dp), allocatable          :: sum_lap_ln_dpsi_exp (:)
+  real(dp), allocatable          :: dvpot_exp(:,:)
+  real(dp), allocatable          :: dvpsp_exp(:)
   real(dp), allocatable          :: eloc_kin_exp (:)
+  real(dp), allocatable          :: eloc_pot_exp (:)
+  real(dp), allocatable          :: eloc_pot_nloc_exp (:)
   real(dp), allocatable          :: eloc_exp (:)
   real(dp), allocatable          :: deloc_exp (:)
   real(dp), allocatable          :: deloc_exp_num (:)
@@ -76,14 +85,14 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
 ! Description   : number of derivatives wrt to optimized exponents
 ! Description   : dexp_to_all_bas is the correspondence between exponent parameters
-! Description   :                 and all basis exponents to be updated including those 
+! Description   :                 and all basis exponents to be updated including those
 ! Description   :                 not directly involved in the optimization but updated
 ! Description   :                 because of symmetry constraints
 ! Description   :                 (for instance, if there is no pz occupied orbitals
 ! Description   :                  only px and py basis functions will be involved in the optimization,
 ! Description   :                  the derivative wrt the pz exponent will be zero,
 ! Description   :                  but pz exponent will also be updated to keep the same exponents for px,py,pz)
-! Description   :           
+! Description   :
 ! Description   : dexp_to_bas     is the correspondence between exponent parameters
 ! Description   :                 and only the basis exponents directly involved in the optimization
 !
@@ -178,14 +187,14 @@ module deriv_exp_mod
              bas_to_dexp (bas_j) = param_exp_nb
              is_basis_func_attributed (bas_j) = .true.
              cycle
-          
+
 !         exponent parameter not directly involved in the optimization
           else
              dexp_to_all_bas_nb (param_exp_nb) = dexp_to_all_bas_nb (param_exp_nb) + 1
              call append (dexp_to_all_bas (param_exp_nb)%row, bas_j)
              cycle
           endif
-      
+
         endif ! restriction on exponent parameters
 
       endif ! l_exp_opt_restrict
@@ -214,7 +223,7 @@ module deriv_exp_mod
   implicit none
 
 ! local
-  integer bas_i
+  integer bas_i, n_analytical, i_analytical
 
 ! header
   if (header_exe) then
@@ -229,12 +238,23 @@ module deriv_exp_mod
   endif
 
 ! begin
-  exp_opt_lab_read_nb = nbasis
-  call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
-  
+  n_analytical = 0
   do bas_i = 1, nbasis
-   exp_opt_lab_read (bas_i) = bas_i
-  enddo
+     if (iwrwf2(bas_i) .eq. 0) then
+        n_analytical = n_analytical + 1
+     end if
+  end do
+
+  exp_opt_lab_read_nb = n_analytical
+  call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
+
+  i_analytical = 0
+  do bas_i = 1, nbasis
+     if (iwrwf2(bas_i) .eq. 0) then
+          i_analytical =  i_analytical + 1
+        exp_opt_lab_read (i_analytical) = bas_i
+     end if
+  end do
 
   end subroutine exp_opt_lab_read_bld
 
@@ -385,6 +405,7 @@ module deriv_exp_mod
 ! Warning       : implemented only for Slater functions
 !
 ! Created       : J. Toulouse, 17 Jan 2007
+! Implemented for Gauss-Slater functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
@@ -397,6 +418,7 @@ module deriv_exp_mod
 
    call object_create ('dnorm_basis_dz')
 
+   call object_needed ('which_analytical_basis') !fp
    call object_needed ('nbasis')
    call object_needed ('norm_basis')
    call object_needed ('zex')
@@ -418,15 +440,20 @@ module deriv_exp_mod
   call object_alloc ('dnorm_basis_dz', dnorm_basis_dz, nbasis)
 
   do bas_i = 1, nbasis
-    if (zex (bas_i, iwf) == 0.d0) then
+    if (zex (bas_i, iwf) < 0.d0) then
       write(6,'(2a,i3,a,i3,a,es15.8)') trim(here), ': zex(',bas_i,',',iwf,')=', zex (bas_i, iwf)
-      call die (here, 'exponent must be non zero')
+      call die (here, 'exponent must not be negative')
     endif
-    n = n_bas (bas_i)
-    if (n > 0) then
-      dnorm_basis_dz (bas_i) = (n + 0.5d0) * norm_basis (bas_i) / zex (bas_i, iwf)
-    else
-      call die (here, 'implemented only for Slater functions (n > 0)')
+    if (zex (bas_i, iwf) > 0.d0) then
+      n = abs(n_bas (bas_i)) !fp
+      if ((trim(which_analytical_basis) .eq. 'slater') .or. (trim(which_analytical_basis) .eq. 'gauss-slater')) then
+         !       write(*,*) "test: calculating the deriv of norm of basis function"
+         dnorm_basis_dz (bas_i) = (n + 0.5d0) * norm_basis (bas_i) / zex (bas_i, iwf)
+      else if (trim(which_analytical_basis) .eq. 'gaussian') then
+         dnorm_basis_dz (bas_i) = (n/2.d0 + 0.25d0) * norm_basis (bas_i) / zex (bas_i, iwf)
+      else
+         call die (here, 'implemented only for Slater or Gauss-Slater functions')
+      endif
     endif
   enddo
 
@@ -469,8 +496,9 @@ module deriv_exp_mod
 ! requirements
   if (numr /= 0 .and. numr /= -1 .and. numr /= -2 .and. numr /= -3) then
    write(6,*) trim(here),': numr=',numr,' /= 0, - 1, -2, -3'
-   write(6,*) trim(here),': implemented only for the case numr = -1 or -2 or -3'
-   write(6,*) trim(here),': i.e. analytical slater functions with order: 1s, 2s, 3s, ...., 2p, 3p...'
+   write(6,*) trim(here),': implemented only for the case numr = 0 or -1 or -2 or -3'
+   write(6,*) trim(here),': i.e. analytical slater functions with order: 1s, 2s, 2p, 3s, 3p, 3d, ... for 0'
+   write(6,*) trim(here),': i.e. analytical slater functions with order: 1s, 2s, 3s, ...., 2p, 3p... for -1, -2, -3'
    call die (here)
   endif
   if (ncent /= 1 ) then
@@ -506,7 +534,6 @@ module deriv_exp_mod
       if (dexp_j /= 0) then
        dbasis_ovlp_dz (bas_i, bas_j, dexp_j) = dbasis_ovlp_dz (bas_i, bas_j, dexp_j) - slater_ovlp (n_i, l_i, m_i, exp_i, n_j+1, l_j, m_j, exp_j)
       endif
-
     enddo ! bas_j
   enddo ! bas_i
 
@@ -617,6 +644,7 @@ module deriv_exp_mod
 ! Description   : Derivatives of the unnormalized basis functions wrt to exponents
 !
 ! Created       : J. Toulouse, 25 Jan 2007
+! Implemented derivatives for Gauss-Slater functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
@@ -629,6 +657,9 @@ module deriv_exp_mod
 
    call object_create ('dphin_dz', dphin_dz_index)
 
+   call object_needed ('which_analytical_basis') !fp
+   call object_needed ('zex') !fp
+   call object_needed ('iwf') !fp
    call object_needed ('nbasis')
    call object_needed ('nelec')
    call object_needed ('basis_fns_cent')
@@ -652,13 +683,34 @@ module deriv_exp_mod
 ! allocation
   call object_alloc ('dphin_dz', dphin_dz, nelec, nbasis)
 
-  do dexp_i = 1, param_exp_nb
-    do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
-      bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
-      cent_i = basis_fns_cent (bas_i)
-      dphin_dz (1:nelec, bas_i) = -r_en (1:nelec, cent_i) * phin (bas_i, 1:nelec)
-    enddo ! dexp_to_bas_i
-  enddo ! dexp_i
+  if (trim(which_analytical_basis) .eq. 'slater') then !fp
+     do dexp_i = 1, param_exp_nb
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+           cent_i = basis_fns_cent (bas_i)
+           dphin_dz (1:nelec, bas_i) = -r_en (1:nelec, cent_i) * phin (bas_i, 1:nelec)
+        enddo ! dexp_to_bas_i
+     enddo ! dexp_i
+  elseif (trim(which_analytical_basis) .eq. 'gauss-slater') then !fp
+!     write(*,*) "Calculating the derivative of unnormalized basis function with respect to the exponent"
+     do dexp_i = 1, param_exp_nb  !fp
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)  !fp
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)  !fp
+           cent_i = basis_fns_cent (bas_i)  !fp
+           dphin_dz (1:nelec, bas_i) = -zex(bas_i, iwf) * r_en (1:nelec, cent_i) ** 2 * (zex(bas_i, iwf) * r_en (1:nelec, cent_i) + 2.d0) / (zex(bas_i, iwf) * r_en (1:nelec, cent_i) + 1.d0) ** 2 * phin (bas_i, 1:nelec)  !fp
+        enddo ! dexp_to_bas_i  !fp
+     enddo ! dexp_i  !fp
+  elseif (trim(which_analytical_basis) .eq. 'gaussian') then !fp
+     do dexp_i = 1, param_exp_nb  !fp
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)  !fp
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)  !fp
+           cent_i = basis_fns_cent (bas_i)  !fp
+           dphin_dz (1:nelec, bas_i) = -r_en (1:nelec, cent_i)**2  * phin (bas_i, 1:nelec)
+        enddo ! dexp_to_bas_i  !fp
+     enddo ! dexp_i  !fp
+  else  !fp
+     call die (here, 'implemented only for Slater, Gaussian and Gauss-Slater functions')  !fp
+  endif  !fp
 
   end subroutine dphin_dz_bld
 
@@ -764,18 +816,24 @@ module deriv_exp_mod
 ! Description   : Gradient of derivatives of the unnormalized basis functions wrt to exponents
 !
 ! Created       : J. Toulouse, 27 Jan 2007
+! Implemented Gauss-Slater basis functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
 
 ! local
   integer elec_i, bas_i, dim_i, cent_i, dexp_i, dexp_to_bas_i
+  real(dp) :: f,df
 
 ! header
   if (header_exe) then
 
    call object_create ('grd_dphin_dz', grd_dphin_dz_index)
 
+   call object_needed ('which_analytical_basis') !fp
+   call object_needed ('zex') !fp
+   call object_needed ('iwf') !fp
+   call object_needed ('rvec_en') !fp
    call object_needed ('nbasis')
    call object_needed ('ndim')
    call object_needed ('nelec')
@@ -802,18 +860,51 @@ module deriv_exp_mod
 ! allocation
   call object_alloc ('grd_dphin_dz', grd_dphin_dz, ndim, nelec, nbasis)
 
-  do dexp_i = 1, param_exp_nb
-    do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
-      bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
-      cent_i = basis_fns_cent (bas_i)
-      do elec_i = 1, nelec
-        do dim_i = 1, ndim
-          grd_dphin_dz (dim_i, elec_i, bas_i) = - grd_dist_en (dim_i, elec_i, cent_i) * phin (bas_i, elec_i) &
-                                              - r_en (elec_i, cent_i) * dphin (dim_i, bas_i, elec_i)
-        enddo ! dim_i
-      enddo ! elec_i
-    enddo ! dexp_to_bas_i
-  enddo ! dexp_i
+  if (trim(which_analytical_basis) .eq. 'slater') then !fp
+     do dexp_i = 1, param_exp_nb
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+           cent_i = basis_fns_cent (bas_i)
+           do elec_i = 1, nelec
+              do dim_i = 1, ndim
+                 grd_dphin_dz (dim_i, elec_i, bas_i) = - grd_dist_en (dim_i, elec_i, cent_i) * phin (bas_i, elec_i) &
+                      - r_en (elec_i, cent_i) * dphin (dim_i, bas_i, elec_i)
+              enddo ! dim_i
+           enddo ! elec_i
+        enddo ! dexp_to_bas_i
+     enddo ! dexp_i
+  elseif (trim(which_analytical_basis) .eq. 'gauss-slater') then !fp
+!     write(*,*) "Gradient of derivatives of the unnormalized basis functions wrt to exponent"
+     do dexp_i = 1, param_exp_nb   !fp
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)   !fp
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)   !fp
+           cent_i = basis_fns_cent (bas_i)   !fp
+           do elec_i = 1, nelec   !fp
+              f = -zex(bas_i, iwf) * r_en(elec_i, cent_i) ** 2 *(zex(bas_i, iwf) * r_en(elec_i, cent_i) + 2.d0) /(zex(bas_i, iwf) * r_en(elec_i, cent_i) + 1.d0) ** 2
+              df = -zex(bas_i, iwf) * r_en(elec_i, cent_i)  * ( 4.d0 + zex(bas_i, iwf) * r_en(elec_i, cent_i) * ( 3 + zex(bas_i, iwf) * r_en(elec_i, cent_i) )) /(zex(bas_i, iwf) * r_en(elec_i, cent_i) + 1.d0) ** 3
+              grd_dphin_dz(:, elec_i, bas_i) =  df * phin(bas_i, elec_i)
+              do dim_i = 1, ndim   !fp
+                 grd_dphin_dz(dim_i, elec_i, bas_i) = grd_dphin_dz(dim_i, elec_i, bas_i)  * rvec_en(dim_i, elec_i, cent_i) / r_en(elec_i, cent_i) + f * dphin(dim_i, bas_i, elec_i)
+              enddo ! dim_i   !fp
+           enddo ! elec_i   !fp
+        enddo ! dexp_to_bas_i   !fp
+     enddo ! dexp_i   !fp
+  else if (trim(which_analytical_basis) .eq. 'gaussian') then !fp
+     do dexp_i = 1, param_exp_nb
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+           cent_i = basis_fns_cent (bas_i)
+           do elec_i = 1, nelec
+              do dim_i = 1, ndim
+                 grd_dphin_dz (dim_i, elec_i, bas_i) = -2.d0 * rvec_en(dim_i, elec_i, cent_i) * phin (bas_i, elec_i) &
+                      - r_en (elec_i, cent_i)**2 * dphin (dim_i, bas_i, elec_i)
+              enddo ! dim_i
+           enddo ! elec_i
+        enddo ! dexp_to_bas_i
+     enddo ! dexp_i
+  else  !fp
+     call die (here, 'implemented only for Slater, Gaussian or Gauss-Slater functions')  !fp
+  endif  !fp
 
   end subroutine grd_dphin_dz_bld
 
@@ -929,19 +1020,24 @@ module deriv_exp_mod
 ! Description   : Laplacian of derivatives of unnormalized basis functions wrt to exponents
 !
 ! Created       : J. Toulouse, 27 Jan 2007
+! Implemented for Gauss-Slater functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
 
 ! local
   integer elec_i, bas_i, cent_i, dim_i, dexp_i, dexp_to_bas_i
-  real(dp) dotproduct
+  real(dp) dotproduct, f, df, ddf
 
 ! header
   if (header_exe) then
 
    call object_create ('lap_dphin_dz', lap_dphin_dz_index)
 
+   call object_needed ('which_analytical_basis') !fp
+   call object_needed ('zex') !fp
+   call object_needed ('iwf') !fp
+   call object_needed ('rvec_en') !fp
    call object_needed ('nbasis')
    call object_needed ('ndim')
    call object_needed ('nelec')
@@ -949,7 +1045,7 @@ module deriv_exp_mod
    call object_needed ('r_en')
    call object_needed ('grd_dist_en')
    call object_needed ('lap_dist_en')
-   call object_needed ('grd_dphin_dz')
+!   call object_needed ('grd_dphin_dz')
    call object_needed ('phin')
    call object_needed ('dphin')
    call object_needed ('d2phin')
@@ -971,25 +1067,65 @@ module deriv_exp_mod
 ! allocation
   call object_alloc ('lap_dphin_dz', lap_dphin_dz, nelec, nbasis)
 
-  do dexp_i = 1, param_exp_nb
-    do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
-      bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
-      cent_i = basis_fns_cent (bas_i)
 
-      do elec_i = 1, nelec
+  if (trim(which_analytical_basis) .eq. 'slater') then !fp
+     do dexp_i = 1, param_exp_nb
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+           cent_i = basis_fns_cent (bas_i)
 
-      dotproduct = 0.d0
-      do dim_i = 1, ndim
-        dotproduct = dotproduct + grd_dist_en (dim_i, elec_i, cent_i) * dphin (dim_i, bas_i, elec_i)
-      enddo ! dim_i
+           do elec_i = 1, nelec
 
-      lap_dphin_dz (elec_i, bas_i) = - lap_dist_en (elec_i, cent_i) * phin (bas_i, elec_i)          &
-                                     - 2.d0 * dotproduct                                            &
-                                     - r_en (elec_i, cent_i) * d2phin (bas_i, elec_i)
-     enddo ! elec_i
+              dotproduct = 0.d0
+              do dim_i = 1, ndim
+                 dotproduct = dotproduct + grd_dist_en (dim_i, elec_i, cent_i) * dphin (dim_i, bas_i, elec_i)
+              enddo ! dim_i
 
-    enddo ! dexp_to_bas_i
-  enddo ! dexp_i
+              lap_dphin_dz (elec_i, bas_i) = - lap_dist_en (elec_i, cent_i) * phin (bas_i, elec_i)          &
+                   - 2.d0 * dotproduct                                            &
+                   - r_en (elec_i, cent_i) * d2phin (bas_i, elec_i)
+           enddo ! elec_i
+
+        enddo ! dexp_to_bas_i
+     enddo ! dexp_i
+
+  elseif (trim(which_analytical_basis) .eq. 'gauss-slater') then !fp
+!     write(*,*) "Calculating the laplacian of the derivative of unnormalized basis function with respect to the exponent"
+     do dexp_i = 1, param_exp_nb
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+           cent_i = basis_fns_cent (bas_i)
+           do elec_i = 1, nelec
+              dotproduct = 0.d0
+              f = -zex(bas_i, iwf) * r_en(elec_i, cent_i) ** 2 *(zex(bas_i, iwf) * r_en(elec_i, cent_i) + 2.d0) /(zex(bas_i, iwf) * r_en(elec_i, cent_i) + 1.d0) ** 2
+              df = -zex(bas_i, iwf) * r_en(elec_i, cent_i)  * ( 4.d0 + zex(bas_i, iwf) * r_en(elec_i, cent_i) * ( 3 + zex(bas_i, iwf) * r_en(elec_i, cent_i) )) /(zex(bas_i, iwf) * r_en(elec_i, cent_i) + 1.d0) ** 3
+              ddf = 2.d0 * zex(bas_i, iwf) * ( zex(bas_i, iwf) * r_en(elec_i, cent_i) - 2.d0)  / (zex(bas_i, iwf) * r_en(elec_i, cent_i) + 1.d0) ** 4
+              do dim_i = 1, ndim
+                 dotproduct = dotproduct + rvec_en(dim_i, elec_i, cent_i) *  dphin (dim_i, bas_i, elec_i)
+              enddo ! dim_i
+              lap_dphin_dz (elec_i, bas_i) =  ddf * phin(bas_i, elec_i) + 2.d0 / r_en(elec_i, cent_i) * df  * ( phin(bas_i, elec_i)  + dotproduct ) + f * d2phin(bas_i, elec_i) 
+           enddo ! elec_i
+        enddo ! dexp_to_bas_i
+     enddo ! dexp_i
+
+  else if (trim(which_analytical_basis) .eq. 'gaussian') then !fp
+     do dexp_i = 1, param_exp_nb
+        do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
+           bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)
+           cent_i = basis_fns_cent (bas_i)
+           do elec_i = 1, nelec
+              dotproduct = 0.d0
+              do dim_i = 1, ndim
+                 dotproduct = dotproduct + rvec_en(dim_i, elec_i, cent_i) * dphin (dim_i, bas_i, elec_i)
+              enddo ! dim_i
+              lap_dphin_dz (elec_i, bas_i) = -6.d0 * phin (bas_i, elec_i) - 4.d0 * dotproduct - r_en (elec_i, cent_i)**2 * d2phin (bas_i, elec_i)
+           enddo ! elec_i
+        enddo ! dexp_to_bas_i
+     enddo ! dexp_i
+
+  else  !fp
+     call die (here, 'implemented only for Slater, Gaussian, or Gauss-Slater functions')  !fp
+  endif  !fp
 
   end subroutine lap_dphin_dz_bld
 
@@ -1520,6 +1656,355 @@ module deriv_exp_mod
   end subroutine dpsi_exp_bld
 
 ! ==============================================================================
+
+! ==============================================================================
+  subroutine slater_mat_trans_inv_in_x_bld
+! ------------------------------------------------------------------------------
+! Description   : Build inverse of transpose spin-up and down slater matrices
+! Description   : in two-dimensional format for integration on angular grid in pseudopotential calculation
+!
+! Created       : F. Petruzielo, 24 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer det_unq_up_i, det_unq_dn_i, orb_i
+  integer elec_up_i, elec_dn_i, mat_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('slater_mat_trans_inv_up_in_x')
+   call object_create ('slater_mat_trans_inv_dn_in_x')
+
+   call object_needed ('electron')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
+   call object_needed ('nup')
+   call object_needed ('ndn')
+   call object_needed ('slmui')
+   call object_needed ('slmdi')
+   call object_needed ('slmin')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('slater_mat_trans_inv_up_in_x', slater_mat_trans_inv_up_in_x, nup, nup, ndetup)
+  call object_alloc ('slater_mat_trans_inv_dn_in_x', slater_mat_trans_inv_dn_in_x, ndn, ndn, ndetdn)
+
+  if (electron .le. nup) then
+
+     ! build slater_mat_trans_inv_up
+     do det_unq_up_i = 1, ndetup
+        mat_i = 0
+        do orb_i = 1, nup
+           do elec_up_i = 1, nup
+              mat_i = mat_i + 1
+              slater_mat_trans_inv_up_in_x (orb_i, elec_up_i, det_unq_up_i) = slmin (mat_i, det_unq_up_i)
+           enddo
+        enddo
+     enddo
+
+     ! build slater_mat_trans_inv_dn
+     do det_unq_dn_i = 1, ndetdn
+        mat_i = 0
+        do orb_i = 1, ndn
+           do elec_dn_i = 1, ndn
+              mat_i = mat_i + 1
+              slater_mat_trans_inv_dn_in_x (orb_i, elec_dn_i, det_unq_dn_i) = slmdi (mat_i, det_unq_dn_i)
+           enddo
+        enddo
+     enddo
+
+  else
+
+          ! build slater_mat_trans_inv_up
+     do det_unq_up_i = 1, ndetup
+        mat_i = 0
+        do orb_i = 1, nup
+           do elec_up_i = 1, nup
+              mat_i = mat_i + 1
+              slater_mat_trans_inv_up_in_x (orb_i, elec_up_i, det_unq_up_i) = slmui (mat_i, det_unq_up_i)
+           enddo
+        enddo
+     enddo
+
+     ! build slater_mat_trans_inv_dn
+     do det_unq_dn_i = 1, ndetdn
+        mat_i = 0
+        do orb_i = 1, ndn
+           do elec_dn_i = 1, ndn
+              mat_i = mat_i + 1
+              slater_mat_trans_inv_dn_in_x (orb_i, elec_dn_i, det_unq_dn_i) = slmin (mat_i, det_unq_dn_i)
+           enddo
+        enddo
+     enddo
+
+  end if
+
+  end subroutine slater_mat_trans_inv_in_x_bld
+
+! ==============================================================================
+  subroutine ddet_dexp_unq_in_x_bld
+! ------------------------------------------------------------------------------
+! Description   : derivatives of unique spin-up and spin-down determinants
+! Description   : with respect to basis exponents
+! Description   : by updating reference determinant via the Sherman-Morrison formula
+!               : for an angular grid point during pseudopotential integration
+!
+! Created       : F. Petruzielo, 24 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer det_unq_up_i, det_unq_dn_i
+  integer orb_i, col_i, i
+  integer dexp_i
+  real(dp) factor_up, factor_dn
+
+! header
+  if (header_exe) then
+
+   call object_create ('ddet_dexp_unq_up_in_x')
+   call object_create ('ddet_dexp_unq_dn_in_x')
+
+   call object_needed ('param_exp_nb')
+   call object_needed ('nup')
+   call object_needed ('ndn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
+   call object_needed ('det_unq_orb_lab_srt_up')
+   call object_needed ('det_unq_orb_lab_srt_dn')
+   call object_needed ('slater_mat_trans_inv_up_in_x')
+   call object_needed ('slater_mat_trans_inv_dn_in_x')
+   call object_needed ('dorb_dexp')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('detn')
+   call object_needed ('orbital_depends_on_opt_exp')
+   call object_needed ('electron')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('ddet_dexp_unq_up_in_x', ddet_dexp_unq_up_in_x, ndetup, param_exp_nb)
+  call object_alloc ('ddet_dexp_unq_dn_in_x', ddet_dexp_unq_dn_in_x, ndetdn, param_exp_nb)
+
+  if (electron .le. nup) then
+
+     ! loop over optimized exponents
+     do dexp_i = 1, param_exp_nb
+
+        !  loop over unique spin-up determinants
+        do det_unq_up_i = 1, ndetup
+
+           ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) = 0.d0
+
+           !    loop over columns (=orbitals) of determinant
+           do col_i = 1, nup
+
+              orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
+              if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
+
+              factor_up = 0.d0
+              do i = 1, nup
+                 factor_up = factor_up + slater_mat_trans_inv_up_in_x (i, col_i, det_unq_up_i) * dorb_dexp (i, orb_i, dexp_i)
+              enddo
+
+              ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) = ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) + factor_up * detn (det_unq_up_i)
+
+           enddo ! col_i
+
+        enddo ! det_unq_up_i
+
+        !  loop over unique spin-dn determinants
+        do det_unq_dn_i = 1, ndetdn
+
+           ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i) = 0.d0
+
+           !    loop over columns (=orbitals) of determinant
+           do col_i = 1, ndn
+
+              orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
+              if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
+
+              factor_dn = 0.d0
+              do i = 1, ndn
+                 factor_dn = factor_dn + slater_mat_trans_inv_dn_in_x (i, col_i, det_unq_dn_i) * dorb_dexp (nup + i, orb_i, dexp_i)
+              enddo
+
+              ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i) = ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i) + factor_dn * detd (det_unq_dn_i)
+
+           enddo ! col_i
+
+        enddo ! det_unq_dn_i
+
+     enddo ! dexp_i
+
+  else
+     ! loop over optimized exponents
+     do dexp_i = 1, param_exp_nb
+
+        !  loop over unique spin-up determinants
+        do det_unq_up_i = 1, ndetup
+
+           ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) = 0.d0
+
+           !    loop over columns (=orbitals) of determinant
+           do col_i = 1, nup
+
+              orb_i = det_unq_orb_lab_srt_up (col_i, det_unq_up_i)
+              if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
+
+              factor_up = 0.d0
+              do i = 1, nup
+                 factor_up = factor_up + slater_mat_trans_inv_up_in_x (i, col_i, det_unq_up_i) * dorb_dexp (i, orb_i, dexp_i)
+              enddo
+
+              ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) = ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) + factor_up * detu (det_unq_up_i)
+
+           enddo ! col_i
+
+        enddo ! det_unq_up_i
+
+        !  loop over unique spin-dn determinants
+        do det_unq_dn_i = 1, ndetdn
+
+           ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i) = 0.d0
+
+           !    loop over columns (=orbitals) of determinant
+           do col_i = 1, ndn
+
+              orb_i = det_unq_orb_lab_srt_dn (col_i, det_unq_dn_i)
+              if (.not. orbital_depends_on_opt_exp (orb_i, dexp_i)) cycle
+
+              factor_dn = 0.d0
+              do i = 1, ndn
+                 factor_dn = factor_dn + slater_mat_trans_inv_dn_in_x (i, col_i, det_unq_dn_i) * dorb_dexp (nup + i, orb_i, dexp_i)
+              enddo
+
+              ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i) = ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i) + factor_dn * detn (det_unq_dn_i)
+
+           enddo ! col_i
+
+        enddo ! det_unq_dn_i
+
+     enddo ! dexp_i
+  end if
+
+ end subroutine ddet_dexp_unq_in_x_bld
+
+
+
+! ==============================================================================
+  subroutine dpsid_exp_in_x_bld
+! ------------------------------------------------------------------------------
+! Description   :  derivatives of determinant part of Psi with respect to basis exponents at angular grid point for pseudopotential
+!
+! Created       : F. Petruzielo, 22 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer dexp_i
+  integer csf_i, det_in_csf_i, det_i
+  integer det_unq_up_i, det_unq_dn_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsid_exp_in_x')
+
+   call object_needed ('param_exp_nb')
+   call object_needed ('ncsf')
+   call object_needed ('ndet')
+   call object_needed ('ndet_in_csf')
+   call object_needed ('iwdet_in_csf')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('csf_coef')
+   call object_needed ('det_to_det_unq_up')
+   call object_needed ('det_to_det_unq_dn')
+   call object_needed ('ddet_dexp_unq_up_in_x')
+   call object_needed ('ddet_dexp_unq_dn_in_x')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('nup')
+   call object_needed ('electron')
+   call object_needed ('detn')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('dpsid_exp_in_x', dpsid_exp_in_x, param_exp_nb)
+
+  dpsid_exp_in_x (:) = 0.d0
+
+  if(electron .le. nup) then
+     !up spin electron
+     ! loop over optimized exponents
+     do dexp_i = 1, param_exp_nb
+
+        do csf_i = 1, ncsf
+
+           do det_in_csf_i = 1, ndet_in_csf (csf_i)
+
+              det_i = iwdet_in_csf (det_in_csf_i, csf_i)
+              det_unq_up_i = det_to_det_unq_up (det_i)
+              det_unq_dn_i = det_to_det_unq_dn (det_i)
+
+              dpsid_exp_in_x (dexp_i) = dpsid_exp_in_x (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
+                   (ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) * detd (det_unq_dn_i) + detn (det_unq_up_i) * ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i))
+
+           enddo ! det_in_csf_i
+        enddo ! csf_i
+
+     enddo ! dexp_i
+
+  else
+        !down spin electron
+        ! loop over optimized exponents
+        do dexp_i = 1, param_exp_nb
+
+           do csf_i = 1, ncsf
+
+              do det_in_csf_i = 1, ndet_in_csf (csf_i)
+
+                 det_i = iwdet_in_csf (det_in_csf_i, csf_i)
+                 det_unq_up_i = det_to_det_unq_up (det_i)
+                 det_unq_dn_i = det_to_det_unq_dn (det_i)
+
+                 dpsid_exp_in_x (dexp_i) = dpsid_exp_in_x (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
+                      (ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) * detn (det_unq_dn_i) + detu (det_unq_up_i) * ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i))
+
+              enddo ! det_in_csf_i
+           enddo ! csf_i
+
+        enddo ! dexp_i
+
+     end if
+! tests for He
+!  write(6,'(2a,f)') trim(here), ': dpsi_exp =', dpsi_exp (1)
+!  write(6,'(2a,f)') trim(here), ': check dpsi_exp=', dorb_dexp(1,1,1)/orb(1,1) + dorb_dexp(2,1,1)/orb(2,1)
+
+ end subroutine dpsid_exp_in_x_bld
+
+! ==============================================================================
+
   subroutine dpsi_lnexp_bld
 ! ------------------------------------------------------------------------------
 ! Description   : logarithm derivatives of Psi with respect to logarithm of basis exponents
@@ -2423,6 +2908,85 @@ module deriv_exp_mod
   end subroutine sum_lap_ln_dpsi_exp_bld
 
 ! ==============================================================================
+  subroutine eloc_pot_nloc_exp_bld
+! ------------------------------------------------------------------------------
+! Description   : nonlocal pseudopoential contribution to local energy from derivates of wavefunction with respect to exponent parameters.
+! Description   : eloc_pot_nloc_exp = dvpsp_exp / dpsid_exp
+! Description   : where dvpsp_exp = (V_nonloc D_exp J)/J and dpsid_exp = D_exp = derivative of determinantal part of wavefunction wrt exponent parameters
+!
+! Created       : F. Petruzielo,   22 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_pot_nloc_exp')
+
+   call object_needed ('param_exp_nb')
+   call object_needed ('dvpsp_exp')
+   call object_needed ('dpsid_exp')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('eloc_pot_nloc_exp', eloc_pot_nloc_exp, param_exp_nb)
+
+  eloc_pot_nloc_exp = dvpsp_exp / dpsid_exp
+
+ end subroutine eloc_pot_nloc_exp_bld
+
+! ==============================================================================
+  subroutine eloc_pot_exp_bld
+! ------------------------------------------------------------------------------
+! Description   : total local potential energy for derivative of  wave functions wrt exponent parameters
+! Description   : with or without (nonlocal) pseudopotential
+!
+! Created       : F. Petruzielo, 22 Jun 2009
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_pot_exp')
+
+   call object_needed ('param_exp_nb')
+   call object_needed ('nloc')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('eloc_pot_exp', eloc_pot_exp, param_exp_nb)
+
+! without a pseudopotential
+  if (nloc <= 0) then
+
+   call object_provide_by_index (eloc_pot_exp_bld_index, eloc_pot_index)
+   eloc_pot_exp = eloc_pot
+
+! with a pseudopotential
+  else
+
+   call object_provide_by_index (eloc_pot_exp_bld_index, eloc_pot_loc_index)
+   call object_provide_by_index (eloc_pot_exp_bld_index, eloc_pot_nloc_exp_index)
+   eloc_pot_exp = eloc_pot_loc + eloc_pot_nloc_exp
+
+  endif
+
+end subroutine eloc_pot_exp_bld
+
+! ==============================================================================
   subroutine eloc_kin_exp_bld
 ! ------------------------------------------------------------------------------
 ! Description   : Kinetic local energy of dpsi_exp
@@ -2489,7 +3053,7 @@ module deriv_exp_mod
 
    call object_needed ('param_exp_nb')
    call object_needed ('eloc_kin_exp')
-   call object_needed ('eloc_pot')
+   call object_needed ('eloc_pot_exp')
 
    return
 
@@ -2497,15 +3061,10 @@ module deriv_exp_mod
 
 ! begin
 
-! not for a pseudopotential
-  if (nloc > 0) then
-    call die (here, 'local energy derivatives wrt exponents not implemented for a pseudopotential')
-  endif
-
 ! allocations
   call object_alloc ('eloc_exp', eloc_exp, param_exp_nb)
 
-  eloc_exp (:) = eloc_kin_exp (:) + eloc_pot
+  eloc_exp (:) = eloc_kin_exp (:) + eloc_pot_exp(:)
 
   end subroutine eloc_exp_bld
 

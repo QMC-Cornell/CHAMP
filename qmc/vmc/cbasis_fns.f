@@ -1,11 +1,12 @@
       subroutine cbasis_fns_num(iel,rvec_en,r_en)
 c written by Amit Ghosal starting from basis_fns.f
       use constants_mod
+      use const_mod
       use atom_mod
       use basis1_mod
-      use const_mod
-      use numbas_mod
       use basis2_mod
+      use basis_mod, only : which_analytical_basis !fp
+      use numbas_mod
       use wfsec_mod
       use cphifun_mod
       implicit real*8(a-h,o-z)
@@ -45,51 +46,55 @@ c Decide whether we are computing all or one electron
           ri2=ri*ri
           ri3=ri2*ri
 
-          if(numr.eq.0) then
-
-            do 10 irb=1,nrbas(ict)
+c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+          do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
-c             rnm2=max(0.d0,rn-2)
               rm3=r**(rn-3)
               rm2=rm3*r
               rm1=rm2*r
-c Slater r^(n-1)*Exp(-zeta*r)
-              if(n.gt.0) then
-                zr=zex2(irb,ict,iwf)*r
-                ex=dexp(-zr)
-                wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
-               elseif(n.eq.0) then
-c Warning: Asymptotic and Gaussian not yet tested.
-c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1,
-c beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
-                stop 'asymptotic not yet fully tested'
-                rn=betaq/zex2(irb,ict,iwf)
-                rm3=r**(rn-3)
-                rm2=rm3*r
-                rm1=rm2*r
-                wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
-               elseif(n.lt.0) then
-c Gaussian  r^(n-1)*Exp(-zeta*r^2) (to be checked)
-c               rnm2=rn-2
-                zr=2*zex2(irb,ict,iwf)*r2
-                ex=dexp(-0.5d0*zr)
-                wfv(3,irb)=rm3*((rn-1)*(rn-2)-(2*rn-1-zr)*zr)*ex
+              if(n.ne.0) then
+                 select case (trim(which_analytical_basis)) !fp
+                 case ('slater') !fp
+                    zr=zex2(irb,ict,iwf)*r
+                    ex=dexp(-zr)
+                    wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
+                 case ('gaussian') !fp
+                    zr=2*zex2(irb,ict,iwf)*r2
+                    ex=dexp(-0.5d0*zr)
+                    wfv(3,irb)=rm3*((rn-1)*(rn-2)-(2*rn-1-zr)*zr)*ex
+                 case ('gauss-slater') !fp
+                    zr=(zex2(irb,ict,iwf)*r)**2/(1+zex2(irb,ict,iwf)*r)**2 * (2+zex2(irb,ict,iwf)*r)  !fp
+!                    ex=dexp(-zr * (1+zex2(irb,ict,iwf)*r) / (2+zex2(irb,ict,iwf)*r) ) !fp
+                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp
+                    wfv(3,irb)=rm3*ex *((rn-1-zr)*(rn-2-zr)-zr*(1+2/(1+zex2(irb,ict,iwf)*r)-2/(2+zex2(irb,ict,iwf)*r))) !fp
+                 case default
+                    write(6,*) 'cbasis_fns_num: Allowed basis types are slater gaussian gauss-slater!'
+                    stop 'cbasis_fns_num: Allowed basis types are slater gaussian gauss-slater!'
+                 end select     !fp
+              elseif(n.eq.0) then
+c     Warning: Asymptotic and Gaussian not yet tested.
+c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+                 write(6,*) 'basis_fns: ict=',ict
+                 write(6,*) 'basis_fns: irb=',irb
+                 write(6,*) 'basis_fns: n=',n
+                 stop 'basis_fns: asymptotic not yet fully tested'
+                 rn=betaq/zex2(irb,ict,iwf)
+                 rm3=r**(rn-3)
+                 rm2=rm3*r
+                 rm1=rm2*r
+                 wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
               endif
               wfv(1,irb)=rm1*ex
-   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex
+   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex              
 
-        write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
+c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
 
-           else
-
-            rk=r
-            do 20 irb=1,nrbas(ict)
-ccc   20         call splfit_bas(rk,irb,ict,iwf,wfv(1,irb),ider)
-              call splfit_bas(rk,irb,ict,iwf,wfv(1,irb),ider)
-   20         if(wfv(1,irb).eq.0.d0) wfv(1,irb)=DBLMIN
-
-          endif
+            do 20 irb=1,nrbas_numerical(ict)
+              rk=r
+              call splfit_bas(rk,irb,ict,iwf,wfv(1,nrbas_analytical(ict)+irb),ider)
+              if(wfv(1,nrbas_analytical(ict)+irb).eq.0.d0) wfv(1,nrbas_analytical(ict)+irb)=DBLMIN
+   20       continue
 
           do 40 ib2=1,nbasis_ctype(ict)
 

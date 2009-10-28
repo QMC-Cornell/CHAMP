@@ -410,7 +410,7 @@ module optimization_mod
   enddo
   if(ijas.ge.4.and.ijas.le.6) then
     do it=1,nctype
-          if(numr.le.0) then
+          if(nloc.eq.0) then
 ! All-electron with analytic slater basis
             if((norda.eq.0.and.nparma(it).gt.0).or.(norda.gt.0 .and. nparma(it).gt.norda+1)) then
               write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
@@ -418,7 +418,7 @@ module optimization_mod
             endif
            else
 ! Pseudopotential with numerical basis (cannot vary a(1) or a(2)
-            if(norda.eq.1) stop 'makes no sense to have norda=1 for numr>0'
+            if(norda.eq.1) stop 'makes no sense to have norda=1 for nloc!=0, i.e. for psp. atoms or Je spheres.'
             if((norda.eq.0.and.nparma(it).gt.0).or.(norda.gt.0 .and. nparma(it).gt.norda-1)) then
               write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
               stop 'nparma too large for norda in pseudopot calculation'

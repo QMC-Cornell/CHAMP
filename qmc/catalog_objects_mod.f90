@@ -44,8 +44,10 @@ module catalog_objects_mod
   call catalog_one_object ('detd', detd_index)
   call catalog_one_object ('electron', electron_index)
   call catalog_one_object ('vpsp_ex', vpsp_ex_index)
+  call catalog_one_object ('dvpsp_exp', dvpsp_exp_index) !fp
   call catalog_one_object ('orbe', orbe_index)
   call catalog_one_object ('detn', detn_index)
+  call catalog_one_object ('slmin', slmin_index) !fp
   call catalog_one_object ('eloc_bav', eloc_bav_index)
   call catalog_one_object ('eloc_av', eloc_av_index)
   call catalog_one_object ('eloc_av_err', eloc_av_err_index)
@@ -68,6 +70,7 @@ module catalog_objects_mod
   call catalog_one_object ('eloc_pot', eloc_pot_index)
   call catalog_one_object ('eloc_pot_loc', eloc_pot_loc_index)
   call catalog_one_object ('eloc_pot_nloc_ex', eloc_pot_nloc_ex_index)
+  call catalog_one_object ('eloc_pot_nloc_exp', eloc_pot_nloc_exp_index) !fp
   call catalog_one_object ('pe_ee', pe_ee_index)
   call catalog_one_object ('pe_en', pe_en_index)
   call catalog_one_object ('jas_pairs_nb', jas_pairs_nb_index)

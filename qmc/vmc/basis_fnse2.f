@@ -16,6 +16,7 @@ c                 = 0 : asymptotic basis
       use real_spherical_harmonics
       use atom_mod
       use basis1_mod
+      use basis_mod, only : which_analytical_basis !fp
       use numbas_mod
       use basis2_mod
       use wfsec_mod
@@ -58,37 +59,41 @@ c     do 40 ie=1,nelec
           ri3=ri2*ri
           ri4=ri3*ri
 
-          if(numr.le.0) then
-
-            do 10 irb=1,nrbas(ict)
+c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+          do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
               rm1=r**(rn-1)
-c Slater r^(n-1)*Exp(-zeta*r)
-              if(n.gt.0) then
-                zr=zex2(irb,ict,iwf)*r
-                ex=dexp(-zr)
-               elseif(n.eq.0) then
-c Warning: Asymptotic and Gaussian not yet tested.
+              if(n.ne.0) then
+                 select case (trim(which_analytical_basis)) !fp
+                 case ('slater') !fp
+                    zr=zex2(irb,ict,iwf)*r
+                    ex=dexp(-zr)
+                 case ('gaussian') !fp
+                    zr=2*zex2(irb,ict,iwf)*r2
+                    ex=dexp(-0.5d0*zr)
+                 case ('gauss-slater') !fp
+                    zr=(zex2(irb,ict,iwf)*r)**2/(1+zex2(irb,ict,iwf)*r)**2 * (2+zex2(irb,ict,iwf)*r) !fp
+!                    ex=dexp(-zr * (1+zex2(irb,ict,iwf)*r) / (2+zex2(irb,ict,iwf)*r) ) !fp
+                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp 
+                 case default
+                    write(6,*) 'basis_fnse2: Allowed basis types are slater gaussian gauss-slater!'
+                    stop 'basis_fnse2: Allowed basis types are slater gaussian gauss-slater!'
+                 end select     !fp
+              elseif(n.eq.0) then
+c     Warning: Asymptotic and Gaussian not yet tested.
 c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
-                stop 'asymptotic not yet fully tested'
-                rn=betaq/zex2(irb,ict,iwf)
-                rm1=r**(rn-1)
-               elseif(n.lt.0) then
-c Gaussian  r^(n-1)*Exp(-zeta*r^2) (to be checked)
-                zr=2*zex2(irb,ict,iwf)*r2
-                ex=dexp(-0.5d0*zr)
+                 stop 'asymptotic not yet fully tested'
+                 rn=betaq/zex2(irb,ict,iwf)
+                 rm1=r**(rn-1)
               endif
    10         wfv(1,irb)=rm1*ex
 
-           else
-
-            rk=r
-            do 20 irb=1,nrbas(ict)
-              call splfit_bas(rk,irb,ict,iwf,wfv(1,irb),ider)
-   20         if(wfv(1,irb).eq.0.d0) wfv(1,irb)=DBLMIN
-
-          endif
+         do 20 irb=1,nrbas_numerical(ict)
+              rk=r
+              call splfit_bas(rk,irb,ict,iwf,wfv(1,nrbas_analytical(ict)+irb),ider)
+              if(wfv(1,nrbas_analytical(ict)+irb).eq.0.d0) wfv(1,nrbas_analytical(ict)+irb)=DBLMIN
+   20     continue
 
 c         write(6,'(''ict,nbasis_ctype'',9i5)') ict,nbasis_ctype(ict)
 
@@ -277,6 +282,7 @@ c                 < 0 : Gaussian basis
 
       use atom_mod
       use basis1_mod
+      use basis_mod, only : which_analytical_basis !fp
       use numbas_mod
       use basis2_mod
       use wfsec_mod
@@ -304,38 +310,41 @@ c     do 40 ie=nelec1,nelec2
           r2=r*r
           ri=1/r
 
-          if(numr.le.0) then
-
-            do 10 irb=1,nrbas(ict)
+c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+          do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
-c             rnm2=max(0.d0,rn-2)
               rm1=r**(rn-1)
-c Slater r^(n-1)*Exp(-zeta*r)
-              if(n.gt.0) then
-                zr=zex2(irb,ict,iwf)*r
-                ex=dexp(-zr)
-               elseif(n.eq.0) then
-c Warning: Asymptotic and Gaussian not yet tested.
+              if(n.ne.0) then
+                 select case (trim(which_analytical_basis)) !fp
+                 case ('slater') !fp
+                    zr=zex2(irb,ict,iwf)*r
+                    ex=dexp(-zr)
+                 case ('gaussian') !fp
+                    zr=2*zex2(irb,ict,iwf)*r2
+                    ex=dexp(-0.5d0*zr)
+                 case ('gauss-slater') !fp
+                    zr=(zex2(irb,ict,iwf)*r)**2/(1+zex2(irb,ict,iwf)*r)**2 * (2+zex2(irb,ict,iwf)*r) !fp
+!                    ex=dexp(-zr * (1+zex2(irb,ict,iwf)*r) / (2+zex2(irb,ict,iwf)*r) ) !fp
+                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp 
+                 case default
+                    write(6,*) 'basis_fns_2de2: Allowed basis types are slater gaussian gauss-slater!'
+                    stop 'basis_fns_2de2: Allowed basis types are slater gaussian gauss-slater!'
+                 end select     !fp
+              elseif(n.eq.0) then
+c     Warning: Asymptotic and Gaussian not yet tested.
 c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
-                stop 'asymptotic not yet fully tested'
-                rn=betaq/zex2(irb,ict,iwf)
-                rm1=r**(rn-1)
-               elseif(n.lt.0) then
-c Gaussian  r^(n-1)*Exp(-zeta*r^2) (to be checked)
-c               rnm2=rn-2
-                zr=2*zex2(irb,ict,iwf)*r2
-                ex=dexp(-0.5d0*zr)
+                 stop 'asymptotic not yet fully tested'
+                 rn=betaq/zex2(irb,ict,iwf)
+                 rm1=r**(rn-1)
               endif
    10         wfv(1,irb)=rm1*ex
 
-           else
-
-            rk=r
-            do 20 irb=1,nrbas(ict)
-   20         call splfit_bas(rk,irb,ict,iwf,wfv(1,irb),ider)
-
-          endif
+         do 20 irb=1,nrbas_numerical(ict)
+              rk=r
+              call splfit_bas(rk,irb,ict,iwf,wfv(1,nrbas_analytical(ict)+irb),ider)
+              if(wfv(1,nrbas_analytical(ict)+irb).eq.0.d0) wfv(1,nrbas_analytical(ict)+irb)=DBLMIN
+   20     continue
 
           do 40 ib2=1,nbasis_ctype(ict)
 

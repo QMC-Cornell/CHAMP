@@ -18,18 +18,19 @@ c                  basis functions by all the s's first, then all the p's etc.
 c                  instead of 1s,2s,2p,3s,3p,3d,...
 c         =1       we are using numerical basis functions and we use normalization
 c                  for angular part only
-c Whether one is using Slater or gaussian basis fns. is inputted by having
-c n1s,n2s etc. be either > 0 or < 0.
-c The two old versions of the code used unnormalized Gaussian and asymptotic functions,
-c and, the same normal. for Gaussians as for Slaters.
+c                  The check has now been changed to iwrwf2(ib).le.nrbas_analytical(ict) 14 Oct 09
+c Whether one is using Slater or gaussian basis fns. used to be inputted by having
+c n1s,n2s etc. be either > 0 or < 0.  Now use which_analytical_basis
       use all_tools_mod
+      use const_mod
       use control_mod
+      use atom_mod, only : iwctype
       use orbitals_mod
       use coefs_mod
-      use const_mod
       use dim_mod
       use numbas_mod
       use basis1_mod
+      use basis_mod, only : which_analytical_basis, norm_gauss_slat_exp_1 !fp
       use basis2_mod
       use basisnorm_mod
       use contr2_mod
@@ -43,26 +44,33 @@ c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
       call alloc ('m_bas', m_bas, nbasis)
 
       do 20 ib=1,nbasis
+        ict=ictype_basis(ib)
         n=n_bas(ib)
         if(ndim.eq.3) then
           l=l_bas(ib)
-          if(numr.le.0) then
-            if(n.gt.0) then
-              anorm(ib)=sqrt((2*zex(ib,iwf))**(2*n+1)*(2*l+1)/(fact(2*n)*4*pi))
-             else
-              n1=abs(n)
-              anorm(ib)=sqrt(2*(2*zex(ib,iwf))**(n1+0.5d0)*(2*l+1)/(gamma1(n1)*4*pi))
-            endif
-           elseif(numr.eq.1 .or. numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
-            anorm(ib)=sqrt((2*l+1)/(4*pi))
+          if(iwrwf2(ib).le.nrbas_analytical(ict)) then           
+            select case (trim(which_analytical_basis)) !fp
+             case ('slater')    !fp
+                anorm(ib)=sqrt((2*zex(ib,iwf))**(2*n+1)*(2*l+1)/(fact(2*n)*4*pi))
+             case ('gaussian')  !fp
+                n1=abs(n)
+                anorm(ib)=sqrt(2*(2*zex(ib,iwf))**(n1+0.5d0)*(2*l+1)/(gamma1(n1)*4*pi))
+             case ('gauss-slater') !fp
+                anorm(ib) = norm_gauss_slat_exp_1(n) * sqrt((2*l+1)/(4*pi)) * zex(ib,iwf)**(n+0.5d0)   !fp
+             case default
+                write(6,*) 'basis_norm: Allowed basis types are slater gaussian gauss-slater!'
+                stop 'basis_norm: Allowed basis types are slater gaussian gauss-slater!'
+            end select         !fp
            else
-            stop 'numr must be between -3 and 1'
+            anorm(ib)=sqrt((2*l+1)/(4*pi))
           endif
          elseif(ndim.eq.2) then
           m=m_bas(ib)
-          if(numr.le.0 .and. ibasis.lt.4) then
+          if(iwrwf2(ib).le.nrbas_analytical(ict) .and. ibasis.lt.4) then
             anorm(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(fact(2*n-1)*2*pi))
-           elseif(numr.le.0 .and. (ibasis.ge.4 .and. ibasis.le.6)) then
+c The following change is not necessary at this time and has not been tested.
+c          elseif(numr.le.0 .and. (ibasis.ge.4 .and. ibasis.le.6)) then
+           elseif(iwrwf2(ib).le.nrbas_analytical(ict) .and. (ibasis.ge.4 .and. ibasis.le.6)) then
             anorm(ib)=dsqrt(1/pi)
            else
 c Warning: temporarily commented out diff norm for m=0

@@ -26,6 +26,9 @@ module basis_mod
   integer, allocatable            :: exp_opt_lab_read (:)
   character(len=max_string_len)   :: basis_functions_varied = 'normalized'
   logical                         :: l_optimize_log_exp = .false.
+  character(len=max_string_len)   :: which_analytical_basis = 'none' !fp
+  integer, parameter              :: max_n_gauss_slat = 5 !fp
+  real(dp), dimension(max_n_gauss_slat), parameter   :: norm_gauss_slat_exp_1 = (/ 1.12646742161049d0, 0.5766099503612371d0, 0.1965811411216233d0, 0.05027565586963441d0, 0.01028077216468808d0 /)  !fp
 
   real(dp), external              :: gamma1
 
@@ -60,6 +63,7 @@ module basis_mod
    write(6,'(a)') 'HELP for basis menu:'
    write(6,'(a)') 'basis'
    write(6,'(a)') '  ibasis = [integer]: type of basis (default: 1)'
+   write(6,'(a)') '  which_analytical_basis = [none (default), slater, gaussian, gauss-slater]' !fp
    write(6,'(a)') '  numr = [integer] options for numerical basis (default: -3)'
    write(6,'(a)') '  basis_functions : function types and exponents'
    write(6,'(a)') '   1  ! atom type'
@@ -108,6 +112,10 @@ module basis_mod
   case ('basis_functions_varied')
    call get_next_value (basis_functions_varied)
 
+  case ('which_analytical_basis')  !fp
+   call get_next_value (which_analytical_basis) !fp
+   call object_modified('which_analytical_basis') !fp
+
   case ('optimize_log_exp')
    call get_next_value (l_optimize_log_exp)
 
@@ -131,16 +139,26 @@ module basis_mod
   if (use_parser) then
 
   if(ibasis == 1) then
-    write(6,'(a)') ' type of basis: localized Slater or gaussian or numerical basis'
+    write(6,'(a)') ' type of basis: localized Slater or gaussian or gauss-slater or numerical basis' !fp
     notype=0
    else
     call die (lhere, 'case ibasis='+ibasis+'not yet implemented for new input')
   endif
 
   write(6,'(a,i5)') ' numr=',numr
-  if(numr>0) write(6,'(a)') ' numerical basis functions used'
 
-  if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
+!   if (numr>0) then
+!      if (trim(which_analytical_basis) .eq. 'none') then !fp
+!         write(6,'(a)') ' numerical basis functions used'
+!      else
+!         write(6,*) 'numr>0 but which_analytical_basis .ne. none'
+!         stop 'numr>0 but which_analytical_basis .ne. none'
+!      end if
+!   end if
+
+! if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
+! if(ibasis.eq.1 .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
+  if(ibasis.eq.1 .and. inum_orb.eq.0) call read_bas_num(1)
 
   call object_provide ('nbasis')
   write(6,'(/a,i5)') ' number of basis functions = ',nbasis
@@ -155,7 +173,7 @@ module basis_mod
     do cent_type_i = 1, nctype
       write (6, '(a,i5)') ' center type # ',cent_type_i
       do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
-      write (6, '(a,i5,a,a6,a,f12.6)') ' function # ', bas_c_i, ': ',trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)), '       exponent = ', basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
+        write (6, '(a,i5,a,a6,a,f12.6)') ' function # ', bas_c_i, ': ',trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)), '       exponent = ', basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
       enddo
     enddo
 
@@ -165,7 +183,7 @@ module basis_mod
     do cent_type_i = 1, nctype
       write (6, '(a,i5)') ' center type # ',cent_type_i
       do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
-      write (6, '(a,i5,a,a6,a,i5)') ' function # ', bas_c_i, ': ',trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)), '       radial function # ', basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)
+        write (6, '(a,i5,a,a6,a,i5)') ' function # ', bas_c_i, ': ',trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)), '       radial function # ', basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)
         if (basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i) > nrbas(cent_type_i)) then
           call die (lhere, ' for center type # '+cent_type_i+', radial function # '+basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)+' > nrbas='+nrbas(cent_type_i))
         endif
@@ -178,7 +196,7 @@ module basis_mod
   call distinct_radial_bas
 
   if(ibasis.eq.1) then
-! irecursion_ylm=0 use Cyrus' spherical harmonics (upto f functions)
+! irecursion_ylm=0 use Cyrus' spherical harmonics (upto g functions)
 ! irecursion_ylm=1 use Ryo' spherical harmonics (any L)
 ! Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
 ! Change it to calculate upto largest l actually used.
@@ -294,7 +312,7 @@ module basis_mod
 
   do cent_i = 1, ncent
     cent_type_i = iwctype (cent_i)
-    
+
     do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
       bas_i = bas_i + 1
       call alloc ('n_bas', n_bas, bas_i)
@@ -360,7 +378,7 @@ module basis_mod
 
      case default
        call die (lhere, 'unknown basis function label >'+trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i))+'<')
-    end select 
+    end select
 
 
     call alloc ('zex', zex, bas_i, nwf)
@@ -370,7 +388,7 @@ module basis_mod
 
     enddo
   enddo
-   
+
 ! for now, ML_BAS needs to be at least 4 because of the code in basis_fns.f
   ML_BAS = max (4, maxval(l_bas))
 
@@ -567,10 +585,8 @@ module basis_mod
 !                  instead of 1s,2s,2p,3s,3p,3d,...
 !         =1       we are using numerical basis functions and we use normalization
 !                  for angular part only
-! Whether one is using Slater or gaussian basis fns. is inputted by having
-! n1s,n2s etc. be either > 0 or < 0.
-! The two old versions of the code used unnormalized Gaussian and asymptotic functions,
-! and, the same normal. for Gaussians as for Slaters.
+! Whether one is using Slater or gaussian basis fns. was inputted by having
+! n1s,n2s etc. be either > 0 or < 0.  Now use which_analytical_basis
 !
 ! Created       : J. Toulouse, 16 Apr 2007
 ! ------------------------------------------------------------------------------
@@ -579,7 +595,7 @@ module basis_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'norm_basis_bld'
-  integer ib, n, l, m, n1
+  integer ib, ict, n, l, m, n1
 
 ! header
   if (header_exe) then
@@ -612,35 +628,43 @@ module basis_mod
   endif
 
   do ib = 1, nbasis
+     ict=ictype_basis(ib)
      n = n_bas(ib)
      if (ndim == 3) then
        l = l_bas(ib)
-       if (numr <= 0) then
-         if (n > 0) then
-            norm_basis(ib)=sqrt((2*zex(ib,iwf))**(2*n+1)*(2*l+1)/(factorial(2*n)*4*pi))
-          else
-            n1=abs(n)
-            norm_basis(ib)=sqrt(2*(2*zex(ib,iwf))**(n1+0.5d0)*(2*l+1)/(gamma1(n1)*4*pi))
-          endif
-       elseif (numr == 1 .or. numr == -1 .or. numr == -2 .or. numr == -3) then
+       if(iwrwf2(ib).le.nrbas_analytical(ict)) then
+         select case (trim(which_analytical_basis))   !fp
+          case ('slater')   !fp
+             norm_basis(ib)=sqrt((2*zex(ib,iwf))**(2*n+1)*(2*l+1)/(factorial(2*n)*4*pi))   !fp
+          case ('gaussian')   !fp
+             n1=abs(n)   !fp
+             norm_basis(ib)=sqrt(2*(2*zex(ib,iwf))**(n1+0.5d0)*(2*l+1)/(gamma1(n1)*4*pi))   !fp
+          case ('gauss-slater')   !fp
+             write(*,*) "Testing: calculating gauss-slater normalization" !fp
+             norm_basis(ib) = norm_gauss_slat_exp_1(n) * sqrt((2*l+1)/(4*pi)) * zex(ib,iwf)**(n+0.5d0)   !fp
+          case default
+             write(6,*) 'norm_basis_bld: Allowed basis types are slater gaussian gauss-slater!'
+             stop 'norm_basis_bld: Allowed basis types are slater gaussian gauss-slater!'
+         end select   !fp
+        else
          norm_basis(ib)=sqrt((2*l+1)/(4*pi))
-       else
-         call die (here, 'numr must be between -3 and 1.')
        endif
      elseif (ndim == 2) then
        m = m_bas(ib)
-!       ibasis=4  ! testing !ADG
+!      ibasis=4  ! testing !ADG
        if (numr <= 0 .and. ibasis < 4) then !ADG
          norm_basis(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(factorial(2*n-1)*2*pi))
-       elseif (numr <= 0 .and. ibasis == 4 .or. ibasis == 5 .or. ibasis == 6) then !ADG
+! The following change is not necessary at this time and has not been tested.
+!          elseif(numr<=0 .and. (ibasis>=4 .and. ibasis<=6)) then
+           elseif(iwrwf2(ib)<=nrbas_analytical(ict) .and. (ibasis>=4 .and. ibasis<=6)) then
          norm_basis(ib)=sqrt(1/pi) !ADG
        else
-!        Warning: temporarily commented out diff norm for m=0
-!         norm_basis(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
+! Warning: temporarily commented out diff norm for m=0
+!        norm_basis(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
          norm_basis(ib)=sqrt(1/pi)
        endif
      endif
-   enddo ! ib
+  enddo ! ib
 
   end subroutine norm_basis_bld
 
@@ -767,7 +791,7 @@ module basis_mod
         ib=ib+1
         basis_fns_cent (ib) = ic
      enddo
-   enddo
+  enddo
 
   end subroutine basis_fns_cent_bld
 
@@ -967,8 +991,9 @@ module basis_mod
 ! requirements
   if (numr /= 0 .and. numr /= -1 .and. numr /= -2 .and. numr /= -3) then
    write(6,*) trim(here),': numr=',numr,' /= 0, - 1, -2, -3'
-   write(6,*) trim(here),': implemented only for the case numr = -1 or -2 or -3'
-   write(6,*) trim(here),': i.e. analytical slater functions with order: 1s, 2s, 3s, ...., 2p, 3p...'
+   write(6,*) trim(here),': implemented only for the case numr = 0 or -1 or -2 or -3'
+   write(6,*) trim(here),': i.e. analytical slater functions with order: 1s, 2s, 2p, 3s, 3p, 3d, ... for 0'
+   write(6,*) trim(here),': i.e. analytical slater functions with order: 1s, 2s, 3s, ...., 2p, 3p... for -1, -2, -3'
    call die (here)
   endif
   if (ncent /= 1 ) then

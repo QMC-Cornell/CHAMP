@@ -39,8 +39,7 @@ c Read parameters for secondary wavefns.
         stop 'wf_secondary, increase MFORCE'
       endif
 
-      wfile=filename(1:index(filename,' ')-1)//'.'
-     &     //wfile(1:index(wfile,' ')-1)
+      wfile=filename(1:index(filename,' ')-1)//'.'//wfile(1:index(wfile,' ')-1)
       open(3,file=wfile,status='old')
 
 c Determinantal section
@@ -52,7 +51,7 @@ c Determinantal section
 
       do 10 i=1,nctype
         read(3,*)
-        if(numr.gt.0) read(3,*)
+        read(3,*)
    10 continue
 
       if(ibasis.eq.1 .or. ibasis.eq.3) then
@@ -127,7 +126,9 @@ ccCheck if all the determinants are used in CSFs
 c     do 90 idet=1,ndet
 c  90   if(iflag(idet).eq.0) write(6,'(''Warning: determinant'',i3,'' is unused'')') idet
 
-      if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) call read_bas_num(iwt)
+c     if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) call read_bas_num(iwt)
+c     if((ibasis.eq.1.or.ibasis.eq.3).and.minval(zex(:,1)).eq.0.d0) call read_bas_num(iwt)
+      if(ibasis.eq.1.or.ibasis.eq.3) call read_bas_num(iwt)
 
 c Jastrow section
       read(3,*) section
@@ -267,13 +268,11 @@ c Analytical basis functions
         do 20 i=1,orb_tot_nb
           do 20 j=1,nbasis
    20     coef(j,i,iadd_diag)=coef(j,i,1)
-        if(numr.le.0) then
         do 30 j=1,nbasis
    30     zex(j,iadd_diag)=zex(j,1)
         do 35 ictype=1,nctype
-          do 35 irwf=1,MRWF
+          do 35 irwf=1,nrbas_analytical(ictype)
    35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
-        endif
       endif
       if(ibasis.ge.4 .and. ibasis.le.6) then
         do 37 i=1,orb_tot_nb
@@ -291,10 +290,10 @@ c  40   cdet(i,iadd_diag)=cdet(i,1)
 
 
 c Numerical radial basis functions
-      if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) then
+      if((ibasis.eq.1.or.ibasis.eq.3)) then
       do 45 iadd_diag=2,nwftype
         do 45 ict=1,nctype
-          do 45 irb=1,nrbas(ict)
+          do 45 irb=1,nrbas_numerical(ict)
             do 45 ir=1,nr(ict)
               rwf(ir,irb,ict,iadd_diag)=rwf(ir,irb,ict,1)
    45         d2rwf(ir,irb,ict,iadd_diag)=d2rwf(ir,irb,ict,1)
@@ -302,7 +301,7 @@ c Numerical radial basis functions
 c Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I think they should be MWF
       do 50 ifr=2,nforce
         do 50 ict=1,nctype
-          do 50 irb=1,nrbas(ict)
+          do 50 irb=1,nrbas_numerical(ict)
             do 50 icoef=1,NCOEF
               if(icoef.le.2) ae(icoef,irb,ict,ifr)=ae(icoef,irb,ict,1)
    50         ce(icoef,irb,ict,ifr)=ce(icoef,irb,ict,1)
@@ -439,12 +438,16 @@ c Jastrow
        endif
        
 !      save exponents
-       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+c      if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+       if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
          call object_provide ('nctype')
          call object_alloc ('zex_sav', zex_sav, nbasis)
          call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
          zex_sav (1:nbasis) = zex (1:nbasis,1)
-         zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
+c        zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
+         do ict=1,nctype
+           zex2_sav (1:nrbas_analytical(ict),1:nctype) = zex2 (1:nrbas_analytical(ict),1:nctype,1)
+         enddo
          call object_modified ('zex_sav')
          call object_modified ('zex2_sav')
        endif
@@ -485,29 +488,33 @@ c-----------------------------------------------------------------------
 
 !     restore orbital coefficients (must restore only for iwf=1 to avoid problems)
       if (inum_orb == 0) then
-       call object_valid_or_die ('coef_sav')
-       coef (1:nbasis, 1:orb_tot_nb, 1) = coef_sav (1:nbasis, 1:orb_tot_nb)
-       call object_modified ('coef')
-       
-       call object_valid_or_die ('coef_orb_on_norm_basis_sav')
-       coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb)
-       call object_modified ('coef_orb_on_norm_basis')
-       
-       if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
-        call object_valid_or_die ('coef_orb_on_ortho_basis_sav')
-        coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb)
-        call object_modified ('coef_orb_on_ortho_basis')
-       endif
-       
-!      restore exponents (must restore only for iwf=1 to avoid problems)
-       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
-         call object_valid_or_die ('zex_sav')
-         call object_valid_or_die ('zex2_sav')
-         zex (1:nbasis,1) = zex_sav (1:nbasis)
-         zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
-         call object_modified ('zex')
-         call object_modified ('zex2')
-       endif
+        call object_valid_or_die ('coef_sav')
+        coef (1:nbasis, 1:orb_tot_nb, 1) = coef_sav (1:nbasis, 1:orb_tot_nb)
+        call object_modified ('coef')
+        
+        call object_valid_or_die ('coef_orb_on_norm_basis_sav')
+        coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb)
+        call object_modified ('coef_orb_on_norm_basis')
+        
+        if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+         call object_valid_or_die ('coef_orb_on_ortho_basis_sav')
+         coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb)
+         call object_modified ('coef_orb_on_ortho_basis')
+        endif
+        
+!       restore exponents (must restore only for iwf=1 to avoid problems)
+!       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+        if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+          call object_valid_or_die ('zex_sav')
+          call object_valid_or_die ('zex2_sav')
+          zex (1:nbasis,1) = zex_sav (1:nbasis)
+c         zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
+          do ict=1,nctype
+            zex2 (1:nrbas_analytical(ict),1:nctype,1) = zex2_sav (1:nrbas_analytical(ict),1:nctype)
+          enddo
+          call object_modified ('zex')
+          call object_modified ('zex2')
+        endif
       endif
 
 !     restore nuclear coordinates
@@ -600,20 +607,21 @@ c Jastrow
 
 !     save orbital coefficients
       if (inum_orb == 0) then
-       call object_provide ('nbasis')
-       call object_provide ('orb_tot_nb')
-       call object_provide ('coef_orb_on_norm_basis')
-       call object_alloc ('coef_orb_on_norm_basis_best', coef_orb_on_norm_basis_best, nbasis, orb_tot_nb)
-       coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
-       call object_modified ('coef_orb_on_norm_basis_best')
-       
-!      save exponents
-       if (numr.le.0) then
-         call object_provide ('nctype')
-         call object_alloc ('zex_best', zex_best, nbasis)
-         zex_best (1:nbasis) = zex (1:nbasis,1)
-         call object_modified ('zex_best')
-       endif
+        call object_provide ('nbasis')
+        call object_provide ('orb_tot_nb')
+        call object_provide ('coef_orb_on_norm_basis')
+        call object_alloc ('coef_orb_on_norm_basis_best', coef_orb_on_norm_basis_best, nbasis, orb_tot_nb)
+        coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
+        call object_modified ('coef_orb_on_norm_basis_best')
+        
+!       save exponents
+c       if (numr.le.0) then
+        if (maxval(zex).ne.0.d0) then
+          call object_provide ('nctype')
+          call object_alloc ('zex_best', zex_best, nbasis)
+          zex_best (1:nbasis) = zex (1:nbasis,1)
+          call object_modified ('zex_best')
+        endif
       endif
 
 !     save nuclear coordinates

@@ -2389,7 +2389,10 @@ module orbitals_mod
 
   call alloc('diff', diff, ncent*orb_tot_nb)
 
-  if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) then
+! With the current implementation checking or imposing the e-n cusp will only work with a purely analytical basis,
+! not a mixed analytic-numerical basis
+! if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) then
+  if((nloc.eq.0. .or. nloc.eq.5) .and. minval(zex(:,1)).ne.0.d0) then
 
     if (l_check_cusp_en .and. .not. l_impose_cusp_en) then
      icusp = -1

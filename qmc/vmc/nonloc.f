@@ -134,6 +134,7 @@ cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
                 if(l.ne.lpotp1(ict)) then
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
 
+
 ! JT beg
 !             For singly-excited wave functions
               if (l_opt_orb_energy) then
@@ -272,31 +273,79 @@ c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
 
         ikel=nup*(iel-1)
 
-        do 30 idet=1,ndetup
-          ratio(idet)=0
-          do 30 j=1,nup
-c           write(6,'(''slmui(j+ikel,idet)*orbe(iworbdup(j,idet))'',9d12.4)') slmui(j+ikel,idet),orbe(iworbdup(j,idet))
-   30       ratio(idet)=ratio(idet)+slmui(j+ikel,idet)*orbe(iworbdup(j,idet))
+        do idet=1,ndetup
+           ratio(idet)=0
+           do j=1,nup
+              ratio(idet)=ratio(idet)+slmui(j+ikel,idet)*orbe(iworbdup(j,idet))
+           end do
+        end do
 
-        do 50 idet=1,ndetup
-c         write(6,'(''detu(idet),ratio(idet)'',9d12.4)') detu(idet),ratio(idet)
-   50     detn(idet)=detu(idet)*ratio(idet)
+        if(.not. l_opt_exp) then
+           do idet=1,ndetup
+              detn(idet)=detu(idet)*ratio(idet)
+           end do
+        else
+           do idet=1,ndetup
+              detn(idet)=detu(idet)*ratio(idet)
+              do i=1,nup
+                 if(i.ne.iel) then
+                    ik=nup*(i-1)
+                    sum=0
+                    do j=1,nup
+                       sum=sum+slmui(j+ik,idet)*orbe(iworbdup(j,idet))
+                    end do
+                    sum=sum/ratio(idet)
+                    do j=1,nup
+                       slmin(j+ik,idet)=slmui(j+ik,idet)-slmui(j+ikel,idet)*sum
+                    end do
+                 endif
+              end do
+              do j=1,nup
+                 slmin(j+ikel,idet)=slmui(j+ikel,idet)/ratio(idet)
+              end do
+           end do
+        end if
 
-       else
+      else
 
         ikel=ndn*(iel-nup-1)
 
-        do 55 idet=1,ndetdn
-          ratio(idet)=0
-          do 55 j=1,ndn
-   55       ratio(idet)=ratio(idet)+slmdi(j+ikel,idet)*orbe(iworbddn(j,idet))
+        do idet=1,ndetdn
+           ratio(idet)=0
+           do j=1,ndn
+              ratio(idet)=ratio(idet)+slmdi(j+ikel,idet)*orbe(iworbddn(j,idet))
+           end do
+        end do
+        if(.not. l_opt_exp) then
+           do idet=1,ndetdn
+              detn(idet)=detd(idet)*ratio(idet)
+           end do
+        else
+           do idet=1,ndetdn
+              detn(idet)=detd(idet)*ratio(idet)
+              do i=1,ndn
+                 if(i+nup.ne.iel) then
+                    ik=ndn*(i-1)
+                    sum=0
+                    do j=1,ndn
+                       sum=sum+slmdi(j+ik,idet)*orbe(iworbddn(j,idet))
+                    end do
+                    sum=sum/ratio(idet)
+                    do j=1,ndn
+                       slmin(j+ik,idet)=slmdi(j+ik,idet)-slmdi(j+ikel,idet)*sum
+                    end do
+                 endif
+              end do
+              do j=1,ndn
+                 slmin(j+ikel,idet)=slmdi(j+ikel,idet)/ratio(idet)
+              end do
+           end do
+        end if
 
-        do 75 idet=1,ndetdn
-   75     detn(idet)=detd(idet)*ratio(idet)
-
-      endif
+      end if
 
       call object_modified_by_index (detn_index) !JT
+      call object_modified_by_index (slmin_index) !fp
 
       determ=0
       do 115 icsf=1,ncsf

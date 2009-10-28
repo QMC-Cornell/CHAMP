@@ -36,8 +36,7 @@ c nej controls whether if we have correlated basis set
       if(numr.eq.1) then
 	call cbasis_fns_num(iel,rvec_en,r_en)
 	nej=1
-
-      else if(idot.eq.3) then
+      elseif(idot.eq.3) then
         if(iel.ne.0) stop '1 electron move not possible with projected comp.ferm.'
         call cbasis_fns_cf(rvec_en)
         nej=nelec

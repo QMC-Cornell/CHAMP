@@ -4,6 +4,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use constants_mod
       use control_mod
       use deriv_orb_mod
+      use deriv_exp_mod !fp
       use periodic_jastrow_mod  !WAS
       use atom_mod
       use dets_mod
@@ -45,6 +46,16 @@ c note: dk2,dr and dr2 are unused variables here
       endif
 ! JT end
 
+!fp
+      if (l_opt_exp) then
+       call object_provide ('param_exp_nb')
+       call object_alloc ('dvpot_exp', dvpot_exp, MPS_L, param_exp_nb)
+       call object_alloc ('dvpsp_exp', dvpsp_exp, param_exp_nb)
+       dvpsp_exp = 0.d0
+      endif
+!fp
+
+
 ! WAS
       if (l_opt_pjas) then
        call object_alloc ('dvpot_pjas', dvpot_pjas, MPS_L, param_pjas_nb)
@@ -84,6 +95,10 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
             if (l_opt_orb_energy) then  !JT
                vpot_ex = 0.d0           !JT
             endif                       !JT
+
+            if (l_opt_exp) then  !fp
+               dvpot_exp = 0.d0           !fp
+            endif                       !fp
 
 ! WAS
             if (l_opt_pjas) then
@@ -131,6 +146,7 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
                     do 39 k=1,ndim
    39                 r_en(i,jc)=r_en(i,jc)+rvec_en(k,i,jc)**2
                     r_en(i,jc)=dsqrt(r_en(i,jc))
+                    call object_modified_by_index(r_en_index) !fp
                    else
                     call find_image4(rshift(1,i,jc),rvec_en(1,i,jc),r_en(i,jc),rlatt,rlatt_inv)
                   endif
@@ -184,6 +200,15 @@ cWAS
               endif
 ! JT end
 
+! fp beg
+              if (l_opt_exp) then
+                 call object_provide ('dpsid_exp_in_x')
+                 do iexp = 1, param_exp_nb
+                  dvpot_exp(l,iexp)=dvpot_exp(l,iexp)+wq(iq)*yl0(l,costh)*dpsid_exp_in_x(iexp)*exp(value)
+                 enddo
+              endif
+! fp end
+
 !WAS
               if (l_opt_pjas) then
                  do iex = 1, param_pjas_nb
@@ -211,6 +236,8 @@ cWAS
                 rshift(k,i,jc)=rshift_sav(k,jc)
    70           rvec_en(k,i,jc)=rvec_en_sav(k,jc)
 
+                    call object_modified_by_index(r_en_index) !fp
+
             do 80 l=1,npotd(ict)
               if(l.ne.lpotp1(ict)) then
                 if(ipr.ge.4) write(6,'(''i,ic,l,vps(i,ic,l),vpot(l)2'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l)
@@ -229,6 +256,15 @@ cWAS
               endif
 ! JT end
 
+!fp
+              if (l_opt_exp) then
+                 do iex = 1, param_exp_nb
+                  dvpsp_exp(iex)=dvpsp_exp(iex)+vps(i,ic,l)*dvpot_exp(l,iex)
+                 enddo
+              endif
+!fp
+
+
 !     WAS
 !     For periodic jastrow
               if (l_opt_pjas) then
@@ -246,6 +282,10 @@ cWAS
 
       if (l_opt_orb_energy) then
        call object_modified_by_index (vpsp_ex_index) !JT
+      endif
+
+      if (l_opt_exp) then
+       call object_modified_by_index (dvpsp_exp_index) !fp
       endif
 
 !WAS

@@ -334,6 +334,7 @@ module catalog_routines_mod
   call catalog_one_node ('delta_coef_pw_bld', delta_coef_pw_bld)
 
 ! exponent derivatives
+  call catalog_one_node ('slater_mat_trans_inv_in_x_bld', slater_mat_trans_inv_in_x_bld)
   call catalog_one_node ('basis_fns_cent_bld', basis_fns_cent_bld)
   call catalog_one_node ('basis_fns_type_bld', basis_fns_type_bld)
   call catalog_one_node ('basis_fns_name_bld', basis_fns_name_bld)
@@ -350,6 +351,8 @@ module catalog_routines_mod
   call catalog_one_node ('grd_ddet_dexp_unq_bld', grd_ddet_dexp_unq_bld)
   call catalog_one_node ('lap_ddet_dexp_unq_bld', lap_ddet_dexp_unq_bld)
   call catalog_one_node ('dpsi_exp_bld', dpsi_exp_bld)
+  call catalog_one_node ('dpsid_exp_in_x_bld', dpsid_exp_in_x_bld) !fp
+  call catalog_one_node ('ddet_dexp_unq_in_x_bld', ddet_dexp_unq_in_x_bld) !fp
   call catalog_one_node ('dpsi_lnexp_bld', dpsi_lnexp_bld)
   call catalog_one_node ('grd_dpsid_exp_over_dpsid_exp_bld', grd_dpsid_exp_over_dpsid_exp_bld)
   call catalog_one_node ('lap_dpsid_exp_over_dpsid_exp_bld', lap_dpsid_exp_over_dpsid_exp_bld)
@@ -359,6 +362,8 @@ module catalog_routines_mod
   call catalog_one_node ('sum_lap_ln_dpsi_exp_bld', sum_lap_ln_dpsi_exp_bld)
   call catalog_one_node ('eloc_kin_exp_bld', eloc_kin_exp_bld)
   call catalog_one_node ('eloc_exp_bld', eloc_exp_bld)
+  call catalog_one_node ('eloc_pot_nloc_exp_bld', eloc_pot_nloc_exp_bld) !fp
+  call catalog_one_node ('eloc_pot_exp_bld', eloc_pot_exp_bld, eloc_pot_exp_bld_index) !fp
   call catalog_one_node ('deloc_exp_bld', deloc_exp_bld)
   call catalog_one_node ('deloc_lnexp_bld', deloc_lnexp_bld)
   call catalog_one_node ('slater_mat_exp_trans_inv_bld', slater_mat_exp_trans_inv_bld)

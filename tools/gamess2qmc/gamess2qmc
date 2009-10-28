@@ -379,7 +379,7 @@ sub get_options{
 
 # analytic basis option !JT
     if(exists $options{S}){
-       print "Analytic Slater basis requested.\n";
+       print "Analytic Slater or Gauss-Slater basis requested.\n";
        $analytic_basis=1;
        $make_radial_grids=0;
     }
@@ -825,7 +825,7 @@ sub read_basis{
 #################################################################
 
     $current_func=0;
-     printf(" basis ") if(! $quiet);
+    printf(" basis ") if(! $quiet);
     %seen=();
     $ignore=0;
 
@@ -911,41 +911,48 @@ sub read_basis{
 	      push @{$functions{$symbol}},$current_func;
 	  }
 
-         $ftype[$current_func]=$w[1];
+	  $ftype[$current_func]=$w[1];
 
 #        Gaussian or Slater basis set?
-         process_basis_function_type($symbol);   #JT
+	  process_basis_function_type($symbol);   #JT
 
 #        if analytic basis requested, check is all functions are Slaters.
-         if($analytic_basis and ! $is_slater_function){
-          print "\nfunction type $ftype[$current_func] is not a Slater function.\n";
-          print "For an analytic basis set, all functions must be Slaters.\n";
-          exit;
-         }
+	  if($analytic_basis and ! $is_slater_function and ! $is_gauss_slater_function){
+	      print "\nfunction type $ftype[$current_func] is not a Slater function or a Gauss-Slater function.\n";
+	      print "For an analytic basis set, all functions must be exclusively Slaters or exclusively Gauss-Slaters.\n";
+	      exit;
+	  }
 
-         if($is_new_function and $is_slater_function){
+	  if($is_new_function and $is_slater_function){
 
-           $exponents_slater[$current_func]=$w[3];
-	   push @{$exponents[$current_func]}, $w[4];
-	   push @{$coeff[$current_func]}, $w[5];
+	      $exponents_slater[$current_func]=$w[3];
+	      push @{$exponents[$current_func]}, $w[4];
+	      push @{$coeff[$current_func]}, $w[5];
+	      
+	  }
+	  
+	  elsif($is_new_function and $is_gauss_slater_function){
 
-         }
+	      $exponents_gauss_slater[$current_func]=$w[3];
+	      push @{$exponents[$current_func]}, $w[4];
+	      push @{$coeff[$current_func]}, $w[5];
+	      
+	  }
 
           else{
 
-	   push @{$exponents[$current_func]}, $w[3];
-	   push @{$coeff[$current_func]}, $w[4];
+	      push @{$exponents[$current_func]}, $w[3];
+	      push @{$coeff[$current_func]}, $w[4];
 
-	   if($w[1] eq "L"){
-	     push @{$coeff_L[$current_func]}, $w[5];
-	   }
+	      if($w[1] eq "L"){
+		  push @{$coeff_L[$current_func]}, $w[5];
+	      }
 
           }
-
+	  
       }
-  }
-
-           if($analytic_basis) {check_slater_functions_order();}
+  }   
+    if($analytic_basis && $is_slater_func) {check_slater_functions_order();}
 }
 
 #################################################################
@@ -3646,7 +3653,7 @@ my $i;
 sub process_basis_function_type{
 ###############################################################
 # check if the current basis function is a Gaussian function (S,P,D,F...)
-# or a Slater function (1S,2S,2P,...)
+# or a Slater function (1S,2S,2P,...) or a Gauss-Slater basis function (GS-S,GS-P,...)
 #
 # Count the numbers of Slater function of each kind (1S, 2S, 2P,...) and
 # drop principal quantum number (1S -> S, 2S ->S, 2P -> P, ...)
@@ -3673,6 +3680,7 @@ sub process_basis_function_type{
     ### WAS
 
     $is_slater_function =  0;
+    $is_gauss_slater_function = 0;
 
 # Gaussians
     if($ftype[$current_func] eq "S"){}
@@ -3681,6 +3689,58 @@ sub process_basis_function_type{
     elsif($ftype[$current_func] eq "F"){}
     elsif($ftype[$current_func] eq "G"){}
     elsif($ftype[$current_func] eq "L"){}
+
+# Gauss-Slater functions
+    elsif($ftype[$current_func] eq "GS-S"){
+         $is_gauss_slater_function = 1;
+         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
+         $ftype[$current_func] = 'S';
+         $function_gauss_slater_quantum_number[$current_func] = '1';
+         if($is_new_function){
+          $n1s{$atomtype} = $n1s{$atomtype} + 1;
+         }
+    }
+    elsif($ftype[$current_func] eq "GS-P"){
+         $is_gauss_slater_function = 1;
+         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
+         $ftype[$current_func] = 'P';
+         $function_gauss_slater_quantum_number[$current_func] = '2';
+         if($is_new_function){
+          $n2p{$atomtype} = $n2p{$atomtype} + 1;
+         }
+    }
+    elsif($ftype[$current_func] eq "GS-D"){
+         $is_gauss_slater_function = 1;
+         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
+         $ftype[$current_func] = 'D';
+         $function_gauss_slater_quantum_number[$current_func] = '3';
+         if($is_new_function){
+          $n3d{$atomtype} = $n3d{$atomtype} + 1;
+#          $n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
+         }
+    }
+    elsif($ftype[$current_func] eq "GS-F"){
+         $is_gauss_slater_function = 1;
+         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
+         $ftype[$current_func] = 'F';
+         $function_gauss_slater_quantum_number[$current_func] = '4';
+         if($is_new_function){
+          $n4f{$atomtype} = $n4f{$atomtype} + 1;
+#          $n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
+         }
+    }
+    elsif($ftype[$current_func] eq "GS-G"){
+         $is_gauss_slater_function = 1;
+         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
+         $ftype[$current_func] = 'G';
+         $function_gauss_slater_quantum_number[$current_func] = '5';
+         if($is_new_function){
+          $n5g{$atomtype} = $n5g{$atomtype} + 1;
+#          $n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
+#          $n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
+         }
+    }
+
 
 # Slaters
     elsif($ftype[$current_func] eq "1S"){

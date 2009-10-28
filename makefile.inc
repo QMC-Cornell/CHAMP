@@ -9,8 +9,8 @@ hostname := $(shell uname -n)
 
 # Libraries --------------------------------------------------------------
 
-LIBHOME=../lib
-# LIBHOME=/home/cyrus/champ/lib
+# LIBHOME=../lib
+LIBHOME=/home/cyrus/champ/lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus

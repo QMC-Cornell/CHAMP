@@ -35,7 +35,7 @@ c given orbital have same l, as should be the case for a "restricted" calculatio
 c Fock-Darwin basis
                     ltoti=ltoti+m_fd(ibas)
                    else
-c Radial fn. times complex spherical harmonic
+c Radial fn. times complex spherical harmonic (should this be m_bas instead of l_bas?)
                     ltoti=ltoti+l_bas(ibas)
                   endif
                 endif
