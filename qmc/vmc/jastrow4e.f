@@ -24,9 +24,8 @@ c Jastrow 6   must be used with one of isc=6,7
 
       parameter (eps=1.d-12)
 
-!!! added WAS
+! added WAS
       common /jas_c_cut/ cutjasc,icutjasc
-!!!
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
@@ -96,9 +95,6 @@ c     dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord),rrj(-2:nord)
 
       if(rij.gt.cutjas_ee) goto 22
 
-
-
-
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
 c     topuu=0
@@ -146,9 +142,7 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
       endif
 
       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
-         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
-     +        dfcuti, dfcutj,d2fcuti,d2fcutj)
+         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
       endif
 
       do 50 ic=1,ncent
@@ -169,12 +163,10 @@ c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
           call switch_scale1(rrj(1),dd8,3)
         endif
 
-        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
-           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
-     +          dfcuti, dfcutj,d2fcuti,d2fcutj)
-        endif
-
+c Moved to line 209
+c       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj, d2fcuti, d2fcutj)
+c       endif
 
         do 30 iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
@@ -212,14 +204,15 @@ c     call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
         fu=fu*dd1/rij
         fi=fi*dd7/ri
         fj=fj*dd8/rj
-!!!  een for periodic systems         WAS
+! een for periodic systems         WAS
         if(icutjasc .gt.  0 .or. iperiodic .ne. 0) then
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj, d2fcuti, d2fcutj)
            fi = fi * fcut + (fc * fcutj *  dfcuti)/ri
            fj = fj * fcut + (fc * fcuti *  dfcutj)/rj
            fu = fu * fcut
            fc = fc * fcut
         endif
-!!! end WAS
+! end WAS
         fsn(i,j)=fsn(i,j) + fc
 
         fijn(1,i,j)=fijn(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)

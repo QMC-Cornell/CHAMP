@@ -23,7 +23,7 @@ c Jastrow 6   must be used with one of isc=6,7
 
       parameter (eps=1.d-12)
 
-!!! added WAS
+! added WAS
       common /jas_c_cut/ cutjasc,icutjasc
 
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
@@ -174,13 +174,10 @@ c       write(6,'(''rshift(k,i,ic)'',9f9.4)') (rshift(k,i,ic),k=1,ndim),(rshift(
         endif
 c       write(6,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
-        !!WAS
-        if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
-           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
-     +          dfcuti, dfcutj,d2fcuti,d2fcutj)
-        endif
-        !! WAS
+c Moved to line 252
+c       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
+c       endif
 
         s=ri+rj
         t=ri-rj
@@ -250,8 +247,9 @@ c             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
         fjj=fjj*dd8*dd8+fj*dd10
         fi=fi*dd7/ri
         fj=fj*dd8/rj
-!!!!  een for periodic systems         WAS
+! een for periodic systems         WAS
         if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+           call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
 
            fuu = fuu * fcut
            fii = fii * fcut +(2 * fi * ri * dfcuti + fc * d2fcuti)*fcutj
@@ -264,8 +262,7 @@ c             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
            fc = fc * fcut
            fu = fu * fcut
         endif
-!!!! end WAS
-
+! end WAS
 
         fso(i,j)=fso(i,j) + fc
 

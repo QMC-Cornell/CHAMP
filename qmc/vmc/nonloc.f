@@ -20,7 +20,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       dimension rr_en(nelec,ncent),rr_en2(nelec,ncent),rr_en_sav(ncent),rr_en2_sav(ncent)
      &,xsav(3),rshift_sav(3,ncent),rvec_en_sav(3,ncent),r_en_sav(ncent),vpot(MPS_L)
 
-
       do 10 i=1,nelec
         do 10 ic=1,ncent
           call scale_dist(r_en(i,ic),rr_en(i,ic),1)
@@ -30,15 +29,12 @@ c     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
 c     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)
 c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
 
-
-! JT beg
       if (l_opt_orb_energy) then
-       call object_provide_by_index (param_orb_nb_index)
-       call object_alloc ('vpot_ex', vpot_ex, MPS_L, param_orb_nb)
-       call object_alloc ('vpsp_ex', vpsp_ex, param_orb_nb)
-       vpsp_ex = 0.d0
+        call object_provide_by_index (param_orb_nb_index)
+        call object_alloc ('vpot_ex', vpot_ex, MPS_L, param_orb_nb)
+        call object_alloc ('vpsp_ex', vpsp_ex, param_orb_nb)
+        vpsp_ex = 0.d0
       endif
-! JT end
 
       vpsp=0
       do 100 ic=1,ncent
@@ -115,15 +111,13 @@ c vps was calculated by calling getvps_tm from nonloc_pot
               call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
 c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
 
-cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
-
+!WAS          call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
               call nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
 
 !WAS
               if (do_pjas) then
                  call nonloc_pjas (iel, x(:,1:nelec), value)
               endif
-!WAS
 
               if(ipr.ge.4) then
                 write(6,'(''rr_en,rr_en2'',2d14.6)') rr_en(1,1),rr_en2(1,1)
@@ -134,16 +128,14 @@ cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
                 if(l.ne.lpotp1(ict)) then
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
 
-
-! JT beg
-!             For singly-excited wave functions
-              if (l_opt_orb_energy) then
-                 call object_provide_by_index (psid_ex_in_x_index)
-                 do iex = 1, param_orb_nb
-                  vpot_ex(l,iex)=vpot_ex(l,iex)+wq(iq)*yl0(l,costh)*psid_ex_in_x(iex)*exp(value)
-                 enddo
-              endif
-! JT end
+! JT
+!                 For singly-excited wave functions
+                  if (l_opt_orb_energy) then
+                     call object_provide_by_index (psid_ex_in_x_index)
+                     do iex = 1, param_orb_nb
+                      vpot_ex(l,iex)=vpot_ex(l,iex)+wq(iq)*yl0(l,costh)*psid_ex_in_x(iex)*exp(value)
+                     enddo
+                  endif
 
                 endif
    50         continue
@@ -163,18 +155,15 @@ cWAS              call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
             do 80 l=1,npotd(ict)
               if(l.ne.lpotp1(ict)) then
                 vpsp=vpsp+vps(i,ic,l)*vpot(l)
-                if(ipr.ge.4) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)')
-     &          i,ic,l,vps(i,ic,l),vpot(l),vpsp
+                if(ipr.ge.4) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l),vpsp
 
-! JT beg
-!             For singly-excited wave functions
-              if (l_opt_orb_energy) then
-                 do iex = 1, param_orb_nb
-                  vpsp_ex(iex)=vpsp_ex(iex)+vps(i,ic,l)*vpot_ex(l,iex)
-                 enddo
-              endif
-! JT end
-
+! JT
+!               For singly-excited wave functions
+                if (l_opt_orb_energy) then
+                   do iex = 1, param_orb_nb
+                    vpsp_ex(iex)=vpsp_ex(iex)+vps(i,ic,l)*vpot_ex(l,iex)
+                   enddo
+                endif
 
               endif
    80       continue
@@ -377,8 +366,7 @@ c Derivatives wrt to csf_coefs for optimizing them
       end
 c-----------------------------------------------------------------------
 
-!      subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
-!WAS
+!WAS  subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
       subroutine nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
 c Written by Claudia Filippi, modified by Cyrus Umrigar
 
@@ -394,12 +382,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use jaso_mod
       implicit real*8(a-h,o-z)
 
-      dimension x(3,*),rshift(3,nelec,ncent),rr_en(nelec,ncent),rr_en2(nelec,ncent)
-     &,fsn(nelec,nelec),dx(3)
+      dimension x(3,*),rshift(3,nelec,ncent),rr_en(nelec,ncent),rr_en2(nelec,ncent),fsn(nelec,nelec),dx(3)
 
-!WAS
       dimension r_en(nelec,ncent)
-!!
 
       fsumn=0
 
@@ -452,14 +437,8 @@ c     if(isc.ge.12) call scale_dist(rij,u,3)
 
         do 40 ic=1,ncent
           it=iwctype(ic)
-   40     fsn(i,j)=fsn(i,j) +
-!!
-!!     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),it)
-!WAS
-     &    psinl(u,rshift(1,i,ic),rshift(1,j,ic),r_en(i,ic),r_en(j,ic),
-     &         rr_en2(i,ic),rr_en2(j,ic),it)
-!!
-
+!WAS 40   fsn(i,j)=fsn(i,j) + psinl(u,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic),it)
+   40     fsn(i,j)=fsn(i,j) + psinl(u,rshift(1,i,ic),rshift(1,j,ic),r_en(i,ic),r_en(j,ic),rr_en2(i,ic),rr_en2(j,ic),it)
         fsumn=fsumn+fsn(i,j)-fso(i,j)
 
    45 continue

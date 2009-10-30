@@ -21,7 +21,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       parameter (eps=1.d-12)
 
-!!!   added WAS
+!     added WAS
       common /jas_c_cut/ cutjasc,icutjasc
 
       common /chck/ bot
@@ -106,18 +106,18 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
         call switch_scale(rrri,3)
         call switch_scale(rrrj,3)
 
-!!!!  WAS
-        if(icutjasc.gt.0 .or. iperiodic.ne.0) then
-           call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
-        endif
-!!!
         uu(0)=one
         ss(0)=two
         tt(0)=one
+        uu(1)=uuu
+        rrri_jp=one
+        rrrj_jp=one
         do 40 jp=1,nordc
-          uu(jp)=uuu**jp
-          ss(jp)=rrri**jp+rrrj**jp
-   40     tt(jp)=(rrri*rrrj)**jp
+          uu(jp)=uu(jp-1)*uuu
+          rrri_jp=rrri_jp*rrri
+          rrrj_jp=rrrj_jp*rrrj
+          ss(jp)=rrri_jp+rrrj_jp
+   40     tt(jp)=rrri_jp*rrrj_jp
 
         ll=0
         do 50 n=2,nordc
@@ -132,15 +132,14 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
               if(2*m.eq.n-k-l) then
                 ll=ll+1
                 p=uu(k)*ss(l)*tt(m)
-c     write(6,'(''n,k,l,p,fcut='',3i4,9d12.4)') n,k,l,p,fcut
-!!WAS
-                if(icutjasc.gt.0 .or. iperiodic.ne.0) then
-                   p=p*fcut
-                endif
-!!!
                 psinl=psinl+c(ll,it,iwf)*p
               endif
    50   continue
+
+        if(icutjasc.gt.0 .or. iperiodic.ne.0) then
+          call f_een_cuts_nd (cutjas_en, ri, rj, fcut)
+          psinl=psinl*p
+        endif
 
       endif
 
