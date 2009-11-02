@@ -63,7 +63,7 @@ module basis_mod
    write(6,'(a)') 'HELP for basis menu:'
    write(6,'(a)') 'basis'
    write(6,'(a)') '  ibasis = [integer]: type of basis (default: 1)'
-   write(6,'(a)') '  which_analytical_basis = [none (default), slater, gaussian, gauss-slater]' !fp
+   write(6,'(a)') '  which_analytical_basis = [none|slater|gaussian|gauss-slater] (default: slater for all-electron, none otherwise)'
    write(6,'(a)') '  numr = [integer] options for numerical basis (default: -3)'
    write(6,'(a)') '  basis_functions : function types and exponents'
    write(6,'(a)') '   1  ! atom type'
@@ -139,12 +139,31 @@ module basis_mod
   if (use_parser) then
 
   if(ibasis == 1) then
-    write(6,'(a)') ' type of basis: localized Slater or gaussian or gauss-slater or numerical basis' !fp
+    write(6,'(a)') ' use localized basis functions (ibasis=1)'
     notype=0
    else
     call die (lhere, 'case ibasis='+ibasis+'not yet implemented for new input')
   endif
 
+! Slater functions are default for all-electron calculations
+  call object_provide ('nloc')
+  if (nloc ==0) then
+   which_analytical_basis = 'slater'
+  endif
+
+  select case(trim(which_analytical_basis))
+  case ('none')
+    write(6,'(a)') ' the basis functions are all numerical'
+  case ('slater')
+    write(6,'(a)') ' the analytical basis functions are Slater functions'
+  case ('gaussian')
+    write(6,'(a)') ' the analytical basis functions are Gaussian functions'
+  case ('gauss-slater')
+    write(6,'(a)') ' the analytical basis functions are Gauss-Slater functions'
+  case default
+   call die (lhere, 'unknown keyword which_analytical_basis='+trim(which_analytical_basis)+'')
+  end select
+  
   write(6,'(a,i5)') ' numr=',numr
 
 !   if (numr>0) then
@@ -194,6 +213,10 @@ module basis_mod
 
 ! distinct_radial_bas must be called to update n_bas2, etc...
   call distinct_radial_bas
+
+! if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
+! if(ibasis.eq.1 .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
+  if(ibasis.eq.1 .and. inum_orb.eq.0) call read_bas_num(1)
 
   if(ibasis.eq.1) then
 ! irecursion_ylm=0 use Cyrus' spherical harmonics (upto g functions)

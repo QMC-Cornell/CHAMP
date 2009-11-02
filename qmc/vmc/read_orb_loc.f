@@ -1281,15 +1281,16 @@ c Now that we are allowing a mixed analytical and numerical basis, we use this r
 c basis functions and put them first and the numerical ones will be put later.
 c The decision of which are analytical and which are numerical is based on whether zex is nonzero or zero.
 
-      write(6,'(''beg of distinct_rad_bas'')')
-      do 10 ict=1,nctype
-        write(6,'(''ict='',20i5)') ict
-   10   write(6,'(''distinct: iwrwf='',20i5)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
+!JT      write(6,'(''beg of distinct_rad_bas'')')
+!JT      do 10 ict=1,nctype
+!JT        write(6,'(''ict='',20i5)') ict
+!JT   10   write(6,'(''distinct: iwrwf='',20i5)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
  
-      write(6,'(''beg of distinct_radial_bas'')')
+!JT      write(6,'(''beg of distinct_radial_bas'')')
       call alloc ('iwrwf2', iwrwf2, nbasis)
       call alloc ('nrbas_analytical', nrbas_analytical, nctype)
-c     call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
+!     allocate iwrwf here in the case when it is not allocated and read in before (new style format input)
+      call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
 
 !     write(6,'(''n_bas(ib),l_bas(ib)'',50(i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)
       ib=0
@@ -1329,12 +1330,12 @@ c     call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
 !JT   write(6,'(''iwrwf2(ib)='',40i3)') (iwrwf2(ib),ib=1,nbasis)
 !JT   write(6,'(''iwrwf(ibct,ict)='',40i3)') ((iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict)),ict=1,nctype)
 
-      write(6,'(''iwrwf2='',40i3)') (iwrwf2(ib),ib=1,nbasis)
-      do 300 ict=1,nctype
-        write(6,'(''ict='',20i5)') ict
-        write(6,'(''iwrwf='',20i5)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
-        write(6,'(''nbas2='',20i5)') (n_bas2(irb,ict),irb=1,nrbas_analytical(ict))
-  300   write(6,'(''zex2='',20f6.2)') (zex2(irb,ict,iwf),irb=1,nrbas_analytical(ict))
+!JT      write(6,'(''iwrwf2='',40i3)') (iwrwf2(ib),ib=1,nbasis)
+!JT      do 300 ict=1,nctype
+!JT        write(6,'(''ict='',20i5)') ict
+!JT        write(6,'(''iwrwf='',20i5)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
+!JT        write(6,'(''nbas2='',20i5)') (n_bas2(irb,ict),irb=1,nrbas_analytical(ict))
+!JT  300   write(6,'(''zex2='',20f6.2)') (zex2(irb,ict,iwf),irb=1,nrbas_analytical(ict))
 
       call object_modified ('zex2')
 

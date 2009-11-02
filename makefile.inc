@@ -9,7 +9,7 @@ hostname := $(shell uname -n)
 
 # Libraries --------------------------------------------------------------
 
- LIBHOME=../lib
+LIBHOME=../lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
@@ -98,6 +98,7 @@ DEBUG_EXE=champ.exe
 
 # Export these for compiling the libraries
 export F77 F77_FLAGS LD_FLAGS CC CXX EINSPLINE USE_GCC 
+
 ####################### MACHINES ########################################
 
 # New dft cluster at Cornell
