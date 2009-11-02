@@ -145,6 +145,8 @@ module matrix_tools_mod
   real(dp), allocatable :: work (:)
   real(dp) :: matrix_check
   integer lwork, info, i, j, k
+  integer, save :: warnings_nb = 0
+  integer       :: warnings_nb_max = 20
 
 ! begin
   if (dim == 0) return
@@ -172,10 +174,14 @@ module matrix_tools_mod
      do k = 1, dim
       matrix_check = matrix_check + eigenvectors (i, k) * eigenvalues (k) * eigenvectors (j, k)
      enddo ! k
-     if(abs(matrix_check-matrix(i,j)) > 1.d-7) then
+     if(warnings_nb < warnings_nb_max .and. abs(matrix_check-matrix(i,j)) > 1.d-7) then
        write(6,'(''Warning: low accuracy in diagonalization; the error on a matrix element'',2i4,'' is'',d12.4)') &
          i,j,matrix_check-matrix(i,j)
        l_warning = .true.
+       warnings_nb = warnings_nb + 1
+       if (warnings_nb == warnings_nb_max) then
+        write(6,'(a)') 'all further similar warnings will be suppressed'
+       endif
      endif
 ! JT: Warning: comment out this stop for now
 !     if(abs(matrix_check-matrix(i,j)) > 1.d-2) then
