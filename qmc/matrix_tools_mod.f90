@@ -200,6 +200,7 @@ module matrix_tools_mod
   real(dp) function matrix_determinant (matrix, n)
 ! ------------------------------------------------------------------------------
 ! Description   : returns determinant of a matrix
+! WARNING: not checked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !
 ! Function to find the determinant of a square matrix
 ! Author : Louisda16th a.k.a Ashwith J. Rego

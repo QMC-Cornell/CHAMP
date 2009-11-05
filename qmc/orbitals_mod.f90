@@ -13,6 +13,8 @@ module orbitals_mod
   logical                             :: l_approx_orb_rot = .false.
   logical                             :: l_ortho_orb_now = .false.
   logical                             :: l_ortho_orb_opt = .false.
+  logical                             :: l_orb_scaling_factor = .false.
+  real(dp)                            :: orb_scaling_factor  = 1.d0
 
   integer, allocatable                :: det_unq_orb_lab_srt_up (:,:)
   integer, allocatable                :: det_unq_orb_lab_srt_dn (:,:)
@@ -116,6 +118,9 @@ module orbitals_mod
   write(6,*)
   write(6,'(a)') 'Beginning of orbitals menu -------------------------------------------------------------------------------'
 
+! initialization
+  l_orb_scaling_factor = .false.
+
 ! loop over menu lines
   do
   call get_next_word (word)
@@ -131,6 +136,7 @@ module orbitals_mod
    write(6,'(a)') '  energies -2.4 -0.2 0.44 7.4 end: orbital energies for perturbative optimization method'
    write(6,'(a)') '  symmetry A1G A2U EG EU end: symmetry labels for orbitals, default: no symmetry'
    write(6,'(a)') '  orthonormalize = [bool] orthonormalize orbitals once of current wave function? (default=false)'
+   write(6,'(a)') '  scaling_factor = [real] apply a scaling factor to all orbitals (e.g. to avoid over/underflow in determinant)'
    write(6,'(a)') '  opt 1 2 3 4 end : which (occupied and virtual) orbitals to consider in the optimization, default: all orbitals'
    write(6,'(a)') '  orb_opt_nb = [integer] : total number of orbitals to consider in the optimization, default: total number of orbitals'
    write(6,'(a)') '  excitations_forbidden  6 7   10 23 end : list of forbidden orbital excitations for orbital optimization'
@@ -163,6 +169,10 @@ module orbitals_mod
 
   case ('orthonormalize')
    call get_next_value (l_ortho_orb_now)
+
+  case ('scaling_factor')
+   call get_next_value (orb_scaling_factor)
+   l_orb_scaling_factor = .true.
 
   case ('cusp')
    call orb_cusp_menu
@@ -239,6 +249,18 @@ module orbitals_mod
 ! orthonormalization the orbitals
   if (l_ortho_orb_now) then
     call ortho_orb
+  endif
+
+! apply a scaling factor to all orbitals
+  if (l_orb_scaling_factor) then
+   write(6,*)
+   write(6,'(a,f)') ' all orbitals will be multiplied by the scaling factor ',orb_scaling_factor
+   write(6,'(a)') ' warning: for now, this scaling factor will be removed when printing orbitals after orbital optimization'
+   call object_provide ('norb')
+   call object_provide ('nbasis')
+   call object_provide ('coef')
+   coef(1:nbasis,1:norb,1) = coef(1:nbasis,1:norb,1) * orb_scaling_factor
+   call object_modified ('coef')
   endif
 
   write(6,'(a)') 'End of orbitals menu -------------------------------------------------------------------------------------'
