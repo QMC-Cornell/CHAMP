@@ -398,15 +398,29 @@ module optimization_mod
   nparmot=0
   call alloc ('nparma', nparma, na2-na1+1)
   do ia=na1,na2
-   nparma(ia)=4
+   if(norda==5) then
+    nparma(ia)=4
+   else
+    call die (lhere, 'default value of nparma needs to be implemented for norda='+norda)
+   endif
   enddo
   call alloc ('nparmb', nparmb, nspin2b-nspin1+1)
   do isp=nspin1,nspin2b
-   nparmb(isp)=5
+   if(nordb==5) then
+    nparmb(isp)=5
+   else
+    call die (lhere, 'default value of nparmb needs to be implemented for nordb='+nordb)
+   endif
   enddo
   call alloc ('nparmc', nparmc, nctype)
   do it=1,nctype
-   nparmc(it)=15
+   if(nordc==0) then
+    nparmc(it)=0
+   elseif(nordc==5) then
+    nparmc(it)=15
+   else
+    call die (lhere, 'default value of nparmc needs to be implemented for nordc='+nordc)
+   endif
   enddo
   if(ijas.ge.4.and.ijas.le.6) then
     do it=1,nctype
@@ -1880,12 +1894,10 @@ module optimization_mod
 
       if(nparmc_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
-       else
-        write(fmt,'(''(a)'')')
+        do ict=1,nctype
+          write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
+        enddo
       endif
-      do ict=1,nctype
-        write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
-      enddo
 
   endif ! l_opt_jas
 
@@ -2023,12 +2035,10 @@ module optimization_mod
 
       if(nparmc_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
-       else
-        write(fmt,'(''(a)'')')
+        do ict=1,nctype
+          write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
+        enddo
       endif
-      do ict=1,nctype
-        write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
-      enddo
 
   endif ! l_opt_jas
 
@@ -2150,12 +2160,10 @@ module optimization_mod
 
       if(nparmc_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
-       else
-        write(fmt,'(''(a)'')')
+        do ict=1,nctype
+          write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
+        enddo
       endif
-      do ict=1,nctype
-        write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
-      enddo
 
   endif ! l_opt_jas
 

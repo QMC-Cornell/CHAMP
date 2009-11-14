@@ -224,8 +224,11 @@ module nuclei_mod
    call object_provide ('cent')
    cent(1:ndim,1:ncent) = cent(1:ndim,1:ncent) * angstrom_to_bohr
    call object_modified ('cent')
-   do cent_i = 1,ncent
-    write(6,'(a,i4,a,3f8.5)') ' center # ',cent_i,' : ',cent(1:ndim,cent_i)
+   call object_provide ('znuc')
+   call object_provide ('iwctype')
+   write(6,'(a)')'                  type  charge            cartesian coordinates'
+   do cent_i=1,ncent
+    write(6,'(a,i4,a,i4,3x,f5.1,4x,3f12.6)') ' nucleus # ', cent_i,': ', iwctype(cent_i), znuc(iwctype(cent_i)), (cent(dim_i,cent_i),dim_i=1,ndim)
    enddo
 !  recalculate nuclear potential energy
 !   call object_provide ('znuc')

@@ -235,9 +235,11 @@ module jastrow_mod
              stop 'b(2,isp,1) too low, Jastrow denom could become negative'
            endif
         enddo    
-        do it=1,nctype
-          write(6,'(a,50f10.6)') ' e-e-n terms: c=',(c(iparm,it,1),iparm=1,nparmc_read)
-       enddo
+        if(nparmc_read>0) then
+          do it=1,nctype
+            write(6,'(a,50f10.6)') ' e-e-n terms: c=',(c(iparm,it,1),iparm=1,nparmc_read)
+          enddo
+        endif
 ! Note: Fock terms yet to be put in ijas=4,5,6.
    endif
 
@@ -375,10 +377,12 @@ module jastrow_mod
        do isp=nspin1,nspin2b
          read(5,*) (b(iparm,isp,1),iparm=1,nparmb_read)
        enddo    
+       if (nparmc_read /= 0) then
        call alloc ('c', c, nparmc_read, nctype, nwf)
-       do it=1,nctype
+        do it=1,nctype
          read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
-      enddo
+        enddo
+       endif
    endif
 
    call read_up_to_end
