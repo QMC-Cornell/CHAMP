@@ -77,7 +77,7 @@ module optimization_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'optimization_menu'
-  integer param_type_i, param_i, na1, na2, ia, isp, it
+  integer nterms4, param_type_i, param_i, na1, na2, ia, isp, it
   logical l_launch_opt
 
 ! begin
@@ -388,6 +388,7 @@ module optimization_mod
 
 
 ! default jastrow parameters to optimize
+! For the e-n parameters we are assuming that a(1) and a(2) are not optimized, which is often not true for all-electron calculations.
   if(ijas.le.3) then
    na1=nspin1
    na2=nspin2
@@ -398,28 +399,33 @@ module optimization_mod
   nparmot=0
   call alloc ('nparma', nparma, na2-na1+1)
   do ia=na1,na2
-   if(norda==5) then
-    nparma(ia)=4
+   if(norda==0) then
+    nparma(ia)=0
+   elseif(norda>=1) then
+    nparma(ia)=norda-1
    else
-    call die (lhere, 'default value of nparma needs to be implemented for norda='+norda)
+    call die (lhere, 'norda must be >= 0 norda='+norda)
    endif
   enddo
   call alloc ('nparmb', nparmb, nspin2b-nspin1+1)
   do isp=nspin1,nspin2b
-   if(nordb==5) then
-    nparmb(isp)=5
+   if(nordb==0) then
+    nparmb(isp)=0
+   elseif(nordb>=1) then
+    nparmb(isp)=nordb
    else
-    call die (lhere, 'default value of nparmb needs to be implemented for nordb='+nordb)
+    call die (lhere, 'nordb must be >= 0 nordb='+nordb)
    endif
   enddo
   call alloc ('nparmc', nparmc, nctype)
   do it=1,nctype
    if(nordc==0) then
     nparmc(it)=0
-   elseif(nordc==5) then
+   elseif(nordc>=1) then
     nparmc(it)=15
+    nparmc(it)=nterms4(nordc)-2*(nordc-1)
    else
-    call die (lhere, 'default value of nparmc needs to be implemented for nordc='+nordc)
+    call die (lhere, 'nordc must be >= 0 nordc='+nordc)
    endif
   enddo
   if(ijas.ge.4.and.ijas.le.6) then
@@ -482,18 +488,47 @@ module optimization_mod
       call object_modified ('nparmjs')
 
       if(ijas.ge.4.and.ijas.le.6) then
-        call alloc ('iwjasa', iwjasa, nparmj, nctype)
+!       call alloc ('iwjasa', iwjasa, nparmj, nctype)
+        call alloc ('iwjasa', iwjasa, max(maxval(nparma),1), nctype)
         do it=1,nctype 
-          iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
+!         iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
+          do param_i = 1, nparma(it)
+            iwjasa(param_i,it) = param_i + 2
+          enddo
         enddo
-        call alloc ('iwjasb', iwjasb, nparmj, nspin2b-nspin1+1)
+!       call alloc ('iwjasb', iwjasb, nparmj, nspin2b-nspin1+1)
+        call alloc ('iwjasb', iwjasb, max(maxval(nparmb),1), nspin2b-nspin1+1)
         do isp=nspin1,nspin2b
-          iwjasb(1:nparmb(isp),isp) = (/2, 3, 4, 5, 6/)
+!         iwjasb(1:nparmb(isp),isp) = (/2, 3, 4, 5, 6/)
+          do param_i = 1, nparmb(isp)
+            iwjasb(param_i,isp) = param_i + 1
+          enddo
         enddo
-        call alloc ('iwjasc', iwjasc, nparmj, nctype)
-        do  it=1,nctype
-          iwjasc(1:nparmc(it),it) = (/ 3,  5,  7, 8, 9,   11,  13, 14, 15, 16, 17, 18,  20, 21,  23/)
-        enddo
+!       call alloc ('iwjasc', iwjasc, nparmj, nctype)
+        call alloc ('iwjasc', iwjasc, max(maxval(nparmc),1), nctype)
+        if(nordc==3) then
+          do  it=1,nctype
+            iwjasc(1:nparmc(it),it) = (/ 3,   5/)
+          enddo
+        elseif(nordc==4) then
+          do  it=1,nctype
+            iwjasc(1:nparmc(it),it) = (/ 3,   5,   7, 8, 9,    11,    13/)
+          enddo
+        elseif(nordc==5) then
+          do  it=1,nctype
+            iwjasc(1:nparmc(it),it) = (/ 3,   5,   7, 8, 9,    11,    13, 14, 15, 16, 17, 18,    20, 21,    23/)
+          enddo
+        elseif(nordc==6) then
+          do  it=1,nctype
+            iwjasc(1:nparmc(it),it) = (/ 3,   5,   7, 8, 9,    11,    13, 14, 15, 16, 17, 18,    20, 21,    23, 24, 25, 26, 27, 28, 29, 30, 31,    33, 34,    36, 37/)
+          enddo
+        elseif(nordc==7) then
+          do  it=1,nctype
+            iwjasc(1:nparmc(it),it) = (/ 3,   5,   7, 8, 9,    11,    13, 14, 15, 16, 17, 18,    20, 21,    23, 24, 25, 26, 27, 28, 29, 30, 31,    33, 34,    36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,    50, 51, 52, 54, 55/)
+          enddo
+        elseif(nordc>=8) then
+          call die (lhere, 'iwjasc is not implemented for nordc >= 8 nordc='+nordc)
+        endif
       endif
 
       if(icusp2.ge.1 .and. ijas.eq.3 .and. isc.le.7) call cuspinit3(1)

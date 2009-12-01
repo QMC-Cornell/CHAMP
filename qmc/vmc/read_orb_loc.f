@@ -41,7 +41,7 @@ c Do not confuse analytic orbs with analytic basis fns.
         endif
 c       if(maxval(zex).gt.0.d0) call distinct_radial_bas
         call distinct_radial_bas
-        write(6,'(''read in analytical orbitals'')')
+        write(6,'(''Done reading in LCAO coefs. of orbitals'')')
       endif
 
 c Check that irecursion_ylm=1 if l of basis function >=5
@@ -371,6 +371,10 @@ c Either order will work when numr.eq.1.
       read(5,*) (zex(i,1),i=1,nbasis)
       write(6,'(12f10.6)') (zex(i,1),i=1,nbasis)
       write(6,*)
+      if(minval(zex(:,1)).lt.0.d0) then
+        write(6,'(''Basis exponents must be >= 0.  If 0 then numerical radial basis fn is used'')')
+        stop 'Basis exponents must be >= 0.  If 0 then numerical radial basis fn is used'
+      endif
 
       do 262 i=1,nbasis
         if(zex(i,1).lt.0.d0) then
@@ -1253,6 +1257,7 @@ c-----------------------------------------------------------------------
 c Written by Cyrus Umrigar
 c Determine distinct radial basis functions
       use all_tools_mod
+      use const_mod, only : ipr
       use atom_mod
       use coefs_mod
       use basis1_mod
@@ -1292,7 +1297,13 @@ c The decision of which are analytical and which are numerical is based on wheth
 !     allocate iwrwf here in the case when it is not allocated and read in before (new style format input)
       call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
 
-!     write(6,'(''n_bas(ib),l_bas(ib)'',50(i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)
+c Figure out the number of different analytical radial basis functions
+c Note that we are checking not only for the equality of of n_bas and zex but also of l_bas.  The latter is not necessary if this is
+c not an optimization run, but since we do not know at this stage if it is or not, we do the safe thing.
+c Note also that in principle different centers of the same center type could have different basis exponents for the analytical basis functions
+c (although the numerical ones must be the same).  However, the dimensioning of iwrwf and zex2 does not allow this.
+c So, although we are looping over all centers below, we could loop over just the center types and copy the information to centers of the same center type.
+      if(ipr.ge.2) write(6,'(''n_bas(ib),l_bas(ib)'',100(2i2,x))') (n_bas(ib),l_bas(ib),ib=1,nbasis)
       ib=0
       kbct=0
       do 290 ic=1,ncent
@@ -1302,11 +1313,18 @@ c The decision of which are analytical and which are numerical is based on wheth
           ib=ib+1
           if(ib.ne.ibct+kbct) stop 'ib .ne. ibct+kbct'
           if(zex(ib,1).gt.0.d0) then
-            do 270 jbct=1,ibct-1
-              if((index(mode,'fit').eq.0 .and. n_bas(ib).eq.n_bas(jbct+kbct) .and. zex(ib,1).eq.zex(jbct+kbct,1)) .or.
-     &        (l_bas(ib).eq.l_bas(jbct+kbct) .and. n_bas(ib).eq.n_bas(jbct+kbct) .and. zex(ib,1).eq.zex(jbct+kbct,1))) then
-                irb=iwrwf2(jbct+kbct)
-                goto 275
+            do 270 jbct=1,ibct-1  ! check if any of the earlier basis functions on the same atom uses the same analytical radial basis fn.
+              if(zex(jbct+kbct,1).gt.0.d0) then
+                if(ipr.ge.2) then
+                  write(6,'(''ibct,jbct,l_bas(ib),l_bas(jbct+kbct),n_bas(ib),n_bas(jbct+kbct),zex(ib,1),zex(jbct+kbct,1)'',
+     &            6i5,9f15.8)')
+     &            ibct,jbct,l_bas(ib),l_bas(jbct+kbct),n_bas(ib),n_bas(jbct+kbct),zex(ib,1),zex(jbct+kbct,1)
+                endif
+c               if((index(mode,'fit').eq.0 .and. n_bas(ib).eq.n_bas(jbct+kbct) .and. zex(ib,1).eq.zex(jbct+kbct,1)) .or.
+                if((l_bas(ib).eq.l_bas(jbct+kbct) .and. n_bas(ib).eq.n_bas(jbct+kbct) .and. zex(ib,1).eq.zex(jbct+kbct,1))) then
+                  irb=iwrwf2(jbct+kbct)
+                  goto 275
+                endif
               endif
   270       continue
             nrbas_analytical(ict)=nrbas_analytical(ict)+1
@@ -1326,16 +1344,15 @@ c The decision of which are analytical and which are numerical is based on wheth
           endif
   280     continue
   290   kbct=kbct+nbasis_ctype(ict)
-!JT   write(6,'(''nrbas_analytical(ict)='',40i4)') (nrbas_analytical(ict),ict=1,nctype)
-!JT   write(6,'(''iwrwf2(ib)='',40i3)') (iwrwf2(ib),ib=1,nbasis)
-!JT   write(6,'(''iwrwf(ibct,ict)='',40i3)') ((iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict)),ict=1,nctype)
 
-!JT      write(6,'(''iwrwf2='',40i3)') (iwrwf2(ib),ib=1,nbasis)
-!JT      do 300 ict=1,nctype
-!JT        write(6,'(''ict='',20i5)') ict
-!JT        write(6,'(''iwrwf='',20i5)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
-!JT        write(6,'(''nbas2='',20i5)') (n_bas2(irb,ict),irb=1,nrbas_analytical(ict))
-!JT  300   write(6,'(''zex2='',20f6.2)') (zex2(irb,ict,iwf),irb=1,nrbas_analytical(ict))
+      if(ipr.ge.2) then
+        write(6,'(''iwrwf2='',40i3)') (iwrwf2(ib),ib=1,nbasis)
+        do 300 ict=1,nctype
+          write(6,'(''ict,nrbas_analytical(ict)='',20i5)') ict,nrbas_analytical(ict)
+          write(6,'(''iwrwf='',20i5)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
+          write(6,'(''nbas2='',20i5)') (n_bas2(irb,ict),irb=1,nrbas_analytical(ict))
+  300     write(6,'(''zex2='',20f6.2)') (zex2(irb,ict,iwf),irb=1,nrbas_analytical(ict))
+      endif
 
       call object_modified ('zex2')
 

@@ -156,12 +156,18 @@ c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta
 
 c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
 
-            do 20 irb=1,nrbas_numerical(ict)
-              rk=r
-              call splfit_bas(rk,irb,ict,iwf,wfv(1,nrbas_analytical(ict)+irb),ider)
-              if(wfv(1,nrbas_analytical(ict)+irb).eq.0.d0) wfv(1,nrbas_analytical(ict)+irb)=DBLMIN
-   20       continue
+          do 20 irb=1,nrbas_numerical(ict)
+            rk=r
+            call splfit_bas(rk,irb,ict,iwf,wfv(1,nrbas_analytical(ict)+irb),ider)
+            if(wfv(1,nrbas_analytical(ict)+irb).eq.0.d0) wfv(1,nrbas_analytical(ict)+irb)=DBLMIN
+   20     continue
 
+       if(ipr.ge.3) write(6,'(''ic,ict,nrbas(ict),n_bas2='',3i5,29i12)')
+     &   ic,ict,nrbas(ict),(n_bas2(irb,1),irb=1,nrbas_analytical(ict))
+       if(ipr.ge.3) write(6,'(''ic,ict,nrbas(ict),zex2  ='',3i5,29d12.5)')
+     &   ic,ict,nrbas(ict),(zex2(irb,1,1),irb=1,nrbas_analytical(ict))
+       if(ipr.ge.3) write(6,'(''ic,ict,nrbas(ict),wfv   ='',3i5,29d12.5)')
+     &   ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas_analytical(ict))
 
 !**RM(2)
           if(irecursion_ylm.eq.0)  then

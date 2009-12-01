@@ -397,7 +397,7 @@ c c1_jas6_en and c1_jas6_ee.  Since I no longer use ijaas=6, I do not bother.
       end
 
 c-----------------------------------------------------------------------
-      function nterms4(nord)
+      integer function nterms4(nord)
 c Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 

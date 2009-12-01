@@ -254,8 +254,8 @@ module orbitals_mod
 ! apply a scaling factor to all orbitals
   if (l_orb_scaling_factor) then
    write(6,*)
-   write(6,'(a,f)') ' all orbitals will be multiplied by the scaling factor ',orb_scaling_factor
-   write(6,'(a)') ' warning: for now, this scaling factor will be removed when printing orbitals after orbital optimization'
+   write(6,'(a,f10.6)') 'all orbitals will be multiplied by the scaling factor ',orb_scaling_factor
+   write(6,'(a)') 'warning: for now, this scaling factor will be removed when printing orbitals after orbital optimization'
    call object_provide ('norb')
    call object_provide ('nbasis')
    call object_provide ('coef')

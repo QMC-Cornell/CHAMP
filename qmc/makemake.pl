@@ -67,7 +67,7 @@ print MAKEFILE "\tmake \"EXE=\$\{DEBUG_EXE\}\" \"F95_FLAGS=\$\{F95_DEBUG_FLAGS\}
 # prof:     
 #
 print MAKEFILE "prof:\n";
-print MAKEFILE "\tmake \"F95_FLAGS=\$\{F95_PROF_FLAGS\}\" \"F77_FLAGS=\$\{F77_PROF_FLAGS\}\" \"CC_FLAGS=\$\{CC_PROF_FLAGS\}\"  \"LD_FLAGS=\$\{LD_PROF_FLAGS\}\"\n\n";
+print MAKEFILE "\tmake \"EXE=\$\{PROF_EXE\}\" \"F95_FLAGS=\$\{F95_PROF_FLAGS\}\" \"F77_FLAGS=\$\{F77_PROF_FLAGS\}\" \"CC_FLAGS=\$\{CC_PROF_FLAGS\}\"  \"LD_FLAGS=\$\{LD_PROF_FLAGS\}\"\n\n";
 #
 # mpi:     
 #

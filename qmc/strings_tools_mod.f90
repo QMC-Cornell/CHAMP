@@ -194,7 +194,7 @@ module strings_tools_mod
 
 ! begin
   string = ''
-  write (string,'(i2)') intg
+  write (string,'(i3)') intg
   string = trim(string)
 
   end function string2_integer
