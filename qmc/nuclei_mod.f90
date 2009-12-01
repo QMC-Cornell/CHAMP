@@ -125,6 +125,17 @@ module nuclei_mod
     write(6,'(a,i4,a,i4,3x,f5.1,4x,3f12.6)') ' nucleus # ', cent_i,': ', iwctype(cent_i), znuc(iwctype(cent_i)), (cent(dim_i,cent_i),dim_i=1,ndim)
   enddo
 
+! Store the number of centers of each center type in ncent_ctype()
+  call alloc ('ncent_ctype', ncent_ctype, nctype)
+  do ict=1,nctype
+    ncent_ctype(ict)=0
+  enddo
+  do ic=1,ncent
+    ncent_ctype(iwctype(ic))=ncent_ctype(iwctype(ic))+1
+!    write(6,'(''Number of centers of each centertype:'',20i3)') (ncent_ctype(ict),ict=1,nctype)
+  enddo
+  call object_modified ('ncent_ctype')
+
   write(6,*)
   write(6,'(a,i5)') ' type of external potential: nloc=',nloc
   if (nloc > 0) then

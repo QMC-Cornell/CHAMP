@@ -27,6 +27,7 @@ module basis_mod
   character(len=max_string_len)   :: basis_functions_varied = 'normalized'
   logical                         :: l_optimize_log_exp = .false.
   character(len=max_string_len)   :: which_analytical_basis = 'none' !fp
+  logical                         :: l_purely_analytical_basis = .true.
   integer, parameter              :: max_n_gauss_slat = 5 !fp
   real(dp), dimension(max_n_gauss_slat), parameter   :: norm_gauss_slat_exp_1 = (/ 1.12646742161049d0, 0.5766099503612371d0, 0.1965811411216233d0, 0.05027565586963441d0, 0.01028077216468808d0 /)  !fp
 
@@ -145,10 +146,17 @@ module basis_mod
     call die (lhere, 'case ibasis='+ibasis+'not yet implemented for new input')
   endif
 
-! Slater functions are default for all-electron calculations
+! default for all-electron calculations: analytical Slater functions
   call object_provide ('nloc')
   if (nloc ==0) then
    which_analytical_basis = 'slater'
+  endif
+
+  call object_provide ('zex')
+  if(minval(zex(:,1)).ne.0.d0) then
+    l_purely_analytical_basis = .true.
+  else
+    l_purely_analytical_basis = .false.
   endif
 
   select case(trim(which_analytical_basis))
@@ -175,18 +183,22 @@ module basis_mod
 !      end if
 !   end if
 
+  call object_provide ('nbasis')
+  write(6,'(/a,i5)') ' number of basis functions = ',nbasis
+
+! distinct_radial_bas must be called to update n_bas2, etc...
+  call distinct_radial_bas
+
 ! if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
 ! if(ibasis.eq.1 .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
   if(ibasis.eq.1 .and. inum_orb.eq.0) call read_bas_num(1)
-
-  call object_provide ('nbasis')
-  write(6,'(/a,i5)') ' number of basis functions = ',nbasis
 
   call object_provide ('nctype')
   call object_provide ('basis_fns_by_center_type_nb')
   call object_provide ('basis_fns_type_by_center_type')
 
 ! analytic (Slater) basis
+  write(6,*) 
   if (numr<=0) then
     call object_provide ('basis_fns_expo_by_center_type')
     do cent_type_i = 1, nctype
@@ -211,12 +223,6 @@ module basis_mod
 
   endif
 
-! distinct_radial_bas must be called to update n_bas2, etc...
-  call distinct_radial_bas
-
-! if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
-! if(ibasis.eq.1 .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
-  if(ibasis.eq.1 .and. inum_orb.eq.0) call read_bas_num(1)
 
   if(ibasis.eq.1) then
 ! irecursion_ylm=0 use Cyrus' spherical harmonics (upto g functions)
@@ -565,6 +571,9 @@ module basis_mod
     iwrwf (bas_c_i, cent_type_i) = basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)
     call alloc ('ictype_basis', ictype_basis, bas_i)
     ictype_basis (bas_i)= cent_type_i
+!   for now, a numerical basis function is indicated by zero exponent:
+    call alloc ('zex', zex, bas_i, nwf)
+    zex (bas_i,1) = 0.d0
 
     enddo
   enddo
@@ -580,7 +589,7 @@ module basis_mod
   call object_modified ('m_bas')
   call object_modified ('ictype_basis')
   call object_modified ('iwrwf')
-
+  call object_modified ('zex')
 
   end subroutine basis_functions_num
 

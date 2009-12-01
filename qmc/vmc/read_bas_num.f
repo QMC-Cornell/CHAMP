@@ -6,6 +6,7 @@ c If igrid(ict).eq.2 .and. (r0_bas(ict).le.0.d0 .or. exp_h_bas(ict).le.0.d0) the
       use atom_mod
       use const_mod
       use dim_mod
+      use basis_mod, only :  l_purely_analytical_basis
       use coefs_mod,  only : nbasis
       use basis1_mod, only : zex
       use basis2_mod, only : nbasis_ctype, iwrwf2
@@ -36,7 +37,7 @@ c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
 c If there are no numerical radial basis functions just initialize nrbas_numerical, nrbas and return
       call alloc ('nrbas_numerical', nrbas_numerical, nctype)
       call alloc ('nrbas', nrbas, nctype)
-      if(minval(zex(:,1)).ne.0.d0) then
+      if (l_purely_analytical_basis) then
         nrbas_numerical=0
         nrbas=nrbas_analytical
         return

@@ -3,7 +3,7 @@ c Written by Cyrus Umrigar
       use all_tools_mod
       use constants_mod
       use variables_mod
-      use basis_mod, only : which_analytical_basis
+      use basis_mod, only : which_analytical_basis, l_purely_analytical_basis
       use control_mod
       use montecarlo_mod
       use orbitals_mod
@@ -1045,6 +1045,11 @@ c Read in analytical or numerical orbitals
 c Read in numerical radial basis
 c This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
 c to compactify the radial basis functions in read_bas_num.
+      if(minval(zex(:,1)).ne.0.d0) then
+        l_purely_analytical_basis = .true.
+      else
+        l_purely_analytical_basis = .false.
+      endif
 c     if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
 c     if((ibasis.eq.1.or.ibasis.eq.3) .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
       if((ibasis.eq.1.or.ibasis.eq.3) .and. inum_orb.eq.0) call read_bas_num(1)
