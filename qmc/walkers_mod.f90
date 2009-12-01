@@ -577,7 +577,7 @@ module walkers_mod
 
 ! local
   character (len=max_string_len_rout), save :: lhere = 'generate_walkers_from_vmc'
-  integer nstep_save, nblk_save, nstep_total_save, nwalk_save
+  integer nstep_save, nblk_save, nstep_total_save, nwalk_save, nblkeq_save
   real(dp) error_threshold_save
   character(len=max_string_len) :: mode_save
 
@@ -587,6 +587,7 @@ module walkers_mod
   mode_save = mode
   nstep_save = nstep
   nblk_save = nblk
+  nblkeq_save = nblkeq
   nstep_total_save = nstep_total
   nwalk_save = nwalk
   error_threshold_save = error_threshold
@@ -598,6 +599,9 @@ module walkers_mod
   call set_mode
   nstep = 10
   nblk = nconf
+! if we use small nstep, then nblkeq needs to be large. In most cases, nstep*nblkeq=100 is good.
+! if nblkeq is too small, then Tc will be overestimated.
+  nblkeq = 10
   error_threshold = 1.d99
   nwalk = 1
   nstep_total = nstep * nproc
@@ -606,6 +610,7 @@ module walkers_mod
   call vmc_release
   nstep = nstep_save
   nblk = nblk_save
+  nblkeq = nblkeq_save
   nstep_total = nstep_total_save
   nwalk = nwalk_save
   error_threshold = error_threshold_save
