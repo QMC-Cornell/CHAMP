@@ -11,6 +11,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 
       use all_tools_mod  
       use constants_mod
+      use contrl_per_mod, only: iperiodic
       use montecarlo_mod 
       use opt_lin_mod    
       use opt_ptb_mod    
@@ -308,6 +309,12 @@ c rratio^2 is needed for the density of the angular moves
      &    costht(i),sintht(i),phitry
           write(6,'(''fxop'',9d12.4)') fxop,areao
           write(6,*)
+        endif
+
+c Write warning msg. if electron is going far away
+        if(rminn(i).gt.100.d0 .and. ndim.eq.3 .and. iperiodic.eq.0) then
+          write(6,'(''Warning: rminn(i) too large, i, rminn(i) ='',i4,d12.4)') i,rminn(i)
+          if(rminn(i).gt.300.d0) stop 'rminn(i) too large'
         endif
 
    90 continue
