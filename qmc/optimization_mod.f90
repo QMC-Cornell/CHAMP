@@ -2070,10 +2070,12 @@ module optimization_mod
 
       if(nparmc_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
-        do ict=1,nctype
-          write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
-        enddo
+       else
+        write(fmt,'(''(a)'')')
       endif
+      do ict=1,nctype
+        write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
+      enddo
 
   endif ! l_opt_jas
 
@@ -2195,10 +2197,12 @@ module optimization_mod
 
       if(nparmc_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparmc_read
-        do ict=1,nctype
-          write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
-        enddo
+       else
+        write(fmt,'(''(a)'')')
       endif
+      do ict=1,nctype
+        write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
+      enddo
 
   endif ! l_opt_jas
 
