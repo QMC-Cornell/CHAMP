@@ -510,6 +510,7 @@ c     read(5,'(a20,4x,4i4)') title,irn
 
       read(5,'(4i4)') irn
       read(5,*) iperiodic,ibasis,which_analytical_basis
+      call object_modified ('which_analytical_basis')
       if(iperiodic.gt.0) then
         write (6,'(''System periodic in '',i1,'' dimensions'')') iperiodic
        else

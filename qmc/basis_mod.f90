@@ -54,6 +54,20 @@ module basis_mod
   write(6,*)
   write(6,'(a)') 'Beginning of basis menu ----------------------------------------------------------------------------------'
 
+! initializations
+  if (use_parser) then
+   call object_provide ('nloc')
+!  default for all-electron calculations: analytical Slater functions
+   if (nloc==0) then
+    which_analytical_basis = 'slater'
+   endif
+!  default for pseudopotential calculations: all numerical functions
+   if (nloc>0) then
+    which_analytical_basis = 'none'
+   endif
+   call object_modified ('which_analytical_basis')
+  endif
+
 ! loop over menu lines
   do
   call get_next_word (word)
@@ -144,12 +158,6 @@ module basis_mod
     notype=0
    else
     call die (lhere, 'case ibasis='+ibasis+'not yet implemented for new input')
-  endif
-
-! default for all-electron calculations: analytical Slater functions
-  call object_provide ('nloc')
-  if (nloc ==0) then
-   which_analytical_basis = 'slater'
   endif
 
   call object_provide ('zex')
