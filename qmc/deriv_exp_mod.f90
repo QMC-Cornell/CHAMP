@@ -238,23 +238,32 @@ module deriv_exp_mod
   endif
 
 ! begin
-  n_analytical = 0
-  do bas_i = 1, nbasis
-     if (iwrwf2(bas_i) .eq. 0) then
-        n_analytical = n_analytical + 1
-     end if
-  end do
 
-  exp_opt_lab_read_nb = n_analytical
+!JT: this general stuff for mixed basis do not work properly: it leads to zero exp_opt_lab_read_nb=0 for all-electron calculations, it needs to be fixed.
+!JT n_analytical = 0
+!JT   do bas_i = 1, nbasis
+!JT     if (iwrwf2(bas_i) .eq. 0) then
+!JT        n_analytical = n_analytical + 1
+!JT     end if
+!JT  end do
+!JT
+!JT  exp_opt_lab_read_nb = n_analytical
+!JT  call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
+!JT
+!JT  i_analytical = 0
+!JT  do bas_i = 1, nbasis
+!JT     if (iwrwf2(bas_i) .eq. 0) then
+!JT          i_analytical =  i_analytical + 1
+!JT        exp_opt_lab_read (i_analytical) = bas_i
+!JT     end if
+!JT  end do
+
+! JT: put back simple code for the moment:
+  exp_opt_lab_read_nb = nbasis
   call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
-
-  i_analytical = 0
   do bas_i = 1, nbasis
-     if (iwrwf2(bas_i) .eq. 0) then
-          i_analytical =  i_analytical + 1
-        exp_opt_lab_read (i_analytical) = bas_i
-     end if
-  end do
+    exp_opt_lab_read (bas_i) = bas_i
+  enddo
 
   end subroutine exp_opt_lab_read_bld
 
