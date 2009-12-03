@@ -566,6 +566,8 @@ ifeq ($(hostname),jugene5)
   F95_MPI = mpixlf2003_r
   F95_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
   F77_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
+  F95_DEBUG_MPI_FLAGS = -g -C -qarch=450 -qtune=450 -qsuffix=cpp=f90  -WF,-DMPI,-DNOEINSPLINE,-DNOQUENCH -qsuppress=1512-039 -qsuppress=1512-047
+  F77_DEBUG_MPI_FLAGS = -g -C -qarch=450 -qtune=450 -qsuffix=cpp=f -WF,-DMPI,-DUNDERSCORE,-DNOEINSPLINE,-DNOQUENCH -qfixed=132 -qsuppress=1512-039 -qsuppress=1512-047
   CC_MPI = mpixlc
   CC_MPI_FLAGS = -O3 -qstrict -qarch=450 -qtune=450
 # no lapack in Julich
