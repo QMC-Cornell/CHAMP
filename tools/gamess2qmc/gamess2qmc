@@ -379,7 +379,7 @@ sub get_options{
 
 # analytic basis option !JT
     if(exists $options{S}){
-       print "Analytic Slater or Gauss-Slater basis requested.\n";
+       print "Analytic Slater basis requested.\n";
        $analytic_basis=1;
        $make_radial_grids=0;
     }
@@ -577,6 +577,10 @@ sub read_from_gamess{
     print "Reading gamess output: " if(! $quiet);
 
   READ_LOOP: while(<>){
+
+      if(/ISPHER\s*=\s*1/) {
+	  $ispher=1;
+      }
 
       if( /^\s*RUN TITLE\s*$/){
 	  eat_lines(1);
@@ -825,7 +829,7 @@ sub read_basis{
 #################################################################
 
     $current_func=0;
-    printf(" basis ") if(! $quiet);
+     printf(" basis ") if(! $quiet);
     %seen=();
     $ignore=0;
 
@@ -911,48 +915,51 @@ sub read_basis{
 	      push @{$functions{$symbol}},$current_func;
 	  }
 
-	  $ftype[$current_func]=$w[1];
+         $ftype[$current_func]=$w[1];
 
 #        Gaussian or Slater basis set?
-	  process_basis_function_type($symbol);   #JT
+         process_basis_function_type($symbol);   #JT
 
 #        if analytic basis requested, check is all functions are Slaters.
-	  if($analytic_basis and ! $is_slater_function and ! $is_gauss_slater_function){
-	      print "\nfunction type $ftype[$current_func] is not a Slater function or a Gauss-Slater function.\n";
-	      print "For an analytic basis set, all functions must be exclusively Slaters or exclusively Gauss-Slaters.\n";
-	      exit;
-	  }
+         if($analytic_basis and ! $is_slater_function){
+          print "\nfunction type $ftype[$current_func] is not a Slater function.\n";
+          print "For an analytic basis set, all functions must be Slaters.\n";
+          exit;
+         }
 
-	  if($is_new_function and $is_slater_function){
+         if($is_new_function and $is_slater_function){
 
-	      $exponents_slater[$current_func]=$w[3];
-	      push @{$exponents[$current_func]}, $w[4];
-	      push @{$coeff[$current_func]}, $w[5];
-	      
-	  }
+           $exponents_slater[$current_func]=$w[3];
+	   push @{$exponents[$current_func]}, $w[4];
+	   push @{$coeff[$current_func]}, $w[5];
+
+         }
+
+
+         elsif($w[4] == 1.000){
+	     $is_gauss_function = 1;
+	     $exponents_slater[$current_func]=$w[3];
+	     push @{$exponents[$current_func]}, $w[3];
+	     push @{$coeff[$current_func]}, $w[4];
+         }
+
 	  
-	  elsif($is_new_function and $is_gauss_slater_function){
-
-	      $exponents_gauss_slater[$current_func]=$w[3];
-	      push @{$exponents[$current_func]}, $w[4];
-	      push @{$coeff[$current_func]}, $w[5];
-	      
-	  }
-
           else{
-
+	      $is_gauss_function = 1;
+	      $exponents_slater[$current_func]=0;
 	      push @{$exponents[$current_func]}, $w[3];
 	      push @{$coeff[$current_func]}, $w[4];
+	      
 
 	      if($w[1] eq "L"){
 		  push @{$coeff_L[$current_func]}, $w[5];
 	      }
-
+	      
           }
-	  
+
       }
-  }   
-    if($analytic_basis && $is_slater_func) {check_slater_functions_order();}
+  }
+           if($analytic_basis) {check_slater_functions_order();}
 }
 
 #################################################################
@@ -2312,12 +2319,19 @@ sub basis_info_cyrus{
     $p=1;
     foreach my $j (@{$functions{$atype}}){
         foreach my $k (@{$shell{$ftype[$j]}}){
-            if( exists $map_prim{$k}){
-                $k2=$map_prim{$k}
-            } else {
-                $k2=$k;
-            }
-            push @{$r_func{$k2}}, $p;
+	    if (! $ispher) {
+		if( exists $map_prim{$k}){
+		    $k2=$map_prim{$k}
+		} else {
+		    $k2=$k;
+		}
+
+	    } else {
+		unless( exists $map_prim{$k}){
+		    $k2=$k;
+		    push @{$r_func{$k2}}, $p;
+		}
+	    }
             if( ($ftype[$j] eq 'L') && ($k eq 'S')){
                 $p++;
             }
@@ -2779,7 +2793,12 @@ sub print_cyrus_input{
 #   printf CYRFILE "ncsf=%d ndet=%d norb=%d 1837465927472523 title, irn\n",$ncsf,$selected_det,$porb;
     printf CYRFILE "'ncsf=%d ndet=%d norb=%d'                title\n",$ncsf,$selected_det,$porb;
     printf CYRFILE "1837465927472523                         irn\n";
-    printf CYRFILE "0 1                                      iperiodic,ibasis\n";
+    if ($is_gauss_function) {
+	printf CYRFILE "0 1 gaussian                                     iperiodic,ibasis,which_analytical_basis\n";
+    }
+    else {
+	printf CYRFILE "0 1                                     iperiodic,ibasis\n";
+    }
     printf CYRFILE "0.5  %7.2f  '  Hartrees'               hb,etrial,eunit\n",$total_energy;
     printf CYRFILE "100   100  1   100   0                   nstep,nblk,nblkeq,nconf,nconf_new\n";
     printf CYRFILE "0    0    1    -2                        idump,irstar,isite,ipr\n";
@@ -2792,7 +2811,11 @@ sub print_cyrus_input{
     printf CYRFILE "50  .01                                  nfprod,tau\n";
     }
 
-    if($ecp){
+    if($ecp && ($is_gauss_function)){
+     printf CYRFILE "6  -1   1  0                              nloc,numr,nforce,nefp\n";
+     printf CYRFILE "6                                        nquad\n";
+    }
+    elsif($ecp){
      printf CYRFILE "6  1   1  0                              nloc,numr,nforce,nefp\n";
      printf CYRFILE "6                                        nquad\n";
     }
@@ -2889,7 +2912,8 @@ sub print_cyrus_input{
         }
         else
 	{
-        printf CYRFILE "%s ns,np,nd,nf,ng,nh (for pseudo sys. principal quantum number is irrelevant)\n", join(" ", @c);
+#        printf CYRFILE "%s ns,np,nd,nf,ng,nh (for pseudo sys. principal quantum number is irrelevant)\n", join(" ", @c);
+    print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a}  $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a}  $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
         printf CYRFILE "%s (iwrwf(ib),ib=1,nbastyp)\n", join(" ", @r);
 	}
     }
@@ -2912,34 +2936,62 @@ sub print_cyrus_input{
         }
     }
 
+    my @final_lcao_coef=();
     foreach my $j (@orbital_indices){
-
+	my @temp_lcao_coef=();
         for(my $ia=0; $ia <= $#atom_symbols; $ia++){
             foreach my $i (@basorder){
                 for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
                     $pk=${$prim_index2{$i}}[$k];
                       if($lcao_atomidx[$pk] == ($ia+1)){
-                         printf CYRFILE $lcao_format, ${$lcao[$j]}[$pk];
+			  my $temp_lcao_coef=sprintf "% .8E", ${$lcao[$j]}[$pk];
+			  push @temp_lcao_coef, $temp_lcao_coef;
                       }
                }
             }
         }
-        if ($j==0) {
-         printf  CYRFILE " ((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)\n";
-        } else {
-         printf  CYRFILE "\n";
-        }
-   }
+	push @final_lcao_coef, [@temp_lcao_coef];
+    }
+
+    my @which_basis_used=();
+    my $reduced_nbasis=0;
+    if ($ispher == 1) {
+	print "Removing redundant basis functions\n";
+	my $tolerance = 10e-06;
+	for my $current_basis (0..$nbasis-1) {
+	    $current_basis_used=0;
+	    for my $current_orb (@orbital_indices) {
+		$current_basis_used = 1 if ${$final_lcao_coef[$current_orb]}[$current_basis] > $tolerance;
+	    }
+	    push @which_basis_used, $current_basis if $current_basis_used;
+	}
+
+	for my $current_orb (@orbital_indices) {
+	    @{$final_lcao_coef[$current_orb]} = @{$final_lcao_coef[$current_orb]}[@which_basis_used]; 
+	}
+	$reduced_nbasis = @{$final_lcao_coef[0]};
+    }
+    push @{$final_lcao_coef[0]}, "((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)";
+    print CYRFILE " @{$_}\n" for @final_lcao_coef;
+
 
 # screening contants
     if($analytic_basis){
-     printf CYRFILE "@exponents_slater_ordered";
+	if ($ispher == 1) {
+	    @exponents_slater_ordered = @exponents_slater_ordered[@which_basis_used];
+	}
+	printf CYRFILE "@exponents_slater_ordered";
     }
     else{
-     for($j=0; $j<$nbasis; $j++){
-       printf CYRFILE "1. ";
+#     for($j=0; $j<$nbasis; $j++){
+#       printf CYRFILE "1. ";
+	process_slater_exponents();
+	if ($ispher == 1) {
+	    @exponents_slater_ordered = @exponents_slater_ordered[@which_basis_used];
+	}
+	printf CYRFILE "@exponents_slater_ordered";
      }
-    }
+#    }
     printf CYRFILE " (zex(i),i=1,nbasis)";
 
 #   foreach my $j (@orbital_indices){
@@ -3059,7 +3111,10 @@ sub print_cyrus_input{
    }else{
    printf CYRFILE "%d %d %d         norda,nordb,nordc\n",$norda,$nordb,$nordc;
    }
-   printf CYRFILE "0.8 0. scalek,a21\n";
+   if($ecp) {
+   printf CYRFILE "0.4 0. scalek,a21\n";
+   }else{ printf CYRFILE "0.8 0. scalek,a21\n";
+   }
 
    for($j=0; $j<$nctype; $j++){
     printf CYRFILE "0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n";
@@ -3150,6 +3205,24 @@ sub print_cyrus_input{
     printf CYRFILE "end\n";
     printf CYRFILE "\n";
 
+    if ($is_gauss_function){
+        printf CYRFILE "basis\n";
+        printf CYRFILE " which_analytical_basis = gaussian \n";
+	my $which_opt_exp = 1;
+	my @optimized_exponents=();
+	for (0..$#exponents_slater_ordered) {
+	    if ($exponents_slater_ordered[$_] != 0) {
+		push @optimized_exponents, $which_opt_exp;
+	    }
+	    $which_opt_exp++;
+	}
+	printf CYRFILE "optimized_exponents ";
+	printf CYRFILE  join(" ",@optimized_exponents);
+	printf CYRFILE " end\n";
+        printf CYRFILE "end\n";
+        printf CYRFILE "\n";
+    }
+
     # print orbital information
     printf CYRFILE "orbitals\n";
 
@@ -3196,6 +3269,9 @@ sub print_cyrus_input{
     printf CYRFILE "!linear renormalize=true end\n";
     printf CYRFILE " increase_blocks=true\n";
     printf CYRFILE " increase_blocks_factor=1.4\n";
+    printf CYRFILE "!casscf=true\n";
+    printf CYRFILE "!check_redundant_orbital_derivative=false\n";
+    printf CYRFILE "!do_add_diag_mult_exp=.true.\n";
     printf CYRFILE "end\n";
     printf CYRFILE "\n";
     }
@@ -3208,6 +3284,19 @@ sub print_cyrus_input{
    printf ("  Warning: verify values of lpotp1 especially for H ECP \n") if(! $quiet);
    }
 
+    if ($ispher == 1) {
+	open(CYRFILE,"< $cyrus_input_file") || die  "cant open file $cyrus_input_file : $!"; 
+	my @temp_file_contents = <CYRFILE>;
+	close(CYRFILE);
+	for (@temp_file_contents) {
+	    if (/nbasis,norb/) {
+		s/^\s*(\d+)\s+\d+\s+(\d+)/$1 $reduced_nbasis $2/;
+	    }
+	}
+	open(CYRFILE,"> $cyrus_input_file") || die  "cant open file $cyrus_input_file : $!"; 
+	print CYRFILE @temp_file_contents;
+    }
+    
 # print also file in new format
   if($make_new_file){
     print_new_input();
@@ -3648,12 +3737,11 @@ my $i;
  close(ORBFILE);
 }
 
-
 ###############################################################
 sub process_basis_function_type{
 ###############################################################
 # check if the current basis function is a Gaussian function (S,P,D,F...)
-# or a Slater function (1S,2S,2P,...) or a Gauss-Slater basis function (GS-S,GS-P,...)
+# or a Slater function (1S,2S,2P,...)
 #
 # Count the numbers of Slater function of each kind (1S, 2S, 2P,...) and
 # drop principal quantum number (1S -> S, 2S ->S, 2P -> P, ...)
@@ -3680,230 +3768,219 @@ sub process_basis_function_type{
     ### WAS
 
     $is_slater_function =  0;
-    $is_gauss_slater_function = 0;
 
 # Gaussians
-    if($ftype[$current_func] eq "S"){}
-    elsif($ftype[$current_func] eq "P"){}
-    elsif($ftype[$current_func] eq "D"){}
-    elsif($ftype[$current_func] eq "F"){}
-    elsif($ftype[$current_func] eq "G"){}
+    if($ftype[$current_func] eq "S"){
+	if($is_new_function){
+	    $n1s{$atomtype} = $n1s{$atomtype} + 1;
+	}
+    }
+    elsif($ftype[$current_func] eq "P"){
+	if($is_new_function){
+	    $n2p{$atomtype} = $n2p{$atomtype} + 1;
+	}
+    }
+    elsif($ftype[$current_func] eq "D"){
+	if($is_new_function){
+	    $n3d{$atomtype} = $n3d{$atomtype} + 1;
+	    if (! $ispher) {
+		$n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
+	    }
+	}
+    }
+    elsif($ftype[$current_func] eq "F"){
+	if($is_new_function){
+	    $n4f{$atomtype} = $n4f{$atomtype} + 1;
+	    if (! $ispher) {	 
+		$n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
+	    }
+	}
+    }
+    elsif($ftype[$current_func] eq "G"){
+	if($is_new_function){
+	    $n5g{$atomtype} = $n5g{$atomtype} + 1;
+	    if (! $ispher) {
+		$n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
+		$n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
+	    }
+	}
+    }
     elsif($ftype[$current_func] eq "L"){}
-
-# Gauss-Slater functions
-    elsif($ftype[$current_func] eq "GS-S"){
-         $is_gauss_slater_function = 1;
-         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'S';
-         $function_gauss_slater_quantum_number[$current_func] = '1';
-         if($is_new_function){
-          $n1s{$atomtype} = $n1s{$atomtype} + 1;
-         }
-    }
-    elsif($ftype[$current_func] eq "GS-P"){
-         $is_gauss_slater_function = 1;
-         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'P';
-         $function_gauss_slater_quantum_number[$current_func] = '2';
-         if($is_new_function){
-          $n2p{$atomtype} = $n2p{$atomtype} + 1;
-         }
-    }
-    elsif($ftype[$current_func] eq "GS-D"){
-         $is_gauss_slater_function = 1;
-         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'D';
-         $function_gauss_slater_quantum_number[$current_func] = '3';
-         if($is_new_function){
-          $n3d{$atomtype} = $n3d{$atomtype} + 1;
-#          $n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
-         }
-    }
-    elsif($ftype[$current_func] eq "GS-F"){
-         $is_gauss_slater_function = 1;
-         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'F';
-         $function_gauss_slater_quantum_number[$current_func] = '4';
-         if($is_new_function){
-          $n4f{$atomtype} = $n4f{$atomtype} + 1;
-#          $n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
-         }
-    }
-    elsif($ftype[$current_func] eq "GS-G"){
-         $is_gauss_slater_function = 1;
-         $function_gauss_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'G';
-         $function_gauss_slater_quantum_number[$current_func] = '5';
-         if($is_new_function){
-          $n5g{$atomtype} = $n5g{$atomtype} + 1;
-#          $n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
-#          $n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
-         }
-    }
-
 
 # Slaters
     elsif($ftype[$current_func] eq "1S"){
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'S';
-         $function_slater_quantum_number[$current_func] = '1';
-         if($is_new_function){
-          $n1s{$atomtype} = $n1s{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'S';
+	$function_slater_quantum_number[$current_func] = '1';
+	if($is_new_function){
+	    $n1s{$atomtype} = $n1s{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "2S"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'S';
-         $function_slater_quantum_number[$current_func] = '2';
-         if($is_new_function){
-          $n2s{$atomtype} = $n2s{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'S';
+	$function_slater_quantum_number[$current_func] = '2';
+	if($is_new_function){
+	    $n2s{$atomtype} = $n2s{$atomtype} + 1;
+	}
 
     }
     elsif($ftype[$current_func] eq "3S"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'S';
-         $function_slater_quantum_number[$current_func] = '3';
-         if($is_new_function){
-          $n3s{$atomtype} = $n3s{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'S';
+	$function_slater_quantum_number[$current_func] = '3';
+	if($is_new_function){
+	    $n3s{$atomtype} = $n3s{$atomtype} + 1;
+	}
 
     }
     elsif($ftype[$current_func] eq "4S"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'S';
-         $function_slater_quantum_number[$current_func] = '4';
-         if($is_new_function){
-          $n4s{$atomtype} = $n4s{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'S';
+	$function_slater_quantum_number[$current_func] = '4';
+	if($is_new_function){
+	    $n4s{$atomtype} = $n4s{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "5S"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'S';
-         $function_slater_quantum_number[$current_func] = '5';
-         if($is_new_function){
-          $n5s{$atomtype} = $n5s{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'S';
+	$function_slater_quantum_number[$current_func] = '5';
+	if($is_new_function){
+	    $n5s{$atomtype} = $n5s{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "2P"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'P';
-         $function_slater_quantum_number[$current_func] = '2';
-         if($is_new_function){
-          $n2p{$atomtype} = $n2p{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'P';
+	$function_slater_quantum_number[$current_func] = '2';
+	if($is_new_function){
+	    $n2p{$atomtype} = $n2p{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "3P"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'P';
-         $function_slater_quantum_number[$current_func] = '3';
-         if($is_new_function){
-          $n3p{$atomtype} = $n3p{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'P';
+	$function_slater_quantum_number[$current_func] = '3';
+	if($is_new_function){
+	    $n3p{$atomtype} = $n3p{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "4P"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'P';
-         $function_slater_quantum_number[$current_func] = '4';
-         if($is_new_function){
-          $n4p{$atomtype} = $n4p{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'P';
+	$function_slater_quantum_number[$current_func] = '4';
+	if($is_new_function){
+	    $n4p{$atomtype} = $n4p{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "5P"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'P';
-         $function_slater_quantum_number[$current_func] = '5';
-         if($is_new_function){
-          $n5p{$atomtype} = $n5p{$atomtype} + 1;
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'P';
+	$function_slater_quantum_number[$current_func] = '5';
+	if($is_new_function){
+	    $n5p{$atomtype} = $n5p{$atomtype} + 1;
+	}
     }
     elsif($ftype[$current_func] eq "3D"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'D';
-         $function_slater_quantum_number[$current_func] = '3';
-         if($is_new_function){
-          $n3d{$atomtype} = $n3d{$atomtype} + 1;
-          $n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'D';
+	$function_slater_quantum_number[$current_func] = '3';
+	if($is_new_function){
+	    $n3d{$atomtype} = $n3d{$atomtype} + 1;
+	    if (! $ispher) {
+		$n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
+	    }
+	}
     }
     elsif($ftype[$current_func] eq "4D"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'D';
-         $function_slater_quantum_number[$current_func] = '4';
-         if($is_new_function){
-          $n4d{$atomtype} = $n4d{$atomtype} + 1;
-          $n4s{$atomtype} = $n4s{$atomtype} + 1;  # 6d ->5d,s
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'D';
+	$function_slater_quantum_number[$current_func] = '4';
+	if($is_new_function){
+	    $n4d{$atomtype} = $n4d{$atomtype} + 1;
+	    if (! $ispher) {
+		$n4s{$atomtype} = $n4s{$atomtype} + 1;  # 6d ->5d,s
+	    }
+	}
     }
     elsif($ftype[$current_func] eq "5D"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'D';
-         $function_slater_quantum_number[$current_func] = '5';
-         if($is_new_function){
-          $n5d{$atomtype} = $n5d{$atomtype} + 1;
-          $n5s{$atomtype} = $n5s{$atomtype} + 1;  # 6d ->5d,s
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'D';
+	$function_slater_quantum_number[$current_func] = '5';
+	if($is_new_function){
+	    $n5d{$atomtype} = $n5d{$atomtype} + 1;
+	    if (! $ispher) {
+		$n5s{$atomtype} = $n5s{$atomtype} + 1;  # 6d ->5d,s
+	    }
+	}
     }
     elsif($ftype[$current_func] eq "4F"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'F';
-         $function_slater_quantum_number[$current_func] = '4';
-         if($is_new_function){
-          $n4f{$atomtype} = $n4f{$atomtype} + 1;
-          $n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'F';
+	$function_slater_quantum_number[$current_func] = '4';
+	if($is_new_function){
+	    $n4f{$atomtype} = $n4f{$atomtype} + 1;
+	    if (! $ispher) {
+		$n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
+	    }
+	}
     }
     elsif($ftype[$current_func] eq "5F"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'F';
-         $function_slater_quantum_number[$current_func] = '5';
-         if($is_new_function){
-          $n5f{$atomtype} = $n5f{$atomtype} + 1;
-          $n5p{$atomtype} = $n5p{$atomtype} + 1;  # 10f ->7f,3p
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'F';
+	$function_slater_quantum_number[$current_func] = '5';
+	if($is_new_function){
+	    $n5f{$atomtype} = $n5f{$atomtype} + 1;
+	    if (! $ispher) {
+		$n5p{$atomtype} = $n5p{$atomtype} + 1;  # 10f ->7f,3p
+	    }
+	}
     }
     elsif($ftype[$current_func] eq "5G"){
 
-         $is_slater_function = 1;
-         $function_slater_type[$current_func] = $ftype[$current_func];
-         $ftype[$current_func] = 'G';
-         $function_slater_quantum_number[$current_func] = '5';
-         if($is_new_function){
-          $n5g{$atomtype} = $n5g{$atomtype} + 1;
-          $n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
-          $n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
-         }
+	$is_slater_function = 1;
+	$function_slater_type[$current_func] = $ftype[$current_func];
+	$ftype[$current_func] = 'G';
+	$function_slater_quantum_number[$current_func] = '5';
+	if($is_new_function){
+	    $n5g{$atomtype} = $n5g{$atomtype} + 1;
+	    if (! $ispher) {
+		$n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
+		$n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
+	    }
+	}
     }
     else{
-    print "$here: unknow basis function type: $ftype[$current_func]\n";
-    exit;
+	print "$here: unknow basis function type: $ftype[$current_func]\n";
+	exit;
     }
 }
 
