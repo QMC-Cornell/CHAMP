@@ -87,7 +87,7 @@ c           anorm(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
       if(ipr.ge.0) write(6,'(''anorm='',20f10.6)') (anorm(ib),ib=1,nbasis)
 
       call object_modified ('anorm')   !JT
-!      write(*,*) 'JT icusp=',icusp
+!      write(6,*) 'JT icusp=',icusp
 !      if (icusp.eq.1) then
 !       call ie
 !       call equiv_bas

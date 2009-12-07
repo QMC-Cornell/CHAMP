@@ -341,7 +341,7 @@ contains
        !
        if(used(mn)) then
           write(6,*)resultt(1,mn2),resultt(2,mn2),resultt(3,mn2)
-          write(*,*)'create_pw_lattice: attempt to reuse rec. lat. vector'
+          write(6,*)'create_pw_lattice: attempt to reuse rec. lat. vector'
        endif
        used(mn)=.true.
        mntot=mntot + 1
@@ -398,7 +398,7 @@ contains
 
 !!! remove those stars which give zero contribution due to symmetry
 
-    write(*,*) "nstar ",  nstar
+    write(6,*) "nstar ",  nstar
 
     allocate(mstar_tt(ntstar), istar_tt(ntstar),sk3_tt(ntstar))
     allocate(ekin_tt (ntstar), kv_tt(3,ntstar), phase_tt(ntstar),rkv_tt(3,ntstar))
@@ -477,18 +477,18 @@ contains
        kk=0
        do j=i1,i2
           if (maxval(real(kv_tt (:,j)+kv_tt(:,i3-kk)))  > 0.0000001) then
-             !             write(*,*) "kv_tt1 ",kv_tt(:,j)
-             !             write(*,*) "kv_tt2 ",kv_tt(:,i3-kk)
-             !             write(*,*) "diff is ", maxval(real(kv_tt (:,j)+kv_tt(:,i3-kk)))
-             write(*,*) "you should use generalized stars which include G and -G "
-             write(*,*) "add inversion symmetry to your list of symmetries"
+             !             write(6,*) "kv_tt1 ",kv_tt(:,j)
+             !             write(6,*) "kv_tt2 ",kv_tt(:,i3-kk)
+             !             write(6,*) "diff is ", maxval(real(kv_tt (:,j)+kv_tt(:,i3-kk)))
+             write(6,*) "you should use generalized stars which include G and -G "
+             write(6,*) "add inversion symmetry to your list of symmetries"
              stop
           endif
           if (abs(phase_tt(j)-conjg(phase_tt(i3-kk))) > 0.0000001) then
-             write(*,*) "star kv_tt bar{kv_tt}=", i, kv_tt (:,j), kv_tt (:,i3-kk)
-             write(*,*) "phase1 ",phase_tt(j)
-             write(*,*) "phase2 ",phase_tt(i3-kk)
-             write(*,*) "phases should be conjugate to each other"
+             write(6,*) "star kv_tt bar{kv_tt}=", i, kv_tt (:,j), kv_tt (:,i3-kk)
+             write(6,*) "phase1 ",phase_tt(j)
+             write(6,*) "phase2 ",phase_tt(i3-kk)
+             write(6,*) "phases should be conjugate to each other"
              stop
           endif
           kk=kk+1

@@ -669,13 +669,13 @@ c Decide whether we are computing all or one electron
       endif
 
       ic=1
-c      write(*,*) 'in basis_fns'
+c      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(*,*) 'x1,x2,we=',x1,x2,we
+c       write(6,*) 'x1,x2,we=',x1,x2,we
 
         do ib=1,nbasis
           wez=we*oparm(3,ib,iwf)
@@ -688,8 +688,8 @@ c       write(*,*) 'x1,x2,we=',x1,x2,we
 
           phin(ib,ie)=dsqrt(wez)*dexp(-0.5d0*wez*rrel2)
 
-c         write(*,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(*,*) 'oparm1,oparm2,oparm3=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf)
+c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+c         write(6,*) 'oparm1,oparm2,oparm3=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf)
 
           dphin(1,ib,ie)=-wez*x1rel*phin(ib,ie)
           dphin(2,ib,ie)=-wez*x2rel*phin(ib,ie)
@@ -742,7 +742,7 @@ c     common /dim/ ndim
       nelec2=nelec
 
       ic=1
-c      write(*,*) 'in deriv_2dgauss'
+c      write(6,*) 'in deriv_2dgauss'
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
@@ -805,7 +805,7 @@ c coo. derivatives of parameter derivatives:
           d2dparam(3,ib,ie)=xg3i*d2phin(ib,ie)-2*wez*dparam(3,ib,ie)
      &+wez*we*(phin(ib,ie)+oparm(3,ib,iwf)*dparam(3,ib,ie))*rrel2     ! laplacian of dparam(3,ib,ie)
 c         test=2*we*phin(ib,ie)+0.5d0*(5*xg3i-we*rrel2)*d2phin(ib,ie)
-c         write(*,*) 'ib,ie,d2dparam,test=',ib,ie,d2dparam(3,ib,ie),test
+c         write(6,*) 'ib,ie,d2dparam,test=',ib,ie,d2dparam(3,ib,ie),test
 c         d2dparam(3,ib,ie)=test
 
         enddo
@@ -857,7 +857,7 @@ c     common /dim/ ndim
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-c      write(*,*) 'oparm1s=',oparm(1,1,iwf),oparm(1,2,iwf),oparm(1,3,iwf),oparm(1,4,iwf)
+c      write(6,*) 'oparm1s=',oparm(1,1,iwf),oparm(1,2,iwf),oparm(1,3,iwf),oparm(1,4,iwf)
 
 c Decide whether we are computing all or one electron
       if(iel.eq.0) then
@@ -870,7 +870,7 @@ c Decide whether we are computing all or one electron
 
       ic=1
       expnorm=1.d0
-c      write(*,*) 'in basis_fns'
+c      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
@@ -880,7 +880,7 @@ c      write(*,*) 'in basis_fns'
         xri=1/xr
         xri2=xri*xri
 
-c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
+c        write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
 
         do ib=1,nbasis
 
@@ -920,11 +920,11 @@ c        write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
             stop 'phit too large'
           endif
 
-c          write(*,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
-c          write(*,*) 'xg1,xg2,xg3,xg4,wez,wez2,',
+c          write(6,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
+c          write(6,*) 'xg1,xg2,xg3,xg4,wez,wez2,',
 c     &'xrrel,xrrel2,xtrel,cxtrel,sxtrel=',
 c     &xg1,xg2,xg3,xg4,wez,wez2,xrrel,xrrel2,xtrel,cxtrel,sxtrel
-c          write(*,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
+c          write(6,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           dpdxr=-wez*xrrel
           dpdxt=-xg4*sxtrel
@@ -1010,7 +1010,7 @@ c     common /dim/ ndim
         xri=1/xr
         xri2=xri*xri
 
-c       write(*,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
+c       write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
 
         do ib=1,nbasis
 
@@ -1036,7 +1036,7 @@ c wfs and coo. derivatives:
           phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
-c         write(*,*) 'phir,phit=',phir,phit
+c         write(6,*) 'phir,phit=',phir,phit
 
           tempr1=-wez*xrrel
           tempt1=-xg4*sxtrel
@@ -1174,13 +1174,13 @@ c Decide whether we are computing all or one electron
       endif
 
       ic=1
-c      write(*,*) 'in basis_fns'
+c      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(*,*) 'x1,x2,we=',x1,x2,we
+c       write(6,*) 'x1,x2,we=',x1,x2,we
 
         do ib=1,nbasis
           wex=we*oparm(3,ib,iwf)
@@ -1194,8 +1194,8 @@ c       write(*,*) 'x1,x2,we=',x1,x2,we
      
           phin(ib,ie)=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wex*x1rel2)*dexp(-0.5d0*wey*x2rel2)
 
-c         write(*,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(*,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
+c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
 
           dphin(1,ib,ie)=-wex*x1rel*phin(ib,ie)
           dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
@@ -1255,7 +1255,7 @@ c     common /dim/ ndim
       nelec2=nelec
 
       ic=1
-c      write(*,*) 'in deriv_2dgauss'
+c      write(6,*) 'in deriv_2dgauss'
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)

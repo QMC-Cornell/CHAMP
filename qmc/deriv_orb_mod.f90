@@ -1745,10 +1745,10 @@ module deriv_orb_mod
   do det_i = 1, det_ex_unq_up_nb
    call flatten (mat_flat_up (:,det_i), slater_mat_ex_trans_up (:,:,det_i), nup, nup)
 !debug WAS
-!!$   write(*,*) "slater_mat_ex_trans_up (:,:,det_i)", slater_mat_ex_trans_up (:,:,det_i)
-!!$   write(*,*) "doing deti ", det_i, det_ex_unq_up_nb
-!!$   write(*,*) "mat_falt_up",  mat_flat_up (:, det_i)
-!!$   write(*,*)  "det_ex_unq_up_nb",  det_ex_unq_up_nb
+!!$   write(6,*) "slater_mat_ex_trans_up (:,:,det_i)", slater_mat_ex_trans_up (:,:,det_i)
+!!$   write(6,*) "doing deti ", det_i, det_ex_unq_up_nb
+!!$   write(6,*) "mat_falt_up",  mat_flat_up (:, det_i)
+!!$   write(6,*)  "det_ex_unq_up_nb",  det_ex_unq_up_nb
 !
    call matinv (mat_flat_up (:,det_i), nup, det_ex_unq_up (det_i))
    call unflatten (mat_flat_up (:,det_i), slater_mat_ex_trans_inv_up (:,:,det_i), nup, nup)

@@ -34,7 +34,7 @@ c get basis functions
    10       cdorb(idim,iorb)=dcmplx(0,0)
           cddorb(iorb)=dcmplx(0,0)
           do 25 m=1,nbasis
-c           write(*,*) 'cphin,cdphin1,cdphin2,cd2phin='
+c           write(6,*) 'cphin,cdphin1,cdphin2,cd2phin='
 c     &              ,cphin(m,iel),cdphin(1,m,iel),cdphin(2,m,iel),cd2phin(m,iel)
            corb(iorb)=corb(iorb)+coef(m,iorb,iwf)*cphin(m,iel)
            do 15 idim=1,ndim

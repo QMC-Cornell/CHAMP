@@ -337,7 +337,7 @@ c              ae(2,irb,ict,iwf)=we/2   !  correct expression for parabolic conf
      &      ir,x(nr(ict)-ir),val,rwf(nr(ict)-ir,irb,ict,iwf)
      &      ,val-rwf(nr(ict)-ir,irb,ict,iwf)
             if(abs(val-rwf(nr(ict)-ir,irb,ict,iwf))/rwf(nr(ict)-ir,irb,ict,iwf).gt.1.d0)
-     &         write(*,*) 'Warning: fit of radial function at large radii not good'
+     &         write(6,*) 'Warning: fit of radial function at large radii not good'
 c    &         stop 'fit of radial function at large radii not good'
    90     enddo
           if(ipr.ge.1) write(6,*) 'dwf1,dwfn',dwf1,dwfn

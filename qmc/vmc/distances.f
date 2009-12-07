@@ -86,9 +86,9 @@ c      The x-direction (confining) potential:
      &+ wire_root1)**2) 
      &/ ((wire_length + wire_root3 - xshift)*(xshift + wire_root2))  ) )
               pe_en=pe_en+pe_x
-c              write(*,*) 'wire_root1, wire_root2, wire_root3 = ', wire_root1, wire_root2, wire_root3
-c              write(*,*) 'wire_radius2, wire_length, wire_prefactor ', wire_radius2, wire_length, wire_prefactor
-c              write(*,*) 'i,x(1,i),x(2,i),pe_x,pe_y=',i,x(1,i),x(2,i),pe_x,pe_y
+c              write(6,*) 'wire_root1, wire_root2, wire_root3 = ', wire_root1, wire_root2, wire_root3
+c              write(6,*) 'wire_radius2, wire_length, wire_prefactor ', wire_radius2, wire_length, wire_prefactor
+c              write(6,*) 'i,x(1,i),x(2,i),pe_x,pe_y=',i,x(1,i),x(2,i),pe_x,pe_y
             endif
    26   continue
 

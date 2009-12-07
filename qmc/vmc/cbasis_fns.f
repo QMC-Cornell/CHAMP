@@ -128,7 +128,7 @@ c ****************** The modified part ends here ***************************
             m=m_bas(ib)
             ylm=cph(m)
 c	    if(abs(m).gt.ML_BAS) then
-c	      write(*,*) 'm=',m
+c	      write(6,*) 'm=',m
 c	      stop
 c	    endif
 	    cphin(ib,ie)=ylm*wfv(1,irb)
@@ -352,7 +352,7 @@ c normalize:
 
 c now get derivatives of the flux term for all landau levels.
 c they are calculated a part because they only depend on landau level index.
-c        write(*,*) ncfmax
+c        write(6,*) ncfmax
         do in=0,ncfmax
           df(in)=djnflux(in,djnkj)
           do ie=1,nelec
@@ -370,7 +370,7 @@ c loop on all basis functions
 
 c calculate orbital:
           cphin(ib,je)=zjpowmn*df(n)
-c          write(*,*) 'je,n,m,zj,cphin',je,n,m,zj,cphin(ib,je)
+c          write(6,*) 'je,n,m,zj,cphin',je,n,m,zj,cphin(ib,je)
 c calculate gradient of the orbital with respect to the electron ie's coord.:
           do ie=1,nelec
             if(ie.eq.je) then

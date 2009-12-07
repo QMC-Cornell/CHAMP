@@ -102,7 +102,7 @@ c substract the infinite k limit:
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)-(nr_un(ir)+nr_dn(ir))*p
 
         enddo
-c        write(*,*) 'fourierrk_t=',fourierrk_t(ir,ik)
+c        write(6,*) 'fourierrk_t=',fourierrk_t(ir,ik)
       enddo
 
       return
@@ -198,7 +198,7 @@ c reset temporary arrays:
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)+dsqrt((fcos_un(ir)+fcos_dn(ir))**2
      &                                               +(fsin_un(ir)+fsin_dn(ir))**2)*p
         enddo
-c        write(*,*) 'fourierrk_t=',fourierrk_t(ir,ik)
+c        write(6,*) 'fourierrk_t=',fourierrk_t(ir,ik)
       enddo
 
       return

@@ -11,7 +11,7 @@
 11        continue
           if(i.eq.j)then
             if(sum.le.0.) then
-               write (*,*) 'choldc failed'
+               write (6,*) 'choldc failed'
                stop 'choldc failed'
             end if
             p(i)=sqrt(sum)

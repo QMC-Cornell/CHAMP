@@ -294,7 +294,7 @@ c calculate parameter-derivatives of csf_coefs for optimization
           do 50 iparm=1,nparmcsf+nparmot
             if(nloc.le.0) then
               denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)
-c             write(*,*) 'd2deti_det,deti_det,denergy,iparm=' ,d2deti_det(iparm),deti_det(iparm),denergy(iparm),iparm
+c             write(6,*) 'd2deti_det,deti_det,denergy,iparm=' ,d2deti_det(iparm),deti_det(iparm),denergy(iparm),iparm
             else
               if(nparmot.gt.0) stop 'orbital optimization not possible with nonlocal pseudopotentials yet'
               denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)+dpe(iparm)
@@ -302,7 +302,7 @@ c             write(6,'(''dpe(iparm)='',9d12.5)') dpe(iparm)
             endif
             do 50 i=1,nelec
               do 50 k=1,ndim
-c                write(*,*) '++ ddeti_det,k,i,iparm=',ddeti_det(k,i,iparm),k,i,iparm
+c                write(6,*) '++ ddeti_det,k,i,iparm=',ddeti_det(k,i,iparm),k,i,iparm
    50           denergy(iparm)=denergy(iparm)-hb*(2*(ddeti_det(k,i,iparm)-deti_det(iparm)*vd(k,i))*vj(k,i))
 
           if(ipr.ge.4) write(6,'(''denergy='',9f10.6)') (denergy(iparm),iparm=1,nparmcsf+nparmot)

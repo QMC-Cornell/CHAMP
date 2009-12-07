@@ -37,7 +37,7 @@ c we need this to be consistent with G.S.Jeon&J.Jain's convention:
         else
           anorm(ib)=dsqrt((zex(ib,iwf)*we)**(mabs+1)/pi/fac)
         endif
-c        write(*,*) 'ib,n_fd,m_fd,anorm=',ib,n_fd(ib),m_fd(ib),anorm(ib)
+c        write(6,*) 'ib,n_fd,m_fd,anorm=',ib,n_fd(ib),m_fd(ib),anorm(ib)
         if(iflag.eq.1) then
           do 10 iorb=1,norb
             coef(ib,iorb,iwf)=coef(ib,iorb,iwf)*anorm(ib)

@@ -59,7 +59,7 @@ c     &,coef(m,iorb,iwf)*phin(m,ie)
 
 c      do  iorb=1,norb
 c        do  ie=nelec1,nelec2
-c          write(*,*) 'orb(ie,iorb),ie,iorb=',orb(ie,iorb),ie,iorb
+c          write(6,*) 'orb(ie,iorb),ie,iorb=',orb(ie,iorb),ie,iorb
 c        enddo
 c      enddo
 
@@ -163,7 +163,7 @@ c get basis functions
           do m=1,nbasis
 
             orb(ie,iorb)=orb(ie,iorb)+coef(m,iorb,iwf)*phin(m,ie)
-c            write(*,*) 'ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)='
+c            write(6,*) 'ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)='
 c     &,ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)
             do idim=1,ndim
               dorb(idim,ie,iorb)=dorb(idim,ie,iorb)+coef(m,iorb,iwf)*dphin(idim,m,ie)
@@ -186,8 +186,8 @@ c     &,ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)
           enddo
         enddo
 
-c        write(*,*) 'iorb,orb(ie,iorb)=',(orb(ie,iorb),ie=1,nelec)
-c        write(*,*) 'phin(m,ie)=',(phin(iorb,ie),ie=1,nelec)
+c        write(6,*) 'iorb,orb(ie,iorb)=',(orb(ie,iorb),ie=1,nelec)
+c        write(6,*) 'phin(m,ie)=',(phin(iorb,ie),ie=1,nelec)
 
       enddo
 

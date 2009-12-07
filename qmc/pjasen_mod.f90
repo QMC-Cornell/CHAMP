@@ -945,7 +945,7 @@ contains
 !!$!!! only main processor will enter
 !!$    if (idtask .ne. 0) return
 !!$
-!!$    write(*,*) "calling plot_phi"
+!!$    write(6,*) "calling plot_phi"
 !!$
 !!$    if (first) then
 !!$       open(181,file="plot_jasen",status="replace")

@@ -152,7 +152,7 @@ C
            endif
 !JT 200       if (num_list.lt.list_length) then
  200       if (num_list.eq.list_length) then !JT
-            write(*,*) 'hash_store: limit list_length=',list_length, !§JT
+            write(6,*) 'hash_store: limit list_length=',list_length, !§JT
      *     ' reached. Increase it!'                                  ! JT
            endif !JT
              num_list=num_list+1

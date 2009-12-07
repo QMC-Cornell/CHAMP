@@ -456,7 +456,7 @@ module deriv_exp_mod
     if (zex (bas_i, iwf) > 0.d0) then
       n = abs(n_bas (bas_i)) !fp
       if ((trim(which_analytical_basis) .eq. 'slater') .or. (trim(which_analytical_basis) .eq. 'gauss-slater')) then
-         !       write(*,*) "test: calculating the deriv of norm of basis function"
+         !       write(6,*) "test: calculating the deriv of norm of basis function"
          dnorm_basis_dz (bas_i) = (n + 0.5d0) * norm_basis (bas_i) / zex (bas_i, iwf)
       else if (trim(which_analytical_basis) .eq. 'gaussian') then
          dnorm_basis_dz (bas_i) = (n/2.d0 + 0.25d0) * norm_basis (bas_i) / zex (bas_i, iwf)
@@ -701,7 +701,7 @@ module deriv_exp_mod
         enddo ! dexp_to_bas_i
      enddo ! dexp_i
   elseif (trim(which_analytical_basis) .eq. 'gauss-slater') then !fp
-!     write(*,*) "Calculating the derivative of unnormalized basis function with respect to the exponent"
+!     write(6,*) "Calculating the derivative of unnormalized basis function with respect to the exponent"
      do dexp_i = 1, param_exp_nb  !fp
         do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)  !fp
            bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)  !fp
@@ -883,7 +883,7 @@ module deriv_exp_mod
         enddo ! dexp_to_bas_i
      enddo ! dexp_i
   elseif (trim(which_analytical_basis) .eq. 'gauss-slater') then !fp
-!     write(*,*) "Gradient of derivatives of the unnormalized basis functions wrt to exponent"
+!     write(6,*) "Gradient of derivatives of the unnormalized basis functions wrt to exponent"
      do dexp_i = 1, param_exp_nb   !fp
         do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)   !fp
            bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)   !fp
@@ -1099,7 +1099,7 @@ module deriv_exp_mod
      enddo ! dexp_i
 
   elseif (trim(which_analytical_basis) .eq. 'gauss-slater') then !fp
-!     write(*,*) "Calculating the laplacian of the derivative of unnormalized basis function with respect to the exponent"
+!     write(6,*) "Calculating the laplacian of the derivative of unnormalized basis function with respect to the exponent"
      do dexp_i = 1, param_exp_nb
         do dexp_to_bas_i = 1, dexp_to_bas_nb (dexp_i)
            bas_i = dexp_to_bas (dexp_i)%row (dexp_to_bas_i)

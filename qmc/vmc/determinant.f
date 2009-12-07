@@ -378,12 +378,12 @@ c complete initialization of detij_det is done in determinant()
         enddo
       enddo
 
-c      write(*,*) 'detu(idet)',detu(1)
+c      write(6,*) 'detu(idet)',detu(1)
       iparm0=0
       do it=1,notype
         do ip=1,nparmo(it)
           iparm0=iparm0+1
-c          write(*,*) 'it,ip,iparm0=',it,ip,iparm0
+c          write(6,*) 'it,ip,iparm0=',it,ip,iparm0
 
 c more initializations
           do idet=1,ndetup
@@ -436,7 +436,7 @@ c first calculate vector z
               zvec(jopt)=zvec(jopt)-1.d0
               detui(iparm0,idet)=beta
               betai=1/beta
-c             write(*,*) 'beta=',beta
+c             write(6,*) 'beta=',beta
 c get the new inverse matrix:
               do i=1,nup
                 jk=-nup
@@ -531,7 +531,7 @@ c first calculate vector z
               zvec(jopt)=zvec(jopt)-1.d0
               detdi(iparm0,idet)=beta
               betai=1/beta
-c                write(*,*) 'beta=',beta
+c                write(6,*) 'beta=',beta
 c get the new inverse matrix:
               do i=1,ndn
                 jk=-ndn
@@ -561,8 +561,8 @@ c to get the coord. derivatives:
                   endif
                 enddo
               enddo
-c              write(*,*) 'd2detdi(iparm0,idet)=',d2detdi(iparm0,idet)
-c              write(*,*) 'detdi(iparm0,idet)=',detdi(iparm0,idet)
+c              write(6,*) 'd2detdi(iparm0,idet)=',d2detdi(iparm0,idet)
+c              write(6,*) 'detdi(iparm0,idet)=',detdi(iparm0,idet)
 
 c now get the second derivatives wrt optimization parameters
 c if we are doing newton optimization

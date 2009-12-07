@@ -331,7 +331,7 @@ c initialize the determinant arrays to one
    22   cdetd(idet)=dcmplx(one,0)
       cdeterm=dcmplx(0,0)
 
-c      write(*,*) 'flag1'
+c      write(6,*) 'flag1'
 
 c      if(nelec.ne.nup) stop 'system must be fully polarized for projected composite fermions!'
 
@@ -388,7 +388,7 @@ c (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
             cauxx(i,j)=cslmui(in+1,idet)
         enddo
         call cmatinv(cauxx,nup,cdetu(idet))
-c        write(*,*) 'det=',cdetu(idet)
+c        write(6,*) 'det=',cdetu(idet)
         do in=0,nup*nup-1
             i=in/nup+1
             j=mod(in,nup)+1
@@ -425,7 +425,7 @@ c repeat above for down spins
         enddo
    60 continue
 
-c      write(*,*) 'flag3'
+c      write(6,*) 'flag3'
 
 c      if(ipr.ge.4) write(6,'(''cdetu,cdetd,cdet'',9d12.5)') cdetu(1),cdetd(1),cdet(1,1)
 
@@ -470,7 +470,7 @@ c          do 95 idim=1,ndim
 c   95       cddet_det(idim,i)=cddet_det(idim,i)+cddeti_deti(idim,i,idet)*cterm
   110 continue
 
-c      write(*,*) 'flag4'
+c      write(6,*) 'flag4'
 
       cdeterm=0
       do 115 icsf=1,ncsf
@@ -502,7 +502,7 @@ c div_vd(i)=dreal(cdiv_vd(i))
           div_vd(i)=div_vd(i)-temp
   120     d2lndet=d2lndet-temp
 
-c      write(*,*) 'flag5'
+c      write(6,*) 'flag5'
 
 c Derivatives wrt to csf_coefs for optimizing them
 c Note that the arrays that are needed for vmc and dmc are over ndet but
@@ -535,7 +535,7 @@ c      if(ipr.ge.4) write(6,'(''deti_det(iparm) in determinant'',40d12.4)') (det
 
       endif
 
-c      write(*,*) 'flag6'
+c      write(6,*) 'flag6'
 
 c release memory. we do not need to keep these because no vmc_mov1 for cfermions.
 c on the other hand, releasing not very meaningful since the rest of the code
@@ -549,7 +549,7 @@ c do not use memory allocation? keep it for now.
       call release('cddeti_deti',cddeti_deti)
       call release('cd2edeti_deti',cd2edeti_deti)
 
-c      write(*,*) 'flag7'
+c      write(6,*) 'flag7'
 
       return
       end

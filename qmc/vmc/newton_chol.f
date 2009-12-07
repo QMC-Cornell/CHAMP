@@ -944,7 +944,7 @@ c orbital parameters (type 1,2,3 and 4)
           do i=1,nparmo(4)
             iparm=iparm+1
             dparm_norm=dparm_norm+dparm(iparm)**2
-c           write(*,*) 'test: dparm(iparm)=',dparm(iparm)
+c           write(6,*) 'test: dparm(iparm)=',dparm(iparm)
           enddo
           dparm_norm=sqrt(dparm_norm/nparmo(4))
           if(dparm_norm.gt.3.d0) then

@@ -680,7 +680,6 @@ module basis_mod
              n1=abs(n)   !fp
              norm_basis(ib)=sqrt(2*(2*zex(ib,iwf))**(n1+0.5d0)*(2*l+1)/(gamma1(n1)*4*pi))   !fp
           case ('gauss-slater')   !fp
-             write(*,*) "Testing: calculating gauss-slater normalization" !fp
              norm_basis(ib) = norm_gauss_slat_exp_1(n) * sqrt((2*l+1)/(4*pi)) * zex(ib,iwf)**(n+0.5d0)   !fp
           case default
              write(6,*) 'norm_basis_bld: Allowed basis types are slater gaussian gauss-slater!'

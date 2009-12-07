@@ -141,8 +141,8 @@ c (easily doable but for testing dont optimize both for now)
       endif
 
 c      do i=1,nparmot
-c        write(*,*) 'i,j,d2j(i,j)=',(d2j(i,j),j=1,i)
-c        write(*,*) 'i,j,detij_det(i,j)=',(detij_det(i,j),j=1,i)
+c        write(6,*) 'i,j,d2j(i,j)=',(d2j(i,j),j=1,i)
+c        write(6,*) 'i,j,detij_det(i,j)=',(detij_det(i,j),j=1,i)
 c      enddo
 
 
@@ -201,7 +201,7 @@ c swap next 2 lines
    30 continue
 
 c      do i=1,nparmot
-c        write(*,*) 'i,d2j(i,j,)=',i,(d2j(i,j),j=1,nparmot)
+c        write(6,*) 'i,d2j(i,j,)=',i,(d2j(i,j),j=1,nparmot)
 c      enddo
 
 
