@@ -603,7 +603,7 @@ sub read_from_gamess{
       }
 
       if(  /^\s*ATOMIC BASIS SET\s*$/ ){
-	  eat_lines(5);
+	  eat_lines(3);
 	  read_basis();
 	  next READ_LOOP;
       }
@@ -847,6 +847,15 @@ sub read_basis{
 	  next READ_LOOP;
       }
 ####
+      if($_=~/^\s*SHELL\s+TYPE\s+PRIMITIVE/){
+	  if( $_=~/GAUSS-SLAT/ ){ 
+	      $gauss_slater_functions = 1;
+	  }
+	  if( $_=~/SLATER/ ){ 
+	      $slater_functions = 1;
+	  }
+	  next READ_LOOP;
+      }
       if( /^\sTOTAL NUMBER OF BASIS SET SHELLS.*$/ ){
 	  next READ_LOOP;
       }
@@ -927,7 +936,7 @@ sub read_basis{
           exit;
          }
 
-         if($is_new_function and $is_slater_function){
+         if($is_new_function and ($slater_functions || $gauss_slater_functions)){
 
            $exponents_slater[$current_func]=$w[3];
 	   push @{$exponents[$current_func]}, $w[4];
@@ -935,17 +944,18 @@ sub read_basis{
 
          }
 
+	 elsif($is_new_function) {
+	      $exponents_slater[$current_func]=$w[3];
+	      push @{$exponents[$current_func]}, $w[3];
+	      push @{$coeff[$current_func]}, $w[4];
+         }
 
-         elsif($w[4] == 1.000){
-	     $is_gauss_function = 1;
-	     $exponents_slater[$current_func]=$w[3];
+	 elsif($slater_functions || $gauss_slater_functions){
 	     push @{$exponents[$current_func]}, $w[3];
 	     push @{$coeff[$current_func]}, $w[4];
          }
-
 	  
-          else{
-	      $is_gauss_function = 1;
+         else{
 	      $exponents_slater[$current_func]=0;
 	      push @{$exponents[$current_func]}, $w[3];
 	      push @{$coeff[$current_func]}, $w[4];
@@ -959,6 +969,7 @@ sub read_basis{
 
       }
   }
+
            if($analytic_basis) {check_slater_functions_order();}
 }
 
@@ -2793,11 +2804,14 @@ sub print_cyrus_input{
 #   printf CYRFILE "ncsf=%d ndet=%d norb=%d 1837465927472523 title, irn\n",$ncsf,$selected_det,$porb;
     printf CYRFILE "'ncsf=%d ndet=%d norb=%d'                title\n",$ncsf,$selected_det,$porb;
     printf CYRFILE "1837465927472523                         irn\n";
-    if ($is_gauss_function) {
-	printf CYRFILE "0 1 gaussian                                     iperiodic,ibasis,which_analytical_basis\n";
+    if ($gauss_slater_functions) {
+	printf CYRFILE "0 1 gauss-slater                             iperiodic,ibasis,which_analytical_basis\n";
+    }
+    elsif ($slater_functions) {
+	printf CYRFILE "0 1 slater                               iperiodic,ibasis,which_analytical_basis\n";
     }
     else {
-	printf CYRFILE "0 1                                     iperiodic,ibasis\n";
+	printf CYRFILE "0 1 gaussian                             iperiodic,ibasis,which_analytical_basis\n";
     }
     printf CYRFILE "0.5  %7.2f  '  Hartrees'               hb,etrial,eunit\n",$total_energy;
     printf CYRFILE "100   100  1   100   0                   nstep,nblk,nblkeq,nconf,nconf_new\n";
@@ -2811,15 +2825,11 @@ sub print_cyrus_input{
     printf CYRFILE "50  .01                                  nfprod,tau\n";
     }
 
-    if($ecp && ($is_gauss_function)){
-     printf CYRFILE "6  -1   1  0                              nloc,numr,nforce,nefp\n";
+    if($ecp){
+     printf CYRFILE "6 -1   1  0                              nloc,numr,nforce,nefp\n";
      printf CYRFILE "6                                        nquad\n";
     }
-    elsif($ecp){
-     printf CYRFILE "6  1   1  0                              nloc,numr,nforce,nefp\n";
-     printf CYRFILE "6                                        nquad\n";
-    }
-    else{ #if ecp
+    else{ 
 	    if($analytic_basis){
     printf CYRFILE "0  -3   1  0                             nloc,numr,nforce,nefp\n";
             }
@@ -2827,7 +2837,7 @@ sub print_cyrus_input{
 	    {
     printf CYRFILE "0  1   1  0                              nloc,numr,nforce,nefp\n";
 	    }
-    } #if ecp
+    }
 
     printf CYRFILE "%d %d \t \t \t \t \t nelec,nup\n\n",$nalpha+$nbeta,$nalpha;
 
@@ -2983,25 +2993,13 @@ sub print_cyrus_input{
 	printf CYRFILE "@exponents_slater_ordered";
     }
     else{
-#     for($j=0; $j<$nbasis; $j++){
-#       printf CYRFILE "1. ";
 	process_slater_exponents();
 	if ($ispher == 1) {
 	    @exponents_slater_ordered = @exponents_slater_ordered[@which_basis_used];
 	}
 	printf CYRFILE "@exponents_slater_ordered";
      }
-#    }
     printf CYRFILE " (zex(i),i=1,nbasis)";
-
-#   foreach my $j (@orbital_indices){
-#   for($j=0; $j<$nbasis; $j++){
-#JT      printf CYRFILE "1. ";
-#      print "ftype[
-#      printf CYRFILE "$exponents_slater[$j] ";  #JT
-#      printf CYRFILE "%2.1f ",$irrep_index[$j];
-#   }
-
 
 # CSFs and determinants
 
@@ -3201,13 +3199,20 @@ sub print_cyrus_input{
    printf CYRFILE "%5.2f eave\n",$total_energy;
    printf CYRFILE "1.d-6 5. 1 15 4 pmarquardt,tau,noutput,nstep,ibold\n";
    printf CYRFILE "T F analytic,cholesky\n";
-   if($options_JT){
-    printf CYRFILE "end\n";
-    printf CYRFILE "\n";
+    if($options_JT){
+	printf CYRFILE "end\n";
+	printf CYRFILE "\n";
 
-    if ($is_gauss_function){
-        printf CYRFILE "basis\n";
-        printf CYRFILE " which_analytical_basis = gaussian \n";
+	printf CYRFILE "basis\n";
+	if ($gauss_slater_functions) {
+	    printf CYRFILE " which_analytical_basis = gauss-slater \n";
+	}
+	elsif ($slater_functions) {
+	    printf CYRFILE " which_analytical_basis = slater \n";
+	}
+	else{
+	    printf CYRFILE " which_analytical_basis = gaussian \n";
+	}
 	my $which_opt_exp = 1;
 	my @optimized_exponents=();
 	for (0..$#exponents_slater_ordered) {
@@ -3219,64 +3224,64 @@ sub print_cyrus_input{
 	printf CYRFILE "optimized_exponents ";
 	printf CYRFILE  join(" ",@optimized_exponents);
 	printf CYRFILE " end\n";
-        printf CYRFILE "end\n";
-        printf CYRFILE "\n";
-    }
+	printf CYRFILE "end\n";
+	printf CYRFILE "\n";
+	
 
-    # print orbital information
-    printf CYRFILE "orbitals\n";
+	# print orbital information
+	printf CYRFILE "orbitals\n";
 
-     # print orbital eigenvalues
-     printf CYRFILE " energies\n";
-     for($i=0; $i<$porb; $i++){
-      printf CYRFILE "$orbital_eigenvalues[@orbital_indices[$i]] ";
-     }
-     printf CYRFILE "\n end\n";
+	# print orbital eigenvalues
+	printf CYRFILE " energies\n";
+	for($i=0; $i<$porb; $i++){
+	    printf CYRFILE "$orbital_eigenvalues[@orbital_indices[$i]] ";
+	}
+	printf CYRFILE "\n end\n";
 
-     # print symmetry info
-     printf CYRFILE " symmetry\n";
+	# print symmetry info
+	printf CYRFILE " symmetry\n";
 
-     if($#irrep_strings > -1){
-        %irreps=();
-        $irrep_num=0;
-        @irrep_index=();
-        for($j=0; $j<$orbitals;$j++){
-            if( ! exists $irreps{$irrep_strings[$j]}){
-                $irrep_num++;
-                $irreps{$irrep_strings[$j]}=$irrep_num;
-                $idx=$irrep_num;
-            } else {
-                $idx=$irreps{$irrep_strings[$j]};
-            }
-            $irrep_index[$j]=$idx;
-        }
+	if($#irrep_strings > -1){
+	    %irreps=();
+	    $irrep_num=0;
+	    @irrep_index=();
+	    for($j=0; $j<$orbitals;$j++){
+		if( ! exists $irreps{$irrep_strings[$j]}){
+		    $irrep_num++;
+		    $irreps{$irrep_strings[$j]}=$irrep_num;
+		    $idx=$irrep_num;
+		} else {
+		    $idx=$irreps{$irrep_strings[$j]};
+		}
+		$irrep_index[$j]=$idx;
+	    }
             foreach my $j (@orbital_indices){
 #JT                printf CYRFILE "%d ",$irrep_index[$j];
                 printf CYRFILE "%s ",$irrep_strings[$j];  #JT print label of irrep instead of index
             }
-    }
+	}
 
-       printf CYRFILE "\n end\n";
+	printf CYRFILE "\n end\n";
 
-     printf CYRFILE "end\n";
-    printf CYRFILE "\n";
+	printf CYRFILE "end\n";
+	printf CYRFILE "\n";
 
-    # print optimization menu
-    if($no_jastrow != 1){
-    printf CYRFILE "optimization\n";
-    printf CYRFILE " parameters jastrow end\n";
-    printf CYRFILE " method = linear\n";
-    printf CYRFILE "!linear renormalize=true end\n";
-    printf CYRFILE " increase_blocks=true\n";
-    printf CYRFILE " increase_blocks_factor=1.4\n";
-    printf CYRFILE "!casscf=true\n";
-    printf CYRFILE "!check_redundant_orbital_derivative=false\n";
-    printf CYRFILE "!do_add_diag_mult_exp=.true.\n";
-    printf CYRFILE "end\n";
-    printf CYRFILE "\n";
-    }
+	# print optimization menu
+	if($no_jastrow != 1){
+	    printf CYRFILE "optimization\n";
+	    printf CYRFILE " parameters jastrow end\n";
+	    printf CYRFILE " method = linear\n";
+	    printf CYRFILE "!linear renormalize=true end\n";
+	    printf CYRFILE " increase_blocks=true\n";
+	    printf CYRFILE " increase_blocks_factor=1.4\n";
+	    printf CYRFILE "!casscf=true\n";
+	    printf CYRFILE "!check_redundant_orbital_derivative=false\n";
+	    printf CYRFILE "!do_add_diag_mult_exp=.true.\n";
+	    printf CYRFILE "end\n";
+	    printf CYRFILE "\n";
+	}
 
-   } # end if($options_JT)
+    } # end if($options_JT)
 
    close(CYRFILE);
    printf ("Cyrus format input file written to $cyrus_input_file\n") if(! $quiet);
@@ -3806,6 +3811,52 @@ sub process_basis_function_type{
 	}
     }
     elsif($ftype[$current_func] eq "L"){}
+
+
+#Gauss-Slaters
+# Gaussians
+    elsif($ftype[$current_func] eq "GS-S"){
+	$ftype[$current_func] = 'S';
+	if($is_new_function){
+	    $n1s{$atomtype} = $n1s{$atomtype} + 1;
+	}
+    }
+    elsif($ftype[$current_func] eq "GS-P"){
+	$ftype[$current_func] = 'P';
+	if($is_new_function){
+	    $n2p{$atomtype} = $n2p{$atomtype} + 1;
+	}
+    }
+    elsif($ftype[$current_func] eq "GS-D"){
+	$ftype[$current_func] = 'D';
+	if($is_new_function){
+	    $n3d{$atomtype} = $n3d{$atomtype} + 1;
+	    if (! $ispher) {
+		$n3s{$atomtype} = $n3s{$atomtype} + 1;   # 6d ->5d,s
+	    }
+	}
+    }
+    elsif($ftype[$current_func] eq "GS-F"){
+	$ftype[$current_func] = 'F';
+	if($is_new_function){
+	    $n4f{$atomtype} = $n4f{$atomtype} + 1;
+	    if (! $ispher) {	 
+		$n4p{$atomtype} = $n4p{$atomtype} + 1;  # 10f ->7f,3p
+	    }
+	}
+    }
+    elsif($ftype[$current_func] eq "GS-G"){
+	$ftype[$current_func] = 'G';
+	if($is_new_function){
+	    $n5g{$atomtype} = $n5g{$atomtype} + 1;
+	    if (! $ispher) {
+		$n5d{$atomtype} = $n5d{$atomtype} + 1;  # 15g ->9g,5d,1s
+		$n5s{$atomtype} = $n5s{$atomtype} + 1;  # 15g ->9g,5d,1s
+	    }
+	}
+    }
+
+
 
 # Slaters
     elsif($ftype[$current_func] eq "1S"){
