@@ -1148,7 +1148,7 @@ module optimization_mod
 ! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
 ! has a smaller error, either because of a reduction in sigma and Tcorr or because nblk is increasing.
 ! If p_var!=0 then we add that to the criterion too.
-  energy_plus_err=energy(1)+3*energy_err(1)+p_var*energy_sigma(1)
+  energy_plus_err=energy(1)+3*energy_err(1)+p_var*(energy_sigma(1)+3*error_sigma)
   if(energy_plus_err.lt.energy_plus_err_best) then
     iter_best = iter
     energy_plus_err_best=energy_plus_err
