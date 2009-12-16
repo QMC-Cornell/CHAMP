@@ -55,9 +55,9 @@ c     write(6,'(''wcum1,wcum(1)'',9d16.8)') wcum1,wcum(1)
 c     if(idtask.ne.0) return
 
       if(index(mode,'mpi').eq.0) then
-        passes=dfloat(iblk*nstep)
+        passes=dfloat(iblk)*dfloat(nstep)
        else
-        passes=dfloat(iblk*nstep*nproc)
+        passes=dfloat(iblk)*dfloat(nstep)*dfloat(nproc)
       endif
       rtpass=dsqrt(passes)
 

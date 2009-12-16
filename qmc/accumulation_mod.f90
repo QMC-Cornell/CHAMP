@@ -698,9 +698,9 @@ module accumulation_mod
   errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk_proc))
 # endif
 
-  passes=dfloat(iblk*nstep)
+  passes=dfloat(iblk)*dfloat(nstep)
   eval=nconf*passes
-  pass_proc=dfloat(iblk_proc*nstep)
+  pass_proc=dfloat(iblk_proc)*dfloat(nstep)
   eval_proc=nconf*pass_proc
 
 ! Either the next 3 lines or the 3 lines following them could be used.
