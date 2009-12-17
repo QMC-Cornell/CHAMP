@@ -63,19 +63,19 @@ c statement functions for error calculation
 !JT      erric1(x,x2)=errori(x,x2,wcum1,wcm21,pass_proc)
 !JT      errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk_proc))
 
-      passes=dfloat(iblk*nstep)
+      passes=dfloat(iblk)*dfloat(nstep)
       eval=nconf*passes
-      pass_proc=dfloat(iblk_proc*nstep)
+      pass_proc=dfloat(iblk_proc)*dfloat(nstep)
       eval_proc=nconf_global*pass_proc
 c Either the next 3 lines or the 3 lines following them could be used.
 c They should give nearly (but not exactly) the same result.
 c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
-c     eval_proc_eff=nconf_global*rn_eff(wcum1,wcm21)
-c     evalf_proc_eff=nconf_global*rn_eff(wfcum1,wfcm21)
-c     evalg_proc_eff=nconf_global*rn_eff(wgcum1(1),wgcm21(1))
-      eval_proc_eff=nconf_global*nstep*rn_eff(wcum,wcm2)
-      evalf_proc_eff=nconf_global*nstep*rn_eff(wfcum,wfcm2)
-      evalg_proc_eff=nconf_global*nstep*rn_eff(wgcum(1),wgcm2(1))
+c     eval_proc_eff=dfloat(nconf_global)*rn_eff(wcum1,wcm21)
+c     evalf_proc_eff=dfloat(nconf_global)*rn_eff(wfcum1,wfcm21)
+c     evalg_proc_eff=dfloat(nconf_global)*rn_eff(wgcum1(1),wgcm21(1))
+      eval_proc_eff=dfloat(nconf_global)*nstep*rn_eff(wcum,wcm2)
+      evalf_proc_eff=dfloat(nconf_global)*nstep*rn_eff(wfcum,wfcm2)
+      evalg_proc_eff=dfloat(nconf_global)*nstep*rn_eff(wgcum(1),wgcm2(1))
 c     rtpass1=dsqrt(passes-1)
       rtpass_proc1=dsqrt(pass_proc-1)
 c     rteval=dsqrt(eval)

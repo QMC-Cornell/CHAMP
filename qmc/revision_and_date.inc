@@ -1,2 +1,2 @@
- write(6,'(a)') 'SVN Revision: 392, Last Changed Date: 2009-12-16 20:49:28 +0100 (Wed, 16 Dec 2009)'
- write(6,'(a)') 'Compiled by toulouse on Thu Dec 17 11:37:30 CET 2009 on host clastos'
+ write(6,'(a)') 'SVN Revision: 393, Last Changed Date: 2009-12-17 08:31:52 -0500 (Thu, 17 Dec 2009)'
+ write(6,'(a)') 'Compiled by cyrus on Thu Dec 17 12:37:40 EST 2009 on host gauss'

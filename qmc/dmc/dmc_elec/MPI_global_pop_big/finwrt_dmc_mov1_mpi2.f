@@ -61,16 +61,16 @@ c statement functions for error calculation
 !JT      erric1(x,x2)=errori(x,x2,wcum1,wcm21,passes)  ! unused
 !JT      errig(x,x2)=errori(x,x2,wgcum(1),wgcm2(1),dfloat(iblk))  ! unused
 
-      passes=dfloat(iblk*nstep)
+      passes=dfloat(iblk)*dfloat(nstep)
       eval=nconf_global*passes
 c Either the next 3 lines or the 3 lines following them could be used.
 c They should give nearly (but not exactly) the same result.
 c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
-c     eval_eff=nconf_global*rn_eff(wcum1,wcm21)
-c     evalf_eff=nconf_global*rn_eff(wfcum1,wfcm21)
-c     evalg_eff=nconf_global*rn_eff(wgcum1(1),wgcm21(1))
-      eval_eff=nconf_global*nstep*rn_eff(wcum,wcm2)
-      evalf_eff=nconf_global*nstep*rn_eff(wfcum,wfcm2)
+c     eval_eff=dfloat(nconf_global)*rn_eff(wcum1,wcm21)
+c     evalf_eff=dfloat(nconf_global)*rn_eff(wfcum1,wfcm21)
+c     evalg_eff=dfloat(nconf_global)*rn_eff(wgcum1(1),wgcm21(1))
+      eval_eff=dfloat(nconf_global)*nstep*rn_eff(wcum,wcm2)
+      evalf_eff=dfloat(nconf_global)*nstep*rn_eff(wfcum,wfcm2)
       write(6,'(''evalf_eff,nconf_global,nstep,wfcum,wfcm2'',d12.4,2i5,9d12.4)') evalf_eff,nconf_global,nstep,wfcum,wfcm2
       evalg_eff=nconf_global*nstep*rn_eff(wgcum(1),wgcm2(1))
       rtpass1=dsqrt(passes-1)

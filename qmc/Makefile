@@ -275,9 +275,11 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 .PHONY: clean_local clean clean_all clean_all_lib make
 
 # Default target and the one that gets called by all the other targets:
-$(EXE): $(LIBS_MAKE) $(OBJS)
-	bash revision_and_date.sh
+$(EXE): $(LIBS_MAKE) $(OBJS) revision_and_date.inc
 	$(LD) $(LD_FLAGS) -o $@ $(OBJS) $(LIBS) $(LD_END)
+
+revision_and_date.inc: $(SRCS)
+	bash revision_and_date.sh
 
 debug:
 	make "EXE=${DEBUG_EXE}" "F95_FLAGS=${F95_DEBUG_FLAGS}" "F77_FLAGS=${F77_DEBUG_FLAGS}" "CC_FLAGS=${CC_DEBUG_FLAGS}" "LD_FLAGS=${LD_DEBUG_FLAGS}"
