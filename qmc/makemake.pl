@@ -56,6 +56,7 @@ print MAKEFILE ".PHONY: clean_local clean clean_all clean_all_lib make\n\n";
 
 print MAKEFILE "# Default target and the one that gets called by all the other targets:\n";
 print MAKEFILE "\$(EXE): \$(LIBS_MAKE) \$(OBJS)\n";
+print MAKEFILE "\tbash revision_and_date.sh\n";
 print MAKEFILE "\t\$(LD) \$(LD_FLAGS) -o \$@ \$(OBJS) \$(LIBS) \$(LD_END)\n\n";
 print MAKEFILE "";
 #

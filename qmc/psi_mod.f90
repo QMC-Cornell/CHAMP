@@ -635,9 +635,7 @@ module psi_mod
    grd_psi_over_psi_wlk (:,:,:) = voldw (1:ndim, 1:nelec, 1:nwalk, 1)
 
   else
-   write(6,'(4a)') trim(here),': mode=',trim(mode),' should contain either vmc or dmc.'
-   call die (here)
-
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
   endif
 
 ! call object_provide  ('grd_psi_over_psi_old')

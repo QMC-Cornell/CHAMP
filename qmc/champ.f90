@@ -15,6 +15,8 @@ program champ
 ! local
   character(len=max_string_len_rout), save :: lhere = 'champ'
   character (len=max_string_len) :: date = ''
+  character (len=max_string_len) :: hostname = ''
+  character (len=max_string_len) :: user = ''
   integer            :: narg, iarg
   character(len=256) :: command_line_arguments
   character(len=256) :: executable_name
@@ -55,9 +57,12 @@ program champ
 # endif
 
   write(6,'(a)') 'PROGRAM CHAMP version 3.08.0'
-  write(6,'(a)') 'SVN VERSION $Rev$ on $Date$'
+!  write(6,'(a)') 'SVN VERSION $Rev$ on $Date$'
+  include 'revision_and_date.inc'
   call get_date (date)
-  write(6,'(2a)') 'Execution date: ',date
+  call get_environment_variable ("HOSTNAME", hostname)
+  call get_environment_variable ("USER", user)
+  write(6,'(6a)') 'Executed by ',trim(user),' on ',trim(date), ' on master host ',trim(hostname)
 
 # if defined (MPI)
   write(6,'(a,i4,a)') 'MPI version running on ', nproc, ' processors.'

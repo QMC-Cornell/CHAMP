@@ -276,6 +276,7 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 
 # Default target and the one that gets called by all the other targets:
 $(EXE): $(LIBS_MAKE) $(OBJS)
+	bash revision_and_date.sh
 	$(LD) $(LD_FLAGS) -o $@ $(OBJS) $(LIBS) $(LD_END)
 
 debug:
@@ -375,7 +376,8 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
-	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o
+	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o \
+	revision_and_date.inc
 constants_mod.o: types_mod.o
 control_mod.o: all_tools_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h

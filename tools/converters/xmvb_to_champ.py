@@ -1,5 +1,5 @@
-#!/usr/local/bin/python2.4
 #!/usr/bin/python
+#!/usr/local/bin/python2.4
 
 ###################################################################################
 #
@@ -317,6 +317,7 @@ def read_orbitals ():
 
   norb = len(orbital_indexes)
   nbasis = len(orbital_coefficients[0])
+#  print "norb=",norb
 #  print "orbital_indexes=", orbital_indexes
 #  print "orbital_coefficients=",orbital_coefficients
 
