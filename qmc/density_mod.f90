@@ -26,6 +26,13 @@ module density_mod
   real(dp), allocatable             :: dens_zb1_av (:)
   real(dp), allocatable             :: dens_zvzb1_av (:)
   real(dp), allocatable             :: dens_zvzb1_av_err (:)
+  real(dp), allocatable             :: dens_q5 (:,:)
+  real(dp), allocatable             :: dens_q5_av (:)
+  real(dp), allocatable             :: dens_q5_eloc (:,:)
+  real(dp), allocatable             :: dens_q5_eloc_av (:)
+  real(dp), allocatable             :: dens_zb5_av (:)
+  real(dp), allocatable             :: dens_zvzb5_av (:)
+  real(dp), allocatable             :: dens_zvzb5_av_err (:)
   real(dp), allocatable             :: dens (:)
   real(dp), allocatable             :: dens_err (:)
 
@@ -77,8 +84,8 @@ module density_mod
   case ('help')
    write(6,'(a)') 'HELP for menu density'
    write(6,'(a)') 'density'
-   write(6,'(a)') ' estimator = [string] : choice of estimator {histogram|zv1|zv5|zvzb1} (default=zv1)'
-   write(6,'(a)') ' exponent  = [real] : exponent for zv5 estimator (should be 2*sqrt(2*I)) (default = 1.0)'
+   write(6,'(a)') ' estimator = [string] : choice of estimator {histogram|zv1|zv5|zvzb1|zvzb5} (default=zv1)'
+   write(6,'(a)') ' exponent  = [real] : exponent for zv5 or zvzb5 estimator (should be 2*sqrt(2*I)) (default = 1.0)'
    write(6,'(a)') ' file      = [string] : file in which density will be written'
    write(6,'(a)') 'end'
 
@@ -135,6 +142,13 @@ module density_mod
    call object_average_request ('dens_q1_av')
    call object_average_request ('dens_q1_eloc_av')
    call object_error_request ('dens_zvzb1_av_err')
+
+   case ('zvzb5')
+   write (6,'(a)') ' density will be calculated with ZVZB5 estimator'
+   call object_average_request ('dens_zv5_av')
+   call object_average_request ('dens_q5_av')
+   call object_average_request ('dens_q5_eloc_av')
+   call object_error_request ('dens_zvzb5_av_err')
 
    case default
    call die (lhere, 'unknown estimator >'+trim(dens_estimator)+'<')
@@ -624,6 +638,182 @@ module density_mod
   end subroutine dens_zvzb1_av_bld
 
 ! ==============================================================================
+  subroutine dens_q5_bld
+! ------------------------------------------------------------------------------
+! Description   : term for zero-bias correction for density
+!
+! Created       : J. Toulouse, 07 Jan 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer               :: walk_i, elec_i, grid_i
+  real(dp)              :: r
+  real(dp)              :: u, rpu, ru, rmu, abs_rmu
+  real(dp)              :: mcabsrmu, mcrpu, exp_mcabsrmu, exp_mcrpu
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_q5')
+   call object_average_walk_define ('dens_q5', 'dens_q5_av')
+
+   call object_needed ('nwalk')
+   call object_needed ('grid_r_nb')
+   call object_needed ('grid_r')
+   call object_needed ('nelec')
+   call object_needed ('dist_e_wlk')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_q5', dens_q5, grid_r_nb, nwalk)
+  call object_alloc ('dens_q5_av', dens_q5_av, grid_r_nb)
+
+  dens_q5 (:,:) = 0.d0
+
+  do walk_i = 1, nwalk
+    do elec_i = 1, nelec
+
+!     distance |r_i|
+      r = dist_e_wlk (elec_i, walk_i)
+
+!     loop over grid points
+      do grid_i = 1, grid_r_nb
+
+        u = grid_r (grid_i)
+
+        rpu = r + u
+        rmu   = r - u
+        abs_rmu = dabs(rmu)
+        ru = r * u
+
+        mcabsrmu = -dens_exp*abs_rmu
+        mcrpu = -dens_exp*rpu
+
+        exp_mcabsrmu = dexp(mcabsrmu)
+        exp_mcrpu = dexp(mcrpu)
+
+        dens_q5 (grid_i, walk_i) = dens_q5 (grid_i, walk_i) + (exp_mcabsrmu - exp_mcrpu)/(2.d0*dens_exp*ru)
+
+     enddo ! grid_i
+
+    enddo ! elec_i
+  enddo ! walk_i
+
+  end subroutine dens_q5_bld
+
+! ==============================================================================
+  subroutine dens_q5_eloc_bld
+! ------------------------------------------------------------------------------
+! Description   : term for zero-bias correction for density
+!
+! Created       : J. Toulouse, 07 Jan 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer walk_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_q5_eloc')
+   call object_average_walk_define ('dens_q5_eloc', 'dens_q5_eloc_av')
+
+   call object_needed ('nwalk')
+   call object_needed ('grid_r_nb')
+   call object_needed ('dens_q5')
+   call object_needed ('eloc_wlk')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_q5_eloc', dens_q5_eloc, grid_r_nb, nwalk)
+  call object_alloc ('dens_q5_eloc_av', dens_q5_eloc_av, grid_r_nb)
+
+  do walk_i = 1, nwalk
+    dens_q5_eloc (:, walk_i) = dens_q5 (:, walk_i) * eloc_wlk (walk_i)
+  enddo
+
+  end subroutine dens_q5_eloc_bld
+
+! ==============================================================================
+  subroutine dens_zb5_av_bld
+! ------------------------------------------------------------------------------
+! Description   : zero-bias correction for density
+!
+! Created       : J. Toulouse, 07 Jan 2010
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_zb5_av')
+
+   call object_needed ('grid_r_nb')
+   call object_needed ('dens_q5_eloc_av')
+   call object_needed ('dens_q5_av')
+   call object_needed ('eloc_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_zb5_av', dens_zb5_av, grid_r_nb)
+
+  dens_zb5_av (:) = -oneover2pi * (dens_q5_eloc_av (:) - dens_q5_av (:) * eloc_av)
+
+  end subroutine dens_zb5_av_bld
+
+! ==============================================================================
+  subroutine dens_zvzb5_av_bld
+! ------------------------------------------------------------------------------
+! Description   : zero-variance zero-bias estimator for density
+!
+! Created       : J. Toulouse, 07 Jan 2010
+! ------------------------------------------------------------------------------
+  implicit none
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_zvzb5_av')
+   call object_error_define ('dens_zvzb5_av', 'dens_zvzb5_av_err')
+
+   call object_needed ('grid_r_nb')
+   call object_needed ('dens_zv5_av')
+   call object_needed ('dens_zb5_av')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_zvzb5_av', dens_zvzb5_av, grid_r_nb)
+  call object_alloc ('dens_zvzb5_av_err', dens_zvzb5_av_err, grid_r_nb)
+
+  dens_zvzb5_av (:) = dens_zv5_av (:) + dens_zb5_av (:)
+
+  end subroutine dens_zvzb5_av_bld
+
+! ==============================================================================
   subroutine dens_bld
 ! ------------------------------------------------------------------------------
 ! Description   : spherically averaged density density  n(r)
@@ -677,6 +867,12 @@ module density_mod
    call object_provide (lhere,'dens_zvzb1_av_err')
    dens (:)     = dens_zvzb1_av (:)
    dens_err (:) = dens_zvzb1_av_err (:)
+
+   case ('zvzb5')
+   call object_provide (lhere,'dens_zvzb5_av')
+   call object_provide (lhere,'dens_zvzb5_av_err')
+   dens (:)     = dens_zvzb5_av (:)
+   dens_err (:) = dens_zvzb5_av_err (:)
 
    case default
    call die (lhere, 'unknown estimator >'+trim(dens_estimator)+'<.')
