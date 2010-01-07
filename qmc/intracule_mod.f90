@@ -883,7 +883,7 @@
 ! local
   integer                       :: grid_i
   integer                       :: elec_i, elec_j
-  real(dp)              :: dij,  r
+  real(dp)                      :: dij,  r
   integer                       :: spin
 
 ! begin

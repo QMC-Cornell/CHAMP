@@ -1,3 +1,4 @@
+! $Rev$ $Date$
 program champ
 
 ! modules use
@@ -57,7 +58,6 @@ program champ
 # endif
 
   write(6,'(a)') 'PROGRAM CHAMP version 3.08.0'
-!  write(6,'(a)') 'SVN VERSION $Rev$ on $Date$'
   include 'revision_and_date.inc'
   call get_date (date)
   call get_environment_variable ("HOSTNAME", hostname)
