@@ -143,7 +143,7 @@ c the witdh of gaussians is given by zex*we
           write(6,'(''ibasis must be 4, 5, or 6 in read_orb_dot_gauss'')')
           stop 'ibasis must be 4, 5, or 6 in read_orb_dot_gauss'
         endif
-        write(6,'(1000f9.6)') (oparm(it,ib,1),ib=1,nbasis)
+        write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis)
       enddo
 
       do ib=1,nbasis
