@@ -202,18 +202,30 @@ ifeq ($(findstring linuxlogin,$(hostname)), linuxlogin)
 endif
 
 # clastos in Paris
-ifeq ($(hostname),clastos)
-# CC=icc
- CC=/usr/local/bin/mpicc_64
-# CXX=icpc
- CXX=/usr/local/bin/mpicxx_64
- F95=/usr/local/bin/mpif90_64
- F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
- F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
- EINSPLINE=
- F95_MPI=/usr/local/bin/mpif90_64
- CC_MPI=/usr/local/bin/mpicc_64
- LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+ifeq ($(hostname),clastos.lct.jussieu.fr)
+
+# CC=/usr/local/bin/mpicc_64
+# CXX=/usr/local/bin/mpicxx_64
+# F95=/usr/local/bin/mpif90_64
+# F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
+# F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
+# EINSPLINE=
+# F95_MPI=/usr/local/bin/mpif90_64
+# CC_MPI=/usr/local/bin/mpicc_64
+# LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+
+#  export OMPI_F77=ifort
+#  export OMPI_FC=ifort
+  CC=icc
+  CXX=icc
+  CC_MPI=/usr/local/openmpi/bin/mpicc
+  F95=ifort
+  F95_MPI=/usr/local/openmpi/bin/mpif90
+  F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+  F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
+  EINSPLINE=
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+
 endif
 
 # hydrogene in Paris
