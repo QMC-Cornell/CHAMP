@@ -764,6 +764,7 @@ c            = 2 then we print new parameters with _new subscript
       use optimo_mod
       use orbpar_mod
       use optim2_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
       parameter(AMAX_NONLIN=100.d0)
       character*50 fmt
@@ -839,7 +840,8 @@ c update parameters
       do 59 it=1,notype
         do 59 ip=1,nparmo(it)
           iparm=iparm+1
-   59     oparm(it,iwo(ip,it),iadd_diag)=oparm(it,iwo(ip,it),1)+dparm(iparm)
+          oparm(it,iwo(ip,it),iadd_diag)=oparm(it,iwo(ip,it),1)+dparm(iparm)
+   59     if (ibasis.eq.7 .and. it.eq.1) oparm(it,iwo(ip,it),iadd_diag) = modulo(oparm(it,iwo(ip,it),iadd_diag), alattice)  
 
       if(nparms.eq.1) then
         iparm=iparm+1
