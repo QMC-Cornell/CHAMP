@@ -235,7 +235,7 @@ module orbitals_mod
   endif
   
 ! orbital coefficients on normalized and orthonormalized basis functions
-!  if(.not.(ibasis.ge.3 .and. ibasis.le.6)) then ! do not do it for quantum dots, rings, etc...
+!  if(.not.(ibasis.ge.3 .and. ibasis.le.7)) then ! do not do it for quantum dots, rings, etc...
    if (inum_orb == 0) then ! only if non-numerical orbitals
      call coef_orb_on_norm_basis_from_coef (1)
    endif

@@ -105,6 +105,7 @@ c            =3 complex basis for 2D quantum dots / composite fermions (if numr=
 c            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
 c            =5 2d localized floating gaussians in circular coord. (wigner crystal)
 c            =6 2d localized non-circular floating gaussians in cartesian coord. (wigner crystal)
+c            =7 2d localized periodic floating gaussians in cartesian coord (periodic 1d wigner crystal)
 c            Warning I would like to be able to use for dots a gaussian radial basis with complex
 c            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
 c which_analytical_basis  If ibasis==1, then this is used to select between slater, gaussian and gauss-slater
@@ -540,9 +541,16 @@ c     read(5,'(a20,4x,4i4)') title,irn
        elseif(ibasis.eq.6) then
         write(6,'(''Floating, non-circular Gaussian basis for 2D Wigner crystals'')')
         notype=4
+       elseif(ibasis.eq.7) then
+        if(iperiodic.ne.1) then
+           write(6, '(''read_input: iperiodic must =1 for ibasis=7'')')
+           stop 'read_input: iperiodic must =1 for ibasis=7'
+        endif
+        write(6,'(''Floating, periodic Gaussian basis for periodic (quasi-)1D Wigner crystals'')')
+        notype=4
        else
-        write(6,'(''read_input: ibasis must be between 1 and 6'')')
-        stop 'read_input: ibasis must be between 1 and 6'
+        write(6,'(''read_input: ibasis must be between 1 and 7'')')
+        stop 'read_input: ibasis must be between 1 and 7'
       endif
 
 c     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC calculation for periodic
@@ -926,7 +934,7 @@ c Determinantal section
       read(5,*) section
       write(6,'(/,a30,/)') section
 
-      if(ibasis.ge.3 .and. ibasis.le.6) then
+      if(ibasis.ge.3 .and. ibasis.le.7) then
         read(5,*) inum_orb
         iorb_used=0
         iorb_format='unused'
@@ -1027,11 +1035,11 @@ c Read in analytical or numerical orbitals
        elseif(ibasis.eq.3.and.numr.eq.1) then
         write(6,'(''Warning: ibasis.eq.3.and.numr.eq.1 never tested'')')
         call read_orb_loc
-       elseif((ibasis.ge.3.and.ibasis.le.6).and.numr.eq.0) then
+       elseif((ibasis.ge.3.and.ibasis.le.7).and.numr.eq.0) then
         call read_orb_dot
        elseif(ibasis.ge.4) then
         write(6,'(''read_input: This combination of ibasis='',i2,'' and numr='',i2,'' not allowed'')') ibasis,numr
-        write(6,'(''read_input: numr must be 0 for ibasis=4,5,6'')')
+        write(6,'(''read_input: numr must be 0 for ibasis=4,5,6,7'')')
         stop 'read_input: This combination of ibasis and numr not allowed'
       endif
 
@@ -1429,7 +1437,7 @@ c        where w0, etc... are read in
 c Read optional variables if any:
 c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
 c (also for 2D systems with numerical orbitals)
-      if((ibasis.ge.3 .and. ibasis.le.6) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then 
+      if((ibasis.ge.3 .and. ibasis.le.7) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then 
         read(5,*) section
         write(6,'(/,a30,/)') section
         read(5,opt_list)

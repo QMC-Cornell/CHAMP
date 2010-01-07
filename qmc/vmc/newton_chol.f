@@ -917,6 +917,12 @@ c orbital parameters (type 1,2,3 and 4)
             write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
      &'' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
           endif
+        elseif(ibasis.eq.7) then
+          if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
+            iflag=1
+            write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
+     &'' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
+          endif  
         elseif(ibasis.eq.5) then
           if(dparm_norm.gt..2d0) then
             iflag=1
@@ -938,7 +944,7 @@ c orbital parameters (type 1,2,3 and 4)
      &,i1,f9.2,'' iflag=1 because dparm_norm>2 for otype 3 params'')') iadd_diag,dparm_norm
         endif
       endif
-      if(ibasis.eq.5 .or. ibasis.eq.6) then
+      if(ibasis.eq.5 .or. ibasis.eq.6 .or. ibasis.eq.7) then
         if(nparmo(4).gt.0) then
           dparm_norm=0
           do i=1,nparmo(4)
@@ -1007,7 +1013,7 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
         enddo
       endif
 
-      if(ibasis.eq.5 .or. ibasis.eq.6) then
+      if(ibasis.eq.5 .or. ibasis.eq.6 .or. ibasis.eq.7) then
         if(nparmo(4).gt.0) then
           do ib=1,nbasis
             if(oparm(4,ib,iadd_diag).le.0.d0) then

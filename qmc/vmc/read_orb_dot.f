@@ -23,10 +23,10 @@ c     if(nloc.ne.-1) stop 'nloc must be -1 for quantum dots'
 
       if(ibasis.eq.3) then
         call read_orb_dot_fd
-      elseif(ibasis.ge.4 .or. ibasis.le.6) then
+      elseif(ibasis.ge.4 .or. ibasis.le.7) then
         call read_orb_dot_gauss
       else
-        stop 'In read_orb_dot: only ibasis=3,4,5,6 allowed'
+        stop 'In read_orb_dot: only ibasis=3,4,5,6,7 allowed'
       endif
       return
       end
@@ -118,6 +118,7 @@ c the witdh of gaussians is given by zex*we
       use optimo_mod
       use forcepar_mod
       use orbpar_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
 
 
@@ -139,9 +140,24 @@ c the witdh of gaussians is given by zex*we
           if(it.eq.2) write(6,'(''Floating gaussian y-positions:'')')
           if(it.eq.3) write(6,'(''Floating gaussian x-widths:'')')
           if(it.eq.4) write(6,'(''Floating gaussian y-widths:'')')
+        elseif(ibasis.eq.7) then
+c       Periodic Gaussians: do modulo math
+          if(it.eq.1) then
+            write(6,'(''Floating gaussian x-positions:'')')
+            do ib=1,nbasis
+              oparm(it,ib,1) = modulo(oparm(it,ib,1), alattice)
+            enddo
+          endif
+          if(it.eq.2) write(6,'(''Floating gaussian y-positions:'')')
+c     TO DO:  We should add in a check here to make sure that gaussians
+c          aren't too much wider than alattice (i.e., cell size)
+          if(it.eq.3) then
+            write(6,'(''Floating gaussian x-widths:'')')
+          endif 
+          if(it.eq.4) write(6,'(''Floating gaussian y-widths:'')')  
         else
-          write(6,'(''ibasis must be 4, 5, or 6 in read_orb_dot_gauss'')')
-          stop 'ibasis must be 4, 5, or 6 in read_orb_dot_gauss'
+          write(6,'(''ibasis must be 4, 5, 6, or 7 in read_orb_dot_gauss'')')
+          stop 'ibasis must be 4, 5, 6, or 7 in read_orb_dot_gauss'
         endif
         write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis)
       enddo
@@ -151,7 +167,7 @@ c the witdh of gaussians is given by zex*we
           write(6,'(''WARNING: exponent oparm(3,ib,1) set to 1'')')
           oparm(3,ib,1)=1  
         endif
-        if(ibasis.eq.5 .or. ibasis.eq.6) then
+        if(ibasis.eq.5 .or. ibasis.eq.6 .or. ibasis.eq.7) then
           if(oparm(4,ib,1).le.0.d0) then
             write(6,'(''oparm(4,ib,1) must be  > 0'')')
             stop 'oparm(4,ib,1) must be  > 0'

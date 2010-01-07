@@ -26,8 +26,10 @@ c get basis functions
            call basis_fns_polargauss(iel,rvec_en,r_en)
          elseif(ibasis.eq.6) then
            call basis_fns_2dgauss_noncirc(iel, rvec_en,r_en)
+         elseif(ibasis.eq.7) then
+           call basis_fns_2dgauss_periodic(iel, rvec_en,r_en)
          else
-           stop 'orbitals_loc_ana: ibasis must be 1,4,5 or 6 for 2d systems'
+           stop 'orbitals_loc_ana: ibasis must be 1,4,5, 6, or 7 for 2d systems'
          endif
       endif
 
