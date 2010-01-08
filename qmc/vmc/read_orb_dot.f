@@ -4,14 +4,15 @@ c Reads in 2-dimensional basis fns info for circular quantum dots.
 
       use all_tools_mod
       use control_mod
+      use contr2_mod
+      use contrl_per_mod
       use dim_mod
       use numbas_mod
-      use contr2_mod
+      use basis2_mod
+      use coefs_mod
       use forcepar_mod
       use pseudo_mod
-      use contrl_per_mod
       implicit real*8(a-h,o-z)
-
 
 c do some debugging. not sure if all these are necessary to check
 c but take no chance for now
@@ -20,6 +21,21 @@ c but take no chance for now
 c     if(nloc.ne.-1) stop 'nloc must be -1 for quantum dots'
       if(numr.ne.0) stop 'numr must be 0 in read_orb_dot'
       if(inum_orb.ne.0) stop 'inum_orb must be 0 for quantum dots'
+
+c For a dot or a ring there is just one center, so set for consistency with molecules the foll:
+      call alloc ('nrbas_analytical', nrbas_analytical, 1)
+      call alloc ('nrbas_numerical', nrbas_numerical, 1)
+      call alloc ('nrbas', nrbas, 1)
+      call alloc ('', ictype_basis, nbasis)
+c     call alloc ('iwrwf2', iwrwf2, nbasis)
+!     allocate iwrwf here in the case when it is not allocated and read in before (new style format input)
+c     call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
+
+      nrbas_analytical(1)=nbasis
+      nrbas_numerical(1)=0
+      nrbas(1)=nbasis
+      do 10 ib=1,nbasis
+   10   ictype_basis(ib)=1
 
       if(ibasis.eq.3) then
         call read_orb_dot_fd

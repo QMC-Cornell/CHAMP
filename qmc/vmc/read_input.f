@@ -1054,21 +1054,22 @@ c Read in analytical or numerical orbitals
 c Read in numerical radial basis
 c This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
 c to compactify the radial basis functions in read_bas_num.
-      if(minval(zex(:,1)).ne.0.d0) then
-        l_purely_analytical_basis = .true.
-      else
-        l_purely_analytical_basis = .false.
+      if(ibasis.le.3) then
+        if(minval(zex(:,1)).ne.0.d0) then
+          l_purely_analytical_basis = .true.
+        else
+          l_purely_analytical_basis = .false.
+        endif
+c       if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
+c       if((ibasis.eq.1.or.ibasis.eq.3) .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
+        if((ibasis.eq.1.or.ibasis.eq.3) .and. inum_orb.eq.0) call read_bas_num(1)
+        if(minval(zex).ne.0.d0) write(6,'(/,''Purely analytical radial basis functions used'')')
+        if(maxval(zex).eq.0.d0) write(6,'(/,''Purely numerical radial basis functions used'')')
+        if(minval(zex).eq.0.d0 .and. maxval(zex).ne.0.d0) write(6,'(/,''Mixed analytical and numerical radial basis functions used''
+     &  )')
+        write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)')
+     &  (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
       endif
-c     if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
-c     if((ibasis.eq.1.or.ibasis.eq.3) .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
-      if((ibasis.eq.1.or.ibasis.eq.3) .and. inum_orb.eq.0) call read_bas_num(1)
-      if(minval(zex).ne.0.d0) write(6,'(/,''Purely analytical radial basis functions used'')')
-      if(maxval(zex).eq.0.d0) write(6,'(/,''Purely numerical radial basis functions used'')')
-      if(minval(zex).eq.0.d0 .and. maxval(zex).ne.0.d0) write(6,'(/,''Mixed analytical and numerical radial basis functions used'')'
-     & )
-      write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)')
-     & (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
-    
 
 c get normalization for basis functions
 c Devrims note: moved down; basis_norm_dot need idot to be defined

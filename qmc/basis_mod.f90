@@ -690,12 +690,11 @@ module basis_mod
        endif
      elseif (ndim == 2) then
        m = m_bas(ib)
-!      ibasis=4  ! testing !ADG
        if (numr <= 0 .and. ibasis < 4) then !ADG
          norm_basis(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(factorial(2*n-1)*2*pi))
 ! The following change is not necessary at this time and has not been tested.
-!          elseif(numr<=0 .and. (ibasis>=4 .and. ibasis<=7)) then
-           elseif(iwrwf2(ib)<=nrbas_analytical(ict) .and. (ibasis>=4 .and. ibasis<=7)) then
+       elseif(numr<=0 .and. (ibasis>=4 .and. ibasis<=7)) then
+!      elseif(iwrwf2(ib)<=nrbas_analytical(ict) .and. (ibasis>=4 .and. ibasis<=7)) then
          norm_basis(ib)=sqrt(1/pi) !ADG
        else
 ! Warning: temporarily commented out diff norm for m=0
