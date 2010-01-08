@@ -1445,8 +1445,8 @@ c         modulo math:
           d2phinxpart = x1rel2*phinxpart
           
           do icell = 1,2
-             x1relleft = x1rel - alattice*i
-             x1relright = x1rel + alattice*i
+             x1relleft = x1rel - alattice*icell
+             x1relright = x1rel + alattice*icell
              x1relleft2 = x1relleft*x1relleft
              x1relright2 = x1relright*x1relright
              phileft = dexp(-0.5d0*(wex*x1relleft2))
@@ -1577,8 +1577,8 @@ c wfs and coo. derivatives:
           d4phinxpart = x1rel2*x1rel2*phinxpart
           
           do icell = 1,2
-             x1relleft = x1rel - alattice*i
-             x1relright = x1rel + alattice*i
+             x1relleft = x1rel - alattice*icell
+             x1relright = x1rel + alattice*icell
              x1relleft2 = x1relleft*x1relleft
              x1relright2 = x1relright*x1relright
              phileft = dexp(-0.5d0*(wex*x1relleft2))
