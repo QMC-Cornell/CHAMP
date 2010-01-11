@@ -1394,7 +1394,7 @@ c         in units of we (or wire_w in case of wire)))
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
-      eps = 1e-12  ! We sum gaussians with value greater than eps
+      eps = 1.d-12  ! We sum gaussians with value greater than eps
 
 c Decide whether we are computing all or one electron
       if(iel.eq.0) then
@@ -1440,11 +1440,11 @@ c         modulo math:
           
           phinypart=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(-0.5d0*wex*x1rel2)
-          eps = eps * phinxpart
+          eps = 1.d-12 * phinxpart
           dphinxpart = x1rel*phinxpart
           d2phinxpart = x1rel2*phinxpart
           
-          do icell = 1,2
+          do icell = 1,3
              x1relleft = x1rel - alattice*icell
              x1relright = x1rel + alattice*icell
              x1relleft2 = x1relleft*x1relleft
@@ -1455,7 +1455,7 @@ c         modulo math:
              phinxpart = phinxpart + phileft + phiright
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright
-             if (icell.gt.1) then
+             if (icell.gt.2) then
                 write (6,*) 'Warning: in basis_fns_2dgauss_periodic: gaussians are wider than a unit cell.'
              endif
           enddo
@@ -1521,7 +1521,7 @@ c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
-      eps = 1e-12  ! We sum gaussians with value greater than eps
+      gausseps = 1.d-12  ! We sum gaussians with value greater than eps
 
       nelec1=1
       nelec2=nelec
@@ -1571,11 +1571,11 @@ c wfs and coo. derivatives:
 
           phinypart=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(-0.5d0*wex*x1rel2)
-          eps = eps * phinxpart
+          gausseps = 1.d-12 * phinxpart
           dphinxpart = x1rel*phinxpart
           d2phinxpart = x1rel2*phinxpart
+          d3phinxpart = x1rel*x1rel2*phinxpart
           d4phinxpart = x1rel2*x1rel2*phinxpart
-          
           do icell = 1,2
              x1relleft = x1rel - alattice*icell
              x1relright = x1rel + alattice*icell
@@ -1583,7 +1583,7 @@ c wfs and coo. derivatives:
              x1relright2 = x1relright*x1relright
              phileft = dexp(-0.5d0*(wex*x1relleft2))
              phiright = dexp(-0.5d0*(wex*x1relright2))
-             if((phileft.lt.eps).and.(phiright.lt.eps)) exit
+             if((phileft.lt.gausseps).and.(phiright.lt.gausseps)) exit
              phinxpart = phinxpart + phileft + phiright
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright
