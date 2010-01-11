@@ -5,6 +5,7 @@ c Written by Cyrus Umrigar
       use dim_mod
       use pseudo_mod
       use jel_sph2_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
 c Routine to put electrons down around centers for a VERY crude initial
@@ -83,8 +84,10 @@ c a.d.guclu: for wires distribute electrons linearly in y direction
                  if(nloc.eq.-4) then 
                    if(k.eq.2) then
                      x(k,ielec)=sitsca*site+cent(k,i)
-                   else
+                   elseif(iperiodic.eq.0) then
                      x(k,ielec)=wire_length*(0.5d0-rannyu(0))
+                   else
+                     x(k,ielec)=wire_length*rannyu(0)
                    endif
                  else
                    x(k,ielec)=sitsca*site+cent(k,i)

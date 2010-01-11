@@ -744,6 +744,7 @@ c Geometrical section
       
       if(iperiodic.eq.1) then
         read(5,*) alattice
+        if(nloc.eq.-4) wire_length = alattice
         write(6,'(''Length of 1d periodic system, alattice='',t31,f10.5)') alattice
       else if(iperiodic.eq.3) then
        
