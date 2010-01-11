@@ -31,6 +31,8 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use estsum_mod
       implicit real*8(a-h,o-z)
 
+      parameter (eps=1.d-10)
+
       logical vgreater
 
 c Warning: program has a bug, but it does not matter much since
