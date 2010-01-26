@@ -1394,7 +1394,7 @@ c         in units of we (or wire_w in case of wire)))
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
-      eps = 1.d-12  ! We sum gaussians with value greater than eps
+      gausseps = 1.d-12  ! We sum gaussians with value greater than gausseps
 
 c Decide whether we are computing all or one electron
       if(iel.eq.0) then
@@ -1440,7 +1440,12 @@ c         modulo math:
           
           phinypart=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(-0.5d0*wex*x1rel2)
-          eps = 1.d-12 * phinxpart
+c         The following line was the way we originally wanted to do this, but
+c            there were strange compiler errors, and the code would often fail to
+c            exit the following do loop if gausseps was too small.
+c          For now, we just set gausseps = 1.d-12, but another thing to try
+c            would be to try gausseps = abs(1.d-12 * phinxpart)
+c          gausseps = 1.d-12 * phinxpart
           dphinxpart = x1rel*phinxpart
           d2phinxpart = x1rel2*phinxpart
           
@@ -1451,7 +1456,7 @@ c         modulo math:
              x1relright2 = x1relright*x1relright
              phileft = dexp(-0.5d0*(wex*x1relleft2))
              phiright = dexp(-0.5d0*(wex*x1relright2))
-             if((phileft.lt.eps).and.(phiright.lt.eps)) exit
+             if((phileft.le.gausseps).and.(phiright.le.gausseps)) exit
              phinxpart = phinxpart + phileft + phiright
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright
@@ -1521,7 +1526,7 @@ c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
-      gausseps = 1.d-12  ! We sum gaussians with value greater than eps
+      gausseps = 1.d-12  ! We sum gaussians with value greater than gausseps
 
       nelec1=1
       nelec2=nelec
@@ -1571,7 +1576,12 @@ c wfs and coo. derivatives:
 
           phinypart=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(-0.5d0*wex*x1rel2)
-          gausseps = 1.d-12 * phinxpart
+c         The following line was the way we originally wanted to do this, but
+c            there were strange compiler errors, and the code would often fail to
+c            exit the following do loop if gausseps was too small.
+c          For now, we just set gausseps = 1.d-12, but another thing to try
+c            would be to try gausseps = abs(1.d-12 * phinxpart)
+c          gausseps = 1.0d-12*phinxpart
           dphinxpart = x1rel*phinxpart
           d2phinxpart = x1rel2*phinxpart
           d3phinxpart = x1rel*x1rel2*phinxpart
@@ -1583,7 +1593,7 @@ c wfs and coo. derivatives:
              x1relright2 = x1relright*x1relright
              phileft = dexp(-0.5d0*(wex*x1relleft2))
              phiright = dexp(-0.5d0*(wex*x1relright2))
-             if((phileft.lt.gausseps).and.(phiright.lt.gausseps)) exit
+             if((phileft.le.gausseps).and.(phiright.le.gausseps)) exit
              phinxpart = phinxpart + phileft + phiright
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright

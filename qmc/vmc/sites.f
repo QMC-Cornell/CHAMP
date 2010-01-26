@@ -6,6 +6,8 @@ c Written by Cyrus Umrigar
       use pseudo_mod
       use jel_sph2_mod
       use contrl_per_mod
+      use orbpar_mod
+      use wfsec_mod
       implicit real*8(a-h,o-z)
 
 c Routine to put electrons down around centers for a VERY crude initial
@@ -76,18 +78,25 @@ c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots
              else
                do 5 k=1,ndim
 c sample position from exponentials or gaussian around center
-c a.d.guclu: for wires distribute electrons linearly in y direction  
+c a.d.guclu: for wires distribute electrons linearly in y direction 
+c a.c.mehta: unless floating gaussians, then make sure electrons
+c             are close to centers of gaussians 
                  site=-dlog(rannyu(0))
                  if(nloc.eq.-1 .or. nloc.eq.-4 .or. nloc.eq.-5) site=dsqrt(site)
                  site=sign(site,(rannyu(0)-half))
 
                  if(nloc.eq.-4) then 
-                   if(k.eq.2) then
-                     x(k,ielec)=sitsca*site+cent(k,i)
-                   elseif(iperiodic.eq.0) then
-                     x(k,ielec)=wire_length*(0.5d0-rannyu(0))
+                   if (ibasis.eq.6 .or. ibasis.eq.7) then
+                     site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(k+2, ielec, iwf))
+                     x(k,ielec) = site + oparm(k, ielec, iwf)
                    else
-                     x(k,ielec)=wire_length*rannyu(0)
+                     if(k.eq.2) then
+                       x(k,ielec)=sitsca*site+cent(k,i)
+                     elseif(iperiodic.eq.0) then
+                       x(k,ielec)=wire_length*(0.5d0-rannyu(0))
+                     else
+                       x(k,ielec)=wire_length*rannyu(0)
+                     endif
                    endif
                  else
                    x(k,ielec)=sitsca*site+cent(k,i)

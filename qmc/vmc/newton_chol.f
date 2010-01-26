@@ -634,7 +634,7 @@ c     endif
 
 c     do 22 i=1,min(nparmp1,5)
       do 22 i=1,nparmp1
-   22   write(6,'(''i,coef'',i2,50f7.4)') i,(coef(j,i),j=1,nparmp1)
+   22   write(6,'(''i,coef'',i2,500f7.4)') i,(coef(j,i),j=1,nparmp1)
 
       if(mod(iopt/1000,10).eq.1) then
         i0=i_emin
