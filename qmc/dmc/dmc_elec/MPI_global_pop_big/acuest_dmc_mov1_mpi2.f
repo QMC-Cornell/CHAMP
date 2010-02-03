@@ -413,7 +413,7 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
 
       eigv=one
       eest=etrial
-      write(6,'(''nconf,nconf_global='',9i5)') nconf,nconf_global
+      write(6,'(''nconf,nconf_global='',9i8)') nconf,nconf_global
       nwalk=nconf
       wdsumo=nconf_global
       wgdsumo=nconf_global

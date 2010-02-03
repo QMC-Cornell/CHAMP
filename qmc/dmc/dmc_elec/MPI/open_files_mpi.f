@@ -20,13 +20,21 @@ c Also do other things that differ for serial and parallel runs, such as setting
       character*27 fmt
       character*20 filename
 
-
-
-
-c set the random number seed, setrn already called in read_input
+c set the random number seed differently on each processor
+c Seed is set for serial run by calling setrn in read_input and is reset by calling setrn again in
+c vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
+c dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
+c It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
+c rnd itself is unused.
+c Frank's temporary fix for a better choice of random number seeds for parallelel run.
       if(irstar.ne.1) then
         do 95 id=1,(ndim*nelec)*idtask
-  95      rnd=rannyu(0)
+   95     rnd=rannyu(0)
+        do i =1,4
+          irand_seed(i)=mod(int(irand_seed(i)+rannyu(0)*nelec*nstep*nblk*idtask),7777)
+        enddo
+        call setrn(irand_seed)
+        write(6,'(''irand_seed='',4i5)') irand_seed
       endif
 
       if(ipr.gt.-2 .and. irstar.eq.0) then

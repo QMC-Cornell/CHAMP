@@ -1394,14 +1394,14 @@ module density_mod
   unit = 0
   call open_file_or_die (dens_file_out, unit)
 
-  write(unit,'(a)')         'spherically averaged density calculated with CHAMP'
+  write(unit,'(3a)')        'spherically averaged density calculated with CHAMP', mode, dens_estimator
   write(unit,'(a,i5)')      'number of electrons       =',nelec
-  write(unit,'(a,i20)')     'number of steps per block =',nstep_total
-  write(unit,'(a,i20)')     'number of blocks          =',block_iterations_nb
-  write(unit,'(a,3e25.15)') 'grid_r_step               =',grid_r_step
-  write(unit,'(a,3e25.15)') 'grid_r_min                =',grid_r_min
-  write(unit,'(a,3e25.15)') 'grid_r_max                =',grid_r_max
-  write(unit,'(a,i25)')     'grid_r_nb                 =',grid_r_nb
+  write(unit,'(a,i15)')     'number of steps per block =',nstep_total
+  write(unit,'(a,i15)')     'number of blocks          =',block_iterations_nb
+  write(unit,'(a,3e15.8)')  'grid_r_step               =',grid_r_step
+  write(unit,'(a,3e15.8)')  'grid_r_min                =',grid_r_min
+  write(unit,'(a,3e15.8)')  'grid_r_max                =',grid_r_max
+  write(unit,'(a,i15)')     'grid_r_nb                 =',grid_r_nb
   write(unit,'(a,es15.8)')  'dist_e_min                =',dist_e_min
   write(unit,'(a,es15.8)')  'dist_e_max                =',dist_e_max
 

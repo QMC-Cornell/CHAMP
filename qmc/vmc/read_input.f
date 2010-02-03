@@ -83,7 +83,7 @@ c     namelist /opt_list/ igradhess
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
 
-      dimension irn(4),cent_tmp(3)
+      dimension cent_tmp(3)
       integer, allocatable :: iflag(:)
 
       character*25 lhere
@@ -91,7 +91,7 @@ c     namelist /opt_list/ igradhess
 c Inputs not described in mainvmc:
 c The first line of input is fixed-format, all the rest are free.
 c title      title
-c irn        random number seeds (four 4-digit integers)
+c irand_seed random number seeds (four 4-digit integers)
 c ijas       form of Jastrow. (between 1 and 6, mostly we use 4)
 c isc        form of scaling function for ri,rj,rij in Jastrow (between 1 and 10, mostly use 2,4,6,7,16,17)
 c iperiodic  0  finite system, 
@@ -504,12 +504,12 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
       nwf = 3 ! for optimization runs
       call object_modified ('nwf')
 
-c     read(5,'(a20,4x,4i4)') title,irn
+c     read(5,'(a20,4x,4i4)') title,irand_seed
       read(5,*) title
       write(fmt,'(''(a'',i3,'')'')') len_trim(title)
       write(6,fmt) title
 
-      read(5,'(4i4)') irn
+      read(5,'(4i4)') irand_seed
       read(5,*) iperiodic,ibasis,which_analytical_basis
       call object_modified ('which_analytical_basis')
       if(iperiodic.gt.0) then
@@ -557,8 +557,8 @@ c     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC c
 c    & system run dmc or dmc.mov1 with idmc < 0'
 
       if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
-        write(6,'(/,''random number seeds'',t25,4i4)') irn
-        call setrn(irn)
+        write(6,'(/,''random number seeds'',t25,4i4)') irand_seed
+        call setrn(irand_seed)
       endif
 
       read(5,*) hb,etrial,eunit
@@ -580,7 +580,7 @@ c    & system run dmc or dmc.mov1 with idmc < 0'
         call object_modified ('nstep') !JT
         call object_modified ('nconf') !JT
 c Make sure that the printout is not huge
-        if(nstep*(nblk+2*nblkeq).gt.104000) then
+        if(nstep*(nblk+2*nblkeq).gt.104000 .and. ipr.gt.-1) then
           ipr=min(ipr,-1)
           write(6,'(''Warning: ipr set to'',i3,'' to avoid large output'')') ipr
         endif
@@ -635,8 +635,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       if(index(mode,'dmc').ne.0) then
         read(5,*) idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v
      &  ,icut_br,icut_e
-        write(6,'(/,''idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icu
-     &t_br,icut_e='',9i4)')
+        write(6,'(/,''idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e='',9i4)')
      &  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
         if(idmc.lt.0) write(6,'(''Running DMC program in VMC mode'')')
         if(iabs(idmc).ne.1 .and. iabs(idmc).ne.2) stop 'iabs(idmc) must be 1 or 2'

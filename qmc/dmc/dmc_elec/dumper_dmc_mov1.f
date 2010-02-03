@@ -39,7 +39,6 @@ c job where it left off
 
       parameter (small=1.d-6)
 
-      dimension irn(4)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(ncent)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
@@ -51,9 +50,9 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
 
       if(nforce.gt.1) call strech(xoldw,xoldw,ajacob,1,0)
 
-      call savern(irn)
+      call savern(irand_seed)
       rewind 10
-      write(10) irn
+      write(10) irand_seed
       write(10) hb
       write(10) tau,rttau,taueff(1),tautot,idmc,nfprod
       write(10) nelec,nconf_global,nforce
@@ -137,8 +136,8 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       entry startr_dmc_mov1
       write(6,'(1x,''attempting restart from restart_dmc'')')
       rewind 10
-      read(10) irn
-      call setrn(irn)
+      read(10) irand_seed
+      call setrn(irand_seed)
       read(10) hbx
       call alloc ('taueff', taueff, 1)
       read(10) taux,rttau,taueff(1),tautot,idmc,nfprod

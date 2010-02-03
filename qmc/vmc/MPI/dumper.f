@@ -38,7 +38,8 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /stats_vmc/ rejmax
       common /forcjac/ ajacob
 
-      dimension irn(4,0:nproc),istatus(MPI_STATUS_SIZE)
+c Warning: need to change the following to allocate
+      dimension irand_seed_loc(4,0:nproc),istatus(MPI_STATUS_SIZE)
       dimension ircounts(0:nproc),idispls(0:nproc)
 
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(nctype)
@@ -54,7 +55,9 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
 
       rewind 10
       if(idtask.eq.0) write(10) nproc
-      call savern(irn(1,idtask))
+
+c Retrieve current value of seed for this processor
+      call savern(irand_seed_tmp(1,idtask))
 
       do 124 i=0,nproc-1
         ircounts(i)=4
@@ -62,41 +65,33 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       idispls(nproc)=4*nproc
 
       nscounts=ircounts(idtask)
-      call mpi_gatherv(irn(1,idtask),nscounts,mpi_integer
-     &,irn,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
+      call mpi_gatherv(irand_seed_tmp(1,idtask),nscounts,mpi_integer
+     &,irand_seed_loc,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
       if(idtask.ne.0) then
-        call mpi_isend(xold,3*nelec,mpi_double_precision,0
-     &  ,1,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(xold,3*nelec,mpi_double_precision,0,1,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(xq,nquad,mpi_double_precision,0
-     &  ,2,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(xq,nquad,mpi_double_precision,0,2,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(yq,nquad,mpi_double_precision,0
-     &  ,3,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(yq,nquad,mpi_double_precision,0,3,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(zq,nquad,mpi_double_precision,0
-     &  ,4,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(zq,nquad,mpi_double_precision,0,4,MPI_COMM_WORLD,irequest,ierr)
          call MPI_Wait(irequest,istatus,ierr)
        else
         write(10) ((xold(k,i),k=1,ndim),i=1,nelec)
         if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
         do 450 id=1,nproc-1
-          call mpi_recv(xold,3*nelec,mpi_double_precision,id
-     &    ,1,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xq,nquad,mpi_double_precision,id
-     &    ,2,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(yq,nquad,mpi_double_precision,id
-     &    ,3,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(zq,nquad,mpi_double_precision,id
-     &    ,4,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xold,3*nelec,mpi_double_precision,id,1,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xq,nquad,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(yq,nquad,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(zq,nquad,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
           write(10) ((xold(k,i),k=1,ndim),i=1,nelec)
   450     if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
       endif
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       if(idtask.ne.0) return
-      write(10) ((irn(i,j),i=1,4),j=0,nproc-1)
+      write(10) ((irand_seed_loc(i,j),i=1,4),j=0,nproc-1)
       write(10) hb,delta
       write(10) nelec,nforce
       write(10) ((rvmino(k,i),k=1,ndim),i=1,nelec)
@@ -104,12 +99,10 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       write(10) (nearesto(i),i=1,nelec)
       write(10) (psi2o(i),eold(i),i=1,nforce),peo,tjfo
 c     write(10) ecum1/nproc,(ecum(i),i=1,nforce),pecum,tpbcum,
-      write(10) ecum1,(ecum(i),i=1,nforce),pecum,tpbcum,
-     &tjfcum,r2cum,acccum
+      write(10) ecum1,(ecum(i),i=1,nforce),pecum,tpbcum,tjfcum,r2cum,acccum
       write(10) iblk
 c     write(10) ecm21/nproc,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
-      write(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
-     &tjfcm2,r2cm2
+      write(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,tjfcm2,r2cm2
       if(nforce.gt.0) write(10) (wcum(i),fcum(i),fcm2(i),i=1,nforce)
       do 3 i=1,nforce
 c   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
@@ -180,8 +173,8 @@ c   3 continue
       do 5 id=idtask+1,nproc-1
         read(10) (x_id,i=1,ndim*nelec)
     5   if(nloc.gt.0) read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nq_id)
-      read(10) ((irn(i,j),i=1,4),j=0,nproc-1)
-      call setrn(irn(1,idtask))
+      read(10) ((irand_seed_loc(i,j),i=1,4),j=0,nproc-1)
+      call setrn(irand_seed_loc(1,idtask))
       read(10) hbx,deltax
       read(10) nelecx,nforce
       if(dabs(hbx-hb).gt.small) stop 'hb'
@@ -192,12 +185,10 @@ c   3 continue
       read(10) (nearesto(i),i=1,nelec)
       read(10) (psi2o(i),eold(i),i=1,nforce),peo,tjfo
       call alloc ('ecum', ecum, nforce)
-      read(10) ecum1,(ecum(i),i=1,nforce),pecum,tpbcum,
-     &tjfcum,r2cum,acccum
+      read(10) ecum1,(ecum(i),i=1,nforce),pecum,tpbcum,tjfcum,r2cum,acccum
       read(10) iblk
       call alloc ('ecm2', ecm2, nforce)
-      read(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
-     &tjfcm2,r2cm2
+      read(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,tjfcm2,r2cm2
       call alloc ('fcum', fcum, nforce)
       call alloc ('fcm2', fcm2, nforce)
       call alloc ('wcum', wcum, nforce)

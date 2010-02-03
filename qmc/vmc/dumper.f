@@ -18,6 +18,7 @@ c Written by Cyrus Umrigar, modified by Claudia Filippi
 c Routine to pick up and dump everything needed to restart job where it left off.
       use all_tools_mod
       use constants_mod
+      use contrl_mod
       use atom_mod
       use config_mod
       use coefs_mod
@@ -48,7 +49,6 @@ c Routine to pick up and dump everything needed to restart job where it left off
 
       common /stats_vmc/ rejmax
 
-      dimension irn(4)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(nctype)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
@@ -59,9 +59,9 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,csf_coefx(ndet)
       dimension xstrech(3,nelec)
 
-      call savern(irn)
+      call savern(irand_seed)
       rewind 10
-      write(10) irn
+      write(10) irand_seed
       write(10) hb,delta
       write(10) nelec,nforce
       write(10) ((xold(k,i),k=1,ndim),i=1,nelec)
@@ -131,8 +131,8 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
 c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
       rewind 10
-      read(10) irn
-      call setrn(irn)
+      read(10) irand_seed
+      call setrn(irand_seed)
       read(10) hbx,deltax
       read(10) nelecx,nforce
       if(dabs(hbx-hb).gt.small) stop 'hb'

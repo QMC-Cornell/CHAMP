@@ -44,7 +44,7 @@ c job where it left off
 
       character*13 filename
 
-      dimension irn(4,0:nproc),istatus(MPI_STATUS_SIZE)
+      dimension irand_seed_loc(4,0:nproc),istatus(MPI_STATUS_SIZE)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(ncent)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
@@ -57,11 +57,11 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
 
       if(nforce.gt.1) call strech(xoldw,xoldw,ajacob,1,0)
 
-      call savern(irn(1,idtask))
+      call savern(irand_seed_loc(1,idtask))
 
       nscounts=4
-      call mpi_gather(irn(1,idtask),nscounts,mpi_integer
-     &,irn,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
+      call mpi_gather(irand_seed_loc(1,idtask),nscounts,mpi_integer
+     &,irand_seed_loc,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
       if(idtask.ne.0) then
         call mpi_isend(nwalk,1,mpi_integer,0
@@ -145,7 +145,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       write(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i)
      &,wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i)
      &,i=1,nforce)
-      write(10) ((irn(i,j),i=1,4),j=0,nproc-1)
+      write(10) ((irand_seed_loc(i,j),i=1,4),j=0,nproc-1)
       write(10) hb
       write(10) tau,rttau,idmc
       write(10) nelec,nconf_global
@@ -237,8 +237,8 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       read(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i),
      &wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i),
      &i=1,nforce)
-      read(10) ((irn(i,j),i=1,4),j=0,nproc-1)
-      call setrn(irn(1,idtask))
+      read(10) ((irand_seed_loc(i,j),i=1,4),j=0,nproc-1)
+      call setrn(irand_seed_loc(1,idtask))
       read(10) hbx
       read(10) taux,rttau,idmc
       read(10) nelecx,nconf_global
