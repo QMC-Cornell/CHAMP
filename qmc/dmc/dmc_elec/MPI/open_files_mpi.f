@@ -28,7 +28,7 @@ c It is also set in startr (entry in dumper.f) after reading in irand_seed from 
 c rnd itself is unused.
 c Frank's temporary fix for a better choice of random number seeds for parallelel run.
       if(irstar.ne.1) then
-        do 95 id=1,(ndim*nelec)*idtask
+        do 95 id=1,ndim*nelec*idtask
    95     rnd=rannyu(0)
         do i =1,4
           irand_seed(i)=mod(int(irand_seed(i)+rannyu(0)*nelec*nstep*nblk*idtask),7777)

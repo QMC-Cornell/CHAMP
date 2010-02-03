@@ -57,7 +57,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       if(idtask.eq.0) write(10) nproc
 
 c Retrieve current value of seed for this processor
-      call savern(irand_seed_tmp(1,idtask))
+      call savern(irand_seed_loc(1,idtask))
 
       do 124 i=0,nproc-1
         ircounts(i)=4
@@ -65,7 +65,7 @@ c Retrieve current value of seed for this processor
       idispls(nproc)=4*nproc
 
       nscounts=ircounts(idtask)
-      call mpi_gatherv(irand_seed_tmp(1,idtask),nscounts,mpi_integer
+      call mpi_gatherv(irand_seed_loc(1,idtask),nscounts,mpi_integer
      &,irand_seed_loc,ircounts,idispls,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
       if(idtask.ne.0) then
