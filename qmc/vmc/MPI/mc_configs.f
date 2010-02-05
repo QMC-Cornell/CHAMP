@@ -21,18 +21,20 @@ c Write mc_configs_new.<iproc> at end of run to provide configurations for fit o
 
       character*30 filename
 
-c set the random number seed differently on each processor
-c Seed is set for serial run by calling setrn in read_input and is reset by calling setrn again in
-c vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
+c Set the random number seed differently on each processor.
+c Seed is set for serial run by calling setrn in read_input and is reset for all except the first process
+c by calling setrn again in vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
 c dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
 c It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
 c rnd itself is unused.
-c Frank's temporary fix for a better choice of random number seeds for parallelel run.
+c Frank's temporary fix for a better choice of random number seeds for parallel run.
       if(irstar.ne.1) then
         do 95 id=1,ndim*nelec*idtask
    95     rnd=rannyu(0)
+c The next call to savern is not really needed but since Claudia put it in, I am too for consistency
+        call savern(irand_seed)
         do i =1,4
-          irand_seed(i)=mod(int(irand_seed(i)+rannyu(0)*nelec*nstep*nblk*idtask),7777)
+          irand_seed(i)=mod(irand_seed(i)+int(rannyu(0)*idtask*9999),9999)
         enddo
         call setrn(irand_seed)
         write(6,'(''irand_seed='',4i5)') irand_seed

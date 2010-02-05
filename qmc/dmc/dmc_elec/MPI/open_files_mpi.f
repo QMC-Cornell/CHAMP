@@ -20,53 +20,54 @@ c Also do other things that differ for serial and parallel runs, such as setting
       character*27 fmt
       character*20 filename
 
-c set the random number seed differently on each processor
-c Seed is set for serial run by calling setrn in read_input and is reset by calling setrn again in
-c vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
+c Set the random number seed differently on each processor.
+c Seed is set for serial run by calling setrn in read_input and is reset for all except the first process
+c by calling setrn again in vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
 c dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
 c It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
 c rnd itself is unused.
-c Frank's temporary fix for a better choice of random number seeds for parallelel run.
+c Frank's temporary fix for a better choice of random number seeds for parallel run.
       if(irstar.ne.1) then
         do 95 id=1,ndim*nelec*idtask
    95     rnd=rannyu(0)
+c The next call to savern is not really needed but since Claudia put it in, I am too for consistency
+        call savern(irand_seed)
         do i =1,4
-          irand_seed(i)=mod(int(irand_seed(i)+rannyu(0)*nelec*nstep*nblk*idtask),7777)
+          irand_seed(i)=mod(irand_seed(i)+int(rannyu(0)*idtask*9999),9999)
         enddo
         call setrn(irand_seed)
         write(6,'(''irand_seed='',4i5)') irand_seed
       endif
 
       if(ipr.gt.-2 .and. irstar.eq.0) then
-         if (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
-            if (idtask == 0) then 
-               filename='walkalize'
-               open(11,file=filename)
-               rewind 11
-               write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
-            end if
-         else
-            if(idtask.le.9) then
-               write(filename,'(''walkalize.'',i1)') idtask
-            elseif(idtask.le.99) then
-               write(filename,'(''walkalize.'',i2)') idtask
-            elseif(idtask.le.999) then
-               write(filename,'(''walkalize.'',i3)') idtask
-            elseif(idtask.le.9999) then
-               write(filename,'(''walkalize.'',i4)') idtask
-            elseif(idtask.le.99999) then
-               write(filename,'(''walkalize.'',i5)') idtask
-            elseif(idtask.le.999999) then
-               write(filename,'(''walkalize.'',i6)') idtask
-            else
-               stop 'idtask > 999999'
-            endif
+        if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+          if(idtask == 0) then 
+            filename='walkalize'
             open(11,file=filename)
             rewind 11
-c     write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
             write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
-         end if
-
+          endif
+         else
+          if(idtask.le.9) then
+            write(filename,'(''walkalize.'',i1)') idtask
+          elseif(idtask.le.99) then
+            write(filename,'(''walkalize.'',i2)') idtask
+          elseif(idtask.le.999) then
+            write(filename,'(''walkalize.'',i3)') idtask
+          elseif(idtask.le.9999) then
+            write(filename,'(''walkalize.'',i4)') idtask
+          elseif(idtask.le.99999) then
+            write(filename,'(''walkalize.'',i5)') idtask
+          elseif(idtask.le.999999) then
+            write(filename,'(''walkalize.'',i6)') idtask
+          else
+            stop 'idtask > 999999'
+          endif
+          open(11,file=filename)
+          rewind 11
+c         write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
+          write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
+        endif
       endif
 
       call get_initial_walkers
