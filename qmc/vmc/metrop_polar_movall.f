@@ -229,7 +229,8 @@ c Convert back to original coordinate system
 c Write warning msg. if electron is going far away
         if(rminn(i).gt.100.d0 .and. ndim.eq.3 .and. iperiodic.eq.0) then
           write(6,'(''Warning: rminn(i) too large, i, rminn(i) ='',i4,d12.4)') i,rminn(i)
-          if(rminn(i).gt.300.d0) stop 'rminn(i) too large'
+          write(6,'(''Warning: xold,xnew='',9es12.4)') (xold(k,i),k=1,ndim),(xnew(k,i),k=1,ndim)
+          if(rminn(i).gt.1000.d0) stop 'rminn(i) too large'
         endif
 
    90 continue

@@ -10,7 +10,6 @@ c M(1-4)= 502,1521,4071,2107 since 502*8^12+1521*8^8+4071*8^4+2107 = 34522712143
 
       subroutine setrn(iseed)
 c Set seed and make sure it is an odd integer.
-
       implicit real*8(a-h,o-z)
       common /rnyucm/ m(4),l(4)
       integer iseed(4)

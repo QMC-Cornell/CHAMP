@@ -23,6 +23,7 @@ program champ
   character(len=256) :: command_line_arguments
   character(len=256) :: executable_name
   character(len=256) :: argument
+  character(len=16)  :: filename
   character(len=max_string_len_file)       :: input_file_name = ''
   integer iostat, mode_i
 
@@ -51,10 +52,21 @@ program champ
 
 ! Close standard output if not the master
   if (idtask.ne.0) then
-   close(6)
+    close(6)
 ! Warning temporarily commented out
-  open(6,file='/dev/null')
-!   open(6,file='slave.out')
+!   if(idtask.le.9) then
+!     write(filename,'(''slave.'',i1)') idtask
+!    elseif(idtask.le.99) then
+!     write(filename,'(''slave.'',i2)') idtask
+!    elseif(idtask.le.999) then
+!     write(filename,'(''slave.'',i3)') idtask
+!    elseif(idtask.le.9999) then
+!     write(filename,'(''slave.'',i4)') idtask
+!    elseif(idtask.le.99999) then
+!     write(filename,'(''slave.'',i4)') idtask
+!   endif
+!   open(6,file=filename)
+    open(6,file='/dev/null')
   endif
 # endif
 

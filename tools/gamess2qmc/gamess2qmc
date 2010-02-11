@@ -241,9 +241,9 @@ $ecp=0;
 
 # default values for grid parameters
 $gridtype=3;
-$gridpoints=2000;
+$gridpoints=1600;
 $gridarg=1.003;
-$gridr0=20.0;
+$gridr0=7.0;
 
 # format string (for one number) for grid print out
 $gridformat="  %.12E";
@@ -2916,17 +2916,17 @@ sub print_cyrus_input{
         @c=();
         @r=();
         basis_info_cyrus($a,\@c,\@r);
-	if($analytic_basis){ #JT
+#	if($analytic_basis){ #JT
 # printf CYRFILE "%s  0   0  0 0 0   0  0 0 0  0 0 0 0 0   0  0 0 0  0 0 0 0 0  0  0 0 0  0 0 0 0 0 n1s...4pz,sa,pa,da\n";
-	    print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a}  $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a}  $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
-        }
-        else
-	{
+#	    print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a}  $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a}  $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
+#        }
+#        else
+#	{
 #        printf CYRFILE "%s ns,np,nd,nf,ng,nh (for pseudo sys. principal quantum number is irrelevant)\n", join(" ", @c);
     print CYRFILE "  $n1s{$a}   $n2s{$a}  $n2p{$a} $n2p{$a} $n2p{$a}   $n3s{$a}  $n3p{$a} $n3p{$a} $n3p{$a}  $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a} $n3d{$a}   $n4s{$a}  $n4p{$a} $n4p{$a} $n4p{$a}  $n4d{$a} $n4d{$a} $n4d{$a} $n4d $n4d{$a}  $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a} $n4f{$a}   $n5s{$a}  $n5p{$a} $n5p{$a} $n5p{$a}  $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a} $n5d{$a}  $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a} $n5f{$a}   $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a} $n5g{$a}  0  0 0 0  0 0 0 0 0 n1s,n2s,n2px,n2py,np2z,...,n5g,sa,pa,da\n";
         printf CYRFILE "%s (iwrwf(ib),ib=1,nbastyp)\n", join(" ", @r);
 	}
-    }
+   # }
 
 # irrep info
 

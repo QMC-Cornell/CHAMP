@@ -10,7 +10,7 @@ hostname := $(shell uname -n)
 # Libraries --------------------------------------------------------------
 
 LIBHOME=../lib
-# LIBHOME=/home/cyrus/champ_new3/lib
+# LIBHOME=/home/cyrus/champ/lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
@@ -206,6 +206,7 @@ ifeq ($(findstring linuxlogin,$(hostname)), linuxlogin)
 endif
 
 # clastos in Paris
+# Remember to put . /usr/local/intel/Compiler/11.1/064/bin/intel64/ifortvars_intel64.sh in .bashrc 
 ifeq ($(hostname),clastos.lct.jussieu.fr)
 
 # CC=/usr/local/bin/mpicc_64

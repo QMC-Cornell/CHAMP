@@ -294,7 +294,14 @@ c         xm=0.5d0*(x(nr(ict))+x(nr(ict)-1))
      &    (x(nr(ict))-x(nr(ict)-1))
           if(ndim.eq.3) then
             if(dabs(wfm).gt.1.d-99) then
-              ae(2,irb,ict,iwf)=-dwfm/wfm
+              if(dwfm/wfm.lt.0) then
+                ae(2,irb,ict,iwf)=-dwfm/wfm
+               else
+                write(6,'(''Warning: Basis fn is growing at large distances because match to exponential is at wrong place'',/,
+     &          ''irb,ict,iwf,ae(2,irb,ict,iwf)='',3i5,es10.2)') irb,ict,iwf,ae(2,irb,ict,iwf)
+                ae(2,irb,ict,iwf)=0.1d0
+                write(6,'(''Warning: exponent is being reset to'',es12.4)') ae(2,irb,ict,iwf)
+              endif
               ae(1,irb,ict,iwf)=rwf(nr(ict),irb,ict,iwf)*
      &                       dexp(ae(2,irb,ict,iwf)*x(nr(ict)))
               dwfn=-ae(2,irb,ict,iwf)*rwf(nr(ict),irb,ict,iwf)
@@ -305,8 +312,15 @@ c         xm=0.5d0*(x(nr(ict))+x(nr(ict)-1))
             endif
           elseif(ndim.eq.2) then
             if(dabs(wfm).gt.1.d-99) then
-              ae(2,irb,ict,iwf)=-0.5d0*dwfm/(wfm*x(nr(ict)))
-c              ae(2,irb,ict,iwf)=we/2   !  correct expression for parabolic confinement
+              if(dwfm/wfm.lt.0) then
+                ae(2,irb,ict,iwf)=-0.5d0*dwfm/(wfm*x(nr(ict)))
+c               ae(2,irb,ict,iwf)=we/2   !  correct expression for parabolic confinement
+               else
+                write(6,'(''Warning: Basis fn is growing at large distances because match to exponential is at wrong place'',/,
+     &          ''irb,ict,iwf,ae(2,irb,ict,iwf)='',3i5,es10.2)') irb,ict,iwf,ae(2,irb,ict,iwf)
+                ae(2,irb,ict,iwf)=0.01d0
+                write(6,'(''Warning: exponent is being reset to'',es12.4)') ae(2,irb,ict,iwf)      
+              endif
               ae(1,irb,ict,iwf)=rwf(nr(ict),irb,ict,iwf)*
      &                       dexp(ae(2,irb,ict,iwf)*x(nr(ict))*x(nr(ict)))
               dwfn=-2*x(nr(ict))*ae(2,irb,ict,iwf)*rwf(nr(ict),irb,ict,iwf)
