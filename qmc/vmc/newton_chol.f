@@ -837,11 +837,18 @@ c update parameters
    58   csf_coef(iwcsf(i),iadd_diag)=csf_coef(iwcsf(i),1)+dparm(iparm)
 
 
-      do 59 it=1,notype
-        do 59 ip=1,nparmo(it)
+      do  it=1,notype
+        do  ip=1,nparmo(it)
           iparm=iparm+1
           oparm(it,iwo(ip,it),iadd_diag)=oparm(it,iwo(ip,it),1)+dparm(iparm)
-   59     if (ibasis.eq.7 .and. it.eq.1) oparm(it,iwo(ip,it),iadd_diag) = modulo(oparm(it,iwo(ip,it),iadd_diag), alattice)  
+          if (ibasis.eq.7 .and. it.eq.1) then
+             oparm(it,iwo(ip,it),iadd_diag) = modulo(oparm(it,iwo(ip,it),iadd_diag), alattice)
+             if (oparm(it,iwo(ip,it),iadd_diag).gt.(alattice/2.)) then
+                oparm(it,iwo(ip,it),iadd_diag) = oparm(it,iwo(ip,it),iadd_diag) - alattice
+             endif
+          endif 
+        enddo
+      enddo
 
       if(nparms.eq.1) then
         iparm=iparm+1
