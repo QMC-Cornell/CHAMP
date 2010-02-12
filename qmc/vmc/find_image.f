@@ -477,7 +477,7 @@ c     answer that has the same sign as a
       do k = 1,ndim
          rnorm = rnorm + r(k)**2
       enddo
-      rnorm = dqsrt(rnorm)
+      rnorm = dsqrt(rnorm)
       
       return
       end
