@@ -12,6 +12,10 @@ c the matrix a is replaced by its inverse.
       dimension ipivot(nsub),atemp(nsub)
 
       n=nsub
+c      write(6,*) 'Inverting this matrix:'
+c      do irow=0,(n-1)
+c         write(6,'(100f6.2)') (a(n*irow+k),k=1,n)
+c      enddo
       do 5 i=1,n
     5   ipivot(i)=i
 
@@ -53,6 +57,9 @@ c update determinant
      &    ''which happens if norb=nbasis and cusps are imposed on the s orbitals.'',/,
      &    ''Yet another possible reason is failure to do a "make clean" between "make" and "make mpi" or vice versa.'',/,
      &    ''The dimension gives you a clue as to where matinv was called from.'')') nsub
+          do irow=0,(n-1)
+              write(6,'(100f6.2)') (a(irow+k),k=1,n)
+          enddo
           stop 'adiag=0 in matinv'
         endif
         adiagi=one/adiag

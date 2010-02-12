@@ -2269,16 +2269,10 @@ c       calculates e-e interaction energy for 1d periodic system
       do i = 2,nelec
         do j = 1,i-1
           ij = ij+1
-          r_ee(ij) = 0.d0
           do k=1,ndim
             rvec_ee(k,ij)=x(k,i)-x(k,j)
-            if(k.eq.1)then   ! modulo math to compute distances w/periodic bc's
-              rvec_ee(k,ij) = modulo(rvec_ee(k,ij), alattice)
-              if (rvec_ee(k,ij).gt.(alattice/2.)) rvec_ee(k,ij) = alattice-rvec_ee(k,ij)
-            endif
-            r_ee(ij) = r_ee(ij) + rvec_ee(k,ij)**2
           enddo
-          r_ee(ij) = dsqrt(r_ee(ij))
+          call find_image_1d(rvec_ee(:,ij), r_ee(ij))
           pe_ee = pe_ee + derfc(ewald_1d_cutoff*r_ee(ij))/r_ee(ij)
           do m = 1,ngvecs_1d
             pe_ee_gammapart = pe_ee_gammapart + gamma_gvec(m)*dcos(gvec_1d(m)*rvec_ee(1,ij))

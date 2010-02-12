@@ -113,16 +113,10 @@ c Calculate e-e inter-particle distances
          pe_en=0.d0
          do ic=1,ncent
           do i=1,nelec
-            r_en(i,ic)=0.d0
             do k=1,ndim
               rvec_en(k,i,ic)=x(k,i)-cent(k,ic)
-              if(k.eq.1)then    ! modulo math to compute distances w/periodic bc's
-                 rvec_en(k,i,ic) = modulo(rvec_en(k,i,ic), alattice)
-                 if (rvec_en(k,i,ic).gt.(alattice/2.)) rvec_en(k,i,ic) = alattice-rvec_en(k,i,ic)
-              endif 
-              r_en(i,ic)=r_en(i,ic)+rvec_en(k,i,ic)**2
             enddo
-            r_en(i,ic)=dsqrt(r_en(i,ic))
+            call find_image_1d(rvec_en(:,i,ic), r_en(i,ic)) ! modulo math
 c     Don't forget to add in perturbation for periodic wire!!
             if(nloc.eq.-4) then  !  quantum wire
               pe_y=0.5d0*(wire_w*x(2,i))**2  !  y-direction
@@ -188,15 +182,7 @@ c Calculate e-N inter-particle distances
    20       r_en(iel,ic)=r_en(iel,ic)+rvec_en(k,iel,ic)**2
           r_en(iel,ic)=dsqrt(r_en(iel,ic))
         elseif(iperiodic.eq.1)then
-          r_en(iel,ic)=0.d0
-          do k=1,ndim
-            if(k.eq.1)then      ! modulo math to compute distances w/periodic bc's
-              rvec_en(k,iel,ic) = modulo(rvec_en(k,iel,ic), alattice)
-              if (rvec_en(k,iel,ic).gt.(alattice/2.)) rvec_en(k,iel,ic) = alattice-rvec_en(k,iel,ic)
-            endif 
-            r_en(iel,ic)=r_en(iel,ic)+rvec_en(k,iel,ic)**2
-          enddo 
-          r_en(iel,ic)=dsqrt(r_en(iel,ic))
+          call find_image_1d(rvec_en(:,iel,ic),r_en(iel,ic)) ! modulo math
         else
           call find_image4(rshift(1,iel,ic),rvec_en(1,iel,ic),r_en(iel,ic),rlatt,rlatt_inv)
         endif
@@ -219,15 +205,13 @@ c Calculate e-e inter-particle distances
         do 40 k=1,ndim
           rvec_ee_sav(k,jj)=rvec_ee(k,ij)
    40     rvec_ee(k,ij)=x(k,i)-x(k,j)
-          if(iperiodic.eq.1 .and. k.eq.1) then
-            rvec_ee(k,ij) = modulo(rvec_ee(k,ij), alattice)
-            if (rvec_ee(k,ij).gt.(alattice/2.)) rvec_ee(k,ij) = alattice-rvec_ee(k,ij)
-          endif 
-        if(iperiodic.eq.0 .or. iperiodic.eq.1) then
+        if(iperiodic.eq.0) then
           r_ee(ij)=0
           do 50 k=1,ndim
    50       r_ee(ij)=r_ee(ij)+rvec_ee(k,ij)**2
           r_ee(ij)=dsqrt(r_ee(ij))
+         elseif(iperiodic.eq.1) then
+            call find_image_1d(rvec_ee(:,ij), r_ee(ij))
          else
           call find_image3(rvec_ee(1,ij),r_ee(ij),rlatt_sim,rlatt_sim_inv)
         endif

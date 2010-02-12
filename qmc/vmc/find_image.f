@@ -439,3 +439,45 @@ c     write(6,'(''rshift_aft'',9f9.4)') rshift
 
       return
       end
+
+
+c-----------------------------------------------------------------------
+
+      subroutine find_image_1d(r,rnorm)
+c Written by Abhijit Mehta
+c  (Based on find_image4)
+c For a system with 1D periodic BC's, this takes a vector r (from one particle
+c   to another) in and replaces the vector by its closest image. 
+c It also calculates the norm and returns that in rnorm.
+c The shift is modulo the simulation lattice vector 'alattice'
+c Our convention is that -alattice/2 < r < alattice/2 
+c Since the simulation cell is the primitive cell for our 1D periodic systems,
+c we don't need to calculate an 'rshift' since it is always zero.
+
+c  We previously did the modulo math explicitly in distances.f and ewald.f
+c  Even though this is very little code, we make it a separate subroutine
+c   for two reasons:
+c  - This way, the structure for 1D periodic BC's parallels that for 3D periodic
+c  - If we decide later that we want r to run from 0 to alattice instead of
+c      from -alattice/2 to alattice/2, it's easier to just make the change here
+
+      use dim_mod
+      use periodic_1d_mod
+      implicit real*8(a-h,o-z)
+
+      dimension r(3)
+
+c    Note that "modulo(a,b)" is a Fortran 90 function which returns
+c     a mod b, so that the sign of the answer always matches the sign of b
+c    This is different from the function "MOD(a,b)", which returns an
+c     answer that has the same sign as a
+      r(1) = modulo(r(1),alattice) ! returns a number between 0 and alattice
+      if (r(1).gt.(alattice/2.)) r(1) = r(1) - alattice
+      rnorm = 0.
+      do k = 1,ndim
+         rnorm = rnorm + r(k)**2
+      enddo
+      rnorm = dqsrt(rnorm)
+      
+      return
+      end
