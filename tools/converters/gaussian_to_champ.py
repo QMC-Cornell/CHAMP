@@ -146,19 +146,39 @@ def read_geometry ():
   found = False
   j = 0
   for i in range(len(lines)):
-    if re.search ("Coordinates", lines[i]):
-      if re.search ("Number", lines[i+1]):
-        if re.search ("-------", lines[i+2]):
-          j = i + 3
-          geometry_list = []
-          while (j < len(lines)):
-            if re.search ("-------", lines[j]):
-              found = True
+    if re.search ("Input orientation:", lines[i]):
+      if re.search ("Coordinates", lines[i+2]):
+        if re.search ("Number", lines[i+3]):
+          if re.search ("-------", lines[i+4]):
+            j = i + 5
+            geometry_list = []
+            while (j < len(lines)):
+              if re.search ("-------", lines[j]):
+                found = True
+                break
+              geometry_list.append (string.split (lines[j]))
+              j = j + 1
+            if found:
               break
-            geometry_list.append (string.split (lines[j]))
-            j = j + 1
-          if found:
-            break
+
+#  if Standard orientation (ie calculations with symmetry) is found, take it
+  found = False
+  j = 0
+  for i in range(len(lines)):
+    if re.search ("Standard orientation:", lines[i]):
+      if re.search ("Coordinates", lines[i+2]):
+        if re.search ("Number", lines[i+3]):
+          if re.search ("-------", lines[i+4]):
+            j = i + 5
+            geometry_list = []
+            while (j < len(lines)):
+              if re.search ("-------", lines[j]):
+                found = True
+                break
+              geometry_list.append (string.split (lines[j]))
+              j = j + 1
+            if found:
+              break
 
   if not found:
     print "\nERROR: geometry not found"
@@ -271,11 +291,14 @@ def read_orbitals ():
           orbital_occupations.extend (string.split(lines[j]))
 #          print "line ",j,", orbital occupation:",lines[j]
           j = j + 1
-          if not re.search ("EIGENVALUES \-\-\s+([0-9\-\.]+\s+)+", lines[j]):
-            print "\nERROR: the orbital section is not in the expected format"
-            sys.exit(0)
-          orbital_eigenvalues.extend ((string.split(lines[j]))[2:])
-#          print "line ",j,", orbital eigenvalues:",lines[j]
+
+#         skip reading of eigenvalues if *********************************** found
+          if not re.search ("EIGENVALUES \-\-\s+(\*)+", lines[j]):
+            if not re.search ("EIGENVALUES \-\-\s+([0-9\-\.]+\s+)+", lines[j]):
+              print "\nERROR: the orbital section is not in the expected format"
+              sys.exit(0)
+            orbital_eigenvalues.extend ((string.split(lines[j]))[2:])
+#            print "line ",j,", orbital eigenvalues:",lines[j]
 
           subsection = subsection + 1
           if (subsection >= 2):
@@ -592,8 +615,8 @@ file_output.write(' end\n')
 file_output.write('end\n\n')
 
 file_output.write('jastrow\n')
-file_output.write(' ijas=4 isc=2\n')
-file_output.write(' scalek=0.5\n')
+file_output.write(' ijas=4 isc=4\n')
+file_output.write(' scalek=0.8\n')
 file_output.write(' parameters\n')
 for i in range(nctype):
   file_output.write('0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n')
@@ -689,9 +712,9 @@ for i in range(ncsf):
 file_output.write('\n')
 file_output.write('\'* Jastrow section\'\n')
 file_output.write('1             ianalyt_lap\n')
-file_output.write('4 2 1 1 5 0   ijas,isc,nspin1,nspin2,nord,ifock\n')
+file_output.write('4 4 1 1 5 0   ijas,isc,nspin1,nspin2,nord,ifock\n')
 file_output.write('5 5 5         norda,nordb,nordc\n')
-file_output.write('0.5 0. scalek,a21\n')
+file_output.write('0.8 0. scalek,a21\n')
 for i in range(nctype):
   file_output.write('0. 0. 0. 0. 0. 0. (a(iparmj),iparmj=1,nparma)\n')
 file_output.write('0.5 1. 0. 0. 0. 0. (b(iparmj),iparmj=1,nparmb)\n')
