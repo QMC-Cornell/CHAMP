@@ -162,10 +162,10 @@ def read_geometry ():
               break
 
 #  if Standard orientation (ie calculations with symmetry) is found, take it
-  found = False
   j = 0
   for i in range(len(lines)):
     if re.search ("Standard orientation:", lines[i]):
+      found = False
       if re.search ("Coordinates", lines[i+2]):
         if re.search ("Number", lines[i+3]):
           if re.search ("-------", lines[i+4]):
