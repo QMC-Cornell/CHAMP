@@ -2971,7 +2971,7 @@ sub print_cyrus_input{
 	for my $current_basis (0..$nbasis-1) {
 	    $current_basis_used=0;
 	    for my $current_orb (@orbital_indices) {
-		$current_basis_used = 1 if ${$final_lcao_coef[$current_orb]}[$current_basis] > $tolerance;
+		$current_basis_used = 1 if abs(${$final_lcao_coef[$current_orb]}[$current_basis]) > $tolerance;
 	    }
 	    push @which_basis_used, $current_basis if $current_basis_used;
 	}
