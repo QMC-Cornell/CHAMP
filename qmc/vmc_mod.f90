@@ -26,11 +26,12 @@ module vmc_mod
 ! EFP
 !  if (nefp >0 ) call readbas ! to remove
 
-
 ! correlated sampling
   if (nforce > 1) then
 !   force parameters
-    call readforce
+    if (.not. use_parser) then
+      call readforce
+    endif
 !   parameters for secondary geometry wave function
     call wf_secondary
   else

@@ -34,10 +34,6 @@ module nuclei_mod
 
 ! initialization
   l_convert_from_angstrom_to_bohr = .false.
-  if (use_parser) then
-    nforce = 1
-  endif
-
   write(6,*)
   write(6,'(a)') 'Beginning of nuclei menu ---------------------------------------------------------------------------------'
 
@@ -54,7 +50,6 @@ module nuclei_mod
    write(6,'(a)') '   nloc = [integer] type of external potential (default: 0, i.e. -Z/r)'
    write(6,'(a)') '   nquad = [integer] number of quadrature points for pseudopotential (default: 6)'
    write(6,'(a)') '   lpotp1 2 1 ... end : local components of the pseudopotential for each atom type'
-   write(6,'(a)') '   nforce = [integer] number of geometries for correlated sampling (default: 1)'
    write(6,'(a)') '   geometry ... end: atom types, nuclear charges and cartesian coordinates. Example for H2O:'
    write(6,'(a)') '    geometry'
    write(6,'(a)') '     1 8.0   0.00000000   0.00000000   0.00000000'
@@ -80,12 +75,6 @@ module nuclei_mod
   case ('lpotp1')
    call get_next_value_list ('lpotp1', lpotp1, lpotp1_nb)
    call object_modified ('lpotp1')
-
-  case ('nforce')
-   call get_next_value (nforce)
-   call object_modified ('nforce')
-   write(6,'(a,i5)') ' number of geometries for correlated sampling calculation = ',nforce
-
 
   case ('geometry')
    call geometry_rd

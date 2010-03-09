@@ -94,7 +94,7 @@ LD_END_MPI=
 
 EXE=champ.exe
 MPI_EXE=champ_mpi.exe
-DEBUG_EXE=champ_debug.exe
+DEBUG_EXE=champ.exe
 PROF_EXE=champ_prof.exe
 
 # Export these for compiling the libraries

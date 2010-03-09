@@ -20,6 +20,7 @@ c jacobian of the transformation
       use wfsec_mod
       use contr3_mod
       use force_dmc_mod
+      use correlated_sampling_mod
       implicit real*8(a-h,o-z)
       character*64 filename
 
@@ -30,7 +31,7 @@ c jacobian of the transformation
 
 !     JT: cent_ref, delc and pecentn used to be local, now there are in nuclei module
 
-      save alfstr
+!JT      save alfstr ! alfstr is now in correlated_sampling_mod
 
       pecent=pecentn(ifr)
       do 1 icent=1,ncent
