@@ -275,6 +275,10 @@ module opt_lin_mod
      ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
     endif
 
+    if (i /= j) then
+      ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
+    endif
+
    enddo
   enddo
 
