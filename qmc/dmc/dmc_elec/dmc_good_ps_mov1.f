@@ -159,6 +159,8 @@ c Tau secondary in drift is one (first time around)
       ioldest=0
       do 300 iw=1,nwalk
 c Loop over primary walker
+        current_walker = iw !JT
+        call object_modified_by_index (current_walker_index) !JT
 
 c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         if(nforce.gt.1)
@@ -494,6 +496,8 @@ c Set weights and product of weights over last nwprod steps
      &    eoldw(iw,ifr),enew,wtnow
 
           wtg=wtnow*fprod
+          current_walker_weight = wt(iw) * fprod !JT
+          call object_modified_by_index (current_walker_weight_index) !JT
 
           if(ifr.eq.1) then
 
@@ -615,6 +619,8 @@ c           write(6,'(''eest_pri,eest_sec,eest_dif,ro='',9f9.5)') eest_pri,eest_
   280   continue
 c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
+
+        call compute_averages_step !JT
   300 continue
 
 !JT      if(wsum1(1).gt.1.1d0*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,

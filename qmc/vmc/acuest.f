@@ -82,8 +82,8 @@ c write out header first time
 c write out current values of averages
 
       wsum(1)=dfloat(nstep)*dfloat(nproc)
-      walker_weights_sum_block  = nstep_total
-      walker_weights_sum  = dfloat(nstep_total)*dfloat(block_iterations_nb)
+      walker_weights_sum_block = nstep_total
+      walker_weights_sum = dfloat(nstep_total)*dfloat(block_iterations_nb)
       call object_modified_by_index (walker_weights_sum_block_index)
       call object_modified_by_index (walker_weights_sum_index)
 

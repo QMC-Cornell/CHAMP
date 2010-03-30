@@ -122,4 +122,6 @@ module variables_mod
 
   logical                          :: print_radial_probability = .false.
 
+  logical                          :: l_equilibration = .false.
+
 end module variables_mod

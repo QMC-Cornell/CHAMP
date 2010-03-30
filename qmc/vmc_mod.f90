@@ -23,9 +23,6 @@ module vmc_mod
 ! local
   call my_second(0,'begin ')
 
-! EFP
-!  if (nefp >0 ) call readbas ! to remove
-
 ! correlated sampling
   if (nforce > 1) then
 !   force parameters
@@ -72,6 +69,12 @@ module vmc_mod
   call alloc ('nearestn', nearestn, nelec)
 
   call common_allocations
+
+! set current walker and current walker weight to 1 for VMC
+  current_walker = 1
+  call object_modified ('current_walker')
+  current_walker_weight = 1
+  call object_modified ('current_walker_weight')
 
   end subroutine vmc_init
 

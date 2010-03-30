@@ -17,6 +17,15 @@ module montecarlo_mod
   real(dp), allocatable   :: eloc_wlk (:)
 
 ! local energy for tests
+  real(dp)                :: eloc_test2          ! for tests
+  real(dp)                :: eloc_test2_av       ! for tests
+  real(dp)                :: eloc_test2_av_err      ! for tests
+  real(dp), allocatable   :: eloc_test3 (:)         ! for tests
+  real(dp), allocatable   :: eloc_test3_av (:)      ! for tests
+  real(dp), allocatable   :: eloc_test3_av_err (:)  ! for tests
+  real(dp), allocatable   :: eloc_test4 (:,:)         ! for tests
+  real(dp), allocatable   :: eloc_test4_av (:,:)      ! for tests
+  real(dp), allocatable   :: eloc_test4_av_err (:,:)      ! for tests
   real(dp), allocatable   :: eloc_test (:)          ! for tests
   real(dp), allocatable   :: eloc_test_bav (:)         ! for tests
   real(dp), allocatable   :: eloc_test_av (:)         ! for tests
@@ -49,6 +58,147 @@ module montecarlo_mod
 !  real(dp)                  :: e2_eloc_av
 
   contains
+
+! ==============================================================================
+  subroutine eloc_test2_bld
+! ------------------------------------------------------------------------------
+! Description   : local energy for test
+!
+! Created       : J. Toulouse, 30 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_test2')
+   call object_average_define ('eloc_test2', 'eloc_test2_av')
+   call object_error_define ('eloc_test2_av', 'eloc_test2_av_err')
+
+   call object_needed ('current_walker')
+
+   return
+
+  endif
+
+! begin
+  call object_associate ('eloc_test2', eloc_test2)
+  call object_associate ('eloc_test2_av', eloc_test2_av)
+  call object_associate ('eloc_test2_av_err', eloc_test2_av_err)
+
+! allocations
+  if (index(mode, 'vmc') /= 0) then
+   call object_provide_by_index (eloc_test2_bld_index, eold_index)
+   eloc_test2  = eold (1)
+
+  elseif (index(mode, 'dmc') /= 0) then
+   call object_provide_by_index (eloc_test2_bld_index, eoldw_index)
+   eloc_test2 = eoldw (current_walker, 1)
+
+  else
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
+
+  endif
+
+  end subroutine eloc_test2_bld
+
+! ==============================================================================
+  subroutine eloc_test3_bld
+! ------------------------------------------------------------------------------
+! Description   : local energy for test
+!
+! Created       : J. Toulouse, 30 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_test3')
+   call object_average_define ('eloc_test3', 'eloc_test3_av')
+   call object_error_define ('eloc_test3_av', 'eloc_test3_av_err')
+
+   call object_needed ('current_walker')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('eloc_test3', eloc_test3, 3)
+  call object_alloc ('eloc_test3_av', eloc_test3_av, 3)
+  call object_alloc ('eloc_test3_av_err', eloc_test3_av_err, 3)
+
+! allocations
+  if (index(mode, 'vmc') /= 0) then
+   call object_provide_by_index (eloc_test3_bld_index, eold_index)
+   eloc_test3 (1) = eold (1)
+
+  elseif (index(mode, 'dmc') /= 0) then
+   call object_provide_by_index (eloc_test3_bld_index, eoldw_index)
+   eloc_test3 (1) = eoldw (current_walker, 1)
+
+  else
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
+
+  endif
+
+  eloc_test3 (2) = - eloc_test3 (1)
+  eloc_test3 (3) = 2.d0* eloc_test3 (1)
+
+  end subroutine eloc_test3_bld
+
+! ==============================================================================
+  subroutine eloc_test4_bld
+! ------------------------------------------------------------------------------
+! Description   : local energy for test
+!
+! Created       : J. Toulouse, 30 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_test4')
+   call object_average_define ('eloc_test4', 'eloc_test4_av')
+   call object_error_define ('eloc_test4_av', 'eloc_test4_av_err')
+
+   call object_needed ('current_walker')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('eloc_test4', eloc_test4, 2, 3)
+  call object_alloc ('eloc_test4_av', eloc_test4_av, 2, 3)
+  call object_alloc ('eloc_test4_av_err', eloc_test4_av_err, 2, 3)
+
+! allocations
+  if (index(mode, 'vmc') /= 0) then
+   call object_provide_by_index (eloc_test4_bld_index, eold_index)
+   eloc_test4 (1,1) = eold (1)
+
+  elseif (index(mode, 'dmc') /= 0) then
+   call object_provide_by_index (eloc_test4_bld_index, eoldw_index)
+   eloc_test4 (1,1) = eoldw (current_walker, 1)
+
+  else
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
+
+  endif
+
+  eloc_test4 (1,2) = 2.d0*eloc_test4 (1,1)
+  eloc_test4 (1,3) = -2.d0*eloc_test4 (1,1)
+  eloc_test4 (2,1) = -eloc_test4 (1,1)
+  eloc_test4 (2,2) = -3.d0*eloc_test4 (1,1)
+  eloc_test4 (2,3) = 3.d0*eloc_test4 (1,1)
+
+  end subroutine eloc_test4_bld
 
 ! ==============================================================================
   subroutine eloc_wlk_bld

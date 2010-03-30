@@ -275,10 +275,6 @@ module opt_lin_mod
      ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
     endif
 
-    if (i /= j) then
-      ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
-    endif
-
    enddo
   enddo
 
@@ -694,7 +690,6 @@ module opt_lin_mod
   case default
    call die (here, 'unknown stabilization choice >'+trim(stabilization)+'<.')
   end select
-
 
   end subroutine ham_lin_renorm_stab_bld
 

@@ -179,8 +179,8 @@ module catalog_objects_mod
 !  call catalog_one_object ('ngvec_orb', ngvec_orb_index)
 !!!
 
-
-
+  call catalog_one_object ('current_walker', current_walker_index)
+  call catalog_one_object ('current_walker_weight', current_walker_weight_index)
 
  end subroutine catalog_objects
 

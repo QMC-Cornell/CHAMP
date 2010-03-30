@@ -66,9 +66,13 @@ module catalog_routines_mod
 ! begin
 
 ! basic
+  call catalog_one_node ('coord_elec_bld', coord_elec_bld, coord_elec_bld_index)
   call catalog_one_node ('coord_elec_wlk_bld', coord_elec_wlk_bld, coord_elec_wlk_bld_index)
   call catalog_one_node ('eloc_wlk_bld', eloc_wlk_bld, eloc_wlk_bld_index)
   call catalog_one_node ('eloc_test_bld', eloc_test_bld)
+  call catalog_one_node ('eloc_test2_bld', eloc_test2_bld, eloc_test2_bld_index)
+  call catalog_one_node ('eloc_test3_bld', eloc_test3_bld, eloc_test3_bld_index)
+  call catalog_one_node ('eloc_test4_bld', eloc_test4_bld, eloc_test4_bld_index)
   call catalog_one_node ('eloc_wlk_test_bld', eloc_wlk_test_bld, eloc_wlk_test_bld_index)
   call catalog_one_node ('eloc_wlk_test2_bld', eloc_wlk_test2_bld, eloc_wlk_test2_bld_index)
   call catalog_one_node ('sigma_bld', sigma_bld)

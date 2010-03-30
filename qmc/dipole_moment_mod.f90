@@ -16,7 +16,7 @@
   real(dp), parameter                         :: atomic_unit_to_debye = 1.d0/0.393456d0
   real(dp), allocatable                       :: dipole_moment_origin (:)
   real(dp), allocatable                       :: dipole_moment_nucl (:)
-  real(dp), allocatable                       :: dipole_moment (:,:)
+  real(dp), allocatable                       :: dipole_moment (:)
   real(dp), allocatable                       :: dipole_moment_av (:)
   real(dp), allocatable                       :: dipole_moment_bav (:)
   real(dp), allocatable                       :: dipole_moment_av_var (:)
@@ -295,7 +295,7 @@
   implicit none
 
 ! local
-  integer elec_i, dim_i, walk_i
+  integer elec_i, dim_i
 
 ! begin
 
@@ -304,35 +304,32 @@
 
    call object_create ('dipole_moment')
    call object_block_average_define ('dipole_moment', 'dipole_moment_bav')
-   call object_average_walk_define ('dipole_moment', 'dipole_moment_av')
+   call object_average_define ('dipole_moment', 'dipole_moment_av')
    call object_variance_define ('dipole_moment_av', 'dipole_moment_av_var')
    call object_error_define ('dipole_moment_av', 'dipole_moment_av_err')
 
-   call object_needed ('nwalk')
    call object_needed ('ndim')
    call object_needed ('nelec')
    call object_needed ('dipole_moment_nucl')
-   call object_needed ('coord_elec_wlk')
+   call object_needed ('coord_elec')
 
    return
 
   endif
 
 ! allocations
-  call object_alloc ('dipole_moment', dipole_moment, ndim, nwalk)
+  call object_alloc ('dipole_moment', dipole_moment, ndim)
   call object_alloc ('dipole_moment_av', dipole_moment_av, ndim)
   call object_alloc ('dipole_moment_bav', dipole_moment_bav, ndim)
   call object_alloc ('dipole_moment_av_var', dipole_moment_av_var, ndim)
   call object_alloc ('dipole_moment_av_err', dipole_moment_av_err, ndim)
 
-  do walk_i = 1, nwalk
    do dim_i = 1, ndim
-    dipole_moment (dim_i, walk_i) = dipole_moment_nucl (dim_i)
+    dipole_moment (dim_i) = dipole_moment_nucl (dim_i)
     do elec_i = 1, nelec
-     dipole_moment (dim_i, walk_i) = dipole_moment (dim_i, walk_i) - (coord_elec_wlk (dim_i, elec_i, walk_i) - dipole_moment_origin (dim_i))
+     dipole_moment (dim_i) = dipole_moment (dim_i) - (coord_elec (dim_i, elec_i) - dipole_moment_origin (dim_i))
     enddo ! elec_i
    enddo ! dim_i
-  enddo ! walk_i
 
   end subroutine dipole_moment_bld
 
@@ -382,7 +379,7 @@
 
   do dim_i = 1, ndim
    do param_i = 1, param_nb
-    dipole_moment_deloc (dim_i, param_i) = dipole_moment (dim_i, 1) * deloc (param_i)
+    dipole_moment_deloc (dim_i, param_i) = dipole_moment (dim_i) * deloc (param_i)
    enddo ! param_i
   enddo ! dim_i
 
@@ -424,7 +421,7 @@
 
   do dim_i = 1, ndim
    do param_i = 1, param_nb
-    dipole_moment_dpsi (dim_i, param_i) = dipole_moment (dim_i, 1) * dpsi (param_i)
+    dipole_moment_dpsi (dim_i, param_i) = dipole_moment (dim_i) * dpsi (param_i)
    enddo ! param_i
   enddo ! dim_i
 
@@ -466,7 +463,7 @@
 
   do dim_i = 1, ndim
    do pair_i = 1, param_pairs_nb
-    dipole_moment_dpsi_dpsi (dim_i, pair_i) = dipole_moment (dim_i, 1) * dpsi_dpsi (pair_i)
+    dipole_moment_dpsi_dpsi (dim_i, pair_i) = dipole_moment (dim_i) * dpsi_dpsi (pair_i)
    enddo ! pair_i
   enddo ! dim_i
 

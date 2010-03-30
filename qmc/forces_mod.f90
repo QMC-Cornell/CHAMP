@@ -24,6 +24,7 @@
   logical                                     :: l_forces_pulay = .false.
   logical                                     :: l_forces_zv_pulay = .false.
   logical                                     :: l_forces_zv_deriv_pulay = .true.
+!  logical                                     :: l_forces_zv_deriv_pulay = .false.
   real(dp), allocatable                       :: forces_nn (:)
   real(dp), allocatable                       :: forces_bare (:)
   real(dp), allocatable                       :: forces_bare_av (:)

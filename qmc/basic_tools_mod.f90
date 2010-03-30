@@ -90,6 +90,14 @@ module basic_tools_mod
   end interface copy
 
 !===============================================================
+  interface move
+!---------------------------------------------------------------
+   module procedure move_integer_1, &
+                    move_double_1
+
+  end interface move
+
+!===============================================================
   interface append
 !---------------------------------------------------------------
    module procedure append_integer_0_to_1, &
@@ -2472,8 +2480,10 @@ module basic_tools_mod
 
 
 ! begin
-  call alloc ('array2', array2, mysize(array1))
-  array2 (:) = array1 (:)
+  if (mysize(array1) /= 0) then
+   call alloc ('array2', array2, mysize(array1))
+   array2 (:) = array1 (:)
+  endif
 
   end subroutine copy_integer_1
 
@@ -2494,10 +2504,56 @@ module basic_tools_mod
 
 
 ! begin
-  call alloc ('array2', array2, mysize(array1))
-  array2 (:) = array1 (:)
+  if (mysize(array1) /= 0) then
+   call alloc ('array2', array2, mysize(array1))
+   array2 (:) = array1 (:)
+  endif
 
   end subroutine copy_double_1
+
+!===========================================================================
+  subroutine move_integer_1 (array1, array2)
+!---------------------------------------------------------------------------
+! Description : move array1 into array2
+!
+! Created     : J. Toulouse, 27 Mar 2010
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, allocatable, intent(in) :: array1 (:)
+
+! input/output
+  integer, allocatable, intent(inout) :: array2 (:)
+
+
+! begin
+  call copy (array1, array2)
+  call release ('array1', array1)
+
+  end subroutine move_integer_1
+
+!===========================================================================
+  subroutine move_double_1 (array1, array2)
+!---------------------------------------------------------------------------
+! Description : move array1 into array2
+!
+! Created     : J. Toulouse, 27 Mar 2010
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  real(dp), allocatable, intent(in) :: array1 (:)
+
+! input/output
+  real(dp), allocatable, intent(inout) :: array2 (:)
+
+
+! begin
+  call copy (array1, array2)
+  call release ('array1', array1)
+
+  end subroutine move_double_1
 
 !===========================================================================
   subroutine append_integer_0_to_1 (array, intg)

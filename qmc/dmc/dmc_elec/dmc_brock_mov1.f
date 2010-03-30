@@ -69,6 +69,8 @@ c Undo weights
       ioldest=0
       do 200 iw=1,nwalk
 c primary path
+        current_walker = iw !JT
+        call object_modified_by_index (current_walker_index) !JT
 
 c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
@@ -261,6 +263,8 @@ c Set weights and product of weights over last nwprod steps
           endif
 
           wtg=wtnow*fprod
+          current_walker_weight = wt(iw) * fprod !JT
+          call object_modified_by_index (current_walker_weight_index) !JT
 
           if(iaccept.eq.1) then   ! If any of the 1-electron moves were accepted then
             psidow(iw,ifr)=psidn
@@ -301,6 +305,8 @@ c Set weights and product of weights over last nwprod steps
           tausum(ifr)=tausum(ifr)+wtg*taunow
 
   190   continue
+
+        call compute_averages_step !JT
 
   200 continue
 

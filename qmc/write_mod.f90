@@ -9,6 +9,8 @@ module write_mod
   integer, allocatable         :: routines_write_block_index (:)
   integer                      :: routines_write_final_nb = 0
   integer, allocatable         :: routines_write_final_index (:)
+  integer                      :: routines_write_final_nb_save
+  integer, allocatable         :: routines_write_final_index_save (:)
 
   contains
 
@@ -173,8 +175,6 @@ module write_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! local
-
 ! begin
   routines_write_block_nb = 0
   call release ('routines_write_block_index', routines_write_block_index)
@@ -190,12 +190,40 @@ module write_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! local
-
 ! begin
   routines_write_final_nb = 0
   call release ('routines_write_final_index', routines_write_final_index)
 
  end subroutine reinit_routines_write_final
+
+! ===================================================================================
+  subroutine save_routines_write_final
+! -----------------------------------------------------------------------------------
+! Description   : save array of writing routines
+!
+! Created       : J. Toulouse, 27 Mar 2010
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! begin
+  routines_write_final_nb_save = routines_write_final_nb
+  call copy (routines_write_final_index, routines_write_final_index_save)
+
+ end subroutine save_routines_write_final
+
+! ===================================================================================
+  subroutine restore_routines_write_final
+! -----------------------------------------------------------------------------------
+! Description   : restore array of writing routines
+!
+! Created       : J. Toulouse, 27 Mar 2010
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! begin
+  routines_write_final_nb = routines_write_final_nb_save
+  call move (routines_write_final_index_save, routines_write_final_index)
+
+ end subroutine restore_routines_write_final
 
 end module write_mod

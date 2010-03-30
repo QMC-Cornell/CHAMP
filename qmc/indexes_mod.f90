@@ -179,7 +179,11 @@ module indexes_mod
   integer     :: wgcum_index
   integer     :: eloc_wlk_bld_index
   integer     :: eloc_wlk_test_bld_index
+  integer     :: eloc_test2_bld_index
+  integer     :: eloc_test3_bld_index
+  integer     :: eloc_test4_bld_index
   integer     :: eloc_wlk_test2_bld_index
+  integer     :: coord_elec_bld_index
   integer     :: coord_elec_wlk_bld_index
   integer     :: grd_psi_over_psi_wlk_bld_index
   integer     :: grd_psi_over_psi_sq_wlk_bld_index
@@ -236,5 +240,7 @@ module indexes_mod
   integer     :: param_geo_nb_index
 !! solid orbitals
 !  integer    :: ngvec_orb_index
+  integer     :: current_walker_index
+  integer     :: current_walker_weight_index
 
 end module indexes_mod

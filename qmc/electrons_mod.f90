@@ -4,6 +4,7 @@ module electrons_mod
   use walkers_mod
 
 ! Declaration of global variables and default values
+  real(dp), allocatable     :: coord_elec (:,:)
   real(dp), allocatable     :: coord_elec_wlk (:,:,:)
 
   real(dp), allocatable     :: dist_e_wlk (:,:)
@@ -45,6 +46,46 @@ module electrons_mod
   contains
 
 ! ==============================================================================
+  subroutine coord_elec_bld
+! ------------------------------------------------------------------------------
+! Description   : cartesian coordinates of electrons for current walker
+!
+! Created       : J. Toulouse, 30 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('coord_elec')
+
+   call object_needed ('ndim')
+   call object_needed ('nelec')
+   call object_needed ('current_walker')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('coord_elec', coord_elec, ndim, nelec)
+
+  if (index(mode, 'vmc') /= 0) then
+   call object_provide_by_index (coord_elec_bld_index, xold_index)
+   coord_elec (:,:) = xold (1:ndim, 1:nelec)
+
+  elseif (index(mode, 'dmc') /= 0) then
+   call object_provide_by_index (coord_elec_bld_index, xoldw_index)
+   coord_elec (:,:) = xoldw (1:ndim, 1:nelec, current_walker, 1)
+
+  else
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
+  endif
+
+  end subroutine coord_elec_bld
+
+! ==============================================================================
   subroutine coord_elec_wlk_bld
 ! ------------------------------------------------------------------------------
 ! Description   : Cartesian coordinates of electrons
@@ -81,7 +122,7 @@ module electrons_mod
    coord_elec_wlk (:,:,:) = xoldw (1:ndim, 1:nelec, 1:nwalk, 1)
 
   else
-   call die (here,'mode='+trim(mode)+' should contain either vmc or dmc.')
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
   endif
 
   end subroutine coord_elec_wlk_bld

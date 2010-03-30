@@ -216,6 +216,7 @@ c        = 7 spherical-polar with slater T
       if(nblkeq.ge.1.and.irstar.ne.1) then
         l=0
 
+        l_equilibration = .true.
         do 420 i=1,nblkeq
           do 410 j=1,nstep
             l=l+1
@@ -229,6 +230,7 @@ c        = 7 spherical-polar with slater T
             endif
   410     continue
   420   call acuest
+        l_equilibration = .false.
 
 c       Equilibration steps done. Zero out estimators again.
         call print_cpu_time_in_seconds ('End       of equilibration')
@@ -254,8 +256,9 @@ c now do averaging steps
 !JT        call object_modified_by_index (xold_index)  !JT
 
 !       accumulate data for averages and statitical errors
-!        call compute_averages        !JT
-        call compute_block_averages        !JT
+!        call compute_block_averages        !JT old
+        call compute_averages_step        !JT new
+
         call compute_averages_walk_step   !JT
 
 c       write out configuration for optimization/dmc/gfmc here
@@ -275,7 +278,7 @@ c       write out configuration for optimization/dmc/gfmc here
         if (l_write_walkers) then
          if(mod(l,write_walkers_step) == 0) then
           do jj = 1, nelec
-       write(file_walkers_out_unit,'(3(F7.3,X))') (xold(k,jj),k=1,ndim)
+           write(file_walkers_out_unit,'(3(F7.3,X))') (xold(k,jj),k=1,ndim)
           enddo
            write(file_walkers_out_unit,*) dexp(psijo)*psido
          endif
@@ -286,7 +289,10 @@ c       write out configuration for optimization/dmc/gfmc here
 !     compute averages and statitical errors
       call acuest
       call compute_averages_walk_block   !JT
-      call compute_global_averages   !JT
+
+!      call compute_global_averages   !JT old
+      call compute_averages_block   !JT new
+
       call compute_covariances  !JT
       call compute_variances  !JT
       call compute_errors  !JT

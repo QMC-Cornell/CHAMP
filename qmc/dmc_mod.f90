@@ -185,6 +185,8 @@ module dmc_mod
   write(6,*)
   write(6,'(a)') '*********** START DMC CALCULATION  ***********'
 
+  call print_list_of_averages_and_errors
+
 ! initialize sums and averages
   if(irstar /= 1) then
      call zeres0_dmc
@@ -207,6 +209,7 @@ module dmc_mod
   call systemflush(6)
 
 ! Equilibration phase
+  l_equilibration = .true.
   do i = 1, 2*nblkeq
 
      if ((i == nblkeq+1) .and. irstar /= 1) then
@@ -231,6 +234,7 @@ module dmc_mod
     call acuest_dmc
 
   enddo ! end of equilibration
+  l_equilibration = .false.
 
   call print_cpu_time_in_seconds ('End       of equilibration')
   write (6,*)
@@ -294,6 +298,7 @@ module dmc_mod
          enddo ! istep
 
         call acuest_dmc
+        call compute_averages_block ! new 
         call compute_averages_walk_block
         call compute_covariances
         call compute_variances
