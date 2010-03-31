@@ -1,5 +1,5 @@
-#!/usr/local/bin/python2.4
 #!/usr/bin/python
+#!/usr/local/bin/python2.4
 
 ###################################################################################
 #
@@ -286,17 +286,20 @@ def read_orbitals ():
 #          print "line ",j,", orbital indexes:",lines[j]
           j = j + 1
           if not re.search ("([OV]\s+)+", lines[j]):
+#            print "\nline: ", lines[j]
             print "\nERROR: the orbital section is not in the expected format"
             sys.exit(0)
           orbital_occupations.extend (string.split(lines[j]))
 #          print "line ",j,", orbital occupation:",lines[j]
           j = j + 1
 
-#         skip reading of eigenvalues if *********************************** found
-          if not re.search ("EIGENVALUES \-\-\s+(\*)+", lines[j]):
-            if not re.search ("EIGENVALUES \-\-\s+([0-9\-\.]+\s+)+", lines[j]):
-              print "\nERROR: the orbital section is not in the expected format"
-              sys.exit(0)
+#         read eigenvalues if correct format is found
+#          if not re.search ("EIGENVALUES \-\-\s+(\*)+", lines[j]):
+          if not re.search ("EIGENVALUES \-\-\s+([0-9\-\.]+\s+)+", lines[j]):
+#              print "\nline: ", lines[j]
+              print "\nWARNING: the orbital eigenvalues are not in the expected format (but they are not used anyway)"
+#              sys.exit(0)
+          else:
             orbital_eigenvalues.extend ((string.split(lines[j]))[2:])
 #            print "line ",j,", orbital eigenvalues:",lines[j]
 

@@ -3476,7 +3476,7 @@ module average_mod
 ! Description   : compute block and global averages in VMC or DMC
 ! Description   : this routine must be called at each block
 ! Description   : the block average of a local object X_ik where k refers blocks, i to steps is
-! Description   : Xk = sum_i (X_ik w_ik ) / sum_i w_ik
+! Description   : X_k = sum_i (X_ik w_ik ) / sum_i w_ik
 ! Description   : where w_ik are weights (= 1 for VMC)
 ! Description   : the global average is
 ! Description   : X = sum_k sum_i ( X_ik w_ik ) / sum_k sum_i w_ik
