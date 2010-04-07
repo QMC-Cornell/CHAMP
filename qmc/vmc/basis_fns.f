@@ -1461,7 +1461,7 @@ c          gausseps = 1.d-12 * phinxpart
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright
              if (icell.gt.2) then
-                write (6,*) 'Warning: in basis_fns_2dgauss_periodic: gaussians are wider than a unit cell.'
+                write (6,*) 'Warning: in basis_fns_2dgauss_periodic: gaussians are wider than 2 unit cells.'
              endif
           enddo
 
@@ -1586,7 +1586,7 @@ c          gausseps = 1.0d-12*phinxpart
           d2phinxpart = x1rel2*phinxpart
           d3phinxpart = x1rel*x1rel2*phinxpart
           d4phinxpart = x1rel2*x1rel2*phinxpart
-          do icell = 1,2
+          do icell = 1,3
              x1relleft = x1rel - alattice*icell
              x1relright = x1rel + alattice*icell
              x1relleft2 = x1relleft*x1relleft
@@ -1601,8 +1601,8 @@ c          gausseps = 1.0d-12*phinxpart
      &            + x1relright*x1relright2*phiright
              d4phinxpart = d4phinxpart + x1relleft2*x1relleft2*phileft 
      &            + x1relright2*x1relright2*phiright
-             if (icell.gt.1) then
-                write (6,*) 'Warning: in deriv_2dgauss_periodic gaussians are wider than unit cell.'
+             if (icell.gt.2) then
+                write (6,*) 'Warning: in deriv_2dgauss_periodic gaussians are wider than 2 unit cells.'
              endif
           enddo
 
