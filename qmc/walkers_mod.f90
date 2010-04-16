@@ -17,6 +17,7 @@ module walkers_mod
   real(dp), allocatable                 :: elec_dn_nb_close_atom_input (:)
   character (len=max_string_len_file)   :: file_walkers_out = ''
   logical :: l_write_walkers = .false.
+  logical :: l_write_walkers_modified_format = .false.
   integer :: write_walkers_step = 1
   integer :: file_walkers_out_unit
   integer :: nconf_saved
@@ -61,6 +62,7 @@ module walkers_mod
    write(6,'(a)') '  keep_only_walkers_with_elec_nb_close_atom_input = [bool] : default = false.'
    write(6,'(a)') '  file_walkers_out  = [string] : output file for walkers in Scemama format'
    write(6,'(a)') '  write_walkers = [logical] write walkers in Scemama format (default=false)'
+   write(6,'(a)') '  write_walkers_modified_format = [logical] write walkers in original Scemama format (false) or modified format (true) (default=false)'
    write(6,'(a)') '  write_walkers_step = [integer] write walkers in Scemama format every X step? (default=1)'
    write(6,'(a)') '  generate_walkers_from_vmc = [bool] generate walkers from a short VMC run (default=false)'
    write(6,'(a)') ' end'
@@ -107,6 +109,9 @@ module walkers_mod
    call get_next_value (file_walkers_out)
    call open_file_or_die (file_walkers_out, file_walkers_out_unit)
 
+  case ('write_walkers_modified_format')
+   call get_next_value (l_write_walkers_modified_format)
+  
   case ('write_walkers')
    call get_next_value (l_write_walkers)
 
