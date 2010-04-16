@@ -278,9 +278,16 @@ c       write out configuration for optimization/dmc/gfmc here
         if (l_write_walkers) then
          if(mod(l,write_walkers_step) == 0) then
           do jj = 1, nelec
+            if (l_write_walkers_modified_format) then
+       write(file_walkers_out_unit,'(3(F11.7,X))') (xold(k,jj),k=1,ndim)
+            else
            write(file_walkers_out_unit,'(3(F7.3,X))') (xold(k,jj),k=1,ndim)
+           endif
           enddo
            write(file_walkers_out_unit,*) dexp(psijo)*psido
+	  if (l_write_walkers_modified_format) then
+	   write(file_walkers_out_unit,*) eold(1)
+	  endif
          endif
         endif
 
