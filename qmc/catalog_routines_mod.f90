@@ -164,6 +164,12 @@ module catalog_routines_mod
   call catalog_one_node ('csfs_ovlp_bld', csfs_ovlp_bld)
   call catalog_one_node ('csfs_wfdet_ovlp_bld', csfs_wfdet_ovlp_bld)
   call catalog_one_node ('dens_mat_wfdet_bld', dens_mat_wfdet_bld)
+  call catalog_one_node ('vb_weights_hiberty_bld', vb_weights_hiberty_bld)
+  call catalog_one_node ('csf_over_psid_bld', csf_over_psid_bld)
+  call catalog_one_node ('product_csf_over_psid_bld', product_csf_over_psid_bld)
+  call catalog_one_node ('vb_weights_chirgwin_coulson_bld', vb_weights_chirgwin_coulson_bld)
+  call catalog_one_node ('vb_weights_lowdin_bav_bld', vb_weights_lowdin_bav_bld)
+  call catalog_one_node ('vb_weights_lowdin_like_bav_bld', vb_weights_lowdin_like_bav_bld)
 
 ! general optimization method
   call catalog_one_node ('delta_param_bld', delta_param_bld)
@@ -655,6 +661,7 @@ module catalog_routines_mod
   call catalog_one_routine ('extracule_wrt', extracule_wrt)
   call catalog_one_routine ('dipole_moment_wrt', dipole_moment_wrt)
   call catalog_one_routine ('forces_wrt', forces_wrt)
+  call catalog_one_routine ('vb_weights_wrt', vb_weights_wrt)
 
 !!pjas WAS
   call catalog_one_node ('pjas_init_bld', pjas_init_bld)

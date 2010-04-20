@@ -1623,7 +1623,7 @@ module deriv_exp_mod
    call object_needed ('ddet_dexp_unq_dn')
    call object_needed ('detu')
    call object_needed ('detd')
-   call object_needed ('psido')
+   call object_needed ('psi_det')
 
    return
 
@@ -1654,7 +1654,7 @@ module deriv_exp_mod
      enddo ! det_in_csf_i
    enddo ! csf_i
 
-    dpsi_exp (dexp_i) = dpsid_exp (dexp_i) / psido
+    dpsi_exp (dexp_i) = dpsid_exp (dexp_i) / psi_det
 
   enddo ! dexp_i
 

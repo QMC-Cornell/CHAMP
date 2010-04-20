@@ -315,7 +315,7 @@ module forces_pulay_mod
    call object_needed ('ddet_drn_unq_dn')
    call object_needed ('detu')
    call object_needed ('detd')
-   call object_needed ('psido')
+   call object_needed ('psi_det')
 
    return
 
@@ -346,7 +346,7 @@ module forces_pulay_mod
      enddo ! det_in_csf_i
    enddo ! csf_i
 
-    dpsid_rn (force_i) = dpsid_drn (force_i) / psido
+    dpsid_rn (force_i) = dpsid_drn (force_i) / psi_det
 
   enddo ! force_i
 
@@ -445,7 +445,7 @@ module forces_pulay_mod
    call object_needed ('forces_direct')
    call object_needed ('cent')
    call object_needed ('psijo')
-   call object_needed ('psido')
+   call object_needed ('psid_det')
 
    return
 
@@ -455,14 +455,14 @@ module forces_pulay_mod
   call object_alloc ('dpsi_rn_num', dpsi_rn_num, forces_nb)
 
 ! calculating wave function
-!  call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+!  call hpsi(xold,psi_det,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
 !  call object_modified_by_index (eold_index)
 !  call object_modified_by_index (eloc_index)
-!  call object_modified_by_index (psido_index)
+!  call object_modified_by_index (psi_det_index)
 !  call object_modified_by_index (denergy_index)
 !  call object_modified_by_index (vold_index)
 !  call object_modified_by_index (div_vo_index)
-  psi1 = dexp(psijo)*psido
+  psi1 = dexp(psijo)*psi_det
 
 ! loop over force components
   do force_i = 1, forces_nb
@@ -476,14 +476,14 @@ module forces_pulay_mod
    call object_modified ('cent')
 
 !  recalculating wave function
-   call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+   call hpsi(xold,psi_det,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
    call object_modified_by_index (eold_index)
    call object_modified_by_index (eloc_index)
-   call object_modified_by_index (psido_index)
+   call object_modified_by_index (psi_det_index)
    call object_modified_by_index (denergy_index)
    call object_modified_by_index (vold_index)
    call object_modified_by_index (div_vo_index)
-   psi2 = dexp(psijo)*psido
+   psi2 = dexp(psijo)*psi_det
 
 !  calculating numerical derivative
    dpsi = (psi2 - psi1)/d
@@ -587,10 +587,10 @@ module forces_pulay_mod
 
 !  recalculating wave function and local energy (including nuclear potential energy!)
    call pot_nn(cent,znuc,iwctype,ncent,pecent)
-   call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+   call hpsi(xold,psi_det,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
    call object_modified_by_index (eold_index)
    call object_modified_by_index (eloc_index)
-   call object_modified_by_index (psido_index)
+   call object_modified_by_index (psi_det_index)
    call object_modified_by_index (denergy_index)
    call object_modified_by_index (vold_index)
    call object_modified_by_index (div_vo_index)

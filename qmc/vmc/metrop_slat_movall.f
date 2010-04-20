@@ -31,6 +31,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use forcewt_mod
       use estsig_mod
       use estsum_mod
+      use determinants_mod
       implicit real*8(a-h,o-z)
 
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -624,10 +625,11 @@ c       endif
       endif
 
       eloc = eold(1)            !JT
+      psi_det = psido           !JT
       call object_modified_by_index (xold_index)  !JT
       call object_modified_by_index (eold_index) !JT
       call object_modified_by_index (eloc_index)  !JT
-      call object_modified_by_index (psido_index) !JT
+      call object_modified_by_index (psi_det_index) !JT
       call object_modified_by_index (denergy_index) !JT
       call object_modified_by_index (vold_index) !JT
       call object_modified_by_index (div_vo_index) !JT

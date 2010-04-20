@@ -397,7 +397,7 @@ def determine_orbitals_sym ():
   for det_i in range(ndet):
     for elec_i in range(nelec):
        orbital_occupied[int(determinants[det_i][elec_i])-1]=1
-#  print "orbital_occupied=",orbital_occupied
+  #print "orbital_occupied=",orbital_occupied
 
 # determine orbital "symmetry" classes
   orbital_sym_classes = []
@@ -407,8 +407,8 @@ def determine_orbitals_sym ():
     for bas_i in range(nbasis):
        if (not orbital_coefficients[orb_i][bas_i] == 0):
          orbital_sym_class[bas_i]=1
-#    print "orbital_sym_class=",orbital_sym_class
-    
+    #print "orbital_sym_class=",orbital_sym_class
+
     found = False
     for orb_sym in range(orb_sym_nb):
       found = True
@@ -433,8 +433,47 @@ def determine_orbitals_sym ():
       orbital_symmetries.append (orb_sym_nb)
       orbital_sym_classes.append (orbital_sym_class)
 
+
+# filter for symmetry classes that are alike (different only by one basis function) and suppress one                 #
+  for orb_sym_i in range(orb_sym_nb-1):                                                                              #
+    suppressed = False                                                                                               #
+    for orb_sym_j in range(orb_sym_i+1,orb_sym_nb):                                                                  #
+# if a class has been suppressed, the indexes has to be moved up                                                     #
+       if (suppressed):                                                                                              #
+          orb_sym_j = orb_sym_j - 1                                                                                  #
+       tester = 0                                                                                                    #
+       for bas_i in range(nbasis):                                                                                   #
+          if (not orbital_sym_classes [orb_sym_i][bas_i] == orbital_sym_classes [orb_sym_j][bas_i]):                 #
+             tester = tester+1                                                                                       #
+# remember which orbital is to be suppressed (the one that has lesser basis functions)                               #
+             if (orbital_sym_classes [orb_sym_i][bas_i] > orbital_sym_classes [orb_sym_j][bas_i]):                   #
+                orb_sym_target = orb_sym_j                                                                           #
+                orb_sym_new = orb_sym_i                                                                              #
+             else:                                                                                                   #
+                orb_sym_target = orb_sym_i                                                                           #
+                orb_sym_new = orb_sym_j                                                                              #
+# if classes are different by more than one basis : skip                                                             #
+             if tester > 1:                                                                                          #
+               break                                                                                                 #
+          if tester > 1:                                                                                             #
+            break                                                                                                    #
+# if indeed a class is to be suppressed : modify -orbital_sym_classes (suppress the class)                           #
+#                                                -orb_sym_nb (one less)                                              #
+#                                                -orbital_symmetries (everyone beyond is shifted down)               #
+       if tester == 1:                                                                                               #
+          suppressed = True                                                                                          #
+          orbital_sym_classes.pop(orb_sym_target)                                                                    #
+          orb_sym_nb = orb_sym_nb - 1                                                                                #
+          for orb_i in range(norb):                                                                                  #
+             if orbital_symmetries[orb_i] == orb_sym_target+1:                                                       #
+                orbital_symmetries[orb_i] = orb_sym_new+1                                                            #
+             if orbital_symmetries[orb_i] > orb_sym_target+1:                                                        #
+                orbital_symmetries[orb_i] = orbital_symmetries[orb_i] - 1                                            #
+          print "WARNING: a symmetry class had to be removed (it was similar to another one)"                         #
+
+ 
 # check that two symmetry classes do not share the same basis functions
-# and that any basis function is in a symmetry class
+# [optionnal] and that any basis function is in a symmetry class
   orbital_sym_class_sum = zeros([nbasis], Int)
   for orb_sym in range(orb_sym_nb):
 #    print orb_sym+1,orbital_sym_classes[orb_sym]

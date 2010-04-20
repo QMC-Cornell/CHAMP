@@ -350,7 +350,7 @@ module psi_mod
    call object_needed ('detd')
    call object_needed ('grd_det_unq_up')
    call object_needed ('grd_det_unq_dn')
-   call object_needed ('psido')
+   call object_needed ('psi_det')
 
 
    return
@@ -391,7 +391,7 @@ module psi_mod
    enddo ! det_in_csf_i
   enddo ! csf_i
 
-  grd_psid_over_psid = grd_psid_over_psid / psido
+  grd_psid_over_psid = grd_psid_over_psid / psi_det
 
  end subroutine grd_psid_over_psid_bld
 
@@ -432,7 +432,7 @@ module psi_mod
    call object_needed ('detd')
    call object_needed ('lap_det_unq_up')
    call object_needed ('lap_det_unq_dn')
-   call object_needed ('psido')
+   call object_needed ('psi_det')
 
    return
 
@@ -469,7 +469,7 @@ module psi_mod
    enddo ! det_in_csf_i
   enddo ! csf_i
 
-  lap_psid_over_psid = lap_psid_over_psid / psido
+  lap_psid_over_psid = lap_psid_over_psid / psi_det
 
  end subroutine lap_psid_over_psid_bld
 
@@ -923,8 +923,8 @@ module psi_mod
 
 ! begin
   call unflatten  (coord_elec_vec, xold, ndim, nelec)
-  call hpsi (xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
-  psi2_eval = (dexp(psijo)*psido)**2
+  call hpsi (xold,psi_det,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
+  psi2_eval = (dexp(psijo)*psi_det)**2
 
 !  write(6,*) 'eold=',eold(1)
 

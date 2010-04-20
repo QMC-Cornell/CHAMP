@@ -29,6 +29,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use forcewt_mod
       use estsig_mod
       use estsum_mod
+      use determinants_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10)
@@ -262,9 +263,10 @@ c primary configuration
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
 
       eloc = eold(1)                 !JT
+      psi_det = psido                !JT
       call object_modified_by_index (eold_index)  !JT
       call object_modified_by_index (eloc_index)  !JT
-      call object_modified_by_index (psido_index) !JT
+      call object_modified_by_index (psi_det_index) !JT
       call object_modified_by_index (psijo_index)  !JT
       call object_modified_by_index (denergy_index) !JT
       call object_modified_by_index (vold_index) !JT

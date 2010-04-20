@@ -34,6 +34,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use forcewt_mod
       use estsig_mod
       use estsum_mod
+      use determinants_mod
       implicit real*8(a-h,o-z)
 
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
@@ -554,9 +555,10 @@ c primary configuration
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
 
       eloc = eold(1)                               !JT
+      psi_det = psido                              !JT
       call object_modified_by_index (eold_index)   !JT
       call object_modified_by_index (eloc_index)   !JT
-      call object_modified_by_index (psido_index)  !JT
+      call object_modified_by_index (psi_det_index)!JT
       call object_modified_by_index (psijo_index)  !JT
       call object_modified_by_index (denergy_index)!JT
       call object_modified_by_index (vold_index)   !JT
@@ -569,18 +571,20 @@ c primary configuration
 !      eloc1 = eold(1)
 !      call move_zex (iexp, dzex)
 !      call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,eold(1),denergy,1)
+!      psi_det = psido                              !JT
 !      call object_modified_by_index (eold_index)  !JT
 !      call object_modified_by_index (eloc_index)  !JT
-!      call object_modified_by_index (psido_index) !JT
+!      call object_modified_by_index (psi_det_index)!JT
 !      call object_modified_by_index (denergy_index) !JT
 !      call object_modified_by_index (vold_index) !JT
 !      call object_modified_by_index (div_vo_index) !JT
 !      eloc2 = eold(1)
 !      call move_zex (iexp, -dzex)
 !      call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,eold(1),denergy,1)
+!      psi_det = psido                              !JT
 !      call object_modified_by_index (eold_index)  !JT
 !      call object_modified_by_index (eloc_index)  !JT
-!      call object_modified_by_index (psido_index) !JT
+!      call object_modified_by_index (psi_det_index)!JT
 !      call object_modified_by_index (denergy_index) !JT
 !      call object_modified_by_index (vold_index) !JT
 !      call object_modified_by_index (div_vo_index) !JT

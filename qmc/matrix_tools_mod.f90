@@ -197,6 +197,58 @@ module matrix_tools_mod
   end subroutine eigensystem
 
 ! ==============================================================================
+  subroutine to_the_power (matrix, dim, power_n, matrix_out)
+! ------------------------------------------------------------------------------
+! Description   : returns the matrix to the power n
+! Description   : valid for a real symmetric matrix (uses eigensystem)
+!
+! Created       : B. Mussard, 09 Mar 2010
+! ------------------------------------------------------------------------------
+  implicit none
+
+! input
+  real(dp), intent(in)   :: matrix (:,:)
+  integer,  intent(in)   :: dim
+  real(dp), intent(in)   :: power_n
+
+! output
+  real(dp), intent(out)  :: matrix_out (:,:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'to_the_power'
+  integer eigen_i, bas_i, bas_j, bas_k
+  real(dp), allocatable  :: eigenvectors (:,:)
+  real(dp), allocatable  :: eigenvalues (:)
+
+! begin
+  call alloc('eigenvectors',eigenvectors,dim,dim)
+  call alloc('eigenvalues',eigenvalues,dim)
+
+  call eigensystem (matrix, eigenvectors, eigenvalues, dim)
+ 
+  if (power_n < 1) then
+     do eigen_i = 1, dim
+        if (eigenvalues (eigen_i) < (-10**-5)) then
+            write(6,'(a)') 'one eigenvalue is too negative to be equalled to zero'
+        else if (eigenvalues (eigen_i) < 0) then
+            eigenvalues (eigen_i) = 0
+        endif
+     enddo
+  endif
+            
+
+  do bas_i = 1, dim
+    do bas_j = 1, dim
+       matrix_out(bas_i, bas_j) = 0.d0
+       do bas_k = 1, dim
+          matrix_out(bas_i, bas_j) = matrix_out(bas_i, bas_j) + eigenvectors (bas_i, bas_k) * eigenvalues(bas_k)**power_n * eigenvectors (bas_j, bas_k)
+       enddo ! bas_k
+    enddo ! bas_j
+  enddo ! bas_i
+
+  end subroutine to_the_power
+
+! ==============================================================================
   real(dp) function matrix_determinant (matrix, n)
 ! ------------------------------------------------------------------------------
 ! Description   : returns determinant of a matrix

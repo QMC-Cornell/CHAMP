@@ -75,6 +75,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use branch_dmc_opt_mod
       use velratio_mod
       use pop_control_mod, only : ffn
+      use determinants_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -533,7 +534,9 @@ c Primary configuration
      &        call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
 
+              psi_det = psidn                             !JT
               call object_modified_by_index (voldw_index) !JT
+              call object_modified_by_index (psi_det_index) !JT
               call object_modified_by_index (div_vow_index) !JT
 
               if(ibasis.eq.3) then                  !complex calculations

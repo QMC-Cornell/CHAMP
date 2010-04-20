@@ -743,6 +743,8 @@ module optimization_mod
 
 ! Start optimization loop ------------------------------------------------------------------------
   do iter = 1, iter_opt_max_nb
+   iter_global_optimization = iter
+
    write(6,'()')
    write(6,'(a,i3)') 'Beginning optimization iteration # ',iter
 
@@ -829,6 +831,17 @@ module optimization_mod
 !     call object_provide ('orb_ovlp')
 !     call object_write ('orb_ovlp')
 
+   endif
+
+!  request vb_weights
+   if (l_vb_weights) then
+      call object_block_average_request ('product_csf_over_psid_bav')
+      call object_block_average_request ('csf_over_psid_bav')
+      call object_average_request ('vb_weights_chirgwin_coulson_av')
+      call object_error_request ('vb_weights_chirgwin_coulson_av_err')
+      call object_average_request ('vb_weights_lowdin_av')
+      call object_error_request ('vb_weights_lowdin_av_err')
+      call routine_write_final_request ('vb_weights_wrt')
    endif
 
 !  VMC run
@@ -1137,9 +1150,24 @@ module optimization_mod
   if (l_last_run) then
   write(6,*)
   write(6,'(a)') 'Performing last vmc run'
+
+! request vb_weights
+  if (l_vb_weights) then
+      l_lastrun_global_optimization = l_last_run
+      call object_block_average_request ('product_csf_over_psid_bav')
+      call object_block_average_request ('csf_over_psid_bav')
+      call object_average_request ('vb_weights_chirgwin_coulson_av')
+      call object_error_request ('vb_weights_chirgwin_coulson_av_err')
+      call object_average_request ('vb_weights_lowdin_av')
+      call object_error_request ('vb_weights_lowdin_av_err')
+      call routine_write_final_request ('vb_weights_wrt')
+  endif
+
   nforce=1
   nwftype=1
   call vmc
+
+
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
@@ -1155,6 +1183,8 @@ module optimization_mod
     call wf_best_save
   endif
   endif !l_last_run
+
+!
 
 ! Print best wave function
   write(6,*)

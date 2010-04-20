@@ -56,6 +56,8 @@ module variables_mod
 ! wave function optimization
   logical                         :: l_opt      = .false.
 
+  integer                         :: iter_global_optimization
+  logical                         :: l_lastrun_global_optimization
   logical                         :: l_opt_nwt = .false.
   logical                         :: l_opt_lin  = .false.
   logical                         :: l_opt_ptb = .false.

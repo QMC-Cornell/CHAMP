@@ -74,7 +74,7 @@ module deriv_csf_mod
   subroutine dpsi_csf_bld
 ! ------------------------------------------------------------------------------
 ! Description   :  Logarithmic derivatives of Psi with respect to
-! Description   :  csftrow parameters
+! Description   :  csf parameters
 ! Description   :  d ln Psi / d j = (1/Psi) * d Psi / d j
 !
 ! Created       : J. Toulouse, 15 Jan 2006

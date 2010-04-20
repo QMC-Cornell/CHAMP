@@ -18,6 +18,22 @@ module csfs_mod
   real(dp), allocatable     :: csfs_ovlp (:,:)
   real(dp), allocatable     :: csfs_wfdet_ovlp (:)
 
+  logical                   :: l_vb_weights = .false.
+  real(dp), allocatable     :: vb_weights_hiberty (:)
+  real(dp), allocatable     :: csf_over_psid (:)
+  real(dp), allocatable     :: csf_over_psid_bav (:)
+  real(dp), allocatable     :: product_csf_over_psid (:,:)
+  real(dp), allocatable     :: product_csf_over_psid_bav (:,:)
+  real(dp), allocatable     :: vb_weights_chirgwin_coulson_bav (:)
+  real(dp), allocatable     :: vb_weights_chirgwin_coulson_av (:)
+  real(dp), allocatable     :: vb_weights_chirgwin_coulson_av_err (:)
+  real(dp), allocatable     :: vb_weights_lowdin_bav (:)
+  real(dp), allocatable     :: vb_weights_lowdin_av (:)
+  real(dp), allocatable     :: vb_weights_lowdin_av_err (:)
+  real(dp), allocatable     :: vb_weights_lowdin_like_bav (:)
+  real(dp), allocatable     :: vb_weights_lowdin_like_av (:)
+  real(dp), allocatable     :: vb_weights_lowdin_like_av_err (:)
+
   contains
 
 !===========================================================================
@@ -53,6 +69,7 @@ module csfs_mod
    write(6,'(a)') '   1 3  1 2'
    write(6,'(a)') '  end'
    write(6,'(a)') '  csf_coef 1.0 0.3 ... end : CSF coefficients'
+   write(6,'(a)') '  vb_weights = [logical] : calculate VB weights (default=false)'
    write(6,'(a)') '  dets_in_csfs ... end : determinants in CSFs'
    write(6,'(a)') ' end'
    write(6,*)
@@ -70,6 +87,9 @@ module csfs_mod
 
   case ('dets_in_csfs')
    call dets_in_csfs_rd
+
+  case ('vb_weights')
+   call get_next_value (l_vb_weights)
 
   case ('end')
    exit
@@ -135,6 +155,16 @@ module csfs_mod
   call object_modified ('norb')
 
   write(6,'(a)') 'End of csfs menu -----------------------------------------------------------------------------------------'
+
+  if (l_vb_weights) then
+    call object_block_average_request ('product_csf_over_psid_bav')
+    call object_block_average_request ('csf_over_psid_bav')
+    call object_average_request ('vb_weights_chirgwin_coulson_av')
+    call object_error_request ('vb_weights_chirgwin_coulson_av_err')
+    call object_average_request ('vb_weights_lowdin_av')
+    call object_error_request ('vb_weights_lowdin_av_err')
+    call routine_write_final_request ('vb_weights_wrt')
+  endif
 
   end subroutine csfs_menu
 
@@ -707,5 +737,360 @@ module csfs_mod
    endif
 
   end subroutine dens_mat_wfdet_bld
+
+! ==============================================================================
+  subroutine csf_over_psid_bld
+! ------------------------------------------------------------------------------
+! Description : Psi_i / Psid
+! Description : where Psi_i is a CSF and Psid is the determinant part of the wave function
+!
+! Created     : J. Toulouse, 01 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i, det_in_csf_i, det_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('csf_over_psid')
+   call object_block_average_define ('csf_over_psid', 'csf_over_psid_bav')
+
+   call object_needed ('ncsf')
+   call object_needed ('ndn')
+   call object_needed ('ndet_in_csf')
+   call object_needed ('iwdet_in_csf')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('iwdetup')
+   call object_needed ('iwdetdn')
+   call object_needed ('psi_det')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('csf_over_psid', csf_over_psid, ncsf)
+  call object_alloc ('csf_over_psid_bav', csf_over_psid_bav, ncsf)
+
+  do csf_i = 1, ncsf
+    csf_over_psid (csf_i) = 0.d0
+    do det_in_csf_i = 1, ndet_in_csf(csf_i)
+      det_i = iwdet_in_csf (det_in_csf_i, csf_i)
+      if (ndn >= 1) then
+        csf_over_psid (csf_i) = csf_over_psid (csf_i) + cdet_in_csf(det_in_csf_i, csf_i) * detu(iwdetup(det_i)) * detd(iwdetdn(det_i))
+      else
+        csf_over_psid (csf_i) = csf_over_psid (csf_i) + cdet_in_csf(det_in_csf_i, csf_i) * detu(iwdetup(det_i))
+      endif
+    enddo ! det_in_csf_i
+    csf_over_psid (csf_i) = csf_over_psid (csf_i) / psi_det
+  enddo ! csf_i
+
+  end subroutine csf_over_psid_bld
+
+! ==============================================================================
+  subroutine product_csf_over_psid_bld
+! ------------------------------------------------------------------------------
+! Description : Psi_i / Psid * Psi_j / Psid
+! Description : where Psi_i,j are CSFs and Psid is the determinant part of the wave function
+!
+! Created     : B. Mussard, 03 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i, csf_j
+
+! header
+  if (header_exe) then
+
+   call object_create ('product_csf_over_psid')
+   call object_block_average_define ('product_csf_over_psid', 'product_csf_over_psid_bav')
+
+   call object_needed ('ncsf') 
+   call object_needed ('csf_over_psid')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('product_csf_over_psid', product_csf_over_psid,ncsf,ncsf)
+  call object_alloc ('product_csf_over_psid_bav', product_csf_over_psid_bav, ncsf, ncsf)
+
+  do csf_i = 1,ncsf
+    do csf_j = csf_i, ncsf
+        product_csf_over_psid (csf_i,csf_j) = csf_over_psid(csf_i)*csf_over_psid(csf_j)
+        if (csf_i /= csf_j) then
+          product_csf_over_psid (csf_j,csf_i) = product_csf_over_psid (csf_i,csf_j)
+        endif
+    enddo ! csf_j
+  enddo ! csf_i
+
+  end subroutine product_csf_over_psid_bld
+
+! ==============================================================================
+  subroutine vb_weights_hiberty_bld
+! ------------------------------------------------------------------------------
+! Description : VB weights (Hiberty definition):
+! Description : w_i = c_i^2 / (Sum_i c_i^2)
+!
+! Created     : J. Toulouse, 16 Feb 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i
+  real(dp) sum_csf_coef_sq
+
+! header
+  if (header_exe) then
+
+   call object_create ('vb_weights_hiberty')
+
+   call object_needed ('ncsf')
+   call object_needed ('csf_coef')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('vb_weights_hiberty', vb_weights_hiberty, ncsf)
+
+  sum_csf_coef_sq = sum(csf_coef(1:ncsf,1)**2)
+
+  do csf_i = 1, ncsf
+    vb_weights_hiberty (csf_i) = csf_coef (csf_i, 1)**2 / sum_csf_coef_sq
+  enddo ! csf_i
+
+  end subroutine vb_weights_hiberty_bld
+
+! ==============================================================================
+  subroutine vb_weights_chirgwin_coulson_bld
+! ------------------------------------------------------------------------------
+! Description : VB weights (Chirgwin-Coulson definition):
+! Description : w_i = sum_j c_i c_j S_ij / sum_i sum_j c_i c_j S_ij
+!
+! Created     : J. Toulouse, 08 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('vb_weights_chirgwin_coulson_bav')
+   call object_average_define_from_block_average ('vb_weights_chirgwin_coulson_bav', 'vb_weights_chirgwin_coulson_av')
+   call object_error_define ('vb_weights_chirgwin_coulson_av', 'vb_weights_chirgwin_coulson_av_err')
+
+   call object_needed ('ncsf')
+   call object_needed ('csf_coef')
+   call object_needed ('csf_over_psid_bav')
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('vb_weights_chirgwin_coulson_bav', vb_weights_chirgwin_coulson_bav, ncsf)
+  call object_alloc ('vb_weights_chirgwin_coulson_av', vb_weights_chirgwin_coulson_av, ncsf)
+  call object_alloc ('vb_weights_chirgwin_coulson_av_err', vb_weights_chirgwin_coulson_av_err, ncsf)
+
+  do csf_i = 1, ncsf
+    vb_weights_chirgwin_coulson_bav (csf_i) = csf_coef (csf_i, 1) * csf_over_psid_bav (csf_i) 
+  enddo ! csf_i
+
+  end subroutine vb_weights_chirgwin_coulson_bld
+
+! ==============================================================================
+  subroutine vb_weights_lowdin_bav_bld
+! ------------------------------------------------------------------------------
+! Description : VB weights (Lowdin definition):
+! Description : w_k = sum_i sum_j c_i c_j S^1/2_ik S^1/2_jk
+!
+! Created     : B. Mussard, 08 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i, csf_j
+  real(dp) norm_wf_bav, intermed
+  real(dp), allocatable   ::  sqrt_product(:,:)
+
+! header
+  if (header_exe) then
+
+   call object_create ('vb_weights_lowdin_bav')
+   call object_average_define_from_block_average ('vb_weights_lowdin_bav', 'vb_weights_lowdin_av')
+   call object_error_define ('vb_weights_lowdin_av', 'vb_weights_lowdin_av_err')
+
+   call object_needed ('ncsf')
+   call object_needed ('csf_coef')
+   call object_needed ('product_csf_over_psid_bav')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('vb_weights_lowdin_bav', vb_weights_lowdin_bav, ncsf)
+  call object_alloc ('vb_weights_lowdin_av', vb_weights_lowdin_av, ncsf)
+  call object_alloc ('vb_weights_lowdin_av_err', vb_weights_lowdin_av_err, ncsf)
+  call alloc ('sqrt_product',sqrt_product,ncsf,ncsf)
+
+  call to_the_power (product_csf_over_psid_bav, ncsf, 0.5, sqrt_product)
+
+  norm_wf_bav = 0.d0
+  do csf_i = 1, ncsf
+    intermed = 0.d0
+    do csf_j = 1, ncsf
+       intermed = intermed + csf_coef (csf_j, 1) * sqrt_product (csf_j, csf_i)
+    enddo ! csf_j
+    intermed = intermed**2
+    norm_wf_bav = norm_wf_bav + intermed
+  enddo ! csf_i
+
+  do csf_i = 1, ncsf
+    vb_weights_lowdin_bav (csf_i) = 0.d0
+    do csf_j = 1, ncsf
+       vb_weights_lowdin_bav (csf_i) = vb_weights_lowdin_bav (csf_i) + csf_coef (csf_j, 1) * sqrt_product (csf_j, csf_i)
+    enddo ! csf_j
+    vb_weights_lowdin_bav (csf_i) = vb_weights_lowdin_bav (csf_i)**2 / norm_wf_bav
+  enddo ! csf_i
+
+! release
+  call release('sqrt_product',sqrt_product)
+
+  end subroutine vb_weights_lowdin_bav_bld
+
+! ==============================================================================
+  subroutine vb_weights_lowdin_like_bav_bld
+! ------------------------------------------------------------------------------
+! Description : VB weights (Lowdin definition):
+! Description : w_k = sum_i sum_j c_i c_j S^1/2_ik S^1/2_jk
+!
+! AIM : DMC
+! Created     : B. Mussard, 21 Mar 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i, csf_k
+  real(dp), allocatable :: lowdin_transform(:,:)
+
+! header
+  if (header_exe) then
+
+   call object_create ('vb_weights_lowdin_like_bav')
+   call object_average_define_from_block_average ('vb_weights_lowdin_like_bav', 'vb_weights_lowdin_like_av')
+   call object_error_define ('vb_weights_lowdin_like_av', 'vb_weights_lowdin_like_av_err')
+
+   call object_needed ('ncsf')
+   call object_needed ('csf_over_psid')
+   call object_needed ('product_csf_over_psid_bav')
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('vb_weights_lowdin_like_bav', vb_weights_lowdin_like_bav, ncsf)
+  call object_alloc ('vb_weights_lowdin_like_av', vb_weights_lowdin_like_av, ncsf)
+  call object_alloc ('vb_weights_lowdin_like_av_err', vb_weights_lowdin_like_av_err, ncsf)
+
+  call alloc ('lowdin_transform', lowdin_transform, ncsf,ncsf)
+  call to_the_power (product_csf_over_psid_bav, ncsf, -0.5, lowdin_transform)
+
+  do csf_i = 1, ncsf
+    vb_weights_lowdin_like_bav (csf_i) = 0.d0
+    do csf_k = 1,ncsf
+        vb_weights_lowdin_like_bav (csf_i) = lowdin_transform (csf_i, csf_k) * csf_over_psid_bav (csf_k)
+    enddo ! csf_k
+    vb_weights_lowdin_like_bav (csf_i) = vb_weights_lowdin_like_bav (csf_i) **2  
+  enddo ! csf_i
+
+! release
+  call release('lowdin_transform', lowdin_transform)
+
+  end subroutine vb_weights_lowdin_like_bav_bld
+
+
+! ==============================================================================
+  subroutine vb_weights_wrt
+! ------------------------------------------------------------------------------
+! Description : write VB weights
+!
+! Created     : J. Toulouse, 16 Feb 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer csf_i, csf_j
+
+! begin
+  call object_provide ('ncsf')
+  call object_provide ('vb_weights_hiberty')
+  call object_provide ('vb_weights_chirgwin_coulson_av')
+  call object_provide ('vb_weights_chirgwin_coulson_av_err')
+  call object_provide ('vb_weights_lowdin_av')
+  call object_provide ('vb_weights_lowdin_av_err')
+!  call object_provide ('vb_weights_lowdin_like_av')
+!  call object_provide ('vb_weights_lowdin_like_av_err')
+  call object_provide ('product_csf_over_psid_bav')
+  call object_provide ('csf_coef')
+
+  write(6,*)
+
+  if (l_lastrun_global_optimization) then
+  write(6,'(a,i4,a)') 'VB Weights (last run) -----------------------------------------------------------------------------------'
+  else
+  write(6,'(a,i4,a)') 'VB Weights (iteration:',iter_global_optimization,') ---------------------------------------------------------------------------' 
+  endif !l_last_run
+
+  write(6,*)
+  write(6,'(a)') '                        Hiberty'
+  do csf_i = 1, ncsf
+      write(6,'(a,i5,a,100f12.6)',advance='no') ' structure # ', csf_i, ': ', vb_weights_hiberty(csf_i)
+      write(6,*)
+  enddo
+  write(6,*)
+  write(6,'(a)') '              Chirgwin-Coulson    +-   error   '
+  do csf_i = 1, ncsf
+      write(6,'(a,i5,a,100f12.6)',advance='no') ' structure # ', csf_i, ': ', vb_weights_chirgwin_coulson_av (csf_i)
+      write(6,'(a,100f12.6)') ' +-', vb_weights_chirgwin_coulson_av_err (csf_i)
+  enddo
+  write(6,*)
+  write(6,'(a)') '                        Lowdin    +-   error   '
+  do csf_i = 1, ncsf
+      write(6,'(a,i5,a,100f12.6)',advance='no') ' structure # ', csf_i, ': ', vb_weights_lowdin_av (csf_i)
+      write(6,'(a,100f12.6)') ' +-', vb_weights_lowdin_av_err (csf_i)
+  enddo
+  write(6,*)
+  write(6,'(a)') 'End of VB Weights ----------------------------------------------------------------------------------------'
+
+  end subroutine vb_weights_wrt
 
 end module csfs_mod

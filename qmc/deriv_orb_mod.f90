@@ -1587,7 +1587,7 @@ module deriv_orb_mod
    call object_needed ('iwdet_in_csf')
    call object_needed ('cdet_in_csf')
    call object_needed ('det_ex')
-   call object_needed ('psido')
+   call object_needed ('psi_det')
 
    return
 
@@ -1625,7 +1625,7 @@ module deriv_orb_mod
      enddo ! det_in_csf_i
    enddo ! csf_i
 
-    dpsi_orb (dorb_i) = psid_ex (dorb_i) / psido
+    dpsi_orb (dorb_i) = psid_ex (dorb_i) / psi_det
 
  enddo ! ex_i
 

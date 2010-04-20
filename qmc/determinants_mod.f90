@@ -32,6 +32,8 @@ module determinants_mod
   logical, allocatable              :: orb_occ_in_adet_unq_dn (:,:,:)
   integer, allocatable              :: sgn_adet_unq_up (:,:)
   integer, allocatable              :: sgn_adet_unq_dn (:,:)
+  
+  real(dp)                          :: psi_det
 
   contains
 
