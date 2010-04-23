@@ -958,7 +958,7 @@ module csfs_mod
   call object_alloc ('vb_weights_lowdin_av_err', vb_weights_lowdin_av_err, ncsf)
   call alloc ('sqrt_product',sqrt_product,ncsf,ncsf)
 
-  call to_the_power (product_csf_over_psid_bav, ncsf, 0.5, sqrt_product)
+  call to_the_power (product_csf_over_psid_bav, ncsf, 0.5d0, sqrt_product)
 
   norm_wf_bav = 0.d0
   do csf_i = 1, ncsf
@@ -1021,7 +1021,7 @@ module csfs_mod
   call object_alloc ('vb_weights_lowdin_like_av_err', vb_weights_lowdin_like_av_err, ncsf)
 
   call alloc ('lowdin_transform', lowdin_transform, ncsf,ncsf)
-  call to_the_power (product_csf_over_psid_bav, ncsf, -0.5, lowdin_transform)
+  call to_the_power (product_csf_over_psid_bav, ncsf, -0.5d0, lowdin_transform)
 
   do csf_i = 1, ncsf
     vb_weights_lowdin_like_bav (csf_i) = 0.d0
