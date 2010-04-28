@@ -20,6 +20,7 @@ module main_menu_mod
   use debug_mod
   use backflow_mod, only: backflow_menu !fp
   use correlated_sampling_mod
+  use cusp_mod
 
   character(len=max_string_len_file)  :: include_file = ''
   logical                             :: in_include_file = .false.
@@ -72,6 +73,7 @@ module main_menu_mod
    write(6,'(a)') ' intracule3d ... end: menu for calculation of 3D intracules'
    write(6,'(a)') ' extracule ... end: menu for calculation of 1D extracules'
    write(6,'(a)') ' forces    ... end: menu for calculation of forces'
+   write(6,'(a)') ' cusp      ... end: menu for e-N cusp options'
    write(6,'(a)') ' debug ... end: menu for debugging'
    write(6,'(a)') ' statistics ... end: menu for printing timing statistics'
    write(6,'(a)') ' backflow ... end: menu for backflow transformation' !fp
@@ -104,6 +106,7 @@ module main_menu_mod
   case ('intracule_3d')      ; call intra_3d_menu
   case ('extracule')         ; call extracule_menu
   case ('forces')            ; call forces_menu
+  case ('cusp')              ; call orb_cusp_menu
   case ('grid')              ; call grid_menu
   case ('node')              ; call node_menu
   case ('debug')             ; call debug_menu

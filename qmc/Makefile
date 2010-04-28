@@ -62,9 +62,9 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	catalog_averages_mod.f90 catalog_objects_mod.f90 \
 	catalog_routines_mod.f90 champ.f90 constants_mod.f90 control_mod.f90 \
 	correlated_sampling_mod.f90 crystal_symmetries_mod.f90 csfs_mod.f90 \
-	cslater_cf_mod.f90 cslater_mod.f90 cslaterw_mod.f90 debug_mod.f90 \
-	density_mod.f90 deriv_csf_mod.f90 deriv_exp_mod.f90 deriv_geo_mod.f90 \
-	deriv_jas_mod.f90 deriv_mod.f90 deriv_orb_mod.f90 \
+	cslater_cf_mod.f90 cslater_mod.f90 cslaterw_mod.f90 cusp_mod.f90 \
+	debug_mod.f90 density_mod.f90 deriv_csf_mod.f90 deriv_exp_mod.f90 \
+	deriv_geo_mod.f90 deriv_jas_mod.f90 deriv_mod.f90 deriv_orb_mod.f90 \
 	determinants_mod.f90 dipole_moment_mod.f90 dmc_mod.f90 \
 	electrons_mod.f90 eloc_mod.f90 ewald2_mod.f90 extracule_mod.f90 \
 	f2kcli.f90 files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 \
@@ -190,7 +190,7 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	bwfdet_mod.o catalog_averages_mod.o catalog_objects_mod.o \
 	catalog_routines_mod.o champ.o constants_mod.o control_mod.o \
 	correlated_sampling_mod.o crystal_symmetries_mod.o csfs_mod.o \
-	cslater_cf_mod.o cslater_mod.o cslaterw_mod.o debug_mod.o \
+	cslater_cf_mod.o cslater_mod.o cslaterw_mod.o cusp_mod.o debug_mod.o \
 	density_mod.o deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o \
 	deriv_jas_mod.o deriv_mod.o deriv_orb_mod.o determinants_mod.o \
 	dipole_moment_mod.o dmc_mod.o electrons_mod.o eloc_mod.o ewald2_mod.o \
@@ -385,6 +385,7 @@ control_mod.o: all_tools_mod.o modules.h
 correlated_sampling_mod.o: all_tools_mod.o nuclei_mod.o modules.h
 crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h
+cusp_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o modules.h
 debug_mod.o: all_tools_mod.o
 density_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o grid_mod.o \
 	psi_mod.o modules.h
@@ -425,7 +426,7 @@ jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o modules.h
 main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
 	commons/contr3_mod.o commons/stepv_mod.o control_mod.o \
-	correlated_sampling_mod.o debug_mod.o density_mod.o \
+	correlated_sampling_mod.o cusp_mod.o debug_mod.o density_mod.o \
 	dipole_moment_mod.o dmc_mod.o extracule_mod.o forces_mod.o grid_mod.o \
 	intracule_mod.o jastrow_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o
@@ -440,7 +441,7 @@ opt_common_mod.o: all_tools_mod.o
 opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o modules.h
 opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o modules.h
 opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o
-optimization_mod.o: all_tools_mod.o control_mod.o deriv_mod.o \
+optimization_mod.o: all_tools_mod.o control_mod.o cusp_mod.o deriv_mod.o \
 	montecarlo_mod.o nuclei_mod.o opt_common_mod.o opt_lin_mod.o \
 	opt_nwt_mod.o opt_ptb_mod.o orbitals_mod.o periodic_jastrow_mod.o \
 	vmc_mod.o modules.h

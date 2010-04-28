@@ -2,6 +2,7 @@
 c Written by Cyrus Umrigar
 c Calculate all orbitals, orb, at position of nucleus icent
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
+      use all_tools_mod
       use atom_mod
       use coefs_mod
       use dim_mod
@@ -27,6 +28,11 @@ c Calculate all orbitals, orb, at position of nucleus icent
           rvec_en(1,1,ic)=eps
         endif
     6 continue
+
+! allocate basis functions
+      call alloc ('phin', phin, nbasis, nelec)
+      call alloc ('dphin', dphin, 3, nbasis, nelec)
+      call alloc ('d2phin', d2phin, nbasis, nelec)
 
 c Calculate basis functions, phin, at position of nucleus icent
       if(ndim.eq.3) then

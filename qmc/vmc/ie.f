@@ -15,6 +15,7 @@ c necn -> necoef
       use numbas_mod
       use basis2_mod
       use lbas_mod
+      use basis_mod
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-5)
 
@@ -50,6 +51,10 @@ c I have to put in more features.
 c At present I assume that if a coef is zero, then it is not to be varied and
 c it need not be equal to other zero coefs.  Neither assumption is correct.
 c 1st basis function is not varied because normalization not relevant
+
+! JT: use basis_fns_name instead of lbasis
+      call object_provide ('basis_fns_name')
+
       nparml=0
       necn=0
       do 20 k=1,norb
@@ -57,9 +62,12 @@ c 1st basis function is not varied because normalization not relevant
           do 15 l=1,norb
             do 10 j=1,nbasis
               if((l-1)*nbasis+j .ge. (k-1)*nbasis+i) goto 15
-              indexi=index(lbasis(i),' ',.true.)
-              indexj=index(lbasis(j),' ',.true.)
-              if(lbasis(i)(indexi+1:indexi+2).eq.lbasis(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
+!JT              indexi=index(lbasis(i),' ',.true.)
+!JT              indexj=index(lbasis(j),' ',.true.)
+              indexi=index(basis_fns_name(i),'_',.true.) !JT
+              indexj=index(basis_fns_name(j),'_',.true.) !JT
+!JT              if(lbasis(i)(indexi+1:indexi+2).eq.lbasis(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
+              if(basis_fns_name(i)(indexi+1:indexi+2).eq.basis_fns_name(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
                 if( ((i.ne.j).or.(k.ne.l)) .and. abs(coef(i,k,1)-coef(j,l,1)).le.eps .and. abs(coef(i,k,1)).gt.eps ) then
                   necn=necn+1
                   call alloc ('iebasi', iebasi, 2, necn)
@@ -101,9 +109,12 @@ c 1st basis function is not varied because normalization not relevant
       nebase=0
       do 40 i=2,nbasis
         do 30 j=1,i-1
-          indexi=index(lbasis(i),' ',.true.)
-          indexj=index(lbasis(j),' ',.true.)
-          if(lbasis(i)(indexi+1:indexi+2).eq.lbasis(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
+!JT          indexi=index(lbasis(i),' ',.true.)
+!JT          indexj=index(lbasis(j),' ',.true.)
+          indexi=index(basis_fns_name(i),'_',.true.) !JT
+          indexj=index(basis_fns_name(j),'_',.true.) !JT
+!JT          if(lbasis(i)(indexi+1:indexi+2).eq.lbasis(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
+          if(basis_fns_name(i)(indexi+1:indexi+2).eq.basis_fns_name(j)(indexj+1:indexj+2) .and. zex(i,1).eq.zex(j,1)) then
             nebase=nebase+1
             call alloc ('iebase', iebase, 2, nebase)
             iebase(1,nebase)=i

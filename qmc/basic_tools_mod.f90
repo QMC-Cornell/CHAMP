@@ -342,7 +342,8 @@ module basic_tools_mod
   integer                             :: dim1
 
 ! output
-  character(len=max_string_len), allocatable  :: object (:)
+!  character(len=max_string_len), allocatable  :: object (:) ! comment out for lbasis
+  character(len=*), allocatable  :: object (:) ! is this syntax ok?
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'alloc_string_1'

@@ -12,6 +12,7 @@ module optimization_mod
   use montecarlo_mod
   use control_mod
   use vmc_mod
+  use cusp_mod
 
 ! Declaration of global variables and default values
   character(len=max_string_len)   :: opt_method = 'linear'

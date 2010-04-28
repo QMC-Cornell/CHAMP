@@ -19,6 +19,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use constants_mod
       use atom_mod
       use orbitals_mod
+      use cusp_mod
       use coefs_mod
       use coefs2_mod
       use dets_mod
