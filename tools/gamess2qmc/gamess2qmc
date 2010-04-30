@@ -493,7 +493,7 @@ sub get_options{
       if(exists $options{f}){
 	  $det_threshold_det2csf = $options{f};
       } else {
-	  $det_threshold_det2csf=$det_threshold
+	  $det_threshold_det2csf=10*$det_threshold
       }
 
 # state for trial wave function
@@ -1815,12 +1815,56 @@ sub print_csf_cyrus{
     printf CSFFILE "0 iused_orbs \n";
 #   printf CSFFILE ".005 .05 cutoff_g2q,cutoff_d2c\n";
     printf CSFFILE "%.4f %.4f cutoff_g2q,cutoff_d2c\n",$det_threshold,$det_threshold_det2csf;
-    printf CSFFILE "%d %d %d %d %d 1.d-5 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$nbasis;
+#process lcao coeff
+    my @final_lcao_coef=();
+    foreach my $j (@orbital_indices){
+	my @temp_lcao_coef=();
+        for(my $ia=0; $ia <= $#atom_symbols; $ia++){
+            foreach my $i (@basorder){
+                for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
+                    $pk=${$prim_index2{$i}}[$k];
+                      if($lcao_atomidx[$pk] == ($ia+1)){
+			  my $temp_lcao_coef=sprintf "% .8E", ${$lcao[$j]}[$pk];
+			  push @temp_lcao_coef, $temp_lcao_coef;
+                      }
+               }
+            }
+        }
+	push @final_lcao_coef, [@temp_lcao_coef];
+    }
+
+    my @which_basis_used=();
+    my $reduced_nbasis=0;
+    if ($ispher == 1) {
+	print "Removing redundant basis functions\n";
+	my $tolerance = 10e-06;
+	for my $current_basis (0..$nbasis-1) {
+	    $current_basis_used=0;
+	    for my $current_orb (@orbital_indices) {
+		$current_basis_used = 1 if abs(${$final_lcao_coef[$current_orb]}[$current_basis]) > $tolerance;
+	    }
+	    push @which_basis_used, $current_basis if $current_basis_used;
+	}
+
+	for my $current_orb (@orbital_indices) {
+	    @{$final_lcao_coef[$current_orb]} = @{$final_lcao_coef[$current_orb]}[@which_basis_used]; 
+	}
+	$reduced_nbasis = @{$final_lcao_coef[0]};
+    }
+    push @{$final_lcao_coef[0]}, "((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)";
+
+    if ($ispher == 1) {
+	printf CSFFILE "%d %d %d %d %d 1.d-6 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$reduced_nbasis;
+    }
+    else {
+	printf CSFFILE "%d %d %d %d %d 1.d-6 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$nbasis;
+    }
 
     # print determinantal coefficients
     for($i=1; $i<=$selected_det; $i++){
         $d=$kept_det[$i];
-	printf CSFFILE "%.8f ",$det_coeff{$d}*$phase_factors[$d]*$qmc_phase[$d];
+#	printf CSFFILE "%.8f ",$det_coeff{$d}*$phase_factors[$d]*$qmc_phase[$d];
+	printf CSFFILE "%s ",$det_coeff{$d}*$phase_factors[$d]*$qmc_phase[$d];
     }
     printf CSFFILE " (det_coef(idet),idet=1,ndet)\n";
 
@@ -1844,25 +1888,27 @@ sub print_csf_cyrus{
       printf CSFFILE "(occupations(iocc),iocc=1,norb)\n";
      }
 
-# lcao coefs
-    foreach my $j (@orbital_indices){
+# print lcao coefs
+    print CSFFILE " @{$_}\n" for @final_lcao_coef;
 
-        for(my $ia=0; $ia <= $#atom_symbols; $ia++){
-            foreach my $i (@basorder){
-                for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
-                    $pk=${$prim_index2{$i}}[$k];
-                      if($lcao_atomidx[$pk] == ($ia+1)){
-                         printf CSFFILE $lcao_format, ${$lcao[$j]}[$pk];
-                      }
-               }
-            }
-        }
-        if ($j==0) {
-         printf  CSFFILE " ((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)\n";
-        } else {
-         printf  CSFFILE "\n";
-        }
-   }
+#     foreach my $j (@orbital_indices){
+
+#         for(my $ia=0; $ia <= $#atom_symbols; $ia++){
+#             foreach my $i (@basorder){
+#                 for(my $k=0; $k<=$#{$prim_index2{$i}}; $k++){
+#                     $pk=${$prim_index2{$i}}[$k];
+#                       if($lcao_atomidx[$pk] == ($ia+1)){
+#                          printf CSFFILE $lcao_format, ${$lcao[$j]}[$pk];
+#                       }
+#                }
+#             }
+#         }
+#         if ($j==0) {
+#          printf  CSFFILE " ((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)\n";
+#         } else {
+#          printf  CSFFILE "\n";
+#         }
+#    }
 
 
     for($i=1; $i<=$selected_det; $i++){
@@ -2336,7 +2382,7 @@ sub basis_info_cyrus{
 		} else {
 		    $k2=$k;
 		}
-
+		push @{$r_func{$k2}}, $p;
 	    } else {
 		unless( exists $map_prim{$k}){
 		    $k2=$k;
