@@ -16,22 +16,22 @@ c related with multiplicative factors of 1.
 c It is not guaranteed to find all relationships, but it finds almost all of them.
 c Also, it could find a relationship because of a chance equality of the CSF's
 c that does not really exist.  I reduce the chance of that by using orbital
-c eigenvalues or occupation numbers to label determinants that could enter in
-c the same CSF.
+c eigenvalues or natural orbital occupation numbers to label determinants that could
+c enter in the same CSF.
 c Output written in fashion to be useful to serve as input to both old and
 c new versions of optimization program, but presently only the one for the
 c new version is written out after checking the triplets.
 c The input can come either from the output of a GUGA or a GENCI run using
 c GAMESS.  If it is a GENCI run, then gamess2qmc does not write out the
 c determinants in CHAMP format, so this program does that too, but that is
-c assuming that the GENCI has been transfered correctly from det_to_csf.
+c assuming that the GENCI part has been transfered correctly from det_to_csf.
 
 c iused_orbs = 0  write out all orbs
 c            = 1  write out used orbs only
 
       implicit real*8(a-h,o-z)
       character*80 fmt,fmt2,mode
-      parameter(MDET=10000,MCSF=5000,MDET_IN_CSF=200,MELEC=100,MORB=100,MBASIS=500,MLABEL=MDET,MACT=100)
+      parameter(MDET=20000,MCSF=8000,MDET_IN_CSF=200,MELEC=100,MORB=100,MBASIS=500,MLABEL=MDET,MACT=100)
       dimension cdet(MDET),iwdet(MDET),iedet(2,MDET),frac(2,MDET)
      &,iflag_det(MDET),iflag_label_det(MLABEL),iflag_csf(MCSF), csf_coef(MCSF),ndet_in_csf(MCSF)
      &,iwdet_in_csf(MDET_IN_CSF,MCSF),cdet_in_csf(MDET_IN_CSF,MCSF)
@@ -53,7 +53,7 @@ c            = 1  write out used orbs only
 c eps should be something like 4.d-6 to 4.d-5
         read(5,*) ndet,nelec,nup,norb,nbasis,eps
         write(6,'(''This program is far from foolproof since it looks for near equalities'')')
-        write(6,'(''You can play with eps in a range something like 4.d-6 to 4.d-5'')')
+        write(6,'(''You can play with eps in a range something like 1.d-7 to 1.d-5'')')
         write(6,'(''ndet,nelec,nup,norb,nbasis,eps='',5i4,1pd9.2)') ndet,nelec,nup,norb,nbasis,eps
         if(ndet.gt.MDET) stop 'ndet>MDET'
         if(nelec.gt.MELEC) stop 'nelec>MELEC'
@@ -162,29 +162,24 @@ c Write out eigs just to see in practice how close the ones that should be degen
       call shell(eigs_tmp,norb)
       write(6,'(/,''Only determinants with orbitals whose eigs are within 0.1*eps of each other can be combined into CSFs'')')
       write(6,'(''This helps in choosing eps'')')
-      write(6,'(''sorted eigs'',90f10.6)') (eigs_tmp(i),i=1,norb)
+      write(6,'(''sorted eigs'',2000f13.9)') (eigs_tmp(i),i=1,norb)
 
 c Write out the small eigenvalue diffs.
+c In loop over 130 we are giving eigenvals. that match within 0.1d0*eps the same label.
+c If the eigenvalues are close, but do not fit this criterion, write out warning.
       ndiffs=0
       do 90 i=2,norb
-        if(eigs_tmp(i).gt.eigs_tmp(i-1) .and. eigs_tmp(i)-eigs_tmp(i-1).lt.100*eps) then
+        if(eigs_tmp(i)-eigs_tmp(i-1).gt.0.1d0*eps .and. eigs_tmp(i)-eigs_tmp(i-1).lt.100*eps) then
+          write(6,'(''Warning: eigs. close but not close enough to get same label, iorb,eigs='',2i6,2f13.9)')
+     &    i-1,i,eigs_tmp(i-1),eigs_tmp(i)
           ndiffs=ndiffs+1
           eigs_tmp(ndiffs)=eigs_tmp(i)-eigs_tmp(i-1)
         endif
    90 continue
 c     write(6,'(i4,'' Eigenvalue diffs are'')') ndiffs
-c     write(6,'(''Eig diffs'',90f10.6)') (eigs_tmp(i),i=1,ndiffs)
+c     write(6,'(''Eig diffs'',2000f10.6)') (eigs_tmp(i),i=1,ndiffs)
       call shell(eigs_tmp,ndiffs)
-c     write(6,'(''Eig diffs'',90f10.6)') (eigs_tmp(i),i=1,ndiffs)
-      ndiffs2=1
-      do 95 i=2,ndiffs
-        if(eigs_tmp(i).gt.eigs_tmp(i-1)+1.d-9) then
-          ndiffs2=ndiffs2+1
-          eigs_tmp(ndiffs2)=eigs_tmp(i)
-        endif
-   95 continue
-      write(6,'(i4,'' Eigenvalue diffs are'')') ndiffs2
-      write(6,'(''Eig diffs'',90f10.6)') (eigs_tmp(i),i=1,ndiffs2)
+      if(ndiffs.ge.1) write(6,'(''Warning: Eig diffs'',2000f12.9)') (eigs_tmp(i),i=1,ndiffs)
 
 c Sort eigenvalues and match eigenvalue sets to label dets. so that those dets. that
 c can be in the same CSF have the same label.
@@ -194,7 +189,7 @@ c For the eigenvlues we use 0.1*eps rather than eps as the matching criterion.
         do 110 iel=1,nelec
   110     eigs_in_det(iel,idet)=eigs(iworbd(iel,idet))
         call shell(eigs_in_det(1,idet),nelec)
-  120   write(6,'(''sorted eigs'',i4,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
+  120   write(6,'(''sorted eigs'',i4,2000f13.9)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
 
       do 125 idet=2,ndet
   125   label_det(idet)=0
@@ -225,6 +220,7 @@ c Flag the label_det's that have csf_coef(icsf) >= cutoff_d2c
 c Check that all dets in a given CSF have the same label_det
       read(5,*) ncsf
       write(6,'(''No of CSFs read in='',i4)') ncsf
+      if(ncsf.gt.MCSF) stop 'ncsf>MCSF'
       read(5,*) (csf_coef(icsf),icsf=1,ncsf)
       write(6,'(''Input csf_coef='',100f8.4)') (csf_coef(icsf),icsf=1,ncsf)
       read(5,*) (ndet_in_csf(icsf),icsf=1,ncsf)
@@ -253,7 +249,7 @@ c Write out csf_coefs just to see in practice how close the ones that should be 
       write(6,'(/,''Only determinants in CSFs whose abs(csf_coef) are within eps*sqrt(abs(csf_coef(icsf))) of each other can be'',
      &'' combined into CSFs'')')
       write(6,'(''This helps in choosing eps'')')
-      write(6,'(''sorted abs(csf_coef)'',i4,90f10.6)') idet,(csf_coef_tmp(i),i=1,ncsf)
+      write(6,'(''sorted abs(csf_coef)'',i4,100000f10.6)') idet,(csf_coef_tmp(i),i=1,ncsf)
 
 c Write out the small csf_coef diffs.
       ndiffs=0
@@ -265,11 +261,11 @@ c Write out the small csf_coef diffs.
         endif
       enddo
       write(6,'(i4,'' abs(csf_coef) diffs are'')') ndiffs
-      write(6,'(/,''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
+      write(6,'(/,''abs(csf_coef) diffs'',2000f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
       write(6,'(''And the corresponding abs(csf_coef) are'')')
-      write(6,'(''abs(csf_coef)      '',90f10.6)') (abs_csf_coef(i),i=1,ndiffs)
+      write(6,'(''abs(csf_coef)      '',2000f10.6)') (abs_csf_coef(i),i=1,ndiffs)
       call shell(csf_coef_tmp,ndiffs)
-c     write(6,'(''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
+c     write(6,'(''abs(csf_coef) diffs'',2000f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
       ndiffs2=1
       do i=2,ndiffs
         if(csf_coef_tmp(i).gt.csf_coef_tmp(i-1)+1.d-9) then
@@ -279,22 +275,23 @@ c     write(6,'(''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs)
         endif
       enddo
       write(6,'(/,i4,'' abs(csf_coef) diffs are'')') ndiffs2
-      write(6,'(''abs(csf_coef) diffs'',90f10.6)') (csf_coef_tmp(i),i=1,ndiffs2)
+      write(6,'(''abs(csf_coef) diffs'',2000f10.6)') (csf_coef_tmp(i),i=1,ndiffs2)
 c abs_csf_coef was not sorted when csf_coef_tmp was sorted, so the next write is not correct.
-c     write(6,'(''abs(csf_coef)      '',90f10.6)') (abs_csf_coef(i),i=1,ndiffs2)
+c     write(6,'(''abs(csf_coef)      '',2000f10.6)') (abs_csf_coef(i),i=1,ndiffs2)
 
-c Make cdet_in_csf more accurate
+c Make cdet_in_csf more accurate since they are printed out only to an accuracy of 10^-6
       do 167 icsf=1,ncsf
         do 167 idet_in_csf=1,ndet_in_csf(icsf)
-          do 166 inum=1,15
-            do 166 iden=1,11664
-              if(abs(abs(cdet_in_csf(idet_in_csf,icsf))-sqrt(dfloat(inum)/dfloat(iden))).lt.1.d-4) then
-c               write(6,*) abs(cdet_in_csf(idet_in_csf,icsf)),dfloat(inum)/dfloat(iden)
+          do 166 inum=1,50
+            do 166 iden=1,20000
+              if(abs(abs(cdet_in_csf(idet_in_csf,icsf))-sqrt(dfloat(inum)/dfloat(iden))).le.1.d-6) then
+c               write(6,*) 'Match',abs(cdet_in_csf(idet_in_csf,icsf)),dfloat(inum)/dfloat(iden),inum,iden
+                write(6,'(''Match'',2i6)') inum,iden
                 cdet_in_csf(idet_in_csf,icsf)=sign(sqrt(dfloat(inum)/dfloat(iden)),cdet_in_csf(idet_in_csf,icsf))
                 goto 167
               endif
   166   continue
-        write(6,'(''cdet_in_csf(idet_in_csf,icsf)='',f8.6)') cdet_in_csf(idet_in_csf,icsf)
+        write(6,'(''Warning: failed to match cdet_in_csf(idet_in_csf,icsf)='',f8.6)') cdet_in_csf(idet_in_csf,icsf)
         stop 'failed to match up cdet_in_csf(idet_in_csf,icsf)'
   167 continue
 
@@ -325,6 +322,7 @@ c     write(fmt,'(''(''i3,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
       write(fmt,'(''(''i4,''i3,a)'')') ncsf
       write(6,fmt) (ndet_in_csf(icsf),icsf=1,ncsf),' (ndet_in_csf(icsf),icsf=1,ncsf)'
       do 1340 icsf=1,ncsf
+        if(ndet_in_csf(icsf).le.0) write(6,'(''Warning: icsf,ndet_in_csf(icsf)='',9i6)') icsf,ndet_in_csf(icsf)
         write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
@@ -417,6 +415,11 @@ c Eliminate the unused orbitals and update the corresponding eigs
             eigs(map_orb(iorb))=eigs(iorb)
           endif
   195   continue
+        if(norb_used.ne.norb) then
+          write(6,'(''norb_used is < norb, norb_used, norb='',9i5)') norb_used,norb
+         else
+          write(6,'(''norb_used = norb ='',9i5)') norb
+        endif
         norb=norb_used
 
 c Update iworbd
@@ -432,7 +435,7 @@ c For the eigenvlues we use 0.1*eps rather than eps as the matching criterion.
         do 210 iel=1,nelec
   210     eigs_in_det(iel,idet)=eigs(iworbd(iel,idet))
         call shell(eigs_in_det(1,idet),nelec)
-  220   write(6,'(''sorted eigs'',i4,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
+  220   write(6,'(''sorted eigs'',i4,2000f13.9)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
 
       do 225 idet=2,ndet
   225   label_det(idet)=0
@@ -543,7 +546,7 @@ c Create old version inputs
   330 continue
       write(6,'(i4,'' nparmd'')') nparmd
       if(nparmd.gt.0) then
-        write(fmt,'(''(''i4,''i4,a)'')') nparmd
+        write(fmt,'(''(''i5,''i5,a)'')') nparmd
         write(6,fmt) (iwdet(ipar),ipar=1,nparmd),' (iwdet(ipar),ipar=1,nparmd)'
        else
         write(6,'(a)') '(iwdet(ipar),ipar=1,nparmd)'
@@ -583,15 +586,16 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
         write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
-        do 5710 idet_in_csf=1,ndet_in_csf(icsf)
- 5710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c       do 5710 idet_in_csf=1,ndet_in_csf(icsf)
+c5710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
         write(fmt,'(''(''i3,''f5.1,a)'')') ndet_in_csf(icsf)
  5340   write(6,fmt) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
 
 c Combine CSFs that have related coefs
 c The following puts the icsf CSF into the jcsf CSF and eliminates the icsf CSF.
+c It then moves csfs from jcp on down a step and goes back to the very beginning.  Dumb way, but it works.
 c Note: it is probably better to have icsf be the smallest index (largest coef) rather
 c than the largest index (smallest coef) of the two because then one ends up with
 c smaller CSF coefs. and if they are small enough then we can drop them.
@@ -639,9 +643,9 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
         write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
-        do 6710 idet_in_csf=1,ndet_in_csf(icsf)
- 6710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c       do 6710 idet_in_csf=1,ndet_in_csf(icsf)
+c6710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
         write(fmt,'(''(''i3,''f5.1,a)'')') ndet_in_csf(icsf)
  6340   write(6,fmt) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
@@ -685,9 +689,9 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
         write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
-        do 7710 idet_in_csf=1,ndet_in_csf(icsf)
- 7710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c       do 7710 idet_in_csf=1,ndet_in_csf(icsf)
+c7710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
         write(fmt,'(''(''i3,''f5.1,a)'')') ndet_in_csf(icsf)
  7340   write(6,fmt) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
@@ -721,9 +725,9 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
 c       do 435 idet_in_csf=1,ndet_in_csf(icsf)
 c 435   if(abs(cdet_in_csf(idet_in_csf,icsf)).le.1.d-4)
 c    &  write(6,'(''Warning: cdet_in_csf(idet_in_csf,icsf)='',d12.4)') cdet_in_csf(idet_in_csf,icsf)
-        do 436 idet_in_csf=1,ndet_in_csf(icsf)
-  436     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c       do 436 idet_in_csf=1,ndet_in_csf(icsf)
+c 436     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
         write(fmt,'(''(''i3,''f5.1,a)'')') ndet_in_csf(icsf)
   440   write(6,fmt) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
@@ -837,9 +841,9 @@ c eliminated, but at present we just print informative warning.
       ndet=0
       do 578 icsf=1,ncsf
         do 578 idet_in_csf=1,ndet_in_csf(icsf)
-          if(abs(cdet(iwdet_in_csf(idet_in_csf,icsf))).lt.1.d-6)
-     &    write(6,'(''Warning: det'',i5,'' could probably be eliminated but it just costs a bit of extra time to keep it'')')
-     &    iwdet_in_csf(idet_in_csf,icsf)
+c         if(abs(cdet(iwdet_in_csf(idet_in_csf,icsf))).lt.1.d-6)
+c    &    write(6,'(''Warning: det'',i5,'' could probably be eliminated but it just costs a bit of extra time to keep it'')')
+c    &    iwdet_in_csf(idet_in_csf,icsf)
   578     ndet=max(ndet,iwdet_in_csf(idet_in_csf,icsf))
       write(6,'(''used ndet='',i5)') ndet
 
@@ -855,9 +859,9 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
         write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
-        do 8710 idet_in_csf=1,ndet_in_csf(icsf)
- 8710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c       do 8710 idet_in_csf=1,ndet_in_csf(icsf)
+c8710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
         write(fmt,'(''(''i3,''f5.1,a)'')') ndet_in_csf(icsf)
  8340   write(6,fmt) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
@@ -910,7 +914,7 @@ c For the eigenvlues we use 0.1*eps rather than eps as the matching criterion.
         do 610 iel=1,nelec
   610     eigs_in_det(iel,idet)=eigs(iworbd(iel,idet))
         call shell(eigs_in_det(1,idet),nelec)
-  620   write(6,'(''sorted eigs'',i4,90f10.6)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
+  620   write(6,'(''sorted eigs'',i4,2000f13.9)') idet,(eigs_in_det(iel,idet),iel=1,nelec)
 
       do 625 idet=2,ndet
   625   label_det(idet)=0
@@ -942,9 +946,9 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
         write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
-        do 9710 idet_in_csf=1,ndet_in_csf(icsf)
- 9710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c       do 9710 idet_in_csf=1,ndet_in_csf(icsf)
+c9710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
         write(fmt,'(''(''i3,''f5.1,a)'')') ndet_in_csf(icsf)
  9340   write(6,fmt) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
@@ -996,6 +1000,23 @@ c Calculate total norm of the csf's kept.
       csf_sum=sqrt(csf_sum)
       write(6,'(''csf_sum='',f8.6)') csf_sum
 
+c Check if there are close csf coefs.  At this point they are in order of decreasing magnitude, so upper limit of iden is inum.
+      do 399 icsf=1,ncsf-1
+        do 399 jcsf=icsf+1,ncsf
+          if(label_det(iwdet_in_csf(1,icsf)).eq.label_det(iwdet_in_csf(1,jcsf))) then
+            do 398 inum=1,20
+            do 398 iden=1,10
+              times=dfloat(inum)/dfloat(iden)
+              do 398 isignj=-1,1,2
+                if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.100*eps*sqrt(abs(csf_coef(icsf)))) then
+                  write(6,'(''Warning close coefs.: inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i5,2f13.9)')
+     &            inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
+                  goto 399
+                endif
+  398       continue
+          endif
+  399 continue
+
 c Create new version inputs
 c While doing that, check if any cdet_in_csf is not an integer or half-integer.
 c I need to do the checking completely differently using orbital energies or occupations.
@@ -1004,9 +1025,10 @@ c I need to do the checking completely differently using orbital energies or occ
 c First write the easy lines that are to be swapped into the input file
 c     write(6,'(a1,''ncsf='',i2,'' ndet='',i3,'' norb='',i3,'' csf_sum='',f8.6,a1,a)')
 c    &"'",ncsf,ndet,norb,csf_sum,"'",'  title'
-      write(6,'(a1,''ncsf='',i3,'' ndet='',i3,'' norb='',i3,'' csf_sum='',f8.6,'' cutoff_g2q='',f6.4,'' cutoff_d2c='',f5.3,a1,a)')
-     &"'",ncsf,ndet,norb,csf_sum,cutoff_g2q,cutoff_d2c,"'",'  title'
-      write(6,'(i3,2i4,t42,a)') ndet,nbasis,norb, 'ndet,nbasis,norb'
+      write(6,'(a1,''ncsf='',i3,'' ndet='',i4,'' norb='',i3,'' csf_sum='',f8.6,'' cutoff_g2q='',f6.4,'' cutoff_d2c='',f5.3,
+     &'' eps='',es7.1,a1,a)')
+     &"'",ncsf,ndet,norb,csf_sum,cutoff_g2q,cutoff_d2c,eps,"'",'  title'
+      write(6,'(i4,2i4,t42,a)') ndet,nbasis,norb, 'ndet,nbasis,norb'
       nparm=24+ncsf-1
       write(6,'(''1000 '',i3,'' -1 1 5 1000 31101 1 NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr'')') nparm
       write(6,'(''0  4  5  15  0 '',i3,'' 0 0  nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg'')') ncsf-1
@@ -1020,14 +1042,18 @@ c Write the line for making 0Info
       write(6,'($,99i5)') (icsf,icsf=1000,min(ncsf,9999))
       write(6,'('' (iwcsf(iparm),iparm=1,nparmcsf)'')')
 
-      do 706 iorb=1,norb
-        write(fmt,'(''(1p,'',i3''d16.8,a)'')') nbasis
-        if(iorb.eq.1) then
-          write(6,fmt) (coef(ibasis,iorb),ibasis=1,nbasis),' ((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)'
-         else
-          write(6,fmt) (coef(ibasis,iorb),ibasis=1,nbasis)
-        endif
-  706 continue
+c Write out orbs if we are keeping only the orbitals used in the CSFs (iused_orbs=1).  If we are not doing orbital optimization by
+c rotations, then that is all we need, but if we do orbital optimization by rotations then we need all orbitals.
+      if(iused_orbs.eq.1) then
+        do 706 iorb=1,norb
+          write(fmt,'(''(1p,'',i3''d16.8,a)'')') nbasis
+          if(iorb.eq.1) then
+            write(6,fmt) (coef(ibasis,iorb),ibasis=1,nbasis),' ((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)'
+           else
+            write(6,fmt) (coef(ibasis,iorb),ibasis=1,nbasis)
+          endif
+  706   continue
+      endif
 
       ndn=nelec-nup
       do 707 idet=1,ndet
@@ -1062,11 +1088,12 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
             write(6,'(''cdet(iwdet_in_csf(idet_in_csf,icsf))='',d12.4)') cdet(iwdet_in_csf(idet_in_csf,icsf))
             stop 'iwdet_in_csf(idet_in_csf,icsf) > ndet'
           endif
-          if(abs(cdet(iwdet_in_csf(idet_in_csf,icsf))).lt.1.d-6)
-     &    write(6,'(''Warning: det'',i5,'' could probably be eliminated but it just costs a bit of extra time to keep it'')')
-     &    iwdet_in_csf(idet_in_csf,icsf)
-  710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
-     &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+c         if(abs(cdet(iwdet_in_csf(idet_in_csf,icsf))).lt.1.d-6)
+c    &    write(6,'(''Warning: det'',i5,'' could probably be eliminated but it just costs a bit of extra time to keep it'')')
+c    &    iwdet_in_csf(idet_in_csf,icsf)
+c 710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
+c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
+  710   continue
         write(fmt,'(''(''i3,''i4,a)'')') ndet_in_csf(icsf)
   720   write(6,fmt) (nint(cdet_in_csf(idet_in_csf,icsf)),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'

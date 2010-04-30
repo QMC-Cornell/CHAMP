@@ -12,7 +12,7 @@ ifeq ($(system),Linux)
 
  FC = ifort
  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad
- LDFLAGS = -nothread
+#LDFLAGS = -nothread
 
 ifeq ($(hostname),planck)
 # AMD Athlon cluster of Arias group
@@ -59,6 +59,27 @@ ifeq ($(planck_compiler),ifort)
 # LDFLAGS_MPI = -Vaxlib -static
   LDFLAGS_MPI = -static -lmpi
 endif
+endif
+
+# New dft cluster at Cornell
+ifeq ($(hostname),gauss)
+  FC=ifort
+  FFLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -extend_source 
+  FFLAGS_DEBUG_FLAGS=$(FFLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+endif
+
+#qmc1 at cornell
+ifeq ($(hostname),qmc1)
+  FC=ifort
+  FFLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -extend_source                 
+  FFLAGS_DEBUG=$(FFLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+endif
+
+#qmc2 at cornell
+ifeq ($(hostname),qmc2)
+  FC=gfortran
+  FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
+  FFLAGS_DEBUG=$(FFLAGS) -g -fbounds-check
 endif
 
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
