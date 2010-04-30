@@ -142,7 +142,7 @@ module deriv_orb_mod
   implicit none
 
 ! local
-  integer  ex_i, orb_i
+  integer  ex_i, orb_i, dorb_i
   integer orb_opt_cls_i, orb_opt_opn_i, orb_opt_act_i, orb_opt_act_j, orb_opt_vir_i
   integer orb_opt_cls, orb_opt_opn, orb_opt_act, orb_opt_vir, orb_opt_act_lab_i, orb_opt_act_lab_j
 
@@ -382,6 +382,19 @@ module deriv_orb_mod
 !  temporary: call new routine checking for redundancies
    call node_exe ('single_ex_wf_bld_2')
 
+  else
+  endif
+
+  if (l_print_orbital_excitations .and. .not. l_check_redundant_orbital_derivative) then
+  write(6,*)
+  write(6,'(a)') ' Orbital excitations:'
+   do dorb_i = 1, param_orb_nb
+    write(6,'(a,i4,a,i4,a,i4,a,i4)') ' orbital parameter # ',dorb_i,' corresponds to single excitation # ',ex_orb_ind (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind (dorb_i))
+    if (ex_orb_ind_rev (dorb_i) /= 0) then
+     write(6,'(a,i4,a,i4,a,i4)') '                             and reverse single excitation # ',ex_orb_ind_rev (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind_rev (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind_rev (dorb_i))
+    endif
+   enddo ! dorb_i
+  write(6,*)
   endif
 
  end subroutine single_ex_wf_bld
@@ -391,8 +404,8 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
 ! Description   : Build single orbital excitation list for general wave function
 ! Description   : taking into account some (but not all) redundancies
-! Description   : For large CASCF wave functions, this routine does not seem to recognize redundant active-> active excitations
-! Description   : recognize redundant active-> active excitations -> has to be improved
+! Description   : For large CASCF wave functions, this routine does not seem to recognize
+! Description   : recognize some redundant active-> active excitations -> has to be improved
 ! Description   : This routine is to replace single_ex_wf_bld
 ! Description   : For now, the routine is only used as replacement for single_ex_wf_bld
 ! Description   : information gathered on excitations in this routine should be used in the program
@@ -552,7 +565,7 @@ module deriv_orb_mod
       cycle
     endif
 
-!   excitations between orbitals of same symmetry only
+!   skip excitations between orbitals of different symmetry
     if (orb_sym_lab (orb_opt_lab_i) /= orb_sym_lab (orb_opt_lab_j)) then
       cycle
     endif
@@ -569,6 +582,7 @@ module deriv_orb_mod
     endif
 
 !   skip open -> open excitations for single-determinant wave functions
+!   warning: not always redundant!
     if (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) then
       cycle
     endif
@@ -1059,15 +1073,25 @@ module deriv_orb_mod
 
       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-      if (ex_orb_ind_cur == 0) then
-       write(6,'(2a,i4,a,i4)') trim(here),': orbital excitation ', orb_opt_lab_j, ' -> ', orb_opt_lab_i
-       write(6,'(2a)') trim(here),': orbital derivative with vanishing direct excitation but not vanishing reverse excitation'
-       write(6,'(2a)') trim(here),': this case is not yet implemented'
+
+      if (ex_orb_ind_cur /= 0) then
+       ex_orb_ind (param_orb_nb) = ex_orb_ind_cur
+       ex_orb_ind_rev (param_orb_nb) = ex_orb_ind_rev_cur
+      else
+
+!       write(6,'(2a,i4,a,i4)') trim(here),': orbital excitation ', orb_opt_lab_j, ' -> ', orb_opt_lab_i
+!       write(6,'(2a)') trim(here),': orbital derivative with vanishing direct excitation but not vanishing reverse excitation'
+!       write(6,'(2a)') trim(here),': this case is not yet implemented'
 !       write(6,'(2a,i4)') trim(here),': the index of reverse excitation is ',ex_orb_ind_rev_cur
-       call die (here)
+!       call die (here)
+
+!      if direct excitation i->j is zero, swap direct and reverse excitations
+!      this simply corresponds to changing the sign of the derivative (so the optimized parameter will get the opposite sign)
+!      in particular, this can happen if the orbitals are in an unexpected order, e.g.  i<j with i virtual and j occupied
+!      Warning: I did not check this very carefully
+       ex_orb_ind (param_orb_nb) = ex_orb_ind_rev_cur
+       ex_orb_ind_rev (param_orb_nb) = ex_orb_ind_cur
       endif
-      ex_orb_ind (param_orb_nb) = ex_orb_ind_cur
-      ex_orb_ind_rev (param_orb_nb) = ex_orb_ind_rev_cur
 
 !      write(6,'(2a)') trim(here),': add new orbital derivative'
     endif ! if (.not. dpsi_orb_is_redundant)
