@@ -3503,8 +3503,17 @@ module average_mod
   real(dp), allocatable :: collect_double_2 (:,:)
 # endif
 
+  if (block_averages_nb == 0) return
+
+! warning: walker_weights_sum_block and walker_weights_sum need to be set to their correct values for mpi2 or mpi3 mode.
+! this is probably easy to do... need to check in routine dmc/dmc_elec/MPI_global_pop_big/acuest_dmc_mov1_mpi2.f
+  if (l_mode_dmc_mov1_mpi2 .or. l_mode_dmc_mov1_mpi3) then
+    call die (lhere, 'walker weights not yet implemented in routine compute_averages_block for mpi2 or mpi3 mode.')
+  endif
+
 ! sum of weights of walkers over current block
   call object_provide_by_index (walker_weights_sum_block_index)
+!  write(6,*) "walker_weights_sum_block=",walker_weights_sum_block
 
 ! sum of weights of walkers over entire run
   call object_provide_by_index (walker_weights_sum_index)
