@@ -292,6 +292,10 @@ complex: $(CLASRC) $(ALLAUX) $(SCLAUX)
 liblapack.a: $(DLASRC) $(ALLAUX) $(DZLAUX)
 	ar r $@ $(DLASRC) $(ALLAUX) $(DZLAUX)
 	ranlib $@
+#JT: add complex*16 routines (does not work because some additional blas routines are also required)
+#liblapack.a: $(DLASRC) $(ALLAUX) $(DZLAUX) $(ZLASRC) 
+#	ar r $@ $(DLASRC) $(ALLAUX) $(DZLAUX) $(ZLASRC)
+#	ranlib $@
 
 
 complex16: $(ZLASRC) $(ALLAUX) $(DZLAUX)

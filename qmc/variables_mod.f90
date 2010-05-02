@@ -41,6 +41,9 @@ module variables_mod
   real(dp)                :: cpu_time_start
   real(dp)                :: cpu_time_last
 
+! memory used
+  real(dp)                :: memory = 0.d0
+
 ! current routine name
   character(len=max_string_len)   :: here       = 'undefined'
 
@@ -82,6 +85,7 @@ module variables_mod
   character(len=max_string_len)   :: stabilization = 'identity'
   logical                         :: l_casscf = .false.
   logical                         :: l_check_redundant_orbital_derivative = .true.
+  logical                         :: l_active_orb_ortho_constraint = .true.
 
   logical                         :: l_deriv2nd = .true.
   logical                         :: l_deriv_bound = .false.

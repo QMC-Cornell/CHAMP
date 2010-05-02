@@ -6,7 +6,6 @@ module orbitals_mod
 ! Declaration of global variables and default values
   integer                             :: orb_tot_nb
 
-  logical                             :: l_approx_orb_rot = .false.
   logical                             :: l_ortho_orb_now = .false.
   logical                             :: l_ortho_orb_opt = .false.
   logical                             :: l_orb_scaling_factor = .false.
@@ -190,9 +189,6 @@ module orbitals_mod
 
   case ('file_orbitals_pw_tm_out')
    call get_next_value (file_orbitals_pw_tm_out)
-
-  case ('approx_orb_rot')
-   call get_next_value (l_approx_orb_rot)
 
   case ('end')
    exit

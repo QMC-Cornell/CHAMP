@@ -6,12 +6,37 @@ module testing_mod
 
   contains
 
-subroutine testing
+  subroutine testing
 
   implicit none
   character*(max_string_len_rout), save :: lhere= 'test'
 
+  real(dp), allocatable         :: mat_test(:,:)
+  real(dp), allocatable         :: mat_test_inv(:,:)
+  integer i, j
 
+  call alloc ('mat_test', mat_test, 3, 3)
+  call alloc ('mat_test_inv', mat_test_inv, 3, 3)
+  mat_test (1,1) = 1.d0 
+  mat_test (1,2) = 2.d0 
+  mat_test (1,3) = 3.d0 
+  mat_test (2,1) = -3.d0 
+  mat_test (2,2) = -5.d0 
+  mat_test (2,3) = 0.5d0 
+  mat_test (3,1) = 0.5d0 
+  mat_test (3,2) = 0.5d0 
+  mat_test (3,3) = 2.d0 
+  
+  do i =1,3 
+  write(6,*) "mat_test=",(mat_test(i,j),j=1,3)
+  enddo
+
+  call inverse_by_svd (mat_test, mat_test_inv, 3, 1.d-10)
+  do i =1,3 
+  write(6,*) "mat_test_inv=",(mat_test_inv(i,j),j=1,3)
+  enddo
+
+  return
   call alloc_test ('aa',aa,3)
 
 

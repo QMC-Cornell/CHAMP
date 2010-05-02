@@ -772,10 +772,15 @@ module opt_lin_mod
 ! solve generalized eigenvalue problem A*x = lambda*B*x
   write(6,*)
   write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation of linear method with a_diag =', diag_stab
+! note: large jobs can die in this routine because of lack of memory
   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
 !  call dggev('V','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
 !             eigval_denom, eigvec_left, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
+!  write(6,*) 'after dggev'
+  call release ('work', work)
+  call release ('mat_a', mat_a)
+  call release ('mat_b', mat_b)
   if(info /= 0) then
    call die(lhere, 'problem in dggev: info='+info+' /= 0')
   endif
@@ -1039,6 +1044,10 @@ module opt_lin_mod
   do iparm = 1, param_nb
     delta_lin(iparm) = eigvec(1+iparm, eig_ind) / eigvec_first_coef
   enddo
+
+  call release ('eigval_r', eigval_r)
+  call release ('eigval_i', eigval_i)
+  call release ('eigval_denom', eigval_denom)
 
   end subroutine delta_lin_bld
 

@@ -340,6 +340,7 @@ module catalog_routines_mod
   call catalog_one_node ('psid_ex_in_x_bld', psid_ex_in_x_bld)
   call catalog_one_node ('eloc_pot_nloc_ex_bld', eloc_pot_nloc_ex_bld)
   call catalog_one_node ('deloc_orb_bld', deloc_orb_bld)
+  call catalog_one_node ('delta_mat_rot_1st_order_bld', delta_mat_rot_1st_order_bld)
   call catalog_one_node ('delta_mat_rot_real_bld', delta_mat_rot_real_bld)
   call catalog_one_node ('delta_coef_pw_bld', delta_coef_pw_bld)
 

@@ -37,6 +37,7 @@ module optimization_mod
   real(dp)                :: increase_blocks_factor = 2.d0
   logical                 :: l_decrease_p_var = .false.
   logical                 :: l_ortho_orb_vir_to_orb_occ = .false.
+  logical                 :: l_approx_orb_rot = .false.
 
   real(dp)                :: energy_threshold          = 1.d-3
   real(dp)                :: gradient_norm_threshold   = 0.1d0
@@ -51,6 +52,7 @@ module optimization_mod
   real(dp), allocatable   :: delta_jas (:)
   real(dp), allocatable   :: delta_pjas (:)
   real(dp), allocatable   :: delta_coef_ex (:)
+  real(dp), allocatable   :: delta_mat_rot_1st_order (:,:)
   real(dp), allocatable   :: delta_mat_rot_real (:,:)
   real(dp), allocatable   :: delta_exp (:)
   real(dp), allocatable   :: delta_geo (:)
@@ -98,6 +100,8 @@ module optimization_mod
   l_opt_orb = .false.
   l_opt_exp = .false.
   l_opt_geo = .false.
+  l_approx_orb_rot = .false.
+  l_active_orb_ortho_constraint = .true.
 
 ! temporary error message
   if (nopt_iter <= 0 .and. .not. use_parser) then
@@ -146,6 +150,8 @@ module optimization_mod
    write(6,'(a)') ' energy_threshold = [real] : threshold on energy for stopping criterium (default=1.d-3)'
    write(6,'(a)') ' casscf = [logical] : default=false, is it a CASSCF wave function? If true, help the program by removing redundant active-active excitations for orbital optimization'
    write(6,'(a)') ' check_redundant_orbital_derivative = [logical] : default=true, check for additional redundancies in orbital derivatives'
+   write(6,'(a)') ' approx_orb_rot = [logical] : approximate first-order orbital rotation (default=false)'
+   write(6,'(a)') ' active_orb_ortho_constraint = [logical] : impose active orbitals orthogonality constraint during optimization (default=true)'
    write(6,'(a)') ' deriv2nd = [logical] : default=true, compute second-order wave function derivatives if necessary?'
    write(6,'(a)') ' delta_param_norm_max = [real] : maximum parameter variation norm allowed (default=10)'
    write(6,'(a)') ' hessian_variance = [linear|levenberg_marquardt|levenberg_marquardt_cov] : choice of variance hessian (default=linear)'
@@ -270,6 +276,12 @@ module optimization_mod
   case ('check_redundant_orbital_derivative')
    call get_next_value (l_check_redundant_orbital_derivative)
 
+  case ('approx_orb_rot')
+   call get_next_value (l_approx_orb_rot)
+
+  case ('active_orb_ortho_constraint')
+   call get_next_value (l_active_orb_ortho_constraint)
+
   case ('deriv2nd')
    call get_next_value (l_deriv2nd)
 
@@ -334,6 +346,11 @@ module optimization_mod
 
   add_diag_mult_exp = 1.d0
   call object_modified ('add_diag_mult_exp')
+
+  if (.not. l_active_orb_ortho_constraint) then
+    l_approx_orb_rot = .true.
+    write(6,'(a)') " Warning: switch on approximate first-order orbital rotation because it is the only one available for option active_orb_ortho_constraint = false"
+  endif
 
 ! choice of optimization method
   select case(trim(opt_method))
@@ -2569,16 +2586,66 @@ module optimization_mod
  end subroutine delta_csf_rot_bld_old
 
 ! ==============================================================================
-  subroutine delta_mat_rot_real_bld
+  subroutine delta_mat_rot_1st_order_bld
 ! ------------------------------------------------------------------------------
-! Description   : orbital rotation matrix
+! Description   : approximate first-order orbital rotation matrix = kappa matrix
 !
-! Created       : J. Toulouse, 07 Feb 2006
+! Created       : J. Toulouse, 02 May 2010
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
 
 ! local
+  integer ex_i, dorb_i, orb_1st, orb_2nd
+
+! header
+  if (header_exe) then
+
+   call object_create ('delta_mat_rot_1st_order')
+
+   call object_needed ('orb_tot_nb')
+   call object_needed ('param_orb_nb')
+   call object_needed ('ex_orb_ind')
+   call object_needed ('ex_orb_1st_lab')
+   call object_needed ('ex_orb_2nd_lab')
+   call object_needed ('delta_coef_ex')
+
+   return
+
+  endif
+
+! set up kappa matrix
+! this matrix is real anti-symmetric if all orthogonality constraints kij=-kji are imposed
+! for active-active excitations the orthogonality constraints may or may not be imposed
+  call object_alloc ('delta_mat_rot_1st_order', delta_mat_rot_1st_order, orb_tot_nb, orb_tot_nb)
+  delta_mat_rot_1st_order (:,:) =  0.d0
+  do dorb_i = 1, param_orb_nb
+    ex_i = ex_orb_ind (dorb_i)
+    orb_1st = ex_orb_1st_lab (ex_i)
+    orb_2nd = ex_orb_2nd_lab (ex_i)
+    delta_mat_rot_1st_order (orb_1st, orb_2nd) = delta_coef_ex (dorb_i)
+!   anti-symmetrize elements that are zero (but do not necessarily anti-symmetrize active-active block for which 
+!   we can have independent kij and kji if orthogonality constraint is not imposed
+    if (delta_mat_rot_1st_order (orb_2nd, orb_1st) == 0.d0) then
+      delta_mat_rot_1st_order (orb_2nd, orb_1st) = - delta_mat_rot_1st_order (orb_1st, orb_2nd)
+    endif
+  enddo ! dorb_i
+
+  end subroutine delta_mat_rot_1st_order_bld
+
+! ==============================================================================
+  subroutine delta_mat_rot_real_bld
+! ------------------------------------------------------------------------------
+! Description   : orbital rotation matrix
+!
+! Created       : J. Toulouse, 07 Feb 2006
+! Modified      : J. Toulouse, 01 May 2010: begin case of no orthogonality constraint for active orbitals
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'delta_mat_rot_real_bld'
   integer ex_i, i, j, k, dorb_i
   integer orb_1st, orb_2nd
   integer lwork
@@ -2595,7 +2662,7 @@ module optimization_mod
   real(dp), allocatable :: identity (:,:)
   double complex, allocatable :: mat_w (:)
 !  double complex, allocatable :: identity_complex (:,:)
-  double complex, allocatable :: mat_u (:,:)
+  double complex, allocatable :: mat_u (:,:), mat_u_inv (:,:)
   double complex, allocatable :: kappa_check (:,:)
   double complex, allocatable :: mat_exp_w (:)
   double complex, allocatable :: delta_mat_rot (:,:)
@@ -2608,7 +2675,6 @@ module optimization_mod
    call object_create ('delta_mat_rot_real')
 
    call object_needed ('orb_tot_nb')
-   call object_needed ('nbasis')
    call object_needed ('param_orb_nb')
    call object_needed ('ex_orb_ind')
    call object_needed ('ex_orb_1st_lab')
@@ -2619,12 +2685,9 @@ module optimization_mod
 
   endif
 
-! begin
-
-! allocations
-  call object_alloc ('delta_mat_rot_real', delta_mat_rot_real, orb_tot_nb, orb_tot_nb)
-
-! set up anti-Hermitian (actually real anti-symmetric) kappa matrix
+! set up kappa matrix
+! this matrix is real anti-symmetric if all orthogonality constraints kij=-kji are imposed
+! for active-active excitations the orthogonality constraints may or may not be imposed
   call alloc ('kappa', kappa, orb_tot_nb, orb_tot_nb)
   kappa (:,:) =  0.d0
   do dorb_i = 1, param_orb_nb
@@ -2632,7 +2695,11 @@ module optimization_mod
     orb_1st = ex_orb_1st_lab (ex_i)
     orb_2nd = ex_orb_2nd_lab (ex_i)
     kappa (orb_1st, orb_2nd) = delta_coef_ex (dorb_i)
-    kappa (orb_2nd, orb_1st) = - kappa (orb_1st, orb_2nd)
+!   anti-symmetrize elements that are zero (but do not necessarily anti-symmetrize active-active block for which 
+!   we can have independent kij and kji if orthogonality constraint is not imposed
+    if (kappa (orb_2nd, orb_1st) == 0.d0) then
+      kappa (orb_2nd, orb_1st) = - kappa (orb_1st, orb_2nd)
+    endif
   enddo ! dorb_i
 
 ! diagonalize kappa
@@ -2643,14 +2710,16 @@ module optimization_mod
   call alloc ('mat_wi', mat_wi, orb_tot_nb)
   lwork = 1
   call alloc ('work', work, lwork)
-  call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, -1, info )
+  call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, -1, info)
   if (info /= 0) then
    call die (here, 'problem in dgeev')
   endif
   lwork = work(1)
   call alloc ('work', work, lwork)
   mat_a (:,:) = kappa (:,:)
-  call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, lwork, info )
+  call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, lwork, info)
+  call release ('mat_a', mat_a)
+  call release ('work', work)
   if (info /= 0) then
    call die (here, 'problem in dgeev')
   endif
@@ -2663,15 +2732,17 @@ module optimization_mod
 !   write(6,'(2a,i3,a,e,a,e,a)') trim(here),': ',i,' eig=',mat_wr(i), ' +', mat_wi(i),' i'
 !  enddo
 
-! check that all eigenvalues are purely imaginary
-  do i = 1, orb_tot_nb
+! check that all eigenvalues are purely imaginary if orthogonality constraint is imposed
+  if (l_active_orb_ortho_constraint) then
+   do i = 1, orb_tot_nb
     if (dabs(mat_wr(i)) > 1.d-8) then
       write(6,'(2a,i3,a,es15.8,a,es15.8,a)') trim(here),': eigenvalue # ',i,' : ' ,mat_wr(i), ' +', mat_wi(i),' i  is not purely imaginary'
       call die (here)
     endif
-  enddo
+   enddo
+  endif
 
-! set up unitary matrix of eigenvectors
+! set up matrix of eigenvectors. It is unitary if orthogonality constraint is imposed.
   call alloc ('mat_u', mat_u, orb_tot_nb, orb_tot_nb)
   eig = 0
   do
@@ -2679,14 +2750,22 @@ module optimization_mod
    if (eig > orb_tot_nb) exit
    mat_u (:,eig) = dcmplx(mat_vr(:,eig), 0.d0)
    if (eig+1 > orb_tot_nb) exit
-   if (mat_w (eig) == conjg(mat_w(eig+1))) then
-!     write(6,*) trim(here),': igenvalue # ',eig,'and # ',eig+1,' are congugate'
+   if (mat_w (eig) == dconjg(mat_w(eig+1))) then
+!     write(6,*) trim(here),': eigenvalue # ',eig,'and # ',eig+1,' are congugate'
      mat_u (:,eig)   = dcmplx(mat_vr(:,eig), mat_vr(:,eig+1))
      mat_u (:,eig+1) = dcmplx(mat_vr(:,eig), -mat_vr(:,eig+1))
      eig = eig + 1
    endif
    cycle
   enddo
+
+! compute inverse of eigenvector matrix if not the matrix is not unitary
+! unfinished...
+  if (.not. l_active_orb_ortho_constraint) then
+   call die (lhere, 'routine not yet finished for active_orb_ortho_constraint = false')
+   call alloc ('mat_u_inv', mat_u_inv, orb_tot_nb, orb_tot_nb)
+   call inverse_by_svd (mat_u, mat_u_inv, orb_tot_nb, 1.d-8)
+  endif
 
 !  write(6,'(2a)') trim(here), 'unitary eigenvectors:'
 !  do j = 1, orb_tot_nb
@@ -2696,7 +2775,7 @@ module optimization_mod
 
 ! check that U*U^dag = 1: this is not true numerically in the subspace of zero eigenvalue
 !  call alloc ('identity_complex', identity_complex, orb_tot_nb, orb_tot_nb)
-!  identity_complex (:,:) = matmul(mat_u,transpose(conjg(mat_u)))
+!  identity_complex (:,:) = matmul(mat_u,transpose(dconjg(mat_u)))
 !
 !  do i = 1,orb_tot_nb
 !   do j = 1, orb_tot_nb
@@ -2710,7 +2789,7 @@ module optimization_mod
   do i = 1,orb_tot_nb
    do j = 1,orb_tot_nb
     do k = 1, orb_tot_nb
-      kappa_check (i,j) = kappa_check (i,j) +  mat_u (i, k) * mat_w (k) * conjg(mat_u (j,k))
+      kappa_check (i,j) = kappa_check (i,j) +  mat_u (i, k) * mat_w (k) * dconjg(mat_u (j,k))
     enddo
 !   check absolute accuracy
     if (dabs(real(kappa_check(i,j))-kappa(i,j)) > 10d-10 .or. aimag(kappa_check(i,j)) > 10d-10) then
@@ -2718,7 +2797,7 @@ module optimization_mod
      if (dabs(1.d0 - real(kappa_check(i,j))/kappa(i,j)) > 10d-10) then
          write(6,'(2a,i3,a,i3,a,es15.8,es15.8)') trim(here),': kappa(',i,',',j,')=',kappa(i,j)
          write(6,'(2a,i3,a,i3,a,es15.8,es15.8)') trim(here),': kappa_check(',i,',',j,')=',kappa_check(i,j)
-         write (6,'(2a)') trim(here),': problem in the diagonalisation of orbital rotation generator matrix kappa.'
+         write (6,'(2a)') trim(here),': problem in the diagonalization of orbital rotation generator matrix kappa.'
          write (6,'(2a)') trim(here),': most likely, this happened because there are redundant orbital parameters.'
          call die (here)
      endif
@@ -2734,7 +2813,7 @@ module optimization_mod
   do i = 1,orb_tot_nb
    do j = 1,orb_tot_nb
     do k = 1, orb_tot_nb
-      delta_mat_rot (i,j) = delta_mat_rot (i,j) +  mat_u (i, k) * (mat_exp_w (k) - 1.d0) * conjg(mat_u (j,k))
+      delta_mat_rot (i,j) = delta_mat_rot (i,j) +  mat_u (i, k) * (mat_exp_w (k) - 1.d0) * dconjg(mat_u (j,k))
     enddo
    enddo
   enddo
@@ -2777,7 +2856,20 @@ module optimization_mod
    enddo
   enddo
 
+  call release ('kappa', kappa)
+  call release ('mat_vr', mat_vr)
+  call release ('mat_vl', mat_vl)
+  call release ('mat_wr', mat_wr)
+  call release ('mat_wi', mat_wi)
+  call release ('mat_w', mat_w)
+  call release ('mat_u', mat_u)
+  call release ('mat_exp_w', mat_exp_w)
+  call release ('mat_rot', mat_rot)
+  call release ('mat_rot_real', mat_rot_real)
+
+  call object_alloc ('delta_mat_rot_real', delta_mat_rot_real, orb_tot_nb, orb_tot_nb)
   delta_mat_rot_real = real(delta_mat_rot)
+  call release ('delta_mat_rot', delta_mat_rot)
 
   end subroutine delta_mat_rot_real_bld
 
@@ -2807,13 +2899,12 @@ module optimization_mod
 
 ! update orbital coefficients by first-order rotation
   if (l_approx_orb_rot) then
-   call object_provide ('delta_coef_ex')
-   do dorb_i = 1, param_orb_nb
-     ex_i = ex_orb_ind (dorb_i)
-     orb_1st = ex_orb_1st_lab (ex_i)
-     orb_2nd = ex_orb_2nd_lab (ex_i)
-     coef_new (1:nbasis, orb_1st) = coef_new (1:nbasis, orb_1st) + delta_coef_ex (ex_i) * coef (1:nbasis, orb_2nd, 1)
-    enddo
+    call object_provide ('delta_mat_rot_1st_order')
+    do orb_i = 1, orb_tot_nb
+      do orb_j = 1, orb_tot_nb
+        coef_new (1:nbasis, orb_i) = coef_new (1:nbasis, orb_i) + delta_mat_rot_1st_order (orb_i, orb_j) * coef (1:nbasis, orb_j, 1)
+      enddo ! orb_j
+     enddo ! orb_i
 
 ! update orbital coefficients by exact rotation
   else
@@ -2856,13 +2947,12 @@ module optimization_mod
 
 ! update orbital coefficients by first-order rotation
   if (l_approx_orb_rot) then
-   call object_provide ('delta_coef_ex')
-   do dorb_i = 1, param_orb_nb
-     ex_i = ex_orb_ind (dorb_i)
-     orb_1st = ex_orb_1st_lab (ex_i)
-     orb_2nd = ex_orb_2nd_lab (ex_i)
-     coef_new (1:nbasis, orb_1st) = coef_new (1:nbasis, orb_1st) + delta_coef_ex (ex_i) * coef_orb_on_norm_basis (1:nbasis, orb_2nd, 1)
-    enddo
+    call object_provide ('delta_mat_rot_1st_order')
+    do orb_i = 1, orb_tot_nb
+      do orb_j = 1, orb_tot_nb
+        coef_new (1:nbasis, orb_i) = coef_new (1:nbasis, orb_i) + delta_mat_rot_1st_order (orb_i, orb_j) * coef_orb_on_norm_basis (1:nbasis, orb_j, 1)
+      enddo ! orb_j
+     enddo ! orb_i
 
 ! update orbital coefficients by exact rotation
   else
@@ -2905,13 +2995,12 @@ module optimization_mod
 
 ! update orbital coefficients by first-order rotation
   if (l_approx_orb_rot) then
-   call object_provide ('delta_coef_ex')
-   do dorb_i = 1, param_orb_nb
-     ex_i = ex_orb_ind (dorb_i)
-     orb_1st = ex_orb_1st_lab (ex_i)
-     orb_2nd = ex_orb_2nd_lab (ex_i)
-     coef_new (1:nbasis, orb_1st) = coef_new (1:nbasis, orb_1st) + delta_coef_ex (ex_i) * coef_orb_on_ortho_basis (1:nbasis, orb_2nd, 1)
-    enddo
+    call object_provide ('delta_mat_rot_1st_order')
+    do orb_i = 1, orb_tot_nb
+      do orb_j = 1, orb_tot_nb
+        coef_new (1:nbasis, orb_i) = coef_new (1:nbasis, orb_i) + delta_mat_rot_1st_order (orb_i, orb_j) * coef_orb_on_ortho_basis (1:nbasis, orb_j, 1)
+      enddo ! orb_j
+     enddo ! orb_i
 
 ! update orbital coefficients by exact rotation
   else

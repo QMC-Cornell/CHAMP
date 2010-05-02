@@ -300,6 +300,7 @@ module deriv_orb_mod
        orb_opt_act_lab_j = orb_opt_act_lab (orb_opt_act_j)
        if (orb_sym_lab (orb_opt_act_lab_i) == orb_sym_lab (orb_opt_act_lab_j) .and. .not. orb_ex_forbidden (orb_opt_act_lab_i, orb_opt_act_lab_j)) then
 
+!      direct excitation i->j
        param_orb_nb = param_orb_nb + 1
        single_ex_nb = single_ex_nb + 1
        call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
@@ -310,14 +311,26 @@ module deriv_orb_mod
        ex_orb_1st_lab (single_ex_nb) = orb_opt_act_lab_i
        ex_orb_2nd_lab (single_ex_nb) = orb_opt_act_lab_j
 
-! reverse excitation (j->i)
-!       ex_orb_ind_rev (param_orb_nb) = 0 ! desactivate reverse excitation
+!      reverse excitation j->i
        single_ex_nb = single_ex_nb + 1
        call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
        call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind_rev (param_orb_nb) = single_ex_nb
        ex_orb_1st_lab (single_ex_nb) = orb_opt_act_lab_j
        ex_orb_2nd_lab (single_ex_nb) = orb_opt_act_lab_i
+
+!      if orthogonality constraint is imposed, then the reverse excitation is combined with the direct excitation in one orbital derivative
+       if (l_active_orb_ortho_constraint) then
+        ex_orb_ind_rev (param_orb_nb) = single_ex_nb
+!       ex_orb_ind_rev (param_orb_nb) = 0 ! desactivate reverse excitation
+
+!      if orthogonality constraint is not imposed, then the reverse excitation is a new independent orbtital derivative
+       else
+        param_orb_nb = param_orb_nb + 1
+        call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
+        call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
+        ex_orb_ind (param_orb_nb) = single_ex_nb
+        ex_orb_ind_rev (param_orb_nb) = 0
+       endif
 
        endif
      enddo ! orb_opt_act_j
@@ -418,7 +431,7 @@ module deriv_orb_mod
 
 ! local
   integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j, dorb_i, orb_i
-  integer ex_dir_rev
+  integer ex_dir_rev, ex_dir_rev_nonortho, ex_dir_rev_nb, ex_dir_rev_nonortho_nb
   logical dpsi_orb_is_zero, ex_is_zero, csf_ex_unq_is_zero, dpsi_orb_is_redundant
 
   integer det_ex_unq_up_k, det_ex_unq_dn_k
@@ -544,6 +557,14 @@ module deriv_orb_mod
   call alloc ('det_ex_cur_orb_lab_dn', det_ex_cur_orb_lab_dn, ndn)
   call alloc ('det_ex_cur_orb_lab_srt_dn', det_ex_cur_orb_lab_srt_dn, ndn)
 
+  if (l_active_orb_ortho_constraint) then
+   ex_dir_rev_nb = 2
+   ex_dir_rev_nonortho_nb = 1
+  else
+   ex_dir_rev_nb = 1
+   ex_dir_rev_nonortho_nb = 2
+  endif
+
 ! initializations
   single_ex_nb = 0
   param_orb_nb = 0
@@ -558,7 +579,6 @@ module deriv_orb_mod
     orb_opt_lab_j = orb_opt_lab (orb_opt_j)
 
 !    write(6,'(2a,i4,a,i4)') trim(here),': considering orbital excitation ', orb_opt_lab_i, ' -> ', orb_opt_lab_j
-    dpsi_orb_is_zero = .true.
 
 !   skip user-specified forbidden excitations
     if (orb_ex_forbidden (orb_opt_lab_i, orb_opt_lab_j)) then
@@ -582,7 +602,6 @@ module deriv_orb_mod
     endif
 
 !   skip open -> open excitations for single-determinant wave functions
-!   warning: not always redundant!
     if (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) then
       cycle
     endif
@@ -593,12 +612,17 @@ module deriv_orb_mod
     endif
 
 !   loop over the direct excitation i->j and the reverse excitation j->i
-    do ex_dir_rev = 1, 2
+!   one loop or the other is used depending whether the orthogonality constraint is imposed or not
+    do ex_dir_rev_nonortho = 1, ex_dir_rev_nonortho_nb
+
+    dpsi_orb_is_zero = .true.
+
+    do ex_dir_rev = 1, ex_dir_rev_nb
 
     ex_is_zero = .true.
 
 !   swap orbitals for reverse excitation j->i
-    if (ex_dir_rev == 2) then
+    if (ex_dir_rev == 2 .or. ex_dir_rev_nonortho == 2) then
      call swap (orb_opt_lab_i, orb_opt_lab_j)
     endif
 
@@ -1108,8 +1132,10 @@ module deriv_orb_mod
     ex_orb_ind_cur = 0
     ex_orb_ind_rev_cur = 0
 
-!  reset label of first orbital
-   orb_opt_lab_i = orb_opt_lab_j
+    enddo ! ex_dir_rev_nonortho
+
+!   reset label of first orbital
+    orb_opt_lab_i = orb_opt_lab_j
 
    enddo ! orb_opt_j
 

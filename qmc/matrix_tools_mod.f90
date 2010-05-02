@@ -4,10 +4,18 @@ module matrix_tools_mod
   use strings_tools_mod
   use variables_mod
 
+
+!===============================================================
+  interface inverse_by_svd
+!---------------------------------------------------------------
+   module procedure inverse_by_svd_double , &
+                    inverse_by_svd_complex
+  end interface inverse_by_svd
+
   contains
 
 ! ==============================================================================
-  subroutine inverse_by_svd (matrix, matrix_inv, dim, threshold)
+  subroutine inverse_by_svd_double (matrix, matrix_inv, dim, threshold)
 ! ------------------------------------------------------------------------------
 ! Description   : Calculate inverse of square matrix by SVD with a threshold on singular values
 !
@@ -17,109 +25,142 @@ module matrix_tools_mod
 
 ! input
   real(dp), intent (in)      :: matrix (:,:)
-  integer,          intent (in)      :: dim
+  integer,  intent (in)      :: dim
   real(dp), intent (in)      :: threshold
 
 ! output
-  real(dp), intent (out)      :: matrix_inv (:,:)
+  real(dp), intent (out)     :: matrix_inv (:,:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'inverse_by_svd'
-  integer i, j, k
-  real(dp), allocatable :: mat_u(:,:)
-  real(dp), allocatable :: mat_v(:,:)
-  real(dp), allocatable :: mat_w(:)
-  real(dp), allocatable :: mat_w_inv(:)
-  integer w_kept_nb
-  real(dp), allocatable :: mat_a(:,:)
-  real(dp), allocatable :: mat_vt(:,:)
-  real(dp), allocatable :: work (:)
-  integer lwork
-  integer info
+  character(len=max_string_len_rout), save :: lhere = 'inverse_by_svd_double'
+  integer i, j, k, w_kept_nb, lwork, info
+  real(dp), allocatable :: mat_a(:,:), mat_u(:,:), mat_vt(:,:) 
+  real(dp), allocatable :: mat_w(:), work (:)
 
-! begin
   if (dim == 0) return
 
 ! temporary arrays for SVD
-  call alloc ('mat_u', mat_u, dim, dim)
-  call alloc ('mat_v', mat_v, dim, dim)
-  call alloc ('mat_w', mat_w, dim)
-  call alloc ('mat_w_inv', mat_w_inv, dim)
-
-  lwork = 10 * dim
   call alloc ('mat_a', mat_a, dim, dim)
+  call alloc ('mat_u', mat_u, dim, dim)
   call alloc ('mat_vt', mat_vt, dim, dim)
   call alloc ('mat_w', mat_w, dim)
+  mat_a = matrix
+
+! calculate optimal value of lwork
+  call alloc ('work', work, 1)
+  call dgesvd ('A', 'A', dim, dim, mat_a, dim, mat_w, mat_u, dim, mat_vt, dim, work, -1, info)
+  if(info /= 0) then
+   call die (lhere, 'problem in dgesvd (while calculating optimal value of lwork): info='+info+' /= 0')
+  endif
+  lwork =  work(1)
   call alloc ('work', work, lwork)
 
-! SVD from numerical recipes
-!  mat_u = matrix ! matrix to be inverted
-!  call svdcmp (mat_u, dim, dim, dim, dim, mat_w, mat_v)
-!
-!  write(6,*) trim(lhere),': SVD from numerical recipes:'
-!  write(6,*) trim(lhere),': mat_u=',mat_u
-!  write(6,*) trim(lhere),': mat_v=',mat_v
-!  write(6,*) trim(lhere),': mat_w=',mat_w
-
-! SVD from Lapack
-  mat_a = matrix ! matrix to be inverted
-!  write(6,*) trim(lhere),': mat_a=',mat_a
-!  write(6,*) trim(lhere),': before dgesvd'
-  call dgesvd( 'A', 'A', dim, dim, mat_a, dim, mat_w, mat_u, dim, mat_vt, dim, work, lwork, info)
-!  write(6,*) trim(lhere),': after dgesvd'
+! SVD decomposition: A = U . W . V^T
+  call dgesvd ('A', 'A', dim, dim, mat_a, dim, mat_w, mat_u, dim, mat_vt, dim, work, lwork, info)
+  call release ('mat_a', mat_a)
+  call release ('work', work)
   if (info /= 0) then
-   call die (lhere, 'problem in dgesvd')
+   call die (lhere, 'problem in dgesvd: info='+info+' /= 0')
   endif
 
- mat_v = transpose(mat_vt)
-
-!  write(6,*) trim(lhere),': SVD from Lapack:'
-!  write(6,*) trim(lhere),': mat_u=',mat_u
-!  write(6,*) trim(lhere),': mat_v=',mat_v
-!  write(6,*) trim(lhere),': mat_w=',mat_w
-
-! Singular values
-!JT  do i = 1, dim
-!JT   write(6,*) trim(lhere), ': i=',i,' mat_w=',mat_w(i)
-!JT  enddo
-
-! Inverse singular values  (drop small singular values)
-!JT  write(6,*) trim(lhere), ': threshold on singular values: ',threshold
-  w_kept_nb = dim
-  do i = 1, dim
-   if (mat_w (i) < threshold) then
-     mat_w_inv (i) = 0.d0
-     w_kept_nb = w_kept_nb - 1
-   else
-     mat_w_inv (i) = 1.d0 / mat_w (i)
+! calculate inverse matrix: A^-1 = V . W^-1 . U^T
+  matrix_inv = 0.d0
+  w_kept_nb = 0
+  do k = 1, dim
+    if (mat_w (k) >= threshold) then
+      w_kept_nb = w_kept_nb + 1
+      do i = 1, dim
+        do j = 1, dim
+          matrix_inv (i, j) = matrix_inv (i, j) + mat_vt (k, i) * (1.d0 / mat_w (k)) * mat_u (j, k)
+        enddo
+      enddo
    endif
   enddo
-!JT  write(6,*) trim(lhere), ': number of singular values dropped:', dim - w_kept_nb
-
-! calculate inverse matrix
-  matrix_inv = 0.d0
-
-   do i = 1, dim
-     do j = 1, dim
-       do k = 1, dim
-         matrix_inv (i, j) = matrix_inv (i, j) + mat_v (i, k) * mat_w_inv (k) * mat_u (j, k)
-       enddo
-     enddo
-   enddo
+!  write(6,*) trim(lhere), ': number of singular values dropped:', dim - w_kept_nb
 
 !  write(6,*) trim(lhere), ': matrix_inv=',matrix_inv
 
-! release arrays for SVD
   call release ('mat_u', mat_u)
-  call release ('mat_v', mat_v)
-  call release ('mat_w', mat_w)
-  call release ('mat_w_inv', mat_w_inv)
-  call release ('mat_a', mat_a)
   call release ('mat_vt', mat_vt)
-  call release ('work', work)
+  call release ('mat_w', mat_w)
 
-!  write(6,*) trim(lhere), ': exiting'
-  end subroutine inverse_by_svd
+  end subroutine inverse_by_svd_double
+
+! ==============================================================================
+  subroutine inverse_by_svd_complex (matrix, matrix_inv, dim, threshold)
+! ------------------------------------------------------------------------------
+! Description   : Calculate inverse of square matrix by SVD with a threshold on singular values
+!
+! Created       : J. Toulouse, 02 May 2010
+! ------------------------------------------------------------------------------
+  implicit none
+
+! input
+  double complex, intent (in)  :: matrix (:,:)
+  integer,  intent (in)        :: dim
+  real(dp), intent (in)        :: threshold
+
+! output
+  double complex, intent (out) :: matrix_inv (:,:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'inverse_by_svd_complex'
+  integer i, j, k, w_kept_nb, lwork, info
+  double complex, allocatable :: mat_a(:,:), mat_u(:,:), mat_vh(:,:), work(:)
+  real(dp), allocatable :: mat_w(:), rwork (:)
+
+  if (dim == 0) return
+
+! temporary arrays for SVD
+  call alloc ('mat_a', mat_a, dim, dim)
+  call alloc ('mat_u', mat_u, dim, dim)
+  call alloc ('mat_vh', mat_vh, dim, dim)
+  call alloc ('mat_w', mat_w, dim)
+  call alloc ('rwork', rwork, 5*dim)
+  mat_a = matrix
+
+! calculate optimal value of lwork
+  call alloc ('work', work, 1)
+  call die (lhere, 'need zgesvd')
+!  call zgesvd ('A', 'A', dim, dim, mat_a, dim, mat_w, mat_u, dim, mat_vh, dim, work, -1, rwork, info)
+  if(info /= 0) then
+   call die (lhere, 'problem in zgesvd (while calculating optimal value of lwork): info='+info+' /= 0')
+  endif
+  lwork =  work(1)
+  call alloc ('work', work, lwork)
+
+! SVD decomposition: A = U . W . V^H
+  call die (lhere, 'need zgesvd')
+!  call zgesvd ('A', 'A', dim, dim, mat_a, dim, mat_w, mat_u, dim, mat_vh, dim, work, lwork, rwork, info)
+  call release ('mat_a', mat_a)
+  call release ('work', work)
+  call release ('rwork', rwork)
+  if (info /= 0) then
+   call die (lhere, 'problem in zgesvd: info='+info+' /= 0')
+  endif
+
+! calculate inverse matrix: A^-1 = V . W^-1 . U^H
+  matrix_inv = 0.d0
+  w_kept_nb = 0
+  do k = 1, dim
+    if (mat_w (k) >= threshold) then
+      w_kept_nb = w_kept_nb + 1
+      do i = 1, dim
+        do j = 1, dim
+          matrix_inv (i, j) = matrix_inv (i, j) + dconjg(mat_vh (k, i)) * (1.d0 / mat_w (k)) * dconjg(mat_u (j, k))
+        enddo
+      enddo
+   endif
+  enddo
+!  write(6,*) trim(lhere), ': number of singular values dropped:', dim - w_kept_nb
+
+!  write(6,*) trim(lhere), ': matrix_inv=',matrix_inv
+
+  call release ('mat_u', mat_u)
+  call release ('mat_vh', mat_vh)
+  call release ('mat_w', mat_w)
+
+  end subroutine inverse_by_svd_complex
 
 ! ==============================================================================
   subroutine eigensystem (matrix, eigenvectors, eigenvalues, dim)
@@ -158,11 +199,13 @@ module matrix_tools_mod
   mat_a (:,:) = matrix (:,:)
 
   call dsyev ('V','U',dim, mat_a, dim, eigenvalues, work, lwork, info)
+  call release ('work', work)
   if (info /= 0) then
    call die (lhere, 'exiting dsyev with info='+info+' /= 0.')
   endif
 
   eigenvectors (:,:) = mat_a (:,:)
+  call release ('mat_a', mat_a)
 
 ! checkings
 !  call is_a_number_or_die ('eigenvalues', eigenvalues)
@@ -189,10 +232,6 @@ module matrix_tools_mod
 !     endif
    enddo ! j
   enddo ! i
-
-! release arrays
-  call release ('mat_a', mat_a)
-  call release ('work', work)
 
   end subroutine eigensystem
 
