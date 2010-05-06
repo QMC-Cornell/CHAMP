@@ -1,0 +1,56 @@
+#! /bin/sh
+# This script is run on the .out file from a GAMESS CI run.
+# e.g. ~/champ_new_basis/tools/gamess2qmc/run_csf2csf ci.out
+# This script does the foll.:
+# 1) it runs gamess2qmc on the GAMESS out file
+# 2) it runs csf2csf on the .csf file created by gamess2qmc to create a .csfs file.
+# 3) it edits the .inp file created by gamess2qmc using the .csf2 file to create a .inp2 file
+
+# The .inp2 file should be ready to run in CHAMP if nctype=1, otherwise the lines with
+# NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr
+# and
+# nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg
+# need editing.
+
+for file in $*
+do
+  in=$file
+  in_csf2csf=`echo $in | sed -e 's/out/csf/'`
+  out_csf2csf=`echo $in | sed -e 's/out/csfs/'`
+  vmc_input1=`echo $in | sed -e 's/.out/_vmc.inp/'`
+  vmc_input2=`echo $in | sed -e 's/.out/_vmc.inp2/'`
+  echo $in $in_csf2csf $out_csf2csf
+
+# $HOME/bin/gamess2qmc -CJF -t initial $in
+  $HOME/champ_new_basis/tools/gamess2qmc/gamess2qmc -CJF -t initial $in
+  $HOME/champ_new_basis/tools/iequal/csf2csf < $in_csf2csf > $out_csf2csf
+
+  ex $out_csf2csf <<_end
+    1,/Inputs for new version of CHAMP with linear relations recognized/d
+    1,1w! title
+    2,2w! ndet
+    3,3w! nparm
+    4,4w! nparmcsf
+    6,6w! iwcsf
+    7,\$w! csfs
+_end
+
+  cp $vmc_input1 $vmc_input2
+
+  ex $vmc_input2 <<_end
+    1r title
+    1,1d
+    /ndet,nbasis,norb/d
+    -1r ndet
+    /NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/d
+    -1r nparm
+    /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/d
+    -1r nparmcsf
+    /(iwcsf(iparm),iparm=1,nparmcsf)/d
+    -1r iwcsf
+    /zex/+1,/Jastrow/-2d
+    -1r csfs
+    wq
+_end
+
+done

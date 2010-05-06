@@ -1,8 +1,11 @@
 #SHELL  = /bin/csh
 
- FC     = g77
- FFLAGS = -g -C -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check
-#FFLAGS = -O3 -malign-double -ffixed-line-length-none -fno-automatic
+# FC     = g77
+# FFLAGS = -g -C -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check
+##FFLAGS = -O3 -malign-double -ffixed-line-length-none -fno-automatic
+
+ FC     = gfortran
+ FFLAGS = -finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132
 
 LIBHOME = $(HOME)
 # LIBHOME = $(QMCHOME)

@@ -296,8 +296,8 @@ c               write(6,*) 'Match',abs(cdet_in_csf(idet_in_csf,icsf)),dfloat(inu
   167 continue
 
 c flag CSFs
-c a) that have csf_coef(icsf).ge.cutoff_d2c by 2
-c b) that have dets that have been flagged by 1
+c a) that have csf_coef(icsf).ge.cutoff_d2c by iflag_csf(icsf)=2
+c b) that have dets that have been flagged by  iflag_csf(icsf)=1
       do 168 icsf=1,ncsf
   168   iflag_csf(icsf)=0
       do 171 icsf=1,ncsf
@@ -524,33 +524,33 @@ c Make largest cdet_in_csf of each CSF be 1.
   290   continue
   300   csf_coef(icsf)=csf_coef(icsf)*cdet_in_csf_max
 
-c Create old version inputs
-      write(6,'(/,''4Inputs for old version of CHAMP'')')
-      write(6,'(i3,'' nedet'')') nedet
-      if(nedet.gt.0) then
-        write(fmt,'(''(''i3,''(i5,i4),a)'')') nedet
-        write(6,fmt) ((iedet(k,i),k=1,2),i=1,nedet),' ((iedet(k,i),k=1,2),i=1,nedet)'
-        write(fmt,'(''(''i3,''(f6.1,f5.1),a)'')') nedet
-        write(6,fmt) ((frac(k,i),k=1,2),i=1,nedet),' ((frac(k,i),k=1,2),i=1,nedet)'
-       else
-        write(6,'(a)') '((iedet(k,i),k=1,2),i=1,nedet)'
-        write(6,'(a)') '((frac(k,i),k=1,2),i=1,nedet)'
-      endif
+c Create old version inputs (cdet's rather than csf_coef's)
+c     write(6,'(/,''4Inputs for old version of CHAMP'')')
+c     write(6,'(i3,'' nedet'')') nedet
+c     if(nedet.gt.0) then
+c       write(fmt,'(''(''i3,''(i5,i4),a)'')') nedet
+c       write(6,fmt) ((iedet(k,i),k=1,2),i=1,nedet),' ((iedet(k,i),k=1,2),i=1,nedet)'
+c       write(fmt,'(''(''i3,''(f6.1,f5.1),a)'')') nedet
+c       write(6,fmt) ((frac(k,i),k=1,2),i=1,nedet),' ((frac(k,i),k=1,2),i=1,nedet)'
+c      else
+c       write(6,'(a)') '((iedet(k,i),k=1,2),i=1,nedet)'
+c       write(6,'(a)') '((frac(k,i),k=1,2),i=1,nedet)'
+c     endif
 
-      nparmd=0
-      do 330 i=2,ndet
-        if(iflag_det(i).eq.0) then
-          nparmd=nparmd+1
-          iwdet(nparmd)=i
-        endif
-  330 continue
-      write(6,'(i4,'' nparmd'')') nparmd
-      if(nparmd.gt.0) then
-        write(fmt,'(''(''i5,''i5,a)'')') nparmd
-        write(6,fmt) (iwdet(ipar),ipar=1,nparmd),' (iwdet(ipar),ipar=1,nparmd)'
-       else
-        write(6,'(a)') '(iwdet(ipar),ipar=1,nparmd)'
-      endif
+c     nparmd=0
+c     do 330 i=2,ndet
+c       if(iflag_det(i).eq.0) then
+c         nparmd=nparmd+1
+c         iwdet(nparmd)=i
+c       endif
+c 330 continue
+c     write(6,'(i4,'' nparmd'')') nparmd
+c     if(nparmd.gt.0) then
+c       write(fmt,'(''(''i5,''i5,a)'')') nparmd
+c       write(6,fmt) (iwdet(ipar),ipar=1,nparmd),' (iwdet(ipar),ipar=1,nparmd)'
+c      else
+c       write(6,'(a)') '(iwdet(ipar),ipar=1,nparmd)'
+c     endif
 
 c Temp printout
       write(6,'(/,''4Inputs for new version of CHAMP'')')
@@ -1030,7 +1030,7 @@ c    &"'",ncsf,ndet,norb,csf_sum,"'",'  title'
      &"'",ncsf,ndet,norb,csf_sum,cutoff_g2q,cutoff_d2c,eps,"'",'  title'
       write(6,'(i4,2i4,t42,a)') ndet,nbasis,norb, 'ndet,nbasis,norb'
       nparm=24+ncsf-1
-      write(6,'(''1000 '',i3,'' -1 1 5 1000 31101 1 NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr'')') nparm
+      write(6,'(''1000 '',i3,'' -1 1 5 1000 21101 1 NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr'')') nparm
       write(6,'(''0  4  5  15  0 '',i3,'' 0 0  nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg'')') ncsf-1
 
 c Write the line for making 0Info
