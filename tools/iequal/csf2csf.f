@@ -286,7 +286,7 @@ c Make cdet_in_csf more accurate since they are printed out only to an accuracy 
             do 166 iden=1,20000
               if(abs(abs(cdet_in_csf(idet_in_csf,icsf))-sqrt(dfloat(inum)/dfloat(iden))).le.1.d-6) then
 c               write(6,*) 'Match',abs(cdet_in_csf(idet_in_csf,icsf)),dfloat(inum)/dfloat(iden),inum,iden
-                write(6,'(''Match'',2i6)') inum,iden
+                write(6,'(''Match: inum,iden'',2i6)') inum,iden
                 cdet_in_csf(idet_in_csf,icsf)=sign(sqrt(dfloat(inum)/dfloat(iden)),cdet_in_csf(idet_in_csf,icsf))
                 goto 167
               endif
@@ -609,9 +609,10 @@ c       do 400 jcsf=1,icsf-1
             do 390 iden=2,10
               times=dfloat(inum)/dfloat(iden)
               do 390 isignj=-1,1,2
-                if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps*sqrt(abs(csf_coef(icsf)))) then
-                  write(6,'(''icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2f6.3)')
-     &            icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
+                if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps .and.
+     &             abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.1000*eps*sqrt(abs(csf_coef(icsf)))) then
+                  write(6,'(''inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i4,2f6.3)')
+     &            inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
                   if(ndet_in_csf(jcsf)+ndet_in_csf(icsf).gt.MDET_IN_CSF) stop 'ndet_in_csf(jcsf) > MDET_IN_CSF'
                   do 370 idet_in_csf=1,ndet_in_csf(jcsf)
                     iwdet_in_csf(ndet_in_csf(icsf)+idet_in_csf,icsf)=iwdet_in_csf(idet_in_csf,jcsf)
@@ -630,6 +631,38 @@ c       do 400 jcsf=1,icsf-1
   390       continue
           endif
   400 continue
+
+c And do it again
+  401 ncsf_tmp=ncsf
+      do 405 icsf=1,ncsf_tmp-1
+        do 405 jcsf=icsf+1,ncsf_tmp
+          if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps .and.
+     &       abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.1000*eps*sqrt(abs(csf_coef(icsf)))) then
+            do 404 inum=2,20
+            do 404 iden=2,10
+              times=dfloat(inum)/dfloat(iden)
+              do 404 isignj=-1,1,2
+                if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps*sqrt(abs(csf_coef(icsf)))) then
+                  write(6,'(''2nd round inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i4,2f6.3)')
+     &            inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
+                  if(ndet_in_csf(jcsf)+ndet_in_csf(icsf).gt.MDET_IN_CSF) stop 'ndet_in_csf(jcsf) > MDET_IN_CSF'
+                  do 402 idet_in_csf=1,ndet_in_csf(jcsf)
+                    iwdet_in_csf(ndet_in_csf(icsf)+idet_in_csf,icsf)=iwdet_in_csf(idet_in_csf,jcsf)
+  402               cdet_in_csf(ndet_in_csf(icsf)+idet_in_csf,icsf)=cdet_in_csf(idet_in_csf,jcsf)*csf_coef(jcsf)/csf_coef(icsf)
+                  ndet_in_csf(icsf)=ndet_in_csf(icsf)+ndet_in_csf(jcsf)
+
+                  do 403 lcsf=jcsf+1,ncsf_tmp
+                    csf_coef(lcsf-1)=csf_coef(lcsf)
+                    ndet_in_csf(lcsf-1)=ndet_in_csf(lcsf)
+                    do 403 idet_in_csf=1,ndet_in_csf(lcsf)
+                      iwdet_in_csf(idet_in_csf,lcsf-1)=iwdet_in_csf(idet_in_csf,lcsf)
+  403                 cdet_in_csf(idet_in_csf,lcsf-1)=cdet_in_csf(idet_in_csf,lcsf)
+                  ncsf=ncsf-1
+                  goto 401
+                endif
+  404       continue
+          endif
+  405 continue
 
 c Temp printout
       write(6,'(/,''6Inputs for new version of CHAMP'')')
@@ -968,8 +1001,6 @@ c First calculate normalization and adjust csf_coef to correspond to that.
 
 c Now make cdet_in_csf integers to make the input file smaller.  The qmc program will
 c turn these back into normalized csfs.
-ccAlso determine ndet
-c     ndet=0
       do 690 icsf=1,ncsf
         cdet_in_csf_min=9.d99
         do 680 idet_in_csf=1,ndet_in_csf(icsf)
@@ -980,11 +1011,11 @@ c     ndet=0
   686   continue
 
         do 690 idet_in_csf=1,ndet_in_csf(icsf)
-c         ndet=max(ndet,iwdet_in_csf(idet_in_csf,icsf))
           do 688 iden=2,50
             do 688 inum=iden+1,50
               if(dfloat(inum)/dfloat(iden)-dfloat(inum/iden). gt. 1.d-9 .and.
      &          abs(abs(cdet_in_csf(idet_in_csf,icsf))-(dfloat(inum)/dfloat(iden))).lt.1.d-3) then
+                write(6,'(''inum,iden,icsf='',2i3,i4)') inum,iden,icsf
                 do 687 jdet_in_csf=1,ndet_in_csf(icsf)
   687             cdet_in_csf(jdet_in_csf,icsf)=cdet_in_csf(jdet_in_csf,icsf)*iden
                 goto 686
@@ -1001,21 +1032,21 @@ c Calculate total norm of the csf's kept.
       write(6,'(''csf_sum='',f8.6)') csf_sum
 
 c Check if there are close csf coefs.  At this point they are in order of decreasing magnitude, so upper limit of iden is inum.
-      do 399 icsf=1,ncsf-1
-        do 399 jcsf=icsf+1,ncsf
+      do 699 icsf=1,ncsf-1
+        do 699 jcsf=icsf+1,ncsf
           if(label_det(iwdet_in_csf(1,icsf)).eq.label_det(iwdet_in_csf(1,jcsf))) then
-            do 398 inum=1,20
-            do 398 iden=1,10
+            do 698 inum=1,20
+            do 698 iden=1,10
               times=dfloat(inum)/dfloat(iden)
-              do 398 isignj=-1,1,2
+              do 698 isignj=-1,1,2
                 if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.100*eps*sqrt(abs(csf_coef(icsf)))) then
                   write(6,'(''Warning close coefs.: inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i5,2f13.9)')
      &            inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
-                  goto 399
+                  goto 699
                 endif
-  398       continue
+  698       continue
           endif
-  399 continue
+  699 continue
 
 c Create new version inputs
 c While doing that, check if any cdet_in_csf is not an integer or half-integer.

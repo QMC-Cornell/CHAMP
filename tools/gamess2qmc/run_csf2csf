@@ -1,10 +1,10 @@
 #! /bin/sh
 # This script is run on the .out file from a GAMESS CI run.
-# e.g. ~/champ_new_basis/tools/gamess2qmc/run_csf2csf ci.out
+# e.g. ~/champ/tools/gamess2qmc/run_csf2csf ci.out
 # This script does the foll.:
 # 1) it runs gamess2qmc on the GAMESS out file
 # 2) it runs csf2csf on the .csf file created by gamess2qmc to create a .csfs file.
-# 3) it edits the .inp file created by gamess2qmc using the .csfs file to create a .inp2 file
+# 3) it edits the .inp file created by gamess2qmc using the .csf2 file to create a .inp2 file
 
 # The .inp2 file should be ready to run in CHAMP if nctype=1, otherwise the lines with
 # NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr
@@ -21,9 +21,9 @@ do
   vmc_input2=`echo $in | sed -e 's/.out/_vmc.inp2/'`
   echo $in $in_csf2csf $out_csf2csf
 
-# $HOME/bin/gamess2qmc -CJF -t initial $in
-  $HOME/champ_new_basis/tools/gamess2qmc/gamess2qmc -CJF -t initial $in
-  $HOME/champ_new_basis/tools/iequal/csf2csf < $in_csf2csf > $out_csf2csf
+# $HOME/bin/gamess2qmc -CJF -t initial -d 0.0010 $in
+  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.0010 $in
+  $HOME/champ/tools/iequal/csf2csf < $in_csf2csf > $out_csf2csf
 
   ex $out_csf2csf <<_end
     1,/Inputs for new version of CHAMP with linear relations recognized/d
@@ -52,5 +52,7 @@ _end
     -1r csfs
     wq
 _end
+
+echo 'If nctype>1, you will have to edit 2 lines of the .inp2 file to change nparm, nparma and nparmc'
 
 done
