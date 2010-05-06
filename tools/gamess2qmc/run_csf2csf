@@ -4,7 +4,7 @@
 # This script does the foll.:
 # 1) it runs gamess2qmc on the GAMESS out file
 # 2) it runs csf2csf on the .csf file created by gamess2qmc to create a .csfs file.
-# 3) it edits the .inp file created by gamess2qmc using the .csf2 file to create a .inp2 file
+# 3) it edits the .inp file created by gamess2qmc using the .csfs file to create a .inp2 file
 
 # The .inp2 file should be ready to run in CHAMP if nctype=1, otherwise the lines with
 # NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr
