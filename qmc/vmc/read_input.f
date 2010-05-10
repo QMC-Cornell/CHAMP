@@ -7,6 +7,7 @@ c Written by Cyrus Umrigar
       use control_mod
       use montecarlo_mod
       use orbitals_mod
+      use orbpar_mod
       use optimization_mod
       use fitdet_mod
       use orbital_grid_mod
@@ -413,7 +414,8 @@ c nparmd      Number of determinantal coefs to be optimized (obsolete)
 c nparmcsf    Number of determinantal coefs to be optimized
 c nparms      Number of Jastrow scale factor coefs to be optimized (0 or 1)
 c nparmo(i)   Number of Orbital parameters of type i.  At present this is used for floating
-c             gaussians and there are 3 types (x,y positions and width).
+c             gaussians and there are 3-4 types (x,y positions and width).
+c             setting this to -1 constrains all parameters of type i to be the same
 c nparmg      Do not use this.
 
 c For each of the nparms's we now
@@ -1694,10 +1696,35 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
      &  (nparmf(it),it=1,nctype),nparmcsf,nparms,nparmg,
      &  (nparmo(it),it=1,notype)
         do it=1,notype
-          nparmot=nparmot+nparmo(it)
-          if(nparmo(it).lt.0 .or. nparmo(it).gt.norb) then
-            stop 'nparmo must be between 0 and norb'
-          endif
+          if(nparmo(it).eq.-1) then  !all orbitals of type 'it' constrained
+            nparmot = nparmot+1
+c           now we make sure all parameters of this type are the same
+            write(6,'(''Constraint imposed in optimization over orbital parameters.'')')  
+            write(6,'(''Resetting read-in values to enforce constraint:'')')
+            if(ibasis.eq.4) then
+              if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
+              if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
+              if(it.eq.3) write(6,'(''New (constrained) floating gaussian widths:'')')
+            elseif(ibasis.eq.5) then
+              if(it.eq.1) write(6,'(''New (constrained) floating gaussian radial positions:'')')
+              if(it.eq.2) write(6,'(''New (constrained) floating gaussian angular positions:'')')
+              if(it.eq.3) write(6,'(''New (constrained) floating gaussian radial widths:'')')
+              if(it.eq.4) write(6,'(''New (constrained) floating gaussian angular widths:'')')
+            elseif(ibasis.eq.6 .or. ibasis.eq.7) then
+              if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
+              if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
+              if(it.eq.3) write(6,'(''New (constrained) floating gaussian x-widths:'')')
+              if(it.eq.4) write(6,'(''New (constrained) floating gaussian y-widths:'')')
+            endif
+            do ib=1,nbasis
+              oparm(it,ib,1) = oparm(it,1,1)
+            enddo
+            write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis)
+          else if(nparmo(it).lt.-1 .or. nparmo(it).gt.norb) then
+            stop 'nparmo must be between -1 and norb'
+          else
+            nparmot=nparmot+nparmo(it)
+         endif
         enddo
       endif
 
@@ -1716,7 +1743,7 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
       if(ijas.ge.4.and.ijas.le.6) then
         do 405 it=1,nctype
           if(nloc.eq.0) then
-c All-electron with analytic slater basis
+c     All-electron with analytic slater basis
             if((norda.eq.0.and.nparma(it).gt.0)
      &      .or.(norda.gt.0 .and. nparma(it).gt.norda+1)) then
               write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
@@ -1800,7 +1827,14 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
       call alloc ('iwo', iwo, norb, notype)
       do it=1,notype
         read(5,*) (iwo(iparm,it),iparm=1,nparmo(it))
-        write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
+        if(nparmo(it).eq.-1) then  !constrained orbital optimization
+          do ib = 1,nbasis
+            iwo(ib, it) = ib ! this is a trick to make life easier later in the code
+          enddo
+          write(6,'(''orbital parameters varied= all, constrained to be equal'')')
+        else 
+          write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
+ 1      endif
         do iparm=1,nparmo(it)
           if(iwo(iparm,it).lt.0 .or. iwo(iparm,it).gt.norb) then
             stop 'Incorrect value for iwo.'

@@ -49,7 +49,7 @@ c So, we check in read_input that nup and ndn are each <= MELEC/2.
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*),div_vd(nelec)
       dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
       dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
-
+  
 c initialize the derivative arrays to zero
       do 10 i=1,nelec
         ekinen(i)=0
@@ -292,6 +292,7 @@ c those that are needed for optimization only are over nparmcsf.
   150           ddeti_det(k,i,iparm)=ddeti_det(k,i,iparm)+ddeti_deti(k,i,iwdet)*term
         if(ipr.ge.4) write(6,'(''deti_det(iparm) in determinant'',40d12.4)') (deti_det(iparm),iparm=1,nparmcsf)
 
+
 c Derivatives with respect to orbital parameters (not orbital coefficients!).
         if(iopt.eq.2) then
           do iparm=1,nparmcsf+nparmot
@@ -312,7 +313,21 @@ c Derivatives with respect to orbital parameters (not orbital coefficients!).
 !          call object_modified_by_index (det1_det_index)
 ! JT end
 
-        if(nparmot.gt.0) call deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
+c ACM: See if we're dealing with constrained orbitals
+        iconstrain = 0
+        do it=1,notype
+          if (nparmo(it).eq.-1) iconstrain = 1
+        enddo
+
+        if(nparmot.gt.0) then
+          if(iconstrain.eq.0) then 
+            call deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
+          else
+            call constrained_deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
+          endif
+        endif
+
+
       endif
 
       return
@@ -665,3 +680,123 @@ c              term=detu(idet)*detd(idet)*csf_coef(icsf,iwf)*cdet_in_csf(idet_in
 
       return
       end
+
+
+c--------------------------------------------------------------------------------------
+
+      subroutine constrained_deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
+c  Written by Abhijit Mehta, May 2010
+c  Calculates derivatives wrt orbital parameters for optimization if some of 
+c    the parameters are constrained to be equal (eg, we may want all gaussians
+c      to have the same width, so we can optimize just 1 parameter rather than 
+c       nelec individual parameters.)
+c  This routine calls deriv_det_orb to calculate derivatives as if each
+c     individual orbital parameter were independent, then just sums them up
+c     (using the chain rule) to get the derivative with respect to the single
+c       parameter.
+     
+      use dorb_mod
+      use dets_mod
+      use slater_mod
+      use optim_mod
+      use const_mod
+      use dim_mod
+      use coefs_mod
+      use wfsec_mod
+      use optimo_mod
+      use basic_tools_mod
+      use objects_mod
+      implicit real*8(a-h,o-z)
+      
+      dimension orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb)
+      dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
+      dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
+      dimension nparmo_temp(notype)
+      dimension deti_det_temp(nparmd), ddeti_det_temp(3,nelec,nparmd)
+      dimension d2deti_det_temp(nparmd), detij_det_temp(nparmd, nparmd)
+      dimension detij_partial_temp(nparmd,nparmcsf+4*nbasis)
+
+c ACM: For optimized constraints, we shall run deriv_det_orb as if we were 
+c  varying each orbital parameter separately, so we must change the values of 
+c  nparmo(it), nparmot, and nparmd.  We calculate overall derivatives using 
+c   chain rule, and restore values after calling deriv_det_orb
+c  This is a quick and dirty solution, but it should work.
+      nparmo_temp = nparmo
+      nparmot_temp = nparmot
+      nparmd_temp = nparmd
+      do it=1,notype
+        if (nparmo(it).eq.-1) then
+          nparmo(it) = nbasis
+          nparmot = nparmot - 1 + nbasis
+        endif
+      enddo
+      nparmd = nparmcsf+nparmot
+c  Housekeeping to make sure arrays are the right size - hope I'm doing this right
+      call object_modified('nparmd')
+      call alloc('deti_det', deti_det, nparmd)
+      call alloc('ddeti_det', ddeti_det, 3,nelec, nparmd)
+      call alloc('d2deti_det', d2deti_det, nparmd)
+      call alloc('detij_det', detij_det, nparmd, nparmd)
+
+c Derivatives with respect to orbital parameters (not orbital coefficients!).
+c   This is a cut and paste from determinant()
+      if(iopt.eq.2) then
+        do iparm=1,nparmcsf+nparmot
+          do jparm=1,nparmcsf+nparmot
+            detij_det(iparm,jparm)=0
+          enddo
+        enddo
+      endif
+
+      call deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
+
+c  Do chain rule to calculate derivative with respect to constrained parameter
+
+        iparm0 = nparmcsf ! which parameter we're on for final result 
+        iparm1 = nparmcsf ! which parameter we're on from deriv_det_orb
+        do jparm = 1,nparmd
+          do it = 1,notype
+            if (nparmo(it).eq.-1) then
+              iparm0 = iparm0 + 1
+              deti_det_temp(iparm0) = sum(deti_det(iparm1+1:iparm1+nbasis))
+              ddeti_det_temp(:,:,iparm0) = sum(ddeti_det(:,:,iparm1+1:iparm1+nbasis))
+              d2deti_det_temp(iparm0) = sum(d2deti_det(iparm1+1:iparm1+nbasis))
+              detij_partial_temp(iparm0,jparm) = sum(detij_det(iparm1+1:iparm1+nbasis,jparm))
+              iparm1 = iparm1 + nbasis
+            else
+              iparm0 = iparm0 + nparmo(it)
+              iparm1 = iparm1 + nparmo(it)
+            endif
+          enddo
+        enddo
+c  Finish up doing sum over second index to get detij_det(iparm,jparm)
+        jparm0 = nparmcsf
+        jparm1 = nparmcsf
+        do it = 1,notype
+          if (nparmo(it).eq.-1) then
+            jparm0 = jparm0 + 1
+            detij_det_temp(:,jparm0) = sum(detij_partial_temp(:,jparm1+1:jparm1+nbasis))
+            jparm1 = jparm1 + nbasis
+          else
+            jparm0 = jparm0 + nparmo(it)
+            jparm1 = jparm1 + nparmo(it)
+          endif
+        enddo
+
+c   Restore variables to their original values, update sizes 
+c     of derivative arrays and give them correct values
+        nparmo = nparmo_temp
+        nparmot = nparmot_temp
+        nparmd = nparmd_temp
+        call object_modified('nparmd')
+        call alloc('deti_det', deti_det, nparmd)
+        call alloc('ddeti_det', ddeti_det, 3,nelec, nparmd)
+        call alloc('d2deti_det', d2deti_det, nparmd)
+        call alloc('detij_det', detij_det, nparmd, nparmd)
+        deti_det = deti_det_temp
+        ddeti_det = ddeti_det_temp
+        d2deti_det = d2deti_det_temp
+        detij_det = detij_det_temp
+
+        return
+        end

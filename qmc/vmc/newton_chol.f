@@ -838,7 +838,12 @@ c update parameters
 
 
       do  it=1,notype
-        do  ip=1,nparmo(it)
+        if (nparmo(it).eq.-1) then
+          ipmax = 1 ! don't forget, we set iwo(ip, it) = ip in this case
+        else
+          ipmax = nparmo(it)
+        endif
+        do  ip=1,ipmax
           iparm=iparm+1
           oparm(it,iwo(ip,it),iadd_diag)=oparm(it,iwo(ip,it),1)+dparm(iparm)
           if (ibasis.eq.7 .and. it.eq.1) then
@@ -847,6 +852,11 @@ c update parameters
                 oparm(it,iwo(ip,it),iadd_diag) = oparm(it,iwo(ip,it),iadd_diag) - alattice
              endif
           endif 
+          if (nparmo(it).eq.-1) then ! make sure to enforce constraint
+            do ib=1,nbasis
+               oparm(it,ib,iadd_diag) = oparm(it, 1, iadd_diag)
+            enddo
+          endif
         enddo
       enddo
 
