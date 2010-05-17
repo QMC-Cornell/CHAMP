@@ -706,11 +706,13 @@ c       parameter.
       use optimo_mod
       use basic_tools_mod
       use objects_mod
+      use contrl_opt_mod
       implicit real*8(a-h,o-z)
-      
+c arguments      
       dimension orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb)
       dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)
       dimension ddporb(3,notype,nelec,norb),d2dporb(notype,nelec,norb)
+c temporary variables, used to save values 
       dimension nparmo_temp(notype)
       dimension deti_det_temp(nparmd), ddeti_det_temp(3,nelec,nparmd)
       dimension d2deti_det_temp(nparmd), detij_det_temp(nparmd, nparmd)
@@ -721,7 +723,7 @@ c  varying each orbital parameter separately, so we must change the values of
 c  nparmo(it), nparmot, and nparmd.  We calculate overall derivatives using 
 c   chain rule, and restore values after calling deriv_det_orb
 c  This is a quick and dirty solution, but it should work.
-      nparmo_temp = nparmo
+      nparmo_temp = nparmo  ! this is an array operation nparmo_temp(:) = nparmo(:)
       nparmot_temp = nparmot
       nparmd_temp = nparmd
       do it=1,notype
@@ -754,28 +756,26 @@ c  Do chain rule to calculate derivative with respect to constrained parameter
 
         iparm0 = nparmcsf ! which parameter we're on for final result 
         iparm1 = nparmcsf ! which parameter we're on from deriv_det_orb
-        do jparm = 1,nparmd
-          do it = 1,notype
-            if (nparmo(it).eq.-1) then
-              iparm0 = iparm0 + 1
-              deti_det_temp(iparm0) = sum(deti_det(iparm1+1:iparm1+nbasis))
-              ddeti_det_temp(:,:,iparm0) = sum(ddeti_det(:,:,iparm1+1:iparm1+nbasis))
-              d2deti_det_temp(iparm0) = sum(d2deti_det(iparm1+1:iparm1+nbasis))
-              detij_partial_temp(iparm0,jparm) = sum(detij_det(iparm1+1:iparm1+nbasis,jparm))
-              iparm1 = iparm1 + nbasis
-            else
-              iparm0 = iparm0 + nparmo(it)
-              iparm1 = iparm1 + nparmo(it)
-            endif
-          enddo
+        do it = 1,notype
+          if (nparmo_temp(it).eq.-1) then
+            iparm0 = iparm0 + 1
+            deti_det_temp(iparm0) = sum(deti_det(iparm1+1:iparm1+nbasis))
+            ddeti_det_temp(:,:,iparm0) = sum(ddeti_det(:,:,iparm1+1:iparm1+nbasis), DIM=3)
+            d2deti_det_temp(iparm0) = sum(d2deti_det(iparm1+1:iparm1+nbasis))
+            detij_partial_temp(iparm0,1:nparmd) = sum(detij_det(iparm1+1:iparm1+nbasis,:), DIM=1)
+            iparm1 = iparm1 + nbasis
+          else
+            iparm0 = iparm0 + nparmo(it)
+            iparm1 = iparm1 + nparmo(it)
+          endif
         enddo
 c  Finish up doing sum over second index to get detij_det(iparm,jparm)
         jparm0 = nparmcsf
         jparm1 = nparmcsf
         do it = 1,notype
-          if (nparmo(it).eq.-1) then
+          if (nparmo_temp(it).eq.-1) then
             jparm0 = jparm0 + 1
-            detij_det_temp(:,jparm0) = sum(detij_partial_temp(:,jparm1+1:jparm1+nbasis))
+            detij_det_temp(:,jparm0) = sum(detij_partial_temp(:,jparm1+1:jparm1+nbasis), DIM=2)
             jparm1 = jparm1 + nbasis
           else
             jparm0 = jparm0 + nparmo(it)
