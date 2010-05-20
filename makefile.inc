@@ -5,6 +5,7 @@
 system := $(shell uname)
 hostname := $(shell uname -n)
 uname := $(shell uname)
+machine := $(shell uname -m)
 
 ####################### DEFAULTS ########################################
 
@@ -102,6 +103,22 @@ PROF_EXE=champ_prof.exe
 export F77 F77_FLAGS LD_FLAGS CC CXX EINSPLINE USE_GCC 
 
 ####################### MACHINES ########################################
+ifeq ($(machine),x86_64)
+ifeq ($(uname),Linux)
+     CC=icc
+     CXX=icpc
+     CC_MPI=mpicc
+     F95=ifort
+     F95_MPI=mpif90
+     F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xST -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+     F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
+     EINSPLINE=
+     LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
+endif
+
+
+
 
 # New dft cluster at Cornell
 # We used to use -w to suppress warnings because otherwise the compilation of parser_tools fails after priting 10 error msgs. such as
@@ -682,4 +699,5 @@ ifeq ($(uname),Darwin)
     EINSPLINE=
     LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
+
 
