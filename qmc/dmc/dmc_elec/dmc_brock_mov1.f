@@ -45,6 +45,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use age_mod
       use branch_dmc_opt_mod
       use pop_control_mod, only : ffn
+      use eloc_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10)
@@ -301,6 +302,10 @@ c Set weights and product of weights over last nwprod steps
               rprob(itry)=rprob(itry)+wtg
               r2sum=r2sum+wtg*r2
   180         risum=risum+wtg/r
+
+!             local energy for current walker
+              eloc = eoldw(iw,1)
+              call object_modified_by_index (eloc_index)
           endif
           tausum(ifr)=tausum(ifr)+wtg*taunow
 

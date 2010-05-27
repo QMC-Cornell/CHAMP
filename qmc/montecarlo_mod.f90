@@ -1,17 +1,11 @@
 module montecarlo_mod
 
   use all_tools_mod
+  use eloc_mod
 
 ! Declaration of global variables and default values
 
-  integer             :: block_nb
-
-! local energy
-  real(dp)    :: eloc
-  real(dp)    :: eloc_bav
-  real(dp)    :: eloc_av
-  real(dp)    :: eloc_av_var
-  real(dp)    :: eloc_av_err
+  integer     :: block_nb
 
 ! local energy over walkers
   real(dp), allocatable   :: eloc_wlk (:)

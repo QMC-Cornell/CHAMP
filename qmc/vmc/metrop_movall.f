@@ -20,6 +20,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use forcewt_mod
       use estsig_mod
       use estsum_mod
+      use eloc_mod
       implicit real*8(a-h,o-z)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
@@ -219,6 +220,8 @@ c move is accepted so update positions etc.
 
       endif
 
+      eloc = eold(1)
+      call object_modified_by_index (eloc_index)
       call object_modified_by_index (xold_index)  !JT
 
       do 380 ifr=1,nforce

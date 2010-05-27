@@ -2169,6 +2169,7 @@ module orbitals_mod
 ! ------------------------------------------------------------------------------
 ! Description   : determine whether the orbitals are of the s-type
 ! Description   : lo= 0 is s-type orbital, 1 otherwise
+! Description   : Warning: do we need to know lo for each atom????
 !
 ! Created       : J. Toulouse, 06 Jan 2005
 ! ------------------------------------------------------------------------------

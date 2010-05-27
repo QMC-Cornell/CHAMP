@@ -4,6 +4,7 @@ module density_mod
   use grid_mod
   use electrons_mod
   use psi_mod
+  use eloc_mod
   use deriv_mod
 
 ! Declaration of global variables and default values

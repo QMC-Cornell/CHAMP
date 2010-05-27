@@ -2,7 +2,6 @@ module psi_mod
 
   use all_tools_mod
   use orbitals_mod
-  use montecarlo_mod
   use determinants_mod
 
 ! Declaration of global variables and default values

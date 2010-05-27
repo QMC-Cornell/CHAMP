@@ -793,6 +793,8 @@ module opt_lin_mod
     eigval_i(i) = eigval_i(i) / eigval_denom(i)
   enddo
 
+  call release ('eigval_denom', eigval_denom)
+
 ! print eigenvalues
 !  write(6,'(a)') 'Unsorted (complex) eigenvalues:'
 !  do i = 1, param_aug_nb
@@ -997,6 +999,9 @@ module opt_lin_mod
   write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
 !  write(6,'(2a,100f12.7)') trim(lhere),': parameters variations =', eigvec_lin(:)
 
+  call release ('eigval_r', eigval_r)
+  call release ('eigval_i', eigval_i)
+
 ! undo renormalization
 ! warning: only for selected eigenvector
   eigvec(:, eig_ind) = eigvec(:, eig_ind) / renorm_vector(:)
@@ -1045,9 +1050,7 @@ module opt_lin_mod
     delta_lin(iparm) = eigvec(1+iparm, eig_ind) / eigvec_first_coef
   enddo
 
-  call release ('eigval_r', eigval_r)
-  call release ('eigval_i', eigval_i)
-  call release ('eigval_denom', eigval_denom)
+  call release ('eigvec', eigvec)
 
   end subroutine delta_lin_bld
 

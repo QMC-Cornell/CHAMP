@@ -319,7 +319,7 @@ module catalog_routines_mod
   call catalog_one_node ('sum_lap_lnpsid_bld', sum_lap_lnpsid_bld)
   call catalog_one_node ('sum_lap_lnpsi_bld', sum_lap_lnpsi_bld)
   call catalog_one_node ('eloc_kin_bld', eloc_kin_bld)
-  call catalog_one_node ('eloc_bld', eloc_bld)
+!  call catalog_one_node ('eloc_bld', eloc_bld)
 
   call catalog_one_node ('slater_mat_ex_trans_inv_bld', slater_mat_ex_trans_inv_bld)
   call catalog_one_node ('slater_mat_ex_trans_inv_2_bld', slater_mat_ex_trans_inv_2_bld)

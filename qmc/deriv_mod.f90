@@ -7,6 +7,7 @@ module deriv_mod
   use deriv_exp_mod
   use periodic_jastrow_mod
   use deriv_geo_mod
+  use eloc_mod
 
 ! Declaration of global variables and default values
   integer                        :: param_pairs_nb

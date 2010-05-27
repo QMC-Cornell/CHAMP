@@ -78,6 +78,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use fourier_mod
       use velratio_mod
       use pop_control_mod, only : ffn
+      use eloc_mod
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -603,6 +604,11 @@ c same trick adapted to circular coordinates
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
+
+!           local energy for current walker
+            eloc = eoldw(iw,1)
+            call object_modified_by_index (eloc_index)
+
             call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1))
            else
             ro=ajacold(iw,ifr)*psidow(iw,ifr)**2*

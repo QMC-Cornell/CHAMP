@@ -2,6 +2,7 @@ module deriv_jas_mod
 
   use all_tools_mod
   use montecarlo_mod
+  use eloc_mod
 
 ! Declaration of global variables and default values
   integer                                :: jas_pairs_nb

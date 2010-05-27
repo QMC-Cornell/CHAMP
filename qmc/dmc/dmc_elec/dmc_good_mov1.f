@@ -76,6 +76,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use velratio_mod
       use pop_control_mod, only : ffn
       use determinants_mod
+      use eloc_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -768,6 +769,11 @@ c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
+
+!           local energy for current walker
+            eloc = eoldw(iw,1)
+            call object_modified_by_index (eloc_index)
+
            else
             ro=ajacold(iw,ifr)*psidow(iw,ifr)**2*
      &         exp(2*psijow(iw,ifr)-psi2savo)

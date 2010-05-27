@@ -6,6 +6,7 @@
   use nuclei_mod
   use psi_mod
   use montecarlo_mod
+  use eloc_mod
   use opt_lin_mod
   use forces_pulay_mod
 

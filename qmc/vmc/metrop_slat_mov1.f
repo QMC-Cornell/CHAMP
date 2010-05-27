@@ -13,6 +13,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use constants_mod
       use contrl_per_mod, only: iperiodic
       use montecarlo_mod
+      use eloc_mod
       use opt_lin_mod
       use opt_ptb_mod
       use deriv_exp_mod

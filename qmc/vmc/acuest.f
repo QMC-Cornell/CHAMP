@@ -5,6 +5,7 @@ c routine to accumulate estimators for energy etc.
       use constants_mod
       use control_mod
       use montecarlo_mod
+      use eloc_mod
       use variables_mod
       use mpi_mod
       use atom_mod
@@ -102,11 +103,11 @@ c       wnow=wsum(ifr)/nstep
         endif
 
         if (ifr.eq.1) then                                 !JT
-         eloc_bav = enow                                   !JT
-         eloc_av = eave                                    !JT
+!         eloc_bav = enow                                   !JT
+!         eloc_av = eave                                    !JT
          eloc_av_err = eerr                                !JT
-         call object_modified_by_index (eloc_bav_index)    !JT
-         call object_modified_by_index (eloc_av_index)     !JT
+!         call object_modified_by_index (eloc_bav_index)    !JT
+!         call object_modified_by_index (eloc_av_index)     !JT
          call object_modified_by_index (eloc_av_err_index) !JT
         endif                                              !JT
 

@@ -387,17 +387,18 @@ crystal_symmetries_mod.o: all_tools_mod.o pjas_setup_mod.o modules.h
 csfs_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h
 cusp_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o modules.h
 debug_mod.o: all_tools_mod.o
-density_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o grid_mod.o \
-	psi_mod.o modules.h
-deriv_csf_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o \
-	modules.h
+density_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o eloc_mod.o \
+	grid_mod.o psi_mod.o modules.h
+deriv_csf_mod.o: all_tools_mod.o determinants_mod.o eloc_mod.o \
+	montecarlo_mod.o modules.h
 deriv_exp_mod.o: all_tools_mod.o basis_mod.o csfs_mod.o deriv_orb_mod.o \
 	determinants_mod.o electrons_mod.o eloc_mod.o orbitals_mod.o \
 	psi_mod.o modules.h
 deriv_geo_mod.o: all_tools_mod.o forces_pulay_mod.o
-deriv_jas_mod.o: all_tools_mod.o montecarlo_mod.o modules.h
+deriv_jas_mod.o: all_tools_mod.o eloc_mod.o montecarlo_mod.o modules.h
 deriv_mod.o: all_tools_mod.o deriv_csf_mod.o deriv_exp_mod.o deriv_geo_mod.o \
-	deriv_jas_mod.o deriv_orb_mod.o periodic_jastrow_mod.o modules.h
+	deriv_jas_mod.o deriv_orb_mod.o eloc_mod.o periodic_jastrow_mod.o \
+	modules.h
 deriv_orb_mod.o: all_tools_mod.o csfs_mod.o determinants_mod.o eloc_mod.o \
 	montecarlo_mod.o orbitals_mod.o modules.h
 determinants_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o modules.h
@@ -407,21 +408,21 @@ dmc_mod.o: all_tools_mod.o allocations_mod.o average_mod.o \
 	commons/branch_dmc_opt_mod.o control_mod.o montecarlo_mod.o \
 	print_mod.o restart_mod.o modules.h
 electrons_mod.o: all_tools_mod.o walkers_mod.o modules.h
-eloc_mod.o: all_tools_mod.o electrons_mod.o montecarlo_mod.o psi_mod.o \
-	modules.h
+eloc_mod.o: all_tools_mod.o electrons_mod.o psi_mod.o modules.h
 ewald2_mod.o: basic_tools_mod.o commons/dim_mod.o
 extracule_mod.o: all_tools_mod.o modules.h
 files_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	strings_tools_mod.o
-forces_mod.o: all_tools_mod.o electrons_mod.o forces_pulay_mod.o grid_mod.o \
-	montecarlo_mod.o nuclei_mod.o opt_lin_mod.o psi_mod.o modules.h
-forces_pulay_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o \
+forces_mod.o: all_tools_mod.o electrons_mod.o eloc_mod.o forces_pulay_mod.o \
+	grid_mod.o montecarlo_mod.o nuclei_mod.o opt_lin_mod.o psi_mod.o \
+	modules.h
+forces_pulay_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o eloc_mod.o \
 	jastrow_mod.o montecarlo_mod.o orbitals_mod.o modules.h
 grid_mod.o: all_tools_mod.o orbitals_mod.o modules.h
 initialization_mod.o: all_tools_mod.o commons/contr3_mod.o orbitals_mod.o \
 	modules.h
-intracule_mod.o: all_tools_mod.o electrons_mod.o grid_mod.o psi_mod.o \
-	modules.h
+intracule_mod.o: all_tools_mod.o electrons_mod.o eloc_mod.o grid_mod.o \
+	montecarlo_mod.o psi_mod.o modules.h
 jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o modules.h
 main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
@@ -431,7 +432,7 @@ main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
 	intracule_mod.o jastrow_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o variables_mod.o
-montecarlo_mod.o: all_tools_mod.o modules.h
+montecarlo_mod.o: all_tools_mod.o eloc_mod.o modules.h
 mpi_mod.o: constants_mod.o
 nodes_mod.o: basic_tools_mod.o constants_mod.o strings_tools_mod.o
 nuclei_mod.o: all_tools_mod.o modules.h
@@ -456,8 +457,7 @@ pjasee_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
 pjasen_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o modules.h
 print_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o \
 	parser_tools_mod.o variables_mod.o
-psi_mod.o: all_tools_mod.o determinants_mod.o montecarlo_mod.o orbitals_mod.o \
-	modules.h
+psi_mod.o: all_tools_mod.o determinants_mod.o orbitals_mod.o modules.h
 restart_mod.o: all_tools_mod.o
 routines_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o
 strings_tools_mod.o: basic_tools_mod.o constants_mod.o

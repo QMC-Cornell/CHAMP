@@ -25,6 +25,7 @@ c    (Kluwer Academic Publishers, Boston, 1999)
       use kinet_mod
       use estsig_mod
       use estsum_mod
+      use eloc_mod
       implicit real*8(a-h,o-z)
 
       parameter (d3b2=1.5d0)
@@ -461,6 +462,8 @@ c move is accepted so update positions etc.
 
   300 continue
 
+      eloc = eold(1)
+      call object_modified_by_index (eloc_index)
       call object_modified_by_index (xold_index)  !JT
 
 c Warning: does not have correlated sampling for forces yet.

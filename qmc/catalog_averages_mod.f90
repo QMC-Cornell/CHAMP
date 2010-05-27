@@ -18,7 +18,8 @@ module catalog_averages_mod
   implicit none
 
 ! begin
-  call object_average_define ('e_loc','e_loc_av')
+  call object_block_average_define ('eloc', 'eloc_bav')
+  call object_average_define ('eloc','eloc_av')
   call object_error_define ('e_loc_av','e_loc_av_err')
   call object_average_define ('eloc_sq','eloc_sq_av')
   call object_error_define ('sigma', 'error_sigma')

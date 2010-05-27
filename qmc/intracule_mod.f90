@@ -1,10 +1,11 @@
  module intracule_mod
 
-
   use all_tools_mod
+  use montecarlo_mod
   use grid_mod
   use electrons_mod
   use psi_mod
+  use eloc_mod
 
 ! Declaration of global variables and default values
   character(len=max_string_len_file)  :: intra_file_out  = ''

@@ -2,6 +2,7 @@ module deriv_csf_mod
 
   use all_tools_mod
   use montecarlo_mod
+  use eloc_mod
   use determinants_mod
 
 ! Declaration of global variables and default values

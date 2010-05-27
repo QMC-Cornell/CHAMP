@@ -1,11 +1,15 @@
 module eloc_mod
 
   use all_tools_mod
-  use montecarlo_mod
   use electrons_mod
   use psi_mod
 
 ! Declaration of global variables and default values
+  real(dp)                       :: eloc
+  real(dp)                       :: eloc_bav
+  real(dp)                       :: eloc_av
+  real(dp)                       :: eloc_av_var
+  real(dp)                       :: eloc_av_err
   real(dp)                       :: eloc_kin
   real(dp)                       :: eloc_kin_av
   real(dp)                       :: eloc_kin_av_err
@@ -77,41 +81,40 @@ module eloc_mod
 
  end subroutine eloc_kin_bld
 
-! ==============================================================================
-  subroutine eloc_bld
-! ------------------------------------------------------------------------------
-! Description   : total local energy
+!! ==============================================================================
+!  subroutine eloc_bld
+!! ------------------------------------------------------------------------------
+!! Description   : total local energy
+!! Description   : eloc is directly set to eold in f77 code 
+!!
+!! Created       : J. Toulouse, 05 Dec 2005
+!! ------------------------------------------------------------------------------
+!  include 'modules.h'
+!  implicit none
 !
-! Created       : J. Toulouse, 05 Dec 2005
-! ------------------------------------------------------------------------------
-  include 'modules.h'
-  implicit none
-
-! header
-  if (header_exe) then
-
-!   call object_create ('eloc')
-
-   call object_needed ('eloc_kin')
-   call object_needed ('eloc_pot')
-
-   return
-
-  endif
-
-! begin
-!  write(6,*) trim(here),': entering'
-
-! allocations
-  call object_associate ('eloc', eloc)
-!  call object_associate ('eloc_av', eloc_av)
-!  call object_associate ('eloc_av_err', eloc_av_err)
-
-  eloc = eloc_kin + eloc_pot
-
-!  write(6,*) trim(here),': eloc=', eloc
-
- end subroutine eloc_bld
+!! header
+!  if (header_exe) then
+!
+!!   call object_create ('eloc')
+!
+!   call object_needed ('eloc_kin')
+!   call object_needed ('eloc_pot')
+!
+!   return
+!
+!  endif
+!
+!! begin
+!!  write(6,*) trim(here),': entering'
+!
+!! allocations
+!  call object_associate ('eloc', eloc)
+!!  call object_associate ('eloc_av', eloc_av)
+!!  call object_associate ('eloc_av_err', eloc_av_err)
+!
+!  eloc = eloc_kin + eloc_pot
+!
+! end subroutine eloc_bld
 
 ! ==============================================================================
   subroutine eloc_pot_en_bld

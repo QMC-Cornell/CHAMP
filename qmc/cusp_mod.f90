@@ -138,10 +138,11 @@ module cusp_mod
         write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
      enddo
      write(6,'(a)') '   ----------------------------------------'   
-	do orb_i=1,norb
+     do orb_i=1,norb
         write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
      enddo
      write(6,'(a)') '   ----------------------------------------'
+
      icusp = 1
      if (l_impose_cusp_en_occ) then
       write(6,'(a)') 'imposing e-n cusp conditions on occupied orbitals:'
@@ -159,7 +160,7 @@ module cusp_mod
         write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
      enddo
      write(6,'(a)') '   ----------------------------------------'
-	do orb_i=1,norb
+     do orb_i=1,norb
         write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
      enddo
      write(6,'(a)') '   ----------------------------------------'

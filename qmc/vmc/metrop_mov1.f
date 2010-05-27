@@ -10,6 +10,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use constants_mod
       use control_mod
       use montecarlo_mod
+      use eloc_mod
       use opt_lin_mod
       use opt_ptb_mod
       use config_mod

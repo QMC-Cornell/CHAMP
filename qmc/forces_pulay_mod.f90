@@ -6,6 +6,7 @@ module forces_pulay_mod
   use determinants_mod
   use jastrow_mod
   use montecarlo_mod
+  use eloc_mod
 
 ! Declaration of global variables and default values
   integer, allocatable                   :: force_to_bas_nb (:)
