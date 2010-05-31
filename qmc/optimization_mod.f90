@@ -930,7 +930,7 @@ module optimization_mod
    eloc_av_previous = energy(1)
 
 !  initial error
-   call object_provide ('eloc_av_err')
+!   call object_provide ('eloc_av_err')
 
 !  If this is the best yet, save it.  Since we are primarily interested in the energy we always use
 !  that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
@@ -947,7 +947,7 @@ module optimization_mod
    if (l_check_convergence .and. iter > 1 .and. iter >= iter_opt_min_nb) then
 
 !    convergence reached?
-     if (dabs(d_eloc_av) <= energy_threshold .and. eloc_av_err <= energy_threshold/2.d0) then
+     if (dabs(d_eloc_av) <= energy_threshold .and. energy_err(1) <= energy_threshold/2.d0) then
        convergence_reached_nb = convergence_reached_nb + 1
      else
        convergence_reached_nb = 0
@@ -966,12 +966,12 @@ module optimization_mod
        if (l_decrease_error) then
          if(l_decrease_error_adaptative) then
            if (d_eloc_av /= 0.d0) then
-             error_threshold = min(eloc_av_err,max(dabs(d_eloc_av)/decrease_error_factor,eloc_av_err/decrease_error_factor,decrease_error_limit))
+             error_threshold = min(energy_err(1),max(dabs(d_eloc_av)/decrease_error_factor,energy_err(1)/decrease_error_factor,decrease_error_limit))
            else
-             error_threshold = eloc_av_err
+             error_threshold = energy_err(1)
            endif
          else
-           error_threshold = max(eloc_av_err/decrease_error_factor,decrease_error_limit)
+           error_threshold = max(energy_err(1)/decrease_error_factor,decrease_error_limit)
          endif
        endif
        if (l_increase_blocks) then
@@ -1148,7 +1148,7 @@ module optimization_mod
    write(6,'(a,f12.7,a,i2,a)') 'Threshold on energy ', energy_threshold,' reached for ', check_convergence_nb,' consecutive steps.'
    if (.not. l_last_run) then
    write(6,*)
-   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
    endif
    iter = iter + 1
   else
@@ -1188,7 +1188,7 @@ module optimization_mod
 
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
-  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,eloc_av,' +-',eloc_av_err, d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
+  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
 
 ! If this is the best yet, save it.  Since we are primarily interested in the energy we use
 ! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
@@ -1209,7 +1209,7 @@ module optimization_mod
   write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
   write(6,'(a)') 'Best wave function:'
   write(6,*)
-  write(6,'(a,i3,a,f12.6,a)') 'The best wave function was found at iteration # ',iter_best, ' (energy_plus_err_best = ',energy_plus_err_best,')'
+  write(6,'(a,i3)') 'The best wave function was found at iteration # ',iter_best !, ' (energy_plus_err_best = ',energy_plus_err_best,')'
   call write_wf_best
 
   end subroutine optimization
