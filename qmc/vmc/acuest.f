@@ -5,6 +5,7 @@ c routine to accumulate estimators for energy etc.
       use constants_mod
       use control_mod
       use montecarlo_mod
+      use optimization_mod
       use eloc_mod
       use variables_mod
       use mpi_mod
@@ -137,6 +138,7 @@ c       wnow=wsum(ifr)/nstep
           tjfcum=tjfcum+tjfsum
           r2cum=r2cum+r2sum/nelec
 c         acccum=acccum+accsum
+          d_node_log_cum = d_node_log_cum + d_node_log_sum
           if(index(mode,'mov1').eq.0) then
             acccum=acccum+accsum
            else
@@ -166,6 +168,7 @@ c           if(ibasis.eq.3) emerr=nelec*0.125*bext*bext*err(r2cum,r2cm2,ifr)
           tpbave=tpbcum/wcum(ifr)
           tjfave=tjfcum/wcum(ifr)
           accave=acccum/wcum(ifr)
+          d_node_ave = exp(d_node_log_cum / wcum(ifr))
 
           if(ndim.eq.2) then
             ipeerr=nint(10000000*peerr)
@@ -249,17 +252,35 @@ c zero out xsum variables for metrop
       tjfsum=0
       r2sum=0
       accsum=0
+      d_node_log_sum = 0
 
       call systemflush(6)
 
       return
 
       entry acues1
+
+c     during optimization calculate modified walker weights based on distance to node
+      if (l_reweight .and. l_opt) then
+         if (nforce .eq. 1) then
+            call object_provide_by_index(vold_index)
+            d_node = 1.d0 / sqrt(sum(vold**2))
+            d_node_log = log(d_node)
+            d_node_log_sum = d_node_log_sum + d_node_log
+            current_walker_weight = d_node**reweight_power/(d_node**reweight_power+(d_node_ave/reweight_scale)**reweight_power)
+c     write(6,*) "!fp: ", esum1, d_node, current_walker_weight
+         else
+            current_walker_weight = 1.d0
+         end if
+         call object_modified_by_index (current_walker_weight_index)
+      end if
+
 c statistical fluctuation (without blocking)
       ecum1=ecum1+esum1
       ecm21=ecm21+esum1**2
 c     call grad_hess_jas_save
       esum1=0
+
       return
 
       entry acusig
@@ -304,6 +325,7 @@ c     call wf_secondary
       acccum=0
       ecum1=0
 c     ecum1s=0
+      d_node_log_cum = 0
 
       pecm2=0
       peicm2=0

@@ -38,6 +38,9 @@ module optimization_mod
   logical                 :: l_decrease_p_var = .false.
   logical                 :: l_ortho_orb_vir_to_orb_occ = .false.
   logical                 :: l_approx_orb_rot = .false.
+  logical                 :: l_reweight = .false.
+  integer                 :: reweight_power = 1
+  real(dp)                :: reweight_scale = 10.d0
 
   real(dp)                :: energy_threshold          = 1.d-3
   real(dp)                :: gradient_norm_threshold   = 0.1d0
@@ -163,6 +166,9 @@ module optimization_mod
    write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
    write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function wrt parameters? (default=false)'
    write(6,'(a)') ' deriv_bound_value = [real] : value of the bound mentioned above (default=10.d0)'
+   write(6,'(a)') ' reweight = [bool] : reweight expectation values in optimization with weights depending on distance to node (default=false)'
+   write(6,'(a)') ' reweight_power = [integer] : value of power in reweighting expression (default=1)'
+   write(6,'(a)') ' reweight_scale = [real] : value of scaling factor in reweighting expression (default=10.d0)'
    write(6,'(a)') 'end'
 
   case ('optimize')
@@ -315,6 +321,15 @@ module optimization_mod
   case ('deriv_bound_value')
    call get_next_value (deriv_bound_value)
    call require (lhere, 'deriv_bound_value > 1', deriv_bound_value > 1) !fp
+
+  case ('reweight')
+   call get_next_value (l_reweight)
+
+  case ('reweight_power')
+   call get_next_value (reweight_power)
+
+  case ('reweight_scale')
+   call get_next_value (reweight_scale)
 
   case ('end')
    exit
@@ -1084,6 +1099,8 @@ module optimization_mod
       endif
 !      call object_save ('delta_e_ptb')  !
    endif
+
+!   write(6, *) "fp: biased energy", eloc_av
 
 !  adjust diag_stab
    if (l_stab) then
