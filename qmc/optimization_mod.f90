@@ -39,6 +39,7 @@ module optimization_mod
   logical                 :: l_ortho_orb_vir_to_orb_occ = .false.
   logical                 :: l_approx_orb_rot = .false.
   logical                 :: l_reweight = .false.
+  logical                 :: l_reset_walker_weights_sum_block = .false.
   integer                 :: reweight_power = 1
   real(dp)                :: reweight_scale = 10.d0
 
@@ -1099,8 +1100,6 @@ module optimization_mod
       endif
 !      call object_save ('delta_e_ptb')  !
    endif
-
-!   write(6, *) "fp: biased energy", eloc_av
 
 !  adjust diag_stab
    if (l_stab) then

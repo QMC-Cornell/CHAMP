@@ -329,6 +329,12 @@ c       write out configuration for optimization/dmc/gfmc here
 
   440 continue
 
+c      if( nforce == 1) then
+c         write(6, *) "fp: biased sigma", sigma
+c         write(6, *) "fp: biased energy", eloc_av
+c         write(6, *) "fp: biased energy error", sqrt(eloc_av_var)
+c         write(6, *) "fp: biased sigma error", error_sigma
+c      end if
 !     reinitilization at the end of MC iterations
       block_nb = block_iterations_nb !JT save final block number
       step_iterations_nb  = 0   !JT
