@@ -119,12 +119,21 @@ c cell vectors. This could cause problems for e-e-n terms in J.
 
       use dim_mod
       use periodic_mod
+      use contrl_per_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-9)
 
 
 c     dimension r(3),r_basis(3),rlatt_sim(3,3),rlatt_sim_inv(3,3)
       dimension r(3),r_basis(3)
+
+c ACM, June 1, 2010: add case for systems periodic in only 1D so DMC will work
+      if (iperiodic.eq.1) then
+         r(1) = modulo(r(1),alattice) ! returns a number between 0 and alattice
+         if (r(1).gt.(alattice/2.)) r(1) = r(1) - alattice
+         return
+      endif
 
 c Find vector in basis coordinates
       do 20 k=1,ndim
