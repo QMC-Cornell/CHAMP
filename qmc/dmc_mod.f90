@@ -192,6 +192,21 @@ module dmc_mod
   write(6,*)
   write(6,'(a)') '*********** START DMC CALCULATION  ***********'
 
+! request average of local energy
+! eloc_av is now calculated by the averaging tools (in order to apply effective weight in optimization)
+  call object_associate ('eloc', eloc)
+  call object_associate ('eloc_av', eloc_av)
+  call object_average_request ('eloc_av')
+
+! request variance on averaged local energy
+  call object_associate ('eloc_av_var', eloc_av_var)
+  call object_variance_request ('eloc_av_var')
+
+! sigma
+  call object_associate ('error_sigma', error_sigma) !JT
+  call object_average_request ('eloc_sq_av') !JT
+  call object_error_request ('error_sigma') !JT
+
   call print_list_of_averages_and_errors
 
 ! initialize sums and averages
