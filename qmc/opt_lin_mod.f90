@@ -302,6 +302,7 @@ module opt_lin_mod
 ! Description   : seems to be not good for exponent optimization
 ! Description   : when there are some very small overlap elements
 ! Description   : needs something better -> e.g., Lowdin's canonical orthogonalizatoin
+! Helps for dots, counter-productive for exponents
 !
 ! Created       : J. Toulouse, 13 Jul 2007
 ! ------------------------------------------------------------------------------

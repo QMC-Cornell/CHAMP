@@ -12,6 +12,7 @@ module optimization_mod
   use montecarlo_mod
   use control_mod
   use vmc_mod
+  use dmc_mod
   use cusp_mod
 
 ! Declaration of global variables and default values
@@ -738,7 +739,13 @@ module optimization_mod
   write(6,'(a)') '************************* WAVE FUNCTION OPTIMIZATION *************************'
 
 ! Initializations
-  call vmc_init
+  if(l_mode_vmc) then 
+    call vmc_init
+   elseif(l_mode_dmc) then
+    call dmc_init
+   else
+    call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+  endif
   energy_plus_err_best=1.d99
   eloc_av_previous =  0.d0
   d_eloc_av = 0.d0
@@ -881,7 +888,13 @@ module optimization_mod
 !  VMC run
    nforce=1
    nwftype=1
-   call vmc
+   if(l_mode_vmc) then
+     call vmc
+    elseif(l_mode_dmc) then
+     call dmc
+    else
+     call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+   endif
 
 !  set back norb
    if (l_opt_orb) then
@@ -1199,8 +1212,13 @@ module optimization_mod
 
   nforce=1
   nwftype=1
-  call vmc
-
+  if(l_mode_vmc) then
+    call vmc
+   elseif(l_mode_dmc) then
+    call dmc
+   else
+    call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+  endif
 
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
@@ -1794,7 +1812,13 @@ module optimization_mod
    error_threshold = 1.d30
    nblk_sav=nblk
    nblk=nblk_small
-   call vmc
+   if(l_mode_vmc) then
+     call vmc
+    elseif(l_mode_dmc) then
+     call dmc
+    else
+     call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+   endif
    nblk=nblk_sav
    error_threshold = error_threshold_save
 
@@ -3092,14 +3116,14 @@ module optimization_mod
     orb_1st = ex_orb_1st_lab (ex_i)
     orb_2nd = ex_orb_2nd_lab (ex_i)
 
-!   exitation between orbitals both coming from the real part or imaginary part of complex orbitals
+!   excitation between orbitals both coming from the real part or imaginary part of complex orbitals
     if (ireal_imag(orb_1st) == ireal_imag(orb_2nd)) then
       delta_c_rp (:, orb_1st) = delta_c_rp (:, orb_1st) + delta_coef_ex (ex_i) * c_rp (1:ngvec_orb, orb_2nd)
       delta_c_rm (:, orb_1st) = delta_c_rm (:, orb_1st) + delta_coef_ex (ex_i) * c_rm (1:ngvec_orb, orb_2nd)
       delta_c_ip (:, orb_1st) = delta_c_ip (:, orb_1st) + delta_coef_ex (ex_i) * c_ip (1:ngvec_orb, orb_2nd)
       delta_c_im (:, orb_1st) = delta_c_im (:, orb_1st) + delta_coef_ex (ex_i) * c_im (1:ngvec_orb, orb_2nd)
 
-!   exitation between orbitals coming from the real part and imaginary part of complex orbitals
+!   excitation between orbitals coming from the real part and imaginary part of complex orbitals
     else
       delta_c_rp (:, orb_1st) = delta_c_rp (:, orb_1st) + delta_coef_ex (ex_i) * c_ip (1:ngvec_orb, orb_2nd)
       delta_c_rm (:, orb_1st) = delta_c_rm (:, orb_1st) + delta_coef_ex (ex_i) * c_im (1:ngvec_orb, orb_2nd)
