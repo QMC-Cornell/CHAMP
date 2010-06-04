@@ -107,6 +107,13 @@ module dmc_mod
   call alloc ('ajacold', ajacold, MWALK, nforce)
   call alloc ('fratio', fratio, MWALK, nforce)
 
+! get initial walkers from files or generate them
+  if (l_mode_mpi) then
+   call open_files_mpi
+  else
+   call open_files
+  endif
+
   end subroutine dmc_init
 
 ! ==============================================================================

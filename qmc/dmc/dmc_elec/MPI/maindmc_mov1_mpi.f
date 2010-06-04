@@ -35,7 +35,7 @@ c elements of matrix
         call mpi_type_commit(jas_type2,ierr)
       endif
 
-      call open_files_mpi
+!      call open_files_mpi
       call opt_wf_dmc
 
 # endif

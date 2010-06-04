@@ -443,9 +443,9 @@ opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o modules.h
 opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o modules.h
 opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o
 optimization_mod.o: all_tools_mod.o control_mod.o cusp_mod.o deriv_mod.o \
-	montecarlo_mod.o nuclei_mod.o opt_common_mod.o opt_lin_mod.o \
-	opt_nwt_mod.o opt_ptb_mod.o orbitals_mod.o periodic_jastrow_mod.o \
-	vmc_mod.o modules.h
+	dmc_mod.o montecarlo_mod.o nuclei_mod.o opt_common_mod.o \
+	opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o orbitals_mod.o \
+	periodic_jastrow_mod.o vmc_mod.o modules.h
 orbitals_mod.o: all_tools_mod.o basis_mod.o modules.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \

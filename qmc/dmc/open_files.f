@@ -17,8 +17,6 @@ c Used both for all-electon and 1-electron move versions.
       use contrldmc_mod
       implicit real*8(a-h,o-z)
 
-
-
       call get_initial_walkers
 
       if(irstar.ne.1) then

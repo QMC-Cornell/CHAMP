@@ -288,7 +288,7 @@ c Laplacian(JD)/JD = Laplacian(ln(JD)) + V^2
    45       energy=energy-hb*velocity(k,i)**2
         if(ipr.ge.3) write(6,'(''ifr,energy='',i2,9f16.10)') ifr,energy,psid,psij,pe
 
-      if(igradhess.ne.0 .or. l_opt) then
+        if(igradhess.ne.0 .or. l_opt) then
 
 c calculate parameter-derivatives of csf_coefs for optimization
           do 50 iparm=1,nparmcsf+nparmot
@@ -320,6 +320,8 @@ c E_L,i = -0.5*(\nabla^2*f_i + 2 grad(f_i).V) + (\hat{V}\psi/psi)_i
               do 55 k=1,ndim
    55           denergy(nparmcsf+nparmot+iparm)=denergy(nparmcsf+nparmot+iparm)-2*hb*(g(k,i,iparm)*velocity(k,i))
 
+          call object_modified_by_index (denergy_index)
+       
         endif
 
       endif

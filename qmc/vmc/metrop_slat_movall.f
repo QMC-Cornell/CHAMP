@@ -631,7 +631,7 @@ c       endif
       call object_modified_by_index (eold_index) !JT
       call object_modified_by_index (eloc_index)  !JT
       call object_modified_by_index (psi_det_index) !JT
-      call object_modified_by_index (denergy_index) !JT
+      call object_modified_by_index (denergy_index)
       call object_modified_by_index (vold_index) !JT
       call object_modified_by_index (div_vo_index) !JT
 
