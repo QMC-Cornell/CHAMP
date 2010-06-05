@@ -285,10 +285,12 @@ c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
         write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,(eferr/eferr1)**2
       endif
+      call alloc ('eloc_tc', eloc_tc, nforce) !JT
       do 30 ifr=1,nforce
         egave=egcum(ifr)/wgcum(ifr)
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
+        eloc_tc (ifr) = (egerr/egerr1)**2 !JT
 c save energy, energy_sigma and energy_err for optimization
         energy(ifr)=egave
         energy_sigma(ifr)=egerr1*rtevalg_eff1
@@ -301,6 +303,7 @@ c save energy, energy_sigma and energy_err for optimization
      &    nfprod,ifr,egave,egerr,egerr*rtevalg_eff1,egerr1*rtevalg_eff1,(egerr/egerr1)**2
         endif
   30  continue
+      call object_modified ('eloc_tc') !JT
 c     write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f9.5)') e1ave,e1err,e1err*rteval
 c     write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f9.5)') nfprod-1,e2ave,e2err,e2err*rteval
 c     write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval

@@ -49,6 +49,7 @@ module dmc_mod
     call wf_secondary
   else
     nwprod=1
+    call object_modified ('nwprod')
     nwftype=1
     iwftype(1)=1
   endif

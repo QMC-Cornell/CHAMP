@@ -191,10 +191,12 @@ c Mixed energy estimators
         write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  efave,eferr,eferr*rtevalf_eff1,eferr1*rtevalf_eff1,(eferr/eferr1)**2
       endif
+      call alloc ('eloc_tc', eloc_tc, nforce) !JT
       do 30 ifr=1,nforce
         egave=egcum(ifr)/wgcum(ifr)
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
+        eloc_tc (ifr) = (egerr/egerr1)**2 !JT
 c save energy, energy_sigma and energy_err for optimization
         energy(ifr)=egave
         energy_sigma(ifr)=egerr1*rtevalg_eff1
@@ -207,6 +209,7 @@ c save energy, energy_sigma and energy_err for optimization
      &    nfprod,ifr,egave,egerr,egerr*rtevalg_eff1,egerr1*rtevalg_eff1,(egerr/egerr1)**2
         endif
   30  continue
+      call object_modified ('eloc_tc') !JT
 c Growth energy estimators
       if(idmc.ge.0) then
         write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f9.5)') e1ave,e1err,e1err*rteval_eff1

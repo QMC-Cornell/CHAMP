@@ -1829,6 +1829,7 @@ module optimization_mod
    write (6,*)
    calculation_reliable_nb = 3
    calculation_reliable (1:3) = .true.
+   call object_provide ('eloc_tc')
    do iadd_diag = 1, 3
     if (eloc_tc (iadd_diag) >= 50.d0) then
      calculation_reliable_nb = calculation_reliable_nb - 1

@@ -213,6 +213,9 @@ c force and force_err are really the energy difference and the error in the ener
 !JT         write(6,'(a,f12.7,a,f11.7)') 'Potential energy    =',pefin,' +-',peerr
 !JT         write(6,'(a,f12.7,a,f11.7)') 'Kinetic energy (JF) =',tjffin,' +-',tjferr
 !JT         write(6,'(a,f12.7,a,f11.7)') 'Kinetic energy (PB) =',tpbfin,' +-',tpberr
+
+      call object_modified ('eloc_tc')
+
       if(ndim.eq.2) then
         write(6,'(''radial mag. E ='',t17,f12.7,'' +-''
      &  ,f11.7,f9.5)') tmfin,tmerr,tmerr*rtpass
