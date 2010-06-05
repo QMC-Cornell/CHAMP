@@ -132,6 +132,7 @@ module initialization_mod
   increase_blocks_limit=nblk_max
   add_diag(1) = 1.d-8
   diag_stab = add_diag(1)
+  call object_modified ('diag_stab')
   p_var=0.d0
   call object_modified ('p_var')
 !  ndata=1000

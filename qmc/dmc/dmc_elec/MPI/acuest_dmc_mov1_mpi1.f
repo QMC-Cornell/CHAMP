@@ -206,12 +206,12 @@ c Warning temp fix
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
-        if(ifr.eq.1) then                                !JT
-         eloc_bav = egnow                                !JT
-         eloc_av = egave                                 !JT
-         call object_modified_by_index (eloc_bav_index)  !JT
-         call object_modified_by_index (eloc_av_index)   !JT
-        endif                                            !JT
+!        if(ifr.eq.1) then                                !JT
+!         eloc_bav = egnow                                !JT
+!         eloc_av = egave                                 !JT
+!         call object_modified_by_index (eloc_bav_index)  !JT
+!         call object_modified_by_index (eloc_av_index)   !JT
+!        endif                                            !JT
 
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+fsum(ifr)

@@ -197,7 +197,7 @@ module walkers_mod
 ! if walker file does not exist
   else
 
-     if (idmc < 0) then
+     if (idmc < 0 .and. iperiodic > 0) then
        nconf=1
        write(6,'(a)') 'Warning: walker file does not exist. Generate randomly one walker.'
        call sites_per (xoldw,nelec,nup,ndn,rlatt_sim)
