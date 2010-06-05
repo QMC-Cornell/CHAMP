@@ -41,6 +41,14 @@ module basic_tools_mod
    end interface alloc
 
 !===============================================================
+   interface alloc_range
+!---------------------------------------------------------------
+   module procedure alloc_range_double_1, &
+                    alloc_range_double_2, &
+                    alloc_range_double_3
+   end interface alloc_range
+
+!===============================================================
    interface release
 !---------------------------------------------------------------
    module procedure release_integer_1, &
@@ -1778,6 +1786,202 @@ module basic_tools_mod
   endif
 
   end subroutine alloc_logical_3
+
+!===========================================================================
+  subroutine alloc_range_double_1 (object_name, object, lower1, upper1)
+!---------------------------------------------------------------------------
+! Description : allocate a object with its range
+!
+! Created     : J. Toulouse, 05 Jun 2010
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)     :: object_name
+  integer, intent(in)              :: lower1, upper1
+
+! output
+  real(dp) , allocatable           :: object (:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'alloc_range_double_1'
+  integer all_err, object_lower1, object_upper1
+
+! begin
+
+! allocate object if not already allocated
+  if(.not. allocated(object)) then
+
+   allocate (object(lower1:upper1), stat = all_err)
+
+   if(all_err /= 0) then
+    write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+    write(6,*) trim(lhere),': range is ', lower1, upper1
+    call die(lhere,'allocation failed')
+   endif
+
+!  initialize array to 0
+   object(:) = 0.d0
+
+   else
+
+!  reallocate object if already allocated with different dimension
+   object_lower1 = lbound(object, 1)
+   object_upper1 = ubound(object, 1)
+
+   if (object_lower1 /= lower1 .or. object_upper1 /= upper1) then
+
+    call release (object_name, object)
+
+    allocate (object(lower1:upper1), stat = all_err)
+
+    if(all_err /= 0) then
+     write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+     write(6,*) trim(lhere),': range is ', lower1, upper1
+     call die(lhere,'allocation failed')
+    endif
+
+!   initialize array to 0
+    object(:) = 0.d0
+
+   endif
+
+  endif
+
+  end subroutine alloc_range_double_1
+
+!===========================================================================
+  subroutine alloc_range_double_2 (object_name, object, lower1, upper1, lower2, upper2)
+!---------------------------------------------------------------------------
+! Description : allocate a object with its range
+!
+! Created     : J. Toulouse, 05 Jun 2010
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)     :: object_name
+  integer, intent(in)              :: lower1, upper1, lower2, upper2
+
+! output
+  real(dp) , allocatable           :: object (:,:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'alloc_range_double_2'
+  integer all_err, object_lower1, object_upper1, object_lower2, object_upper2
+
+! begin
+
+! allocate object if not already allocated
+  if(.not. allocated(object)) then
+
+   allocate (object(lower1:upper1,lower2:upper2), stat = all_err)
+
+   if(all_err /= 0) then
+    write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+     write(6,*) trim(lhere),': ranges are ', lower1, upper1, lower2, upper2
+    call die(lhere,'allocation failed')
+   endif
+
+!  initialize array to 0
+   object(:,:) = 0.d0
+
+   else
+
+!  reallocate object if already allocated with different dimension
+   object_lower1 = lbound(object, 1)
+   object_upper1 = ubound(object, 1)
+   object_lower2 = lbound(object, 2)
+   object_upper2 = ubound(object, 2)
+
+   if (object_lower1 /= lower1 .or. object_upper1 /= upper1 .or. object_lower2 /= lower2 .or. object_upper2 /= upper2) then
+
+    call release (object_name, object)
+
+    allocate (object(lower1:upper1,lower2:upper2), stat = all_err)
+
+    if(all_err /= 0) then
+     write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+     write(6,*) trim(lhere),': ranges are ', lower1, upper1, lower2, upper2
+     call die(lhere,'allocation failed')
+    endif
+
+!   initialize array to 0
+    object(:,:) = 0.d0
+
+   endif
+
+  endif
+
+  end subroutine alloc_range_double_2
+
+!===========================================================================
+  subroutine alloc_range_double_3 (object_name, object, lower1, upper1, lower2, upper2, lower3, upper3)
+!---------------------------------------------------------------------------
+! Description : allocate a object with its range
+!
+! Created     : J. Toulouse, 05 Jun 2010
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)     :: object_name
+  integer, intent(in)              :: lower1, upper1, lower2, upper2, lower3, upper3
+
+! output
+  real(dp) , allocatable           :: object (:,:,:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'alloc_range_double_3'
+  integer all_err, object_lower1, object_upper1, object_lower2, object_upper2, object_lower3, object_upper3
+
+! begin
+
+! allocate object if not already allocated
+  if(.not. allocated(object)) then
+
+   allocate (object(lower1:upper1,lower2:upper2,lower3:upper3), stat = all_err)
+
+   if(all_err /= 0) then
+    write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+     write(6,*) trim(lhere),': ranges are ', lower1, upper1, lower2, upper2, lower3, upper3
+    call die(lhere,'allocation failed')
+   endif
+
+!  initialize array to 0
+   object(:,:,:) = 0.d0
+
+   else
+
+!  reallocate object if already allocated with different dimension
+   object_lower1 = lbound(object, 1)
+   object_upper1 = ubound(object, 1)
+   object_lower2 = lbound(object, 2)
+   object_upper2 = ubound(object, 2)
+   object_lower3 = lbound(object, 3)
+   object_upper3 = ubound(object, 3)
+
+   if (object_lower1 /= lower1 .or. object_upper1 /= upper1 .or. object_lower2 /= lower2 .or. object_upper2 /= upper2  &
+       .or. object_lower3 /= lower3 .or. object_upper3 /= upper3) then
+
+    call release (object_name, object)
+
+   allocate (object(lower1:upper1,lower2:upper2,lower3:upper3), stat = all_err)
+
+    if(all_err /= 0) then
+     write(6,*) trim(lhere),': allocation for object ', trim(object_name),' failed'
+     write(6,*) trim(lhere),': ranges are ', lower1, upper1, lower2, upper2, lower3, upper3
+     call die(lhere,'allocation failed')
+    endif
+
+!   initialize array to 0
+    object(:,:,:) = 0.d0
+
+   endif
+
+  endif
+
+  end subroutine alloc_range_double_3
 
 !===========================================================================
   subroutine release_integer_1 (object_name, object)

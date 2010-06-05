@@ -744,7 +744,7 @@ module optimization_mod
    elseif(l_mode_dmc) then
     call dmc_init
    else
-    call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+    call die(lhere, 'If doing new optimization then mode must be vmc or dmc.')
   endif
   energy_plus_err_best=1.d99
   eloc_av_previous =  0.d0
@@ -893,7 +893,7 @@ module optimization_mod
     elseif(l_mode_dmc) then
      call dmc
     else
-     call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+     call die(lhere, 'If doing new optimization then mode must be vmc or dmc.')
    endif
 
 !  set back norb
@@ -1070,8 +1070,11 @@ module optimization_mod
      write(6,'(a)') 'New wave function:'
      call write_wf_new
 
-!    just in case mc config is in crazy place, reset mc_configs by calling sites
-     isite = 1; call mc_configs_read
+!    just in case mc config is in crazy place, reset mc_configs by calling sites, only in VMC for now. Need to do it for DMC as well?
+     if (l_mode_vmc) then
+      isite = 1; call mc_configs_read
+     endif
+
      if (l_decrease_error) then
       write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy(1),' +-', &
       energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
@@ -1217,7 +1220,7 @@ module optimization_mod
    elseif(l_mode_dmc) then
     call dmc
    else
-    call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+    call die(lhere, 'If doing new optimization then mode must be vmc or dmc.')
   endif
 
   d_eloc_av = energy(1) - eloc_av_previous
@@ -1817,7 +1820,7 @@ module optimization_mod
     elseif(l_mode_dmc) then
      call dmc
     else
-     call die(lhere, 'If doing new optimization then mode must be vmc or dmc, not fit')
+    call die(lhere, 'If doing new optimization then mode must be vmc or dmc.')
    endif
    nblk=nblk_sav
    error_threshold = error_threshold_save
@@ -1840,7 +1843,9 @@ module optimization_mod
     add_diag (1) =add_diag (1) * 10.d0
     write(6,'(a,1pd9.1)') 'Correlated calculation # 1 is not reliable, increase add_diag to ',add_diag (1)
 !   just in case mc config is in crazy place, reset mc_configs by calling sites
-    isite=1; call mc_configs_read
+    if (l_mode_vmc) then
+      isite=1; call mc_configs_read
+    endif
     cycle
    endif
 
@@ -1907,7 +1912,9 @@ module optimization_mod
     endif
 
 !   just in case mc config is in crazy place, reset mc_configs by calling sites
-    isite=1; call mc_configs_read
+    if (l_mode_vmc) then
+      isite=1; call mc_configs_read
+    endif
 
     cycle
    endif

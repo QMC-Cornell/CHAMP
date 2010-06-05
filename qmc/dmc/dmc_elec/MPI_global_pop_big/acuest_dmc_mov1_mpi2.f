@@ -591,15 +591,15 @@ c Zero out estimators for charge density of atom.
 
 c Zero out estimators for pair densities:
       if (ifixe.ne.0) then
-      allocate (den2d_t(-NAX:NAX,-NAX:NAX))
-      allocate (den2d_u(-NAX:NAX,-NAX:NAX))
-      allocate (den2d_d(-NAX:NAX,-NAX:NAX))
-      allocate (xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX))
-      allocate (xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX))
-      allocate (xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX))
-      allocate (xx0probut(0:NAX,-NAX:NAX,-NAX:NAX))
-      allocate (xx0probuu(0:NAX,-NAX:NAX,-NAX:NAX))
-      allocate (xx0probud(0:NAX,-NAX:NAX,-NAX:NAX))
+      call alloc_range ('den2d_t', den2d_t, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('den2d_u', den2d_u, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('den2d_d', den2d_d, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('xx0probdt', xx0probdt, 0, NAX, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('xx0probdu', xx0probdu, 0, NAX, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('xx0probdd', xx0probdd, 0, NAX, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('xx0probut', xx0probut, 0, NAX, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('xx0probuu', xx0probuu, 0, NAX, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('xx0probud', xx0probud, 0, NAX, -NAX, NAX, -NAX, NAX)
       do 100 i2=-NAX,NAX
         do 100 i3=-NAX,NAX
           den2d_t(i2,i3)=0

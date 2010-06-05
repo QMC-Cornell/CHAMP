@@ -65,48 +65,48 @@ module dmc_mod
   call object_provide ('ndn_square')
   call object_provide ('nparm')
 
-  call alloc ('iage', iage, MWALK)
+!  call alloc ('iage', iage, MWALK)
   call alloc ('xoldw', xoldw, 3, nelec, MWALK, nforce)
-  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
-  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
-  call alloc ('psidow', psidow, MWALK, nforce)
-  call alloc ('psijow', psijow, MWALK, nforce)
-  call alloc ('peow', peow, MWALK, nforce)
-  call alloc ('peiow', peiow, MWALK, nforce)
-  call alloc ('d2ow', d2ow, MWALK, nforce)
-
-  call alloc ('eoldw', eoldw, MWALK, nforce)
-  call alloc ('pwt', pwt, MWALK, nforce)
-  call alloc ('wt', wt, MWALK)
-
-  call alloc ('div_vow', div_vow, nelec, MWALK)
-  
-  call alloc ('slmuiw', slmuiw, nup_square, ndetup, MWALK)
-  call alloc ('slmdiw', slmdiw, ndn_square, ndetdn, MWALK)
-  call alloc ('fpuw', fpuw, 3, nup_square, ndetup, MWALK)
-  call alloc ('fpdw', fpdw, 3, ndn_square, ndetdn, MWALK)
-  call alloc ('detuw', detuw, ndetup, MWALK)
-  call alloc ('detdw', detdw, ndetdn, MWALK)
-  call alloc ('ddeti_detiw', ddeti_detiw, 3, nelec, ndetupdn, MWALK)
-  
-  call alloc ('fsow', fsow, nelec, nelec, MWALK)
-  call alloc ('fijow', fijow, 3, nelec, nelec, MWALK)
-  call alloc ('fsumow', fsumow, MWALK)
-  call alloc ('fjow', fjow, 3, nelec, MWALK)
-
-  call alloc ('denergy_old_dmc', denergy_old_dmc, nparm, MWALK)
-  call alloc ('wi_w', wi_w, nparm, MWALK)
-
-  call object_modified ('nfprod')
-  allocate(wtgen(0:nfprod))
-  allocate(ff(0:nfprod))
-
-  call object_modified ('nwprod')
-  allocate(wthist(MWALK,0:nwprod,nforce))
-
-  call alloc ('ajacold', ajacold, MWALK, nforce)
-  call alloc ('fratio', fratio, MWALK, nforce)
-
+!  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
+!  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
+!  call alloc ('psidow', psidow, MWALK, nforce)
+!  call alloc ('psijow', psijow, MWALK, nforce)
+!  call alloc ('peow', peow, MWALK, nforce)
+!  call alloc ('peiow', peiow, MWALK, nforce)
+!  call alloc ('d2ow', d2ow, MWALK, nforce)
+!
+!  call alloc ('eoldw', eoldw, MWALK, nforce)
+!  call alloc ('pwt', pwt, MWALK, nforce)
+!  call alloc ('wt', wt, MWALK)
+!
+!  call alloc ('div_vow', div_vow, nelec, MWALK)
+!  
+!  call alloc ('slmuiw', slmuiw, nup_square, ndetup, MWALK)
+!  call alloc ('slmdiw', slmdiw, ndn_square, ndetdn, MWALK)
+!  call alloc ('fpuw', fpuw, 3, nup_square, ndetup, MWALK)
+!  call alloc ('fpdw', fpdw, 3, ndn_square, ndetdn, MWALK)
+!  call alloc ('detuw', detuw, ndetup, MWALK)
+!  call alloc ('detdw', detdw, ndetdn, MWALK)
+!  call alloc ('ddeti_detiw', ddeti_detiw, 3, nelec, ndetupdn, MWALK)
+!  
+!  call alloc ('fsow', fsow, nelec, nelec, MWALK)
+!  call alloc ('fijow', fijow, 3, nelec, nelec, MWALK)
+!  call alloc ('fsumow', fsumow, MWALK)
+!  call alloc ('fjow', fjow, 3, nelec, MWALK)
+!
+!  call alloc ('denergy_old_dmc', denergy_old_dmc, nparm, MWALK)
+!  call alloc ('wi_w', wi_w, nparm, MWALK)
+!
+!  call object_modified ('nfprod')
+!  allocate(wtgen(0:nfprod))
+!  allocate(ff(0:nfprod))
+!
+!  call object_modified ('nwprod')
+!  allocate(wthist(MWALK,0:nwprod,nforce))
+!
+!  call alloc ('ajacold', ajacold, MWALK, nforce)
+!  call alloc ('fratio', fratio, MWALK, nforce)
+ 
 ! get initial walkers from files or generate them
   if (l_mode_mpi) then
    call open_files_mpi
@@ -179,6 +179,7 @@ module dmc_mod
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
   include 'modules.h'
+  use branch_dmc_opt_mod
   implicit none
 
 ! local
@@ -207,6 +208,59 @@ module dmc_mod
   call object_error_request ('error_sigma')
 
   call print_list_of_averages_and_errors
+
+
+! allocations (must be here because nforce can changed)
+  call object_provide ('nforce')
+  call object_provide ('nelec')
+  call object_provide ('ndetup')
+  call object_provide ('ndetdn')
+  call object_provide ('ndetupdn')
+  call object_provide ('nup_square')
+  call object_provide ('ndn_square')
+  call object_provide ('nparm')
+
+  call alloc ('iage', iage, MWALK)
+  call alloc ('xoldw', xoldw, 3, nelec, MWALK, nforce)
+  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
+  call alloc ('voldw', voldw, 3, nelec, MWALK, nforce)
+  call alloc ('psidow', psidow, MWALK, nforce)
+  call alloc ('psijow', psijow, MWALK, nforce)
+  call alloc ('peow', peow, MWALK, nforce)
+  call alloc ('peiow', peiow, MWALK, nforce)
+  call alloc ('d2ow', d2ow, MWALK, nforce)
+
+  call alloc ('eoldw', eoldw, MWALK, nforce)
+  call alloc ('pwt', pwt, MWALK, nforce)
+  call alloc ('wt', wt, MWALK)
+
+  call alloc ('div_vow', div_vow, nelec, MWALK)
+  
+  call alloc ('slmuiw', slmuiw, nup_square, ndetup, MWALK)
+  call alloc ('slmdiw', slmdiw, ndn_square, ndetdn, MWALK)
+  call alloc ('fpuw', fpuw, 3, nup_square, ndetup, MWALK)
+  call alloc ('fpdw', fpdw, 3, ndn_square, ndetdn, MWALK)
+  call alloc ('detuw', detuw, ndetup, MWALK)
+  call alloc ('detdw', detdw, ndetdn, MWALK)
+  call alloc ('ddeti_detiw', ddeti_detiw, 3, nelec, ndetupdn, MWALK)
+  
+  call alloc ('fsow', fsow, nelec, nelec, MWALK)
+  call alloc ('fijow', fijow, 3, nelec, nelec, MWALK)
+  call alloc ('fsumow', fsumow, MWALK)
+  call alloc ('fjow', fjow, 3, nelec, MWALK)
+
+  call alloc ('denergy_old_dmc', denergy_old_dmc, nparm, MWALK)
+  call alloc ('wi_w', wi_w, nparm, MWALK)
+
+  call object_provide ('nfprod')
+  call alloc_range ('wtgen', wtgen, 0, nfprod)
+  call alloc_range ('ff', ff, 0, nfprod)
+
+  call object_provide ('nwprod')
+  call alloc_range ('wthist', wthist, 1, MWALK, 0, nwprod, 1, nforce)
+
+  call alloc ('ajacold', ajacold, MWALK, nforce)
+  call alloc ('fratio', fratio, MWALK, nforce)
 
 ! initialize sums and averages
   if(irstar /= 1) then
