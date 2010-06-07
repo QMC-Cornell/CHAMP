@@ -84,9 +84,6 @@ module catalog_averages_mod
 
 ! perturbative method
 
-! overlap_fn method
-  call object_average_define ('csf_over_psit_j', 'csf_over_psit_j_av')
-
 ! intracule
   call object_average_define ('intra_sp_histo', 'intra_sp_histo_av')
   call object_error_define ('intra_sp_histo_av', 'intra_sp_histo_av_err')
