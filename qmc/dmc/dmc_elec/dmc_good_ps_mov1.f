@@ -49,6 +49,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use average_mod
       use atom_mod
       use dets_mod
+      use jastrow_mod, only: psi_jas
       use basis1_mod
       use contrl_mod
       use contr3_mod, only : mode
@@ -344,7 +345,7 @@ c Primary configuration
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
 
               psi_det = psidn                             !JT
-              psi_jas = psijn
+              psi_jas = exp(psijn)
               call object_modified_by_index (voldw_index) !JT
               call object_modified_by_index (psi_det_index) !JT
               call object_modified_by_index (psi_jas_index) !JT
