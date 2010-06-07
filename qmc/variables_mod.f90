@@ -64,6 +64,7 @@ module variables_mod
   logical                         :: l_opt_nwt = .false.
   logical                         :: l_opt_lin  = .false.
   logical                         :: l_opt_ptb = .false.
+  logical                         :: l_opt_ovlp_fn = .false.
   logical                         :: l_diagonal_overlap = .false.
 
   logical                         :: l_opt_orb  = .false.

@@ -19,6 +19,7 @@ module indexes_mod
   integer     :: ddorb_index
   integer     :: deti_det_index
   integer     :: psi_det_index
+  integer     :: psi_jas_index
   integer     :: psijo_index
   integer     :: eloc_index
   integer     :: slmui_index

@@ -18,6 +18,7 @@ module jastrow_mod
   real(dp), allocatable                  :: dist_en_scaled2_wlk (:,:,:)
   real(dp), allocatable                  :: dist_en_scaled2_deriv1_wlk (:,:,:)
   real(dp), allocatable                  :: dist_ee_scaled2_deriv1_wlk (:,:,:)
+  real(dp)                               :: psi_jas
 
   contains
 

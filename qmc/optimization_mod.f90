@@ -4,6 +4,7 @@ module optimization_mod
   use opt_nwt_mod
   use opt_lin_mod
   use opt_ptb_mod
+  use opt_ovlp_fn_mod
   use opt_common_mod
   use nuclei_mod
   use orbitals_mod
@@ -127,9 +128,11 @@ module optimization_mod
    write(6,'(a)') '        = linear (default) : linear energy optimization method'
    write(6,'(a)') '        = newton           : Newton energy optimization method'
    write(6,'(a)') '        = perturbative     : Perturbative energy optimization method'
+   write(6,'(a)') '        = overlap_fn       : Maximize overlap with fixed-nodes wavefunction method'
    write(6,'(a)') ' newton ... end : menu for Newton optimization method'
    write(6,'(a)') ' linear ... end : menu for linear optimization method'
    write(6,'(a)') ' perturbative ... end : menu for perturbative optimization method'
+   write(6,'(a)') ' overlap_fn ... end : menu for overlap optimization method'
    write(6,'(a)') ' p_var = [real] : fraction of variance to minimize (default=0)'
    write(6,'(a)') ' stabilize  = [logical] stabilize the minimization? (default=true)'
    write(6,'(a)') ' stabilization : choice of stabilization of the minimization'
@@ -194,6 +197,10 @@ module optimization_mod
 
   case ('perturbative')
    call opt_ptb_menu
+
+  case ('overlap_fn')
+   call opt_ovlp_fn_menu
+   call require (lhere, 'l_mode_dmc .eqv. true', l_mode_dmc)
 
   case ('p_var')
    call get_next_value (p_var)
@@ -377,6 +384,8 @@ module optimization_mod
     l_opt_nwt = .true.
    case ('perturbative')
     l_opt_ptb = .true.
+   case ('overlap_fn')
+    l_opt_ovlp_fn = .true.
    case default
     call die (lhere, 'unknown optimization method >'+trim(opt_method)+'<.')
   end select
@@ -634,6 +643,11 @@ module optimization_mod
      call  die (lhere, 'Optimization of periodic Jastrow parameters is done with linear method only')
   endif
 
+! The overlap_fn method is presently only for CSF coefs., though one could extend it to other parameters if one calculates the overlap matrix
+  if (l_opt_ovlp_fn .and. (l_opt_pjas .or. l_opt_jas .or. l_opt_orb .or. l_opt_exp)) then
+     call  die (lhere, 'At present overlap_fn optimization works for CSFs only')
+  endif
+
 ! Warnings for pertubative method
   if (l_opt_ptb) then
     if(l_opt_jas) then
@@ -849,6 +863,11 @@ module optimization_mod
       l_opt_orb_energy = .false.
     endif
 
+   endif
+
+!  overlap_fn method
+   if (l_opt_ovlp_fn) then
+    call object_average_request ('csf_over_psit_j_av')
    endif
 
 !  request additional averages for bounds on dpsi and deloc
@@ -2410,6 +2429,9 @@ module optimization_mod
   elseif (l_opt_ptb) then
       call object_provide_in_node (lhere, 'delta_ptb')
       delta_param (:) = delta_ptb (:)
+  elseif (l_opt_ovlp_fn) then
+      call object_provide_in_node (lhere, 'delta_ovlp_fn')
+      delta_param (:) = delta_ovlp_fn (:)
   else
       call die (lhere, 'No parameter variations available.')
   endif

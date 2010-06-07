@@ -321,7 +321,7 @@ c E_L,i = -0.5*(\nabla^2*f_i + 2 grad(f_i).V) + (\hat{V}\psi/psi)_i
    55           denergy(nparmcsf+nparmot+iparm)=denergy(nparmcsf+nparmot+iparm)-2*hb*(g(k,i,iparm)*velocity(k,i))
 
           call object_modified_by_index (denergy_index)
-       
+
         endif
 
       endif

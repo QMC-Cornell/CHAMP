@@ -72,15 +72,15 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	initialization_mod.f90 intracule_mod.f90 jastrow_mod.f90 \
 	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
 	nodes_mod.f90 nuclei_mod.f90 objects_mod.f90 opt_common_mod.f90 \
-	opt_lin_mod.f90 opt_nwt_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 \
-	orbitals_mod.f90 parser_tools_mod.f90 periodic_jastrow_een.f90 \
-	periodic_jastrow_mod.f90 pjas_interface.f90 pjas_setup_mod.f90 \
-	pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 psi_mod.f90 \
-	restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
-	testing_mod.f90 types_mod.f90 variables_mod.f90 vmc_mod.f90 \
-	walkers_mod.f90 write_mod.f90 amoeba.f amotry.f choldc.f cholsl.f \
-	ei.f ei2.f erf.f expint.f hash_funcs.f pythag.f svbksb.f svdcmp.f \
-	tools.f address_tools.c fit/checkjas2.f fit/cusorb.f \
+	opt_lin_mod.f90 opt_nwt_mod.f90 opt_ovlp_fn_mod.f90 opt_ptb_mod.f90 \
+	optimization_mod.f90 orbitals_mod.f90 parser_tools_mod.f90 \
+	periodic_jastrow_een.f90 periodic_jastrow_mod.f90 pjas_interface.f90 \
+	pjas_setup_mod.f90 pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 \
+	psi_mod.f90 repository.types_mod.f90 restart_mod.f90 routines_mod.f90 \
+	strings_tools_mod.f90 testing_mod.f90 types_mod.f90 variables_mod.f90 \
+	vmc_mod.f90 walkers_mod.f90 write_mod.f90 amoeba.f amotry.f choldc.f \
+	cholsl.f ei.f ei2.f erf.f expint.f hash_funcs.f pythag.f svbksb.f \
+	svdcmp.f tools.f address_tools.c fit/checkjas2.f fit/cusorb.f \
 	fit/cusorb_equiv.f fit/cuspcheck2.f fit/cuspcheck3.f fit/cuspco.f \
 	fit/cuspexact2.f fit/cuspexact3.f fit/cuspexact4.f fit/cuspinit3.f \
 	fit/cuspinit4.f fit/deriv_jastrow.f fit/deriv_jastrow3.f \
@@ -198,22 +198,23 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	forces_pulay_mod.o grid_mod.o indexes_mod.o initialization_mod.o \
 	intracule_mod.o jastrow_mod.o main_menu_mod.o matrix_tools_mod.o \
 	montecarlo_mod.o mpi_mod.o nodes_mod.o nuclei_mod.o objects_mod.o \
-	opt_common_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o \
-	optimization_mod.o orbitals_mod.o parser_tools_mod.o \
+	opt_common_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ovlp_fn_mod.o \
+	opt_ptb_mod.o optimization_mod.o orbitals_mod.o parser_tools_mod.o \
 	periodic_jastrow_een.o periodic_jastrow_mod.o pjas_interface.o \
 	pjas_setup_mod.o pjasee_mod.o pjasen_mod.o print_mod.o psi_mod.o \
-	restart_mod.o routines_mod.o strings_tools_mod.o testing_mod.o \
-	types_mod.o variables_mod.o vmc_mod.o walkers_mod.o write_mod.o \
-	amoeba.o amotry.o choldc.o cholsl.o ei.o ei2.o erf.o expint.o \
-	hash_funcs.o pythag.o svbksb.o svdcmp.o tools.o address_tools.o \
-	fit/checkjas2.o fit/cusorb.o fit/cusorb_equiv.o fit/cuspcheck2.o \
-	fit/cuspcheck3.o fit/cuspco.o fit/cuspexact2.o fit/cuspexact3.o \
-	fit/cuspexact4.o fit/cuspinit3.o fit/cuspinit4.o fit/deriv_jastrow.o \
-	fit/deriv_jastrow3.o fit/deriv_nonloc.o fit/deriv_nonloc_pot.o \
-	fit/deriv_nonlpsi.o fit/deriv_scale.o fit/dummy_newton.o \
-	fit/equiv_bas.o fit/fit.o fit/fockcheck3.o fit/fockexact3.o \
-	fit/func.o fit/jacobian.o fit/piksrt.o fit/plot_jas.o fit/rewght.o \
-	fit/strech.o fit/MPI/func_mpi.o fit/MPI/jacobian_mpi.o vmc/acuest.o \
+	repository.types_mod.o restart_mod.o routines_mod.o \
+	strings_tools_mod.o testing_mod.o types_mod.o variables_mod.o \
+	vmc_mod.o walkers_mod.o write_mod.o amoeba.o amotry.o choldc.o \
+	cholsl.o ei.o ei2.o erf.o expint.o hash_funcs.o pythag.o svbksb.o \
+	svdcmp.o tools.o address_tools.o fit/checkjas2.o fit/cusorb.o \
+	fit/cusorb_equiv.o fit/cuspcheck2.o fit/cuspcheck3.o fit/cuspco.o \
+	fit/cuspexact2.o fit/cuspexact3.o fit/cuspexact4.o fit/cuspinit3.o \
+	fit/cuspinit4.o fit/deriv_jastrow.o fit/deriv_jastrow3.o \
+	fit/deriv_nonloc.o fit/deriv_nonloc_pot.o fit/deriv_nonlpsi.o \
+	fit/deriv_scale.o fit/dummy_newton.o fit/equiv_bas.o fit/fit.o \
+	fit/fockcheck3.o fit/fockexact3.o fit/func.o fit/jacobian.o \
+	fit/piksrt.o fit/plot_jas.o fit/rewght.o fit/strech.o \
+	fit/MPI/func_mpi.o fit/MPI/jacobian_mpi.o vmc/acuest.o \
 	vmc/basis_fns.o vmc/basis_fnse2.o vmc/basis_norm.o \
 	vmc/basis_norm_dot.o vmc/cbasis_fns.o vmc/cdeterminant.o \
 	vmc/cdeterminante.o vmc/cdetsav.o vmc/cjastrow.o vmc/cmatinv.o \
@@ -375,7 +376,7 @@ catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	determinants_mod.o dipole_moment_mod.o eloc_mod.o extracule_mod.o \
 	forces_mod.o grid_mod.o intracule_mod.o jastrow_mod.o \
 	montecarlo_mod.o nodes_mod.o nuclei_mod.o opt_lin_mod.o opt_nwt_mod.o \
-	opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
+	opt_ovlp_fn_mod.o opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o \
@@ -441,11 +442,12 @@ objects_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o routines_mod.o \
 opt_common_mod.o: all_tools_mod.o
 opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o modules.h
 opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o modules.h
+opt_ovlp_fn_mod.o: all_tools_mod.o modules.h
 opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o
 optimization_mod.o: all_tools_mod.o control_mod.o cusp_mod.o deriv_mod.o \
 	dmc_mod.o montecarlo_mod.o nuclei_mod.o opt_common_mod.o \
-	opt_lin_mod.o opt_nwt_mod.o opt_ptb_mod.o orbitals_mod.o \
-	periodic_jastrow_mod.o vmc_mod.o modules.h
+	opt_lin_mod.o opt_nwt_mod.o opt_ovlp_fn_mod.o opt_ptb_mod.o \
+	orbitals_mod.o periodic_jastrow_mod.o vmc_mod.o modules.h
 orbitals_mod.o: all_tools_mod.o basis_mod.o modules.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \

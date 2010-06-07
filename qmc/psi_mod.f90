@@ -637,7 +637,7 @@ module psi_mod
    call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
   endif
 
-! call object_provide  ('grd_psi_over_psi_old')
+! call object_provide ('grd_psi_over_psi_old')
 ! call is_equal_or_die (grd_psi_over_psi, grd_psi_over_psi_old, 10.d-10, .true.)
 
  end subroutine grd_psi_over_psi_wlk_bld

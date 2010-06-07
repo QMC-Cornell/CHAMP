@@ -10,6 +10,7 @@ module catalog_routines_mod
   use opt_nwt_mod
   use opt_lin_mod
   use opt_ptb_mod
+  use opt_ovlp_fn_mod
   use montecarlo_mod
   use determinants_mod
   use eloc_mod
@@ -214,6 +215,9 @@ module catalog_routines_mod
   call catalog_one_node ('delta_ptb_bld', delta_ptb_bld)
   call catalog_one_node ('e_ptb_bld', e_ptb_bld)
   call catalog_one_node ('delta_e_ptb_bld', delta_e_ptb_bld)
+
+! overlap FN wavefunction method
+  call catalog_one_node ('csf_over_psit_j_bld', csf_over_psit_j_bld)
 
 ! jastrow derivatives
   call catalog_one_node ('jas_pairs_bld', jas_pairs_bld)
