@@ -110,8 +110,7 @@ module opt_ovlp_fn_mod
    call object_create('delta_ovlp_fn')
 
    call object_needed('csf_over_psit_j_av')
-   call object_needed ('csf_coef')
-   call object_needed('param_nb')
+   call object_needed ('param_nb')
 
    return
 
@@ -121,6 +120,8 @@ module opt_ovlp_fn_mod
 
 ! allocation
   call object_alloc('delta_ovlp_fn', delta_ovlp_fn, param_nb)
+
+  call object_provide ('csf_coef')
 
   do iparm = 1, param_nb
     delta_ovlp_fn(iparm) = csf_over_psit_j_av(iparm) - csf_coef(iparm, 1)
