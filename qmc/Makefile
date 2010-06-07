@@ -442,7 +442,7 @@ objects_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o routines_mod.o \
 opt_common_mod.o: all_tools_mod.o
 opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o modules.h
 opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o modules.h
-opt_ovlp_fn_mod.o: all_tools_mod.o modules.h
+opt_ovlp_fn_mod.o: all_tools_mod.o csfs_mod.o jastrow_mod.o modules.h
 opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o
 optimization_mod.o: all_tools_mod.o control_mod.o cusp_mod.o deriv_mod.o \
 	dmc_mod.o montecarlo_mod.o nuclei_mod.o opt_common_mod.o \
