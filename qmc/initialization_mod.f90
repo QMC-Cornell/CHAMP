@@ -7,7 +7,7 @@ module initialization_mod
 ! ===================================================================================
   subroutine initialization_before_parser
 ! -----------------------------------------------------------------------------------
-! Description   : initialization of some global variables before parser
+! Description   : initialization of some global variables before parser for new input only
 !
 ! Created       : J. Toulouse, 11 Mar 2009
 ! -----------------------------------------------------------------------------------
@@ -137,6 +137,7 @@ module initialization_mod
   call object_modified ('diag_stab')
   p_var=0.d0
   call object_modified ('p_var')
+  igradhess=0
 !  ndata=1000
   icusp=1
   icusp2=1

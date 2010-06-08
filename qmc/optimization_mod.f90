@@ -200,7 +200,6 @@ module optimization_mod
 
   case ('overlap_fn')
    call opt_ovlp_fn_menu
-   call require (lhere, 'l_mode_dmc .eqv. true', l_mode_dmc)
 
   case ('p_var')
    call get_next_value (p_var)
@@ -354,7 +353,8 @@ module optimization_mod
   write(6,'(a,f12.4)') ' fraction of variance: p_var=',p_var
   write(6,'(a,es12.4)') ' energy threshold for convergence =',energy_threshold
 
-  if(iter_opt_max_nb /= 0) igradhess=1
+! if(iter_opt_max_nb /= 0) igradhess=1 ! possibly needed to do optimization with new input but using Cyrus' optimization routines
+  igradhess=0 ! turn off Cyrus' optimization routines
   if(iter_opt_max_nb /= 0 .and. nforce > 1) stop 'nforce > 1 not allowed in optimization. At present can optim 1 wf only'
   if(iter_opt_max_nb /= 0 .and. (nwf.lt.3)) stop 'for optimization nwf should be >=3'
 
@@ -386,6 +386,7 @@ module optimization_mod
     l_opt_ptb = .true.
    case ('overlap_fn')
     l_opt_ovlp_fn = .true.
+    call require (lhere, 'l_mode_dmc .eqv. true', l_mode_dmc)
    case default
     call die (lhere, 'unknown optimization method >'+trim(opt_method)+'<.')
   end select
@@ -868,6 +869,7 @@ module optimization_mod
 !  overlap_fn method
    if (l_opt_ovlp_fn) then
     call object_average_request ('csf_over_psit_j_av')
+    call object_average_request ('ovlp_ovlp_fn_av')
    endif
 
 !  request additional averages for bounds on dpsi and deloc
@@ -2432,6 +2434,8 @@ module optimization_mod
   elseif (l_opt_ovlp_fn) then
       call object_provide_in_node (lhere, 'delta_ovlp_fn')
       delta_param (:) = delta_ovlp_fn (:)
+!      call object_provide_in_node (lhere, 'delta_ovlp_fn_exact')
+!      delta_param (:) = delta_ovlp_fn_exact (:)
   else
       call die (lhere, 'No parameter variations available.')
   endif

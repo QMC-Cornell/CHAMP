@@ -93,7 +93,7 @@ module deriv_csf_mod
 
    call object_needed ('nparmcsf')
    call object_needed ('deti_det')
-   call object_needed ('csf_coef') !!
+!temp   call object_needed ('csf_coef') !!   commented because causes circular dependencies in ovlp_ovlp_fn
 !   call object_needed ('iwcsf')  !!
 !   call object_needed ('det1_det')  !!
 

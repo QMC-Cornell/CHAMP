@@ -190,7 +190,7 @@ program champ
       call fit
       run_done = .true.
     else
-      call read_up_to_end
+      call read_up_to_end ! read upto end of old input, i.e., until it finds end keyword
 
 !     initialization of some global variables
       call initialization
