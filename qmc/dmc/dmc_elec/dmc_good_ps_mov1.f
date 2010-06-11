@@ -80,6 +80,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use velratio_mod
       use pop_control_mod, only : ffn
       use eloc_mod
+      use opt_ovlp_fn_mod, only : wt_lambda
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -158,6 +159,8 @@ c Tau secondary in drift is one (first time around)
         ncall=ncall+1
       endif
 
+c Temporarily create wt_lambda_tau here, but it should be done at start of program
+      wt_lambda_tau=wt_lambda**tau
       ioldest=0
       do 300 iw=1,nwalk
 c Loop over primary walker
@@ -483,9 +486,11 @@ c Exercise population control if dmc or vmc with weights
 c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
-            wt(iw)=wt(iw)*dwt
+c Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
+c           wt(iw)=wt(iw)*dwt
+            wt(iw)=(wt(iw)**wt_lambda_tau)*dwt
             do 266 iparm=1,nparm
-  266         wi_w(iparm,iw)=wi_w(iparm,iw)+dexponent(iparm)
+  266         wi_w(iparm,iw)=wt_lambda_tau*wi_w(iparm,iw)+dexponent(iparm)
             wtnow=wt(iw)
             pwt(iw,ifr)=pwt(iw,ifr)*dwt/wthist(iw,iwmod,ifr)
             wthist(iw,iwmod,ifr)=dwt

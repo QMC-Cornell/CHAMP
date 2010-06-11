@@ -270,26 +270,28 @@ c                elseif(ll.eq.iwjasc(jparm,it)) then
 c                 ideriv=2
 c               endif
 
-                ideriv=0
-                if(ll.eq.iwjasc(jparm,it)) then
-                  ideriv=2
-                 else
-                  do 31 id=1,2*(nordc-1)
-                    if(ll.eq.iwc4(id)) then
-                      jj=id
-                      if(nvdepend(jj,it).gt.0) ideriv=1
-                    endif
-   31             continue
-                endif
+                if(nparmc(it).gt.0) then
+                  ideriv=0
+                  if(ll.eq.iwjasc(jparm,it)) then
+                    ideriv=2
+                   else
+                    do 31 id=1,2*(nordc-1)
+                      if(ll.eq.iwc4(id)) then
+                        jj=id
+                        if(nvdepend(jj,it).gt.0) ideriv=1
+                      endif
+   31               continue
+                  endif
 
-                if(ideriv.eq.1) then
-                  do 43 id=1,nvdepend(jj,it)
-                    iparm=iwdepend(jj,id,it)
-   43               gn(iparm)=gn(iparm)+cdep(jj,id,it)*p
-c                 jj=jj+1
-                 elseif(ideriv.eq.2) then
-                  gn(jparm)=gn(jparm)+p
-                  jparm=jparm+1
+                  if(ideriv.eq.1) then
+                    do 43 id=1,nvdepend(jj,it)
+                      iparm=iwdepend(jj,id,it)
+   43                 gn(iparm)=gn(iparm)+cdep(jj,id,it)*p
+c                   jj=jj+1
+                   elseif(ideriv.eq.2) then
+                    gn(jparm)=gn(jparm)+p
+                    jparm=jparm+1
+                  endif
                 endif
               endif
    50   continue
@@ -322,11 +324,7 @@ c the derivs. wrt the parameters in gn(*).
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-
-!JT      parameter(one=1.d0)
-
-
-
+!JT   parameter(one=1.d0)
 
       dimension gn(*)
 
@@ -402,10 +400,7 @@ c the derivs. wrt the parameters in gn(*).
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-!JT      parameter(one=1.d0)
-
-
-
+!JT   parameter(one=1.d0)
 
       dimension gn(*)
 

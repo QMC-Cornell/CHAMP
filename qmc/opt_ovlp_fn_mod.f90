@@ -14,6 +14,7 @@ module opt_ovlp_fn_mod
   real(dp), allocatable           :: delta_ovlp_fn_exact (:)
   real(dp), allocatable           :: ovlp_ovlp_fn (:,:)
   real(dp), allocatable           :: ovlp_ovlp_fn_av (:,:)
+  real(dp)                        :: wt_lambda = 1.d0
 
   contains
 
@@ -39,17 +40,27 @@ module opt_ovlp_fn_mod
   select case (trim(word))
   case ('help')
    write(6,'(a)') ' HELP for overlap fixed-node optimization menu'
-   write(6,'(a)') '    weighted_overlap = [logical] : have zero variance estimator by calculating the difference between the FN and the trial wavefn. (default=true)'
+   write(6,'(a)') '  overlap_fn'
+   write(6,'(a)') '   weighted_overlap = [logical] : have zero variance estimator by calculating the difference between the FN and the trial wavefn. (default=true)'
+   write(6,'(a)') '   wt_lambda = [real] : Power to which DMC wts are raised unit physical time later. (default=1.d0)'
    write(6,'(a)') ' end'
 
   case ('weighted_overlap')
    call get_next_value(l_weighted_overlap)
+
+  case ('wt_lambda')
+   call get_next_value(wt_lambda)
+
+  case ('end')
+   exit
 
   case default
    call die(lhere, 'unknown word >'+trim(word)+'<')
   end select
 
   enddo ! end loop over menu lines
+
+  call require (lhere, 'wt_lambda >= 0 and wt_lambda =< 1', wt_lambda >= 0.d0 .and. wt_lambda <= 1.d0)
 
   end subroutine opt_ovlp_fn_menu
 

@@ -452,12 +452,12 @@ module opt_lin_mod
                                + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
 !JT                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/1.d0
 
-!   normal Hamiltoniam
+!   normal Hamiltonian (Eq. 54d of 2007 JCP)
     else
-     ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                        &
-                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
-                               + dpsi_av(i) * dpsi_av(j) * eloc_av                             &
-                               + dpsi_deloc_covar(i, j)
+     ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
+                              - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
+                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
+                              + dpsi_deloc_covar(i, j)
     endif
 
 !   if(i /= j) then
