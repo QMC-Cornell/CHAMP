@@ -230,7 +230,7 @@ ifeq ($(hostname),clastos.lct.jussieu.fr)
 # CC=/usr/local/bin/mpicc_64
 # CXX=/usr/local/bin/mpicxx_64
 # F95=/usr/local/bin/mpif90_64
-# F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xT -ip -diag-disable vec -fpp -DNOEINSPLINE
+# F95_FAST_FLAGS=-zero -r8 -pad -align all -xW -ip -diag-disable vec -fpp -DNOEINSPLINE
 # F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE
 # EINSPLINE=
 # F95_MPI=/usr/local/bin/mpif90_64
