@@ -8,6 +8,7 @@ c Written by Cyrus Umrigar
       use contrl_per_mod
       use orbpar_mod
       use wfsec_mod
+      use dorb_mod
       implicit real*8(a-h,o-z)
 
 c Routine to put electrons down around centers for a VERY crude initial
@@ -81,6 +82,7 @@ c sample position from exponentials or gaussian around center
 c a.d.guclu: for wires distribute electrons linearly in y direction 
 c a.c.mehta: unless floating gaussians, then make sure electrons
 c             are close to centers of gaussians 
+c  Warning:  this might not work if we have multiple slater determinants
                  site=-dlog(rannyu(0))
                  if(nloc.eq.-1 .or. nloc.eq.-4 .or. nloc.eq.-5) site=dsqrt(site)
                  site=sign(site,(rannyu(0)-half))
@@ -88,7 +90,9 @@ c             are close to centers of gaussians
                  if(nloc.eq.-4) then 
                    if (ibasis.eq.6 .or. ibasis.eq.7) then
                      site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(k+2, ielec, iwf))
-                     x(k,ielec) = site + oparm(k, ielec, iwf)
+c  Make sure electron is near the center of some gaussian - might not work 
+c     if there's more than 1 slater determinant
+                     x(k,ielec) = site + oparm(k, iworbd(ielec,1), iwf)
                    else
                      if(k.eq.2) then
                        x(k,ielec)=sitsca*site+cent(k,i)
