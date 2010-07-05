@@ -217,10 +217,11 @@ module catalog_routines_mod
   call catalog_one_node ('delta_e_ptb_bld', delta_e_ptb_bld)
 
 ! overlap FN wavefunction method
-  call catalog_one_node ('csf_over_psit_j_bld', csf_over_psit_j_bld)
+! call catalog_one_node ('csf_over_psit_j_bld', csf_over_psit_j_bld)
   call catalog_one_node ('delta_ovlp_fn_bld', delta_ovlp_fn_bld)
-  call catalog_one_node ('delta_ovlp_fn_exact_bld', delta_ovlp_fn_exact_bld)
+!  call catalog_one_node ('delta_ovlp_fn_exact_bld', delta_ovlp_fn_exact_bld)
   call catalog_one_node ('ovlp_ovlp_fn_bld', ovlp_ovlp_fn_bld)
+  call catalog_one_node ('ovlp_trial_fn_bld', ovlp_trial_fn_bld)
 
 ! jastrow derivatives
   call catalog_one_node ('jas_pairs_bld', jas_pairs_bld)

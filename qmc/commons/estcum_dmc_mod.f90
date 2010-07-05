@@ -5,6 +5,7 @@ module estcum_dmc_mod
  save
 
  double precision, allocatable :: wgcum(:),wgcum1(:),egcum(:),egcum1(:),pecum(:),peicum(:),tpbcum(:),tjfcum(:),taucum(:)
+ double precision, allocatable :: ovlp_ovlp_fn_cum(:,:)
  double precision wcum,w_acc_cum,wfcum,wg_acc_cum,wdcum
  double precision wgdcum, wcum1,w_acc_cum1,wfcum1,wg_acc_cum1     
  double precision wdcum1, ecum,efcum,ecum1,efcum1

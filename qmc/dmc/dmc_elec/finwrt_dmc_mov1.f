@@ -29,6 +29,7 @@ c routine to print out final results
       use age_mod
       use pairden_mod
       use fourier_mod
+      use opt_ovlp_fn_mod, only : ovlp_ovlp_fn_av, ovlp_trial_fn
       implicit real*8(a-h,o-z)
 
 c     common /force_dmc/ itausec,nwprod
@@ -178,6 +179,8 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
       if(idmc.ge.0) then
         write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
         write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
+        call object_provide('ovlp_trial_fn')
+        write(6,'(''overlap psi_t psi_fn ='',t22,f9.5)') ovlp_trial_fn
         do 20 ifr=1,nforce
           wgave=wgcum(ifr)/passes
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
@@ -216,6 +219,12 @@ c Growth energy estimators
         write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f9.5)') nfprod-1,e2ave,e2err,e2err*rtevalg_eff1
         write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval_eff1
       endif
+
+      write (6,*) "passes: ", passes
+      write (6,*) "nwalk: ", nwalk
+      ovlp_ovlp_fn_av = ovlp_ovlp_fn_cum / (passes*nwalk)
+      call object_modified('ovlp_ovlp_fn_av')
+
       do 40 ifr=1,nforce
         peave=pecum(ifr)/wgcum(ifr)
         peiave=peicum(ifr)/wgcum(ifr)

@@ -78,7 +78,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pop_control_mod, only : ffn
       use determinants_mod
       use eloc_mod
-      use opt_ovlp_fn_mod, only : wt_lambda
+      use opt_ovlp_fn_mod, only : wt_lambda, ovlp_ovlp_fn
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -694,7 +694,9 @@ c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
 c Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
+c Warning: temporarily raise also this generation wt, dwt, to have continuous control of parameter changes.
 c           wt(iw)=wt(iw)*dwt
+c           dwt=dwt**wt_lambda_tau
             wt(iw)=(wt(iw)**wt_lambda_tau)*dwt
             do 266 iparm=1,nparm
   266         wi_w(iparm,iw)=wt_lambda_tau*wi_w(iparm,iw)+dexponent(iparm)
@@ -771,6 +773,8 @@ c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
+            call object_provide('ovlp_ovlp_fn')
+            ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
 
 !           local energy for current walker
             eloc = eoldw(iw,1)

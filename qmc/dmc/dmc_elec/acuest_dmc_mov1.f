@@ -4,6 +4,8 @@ c routine to accumulate estimators for energy etc.
       use all_tools_mod
       use constants_mod
       use control_mod
+!      use contrl_opt_mod, only : nparm
+      use optimization_mod, only: param_nb
       use montecarlo_mod
       use variables_mod
       use atom_mod
@@ -85,6 +87,8 @@ c     wfnow=wfsum/nstep
       ei2cum=ei2cum+ei2now
       r2cum=r2cum+r2sum
       ricum=ricum+risum
+
+      ovlp_ovlp_fn_cum = ovlp_ovlp_fn_cum + ovlp_ovlp_fn_sum
 
       do 15 ifr=1,nforce
 
@@ -250,6 +254,8 @@ c zero out xsum variables for metrop
       r2sum=zero
       risum=zero
 
+      ovlp_ovlp_fn_sum=zero
+
       do 20 ifr=1,nforce
         egsum(ifr)=zero
         wgsum(ifr)=zero
@@ -294,6 +300,8 @@ c statistical fluctuations without blocking
           egcm21(ifr)=0
         endif
    30 continue
+      call object_modified('wgcum1') !worry about speed
+      call object_modified('wgcm21')
 
 c collect block averages
       wsum=wsum+wsum1(1)
@@ -481,6 +489,16 @@ c zero out estimators
       call alloc ('tjfsum', tjfsum, nforce)
       call alloc ('tausum', tausum, nforce)
       call alloc ('esum1', esum1, nforce)
+
+      call object_provide('param_nb')
+!      call alloc ('ovlp_ovlp_fn_sum', ovlp_ovlp_fn_sum, nparm+1, nparm+1)
+!      call alloc ('ovlp_ovlp_fn_cum', ovlp_ovlp_fn_cum, nparm+1, nparm+1)
+!      write(6,*) "nparm :", nparm
+      call alloc ('ovlp_ovlp_fn_sum', ovlp_ovlp_fn_sum, param_nb+1, param_nb+1)
+      call alloc ('ovlp_ovlp_fn_cum', ovlp_ovlp_fn_cum, param_nb+1, param_nb+1)
+
+      ovlp_ovlp_fn_cum = zero
+
 c Do it for MFORCE rather than nforce because in optimization at the start nforce=1 but later nforce=3
 !JT: this should not be necessary and it is annoying for dynamic allocation!
       do 85 ifr=1,nforce

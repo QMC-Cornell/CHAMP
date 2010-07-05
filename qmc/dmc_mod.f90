@@ -7,6 +7,7 @@ module dmc_mod
   use print_mod
   use restart_mod
   use allocations_mod
+  use opt_ovlp_fn_mod, only : l_opt_ovlp_fn
 
 ! Declaration of global variables and default values
 
@@ -302,7 +303,7 @@ module dmc_mod
         call acues1_dmc
 
 !       walkers reconfiguration
-        call splitj
+        if(.not.l_opt_ovlp_fn) call splitj
 
       enddo ! istep
 
@@ -338,7 +339,7 @@ module dmc_mod
       call compute_averages_walk_step
 
 !     walkers reconfiguration
-      call splitj
+      if(.not.l_opt_ovlp_fn) call splitj
 
 ! Write out configuration for optimization/dmc/gfmc here
 ! We would like to:

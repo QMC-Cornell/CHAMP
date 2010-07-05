@@ -5,6 +5,7 @@ module estsum_dmc_mod
  save
 
  double precision, allocatable :: wgsum(:),wsum1(:),wgsum1(:),egsum(:),esum1(:),egsum1(:),pesum(:),peisum(:),tpbsum(:),tjfsum(:),tausum(:) 
+ double precision, allocatable :: ovlp_ovlp_fn_sum(:,:)
  double precision wsum,w_acc_sum,wfsum,wg_acc_sum,wdsum   
  double precision wgdsum, w_acc_sum1,wfsum1,wg_acc_sum1
  double precision wdsum1, esum,efsum,efsum1

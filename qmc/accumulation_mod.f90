@@ -172,6 +172,7 @@ module accumulation_mod
       call alloc ('tpbsum', tpbsum, nforce)
       call alloc ('tjfsum', tjfsum, nforce)
       call alloc ('tausum', tausum, nforce)
+
       do 85 ifr=1,nforce
         tausum(ifr)=zero
         taucum(ifr)=zero

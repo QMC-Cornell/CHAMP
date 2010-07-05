@@ -80,7 +80,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use velratio_mod
       use pop_control_mod, only : ffn
       use eloc_mod
-      use opt_ovlp_fn_mod, only : wt_lambda
+!     use optimization_mod, only : l_opt_ovlp_fn
+      use opt_ovlp_fn_mod, only : wt_lambda, ovlp_ovlp_fn
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -113,6 +114,7 @@ c Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
       if(idmc.gt.0) then
+c     if(idmc.gt.0 .and. .not. l_opt_ovlp_fn) then
         ginv=min(1.d0,tau)
 c       ginv=min(1.d0,10*tau)
         ffn=eigv*(wdsumo/nconf_global)**ginv
@@ -487,8 +489,11 @@ c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
 c Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
+c Warning: temporarily raise also this generation wt, dwt, to have continuous control of parameter changes.
 c           wt(iw)=wt(iw)*dwt
+c           dwt=dwt**wt_lambda_tau
             wt(iw)=(wt(iw)**wt_lambda_tau)*dwt
+c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
             do 266 iparm=1,nparm
   266         wi_w(iparm,iw)=wt_lambda_tau*wi_w(iparm,iw)+dexponent(iparm)
             wtnow=wt(iw)
@@ -612,6 +617,8 @@ c same trick adapted to circular coordinates
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
+            call object_provide('ovlp_ovlp_fn')
+            ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
 
 !           local energy for current walker
             eloc = eoldw(iw,1)
