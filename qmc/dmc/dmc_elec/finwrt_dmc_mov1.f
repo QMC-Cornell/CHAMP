@@ -29,7 +29,7 @@ c routine to print out final results
       use age_mod
       use pairden_mod
       use fourier_mod
-      use opt_ovlp_fn_mod, only : ovlp_ovlp_fn_av, ovlp_trial_fn
+      use opt_ovlp_fn_mod
       implicit real*8(a-h,o-z)
 
 c     common /force_dmc/ itausec,nwprod
@@ -220,10 +220,8 @@ c Growth energy estimators
         write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval_eff1
       endif
 
-      write (6,*) "passes: ", passes
-      write (6,*) "nwalk: ", nwalk
-      ovlp_ovlp_fn_av = ovlp_ovlp_fn_cum / (passes*nwalk)
-      call object_modified('ovlp_ovlp_fn_av')
+!JT      ovlp_ovlp_fn_av = ovlp_ovlp_fn_cum / (passes*nwalk)
+!JT      call object_modified('ovlp_ovlp_fn_av')
 
       do 40 ifr=1,nforce
         peave=pecum(ifr)/wgcum(ifr)

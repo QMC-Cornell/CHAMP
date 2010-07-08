@@ -23,14 +23,18 @@ module deriv_mod
   real(dp), allocatable          :: dpsi (:)
   real(dp), allocatable          :: dpsi_bav (:)
   real(dp), allocatable          :: dpsi_av (:)
+  real(dp), allocatable          :: dpsi_uwav (:)
   real(dp), allocatable          :: dpsi_sq (:)
   real(dp), allocatable          :: dpsi_sq_av (:)
   real(dp), allocatable          :: dpsi_var (:)
   real(dp), allocatable          :: dpsi_sq_covar (:)
   real(dp), allocatable          :: dpsi_dpsi (:)
   real(dp), allocatable          :: dpsi_dpsi_av (:)
+  real(dp), allocatable          :: dpsi_dpsi_uwav (:)
   real(dp), allocatable          :: dpsi_dpsi_covar (:,:)
+  real(dp), allocatable          :: dpsi_dpsi_uwcovar (:,:)
   real(dp), allocatable          :: dpsi_dpsi_covar_inv (:,:)
+  real(dp), allocatable          :: dpsi_dpsi_uwcovar_inv (:,:)
   real(dp), allocatable          :: dpsi_sq_eloc   (:)
   real(dp), allocatable          :: dpsi_sq_eloc_av(:)
   real(dp), allocatable          :: dpsi_dpsi_eloc (:)
@@ -243,6 +247,7 @@ module deriv_mod
    call object_create ('dpsi')
    call object_block_average_define ('dpsi', 'dpsi_bav')
    call object_average_define ('dpsi', 'dpsi_av')
+   call object_average_unweighted_define ('dpsi', 'dpsi_uwav')
    call object_covariance_define ('dpsi_av', 'dpsi_av', 'dpsi_av_dpsi_av_covar')
    call object_covariance_define ('dpsi_av', 'eloc_av', 'dpsi_av_eloc_av_covar')
 
@@ -258,6 +263,7 @@ module deriv_mod
   call object_alloc ('dpsi', dpsi, param_nb)
   call object_alloc ('dpsi_bav', dpsi_bav, param_nb)
   call object_alloc ('dpsi_av', dpsi_av, param_nb)
+  call object_alloc ('dpsi_uwav', dpsi_uwav, param_nb)
   call object_alloc ('dpsi_av_dpsi_av_covar', dpsi_av_dpsi_av_covar, param_nb, param_nb)
   call object_alloc ('dpsi_av_eloc_av_covar', dpsi_av_eloc_av_covar, param_nb)
 
@@ -666,6 +672,8 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi_dpsi')
+   call object_average_define ('dpsi_dpsi', 'dpsi_dpsi_av')
+   call object_average_unweighted_define ('dpsi_dpsi', 'dpsi_dpsi_uwav')
 
    call object_needed ('dpsi')
    call object_needed ('param_nb')
@@ -680,6 +688,7 @@ module deriv_mod
 
   call object_alloc ('dpsi_dpsi', dpsi_dpsi, param_pairs_nb)
   call object_alloc ('dpsi_dpsi_av', dpsi_dpsi_av, param_pairs_nb)
+  call object_alloc ('dpsi_dpsi_uwav', dpsi_dpsi_uwav, param_pairs_nb)
 
   do i = 1, param_nb
    do j = i, param_nb
@@ -757,6 +766,74 @@ module deriv_mod
   call inverse_by_svd (dpsi_dpsi_covar, dpsi_dpsi_covar_inv, param_nb, threshold)
 
   end subroutine dpsi_dpsi_covar_inv_bld
+
+! ==============================================================================
+  subroutine dpsi_dpsi_uwcovar_bld
+! ------------------------------------------------------------------------------
+! Description   : unweighted version of dpsi_dpsi_covar for DMC optimization
+!
+! Created       : J. Toulouse, 07 Jul 2010
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer i, j
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_dpsi_uwcovar')
+
+   call object_needed ('param_pairs')
+   call object_needed ('dpsi_uwav')
+   call object_needed ('dpsi_dpsi_uwav')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_dpsi_uwcovar', dpsi_dpsi_uwcovar, param_nb, param_nb)
+
+  do i = 1, param_nb
+   do j = 1, param_nb
+    dpsi_dpsi_uwcovar (i,j)= dpsi_dpsi_uwav (param_pairs(i,j)) - dpsi_uwav (i) * dpsi_uwav (j)
+   enddo
+  enddo
+
+  end subroutine dpsi_dpsi_uwcovar_bld
+
+! ==============================================================================
+  subroutine dpsi_dpsi_uwcovar_inv_bld
+! ------------------------------------------------------------------------------
+! Description   : inverse of dpsi_dpsi_uwcovar
+!
+! Created       : J. Toulouse, 07 Jul 2010
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  real(dp) threshold
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_dpsi_uwcovar_inv')
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_dpsi_uwcovar')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_dpsi_uwcovar_inv', dpsi_dpsi_uwcovar_inv, param_nb, param_nb)
+
+  threshold = 1.d-10
+  call inverse_by_svd (dpsi_dpsi_uwcovar, dpsi_dpsi_uwcovar_inv, param_nb, threshold)
+
+  end subroutine dpsi_dpsi_uwcovar_inv_bld
 
 ! ==============================================================================
   subroutine dpsi_sq_eloc_bld

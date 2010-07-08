@@ -386,7 +386,7 @@ module optimization_mod
     l_opt_ptb = .true.
    case ('overlap_fn')
     l_opt_ovlp_fn = .true.
-    call require (lhere, 'l_mode_dmc .eqv. true', l_mode_dmc)
+    call require (lhere, 'l_mode_dmc = true', l_mode_dmc)
    case default
     call die (lhere, 'unknown optimization method >'+trim(opt_method)+'<.')
   end select
@@ -644,10 +644,6 @@ module optimization_mod
      call  die (lhere, 'Optimization of periodic Jastrow parameters is done with linear method only')
   endif
 
-! ! The overlap_fn method is presently only for CSF coefs., though one could extend it to other parameters if one calculates the overlap matrix
-!   if (l_opt_ovlp_fn .and. (l_opt_pjas .or. l_opt_jas .or. l_opt_orb .or. l_opt_exp)) then
-!      call  die (lhere, 'At present overlap_fn optimization works for CSFs only')
-!   endif
 
 ! Warnings for pertubative method
   if (l_opt_ptb) then
@@ -808,12 +804,10 @@ module optimization_mod
 
 !  For energy gradient
    call object_average_request ('dpsi_av')
-!   if (.not. l_opt_ovlp_fn) call object_average_request ('dpsi_eloc_av')
-    call object_average_request ('dpsi_eloc_av')
+   call object_average_request ('dpsi_eloc_av')
 
 !  For variance gradient and hessian
-   !if (p_var /= 0.d0 .and. .not. l_opt_ovlp_fn) then
-    if (p_var /= 0.d0) then
+   if (p_var /= 0.d0) then
     call object_average_request ('deloc_eloc_av')
     call object_average_request ('dpsi_eloc_sq_av')
     call object_average_request ('deloc_deloc_av')
@@ -868,13 +862,13 @@ module optimization_mod
 
    endif
 
-! !  overlap_fn method
+! for overlap_fn method
     if (l_opt_ovlp_fn) then
-       call object_average_request ('deloc_av') !not really needed but problem with nonzero pvar otherwise
+      call object_average_request ('dpsi_uwav')
+      call object_average_request ('dpsi_dpsi_uwav')
+!      call object_average_request ('csf_over_psit_j_av')
+!      call object_average_request ('ovlp_ovlp_fn_av')
     endif
-!     call object_average_request ('csf_over_psit_j_av')
-!     call object_average_request ('ovlp_ovlp_fn_av')
-!    endif
 
 !  request additional averages for bounds on dpsi and deloc
    if (l_deriv_bound) then
@@ -929,37 +923,34 @@ module optimization_mod
    endif
 
 !  Calculate and print gradient
-!   if (.not. l_opt_ovlp_fn) then
-      call object_provide ('gradient')
-      call object_provide ('gradient_norm')
-      call object_provide ('gradient_norm_err')
-      call object_provide ('param_type')
-      write(6,*)
-      write(6,'(a)') 'Gradient with respect to the parameters:'
-      do param_i = 1, param_nb
-         write(6,'(a,i5,a,es15.8,3a)') 'gradient component # ',param_i,' : ', gradient (param_i), ' (',trim(param_type (param_i)),')'
-      enddo
-      write(6,'(a,es15.8,a,es15.8)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
-      write(6,*)
+   call object_provide ('gradient')
+   call object_provide ('gradient_norm')
+   call object_provide ('gradient_norm_err')
+   call object_provide ('param_type')
+   write(6,*)
+   write(6,'(a)') 'Gradient with respect to the parameters:'
+   do param_i = 1, param_nb
+     write(6,'(a,i5,a,es15.8,3a)') 'gradient component # ',param_i,' : ', gradient (param_i), ' (',trim(param_type (param_i)),')'
+   enddo
+   write(6,'(a,es15.8,a,es15.8)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
+   write(6,*)
 
 !  check vanishing components or linear dependencies in gradient
-      do parm_i = 1, param_nb
-         if (abs(gradient (parm_i)) < 1.d-10) then
-            l_warning = .true.
-            write(6,'(a)') 'Warning: zero or very small gradient component:'
-            write(6,'(a,i3,a,es15.8,a,i3,a,es15.8)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
-            cycle
-         endif
-         do parm_j = parm_i+1, param_nb
-            if (abs(gradient (parm_i) - gradient (parm_j)) < 1.d-10) then
-               l_warning = .true.
-               write(6,'(a)') 'Warning: possible linear dependency:'
-               write(6,'(a,i3,a,es15.8,a,i3,a,es15.8)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
-            endif
-         enddo
-      enddo
-
- !  endif !l_opt_ovlp_fn
+   do parm_i = 1, param_nb
+      if (abs(gradient (parm_i)) < 1.d-10) then
+       l_warning = .true.
+       write(6,'(a)') 'Warning: zero or very small gradient component:'
+       write(6,'(a,i3,a,es15.8,a,i3,a,es15.8)') 'Warning: gradient (',parm_i,')=',gradient (parm_i)
+       cycle
+      endif
+     do parm_j = parm_i+1, param_nb
+      if (abs(gradient (parm_i) - gradient (parm_j)) < 1.d-10) then
+       l_warning = .true.
+       write(6,'(a)') 'Warning: possible linear dependency:'
+       write(6,'(a,i3,a,es15.8,a,i3,a,es15.8)') 'Warning: gradient (',parm_i,')=',gradient (parm_i),' is identical or very close to gradient (',parm_j,')=',gradient (parm_j)
+      endif
+     enddo
+   enddo
 
 !  calculate and print deloc_av_norm
    if (l_opt_lin .or. l_opt_nwt) then
@@ -1016,6 +1007,26 @@ module optimization_mod
      endif
 
    endif ! convergence
+
+!  decrease error threshold provided previous move was not rejected
+   if(move_rejected == 0) then
+     if (l_increase_accuracy) then
+       if (l_decrease_error) then
+         if(l_decrease_error_adaptative) then
+           if (d_eloc_av /= 0.d0) then
+             error_threshold = min(energy_err(1),max(dabs(d_eloc_av)/decrease_error_factor,energy_err(1)/decrease_error_factor,decrease_error_limit))
+           else
+             error_threshold = energy_err(1)
+           endif
+         else
+           error_threshold = max(energy_err(1)/decrease_error_factor,decrease_error_limit)
+         endif
+       endif
+       if (l_increase_blocks) then
+         nblk = min(nblk*increase_blocks_factor,increase_blocks_limit)
+       endif
+     endif
+   endif
 
 !  If wave function got significantly worse, go back to previous wave function and increase diag_stab.
 !  Unlike the criterion for selecting the best wavefn., during the optim. we want to reject the move only if it got much worse.
@@ -1136,59 +1147,32 @@ module optimization_mod
 !  pretty printing
    write(6,*) ''
    call object_provide ('sigma')
-!   if (.not. l_opt_ovlp_fn) then
-      call object_provide ('gradient_norm')
-      call object_provide ('gradient_norm_err')
-      if (iter == 1) then
-         if (l_decrease_error) then
-            write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var      err  nxt stab'
-         else
-            write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var      nblk nxt stab'
-         endif
-      endif
-      if (l_decrease_error) then
-         if (.not. l_convergence_reached) then
-            write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-                 energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
-         else
-            write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
-                 energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab,' converged'
-         endif
-      else
-         if(.not. l_convergence_reached) then
-            write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-                 energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
-         else
-            write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
-                 energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab,' converged'
-         endif
-      endif
- !   else
-!       if (iter == 1) then
-!          if (l_decrease_error) then
-!             write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var      err  nxt stab'
-!          else
-!             write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var      nblk nxt stab'
-!          endif
-!       endif
-!       if (l_decrease_error) then
-!          if (.not. l_convergence_reached) then
-!             write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-!                  energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav,  p_var, error_threshold, diag_stab
-!          else
-!             write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f6.3,f9.5,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
-!                  energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav,  p_var, error_threshold, diag_stab,' converged'
-!          endif
-!       else
-!          if(.not. l_convergence_reached) then
-!             write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
-!                  energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav,  p_var, nblk, diag_stab
-!          else
-!             write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f6.3,i9,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
-!                  energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav,  p_var, nblk, diag_stab,' converged'
-!          endif
-!       endif
-!    endif
+   call object_provide ('gradient_norm')
+   call object_provide ('gradient_norm_err')
+   if (iter == 1) then
+    if (l_decrease_error) then
+     write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt err  nxt stab'
+    else
+     write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt nblk nxt stab'
+    endif
+   endif
+   if (l_decrease_error) then
+    if (.not. l_convergence_reached) then
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
+    else
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab,' converged'
+    endif
+   else
+    if(.not. l_convergence_reached) then
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
+    else
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
+     energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab,' converged'
+    endif
+   endif
 
 !  decrease p_var
    if (l_decrease_p_var) then
@@ -1203,26 +1187,6 @@ module optimization_mod
    call write_wf_new
 
    if (l_convergence_reached) exit
-
-!  decrease error threshold provided previous move was not rejected
-   if(move_rejected == 0) then
-     if (l_increase_accuracy) then
-       if (l_decrease_error) then
-         if(l_decrease_error_adaptative) then
-           if (d_eloc_av /= 0.d0) then
-             error_threshold = min(energy_err(1),max(dabs(d_eloc_av)/decrease_error_factor,energy_err(1)/decrease_error_factor,decrease_error_limit))
-           else
-             error_threshold = energy_err(1)
-           endif
-         else
-           error_threshold = max(energy_err(1)/decrease_error_factor,decrease_error_limit)
-         endif
-       endif
-       if (l_increase_blocks) then
-         nblk = min(nblk*increase_blocks_factor,increase_blocks_limit)
-       endif
-     endif
-   endif
 
   enddo ! end optimization loop
 

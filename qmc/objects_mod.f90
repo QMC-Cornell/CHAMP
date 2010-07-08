@@ -15,6 +15,7 @@ module objects_mod
    character(len=max_string_len_type):: type
    integer, allocatable              :: dimensions (:)
    logical                           :: walkers = .false.
+   logical                           :: unweighted = .false.
    logical                           :: valid
    logical                           :: freezed = .false.
    logical                           :: object_depend_valid = .false.

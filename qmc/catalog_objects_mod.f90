@@ -182,6 +182,8 @@ module catalog_objects_mod
 
   call catalog_one_object ('current_walker', current_walker_index)
   call catalog_one_object ('current_walker_weight', current_walker_weight_index)
+  call catalog_one_object ('total_iterations_block_nb', total_iterations_block_nb_index)
+  call catalog_one_object ('total_iterations_nb', total_iterations_nb_index)
 
  end subroutine catalog_objects
 

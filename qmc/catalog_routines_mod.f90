@@ -220,8 +220,9 @@ module catalog_routines_mod
 ! call catalog_one_node ('csf_over_psit_j_bld', csf_over_psit_j_bld)
   call catalog_one_node ('delta_ovlp_fn_bld', delta_ovlp_fn_bld)
 !  call catalog_one_node ('delta_ovlp_fn_exact_bld', delta_ovlp_fn_exact_bld)
-  call catalog_one_node ('ovlp_ovlp_fn_bld', ovlp_ovlp_fn_bld)
+!  call catalog_one_node ('ovlp_ovlp_fn_bld', ovlp_ovlp_fn_bld)
   call catalog_one_node ('ovlp_trial_fn_bld', ovlp_trial_fn_bld)
+  call catalog_one_node ('ovlp_trial_fn_over_ovlp_trial_bld', ovlp_trial_fn_over_ovlp_trial_bld)
 
 ! jastrow derivatives
   call catalog_one_node ('jas_pairs_bld', jas_pairs_bld)
@@ -259,6 +260,8 @@ module catalog_routines_mod
   call catalog_one_node ('dpsi_dpsi_bld', dpsi_dpsi_bld)
   call catalog_one_node ('dpsi_dpsi_covar_bld', dpsi_dpsi_covar_bld)
   call catalog_one_node ('dpsi_dpsi_covar_inv_bld', dpsi_dpsi_covar_inv_bld)
+  call catalog_one_node ('dpsi_dpsi_uwcovar_bld', dpsi_dpsi_uwcovar_bld)
+  call catalog_one_node ('dpsi_dpsi_uwcovar_inv_bld', dpsi_dpsi_uwcovar_inv_bld)
   call catalog_one_node ('dpsi_dpsi_eloc_sq_bld', dpsi_dpsi_eloc_sq_bld)
   call catalog_one_node ('dpsi_deloc_bld', dpsi_deloc_bld)
   call catalog_one_node ('dpsi_deloc_covar_bld', dpsi_deloc_covar_bld)

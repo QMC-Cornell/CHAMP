@@ -9,4 +9,7 @@ module opt_common_mod
   real(dp)                :: error_sigma_sav
   real(dp)                :: ene_var_sav
 
+  real(dp)                        :: psi_lin_var_norm = 0.d0
+  real(dp)                        :: psi_lin_var_norm_max = 10.d0
+
 end module opt_common_mod

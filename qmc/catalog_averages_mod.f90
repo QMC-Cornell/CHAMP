@@ -27,7 +27,6 @@ module catalog_averages_mod
 
 ! general derivatives
   call object_average_define ('dpsi_sq', 'dpsi_sq_av')
-  call object_average_define ('dpsi_dpsi', 'dpsi_dpsi_av')
   call object_error_define ('dpsi_dpsi_av', 'dpsi_dpsi_av_err')
   call object_average_define ('dpsi_deloc', 'dpsi_deloc_av')
   call object_average_define ('dpsi_sq_eloc', 'dpsi_sq_eloc_av')

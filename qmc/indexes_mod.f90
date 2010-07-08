@@ -243,5 +243,7 @@ module indexes_mod
 !  integer    :: ngvec_orb_index
   integer     :: current_walker_index
   integer     :: current_walker_weight_index
+  integer     :: total_iterations_block_nb_index
+  integer     :: total_iterations_nb_index
 
 end module indexes_mod

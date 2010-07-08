@@ -88,7 +88,7 @@ c     wfnow=wfsum/nstep
       r2cum=r2cum+r2sum
       ricum=ricum+risum
 
-      ovlp_ovlp_fn_cum = ovlp_ovlp_fn_cum + ovlp_ovlp_fn_sum
+!JT      ovlp_ovlp_fn_cum = ovlp_ovlp_fn_cum + ovlp_ovlp_fn_sum
 
       do 15 ifr=1,nforce
 
@@ -254,7 +254,7 @@ c zero out xsum variables for metrop
       r2sum=zero
       risum=zero
 
-      ovlp_ovlp_fn_sum=zero
+!JT      ovlp_ovlp_fn_sum=zero
 
       do 20 ifr=1,nforce
         egsum(ifr)=zero
@@ -494,10 +494,10 @@ c zero out estimators
 !      call alloc ('ovlp_ovlp_fn_sum', ovlp_ovlp_fn_sum, nparm+1, nparm+1)
 !      call alloc ('ovlp_ovlp_fn_cum', ovlp_ovlp_fn_cum, nparm+1, nparm+1)
 !      write(6,*) "nparm :", nparm
-      call alloc ('ovlp_ovlp_fn_sum', ovlp_ovlp_fn_sum, param_nb+1, param_nb+1)
-      call alloc ('ovlp_ovlp_fn_cum', ovlp_ovlp_fn_cum, param_nb+1, param_nb+1)
+!JT      call alloc ('ovlp_ovlp_fn_sum', ovlp_ovlp_fn_sum, param_nb+1, param_nb+1)
+!JT      call alloc ('ovlp_ovlp_fn_cum', ovlp_ovlp_fn_cum, param_nb+1, param_nb+1)
 
-      ovlp_ovlp_fn_cum = zero
+!JT      ovlp_ovlp_fn_cum = zero
 
 c Do it for MFORCE rather than nforce because in optimization at the start nforce=1 but later nforce=3
 !JT: this should not be necessary and it is annoying for dynamic allocation!

@@ -34,8 +34,6 @@ module opt_lin_mod
   real(dp), allocatable           :: ovlp_lin_inv(:,:)
 
   real(dp), allocatable           :: delta_lin(:)
-  real(dp)                        :: psi_lin_var_norm = 0.d0
-  real(dp)                        :: psi_lin_var_norm_max = 10.d0
   real(dp)                        :: psi_lin_norm_sq
 
   logical                         :: l_select_eigvec_lowest = .false.

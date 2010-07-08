@@ -51,7 +51,7 @@ module constants_mod
   real(dp), parameter   :: angstrom_to_bohr = 1.8897261249935897d0
 
 ! maximun numbers of nodes
-  integer, parameter    :: max_nodes_nb = 500
+  integer, parameter    :: max_nodes_nb = 700
 
 ! maximun numbers of routines
   integer, parameter    :: max_routines_nb = 500

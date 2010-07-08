@@ -773,8 +773,8 @@ c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
-            call object_provide('ovlp_ovlp_fn')
-            ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
+!JT            call object_provide('ovlp_ovlp_fn')
+!JT            ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
 
 !           local energy for current walker
             eloc = eoldw(iw,1)

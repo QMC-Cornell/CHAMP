@@ -11,6 +11,8 @@ module average_mod
 ! current MC interation number
   integer                      :: step_iterations_nb = 0
   integer                      :: block_iterations_nb = 0
+  real(dp)                     :: total_iterations_nb = 0.d0
+  real(dp)                     :: total_iterations_block_nb = 0.d0
   integer                      :: current_walker 
   real(dp)                     :: current_walker_weight
 
@@ -215,7 +217,7 @@ module average_mod
  end subroutine routine_average
 
 ! ===================================================================================
-  subroutine object_block_average_define (object_name, object_bav_name)
+  subroutine object_block_average_define (object_name, object_bav_name, l_unweighted)
 ! -----------------------------------------------------------------------------------
 ! Description   : define block average of object to be computed in MC iterations
 ! Description   : store indexes of couple (object, block average)
@@ -226,6 +228,7 @@ module average_mod
 
 ! input
   character(len=*), intent(in) :: object_name, object_bav_name
+  logical, optional :: l_unweighted
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_block_average_define'
@@ -236,14 +239,15 @@ module average_mod
 ! get index of object, catalogue it if necessary
   call object_add_once_and_index (object_name, object_ind)
 
+!!!comment out because of unweighted averages
 ! test if block average has already been defined through a global average
-  do obj_i = 1, averages_defined_nb
-   if (object_ind == averages_defined_object_index (obj_i)) then
-     write(6,'(6a)') trim(lhere), ': block average >'+object_bav_name+'< of object >'+object_name+'< has already been automatically defined though the corresponding global average.'
-     write(6,'(2a)') trim(lhere), ': To define the block average, object_block_average_define has to be placed before object_average_define.'
-     call die (lhere)
-   endif
-  enddo
+!!!  do obj_i = 1, averages_defined_nb
+!!!   if (object_ind == averages_defined_object_index (obj_i)) then
+!!!     write(6,'(6a)') trim(lhere), ': block average >'+object_bav_name+'< of object >'+object_name+'< has already been automatically defined through the corresponding global average.'
+!!!     write(6,'(2a)') trim(lhere), ': To define the block average, object_block_average_define has to be placed before object_average_define.'
+!!!     call die (lhere)
+!!!   endif
+!!!  enddo
 
 ! get index of block average, catalogue it if necessary
   call object_add_once_and_index (object_bav_name, object_bav_ind)
@@ -265,6 +269,11 @@ module average_mod
   call alloc ('block_averages_defined_object_bav_index', block_averages_defined_object_bav_index, block_averages_defined_nb)
   block_averages_defined_object_index (block_averages_defined_nb) = object_ind
   block_averages_defined_object_bav_index (block_averages_defined_nb) = object_bav_ind
+
+! for unweighted averages
+  if (present(l_unweighted)) then
+   objects(object_bav_ind)%unweighted=l_unweighted
+  endif
 
  end subroutine object_block_average_define
 
@@ -344,7 +353,7 @@ module average_mod
  end subroutine object_block_average_request_by_index
 
 ! ===================================================================================
-  subroutine object_average_define (object_name, object_av_name)
+  subroutine object_average_define (object_name, object_av_name, l_unweighted)
 ! -----------------------------------------------------------------------------------
 ! Description   : define couple (object, average of object)
 !
@@ -354,6 +363,7 @@ module average_mod
 
 ! input
   character(len=*), intent(in) :: object_name, object_av_name
+  logical, optional :: l_unweighted
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_define_average'
@@ -380,11 +390,17 @@ module average_mod
    endif
   enddo
 
+! for unweighted averages
+  if (present(l_unweighted)) then
+   objects(object_av_ind)%unweighted=l_unweighted
+  endif
+
 ! block average !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! test if a corresponding block average is defined
+! test if a corresponding block average is defined (must check also whether they are both weighted or unweighted)
   block_average_found = .false.
   do obj_i = 1, block_averages_defined_nb
-   if (object_ind == block_averages_defined_object_index (obj_i)) then
+   if (object_ind == block_averages_defined_object_index (obj_i) .and. &
+       objects(object_av_ind)%unweighted == objects(block_averages_defined_object_bav_index(obj_i))%unweighted) then
      block_average_found = .true.
      object_bav_ind = block_averages_defined_object_bav_index (obj_i)
      exit
@@ -394,7 +410,7 @@ module average_mod
 ! if corresponding block average not found, add it as a new object and define as a block average
   if (.not. block_average_found) then
    call object_add_and_index (object_bav_ind)  
-   call object_block_average_define (object_name, objects(object_bav_ind)%name)
+   call object_block_average_define (object_name, objects(object_bav_ind)%name, l_unweighted)
   endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -456,6 +472,26 @@ module average_mod
   averages_defined_object_av_index (averages_defined_nb) = object_av_ind
 
   end subroutine object_average_define_from_block_average
+
+! ===================================================================================
+  subroutine object_average_unweighted_define (object_name, object_av_name)
+! -----------------------------------------------------------------------------------
+! Description   : define couple (object, average of object) for unweigthed averages
+! Description   : in DMC. 
+!
+! Created       : J. Toulouse, 07 Jul 2010
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in) :: object_name, object_av_name
+
+! local
+  integer object_av_ind
+
+  call object_average_define (object_name, object_av_name, .true.)
+
+  end subroutine object_average_unweighted_define
 
 ! ===================================================================================
   subroutine object_average_walk_define (object_name, object_av_name)
@@ -2855,7 +2891,11 @@ module average_mod
    write(6,'(a)') 'The following averages will be calculated:'
    do ind = 1, averages_nb
     if (averages_object_index (ind) /= 0) then
-     write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
+     if (objects(averages_object_av_index(ind))%unweighted) then
+      write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = unweighted average of ', trim(objects(averages_object_index (ind))%name)
+     else
+      write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = waverage of ', trim(objects(averages_object_index (ind))%name)
+     endif
     else
      write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average associated with block average ', trim(objects(averages_object_bav_index (ind))%name)
     endif
@@ -3408,11 +3448,18 @@ module average_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_averages_step'
-  integer ind, object_ind 
+  integer ind, object_ind, object_bav_ind
   character(len=max_string_len_type) object_type
 
   if (l_equilibration) return
 
+! initialization for first walker and first step
+  if (current_walker == 1 .and. step_iterations_nb == 1) then
+   total_iterations_block_nb = 0.d0
+   total_iterations_nb = 0.d0
+  endif
+
+  total_iterations_block_nb = total_iterations_block_nb + 1
   call object_provide_by_index (current_walker_index)
   call object_provide_by_index (current_walker_weight_index)
 
@@ -3420,6 +3467,7 @@ module average_mod
   do ind = 1, block_averages_nb
 
     object_ind = block_averages_object_index (ind)
+    object_bav_ind = block_averages_object_bav_index (ind)
 
     call object_provide_by_index (object_ind)
 
@@ -3439,32 +3487,44 @@ module average_mod
     if (current_walker == 1 .and. step_iterations_nb == 1) then
       select case (trim(object_type))
       case ('double_0')
-        objects(object_ind)%sum_double_0 = 0.d0
+        objects(object_bav_ind)%sum_double_0 = 0.d0
       case ('double_1')
         call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
-        call alloc ('objects(object_ind)%sum_double_1', objects(object_ind)%sum_double_1, objects(object_ind)%dimensions(1))
-        objects(object_ind)%sum_double_1 (:) = 0.d0
+        call alloc ('objects(object_bav_ind)%sum_double_1', objects(object_bav_ind)%sum_double_1, objects(object_ind)%dimensions(1))
+        objects(object_bav_ind)%sum_double_1 (:) = 0.d0
       case ('double_2')
         call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
         call require (lhere, 'objects(object_ind)%dimensions(2) > 0', objects(object_ind)%dimensions(2) > 0)
-        call alloc ('objects(object_ind)%sum_double_2', objects(object_ind)%sum_double_2, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
-        objects(object_ind)%sum_double_2 (:,:) = 0.d0
+        call alloc ('objects(object_bav_ind)%sum_double_2', objects(object_bav_ind)%sum_double_2, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
+        objects(object_bav_ind)%sum_double_2 (:,:) = 0.d0
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
     endif ! initialization
 
 !   sum over walkers and steps
-    select case (trim(object_type))
-    case ('double_0')
-      objects(object_ind)%sum_double_0 = objects(object_ind)%sum_double_0 + objects(object_ind)%pointer_double_0 * current_walker_weight
-    case ('double_1')
-      objects(object_ind)%sum_double_1 = objects(object_ind)%sum_double_1 + objects(object_ind)%pointer_double_1 * current_walker_weight
-    case ('double_2')
-      objects(object_ind)%sum_double_2 = objects(object_ind)%sum_double_2 + objects(object_ind)%pointer_double_2 * current_walker_weight
-    case default
-      call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
-    end select
+     select case (trim(object_type))
+     case ('double_0')
+      if (objects(object_bav_ind)%unweighted) then
+       objects(object_bav_ind)%sum_double_0 = objects(object_bav_ind)%sum_double_0 + objects(object_ind)%pointer_double_0 
+      else
+       objects(object_bav_ind)%sum_double_0 = objects(object_bav_ind)%sum_double_0 + objects(object_ind)%pointer_double_0 * current_walker_weight
+      endif
+     case ('double_1')
+      if (objects(object_bav_ind)%unweighted) then
+       objects(object_bav_ind)%sum_double_1 = objects(object_bav_ind)%sum_double_1 + objects(object_ind)%pointer_double_1 
+      else
+       objects(object_bav_ind)%sum_double_1 = objects(object_bav_ind)%sum_double_1 + objects(object_ind)%pointer_double_1 * current_walker_weight
+      endif
+     case ('double_2')
+      if (objects(object_bav_ind)%unweighted) then
+       objects(object_bav_ind)%sum_double_2 = objects(object_bav_ind)%sum_double_2 + objects(object_ind)%pointer_double_2 
+      else
+       objects(object_bav_ind)%sum_double_2 = objects(object_bav_ind)%sum_double_2 + objects(object_ind)%pointer_double_2 * current_walker_weight
+      endif
+     case default
+       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
+     end select
 
   enddo ! ind
 
@@ -3503,7 +3563,16 @@ module average_mod
   real(dp), allocatable :: collect_double_2 (:,:)
 # endif
 
-  if (block_averages_nb == 0) return
+# if defined (MPI)
+!   sum values from all processes
+    call mpi_allreduce(total_iterations_block_nb,collect_double_0,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
+    total_iterations_block_nb = collect_double_0
+# endif
+  total_iterations_nb = total_iterations_nb + total_iterations_block_nb
+  call object_modified_by_index (total_iterations_nb_index)
+
+!JT  if (block_averages_nb == 0) return
 
 ! warning: walker_weights_sum_block and walker_weights_sum need to be set to their correct values for mpi2 or mpi3 mode.
 ! this is probably easy to do... need to check in routine dmc/dmc_elec/MPI_global_pop_big/acuest_dmc_mov1_mpi2.f
@@ -3558,40 +3627,52 @@ module average_mod
     case ('double_0') 
 #   if defined (MPI)
 !   sum values from all processes
-    call mpi_allreduce(objects(object_ind)%sum_double_0,collect_double_0,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    call mpi_allreduce(objects(object_bav_ind)%sum_double_0,collect_double_0,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
     if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
-    objects(object_ind)%sum_double_0 = collect_double_0
+    objects(object_bav_ind)%sum_double_0 = collect_double_0
 #   endif
 !   calculate block average
-    objects(object_bav_ind)%pointer_double_0 = objects(object_ind)%sum_double_0 / walker_weights_sum_block
+    if (objects(object_bav_ind)%unweighted) then
+     objects(object_bav_ind)%pointer_double_0 = objects(object_bav_ind)%sum_double_0 / total_iterations_block_nb
+    else
+     objects(object_bav_ind)%pointer_double_0 = objects(object_bav_ind)%sum_double_0 / walker_weights_sum_block
+    endif
 !   reinitialization of sum for each block
-    objects(object_ind)%sum_double_0 = 0.d0
+    objects(object_bav_ind)%sum_double_0 = 0.d0
 
     case ('double_1') 
 #   if defined (MPI)
 !   sum values from all processes
     call alloc ('collect_double_1', collect_double_1, objects(object_ind)%dimensions(1))
-    call mpi_allreduce(objects(object_ind)%sum_double_1,collect_double_1,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    call mpi_allreduce(objects(object_bav_ind)%sum_double_1,collect_double_1,objects(object_ind)%dimensions(1),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
     if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
-    objects(object_ind)%sum_double_1 = collect_double_1
+    objects(object_bav_ind)%sum_double_1 = collect_double_1
 #   endif
 !   calculate block average
-    objects(object_bav_ind)%pointer_double_1 = objects(object_ind)%sum_double_1 / walker_weights_sum_block
+    if (objects(object_bav_ind)%unweighted) then
+     objects(object_bav_ind)%pointer_double_1 = objects(object_bav_ind)%sum_double_1 / total_iterations_block_nb
+    else
+     objects(object_bav_ind)%pointer_double_1 = objects(object_bav_ind)%sum_double_1 / walker_weights_sum_block
+    endif
 !   reinitialization of sum for each block
-    objects(object_ind)%sum_double_1 = 0.d0
+    objects(object_bav_ind)%sum_double_1 = 0.d0
 
     case ('double_2') 
 #   if defined (MPI)
 !   sum values from all processes
     call alloc ('collect_double_2', collect_double_2, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
-    call mpi_allreduce(objects(object_ind)%sum_double_2,collect_double_2,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    call mpi_allreduce(objects(object_bav_ind)%sum_double_2,collect_double_2,objects(object_ind)%dimensions(1)*objects(object_ind)%dimensions(2),mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
     if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
-    objects(object_ind)%sum_double_2 = collect_double_2
+    objects(object_bav_ind)%sum_double_2 = collect_double_2
 #   endif
 !   calculate block average
-    objects(object_bav_ind)%pointer_double_2 = objects(object_ind)%sum_double_2 / walker_weights_sum_block
+    if (objects(object_bav_ind)%unweighted) then
+     objects(object_bav_ind)%pointer_double_2 = objects(object_bav_ind)%sum_double_2 / total_iterations_block_nb
+    else
+     objects(object_bav_ind)%pointer_double_2 = objects(object_bav_ind)%sum_double_2 / walker_weights_sum_block
+    endif
 !   reinitialization of sum for each block
-    objects(object_ind)%sum_double_2 = 0.d0
+    objects(object_bav_ind)%sum_double_2 = 0.d0
     case default
       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
     end select
@@ -3630,16 +3711,16 @@ module average_mod
 !     test dimensions and initialization of sum over blocks
       select case (trim(object_type))
       case ('double_0') 
-        objects(object_bav_ind)%sum_double_0 = 0.d0
+        objects(object_av_ind)%sum_double_0 = 0.d0
       case ('double_1') 
         call require (lhere, 'dim # 1 of '+trim(objects(object_bav_ind)%name)+' = dim # 1 of '+trim(objects(object_av_ind)%name), objects(object_bav_ind)%dimensions(1) == objects(object_av_ind)%dimensions(1))
-        call alloc ('objects(object_bav_ind)%sum_double_1', objects(object_bav_ind)%sum_double_1, objects(object_bav_ind)%dimensions(1))
-        objects(object_bav_ind)%sum_double_1 = 0.d0
+        call alloc ('objects(object_av_ind)%sum_double_1', objects(object_av_ind)%sum_double_1, objects(object_bav_ind)%dimensions(1))
+        objects(object_av_ind)%sum_double_1 = 0.d0
       case ('double_2') 
         call require (lhere, 'dim # 1 of '+trim(objects(object_bav_ind)%name)+' = dim # 1 of '+trim(objects(object_av_ind)%name), objects(object_bav_ind)%dimensions(1) == objects(object_av_ind)%dimensions(1))
         call require (lhere, 'dim # 2 of '+trim(objects(object_bav_ind)%name)+' = dim # 2 of '+trim(objects(object_av_ind)%name), objects(object_bav_ind)%dimensions(2) == objects(object_av_ind)%dimensions(2))
-        call alloc ('objects(object_bav_ind)%sum_double_2', objects(object_bav_ind)%sum_double_2, objects(object_bav_ind)%dimensions(1), objects(object_bav_ind)%dimensions(2))
-        objects(object_bav_ind)%sum_double_2 = 0.d0
+        call alloc ('objects(object_av_ind)%sum_double_2', objects(object_av_ind)%sum_double_2, objects(object_bav_ind)%dimensions(1), objects(object_bav_ind)%dimensions(2))
+        objects(object_av_ind)%sum_double_2 = 0.d0
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
@@ -3648,22 +3729,43 @@ module average_mod
 
     select case (trim(object_type))
     case ('double_0') 
+     if (objects(object_bav_ind)%unweighted) then
 !     sum over blocks
-      objects(object_bav_ind)%sum_double_0 = objects(object_bav_ind)%sum_double_0 + objects(object_bav_ind)%pointer_double_0 * walker_weights_sum_block
+      objects(object_av_ind)%sum_double_0 = objects(object_av_ind)%sum_double_0 + objects(object_bav_ind)%pointer_double_0 * total_iterations_block_nb
 !     calculate global average
-      objects(object_av_ind)%pointer_double_0 = objects(object_bav_ind)%sum_double_0 / walker_weights_sum
+      objects(object_av_ind)%pointer_double_0 = objects(object_av_ind)%sum_double_0 / total_iterations_nb
+     else
+!     sum over blocks
+      objects(object_av_ind)%sum_double_0 = objects(object_av_ind)%sum_double_0 + objects(object_bav_ind)%pointer_double_0 * walker_weights_sum_block
+!     calculate global average
+      objects(object_av_ind)%pointer_double_0 = objects(object_av_ind)%sum_double_0 / walker_weights_sum
+     endif
 
     case ('double_1') 
+     if (objects(object_bav_ind)%unweighted) then
 !     sum over blocks
-      objects(object_bav_ind)%sum_double_1 = objects(object_bav_ind)%sum_double_1 + objects(object_bav_ind)%pointer_double_1 * walker_weights_sum_block
+      objects(object_av_ind)%sum_double_1 = objects(object_av_ind)%sum_double_1 + objects(object_bav_ind)%pointer_double_1 * total_iterations_block_nb
 !     calculate global average
-      objects(object_av_ind)%pointer_double_1 = objects(object_bav_ind)%sum_double_1 / walker_weights_sum
+      objects(object_av_ind)%pointer_double_1 = objects(object_av_ind)%sum_double_1 / total_iterations_nb
+     else
+!     sum over blocks
+      objects(object_av_ind)%sum_double_1 = objects(object_av_ind)%sum_double_1 + objects(object_bav_ind)%pointer_double_1 * walker_weights_sum_block
+!     calculate global average
+      objects(object_av_ind)%pointer_double_1 = objects(object_av_ind)%sum_double_1 / walker_weights_sum
+     endif
 
     case ('double_2') 
+     if (objects(object_bav_ind)%unweighted) then
 !     sum over blocks
-      objects(object_bav_ind)%sum_double_2 = objects(object_bav_ind)%sum_double_2 + objects(object_bav_ind)%pointer_double_2 * walker_weights_sum_block
+      objects(object_av_ind)%sum_double_2 = objects(object_av_ind)%sum_double_2 + objects(object_bav_ind)%pointer_double_2 * total_iterations_block_nb
 !     calculate global average
-      objects(object_av_ind)%pointer_double_2 = objects(object_bav_ind)%sum_double_2 / walker_weights_sum
+      objects(object_av_ind)%pointer_double_2 = objects(object_av_ind)%sum_double_2 / total_iterations_nb
+     else
+!     sum over blocks
+      objects(object_av_ind)%sum_double_2 = objects(object_av_ind)%sum_double_2 + objects(object_bav_ind)%pointer_double_2 * walker_weights_sum_block
+!     calculate global average
+      objects(object_av_ind)%pointer_double_2 = objects(object_av_ind)%sum_double_2 / walker_weights_sum
+     endif
 
     case default
       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
@@ -3672,6 +3774,9 @@ module average_mod
     call object_modified_by_index (object_av_ind)
 
   enddo ! end loop over global averages --------------------------------------------------------------------------------------
+
+! reinitilizations at the end of each block
+  total_iterations_block_nb = 0.d0
 
  end subroutine compute_averages_block
 
