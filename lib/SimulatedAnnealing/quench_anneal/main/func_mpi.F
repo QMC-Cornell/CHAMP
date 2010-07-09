@@ -55,7 +55,7 @@ c iflag		= not used
       if(ndata.lt.nproc) then
         write(6,'((a),i4,(a))')
      &    'proc=',iproc,': func_mpi: ndata.lt.nproc'
-        call stop(iproc,'func_mpi: ndata.lt.nproc')
+        call stop_process(iproc,'func_mpi: ndata.lt.nproc')
       endif
 
 c all processes get chunks that take equal amount of wall time
@@ -142,12 +142,12 @@ c iatom         = chunks should be multiples of iatom
         if(iatom*ndata_chunks.ne.ndata) then
           write(6,'((a),i10,(a),i10)') 'chunks_mpi: ndata=',ndata,
      &      ' not divisible by iatom=',iatom
-          call stop(iproc,'chunks_mpi: ndata not divisible by iatom')
+          call stop_process(iproc,'chunks_mpi: ndata not divisible by iatom')
         endif
         if(iatom*nproc.gt.ndata) then
           write(6,'((a),i3,1x,i3,i6)')
      &      'chunks_mpi: iatom*nproc > ndata',iatom,nproc,ndata
-          call stop(iproc,'chunks_mpi: iatom*nproc > ndata')
+          call stop_process(iproc,'chunks_mpi: iatom*nproc > ndata')
         endif
       endif
       total=0
@@ -214,7 +214,7 @@ c nproc = total number of processes
       dimension from(1:*),to(1:*)
       if(nproc.gt.MXPROCS) then
         write(6,*) 'allgatherv: nproc>MXPROCS',nproc,MXPROCS
-        call stop(iproc,'allgatherv: nproc>MXPROCS')
+        call stop_process(iproc,'allgatherv: nproc>MXPROCS')
       endif
       idispls(0)=0
       do i=1,nproc-1
@@ -258,7 +258,7 @@ c dynamic equivalence (from,tmp2),(to,tmp1)
 
       if(nproc.gt.MXPROCS) then
         write(6,*) 'allgatherv_2d2: nproc>MXPROCS',nproc,MXPROCS
-        call stop(iproc,'allgatherv_2d2: nproc>MXPROCS')
+        call stop_process(iproc,'allgatherv_2d2: nproc>MXPROCS')
       endif
 
       do i=0,nproc-1
@@ -324,7 +324,7 @@ c dynamic equivalence (from,tmp2),(to,tmp1)
 
       if(nproc.gt.MXPROCS) then
         write(6,*) 'allgatherv_2d1: nproc>MXPROCS',nproc,MXPROCS
-        call stop(iproc,'allgatherv_2d1: nproc>MXPROCS')
+        call stop_process(iproc,'allgatherv_2d1: nproc>MXPROCS')
       endif
 
       do i=0,nproc-1

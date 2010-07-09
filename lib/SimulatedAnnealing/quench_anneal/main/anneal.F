@@ -536,10 +536,10 @@ c Initialize efo,A,B,chisqmin,pbest,diff_best
       efo=func_mpi(func,ndata,nparm,pold,diff,iflag)
       called_by_qa=.false.
       if(nparm .le. 0 .or. ndata .le. 0) then
-        if(ipr.ge.0)
-     &    write(6,'(''quench: nparm .le. 0 .or. ndata .le. 0'')')
-     &    nparm,ndata
-        return
+c       if(ipr.ge.0) write(6,'(''quench: nparm .le. 0 .or. ndata .le. 0'',2i9)') nparm,ndata
+c       return
+        write(6,'(''quench: nparm .le. 0 .or. ndata .le. 0'',2i9)') nparm,ndata
+        stop 'Does not make sense to optimize with nparm or ndata <=0'
       endif
       chisqmin=efo
       chisqminold=efo

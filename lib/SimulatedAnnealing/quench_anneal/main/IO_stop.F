@@ -9,7 +9,7 @@ c Revision 1.2  2001/09/28 20:04:47  nigh
 c fixed mpi_abort: 2->3 arguments
 c
 cDate of last modification: Fri Feb  6 17:33:27 EST 1998
-      subroutine stop(jproc,message)
+      subroutine stop_process(jproc,message)
 c stop a process and print a message
 c jproc	= process number
 c message	= message to be printed file stop_file.<process number>
@@ -51,10 +51,10 @@ c idispose	= standard output will be disposed of if jproc > idispose
      &  iunit,file_name(1:name_length),name_length,status,jproc
       if(jproc.gt.MXPROCS.or.jproc.lt.0) then
         write(6,*)   'open1: not 0<=jproc<=MXPROCS',jproc,MXPROCS
-        call stop(0,'open1: not 0<=jproc<=MXPROCS')
+        call stop_process(0,'open1: not 0<=jproc<=MXPROCS')
       endif
       if ( name_length + 4 .gt. 84 ) then
-        call stop(jproc,
+        call stop_process(jproc,
      &    'open1: character variable full_file_name too short')
       endif
       if(jproc.gt.idispose) then
@@ -100,7 +100,7 @@ c        stop '''emergency stop in open'''
         call mpi_abort(MPI_COMM_WORLD,ierr_final,ierr)
       else
         write(unit_num,'(i6)') iunit
-        call stop(jproc,'open1: error opening unit '//unit_num)
+        call stop_process(jproc,'open1: error opening unit '//unit_num)
       endif
       end
 c-----------------------------------------------------------------------
@@ -179,8 +179,8 @@ c open tagged output files
       return
 
 10    continue
-      call stop(jproc,'open_stio: error opening unit=IUNIT_NAMES')
+      call stop_process(jproc,'open_stio: error opening unit=IUNIT_NAMES')
 20    continue
-      call stop(jproc,'open_stio: error opening unit=IUNIT_STI  ')
+      call stop_process(jproc,'open_stio: error opening unit=IUNIT_STI  ')
 
       end
