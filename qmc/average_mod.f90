@@ -400,7 +400,7 @@ module average_mod
   block_average_found = .false.
   do obj_i = 1, block_averages_defined_nb
    if (object_ind == block_averages_defined_object_index (obj_i) .and. &
-       objects(object_av_ind)%unweighted == objects(block_averages_defined_object_bav_index(obj_i))%unweighted) then
+       (objects(object_av_ind)%unweighted .eqv. objects(block_averages_defined_object_bav_index(obj_i))%unweighted)) then
      block_average_found = .true.
      object_bav_ind = block_averages_defined_object_bav_index (obj_i)
      exit
@@ -2894,7 +2894,7 @@ module average_mod
      if (objects(averages_object_av_index(ind))%unweighted) then
       write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = unweighted average of ', trim(objects(averages_object_index (ind))%name)
      else
-      write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = waverage of ', trim(objects(averages_object_index (ind))%name)
+      write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average of ', trim(objects(averages_object_index (ind))%name)
      endif
     else
      write(6,'(4a)') '- ', objects(averages_object_av_index (ind))%name,' = average associated with block average ', trim(objects(averages_object_bav_index (ind))%name)
@@ -2904,6 +2904,18 @@ module average_mod
     write(6,'(4a)') '- ', objects(averages_walk_object_av_index (ind))%name,' = average of ', trim(objects(averages_walk_object_index (ind))%name)
    enddo
   endif
+
+!  if (block_averages_nb > 0) then
+!   write(6,*)
+!   write(6,'(a)') 'The following block averages will be calculated:'
+!   do ind = 1, block_averages_nb
+!     if (objects(block_averages_object_bav_index(ind))%unweighted) then
+!      write(6,'(4a)') '- ', objects(block_averages_object_bav_index (ind))%name,' = unweighted block average of ', trim(objects(block_averages_object_index (ind))%name)
+!     else
+!      write(6,'(4a)') '- ', objects(block_averages_object_bav_index (ind))%name,' = block average of ', trim(objects(block_averages_object_index (ind))%name)
+!     endif
+!   enddo
+!  endif
 
   if (variances_nb > 0) then
    write(6,*)
