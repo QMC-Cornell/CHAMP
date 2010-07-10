@@ -400,7 +400,7 @@ module average_mod
   block_average_found = .false.
   do obj_i = 1, block_averages_defined_nb
    if (object_ind == block_averages_defined_object_index (obj_i) .and. &
-       (objects(object_av_ind)%unweighted .eqv. objects(block_averages_defined_object_bav_index(obj_i))%unweighted)) then
+      (objects(object_av_ind)%unweighted .eqv. objects(block_averages_defined_object_bav_index(obj_i))%unweighted)) then
      block_average_found = .true.
      object_bav_ind = block_averages_defined_object_bav_index (obj_i)
      exit

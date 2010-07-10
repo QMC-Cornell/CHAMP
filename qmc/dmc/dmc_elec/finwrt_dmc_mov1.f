@@ -179,8 +179,6 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
       if(idmc.ge.0) then
         write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
         write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wfave,wferr,wferr*rtpass1,wferr1*rtpass1,(wferr/wferr1)**2
-        call object_provide('ovlp_trial_fn')
-        write(6,'(''overlap psi_t psi_fn ='',t22,f9.5)') ovlp_trial_fn
         do 20 ifr=1,nforce
           wgave=wgcum(ifr)/passes
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
@@ -188,6 +186,9 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
           write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
   20    continue
+        call object_provide('ovlp_trial_fn')
+        write(6,'(''Appr overlap psi_t psi_fn='',f7.5)') ovlp_trial_fn
+
 c Mixed energy estimators
         write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,(eerr/eerr1)**2

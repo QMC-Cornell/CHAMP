@@ -375,6 +375,15 @@ c Either order will work when numr.eq.1.
         write(6,'(''Basis exponents must be >= 0.  If 0 then numerical radial basis fn is used'')')
         stop 'Basis exponents must be >= 0.  If 0 then numerical radial basis fn is used'
       endif
+c We used to set zex=1 to signal that instead of using this exponent, the numerical basis should be used.
+c Now we use zex=0 to signal this. So, check to make sure that the value in the input has been changed.
+      do i=1,nbasis
+        if(zex(i,1).eq.1.d0) then
+          write(6,'(''For basis'',i3,'' exponent is 1.  Probably this means that you forgot to change exponent in old input from
+     &    1 to 0.'')') i
+          stop 'Should zex be changed from 1 to 0?'
+        endif
+      enddo
 
       do 262 i=1,nbasis
         if(zex(i,1).lt.0.d0) then

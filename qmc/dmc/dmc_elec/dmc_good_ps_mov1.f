@@ -110,6 +110,9 @@ c     errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
 c     term=(sqrt(two*pi*tau))**3/pi
 
+c Temporarily create wt_lambda_tau here, but it should be done at start of program
+      wt_lambda_tau=wt_lambda**tau
+
 c Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
@@ -161,8 +164,6 @@ c Tau secondary in drift is one (first time around)
         ncall=ncall+1
       endif
 
-c Temporarily create wt_lambda_tau here, but it should be done at start of program
-      wt_lambda_tau=wt_lambda**tau
       ioldest=0
       do 300 iw=1,nwalk
 c Loop over primary walker
@@ -482,6 +483,9 @@ c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
             endif
           endif
 
+c ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
+          dwt=dwt**wt_lambda
+
 c Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
 
@@ -489,9 +493,6 @@ c Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
 c Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
-c Warning: temporarily raise also this generation wt, dwt, to have continuous control of parameter changes.
-c           wt(iw)=wt(iw)*dwt
-c           dwt=dwt**wt_lambda_tau
             wt(iw)=(wt(iw)**wt_lambda_tau)*dwt
 c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
             do 266 iparm=1,nparm
@@ -617,8 +618,8 @@ c same trick adapted to circular coordinates
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
-!JT            call object_provide('ovlp_ovlp_fn')
-!JT            ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
+!JT         call object_provide('ovlp_ovlp_fn')
+!JT         ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
 
 !           local energy for current walker
             eloc = eoldw(iw,1)
