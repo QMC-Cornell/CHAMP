@@ -315,13 +315,15 @@ module opt_ovlp_fn_mod
 
    call object_needed('wgcum1')
    call object_needed('wgcm21')
+   call object_needed ('total_iterations_nb')
 
    return
 
   endif
 
 ! begin
-  ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) *(nstep*nblk*nwalk*nproc))
+!  ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) *(nstep*nblk*nwalk*nproc))
+  ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) * total_iterations_nb)
 
   end subroutine ovlp_trial_fn_bld
 
