@@ -308,9 +308,6 @@ module opt_ovlp_fn_mod
   include 'modules.h'
   implicit none
 
-! local
-  integer i, j
-
 ! header
   if(header_exe) then
 
@@ -371,6 +368,9 @@ module opt_ovlp_fn_mod
   character(len=max_string_len_rout), save :: lhere = 'delta_ovlp_fn_bld'
   integer param_i, param_j
   real(dp) transform_factor
+  real(dp), allocatable :: dpsi_dpsi_uwcovar_stab (:,:)
+  real(dp), allocatable :: dpsi_dpsi_uwcovar_stab_inv (:,:)
+  real(dp) threshold
 
 ! header
   if (header_exe) then
@@ -381,7 +381,7 @@ module opt_ovlp_fn_mod
    call object_needed ('dpsi_av')
    call object_needed ('dpsi_uwav')
    call object_needed ('dpsi_dpsi_uwcovar')
-   call object_needed ('dpsi_dpsi_uwcovar_inv')
+   call object_needed ('diag_stab')
 
    return
 
@@ -395,12 +395,23 @@ module opt_ovlp_fn_mod
    write(6,'(a,i5,a,f12.6,a,f12.6,a,f12.6)') "parameter # ",param_i, ": <Psi_i|Psi_FN>= ", dpsi_av (param_i), ", <Psi_i|Psi_0>= ", dpsi_uwav (param_i), ", difference= ", dpsi_av (param_i) - dpsi_uwav (param_i)
   enddo
 
+! stabilize overlap matrix
+  call alloc ('dpsi_dpsi_uwcovar_stab', dpsi_dpsi_uwcovar_stab, param_nb, param_nb)
+  dpsi_dpsi_uwcovar_stab (:,:) = dpsi_dpsi_uwcovar (:,:)
+  do param_i = 1, param_nb
+    dpsi_dpsi_uwcovar_stab (param_i, param_i) = dpsi_dpsi_uwcovar_stab (param_i, param_i) + diag_stab
+  enddo
+   
+! inverse overlap matrix
+  call alloc ('dpsi_dpsi_uwcovar_stab_inv', dpsi_dpsi_uwcovar_stab_inv, param_nb, param_nb)
+  threshold = 1.d-10
+  call inverse_by_svd (dpsi_dpsi_uwcovar_stab, dpsi_dpsi_uwcovar_stab_inv, param_nb, threshold)
 
 ! find parameter variations in semiorthogonalized basis
   do param_i = 1, param_nb
    delta_ovlp_fn (param_i) = 0.d0
    do param_j = 1, param_nb
-    delta_ovlp_fn (param_i) = delta_ovlp_fn (param_i) + dpsi_dpsi_uwcovar_inv (param_i, param_j) * (dpsi_av (param_j) - dpsi_uwav (param_j))
+    delta_ovlp_fn (param_i) = delta_ovlp_fn (param_i) + dpsi_dpsi_uwcovar_stab_inv (param_i, param_j) * (dpsi_av (param_j) - dpsi_uwav (param_j))
    enddo
   enddo
 

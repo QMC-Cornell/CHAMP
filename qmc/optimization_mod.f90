@@ -800,11 +800,12 @@ module optimization_mod
    write(6,'()')
    write(6,'(a,i3)') 'Beginning optimization iteration # ',iter
 
-!  Define averages and statistical errors to compute in vmc:
+!  Define averages and statistical errors to compute:
 
 !  For energy gradient
    call object_average_request ('dpsi_av')
    call object_average_request ('dpsi_eloc_av')
+   call object_error_request ('gradient_norm_err')
 
 !  For variance gradient and hessian
    if (p_var /= 0.d0) then
@@ -819,8 +820,6 @@ module optimization_mod
     endif
    endif
 
-   call object_error_request ('gradient_norm_err')
-
 !  Newton method
    if (l_opt_nwt) then
     call object_average_request ('dpsi_dpsi_av')
@@ -829,7 +828,6 @@ module optimization_mod
     call object_average_request ('dpsi_dpsi_eloc_av')
     call object_average_request ('d2psi_av')
     call object_average_request ('d2psi_eloc_av')
-!    call object_error_request ('hess_nwt_norm_err') !!!!
    endif
 
 !  linear method
@@ -880,7 +878,6 @@ module optimization_mod
    if (l_opt_orb) then
     call object_provide ('orb_opt_last_lab')
     norb = orb_opt_last_lab
-!    write(6,'(a,i)') 'Warning: norb reset to=', norb
 
 !   orbital overlap
     if (l_ortho_orb_vir_to_orb_occ) then
@@ -888,8 +885,6 @@ module optimization_mod
      call object_provide ('orb_ovlp')
      call object_write ('orb_ovlp')
     endif
-!     call object_provide ('orb_ovlp')
-!     call object_write ('orb_ovlp')
 
    endif
 
@@ -904,7 +899,7 @@ module optimization_mod
       call routine_write_final_request ('vb_weights_wrt')
    endif
 
-!  VMC run
+!  QMC run
    nforce=1
    nwftype=1
    if(l_mode_vmc) then
@@ -919,7 +914,6 @@ module optimization_mod
    if (l_opt_orb) then
     call object_provide ('orb_occ_last_in_wf_lab')
     norb = orb_occ_last_in_wf_lab
-!    write(6,'(a,i)') 'Warning: norb reset to=', norb
    endif
 
 !  Calculate and print gradient
@@ -976,9 +970,6 @@ module optimization_mod
 
 !  save current energy
    eloc_av_previous = energy(1)
-
-!  initial error
-!   call object_provide ('eloc_av_err')
 
 !  If this is the best yet, save it.  Since we are primarily interested in the energy we always use
 !  that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
@@ -1069,7 +1060,6 @@ module optimization_mod
       call object_restore ('ham_lin')
       call object_restore ('ovlp_lin')
       call object_restore ('renorm_vector')
-!      call object_restore ('dpsi_av')
      endif
      if(l_opt_ptb) then
      if (l_diagonal_overlap) then
@@ -1078,6 +1068,11 @@ module optimization_mod
       call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !        call object_restore ('delta_e_ptb') !!
+     endif
+     if(l_opt_ovlp_fn) then
+      call object_restore ('dpsi_av')
+      call object_restore ('dpsi_uwav')
+      call object_restore ('dpsi_dpsi_uwcovar')
      endif
      diag_stab = min(100.d0 * diag_stab, add_diag_max)
      if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
@@ -1116,7 +1111,7 @@ module optimization_mod
 
 !  save wavefunction, gradient, Hamiltonian and overlap
    call wf_save
-   if (do_pjas) call save_pjas  !WAS
+   if (do_pjas) call save_pjas
    call object_save ('gradient')
    if(l_opt_nwt) then
     call object_save ('hess_nwt')
@@ -1125,7 +1120,6 @@ module optimization_mod
       call object_save ('ham_lin')
       call object_save ('ovlp_lin')
       call object_save ('renorm_vector')
-!      call object_save ('dpsi_av')
    endif
    if(l_opt_ptb) then
       if (l_diagonal_overlap) then
@@ -1134,6 +1128,11 @@ module optimization_mod
        call object_save ('dpsi_dpsi_covar_inv')
       endif
 !      call object_save ('delta_e_ptb')  !
+   endif
+   if(l_opt_ovlp_fn) then
+      call object_save ('dpsi_av')
+      call object_save ('dpsi_uwav')
+      call object_save ('dpsi_dpsi_uwcovar')
    endif
 
 !  adjust diag_stab
@@ -1145,7 +1144,7 @@ module optimization_mod
    call wf_update_and_check_and_stab
 
 !  pretty printing
-   write(6,*) ''
+   write(6,*)
    call object_provide ('sigma')
    call object_provide ('gradient_norm')
    call object_provide ('gradient_norm_err')
@@ -1920,7 +1919,6 @@ module optimization_mod
      call object_restore ('ham_lin')
      call object_restore ('ovlp_lin')
      call object_restore ('renorm_vector')
-!     call object_restore ('dpsi_av')
     endif
     if(l_opt_ptb) then
      if (l_diagonal_overlap) then
@@ -1929,6 +1927,11 @@ module optimization_mod
       call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !       call object_restore ('delta_e_ptb')  !
+    endif
+    if(l_opt_ovlp_fn) then
+      call object_restore ('dpsi_av')
+      call object_restore ('dpsi_uwav')
+      call object_restore ('dpsi_dpsi_uwcovar')
     endif
 
 !   just in case mc config is in crazy place, reset mc_configs by calling sites
@@ -1969,7 +1972,6 @@ module optimization_mod
      call object_restore ('ham_lin')
      call object_restore ('ovlp_lin')
      call object_restore ('renorm_vector')
-!    call object_restore ('dpsi_av')
   endif
   if(l_opt_ptb) then
      if (l_diagonal_overlap) then
@@ -1978,6 +1980,11 @@ module optimization_mod
       call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !     call object_restore ('delta_e_ptb') !!
+  endif  
+  if(l_opt_ovlp_fn) then
+      call object_restore ('dpsi_av')
+      call object_restore ('dpsi_uwav')
+      call object_restore ('dpsi_dpsi_uwcovar')
   endif
   diag_stab = min(add_diag (1), add_diag_max)
   if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
