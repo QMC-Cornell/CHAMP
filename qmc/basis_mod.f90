@@ -4,6 +4,7 @@ module basis_mod
   use control_mod
 
 ! Declaration of global variables and default values
+  character(len=max_string_len)   :: radial_basis_type = 'analytical'
   real(dp), allocatable           :: phin_norm (:,:)
   real(dp), allocatable           :: phin_ortho (:,:)
   integer, allocatable            :: basis_fns_cent (:)
@@ -59,13 +60,19 @@ module basis_mod
    call object_provide ('nloc')
 !  default for all-electron calculations: analytical Slater functions
    if (nloc==0) then
+    radial_basis_type = 'analytical'
     which_analytical_basis = 'slater'
+    numr=-3
    endif
 !  default for pseudopotential calculations: all numerical functions
    if (nloc>0) then
+    radial_basis_type = 'numerical'
     which_analytical_basis = 'none'
+    numr=1
    endif
+   call object_modified ('radial_basis_type')
    call object_modified ('which_analytical_basis')
+   call object_modified ('numr')
   endif
 
 ! loop over menu lines
@@ -78,6 +85,7 @@ module basis_mod
    write(6,'(a)') 'HELP for basis menu:'
    write(6,'(a)') 'basis'
    write(6,'(a)') '  ibasis = [integer]: type of basis (default: 1)'
+   write(6,'(a)') '  radial_basis_type = [analytical|numerical|numerical-analytical]: type of radial basis functions (default: analytical for all-electron, numerical for pseudo)'
    write(6,'(a)') '  which_analytical_basis = [none|slater|gaussian|gauss-slater] (default: slater for all-electron, none otherwise)'
    write(6,'(a)') '  numr = [integer] options for numerical basis (default: -3)'
    write(6,'(a)') '  basis_functions : function types and exponents'
@@ -89,7 +97,7 @@ module basis_mod
    write(6,'(a)') '   2  ! atom type'
    write(6,'(a)') '   1S   2.4731060 '
    write(6,'(a)') '  end'
-   write(6,'(a)') '  exponents 0.2 0.1 end (not used anymore)'
+!   write(6,'(a)') '  exponents 0.2 0.1 end (not used anymore)'
    write(6,'(a)') '  basis_functions_varied = [unnormalized|normalized|orthonormalized] : choice of basis functions for exponent optimization (default=normalized)'
    write(6,'(a)') '  optimize_log_exp = [bool] : optimize logarithm of exponents (default=false)'
    write(6,'(a)') '  optimized_exponents 1 2 3 4 end : list of labels of exponents to optimize (default: all exponents)'
@@ -99,29 +107,50 @@ module basis_mod
   case ('ibasis')
    call get_next_value (ibasis)
 
+  case ('radial_basis_type')
+   call get_next_value (radial_basis_type)
+   select case (trim(radial_basis_type))
+   case ('analytical')
+    numr=-3
+   case ('numerical')
+    numr=1
+   case ('numerical-analytical')
+    numr=-3
+   case default
+    call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+   end select
+   call object_modified ('radial_basis_type')
+   call object_modified ('numr')
+
   case ('numr')
    call get_next_value (numr)
    call object_modified ('numr')
 
   case ('basis_functions')
-   if (numr <=0) then
-    call basis_functions_slater
-   else
-    call basis_functions_num
-   endif
+   call object_provide ('radial_basis_type')
+   select case (trim(radial_basis_type))
+   case ('analytical')
+    call basis_functions_analytical
+   case ('numerical')
+    call basis_functions_numerical
+   case ('numerical-analytical')
+    call basis_functions_analytical_numerical
+   case default
+    call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+   end select
 
-  case ('exponents') ! not used anymore
-   call get_next_value_list ('exponents', exponents, exponents_nb)
-   call object_provide ('nbasis')
-   write(6,*) 'nbasis=',nbasis
-   write(6,*) 'exponents_nb=',exponents_nb
-   call require (lhere, 'exponents_nb == nbasis', exponents_nb == nbasis)
-   write(6,*)
-   write(6,'(a,500f12.6)')  ' exponents: ', exponents (:)
-   zex (1:nbasis,1) = exponents (:)
-   call object_modified ('zex')
-   call copy_zex_zex2
-!   write(6,'(a,500f12.6)')  'zex2: ', zex2
+!  case ('exponents') ! not used anymore
+!   call get_next_value_list ('exponents', exponents, exponents_nb)
+!   call object_provide ('nbasis')
+!   write(6,*) 'nbasis=',nbasis
+!   write(6,*) 'exponents_nb=',exponents_nb
+!   call require (lhere, 'exponents_nb == nbasis', exponents_nb == nbasis)
+!   write(6,*)
+!   write(6,'(a,500f12.6)')  ' exponents: ', exponents (:)
+!   zex (1:nbasis,1) = exponents (:)
+!   call object_modified ('zex')
+!   call copy_zex_zex2
+!!   write(6,'(a,500f12.6)')  'zex2: ', zex2
 
 
   case ('basis_functions_varied')
@@ -160,16 +189,25 @@ module basis_mod
     call die (lhere, 'case ibasis='+ibasis+'not yet implemented for new input')
   endif
 
-  call object_provide ('zex')
-  if(minval(zex(:,1)).ne.0.d0) then
-    l_purely_analytical_basis = .true.
-  else
-    l_purely_analytical_basis = .false.
-  endif
+  write(6,'(a,i5)') ' numr=',numr
+
+  call object_provide ('radial_basis_type')
+  select case (trim(radial_basis_type))
+   case ('analytical')
+     write(6,'(a)') ' analytical radial basis functions used'
+   case ('numerical')
+     write(6,'(a)') ' numerical radial basis functions used'
+   case ('numerical-analytical')
+     write(6,'(a)') ' mixed numerical and analytical radial basis functions used'
+   case default
+    call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+  end select
+
+
 
   select case(trim(which_analytical_basis))
   case ('none')
-    write(6,'(a)') ' the basis functions are all numerical'
+!    write(6,'(a)') ' the basis functions are all numerical'
   case ('slater')
     write(6,'(a)') ' the analytical basis functions are Slater functions'
   case ('gaussian')
@@ -180,16 +218,6 @@ module basis_mod
    call die (lhere, 'unknown keyword which_analytical_basis='+trim(which_analytical_basis)+'')
   end select
   
-  write(6,'(a,i5)') ' numr=',numr
-
-!   if (numr>0) then
-!      if (trim(which_analytical_basis) .eq. 'none') then !fp
-!         write(6,'(a)') ' numerical basis functions used'
-!      else
-!         write(6,*) 'numr>0 but which_analytical_basis .ne. none'
-!         stop 'numr>0 but which_analytical_basis .ne. none'
-!      end if
-!   end if
 
   call object_provide ('nbasis')
   write(6,'(/a,i5)') ' number of basis functions = ',nbasis
@@ -197,17 +225,26 @@ module basis_mod
 ! distinct_radial_bas must be called to update n_bas2, etc...
   call distinct_radial_bas
 
-! if(ibasis.eq.1.and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
-! if(ibasis.eq.1 .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
-  if(ibasis.eq.1 .and. inum_orb.eq.0) call read_bas_num(1)
+! read in numerical basis
+  call object_provide ('zex')
+  if(minval(zex(:,1)).ne.0.d0) then
+    l_purely_analytical_basis = .true.
+  else
+    l_purely_analytical_basis = .false.
+  endif
+  if((ibasis.eq.1.or.ibasis.eq.3) .and. inum_orb.eq.0) call read_bas_num(1)
+!  if(minval(zex).ne.0.d0) write(6,'(a)') ' Purely analytical radial basis functions used'
+!  if(maxval(zex).eq.0.d0) write(6,'(a)') ' Purely numerical radial basis functions used'
+!  if(minval(zex).eq.0.d0 .and. maxval(zex).ne.0.d0) write(6,'(a)') ' Mixed analytical and numerical radial basis functions used'
+  write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)') (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
 
   call object_provide ('nctype')
   call object_provide ('basis_fns_by_center_type_nb')
   call object_provide ('basis_fns_type_by_center_type')
 
-! analytic (Slater) basis
   write(6,*) 
-  if (numr<=0) then
+  select case (trim(radial_basis_type))
+   case ('analytical')
     call object_provide ('basis_fns_expo_by_center_type')
     do cent_type_i = 1, nctype
       write (6, '(a,i5)') ' center type # ',cent_type_i
@@ -216,8 +253,7 @@ module basis_mod
       enddo
     enddo
 
-! numerical basis
-  else
+   case ('numerical')
     call object_provide ('basis_fns_rad_by_center_type')
     do cent_type_i = 1, nctype
       write (6, '(a,i5)') ' center type # ',cent_type_i
@@ -229,8 +265,21 @@ module basis_mod
       enddo
     enddo
 
-  endif
-
+   case ('numerical-analytical')
+    call object_provide ('basis_fns_expo_by_center_type')
+    call object_provide ('basis_fns_rad_by_center_type')
+    do cent_type_i = 1, nctype
+      write (6, '(a,i5)') ' center type # ',cent_type_i
+      do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
+        write (6, '(a,i5,a,a6,a,f12.6,a,i5)') ' function # ', bas_c_i, ': ',trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)), '       exponent = ', basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i), '       radial function # ', basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)
+        if (basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i) > nrbas(cent_type_i)) then
+          call die (lhere, ' for center type # '+cent_type_i+', radial function # '+basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)+' > nrbas='+nrbas(cent_type_i))
+        endif
+      enddo
+    enddo
+   case default
+    call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+  end select
 
   if(ibasis.eq.1) then
 ! irecursion_ylm=0 use Cyrus' spherical harmonics (upto g functions)
@@ -266,9 +315,9 @@ module basis_mod
   end subroutine basis_menu
 
 !===========================================================================
-  subroutine basis_functions_slater
+  subroutine basis_functions_analytical
 !---------------------------------------------------------------------------
-! Description : read and set up Slater basis functions
+! Description : read and set up analytical (Slater) basis functions
 !
 ! Created     : J. Toulouse, 03 Mar 2009
 !---------------------------------------------------------------------------
@@ -276,7 +325,7 @@ module basis_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'basis_functions_slater'
+  character(len=max_string_len_rout), save :: lhere = 'basis_functions_analytical'
   character(len=500) line
   character(len=max_string_len) basis_fns_type_temp
   real(dp) basis_fns_expo_temp
@@ -325,7 +374,6 @@ module basis_mod
    if(iostat < 0) then
      call die (lhere, 'error while reading basis functions')
    endif
-   
    
    call append (basis_fns_type_by_center_type (cent_type_i)%row, basis_fns_type_temp)
    call append (basis_fns_expo_by_center_type (cent_type_i)%row, basis_fns_expo_temp)
@@ -439,10 +487,10 @@ module basis_mod
   call object_modified ('zex')
 
 
-  end subroutine basis_functions_slater
+  end subroutine basis_functions_analytical
 
 !===========================================================================
-  subroutine basis_functions_num
+  subroutine basis_functions_numerical
 !---------------------------------------------------------------------------
 ! Description : read and set up numerical basis functions
 !
@@ -452,7 +500,7 @@ module basis_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'basis_functions_num'
+  character(len=max_string_len_rout), save :: lhere = 'basis_functions_numerical'
   character(len=500) line
   character(len=max_string_len) basis_fns_type_temp
   integer basis_fns_rad_temp
@@ -502,7 +550,6 @@ module basis_mod
      call die (lhere, 'error while reading basis functions')
    endif
    
-   
    call append (basis_fns_type_by_center_type (cent_type_i)%row, basis_fns_type_temp)
    call append (basis_fns_rad_by_center_type (cent_type_i)%row, basis_fns_rad_temp)
  
@@ -533,42 +580,61 @@ module basis_mod
       call alloc ('m_bas', m_bas, bas_i)
 
     select case (trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)))
-     case ('s');   n_bas (bas_i) = 1; l_bas (bas_i) = 0; m_bas (bas_i) = 0
-     case ('px');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 1
-     case ('py');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = -1
-     case ('pz');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 0
-     case ('d0');  n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 0
-     case ('d+1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 1
-     case ('d-1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -1
-     case ('d+2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 2
-     case ('d-2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -2
-     case ('f0');  n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 0
-     case ('f+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 1
-     case ('f-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -1
-     case ('f+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 2
-     case ('f-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -2
-     case ('f+3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 3
-     case ('f-3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -3
-     case ('g0');  n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 0
-     case ('g+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 1
-     case ('g-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -1
-     case ('g+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 2
-     case ('g-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -2
-     case ('g+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 3
-     case ('g-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -3
-     case ('g+4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 4
-     case ('g-4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -4
-     case ('h0');  n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 0
-     case ('h+1'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 1
-     case ('h-1'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -1
-     case ('h+2'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 2
-     case ('h-2'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -2
-     case ('h+3'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 3
-     case ('h-3'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -3
-     case ('h+4'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 4
-     case ('h-4'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -4
-     case ('h+5'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 5
-     case ('h-5'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -5
+     case ('1s');   n_bas (bas_i) = 1; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('2s');   n_bas (bas_i) = 2; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('3s');   n_bas (bas_i) = 3; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('4s');   n_bas (bas_i) = 4; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('5s');   n_bas (bas_i) = 5; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('2px');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('2py');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('2pz');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('3px');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('3py');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('3pz');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('4px');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('4py');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('4pz');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('5px');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('5py');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('5pz');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('3d0');  n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('3d+1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('3d-1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('3d+2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('3d-2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('4d0');  n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('4d+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('4d-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('4d+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('4d-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('5d0');  n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('5d+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('5d-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('5d+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('5d-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('4f0');  n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+     case ('4f+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+     case ('4f-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+     case ('4f+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+     case ('4f-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+     case ('4f+3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+     case ('4f-3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+     case ('5f0');  n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+     case ('5f+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+     case ('5f-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+     case ('5f+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+     case ('5f-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+     case ('5f+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+     case ('5f-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+     case ('5g0');  n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 0
+     case ('5g+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 1
+     case ('5g-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -1
+     case ('5g+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 2
+     case ('5g-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -2
+     case ('5g+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 3
+     case ('5g-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -3
+     case ('5g+4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 4
+     case ('5g-4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -4
 
      case default
        call die (lhere, 'unknown basis function label >'+trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i))+'<')
@@ -599,7 +665,227 @@ module basis_mod
   call object_modified ('iwrwf')
   call object_modified ('zex')
 
-  end subroutine basis_functions_num
+  end subroutine basis_functions_numerical
+
+!===========================================================================
+  subroutine basis_functions_analytical_numerical
+!---------------------------------------------------------------------------
+! Description : read and set up mixed analytical/numerical basis functions
+!
+! Created     : J. Toulouse, 22 Jul 2010
+!---------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'basis_functions_analytical_numerical'
+  character(len=500) line
+  character(len=max_string_len) basis_fns_type_temp
+  integer basis_fns_rad_temp
+  real(dp)basis_fns_expo_temp
+  integer cent_type_i, bas_i, iostat, cent_i, bas_c_i
+
+! begin
+  call object_provide ('nctype')
+
+  call object_alloc ('basis_fns_by_center_type_nb', basis_fns_by_center_type_nb, nctype)
+  call object_alloc ('basis_fns_type_by_center_type', basis_fns_type_by_center_type, nctype)
+  call object_alloc ('basis_fns_expo_by_center_type', basis_fns_expo_by_center_type, nctype)
+  call object_alloc ('basis_fns_rad_by_center_type', basis_fns_rad_by_center_type, nctype)
+  basis_fns_by_center_type_nb (:) = 0
+
+  do
+   read(unit_input,'(a)',iostat=iostat) line
+   if(iostat < 0) then
+     call die (lhere, 'error while reading basis functions')
+   endif
+!   write(6,*) 'line >',trim(line),'<'
+
+!  convert to lower case
+   call upplow (line)
+
+!  skip if empty line
+   if (trim(line) == '') cycle
+
+!  exit when 'end' is read
+   if (index(line,'end') /= 0) exit
+
+!  new center type
+   if (is_string_integer (line)) then
+ 
+     cent_type_i = string_to_integer (line)
+
+     if (cent_type_i > nctype) then
+       call die (lhere, ' center type index = '+cent_type_i+' > number of center types ='+nctype)
+     endif
+
+     cycle
+   endif
+
+!  read basis function type and radial function
+   basis_fns_by_center_type_nb (cent_type_i) = basis_fns_by_center_type_nb (cent_type_i) + 1
+   
+   read(line,*,iostat=iostat) basis_fns_type_temp, basis_fns_expo_temp, basis_fns_rad_temp
+   if(iostat < 0) then
+     call die (lhere, 'error while reading basis functions')
+   endif
+   
+   
+   call append (basis_fns_type_by_center_type (cent_type_i)%row, basis_fns_type_temp)
+   call append (basis_fns_expo_by_center_type (cent_type_i)%row, basis_fns_expo_temp)
+   call append (basis_fns_rad_by_center_type (cent_type_i)%row, basis_fns_rad_temp)
+ 
+  enddo
+
+  call alloc ('nbasis_ctype', nbasis_ctype, nctype)
+  nbasis_ctype (1:nctype) = basis_fns_by_center_type_nb (1:nctype)
+  mbasis_ctype = maxval (nbasis_ctype)
+  call object_modified ('nbasis_ctype')
+  call object_modified ('mbasis_ctype')
+  call object_modified ('basis_fns_by_center_type_nb')
+  call object_modified ('basis_fns_type_by_center_type')
+  call object_modified ('basis_fns_expo_by_center_type')
+  call object_modified ('basis_fns_rad_by_center_type')
+
+! initialization
+  bas_i = 0
+
+  call object_provide ('ncent')
+  call object_provide ('nwf')
+
+  do cent_i = 1, ncent
+    cent_type_i = iwctype (cent_i)
+    
+    do bas_c_i = 1, basis_fns_by_center_type_nb (cent_type_i)
+      bas_i = bas_i + 1
+      call alloc ('n_bas', n_bas, bas_i)
+      call alloc ('l_bas', l_bas, bas_i)
+      call alloc ('m_bas', m_bas, bas_i)
+
+    select case (trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i)))
+     case ('1s');   n_bas (bas_i) = 1; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('2s');   n_bas (bas_i) = 2; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('3s');   n_bas (bas_i) = 3; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('4s');   n_bas (bas_i) = 4; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('5s');   n_bas (bas_i) = 5; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+     case ('2px');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('2py');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('2pz');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('3px');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('3py');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('3pz');  n_bas (bas_i) = 3; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('4px');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('4py');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('4pz');  n_bas (bas_i) = 4; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('5px');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+     case ('5py');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+     case ('5pz');  n_bas (bas_i) = 5; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+     case ('3d0');  n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('3d+1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('3d-1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('3d+2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('3d-2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('4d0');  n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('4d+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('4d-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('4d+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('4d-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('5d0');  n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+     case ('5d+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+     case ('5d-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+     case ('5d+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+     case ('5d-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+     case ('4f0');  n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+     case ('4f+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+     case ('4f-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+     case ('4f+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+     case ('4f-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+     case ('4f+3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+     case ('4f-3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+     case ('5f0');  n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+     case ('5f+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+     case ('5f-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+     case ('5f+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+     case ('5f-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+     case ('5f+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+     case ('5f-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+     case ('5g0');  n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 0
+     case ('5g+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 1
+     case ('5g-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -1
+     case ('5g+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 2
+     case ('5g-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -2
+     case ('5g+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 3
+     case ('5g-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -3
+     case ('5g+4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 4
+     case ('5g-4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -4
+
+! if no n, assume smallest n
+!     case ('s');   n_bas (bas_i) = 1; l_bas (bas_i) = 0; m_bas (bas_i) = 0
+!     case ('px');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 1
+!     case ('py');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = -1
+!     case ('pz');  n_bas (bas_i) = 2; l_bas (bas_i) = 1; m_bas (bas_i) = 0
+!     case ('d0');  n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 0
+!     case ('d+1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 1
+!     case ('d-1'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -1
+!     case ('d+2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = 2
+!     case ('d-2'); n_bas (bas_i) = 3; l_bas (bas_i) = 2; m_bas (bas_i) = -2
+!     case ('f0');  n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 0
+!     case ('f+1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 1
+!     case ('f-1'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -1
+!     case ('f+2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 2
+!     case ('f-2'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -2
+!     case ('f+3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = 3
+!     case ('f-3'); n_bas (bas_i) = 4; l_bas (bas_i) = 3; m_bas (bas_i) = -3
+!     case ('g0');  n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 0
+!     case ('g+1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 1
+!     case ('g-1'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -1
+!     case ('g+2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 2
+!     case ('g-2'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -2
+!     case ('g+3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 3
+!     case ('g-3'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -3
+!     case ('g+4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = 4
+!     case ('g-4'); n_bas (bas_i) = 5; l_bas (bas_i) = 4; m_bas (bas_i) = -4
+!     case ('h0');  n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 0
+!     case ('h+1'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 1
+!     case ('h-1'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -1
+!     case ('h+2'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 2
+!     case ('h-2'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -2
+!     case ('h+3'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 3
+!     case ('h-3'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -3
+!     case ('h+4'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 4
+!     case ('h-4'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -4
+!     case ('h+5'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = 5
+!     case ('h-5'); n_bas (bas_i) = 6; l_bas (bas_i) = 5; m_bas (bas_i) = -5
+
+     case default
+       call die (lhere, 'unknown basis function label >'+trim(basis_fns_type_by_center_type (cent_type_i)%row(bas_c_i))+'<')
+    end select 
+
+    call alloc ('zex', zex, bas_i, nwf)
+    zex (bas_i,1) = basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
+
+    call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
+    iwrwf (bas_c_i, cent_type_i) = basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)
+    call alloc ('ictype_basis', ictype_basis, bas_i)
+    ictype_basis (bas_i)= cent_type_i
+
+    enddo
+  enddo
+   
+! for now, ML_BAS needs to be at least 4 because of the code in basis_fns.f
+  ML_BAS = max (4, maxval(l_bas))
+
+  nbasis = bas_i
+
+  call object_modified ('nbasis')
+  call object_modified ('n_bas')
+  call object_modified ('l_bas')
+  call object_modified ('m_bas')
+  call object_modified ('ictype_basis')
+  call object_modified ('iwrwf')
+  call object_modified ('zex')
+
+  end subroutine basis_functions_analytical_numerical
 
 ! ==============================================================================
   subroutine norm_basis_bld

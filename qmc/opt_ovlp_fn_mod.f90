@@ -12,6 +12,7 @@ module opt_ovlp_fn_mod
   logical                         :: l_weighted_overlap = .true.
 !  real(dp), allocatable           :: csf_over_psit_j (:)
 !  real(dp), allocatable           :: csf_over_psit_j_av (:)
+  real(dp), allocatable           :: delta_reb (:)
   real(dp), allocatable           :: delta_ovlp_fn (:)
 !  real(dp), allocatable           :: delta_ovlp_fn_exact (:)
   real(dp), allocatable           :: ovlp_ovlp_fn (:,:)
@@ -20,6 +21,10 @@ module opt_ovlp_fn_mod
   real(dp)                        :: wt_lambda = 1.d0
   real(dp)                        :: ovlp_trial_fn
   real(dp)                        :: ovlp_trial_fn_over_ovlp_trial
+  real(dp), allocatable           :: dpsi_over_jas2 (:)
+  real(dp), allocatable           :: dpsi_over_jas2_av (:)
+  real(dp)                        :: first_csf_over_jas2
+  real(dp)                        :: first_csf_over_jas2_av
 
   contains
 
@@ -356,10 +361,125 @@ module opt_ovlp_fn_mod
 
   end subroutine ovlp_trial_fn_over_ovlp_trial_bld
 
+ ! ==============================================================================
+   subroutine dpsi_over_jas2_bld
+ ! ------------------------------------------------------------------------------
+ ! Description   : derivatives (Psi_i/Psi_0) (1/Jastrow^2)
+ ! Description   : for Reboredo optimization method
+ !
+ ! Created       : J. Toulouse, 21 Jul 2010
+ ! ------------------------------------------------------------------------------
+   implicit none
+
+ ! local
+   integer param_i
+
+ ! header
+   if(header_exe) then
+
+    call object_create ('dpsi_over_jas2')
+    call object_average_define ('dpsi_over_jas2', 'dpsi_over_jas2_av')
+
+    call object_needed ('param_nb')
+    call object_needed ('dpsi')
+    call object_needed ('psi_jas')
+
+    return
+
+   endif
+
+ ! begin
+
+ ! allocations
+   call object_alloc ('dpsi_over_jas2', dpsi_over_jas2, param_nb)
+   call object_alloc ('dpsi_over_jas2_av', dpsi_over_jas2_av, param_nb)
+
+   do param_i = 1, param_nb
+     dpsi_over_jas2 (param_i) = dpsi (param_i) / (psi_jas**2)
+   enddo
+
+   end subroutine dpsi_over_jas2_bld
+
+ ! ==============================================================================
+   subroutine first_csf_over_jas2_bld
+ ! ------------------------------------------------------------------------------
+ ! Description   : for Reboredo optimization method
+ !
+ ! Created       : J. Toulouse, 21 Jul 2010
+ ! ------------------------------------------------------------------------------
+   implicit none
+
+ ! header
+   if(header_exe) then
+
+    call object_create ('first_csf_over_jas2')
+    call object_average_define ('first_csf_over_jas2', 'first_csf_over_jas2_av')
+
+    call object_needed ('first_csf_over_psid')
+    call object_needed ('psi_jas')
+
+    return
+
+   endif
+
+ ! begin
+   call object_associate ('first_csf_over_jas2', first_csf_over_jas2)
+   call object_associate ('first_csf_over_jas2_av', first_csf_over_jas2_av)
+
+   first_csf_over_jas2 = first_csf_over_psid / (psi_jas**2)
+
+   end subroutine first_csf_over_jas2_bld
+
+ ! ==============================================================================
+   subroutine delta_reb_bld
+ ! ------------------------------------------------------------------------------
+ ! Description   : variation of parameters for overlap FN method
+ ! Description   : with Reboredo method
+ !
+ ! Created       : J. Toulouse, 21 JUl 2010
+ ! ------------------------------------------------------------------------------
+   include 'modules.h'
+   implicit none
+
+ ! local
+   integer param_i
+
+ ! header
+   if(header_exe) then
+
+    call object_create ('delta_reb')
+
+    call object_needed ('param_nb')
+    call object_needed ('dpsi_over_jas2_av')
+    call object_needed ('first_csf_over_jas2_av')
+
+    return
+
+   endif
+
+ ! begin
+
+ ! allocation
+   call object_alloc ('delta_reb', delta_reb, param_nb)
+
+!  rescaling so that first CSF coefficient is unchanged
+   call object_provide ('csf_coef')
+   delta_reb (:) = dpsi_over_jas2_av (:) * csf_coef(1, 1)/first_csf_over_jas2_av
+
+!  for CSF parameters, csf_coef needs to be substracted
+   call object_provide ('nparmcsf')
+   call object_provide ('iwcsf')
+   do param_i = 1, nparmcsf
+      delta_reb (param_i) = delta_reb (param_i) - csf_coef (iwcsf(param_i), 1)
+   enddo
+
+   end subroutine delta_reb_bld
+
 !===========================================================================
   subroutine delta_ovlp_fn_bld
 ! ------------------------------------------------------------------------------
 ! Description   : variation of parameters for overlap FN method
+! Description   : with overlap matrix
 !
 ! Created       : J. Toulouse, 7 Jun 2010
 ! ------------------------------------------------------------------------------
@@ -456,7 +576,6 @@ module opt_ovlp_fn_mod
   delta_ovlp_fn (:) = delta_ovlp_fn (:) / transform_factor
 
   end subroutine delta_ovlp_fn_bld
-
 
 ! ! ==============================================================================
 !   subroutine csf_over_psit_j_bld

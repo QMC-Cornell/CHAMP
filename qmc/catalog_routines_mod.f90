@@ -166,6 +166,7 @@ module catalog_routines_mod
   call catalog_one_node ('csfs_wfdet_ovlp_bld', csfs_wfdet_ovlp_bld)
   call catalog_one_node ('dens_mat_wfdet_bld', dens_mat_wfdet_bld)
   call catalog_one_node ('vb_weights_hiberty_bld', vb_weights_hiberty_bld)
+  call catalog_one_node ('first_csf_over_psid_bld', first_csf_over_psid_bld)
   call catalog_one_node ('csf_over_psid_bld', csf_over_psid_bld)
   call catalog_one_node ('product_csf_over_psid_bld', product_csf_over_psid_bld)
   call catalog_one_node ('vb_weights_chirgwin_coulson_bld', vb_weights_chirgwin_coulson_bld)
@@ -218,6 +219,9 @@ module catalog_routines_mod
 
 ! overlap FN wavefunction method
 ! call catalog_one_node ('csf_over_psit_j_bld', csf_over_psit_j_bld)
+  call catalog_one_node ('dpsi_over_jas2_bld', dpsi_over_jas2_bld)
+  call catalog_one_node ('first_csf_over_jas2_bld', first_csf_over_jas2_bld)
+  call catalog_one_node ('delta_reb_bld', delta_reb_bld)
   call catalog_one_node ('delta_ovlp_fn_bld', delta_ovlp_fn_bld)
 !  call catalog_one_node ('delta_ovlp_fn_exact_bld', delta_ovlp_fn_exact_bld)
 !  call catalog_one_node ('ovlp_ovlp_fn_bld', ovlp_ovlp_fn_bld)

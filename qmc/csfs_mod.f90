@@ -20,6 +20,7 @@ module csfs_mod
 
   logical                   :: l_vb_weights = .false.
   real(dp), allocatable     :: vb_weights_hiberty (:)
+  real(dp)                  :: first_csf_over_psid
   real(dp), allocatable     :: csf_over_psid (:)
   real(dp), allocatable     :: csf_over_psid_bav (:)
   real(dp), allocatable     :: product_csf_over_psid (:,:)
@@ -793,6 +794,52 @@ module csfs_mod
   enddo ! csf_i
 
   end subroutine csf_over_psid_bld
+
+! ==============================================================================
+  subroutine first_csf_over_psid_bld
+! ------------------------------------------------------------------------------
+! Description : csf_over_psid for the first CSF only
+!
+! Created     : J. Toulouse, 21 Jul 2010
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer det_in_csf_i, det_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('first_csf_over_psid')
+
+   call object_needed ('ndn')
+   call object_needed ('ndet_in_csf')
+   call object_needed ('iwdet_in_csf')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('iwdetup')
+   call object_needed ('iwdetdn')
+   call object_needed ('psi_det')
+
+   return
+
+  endif
+
+! begin
+  first_csf_over_psid = 0.d0
+  do det_in_csf_i = 1, ndet_in_csf(1)
+    det_i = iwdet_in_csf (det_in_csf_i, 1)
+    if (ndn >= 1) then
+      first_csf_over_psid = first_csf_over_psid + cdet_in_csf(det_in_csf_i, 1) * detu(iwdetup(det_i)) * detd(iwdetdn(det_i))
+    else
+      first_csf_over_psid = first_csf_over_psid + cdet_in_csf(det_in_csf_i, 1) * detu(iwdetup(det_i))
+    endif
+  enddo ! det_in_csf_i
+  first_csf_over_psid = first_csf_over_psid / psi_det
+
+  end subroutine first_csf_over_psid_bld
 
 ! ==============================================================================
   subroutine product_csf_over_psid_bld
