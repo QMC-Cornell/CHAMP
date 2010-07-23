@@ -236,7 +236,7 @@ module basis_mod
 !  if(minval(zex).ne.0.d0) write(6,'(a)') ' Purely analytical radial basis functions used'
 !  if(maxval(zex).eq.0.d0) write(6,'(a)') ' Purely numerical radial basis functions used'
 !  if(minval(zex).eq.0.d0 .and. maxval(zex).ne.0.d0) write(6,'(a)') ' Mixed analytical and numerical radial basis functions used'
-  write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)') (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
+!  write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)') (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
 
   call object_provide ('nctype')
   call object_provide ('basis_fns_by_center_type_nb')

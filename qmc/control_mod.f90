@@ -13,6 +13,9 @@ module control_mod
   logical                 :: l_hopping_moves  = .false.
   real(dp)                :: proba_hopping_moves = 0.d0
 
+! branching in DMC?
+  logical                 :: l_branching = .true.
+
   contains
 
 !===========================================================================
@@ -65,6 +68,7 @@ module control_mod
    write(6,'(a)') ' deltat = [real]'
    write(6,'(a)') ' fbias = [real]'
    write(6,'(a)') ' idmc = [integer] type of DMC algorithm (default=2)'
+   write(6,'(a)') ' branching = [logical] do branching in DMC? (default=true)'
    write(6,'(a)') ' ipq = [integer]'
    write(6,'(a)') ' itau_eff = [integer]'
    write(6,'(a)') ' iacc_rej = [integer]'
@@ -106,6 +110,7 @@ module control_mod
   case ('deltat'); call get_next_value (deltat)
   case ('fbias');  call get_next_value (fbias)
   case ('idmc');   call get_next_value (idmc)
+  case ('branching'); call get_next_value (l_branching)
   case ('ipq');    call get_next_value (ipq)
   case ('itau_eff');  call get_next_value (itau_eff)
   case ('iacc_rej');  call get_next_value (iacc_rej)
@@ -263,6 +268,9 @@ module control_mod
     rttau=dsqrt(tau)
     write(6,'(a,i5)')    ' nfprod = ', nfprod
     write(6,'(a,f10.5)') ' time-step tau = ', tau
+    if (.not. l_branching) then
+     write(6,'(a)') ' Warning: branching turned off in DMC'
+    endif
   endif
 
   endif ! if use_parser

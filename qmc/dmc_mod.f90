@@ -10,8 +10,6 @@ module dmc_mod
 
 ! Declaration of global variables and default values
 
-! branching in DMC?
-  logical                  :: l_branching = .true.
 
   contains
 
