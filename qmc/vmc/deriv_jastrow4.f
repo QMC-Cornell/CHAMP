@@ -2,6 +2,12 @@
 c Written by Cyrus Umrigar and Claudia Filippi
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
+
+c When iperiodic=1, nloc=-4 (infinite quantum wire), then the "en" distance
+c  used in en and een terms for the first center (ic = 1) is the distance
+c  between the electron and the middle (y-axis) of the wire, rather than
+c   the distance between (0,0) and an electron.  ACM, July 2010 
+
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -356,9 +362,16 @@ c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
 
       do 57 ic=1,ncent
         it=iwctype(ic)
+c       if we have an infinite wire, then for the en and een terms, for ic=1,
+c         we only use the distance from the electron to the y-axis of the wire
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+           ri=rvec_en(2,i,ic)  ! y-component of rvec_en is dist to wire center
+           rj=rvec_en(2,j,ic)
+        else
+           ri=r_en(i,ic)
+           rj=r_en(j,ic)
+        endif
 
-        ri=r_en(i,ic)
-        rj=r_en(j,ic)
 
         if(ri.gt.cutjas_en .or. rj.gt.cutjas_en) goto 57
         do 37 k=1,ndim
@@ -576,13 +589,25 @@ c        = 2 parameter is an independent parameter that is varied
 
                       go(i,j,iparm)=go(i,j,iparm)+cd*gp
                       gvalue(iparm)=gvalue(iparm)+cd*gp
-
-                      g(1,i,iparm)=g(1,i,iparm)+cd*(gi*rvec_en(1,i,ic)+gu*rvec_ee(1,ij))
-                      g(2,i,iparm)=g(2,i,iparm)+cd*(gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij))
-                      g(3,i,iparm)=g(3,i,iparm)+cd*(gi*rvec_en(3,i,ic)+gu*rvec_ee(3,ij))
-                      g(1,j,iparm)=g(1,j,iparm)+cd*(gj*rvec_en(1,j,ic)-gu*rvec_ee(1,ij))
-                      g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
-                      g(3,j,iparm)=g(3,j,iparm)+cd*(gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij))
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+                      if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+                        g(1,i,iparm)=g(1,i,iparm)+cd*(gu*rvec_ee(1,ij))
+                        g(2,i,iparm)=g(2,i,iparm)+cd*(gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij))
+                        g(3,i,iparm)=g(3,i,iparm)+cd*(gu*rvec_ee(3,ij))
+                        g(1,j,iparm)=g(1,j,iparm)+cd*(-gu*rvec_ee(1,ij))
+                        g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
+                        g(3,j,iparm)=g(3,j,iparm)+cd*(-gu*rvec_ee(3,ij)) 
+                      else
+                        g(1,i,iparm)=g(1,i,iparm)+cd*(gi*rvec_en(1,i,ic)+gu*rvec_ee(1,ij))
+                        g(2,i,iparm)=g(2,i,iparm)+cd*(gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij))
+                        g(3,i,iparm)=g(3,i,iparm)+cd*(gi*rvec_en(3,i,ic)+gu*rvec_ee(3,ij))
+                        g(1,j,iparm)=g(1,j,iparm)+cd*(gj*rvec_en(1,j,ic)-gu*rvec_ee(1,ij))
+                        g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
+                        g(3,j,iparm)=g(3,j,iparm)+cd*(gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij))
+                      endif
 
    33                 d2g(iparm)=d2g(iparm) + cd*((ndim-1)*(2*gu+gi+gj)
      &                + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij))
@@ -603,13 +628,26 @@ c                   jj=jj+1
 
                     go(i,j,iparm)=go(i,j,iparm)+gp
                     gvalue(iparm)=gvalue(iparm)+gp
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+                    if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+                      g(1,i,iparm)=g(1,i,iparm)+gu*rvec_ee(1,ij)
+                      g(2,i,iparm)=g(2,i,iparm)+gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij)
+                      g(3,i,iparm)=g(3,i,iparm)+gu*rvec_ee(3,ij)
+                      g(1,j,iparm)=g(1,j,iparm)-gu*rvec_ee(1,ij)
+                      g(2,j,iparm)=g(2,j,iparm)+gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij)
+                      g(3,j,iparm)=g(3,j,iparm)-gu*rvec_ee(3,ij)
+                    else
+                      g(1,i,iparm)=g(1,i,iparm)+gi*rvec_en(1,i,ic)+gu*rvec_ee(1,ij)
+                      g(2,i,iparm)=g(2,i,iparm)+gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij)
+                      g(3,i,iparm)=g(3,i,iparm)+gi*rvec_en(3,i,ic)+gu*rvec_ee(3,ij)
+                      g(1,j,iparm)=g(1,j,iparm)+gj*rvec_en(1,j,ic)-gu*rvec_ee(1,ij)
+                      g(2,j,iparm)=g(2,j,iparm)+gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij)
+                      g(3,j,iparm)=g(3,j,iparm)+gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij)
+                    endif
 
-                    g(1,i,iparm)=g(1,i,iparm)+gi*rvec_en(1,i,ic)+gu*rvec_ee(1,ij)
-                    g(2,i,iparm)=g(2,i,iparm)+gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij)
-                    g(3,i,iparm)=g(3,i,iparm)+gi*rvec_en(3,i,ic)+gu*rvec_ee(3,ij)
-                    g(1,j,iparm)=g(1,j,iparm)+gj*rvec_en(1,j,ic)-gu*rvec_ee(1,ij)
-                    g(2,j,iparm)=g(2,j,iparm)+gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij)
-                    g(3,j,iparm)=g(3,j,iparm)+gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij)
                     d2g(iparm)=d2g(iparm) + (ndim-1)*(2*gu+gi+gj)
      &              + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
 
@@ -643,13 +681,25 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
           go(i,j,iparm)=go(i,j,iparm) + gp
           gvalue(iparm)=gvalue(iparm) + gp
-
-          g(1,i,iparm)=g(1,i,iparm) + gi*rvec_en(1,i,ic) + gu*rvec_ee(1,ij)
-          g(2,i,iparm)=g(2,i,iparm) + gi*rvec_en(2,i,ic) + gu*rvec_ee(2,ij)
-          g(3,i,iparm)=g(3,i,iparm) + gi*rvec_en(3,i,ic) + gu*rvec_ee(3,ij)
-          g(1,j,iparm)=g(1,j,iparm) + gj*rvec_en(1,j,ic) - gu*rvec_ee(1,ij)
-          g(2,j,iparm)=g(2,j,iparm) + gj*rvec_en(2,j,ic) - gu*rvec_ee(2,ij)
-          g(3,j,iparm)=g(3,j,iparm) + gj*rvec_en(3,j,ic) - gu*rvec_ee(3,ij)
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+          if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+            g(1,i,iparm)=g(1,i,iparm) + gu*rvec_ee(1,ij)
+            g(2,i,iparm)=g(2,i,iparm) + gi*rvec_en(2,i,ic) + gu*rvec_ee(2,ij)
+            g(3,i,iparm)=g(3,i,iparm) + gu*rvec_ee(3,ij)
+            g(1,j,iparm)=g(1,j,iparm) - gu*rvec_ee(1,ij)
+            g(2,j,iparm)=g(2,j,iparm) + gj*rvec_en(2,j,ic) - gu*rvec_ee(2,ij)
+            g(3,j,iparm)=g(3,j,iparm) - gu*rvec_ee(3,ij)
+          else
+            g(1,i,iparm)=g(1,i,iparm) + gi*rvec_en(1,i,ic) + gu*rvec_ee(1,ij)
+            g(2,i,iparm)=g(2,i,iparm) + gi*rvec_en(2,i,ic) + gu*rvec_ee(2,ij)
+            g(3,i,iparm)=g(3,i,iparm) + gi*rvec_en(3,i,ic) + gu*rvec_ee(3,ij)
+            g(1,j,iparm)=g(1,j,iparm) + gj*rvec_en(1,j,ic) - gu*rvec_ee(1,ij)
+            g(2,j,iparm)=g(2,j,iparm) + gj*rvec_en(2,j,ic) - gu*rvec_ee(2,ij)
+            g(3,j,iparm)=g(3,j,iparm) + gj*rvec_en(3,j,ic) - gu*rvec_ee(3,ij)
+          endif
 
           gui=dkij*fuui*dd1*dd7 + drij*fui*dd7 + dri*fui*dd1 + dki*fuii*dd1*dd7 + dkj*fuij*dd1*dd7
           guj=dkij*fuuj*dd1*dd8 + drij*fuj*dd8 + drj*fuj*dd1 + dkj*fujj*dd1*dd8 + dki*fuij*dd1*dd8
@@ -705,12 +755,26 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
         fso(i,j)=fso(i,j) + fc
 
-        fijo(1,i,j)=fijo(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
-        fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
-        fijo(3,i,j)=fijo(3,i,j) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
-        fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
-        fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
-        fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
+
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+          fijo(1,i,j)=fijo(1,i,j) + fu*rvec_ee(1,ij)
+          fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+          fijo(3,i,j)=fijo(3,i,j) + fu*rvec_ee(3,ij)
+          fijo(1,j,i)=fijo(1,j,i) - fu*rvec_ee(1,ij)
+          fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+          fijo(3,j,i)=fijo(3,j,i) - fu*rvec_ee(3,ij)
+        else
+          fijo(1,i,j)=fijo(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
+          fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+          fijo(3,i,j)=fijo(3,i,j) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
+          fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
+          fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+          fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
+        endif
 c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
 
 c       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
@@ -761,7 +825,14 @@ c e-n terms
         do 80 ic=1,ncent
           it=iwctype(ic)
 
-          ri=r_en(i,ic)
+c       if we have an infinite wire, then for the en and een terms, for ic=1,
+c         we only use the distance from the electron to the y-axis of the wire
+          if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+             ri=rvec_en(2,i,ic) ! y-component of rvec_en is dist to wire center
+          else
+             ri=r_en(i,ic)
+          endif
+         
           if(ri.gt.cutjas_en) goto 80
 
           call scale_dist2(ri,rri(1),dd7,dd9,1)
@@ -811,10 +882,17 @@ c for scale derivatives we also need feniii:
           tempi=feni*dd7/ri
 
           fso(i,i)=fso(i,i)+fen
-
-          fijo(1,i,i)=fijo(1,i,i) + tempi*rvec_en(1,i,ic)
-          fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
-          fijo(3,i,i)=fijo(3,i,i) + tempi*rvec_en(3,i,ic)
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+          if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+            fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
+          else
+            fijo(1,i,i)=fijo(1,i,i) + tempi*rvec_en(1,i,ic)
+            fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
+            fijo(3,i,i)=fijo(3,i,i) + tempi*rvec_en(3,i,ic)
+          endif
 c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + tempii + ndim1*tempi
@@ -921,14 +999,24 @@ c                asympterm=0
             endif
 
             genii=genii*dd7*dd7+geni*dd9
-            geni=geni*dd7/r_en(i,ic)
+c            geni=geni*dd7/r_en(i,ic)
+c           Changed above line to avoid 'if iperiodic=1 and nloc=-4?' statement
+            geni=geni*dd7/ri      ! ACM - I think this is equivalent
 
             go(i,i,iparm)=go(i,i,iparm)+gen
             gvalue(iparm)=gvalue(iparm)+gen
 
-            g(1,i,iparm)=g(1,i,iparm)+geni*rvec_en(1,i,ic)
-            g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
-            g(3,i,iparm)=g(3,i,iparm)+geni*rvec_en(3,i,ic)
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+            if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+              g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
+            else
+              g(1,i,iparm)=g(1,i,iparm)+geni*rvec_en(1,i,ic)
+              g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
+              g(3,i,iparm)=g(3,i,iparm)+geni*rvec_en(3,i,ic)
+            endif
 
    78       d2g(iparm)=d2g(iparm)+genii+ndim1*geni
 
@@ -948,10 +1036,17 @@ c            call deriv_scale(ri,dk,dk2,dr,dr2,1,iderivk)
             go(i,i,iparm)=go(i,i,iparm)+gen
             gvalue(iparm)=gvalue(iparm)+gen
 
-            g(1,i,iparm)=g(1,i,iparm) + geni*rvec_en(1,i,ic)
-            g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic)
-            g(3,i,iparm)=g(3,i,iparm) + geni*rvec_en(3,i,ic)
-
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+            if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+              g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic) 
+            else
+              g(1,i,iparm)=g(1,i,iparm) + geni*rvec_en(1,i,ic)
+              g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic)
+              g(3,i,iparm)=g(3,i,iparm) + geni*rvec_en(3,i,ic)
+            endif
             d2g(iparm)=d2g(iparm) + genii+ndim1*geni
 
             if(igradhess.gt.0) then

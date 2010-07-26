@@ -3,6 +3,11 @@ c Written by Cyrus Umrigar
 c Jastrow 4,5 must be used with one of isc=2,4,6,7,8,10,12,14,16,17
 c Jastrow 6   must be used with one of isc=6,7
 
+c When iperiodic=1, nloc=-4 (infinite quantum wire), then the "en" distance
+c  used in en and een terms for the first center (ic = 1) is the distance
+c  between the electron and the middle (y-axis) of the wire, rather than
+c   the distance between (0,0) and an electron.  ACM, July 2010  
+
       use constants_mod
       use control_mod
       use atom_mod
@@ -154,9 +159,15 @@ c     write(6,'(''rij,u in een'',2f12.9)') rij,uu(1)
 
       do 57 ic=1,ncent
         it=iwctype(ic)
-
-        ri=r_en(i,ic)
-        rj=r_en(j,ic)
+c       if we have an infinite wire, then for the en and een terms, for ic=1,
+c         we only use the distance from the electron to the y-axis of the wire
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+           ri=rvec_en(2,i,ic)  ! y-component of rvec_en is dist to wire center
+           rj=rvec_en(2,j,ic)
+        else
+           ri=r_en(i,ic)
+           rj=r_en(j,ic)
+        endif
 
 c       write(6,'(''ri,rj'',9f9.4)') ri,rj
 c       write(6,'(''rshift(k,i,ic)'',9f9.4)') (rshift(k,i,ic),k=1,ndim),(rshift(k,j,ic),k=1,ndim),(rshift(k,i,ic)-rshift(k,j,ic),k=1,ndim)
@@ -266,12 +277,25 @@ c             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
 
         fso(i,j)=fso(i,j) + fc
 
-        fijo(1,i,j)=fijo(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
-        fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
-        fijo(3,i,j)=fijo(3,i,j) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
-        fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
-        fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
-        fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+           fijo(1,i,j)=fijo(1,i,j) + fu*rvec_ee(1,ij)
+           fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+           fijo(3,i,j)=fijo(3,i,j) + fu*rvec_ee(3,ij)
+           fijo(1,j,i)=fijo(1,j,i) - fu*rvec_ee(1,ij)
+           fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+           fijo(3,j,i)=fijo(3,j,i) - fu*rvec_ee(3,ij)
+        else
+           fijo(1,i,j)=fijo(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
+           fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+           fijo(3,i,j)=fijo(3,i,j) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
+           fijo(1,j,i)=fijo(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
+           fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+           fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
+        endif
 c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
 
 c       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
@@ -303,8 +327,14 @@ c e-n terms
 
         do 80 ic=1,ncent
           it=iwctype(ic)
+c       if we have an infinite wire, then for the en and een terms, for ic=1,
+c         we only use the distance from the electron to the y-axis of the wire
+          if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+             ri=rvec_en(2,i,ic) ! y-component of rvec_en is dist to wire center
+          else
+             ri=r_en(i,ic)
+          endif
 
-          ri=r_en(i,ic)
           if(ri.gt.cutjas_en) goto 80
 
           call scale_dist2(ri,rri(1),dd7,dd9,1)
@@ -351,9 +381,18 @@ c simpler expressions are :
 
           fso(i,i)=fso(i,i)+fen
 
-          fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
-          fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
-          fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
+c       if we have an infinite wire, then for the en and een terms, we only
+c          use the distance from the electron to the center of the wire
+c          (for the first center, anyway)
+c          thus, derivatives only depend on en distance in the y-direction
+          if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
+             fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
+          else
+             fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
+             fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
+             fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
+          endif
+
 c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
 
           d2ijo(i,i) = d2ijo(i,i) + fenii + ndim1*feni
