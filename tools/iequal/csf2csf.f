@@ -1091,7 +1091,7 @@ c rotations, then that is all we need, but if we do orbital optimization by rota
         if(nup-1.ge.1 .and. ndn.ge.1) then
           write(fmt,'(''(i3,'',i2,''i4,3x,'',i2,''i4,i5,a)'')') nup-1,ndn
          elseif(nup-1.ge.1 .and. ndn.eq.0) then
-          write(fmt,'(''(i3,'',i2,''i4,3x,''i5,a)'')') nup-1
+          write(fmt,'(''(i3,'',i2,''i4,3x,'',i5,a)'')') nup-1
          elseif(nup-1.eq.0 .and. ndn.ge.1) then
           write(fmt,'(''(i3,3x,'',i2,''i4,i5,a)'')') ndn
         endif
@@ -1108,8 +1108,23 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
       write(6,fmt) (csf_coef(icsf),icsf=1,ncsf),' (csf_coef(icsf),icsf=1,ncsf)'
       write(fmt,'(''(''i4,''i3,a)'')') ncsf
       write(6,fmt) (ndet_in_csf(icsf),icsf=1,ncsf),' (ndet_in_csf(icsf),icsf=1,ncsf)'
+      max_ndet_in_csf=r0
+      do icsf=1,ncsf
+        max_ndet_in_csf=max(max_ndet_in_csf,ndet_in_csf(icsf))
+      enddo
+      if(max_ndet_in_csf.gt.48) write(6,'(''Warning: max_ndet_in_csf='',i5,'' Probably too many CSFs were combined. ''
+     &''Increase cutoff_d2c or decrease eps.'')') max_ndet_in_csf
+      max_abs_cdet_in_csf=0
       do 720 icsf=1,ncsf
-        write(fmt,'(''(''i3,''i4,a)'')') ndet_in_csf(icsf)
+        if(ndet.le.999) then
+          write(fmt,'(''(''i3,''i4,a)'')') ndet_in_csf(icsf)
+         elseif(ndet.le.9999) then
+          write(fmt,'(''(''i3,''i5,a)'')') ndet_in_csf(icsf)
+         elseif(ndet.le.99999) then
+          write(fmt,'(''(''i3,''i6,a)'')') ndet_in_csf(icsf)
+         else
+          stop 'ndet > 99999'
+        endif
         write(6,fmt) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
         do 710 idet_in_csf=1,ndet_in_csf(icsf)
@@ -1119,15 +1134,17 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
             write(6,'(''cdet(iwdet_in_csf(idet_in_csf,icsf))='',d12.4)') cdet(iwdet_in_csf(idet_in_csf,icsf))
             stop 'iwdet_in_csf(idet_in_csf,icsf) > ndet'
           endif
+          max_abs_cdet_in_csf=max(max_abs_cdet_in_csf,nint(abs(cdet_in_csf(idet_in_csf,icsf))))
 c         if(abs(cdet(iwdet_in_csf(idet_in_csf,icsf))).lt.1.d-6)
 c    &    write(6,'(''Warning: det'',i5,'' could probably be eliminated but it just costs a bit of extra time to keep it'')')
 c    &    iwdet_in_csf(idet_in_csf,icsf)
 c 710     if(abs(0.5d0*nint(2*cdet_in_csf(idet_in_csf,icsf))-cdet_in_csf(idet_in_csf,icsf)).gt.1.d-3)
 c    &    write(6,'(''Warning:cdet_in_csf(idet_in_csf,icsf)='',f9.6)') cdet_in_csf(idet_in_csf,icsf)
   710   continue
-        write(fmt,'(''(''i3,''i4,a)'')') ndet_in_csf(icsf)
   720   write(6,fmt) (nint(cdet_in_csf(idet_in_csf,icsf)),idet_in_csf=1,ndet_in_csf(icsf)),
      &  ' (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))'
+      if(max_abs_cdet_in_csf.gt.48) write(6,'(''Warning: max_abs_cdet_in_csf='',i5,'' Probably too many CSFs were combined. ''
+     &''Increase cutoff_d2c or decrease eps.'')') max_abs_cdet_in_csf
 
       stop
       end

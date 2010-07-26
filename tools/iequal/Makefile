@@ -103,6 +103,9 @@ endif
 
 endif
 
+# det_to_csf and det2csf are outdated
+all: ie csf2csf
+
 ie: ie.o
 	$(FC) $(FFLAGS) $(LDFLAGS) ie.o -o $@
 
