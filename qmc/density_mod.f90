@@ -242,7 +242,7 @@ module density_mod
    call die (lhere, 'unknown estimator >'+trim(dens_3d_estimator)+'<.')
   end select
 
-  call routine_write_block_request  ('dens_3d_wrt')
+  call routine_write_block_request ('dens_3d_wrt')
 
   write(6,'(a)') 'End of density_3d menu -----------------------------------------------------------------------------------'
 

@@ -613,11 +613,14 @@ module walkers_mod
   nconf_saved = 0
   call save_averages_and_errors
   call reinit_averages_and_errors
+  call save_routines_write_block
+  call reinit_routines_write_block
   call save_routines_write_final
   call reinit_routines_write_final
   call vmc_run
   call vmc_release
   call restore_averages_and_errors
+  call restore_routines_write_block
   call restore_routines_write_final
   nstep = nstep_save
   nblk = nblk_save

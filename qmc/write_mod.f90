@@ -9,6 +9,8 @@ module write_mod
   integer, allocatable         :: routines_write_block_index (:)
   integer                      :: routines_write_final_nb = 0
   integer, allocatable         :: routines_write_final_index (:)
+  integer                      :: routines_write_block_nb_save
+  integer, allocatable         :: routines_write_block_index_save (:)
   integer                      :: routines_write_final_nb_save
   integer, allocatable         :: routines_write_final_index_save (:)
 
@@ -195,6 +197,36 @@ module write_mod
   call release ('routines_write_final_index', routines_write_final_index)
 
  end subroutine reinit_routines_write_final
+
+! ===================================================================================
+  subroutine save_routines_write_block
+! -----------------------------------------------------------------------------------
+! Description   : save array of writing routines
+!
+! Created       : J. Toulouse, 27 Jul 2010
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! begin
+  routines_write_block_nb_save = routines_write_block_nb
+  call copy (routines_write_block_index, routines_write_block_index_save)
+
+ end subroutine save_routines_write_block
+
+! ===================================================================================
+  subroutine restore_routines_write_block
+! -----------------------------------------------------------------------------------
+! Description   : restore array of writing routines
+!
+! Created       : J. Toulouse, 27 Jul 2010
+! -----------------------------------------------------------------------------------
+  implicit none
+
+! begin
+  routines_write_block_nb = routines_write_block_nb_save
+  call move (routines_write_block_index_save, routines_write_block_index)
+
+ end subroutine restore_routines_write_block
 
 ! ===================================================================================
   subroutine save_routines_write_final

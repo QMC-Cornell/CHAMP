@@ -71,6 +71,10 @@ module average_mod
   integer, allocatable         :: averages_object_index_save (:)
   integer, allocatable         :: averages_object_bav_index_save (:)
   integer, allocatable         :: averages_object_av_index_save (:)
+  integer                      :: averages_walk_nb_save = 0
+  integer, allocatable         :: averages_walk_object_index_save (:)
+  integer, allocatable         :: averages_walk_object_bav_index_save (:)
+  integer, allocatable         :: averages_walk_object_av_index_save (:)
   integer                      :: variances_nb_save
   integer, allocatable         :: variances_object_av_index_save (:)
   integer, allocatable         :: variances_object_var_index_save (:)
@@ -3806,6 +3810,11 @@ module average_mod
   call release ('averages_object_bav_index', averages_object_bav_index)
   call release ('averages_object_av_index', averages_object_av_index)
 
+  averages_walk_nb = 0
+  call release ('averages_walk_object_index', averages_walk_object_index)
+  call release ('averages_walk_object_bav_index', averages_walk_object_bav_index)
+  call release ('averages_walk_object_av_index', averages_walk_object_av_index)
+
   variances_nb = 0
   call release ('variances_object_av_index', variances_object_av_index)
   call release ('variances_object_var_index', variances_object_var_index)
@@ -3835,8 +3844,6 @@ module average_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-! local
-
 ! begin
   block_averages_nb_save = block_averages_nb
   call copy (block_averages_object_index, block_averages_object_index_save)
@@ -3846,6 +3853,11 @@ module average_mod
   call copy (averages_object_index, averages_object_index_save)
   call copy (averages_object_bav_index, averages_object_bav_index_save)
   call copy (averages_object_av_index, averages_object_av_index_save)
+
+  averages_walk_nb_save = averages_walk_nb
+  call copy (averages_walk_object_index, averages_walk_object_index_save)
+  call copy (averages_walk_object_bav_index, averages_walk_object_bav_index_save)
+  call copy (averages_walk_object_av_index, averages_walk_object_av_index_save)
 
   variances_nb_save = variances_nb
   call copy (variances_object_av_index, variances_object_av_index_save)
@@ -3886,6 +3898,11 @@ module average_mod
   call move (averages_object_index_save, averages_object_index)
   call move (averages_object_bav_index_save, averages_object_bav_index)
   call move (averages_object_av_index_save, averages_object_av_index)
+
+  averages_walk_nb = averages_walk_nb_save
+  call move (averages_walk_object_index_save, averages_walk_object_index)
+  call move (averages_walk_object_bav_index_save, averages_walk_object_bav_index)
+  call move (averages_walk_object_av_index_save, averages_walk_object_av_index)
 
   variances_nb = variances_nb_save
   call move (variances_object_av_index_save, variances_object_av_index)

@@ -235,6 +235,7 @@ c force and force_err are really the energy difference and the error in the ener
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(passes)
 
       call routines_write_final
+      call reinit_routines_write_block
       call reinit_routines_write_final
 
       return
