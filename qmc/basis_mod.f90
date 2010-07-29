@@ -5,6 +5,7 @@ module basis_mod
 
 ! Declaration of global variables and default values
   character(len=max_string_len)   :: radial_basis_type = 'analytical'
+  integer                         :: basis_analytical_nb
   real(dp), allocatable           :: phin_norm (:,:)
   real(dp), allocatable           :: phin_ortho (:,:)
   integer, allocatable            :: basis_fns_cent (:)
@@ -64,10 +65,10 @@ module basis_mod
     which_analytical_basis = 'slater'
     numr=-3
    endif
-!  default for pseudopotential calculations: all numerical functions
+!  default for pseudopotential calculations: numerical-analytical functions
    if (nloc>0) then
-    radial_basis_type = 'numerical'
-    which_analytical_basis = 'none'
+    radial_basis_type = 'numerical-analytical'
+    which_analytical_basis = 'gaussian'
     numr=1
    endif
    call object_modified ('radial_basis_type')
@@ -221,6 +222,8 @@ module basis_mod
 
   call object_provide ('nbasis')
   write(6,'(/a,i5)') ' number of basis functions = ',nbasis
+  call object_provide ('basis_analytical_nb')
+  write(6,'(a,i5)') ' number of analytical basis functions = ',basis_analytical_nb
 
 ! distinct_radial_bas must be called to update n_bas2, etc...
   call distinct_radial_bas
@@ -478,8 +481,10 @@ module basis_mod
   ML_BAS = max (4, maxval(l_bas))
 
   nbasis = bas_i
+  basis_analytical_nb = nbasis
 
   call object_modified ('nbasis')
+  call object_modified ('basis_analytical_nb')
   call object_modified ('n_bas')
   call object_modified ('l_bas')
   call object_modified ('m_bas')
@@ -656,8 +661,10 @@ module basis_mod
   ML_BAS = max (4, maxval(l_bas))
 
   nbasis = bas_i
+  basis_analytical_nb = 0
 
   call object_modified ('nbasis')
+  call object_modified ('basis_analytical_nb')
   call object_modified ('n_bas')
   call object_modified ('l_bas')
   call object_modified ('m_bas')
@@ -863,6 +870,9 @@ module basis_mod
 
     call alloc ('zex', zex, bas_i, nwf)
     zex (bas_i,1) = basis_fns_expo_by_center_type (cent_type_i)%row(bas_c_i)
+    if (zex (bas_i,1) /= 0.d0) then
+     basis_analytical_nb = basis_analytical_nb + 1
+    endif
 
     call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
     iwrwf (bas_c_i, cent_type_i) = basis_fns_rad_by_center_type (cent_type_i)%row(bas_c_i)
@@ -878,6 +888,7 @@ module basis_mod
   nbasis = bas_i
 
   call object_modified ('nbasis')
+  call object_modified ('basis_analytical_nb')
   call object_modified ('n_bas')
   call object_modified ('l_bas')
   call object_modified ('m_bas')

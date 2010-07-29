@@ -223,7 +223,8 @@ module deriv_exp_mod
   implicit none
 
 ! local
-  integer bas_i, n_analytical, i_analytical
+  character(len=max_string_len_rout), save :: lhere = 'exp_opt_lab_read_bld'
+  integer bas_i, exp_opt_lab_read_i
 
 ! header
   if (header_exe) then
@@ -238,6 +239,25 @@ module deriv_exp_mod
   endif
 
 ! begin
+  call object_provide ('zex')
+
+  exp_opt_lab_read_nb = 0
+  do bas_i = 1, nbasis
+   if (zex (bas_i,1) /= 0.d0) then
+     exp_opt_lab_read_nb = exp_opt_lab_read_nb + 1
+   endif
+  enddo
+
+  call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
+
+  exp_opt_lab_read_i = 0
+  do bas_i = 1, nbasis
+   if (zex (bas_i,1) /= 0.d0) then
+      exp_opt_lab_read_i = exp_opt_lab_read_i + 1
+      exp_opt_lab_read (exp_opt_lab_read_i) = bas_i
+   endif
+  enddo
+
 
 !JT: this general stuff for mixed basis do not work properly: it leads to zero exp_opt_lab_read_nb=0 for all-electron calculations, it needs to be fixed.
 !JT n_analytical = 0
@@ -259,11 +279,11 @@ module deriv_exp_mod
 !JT  end do
 
 ! JT: put back simple code for the moment:
-  exp_opt_lab_read_nb = nbasis
-  call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
-  do bas_i = 1, nbasis
-    exp_opt_lab_read (bas_i) = bas_i
-  enddo
+!    exp_opt_lab_read_nb = nbasis
+!    call object_alloc ('exp_opt_lab_read', exp_opt_lab_read, exp_opt_lab_read_nb)
+!    do bas_i = 1, nbasis
+!      exp_opt_lab_read (bas_i) = bas_i
+!    enddo
 
   end subroutine exp_opt_lab_read_bld
 
