@@ -1,0 +1,64 @@
+Important Notes regarding python file included in this folder.
+--------------------------------------------------------------
+
+# Usage of scripts:
+--------------------------------------------------------------
+./g0x_log_2_xmvb.py GAUSSIAN.LOG
+Produces bfi and xmi files for the preparation of XMVB input files based on the SCF, NBO and LMO orbitals.
+
+
+
+./g0x_log_2_champ.py GAUSSIAN.LOG
+Produces CHAMP input files based on the SCF orbitals. Currently produces RHF/ROHF wave functions with Gaussian basis sets and optional pseudo-potentials.
+
+
+
+# Current Limitations:
+--------------------------------------------------------------
+* In write_champ_v1.py:
+
+The functions analytical_basis() and grid_basis() do not work at all.
+
+The function mixed_analytical_grid_basis() is limited to Spherical Harmonic functions up to 5G and the order is fixed to Gaussian(R) ordering.
+
+
+* In Gaussian_read_v1.py:
+
+The function read_basis_set() does not handle SP or L type functions.
+
+The function read_pseudo-potentials() cannot handle SO-Coefficients.
+
+
+* In general_tools_v1.py: 
+
+The functions periodic_table_lookup() and atomic_number_from_element_symbol() are limited to at most the element Ha.
+
+The function compute_contracted_GTO_at_point() does not handle SP functions or any function higher than G.
+
+The function compute_contracted_STO_at_point() does not work at all.
+
+
+* The files g0x_log_2_xmvb.py and g0x_log_2_champ.py produce only RHF or ROHF wave functions.
+
+* Currently only Gaussian type orbital wave functions are produced by g0x_log_2_champ.py.
+
+
+# Known Errors:
+--------------------------------------------------------------------------
+Slight difference between basis.* and pseudopot.* files produced by the script when compared to those produced from gamess2qmc. 
+Exact impact of these differences is currently unknown.
+
+---> Please add them here when Beta testing has commenced. <-------------
+
+
+# Resolved Issues:
+--------------------------------------------------------------------------
+
+---> None at this time. <----
+
+
+# Desired future features:
+--------------------------------------------------------------------------
+
+---> Please add them here. <---
+
