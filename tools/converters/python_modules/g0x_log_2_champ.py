@@ -237,7 +237,8 @@ write_champ_control(champfile,mc,seed,etrial,nstep,nblk,nblkeq,nconf,nconf_new,t
 write_champ_geometry(champfile,molecular_geometry,ecps)
 write_champ_wavefunction(champfile,ae,be)
 
-basis_type = "mixed_analytical_numerical"
+#basis_type = "mixed_analytical_numerical"
+basis_type = "numerical"
 which_analytical_basis = "Gaussian"
 basis = []
 basis.append(unique_atoms)

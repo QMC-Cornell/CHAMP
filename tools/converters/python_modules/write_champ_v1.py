@@ -280,10 +280,34 @@ def grid_basis(basis):
 	'''Kernel of write_champ_basis for numeric (grid) basis sets.
 
 	'''
-	print "D: using grid basis()"
-	print "ABORTING SCRIPT UNFINISHED FUNCTION: grid_basis()"
-	sys.exit(1)
-#end
+	#print "D: using mixed_analytical_grid_basis()"
+	basis_string = ""
+	i = 0
+	atoms = basis[0]
+	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"]]
+	for iatom in atoms:
+		c = 0
+		i = i + 1
+		basis_string = basis_string + "%d\n" % (i)
+		for contraction in iatom:
+			if len(contraction[1])>=1:
+				if contraction[0]=="S":
+					lmax = 1
+				if contraction[0]=="P":
+					lmax =3	
+				if contraction[0]=="D":
+					lmax = 5
+				if contraction[0]=="F":
+					lmax = 7
+				if contraction[0]=="G":
+					lmax = 9
+				if (contraction[0]!="S" or contraction[0]!="D" or contraction[0]!="P" or contraction[0]!="F" or contraction[0]!="G")==0:
+					print "ERROR: %s is not supported" % contraction[0]
+				c = c + 1
+				for n in range(lmax):
+					basis_string = basis_string + "%s %d\n" % (labels[(lmax-1)/2][n],c)
+	return basis_string
+#end grid_basis()
 
 #====================================================================================================================================================
 def write_champ_csfs(filename,csfs):
