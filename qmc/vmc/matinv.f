@@ -58,7 +58,7 @@ c update determinant
      &    ''Yet another possible reason is failure to do a "make clean" between "make" and "make mpi" or vice versa.'',/,
      &    ''The dimension gives you a clue as to where matinv was called from.'')') nsub
           do irow=0,(n-1)
-              write(6,'(100f6.2)') (a(irow+k),k=1,n)
+              write(6,'(100f6.2)') (a(irow*n+k),k=1,n)
           enddo
           stop 'adiag=0 in matinv'
         endif
