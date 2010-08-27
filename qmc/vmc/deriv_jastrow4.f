@@ -32,6 +32,7 @@ c   the distance between (0,0) and an electron.  ACM, July 2010
       use jaso_mod
       use vardep_mod
       use cuspmat4_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)

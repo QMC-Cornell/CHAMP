@@ -153,6 +153,12 @@ c loop through number of determinants calculating the inverse
 c transpose matrices and their determinants
       do 40 idet=1,ndetup
 c       write(6,'(''before matinv 40'',i2,9d14.6)') idet,slmui(1,idet),slmui(2,idet),slmui(3,idet),slmui(4,idet)
+c         write(6,'(''before matinv 40'')')      
+c         do irow=0,(nup-1)
+c            write(6,'(100f8.4)') (slmui(irow+k,idet),k=1,nup)
+c         enddo
+c         write(6,'(''x-posns of electrons: '',50f8.2)') (rvec_en(1,k,1), k=1,nelec)
+c         write(6,'(''y-posns of electrons: '',50f8.2)') (rvec_en(2,k,1), k=1,nelec)
    40   call matinv(slmui(1,idet),nup,detu(idet))
 c  40   write(6,'(''after matinv 40'',i2,9d14.6)') idet,slmui(1,idet),slmui(2,idet),slmui(3,idet),slmui(4,idet)
 
