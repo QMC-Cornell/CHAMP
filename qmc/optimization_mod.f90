@@ -4,7 +4,7 @@ module optimization_mod
   use opt_nwt_mod
   use opt_lin_mod
   use opt_ptb_mod
-  use opt_ovlp_fn_mod, only: delta_ovlp_fn, delta_reb, opt_ovlp_fn_menu
+  use opt_ovlp_fn_mod, only: delta_ovlp_fn, delta_ovlp_fn_linear, opt_ovlp_fn_menu, l_opt_ovlp_fn_linear
   use opt_common_mod
   use nuclei_mod
   use orbitals_mod
@@ -384,9 +384,6 @@ module optimization_mod
     l_opt_nwt = .true.
    case ('perturbative')
     l_opt_ptb = .true.
-   case ('reboredo')
-    l_opt_reb = .true.
-    call require (lhere, 'l_mode_dmc = true', l_mode_dmc)
    case ('overlap_fn')
     l_opt_ovlp_fn = .true.
     call require (lhere, 'l_mode_dmc = true', l_mode_dmc)
@@ -647,8 +644,8 @@ module optimization_mod
      call  die (lhere, 'Optimization of periodic Jastrow parameters is done with linear method only')
   endif
 
-  if (l_opt_reb .and. (l_opt_jas .or. l_opt_exp)) then
-     call  die (lhere, 'Reboredo optimization method is only for CSF and orbital parameters')
+  if (l_opt_ovlp_fn_linear .and. (l_opt_jas .or. l_opt_exp)) then
+     call  die (lhere, 'Overlap-fn optimization method with linear scaling is only for CSF and orbital parameters')
   endif
 
 ! Warnings for pertubative method
@@ -800,9 +797,9 @@ module optimization_mod
    case default
     call die (lhere, 'unknown stabilization choice >'+trim(stabilization)+'<.')
   end select
-  if (l_opt_reb) then
+  if (l_opt_ovlp_fn_linear) then
    l_stab = .false.
-   write(6,'(a)') 'Warning: turn off stabilization for Reboredo method.'
+   write(6,'(a)') 'Warning: turn off stabilization for overlap-fn method with linear scaling.'
   endif
 
 ! Nice printing
@@ -876,10 +873,17 @@ module optimization_mod
 
    endif
 
-! for Reboredo method
-    if (l_opt_reb) then
+! for overlap_fn method with linear scaling
+    if (l_opt_ovlp_fn_linear) then
       call object_average_request ('dpsi_over_jas2_av')
+      call object_average_request ('dpsi_over_jas2_uwav')
+      call object_average_request ('dpsi2_over_jas2_uwav')
+      call object_average_request ('dpsi_dpsi_over_jas2_uwav') !temp
       call object_average_request ('first_csf_over_jas2_av')
+      call object_average_request ('first_csf_over_jas2_uwav')
+      call object_average_request ('first_csf2_over_jas2_uwav')
+      call object_average_request ('one_over_jas2_uwav')
+      call object_average_request ('one_over_jas2_av') !temp
     endif
 
 ! for overlap_fn method
@@ -2456,9 +2460,9 @@ module optimization_mod
   elseif (l_opt_ptb) then
       call object_provide_in_node (lhere, 'delta_ptb')
       delta_param (:) = delta_ptb (:)
-  elseif (l_opt_reb) then
-      call object_provide_in_node (lhere, 'delta_reb')
-      delta_param (:) = delta_reb (:)
+  elseif (l_opt_ovlp_fn_linear) then
+      call object_provide_in_node (lhere, 'delta_ovlp_fn_linear')
+      delta_param (:) = delta_ovlp_fn_linear (:)
   elseif (l_opt_ovlp_fn) then
       call object_provide_in_node (lhere, 'delta_ovlp_fn')
       delta_param (:) = delta_ovlp_fn (:)

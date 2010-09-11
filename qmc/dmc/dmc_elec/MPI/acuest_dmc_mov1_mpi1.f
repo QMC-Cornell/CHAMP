@@ -360,6 +360,8 @@ c statistical fluctuations without blocking
           egcm21(ifr)=0
         endif
    30 continue
+      call object_modified('wgcum1') !worry about speed
+      call object_modified('wgcm21')
 
 c collect block averages
       wsum=wsum+wsum1(1)

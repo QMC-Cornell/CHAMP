@@ -353,6 +353,8 @@ c     tausum(1)=collect_t(5)
           egcm21(ifr)=0
         endif
    30 continue
+      call object_modified('wgcum1') !worry about speed
+      call object_modified('wgcm21')
 
 c collect block averages
       wsum=wsum+wsum1(1)

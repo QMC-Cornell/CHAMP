@@ -78,7 +78,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pop_control_mod, only : ffn
       use determinants_mod
       use eloc_mod
-      use opt_ovlp_fn_mod, only : wt_lambda, ovlp_ovlp_fn
+      use opt_ovlp_fn_mod, only : wt_lambda
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)

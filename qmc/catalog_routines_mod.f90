@@ -218,13 +218,13 @@ module catalog_routines_mod
   call catalog_one_node ('delta_e_ptb_bld', delta_e_ptb_bld)
 
 ! overlap FN wavefunction method
-! call catalog_one_node ('csf_over_psit_j_bld', csf_over_psit_j_bld)
   call catalog_one_node ('dpsi_over_jas2_bld', dpsi_over_jas2_bld)
+  call catalog_one_node ('dpsi2_over_jas2_bld', dpsi2_over_jas2_bld)
   call catalog_one_node ('first_csf_over_jas2_bld', first_csf_over_jas2_bld)
-  call catalog_one_node ('delta_reb_bld', delta_reb_bld)
+  call catalog_one_node ('first_csf2_over_jas2_bld', first_csf2_over_jas2_bld)
+  call catalog_one_node ('one_over_jas2_bld', one_over_jas2_bld)
+  call catalog_one_node ('delta_ovlp_fn_linear_bld', delta_ovlp_fn_linear_bld)
   call catalog_one_node ('delta_ovlp_fn_bld', delta_ovlp_fn_bld)
-!  call catalog_one_node ('delta_ovlp_fn_exact_bld', delta_ovlp_fn_exact_bld)
-!  call catalog_one_node ('ovlp_ovlp_fn_bld', ovlp_ovlp_fn_bld)
   call catalog_one_node ('ovlp_trial_fn_bld', ovlp_trial_fn_bld)
   call catalog_one_node ('ovlp_trial_fn_over_ovlp_trial_bld', ovlp_trial_fn_over_ovlp_trial_bld)
 

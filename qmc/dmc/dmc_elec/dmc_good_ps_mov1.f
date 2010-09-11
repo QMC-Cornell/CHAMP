@@ -81,7 +81,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pop_control_mod, only : ffn
       use eloc_mod
 !     use optimization_mod, only : l_opt_ovlp_fn
-      use opt_ovlp_fn_mod, only : wt_lambda, ovlp_ovlp_fn
+      use opt_ovlp_fn_mod, only : wt_lambda
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -618,8 +618,6 @@ c same trick adapted to circular coordinates
             peisum(ifr)=peisum(ifr)+wtg*peiow(iw,ifr)
             tpbsum(ifr)=tpbsum(ifr)+wtg*(eoldw(iw,ifr)-peow(iw,ifr))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
-!JT         call object_provide('ovlp_ovlp_fn')
-!JT         ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
 
 !           local energy for current walker
             eloc = eoldw(iw,1)

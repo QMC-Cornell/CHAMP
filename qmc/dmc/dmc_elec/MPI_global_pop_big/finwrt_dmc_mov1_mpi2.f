@@ -30,6 +30,7 @@ c routine to print out final results
       use stats_mod
       use age_mod
       use pairden_mod
+      use opt_ovlp_fn_mod
       implicit real*8(a-h,o-z)
 
 c /config_dmc/ included to print out xoldw and voldw for old walkers
@@ -99,46 +100,55 @@ c Collect radial charge density for atoms
       endif
 
       if(ifixe.ne.0) then
+
         naxt=(NAX+1)*(2*NAX+1)*(2*NAX+1)
         call mpi_reduce(xx0probut,xx0probt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 5 i1=0,NAX
           do 5 i2=-NAX,NAX
             do 5 i3=-NAX,NAX
     5         xx0probut(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_reduce(xx0probud,xx0probt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 6 i1=0,NAX
           do 6 i2=-NAX,NAX
             do 6 i3=-NAX,NAX
     6         xx0probud(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_reduce(xx0probuu,xx0probt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 7 i1=0,NAX
           do 7 i2=-NAX,NAX
             do 7 i3=-NAX,NAX
     7         xx0probuu(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_reduce(xx0probdu,xx0probt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 8 i1=0,NAX
           do 8 i2=-NAX,NAX
             do 8 i3=-NAX,NAX
     8         xx0probdu(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_reduce(xx0probdd,xx0probt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 9 i1=0,NAX
           do 9 i2=-NAX,NAX
             do 9 i3=-NAX,NAX
     9         xx0probdd(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         call mpi_reduce(xx0probdt,xx0probt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 10 i1=0,NAX
           do 10 i2=-NAX,NAX
             do 10 i3=-NAX,NAX
    10         xx0probdt(i1,i2,i3)=xx0probt(i1,i2,i3)
+
         naxt=(2*NAX+1)*(2*NAX+1)
         call mpi_reduce(den2d_t,den2dt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 11 i1=-NAX,NAX
           do 11 i2=-NAX,NAX
    11       den2d_t(i1,i2)=den2dt(i1,i2)
+
         call mpi_reduce(den2d_d,den2dt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 12 i1=-NAX,NAX
           do 12 i2=-NAX,NAX
    12       den2d_d(i1,i2)=den2dt(i1,i2)
+
         call mpi_reduce(den2d_u,den2dt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 13 i1=-NAX,NAX
           do 13 i2=-NAX,NAX
@@ -280,6 +290,12 @@ c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
           write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
   20    continue
+        call object_provide('ovlp_trial_fn')
+        write(6,'(a,f7.5)') 'approx to normalized overlap of FN and trial wave functions=',ovlp_trial_fn
+        call object_provide('ovlp_trial_fn_over_ovlp_trial')
+        write(6,'(a,f7.5)') 'unnormalized overlap of FN and trial wave functions', ovlp_trial_fn_over_ovlp_trial
+
+c Mixed energy estimators
         write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,(eerr/eerr1)**2
         write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
