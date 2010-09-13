@@ -7,6 +7,7 @@ module dmc_mod
   use print_mod
   use restart_mod
   use allocations_mod
+  use walkers_mod
 
 ! Declaration of global variables and default values
 
@@ -372,7 +373,26 @@ module dmc_mod
   352         write(7,fmt) ((xoldw(k,jj,iwalk,1),k=1,ndim),jj=1,nelec),int(sign(1.d0,psidow(iwalk,1))),log(dabs(psidow(iwalk,1)))+psijow(iwalk,1),eoldw(iwalk,1)
           endif
 
-         enddo ! istep
+!       write out configurations in Scemama's format
+        if (l_write_walkers) then
+         if(mod(ipass,write_walkers_step) == 0) then
+          do iwalk=1,nwalk
+           do jj = 1, nelec
+            if (l_write_walkers_modified_format) then
+             write(file_walkers_out_unit,'(3(F11.7,X))') (xoldw(k,jj,iwalk,1),k=1,ndim)
+            else
+             write(file_walkers_out_unit,'(3(F7.3,X))') (xoldw(k,jj,iwalk,1),k=1,ndim)
+            endif
+           enddo
+           write(file_walkers_out_unit,*) dexp(psijow(iwalk,1))*psidow(iwalk,1)
+           if (l_write_walkers_modified_format) then
+            write(file_walkers_out_unit,*) eoldw(iwalk,1)
+           endif
+          enddo
+         endif
+        endif
+
+        enddo ! istep
 
         call acuest_dmc
         call compute_averages_block ! new 
