@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-general_tools_version_string ="version 1 revision 5"
+general_tools_version_string ="version 1 revision 6"
 ##############################################################################
 ### A collection of general functions that are useful for writing scripts. ###
 ### Authors: Dominik Domin                                                 ###
-### Last updated: August 5, 2010					   ###
+### Last updated: September 14, 2010					   ###
 ##############################################################################
 import sys
 import re
@@ -18,7 +18,7 @@ def atomic_number_from_element_symbol(element_symbol):
 	'''
 	atomic_number = -999999
 	
-	periodic_table_element_list = ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al', 'Si','P','S','Cl','Ar','K','Ca','Sc', 'Ti','V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Ha']
+	periodic_table_element_list = ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al', 'Si','P','S','Cl','Ar','K','Ca','Sc', 'Ti','V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db','Sg','Bh','Hs','Mt','Ds','Rg','Cn','Uut','Uuq','Uup','Uuh','Uus','Uuo']
 	i = 0	
 	for el in periodic_table_element_list:
 		i = i + 1
@@ -35,7 +35,7 @@ def periodic_table_lookup(atomic_number):
 	'''Returns element symbol based on atomic charge
 	'''
 	element_name =""
-	periodic_table_element_list = ['X', 'H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al', 'Si','P','S','Cl','Ar','K','Ca','Sc', 'Ti','V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Ha'] #X is a ghost atom
+	periodic_table_element_list = ['X', 'H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al', 'Si','P','S','Cl','Ar','K','Ca','Sc', 'Ti','V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U', 'Np', 'Pu', 'Am', 'Cm', 'Bk', 'Cf', 'Es', 'Fm', 'Md', 'No', 'Lr', 'Rf', 'Db','Sg','Bh','Hs','Mt','Ds','Rg','Cn','Uut','Uuq','Uup','Uuh','Uus','Uuo'] #X is a ghost atom
 	if atomic_number > len(periodic_table_element_list):
 		print "*****************************************************************************************************************************"
 		print "ERROR: atomic number %d is greater than the available Periodic Table list (currently largest element has atomic number of %d)" % (atomic_number, len(periodic_table_element_list))
@@ -88,6 +88,7 @@ def script_help(program_name, arguments_list, usage_description):
 	print "*  %s " % (usage_description)
 	print "*************************************************************************************"
 	print "USAGE: %s %s" % (program_name, arguments_list)
+	print "*************************************************************************************"
 	sys.exit(0)
 #end of script_help
 
@@ -184,7 +185,7 @@ def compute_contracted_GTO_at_point(l_angular,exponents,coefficients,r_value):
 	'''
 	value = 0.0
 	i = -1
-	pi = 3.14159265358979323846264338327950288419716939937510
+	pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679
 	if l_angular == "S":
 		for alpha in exponents:
 			i = i + 1
@@ -205,21 +206,63 @@ def compute_contracted_GTO_at_point(l_angular,exponents,coefficients,r_value):
                 for alpha in exponents:
                         i = i + 1
                         value = value + ((r_value**4) * coefficients[i] * math.exp(-1.0*alpha*r_value**2) * (math.sqrt(1.0/1155.0)/(pi**(1.0/4.0)))*((2.0*alpha)**(11.0/4.0)) )
+	if l_angular == "H":
+		print "Warning GTO H type function detected"
+		for alpha in exponents:
+			i = i + 1
+			value = value + ((r_value**5)*coefficients[i]*math.exp(-1.0*alpha*r_value**2)*(math.sqrt(128.0/10395.0)/(pi**(1.0/4.0)))*((2.0*alpha)**(13.0/4.0)) )
 	if l_angular == "SP":
 		print "ERROR: normalization of solid spherical harmonic gaussian type function is not implemented for l_angular = SP"
 		print "       Your basis set contains l_angular = %s " % l_angular
+		sys.exit(0)
+	if l_angular != "S" and l_angular != "P" and l_angular != "D" and l_angular != "F" and l_angular != "G" and l_angular != "H":
+		print "ERROR: l_angular = %s normalization is not programmed!" % l_angular
+		print "  Can not proceed with calculation of basis grid.     "
 		sys.exit(0)
 	return value
 #end compute_contracted_GTO_at_point()
 
 #=====================================================================================================
 def compute_contracted_STO_at_point(l_angular,exponents,coefficients,r_value):
-        '''Currently this is an empty function!
-        '''
-	print "WARNING: You have called an unwritten function: compute_contracted_STO_at_point"
-	if l_angular >= 0:
-                print "ERROR: normalization of solid spherical harmonic slater type function is not implemented for any l_angular "
-                sys.exit(0)
+	'''Computes and returns the radial value of a contracted S Type Orbital functions.
+	The input parameters exponents and coefficients must be lists in the appropriate order.
+	Works only for one angular moment type contraction: i.e. does not work for SP contractions.
+
+	Warning this function has not been double checked or validated.
+	'''
+	value = 0.0
+	i = -1
+	pi = 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679
+	print "Warning compute_contracted_STO_at_point() HAS NOT BEEN VALIDATED"
+	if l_angular == "S":
+		for alpha in exponents:
+			i = i + 1
+			value = value + (coefficients[i] * math.exp(-1.0*alpha*r_value) * ((2.0*alpha)**1.5)/math.sqrt(2.0))
+	if l_angular == "P":
+		for alpha in exponents:
+                        i = i + 1
+			value = value + (r_value * coefficients[i] * math.exp(-1.0*alpha*r_value) * (((2.0*alpha)**(5.0/2.0))/(2.0*math.sqrt(6.0)) ))
+	if l_angular == "D":
+                for alpha in exponents:
+                        i = i + 1
+                        value = value + ((r_value**2) * coefficients[i] * math.exp(-1.0*alpha*r_value) *(((2.0*alpha)**(7.0/2.0))/(12.0*math.sqrt(5.0)))   )
+	if l_angular == "F":
+                for alpha in exponents:
+                        i = i + 1
+                        value = value + ((r_value**3) * coefficients[i] * math.exp(-1.0*alpha*r_value) * (((2.0*alpha)**(9.0/2.0))/(24.0*math.sqrt(70.0))  ))
+	if l_angular == "G":
+                for alpha in exponents:
+                        i = i + 1
+                        value = value + ((r_value**4) * coefficients[i] * math.exp(-1.0*alpha*r_value) * (((2.0*alpha)**(11.0/2.0))/(720.0*math.sqrt(7.0))  ))
+	if l_angular == "H":
+		for alpha in exponents:
+			i = i + 1
+			value = value + ((r_value**5)*coefficients[i]*math.exp(-1.0*alpha*r_value)*( ((2.0*alpha)**(13.0/2.0))/(1440.0*math.sqrt(231.0)) ))
+	if l_angular != "S" and l_angular != "P" and l_angular != "D" and l_angular != "F" and l_angular != "G" and l_angular != "H":
+		print "ERROR: l_angular = %s normalization is not programmed for STOs!" % l_angular
+		print "  Can not proceed with calculation of basis grid.     "
+		sys.exit(0)
+	return value
 #end compute_contracted_GTO_at_point()
 
 #=====================================================================================================

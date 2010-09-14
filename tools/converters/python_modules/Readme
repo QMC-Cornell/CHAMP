@@ -17,9 +17,11 @@ Produces CHAMP input files based on the SCF orbitals. Currently produces RHF/ROH
 --------------------------------------------------------------
 * In write_champ_v1.py:
 
-The functions analytical_basis() and grid_basis() do not work at all.
+The functions analytical_basis() does not work at all.
 
-The function mixed_analytical_grid_basis() is limited to Spherical Harmonic functions up to 5G and the order is fixed to Gaussian(R) ordering.
+The function grid_basis() needs testing.
+
+The function mixed_analytical_grid_basis() is limited to Spherical Harmonic functions up to 6H and the order is fixed to Gaussian(R) ordering.
 
 
 * In Gaussian_read_v1.py:
@@ -31,11 +33,11 @@ The function read_pseudo-potentials() cannot handle SO-Coefficients.
 
 * In general_tools_v1.py: 
 
-The functions periodic_table_lookup() and atomic_number_from_element_symbol() are limited to at most the element Ha.
+The functions periodic_table_lookup() and atomic_number_from_element_symbol() use the current IUPAC symbol as seen on wikipedia and webelements web sites.
 
-The function compute_contracted_GTO_at_point() does not handle SP functions or any function higher than G.
+The function compute_contracted_GTO_at_point() does not handle SP functions or any function higher than H.
 
-The function compute_contracted_STO_at_point() does not work at all.
+The function compute_contracted_STO_at_point() does not handle SP functions or any function higher than H. NEED TO TEST THIS FUNCTION
 
 
 * The files g0x_log_2_xmvb.py and g0x_log_2_champ.py produce only RHF or ROHF wave functions.

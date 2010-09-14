@@ -6,7 +6,7 @@ write_champ_version_string = "version 1 revision 5"
 # Functions useful for writing to CHAMP format
 # 
 #  Author: Dominik Domin
-#  Last Modified on August 5, 2010
+#  Last Modified on September 14, 2010
 ############################################################
 
 #===========================================================
@@ -236,7 +236,7 @@ def mixed_analytical_grid_basis(basis):
 	basis_string = ""
 	i = 0
 	atoms = basis[0]
-	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"]]
+	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"],["6H0","6H+1","6H-1","6H+2","6H-2","6H+3","6H-3","6H+4","6H-4","6H+5","6H-5"]]
 	for iatom in atoms:
 		c = 0
 		i = i + 1
@@ -253,7 +253,9 @@ def mixed_analytical_grid_basis(basis):
 					lmax = 7
 				if contraction[0]=="G":
 					lmax = 9
-				if (contraction[0]!="S" or contraction[0]!="D" or contraction[0]!="P" or contraction[0]!="F" or contraction[0]!="G")==0:
+				if contraction[0]=="H":
+					lmax = 11
+				if (contraction[0]!="S" and contraction[0]!="D" and contraction[0]!="P" and contraction[0]!="F" and contraction[0]!="G" and contraction[0]!="H")==0:
 					print "ERROR: %s is not supported" % contraction[0]
 				c = c + 1
 				for n in range(lmax):
@@ -284,7 +286,7 @@ def grid_basis(basis):
 	basis_string = ""
 	i = 0
 	atoms = basis[0]
-	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"]]
+	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"],["6H0","6H+1","6H-1","6H+2","6H-2","6H+3","6H-3","6H+4","6H-4","6H+5","6H-5"]]
 	for iatom in atoms:
 		c = 0
 		i = i + 1
@@ -301,7 +303,9 @@ def grid_basis(basis):
 					lmax = 7
 				if contraction[0]=="G":
 					lmax = 9
-				if (contraction[0]!="S" or contraction[0]!="D" or contraction[0]!="P" or contraction[0]!="F" or contraction[0]!="G")==0:
+				if contraction[0]=="H":
+					lmax = 11
+				if (contraction[0]!="S" and contraction[0]!="D" and contraction[0]!="P" and contraction[0]!="F" and contraction[0]!="G" and contraction[0]!="H")==0:
 					print "ERROR: %s is not supported" % contraction[0]
 				c = c + 1
 				for n in range(lmax):
