@@ -8,25 +8,30 @@ Produces bfi and xmi files for the preparation of XMVB input files based on the 
 
 
 
-./g0x_log_2_champ.py GAUSSIAN.LOG
+./g0x_log_2_champ.py GAUSSIAN.LOG NUMERICAL/MIXED
 Produces CHAMP input files based on the SCF orbitals. Currently produces RHF/ROHF wave functions with Gaussian basis sets and optional pseudo-potentials.
+An optional second argument of "N" for numerical (grid) basis sets or "M" for mixed numerical and analytical basis sets. If no optional argument is set then it defaults to MIXED
 
+
+./g0x_log_vb_2_champ.py GAUSSIAN.LOG PseudoVB_input_file NUMERICAL/MIXED
+Produces CHAMP input files based on the NBO/NLMO orbitals and the designated VB structures in the PseudoVB_input_file. NEEDS TESTING.
+An optional second argument of "N" for numerical (grid) basis sets or "M" for mixed numerical and analytical basis sets. If no optional argument is set then it defaults to MIXED
 
 
 # Current Limitations:
 --------------------------------------------------------------
 * In write_champ_v1.py:
 
-The functions analytical_basis() does not work at all.
+The functions analytical_basis() does not work at all. NEED TO DEVISE SPECIFICATION FOR GAUSSIAN AND SLATER ANALYTICAL BASIS FUNCTIONS.
 
 The function grid_basis() needs testing.
 
-The function mixed_analytical_grid_basis() is limited to Spherical Harmonic functions up to 6H and the order is fixed to Gaussian(R) ordering.
+The function mixed_analytical_grid_basis() is limited to Spherical Harmonic functions up to 7I and the order is fixed to Gaussian(R) ordering.
 
 
 * In Gaussian_read_v1.py:
 
-The function read_basis_set() does not handle SP or L type functions.
+The function read_basis_set() now handle SP type functions. NEEDS FURTHER TESTING TO MAKE SURE EVERYTHING IS OK WHEN USING SP type basis functions.
 
 The function read_pseudo-potentials() cannot handle SO-Coefficients.
 
@@ -42,13 +47,13 @@ The function compute_contracted_STO_at_point() does not handle SP functions or a
 
 * The files g0x_log_2_xmvb.py and g0x_log_2_champ.py produce only RHF or ROHF wave functions.
 
-* Currently only Gaussian type orbital wave functions are produced by g0x_log_2_champ.py.
+* Currently only Gaussian type orbital wave functions are produced by g0x_log_2_champ.py and g0x_log_vb_2_champ.py.
 
 
 # Known Errors:
 --------------------------------------------------------------------------
-Slight difference between basis.* and pseudopot.* files produced by the script when compared to those produced from gamess2qmc. 
-Exact impact of these differences is currently unknown.
+ Slight difference between basis.* and pseudopot.* files produced by the script when compared to those produced from gamess2qmc. 
+ Exact impact of these differences is currently unknown.
 
 ---> Please add them here when Beta testing has commenced. <-------------
 
@@ -56,7 +61,9 @@ Exact impact of these differences is currently unknown.
 # Resolved Issues:
 --------------------------------------------------------------------------
 
----> None at this time. <----
+ Added support for parsing of SP type basis functions.
+
+---> Please add what has been resolved here <----
 
 
 # Desired future features:
@@ -64,3 +71,12 @@ Exact impact of these differences is currently unknown.
 
 ---> Please add them here. <---
 
+# Requires extensive testing:
+--------------------------------------------------------------------------
+
+* Support for SP type basis functions has been added. It uncontracts such basis functions into an S and 3 P functions. REQUIRES EXTENSIVE TESTING ESPECIALLY WITH ORBITALS *
+
+---> Please add comments here. <----
+
+--------------------------------------------------------------------------
+Readme file has last been updated on October 21, 2010.

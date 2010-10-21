@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-write_champ_version_string = "version 1 revision 5"
+write_champ_version_string = "version 1 revision 6"
 ############################################################
 #
 # Functions useful for writing to CHAMP format
 # 
 #  Author: Dominik Domin
-#  Last Modified on September 14, 2010
+#  Last Modified on October 21, 2010
 ############################################################
 
 #===========================================================
@@ -236,7 +236,7 @@ def mixed_analytical_grid_basis(basis):
 	basis_string = ""
 	i = 0
 	atoms = basis[0]
-	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"],["6H0","6H+1","6H-1","6H+2","6H-2","6H+3","6H-3","6H+4","6H-4","6H+5","6H-5"]]
+	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"],["6H0","6H+1","6H-1","6H+2","6H-2","6H+3","6H-3","6H+4","6H-4","6H+5","6H-5"],["7I0","7I+1","7I-1","7I+","7I-","7I+2","7I2-","7I+3","7I-3","7I+4","7I-4","7I+5","7I-5","7I+6","7I-6"]]
 	for iatom in atoms:
 		c = 0
 		i = i + 1
@@ -255,7 +255,9 @@ def mixed_analytical_grid_basis(basis):
 					lmax = 9
 				if contraction[0]=="H":
 					lmax = 11
-				if (contraction[0]!="S" and contraction[0]!="D" and contraction[0]!="P" and contraction[0]!="F" and contraction[0]!="G" and contraction[0]!="H")==0:
+				if contraction[0]=="I":
+					lmax = 13
+				if (contraction[0]!="S" and contraction[0]!="D" and contraction[0]!="P" and contraction[0]!="F" and contraction[0]!="G" and contraction[0]!="H" and contraction[0]!="I"):
 					print "ERROR: %s is not supported" % contraction[0]
 				c = c + 1
 				for n in range(lmax):
@@ -286,13 +288,13 @@ def grid_basis(basis):
 	basis_string = ""
 	i = 0
 	atoms = basis[0]
-	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"],["6H0","6H+1","6H-1","6H+2","6H-2","6H+3","6H-3","6H+4","6H-4","6H+5","6H-5"]]
+	labels = [["1S"],["2PX","2PY","2PZ"],["3D0","3D+1","3D-1","3D+2","3D-2"],["4F0","4F+1","4F-1","4F+2","4F-2","4F+3","4F-3"],["5G0","5G+1","5G-1","5G+2","5G-2","5G+3","5G-3","5G+4","5G-4"],["6H0","6H+1","6H-1","6H+2","6H-2","6H+3","6H-3","6H+4","6H-4","6H+5","6H-5"],["7I0","7I+1","7I-1","7I+","7I-","7I+2","7I2-","7I+3","7I-3","7I+4","7I-4","7I+5","7I-5","7I+6","7I-6"]]
 	for iatom in atoms:
 		c = 0
 		i = i + 1
 		basis_string = basis_string + "%d\n" % (i)
 		for contraction in iatom:
-			if len(contraction[1])>=1:
+ 			if len(contraction[1])>=1:
 				if contraction[0]=="S":
 					lmax = 1
 				if contraction[0]=="P":
@@ -305,7 +307,9 @@ def grid_basis(basis):
 					lmax = 9
 				if contraction[0]=="H":
 					lmax = 11
-				if (contraction[0]!="S" and contraction[0]!="D" and contraction[0]!="P" and contraction[0]!="F" and contraction[0]!="G" and contraction[0]!="H")==0:
+				if contraction[0]=="I":
+					lmax = 13 
+				if (str(contraction[0])!="S" and str(contraction[0])!="D" and str(contraction[0])!="P" and str(contraction[0])!="F" and str(contraction[0])!="G" and str(contraction[0])!="H" and str(contraction[0])!="I"):
 					print "ERROR: %s is not supported" % contraction[0]
 				c = c + 1
 				for n in range(lmax):

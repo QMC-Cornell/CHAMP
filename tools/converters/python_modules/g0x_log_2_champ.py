@@ -2,16 +2,16 @@
 
 #########################################################################################################################################
 program_name = "g0x_log_2_champ.py"																										#
-version_num = 0.03																														#
+version_num = 0.04																														#
 #																																		#
 #  This script extracts orbitals from Gaussian 03 log files																				#
 #  and it will create a champ output file																								#
 #																																		#
-arguments_list = "gaussian_03_output.log"																								#
-usage_description = "This script generates CHAMP input files based Gaussian 03/09 log files. \nIt just generates Hartree-Fock.\n" 		#
-# 																																		#
-#  Author: Dominik Domin																												#
-#  Last Modified on August 15, 2010																										#
+arguments_list = "gaussian_03_output.log (N/M)"																								#
+usage_description = "This script generates CHAMP input files based Gaussian 03/09 log files. \nIt just generates Hartree-Fock.\n An optional second argument for chosing whether purely numerical (N) or mixed numerical-analytical basis set (M) will be printed.\n"
+#
+#  Author: Dominik Domin	
+#  Last Modified on  October 21, 2010
 #########################################################################################################################################
 
 import sys
@@ -49,16 +49,17 @@ apir = split(pseudovb_input_read_version_string)
 agt = split(general_tools_version_string)
 aot = split(orbital_tools_version_string)
 a=0 
-if str(awc[1])!=str(1) or str(awc[3])< str(5):
+if str(awc[1])!=str(1) or int(awc[3])< int(5):
 	print "FATAL ERROR: write_champ module is out of date or incompatible with this script"
 	a = 1
-if str(agr[1])!=str(1) or str(agr[3])< str(8):
+if str(agr[1])!=str(1) or int(agr[3])< int(10):
+	print str(agr)
 	print "FATAL ERROR: gaussian_read module is out of date or incompatible with this script"
 	a = 1
-if str(agt[1])!=str(1) or str(agt[3])< str(5):
+if str(agt[1])!=str(1) or int(agt[3])< int(5):
 	print "FATAL ERROR: general_tools module is out of date or incompatible with this script"
 	a = 1
-if str(aot[1])!=str(1) or str(aot[3])< str(2):
+if str(aot[1])!=str(1) or int(aot[3])< int(2):
 	print "FATAL ERROR: orbital_tools module is out of date or incompatible with this script"
 	a = 1
 if a == 1:
@@ -66,7 +67,21 @@ if a == 1:
 #end of testing of module versions ###############################################################################	
 
 base_file_name = sys.argv[1]
-
+numericalORmixed = "M"
+if len(sys.argv)==3:
+	numericalORmixed = str(sys.argv[2]).upper()
+	if numericalORmixed == "N":
+		print "Purely numerical/grid basis selected"
+	if numericalORmixed =="M":
+		print "Mixed numerical and analytical basis selected"
+	if numericalORmixed !="N" and numericalORmixed !="M":
+		print "ERROR: %s is not a valid basis type selection"
+		print "     Please choose between N for numerical/grid"
+		print "     and M for mixed numerical and analytical"
+		print "     basis sets."
+		sys.exit(0) 
+else:
+	print "Warning: no basis set type choosen. Assuming Mixed basis type"
 loglines=[]
 index_start_stop = []
 everything = []
@@ -238,7 +253,10 @@ write_champ_geometry(champfile,molecular_geometry,ecps)
 write_champ_wavefunction(champfile,ae,be)
 
 #basis_type = "mixed_analytical_numerical"
-basis_type = "numerical"
+if numericalORmixed == "N":
+	basis_type = "numerical"
+if numericalORmixed == "M":
+	basis_type = "mixed_analytical_numerical"
 which_analytical_basis = "Gaussian"
 basis = []
 basis.append(unique_atoms)

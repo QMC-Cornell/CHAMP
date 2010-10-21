@@ -10,7 +10,7 @@ version_num = 0.07
 #  This is the new generation script using Dominik's Version 1 python modules.
 # 
 #  Author: Dominik Domin
-#  Last Modified on May 28, 2010
+#  Last Modified on October 21, 2010
 ##################################################################################
 
 import sys
@@ -37,16 +37,16 @@ axw = split(xmvb_write_version_string)
 apir = split(pseudovb_input_read_version_string)
 
 a=0 
-if str(agr[1])!=str(1) or str(agr[3])< str(4):
+if str(agr[1])!=str(1) or int(agr[3])< int(4):
 	print "FATAL ERROR: gaussian_read module is out of date or incompatible with this script"
 	a = 1
-if str(agt[1])!=str(1) or str(agt[3])< str(2):
+if str(agt[1])!=str(1) or int(agt[3])< int(2):
 	print "FATAL ERROR: general_tools module is out of date or incompatible with this script"
 	a = 1
-if str(aot[1])!=str(1) or str(aot[3])< str(2):
+if str(aot[1])!=str(1) or int(aot[3])< int(2):
 	print "FATAL ERROR: orbital_tools module is out of date or incompatible with this script"
 	a = 1
-if str(axw[1])!=str(1) or str(axw[3])< str(2):
+if str(axw[1])!=str(1) or int(axw[3])< int(2):
 	print "FATAL ERROR: orbital_tools module is out of date or incompatible with this script"
 	a = 1
 #if str(apir[1])!=str(1) or str(apir[3])< str(2):

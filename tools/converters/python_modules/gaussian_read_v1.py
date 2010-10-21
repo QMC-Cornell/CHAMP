@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-gaussian_read_version_string ="version 1 revision 9"
+gaussian_read_version_string ="version 1 revision 10"
 ###################################################################################################
 ### A collection of g98/g03/g09 related functions that are useful for writing scripts. 		###
 ### Authors: Dominik Domin              	                                        	###
-### Last updated: August 14, 2010  	                                                	###
+### Last updated: October 21, 2010  	                                                	###
 ###################################################################################################
 
 import sys
@@ -731,6 +731,7 @@ def read_basis_set(index_start_stop,loglines):
 	contract_expo = 0.0
 	contractions_exponents = []
 	contractions_coefficients = []
+	contractions_coefficientsP = []
 	atoms = []
 	atom = []
 	i = 0
@@ -738,18 +739,33 @@ def read_basis_set(index_start_stop,loglines):
 	contraction_length = 0
 	atom_charges = []
 	contraction = []
+	previous_bf_type = "None"
+	number_of_sp_basis = 0
 	for line in loglines[index_start_stop[0]+1:index_start_stop[1]]:
 		splitoid = split(line)
 		if len(splitoid)>0:
 			if len(splitoid)==1:
 				if splitoid[0]=="****":
 					if len(contractions_exponents)>0 and len(contractions_coefficients)>0:
-						contraction.append(bf_type)
-						contraction.append(contractions_exponents)
-						contraction.append(contractions_coefficients)
-						atom.append(contraction)
+						if bf_type != "SP" and bf_type != "L":
+							contraction.append(bf_type)
+							contraction.append(contractions_exponents)
+							contraction.append(contractions_coefficients)
+							atom.append(contraction)
+						else:
+							if bf_type == "SP" or bf_type == "L":
+								contraction.append("S")
+								contraction.append(contractions_exponents)
+								contraction.append(contractions_coefficients)
+								atom.append(contraction)
+								contraction = []
+								contraction.append("P")
+								contraction.append(contractions_exponents)
+								contraction.append(contractions_coefficientsP)
+								atom.append(contraction)
 						contractions_exponents = []
 						contractions_coefficients = []
+						contractions_coefficientsP = []
 						contraction = []
 					atoms.append(atom)
 					atom=[]
@@ -763,6 +779,7 @@ def read_basis_set(index_start_stop,loglines):
 					else:
 						atom_charges.append(int(splitoid[1]))
 				else:
+					previous_bf_type = bf_type 
 					Xcontract_expo = splitoid[0]
 					Xcontract_coeff = splitoid[1]
 					if Xcontract_expo.count("D")==1:
@@ -773,15 +790,27 @@ def read_basis_set(index_start_stop,loglines):
 					contract_coeff = float(Xcontract_coeff)*contraction_norm_coeff
 					contractions_exponents.append(contract_expo)
 					contractions_coefficients.append(contract_coeff)
-			if len(splitoid)==3 or len(splitoid)==4:
+			if ((len(splitoid)==3 or len(splitoid)==4) and splitoid[0].count(".")==0):
 				if len(contractions_exponents)>0 and len(contractions_coefficients)>0:
-					contraction.append(bf_type)
-					contraction.append(contractions_exponents)
-					contraction.append(contractions_coefficients)
+					if (previous_bf_type != "SP" and previous_bf_type != "L"):
+						contraction.append(bf_type)
+						contraction.append(contractions_exponents)
+						contraction.append(contractions_coefficients)
+					else:
+						if (previous_bf_type == "SP" or previous_bf_type == "L"):
+							contraction.append("S")
+							contraction.append(contractions_exponents)
+							contraction.append(contractions_coefficients)
+							atom.append(contraction)
+							contraction = []
+							contraction.append("P")
+							contraction.append(contractions_exponents)
+							contraction.append(contractions_coefficientsP)
 					if len(contractions_exponents)!=contraction_length:
 						print "error contractions length!!!"
 					contractions_exponents = []
 					contractions_coefficients = []
+					contractions_coefficientsP = []
 					atom.append(contraction)
 					contraction=[]
 				bf_type = str(splitoid[0])
@@ -792,8 +821,29 @@ def read_basis_set(index_start_stop,loglines):
 				if contraction_norm_coeff != 1.0:
 					print "error contraction_norm_coeff != 1.0"
 				if bf_type == "L" or bf_type == "SP":
-					print "CRITICAL ERROR: Does not handle L (SP) functions"
-				
+					number_of_sp_basis = number_of_sp_basis + 1
+					if number_of_sp_basis == 1:
+						print "Warning: L (SP) functions detected in basis set! Please double check every thing is OK."
+			if (len(splitoid)==3 and splitoid[0].count(".")==1):
+				previous_bf_type = bf_type
+				if splitoid[0].count(".") == 0:
+					print "ERROR: problem with parsing SP type basis set!"
+				else:
+					Xcontract_expo = splitoid[0]
+					Xcontract_coeff = splitoid[1]
+					Xcontract_coeffP = splitoid[2]
+					if Xcontract_expo.count("D")==1:
+						Xcontract_expo=Xcontract_expo.replace("D","E")
+					if Xcontract_coeff.count("D")==1:
+						Xcontract_coeff=Xcontract_coeff.replace("D","E")
+					if Xcontract_coeffP.count("D")==1:
+						Xcontract_coeffP=Xcontract_coeffP.replace("D","E")
+					contract_expo = float(Xcontract_expo)
+					contract_coeff = float(Xcontract_coeff)*contraction_norm_coeff
+					contractions_exponents.append(contract_expo)
+					contractions_coefficients.append(contract_coeff)
+					contract_coeff = float(Xcontract_coeffP)*contraction_norm_coeff
+					contractions_coefficientsP.append(contract_coeff)
 	return atoms
 #end read_basis_set()
 
