@@ -583,7 +583,7 @@ c        = 2 parameter is an independent parameter that is varied
 
                   if(ideriv.eq.1) then
 
-                    do 33 id=1,nvdepend(jj,it)
+                    do id=1,nvdepend(jj,it)  ! used to be labeled 33
 
                       iparm=npoint(it)+iwdepend(jj,id,it)+nparms
                       cd=cdep(jj,id,it)
@@ -609,15 +609,26 @@ c          thus, derivatives only depend on en distance in the y-direction
                         g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
                         g(3,j,iparm)=g(3,j,iparm)+cd*(gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij))
                       endif
-
-   33                 d2g(iparm)=d2g(iparm) + cd*((ndim-1)*(2*gu+gi+gj)
-     &                + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij))
-
+c      This equation (and the subsequent u,s,t notation) comes from 
+c        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
+c        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
+c      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
+c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
+                      if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
+                         d2g(iparm)=d2g(iparm) + cd*(ndim- 1.)*2.*gu  
+     &                   + 2.*guu + gii + gjj + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij
+                      else
+                         d2g(iparm)=d2g(iparm) + cd*((ndim-1)*(2*gu+gi+gj)
+     &                   + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij))
+                      endif
 c  33                 d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu)
 c    &                + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
 c    &                + gii + 2*gi + gjj + 2*gj)
 
+                    enddo        ! loop over id.  Used to be labeled 33.
 c                   jj=jj+1
+
+ 
 
                     if(igradhess.gt.0 .and. nparms.eq.1) then
                       didk(iparm)=didk(iparm)+cd*(pu*dkij+ppi*dki+pj*dkj)
@@ -648,10 +659,14 @@ c          thus, derivatives only depend on en distance in the y-direction
                       g(2,j,iparm)=g(2,j,iparm)+gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij)
                       g(3,j,iparm)=g(3,j,iparm)+gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij)
                     endif
-
-                    d2g(iparm)=d2g(iparm) + (ndim-1)*(2*gu+gi+gj)
-     &              + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
-
+                      
+                    if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
+                       d2g(iparm)=d2g(iparm) + (ndim- 1.)*2.*gu  
+     &                   + 2.*guu + gii + gjj + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij
+                    else
+                       d2g(iparm)=d2g(iparm) + (ndim-1)*(2*gu+gi+gj)
+     &                   + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
+                    endif
 c                   d2g(iparm)=d2g(iparm) + 2*(guu + 2*gu)
 c    &              + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
 c    &              + gii + 2*gi + gjj + 2*gj
@@ -711,9 +726,14 @@ c          thus, derivatives only depend on en distance in the y-direction
           gtj=dd10*(fuj*dkij + fjj*dkj + fij*dki) + fj*dr2j + 2*fjj*dd8*drj
      &       + dd8*dd8*(fujj*dkij + fjjj*dkj + fijj*dki)
 
-
-          d2g(iparm)=d2g(iparm) + (2*gu+gi+gj)*ndim1 + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
-     &              + 2*gtu + gti + gtj
+c        check to see what gtu and gti are!
+          if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
+             d2g(iparm)=d2g(iparm) + (ndim- 1.)*2.*gu + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij
+     &          + 2.*gtu + gti + gtj
+          else
+             d2g(iparm)=d2g(iparm) + (2*gu+gi+gj)*ndim1 + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
+     &          + 2*gtu + gti + gtj
+          endif
 
           if(igradhess.gt.0 .and. nparms.eq.1) then
             didk(iparm)=didk(iparm)+(fuu*dkij+fui*dki+fuj*dkj)*dkij+fu*dk2ij
@@ -1013,13 +1033,16 @@ c          (for the first center, anyway)
 c          thus, derivatives only depend on en distance in the y-direction
             if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
               g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
+              d2g(iparm)=d2g(iparm)+genii
             else
               g(1,i,iparm)=g(1,i,iparm)+geni*rvec_en(1,i,ic)
               g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
               g(3,i,iparm)=g(3,i,iparm)+geni*rvec_en(3,i,ic)
+              d2g(iparm)=d2g(iparm)+genii+ndim1*geni
             endif
-
-   78       d2g(iparm)=d2g(iparm)+genii+ndim1*geni
+c  Put this line in the above if...else block (ACM):
+c   78       d2g(iparm)=d2g(iparm)+genii+ndim1*geni
+  78        continue
 
 c derivatives (go,gvalue and g) wrt scalek parameter
           if(nparms.eq.1) then
@@ -1043,12 +1066,16 @@ c          (for the first center, anyway)
 c          thus, derivatives only depend on en distance in the y-direction
             if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
               g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic) 
+              d2g(iparm)=d2g(iparm) + genii
             else
               g(1,i,iparm)=g(1,i,iparm) + geni*rvec_en(1,i,ic)
               g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic)
               g(3,i,iparm)=g(3,i,iparm) + geni*rvec_en(3,i,ic)
+              d2g(iparm)=d2g(iparm) + genii+ndim1*geni
             endif
-            d2g(iparm)=d2g(iparm) + genii+ndim1*geni
+
+c       Placed this line in the above if...else block (ACM):
+c            d2g(iparm)=d2g(iparm) + genii+ndim1*geni
 
             if(igradhess.gt.0) then
               didk(1)=didk(1)+fenii*dk*dk+feni*dk2

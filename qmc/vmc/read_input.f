@@ -1354,43 +1354,42 @@ c Warning: At present we are assuming that the same scalek is used
 c for primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
 c should be dimensioned to MWF
       if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
-        if(iperiodic.eq.1)then
+        if(iperiodic.eq.1)then  ! set maximum allowed value for cutjas
           cutjas_en = alattice/2.
           cutjas_ee = alattice/2.
-        else
-          read(5,*) cutjas_en_tmp,cutjas_ee_tmp
-          if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
-           write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
-     &      cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
-          else
-            if(cutjas_en_tmp.lt.cutjas_en-eps) then
-               write(6,'(''Warning: Could use larger cutjas_en='',f9.5,
-     &         '' instead of the input value='',f9.5)') cutjas_en,cutjas_en_tmp
-            endif
-            write(6,'(''input cutjas_en='',d12.5)') cutjas_en_tmp
-            cutjas_en=cutjas_en_tmp
-          endif
-          if(iperiodic.ne.0 .and. cutjas_ee_tmp.gt.cutjas_ee+eps) then
-            write(6,'(''Warning: input cutjas > half shortest simulation cell lattice vector;
-     &      cutjas_ee reset from'',f9.5,'' to'',f9.5)') cutjas_ee_tmp,cutjas_ee
-          else
-            if(cutjas_ee_tmp.lt.cutjas_ee-eps) then
-              write(6,'(''Warning: Could use larger cutjas_ee='',f9.5, 
-     &        '' instead of the input value='',f9.5)') cutjas_ee,cutjas_ee_tmp
-            endif
-            write(6,'(''input cutjas_ee='',d12.5)') cutjas_ee_tmp
-            cutjas_ee=cutjas_ee_tmp
-          endif
-          if(cutjas_en_tmp.le.0.d0) then
-            write(6,'(''cutjas_en reset to infinity'')')
-            cutjas_en=1.d99
-          endif
-          if(cutjas_ee_tmp.le.0.d0) then
-            write(6,'(''cutjas_ee reset to infinity'')')
-            cutjas_ee=1.d99
-          endif
         endif
+        read(5,*) cutjas_en_tmp,cutjas_ee_tmp
+        if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
+          write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
+     &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+        else
+          if(cutjas_en_tmp.lt.cutjas_en-eps) then
+             write(6,'(''Warning: Could use larger cutjas_en='',f9.5,
+     &'' instead of the input value='',f9.5)') cutjas_en,cutjas_en_tmp
+          endif
+          write(6,'(''input cutjas_en='',d12.5)') cutjas_en_tmp
+          cutjas_en=cutjas_en_tmp
+        endif
+        if(iperiodic.ne.0 .and. cutjas_ee_tmp.gt.cutjas_ee+eps) then
+          write(6,'(''Warning: input cutjas > half shortest simulation cell lattice vector;
+     &cutjas_ee reset from'',f9.5,'' to'',f9.5)') cutjas_ee_tmp,cutjas_ee
+        else
+          if(cutjas_ee_tmp.lt.cutjas_ee-eps) then
+            write(6,'(''Warning: Could use larger cutjas_ee='',f9.5, 
+     &'' instead of the input value='',f9.5)') cutjas_ee,cutjas_ee_tmp
+         endif
+         write(6,'(''input cutjas_ee='',d12.5)') cutjas_ee_tmp
+         cutjas_ee=cutjas_ee_tmp
        endif
+       if(cutjas_en_tmp.le.0.d0) then
+         write(6,'(''cutjas_en reset to infinity'')')
+         cutjas_en=1.d99
+       endif
+       if(cutjas_ee_tmp.le.0.d0) then
+         write(6,'(''cutjas_ee reset to infinity'')')
+         cutjas_ee=1.d99
+       endif
+      endif
       call set_scale_dist(1,1)
 
       if(ifock.gt.0) then
