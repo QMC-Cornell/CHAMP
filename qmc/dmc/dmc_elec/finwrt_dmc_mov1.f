@@ -187,6 +187,7 @@ c     write(6,'(''dmc_mov1 '',2a10)') title
      &    wgave,wgerr,wgerr*rtpass1,wgerr1*rtpass1,(wgerr/wgerr1)**2
   20    continue
         call object_provide('ovlp_trial_fn')
+        write(6,'(''Appr overlap psi_t psi_fn='',f10.8)') ovlp_trial_fn
         write(6,'(a,f7.5)') 'approx to normalized overlap of FN and trial wave functions=',ovlp_trial_fn
         call object_provide('ovlp_trial_fn_over_ovlp_trial')
         write(6,'(a,f7.5)') 'unnormalized overlap of FN and trial wave functions', ovlp_trial_fn_over_ovlp_trial

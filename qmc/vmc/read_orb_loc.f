@@ -42,15 +42,19 @@ c Do not confuse analytic orbs with analytic basis fns.
 c       if(maxval(zex).gt.0.d0) call distinct_radial_bas
         call distinct_radial_bas
         write(6,'(''Done reading in LCAO coefs. of orbitals'')')
-      endif
 
 c Check that irecursion_ylm=1 if l of basis function >=5
-      do 20 ibasis=1,nbasis
-        if(l_bas(ibasis).ge.5 .and. irecursion_ylm.eq.0) then
-          write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
-          stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
-        endif
-   20 continue
+        do 20 ibas=1,nbasis
+          if(irecursion_ylm.eq.0) then
+            write(6,'(''ibas,l_bas(ibas)='',9i5)') ibas,l_bas(ibas)
+            if(l_bas(ibas).ge.5) then
+              write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
+              stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
+            endif
+          endif
+   20   continue
+
+      endif
 
 c The rest of this routine is for numerical orbs and so we could have one big if statement
 c Generate grid and orbitals on grid if using numerical orbitals that do not already exist on disk

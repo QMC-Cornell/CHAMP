@@ -1056,7 +1056,7 @@ c Read in analytical or numerical orbitals
 c Read in numerical radial basis
 c This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
 c to compactify the radial basis functions in read_bas_num.
-      if(ibasis.le.3) then
+      if(inum_orb.eq.0 .and. ibasis.le.3) then
         if(minval(zex(:,1)).ne.0.d0) then
           l_purely_analytical_basis = .true.
         else
@@ -1086,7 +1086,7 @@ c     write(6,'(/,''determinant coefficients'')')
 c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
 
       write(6,'(/,''orbitals in determinants'')')
-!      norb_used=0
+!     norb_used=0
       call alloc ('iworbd', iworbd, nelec, ndet)
       do 72 i=1,ndet
         read(5,*) (iworbd(j,i),j=1,nelec)
@@ -1118,6 +1118,7 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
 
       read(5,*) ncsf
       write(6,'(/,''ncsf='',i5)') ncsf
+      call flush(6)
 
       call alloc ('csf_coef', csf_coef, ncsf, nwf)
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
@@ -1188,6 +1189,7 @@ c     if(iperiodic.eq.0 .and. inum_orb.gt.0) call read_orb_num
 c Jastrow section
       read(5,*) section
       write(6,'(/,a30,/)') section
+      call flush(6)
 
       read(5,*) ianalyt_lap
       write(6,'(''ianalyt_lap='',i3)') ianalyt_lap
@@ -1195,6 +1197,7 @@ c Jastrow section
       read(5,*) ijas,isc,nspin1,nspin2,nord,ifock
       write(6,'(''ijas,isc,nspin1,nspin2,nord,ifock='',9i4)')
      &ijas,isc,nspin1,nspin2,nord,ifock
+      call flush(6)
 
       if(ianalyt_lap.eq.0 .and. nloc.gt.0)
      &stop 'Cannot have numerical Lap. with pseudopot'
@@ -1333,6 +1336,7 @@ ccWAS
      &    iparm=1,nparmc_read)
 c Note: Fock terms yet to be put in ijas=4,5,6.
       endif
+      call flush(6)
 
       call object_modified ('scalek')
       call object_modified('isc')          !fp
@@ -1391,6 +1395,7 @@ c should be dimensioned to MWF
        endif
       endif
       call set_scale_dist(1,1)
+      call flush(6)
 
       if(ifock.gt.0) then
 c Setup for Chris' Fock
@@ -1445,6 +1450,7 @@ c (also for 2D systems with numerical orbitals)
         read(5,opt_list)
         write(6,opt_list)
       endif
+      call flush(6)
 
       if(nloc.eq.-5) then ! ring with barrier in center
          dot_bump_radius_inv2 = 1.0d0 / (dot_bump_radius * dot_bump_radius)
@@ -1498,6 +1504,7 @@ c composite fermions:
       endif
       emag=emaglz+emagsz+emagv
       write(6,'(''emaglz,emagsz,emagv,emag='',9f10.6)') emaglz,emagsz,emagv,emag
+      call flush(6)
 
 c Quantum rings:
       if(bext.ne.0.d0 .and. rring.ne.0.d0) stop 'Quantum rings in magnetic field not yet implemented'
@@ -1506,6 +1513,7 @@ c Quantum rings:
         if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) stop 'shrp_perturb must be between 0 and 100'
         if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) stop 'ang_perturb must be between 0 and 4pi'
       endif
+      call flush(6)
 
 c circular coordinates
       if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2' 
@@ -1517,15 +1525,18 @@ c circular coordinates
 
 c get normalization for basis functions
 c (used to be up)
-      if(ibasis.eq.3.and.numr.eq.0) then
-        call basis_norm_dot(1,1)
-       else
-        call basis_norm(1,1)
+      if(inum_orb.eq.0) then
+        if(ibasis.eq.3.and.numr.eq.0) then
+          call basis_norm_dot(1,1)
+         else
+          call basis_norm(1,1)
+        endif
       endif
 
 c get nuclear potential energy
       call pot_nn(cent,znuc,iwctype,ncent,pecent)
       write(6,'(''pecent='',f14.7)') pecent
+      call flush(6)
 
 c get interparticle distances
 c Don't need to call distances if hpsi always calls it.
@@ -1548,6 +1559,7 @@ c 386     rvmino(k,i)=rvec_en(k,i,nearesto(i))
 c Optimization section
       read(5,*) section
       write(6,'(a)') section
+      call flush(6)
 
       read(5,*) nopt_iter,nblk_max,add_diag(1),p_var,tol_energy
       write(6,'(/,''nopt_iter,nblk_max,add_diag(1),p_var,tol_energy='',i4,i8,1p,9d12.4)')
@@ -1599,7 +1611,8 @@ c if doing fit, allocate memory for saved configurations
        elseif(index(mode,'fit').ne.0 .and. iopt.ne.2) then
         iopt=2
         write(6,'(''Warning: iopt set to 2 because now fit uses quench only; zxssq is obsolete'')')
-       endif
+      endif
+      call flush(6)
 
 ! JT beg: checking e-N cusp condition on orbitals -> moved to orbitals_mod
 !      if (index(mode,'vmc').ne.0 .and. icusp.ge.0) then
@@ -1625,6 +1638,7 @@ c     do 404 i=1,ndata
 c 404   wght(i)=one
       write(6,'(''i3body,irewgt,iaver,istrch'',9i5)')
      &i3body,irewgt,iaver,istrch
+      call flush(6)
 
       read(5,*) ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,
      &idbdu,idbdt
@@ -1652,6 +1666,7 @@ c 404   wght(i)=one
      &''dist scaled r=(1-exp(-scalek*r))'')')
       if(isc.eq.10) write(6,'(
      &''dist scaled r=scalek*r/(1+scalek*r)'')')
+      call flush(6)
 
       if(ijas.eq.1) write(6,'(''Conventional Jastrow'')')
       if(ijas.eq.2) write(6,'(''Exp. Pade + non-anal terms'')')

@@ -264,33 +264,33 @@ c Warning: I have not been careful about doing it only when needed, because it d
 c matter to do extra anyway.
 c Analytical basis functions
       do 42 iadd_diag=2,3
-      if(ibasis.eq.1 .or. ibasis.eq.3) then
-        do 20 i=1,orb_tot_nb
-          do 20 j=1,nbasis
-   20     coef(j,i,iadd_diag)=coef(j,i,1)
-        do 30 j=1,nbasis
-   30     zex(j,iadd_diag)=zex(j,1)
-        do 35 ictype=1,nctype
-          do 35 irwf=1,nrbas_analytical(ictype)
-   35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
-      endif
-      if(ibasis.ge.4 .and. ibasis.le.7) then
-        do 37 i=1,orb_tot_nb
-          do 37 j=1,nbasis
-   37       coef(j,i,iadd_diag)=coef(j,i,1)
-      endif
-c     do 40 i=1,ndet
-c  40   cdet(i,iadd_diag)=cdet(i,1)
-      do 40 i=1,ncsf
-   40   csf_coef(i,iadd_diag)=csf_coef(i,1)
+        if(inum_orb.eq.0) then
+          if(ibasis.eq.1 .or. ibasis.eq.3) then
+            do 20 i=1,orb_tot_nb
+              do 20 j=1,nbasis
+   20         coef(j,i,iadd_diag)=coef(j,i,1)
+            do 30 j=1,nbasis
+   30         zex(j,iadd_diag)=zex(j,1)
+            do 35 ictype=1,nctype
+              do 35 irwf=1,nrbas_analytical(ictype)
+   35           zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
+          endif
+          if(ibasis.ge.4 .and. ibasis.le.7) then
+            do 37 i=1,orb_tot_nb
+              do 37 j=1,nbasis
+   37           coef(j,i,iadd_diag)=coef(j,i,1)
+          endif
+        endif
 
-      do 42 it=1,notype
-        do 42 ip=1,nbasis
-   42     oparm(it,ip,iadd_diag)=oparm(it,ip,1)
+        do 40 i=1,ncsf
+   40     csf_coef(i,iadd_diag)=csf_coef(i,1)
 
+        do 42 it=1,notype
+          do 42 ip=1,nbasis
+   42       oparm(it,ip,iadd_diag)=oparm(it,ip,1)
 
-c Numerical radial basis functions
-      if((ibasis.eq.1.or.ibasis.eq.3)) then
+c Analytical orbitals and numerical radial basis functions
+      if(inum_orb.eq.0 .and. (ibasis.eq.1.or.ibasis.eq.3)) then
       do 45 iadd_diag=2,nwftype
         do 45 ict=1,nctype
           do 45 irb=1,nrbas_numerical(ict)
@@ -329,15 +329,15 @@ c  90 call basis_norm(iadd_diag,1)
 
 !     Copy orbital coefficients
       if (inum_orb == 0) then
-       do iadd_diag = 2, 3
-         coef_orb_on_norm_basis (:,:,iadd_diag) = coef_orb_on_norm_basis (:,:,1)
-       enddo
-      
-       if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
         do iadd_diag = 2, 3
-         coef_orb_on_ortho_basis (:,:,iadd_diag) = coef_orb_on_ortho_basis (:,:,1)
+          coef_orb_on_norm_basis (:,:,iadd_diag) = coef_orb_on_norm_basis (:,:,1)
         enddo
-       endif
+      
+        if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+          do iadd_diag = 2, 3
+            coef_orb_on_ortho_basis (:,:,iadd_diag) = coef_orb_on_ortho_basis (:,:,1)
+          enddo
+        endif
       endif
 
       return
