@@ -1,4 +1,5 @@
-#! /bin/sh
+#! /bin/bash
+# /bin/sh
 # This script is run on the .out file from a GAMESS CI run.
 # e.g. ~/champ/tools/gamess2qmc/run_csf2csf ci.out
 # This script does the foll.:
@@ -22,8 +23,18 @@ do
   echo $in $in_csf2csf $out_csf2csf
 
 # $HOME/bin/gamess2qmc -CJF -t initial -d 0.0010 $in
-  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.0010 $in
+# $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.0010 $in
+  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 $in
   $HOME/champ/tools/iequal/csf2csf < $in_csf2csf > $out_csf2csf
+
+# nctype=`awk '/nctype,ncent/{print $1}' $vmc_input1` #determine number of center types
+# string=`awk '/nctype,ncent/{print $3}' $vmc_input1`
+# nparm=`awk '/DATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/{print $2}' $vmc_input1` #determine number of parameters
+# nparmcsf=`awk '/nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/{print $[3*$nctype+2]}' $vmc_input1` #determine number of CSF parameters
+
+# echo $[nctype] $[nparm] $[nparmcsf] $[2*nparmcsf] $string
+# awk '/DATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/{print $1, $[nparm], $3, $4, $5, $6, $7, $8}' $vmc_input1
+
 
   ex $out_csf2csf <<_end
     1,/Inputs for new version of CHAMP with linear relations recognized/d
@@ -32,7 +43,8 @@ do
     3,3w! nparm
     4,4w! nparmcsf
     6,6w! iwcsf
-    7,\$w! csfs
+    7,\$-1w! csfs
+    \$w! nparmcsf_reduce
 _end
 
   cp $vmc_input1 $vmc_input2
@@ -42,12 +54,14 @@ _end
     1,1d
     /ndet,nbasis,norb/d
     -1r ndet
-    /NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/d
-    -1r nparm
-    /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/d
-    -1r nparmcsf
-    /(iwcsf(iparm),iparm=1,nparmcsf)/d
-    -1r iwcsf
+#   /NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/d
+#   -1r nparm
+#   /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/d
+#   -1r nparmcsf
+    /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/
+    .r nparmcsf_reduce
+#   /(iwcsf(iparm),iparm=1,nparmcsf)/d
+#   -1r iwcsf
     /zex/+1,/Jastrow/-2d
     -1r csfs
     wq
