@@ -900,20 +900,20 @@ c        write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
           phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
-          if(abs(phir).lt.1.d-300) then
-            write(6,'(''phir='',9d12.4)') phir
-            stop 'phir too small'
-          endif
+c         if(abs(phir).lt.1.d-300) then
+c           write(6,'(''phir='',9d12.4)') phir
+c           stop 'phir too small'
+c         endif
 
           if(abs(phir).gt.1.d+300) then
             write(6,'(''phir='',9d12.4)') phir
             stop 'phir too large'
           endif
 
-          if(abs(phir).lt.1.d-300) then
-            write(6,'(''phit='',9d12.4)') phit
-            stop 'phit too small'
-          endif
+c         if(abs(phir).lt.1.d-300) then
+c           write(6,'(''phit='',9d12.4)') phit
+c           stop 'phit too small'
+c         endif
 
           if(abs(phit).gt.1.d+300) then
             write(6,'(''phit='',9d12.4)') phit
@@ -936,11 +936,11 @@ c          write(6,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           d2phin(ib,ie)=(dpdxr*xri+d2pdxr2+d2pdxt2*xri2)*phin(ib,ie)
 
-          if(abs(phin(ib,ie)).lt.1.d-300) then
-            write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
-     &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
-            stop 'phir,phit,phin(ib,ie) too small'
-          endif
+c         if(abs(phin(ib,ie)).lt.1.d-300) then
+c           write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
+c    &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
+c           stop 'phir,phit,phin(ib,ie) too small'
+c         endif
 
           if(abs(phin(ib,ie)).gt.1.d+300) then
             write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
@@ -950,6 +950,28 @@ c          write(6,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
         enddo
       enddo
+
+c Check that every electron has at least one nonzero basis function.
+      phimax=maxval(abs(phin))
+c     write(6,'(''phimax='',d12.4)') phimax
+
+      do ie=nelec1,nelec2
+        phicolmax=maxval(abs(phin(:,ie)))
+        if(phicolmax.lt.1.d-100*phimax) write(6,'(''Warning: ie, phicolmax, phimax='',i5,9e12.4)')  ie, phicolmax, phimax
+        if(phicolmax.eq.0.d0) then
+          write(6,'(''Warning stop: ie, phicolmax, phimax='',i5,9e12.4)')  ie, phicolmax, phimax
+          stop 'phicolmax = 0'
+        endif
+      enddo
+
+c     do ib=1,nbasis
+c       phirowmax=maxval(abs(phin(ib,:)))
+c       if(phirowmax.lt.1.d-100*phimax) write(6,'(''Warning: ib, phirowmax, phimax='',i5,9e12.4)')  ib, phirowmax, phimax
+c       if(phirowmax.eq.0.d0) then
+c         write(6,'(''Warning stop: ib, phirowmax, phimax='',i5,9e12.4)')  ib, phicolmax, phimax
+c         stop 'phirowmax = 0'
+c       endif
+c     enddo
 
       return
       end

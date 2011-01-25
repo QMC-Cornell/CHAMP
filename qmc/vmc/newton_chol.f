@@ -1119,65 +1119,71 @@ c Write out wavefn
         endif
       enddo
 
-
-      if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
-        write(6,'(f9.6,'' 0. scalek,a21'')') scalek(iadd_diag)
-        write(2,'(f9.6,'' 0. scalek,a21'')') scalek(iadd_diag)
-       else
-        write(6,'(f9.6,'' 0. scalek_new,a21'')') scalek(iadd_diag)
-        write(2,'(f9.6,'' 0. scalek_new,a21'')') scalek(iadd_diag)
-      endif
-
-      if(nparma_read.gt.0) then
-c       write(fmt,'(''('',i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
-        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
-       else
-c       write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
-        write(fmt,'(''(a)'')')
-      endif
-      do 80 ict=1,nctype
+      if(nparms.gt.0) then
+        write(6,'(/,''scalek parameter:'')')
         if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
-          write(6,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
-          write(2,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
+          write(6,'(f9.6,'' 0. scalek,a21'')') scalek(iadd_diag)
+          write(2,'(f9.6,'' 0. scalek,a21'')') scalek(iadd_diag)
          else
-          write(6,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a_new(iparmj),iparmj=1,nparma)'
-          write(2,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a_new(iparmj),iparmj=1,nparma)'
+          write(6,'(f9.6,'' 0. scalek_new,a21'')') scalek(iadd_diag)
+          write(2,'(f9.6,'' 0. scalek_new,a21'')') scalek(iadd_diag)
         endif
-   80 continue
-
-      if(nparmb_read.gt.0) then
-c       write(fmt,'(''('',i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
-        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
-       else
-c       write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
-        write(fmt,'(''(a)'')')
       endif
-      do 85 isp=nspin1,nspin2b
-        if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
-          write(6,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
-          write(2,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
-         else
-          write(6,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b_new(iparmj),iparmj=1,nparmb)'
-          write(2,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b_new(iparmj),iparmj=1,nparmb)'
-        endif
-   85 continue
 
-      if(nparmc_read.gt.0) then
-c       write(fmt,'(''('',i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
-        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
-       else
-c       write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
-        write(fmt,'(''(a)'')')
-      endif
-      do 90 ict=1,nctype
-        if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
-          write(6,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
-          write(2,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
+      if(nparmj.gt.0) then
+        write(6,'(/,''Jastrow parameters:'')')
+        if(nparma_read.gt.0) then
+c         write(fmt,'(''('',i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
+          write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
          else
-          write(6,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
-          write(2,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
+c         write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
+          write(fmt,'(''(a)'')')
         endif
-   90 continue
+        do 80 ict=1,nctype
+          if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
+            write(6,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
+            write(2,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
+           else
+            write(6,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a_new(iparmj),iparmj=1,nparma)'
+            write(2,fmt) (a4(i,ict,iadd_diag),i=1,nparma_read),' (a_new(iparmj),iparmj=1,nparma)'
+          endif
+   80   continue
+
+        if(nparmb_read.gt.0) then
+c         write(fmt,'(''('',i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
+          write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
+         else
+c         write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
+          write(fmt,'(''(a)'')')
+        endif
+        do 85 isp=nspin1,nspin2b
+          if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
+            write(6,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
+            write(2,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
+           else
+            write(6,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b_new(iparmj),iparmj=1,nparmb)'
+            write(2,fmt) (b(i,isp,iadd_diag),i=1,nparmb_read),' (b_new(iparmj),iparmj=1,nparmb)'
+          endif
+   85   continue
+
+        if(nparmc_read.gt.0) then
+c         write(fmt,'(''('',i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
+          write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
+         else
+c         write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
+          write(fmt,'(''(a)'')')
+        endif
+        do 90 ict=1,nctype
+          if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then
+            write(6,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
+            write(2,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
+           else
+            write(6,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
+            write(2,fmt) (c(i,ict,iadd_diag),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
+          endif
+   90   continue
+
+      endif
 
       return
       end

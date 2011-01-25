@@ -467,11 +467,13 @@ c After the call to checkjas2, diff is reallocated correctly.
       write(6,'(''ndata, ndata2, # of s-orb. cusp cond., # of analyt. cusp cond., # of Fock cond., # of shape cond. ='',6i5)')
      &   ndata,ndata2,ncent*norbc,ncuspc*(nspin2-nspin1+1),nfockc,ncnstr*(nspin2-nspin1+1)
 
-      call alloc ('imnbas', imnbas, ncent)
-      imnbas(1)=1
-      do 36 i=1,ncent-1
-        it=iwctype(i)
-   36   imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
+      if(mbasis_ctype.gt.0) then   ! Needed since nbasis_ctype(it) is not initialized for quantum rings
+        call alloc ('imnbas', imnbas, ncent)
+        imnbas(1)=1
+        do 36 i=1,ncent-1
+          it=iwctype(i)
+   36     imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
+      endif
 
       if(ijas.eq.2. and. iabs(icusp2).ge.2) then
         do 37 isp=nspin1,nspin2
