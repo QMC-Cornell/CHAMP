@@ -1,3 +1,7 @@
+If you publish any papers with results obtained with the help of this
+package, we would greatly appreciate an acknowledgment.  Thanks in advance!
+M. Peter Nightingale and Cyrus J. Umrigar
+
 $Log: 0ReadMe,v $
 Revision 1.1.1.1  2006/10/08 19:38:15  toulouse
 champ
@@ -407,6 +411,11 @@ upon return:
   iproc is the number of the calling parallel process
   nproc is the total number of parallel processes 1 <= iproc < nproc
 
+  call set_static_chunks(logical)
+  if logical = .true. chunks are static and independent of load balance
+  if logical = .false. chunks are dynamic and chosen to achieve load balance
+  Default is .false.
+
 Multiples of chunks of length iatom of the diff array (the sum of the
 squares of the elements of which is the object of our minimization) are
 farmed out to the parallel processes.  Usually, iatom=1.
@@ -469,7 +478,7 @@ Note: the three- and five-point approximants do not use the central
 point, but the central point is computed for other reasons anyway.  Also
 note that for the n-point scheme, the differences between the points are
 max(eps_diff,DBL_EPSILON)**(1./n), so that higher-order schemes suffer
-less from numerical cancelation.
+less from numerical cancellation.
 
 The logical variable called_by_qa in
 

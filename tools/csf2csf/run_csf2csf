@@ -25,7 +25,7 @@ do
 # $HOME/bin/gamess2qmc -CJF -t initial -d 0.0010 $in
 # $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.0010 $in
   $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 $in
-  $HOME/champ/tools/iequal/csf2csf < $in_csf2csf > $out_csf2csf
+  $HOME/champ/tools/csf2csf/csf2csf < $in_csf2csf > $out_csf2csf
 
 # nctype=`awk '/nctype,ncent/{print $1}' $vmc_input1` #determine number of center types
 # string=`awk '/nctype,ncent/{print $3}' $vmc_input1`

@@ -20,7 +20,7 @@ c     t1=secnds(0.)
 c     real*4 tarray
 c     dimension tarray(2)
       character(len=*) title
-      integer time
+c     integer time
       save icall,itim1,itim2,etim1,etim2
       data icall/0/
 

@@ -1,4 +1,4 @@
-ifndef FC
+ifndef F77
 
 ##########
 # README #
@@ -13,8 +13,8 @@ ifndef FC
 # IRIX, AIX, or Unix, and if you wish to use the standard fortran 77 compiler
 # that comes with these operating systems then you need not make this change.
 # If you are not using one of these operating systems, you need to add lines
-# below to create a system-dependent include/parameters.h file and define FC,
-# FFLAGS, FC_MPI and FFLAGS_MPI for the new operating system, using the lines
+# below to create a system-dependent include/parameters.h file and define F77,
+# FFLAGS, F77_MPI and FFLAGS_MPI for the new operating system, using the lines
 # below as a model.  Also, even if you are using one of these operating systems
 # but with a different compiler or different compiler options you will need to
 # either modify the existing lines or add new ones.
@@ -48,14 +48,14 @@ hostname := $(shell uname -n)
 planck_compiler=ifort
 $(shell mkdir -p lib)
 # system = AIX
-export FC FFLAGS LDFLAGS FC_MPI FFLAGS_MPI FLINKER_MPI
+export F77 FFLAGS LDFLAGS F77_MPI FFLAGS_MPI FLINKER_MPI
 
-# FC:         Sequential FC compile command
-# FFLAGS:      Flags for sequential FC compilations
-# FC_MPI:     Parallel FC compile command (may e.g. the F90 sequential compiler)
-# FLINKER_MPI: Parallel link editor command (is useful if FC_MPI for some reason 
+# F77:         Sequential F77 compile command
+# FFLAGS:      Flags for sequential F77 compilations
+# F77_MPI:     Parallel F77 compile command (may e.g. the F90 sequential compiler)
+# FLINKER_MPI: Parallel link editor command (is useful if F77_MPI for some reason
 #                is not an MPI compiler)
-# FFLAGS_MPI:  Flags for parallel FC compilations (May have to contain include 
+# FFLAGS_MPI:  Flags for parallel F77 compilations (May have to contain include
 #                directory that contains mpif.h)
 # In most cases the Fortran compilers used for sequential and MPI programs are
 # in fact the same, but many implementations of MPI provide a script (often called
@@ -67,10 +67,10 @@ export FC FFLAGS LDFLAGS FC_MPI FFLAGS_MPI FLINKER_MPI
 
 ifeq ($(findstring IRIX,$(system)),IRIX)
   $(shell cp -p parameters/parameters.IRIX_Solaris include/parameters.h)
-  FC = f77
+  F77 = f77
   FFLAGS = -O3 -n32 -mips4 -DIRIX
 # FFLAGS = -g -C -n32 -mips4 -DIRIX
-  FC_MPI = mpif77
+  F77_MPI = mpif77
   FLINKER_MPI = mpif77
   FFLAGS_MPI = -O3 -n32 -mips4 -DIRIX -DMPI -DNON_STANDARD
 # FFLAGS_MPI = -g -C -n32 -mips4 -DIRIX -DMPI -DNON_STANDARD
@@ -78,9 +78,9 @@ endif
 
 ifeq ($(system),AIX)
   $(shell cp -p parameters/parameters.AIX include/parameters.h)
-  FC = xlf
+  F77 = xlf
   FFLAGS = -O2 -qnosave -qsigtrap -WF,-DAIX
-  FC_MPI = mpxlf
+  F77_MPI = mpxlf
   FLINKER_MPI = mpxlf
   FFLAGS_MPI = -O2 -qnosave -qsigtrap -WF,-DAIX,-DMPI,-DNON_STANDARD
 endif
@@ -88,14 +88,14 @@ endif
 ifeq ($(system),Linux)
   $(shell cp -p parameters/parameters.Linux include/parameters.h)
 # Linux default is now ifort
-  FC = ifort
+  F77 = ifort
 # FFLAGS = -g -CB -d4 -zero -save -extend_source -w -r8 -fpp2 -O0 -ax
 # FFLAGS = -zero -save -extend_source -w -r8 -fpp2 -O2 -ax
 # FFLAGS = -zero -save -extend_source -w -r8 -O3 -axN -ipo -pad
   FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad
 # LDFLAGS = -Vaxlib -static
   LDFLAGS = -static -nothread
-  FC_MPI = mpif77 -fc=ifort
+  F77_MPI = mpif77 -fc=ifort
 # FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O0 -ax
 # FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O2 -ax
 # FFLAGS_MPI = -zero -save -extend_source -w -r8 -O2 -ax
@@ -107,15 +107,15 @@ ifeq ($(system),Linux)
 ifeq ($(hostname),dft.physics.cornell.edu)
 ifeq ($(planck_compiler),g77)
 # to link g77 mpi libraries, make sure /usr/bin is ahead of /usr/local/bin
-# FC = g77-3.2
-  FC = g77-3.0
-# FC = g77
+# F77 = g77-3.2
+  F77 = g77-3.0
+# F77 = g77
 # FFLAGS = -g -C -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check
 # FFLAGS = -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check
   FFLAGS = -O3 -malign-double -ffixed-line-length-none -fno-automatic
 # FFLAGS = -pg -O3 -malign-double -ffixed-line-length-none -fno-automatic
 # LDFLAGS = -static
-  FC_MPI = mpif77 -fc=g77
+  F77_MPI = mpif77 -fc=g77
 # FFLAGS_MPI = -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check -DCLOBBER -DMPI
   FFLAGS_MPI = -O3 -malign-double -ffixed-line-length-none -fno-automatic -DCLOBBER -DMPI
 # LDFLAGS_MPI = -static
@@ -135,14 +135,14 @@ ifeq ($(planck_compiler),ifort)
 # He says VASP did not run correctly with -fast or -xW
 # He says to use :ib on mpirun to get infiniband network
 # He found -O3 -axWN -ipo -pad runs fastest, but there were several choices within the timing noise.
-  FC = ifort
+  F77 = ifort
 # FFLAGS = -g -C -d4 -extend_source -w -r8 -fpp2 -O0 -axi
 # FFLAGS = -extend_source -w -r8 -fpp2 -O2 -axi
 # FFLAGS = -extend_source -w -r8 -O3 -axiN -ipo -pad
   FFLAGS = -extend_source -w -r8 -O3 -axi -pad
 # LDFLAGS = -Vaxlib -static
   LDFLAGS = -static
-  FC_MPI = mpif77 -fc=ifort
+  F77_MPI = mpif77 -fc=ifort
 # FFLAGS_MPI = -g -C -extend_source -w -r8 -O2 -axi
 # FFLAGS_MPI = -extend_source -w -r8 -O2 -axi
   FFLAGS_MPI = -extend_source -w -r8 -O3 -axi -pad -DCLOBBER -DMPI
@@ -156,7 +156,7 @@ endif
 ifeq ($(hostname),gauss)
   #-zero Initializes to zero all local scalar variables of intrinsic type INTEGER, REAL, COMPLEX, or LOGICAL that are saved but not yet initialized
 #-save ????
-#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132). 
+#-extend-source Determines the column that ends the statement field of each source line in a fixed-format file (default 132).
 #-w disable all warnings
 #-r8 set default size of real to 8 bytes
 #-O3 aggressive optimization
@@ -169,21 +169,21 @@ ifeq ($(hostname),gauss)
 #-nothread
 #-no multithreaded libraries
   LDFLAGS = -static -nothread
-  FC_MPI = /usr/bin/mpif90.openmpi -fc=ifort
+  F77_MPI = /usr/bin/mpif90.openmpi -fc=ifort
   FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3  -pad -mtune=core2 -march=core2 -xT
   LDFLAGS_MPI = -static -nothread -lmpi
   FLINKER_MPI = /usr/bin/mpif90.openmpi
 endif
 
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
-  FC = ifort
+  F77 = ifort
 # FFLAGS = -g -CB -d4 -zero -save -extend_source -w -r8 -fpp2 -O0 -ax
 # FFLAGS = -zero -save -extend_source -w -r8 -fpp2 -O2 -ax
 # FFLAGS = -zero -save -extend_source -w -r8 -O3 -axN -ipo -pad
   FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad
 # LDFLAGS = -Vaxlib -static
   LDFLAGS = -static -nothread
-  FC_MPI = mpif77
+  F77_MPI = mpif77
 # FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O0 -ax
 # FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O2 -ax
 # FFLAGS_MPI = -zero -save -extend_source -w -r8 -O2 -ax
@@ -194,52 +194,52 @@ ifeq ($(hostname),nanolab.cnf.cornell.edu)
 endif
 
 ifeq ($(hostname),tyche.acc.uri.edu)
-  FC = f90
+  F77 = f90
   FFLAGS = -O -YEXT_NAMES=UCS
-  FC_MPI = f90
+  F77_MPI = f90
   FLINKER_MPI = mpif77
   FFLAGS_MPI = -O -DMPI -DAIX -DNON_STANDARD -YEXT_NAMES=UCS -I$(HOME)/mpich/include
 endif
 ifeq ($(hostname),charming)
-  FC = pgf90
+  F77 = pgf90
   FFLAGS = -O2
   FFLAGS = -fast -r8
-  FC_MPI = mpif90.pgf
+  F77_MPI = mpif90.pgf
   FLINKER_MPI = mpif90.pgf
   FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 endif
 ifeq ($(hostname),mesdag)
-  FC = pgf90
+  F77 = pgf90
   FFLAGS = -O2
   FFLAGS = -fast -r8
-  FC_MPI = mpif90.pgf
+  F77_MPI = mpif90.pgf
   FLINKER_MPI = mpif90.pgf
   FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 endif
 # ifeq ($(hostname),oscbw01)
 # ifeq ($(hostname),amd-login1)
 # AMD Cluster at OSC using Portland Group Compiler
-#   FC = pgf77
+#   F77 = pgf77
 #   FFLAGS = -fast -r8 -Mextend -Mdalign -Msave -Mbounds
-#   FC_MPI = mpif77
+#   F77_MPI = mpif77
 ##  FFLAGS_MPI = -fast -r8 -Mextend -Mdalign -Msave -Mbounds
 #   FFLAGS_MPI = -fast -r8 -Mextend -Mdalign -Msave
 # endif
 ifeq ($(hostname),amd-login1)
-  FC = ifc
+  F77 = ifc
   FFLAGS = -FI -extend_source -O2 -w -r8 -fpp2
   LDFLAGS = -Vaxlib
-  FC_MPI = mpif77 -fc=ifc
+  F77_MPI = mpif77 -fc=ifc
   FFLAGS_MPI = -FI -extend_source -O2 -w -r8
   LDFLAGS_MPI = -Vaxlib
 endif
 ifeq ($(hostname),ia64)
 # Intel Itanium cluster at OSC using MPI and Intel Compiler efc
 # LIBHOME = $(QMCHOME)
-  FC = efc
-# FFLAGS = -FI -extend_source -O2 -w -r8 -Dderf=INTELERF -Dderfc=INTELERFC -fpp2
+  F77 = efc
+# FFLAGS = -FI -extend_source -O2 -w -r8 -Dderf=INTELERF -Dderfc=INTELERF77 -fpp2
   FFLAGS = -FI -extend_source -O2 -w -r8
-  FC_MPI = mpif77
+  F77_MPI = mpif77
   FFLAGS_MPI = -FI -extend_source -O2 -w -r8
 # BLAS = $(MKL) -lderf -Vaxlib
   BLAS = $(MKL) -L$(HOME)/QMC/qmc/lib -laux -Vaxlib
@@ -247,9 +247,9 @@ endif
 ifeq ($(hostname),mck-login1)
 # Intel Itanium cluster at OSC using MPI and Intel Compiler efc
 # LIBHOME = $(QMCHOME)
-  FC = efc
+  F77 = efc
   FFLAGS = -FI -extend_source -O2 -w -r8
-  FC_MPI = mpif77
+  F77_MPI = mpif77
   FFLAGS_MPI = -FI -extend_source -O2 -w -r8
   BLAS = $(MKL) -L$(HOME)/QMC/qmc/lib -laux -Vaxlib
 endif
@@ -258,20 +258,20 @@ endif
 ifeq ($(hostname),login1)
 
 # for debug front-end
-  FC = xlf
+  F77 = xlf
   FFLAGS = -C -g -qlinedebug -qsigtrap -qfixed=132
 
 # for nodes
-  FC = blrts_xlf
+  F77 = blrts_xlf
   FFLAGS = -O5 -qarch=440 -qtune=440 -WF,-DAIX -qfixed=132
 #  FFLAGS = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
 # FFLAGS = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
 # FFLAGS = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
 # FFLAGS = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
   LDFLAGS =
-# FC_MPI = mpxlf
-  FC_MPI = mpif90.ibm
-# FC_MPI = blrts_xlf
+# F77_MPI = mpxlf
+  F77_MPI = mpif90.ibm
+# F77_MPI = blrts_xlf
 # FFLAGS_MPI = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
   FFLAGS_MPI = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
 # FFLAGS_MPI = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
@@ -291,11 +291,11 @@ ifeq ($(hostname),marx)
 endif
 # -ax{i|M|K|W} i=Pentium Pro, M-Pentium MMX, K=Pentium3, W=Pentium4,Xeon
 ifeq ($(URI_CLUSTER),true)
-  FC = mpif77
+  F77 = mpif77
   FFLAGS = -c -extend_source -fpp -O2 -w -pad -axi
 # -CA -CB -CU -g
   FFLAGS_NOOPT = -c -extend_source -fpp -O0 -w -pad -axi
-  FC_MPI = mpif77
+  F77_MPI = mpif77
   FLINKER_MPI = mpif77
   FFLAGS_MPI = -DMPI -DNON_STANDARD -DAIX -fpp -w
 endif
@@ -310,9 +310,9 @@ ifeq ($(hostname),armstrong)
   LINPACK = -L$(LIBHOME)/lib2/linpack -llinpack
   QUENCH  = -L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
   PSPLINE = -L$(LIBHOME)/lib2/pspline/pspline -lpspline
-  FC = ftn
+  F77 = ftn
   FFLAGS = -O2 -Rabc -Ossp -ev -N 132
-  FC_MPI = ftn
+  F77_MPI = ftn
   FFLAGS_MPI = -O2 -DMPI -Ossp -ev -N 132
 endif
 
@@ -325,17 +325,17 @@ endif
 ifeq ($(system),SunOS)
 ifeq ($(hostname),sasn100)
   $(shell cp -p parameters/parameters.Linux include/parameters.h)
-  FC = cif90
+  F77 = cif90
   FFLAGS = -O2
 # FFLAGS = -g -C
-  FC_MPI = cif90
+  F77_MPI = cif90
   FLINKER_MPI = cif90
   FFLAGS_MPI = -O2 -DCLOBBER -DMPI -DNON_STANDARD
 else
   $(shell cp -p parameters/parameters.IRIX_Solaris include/parameters.h)
-  FC = f77
+  F77 = f77
   FFLAGS = -O2 -stackvar
-  FC_MPI = mpif77
+  F77_MPI = mpif77
   FLINKER_MPI = mpif77
   FFLAGS_MPI = -O2 -stackvar -DCLOBBER -DMPI -DNON_STANDARD
 endif
@@ -346,47 +346,47 @@ ifeq ($(system),OSF1)
 # I have not checked if -DNON_STANDARD works
 ifeq ($(hostname),eigernorth.sandia.gov)
   $(shell cp -p parameters/parameters.Linux include/parameters.h)
-# FC = $(CPLANTHOME)/bin/f90
-  FC = /usr/local/cplant/west/current/bin/f77
+# F77 = $(CPLANTHOME)/bin/f90
+  F77 = /usr/local/cplant/west/current/bin/f77
   FFLAGS = -g -extend_source -align dcommons -fpe1
-  FC_MPI = /usr/local/cplant/west/current/bin/f77
+  F77_MPI = /usr/local/cplant/west/current/bin/f77
   FFLAGS_MPI = -g -extend_source -align dcommons -fpe1 -DMPI -DNON_STANDARD
 endif
 ifeq ($(hostname),eigersouth.sandia.gov)
   $(shell cp -p parameters/parameters.Linux include/parameters.h)
-# FC = $(CPLANTHOME)/bin/f90
-  FC = /usr/local/cplant/west/current/bin/f77
+# F77 = $(CPLANTHOME)/bin/f90
+  F77 = /usr/local/cplant/west/current/bin/f77
   FFLAGS = -g -extend_source -align dcommons -fpe1
-  FC_MPI = /usr/local/cplant/west/current/bin/f77
+  F77_MPI = /usr/local/cplant/west/current/bin/f77
   FFLAGS_MPI = -g -extend_source -align dcommons -fpe1 -DMPI -DNON_STANDARD
 endif
 endif
 
 #ifeq ($(system),CYGWIN_NT-5.0)
 #  $(shell cp -p parameters/parameters.Linux include/parameters.h)
-#  FC = f77.exe
+#  F77 = f77.exe
 #  FFLAGS = -unix -fpp:"/n"
-#  FC_MPI = f77.exe
+#  F77_MPI = f77.exe
 #  FLINKER_MPI = link.exe
 #  FFLAGS_MPI = -unix -fpp:"/n" -DCLOBBER -DMPI -Ic:/Progra~1/MPIPro/include
 #  AR = ar
 #endif
 #ifeq ($(system),CYGWIN_NT-5.0)
 # $(shell cp -p parameters/parameters.Linux include/parameters.h)
-#  FC = g77
+#  F77 = g77
 #  FFLAGS =  -fcase-upper -fno-underscoring -enable-stdcall-fixup -O3 -malign-double -ffixed-line-length-none -fno-automatic -L/cygdrive/c/progra~1/mifd68~1/Lib
-#  FC_MPI = g77
+#  F77_MPI = g77
 #  FFLAGS_MPI = -fcase-upper -fno-underscoring -enable-stdcall-fixup -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall -fbounds-check -I/cygdrive/c/PROGRA~1/MPIPro164/include
 #  LDFLAGS_MPI = -L/cygdrive/c/PROGRA~1/MPIPro164/lib -lMPIPro_stdc -lMPIPro -L/cygdrive/c/progra~1/mifd68~1/Lib
 #endif
 ifeq ($(system),CYGWIN_NT-5.0)
   $(shell cp -p parameters/parameters.Linux include/parameters.h)
-  FC = win32fe ifl
+  F77 = win32fe ifl
   FFLAGS = -FI -4L132 -Qlowercase -w -O2 -Qfpp
 # FFLAGS = -FI -4L132 -Qlowercase -w -O2 -Qfpp /Qoption,link,/verbose
 # BLAS = $(MKL) -lderf -Vaxlib
 # LDFLAGS = -L/cygdrive/c/progra~1/mifd68~1/Lib /Qoption,link,/verbose mkl_c.lib mkl_p3.lib
-  FC_MPI = win32fe ifl
+  F77_MPI = win32fe ifl
 # MPIPro164 for v2.  For v1,vplus use MPIPro and change library names
 # Another way to deal with spaces in names is "Program~s" instead of "Program\ Files"
   FFLAGS_MPI = -FI -4L132 -Qlowercase -w -O2 -Qfpp -I/cygdrive/c/Program\ Files/MPIPro164/include
@@ -398,34 +398,34 @@ endif
 ifeq ($(findstring jaguar,$(hostname)), jaguar)
 
 # Portland compiler
-#  FC    = pgf95
+#  F77    = pgf95
 #  FFLAGS = -fast -r8 -Mextend -Mdalign -Msave
-#  FC_MPI = mpif77.pgf
+#  F77_MPI = mpif77.pgf
 #  FFLAGS_MPI = -fast -r8 -DCLOBBER -DMPI
 
 # Pathscale compiler
 # module swap PrgEnv-pgi PrgEnv-pathscale && module load acml
-  FC = ftn -target=linux
+  F77 = ftn -target=linux
   FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
   LDFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
-  FC_MPI = ftn -target=linux
+  F77_MPI = ftn -target=linux
   FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 
 endif
 
 ifeq ($(hostname),clastos)
-  FC = /usr/local/bin/mpif90_64
-  FC_MPI = /usr/local/bin/mpif90_64
+  F77 = /usr/local/bin/mpif90_64
+  F77_MPI = /usr/local/bin/mpif90_64
   FLINKER_MPI = /usr/local/bin/mpif90_64
 endif
 
 # AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
- FC = pathf90
+ F77 = pathf90
 #FFLAGS = -cpp -DPATHSCALE -O2 -r8 -extend-source -zerouv
  FFLAGS = -O3 -r8 -extend-source -zerouv  -fno-second-underscore
- FC_MPI = pathf90
+ F77_MPI = pathf90
  FFLAGS_MPI = -O3 -r8 -DCLOBBER -DMPI -zerouv -fno-second-underscore
 
 endif
@@ -433,10 +433,10 @@ endif
 # Julich BlueGene P
 ifeq ($(hostname),jugene1)
 
-  FC = mpixlf77
+  F77 = mpixlf77
   FFLAGS = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=F -WF,-DAIX -qfixed=132
-  LDFLAGS = 
-  FC_MPI = mpixlf77
+  LDFLAGS =
+  F77_MPI = mpixlf77
   FFLAGS_MPI = -O3 -qstrict -qarch=450 -qtune=450 -qsuffix=cpp=F -WF,-DAIX -qfixed=132
   LDFLAGS_MPI =
 
@@ -444,7 +444,7 @@ endif
 
 # The Intel compiler ifc causes trouble in dlamch unless the latter is
 # compiled with -O0
-# ifneq ($(FC),ifc)
+# ifneq ($(F77),ifc)
 #   FFLAGS_NOOPT = $(FFLAGS)
 # endif
 ifndef FFLAGS_NOOPT
@@ -473,10 +473,10 @@ endif
 # ./lib/libquench_mpi.a.  (Of course this will not work unless MPI is
 # already installed on your system.)  Note that running "make mpi" uses
 # both sequential and MPI f77 compilers, so all four of the variables
-# FC, FFLAGS, FC_MPI, FFLAGS_MPI, and FLINKER_MPI must be defined;
-# also see INCLUDE_MPI above. 
+# F77, FFLAGS, F77_MPI, FFLAGS_MPI, and FLINKER_MPI must be defined;
+# also see INCLUDE_MPI above.
 
-# On most systems the Makefile should not leave unwanted object files hanging 
+# On most systems the Makefile should not leave unwanted object files hanging
 # around.  Note however that if you change a compiler option, then you need to
 # first get rid of any libraries that already exist by typing "gmake clean_all"
 # before remaking them, otherwise make will think they are up to date.
@@ -627,15 +627,15 @@ $(LIB_MPI)(main/start_stop_mpi.o):        $(INC_MPI)
 # for them.  Ordinary (sequential) code is compiled using the default
 # rules defined further down.
 $(LIB_MPI)(main/func_mpi.o) : main/func_mpi.F
-	$(FC_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
+	$(F77_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 $(LIB_MPI)(main/IO_stop.o): main/IO_stop.F
-	$(FC_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
+	$(F77_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 $(LIB_MPI)(main/start_stop_mpi.o): main/start_stop_mpi.F
-	$(FC_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
+	$(F77_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 
@@ -650,15 +650,15 @@ $(LIB_MPI)(main/start_stop_mpi.o): main/start_stop_mpi.F
 # of the archive itself.
 .SUFFIXES: .F .f .for
 .F.a:
-	$(FC) $(FFLAGS) -Iinclude -c $< -o $*.o
+	$(F77) $(FFLAGS) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 .f.a:
-	$(FC) $(FFLAGS) -Iinclude -c $< -o $*.o
+	$(F77) $(FFLAGS) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 .for.a:
-	$(FC) $(FFLAGS_NOOPT) -Iinclude -c $< -o $*.o
+	$(F77) $(FFLAGS_NOOPT) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 

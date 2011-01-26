@@ -533,6 +533,7 @@ c Saves the best wf yet and writes it out at end of run
       use orbitals_mod
       use basis_mod
       use optimization_mod
+      use optim_mod, only : nparml,nparme,nparmcsf,nparms,nparmg,nparmj
       use atom_mod
       use coefs_mod
       use dets_mod
@@ -645,13 +646,15 @@ c-----------------------------------------------------------------------
 
       write(6,'(/,''Best wave function:'')')
 
-      if(ncsf.gt.0) then
-        write(fmt,'(''(''i2,''f15.8,a)'')') ncsf
-       else
-        write(fmt,'(''(a)'')')
+c     if(ncsf.gt.0) then
+c       write(fmt,'(''(''i2,''f15.8,a)'')') ncsf
+c      else
+c       write(fmt,'(''(a)'')')
+c     endif
+      if(nparmcsf.gt.0) then
+        write(6,fmt) (csf_coef_best(i),i=1,ncsf),' (csf_coef_best(icsf),icsf=1,ncsf)'
+        write(2,fmt) (csf_coef_best(i),i=1,ncsf),' (csf_coef(icsf),icsf=1,ncsf)'
       endif
-      write(6,fmt) (csf_coef_best(i),i=1,ncsf),' (csf_coef_best(icsf),icsf=1,ncsf)'
-      write(2,fmt) (csf_coef_best(i),i=1,ncsf),' (csf_coef(icsf),icsf=1,ncsf)'
 
       do it=1,notype
         write(fmt,'(''(''i2,''f15.8,a)'')') nbasis
@@ -670,45 +673,52 @@ c-----------------------------------------------------------------------
          endif
       enddo
 
-      write(6,'(f9.6,'' 0. scalek_best,a21'')') scalek_best
-      write(2,'(f9.6,'' 0. scalek_best,a21'')') scalek_best
-
-      nparma_read=2+max(0,norda-1)
-      nparmb_read=2+max(0,nordb-1)
-      nparmc_read=nterms4(nordc)
-
-      if(nparma_read.gt.0) then
-c       write(fmt,'(''(''i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
-        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
-       else
-c       write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
-        write(fmt,'(''(a)'')')
+      if(nparms.gt.0) then
+        write(6,'(/,''scalek parameter:'')')
+        write(6,'(f9.6,'' 0. scalek_best,a21'')') scalek_best
+        write(2,'(f9.6,'' 0. scalek_best,a21'')') scalek_best
       endif
-      do 80 ict=1,nctype
-        write(6,fmt) (a4_best(i,ict),i=1,nparma_read),' (a_best(iparmj),iparmj=1,nparma)'
-   80   write(2,fmt) (a4_best(i,ict),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
 
-      if(nparmb_read.gt.0) then
-c       write(fmt,'(''(''i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
-        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
-       else
-c       write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
-        write(fmt,'(''(a)'')')
-      endif
-      do 85 isp=nspin1,nspin2b
-        write(6,fmt) (b_best(i,isp),i=1,nparmb_read),' (b_best(iparmj),iparmj=1,nparmb)'
-   85   write(2,fmt) (b_best(i,isp),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
+      if(nparmj.gt.0) then
+        write(6,'(a)') 'Jastrow parameters:'
+        write(2,'(a)') 'Jastrow parameters:'
+        nparma_read=2+max(0,norda-1)
+        nparmb_read=2+max(0,nordb-1)
+        nparmc_read=nterms4(nordc)
 
-      if(nparmc_read.gt.0) then
-c       write(fmt,'(''(''i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
-        write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
-       else
-c       write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
-        write(fmt,'(''(a)'')')
+        if(nparma_read.gt.0) then
+c         write(fmt,'(''(''i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
+          write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
+         else
+c         write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
+          write(fmt,'(''(a)'')')
+        endif
+        do 80 ict=1,nctype
+          write(6,fmt) (a4_best(i,ict),i=1,nparma_read),' (a_best(iparmj),iparmj=1,nparma)'
+   80     write(2,fmt) (a4_best(i,ict),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
+
+        if(nparmb_read.gt.0) then
+c         write(fmt,'(''(''i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
+          write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
+         else
+c         write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
+          write(fmt,'(''(a)'')')
+        endif
+        do 85 isp=nspin1,nspin2b
+          write(6,fmt) (b_best(i,isp),i=1,nparmb_read),' (b_best(iparmj),iparmj=1,nparmb)'
+   85     write(2,fmt) (b_best(i,isp),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
+
+        if(nparmc_read.gt.0) then
+c         write(fmt,'(''(''i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
+          write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
+         else
+c         write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
+          write(fmt,'(''(a)'')')
+        endif
+        do 90 ict=1,nctype
+          write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
+   90     write(2,fmt) (c_best(i,ict),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
       endif
-      do 90 ict=1,nctype
-        write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
-   90   write(2,fmt) (c_best(i,ict),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
 
       return
       end

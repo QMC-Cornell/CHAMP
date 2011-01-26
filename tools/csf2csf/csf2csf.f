@@ -31,7 +31,7 @@ c            = 1  write out used orbs only
 
       implicit real*8(a-h,o-z)
       character*80 fmt,fmt2,mode
-      parameter(MDET=20000,MCSF=8000,MDET_IN_CSF=200,MELEC=100,MORB=100,MBASIS=500,MLABEL=MDET,MACT=100)
+      parameter(MDET=20000,MCSF=8000,MDET_IN_CSF=200,MELEC=200,MORB=200,MBASIS=800,MLABEL=MDET,MACT=100)
       dimension cdet(MDET),iwdet(MDET),iedet(2,MDET),frac(2,MDET)
      &,iflag_det(MDET),iflag_label_det(MLABEL),iflag_csf(MCSF), csf_coef(MCSF),ndet_in_csf(MCSF)
      &,iwdet_in_csf(MDET_IN_CSF,MCSF),cdet_in_csf(MDET_IN_CSF,MCSF)
@@ -580,7 +580,7 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
 
 c Sort the CSFs by the absolute value of csf_coef
       write(6,'(''before shell_abs_csf_coef'')')
-      call shell_abs_csf_coef(csf_coef,ncsf,ndet_in_csf,iwdet_in_csf,cdet_in_csf,MDET_IN_CSF,MCSF,1.d-6)
+      call shell_abs_csf_coef(csf_coef,ncsf,ndet_in_csf,iwdet_in_csf,cdet_in_csf,MDET_IN_CSF,MCSF,cutoff_g2q)
       write(6,'(''after shell_abs_csf_coef'')')
 
 c Temp printout
@@ -1288,6 +1288,7 @@ c Find normalization of cdet_in_csf's
    20     continue
 
 c Calculate number of CSFs with abs(csf_coef) >= cutoff
+      write(6,'(''cutoff in shell_abs_csf_coef'',d12.4)') cutoff
       ncsf_new=0
       do 30 icsf=1,ncsf
    30   if(abs(csf_coef(icsf)*csf_norm(icsf)).ge.cutoff) ncsf_new=ncsf_new+1

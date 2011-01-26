@@ -254,6 +254,7 @@ c     err=zero
 c     do 130 i=1,ndata2
 c 130   err=err+diff(i)**2
 c     func=err
+      func=0  ! needed for ifort compiler but not for gfortran
 
       else
 
