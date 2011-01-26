@@ -413,10 +413,25 @@ c nparmf      Number of Fock Jastrow coefs to be optimized (not yet implemented 
 c nparmd      Number of determinantal coefs to be optimized (obsolete)
 c nparmcsf    Number of determinantal coefs to be optimized
 c nparms      Number of Jastrow scale factor coefs to be optimized (0 or 1)
-c nparmo(i)   Number of Orbital parameters of type i.  At present this is used for floating
+c nparmo(i)   Number of Orbital parameters of type i to be optimized
+c             At present this is used for floating
 c             gaussians and there are 3-4 types (x,y positions and width).
-c             setting this to -1 constrains all parameters of type i to be the same
+c             setting this to be negative indicates that there are constraints, the 
+c             absolute value is the number of free parameters
 c nparmg      Do not use this.
+c norb_constraints(i)  Number of constraints imposed on orbital params of type i to be optimized
+c orb_constraints(type,constraint #, :) For each type and constraint, the first element is one of
+c             the orbitals being optimized (should be in iwo), and the second element is the 
+c            orbital constrained to be equal (or negative of, if it has a '-' sign)
+c            to the first element
+c    Eg, sample input if there orbitals 1 and 3 have the same first coordinate, and
+c         if the second coordinate of 2 had mirror symmetry with 30, and 3 with 29: 
+c  1 2 0 0    (norb_constraints(i),i=1,notype)  ! a total of 3 constraints
+c  1 3             ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+c  2  -30  3 -29   ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+c                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+c                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+
 
 c For each of the nparms's we now
 c To be completed!
@@ -1694,6 +1709,7 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
       endif
 
       nparmot=0
+      iconstrain_gauss_orbs=0
       call alloc ('nparma', nparma, na2-na1+1)
       call alloc ('nparmb', nparmb, nspin2b-nspin1+1)
       call alloc ('nparmc', nparmc, nctype)
@@ -1710,35 +1726,14 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
      &  (nparmf(it),it=1,nctype),nparmcsf,nparms,nparmg,
      &  (nparmo(it),it=1,notype)
         do it=1,notype
-          if(nparmo(it).eq.-1) then  !all orbitals of type 'it' constrained
-            nparmot = nparmot+1
-c           now we make sure all parameters of this type are the same
+          nparmot=nparmot+iabs(nparmo(it))
+          if(nparmo(it).lt.(1-norb) .or. nparmo(it).gt.norb) then
+            write(6, '(''nparmo must be between (-norb+1) and norb'')')
+            stop 'nparmo must be between (-norb+1) and norb'
+          elseif(nparmo(it).lt.0) then  !some orbitals of type 'it' constrained
+            iconstrain_gauss_orbs = 1 
             write(6,'(''Constraint imposed in optimization over orbital parameters.'')')  
-            write(6,'(''Resetting read-in values to enforce constraint:'')')
-            if(ibasis.eq.4) then
-              if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
-              if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
-              if(it.eq.3) write(6,'(''New (constrained) floating gaussian widths:'')')
-            elseif(ibasis.eq.5) then
-              if(it.eq.1) write(6,'(''New (constrained) floating gaussian radial positions:'')')
-              if(it.eq.2) write(6,'(''New (constrained) floating gaussian angular positions:'')')
-              if(it.eq.3) write(6,'(''New (constrained) floating gaussian radial widths:'')')
-              if(it.eq.4) write(6,'(''New (constrained) floating gaussian angular widths:'')')
-            elseif(ibasis.eq.6 .or. ibasis.eq.7) then
-              if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
-              if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
-              if(it.eq.3) write(6,'(''New (constrained) floating gaussian x-widths:'')')
-              if(it.eq.4) write(6,'(''New (constrained) floating gaussian y-widths:'')')
-            endif
-            do ib=1,nbasis
-              oparm(it,ib,1) = oparm(it,1,1)
-            enddo
-            write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis)
-          else if(nparmo(it).lt.-1 .or. nparmo(it).gt.norb) then
-            stop 'nparmo must be between -1 and norb'
-          else
-            nparmot=nparmot+nparmo(it)
-         endif
+          endif
         enddo
       endif
 
@@ -1840,15 +1835,11 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
 
       call alloc ('iwo', iwo, norb, notype)
       do it=1,notype
-        read(5,*) (iwo(iparm,it),iparm=1,nparmo(it))
-        if(nparmo(it).eq.-1) then  !constrained orbital optimization
-          do ib = 1,nbasis
-            iwo(ib, it) = ib ! this is a trick to make life easier later in the code
-          enddo
-          write(6,'(''orbital parameters varied= all, constrained to be equal'')')
-        else 
-          write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
- 1      endif
+        read(5,*) (iwo(iparm,it),iparm=1,iabs(nparmo(it)))
+        write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
+        if(nparmo(it).lt.0) then  !constrained orbital optimization
+          write(6,'(''Constraints applied to orbital parameters - constraints printed below'')')
+        endif 
         do iparm=1,nparmo(it)
           if(iwo(iparm,it).lt.0 .or. iwo(iparm,it).gt.norb) then
             stop 'Incorrect value for iwo.'
@@ -1920,6 +1911,83 @@ c    &(iwdet(iparm),iparm=1,nparmd)
       if(icusp2.ge.1 .and. ijas.eq.3 .and. isc.le.7) call cuspinit3(1)
       if(icusp2.ge.1 .and. ijas.eq.4 .and. isc.le.10) call cuspinit4(0)
 
+      if(iconstrain_gauss_orbs.eq.1) then  !read in constraints for orbital optimization
+        call alloc ('norb_constraints', norb_constraints, notype)
+        read(5,*) (norb_constraints(it),it=1,notype)
+        write(6,'(''Number of constraints applied to each type of orbital: '',4i3)') (norb_constraints(it),it=1,notype)
+        call alloc ('orb_constraints', orb_constraints, notype, norb-1, 2)
+        do it=1,notype  ! read in constraints
+          if(norb_constraints(it).lt.0 .or. norb_constraints(it).gt.(norb-1)) then
+            write(6, '(''There must be between 0 and (norb-1) constraints'')')
+            stop 'Invalid number of constraints.'
+          endif
+          read(5,*) ((orb_constraints(it,i,j),j=1,2),i=1,norb_constraints(it))
+          if(ibasis.eq.4) then
+            if(it.eq.1) write(6,'(''Applying constraints to floating gaussian x-positions:'')')
+            if(it.eq.2) write(6,'(''Applying constraints to floating gaussian y-positions:'')')
+            if(it.eq.3) write(6,'(''Applying constraints to floating gaussian widths:'')')
+          elseif(ibasis.eq.5) then
+            if(it.eq.1) write(6,'(''Applying constraints to floating gaussian radial positions:'')')
+            if(it.eq.2) write(6,'(''Applying constraints to floating gaussian angular positions:'')')
+            if(it.eq.3) write(6,'(''Applying constraints to floating gaussian radial widths:'')')
+            if(it.eq.4) write(6,'(''Applying constraints to floating gaussian angular widths:'')')
+          elseif(ibasis.eq.6 .or. ibasis.eq.7) then
+            if(it.eq.1) write(6,'(''Applying constraints to floating gaussian x-positions:'')')
+            if(it.eq.2) write(6,'(''Applying constraints to floating gaussian y-positions:'')')
+            if(it.eq.3) write(6,'(''Applying constraints to floating gaussian x-widths:'')')
+            if(it.eq.4) write(6,'(''Applying constraints to floating gaussian y-widths:'')')
+          endif
+          do icon=1,norb_constraints(it)  ! check that constraints are ok
+            write(6,'(''Constraining orbitals: '',2i5)') (orb_constraints(it,icon,j),j=1,2)
+            is_first_ok = 0 ! check to see if first orbital of pair is one that we are optimizing
+            is_second_ok = 1 ! check that second orbital is one that we aren't optimizing
+            do iparm=1,iabs(nparmo(it)) 
+              if (orb_constraints(it,icon,1).eq.iwo(iparm,it)) then
+                is_first_ok = 1
+                exit
+              elseif (iabs(orb_constraints(it,icon,2)).eq.iwo(iparm,it)) then
+                is_second_ok = 0
+                exit
+              endif
+	    enddo
+            if (is_first_ok.eq.0 .or. is_second_ok.eq.0) then
+              write(6,'(''Constraints must be between an orbital that is listed as being optimized and one that is not'')')
+              stop 'Invalid constraint'
+            endif
+
+            do icon2=icon+1,norb_constraints(it) ! check for duplicate constraints
+              if(iabs(orb_constraints(it,icon,2)).eq.iabs(orb_constraints(it,icon2,2))) then
+                write(6,'(''Duplicate or Conflicting Constraint'')')
+                stop 'Duplicate or conflicting constraint'
+              endif
+            enddo
+            consgn = real(sign(1, orb_constraints(it,icon,2)))
+            oparm(it,iabs(orb_constraints(it,icon,2)),1) = consgn*oparm(it,orb_constraints(it,icon,1),1)
+          enddo  ! finished check do icon=1,norbconstrain(it)
+
+c         now we make sure all parameters of this type are the same
+          write(6,'(''Read-in values reset to enforce constraint:'')')
+          if(ibasis.eq.4) then
+            if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
+            if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
+            if(it.eq.3) write(6,'(''New (constrained) floating gaussian widths:'')')
+          elseif(ibasis.eq.5) then
+            if(it.eq.1) write(6,'(''New (constrained) floating gaussian radial positions:'')')
+            if(it.eq.2) write(6,'(''New (constrained) floating gaussian angular positions:'')')
+            if(it.eq.3) write(6,'(''New (constrained) floating gaussian radial widths:'')')
+            if(it.eq.4) write(6,'(''New (constrained) floating gaussian angular widths:'')')
+          elseif(ibasis.eq.6 .or. ibasis.eq.7) then
+            if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
+            if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
+            if(it.eq.3) write(6,'(''New (constrained) floating gaussian x-widths:'')')
+            if(it.eq.4) write(6,'(''New (constrained) floating gaussian y-widths:'')')
+          endif
+          write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis) 
+        enddo ! do it=1,notype
+        
+      endif
+
+
       write(6,'(''ipr in read_input'',i5)') ipr
 
       call object_modified ('nparma') !JT
@@ -1929,7 +1997,9 @@ c    &(iwdet(iparm),iparm=1,nparmd)
       call object_modified ('iwjasb') !JT
       call object_modified ('iwjasc') !JT
       call object_modified ('nparmj') !JT
-      call object_modified ('nparmcsf') !JT
+      call object_modified ('nparmcsf') !JT 
+      call object_modified ('norb_constraints') 
+      call object_modified ('orb_constraints') 
 
       return
       end
