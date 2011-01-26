@@ -686,10 +686,12 @@ c If the exponents of the basis functions are optimized, recompute normalization
        endif
 
 
-c     fourpi=four*pi
-      do 150 ib=1,nbasis
-        do 150 iorb=1,norb
-  150     coef(ib,iorb,1)=coef(ib,iorb,1)/anorm(ib)
+      if(inum_orb.eq.0) then
+c       fourpi=four*pi
+        do 150 ib=1,nbasis
+          do 150 iorb=1,norb
+  150       coef(ib,iorb,1)=coef(ib,iorb,1)/anorm(ib)
+      endif
 
 c Pivot among orbitals of the same symmetry.
 c Orbitals used to pivot other orbitals must appear
