@@ -837,7 +837,6 @@ c update parameters
         iparm=iparm+1
    58   csf_coef(iwcsf(i),iadd_diag)=csf_coef(iwcsf(i),1)+dparm(iparm)
 
-c  ACM : PUT ANTIFERROMAGNETIC CONSTRAINT IN HERE 2011 01 26
       do  it=1,notype
         ipmax = iabs(nparmo(it))
         do  ip=1,ipmax
@@ -857,8 +856,8 @@ c  ACM : PUT ANTIFERROMAGNETIC CONSTRAINT IN HERE 2011 01 26
           enddo
         endif
       enddo
-
-      call sort_af_gauss_orbs(iadd_diag)
+c    Make sure orbitals have antiferromagnetic order if iantiferromagnetic=1
+      if(iantiferromagnetic.eq.1) call sort_af_gauss_orbs(iadd_diag)
 
       if(nparms.eq.1) then
         iparm=iparm+1

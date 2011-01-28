@@ -3,6 +3,7 @@ module dets_mod
  use constants_mod
 
  integer               :: nup, ndn, nupdn
+ integer               :: iantiferromagnetic
  integer               :: nup_square, ndn_square, nupdn_square
  integer               :: ncsf,ndet
  double precision, allocatable :: csf_coef(:,:),cdet_in_csf(:,:)
