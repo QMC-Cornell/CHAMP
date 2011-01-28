@@ -858,6 +858,8 @@ c  ACM : PUT ANTIFERROMAGNETIC CONSTRAINT IN HERE 2011 01 26
         endif
       enddo
 
+      call sort_af_gauss_orbs(iadd_diag)
+
       if(nparms.eq.1) then
         iparm=iparm+1
         scalek(iadd_diag)=scalek(1)+dparm(iparm)

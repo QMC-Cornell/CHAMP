@@ -2051,4 +2051,91 @@ c and change signs of cdet_in_csf accordingly.  This is needed for orbital optim
    30     cdet_in_csf(idet_in_csf,icsf)=iodd_permut(iwdet_in_csf(idet_in_csf,icsf))*cdet_in_csf(idet_in_csf,icsf)
 
       return
+      end 
+c-----------------------------------------------------------------------
+
+      subroutine sort_af_gauss_orbs(iadd_diag)
+c Written by Abhijit Mehta
+c Order orbitals so that they alternate between spin-up and spin-down 
+c   (i.e., make floating gaussians antiferromagnetic)
+c  This should only work if nup=ndn and iantiferromagnetic=1
+c   We use the positions in oparm(it,i_orbital,iadd_diag)
+c   So, set iadd_diag = 1 by default
+
+      use dorb_mod
+      use dets_mod
+      use orbpar_mod
+      implicit real*8(a-h,o-z)
+
+      dimension iodd_permut(ndet)
+
+      if(nup.ne.ndn) then
+        write(6,'(''sort_af_gauss_orbs only defined for nup=ndn'')')
+        stop 'nup \= ndn in sort_af_gauss_orbs'
+      endif
+
+      if(ibasis.eq.5) then  ! rings, so 2nd coordinate is angular position
+        it = 2
+      else ! wires, so 1st coordinate is x-position (ie, position along length of wire)
+        it = 1
+      endif
+        
+
+      do idet=1,ndet
+c     Use shell sort to put orbitals in order of position
+        LOGNB2=INT(DLOG(DFLOAT(nup+ndn))/DLOG(2.D0)+1.D-14)
+        M=nup+ndn
+        DO 20 NN=1,LOGNB2
+         M=M/2
+         K=nup+ndn-M
+         DO 20 J=1,K
+           DO 10 I=J,1,-M
+             L=I+M
+             IF (oparm(it,iworbd(L,idet),iadd_diag).GT.oparm(it,iworbd(I,idet),iadd_diag)) GOTO 20
+              itemp=iworbd(I,idet)
+              iworbd(I,idet)=iworbd(L,idet)
+              iworbd(L,idet)=itemp
+              iodd_permut(i)=-iodd_permut(i)
+   10      CONTINUE
+   20   CONTINUE
+c     Now make sure that orbitals alternate between up and down
+        do iorb=1,nup  
+          iworbdup(iorb,idet) = iworbd((2*iorb-1), idet)
+          iworbddn(iorb,idet) = iworbd(2*iorb, idet)
+        enddo
+        do iorb=1,nup
+          iworbd(iorb,idet) = iworbdup(iorb,idet)
+          iworbd(iorb+nup, idet) = iworbddn(iorb,idet)
+        enddo
+      enddo
+ 
+
+c      do 20 i=1,ndet
+c        iodd_permut(i)=1
+c        do 10 j=1,nup
+c          do 10 k=j+1,nup
+c            if(iworbd(k,i).lt.iworbd(j,i)) then
+c              itmp=iworbd(j,i)
+c              iworbd(j,i)=iworbd(k,i)
+c              iworbd(k,i)=itmp
+c              iodd_permut(i)=-iodd_permut(i)
+c            endif
+c   10 continue
+c        do 20 j=nup+1,nup+ndn
+c          do 20 k=j+1,nup+ndn
+c            if(iworbd(k,i).lt.iworbd(j,i)) then
+c              itmp=iworbd(j,i)
+c              iworbd(j,i)=iworbd(k,i)
+c              iworbd(k,i)=itmp
+c              iodd_permut(i)=-iodd_permut(i)
+c            endif
+c   20 continue
+
+      do 30 icsf=1,ncsf
+        do 30 idet_in_csf=1,ndet_in_csf(icsf)
+   30     cdet_in_csf(idet_in_csf,icsf)=iodd_permut(iwdet_in_csf(idet_in_csf,icsf))*cdet_in_csf(idet_in_csf,icsf)
+
+      call sort_iworbd
+
+      return
       end
