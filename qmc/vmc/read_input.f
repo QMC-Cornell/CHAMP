@@ -2097,8 +2097,12 @@ c      don't use CSF's
       use dorb_mod
       use dets_mod
       use orbpar_mod
+      use const_mod
       use contrl_per_mod
+      use optimo_mod
       implicit real*8(a-h,o-z)
+      
+      dimension oparmtemp(notype)   ! used for swap
 
       if(nup.ne.ndn) then
         write(6,'(''sort_af_gauss_orbs only defined for nup=ndn'')')
@@ -2111,8 +2115,8 @@ c      don't use CSF's
         it = 1
       endif
 
-      do idet=1,ndet
-c     Use shell sort to put orbitals in order of position
+c      do idet=1,ndet
+c     Use Shell sort to put orbitals in order of position along wire/ring
 c       Adapted from routine written by Cyrus in December 1983
         LOGNB2=INT(DLOG(DFLOAT(nup+ndn))/DLOG(2.D0)+1.D-14)
         M=nup+ndn
@@ -2122,31 +2126,49 @@ c       Adapted from routine written by Cyrus in December 1983
          DO 20 J=1,K
            DO 10 I=J,1,-M
              L=I+M
-             IF (oparm(it,iworbd(L,idet),iadd_diag).GT.oparm(it,iworbd(I,idet),iadd_diag)) GOTO 20
-              itemp=iworbd(I,idet)
-              iworbd(I,idet)=iworbd(L,idet)
-              iworbd(L,idet)=itemp
+             if(ibasis.eq.5) then
+               oparmL = modulo(oparm(it,L,iadd_diag), 2.*pi)
+               oparmI = modulo(oparm(it,I,iadd_diag), 2.*pi)
+             else
+               oparmL = oparm(it,L,iadd_diag)
+               oparmI = oparm(it,I,iadd_diag)
+             endif
+             IF (oparmL.GT.oparmI)   GOTO 20
+             oparmtemp(:) = oparm(:,I,iadd_diag)
+             oparm(:,I,iadd_diag) = oparm(:,L,iadd_diag)
+             oparm(:,L,iadd_diag) = oparmtemp(:)
+c      looping method
+c             do it_temp = 1,notype
+c               oparmtemp(it_temp) = oparm(it_temp,I,iadd_diag)
+c               oparm(it_temp,I,iadd_diag) = oparm(it_temp,L,iadd_diag)
+c               oparm(it_temp,L,iadd_diag) = oparmtemp(it_temp)
+c             enddo
+
+c      Old code to swap indices instead of values -  ACM                
+c              itemp=iworbd(I,idet)
+c              iworbd(I,idet)=iworbd(L,idet)
+c              iworbd(L,idet)=itemp
    10      CONTINUE
    20   CONTINUE
   
 c      write(6,'(''sort_af_gauss_orbs: orbs have order:'', 100g12.6)') (oparm(it,iworbd(ib,idet),iadd_diag),ib=1,(nup+ndn))  ! ACM debug
 
-c     Now make sure that orbitals alternate between up and down
-        do iorb=1,nup  
-          iworbdup(iorb,idet) = iworbd((2*iorb-1), idet)
-          iworbddn(iorb,idet) = iworbd(2*iorb, idet)
-        enddo
-        do iorb=1,nup
-          iworbd(iorb,idet) = iworbdup(iorb,idet)
-          iworbd(iorb+nup, idet) = iworbddn(iorb,idet)
-        enddo
-        write(6,'(a)') 'After sort_af_gauss_orbs, spin-up determinants have orbitals:'
-        write(6,'(a,i5,a,100i4)') ' det # ',idetup, ': ',(iworbdup(iup,idet),iup=1,nup)
-        write(6,'(a)') 'After sort_af_gauss_orbs, spin-down determinants have orbitals:'
-        write(6,'(a,i5,a,100i4)') ' det # ',idetdn, ': ',(iworbddn(idn,idet),idn=1,ndn)
-      enddo
+c     Now make sure that orbitals alternate between up and down - only needed if swapping indices
+c        do iorb=1,nup  
+c          iworbdup(iorb,idet) = iworbd((2*iorb-1), idet)
+c          iworbddn(iorb,idet) = iworbd(2*iorb, idet)
+c        enddo
+c        do iorb=1,nup
+c          iworbd(iorb,idet) = iworbdup(iorb,idet)
+c          iworbd(iorb+nup, idet) = iworbddn(iorb,idet)
+c        enddo
+c        write(6,'(a)') 'After sort_af_gauss_orbs, spin-up determinants have orbitals:'
+c        write(6,'(a,i5,a,100i4)') ' det # ',idetup, ': ',(iworbdup(iup,idet),iup=1,nup)
+c        write(6,'(a)') 'After sort_af_gauss_orbs, spin-down determinants have orbitals:'
+c        write(6,'(a,i5,a,100i4)') ' det # ',idetdn, ': ',(iworbddn(idn,idet),idn=1,ndn)
+c      enddo
 
-c     Make sure iworbd is properly sorted, then make srue iworbdup and iworbddn are too 
+c     Make sure iworbd is properly sorted, then make sure iworbdup and iworbddn are too 
       call sort_iworbd
       
       do idet=1,ndet
