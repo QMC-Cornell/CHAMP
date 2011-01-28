@@ -406,7 +406,7 @@ dipole_moment_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o nuclei_mod.o \
 	opt_lin_mod.o modules.h
 dmc_mod.o: all_tools_mod.o allocations_mod.o average_mod.o \
 	commons/branch_dmc_opt_mod.o control_mod.o montecarlo_mod.o \
-	opt_ovlp_fn_mod.o print_mod.o restart_mod.o modules.h
+	print_mod.o restart_mod.o walkers_mod.o modules.h
 electrons_mod.o: all_tools_mod.o walkers_mod.o modules.h
 eloc_mod.o: all_tools_mod.o electrons_mod.o psi_mod.o modules.h
 ewald2_mod.o: basic_tools_mod.o commons/dim_mod.o

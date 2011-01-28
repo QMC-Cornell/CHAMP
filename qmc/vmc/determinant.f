@@ -721,7 +721,6 @@ c temporary variables, used to save values
       dimension d2deti_det_temp(nparmd), detij_det_temp(nparmd, nparmd)
 c      dimension detij_partial_temp(nparmd,nparmcsf+4*nbasis)
       dimension iwo_temp(norb,notype)
-
 c ACM: For optimized constraints, we shall run deriv_det_orb as if we were 
 c  varying each orbital parameter separately, so we must change the values of 
 c  nparmo(it), nparmot, nparmd, and iwo(ip,it).  We calculate overall derivatives using 
@@ -737,10 +736,10 @@ c    In the future, we should fix this to only compute the necessary parameters.
         if (nparmo(it).lt.0) then
           nparmot = nparmot - iabs(nparmo(it)) + nbasis
           nparmo(it) = nbasis
+          do ib = 1,nbasis  ! we'll calculate derivatives wrt all orbital params
+            iwo(ib, it) = ib
+          enddo
         endif
-        do ib = 1,nbasis  ! we'll calculate derivatives wrt all orbital params
-          iwo(ib, it) = ib
-        enddo
       enddo
       nparmd = nparmcsf+nparmot
 
@@ -764,6 +763,11 @@ c   This is a cut and paste from determinant()
 
       call deriv_det_orb(orb,dorb,ddorb,dporb,d2porb,ddporb,d2dporb,detinv)
 
+c      write(6,'(''After deriv_det_orb, detij_det ='')')  ! ACM debug
+c      do i=1,nparmd
+c        write(6,'(20g12.4)') (detij_det(i,j), j=1,nparmd)
+c      enddo
+
 c  Do chain rule to calculate derivative with respect to constrained parameter
 
         iparm0 = nparmcsf ! which parameter we're on for final result 
@@ -786,17 +790,20 @@ c           Do chain rule by summing up derivatives:
      &             + consgn*consgn2*detij_det(iparm_summand_index,iparm_summand_index2)
               enddo 
             enddo
-c           Now put the summed values in output variabales (currently labeled _temp), but we switch them later
-            do ip=1,nparmo_temp(it)  ! set sums to output variables
+c           Now put the summed values in output variables (currently labeled _temp), but we switch them later
+            do ip=1,iabs(nparmo_temp(it))  ! set sums to output variables
               iparm_final_index = iparm0+ip
               iparm_sum_index = iparm1+iwo_temp(ip,it)
               deti_det_temp(iparm_final_index) = deti_det(iparm_sum_index)
               ddeti_det_temp(:,:,iparm_final_index) = ddeti_det(:,:,iparm_sum_index)
               d2deti_det_temp(iparm_final_index) = d2deti_det(iparm_sum_index)
-              do ip2=1,nparmo_temp(it) ! second sum for detij_det
+              do ip2=1,iabs(nparmo_temp(it)) ! second sum for detij_det
                 iparm_final_index2 = iparm0+ip2
                 iparm_sum_index2 = iparm1+iwo_temp(ip2,it)
                 detij_det_temp(iparm_final_index,iparm_final_index2) = detij_det(iparm_sum_index,iparm_sum_index2)
+c                write(6,'(6i5)') ip, iwo_temp(ip,it), iparm_final_index, iparm_final_index2, iparm_sum_index, iparm_sum_index2
+c                write(6,'(3g12.4)')  iparm_final_index, iparm_final_index2, detij_det_temp(iparm_final_index,iparm_final_index2)
+c                write(6,'(3g12.4)') iparm_sum_index,iparm_sum_index2, detij_det(iparm_sum_index,iparm_sum_index2)
               enddo
             enddo
 c    This code was from when nparmo(it)=-1 just meant constrain ALL params
@@ -812,6 +819,16 @@ c            detij_partial_temp(iparm0,1:nparmd) = sum(detij_det(iparm1+1:iparm1
             iparm1 = iparm1 + nparmo(it)
           endif
         enddo
+c      write(6,'(''After applying constraints, detij_det ='')') ! ACM debug
+c      do i=1,nparmd
+c        write(6,'(20g12.4)') (detij_det(i,j), j=1,nparmd)
+c      enddo
+c
+c      write(6,'(''After applying constraints, detij_det_temp ='')')
+c      do i=1,nparmd_temp
+c        write(6,'(20g12.4)') (detij_det_temp(i,j), j=1,nparmd_temp)
+c      enddo
+
 c  Finish up doing sum over second index to get detij_det(iparm,jparm) - NO LONGER NEEDED
 c        jparm0 = nparmcsf
 c        jparm1 = nparmcsf
@@ -842,6 +859,13 @@ c     of derivative arrays and give them correct values
         ddeti_det = ddeti_det_temp
         d2deti_det = d2deti_det_temp
         detij_det = detij_det_temp
+      
+
+c      write(6,'(''After constrained_deriv_det_orb, detij_det ='')') ! ACM debug
+c      do i=1,nparmd
+c        write(6,'(20g12.4)') (detij_det(i,j), j=1,nparmd)
+c      enddo
+
 
         return
         end

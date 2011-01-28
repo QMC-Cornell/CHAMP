@@ -262,7 +262,7 @@ c now do averaging steps
 
 !JT        call object_modified_by_index (xold_index)  !JT
 
-!       accumulate data for averages and statitical errors
+!       accumulate data for averages and statistical errors
 !        call compute_block_averages        !JT old
         call compute_averages_step        !JT new
 
@@ -326,7 +326,6 @@ c       write out configuration for optimization/dmc/gfmc here
       if (block_iterations_nb .ge. nblk .and. ((eloc_av_err .le. error_threshold) .or. (eloc_av_err .ne. eloc_av_err))) then    !JT
         exit                              !JT
       endif                               !JT
-
   440 continue
 
 c      if( nforce == 1) then

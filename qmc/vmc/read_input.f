@@ -1836,11 +1836,11 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
       call alloc ('iwo', iwo, norb, notype)
       do it=1,notype
         read(5,*) (iwo(iparm,it),iparm=1,iabs(nparmo(it)))
-        write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,nparmo(it))
         if(nparmo(it).lt.0) then  !constrained orbital optimization
           write(6,'(''Constraints applied to orbital parameters - constraints printed below'')')
         endif 
-        do iparm=1,nparmo(it)
+        write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,iabs(nparmo(it)))
+        do iparm=1,iabs(nparmo(it))
           if(iwo(iparm,it).lt.0 .or. iwo(iparm,it).gt.norb) then
             stop 'Incorrect value for iwo.'
           endif
@@ -1921,7 +1921,15 @@ c    &(iwdet(iparm),iparm=1,nparmd)
             write(6, '(''There must be between 0 and (norb-1) constraints'')')
             stop 'Invalid number of constraints.'
           endif
+          if(norb_constraints(it).eq.0 .and. nparmo(it).lt.0) then
+            write(6, '(''nparmo<0, but no constraints found'')')
+            stop 'Invalid number of constraints.'
+          elseif(norb_constraints(it).ne.0 .and. nparmo(it).ge.0) then
+            write(6, '(''Cannot specify constraints if nparmo>=0'')')
+            stop 'Invalid number of constraints.'
+          endif
           read(5,*) ((orb_constraints(it,i,j),j=1,2),i=1,norb_constraints(it))
+          if (norb_constraints(it).eq.0) cycle
           if(ibasis.eq.4) then
             if(it.eq.1) write(6,'(''Applying constraints to floating gaussian x-positions:'')')
             if(it.eq.2) write(6,'(''Applying constraints to floating gaussian y-positions:'')')
@@ -1944,12 +1952,12 @@ c    &(iwdet(iparm),iparm=1,nparmd)
             do iparm=1,iabs(nparmo(it)) 
               if (orb_constraints(it,icon,1).eq.iwo(iparm,it)) then
                 is_first_ok = 1
-                exit
-              elseif (iabs(orb_constraints(it,icon,2)).eq.iwo(iparm,it)) then
+              endif
+              if (iabs(orb_constraints(it,icon,2)).eq.iwo(iparm,it)) then
                 is_second_ok = 0
                 exit
               endif
-	    enddo
+            enddo
             if (is_first_ok.eq.0 .or. is_second_ok.eq.0) then
               write(6,'(''Constraints must be between an orbital that is listed as being optimized and one that is not'')')
               stop 'Invalid constraint'

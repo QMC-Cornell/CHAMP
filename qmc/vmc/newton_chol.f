@@ -128,7 +128,7 @@ c 160     write(6,'(''ham='',20g12.4)') (ham(i,j),j=1,nparmp1)
         write(6,*)
       endif
       write(6,'(/,''diagonal H/O'',9f9.4)') (ham(i,i)/ovlp(i,i),i=1,nparmp1)
-
+c      flush(6) ! ACM debug
       endif ! end of linear method quantities
 
 
@@ -155,7 +155,6 @@ c in order to see the eigenvalues of the Hessian.
         grad(i)=grad_sav(i)
         do 220 j=1,nparm
   220     hess(i,j)=hess_sav(i,j)
-
       if(ipr_opt.ge.0) then
         write(6,'(''grad='',10g14.6)') (grad(i),i=1,nparm)
         do 230 i=1,nparm
@@ -525,13 +524,15 @@ c           ham(i,j)=ham(i,j)+max(-0.5d0*eig_min,0.d0)+add_diag(iadd_diag)
 
 cc    if(ipr_eigs.ge.1 .and. ipr_opt.ge.1) then
 c     if(ipr_opt.ge.1) then
-c       do 8 i=1,nparmp1
-c   8     write(6,'(''ovlp='',20g12.4)') (ovlp(i,j),j=1,i)
-c       write(6,*)
+       do  i=1,nparmp1
+         write(6,'(''ovlp='',20g12.4)') (ovlp(i,j),j=1,i)
+       enddo
+       write(6,*)
 
-c       do 9 i=1,nparmp1
-c   9     write(6,'(''ham='',20g12.4)') (ham(i,j),j=1,nparmp1)
-c       write(6,*)
+       do i=1,nparmp1
+         write(6,'(''ham='',20g12.4)') (ham(i,j),j=1,nparmp1)
+       enddo
+       write(6,*)
 c     endif
 
 
@@ -847,14 +848,14 @@ c  ACM : PUT ANTIFERROMAGNETIC CONSTRAINT IN HERE 2011 01 26
              if (oparm(it,iwo(ip,it),iadd_diag).gt.(alattice/2.)) then
                 oparm(it,iwo(ip,it),iadd_diag) = oparm(it,iwo(ip,it),iadd_diag) - alattice
              endif
-          endif 
-          if (nparmo(it).lt.0) then ! make sure to enforce constraints
-            do icon=1,norb_constraints(it)
-               consgn = real(sign(1,orb_constraints(it,icon,2)))
-               oparm(it,iabs(orb_constraints(it,icon,2)),iadd_diag) = consgn*oparm(it,orb_constraints(it,icon,1), iadd_diag)
-            enddo
           endif
         enddo
+        if (nparmo(it).lt.0) then ! make sure to enforce constraints
+          do icon=1,norb_constraints(it)
+             consgn = real(sign(1,orb_constraints(it,icon,2)))
+             oparm(it,iabs(orb_constraints(it,icon,2)),iadd_diag) = consgn*oparm(it,orb_constraints(it,icon,1), iadd_diag)
+          enddo
+        endif
       enddo
 
       if(nparms.eq.1) then
