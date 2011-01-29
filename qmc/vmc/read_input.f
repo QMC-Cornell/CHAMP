@@ -1986,7 +1986,7 @@ c    &(iwdet(iparm),iparm=1,nparmd)
               endif
             enddo
             consgn = real(sign(1, orb_constraints(it,icon,2)))
-            oparm(it,iabs(orb_constraints(it,icon,1)),1) = consgn*oparm(it,orb_constraints(it,icon,2),1)
+            oparm(it,orb_constraints(it,icon,1),1) = consgn*oparm(it,iabs(orb_constraints(it,icon,2)),1)
           enddo  ! finished check do icon=1,norbconstrain(it)
 
 c         now we make sure all parameters of this type are the same
