@@ -2122,18 +2122,19 @@ c      don't use CSF's
 c      do idet=1,ndet
 c     Use Shell sort to put orbitals in order of position along wire/ring
 c       Adapted from routine written by Cyrus in December 1983
-        LOGNB2=INT(DLOG(DFLOAT(nup+ndn))/DLOG(2.D0)+1.D-14)
         M=nup+ndn
+        LOGNB2=INT(DLOG(DFLOAT(M))/DLOG(2.D0)+1.D-14)
+        if(ibasis.eq.5) then
+          do ib=1,M
+             oparm(it,ib,iadd_diag) = modulo(oparm(it,ib,iadd_diag), 2.*pi)
+          enddo 
+        endif
         DO 20 NN=1,LOGNB2
          M=M/2
          K=nup+ndn-M
          DO 20 J=1,K
            DO 10 I=J,1,-M
              L=I+M
-             if(ibasis.eq.5) then
-               oparm(it,L,iadd_diag) = modulo(oparm(it,L,iadd_diag), 2.*pi)
-               oparm(it,I,iadd_diag) = modulo(oparm(it,I,iadd_diag), 2.*pi)
-             endif
              oparmL = oparm(it,L,iadd_diag)
              oparmI = oparm(it,I,iadd_diag)
              IF (oparmL.GT.oparmI)   GOTO 20
