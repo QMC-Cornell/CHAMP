@@ -776,16 +776,16 @@ c  Do chain rule to calculate derivative with respect to constrained parameter
           if (nparmo_temp(it).lt.0) then
 c           Do chain rule by summing up derivatives:
             do icon=1,norb_constraints(it) 
-              iparm_sum_index = iparm1+orb_constraints(it,icon,1) ! where to keep sum
+              iparm_sum_index = iparm1+iabs(orb_constraints(it,icon,2)) ! where to keep sum
               consgn = real(sign(1,orb_constraints(it,icon,2))) !whether this constraint is a mirror constraint
-              iparm_summand_index = iparm1+iabs(orb_constraints(it,icon,2)) ! constrained param
+              iparm_summand_index = iparm1+orb_constraints(it,icon,1) ! constrained param
               deti_det(iparm_sum_index) = deti_det(iparm_sum_index) + consgn*deti_det(iparm_summand_index)
               ddeti_det(:,:,iparm_sum_index) = ddeti_det(:,:,iparm_sum_index) + consgn*ddeti_det(:,:,iparm_summand_index)
               d2deti_det(iparm_sum_index) = d2deti_det(iparm_sum_index) + consgn*d2deti_det(iparm_summand_index)
               do icon2=1,norb_constraints(it) ! sum to get partials -detij_det
-                iparm_sum_index2 = iparm1+orb_constraints(it,icon2,1)
+                iparm_sum_index2 = iparm1+iabs(orb_constraints(it,icon2,2))
                 consgn2 = real(sign(1,orb_constraints(it,icon2,2)))
-                iparm_summand_index2 = iparm1 + iabs(orb_constraints(it,icon2,2))
+                iparm_summand_index2 = iparm1 + orb_constraints(it,icon2,1)
                 detij_det(iparm_sum_index,iparm_sum_index2) = detij_det(iparm_sum_index,iparm_sum_index2)
      &             + consgn*consgn2*detij_det(iparm_summand_index,iparm_summand_index2)
               enddo 

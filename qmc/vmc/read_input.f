@@ -424,15 +424,15 @@ c             setting this to be negative indicates that there are constraints, 
 c             absolute value is the number of free parameters
 c nparmg      Do not use this.
 c norb_constraints(i)  Number of constraints imposed on orbital params of type i to be optimized
-c orb_constraints(type,constraint #, :) For each type and constraint, the first element is one of
-c             the orbitals being optimized (should be in iwo), and the second element is the 
-c            orbital constrained to be equal (or negative of, if it has a '-' sign)
-c            to the first element
-c    Eg, sample input if there orbitals 1 and 3 have the same first coordinate, and
+c orb_constraints(type,constraint #, orb1:orb2) For each type and constraint, 
+c              the first orbital is set equal to the value (or negative of, if it has a '-' sign)
+c              of the second orbital (orb2 must be one of the orbitals being optimized, ie.
+c              it should be in iwo).
+c    Eg, sample input if orbitals 1 and 3 have the same first coordinate, and
 c         if the second coordinate of 2 had mirror symmetry with 30, and 3 with 29: 
 c  1 2 0 0    (norb_constraints(i),i=1,notype)  ! a total of 3 constraints
-c  1 3             ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
-c  2  -30  3 -29   ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+c  3 1             ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+c  30 -2   29 -3   ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
 c                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
 c                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
 
@@ -1960,14 +1960,18 @@ c    &(iwdet(iparm),iparm=1,nparmd)
           endif
           do icon=1,norb_constraints(it)  ! check that constraints are ok
             write(6,'(''Constraining orbitals: '',2i5)') (orb_constraints(it,icon,j),j=1,2)
-            is_first_ok = 0 ! check to see if first orbital of pair is one that we are optimizing
-            is_second_ok = 1 ! check that second orbital is one that we aren't optimizing
+            if (orb_constraints(it,icon,1).le.0 .or. orb_constraints(it,icon,1).gt.norb) then
+              write(6,'(''Constrained orbital must be between 1 and norb'')')
+              stop 'Constrained orbital out of range'
+            endif
+            is_first_ok = 1 ! check to see if first orbital of pair is one that we aren't optimizing
+            is_second_ok = 0 ! check that second orbital is one that we are optimizing
             do iparm=1,iabs(nparmo(it)) 
-              if (orb_constraints(it,icon,1).eq.iwo(iparm,it)) then
-                is_first_ok = 1
-              endif
               if (iabs(orb_constraints(it,icon,2)).eq.iwo(iparm,it)) then
-                is_second_ok = 0
+                is_second_ok = 1
+              endif
+              if (orb_constraints(it,icon,1).eq.iwo(iparm,it)) then
+                is_first_ok = 0
                 exit
               endif
             enddo
@@ -1975,15 +1979,14 @@ c    &(iwdet(iparm),iparm=1,nparmd)
               write(6,'(''Constraints must be between an orbital that is listed as being optimized and one that is not'')')
               stop 'Invalid constraint'
             endif
-
             do icon2=icon+1,norb_constraints(it) ! check for duplicate constraints
-              if(iabs(orb_constraints(it,icon,2)).eq.iabs(orb_constraints(it,icon2,2))) then
+              if(orb_constraints(it,icon,1).eq.orb_constraints(it,icon2,1)) then
                 write(6,'(''Duplicate or Conflicting Constraint'')')
                 stop 'Duplicate or conflicting constraint'
               endif
             enddo
             consgn = real(sign(1, orb_constraints(it,icon,2)))
-            oparm(it,iabs(orb_constraints(it,icon,2)),1) = consgn*oparm(it,orb_constraints(it,icon,1),1)
+            oparm(it,iabs(orb_constraints(it,icon,1)),1) = consgn*oparm(it,orb_constraints(it,icon,2),1)
           enddo  ! finished check do icon=1,norbconstrain(it)
 
 c         now we make sure all parameters of this type are the same
@@ -2091,6 +2094,7 @@ c   (i.e., make floating gaussians antiferromagnetic)
 c  This should only work if nup=ndn and iantiferromagnetic=1
 c   We use the positions in oparm(it,i_orbital,iadd_diag)
 c   So, set iadd_diag = 1 by default
+c  Note that for rings, this changes angles so that they are in the range 0 .. 2pi rather than -pi..pi
 c  We're not worrying about sign of permutation when we reorder orbitals since we 
 c      don't use CSF's
 
@@ -2127,12 +2131,11 @@ c       Adapted from routine written by Cyrus in December 1983
            DO 10 I=J,1,-M
              L=I+M
              if(ibasis.eq.5) then
-               oparmL = modulo(oparm(it,L,iadd_diag), 2.*pi)
-               oparmI = modulo(oparm(it,I,iadd_diag), 2.*pi)
-             else
-               oparmL = oparm(it,L,iadd_diag)
-               oparmI = oparm(it,I,iadd_diag)
+               oparm(it,L,iadd_diag) = modulo(oparm(it,L,iadd_diag), 2.*pi)
+               oparm(it,I,iadd_diag) = modulo(oparm(it,I,iadd_diag), 2.*pi)
              endif
+             oparmL = oparm(it,L,iadd_diag)
+             oparmI = oparm(it,I,iadd_diag)
              IF (oparmL.GT.oparmI)   GOTO 20
              oparmtemp(:) = oparm(:,I,iadd_diag)
              oparm(:,I,iadd_diag) = oparm(:,L,iadd_diag)
@@ -2151,7 +2154,7 @@ c              iworbd(L,idet)=itemp
    10      CONTINUE
    20   CONTINUE
   
-c      write(6,'(''sort_af_gauss_orbs: orbs have order:'', 100g12.6)') (oparm(it,iworbd(ib,idet),iadd_diag),ib=1,(nup+ndn))  ! ACM debug
+      write(6,'(''sort_af_gauss_orbs: orbs have order:'', 100g12.6)') (oparm(it,ib,iadd_diag),ib=1,(nup+ndn))  ! ACM debug
 
 c     Now make sure that orbitals alternate between up and down - only needed if swapping indices
 c        do iorb=1,nup  
@@ -2169,14 +2172,14 @@ c        write(6,'(a,i5,a,100i4)') ' det # ',idetdn, ': ',(iworbddn(idn,idet),id
 c      enddo
 
 c     Make sure iworbd is properly sorted, then make sure iworbdup and iworbddn are too 
-      call sort_iworbd
-      
-      do idet=1,ndet
-        do iorb=1,nup
-          iworbdup(iorb,idet) = iworbd(iorb,idet)
-          iworbddn(iorb,idet) = iworbd(iorb+nup, idet)
-        enddo
-      enddo
-
+c      call sort_iworbd
+c      
+c      do idet=1,ndet
+c        do iorb=1,nup
+c          iworbdup(iorb,idet) = iworbd(iorb,idet)
+c          iworbddn(iorb,idet) = iworbd(iorb+nup, idet)
+c        enddo
+c      enddo
+c
       return
       end

@@ -852,7 +852,7 @@ c update parameters
         if (nparmo(it).lt.0) then ! make sure to enforce constraints
           do icon=1,norb_constraints(it)
              consgn = real(sign(1,orb_constraints(it,icon,2)))
-             oparm(it,iabs(orb_constraints(it,icon,2)),iadd_diag) = consgn*oparm(it,orb_constraints(it,icon,1), iadd_diag)
+             oparm(it,iabs(orb_constraints(it,icon,1)),iadd_diag) = consgn*oparm(it,orb_constraints(it,icon,2), iadd_diag)
           enddo
         endif
       enddo
