@@ -1481,8 +1481,18 @@ c (also for 2D systems with numerical orbitals)
       endif
 
 c make sure that iantiferromagnetic makes sense
-      if(iantiferromagnetic.eq.1 .and. nup.ne.ndn) stop 'iantiferromagnetic can be 1 only if nup=ndn'
-
+      if(iantiferromagnetic.eq.1) then
+        if(nup.ne.ndn) then
+          stop 'iantiferromagnetic can be 1 only if nup=ndn'
+        else 
+          do i =1,nup
+            if (iworbddn(i,1).ne.(iworbdup(i,1)+1))  then
+              stop 'Incorrect input format for iantiferromagnetic=1. Orbitals must alternate 
+     &            between spin-up and spin-down (ie, up = 1 3 5 7..., dn = 2 4 6 8 ...)'
+            endif
+          enddo
+        endif
+      endif
 
 c pair density calculation parameters:
       if(ifixe.lt.-4 .or. ifixe.gt.nelec) stop 'ifixe must be between -4 and nelec'
