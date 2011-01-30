@@ -233,7 +233,7 @@ c            = 2 then we print new parameters with _new subscript
 
       dimension grad_cal(nparm)
 
-      if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i1,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
+      if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i2,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
 
 c Add max(-lowest eigenvalue,0) + add_diag to diagonal of hessian
 c Another possibility is first diagonalizing hess by a unitary transform
@@ -360,7 +360,7 @@ c            = 2 then we print new parameters with _new subscript
       dimension e_diag(nparm)
 
       write(6,'(''using perturbation theory'')')
-      if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i1,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
+      if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i2,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
 
       nparmp1=nparm+1
 
@@ -489,7 +489,7 @@ c     isym=0
 c to get eigv different than the lowest, set e_target >= dabs(eigv)
 c     e_target=0
 
-      if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i1,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
+      if(ipr_opt.ge.-4) write(6,'(/,''add_diag('',i2,'')='',1pd11.4)') iadd_diag,add_diag(iadd_diag)
 
       nparmp1=nparm+1
       call alloc ('ham', ham, nparmp1, nparmp1)
@@ -694,7 +694,7 @@ c    &      coef(j,i0),ovlp_orig(i,j),ovlp_orig(1,j),coef(j,i0)*ovlp_orig(i,j),t
       write(6,'(''coef0,dnorm1,dnorm2 '',9f16.11)') coef(1,i0),dnorm1,dnorm2
 c     write(6,'(''dparm '',100f10.6)') (coef(i,i0)*dnorm1,i=2,nparmp1)
       write(6,*)
-     
+
       call alloc ('dparm', dparm, nparm)
 
 c     dparm_norm=0
@@ -748,6 +748,7 @@ c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
       use all_tools_mod
+      use const_mod
       use control_mod
       use atom_mod
       use coefs_mod
@@ -897,13 +898,22 @@ c csf parameters:
         dparm_norm=sqrt(dparm_norm/nparmcsf)
         if(dparm_norm.gt.1.d0) then
           iflag=1
-          write(6,'(''iadd_diag,dparm_norm=''
-     &    ,i1,f9.2,'' iflag=1 because dparm_norm>1 for csf params'')') iadd_diag,dparm_norm
+          write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &    '' iflag=1 This is a bad move because dparm_norm>1 for csf params'')') iadd_diag,dparm_norm
         endif
       endif
 
+c ibasis     =1 localized Slater or gaussian or numerical basis
+c            =2 planewave basis, also for extended orbitals on grid
+c            =3 complex basis for 2D quantum dots / composite fermions (if numr=0 then Fock-Darwin basis)
+c            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
+c            =5 2d localized floating gaussians in circular coord. (wigner crystal)
+c            =6 2d localized non-circular floating gaussians in cartesian coord. (wigner crystal)
+c            =7 2d localized periodic floating gaussians in cartesian coord (periodic 1d wigner crystal)
+
 c orbital parameters (type 1,2,3 and 4)
-      if(nparmtot.gt.0) then
+      write(6,'(''nparmot,nparmo(2)='',9i5)') nparmot,nparmo(2)
+      if(nparmot.gt.0) then
         if(nparmo(1).ne.0) then
           dparm_norm=0
           do i=1,iabs(nparmo(1))
@@ -913,8 +923,8 @@ c orbital parameters (type 1,2,3 and 4)
           dparm_norm=sqrt(dparm_norm/abs(nparmo(1)))
           if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
             iflag=1
-            write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &      '' iflag=1 because dparm_norm>1/3scalek for otype 1 params'')')
+            write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &      '' iflag=1. This is a bad move because dparm_norm>1/3scalek for otype 1 params'')')
      &    iadd_diag,dparm_norm
           endif
         endif
@@ -925,29 +935,18 @@ c orbital parameters (type 1,2,3 and 4)
             dparm_norm=dparm_norm+dparm(iparm)**2
           enddo
           dparm_norm=sqrt(dparm_norm/abs(nparmo(2)))
-          if(ibasis.eq.4) then
+          if(ibasis.eq.4 .or. ibasis.eq.6 .or. ibasis.eq. 7) then
             if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
               iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &        '' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
+              write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &        '' iflag=1. This is a bad move because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
             endif
-          elseif(ibasis.eq.6) then
-            if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
-              iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &        '' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
-            endif
-          elseif(ibasis.eq.7) then
-            if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
-              iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &        '' iflag=1 because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
-            endif  
           elseif(ibasis.eq.5) then
-            if(dparm_norm.gt..2d0) then
+            write(6,'(''for ang_pos dparm_norm='',f12.6)') dparm_norm
+            if(dparm_norm.gt.0.01d0) then
               iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &        '' iflag=1 because dparm_norm>0.2 for otype 2 params'')') iadd_diag,dparm_norm
+              write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &        '' iflag=1. This is a bad move  because dparm_norm>0.2 for otype 2 params'')') iadd_diag,dparm_norm
             endif
           endif
         endif
@@ -960,8 +959,8 @@ c orbital parameters (type 1,2,3 and 4)
           dparm_norm=sqrt(dparm_norm/abs(nparmo(3)))
           if(dparm_norm.gt.2.d0) then
             iflag=1
-            write(6,'(''iadd_diag,dparm_norm=''
-     &      ,i1,f9.2,'' iflag=1 because dparm_norm>2 for otype 3 params'')') iadd_diag,dparm_norm
+            write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &      '' iflag=1. This is a bad move because dparm_norm>2 for otype 3 params'')') iadd_diag,dparm_norm
           endif
         endif
         if(ibasis.eq.5 .or. ibasis.eq.6 .or. ibasis.eq.7) then
@@ -975,8 +974,8 @@ c             write(6,*) 'test: dparm(iparm)=',dparm(iparm)
             dparm_norm=sqrt(dparm_norm/abs(nparmo(4)))
             if(dparm_norm.gt.3.d0) then
               iflag=1
-              write(6,'(''iadd_diag,dparm_norm=''
-     &        ,i1,f9.2,'' iflag=1 because dparm_norm>1 for otype 4 params'')') iadd_diag,dparm_norm
+              write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &        '' iflag=1. This is a bad move because dparm_norm>1 for otype 4 params'')') iadd_diag,dparm_norm
             endif
           endif
         endif
@@ -989,8 +988,8 @@ c scalek
         dparm_norm=dabs(dparm(iparm))
         if(dparm_norm.gt..1d0) then
           iflag=1
-          write(6,'(''iadd_diag,dparm_norm=''
-     &  ,i1,f9.2,'' iflag=1 because dparm_norm>0.1 for scalek '')') iadd_diag,dparm_norm
+          write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &    '' iflag=. This is a bad move because dparm_norm>0.1 for scalek '')') iadd_diag,dparm_norm
         endif
       endif
 c jastrow parameters
@@ -1003,25 +1002,25 @@ c jastrow parameters
         dparm_norm=sqrt(dparm_norm/nparmj)
         if(dparm_norm.gt.max(10.d0,1.d0/(5*scalek(iadd_diag)))) then
           iflag=1
-          write(6,'(''iadd_diag,dparm_norm='',i1,f9.2,
-     &'' iflag=1 because dparm_norm > 10 or 1/5*scalek for jastrow params'')') iadd_diag,dparm_norm
+          write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+     &'' iflag=1. This is a bad move because dparm_norm > 10 or 1/5*scalek for jastrow params'')') iadd_diag,dparm_norm
         endif
       endif
 
 c Do minimal check that the move is not terrible by checking the average size of the move
 c and that the nonlinear parameters in the exponent do not become < -1/scalek or too large.
-      iflag=0
+c     iflag=0
       dparm_norm=0
       do 71 i=1,nparm
    71   dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
       if(dparm_norm.gt.10.d0) then
         iflag=1
-        write(6,'(''update_params:iadd_diag,dparm_norm='',i1,f9.2,'' iflag=1 because dparm_norm>10'')') iadd_diag,dparm_norm
+        write(6,'(''update_params:iadd_diag,dparm_norm='',i2,f9.2,'' iflag=1 because dparm_norm>10'')') iadd_diag,dparm_norm
       endif
 
       if(scalek(iadd_diag).le.0.d0) then
-        write(6,'(''iadd_diag='',i1,'' iflag=1 because scalek<0'')') iadd_diag
+        write(6,'(''iadd_diag='',i2,'' iflag=1. This is a bad move  because scalek<0'')') iadd_diag
         iflag=1
       endif
 
@@ -1029,8 +1028,8 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
         if(nparmo(3).ne.0) then
           do ib=1,nbasis
             if(oparm(3,ib,iadd_diag).le.0.d0) then
-              write(6,'(''iadd_diag='',i1,
-     &           '' iflag=1 because oparm(3,..) < 0'')') iadd_diag
+              write(6,'(''iadd_diag='',i2,
+     &           '' iflag=1. This is a bad move  because oparm(3,..) < 0'')') iadd_diag
               iflag=1
             endif
           enddo
@@ -1042,8 +1041,8 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
           if(nparmo(4).ne.0) then
             do ib=1,nbasis
               if(oparm(4,ib,iadd_diag).le.0.d0) then
-                write(6,'(''iadd_diag='',i1,
-     &             '' iflag=1 because oparm(4,..) < 0'')') iadd_diag
+                write(6,'(''iadd_diag='',i2,
+     &             '' iflag=1. This is a bad move  because oparm(4,..) < 0'')') iadd_diag
                 iflag=1
               endif
             enddo
@@ -1058,17 +1057,17 @@ c and that the nonlinear parameters in the exponent do not become < -1/scalek or
       endif
 
       do 72 ict=1,nctype
-        if(a4(2,ict,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i1,'' iflag=1 because a4<-scalek'')') iadd_diag
-        if(a4(2,ict,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i1,'' iflag=1 because a4>AMAX_NONLIN'')') iadd_diag
+        if(a4(2,ict,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i2,'' iflag=1 because a4<-scalek'')') iadd_diag
+        if(a4(2,ict,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i2,'' iflag=1 because a4>AMAX_NONLIN'')') iadd_diag
    72   if(a4(2,ict,iadd_diag).lt.parm2min .or. a4(2,ict,iadd_diag).gt.AMAX_NONLIN) iflag=1
       do 74 isp=nspin1,nspin2b
-        if(b(2,isp,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i1,'' iflag=1 because b<-scalek'')') iadd_diag
-        if(b(2,isp,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i1,'' iflag=1 because b>AMAX_NONLIN'')') iadd_diag
+        if(b(2,isp,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i2,'' iflag=1 because b<-scalek'')') iadd_diag
+        if(b(2,isp,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i2,'' iflag=1 because b>AMAX_NONLIN'')') iadd_diag
    74   if(b(2,isp,iadd_diag).lt.parm2min .or. b(2,isp,iadd_diag).gt.AMAX_NONLIN) iflag=1
 
 c Write out wavefn
 
-      write(2,'(''iadd_diag,add_diag='',i1,1pd12.4)') iadd_diag,add_diag(iadd_diag)
+      write(2,'(''iadd_diag,add_diag='',i2,1pd12.4)') iadd_diag,add_diag(iadd_diag)
 
       write(6,'(/,''New wave function:'')')
 
@@ -1085,6 +1084,12 @@ c Write out wavefn
         write(2,fmt) (csf_coef(i,iadd_diag),i=1,ncsf),' (csf_coef_new(icsf),icsf=1,ncsf)'
       endif
 
+c Change angular positions of floating gaussians for quantum rings from (0,2pi) to (-pi,pi).
+      if(ibasis.eq.5) then
+        do i=1,nbasis
+          if(oparm(2,i,iadd_diag).gt.pi) oparm(2,i,iadd_diag)=oparm(2,i,iadd_diag)-2*pi
+        enddo
+      endif
       do it=1,notype
         write(fmt,'(''('',i3,''f15.8,a)'')') nbasis
         if(ipr_new.eq.0 .or. (ipr_new.eq.1 .and. iflag.ne.0)) then

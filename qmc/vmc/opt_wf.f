@@ -46,6 +46,7 @@ c and because optimization of add_diag makes the method totally stable.
         add_diag(1)=abs(add_diag(1))
         iadd_diag_opt=0
       endif
+      add_diag_sav=add_diag(1)
 
 c Do wavefunction optimization if nopt_iter>0
       if(nopt_iter.gt.0) then
@@ -93,18 +94,20 @@ c increase add_diag(1) and use the previous grad and hess to create a new wf.
             if(iadd_diag_loop1.gt.6) stop 'sigma went up considerably and iadd_diag_loop1>6'
             write(6,'(/,''Going back to previous wavefn. to generate new grad, hess, ham, ovlp'',/)')
             call wf_restore
-            if(iadd_diag_opt.ne.0) then
+c           if(iadd_diag_opt.ne.0) then
+            if(add_diag(1).gt.0.d0) then
               add_diag(1)=100*add_diag(1)
              else
               add_diag(1)=1.d-6*100**iadd_diag_loop2
-              write(6,'(''Temporarily change add_diag from 0 to 1.d-6*100^iadd_diag_loop2 and back to 0 after calling new_param'')')
+              write(6,'(''Temporarily change add_diag from 0 to 1.d-6*100^iadd_diag_loop2='',d12.4,
+     &        '' and back to 0 after calling new_param'')') add_diag(1)
             endif
             write(6,'(''Energy_sigma got significantly worse in grad_hess call to vmc so increase add_diag(1) to'',
      &      1pd11.4)') add_diag(1)
             write(6,'(''add_diag_log_min,add_diag_min='',f7.3,1p,d9.2)')
      &      dlog10(add_diag(1)),add_diag(1)
             call new_param(1,1,1,iflag1)
-            if(iadd_diag_opt.eq.0) add_diag(1)=0
+            if(iadd_diag_opt.eq.0) add_diag(1)=add_diag_sav
 c just in case mc config is in crazy place, reset mc_configs by calling sites
             isite=1
             call mc_configs_read
@@ -147,7 +150,8 @@ c Turn correlated sampling on/off
           if(iadd_diag_opt.eq.1) then
 
 c Reset add_diag
-            add_diag(1)=1.d-8
+c           add_diag(1)=1.d-8
+            add_diag(1)=add_diag_sav
 
 c Make sure that the add_diag values are not tiny compared to eig_min
 c Done in ham_ovlp_grad_hess now
@@ -232,8 +236,23 @@ c           call quad_min(energy_sav,energy_err_sav,ene_var,3)
 c Restore wavefn for iadd_diag=1 before updating with optimal add_diag
             call wf_restore
 
-          endif
-c end of 1st if(iadd_diag_opt.eq.1) then
+           else  ! 1st if(iadd_diag_opt.eq.1)
+
+            iadd_diag_loop5=0
+  409       call new_param(1,0,0,iflag1)
+            if(iflag1.ne.0) then
+              call wf_restore
+              add_diag(1)=10**(iflag1)*add_diag(1)
+              write(6,'(''change in params. too large or a(2) or b(2) < -scalek, add_diag(1) increased to'',1pd12.4)') add_diag(1)
+              iadd_diag_loop5=iadd_diag_loop5+1
+              if(iadd_diag_loop5.lt.9) then
+                goto 409
+               else
+                stop 'iadd_diag_loop5 too large'
+              endif
+            endif
+
+          endif  ! 1st if(iadd_diag_opt.eq.1)
 
 c Calculate optimized wavefunction for the optimal a_diag
 c If add_diag(1).ge.0.1d0*add_diag1_sav then use ipr_new=2 to put _new subscript when writing
@@ -244,6 +263,7 @@ c parameters regardless of the value of iflag1
             call new_param(1,0,1,iflag1)
           endif
           call set_scale_dist(ipr,1)
+          add_diag(1)=add_diag_sav
 
           if(iadd_diag_opt.eq.1) then
 
@@ -295,8 +315,7 @@ c At minimum increase nblk by a factor of 2 every other iteration
               write(6,'(''nblk reset to'',i8,9d12.4)') nblk
             endif
 
-          endif
-c end of 2nd if(iadd_diag_opt.eq.1) then
+          endif  ! 2nd if(iadd_diag_opt.eq.1)
 
         write(6,*)
   430   write(2,*)

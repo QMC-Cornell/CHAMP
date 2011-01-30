@@ -2126,7 +2126,7 @@ c       Adapted from routine written by Cyrus in December 1983
         LOGNB2=INT(DLOG(DFLOAT(M))/DLOG(2.D0)+1.D-14)
         if(ibasis.eq.5) then
           do ib=1,M
-             oparm(it,ib,iadd_diag) = modulo(oparm(it,ib,iadd_diag), 2.*pi)
+             oparm(it,ib,iadd_diag) = modulo(oparm(it,ib,iadd_diag), 2*pi)
           enddo 
         endif
         DO 20 NN=1,LOGNB2
