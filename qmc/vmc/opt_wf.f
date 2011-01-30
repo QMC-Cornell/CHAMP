@@ -125,6 +125,7 @@ c Wavefn. got better or at least not significantly worse so save various quantit
           energy_sigma_sav=energy_sigma(1)
           energy_err_sav=energy_err(1)
           ene_var_sav=(1-p_var)*energy(1)+p_var*energy_sigma(1)**2
+          increase_nblk=increase_nblk+1
 
 c If this is the best yet, save it.  Since we are primarily interested in the energy we always use
 c that as part of the criterion.  By adding in energy_err we favor those iterations where the energy
@@ -173,8 +174,8 @@ c of iadd_diag by imcrementing the old parameters for iadd_diag=1.
             call set_scale_dist(ipr,2)
             call set_scale_dist(ipr,3)
             if(iflag1.eq.1 .or. iflag2.eq.1 .or. iflag3.eq.1) then
+c           if(iflag1.eq.1 .and. iflag2.eq.1 .and. iflag3.eq.1) then
               call wf_restore
-c             call set_scale_dist(ipr,1)
               add_diag(1)=10**(iflag1+iflag2+iflag3)*add_diag(1)
               write(6,'(''change in params. too large or a(2) or b(2) < -scalek, add_diag(1) increased to'',1pd12.4)') add_diag(1)
               iadd_diag_loop4=iadd_diag_loop4+1
@@ -292,7 +293,7 @@ c are less than the tolerance
             write(6,'(''iopt_iter,e_diff='',i4,d12.4)') iopt_iter,e_diff
 
 c Increase nblk if near convergence to value needed to get desired statistical error
-            increase_nblk=increase_nblk+1
+c           increase_nblk=increase_nblk+1
             add_diag_ratio=(add_diag(1)+2*max(-eig_min,0.d0))/add_diag(1)
             if(add_diag_ratio*e_diff.lt.tol_energy .and.
      &      force_err(2).lt.tol_energy .and. force_err(3).lt.tol_energy) then
@@ -308,14 +309,15 @@ c             nblk_tmp=nblk*min(10.d0,max(1.d0,(energy_err_sav/tol_energy)**2))
               write(6,'(''The difference in the energies for different add_diag is converged to'',d12.4)') tol_energy
               goto 440
             endif
-c At minimum increase nblk by a factor of 2 every other iteration
-            if(increase_nblk.eq.2 .and. nblk.lt.nblk_max) then
-              increase_nblk=0
-              nblk=min(2*nblk,nblk_max)
-              write(6,'(''nblk reset to'',i8,9d12.4)') nblk
-            endif
 
           endif  ! 2nd if(iadd_diag_opt.eq.1)
+
+c At minimum increase nblk by a factor of 2 every other iteration
+          if(increase_nblk.eq.2 .and. nblk.lt.nblk_max) then
+            increase_nblk=0
+            nblk=min(2*nblk,nblk_max)
+            write(6,'(''nblk reset to'',i8,9d12.4)') nblk
+          endif
 
         write(6,*)
   430   write(2,*)

@@ -316,9 +316,9 @@ c           hess(i,j)=hess_sav(i,j)+2*max(-eig_min,0.d0)+add_diag(iadd_diag)
         do 30 j=1,nparm
    30     grad_cal(i)=grad_cal(i)+hess(i,j)*grad(j)
       dparm_norm=sqrt(dparm_norm/nparm)
-c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''newton_chol: iadd_diag,dparm_norm='',i2,9f10.5)')
-      if(ipr_opt.ge.-4) write(6,'(''newton_chol: iadd_diag,dparm_norm='',i2,9f10.5)')
-     &iadd_diag,dparm_norm
+c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''newton_chol: iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,9f10.5)')
+      if(ipr_opt.ge.-4) write(6,'(''newton_chol: iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,9f10.5)')
+     &iadd_diag,add_diag(iadd_diag),dparm_norm
       if(ipr_eigs.ge.1 .and. ipr_opt.ge.1) write(6,'(''grad_cal='',9g12.4)') (grad_cal(i),i=1,nparm)
 c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.0) write(6,'(''dparm='',100f10.6)') (dparm(i),i=1,nparm)
 
@@ -444,8 +444,8 @@ c multiply grad by inverse overlap
       do 30 i=1,nparm
    30   dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
-      if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''perturbation:iadd_diag,dparm_norm='',i2,9f10.5)')
-     &iadd_diag,dparm_norm
+      if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''perturbation:iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,9f10.5)')
+     &iadd_diag,add_diag(iadd_diag),dparm_norm
 c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.0) write(6,'(''dparm='',100f10.6)') (dparm(i),i=1,nparm)
       write(6,'(''dparm='',100f10.6)') (dparm(i),i=1,nparm)
 
@@ -715,9 +715,9 @@ c  50     dparm_norm=dparm_norm+(coef(iparm+1,i0)*dnorm2)**2
       do 60 iparm=1,nparm
    60   dparm_norm=dparm_norm+dparm(iparm)**2
       dparm_norm=sqrt(dparm_norm/nparm)
-c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''linear:iadd_diag,dparm_norm='',i2,9f10.5)')
-      if(ipr_opt.ge.-4) write(6,'(''linear:iadd_diag,dparm_norm='',i2,9f10.5)')
-     &iadd_diag,dparm_norm
+c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''linear:iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,9f10.5)')
+      if(ipr_opt.ge.-4) write(6,'(''linear:iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,9f10.5)')
+     &iadd_diag,add_diag(iadd_diag),dparm_norm
       write(6,'(''dparm='',100f10.6)') (dparm(i),i=1,nparm)
 
 c Restore ham and ovlp to original value
@@ -781,8 +781,8 @@ c       grad_cal(i)=0
 c       do 30 j=1,nparm
 c  30     grad_cal(i)=grad_cal(i)+hess(i,j)*grad(j)
 c     dparm_norm=sqrt(dparm_norm/nparm)
-c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''iadd_diag,dparm_norm='',i2,9f10.5)')
-c    &iadd_diag,dparm_norm
+c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.-4) write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,9f10.5)')
+c    &iadd_diag,add_diag(iadd_diag),dparm_norm
 c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.1) write(6,'(''grad_cal='',9g12.4)') (grad_cal(i),i=1,nparm)
 c     if(ipr_eigs.ge.1 .and. ipr_opt.ge.0) write(6,'(''dparm='',9f15.9)') (dparm(i),i=1,nparm)
 
@@ -898,8 +898,8 @@ c csf parameters:
         dparm_norm=sqrt(dparm_norm/nparmcsf)
         if(dparm_norm.gt.1.d0) then
           iflag=1
-          write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &    '' iflag=1 This is a bad move because dparm_norm>1 for csf params'')') iadd_diag,dparm_norm
+          write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &    '' iflag=1 This is a bad move because dparm_norm>1 for csf params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
         endif
       endif
 
@@ -923,9 +923,9 @@ c orbital parameters (type 1,2,3 and 4)
           dparm_norm=sqrt(dparm_norm/abs(nparmo(1)))
           if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
             iflag=1
-            write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
+            write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
      &      '' iflag=1. This is a bad move because dparm_norm>1/3scalek for otype 1 params'')')
-     &    iadd_diag,dparm_norm
+     &    iadd_diag,add_diag(iadd_diag),dparm_norm
           endif
         endif
         if(nparmo(2).ne.0) then
@@ -938,15 +938,16 @@ c orbital parameters (type 1,2,3 and 4)
           if(ibasis.eq.4 .or. ibasis.eq.6 .or. ibasis.eq. 7) then
             if(dparm_norm.gt.1/(3*scalek(iadd_diag))) then
               iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &        '' iflag=1. This is a bad move because dparm_norm>1/3scalek for otype 2 params'')') iadd_diag,dparm_norm
+              write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &        '' iflag=1. This is a bad move because dparm_norm>1/3scalek for otype 2 params'')')
+     &        iadd_diag,add_diag(iadd_diag),dparm_norm
             endif
           elseif(ibasis.eq.5) then
             write(6,'(''for ang_pos dparm_norm='',f12.6)') dparm_norm
-            if(dparm_norm.gt.0.01d0) then
+            if(dparm_norm.gt.0.1) then
               iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &        '' iflag=1. This is a bad move  because dparm_norm>0.2 for otype 2 params'')') iadd_diag,dparm_norm
+              write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &       '' iflag=1. This is a bad move  because dparm_norm>0.1 for otype 2 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
             endif
           endif
         endif
@@ -959,8 +960,8 @@ c orbital parameters (type 1,2,3 and 4)
           dparm_norm=sqrt(dparm_norm/abs(nparmo(3)))
           if(dparm_norm.gt.2.d0) then
             iflag=1
-            write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &      '' iflag=1. This is a bad move because dparm_norm>2 for otype 3 params'')') iadd_diag,dparm_norm
+            write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &      '' iflag=1. This is a bad move because dparm_norm>2 for otype 3 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
           endif
         endif
         if(ibasis.eq.5 .or. ibasis.eq.6 .or. ibasis.eq.7) then
@@ -974,8 +975,8 @@ c             write(6,*) 'test: dparm(iparm)=',dparm(iparm)
             dparm_norm=sqrt(dparm_norm/abs(nparmo(4)))
             if(dparm_norm.gt.3.d0) then
               iflag=1
-              write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &        '' iflag=1. This is a bad move because dparm_norm>1 for otype 4 params'')') iadd_diag,dparm_norm
+              write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &        '' iflag=1. This is a bad move because dparm_norm>1 for otype 4 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
             endif
           endif
         endif
@@ -988,8 +989,8 @@ c scalek
         dparm_norm=dabs(dparm(iparm))
         if(dparm_norm.gt..1d0) then
           iflag=1
-          write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &    '' iflag=. This is a bad move because dparm_norm>0.1 for scalek '')') iadd_diag,dparm_norm
+          write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &    '' iflag=. This is a bad move because dparm_norm>0.1 for scalek '')') iadd_diag,add_diag(iadd_diag),dparm_norm
         endif
       endif
 c jastrow parameters
@@ -1002,8 +1003,9 @@ c jastrow parameters
         dparm_norm=sqrt(dparm_norm/nparmj)
         if(dparm_norm.gt.max(10.d0,1.d0/(5*scalek(iadd_diag)))) then
           iflag=1
-          write(6,'(''iadd_diag,dparm_norm='',i2,f9.2,
-     &'' iflag=1. This is a bad move because dparm_norm > 10 or 1/5*scalek for jastrow params'')') iadd_diag,dparm_norm
+          write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &    '' iflag=1. This is a bad move because dparm_norm > 10 or 1/5*scalek for jastrow params'')')
+     &    iadd_diag,add_diag(iadd_diag),dparm_norm
         endif
       endif
 
@@ -1016,7 +1018,8 @@ c     iflag=0
       dparm_norm=sqrt(dparm_norm/nparm)
       if(dparm_norm.gt.10.d0) then
         iflag=1
-        write(6,'(''update_params:iadd_diag,dparm_norm='',i2,f9.2,'' iflag=1 because dparm_norm>10'')') iadd_diag,dparm_norm
+        write(6,'(''update_params:iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,'' iflag=1 because dparm_norm>10'')')
+     &  iadd_diag,add_diag(iadd_diag),dparm_norm
       endif
 
       if(scalek(iadd_diag).le.0.d0) then
