@@ -912,8 +912,8 @@ c            =6 2d localized non-circular floating gaussians in cartesian coord.
 c            =7 2d localized periodic floating gaussians in cartesian coord (periodic 1d wigner crystal)
 
 c orbital parameters (type 1,2,3 and 4)
-      write(6,'(''nparmot,nparmo(2)='',9i5)') nparmot,nparmo(2)
       if(nparmot.gt.0) then
+        write(6,'(''nparmot,nparmo(2)='',9i5)') nparmot,nparmo(2)
         if(nparmo(1).ne.0) then
           dparm_norm=0
           do i=1,iabs(nparmo(1))

@@ -1457,7 +1457,7 @@ c   default values:
       nmeshr=NAX
       nmesht=NAX
       icoosys=1
-      if (nup.eq.ndn) then
+      if (nup.eq.ndn .and. ibasis.ge.3 .and. ibasis.le.7) then
         iantiferromagnetic = 1
       else
         iantiferromagnetic = 0
