@@ -164,7 +164,7 @@ c       write(6,'(''aaaa'',9f12.5)') energy(2),energy(1),add_diag_log_min
 c     endif
       write(6,'(''add_diag_min before bounding is'',1p,d12.4,0p)') 10**add_diag_log_min
 c     add_diag_log_min=min(max(add_diag_log_min,-8.d0),6.d0)
-      add_diag_log_min=max(add_diag_log_min,-8.d0)
+      add_diag_log_min=max(add_diag_log_min,-12.d0)
       add_diag_min=10**add_diag_log_min
 ctmp  add_diag_min=10**(add_diag_log_min/(1-add_diag_log_min/dlog10_eig_max))-max(eig_min,0.d0)
       ene_var_min=b(1)+b(2)*add_diag_log_min+b(3)*add_diag_log_min**2

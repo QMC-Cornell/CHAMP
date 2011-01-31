@@ -748,6 +748,7 @@ c If ipr_new = 0 then we print new parameters without _new subscript
 c            = 1 then we print new parameters with _new subscript if iflag=0
 c            = 2 then we print new parameters with _new subscript
       use all_tools_mod
+      use dim_mod
       use const_mod
       use control_mod
       use atom_mod
@@ -947,7 +948,7 @@ c orbital parameters (type 1,2,3 and 4)
             if(dparm_norm.gt.0.1) then
               iflag=1
               write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
-     &       '' iflag=1. This is a bad move  because dparm_norm>0.1 for otype 2 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
+     &       '' iflag=1. This is a bad move because dparm_norm>0.1 for otype 2 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
             endif
           endif
         endif
@@ -1001,10 +1002,11 @@ c jastrow parameters
           dparm_norm=dparm_norm+dparm(iparm)**2
         enddo
         dparm_norm=sqrt(dparm_norm/nparmj)
-        if(dparm_norm.gt.max(10.d0,1.d0/(5*scalek(iadd_diag)))) then
+        if((ndim.eq.3 .and. dparm_norm.gt.max(10.d0,1.d0/(5*scalek(iadd_diag)))) .or.
+     &     (ndim.eq.2 .and. dparm_norm.gt.max(500.d0,1.d0/(5*scalek(iadd_diag))))) then
           iflag=1
           write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
-     &    '' iflag=1. This is a bad move because dparm_norm > 10 or 1/5*scalek for jastrow params'')')
+     &    '' iflag=1. This is a bad move because dparm_norm > 10 or 500 (ndim=3,2) or 1/5*scalek for jastrow params'')')
      &    iadd_diag,add_diag(iadd_diag),dparm_norm
         endif
       endif
@@ -1016,14 +1018,14 @@ c     iflag=0
       do 71 i=1,nparm
    71   dparm_norm=dparm_norm+dparm(i)**2
       dparm_norm=sqrt(dparm_norm/nparm)
-      if(dparm_norm.gt.10.d0) then
+      if((ndim.eq.3 .and. dparm_norm.gt.10.d0) .or. (ndim.eq.2 .and. dparm_norm.gt.500.d0)) then
         iflag=1
-        write(6,'(''update_params:iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,'' iflag=1 because dparm_norm>10'')')
-     &  iadd_diag,add_diag(iadd_diag),dparm_norm
+        write(6,'(''update_params:iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
+     &  '' iflag=1 This is a bad move because dparm_norm>10 or 500 (ndim=3,2)'')') iadd_diag,add_diag(iadd_diag),dparm_norm
       endif
 
       if(scalek(iadd_diag).le.0.d0) then
-        write(6,'(''iadd_diag='',i2,'' iflag=1. This is a bad move  because scalek<0'')') iadd_diag
+        write(6,'(''iadd_diag='',i2,d12.4,'' iflag=1. This is a bad move because scalek<0'')') iadd_diag,add_diag(1)
         iflag=1
       endif
 
@@ -1031,8 +1033,8 @@ c     iflag=0
         if(nparmo(3).ne.0) then
           do ib=1,nbasis
             if(oparm(3,ib,iadd_diag).le.0.d0) then
-              write(6,'(''iadd_diag='',i2,
-     &           '' iflag=1. This is a bad move  because oparm(3,..) < 0'')') iadd_diag
+              write(6,'(''iadd_diag='',i2,d12.4,
+     &           '' iflag=1. This is a bad move because oparm(3,..) < 0'')') iadd_diag,add_diag(1)
               iflag=1
             endif
           enddo
@@ -1044,8 +1046,8 @@ c     iflag=0
           if(nparmo(4).ne.0) then
             do ib=1,nbasis
               if(oparm(4,ib,iadd_diag).le.0.d0) then
-                write(6,'(''iadd_diag='',i2,
-     &             '' iflag=1. This is a bad move  because oparm(4,..) < 0'')') iadd_diag
+                write(6,'(''iadd_diag='',i2,d12.4,
+     &             '' iflag=1. This is a bad move because oparm(4,..) < 0'')') iadd_diag,add_diag(1)
                 iflag=1
               endif
             enddo
@@ -1060,12 +1062,16 @@ c     iflag=0
       endif
 
       do 72 ict=1,nctype
-        if(a4(2,ict,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i2,'' iflag=1 because a4<-scalek'')') iadd_diag
-        if(a4(2,ict,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i2,'' iflag=1 because a4>AMAX_NONLIN'')') iadd_diag
+        if(a4(2,ict,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i2,d12.4,
+     &  '' iflag=1. This is a bad move because a4<-scalek'')') iadd_diag,add_diag(1)
+        if(a4(2,ict,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i2,d12.4,
+     &  '' iflag=1. This is a bad move because a4>AMAX_NONLIN'')') iadd_diag,add_diag(1)
    72   if(a4(2,ict,iadd_diag).lt.parm2min .or. a4(2,ict,iadd_diag).gt.AMAX_NONLIN) iflag=1
       do 74 isp=nspin1,nspin2b
-        if(b(2,isp,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i2,'' iflag=1 because b<-scalek'')') iadd_diag
-        if(b(2,isp,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i2,'' iflag=1 because b>AMAX_NONLIN'')') iadd_diag
+        if(b(2,isp,iadd_diag).lt.parm2min) write(6,'(''iadd_diag='',i2,d12.4,
+     &  '' iflag=1. This is a bad move because b<-scalek'')') iadd_diag,add_diag(1)
+        if(b(2,isp,iadd_diag).gt.AMAX_NONLIN) write(6,'(''iadd_diag='',i2,d12.4,
+     &  '' iflag=1. This is a bad move because b>AMAX_NONLIN'')') iadd_diag,add_diag(1)
    74   if(b(2,isp,iadd_diag).lt.parm2min .or. b(2,isp,iadd_diag).gt.AMAX_NONLIN) iflag=1
 
 c Write out wavefn
