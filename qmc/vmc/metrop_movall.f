@@ -156,7 +156,11 @@ c       itryn=min(int(delri*rnew)+1,NRAD)
         endif
         rprob(itryo)=rprob(itryo)+q
         rprob(itryn)=rprob(itryn)+p
-c calculate 2density related functions:
+c calculate 2d density related functions:
+        if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+          call reduce_sim_cell(xold(:,i))
+          call reduce_sim_cell(xnew(:,i))
+        endif
         if(ifixe.ne.0 .and. ifixe.ne.i .and. ifixe.ne.-2) then     ! fixed electron density or 2d density
             if(icoosys.eq.1) then 
               do 27 idim=1,ndim

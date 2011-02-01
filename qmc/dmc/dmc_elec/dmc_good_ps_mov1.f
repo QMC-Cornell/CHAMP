@@ -543,6 +543,10 @@ c electron-i is being moved
                     xoc(idim,j)=xoci(idim,j,i)
                     xnc(idim,j)=xnci(idim,j,i)
   263           continue
+                if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+                  call reduce_sim_cell(xoc(:,j))
+                  call reduce_sim_cell(xnc(:,j))
+                endif
                 if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
@@ -550,6 +554,10 @@ c electron-i is being moved
 
               if(ifixe.eq.-1 .or. ifixe.eq.-3) then
                 if(icoosys.eq.1) then 
+                  if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+                    call reduce_sim_cell(xoci(:,i,i))
+                    call reduce_sim_cell(xnci(:,i,i))
+                  endif
                   do 265 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
                     ixo(idim)=nint(delxi*xoci(idim,i,i))

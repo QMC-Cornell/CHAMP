@@ -658,19 +658,35 @@ c     endif
 
       do it=1,notype
         write(fmt,'(''(''i2,''f15.8,a)'')') nbasis
-        if(it.eq.1) then
-          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_pos_best(it,i),i=1,nbasis)'
-          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_pos_best(it,i),i=1,nbasis)'
-         elseif(it.eq.2) then
-          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_pos_best(it,i),i=1,nbasis)'
-          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_pos_best(it,i),i=1,nbasis)'
-         elseif(it.eq.3) then
-          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_width_best(it,i),i=1,nbasis)'
-          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_width_best(it,i),i=1,nbasis)'
-         elseif(it.eq.4) then
-          write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_width_best(it,i),i=1,nbasis)'
-          write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_width_best(it,i),i=1,nbasis)'
-         endif
+        if(ibasis.eq.5) then
+          if(it.eq.1) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_pos_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_pos_best(it,i),i=1,nbasis)'
+          elseif(it.eq.2) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_pos_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_pos_best(it,i),i=1,nbasis)'
+          elseif(it.eq.3) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_width_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_rad_width_best(it,i),i=1,nbasis)'
+          elseif(it.eq.4) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_width_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_ang_width_best(it,i),i=1,nbasis)'
+          endif
+        else
+          if(it.eq.1) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_x_pos_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_x_pos_best(it,i),i=1,nbasis)'
+          elseif(it.eq.2) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_y_pos_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_y_pos_best(it,i),i=1,nbasis)'
+          elseif(it.eq.3) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_x_width_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_x_width_best(it,i),i=1,nbasis)'
+          elseif(it.eq.4) then
+            write(6,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_y_width_best(it,i),i=1,nbasis)'
+            write(2,fmt) (oparm_best(it,i),i=1,nbasis),' (floating_gauss_y_width_best(it,i),i=1,nbasis)'
+          endif
+        endif
       enddo
 
       if(nparms.gt.0) then

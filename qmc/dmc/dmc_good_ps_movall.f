@@ -427,6 +427,10 @@ c Collect density only for primary walk
 
 c calculate 2d density related functions:
               if(ifixe.eq.-1 .or. ifixe.ne.-3) then
+                if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+                  call reduce_sim_cell(xoldw(:,i,iw,ifr))
+                  call reduce_sim_cell(xnew(:,i,ifr))
+                endif
 
                 if(icoosys.eq.1) then 
                   do 247 idim=1,ndim

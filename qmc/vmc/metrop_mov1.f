@@ -174,6 +174,10 @@ c for general ndim
           ekin2(itryn)=ekin2(itryn)+p*ekinen(i)**2
 
 c calculate 2d-density related functions
+          if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+            call reduce_sim_cell(xold(:,i))
+            call reduce_sim_cell(xnew(:,i))
+          endif
           if(ifixe.le.-2) call pairden2d(p,q,xold,xnew)
           if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)
           if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)
