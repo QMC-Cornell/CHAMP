@@ -26,7 +26,8 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       common /jas_c_cut/ cutjasc,icutjasc
 !!!
       dimension rshifti(3),rshiftj(3),gn(*)
-      dimension uu(0:nord),ss(0:nord),tt(0:nord),rrri(0:nord),rrrj(0:nord)
+      dimension uu(0:max(nord,nordb,nordc)),ss(0:max(nord,norda,nordc)),tt(0:max(nord,norda,nordc)),rrri(0:max(nord,norda,nordc))
+     &,rrrj(0:max(nord,norda,nordc))
 
       dlogs4(x) = 2*dlog((one-dexp(-a1(41,is,iwf)*x))/a1(41,is,iwf))
 

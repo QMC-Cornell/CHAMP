@@ -26,7 +26,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       common /chck/ bot
 
-      dimension uu(0:nord),ss(0:nord),tt(0:nord),rshifti(3),rshiftj(3)
+      dimension uu(0:max(nord,nordb,nordc)),ss(0:max(nord,norda,nordc)),tt(0:max(nord,norda,nordc)),rshifti(3),rshiftj(3)
 
 c Not updated for ijas=5,6 because we will probably stay with ijas=4
 c If we want to use ijas=5,6 update this routine similarly to psi.f

@@ -19,7 +19,7 @@ c periodic systems.
 
       common /chck/ bot
 
-      dimension uu(0:nord),ss(0:nord),tt(0:nord)
+      dimension uu(0:max(nord,nordb,nordc)),ss(0:max(nord,norda,nordc)),tt(0:max(nord,norda,nordc))
 
       dlogs4(x) = 2*dlog((one-dexp(-a1(41,is,iwf)*x))/a1(41,is,iwf))
 

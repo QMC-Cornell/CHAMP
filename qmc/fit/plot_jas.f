@@ -46,9 +46,8 @@ c Jastrow 6   must be used with one of isc=6,7
       use bparm_mod
       implicit real*8(a-h,o-z)
 
-
-      dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord)
-     &,rrj(-2:nord),fen(ncent),fee(2)
+      dimension uu(-2:max(nord,nordb,nordc)),ss(-2:max(nord,norda,nordc)),tt(-2:max(nord,norda,nordc)),rri(-2:max(nord,norda,nordc))
+     &,rrj(-2:max(nord,norda,nordc)),fen(ncent),fee(2)
 
       fsum=0
       do 5 i=-2,-1

@@ -35,7 +35,6 @@ c   the distance between (0,0) and an electron.  ACM, July 2010
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
       dimension x(3,*),v(3,*),div_vj(*)
-c     dimension uu(-2:nord),ss(-2:nord),tt(-2:nord),rri(-2:nord),rrj(-2:nord)
       dimension uu(-2:max(nord,nordb,nordc)),ss(-2:max(nord,norda,nordc)),tt(-2:max(nord,norda,nordc)),rri(-2:max(nord,norda,nordc))
      &,rrj(-2:max(nord,norda,nordc))
 
