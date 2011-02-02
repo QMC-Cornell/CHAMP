@@ -73,6 +73,11 @@ c Contribution from Jellium to the potential energy. A temporary patch which sho
             if(nloc.eq.-4) then  !  quantum wire
               pe_y=0.5d0*(wire_w*x(2,i))**2  !  y-direction
               pe_en=pe_en+pe_y
+              if(iperturb.eq.1) then
+c note that in wires, ang_perturb is the semi-width of the perturbation in the x-direction
+                pe_en=pe_en+amp_perturb*(tanh(shrp_perturb*(x(1,i)+ang_perturb))
+     &                            -tanh(shrp_perturb*(x(1,i)-ang_perturb)))
+              endif
 c      These are used to calculate confining, x-direction potential:
               xshift=x(1,i)+wire_length*0.5d0
               wire_root2 = dsqrt(wire_radius2 + xshift**2)
@@ -117,10 +122,14 @@ c Calculate e-e inter-particle distances
               rvec_en(k,i,ic)=x(k,i)-cent(k,ic)
             enddo
             call find_image_1d(rvec_en(:,i,ic), r_en(i,ic)) ! modulo math
-c     Don't forget to add in perturbation for periodic wire!!
             if(nloc.eq.-4) then  !  quantum wire
               pe_y=0.5d0*(wire_w*x(2,i))**2  !  y-direction
               pe_en=pe_en+pe_y
+              if(iperturb.eq.1) then
+c note that in wires, ang_perturb is the semi-width of the perturbation in the x-direction
+                pe_en=pe_en+amp_perturb*(tanh(shrp_perturb*(x(1,i)+ang_perturb))
+     &                            -tanh(shrp_perturb*(x(1,i)-ang_perturb)))
+              endif
             endif
           enddo
          enddo

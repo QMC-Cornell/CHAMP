@@ -143,7 +143,8 @@ c nloc       external potential (a positive value => nonlocal pseudopotential)
 c            -9 numerical dot potential read in from potential_num (not yet implemented)
 c            -5 quadratic dot potential 0.5*w0^2*r^2 with barrier at center
 c                (dot_bump_height)*exp(1 - 1/(1-(x/dot_bump_radius)^2))
-c            -4 finite quantum wire   Vwire(x) + 0.5 w0 * y^2
+c            -4 quantum wire, if finite:   Vwire(x) + 0.5 w0 * y^2
+c                   if iperiodic.eq.1, then no V(x) - periodic in x direction
 c            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
 c            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
 c            -1 quadratic dot potential .5*w0*(r-rring)^2
@@ -317,8 +318,12 @@ c rring    >0 quantum ring with potential given by 0.5 w0^2 (r-rring)^2
 c iperturb 0: off (no angular perturbation for quantum rings)
 c          1: smoothed-square-like perturbation for quantum rings
 c     = amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
-c          2: gaussian-like perturbation for quantum rings
+c             and for quantum wires: (ang_perturb becomes semi-length of constriction)
+c     = amp_perturb*(tanh(shrp_perturb*(x(1,i)+ang_perturb))-tanh(shrp_perturb*(x(1,i)-ang_perturb)))
+c          2: gaussian-like perturbation for quantum rings  
 c     = 2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
+c              and for quantum wires:  (Note this is NOT periodic yet if iperiodic.eq.1)
+c     = 2.d0*amp_perturb*dexp(-0.5d0*(x(1,i)/(ang_perturb))**2)
 c ang_perturb  angular perturbation range 
 c amp_perturb  amplitude of the angular perturbation
 c shrp_perturb sharpness of the angular perturbation
@@ -1544,12 +1549,20 @@ c composite fermions:
       write(6,'(''emaglz,emagsz,emagv,emag='',9f10.6)') emaglz,emagsz,emagv,emag
       call flush(6)
 
-c Quantum rings:
+c Quantum rings/wires:
       if(bext.ne.0.d0 .and. rring.ne.0.d0) stop 'Quantum rings in magnetic field not yet implemented'
       if(iperturb.ne.0) then
-        if (rring.eq.0.d0) stop 'Perturbation only possible for quantum rings'
         if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) stop 'shrp_perturb must be between 0 and 100'
-        if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) stop 'ang_perturb must be between 0 and 4pi'
+        if(nloc.eq.-4) then  ! Quantum Wires
+          if (iperiodic.eq.0) then
+            if (ang_perturb.lt.0 .or. ang_perturb.gt.wire_length) stop 'ang_perturb must be between 0 and wire_length'
+          else
+            if (ang_perturb.lt.0 .or. ang_perturb.gt.alattice) stop 'ang_perturb must be between 0 and alattice'
+          endif
+        else ! Quantum Ring
+          if (rring.eq.0.d0) stop 'Perturbation only possible for quantum rings'
+          if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) stop 'ang_perturb must be between 0 and 4pi'
+        endif
       endif
       call flush(6)
 
