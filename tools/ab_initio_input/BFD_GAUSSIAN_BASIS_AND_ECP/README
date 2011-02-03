@@ -1,0 +1,12 @@
+All basis sets are taken from http://burkatzki.com/pseudos/index.2.html
+They are the Triple Zeta basis set (marked as current on the website)
+
+
+G09* directories refer to GAUSSIAN 98/03/09 formatting
+
+GAMESS* directories refer to GAMESS(US) formatting
+
+MOLPRO* directories refer to MOLPRO formatting
+
+*** GAMESS and MOLPRO directories are incomplete, please add more basis sets and ecps from web site ***
+*** currently they only contain H, B, N, C, O, F, Cl, Fe, Ni, and Cu ***
