@@ -530,16 +530,42 @@ c        = 1 parameter is a dependent parameter
 c        = 2 parameter is an independent parameter that is varied
                 ideriv=0
                 if(nparmj.gt.0) then
-                  if(ll.eq.iwjasc(jparm,it)) then
-                    ideriv=2
+c                  jparm_tempacm = jparm
+c                  if (jparm.gt.nparmc(1)) then
+c                    write(6,'(''Error: jparm too big!!'', i4)') jparm
+c                    jparm = 1
+c                  endif
+                  if(jparm.le.nparmc(it)) then
+                    if(ll.eq.iwjasc(jparm,it)) then
+                      ideriv=2
+                     else
+                      do id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
+                        if(ll.eq.iwc4(id)) then
+                          jj=id
+                          if(nvdepend(jj,it).gt.0) ideriv=1
+                        endif
+                      enddo
+                    endif
                    else
-                    do 31 id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
+                    do id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
                       if(ll.eq.iwc4(id)) then
                         jj=id
                         if(nvdepend(jj,it).gt.0) ideriv=1
                       endif
-   31               continue
-                  endif ! ll
+                    enddo
+                  endif
+                    
+c                 if(ll.eq.iwjasc(jparm,it)) then
+c                   ideriv=2
+c                  else
+c                   do 31 id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
+c                     if(ll.eq.iwc4(id)) then
+c                       jj=id
+c                       if(nvdepend(jj,it).gt.0) ideriv=1
+c                     endif
+c  31               continue
+c                 endif ! ll
+cc                 jparm = jparm_tempacm
                 endif ! nparmj
 
                 if(ideriv.gt.0) then
@@ -615,8 +641,8 @@ c        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
 c      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
 c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
                       if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
-                         d2g(iparm)=d2g(iparm) + cd*(ndim- 1.)*2.*gu  
-     &                   + 2.*guu + gii + gjj + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij
+                         d2g(iparm)=d2g(iparm) + cd*((ndim- 1.)*2.*gu  
+     &                   + 2.*guu + gii + gjj + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij)
                       else
                          d2g(iparm)=d2g(iparm) + cd*((ndim-1)*(2*gu+gi+gj)
      &                   + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij))
@@ -634,7 +660,7 @@ c                   jj=jj+1
                       didk(iparm)=didk(iparm)+cd*(pu*dkij+ppi*dki+pj*dkj)
                     endif
 
-                   elseif(ideriv.eq.2) then
+                   elseif(ideriv.eq.2) then   ! independent parameters
 
                     iparm=npoint(it)+jparm+nparms
 
