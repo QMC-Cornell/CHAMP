@@ -95,7 +95,7 @@ c increase add_diag(1) and use the previous grad and hess to create a new wf.
             write(6,'(/,''Going back to previous wavefn. to generate new grad, hess, ham, ovlp'',/)')
             call wf_restore
 c           if(iadd_diag_opt.ne.0) then
-            if(add_diag(1).gt.0.d0) then
+  406       if(add_diag(1).gt.0.d0) then
               add_diag(1)=100*add_diag(1)
              else
               add_diag(1)=1.d-6*100**iadd_diag_loop2
@@ -107,6 +107,10 @@ c           if(iadd_diag_opt.ne.0) then
             write(6,'(''add_diag_log_min,add_diag_min='',f7.3,1p,d9.2)')
      &      dlog10(add_diag(1)),add_diag(1)
             call new_param(1,1,1,iflag1)
+            if(iflag1.ne.0) then
+              iadd_diag_loop2=iadd_diag_loop2+1
+              goto 406
+            endif
             if(iadd_diag_opt.eq.0) add_diag(1)=add_diag_sav
 c just in case mc config is in crazy place, reset mc_configs by calling sites
             isite=1
