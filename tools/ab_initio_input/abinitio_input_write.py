@@ -159,7 +159,7 @@ def write_molpro(mem,name1,name2,nmul,pseudo_yes,charge,ename,unique_atom_list_e
 	outputoccfile.write("HF\n")		
 	outputoccfile.write("--\n")
 	print "All done writing a Molpro formatted input file for %s" % str(name1)
-	print "**warning untested**"
+	print "**warning untested** input files might not run"
 #end write_molpro()
 
 ### Generate NWCHEM input file
@@ -168,7 +168,7 @@ def write_nwchem(mem,name1,name2,nmul,pseudo_yes,charge,ename,unique_atom_list_e
 	'''
 	outf = open(name1+"-nw.in",'w')
 	outf.write("start %s\nmemory total %d mb\necho\n"% (name1,mem))
-	outf.write("geomtry noautosym noautoz units angstrom\n")
+	outf.write("geometry noautosym noautoz units angstrom\n")
 	for i in range(len(ename)):
 		outf.write("%s %s %s %s\n" % (ename[i],xcor[i],ycor[i],zcor[i]))
 	outf.write("end\n\n")
@@ -185,8 +185,8 @@ def write_nwchem(mem,name1,name2,nmul,pseudo_yes,charge,ename,unique_atom_list_e
 			outf.write("%s" % line)
 	outf.write("end\n\n")
 	
-	outf.write("tast hf \n\n")
+	outf.write("task hf \n\n")
 	
-	print "All done writing a Molpro formatted input file for %s" % str(name1)
-	print "**warning untested**"
+	print "All done writing a NWChem formatted input file for %s" % str(name1)
+	print "**warning untested** input files might not run"
 #end write_nwchem()
