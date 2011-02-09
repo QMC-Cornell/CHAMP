@@ -11,7 +11,7 @@ program_name = "xyz_2_ab_initio_input.py"
 ##		 
 ##	Written by DOMINIK DOMIN (dominik.domin@gmail.com)
 ##	Date of last modification January 31, 2011
-version = 1.00
+version = 1.01
 ################################################################################
 ##  CONVERTS XYZ FILES INTO INPUT FOR GAUSSIAN OR GAMESS OR NWCHEM OR MOLPRO  ##
 ################################################################################
@@ -127,6 +127,8 @@ gbas = [] #temp gamess basis list
 gpseudo = [] #temp gamess basis list
 name1 = str(sys.argv[1])
 name2 = name1.replace("cc-pv","")
+tempname2 = name2.replace(".xyz","")
+name2 = tempname2.replace(".","")
 nalpha = 0 #number of alpha electrons
 nbeta = 0 # number of beta electrons
 print " Molecule has Charge of %d and Spin Multiplicity of %d \n" % (-nelectrons,nmul)
