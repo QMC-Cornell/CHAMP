@@ -1119,14 +1119,14 @@ module csfs_mod
   write(6,'(a)') ' Overlap of structures:'
   write(6,'(1x,100i12)') (csf_j, csf_j=1,ncsf)
   do csf_i = 1, ncsf
-      write(6,'(i4,100f12.6)') csf_i, (product_csf_over_psid_bav (csf_i, csf_j), csf_j=1,ncsf)
+     write(6,'(i4,100f12.6)') csf_i, (product_csf_over_psid_bav (csf_i, csf_j), csf_j=1,ncsf)
   enddo
 
   write(6,*)
   write(6,'(a)') ' Weights of structures:'
   write(6,'(24x,a,10x,a,17x,a)') 'Hiberty', 'Chirgwin-Coulson', 'Lowdin'
   do csf_i = 1, ncsf
-      write(6,'(a,i5,a,f12.6,2x,f12.6,a,f12.6,2x,f12.6,a,f12.6)') ' structure # ', csf_i, ': ', vb_weights_hiberty(csf_i), vb_weights_chirgwin_coulson_av (csf_i), ' +-', vb_weights_chirgwin_coulson_av_err (csf_i), vb_weights_lowdin_av (csf_i), ' +-', vb_weights_lowdin_av_err (csf_i)
+     write(6,'(a,i5,a,f12.6,2x,f12.6,a,f12.6,2x,f12.6,a,f12.6)') ' structure # ', csf_i, ': ', vb_weights_hiberty(csf_i), vb_weights_chirgwin_coulson_av (csf_i), ' +-', vb_weights_chirgwin_coulson_av_err (csf_i), vb_weights_lowdin_av (csf_i), ' +-', vb_weights_lowdin_av_err (csf_i)
   enddo
 
   write(6,*)

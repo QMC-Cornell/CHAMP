@@ -133,7 +133,7 @@ module opt_ovlp_fn_mod
 !  ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) *(nstep*nblk*nwalk*nproc))
 
   ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) * total_iterations_nb)
-  write(6,*) "walker_weights_sum, wgcum1(1), wgcm21(1), total_iterations_nb =", walker_weights_sum, wgcum1(1), wgcm21(1), total_iterations_nb  !temp
+!JT  write(6,*) "walker_weights_sum, wgcum1(1), wgcm21(1), total_iterations_nb =", walker_weights_sum, wgcum1(1), wgcm21(1), total_iterations_nb  !temp
 
   end subroutine ovlp_trial_fn_bld
 
