@@ -44,6 +44,7 @@ ncsf = 0
 csf_coef = []
 ndet_in_csf = [1]
 structures = []
+structures_initial = []
 determinants = []
 det_coef = []
 cdet_csf = [[1.]]
@@ -107,8 +108,69 @@ def read_structure_number ():
     sys.exit(0)
 
 # ========================================================
+def read_structures_initial ():
+  "read VB structures printed initially in the output without the coefficients."
+  global ncsf
+  current_structure = []
+  found = False
+  structures_initial_nb = 0
+
+  for i in range(len(lines)):
+
+#   begin of structure section
+    if re.search ("The following structures are used in calculation:", lines[i]):
+
+      found = True
+      j = i + 1
+      while j <len(lines): 
+
+#        print "\nline=",  lines[j]
+
+#       read first line of new structure
+#       example:   1 *****    1  1  3  3
+        if re.search ("^\s+\d+\s+[\*]+\s+(\s+\d+)+$", lines[j]):
+
+          structures_initial_nb = structures_initial_nb + 1
+          if (structures_initial_nb >= 2):
+#            print "current_structure=",current_structure
+            structures_initial.append (current_structure)
+            current_structure = []
+          
+#          print "\nnew structure matched"
+          line_splitted = filter (not_empty_string,string.split(lines[j],' '))
+          for o in range(2,len(line_splitted)):
+            current_structure.append(string.replace(line_splitted[o],'\n',''))
+
+
+#       read continuation line of structure
+#       example:                          8  8  9 10
+        elif re.search ("^(\s+\d+)+$",lines[j]):
+          line_splitted = filter (not_empty_string,string.split(lines[j],' '))
+          for o in range(0,len(line_splitted)):
+            current_structure.append(string.replace(line_splitted[o],'\n',''))
+
+#       "Nuclear Repulsion Energy" marks the end of the initial structure section
+        elif re.search ("Nuclear Repulsion Energy", lines[j]):
+          structures_initial.append (current_structure)
+          break
+
+        j = j + 1
+      break
+       
+  if not found:
+    print "\nWARNING: no initial VB structures found"
+    sys.exit(0)
+
+#  print "\nstructures_initial_nb=",structures_initial_nb
+#  print "structures_initial=",structures_initial
+
+  if (structures_initial_nb != ncsf):
+    print "\nERROR: mismatch in number of initial structures =",structures_initial_nb
+    sys.exit(0)
+
+# ========================================================
 def read_structures ():
-  "read VB structures."
+  "read VB structures with coefficients."
   global ncsf
   current_structure = []
   found = False
@@ -158,8 +220,14 @@ def read_structures ():
       break
        
   if not found:
-    print "\nERROR: VB structures not found"
-    sys.exit(0)
+#   if only one structure, take it for the initial section and assume coef to be 1
+    if ncsf == 1:
+       structures_nb = 1
+       structures.append (structures_initial[0])
+       csf_coef.append (1.)
+    else:
+      print "\nWARNING: VB structures not found"
+      sys.exit(0)
 
 #  print "csf_coef=",csf_coef
 #  print "structures=",structures
@@ -240,20 +308,63 @@ def read_determinants ():
       break
        
   if not found:
-    print "\nERROR: determinants not found"
-    sys.exit(0)
-
-#  print "spin_up_spin_down=",spin_up_spin_down
+#   if only one structure, construct determinants
+    if ncsf == 1:
+      print "\nWARNING: no determinants found, constructing determinants for single structure by singlet couplings (to be checked)"
+      determinant_up =[]
+      determinant_dn =[]
+      coupled_orbital_1=[]
+      coupled_orbital_2=[]
+      ndet = 1
+      nup = 0
+      ndn = 0
+      o=0
+      while o < len(structures[0]):
+        orb_up = structures[0][o]
+        determinant_up.append (orb_up)
+        nup = nup + 1
+        o = o + 1
+        if o >= len(structures[0]):
+          break
+        orb_dn = structures[0][o]
+        if (orb_dn != orb_up):
+          coupled_orbital_1.append(orb_up)
+          coupled_orbital_2.append(orb_dn)
+        determinant_dn.append (orb_dn)
+        ndn = ndn + 1
+        o = o + 1
+      determinants.append (determinant_up+determinant_dn)
+      det_coef.append (1.)
+      nelec = nup+ndn
+#    construct all determinants by spin-singlet couplings of unpaired electron
+      new_determinant=[]
+      for pair in range(len(coupled_orbital_1)):
+        for det in range(ndet):
+          for orb in determinants[det]:
+             if (orb == coupled_orbital_1[pair]):
+               new_determinant.append (coupled_orbital_2[pair])
+             elif (orb == coupled_orbital_2[pair]):
+               new_determinant.append (coupled_orbital_1[pair])
+             else:
+               new_determinant.append (str(orb))
+          determinants.append (new_determinant)
+          det_coef.append (1.)
+          ndet = ndet + 1
+    else:
+      print "\nERROR: determinants not found"
+      sys.exit(0)
 
 # calculate numbers of spin-up and spin-down electrons
-  nup = 0
-  ndn = 0
-  for s in spin_up_spin_down:
-    if (s == 'a'):
-      nup = nup + 1
-    elif (s == 'b'):
-      ndn = ndn + 1
-  nelec = nup+ndn
+  if found:
+#    print "spin_up_spin_down=",spin_up_spin_down
+    nup = 0
+    ndn = 0
+    for s in spin_up_spin_down:
+      if (s == 'a'):
+        nup = nup + 1
+      elif (s == 'b'):
+        ndn = ndn + 1
+    nelec = nup+ndn
 
 #  print "nup=",nup
 #  print "ndn=",ndn
@@ -596,6 +707,7 @@ lines = file_input.readlines()
 sys.stdout.write('reading XMVB file >'+ str(file_input_string) +'< ... ')
 read_energy ()
 read_structure_number ()
+read_structures_initial ()
 read_structures ()
 read_determinants ()
 read_orbitals ()
@@ -649,7 +761,7 @@ for l in range(len(lines)):
     file_output.write(str(ncsf)+' ncsf\n')
     continue
 
-  if re.search ("orbitals", line):
+  if re.search ("^\s*orbitals\s*$", line):
     skip_line = True
     file_output.write('orbitals\n')
     file_output.write(' coefficients')
@@ -665,7 +777,7 @@ for l in range(len(lines)):
     file_output.write('end\n')
     continue
 
-  if re.search ("csfs", line):
+  if re.search ("^\s*csfs\s*$", line):
     skip_line = True
     file_output.write('csfs\n')
     file_output.write(' determinants\n')
