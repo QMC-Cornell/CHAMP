@@ -25,6 +25,7 @@ module csfs_mod
   real(dp), allocatable     :: csf_over_psid_bav (:)
   real(dp), allocatable     :: product_csf_over_psid (:,:)
   real(dp), allocatable     :: product_csf_over_psid_bav (:,:)
+  real(dp), allocatable     :: product_csf_over_psid_av (:,:)
   real(dp), allocatable     :: vb_weights_chirgwin_coulson_bav (:)
   real(dp), allocatable     :: vb_weights_chirgwin_coulson_av (:)
   real(dp), allocatable     :: vb_weights_chirgwin_coulson_av_err (:)
@@ -159,6 +160,7 @@ module csfs_mod
 
   if (l_vb_weights) then
     call object_block_average_request ('product_csf_over_psid_bav')
+    call object_average_request ('product_csf_over_psid_av')
     call object_block_average_request ('csf_over_psid_bav')
     call object_average_request ('vb_weights_chirgwin_coulson_av')
     call object_error_request ('vb_weights_chirgwin_coulson_av_err')
@@ -860,6 +862,7 @@ module csfs_mod
 
    call object_create ('product_csf_over_psid')
    call object_block_average_define ('product_csf_over_psid', 'product_csf_over_psid_bav')
+   call object_average_define ('product_csf_over_psid', 'product_csf_over_psid_av')
 
    call object_needed ('ncsf') 
    call object_needed ('csf_over_psid')
@@ -873,6 +876,7 @@ module csfs_mod
 ! allocations
   call object_alloc ('product_csf_over_psid', product_csf_over_psid,ncsf,ncsf)
   call object_alloc ('product_csf_over_psid_bav', product_csf_over_psid_bav, ncsf, ncsf)
+  call object_alloc ('product_csf_over_psid_av', product_csf_over_psid_av, ncsf, ncsf)
 
   do csf_i = 1,ncsf
     do csf_j = csf_i, ncsf
@@ -1105,7 +1109,7 @@ module csfs_mod
   call object_provide ('vb_weights_lowdin_av_err')
 !  call object_provide ('vb_weights_lowdin_like_av')
 !  call object_provide ('vb_weights_lowdin_like_av_err')
-  call object_provide ('product_csf_over_psid_bav')
+  call object_provide ('product_csf_over_psid_av')
 
   write(6,*)
 
@@ -1119,7 +1123,7 @@ module csfs_mod
   write(6,'(a)') ' Overlap of structures:'
   write(6,'(1x,100i12)') (csf_j, csf_j=1,ncsf)
   do csf_i = 1, ncsf
-     write(6,'(i4,100f12.6)') csf_i, (product_csf_over_psid_bav (csf_i, csf_j), csf_j=1,ncsf)
+     write(6,'(i4,100f12.6)') csf_i, (product_csf_over_psid_av (csf_i, csf_j), csf_j=1,ncsf)
   enddo
 
   write(6,*)
