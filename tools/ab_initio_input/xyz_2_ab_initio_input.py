@@ -10,8 +10,8 @@ program_name = "xyz_2_ab_initio_input.py"
 ##		 
 ##		 
 ##	Written by DOMINIK DOMIN (dominik.domin@gmail.com)
-##	Date of last modification January 31, 2011
-version = 1.01
+##	Date of last modification February 15, 2011
+version = 1.02
 ################################################################################
 ##  CONVERTS XYZ FILES INTO INPUT FOR GAUSSIAN OR GAMESS OR NWCHEM OR MOLPRO  ##
 ################################################################################
@@ -24,13 +24,23 @@ if version_number < 1 and subversion_number>=0:
 	print "******************************************************************************************"
 	sys.exit(-5)
 
+#default D3_G_BASIS + D3_G_ECP
+st = sys.argv[0]
+ri = str(os.path.basename(st))
+ng = st.index(ri)
+st = str(st[0:ng])
+##
 current_path = os.getenv('PWD')
 basis_path = os.getenv('D3_G_BASIS')
 ecp_path = os.getenv('D3_G_ECP')
 if basis_path == None:
-	basis_path = current_path
+	basis_path = st+"BFD_GAUSSIAN_BASIS_AND_ECP/"
+	if (str(os.path.exists(basis_path)) == "False"):
+		basis_path = current_path
 if ecp_path == None:
-	ecp_path = current_path
+	ecp_path = st+"BFD_GAUSSIAN_BASIS_AND_ECP/"
+	if (str(os.path.exists(ecp_path)) == "False"):
+		ecp_path = current_path
 
 ## HELP MENU
 if (len(sys.argv)>1):
