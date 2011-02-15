@@ -49,6 +49,15 @@ The function compute_contracted_STO_at_point() does not handle SP functions or a
 
 * Currently only Gaussian type orbital wave functions are produced by g0x_log_2_champ.py and g0x_log_vb_2_champ.py.
 
+# Current Issues:
+--------------------------------------------------------------------------
+./pseudovb_input_read_v1.py is currently incompatible with ./g0x_log_vb_2_champ.py
+./pseudovb_input_read_v2.py is incompatible with python versions prior to 2.6 and incompatible with g0x_log_2_champ.py and g0x_log_2_xmvb.py
+
+* In ./g0x_log_vb_2_champ.py:
+
+orbital renumbering and virtual selection components do not fonction properly and in need of rewrite.
+
 
 # Known Errors:
 --------------------------------------------------------------------------
@@ -79,4 +88,4 @@ The function compute_contracted_STO_at_point() does not handle SP functions or a
 ---> Please add comments here. <----
 
 --------------------------------------------------------------------------
-Readme file has last been updated on October 21, 2010.
+Readme file has last been updated on February 15, 2011.
