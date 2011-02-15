@@ -309,7 +309,12 @@ for basis in unique_atoms:
 	options.append(icusp)
 	write_champ_basis_grid("basis.%d" % nn,radial_grid,options)
 
-
+if len(scf_orbitals)==0:
+	print "**************************************************************"
+	print "*** ERROR NO SCF ORBITALS FOUND IN GAUSSIAN LOG FILE *********"
+	print "** TERIMINATING SCRIPT WITHOUT WRITING A CHAMP INPUT FILE ****"
+	print "**************************************************************"
+	sys.exit(-9)
 write_champ_orbitals(champfile,scf_orbitals,energies,sym_labels)
 
 write_champ_csfs(champfile,csfs)
