@@ -1120,10 +1120,10 @@ module csfs_mod
   endif
 
   write(6,*)
-  write(6,'(a)') ' Overlap of structures:'
+  write(6,'(a)') ' Overlap of normalized structures:'
   write(6,'(1x,100i12)') (csf_j, csf_j=1,ncsf)
   do csf_i = 1, ncsf
-     write(6,'(i4,100f12.6)') csf_i, (product_csf_over_psid_av (csf_i, csf_j), csf_j=1,ncsf)
+     write(6,'(i4,100f12.6)') csf_i, (product_csf_over_psid_av(csf_i, csf_j)/(dsqrt(product_csf_over_psid_av(csf_i, csf_i))*dsqrt(product_csf_over_psid_av(csf_j, csf_j))), csf_j=1,ncsf)
   enddo
 
   write(6,*)
