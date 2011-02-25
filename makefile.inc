@@ -709,4 +709,50 @@ ifeq ($(uname),Darwin)
     LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
+# grads-46 at Duke
+ifeq ($(hostname),grads-46)
+  F95=ifort
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
 
+  F95_FAST_FLAGS= -zero -r8 -pad -align all -O3 -fpp -ip
+  F95_PROF_FLAGS= -zero -r8 -pad -align all -O3 -fpp -pg
+  F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+
+# by default, compilation for f77 is the same than for f95
+  F77=$(F95)
+  F77_FAST_FLAGS=$(F95_FAST_FLAGS) -extend_source
+  F77_DEBUG_FLAGS=$(F95_DEBUG_FLAGS) -extend_source
+  F77_PROF_FLAGS=$(F95_PROF_FLAGS) -extend_source
+
+# by default, fast options
+  F95_FLAGS=$(F95_FAST_FLAGS)
+  F77_FLAGS=$(F77_FAST_FLAGS)
+
+  USE_GCC=yes
+endif
+
+# baranger12 at Duke
+ifeq ($(hostname),baranger12)
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F95_SLOW_FLAGS=-finit-local-zero -O0 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F77_SLOW_FLAGS=-finit-local-zero -O0 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F95_DEBUG_FLAGS=$(F95_SLOW_FLAGS) -g -fbounds-check
+  F77_DEBUG_FLAGS=$(F77_SLOW_FLAGS) -g -fbounds-check
+  F95_PROF_FLAGS=$(F95_FAST_FLAGS) -pg
+  F77_PROF_FLAGS=$(F77_FAST_FLAGS) -pg
+  LD=gfortran
+  LD_FLAGS=-O3
+  LD_MPI=mpif90
+  LD_DEBUG_FLAGS=-Wall -g -fbounds-check
+  LD_PROF_FLAGS=-pg
+  EINSPLINE=
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
