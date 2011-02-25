@@ -42,6 +42,7 @@ module opt_lin_mod
 
   integer                         :: target_state = 0
   integer                         :: target_state_above_groundstate = 0
+  integer                         :: target_state_above_groundstate_or_target_smallest_norm = 0
   real(dp)                        :: add_diag_mult_exp = 1.d0
   real(dp)                        :: eigval_lower_bound
   real(dp)                        :: eigval_upper_bound
@@ -66,6 +67,7 @@ module opt_lin_mod
 ! begin
   target_state = 0
   target_state_above_groundstate = 0
+  target_state_above_groundstate_or_target_smallest_norm = 0
   l_eigval_lower_bound_fixed = .false.
   l_eigval_upper_bound_fixed = .false.
 
@@ -97,6 +99,7 @@ module opt_lin_mod
    write(6,'(a)') '    eigval_upper_bound = [real] : upper bound for reasonable eigenvalue window (default: internally calculated)'
    write(6,'(a)') '    target_state = [integer] : index of target state to optimize (default is the most reasonable ground-state)'
    write(6,'(a)') '    target_state_above_groundstate = [integer] : index of target state above the ground state to optimize (default=0 for ground-state)'
+   write(6,'(a)') '    target_state_above_groundstate_or_target_smallest_norm = [integer] : target that state above ground state or target smallest norm (default=0)'
    write(6,'(a)') '    print_eigenvector_norm = [bool] : print norm of all eigenvectors? (default=false)'
    write(6,'(a)') ' end'
 
@@ -167,6 +170,10 @@ module opt_lin_mod
    call get_next_value(target_state_above_groundstate)
    call require (lhere, 'target_state_above_groundstate >= 0', target_state_above_groundstate >= 0)
 
+  case ('target_state_above_groundstate_or_target_smallest_norm')
+   call get_next_value(target_state_above_groundstate_or_target_smallest_norm)
+   call require (lhere, 'target_state_above_groundstate_or_target_smallest_norm >= 0', target_state_above_groundstate_or_target_smallest_norm >= 0)
+
   case ('print_eigenvector_norm')
    call get_next_value (l_print_eigenvector_norm)
 
@@ -197,6 +204,15 @@ module opt_lin_mod
 ! (since smaller norm criterium may not be relevant)
   if (target_state_above_groundstate /= 0) then
    l_select_eigvec_lowest = .true.
+   if (.not. l_eigval_lower_bound_fixed .or. .not. l_eigval_upper_bound_fixed) then
+    call die (lhere, 'eigval_lower_bound and eigval_upper_bound for the ground state must be specified when using target_state_above_groundstate') 
+   endif
+  endif
+  if (target_state_above_groundstate_or_target_smallest_norm /= 0) then
+   l_select_eigvec_lowest = .true.
+  endif
+  if(target_state_above_groundstate/=0 .and. target_state_above_groundstate_or_target_smallest_norm/=0) then
+   call die (lhere, 'only one of target_state_above_groundstate or target_state_above_groundstate_or_target_smallest_norm should be used')
   endif
 
   end subroutine opt_lin_menu
@@ -953,7 +969,7 @@ module opt_lin_mod
    elseif(l_select_eigvec_smallest_norm .or. (l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind == 0)) then
      eig_ind = eigvec_smallest_norm_ind
 
-!  default selection cirterion:
+!  default selection criterion:
    else
      if(eigvec_lowest_eigval_ind /= 0 .and. psi_lin_var_norm < 10*smallest_norm) then
        eig_ind = eigvec_lowest_eigval_ind
@@ -990,6 +1006,14 @@ module opt_lin_mod
 
 ! possibility of selecting an eigenvector above the selected ground state for excited states
   if (target_state_above_groundstate /= 0) then
+    if (eigvec_lowest_eigval_ind ==0) then
+     call die (lhere, 'target_state_above_groundstate /= 0 and no ground state found in the energy window')
+    endif
+    write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+    eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate)
+    write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate,' above this ground state will be selected'
+  endif
+  if (target_state_above_groundstate_or_target_smallest_norm /= 0 .and. psi_lin_var_norm < 10*smallest_norm .and. eigvec_lowest_eigval_ind /=0) then
     write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
     eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate)
     write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate,' above this ground state will be selected'
