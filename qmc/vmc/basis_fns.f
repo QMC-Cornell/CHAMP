@@ -1447,7 +1447,7 @@ c       assume that input parameters oparm are scaled to periodic BC's
 c         modulo math:
           if(x1rel.ge.(alattice/2.0)) then
              x1rel = x1rel - alattice
-          elseif(x1rel.le.(-alattice/2.0)) then
+          elseif(x1rel.lt.(-alattice/2.0)) then
              x1rel = alattice + x1rel
           endif
           
@@ -1582,7 +1582,7 @@ c application than crystals.
 c         modulo math:
           if(x1rel.ge.(alattice/2.0)) then
              x1rel = x1rel - alattice
-          elseif(x1rel.le.(-alattice/2.0)) then
+          elseif(x1rel.lt.(-alattice/2.0)) then
              x1rel = alattice + x1rel
           endif          
           if((x1rel.gt.(alattice/2.0).or.(x1rel.lt.(-alattice/2.0)))) then

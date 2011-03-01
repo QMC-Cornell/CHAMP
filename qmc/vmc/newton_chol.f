@@ -846,7 +846,7 @@ c update parameters
           oparm(it,iwo(ip,it),iadd_diag)=oparm(it,iwo(ip,it),1)+dparm(iparm)
           if (ibasis.eq.7 .and. it.eq.1) then
              oparm(it,iwo(ip,it),iadd_diag) = modulo(oparm(it,iwo(ip,it),iadd_diag), alattice)
-             if (oparm(it,iwo(ip,it),iadd_diag).gt.(alattice/2.)) then
+             if (oparm(it,iwo(ip,it),iadd_diag).ge.(alattice/2.)) then
                 oparm(it,iwo(ip,it),iadd_diag) = oparm(it,iwo(ip,it),iadd_diag) - alattice
              endif
           endif

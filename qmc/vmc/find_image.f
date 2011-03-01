@@ -131,7 +131,7 @@ c     dimension r(3),r_basis(3),rlatt_sim(3,3),rlatt_sim_inv(3,3)
 c ACM, June 1, 2010: add case for systems periodic in only 1D so DMC will work
       if (iperiodic.eq.1) then
          r(1) = modulo(r(1),alattice) ! returns a number between 0 and alattice
-         if (r(1).gt.(alattice/2.)) r(1) = r(1) - alattice
+         if (r(1).ge.(alattice/2.)) r(1) = r(1) - alattice
          return
       endif
 
@@ -459,7 +459,7 @@ c For a system with 1D periodic BC's, this takes a vector r (from one particle
 c   to another) in and replaces the vector by its closest image. 
 c It also calculates the norm and returns that in rnorm.
 c The shift is modulo the simulation lattice vector 'alattice'
-c Our convention is that -alattice/2 < r < alattice/2 
+c Our convention is that -alattice/2 <= r < alattice/2 
 c Since the simulation cell is the primitive cell for our 1D periodic systems,
 c we don't need to calculate an 'rshift' since it is always zero.
 
@@ -481,7 +481,7 @@ c     a mod b, so that the sign of the answer always matches the sign of b
 c    This is different from the function "MOD(a,b)", which returns an
 c     answer that has the same sign as a
       r(1) = modulo(r(1),alattice) ! returns a number between 0 and alattice
-      if (r(1).gt.(alattice/2.)) r(1) = r(1) - alattice
+      if (r(1).ge.(alattice/2.)) r(1) = r(1) - alattice
       rnorm = 0.
       do k = 1,ndim
          rnorm = rnorm + r(k)**2

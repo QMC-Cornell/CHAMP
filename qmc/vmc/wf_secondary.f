@@ -549,6 +549,7 @@ c Saves the best wf yet and writes it out at end of run
       use bparm_mod
       use optimo_mod
       use orbpar_mod
+      use contrl_per_mod
       use numbas_mod
       implicit real*8(a-h,o-z)
 

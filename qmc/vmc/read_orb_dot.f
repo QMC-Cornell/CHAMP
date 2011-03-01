@@ -162,7 +162,7 @@ c       Periodic Gaussians: do modulo math
             write(6,'(''Floating gaussian x-positions:'')')
             do ib=1,nbasis
               oparm(it,ib,1) = modulo(oparm(it,ib,1), alattice)
-              if (oparm(it,ib,1).gt.(alattice/2.)) oparm(it,ib,1) = oparm(it,ib,1) - alattice
+              if (oparm(it,ib,1).ge.(alattice/2.)) oparm(it,ib,1) = oparm(it,ib,1) - alattice
             enddo
           endif
           if(it.eq.2) write(6,'(''Floating gaussian y-positions:'')')
