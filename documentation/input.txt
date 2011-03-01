@@ -11,7 +11,9 @@ job name and random seed
 
 Line 2:
 iperiodic: 0  finite system
-           >0 periodic system
+           >0 periodic system:
+             1 system periodic in 1D 
+             3 system periodic in 3D
 
 ibasis   : 1 localized Slater or gaussian or numerical basis
            2 planewave basis, also for extended orbitals on grid
