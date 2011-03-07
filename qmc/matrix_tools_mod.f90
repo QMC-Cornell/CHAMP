@@ -267,7 +267,7 @@ module matrix_tools_mod
  
   if (power_n < 1) then
      do eigen_i = 1, dim
-        if (eigenvalues (eigen_i) < (-10**-5)) then
+        if (eigenvalues (eigen_i) < -1.d-5) then
             write(6,'(a)') 'one eigenvalue is too negative to be equalled to zero'
         else if (eigenvalues (eigen_i) < 0) then
             eigenvalues (eigen_i) = 0
