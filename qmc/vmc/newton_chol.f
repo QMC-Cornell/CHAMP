@@ -128,7 +128,7 @@ c 160     write(6,'(''ham='',20g12.4)') (ham(i,j),j=1,nparmp1)
         write(6,*)
       endif
       write(6,'(/,''diagonal H/O'',9f9.4)') (ham(i,i)/ovlp(i,i),i=1,nparmp1)
-c      flush(6) ! ACM debug
+c      systemflush(6) ! ACM debug
       endif ! end of linear method quantities
 
 
