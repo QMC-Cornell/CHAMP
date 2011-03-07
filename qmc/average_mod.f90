@@ -569,7 +569,8 @@ module average_mod
   enddo
 
 ! add average to the list of averages
-  if (.not. objects(object_ind)%walkers) then
+! must treat the case object_ind=0 separately since objects(object_ind)%walkers is undefined in this case
+  if (object_ind == 0) then
    averages_nb = averages_nb + 1
    call alloc ('averages_object_index', averages_object_index, averages_nb)
    call alloc ('averages_object_bav_index', averages_object_bav_index, averages_nb) ! block average
@@ -578,21 +579,33 @@ module average_mod
    averages_object_bav_index (averages_nb) = object_bav_ind ! block average
    averages_object_av_index (averages_nb) = object_av_ind
   else
-   averages_walk_nb = averages_walk_nb + 1
-   call alloc ('averages_walk_object_index', averages_walk_object_index, averages_walk_nb)
-   call alloc ('averages_walk_object_bav_index', averages_walk_object_bav_index, averages_walk_nb)
-   call alloc ('averages_walk_object_av_index', averages_walk_object_av_index, averages_walk_nb)
-   averages_walk_object_index (averages_walk_nb) = object_ind
-   averages_walk_object_bav_index (averages_walk_nb) = object_bav_ind ! block average
-   averages_walk_object_av_index (averages_walk_nb) = object_av_ind
+   if (.not. objects(object_ind)%walkers) then
+    averages_nb = averages_nb + 1
+    call alloc ('averages_object_index', averages_object_index, averages_nb)
+    call alloc ('averages_object_bav_index', averages_object_bav_index, averages_nb) ! block average
+    call alloc ('averages_object_av_index', averages_object_av_index, averages_nb)
+    averages_object_index (averages_nb) = object_ind
+    averages_object_bav_index (averages_nb) = object_bav_ind ! block average
+    averages_object_av_index (averages_nb) = object_av_ind
+   else
+    averages_walk_nb = averages_walk_nb + 1
+    call alloc ('averages_walk_object_index', averages_walk_object_index, averages_walk_nb)
+    call alloc ('averages_walk_object_bav_index', averages_walk_object_bav_index, averages_walk_nb)
+    call alloc ('averages_walk_object_av_index', averages_walk_object_av_index, averages_walk_nb)
+    averages_walk_object_index (averages_walk_nb) = object_ind
+    averages_walk_object_bav_index (averages_walk_nb) = object_bav_ind ! block average
+    averages_walk_object_av_index (averages_walk_nb) = object_av_ind
+   endif
   endif
 
 ! invalidate average
   call object_invalidate_by_index (object_av_ind)
 
 ! request corresponding block average, except if block average is an independent object or walk average
-  if (object_ind /= 0 .and. .not. objects(object_ind)%walkers) then
-   call object_block_average_request_by_index (object_bav_ind)
+  if (object_ind /= 0) then
+    if (.not. objects(object_ind)%walkers) then
+      call object_block_average_request_by_index (object_bav_ind)
+    endif
   endif
 
  end subroutine object_average_request
