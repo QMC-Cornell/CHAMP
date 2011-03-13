@@ -70,12 +70,23 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
 c sample position from exponentials or gaussian around center
 c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots            
             if((nloc.eq.-1 .or. nloc.eq.-5) .and. rring.gt.0.d0) then
-              site=-dlog(rannyu(0))
-              site=dsqrt(site)
-              site=sign(site,(rannyu(0)-half))
-              angle=2*pi*rannyu(0)
-              x(1,ielec)=(sitsca*site+rring)*dcos(angle)
-              x(2,ielec)=(sitsca*site+rring)*dsin(angle)
+              if(ibasis.eq.5) then 
+                site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(3, ielec, iwf))
+                angle = (0.5d0 - rannyu(0))*3.d0/dsqrt(oparm(4, ielec, iwf)) 
+                site = site + oparm(1, ielec, iwf)
+                angle = angle + oparm(2, ielec, iwf)
+c  Make sure electron is near the center of some gaussian - might not work 
+c     if there's more than 1 slater determinant
+                x(1,ielec)=site*dcos(angle)
+                x(2,ielec)=site*dsin(angle)
+              else
+                site=-dlog(rannyu(0))
+                site=dsqrt(site)
+                site=sign(site,(rannyu(0)-half))
+                angle=2*pi*rannyu(0)
+                x(1,ielec)=(sitsca*site+rring)*dcos(angle)
+                x(2,ielec)=(sitsca*site+rring)*dsin(angle)
+              endif
              else
                do 5 k=1,ndim
 c sample position from exponentials or gaussian around center
