@@ -746,7 +746,7 @@ module optimization_mod
   logical  l_convergence_reached
   integer convergence_reached_nb
   integer :: move_rejected = 0
-  real(dp) energy_plus_err, energy_plus_err_best
+  real(dp) energy_plus_err, energy_plus_err_best, energy_best
 
 ! begin
   write(6,*)
@@ -1003,6 +1003,7 @@ module optimization_mod
    if(energy_plus_err.lt.energy_plus_err_best) then
     iter_best = iter
     energy_plus_err_best=energy_plus_err
+    energy_best = energy(1)
     call wf_best_save
    endif
 
@@ -1277,6 +1278,7 @@ module optimization_mod
   if(energy_plus_err.lt.energy_plus_err_best) then
     iter_best = iter
     energy_plus_err_best=energy_plus_err
+    energy_best = energy(1)
     call wf_best_save
   endif
   endif !l_last_run
@@ -1287,9 +1289,12 @@ module optimization_mod
   write(6,*)
   write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
   write(6,'(a)') 'Best wave function:'
-  write(6,*)
-  write(6,'(a,i3)') 'The best wave function was found at iteration # ',iter_best !, ' (energy_plus_err_best = ',energy_plus_err_best,')'
+!  write(6,'(a,i3)') 'The best wave function was found at iteration # ',iter_best !, ' (energy_plus_err_best = ',energy_plus_err_best,')'
   call write_wf_best
+
+! restore best wave function and set new etrial for subsequent calculations
+  call wf_best_restore
+  etrial = energy_best
 
   end subroutine optimization
 

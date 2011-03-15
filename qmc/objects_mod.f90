@@ -1819,6 +1819,7 @@ module objects_mod
 ! Description : associate pointer of object by its index
 !
 ! Created     : J. Toulouse, 07 Sep 2007
+! Modified    : J. Toulouse, 14 Mar 2010, resize
 !---------------------------------------------------------------------------
   implicit none
 
@@ -1827,26 +1828,51 @@ module objects_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_associate_by_index_double_1'
-  integer all_err
+  integer all_err, object_dim, dim_min
+  real(dp), allocatable                :: object_temp (:)
 
 ! begin
 
-! if object already associated, return
-  if (objects(object_ind)%associated) return
+! associate object if not already associated
+  if (.not. objects(object_ind)%associated) then
+!   store type
+    objects(object_ind)%type = 'double_1'
+!   store dimensions
+    call append(objects(object_ind)%dimensions, dim1)
+!   associate (allocate) pointer
+    allocate (objects(object_ind)%pointer_double_1(dim1), stat = all_err)
+    if (all_err /= 0) then
+     call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+    endif
+    objects(object_ind)%pointer_double_1 = 0.d0
+    objects(object_ind)%associated = .true.
 
-! store type
-  objects(object_ind)%type = 'double_1'
+! resize object if already associated with different dimension
+  else
+    object_dim = size(objects(object_ind)%pointer_double_1)
+    if (object_dim /= dim1) then
+     dim_min =  min(object_dim, dim1)
+     call alloc ('object_temp', object_temp, dim_min)
+     object_temp(:) = objects(object_ind)%pointer_double_1(1:dim_min)
+     call object_deassociate (objects(object_ind)%name)
 
-! store dimensions
-  call append(objects(object_ind)%dimensions, dim1)
+     objects(object_ind)%type = 'double_1'
+     call append(objects(object_ind)%dimensions, dim1)
+     allocate (objects(object_ind)%pointer_double_1(dim1), stat = all_err)
+     if (all_err /= 0) then
+      call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+     endif
+     objects(object_ind)%pointer_double_1 = 0.d0
+     objects(object_ind)%associated = .true.
 
-! associate (allocate) pointer
-  allocate (objects(object_ind)%pointer_double_1(dim1), stat = all_err)
-  if (all_err /= 0) then
-   call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+     objects(object_ind)%pointer_double_1(1:dim_min) = object_temp(:)
+     call release ('object_temp', object_temp)
+!    resize also the corresponding objects for averages and errors
+!     call alloc ('objects(object_ind)%sum_double_1',objects(object_ind)%sum_double_1, dim1)
+!     call alloc ('objects(object_ind)%sum_blk_double_1',objects(object_ind)%sum_blk_double_1, dim1)
+!!     call alloc ('objects(object_ind)%previous_double_1',objects(object_ind)%previous_double_1, dim1)
+    endif
   endif
-  objects(object_ind)%pointer_double_1 = 0.d0
-  objects(object_ind)%associated = .true.
 
   end subroutine object_associate_by_index_double_1
 
@@ -1856,6 +1882,7 @@ module objects_mod
 ! Description : associate pointer of object by its index
 !
 ! Created     : J. Toulouse, 07 Sep 2007
+! Modified    : J. Toulouse, 14 Mar 2010, resize
 !---------------------------------------------------------------------------
   implicit none
 
@@ -1864,27 +1891,60 @@ module objects_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'object_associate_by_index_double_2'
-  integer all_err
+  integer all_err, object_dim1, object_dim2, dim_min1, dim_min2
+  real(dp), allocatable                :: object_temp (:,:)
 
 ! begin
 
-! if object already associated, return
-  if (objects(object_ind)%associated) return
+! associate object if not already associated
+  if (.not. objects(object_ind)%associated) then
+!   store type
+    objects(object_ind)%type = 'double_2'
+!   store dimensions
+    call append(objects(object_ind)%dimensions, dim1)
+    call append(objects(object_ind)%dimensions, dim2)
+!   associate (allocate) pointer
+    allocate (objects(object_ind)%pointer_double_2(dim1, dim2), stat = all_err)
+    if (all_err /= 0) then
+     call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+    endif
+    objects(object_ind)%pointer_double_2 = 0.d0
+    objects(object_ind)%associated = .true.
 
-! store type
-  objects(object_ind)%type = 'double_2'
+! resize object if already associated with different dimensions
+  else
+    object_dim1 = size(objects(object_ind)%pointer_double_2,1)
+    object_dim2 = size(objects(object_ind)%pointer_double_2,2)
+    if (object_dim1 /= dim1 .or. object_dim2 /= dim2) then
+     dim_min1 =  min(object_dim1, dim1)
+     dim_min2 =  min(object_dim2, dim2)
+     call alloc ('object_temp', object_temp, dim_min1, dim_min2)
+     object_temp(:,:) = objects(object_ind)%pointer_double_2(1:dim_min1,1:dim_min2)
+     call object_deassociate (objects(object_ind)%name)
 
-! store dimensions
-  call append(objects(object_ind)%dimensions, dim1)
-  call append(objects(object_ind)%dimensions, dim2)
+     objects(object_ind)%type = 'double_2'
+     call append(objects(object_ind)%dimensions, dim1)
+     call append(objects(object_ind)%dimensions, dim2)
+     allocate (objects(object_ind)%pointer_double_2(dim1, dim2), stat = all_err)
+     if (all_err /= 0) then
+      call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+     endif
+     objects(object_ind)%pointer_double_2 = 0.d0
+     objects(object_ind)%associated = .true.
 
-! associate (allocate) pointer
-  allocate (objects(object_ind)%pointer_double_2(dim1, dim2), stat = all_err)
-  if (all_err /= 0) then
-   call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+     objects(object_ind)%pointer_double_2(1:dim_min1,1:dim_min2) = object_temp(:,:)
+     call release ('object_temp', object_temp)
+!    resize also the corresponding objects for averages and errors
+!   resize also the corresponding objects for averages and errors
+!    object_ind = object_index (object_name)
+!    call alloc ('objects(object_ind)%sum_double_1',objects(object_ind)%sum_double_1, dim1)
+!    call alloc ('objects(object_ind)%sum_blk_double_1',objects(object_ind)%sum_blk_double_1, dim1)
+!!    call alloc ('objects(object_ind)%previous_double_1',objects(object_ind)%previous_double_1, dim1)
+!    call alloc ('objects(object_ind)%sum_double_2',objects(object_ind)%sum_double_2, dim1, dim2)
+!    call alloc ('objects(object_ind)%sum_blk_double_2',objects(object_ind)%sum_blk_double_2, dim1, dim2)
+!!    call alloc ('objects(object_ind)%previous_double_2',objects(object_ind)%previous_double_2, dim1, dim2)
+    endif
   endif
-  objects(object_ind)%pointer_double_2 = 0.d0
-  objects(object_ind)%associated = .true.
 
   end subroutine object_associate_by_index_double_2
 

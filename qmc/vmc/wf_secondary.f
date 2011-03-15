@@ -611,18 +611,38 @@ c Jastrow
       if (inum_orb == 0) then
         call object_provide ('nbasis')
         call object_provide ('orb_tot_nb')
+
+        call object_provide ('coef')
+        call object_alloc ('coef_best', coef_best, nbasis, orb_tot_nb)
+        coef_best (1:nbasis, 1:orb_tot_nb) = coef (1:nbasis, 1:orb_tot_nb, 1)
+        call object_modified ('coef_best')
+
+
         call object_provide ('coef_orb_on_norm_basis')
         call object_alloc ('coef_orb_on_norm_basis_best', coef_orb_on_norm_basis_best, nbasis, orb_tot_nb)
         coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
         call object_modified ('coef_orb_on_norm_basis_best')
+
+        if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+         call object_provide ('coef_orb_on_ortho_basis')
+         call object_alloc ('coef_orb_on_ortho_basis_best', coef_orb_on_ortho_basis_best, nbasis, orb_tot_nb)
+         coef_orb_on_ortho_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1)
+         call object_modified ('coef_orb_on_ortho_basis_best')
+        endif
         
 !       save exponents
 c       if (numr.le.0) then
-        if (maxval(zex).ne.0.d0) then
+!       if (maxval(zex).ne.0.d0) then
+        if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
           call object_provide ('nctype')
           call object_alloc ('zex_best', zex_best, nbasis)
+          call object_alloc ('zex2_best', zex2_best, MRWF, nctype)
           zex_best (1:nbasis) = zex (1:nbasis,1)
+          do ict=1,nctype
+           zex2_best (1:nrbas_analytical(ict),1:nctype) = zex2 (1:nrbas_analytical(ict),1:nctype,1)
+          enddo
           call object_modified ('zex_best')
+          call object_modified ('zex2_best')
         endif
       endif
 
@@ -633,6 +653,67 @@ c       if (numr.le.0) then
       call object_alloc ('cent_best', cent_best, ndim, ncent)
       cent_best (1:ndim,1:ncent) = cent (1:ndim,1:ncent)
       call object_modified ('cent_best')
+
+      return
+c-----------------------------------------------------------------------
+      entry wf_best_restore
+
+      write(6,*)
+      write(6,'(a)') 'Restoring best wavefunction.'
+
+      do 150 i=1,ncsf
+  150   csf_coef(i,1)=csf_coef_best(i)
+
+      do 151 it=1,notype
+        do 151 ip=1,nbasis
+  151     oparm(it,ip,1)=oparm_best(it,ip)
+
+      scalek(1)=scalek_best
+      do 152 ict=1,nctype
+        do 152 i=1,nparma_read
+  152     a4(i,ict,1)=a4_best(i,ict)
+      do 154 isp=nspin1,nspin2b
+        do 154 i=1,nparmb_read
+  154     b(i,isp,1)=b_best(i,isp)
+      do 156 ict=1,nctype
+        do 156 i=1,nparmc_read
+  156     c(i,ict,1)=c_best(i,ict)
+
+!     restore orbital coefficients (must restore only for iwf=1 to avoid problems)
+      if (inum_orb == 0) then
+        call object_valid_or_die ('coef_best')
+        coef (1:nbasis, 1:orb_tot_nb, 1) = coef_best (1:nbasis, 1:orb_tot_nb)
+        call object_modified ('coef')
+        
+        call object_valid_or_die ('coef_orb_on_norm_basis_best')
+        coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb)
+        call object_modified ('coef_orb_on_norm_basis')
+        
+        if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
+         call object_valid_or_die ('coef_orb_on_ortho_basis_best')
+         coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_best (1:nbasis, 1:orb_tot_nb)
+         call object_modified ('coef_orb_on_ortho_basis')
+        endif
+
+
+!       restore exponents (must restore only for iwf=1 to avoid problems)
+!       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+        if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+          call object_valid_or_die ('zex_best')
+          call object_valid_or_die ('zex2_best')
+          zex (1:nbasis,1) = zex_best (1:nbasis)
+          do ict=1,nctype
+            zex2 (1:nrbas_analytical(ict),1:nctype,1) = zex2_best (1:nrbas_analytical(ict),1:nctype)
+          enddo
+          call object_modified ('zex')
+          call object_modified ('zex2')
+        endif
+      endif
+
+!     restore nuclear coordinates
+      call object_valid_or_die ('cent_best')
+      cent (1:ndim,1:ncent) = cent_best (1:ndim,1:ncent)
+      call object_modified ('cent')
 
       return
 c-----------------------------------------------------------------------

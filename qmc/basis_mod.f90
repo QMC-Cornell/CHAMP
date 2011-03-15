@@ -21,8 +21,9 @@ module basis_mod
   real(dp), allocatable           :: basis_ovlp_12 (:,:)
   real(dp), allocatable           :: basis_ovlp_m12 (:,:)
   real(dp), allocatable           :: zex_sav (:)
-  real(dp), allocatable           :: zex2_sav (:,:)
   real(dp), allocatable           :: zex_best (:)
+  real(dp), allocatable           :: zex2_sav (:,:)
+  real(dp), allocatable           :: zex2_best (:,:)
   real(dp), allocatable           :: norm_basis (:)
   integer                         :: exp_opt_lab_read_nb
   integer, allocatable            :: exp_opt_lab_read (:)
