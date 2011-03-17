@@ -178,12 +178,13 @@ def write_nwchem(mem,name1,name2,nmul,pseudo_yes,charge,ename,unique_atom_list_e
 		for line in lines:
 			outf.write("%s" % line)
 	outf.write("end\n\n")
-	outf.write("ecp\n")
-	for iatom in unique_pseudo_list_ename:
-		lines = open(iatom,'r').readlines()
-		for line in lines:
-			outf.write("%s" % line)
-	outf.write("end\n\n")
+	if pseudo_yes =="T":
+		outf.write("ecp\n")
+		for iatom in unique_pseudo_list_ename:
+			lines = open(iatom,'r').readlines()
+			for line in lines:
+				outf.write("%s" % line)
+		outf.write("end\n\n")
 	
 	outf.write("task hf \n\n")
 	
