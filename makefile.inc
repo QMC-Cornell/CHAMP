@@ -696,15 +696,14 @@ ifeq ($(hostname),genius1)
 endif
 
 # Mac OS for Intel Core2 machines with Intel Fortran compiler
-#ifeq ($(hostname),epistemon.local)
 ifeq ($(uname),Darwin)
     CC=icc
     CXX=icpc
     CC_MPI=mpicc
     F95=ifort
     F95_MPI=mpif90
-    F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xST -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
-    F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
+    F95_FAST_FLAGS=-zero -r8 -m64 -pad -align all -O3 -axSTP -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+    F95_DEBUG_FLAGS=-zero -r8 -m64 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
     EINSPLINE=
     LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
