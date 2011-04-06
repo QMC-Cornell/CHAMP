@@ -834,7 +834,7 @@ c Wave functions are given by (except the normalization csnt)
 
 c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 
-c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
+c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*(cos(xt-xt0)-1))
 
 c where  xr=r and xt=\theta  are polar coordinates of electrons
 c        xg1 and xg2 are polar coordinates of gaussians

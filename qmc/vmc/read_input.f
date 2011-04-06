@@ -79,7 +79,7 @@ c subroutine that is called both from fit and read_input.
 c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
-      namelist /opt_list/ iantiferromagnetic, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
+      namelist /opt_list/ iring_coulomb, iantiferromagnetic, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
      &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
@@ -290,6 +290,14 @@ c iantiferromagnetic  Whether to constrain optimization so that
 c           floating gaussians have antiferromagnetic order
 c           Not implemented for odd number of electrons, or if nup \= ndn
 c           = 1 by default for nup=ndn, = 0 otherwise
+c iring_coulomb  whether to use a modified form of the coulomb potential
+c                in rings
+c           = 0  (default), V ~ 1/|rvec_i - rvec_j|
+c           = 1: V ~ 1/r, where "r" is given by r^2 = "x"^2 + "y"^2,
+c                   "x" = r_1 - r_2
+c                   "y" = 2 * rring * sin((theta_1 - theta_2) / 2)
+c            (useful for making "ringlike" geometry less important when
+c               studying qpc's in rings.)
 c ifixe   if > 0: which electron is fixed at a given position. 0 means none.
 c          -1: calculate 2d density (not pair density)
 c          -2: calculate full 2d pair density (no fixed electron)
@@ -1448,6 +1456,7 @@ c   default values:
       xfix(2)=0.d0
       xfix(3)=0.d0
       rring=0.d0
+      iring_coulomb=0
       iperturb=0
       ang_perturb=0.d0
       amp_perturb=0.d0
@@ -1551,6 +1560,9 @@ c composite fermions:
 
 c Quantum rings/wires:
       if(bext.ne.0.d0 .and. rring.ne.0.d0) stop 'Quantum rings in magnetic field not yet implemented'
+      if(iring_coulomb.ne.0 .and. rring.eq.0.d0) then
+        stop 'Modified coulomb potential for rings (iring_coulomb=1) only possible for quantum rings'
+      endif
       if(iperturb.ne.0) then
         if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) stop 'shrp_perturb must be between 0 and 100'
         if(nloc.eq.-4) then  ! Quantum Wires

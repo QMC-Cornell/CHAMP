@@ -72,7 +72,7 @@ c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots
             if((nloc.eq.-1 .or. nloc.eq.-5) .and. rring.gt.0.d0) then
               if(ibasis.eq.5) then 
                 site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(3, ielec, iwf))
-                angle = (0.5d0 - rannyu(0))*3.d0/dsqrt(oparm(4, ielec, iwf)) 
+                angle = (0.5d0 - rannyu(0))/dsqrt(oparm(4, ielec, iwf)) 
                 site = site + oparm(1, ielec, iwf)
                 angle = angle + oparm(2, ielec, iwf)
 c  Make sure electron is near the center of some gaussian - might not work 

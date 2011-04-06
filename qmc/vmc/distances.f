@@ -108,7 +108,26 @@ c Calculate e-e inter-particle distances
               rvec_ee(k,ij)=x(k,i)-x(k,j)
    28         r_ee(ij)=r_ee(ij)+rvec_ee(k,ij)**2
             r_ee(ij)=dsqrt(r_ee(ij))
-            pe_ee=pe_ee+1/r_ee(ij)
+            if (iring_coulomb.eq.1) then
+c           use "r_ee" given by r_ee^2 = x^2 + y^2, where:
+c              x = ri - rj
+c              y = 2*rring*sin((thetai - thetaj)/2)
+c              ( where ri,thetai are the polar coordinates of electron i)
+c           Note that this is only defined if ndim = 2
+c            We could have done this more efficiently using r_ee and rvec_ee
+c             but that would make the code less readable.
+              ri = dsqrt(x(1,i)*x(1,i) + x(2,i)*x(2,i))
+              rj = dsqrt(x(1,j)*x(1,j) + x(2,j)*x(2,j))
+              dtheta = atan(x(2,j)/x(1,j)) - atan(x(2,i)/x(1,i))
+              xeff = ri - rj
+              yeff = 2.0*rring*sin(0.5*dtheta)
+              reff = dsqrt(xeff*xeff + yeff*yeff)
+              pe_ee = pe_ee + 1.0/reff
+            else 
+              pe_ee=pe_ee+1.0/r_ee(ij)
+            endif
+            
+          
    29   continue
 
         pe=pe+pe_en+pe_ee !JT
