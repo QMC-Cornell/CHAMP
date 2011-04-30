@@ -6,7 +6,7 @@
 # XMVB to CHAMP convertion script
 # Author: J. Toulouse
 # Created: 02 Mar 2009
-# Last modified: 28 Apr 2009
+# Last modified: 30 Apr 2011
 #
 ###################################################################################
 
@@ -62,6 +62,7 @@ def help_menu():
   print "the script overwrites orbital and CSF information in champ_input_file"
   print "options: -h: print this menu"
   print "options: -d file.xdat: get orbitals (including virtual orbitals) from xdat file"
+  print "options: -c: reconstruct list of determinants from the structures"
   
   sys.exit(0)
 
@@ -236,6 +237,14 @@ def read_structures ():
     print "\nERROR: mismatch in number of structures =",structures_nb
     sys.exit(0)
 
+# check that the structures are all different
+  for csf_i in range(ncsf):
+    for csf_j in range(csf_i+1,ncsf):
+      if structures[csf_i] == structures[csf_j]:
+        print "\nERROR: structures ",csf_i+1, " and ",csf_j+1," are identical."
+        sys.exit(0)
+    
+
 # ========================================================
 def read_determinants ():
   "read determinants."
@@ -315,7 +324,6 @@ def read_determinants ():
       determinant_dn =[]
       coupled_orbital_1=[]
       coupled_orbital_2=[]
-      ndet = 1
       nup = 0
       ndn = 0
       o=0
@@ -337,9 +345,10 @@ def read_determinants ():
       det_coef.append (1.)
       nelec = nup+ndn
 #    construct all determinants by spin-singlet couplings of unpaired electron
-      new_determinant=[]
       for pair in range(len(coupled_orbital_1)):
+        ndet=len(determinants)
         for det in range(ndet):
+          new_determinant=[]
           for orb in determinants[det]:
              if (orb == coupled_orbital_1[pair]):
                new_determinant.append (coupled_orbital_2[pair])
@@ -349,7 +358,6 @@ def read_determinants ():
                new_determinant.append (str(orb))
           determinants.append (new_determinant)
           det_coef.append (1.)
-          ndet = ndet + 1
     else:
       print "\nERROR: determinants not found"
       sys.exit(0)
@@ -663,9 +671,146 @@ def dets_in_csfs ():
     if (det_used[det_i] == 0):
       print "WARNING: determinant # ",det_i+1," is not used\n"
     if (det_used[det_i] > 1):
-      print "\nERROR: determinant # ",det_i+1," is used in more than one structure. This case is not handled yet.\n"
+      print "\nERROR: determinant # ",det_i+1," is used in more than one structure. The coefficients of determinants in each structure cannot be determined.\n"
+      print "\nUse option '-c' to reconstruct the list of determinants from the structure.\n"
       sys.exit(0)
+
+# ========================================================
+def construct_determinants ():
+  "construct determinants (and dets_in_csfs) if determinants not read"
+  global nelec, nup, ndn
+  global ndet
+
+  print "\nWARNING: reconstruct list of determinants from the structures, the structures will only be approximately normalized (to be checked)"
+
+# construct the list of non-sorted and non-unique composing determinants from the structures
+  ndet = 0
+  determinants_unsorted=[]
+  for csf_i in range(ncsf):
+    coupled_orbital_1=[]
+    coupled_orbital_2=[]
+    determinant_up =[]
+    determinant_dn =[]
+    determinants_in_csf=[]
+    current_det_label_in_csf = []
+    current_det_coef_in_csf=[]
+    ndet = ndet + 1
+    nup = 0
+    ndn = 0
+    o=0
+    while o < len(structures[csf_i]):
+      orb_up = structures[csf_i][o]
+      determinant_up.append (orb_up)
+      nup = nup + 1
+      o = o + 1
+      if o >= len(structures[csf_i]):
+        break
+      orb_dn = structures[csf_i][o]
+      if (orb_dn != orb_up):
+        coupled_orbital_1.append(orb_up)
+        coupled_orbital_2.append(orb_dn)
+      determinant_dn.append (orb_dn)
+      ndn = ndn + 1
+      o = o + 1
+    determinants_in_csf.append (determinant_up+determinant_dn)
+    current_det_label_in_csf.append (ndet)
+    current_det_coef_in_csf.append (1.)
+    
+    nelec = nup+ndn
+#  construct all determinants by spin-singlet couplings of unpaired electron
+    for pair in range(len(coupled_orbital_1)):
+      ndet_csf=len(determinants_in_csf)
+      for det in range(ndet_csf):
+        new_determinant=[]
+        for orb in determinants_in_csf[det]:
+           if (orb == coupled_orbital_1[pair]):
+             new_determinant.append (coupled_orbital_2[pair])
+           elif (orb == coupled_orbital_2[pair]):
+             new_determinant.append (coupled_orbital_1[pair])
+           else:
+             new_determinant.append (str(orb))
+        ndet = ndet + 1
+        determinants_in_csf.append (new_determinant)
+        current_det_label_in_csf.append (ndet)
+        current_det_coef_in_csf.append (1.) # coefficients are always positive before sorting orbitals in determinants
+    for det in range(len(determinants_in_csf)):
+      determinants_unsorted.append (determinants_in_csf[det])
+    det_label_in_csf.append (current_det_label_in_csf)
+    det_coef_in_csf.append (current_det_coef_in_csf)
+
+
+# sort orbitals in spin-up and spin-down determinants and keep track of sign changes on the coefficients
+  for det_i in range(ndet):
+#    print "determinant       : ",determinants_unsorted[det_i]
+    det_up_and_sign = sort_and_sign(determinants_unsorted[det_i][:nup])
+    det_dn_and_sign = sort_and_sign(determinants_unsorted[det_i][nup:])
+    determinants.append (det_up_and_sign[0]+det_dn_and_sign[0])
+#    print "determinant sorted: ",determinants[det_i]
+#   change sign of the coefficients involving the current sorted determinant
+    for csf_i in range(ncsf):
+      for det_j in range(len(det_label_in_csf[csf_i])):
+        det = det_label_in_csf[csf_i][det_j]
+        if det-1 == det_i:
+          det_coef_in_csf[csf_i][det_j]=det_coef_in_csf[csf_i][det_j]*det_up_and_sign[1]*det_dn_and_sign[1]
+  
+# keep only list of unique determinants
+  det_i=1
+  while det_i < len(determinants):
+   det_unique = True
+   for det_j in range(det_i):
+     if determinants[det_i] == determinants[det_j]:
+#       print "identical determinants:", det_i+1, det_j+1
+       det_unique = False
+       break
+   if det_unique:
+     det_i = det_i +1
+   else:
+     del determinants[det_i]
+     for csf_i in range(ncsf):
+       for det_k in range(len(det_label_in_csf[csf_i])):
+         det = det_label_in_csf[csf_i][det_k]
+         if det-1 == det_i:
+           det_label_in_csf[csf_i][det_k]=det_j+1
+         if det-1 > det_i:
+           det_label_in_csf[csf_i][det_k]=det_label_in_csf[csf_i][det_k]-1
+     
+  ndet=len(determinants)
+
+# approximate normalization of the determinant coefficients (assuming the determinants are orthonormal, which they are not)
+  for csf_i in range(ncsf):
+    norm = 0
+    for det_i in range(len(det_coef_in_csf[csf_i])):
+      norm = norm + det_coef_in_csf[csf_i][det_i]**2
+    for det_i in range(len(det_coef_in_csf[csf_i])):
+      det_coef_in_csf[csf_i][det_i] = det_coef_in_csf[csf_i][det_i]/sqrt(norm)
       
+  
+#  print "nup=",nup
+#  print "ndn=",ndn
+#  print "nelec=",nelec
+#  print "determinants=",determinants
+#  print "det_label_in_csf=",det_label_in_csf
+#  print "det_coef_in_csf=",det_coef_in_csf
+      
+# ========================================================
+def sort_and_sign (array):
+  "sort array and determine the signature of the sort permutation."
+
+  sign=1
+#  print "original array=",array
+  for i in range(len(array)):
+    for j in range(i+1,len(array)):
+      if float(array[j]) < float(array[i]):
+        tempi=array[i]
+        tempj=array[j]
+        del array[i]
+        array.insert(i,tempj)
+        del array[j]
+        array.insert(j,tempi)
+        sign=sign*(-1)
+  return(array,sign)
+#  print "sorted array=",array
+#  print "sign=",sign
 
 # ========================================================
 # main code
@@ -684,9 +829,10 @@ if len(sys.argv) <= 1:
 #file_output_string = sys.argv[2]
 
 # command line arguments
-options, extra = getopt.getopt(sys.argv[1:],'i:o:d:hs')
+options, extra = getopt.getopt(sys.argv[1:],'i:o:d:hsc')
 
 l_xdat = False
+l_construct_det = False
 
 for opt, val in options:
   if opt == "-h":
@@ -698,6 +844,8 @@ for opt, val in options:
   elif opt == "-d":
    file_xdat_string = val
    l_xdat = True
+  elif opt == "-c":
+   l_construct_det = True
   else:
      print "\nERROR: unknown option:", opt, val
 
@@ -709,7 +857,8 @@ read_energy ()
 read_structure_number ()
 read_structures_initial ()
 read_structures ()
-read_determinants ()
+if not l_construct_det:
+  read_determinants ()
 read_orbitals ()
 sys.stdout.write('done\n')
 file_input.close()
@@ -726,7 +875,10 @@ if l_xdat:
 determine_orbitals_sym();
 
 # calculate
-dets_in_csfs ()
+if not l_construct_det:
+  dets_in_csfs ()
+else:
+  construct_determinants ()
 
 # check
 
