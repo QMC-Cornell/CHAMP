@@ -62,7 +62,7 @@ def help_menu():
   print "the script overwrites orbital and CSF information in champ_input_file"
   print "options: -h: print this menu"
   print "options: -d file.xdat: get orbitals (including virtual orbitals) from xdat file"
-  print "options: -c: reconstruct list of determinants from the structures"
+  print "options: -c: reconstruct list of determinants from the VB structures instead of reading them from xmvb_output_file"
   
   sys.exit(0)
 
