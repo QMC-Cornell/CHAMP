@@ -851,8 +851,8 @@ for opt, val in options:
 
 # read xmvb input file
 file_input = open(file_input_string,'r')
-lines = file_input.readlines()
 sys.stdout.write('reading XMVB file >'+ str(file_input_string) +'< ... ')
+lines = file_input.readlines()
 read_energy ()
 read_structure_number ()
 read_structures_initial ()
@@ -860,8 +860,8 @@ read_structures ()
 if not l_construct_det:
   read_determinants ()
 read_orbitals ()
-sys.stdout.write('done\n')
 file_input.close()
+sys.stdout.write('done\n')
 
 # read xdat file
 if l_xdat:

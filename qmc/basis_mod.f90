@@ -360,9 +360,9 @@ module basis_mod
    if (index(line,'end') /= 0) exit
 
 !  new center type
-   if (is_string_integer (line)) then
+   if (is_string_integer (trim(line))) then
  
-     cent_type_i = string_to_integer (line)
+     cent_type_i = string_to_integer (trim(line))
 
      if (cent_type_i > nctype) then
        call die (lhere, ' center type index = '+cent_type_i+' > number of center types ='+nctype)
@@ -374,7 +374,7 @@ module basis_mod
 !  read basis function type and exponent
    basis_fns_by_center_type_nb (cent_type_i) = basis_fns_by_center_type_nb (cent_type_i) + 1
    
-   read(line,*,iostat=iostat) basis_fns_type_temp , basis_fns_expo_temp
+   read(line,*,iostat=iostat) basis_fns_type_temp, basis_fns_expo_temp
    if(iostat < 0) then
      call die (lhere, 'error while reading basis functions')
    endif

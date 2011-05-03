@@ -237,12 +237,15 @@ module strings_tools_mod
 
 ! local
   character(len=1) c
-  integer i 
+  integer i , ifirst, ilast
 
 ! begin
   is_string_integer = .true.
 
-  do i = 1, len(trim(string))
+  ifirst = scan(string, '0123456789')
+  ilast = scan(string, '0123456789', back=.true.)
+
+  do i = ifirst, ilast
    c = string(i:i)
    if (c /= '0' .and. c /= '1' .and. c /= '2' .and. &
        c /= '3' .and. c /= '4' .and. c /= '5' .and. &

@@ -1390,7 +1390,7 @@ c zex and zex2 are the same, but indexed differently.
           ib=ib+1
           irb=iwrwf(ibct,ict)
           if(irb.le.nrbas_analytical(ict)) then
-            write(6,'(''zex2('',2i3,'')=zex('',i3,'')'')') irb,ict,ib
+!            write(6,'(''zex2('',2i3,'')=zex('',i3,'')'')') irb,ict,ib
             zex2(irb,ict,iwf)=zex(ib,iwf)
           endif
    10   continue

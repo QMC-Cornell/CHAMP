@@ -1106,7 +1106,7 @@ module optimization_mod
      call wf_update_and_check_and_stab
 !    write new wave function
      write(6,'(a)') ''
-     write(6,'(a)') 'New wave function:'
+     write(6,'(a,i3)') 'Wave function for next iteration # ',iter+1
      call write_wf_new
 
 !    just in case mc config is in crazy place, reset mc_configs by calling sites, only in VMC for now. Need to do it for DMC as well?
@@ -1207,7 +1207,7 @@ module optimization_mod
 
 !  write new wave function
    write(6,'(a)') ''
-   write(6,'(a)') 'New wave function:'
+   write(6,'(a,i3)') 'Wave function for next iteration # ',iter+1
    call write_wf_new
 
    if (l_convergence_reached) exit
@@ -1235,7 +1235,7 @@ module optimization_mod
 ! write final wave function
   if (.not. l_last_run) then
    write(6,*)
-   write(6,'(a)') 'Final wave function:'
+   write(6,'(a)') 'Wave function at final iteration:'
    call write_wf_new
   endif
 
@@ -2032,7 +2032,8 @@ module optimization_mod
   implicit none
 
 ! local
-  integer orb_i, cent_i, dim_i
+  character(len=max_string_len_rout), save :: lhere = 'write_wf'
+  integer orb_i, cent_i, dim_i, bas_i, bas_cent_i
   integer i, ict, isp
   character(len=80) fmt
 
@@ -2042,13 +2043,16 @@ module optimization_mod
   if (l_opt_csf) then
    call object_provide ('ncsf')
    call object_provide ('csf_coef')
-   write(6,'(a)') 'CSFs coefficients:'
-# if defined (PATHSCALE)
+   write(6,'(a)') 'csfs'
+   write(6,'(a)') ' csf_coef'
+!# if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
-# else
-   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
-   write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)'
-# endif
+!# else
+!   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+!   write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)'
+!# endif
+   write(6,'(a)') ' end'
+   write(6,'(a)') 'end'
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -2059,7 +2063,8 @@ module optimization_mod
     call object_provide ('b')
     call object_provide ('c')
 
-      write(6,'(a)') 'Jastrow parameters:'
+      write(6,'(a)') 'jastrow'
+      write(6,'(a)') ' parameters'
       if (nparma_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparma_read
        else
@@ -2084,6 +2089,9 @@ module optimization_mod
           write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
         enddo
       endif
+
+      write(6,'(a)') ' end'
+      write(6,'(a)') 'end'
 
   endif ! l_opt_jas
 
@@ -2111,7 +2119,8 @@ module optimization_mod
    call object_provide ('orb_tot_nb')
    call object_provide ('coef_orb_on_norm_basis')
 
-   write(6,'(a)') 'Orbital coefficients:'
+   write(6,'(a)') 'orbitals'
+   write(6,'(a)') ' coefficients'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
 # if defined (PATHSCALE)
@@ -2126,17 +2135,42 @@ module optimization_mod
     endif
    enddo
 
-  else
+   else
     call write_orbitals_pw_real
     write(6,'(3a)') 'Orbital coefficients written in file >',trim(file_orbitals_pw_out),'<'
-  endif
+   endif
 
+   write(6,'(a)') ' end'
+   write(6,'(a)') 'end'
   endif ! l_opt_orb
 
 ! print basis exponents
   if (l_opt_exp) then
    call object_provide ('nbasis')
    call object_provide ('zex')
+   if (use_parser) then
+     write(6,'(a)') 'basis'
+     write(6,'(a)') ' basis_functions'
+     bas_i=0
+     do ict=1,nctype
+       write(6,'(i3)') ict
+       do bas_cent_i = 1, basis_fns_by_center_type_nb (ict)
+         bas_i = bas_i + 1
+         select case (trim(radial_basis_type))
+         case ('analytical')
+           write(6,'(a6,3x,f12.8)') basis_fns_type_by_center_type (ict)%row(bas_cent_i), zex (bas_i, iwf)
+         case ('numerical')
+          call die (lhere, 'numerical basis functions cannot be optimized.')
+         case ('numerical-analytical')
+           write(6,'(a6,3x,f12.8,3x,i3)') basis_fns_type_by_center_type (ict)%row(bas_cent_i), zex (bas_i, iwf), basis_fns_rad_by_center_type(ict)%row(bas_cent_i)
+         case default
+          call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+         end select
+       enddo
+     enddo
+     write(6,'(a)') ' end'
+     write(6,'(a)') 'end'
+   else
    write(6,'(a)') 'Basis exponents:'
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
@@ -2144,6 +2178,7 @@ module optimization_mod
    write(fmt,"( '(', i8, 'f10.6,a)' )") nbasis
    write(6,fmt) zex(1:nbasis, iwf), ' (zex(i),i=1,nbasis)'
 # endif
+  endif
   endif ! l_opt_exp
 
 ! print geometry
@@ -2173,7 +2208,8 @@ module optimization_mod
   implicit none
 
 ! local
-  integer orb_i, cent_i, dim_i
+  character(len=max_string_len_rout), save :: lhere = 'write_wf_new'
+  integer orb_i, cent_i, dim_i, bas_i, bas_cent_i
   integer i, ict, isp
   character(len=80) fmt
 
@@ -2183,13 +2219,16 @@ module optimization_mod
   if (l_opt_csf) then
    call object_provide ('ncsf')
    call object_provide ('csf_coef')
-   write(6,'(a)') 'CSFs coefficients:'
-# if defined (PATHSCALE)
+   write(6,'(a)') 'csfs'
+   write(6,'(a)') ' csf_coef'
+!# if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
-# else
-   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
-   write(6,fmt) csf_coef(1:ncsf,iwf), ' (csf_coef_new(icsf),icsf=1,ncsf)'
-# endif
+!# else
+!   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+!   write(6,fmt) csf_coef(1:ncsf,iwf), ' (csf_coef_new(icsf),icsf=1,ncsf)'
+!# endif
+   write(6,'(a)') ' end'
+   write(6,'(a)') 'end'
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -2200,7 +2239,8 @@ module optimization_mod
     call object_provide ('b')
     call object_provide ('c')
 
-      write(6,'(a)') 'Jastrow parameters:'
+      write(6,'(a)') 'jastrow'
+      write(6,'(a)') ' parameters'
       if (nparma_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparma_read
        else
@@ -2228,6 +2268,8 @@ module optimization_mod
         write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c_new(iparmj),iparmj=1,nparmc)'
       enddo
 
+      write(6,'(a)') ' end'
+      write(6,'(a)') 'end'
   endif ! l_opt_jas
 
 ! print orbitals coefficients
@@ -2238,7 +2280,8 @@ module optimization_mod
    call object_provide ('orb_tot_nb')
    call object_provide ('coef_orb_on_norm_basis')
 
-   write(6,'(a)') 'Orbital coefficients:'
+   write(6,'(a)') 'orbitals'
+   write(6,'(a)') ' coefficients'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
 # if defined (PATHSCALE)
@@ -2253,10 +2296,13 @@ module optimization_mod
     endif
    enddo
 
-  else
+   else
     call write_orbitals_pw_real
     write(6,'(3a)') 'Orbital coefficients written in file >',trim(file_orbitals_pw_out),'<'
-  endif
+   endif
+
+   write(6,'(a)') ' end'
+   write(6,'(a)') 'end'
 
   endif ! l_opt_orb
 
@@ -2264,6 +2310,29 @@ module optimization_mod
   if (l_opt_exp) then
    call object_provide ('nbasis')
    call object_provide ('zex')
+   if (use_parser) then
+     write(6,'(a)') 'basis'
+     write(6,'(a)') ' basis_functions'
+     bas_i=0
+     do ict=1,nctype
+       write(6,'(i3)') ict
+       do bas_cent_i = 1, basis_fns_by_center_type_nb (ict)
+         bas_i = bas_i + 1
+         select case (trim(radial_basis_type))
+         case ('analytical')
+           write(6,'(a6,3x,f12.8)') basis_fns_type_by_center_type (ict)%row(bas_cent_i), zex (bas_i, iwf)
+         case ('numerical')
+          call die (lhere, 'numerical basis functions cannot be optimized.')
+         case ('numerical-analytical')
+           write(6,'(a6,3x,f12.8,3x,i3)') basis_fns_type_by_center_type (ict)%row(bas_cent_i), zex (bas_i, iwf), basis_fns_rad_by_center_type(ict)%row(bas_cent_i)
+         case default
+          call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+         end select
+       enddo
+     enddo
+     write(6,'(a)') ' end'
+     write(6,'(a)') 'end'
+   else
    write(6,'(a)') 'Basis exponents:'
 # if defined (PATHSCALE)
    write(6,'(100f10.6)') zex (1:nbasis, iwf) ! for pathscale compiler
@@ -2271,6 +2340,8 @@ module optimization_mod
    write(fmt,"( '(', i8, 'f12.8,a)' )") nbasis
    write(6,fmt) zex(1:nbasis, iwf), ' (zex_new(i),i=1,nbasis)'
 # endif
+  endif
+     
   endif ! l_opt_exp
 
 ! print geometry
@@ -2299,7 +2370,8 @@ module optimization_mod
   implicit none
 
 ! local
-  integer orb_i, cent_i, dim_i
+  character(len=max_string_len_rout), save :: lhere = 'write_wf_best'
+  integer orb_i, cent_i, dim_i, bas_i, bas_cent_i
   integer i, ict, isp
   character(len=80) fmt
 
@@ -2309,13 +2381,16 @@ module optimization_mod
   if (l_opt_csf) then
    call object_provide ('ncsf')
    call object_provide ('csf_coef_best')
-   write(6,'(a)') 'CSFs coefficients:'
-# if defined (PATHSCALE)
+   write(6,'(a)') 'csfs'
+   write(6,'(a)') ' csf_coef'
+!# if defined (PATHSCALE)
    write(6,'(1000f15.8)') csf_coef_best(1:ncsf) ! for pathscale compiler
-# else
-   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
-   write(6,fmt) csf_coef_best(1:ncsf), ' (csf_coef_best(icsf),icsf=1,ncsf)'
-# endif
+!# else
+!   write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+!   write(6,fmt) csf_coef_best(1:ncsf), ' (csf_coef_best(icsf),icsf=1,ncsf)'
+!# endif
+   write(6,'(a)') ' end'
+   write(6,'(a)') 'end'
   endif ! l_opt_csf
 
 ! print Jastrow parameters
@@ -2327,7 +2402,8 @@ module optimization_mod
     call object_provide ('c_best')
 
 
-      write(6,'(a)') 'Jastrow parameters:'
+      write(6,'(a)') 'jastrow'
+      write(6,'(a)') ' parameters'
       if (nparma_read > 0) then
         write(fmt,'(''(''i2,''g20.12,a)'')') nparma_read
        else
@@ -2355,6 +2431,8 @@ module optimization_mod
         write(6,fmt) (c_best(i,ict),i=1,nparmc_read),' (c_best(iparmj),iparmj=1,nparmc)'
       enddo
 
+      write(6,'(a)') ' end'
+      write(6,'(a)') 'end'
   endif ! l_opt_jas
 
 ! print orbitals coefficients
@@ -2365,7 +2443,8 @@ module optimization_mod
    call object_provide ('orb_tot_nb')
    call object_provide ('coef_orb_on_norm_basis_best')
 
-   write(6,'(a)') 'Orbital coefficients:'
+   write(6,'(a)') 'orbitals'
+   write(6,'(a)') ' coefficients'
    do orb_i = 1, orb_tot_nb
     if(orb_i==1) then
 # if defined (PATHSCALE)
@@ -2380,10 +2459,13 @@ module optimization_mod
     endif
    enddo
 
-  else
+   else
     call write_orbitals_pw_real
     write(6,'(3a)') 'Best orbital coefficients written in file >',trim(file_orbitals_pw_out),'<'
-  endif
+   endif
+
+   write(6,'(a)') ' end'
+   write(6,'(a)') 'end'
 
   endif ! l_opt_orb
 
@@ -2391,6 +2473,29 @@ module optimization_mod
   if (l_opt_exp) then
    call object_provide ('nbasis')
    call object_provide ('zex_best')
+   if (use_parser) then
+     write(6,'(a)') 'basis'
+     write(6,'(a)') ' basis_functions'
+     bas_i=0
+     do ict=1,nctype
+       write(6,'(i3)') ict
+       do bas_cent_i = 1, basis_fns_by_center_type_nb (ict)
+         bas_i = bas_i + 1
+         select case (trim(radial_basis_type))
+         case ('analytical')
+           write(6,'(a6,3x,f12.8)') basis_fns_type_by_center_type (ict)%row(bas_cent_i), zex_best (bas_i)
+         case ('numerical')
+          call die (lhere, 'numerical basis functions cannot be optimized.')
+         case ('numerical-analytical')
+           write(6,'(a6,3x,f12.8,3x,i3)') basis_fns_type_by_center_type (ict)%row(bas_cent_i), zex_best (bas_i), basis_fns_rad_by_center_type(ict)%row(bas_cent_i)
+         case default
+          call die (lhere, 'unknown keyword >'+trim(radial_basis_type)+'<')
+         end select
+       enddo
+     enddo
+     write(6,'(a)') ' end'
+     write(6,'(a)') 'end'
+   else
    write(6,'(a)') 'Basis exponents:'
 # if defined (PATHSCALE)
    write(6,'(1000f10.6)') zex_best (1:nbasis) ! for pathscale compiler
@@ -2398,6 +2503,7 @@ module optimization_mod
    write(fmt,"( '(', i8, 'f12.8,a)' )") nbasis
    write(6,fmt) zex_best(1:nbasis), ' (zex_best(i),i=1,nbasis)'
 # endif
+  endif
   endif ! l_opt_exp
 
 ! print geometry
