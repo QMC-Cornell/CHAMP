@@ -557,6 +557,8 @@ c Saves the best wf yet and writes it out at end of run
 
 c     common /contrl_per/ iperiodic,ibasis
 
+      save nparma_read,nparmb_read,nparmc_read
+
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
       nparmc_read=nterms4(nordc)
