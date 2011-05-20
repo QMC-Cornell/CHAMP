@@ -4,6 +4,7 @@ module vmc_mod
   use allocations_mod
 
 ! Declaration of global variables and default values
+  logical :: l_walkers_available = .false.
 
   contains
 
@@ -36,8 +37,11 @@ module vmc_mod
     iwftype(1)=1
   endif
 
-! Initialize starting MC configuration
-  call mc_configs_read
+! Initialize starting MC configuration if warkers not already available from a previous run
+  if (.not. l_walkers_available) then
+   call mc_configs_read
+   l_walkers_available = .true.
+  endif
 
 ! If we are moving one electron at a time, then we need to initialize
 ! xnew, since only the first electron gets initialized in metrop
