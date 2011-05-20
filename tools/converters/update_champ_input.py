@@ -82,6 +82,13 @@ found_wf_iter = False
 found_wf_best = False
 
 for i in range(len(lines)):
+
+  if re.search ("SVN Revision:", lines[i]):
+    revision_number = int(string.split((string.split (lines[i])[2]),',')[0])
+    if (revision_number < 542):
+      print "\nERROR: the output file has SVN Revision number = ",revision_number, ". This script requires SVN Revision number >= 542"
+      sys.exit(0)
+
   if re.search ("Wave function for next iteration #", lines[i]):
     found_wf = True
     line_wf = i
@@ -134,8 +141,8 @@ for i in range(line_wf,len(lines)):
       if re.search ("\s*end\s*", lines[j]):
         break
       lines_jastrow.append(lines[j])
+      jastrow_read = True
       j=j+1
-    jastrow_read = True
 
   if (not csfs_read) and re.search ("^csfs$", lines[i]):
     j=i+1
@@ -145,8 +152,8 @@ for i in range(line_wf,len(lines)):
       if re.search ("\s*end\s*", lines[j]):
         break
       lines_csfs.append(lines[j])
+      csfs_read = True
       j=j+1
-    csfs_read = True
 
   if (not orbitals_read) and re.search ("^orbitals$", lines[i]):
     j=i+1
@@ -156,8 +163,8 @@ for i in range(line_wf,len(lines)):
       if re.search ("\s*end\s*", lines[j]):
         break
       lines_orbitals.append(lines[j])
+      orbitals_read = True
       j=j+1
-    orbitals_read = True
 
   if (not exponents_read) and re.search ("^basis$", lines[i]):
     j=i+1
@@ -167,9 +174,14 @@ for i in range(line_wf,len(lines)):
       if re.search ("\s*end\s*", lines[j]):
         break
       lines_exponents.append(lines[j])
+      exponents_read = True
       j=j+1
-    exponents_read = True
 
+
+if (not jastrow_read and not csfs_read and not orbitals_read and not exponents_read):
+  print "\nERROR: no optimized parameters found"
+  sys.exit(0)
+ 
 
 # opening CHAMP input file
 file_output = open(file_output_string,'r')
@@ -189,46 +201,50 @@ for i in range(len(lines)):
       skip_line = False
     continue
 
-  if re.search ("^\s*jastrow\s*$", lines[i]):
-    in_jastrow_menu=True
-
-  if in_jastrow_menu and re.search ("\s*parameters\s*", lines[i]):
-    skip_line = True
-    print "updating Jastrow parameters"
-    file_output.write(' parameters\n')
-    for k in range(len(lines_jastrow)):
-      file_output.write(lines_jastrow[k])
-    file_output.write(' end\n')
-    in_jastrow_menu=False
-    continue
-
-  if re.search ("\s*csf_coef\s*", lines[i]):
-    if not re.search ("\s*end\s*", lines[i]):
+  if jastrow_read:
+    if re.search ("^\s*jastrow\s*$", lines[i]):
+      in_jastrow_menu=True
+    
+    if in_jastrow_menu and re.search ("\s*parameters\s*", lines[i]):
       skip_line = True
-    print "updating CSF parameters"
-    file_output.write(' csf_coef\n')
-    for k in range(len(lines_csfs)):
-      file_output.write(lines_csfs[k])
-    file_output.write(' end\n')
-    continue
+      print "updating Jastrow parameters"
+      file_output.write(' parameters\n')
+      for k in range(len(lines_jastrow)):
+        file_output.write(lines_jastrow[k])
+      file_output.write(' end\n')
+      in_jastrow_menu=False
+      continue
 
-  if re.search ("\s*coefficients\s*", lines[i]):
-    skip_line = True
-    print "updating orbital parameters"
-    file_output.write(' coefficients\n')
-    for k in range(len(lines_orbitals)):
-      file_output.write(lines_orbitals[k])
-    file_output.write(' end\n')
-    continue
+  if csfs_read:
+    if re.search ("\s*csf_coef\s*", lines[i]):
+      if not re.search ("\s*end\s*", lines[i]):
+        skip_line = True
+      print "updating CSF parameters"
+      file_output.write(' csf_coef\n')
+      for k in range(len(lines_csfs)):
+        file_output.write(lines_csfs[k])
+      file_output.write(' end\n')
+      continue
 
-  if re.search ("\s*basis_functions\s*", lines[i]):
-    skip_line = True
-    print "updating exponent parameters"
-    file_output.write(' basis_functions\n')
-    for k in range(len(lines_exponents)):
-      file_output.write(lines_exponents[k])
-    file_output.write(' end\n')
-    continue
+  if orbitals_read:
+    if re.search ("\s*coefficients\s*", lines[i]):
+      skip_line = True
+      print "updating orbital parameters"
+      file_output.write(' coefficients\n')
+      for k in range(len(lines_orbitals)):
+        file_output.write(lines_orbitals[k])
+      file_output.write(' end\n')
+      continue
+
+  if exponents_read:
+    if re.search ("\s*basis_functions\s*", lines[i]):
+      skip_line = True
+      print "updating exponent parameters"
+      file_output.write(' basis_functions\n')
+      for k in range(len(lines_exponents)):
+        file_output.write(lines_exponents[k])
+      file_output.write(' end\n')
+      continue
      
   file_output.write(lines[i])
 
