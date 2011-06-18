@@ -31,6 +31,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use estsig_mod
       use estsum_mod
       use determinants_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10)
@@ -84,6 +85,12 @@ c         call hpsi(xnew,psidn,psijn,vnew,div_vn,d2,pen,enew(1),denergy,1)
 c         write(6,'(''calling hpsie from metrop_mov1'')')
           call hpsie(iel,xnew,psidn,psijn,vnew)
           psi2n(1)=2*(dlog(dabs(psidn))+psijn)
+
+c save electrostatic potential at new configuration
+c   Note that we already called distances.f from hpsi, otherwise
+c   we should add a call to distances here (ACM)
+
+          pot_ee_new = pot_ee  ! this is an array assignment
 
 c If error is large then save config. to use in optimizing routine
 
@@ -198,18 +205,24 @@ c same trick adapted to circular coordinates
 
             if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
               den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+q
+              pot_ee2d_t(ixo(1),ixo(2))=pot_ee2d_t(ixo(1),ixo(2))+q*pot_ee_old(i)
               if(i.le.nup) then
                 den2d_u(ixo(1),ixo(2))=den2d_u(ixo(1),ixo(2))+q
+                pot_ee2d_u(ixo(1),ixo(2))=pot_ee2d_u(ixo(1),ixo(2))+q*pot_ee_old(i)
                else
                 den2d_d(ixo(1),ixo(2))=den2d_d(ixo(1),ixo(2))+q
+                pot_ee2d_d(ixo(1),ixo(2))=pot_ee2d_d(ixo(1),ixo(2))+q*pot_ee_old(i)
               endif
             endif
             if(abs(ixn(1)).le.NAX .and. abs(ixn(2)).le.NAX) then
               den2d_t(ixn(1),ixn(2))=den2d_t(ixn(1),ixn(2))+p
+              pot_ee2d_t(ixn(1),ixn(2))=pot_ee2d_t(ixn(1),ixn(2))+p*pot_ee_new(i)
               if(i.le.nup) then
                 den2d_u(ixn(1),ixn(2))=den2d_u(ixn(1),ixn(2))+p
+                pot_ee2d_u(ixn(1),ixn(2))=pot_ee2d_u(ixn(1),ixn(2))+p*pot_ee_new(i)
                else
                 den2d_d(ixn(1),ixn(2))=den2d_d(ixn(1),ixn(2))+p
+                pot_ee2d_d(ixn(1),ixn(2))=pot_ee2d_d(ixn(1),ixn(2))+p*pot_ee_new(i)
               endif
             endif
           endif
@@ -228,6 +241,7 @@ c Note when one electron moves the velocity on all electrons change.
           if(rannyu(0).lt.p) then
             idist(i)=itryn
             psi2o(1)=psi2n(1)
+            pot_ee_old = pot_ee_new
             do 240 k=1,ndim
               xold(k,i)=xnew(k,i)
               rvmino(k,i)=rvminn(k,i)

@@ -155,7 +155,7 @@ c transpose matrices and their determinants
 c       write(6,'(''before matinv 40'',i2,9d14.6)') idet,slmui(1,idet),slmui(2,idet),slmui(3,idet),slmui(4,idet)
 c         write(6,'(''before matinv 40'')')      
 c         do irow=0,(nup-1)
-c            write(6,'(100f8.4)') (slmui(irow*nup+k,idet),k=1,nup)
+c            write(6,'(i3,(100f8.4))') irow,(slmui(irow*nup+k,idet),k=1,nup)
 c         enddo
 c         write(6,'(''x-posns of electrons: '',50f8.2)') (rvec_en(1,k,1), k=1,nelec)
 c         write(6,'(''y-posns of electrons: '',50f8.2)') (rvec_en(2,k,1), k=1,nelec)

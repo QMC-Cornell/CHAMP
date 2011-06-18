@@ -99,6 +99,7 @@ c              write(6,*) 'i,x(1,i),x(2,i),pe_x,pe_y=',i,x(1,i),x(2,i),pe_x,pe_y
 
 c Calculate e-e inter-particle distances
         pe_ee=0.d0
+        pot_ee = 0.d0   ! this is an array assignment 
         ij=0
         do 29 i=2,nelec
           do 29 j=1,i-1
@@ -121,12 +122,13 @@ c             but that would make the code less readable.
               dtheta = atan(x(2,j)/x(1,j)) - atan(x(2,i)/x(1,i))
               xeff = ri - rj
               yeff = 2.0*rring*sin(0.5*dtheta)
-              reff = dsqrt(xeff*xeff + yeff*yeff)
-              pe_ee = pe_ee + 1.0/reff
+              reffinv = 1.0/dsqrt(xeff*xeff + yeff*yeff)
             else 
-              pe_ee=pe_ee+1.0/r_ee(ij)
+              reffinv = 1.0/r_ee(ij)
             endif
-            
+            pe_ee = pe_ee + reffinv
+            pot_ee(i) = pot_ee(i) + reffinv
+            pot_ee(j) = pot_ee(j) + reffinv
           
    29   continue
 

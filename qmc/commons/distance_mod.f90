@@ -6,5 +6,6 @@ module distance_mod
 
  integer                       :: iring_coulomb
  double precision, allocatable :: rshift(:,:,:),rvec_en(:,:,:),r_en(:,:),rvec_ee(:,:),r_ee(:)
+ double precision, allocatable :: pot_ee(:)
 
 end module distance_mod

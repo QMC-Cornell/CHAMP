@@ -52,6 +52,7 @@ c polarized calculations were attempted.
       use pars_mod
       use jaspar1_mod
       use jaspar2_mod
+      use distance_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*25 fmt
@@ -95,6 +96,9 @@ c        tjfo   = Jackson Feenberg kinetic energy at current position
 c        tjfn   = same after trial move
 c        psido  = determinantal part of wave function
 c        psijo  = log(Jastrow)
+c        pot_ee_old(ielec) = interaction potential felt by ith electron
+c                              at current position
+c        pot_ee_new(ielec) = same after trial move
 c   /coefs/
 c        coef   = read in coefficients of the basis functions
 c                 to get the molecular orbitals used in determinant
@@ -182,7 +186,12 @@ c xnew, since only the first electron gets initialized in metrop
           do 400 k=1,ndim
   400       xnew(k,i)=xold(k,i)
       endif
-     
+
+c We need to set pot_ee_old(:)
+
+      call distances(xold, pe, pei)
+      pot_ee_old = pot_ee    ! this is an array assignment
+
 c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
 c optimization or dmc calculation. So figure out how often we need to write a
 c configuration to produce nconf_new configurations. If nconf_new = 0

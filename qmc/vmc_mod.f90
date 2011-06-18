@@ -71,7 +71,9 @@ module vmc_mod
   call alloc ('delttn', delttn, nelec)
   call alloc ('nearesto', nearesto, nelec)
   call alloc ('nearestn', nearestn, nelec)
-
+  call alloc ('pot_ee_old', pot_ee_old, nelec)
+  call alloc ('pot_ee_new', pot_ee_new, nelec)
+  call alloc ('pot_ee', pot_ee, nelec)
   call common_allocations
 
 ! set current walker and current walker weight to 1 for VMC
@@ -110,6 +112,9 @@ module vmc_mod
   call release ('delttn', delttn)
   call release ('nearesto', nearesto)
   call release ('nearestn', nearestn)
+  call release ('pot_ee_old', pot_ee_old)
+  call release ('pot_ee_new', pot_ee_new)
+  call release ('pot_ee', pot_ee)
 
   end subroutine vmc_release
 
