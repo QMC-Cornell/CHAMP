@@ -54,7 +54,7 @@ c Do wavefunction optimization if nopt_iter>0
         if(idtask.eq.0) then
           open(2,file='wavefn_new')
          else
-          open(2,file='/dev/null')
+          open(2,file='nullmpi2')
         endif
 
 c Copy wavefn. for first value of add_diag to other values for use in correlated sampling

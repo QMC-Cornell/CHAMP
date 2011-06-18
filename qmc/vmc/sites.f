@@ -71,10 +71,10 @@ c sample position from exponentials or gaussian around center
 c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots            
             if((nloc.eq.-1 .or. nloc.eq.-5) .and. rring.gt.0.d0) then
               if(ibasis.eq.5) then 
-                site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(3, ielec, iwf))
-                angle = (0.5d0 - rannyu(0))/dsqrt(oparm(4, ielec, iwf)) 
-                site = site + oparm(1, ielec, iwf)
-                angle = angle + oparm(2, ielec, iwf)
+                site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(3, iworbd(ielec,1), iwf))
+                angle = (0.5d0 - rannyu(0))/dsqrt(oparm(4, iworbd(ielec,1), iwf)) 
+                site = site + oparm(1, iworbd(ielec,1), iwf)
+                angle = angle + oparm(2, iworbd(ielec,1), iwf)
 c  Make sure electron is near the center of some gaussian - might not work 
 c     if there's more than 1 slater determinant
                 x(1,ielec)=site*dcos(angle)
@@ -100,7 +100,7 @@ c  Warning:  this might not work if we have multiple slater determinants
 
                  if(nloc.eq.-4) then 
                    if (ibasis.eq.6 .or. ibasis.eq.7) then
-                     site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(k+2, ielec, iwf))
+                     site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(k+2, iworbd(ielec,1), iwf))
 c  Make sure electron is near the center of some gaussian - might not work 
 c     if there's more than 1 slater determinant
                      x(k,ielec) = site + oparm(k, iworbd(ielec,1), iwf)

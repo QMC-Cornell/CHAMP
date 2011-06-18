@@ -725,7 +725,7 @@ c-----------------------------------------------------------------------
       if(idtask.eq.0) then
         open(2,file='wavefn_best')
        else
-        open(2,file='/dev/null')
+        open(2,file='nullmpi2')
       endif
 
       write(6,'(/,''Best wave function:'')')

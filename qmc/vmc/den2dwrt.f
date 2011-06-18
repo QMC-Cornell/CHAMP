@@ -44,9 +44,9 @@ c verify the normalization later...
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,file='nullmpi41',status='unknown')
+          open(42,file='nullmpi42',status='unknown')
+          open(43,file='nullmpi43',status='unknown')
         endif
 
 c verify the normalization later...
@@ -82,9 +82,9 @@ c following spaces are for gnuplot convention:
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,file='nullmpi41',status='unknown')
+          open(42,file='nullmpi42',status='unknown')
+          open(43,file='nullmpi43',status='unknown')
         endif
 
 c verify the normalization later...
@@ -116,9 +116,9 @@ c up electron:
             open(42,file=file2,status='unknown')
             open(43,file=file3,status='unknown')
            else
-            open(41,file='/dev/null',status='unknown')
-            open(42,file='/dev/null',status='unknown')
-            open(43,file='/dev/null',status='unknown')
+            open(41,file='nullmpi41',status='unknown')
+            open(42,file='nullmpi42',status='unknown')
+            open(43,file='nullmpi43',status='unknown')
           endif
           do in0=0,NAX
             r0=in0*delx
@@ -154,9 +154,9 @@ c down electron:
             open(42,file=file2,status='unknown')
             open(43,file=file3,status='unknown')
            else
-            open(41,file='/dev/null',status='unknown')
-            open(42,file='/dev/null',status='unknown')
-            open(43,file='/dev/null',status='unknown')
+            open(41,file='nullmpi41',status='unknown')
+            open(42,file='nullmpi42',status='unknown')
+            open(43,file='nullmpi43',status='unknown')
           endif
 
           do in0=0,NAX
@@ -193,9 +193,9 @@ c down electron:
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,file='nullmpi41',status='unknown')
+          open(42,file='nullmpi42',status='unknown')
+          open(43,file='nullmpi43',status='unknown')
         endif
 
 c verify the normalization later...
@@ -227,9 +227,9 @@ c verify the normalization later...
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,file='nullmpi41',status='unknown')
+          open(42,file='nullmpi42',status='unknown')
+          open(43,file='nullmpi43',status='unknown')
         endif
 
 c verify the normalization later...
