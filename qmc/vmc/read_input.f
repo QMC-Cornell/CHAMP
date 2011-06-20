@@ -1233,9 +1233,12 @@ c Jastrow section
 
       if(ianalyt_lap.eq.0 .and. nloc.gt.0)
      &stop 'Cannot have numerical Lap. with pseudopot'
-      if(ianalyt_lap.eq.0 .and. iperiodic.gt.0)
+      if(ianalyt_lap.eq.0 .and. iperiodic.gt.1)
      &stop 'Cannot have numerical Lap. with periodic system: distances in
      & jastrow_num not correct'
+      if(ianalyt_lap.eq.0 .and. iperiodic.eq.1)
+     &write(6,'(''Warning: numerical Lap. might not be correct for
+     & iperiodic = 1'')') 
       if(ijas.ne.4 .and. iperiodic.gt.0)
      &stop 'Only ijas=4 implemented for periodic systems'
       if(ijas.gt.6) stop 'only ijas=1,2,3,4,5,6 implemented'

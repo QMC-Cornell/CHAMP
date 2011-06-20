@@ -26,7 +26,7 @@ c subroutine to calculate jastrow factor,its derivatives
 c and the potential
 c Warning: div_vj not yet implememnted
 
-      dimension x(3,*),v(3,*),div_vj(nelec)
+      dimension x(3,*),v(3,*),div_vj(nelec), rtemp(3)
       dimension rp(3,nelec,ncent),rm(3,nelec,ncent)
      &,rp2(3,nelec,ncent),rm2(3,nelec,ncent)
      &,rrp(3,nelec_pair),rrm(3,nelec_pair),rrp2(3,nelec_pair),rrm2(3,nelec_pair)
@@ -49,32 +49,60 @@ c Calculate e-N and e-e inter-particle distances
         ij=0
         do 29 i=1,nelec
           r_en(i,ic)=zero
-          do 25 m=1,ndim
-   25       r_en(i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))**2
-          do 26 m=1,ndim
-            rp(m,i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))*eps2+epssq
-            rm(m,i,ic)=r_en(i,ic)-(x(m,i)-cent(m,ic))*eps2+epssq
-            rp2(m,i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))*eps4+eps2sq
-            rm2(m,i,ic)=r_en(i,ic)-(x(m,i)-cent(m,ic))*eps4+eps2sq
-            rp(m,i,ic)=dsqrt(rp(m,i,ic))
-            rm(m,i,ic)=dsqrt(rm(m,i,ic))
-            rp2(m,i,ic)=dsqrt(rp2(m,i,ic))
-   26       rm2(m,i,ic)=dsqrt(rm2(m,i,ic))
-          r_en(i,ic)=dsqrt(r_en(i,ic))
+          if(iperiodic.eq.1 .and. nloc.eq.-4 .and. ic.eq.1) then
+            r_en(i,ic)=x(2,i)**2  ! distance from electron to axis
+            rp(2,i,ic)=r_en(i,ic)+(x(2,i))*eps2+epssq
+            rm(2,i,ic)=r_en(i,ic)-(x(2,i))*eps2+epssq
+            rp2(2,i,ic)=r_en(i,ic)+(x(2,i))*eps4+eps2sq
+            rm2(2,i,ic)=r_en(i,ic)-(x(2,i))*eps4+eps2sq
+            rp(2,i,ic)=dsqrt(rp(2,i,ic))
+            rm(2,i,ic)=dsqrt(rm(2,i,ic))
+            rp2(2,i,ic)=dsqrt(rp2(2,i,ic))
+            rm2(2,i,ic)=dsqrt(rm2(2,i,ic))
+            r_en(i,ic)=dsqrt(r_en(i,ic))
+            rp(1,i,ic) = r_en(i,ic)
+            rm(1,i,ic) = r_en(i,ic)
+            rp2(1,i,ic) = r_en(i,ic)
+            rm2(1,i,ic) = r_en(i,ic)
+          else
+            do 25 m=1,ndim
+   25         r_en(i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))**2
+            do 26 m=1,ndim
+              rp(m,i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))*eps2+epssq
+              rm(m,i,ic)=r_en(i,ic)-(x(m,i)-cent(m,ic))*eps2+epssq
+              rp2(m,i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))*eps4+eps2sq
+              rm2(m,i,ic)=r_en(i,ic)-(x(m,i)-cent(m,ic))*eps4+eps2sq
+              rp(m,i,ic)=dsqrt(rp(m,i,ic))
+              rm(m,i,ic)=dsqrt(rm(m,i,ic))
+              rp2(m,i,ic)=dsqrt(rp2(m,i,ic))
+   26         rm2(m,i,ic)=dsqrt(rm2(m,i,ic))
+            r_en(i,ic)=dsqrt(r_en(i,ic))
+          endif
 
           do 28 j=1,i-1
             ij=ij+1
-            r_ee(ij)=(x(1,i)-x(1,j))**2 + (x(2,i)-x(2,j))**2
-     &      + (x(3,i)-x(3,j))**2
-            do 27 m=1,ndim
-              rrp(m,ij)=r_ee(ij)+(x(m,i)-x(m,j))*eps2+epssq
-              rrm(m,ij)=r_ee(ij)-(x(m,i)-x(m,j))*eps2+epssq
-              rrp2(m,ij)=r_ee(ij)+(x(m,i)-x(m,j))*eps4+eps2sq
-              rrm2(m,ij)=r_ee(ij)-(x(m,i)-x(m,j))*eps4+eps2sq
-              rrp(m,ij)=dsqrt(rrp(m,ij))
-              rrm(m,ij)=dsqrt(rrm(m,ij))
-              rrp2(m,ij)=dsqrt(rrp2(m,ij))
-   27         rrm2(m,ij)=dsqrt(rrm2(m,ij))
+            if(iperiodic.eq.0) then
+              r_ee(ij)=(x(1,i)-x(1,j))**2 + (x(2,i)-x(2,j))**2
+     &        + (x(3,i)-x(3,j))**2
+              do 27 m=1,ndim
+                rrp(m,ij)=r_ee(ij)+(x(m,i)-x(m,j))*eps2+epssq
+                rrm(m,ij)=r_ee(ij)-(x(m,i)-x(m,j))*eps2+epssq
+                rrp2(m,ij)=r_ee(ij)+(x(m,i)-x(m,j))*eps4+eps2sq
+                rrm2(m,ij)=r_ee(ij)-(x(m,i)-x(m,j))*eps4+eps2sq
+                rrp(m,ij)=dsqrt(rrp(m,ij))
+                rrm(m,ij)=dsqrt(rrm(m,ij))
+                rrp2(m,ij)=dsqrt(rrp2(m,ij))
+   27           rrm2(m,ij)=dsqrt(rrm2(m,ij))
+            else
+              rtemp(:) = x(:,i)-x(:,j)
+              call find_image_1d(rtemp, r_ee(ij))
+              r_ee(ij) = r_ee(ij)*r_ee(ij)  ! since the below lines need
+                                            !     r_ee**2
+              rrp(:,ij)=dsqrt(r_ee(ij)+rtemp(:)*eps2+epssq)
+              rrm(:,ij)=dsqrt(r_ee(ij)-rtemp(:)*eps2+epssq)
+              rrp2(:,ij)=dsqrt(r_ee(ij)+rtemp(:)*eps4+eps2sq)
+              rrm2(:,ij)=dsqrt(r_ee(ij)-rtemp(:)*eps4+eps2sq)
+            endif
    28       r_ee(ij)=dsqrt(r_ee(ij))
    29   continue
 
