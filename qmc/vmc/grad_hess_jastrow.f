@@ -536,9 +536,9 @@ c parameters d2j IS taken to be second derivative of psi divided by psi.
         open(21,file='grad_hess',status='unknown')
 c       open(22,file='lin_ham_overlap',status='unknown')
        else
-        open(20,file='/dev/null')
-        open(21,file='/dev/null')
-c       open(22,file='/dev/null')
+        open(20,status='scratch')
+        open(21,status='scratch')
+c       open(22,status='scratch')
       endif
 
 c In hess_pieces write the expression for hess in our PRL but then evaluate hess for writing in

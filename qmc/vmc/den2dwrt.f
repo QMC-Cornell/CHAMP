@@ -44,9 +44,9 @@ c verify the normalization later...
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,status='scratch')
+          open(42,status='scratch')
+          open(43,status='scratch')
         endif
 
 c verify the normalization later...
@@ -91,12 +91,12 @@ c following spaces are for gnuplot convention:
           open(45,file=file5,status='unknown')
           open(46,file=file6,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
-          open(44,file='/dev/null',status='unknown')
-          open(45,file='/dev/null',status='unknown')
-          open(46,file='/dev/null',status='unknown')
+          open(41,status='scratch')
+          open(42,status='scratch')
+          open(43,status='scratch')
+          open(44,status='scratch')
+          open(45,status='scratch')
+          open(46,status='scratch')
         endif
 
 c verify the normalization later...
@@ -137,9 +137,9 @@ c up electron:
             open(42,file=file2,status='unknown')
             open(43,file=file3,status='unknown')
            else
-            open(41,file='/dev/null',status='unknown')
-            open(42,file='/dev/null',status='unknown')
-            open(43,file='/dev/null',status='unknown')
+            open(41,status='scratch')
+            open(42,status='scratch')
+            open(43,status='scratch')
           endif
           do in0=0,NAX
             r0=in0*delx
@@ -175,9 +175,9 @@ c down electron:
             open(42,file=file2,status='unknown')
             open(43,file=file3,status='unknown')
            else
-            open(41,file='/dev/null',status='unknown')
-            open(42,file='/dev/null',status='unknown')
-            open(43,file='/dev/null',status='unknown')
+            open(41,status='scratch')
+            open(42,status='scratch')
+            open(43,status='scratch')
           endif
 
           do in0=0,NAX
@@ -214,9 +214,9 @@ c down electron:
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,status='scratch')
+          open(42,status='scratch')
+          open(43,status='scratch')
         endif
 
 c verify the normalization later...
@@ -248,9 +248,9 @@ c verify the normalization later...
           open(42,file=file2,status='unknown')
           open(43,file=file3,status='unknown')
          else
-          open(41,file='/dev/null',status='unknown')
-          open(42,file='/dev/null',status='unknown')
-          open(43,file='/dev/null',status='unknown')
+          open(41,status='scratch')
+          open(42,status='scratch')
+          open(43,status='scratch')
         endif
 
 c verify the normalization later...
