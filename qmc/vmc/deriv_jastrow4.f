@@ -366,8 +366,8 @@ c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
 c       if we have an infinite wire, then for the en and een terms, for ic=1,
 c         we only use the distance from the electron to the y-axis of the wire
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
-           ri=rvec_en(2,i,ic)  ! y-component of rvec_en is dist to wire center
-           rj=rvec_en(2,j,ic)
+           ri=abs(rvec_en(2,i,ic))  ! y-component of rvec_en is dist to wire center
+           rj=abs(rvec_en(2,j,ic))
         else
            ri=r_en(i,ic)
            rj=r_en(j,ic)
@@ -875,7 +875,7 @@ c e-n terms
 c       if we have an infinite wire, then for the en and een terms, for ic=1,
 c         we only use the distance from the electron to the y-axis of the wire
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
-             ri=rvec_en(2,i,ic) ! y-component of rvec_en is dist to wire center
+             ri=abs(rvec_en(2,i,ic)) ! y-component of rvec_en is dist to wire center
           else
              ri=r_en(i,ic)
           endif

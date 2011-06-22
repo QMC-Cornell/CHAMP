@@ -14,7 +14,13 @@ c numerical Laplacian for periodic systems.
       use jaspar3_mod
       use jaspar6_mod
       use bparm_mod
-      use distance_mod
+c  Warning: Do not use distance_mod! Local values of r_ee, r_en, etc...
+c     will overwrite those calculated in distance_mod
+c    (The reason I don't get rid of the recalculations here is that it
+c      would require rewriting parts of this for iperiodic=1)
+c      (do not) !use distance_mod
+      use contrl_per_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=.5d-4,eps2=2.d0*eps,eps4=4.d0*eps,epssq=eps**2
@@ -30,6 +36,7 @@ c Warning: div_vj not yet implememnted
       dimension rp(3,nelec,ncent),rm(3,nelec,ncent)
      &,rp2(3,nelec,ncent),rm2(3,nelec,ncent)
      &,rrp(3,nelec_pair),rrm(3,nelec_pair),rrp2(3,nelec_pair),rrm2(3,nelec_pair)
+     &,r_en(nelec,ncent),r_ee(nelec_pair)
 
       do 10 i=1,nelec
       v(1,i)=zero
@@ -49,21 +56,37 @@ c Calculate e-N and e-e inter-particle distances
         ij=0
         do 29 i=1,nelec
           r_en(i,ic)=zero
-          if(iperiodic.eq.1 .and. nloc.eq.-4 .and. ic.eq.1) then
-            r_en(i,ic)=x(2,i)**2  ! distance from electron to axis
-            rp(2,i,ic)=r_en(i,ic)+(x(2,i))*eps2+epssq
-            rm(2,i,ic)=r_en(i,ic)-(x(2,i))*eps2+epssq
-            rp2(2,i,ic)=r_en(i,ic)+(x(2,i))*eps4+eps2sq
-            rm2(2,i,ic)=r_en(i,ic)-(x(2,i))*eps4+eps2sq
-            rp(2,i,ic)=dsqrt(rp(2,i,ic))
-            rm(2,i,ic)=dsqrt(rm(2,i,ic))
-            rp2(2,i,ic)=dsqrt(rp2(2,i,ic))
-            rm2(2,i,ic)=dsqrt(rm2(2,i,ic))
-            r_en(i,ic)=dsqrt(r_en(i,ic))
-            rp(1,i,ic) = r_en(i,ic)
-            rm(1,i,ic) = r_en(i,ic)
-            rp2(1,i,ic) = r_en(i,ic)
-            rm2(1,i,ic) = r_en(i,ic)
+          if(iperiodic.eq.1) then
+            if(nloc.eq.-4 .and. ic.eq.1) then
+              r_en(i,ic)=x(2,i)**2  ! distance from electron to axis
+              rp(2,i,ic)=r_en(i,ic)+(x(2,i))*eps2+epssq
+              rm(2,i,ic)=r_en(i,ic)-(x(2,i))*eps2+epssq
+              rp2(2,i,ic)=r_en(i,ic)+(x(2,i))*eps4+eps2sq
+              rm2(2,i,ic)=r_en(i,ic)-(x(2,i))*eps4+eps2sq
+              rp(2,i,ic)=dsqrt(rp(2,i,ic))
+              rm(2,i,ic)=dsqrt(rm(2,i,ic))
+              rp2(2,i,ic)=dsqrt(rp2(2,i,ic))
+              rm2(2,i,ic)=dsqrt(rm2(2,i,ic))
+              r_en(i,ic)=dsqrt(r_en(i,ic))
+              rp(1,i,ic) = r_en(i,ic)
+              rm(1,i,ic) = r_en(i,ic)
+              rp2(1,i,ic) = r_en(i,ic)
+              rm2(1,i,ic) = r_en(i,ic)
+            else
+              rtemp(:) = x(:,i)-cent(:,ic)
+              call find_image_1d(rtemp, r_en(i,ic))
+              r_en(i,ic) = r_en(i,ic)*r_en(i,ic)  ! since the below lines need
+                                                  !     r_en**2
+              rp(:,i,ic)=r_en(i,ic)+(rtemp(:))*eps2+epssq
+              rm(:,i,ic)=r_en(i,ic)-(rtemp(:))*eps2+epssq
+              rp2(:,i,ic)=r_en(i,ic)+(rtemp(:))*eps4+eps2sq
+              rm2(:,i,ic)=r_en(i,ic)-(rtemp(:))*eps4+eps2sq
+              rp(:,i,ic)=dsqrt(rp(:,i,ic))
+              rm(:,i,ic)=dsqrt(rm(:,i,ic))
+              rp2(:,i,ic)=dsqrt(rp2(:,i,ic))
+              rm2(:,i,ic)=dsqrt(rm2(:,i,ic))
+              r_en(i,ic)=dsqrt(r_en(i,ic))
+            endif
           else
             do 25 m=1,ndim
    25         r_en(i,ic)=r_en(i,ic)+(x(m,i)-cent(m,ic))**2

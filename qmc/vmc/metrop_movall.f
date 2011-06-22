@@ -21,12 +21,14 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use estsig_mod
       use estsum_mod
       use eloc_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
 
       dimension dx(3,nelec),div_vn(nelec),ixo(3),ixn(3)
       dimension xstrech(3,nelec)
+      parameter(eps=1.d-10)
 
 c Sample transition probability from current state to new state
 c and record value of probability in fxop.
