@@ -140,15 +140,21 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
    25     uu(iord)=uu(1)*uu(iord-1)
       endif
 
-      if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
-      endif
+c    Can't call this yet! ri, rj not defined! (ACM)
+c      if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+c         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
+c      endif
 
       do 50 ic=1,ncent
         it=iwctype(ic)
 
-        ri=r_en(i,ic)
-        rj=r_en(j,ic)
+        if ((iperiodic.eq.1) .and. (nloc.eq.-4) .and. (ic.eq.1)) then
+          ri = abs(rvec_en(2,i,ic))
+          rj = abs(rvec_en(2,j,ic))
+        else
+          ri=r_en(i,ic)
+          rj=r_en(j,ic)
+        endif
 
         if(ri.gt.cutjas_en .or. rj.gt.cutjas_en) goto 50
         do 27 k=1,ndim
@@ -162,7 +168,8 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
           call switch_scale1(rrj(1),dd8,3)
         endif
 
-c Moved to line 209
+c Moved back here, from above the do 50 loop (ACM)
+c   Don't think we should call it here either, since we call it just after the continue at 40
 c       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
 c          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj, d2fcuti, d2fcutj)
 c       endif
@@ -214,13 +221,21 @@ c       endif
 ! end WAS
         fsn(i,j)=fsn(i,j) + fc
 
-        fijn(1,i,j)=fijn(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
-        fijn(2,i,j)=fijn(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
-        fijn(3,i,j)=fijn(3,i,j) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
-        fijn(1,j,i)=fijn(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
-        fijn(2,j,i)=fijn(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
-        fijn(3,j,i)=fijn(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
-
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then  ! infinite wires
+          fijn(1,i,j)=fijn(1,i,j) + fu*rvec_ee(1,ij)
+          fijn(2,i,j)=fijn(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+          fijn(3,i,j)=fijn(3,i,j) + fu*rvec_ee(3,ij)
+          fijn(1,j,i)=fijn(1,j,i) - fu*rvec_ee(1,ij)
+          fijn(2,j,i)=fijn(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+          fijn(3,j,i)=fijn(3,j,i) - fu*rvec_ee(3,ij)
+        else
+          fijn(1,i,j)=fijn(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
+          fijn(2,i,j)=fijn(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+          fijn(3,i,j)=fijn(3,i,j) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
+          fijn(1,j,i)=fijn(1,j,i) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
+          fijn(2,j,i)=fijn(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+          fijn(3,j,i)=fijn(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
+        endif
    50 continue
 
    55 fsumn=fsumn+fsn(i,j)-fso(i,j)
@@ -242,7 +257,11 @@ c e-n terms
       do 80 ic=1,ncent
         it=iwctype(ic)
 
-        ri=r_en(iel,ic)
+        if ((iperiodic.eq.1) .and. (nloc.eq.-4) .and. (ic.eq.1)) then
+          ri = abs(rvec_en(2,iel,ic))
+        else
+          ri=r_en(iel,ic)
+        endif
         if(ri.gt.cutjas_en) goto 80
 
         call scale_dist1(ri,rri(1),dd7,1)
@@ -274,10 +293,15 @@ c       feni=topi/bot-boti*top/bot2
         feni=feni*dd7/ri
 
         fsn(iel,iel)=fsn(iel,iel)+fen
-
-        fijn(1,iel,iel)=fijn(1,iel,iel) + feni*rvec_en(1,iel,ic)
-        fijn(2,iel,iel)=fijn(2,iel,iel) + feni*rvec_en(2,iel,ic)
-        fijn(3,iel,iel)=fijn(3,iel,iel) + feni*rvec_en(3,iel,ic)
+        
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then  !infinte wires
+          fijn(2,iel,iel)=fijn(2,iel,iel) + feni*rvec_en(2,iel,ic)
+        else
+          fijn(1,iel,iel)=fijn(1,iel,iel) + feni*rvec_en(1,iel,ic)
+          fijn(2,iel,iel)=fijn(2,iel,iel) + feni*rvec_en(2,iel,ic)
+          fijn(3,iel,iel)=fijn(3,iel,iel) + feni*rvec_en(3,iel,ic)
+        endif
+        
    80 continue
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)

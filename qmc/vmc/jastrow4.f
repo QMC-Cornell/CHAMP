@@ -143,7 +143,7 @@ c simpler expressions are :
       do 21 k=1,ndim
         fijo(k,i,j)= fijo(k,i,j) + feeu*rvec_ee(k,ij)
    21   fijo(k,j,i)= fijo(k,j,i) - feeu*rvec_ee(k,ij)
-      d2ijo(i,j)=d2ijo(i,j)+2*(feeuu+ndim1*feeu)
+      d2ijo(i,j)=d2ijo(i,j)+2.*(feeuu+ndim1*feeu)
 
 c There are no C terms to order 1.
    30 if(nordc.le.1) goto 58

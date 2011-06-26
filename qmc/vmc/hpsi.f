@@ -81,12 +81,12 @@ c       if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
         endif
       endif
 
-c     write(6,'(''After calling jastrow or jastrow_num, d2j = '', f12.8)') d2j
-c     write(6,'(''div_vj(i)='',90f10.6)') (div_vj(i),i=1,nelec)
-c     write(6,'(''x(1,i)='',90f6.2)') (coord(1,i),i=1,nelec)
-c     write(6,'(''x(2,i)='',90f6.2)') (coord(2,i),i=1,nelec)
-c     write(6,'(''v(1,i)='',90f10.6)') (vj(1,i),i=1,nelec)
-c     write(6,'(''v(2,i)='',90f10.6)') (vj(2,i),i=1,nelec)
+c      write(6,'(''After calling jastrow or jastrow_num, d2j = '', f12.8)') d2j
+c      write(6,'(''div_vj(i)='',90f10.6)') (div_vj(i),i=1,nelec)
+c      write(6,'(''x(1,i)='',90f6.2)') (coord(1,i),i=1,nelec)
+c      write(6,'(''x(2,i)='',90f6.2)') (coord(2,i),i=1,nelec)
+c      write(6,'(''v(1,i)='',90f10.6)') (vj(1,i),i=1,nelec)
+c      write(6,'(''v(2,i)='',90f10.6)') (vj(2,i),i=1,nelec)
       call object_modified_by_index (vj_index)  !JT
       sum_lap_lnj = d2j            !JT
       call object_modified_by_index (sum_lap_lnj_index) !JT

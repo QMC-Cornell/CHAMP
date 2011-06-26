@@ -180,7 +180,7 @@ c we will need feeuu and feeu later
       do 22 k=1,ndim
         fijo(k,i,j)= fijo(k,i,j) + tempu*rvec_ee(k,ij)
    22   fijo(k,j,i)= fijo(k,j,i) - tempu*rvec_ee(k,ij)
-      d2ijo(i,j)=d2ijo(i,j)+2*(tempuu+ndim1*tempu)
+      d2ijo(i,j)=d2ijo(i,j)+2.*(tempuu+ndim1*tempu)
 
 c     v(1,i)=v(1,i) + tempu*rvec_ee(1,ij)
 c     v(2,i)=v(2,i) + tempu*rvec_ee(2,ij)
@@ -826,8 +826,19 @@ c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
 
 c       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
 c    &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
-        d2ijo(i,j)=d2ijo(i,j) + ndim1*(2*fu+fi+fj)
-     &  + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
+
+c      This equation (and the subsequent u,s,t notation) comes from 
+c        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
+c        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
+c      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
+c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
+        if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
+           d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu  
+     &          + 2.*fuu + fii + fjj + 2.*fui*(ri-rj)/rij + 2.*fuj*(rj-ri)/rij
+        else  ! Pekeris, Phys Rev 112, 1649 (1958) eqn 5:   
+           d2ijo(i,j)=d2ijo(i,j) + ndim1*(2*fu+fi+fj)
+     &          + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
+        endif
 
 c       v(1,i)=v(1,i) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
 c       v(2,i)=v(2,i) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
@@ -935,14 +946,15 @@ c          (for the first center, anyway)
 c          thus, derivatives only depend on en distance in the y-direction
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
             fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
+            d2ijo(i,i) = d2ijo(i,i) + tempii 
           else
             fijo(1,i,i)=fijo(1,i,i) + tempi*rvec_en(1,i,ic)
             fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
             fijo(3,i,i)=fijo(3,i,i) + tempi*rvec_en(3,i,ic)
+            d2ijo(i,i) = d2ijo(i,i) + tempii + ndim1*tempi
           endif
 c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
 
-          d2ijo(i,i) = d2ijo(i,i) + tempii + ndim1*tempi
 
 c         v(1,i)=v(1,i) + feni*rvec_en(1,i,ic)
 c         v(2,i)=v(2,i) + feni*rvec_en(2,i,ic)

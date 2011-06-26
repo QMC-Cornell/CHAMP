@@ -188,7 +188,8 @@ c xnew, since only the first electron gets initialized in metrop
       endif
 
 c We need to set pot_ee_old(:)
-
+c  also, zero out rshift(k,i,ic) to start with
+      rshift(:,:,:) = 0.
       call distances(xold, pe, pei)
       pot_ee_old = pot_ee    ! this is an array assignment
 
