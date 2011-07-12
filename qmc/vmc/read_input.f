@@ -79,7 +79,7 @@ c subroutine that is called both from fit and read_input.
 c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
-      namelist /opt_list/ iring_coulomb, iantiferromagnetic, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
+      namelist /opt_list/ iring_coulomb, iantiferromagnetic, iper_gaussian_type, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
      &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
@@ -290,6 +290,9 @@ c iantiferromagnetic  Whether to constrain optimization so that
 c           floating gaussians have antiferromagnetic order
 c           Not implemented for odd number of electrons, or if nup \= ndn
 c           = 1 by default for nup=ndn, = 0 otherwise
+c iper_gaussian_type  Type of floating gaussian to use for periodic wires
+c           = 1 for standard gaussian, periodic by summing images in each cell
+c           = 2 (default) for form similar to that used in rings, made periodic with cos term
 c iring_coulomb  whether to use a modified form of the coulomb potential
 c                in rings
 c           = 0  (default), V ~ 1/|rvec_i - rvec_j|
@@ -1474,6 +1477,7 @@ c   default values:
       nmeshr=NAX
       nmesht=NAX
       icoosys=1
+      iper_gaussian_type = 2
       if (nup.eq.ndn .and. ibasis.ge.3 .and. ibasis.le.7) then
         iantiferromagnetic = 1
       else

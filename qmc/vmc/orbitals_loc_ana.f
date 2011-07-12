@@ -37,7 +37,11 @@ c get basis functions
          elseif(ibasis.eq.6) then
            call basis_fns_2dgauss_noncirc(iel,rvec_en,r_en)
          elseif(ibasis.eq.7) then
-           call basis_fns_2dgauss_periodic(iel,rvec_en,r_en)
+           if(iper_gaussian_type.eq.1) then 
+             call basis_fns_2dgauss_periodic(iel,rvec_en,r_en)
+           else 
+             call basis_fns_2dgauss_periodic2(iel,rvec_en,r_en)
+           endif
          else
            stop 'orbitals_loc_ana: ibasis must be 1,4,5,6, or 7 for 2d systems'
          endif
@@ -138,7 +142,11 @@ c get basis functions
       elseif(ibasis.eq.6) then
         call deriv_2dgauss_noncirc(rvec_en,r_en)
       elseif(ibasis.eq.7) then
-        call deriv_2dgauss_periodic(rvec_en,r_en)
+        if (iper_gaussian_type.eq.1) then
+          call deriv_2dgauss_periodic(rvec_en,r_en)
+        else 
+          call deriv_2dgauss_periodic2(rvec_en,r_en)
+        endif
       else
         stop 'deriv_orbitals: ibasis must be 4, 5, 6, or 7'
       endif
