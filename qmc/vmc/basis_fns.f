@@ -1902,7 +1902,7 @@ c parameter derivatives:
           d2param(1,1,ib,ie)=d2dx2term*phin(ib,ie)  ! wrt xg1,xg1
           d2param(2,2,ib,ie)=d2dy2term*phin(ib,ie)  ! wrt xg2,xg2
           d2param(3,3,ib,ie)=(cxtrel - expnorm)*dparam(3,ib,ie)  ! wrt xg3,xg3
-          d2param(4,4,ib,ie)=-0.5d0*we*x2rel2*dparam(4,ib,i3)    ! wrt xg4,xg4
+          d2param(4,4,ib,ie)=-0.5d0*we*x2rel2*dparam(4,ib,ie)    ! wrt xg4,xg4
 
           d2param(1,2,ib,ie)=wey*x2rel*dparam(1,ib,ie)  ! wrt xg1,xg2          
           d2param(1,3,ib,ie)=-temp2pida*sxtrel*(phin(ib,ie) + xg3*dparam(3,ib,ie))   ! wrt xg1,xg3
