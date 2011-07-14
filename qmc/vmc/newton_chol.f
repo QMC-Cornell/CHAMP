@@ -958,7 +958,7 @@ c orbital parameters (type 1,2,3 and 4)
             iparm=iparm+1
             dparm_norm=dparm_norm+dparm(iparm)**2
           enddo
-          dparm_norm=sqrt(dparm_norm/abs(nparmo(3)))
+          dparm_norm=sqrt(dparm_norm/abs(nparmo(3)))/oparm(3,1,iadd_diag)
           if(dparm_norm.gt.2.d0) then
             iflag=1
             write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
@@ -973,11 +973,11 @@ c orbital parameters (type 1,2,3 and 4)
               dparm_norm=dparm_norm+dparm(iparm)**2
 c             write(6,*) 'test: dparm(iparm)=',dparm(iparm)
             enddo
-            dparm_norm=sqrt(dparm_norm/abs(nparmo(4)))
-            if(dparm_norm.gt.3.d0) then
+            dparm_norm=sqrt(dparm_norm/abs(nparmo(4)))/oparm(4,1,iadd_diag)
+            if(dparm_norm.gt.2.d0) then
               iflag=1
               write(6,'(''iadd_diag,add_diag(iadd_diag),dparm_norm='',i2,d12.4,f9.2,
-     &        '' iflag=1. This is a bad move because dparm_norm>1 for otype 4 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
+     &        '' iflag=1. This is a bad move because dparm_norm>2 for otype 4 params'')') iadd_diag,add_diag(iadd_diag),dparm_norm
             endif
           endif
         endif
