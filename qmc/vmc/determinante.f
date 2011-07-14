@@ -43,6 +43,8 @@ c get orbitals and derivatives for all electron iel
       endif
 
 
+c     write(6,'(''iel,orbe='',i3,(30f9.5))') iel,(orbe(iorb),iorb=1,nelec)
+
       if(iel.le.nup) then
 
         ikel=nup*(iel-1)
