@@ -22,6 +22,9 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use estsum_mod
       use eloc_mod
       use contrl_per_mod
+      use determinants_mod
+      use distance_mod
+
       implicit real*8(a-h,o-z)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
@@ -79,6 +82,12 @@ c primary configuration
       if(nforce.gt.1) call strech(xnew,xstrech,ajacob,1,0)
       call hpsi(xnew,psidn,psijn,vnew,div_vn,d2,pen,pein,enew(1),denergy,1)
       psi2n(1)=2*(dlog(dabs(psidn))+psijn)
+
+c save electrostatic potential at new configuration
+c   Note that we already called distances.f from hpsi, otherwise
+c   we should add a call to distances here (ACM)
+
+          pot_ee_new = pot_ee  ! this is an array assignment
 
 c If error is large then save config. to use in optimizing routine
 
@@ -177,23 +186,29 @@ c same trick adapted to circular coordinates
                ixn(2)=nint(delti*(datan2(xnew(2,i),xnew(1,i))))
             endif
 
-          if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
-            den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+q
-            if(i.le.nup) then
-              den2d_u(ixo(1),ixo(2))=den2d_u(ixo(1),ixo(2))+q
-             else
-              den2d_d(ixo(1),ixo(2))=den2d_d(ixo(1),ixo(2))+q
+            if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
+              den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+q
+              pot_ee2d_t(ixo(1),ixo(2))=pot_ee2d_t(ixo(1),ixo(2))+q*pot_ee_old(i)
+              if(i.le.nup) then
+                den2d_u(ixo(1),ixo(2))=den2d_u(ixo(1),ixo(2))+q
+                pot_ee2d_u(ixo(1),ixo(2))=pot_ee2d_u(ixo(1),ixo(2))+q*pot_ee_old(i)
+               else
+                den2d_d(ixo(1),ixo(2))=den2d_d(ixo(1),ixo(2))+q
+                pot_ee2d_d(ixo(1),ixo(2))=pot_ee2d_d(ixo(1),ixo(2))+q*pot_ee_old(i)
+              endif
             endif
-          endif
-          if(abs(ixn(1)).le.NAX .and. abs(ixn(2)).le.NAX) then
-            den2d_t(ixn(1),ixn(2))=den2d_t(ixn(1),ixn(2))+p
-            if(i.le.nup) then
-              den2d_u(ixn(1),ixn(2))=den2d_u(ixn(1),ixn(2))+p
-             else
-              den2d_d(ixn(1),ixn(2))=den2d_d(ixn(1),ixn(2))+p
+            if(abs(ixn(1)).le.NAX .and. abs(ixn(2)).le.NAX) then
+              den2d_t(ixn(1),ixn(2))=den2d_t(ixn(1),ixn(2))+p
+              pot_ee2d_t(ixn(1),ixn(2))=pot_ee2d_t(ixn(1),ixn(2))+p*pot_ee_new(i)
+              if(i.le.nup) then
+                den2d_u(ixn(1),ixn(2))=den2d_u(ixn(1),ixn(2))+p
+                pot_ee2d_u(ixn(1),ixn(2))=pot_ee2d_u(ixn(1),ixn(2))+p*pot_ee_new(i)
+               else
+                den2d_d(ixn(1),ixn(2))=den2d_d(ixn(1),ixn(2))+p
+                pot_ee2d_d(ixn(1),ixn(2))=pot_ee2d_d(ixn(1),ixn(2))+p*pot_ee_new(i)
+              endif
             endif
-          endif
-        endif
+         endif
 
    28 continue
       if(ifixe.le.-2) call pairden2d(p,q,xold,xnew)  ! full pair-density
@@ -205,6 +220,7 @@ c accept new move with probability p
       if(rannyu(0).le.p) then
 
 c move is accepted so update positions etc.
+        pot_ee_old = pot_ee_new
 
         do 30 k=1,ndim
           do 30 i=1,nelec
