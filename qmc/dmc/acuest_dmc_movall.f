@@ -507,6 +507,9 @@ c Zero out estimators for pair densities:
       if (.not. allocated(den2d_t)) allocate (den2d_t(-NAX:NAX,-NAX:NAX))
       if (.not. allocated(den2d_u)) allocate (den2d_u(-NAX:NAX,-NAX:NAX))
       if (.not. allocated(den2d_d)) allocate (den2d_d(-NAX:NAX,-NAX:NAX))
+      if (.not. allocated(pot_ee2d_t)) allocate (pot_ee2d_t(-NAX:NAX,-NAX:NAX))
+      if (.not. allocated(pot_ee2d_u)) allocate (pot_ee2d_u(-NAX:NAX,-NAX:NAX))
+      if (.not. allocated(pot_ee2d_d)) allocate (pot_ee2d_d(-NAX:NAX,-NAX:NAX))
       if (.not. allocated(xx0probdt)) allocate (xx0probdt(0:NAX,-NAX:NAX,-NAX:NAX))
       if (.not. allocated(xx0probdu)) allocate (xx0probdu(0:NAX,-NAX:NAX,-NAX:NAX))
       if (.not. allocated(xx0probdd)) allocate (xx0probdd(0:NAX,-NAX:NAX,-NAX:NAX))
@@ -518,6 +521,9 @@ c Zero out estimators for pair densities:
           den2d_t(i2,i3)=0
           den2d_u(i2,i3)=0
           den2d_d(i2,i3)=0
+          pot_ee2d_t(i2,i3)=0
+          pot_ee2d_u(i2,i3)=0
+          pot_ee2d_d(i2,i3)=0
           do 100 i1=0,NAX
             xx0probdt(i1,i2,i3)=0
             xx0probdu(i1,i2,i3)=0

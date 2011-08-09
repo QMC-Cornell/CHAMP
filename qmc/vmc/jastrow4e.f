@@ -20,6 +20,7 @@ c Jastrow 6   must be used with one of isc=6,7
       use distance_mod
       use jaso_mod
       use jasn_mod
+      use pseudo_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)

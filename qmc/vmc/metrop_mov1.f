@@ -87,9 +87,10 @@ c         write(6,'(''calling hpsie from metrop_mov1'')')
           psi2n(1)=2*(dlog(dabs(psidn))+psijn)
 
 c save electrostatic potential at new configuration
-c   Note that we already called distances.f from hpsi, otherwise
-c   we should add a call to distances here (ACM)
+c   distances.f is not called from from hpsie, so we add a call to distances here,
+c   since we need it to compute pot_ee(i) (ACM)
 
+c          call distances(xnew,pe_dummy,pei_dummy)
           pot_ee_new = pot_ee  ! this is an array assignment
 
 c If error is large then save config. to use in optimizing routine
@@ -118,8 +119,11 @@ c         tjfn=-tjfn*half*hb
 c p is the probability of accepting new move
 
           p=exp(psi2n(1)-psi2o(1))*fxnp/fxop
-cr        write(6,'(''psi2n,psi2o,fxnp,fxop,psi2n/psi2o,fxnp/fxop,p'',9f12.6
-cr   &    )')psi2n(1),psi2o(1),fxnp,fxop,psi2n(1)/psi2o(1),fxnp/fxop,p
+c         write(6,*) ((xold(kr,ir),kr=1,ndim),ir=1,nelec)
+c         write(6,*) ((xnew(kr,ir),kr=1,ndim),ir=1,nelec)
+c         write(6,'(''psi2n,psi2o,fxnp,fxop,psi2n/psi2o,fxnp/fxop,p'',9f12.6
+c    &    )')psi2n(1),psi2o(1),fxnp,fxop,psi2n(1)/psi2o(1),fxnp/fxop,p
+c         write(6,'(''psido, psidn, psijo, psijn'',4f12.6)') psido, psidn, psijo, psijn
           p=dmin1(one,p)
           q=one-p
 
