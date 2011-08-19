@@ -67,6 +67,7 @@ module allocations_mod
   call alloc ('r_en', r_en, nelec, ncent)
   call alloc ('rvec_ee', rvec_ee, 3, nelec_pair)
   call alloc ('r_ee', r_ee, nelec_pair)
+  call alloc ('pot_ee', pot_ee, nelec)
 
   call alloc ('rshift_sav', rshift_sav, 3, ncent)
   call alloc ('rvec_en_sav', rvec_en_sav, 3, ncent)
