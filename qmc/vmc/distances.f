@@ -99,7 +99,7 @@ c              write(6,*) 'i,x(1,i),x(2,i),pe_x,pe_y=',i,x(1,i),x(2,i),pe_x,pe_y
 
 c Calculate e-e inter-particle distances
         pe_ee=0.d0
-        pot_ee = 0.d0   ! this is an array assignment 
+        pot_ee(:) = 0.   ! this is an array assignment 
         ij=0
         do 29 i=2,nelec
           do 29 j=1,i-1

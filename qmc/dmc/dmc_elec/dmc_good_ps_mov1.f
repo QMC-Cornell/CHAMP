@@ -82,6 +82,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use eloc_mod
 !     use optimization_mod, only : l_opt_ovlp_fn
       use opt_ovlp_fn_mod, only : wt_lambda
+      use distance_mod, only: pot_ee
+      use config_mod, only: pot_ee_new, pot_ee_old
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -515,7 +517,11 @@ c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
           wtg=wtnow*fprod
           current_walker_weight = wt(iw) * fprod !JT
           call object_modified_by_index (current_walker_weight_index) !JT
-
+          
+          ! used to plot interaction potential (ACM)
+          pot_ee_new = pot_ee ! array assignment
+          pot_ee_old = pot_ee_oldw(:,iw,ifr) ! array assignment
+          
           if(ifr.eq.1) then
 
             r2sum=r2sum+wtg*r2sume
@@ -551,7 +557,7 @@ c electron-i is being moved
                 if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
               endif
-
+              
               if(ifixe.eq.-1 .or. ifixe.eq.-3) then
                 if(icoosys.eq.1) then 
                   if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
@@ -571,18 +577,24 @@ c same trick adapted to circular coordinates
                 endif
                 if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
                   den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+wtgq
+                  pot_ee2d_t(ixo(1),ixo(2))=pot_ee2d_t(ixo(1),ixo(2))+wtgq*pot_ee_old(i)
                   if(i.le.nup) then
                     den2d_u(ixo(1),ixo(2))=den2d_u(ixo(1),ixo(2))+wtgq
+                    pot_ee2d_u(ixo(1),ixo(2))=pot_ee2d_u(ixo(1),ixo(2))+wtgq*pot_ee_old(i)
                   else
                     den2d_d(ixo(1),ixo(2))=den2d_d(ixo(1),ixo(2))+wtgq
+                    pot_ee2d_d(ixo(1),ixo(2))=pot_ee2d_d(ixo(1),ixo(2))+wtgq*pot_ee_old(i)
                   endif
                 endif
                 if(abs(ixn(1)).le.NAX .and. abs(ixn(2)).le.NAX) then
                   den2d_t(ixn(1),ixn(2))=den2d_t(ixn(1),ixn(2))+wtgp
+              pot_ee2d_t(ixn(1),ixn(2))=pot_ee2d_t(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   if(i.le.nup) then
                     den2d_u(ixn(1),ixn(2))=den2d_u(ixn(1),ixn(2))+wtgp
+                    pot_ee2d_u(ixn(1),ixn(2))=pot_ee2d_u(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   else
                     den2d_d(ixn(1),ixn(2))=den2d_d(ixn(1),ixn(2))+wtgp
+                    pot_ee2d_d(ixn(1),ixn(2))=pot_ee2d_d(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   endif
                 endif
               endif
@@ -609,6 +621,7 @@ c same trick adapted to circular coordinates
             psidow(iw,ifr)=psidn
             psijow(iw,ifr)=psijn
             fratio(iw,ifr)=fration
+            pot_ee_oldw(:,iw,ifr) = pot_ee_new ! array assignment
            else
             if(ifr.eq.1) then
               iage(iw)=iage(iw)+1

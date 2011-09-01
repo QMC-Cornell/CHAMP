@@ -55,7 +55,6 @@ module dmc_mod
     nwftype=1
     iwftype(1)=1
   endif
-
   call common_allocations
 
 ! allocations for DMC
@@ -264,6 +263,13 @@ module dmc_mod
 
   call alloc ('ajacold', ajacold, MWALK, nforce)
   call alloc ('fratio', fratio, MWALK, nforce)
+
+  call alloc ('pot_ee', pot_ee, nelec) ! not sure why this is needed, since we
+    ! already did this in dmc_init (common_allocations), but we get an error if we
+    ! don't.  ACM 8/27/11
+  call alloc ('pot_ee_old', pot_ee_old, nelec)
+  call alloc ('pot_ee_new', pot_ee_new, nelec)
+  call alloc ('pot_ee_oldw', pot_ee_oldw, nelec, MWALK, nforce)
 
 ! initialize sums and averages
   if(irstar /= 1) then

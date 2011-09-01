@@ -66,6 +66,7 @@ module accumulation_mod
           endif
           ajacold(iw,ifr)=ajacob
           call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr),peow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
+          pot_ee_oldw(:,iw,ifr) = pot_ee(:)
           if(ifr.eq.1) then
             call walksav_det(iw)
             call walksav_jas(iw)
