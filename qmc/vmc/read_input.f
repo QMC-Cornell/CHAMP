@@ -1402,8 +1402,11 @@ c should be dimensioned to MWF
         endif
         read(5,*) cutjas_en_tmp,cutjas_ee_tmp
         if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
-          write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
-     &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+c         write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
+c    &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+          write(6,'(''Warning: input cutjas_en > half shortest primitive cell lattice vector; cutjas_en='',d12.5)') cutjas_en_tmp
+          write(6,'(''cutjas_en will NOT be reset.  I hope you know what you are doing!'')')
+          cutjas_en = cutjas_en_tmp
         else
           if(cutjas_en_tmp.lt.cutjas_en-eps) then
              write(6,'(''Warning: Could use larger cutjas_en='',f9.5,
