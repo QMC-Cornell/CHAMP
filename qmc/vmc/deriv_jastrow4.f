@@ -538,7 +538,7 @@ c                  endif
                   if(jparm.le.nparmc(it)) then
                     if(ll.eq.iwjasc(jparm,it)) then
                       ideriv=2
-                     else
+                     elseif(isc.lt.12) then
                       do id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
                         if(ll.eq.iwc4(id)) then
                           jj=id
@@ -546,7 +546,7 @@ c                  endif
                         endif
                       enddo
                     endif
-                   else
+                   elseif(isc.lt.12) then
                     do id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
                       if(ll.eq.iwc4(id)) then
                         jj=id
