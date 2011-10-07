@@ -1,4 +1,23 @@
+# I do not know why but when this is called from champ/qmc/Makefile and we are compiling there
+# in MPI mode, using "make mpi" then it insists on using mpif90 instead of resetting the compiler
+# to gfortran.
+# So, I have to do a "make libs" from here before doing a "make mpi" in champ/qmc.
+
+ifdef F77
+FC = gfortran
+F77 = gfortran
+F77_MPI = gfortran
+F95 = gfortran
+F95_MPI = gfortran
+endif
+
 ifndef F77
+
+FC = gfortran
+F77 = gfortran
+F77_MPI = gfortran
+F95 = gfortran
+F95_MPI = gfortran
 
 ##########
 # README #

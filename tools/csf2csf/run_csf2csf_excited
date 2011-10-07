@@ -1,7 +1,7 @@
 #! /bin/bash
 # /bin/sh
 # This script is run on the .out file from a GAMESS CI run.
-# e.g. ~/champ/tools/csf2csf/run_csf2csf ci.out
+# e.g. ~/champ/tools/csf2csf/run_csf2csf_excited ci.out
 # This script does the foll.:
 # 1) it runs gamess2qmc on the GAMESS out file
 # 2) it runs csf2csf on the .csf file created by gamess2qmc to create a .csfs file.
@@ -23,9 +23,9 @@ do
   vmc_input2=`echo $in | sed -e 's/.out/_vmc.inp2/'`
   echo $in $in_csf2csf $out_csf2csf
 
-  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 $in
+# $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 $in
 # If you want the excited state of the same symmetry change the above line to:
-# $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 -w 2 $in
+  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 -w 2 $in
   $HOME/champ/tools/csf2csf/csf2csf < $in_csf2csf > $out_csf2csf
 
 # nctype=`awk '/nctype,ncent/{print $1}' $vmc_input1` #determine number of center types

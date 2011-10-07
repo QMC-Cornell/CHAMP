@@ -1,0 +1,6 @@
+Run gamess2qmc on GAMESS output to create CHAMP input (vmc.inp file).
+Best to run gamess2qmc by running either
+champ/tools/csf2csf/run_csf2csf
+or
+champ/tools/csf2csf/run_csf2csf_excited
+on GAMESS output. Creates (vmc.inp2 file in addition to vmc.inp file).

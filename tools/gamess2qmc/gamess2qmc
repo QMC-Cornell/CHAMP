@@ -3323,17 +3323,30 @@ sub print_cyrus_input{
 	    printf CYRFILE "!casscf=true\n";
 	    printf CYRFILE "!check_redundant_orbital_derivative=false\n";
 	    printf CYRFILE "!do_add_diag_mult_exp=.true.\n";
-	    printf CYRFILE "end\n";
-	    printf CYRFILE "\n";
 	}
-
+	    if($trial_state != 1){
+		printf CYRFILE "\n";
+		printf CYRFILE "! For doing excited states.  The option we are using here is to optimize mostly the energy (p_var~0) and look for the nth state above the gnd. state\n";
+		printf CYRFILE "! In this case it also uses as a criterion that the change has a small norm.\n";
+		printf CYRFILE "! The other option is to mostly optimize the variance (p_var~1)and use garget_stattate_above_groundstate_or_target_smallest_norm = 0 because the targeted excited state has the smallest variance.\n";
+		printf CYRFILE "linear\n";
+		printf CYRFILE "! target_state=%d\n",$trial_state;
+		printf CYRFILE "! target_state_above_groundstate = %d\n",$trial_state-1;
+		printf CYRFILE "  target_state_above_groundstate_or_target_smallest_norm = %d\n",$trial_state-1;
+		printf CYRFILE "  eigval_lower_bound=%7.2f\n",$total_energy-0.5;
+		printf CYRFILE "  eigval_upper_bound=%7.2f\n",$total_energy+0.1;
+		printf CYRFILE " end\n";
+		printf CYRFILE " stabilize=false\n";
+	    }
+            printf CYRFILE "end\n";
+            printf CYRFILE "\n";
     } # end if($options_JT)
 
-   close(CYRFILE);
-   printf ("Cyrus format input file written to $cyrus_input_file\n") if(! $quiet);
-   if($ecp){
-   printf ("  Warning: verify values of lpotp1 especially for H ECP \n") if(! $quiet);
-   }
+    close(CYRFILE);
+    printf ("Cyrus format input file written to $cyrus_input_file\n") if(! $quiet);
+    if($ecp){
+    printf ("  Warning: verify values of lpotp1 especially for H ECP \n") if(! $quiet);
+    }
 
     if ($ispher == 1) {
 	open(CYRFILE,"< $cyrus_input_file") || die  "cant open file $cyrus_input_file : $!"; 
