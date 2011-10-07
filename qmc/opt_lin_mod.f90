@@ -731,7 +731,7 @@ module opt_lin_mod
   integer eig_ind, eigvec_max_1st_compon_ind, eigvec_lowest_eigval_ind, eigvec_smallest_norm_ind
 
   integer, allocatable :: eigval_srt_ind_to_eigval_ind(:), eigval_ind_to_eigval_srt_ind(:)
-  integer temp
+  integer temp, eig_excited_ind_test
 
 
 ! header
@@ -954,6 +954,7 @@ module opt_lin_mod
   else
     write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable eigenvalue windows so select eigenvector with smallest norm!'
   endif
+  call flush(6)
 
 ! if target_state = 0, select eigenvector from one of the 3 criteria:
 ! 1) lowest reasonable eigenvalue,
@@ -962,22 +963,22 @@ module opt_lin_mod
 ! 3) smallest norm(Psi_lin-Psi_0) for nonlinear parameters
   if(target_state == 0) then
 
-   if(l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind /= 0) then
-     eig_ind = eigvec_lowest_eigval_ind
-   elseif(l_select_eigvec_largest_1st_coef) then
-     eig_ind = eigvec_max_1st_compon_ind
-   elseif(l_select_eigvec_smallest_norm .or. (l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind == 0)) then
-     eig_ind = eigvec_smallest_norm_ind
+    if(l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind /= 0) then
+      eig_ind = eigvec_lowest_eigval_ind
+    elseif(l_select_eigvec_largest_1st_coef) then
+      eig_ind = eigvec_max_1st_compon_ind
+    elseif(l_select_eigvec_smallest_norm .or. (l_select_eigvec_lowest .and. eigvec_lowest_eigval_ind == 0)) then
+      eig_ind = eigvec_smallest_norm_ind
 
-!  default selection criterion:
-   else
-     if(eigvec_lowest_eigval_ind /= 0 .and. psi_lin_var_norm < 10*smallest_norm) then
-       eig_ind = eigvec_lowest_eigval_ind
-     else
-       eig_ind = eigvec_smallest_norm_ind
-     endif
+!   default selection criterion:
+    else
+      if(eigvec_lowest_eigval_ind /= 0 .and. psi_lin_var_norm < 10*smallest_norm) then
+        eig_ind = eigvec_lowest_eigval_ind
+      else
+        eig_ind = eigvec_smallest_norm_ind
+      endif
 
-   endif
+    endif
 
 ! if target_state >= 1, simply select the corresponding wanted target state
   else
@@ -989,34 +990,64 @@ module opt_lin_mod
 
   endif
 
-  if(eigvec_lowest_eigval_ind /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind .or. eigvec_smallest_norm_ind /= eigvec_lowest_eigval_ind) then
-   if(eigvec_lowest_eigval_ind /= 0) then
-     write(6,'(a,3(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
-     eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i', &
-     eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
-     eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
-    else
-     write(6,'(a,a,2(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
-     'no reasonable eigenvalue', &
-     eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
-     eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
-   endif
-   l_warning = .true.
+!! If we are targeting the ground state ideally all 3 criteria for selecting the eigenvector should coincide
+! Ideally all 3 criteria for selecting the eigenvector should coincide
+! if((target_state == 0 .and. target_state_above_groundstate == 0 .and. target_state_above_groundstate_or_target_smallest_norm == 0) .and. (eigvec_lowest_eigval_ind /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind)) then
+  if((target_state == 0) .and. (eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eigvec_lowest_eigval_ind) + target_state_above_groundstate + target_state_above_groundstate_or_target_smallest_norm) /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind)) then
+    if(eigvec_lowest_eigval_ind /= 0) then
+      write(6,'(a,3(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
+      eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i', &
+      eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
+      eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+     else
+      write(6,'(a,a,2(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
+      'no reasonable eigenvalue', &
+      eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
+      eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+    endif
+    l_warning = .true.
   endif
+  call flush(6)
 
 ! possibility of selecting an eigenvector above the selected ground state for excited states
+! Using target_state_above_groundstate is less robust than using target_state_above_groundstate_or_target_smallest_norm
   if (target_state_above_groundstate /= 0) then
     if (eigvec_lowest_eigval_ind ==0) then
      call die (lhere, 'target_state_above_groundstate /= 0 and no ground state found in the energy window')
     endif
-    write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+    write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected (sorted) ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
     eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate)
     write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate,' above this ground state will be selected'
   endif
-  if (target_state_above_groundstate_or_target_smallest_norm /= 0 .and. psi_lin_var_norm < 10*smallest_norm .and. eigvec_lowest_eigval_ind /=0) then
-    write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
-    eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate)
-    write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate,' above this ground state will be selected'
+
+! At this point eig_ind could either point to the guessed ground state (if eigvec_lowest_eigval_ind /= 0) or the guessed excited state (the state with the change that has the smallest norm).
+  if (target_state_above_groundstate_or_target_smallest_norm /= 0) then
+    if(eigvec_lowest_eigval_ind /= 0) then
+      write(6,'(''psi_lin_var_norm, smallest_norm'',9es12.4)') psi_lin_var_norm, smallest_norm
+      eig_excited_ind_test = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate_or_target_smallest_norm)
+      psi_lin_var_norm = 0.d0
+      do iparm = nparmcsf+1, param_nb
+       do jparm = nparmcsf+1, param_nb
+         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_excited_ind_test)*eigvec(1+jparm,eig_excited_ind_test)*ovlp_lin(1+iparm,1+jparm)
+       enddo
+      enddo
+      psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eig_excited_ind_test)**2 ! Normalize so first component is 1
+      write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this excited trial eigenvector =', psi_lin_var_norm
+    endif
+    if(eigvec_lowest_eigval_ind /=0 .and. psi_lin_var_norm < 10*smallest_norm) then
+      write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+!     eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate_or_target_smallest_norm)
+      eig_ind = eig_excited_ind_test
+      write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate_or_target_smallest_norm,' above this ground state will be selected'
+    else
+      eig_ind = eigvec_smallest_norm_ind
+      write(6,'(a)') 'The state with the change that has the smallest norm will be selected'
+! This seems like a good check, but it can hurt at times because the ground state can get shifted by add_diag to a higher energy than the excited state.
+      if(eigval_ind_to_eigval_srt_ind (eig_ind) < 1+target_state_above_groundstate_or_target_smallest_norm) then
+        eig_ind = eigval_srt_ind_to_eigval_ind (1+target_state_above_groundstate_or_target_smallest_norm)
+        write(6,'(a,i6)') 'Warning: state with the change that has the smallest norm is not sufficiently excited, so choose instead (sorted) eigenvector #',eigval_ind_to_eigval_srt_ind(eig_ind)
+      endif
+    endif
   endif
 
   write(6,'(a,t87,i4,a,2(f10.4,a))') 'The selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
@@ -1039,6 +1070,7 @@ module opt_lin_mod
      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_ind)*eigvec(1+jparm,eig_ind)*ovlp_lin(1+iparm,1+jparm)
    enddo
   enddo
+  psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eig_ind)**2 ! Normalize so first component is 1
   write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   if(psi_lin_var_norm > 10*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 10*smallest_norm'',2d12.4)')  psi_lin_var_norm,smallest_norm
 

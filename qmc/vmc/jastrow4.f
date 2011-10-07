@@ -282,12 +282,12 @@ c          use the distance from the electron to the center of the wire
 c          (for the first center, anyway)
 c          thus, derivatives only depend on en distance in the y-direction
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
-           fijo(1,i,j)=fijo(1,i,j) + fu*rvec_ee(1,ij)
+           fijo(1,i,j)=fijo(1,i,j)                     +fu*rvec_ee(1,ij)
            fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
-           fijo(3,i,j)=fijo(3,i,j) + fu*rvec_ee(3,ij)
-           fijo(1,j,i)=fijo(1,j,i) - fu*rvec_ee(1,ij)
+           fijo(3,i,j)=fijo(3,i,j)                     +fu*rvec_ee(3,ij)
+           fijo(1,j,i)=fijo(1,j,i)                     -fu*rvec_ee(1,ij)
            fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
-           fijo(3,j,i)=fijo(3,j,i) - fu*rvec_ee(3,ij)
+           fijo(3,j,i)=fijo(3,j,i)                     -fu*rvec_ee(3,ij)
         else
            fijo(1,i,j)=fijo(1,i,j) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
            fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)

@@ -327,7 +327,7 @@ make:
 ../lib/lib2/einspline/lib/libeinspline.a:
 	cd ../lib ; make
 
-../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a(main/anneal.o)
+../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:
 	cd ../lib ; make
 
 .SUFFIXES: 

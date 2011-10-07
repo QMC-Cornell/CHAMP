@@ -50,6 +50,8 @@ module opt_ovlp_fn_mod
 
 ! begin
 
+  write(6,'(''Overlap-FN optimization'')')
+
 ! loop over menu lines
   do
   call get_next_word(word)
@@ -82,12 +84,14 @@ module opt_ovlp_fn_mod
 
   case ('wt_lambda')
    call get_next_value( wt_lambda)
+   write(6,'(''wt_lambda='',es10.3)') wt_lambda
 
   case ('update_nonlinear')
    call get_next_value (update_nonlinear)
 
   case ('xi')
    call get_next_value (xi)
+   write(6,'(''xi='',f6.3)') xi
 
   case ('end')
    exit

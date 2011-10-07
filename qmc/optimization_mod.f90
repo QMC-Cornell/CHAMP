@@ -51,7 +51,8 @@ module optimization_mod
   real(dp)                :: delta_param_norm
   real(dp)                :: delta_csf_norm
   real(dp)                :: delta_jas_norm
-  real(dp)                :: delta_param_norm_max = 10.d0
+  real(dp)                :: delta_param_norm_max_3d = 10.d0
+  real(dp)                :: delta_param_norm_max_2d = 500.d0
   real(dp), allocatable   :: delta_param (:)
   real(dp), allocatable   :: delta_csf (:)
   real(dp), allocatable   :: delta_csf_rot (:)
@@ -161,7 +162,8 @@ module optimization_mod
    write(6,'(a)') ' approx_orb_rot = [logical] : approximate first-order orbital rotation (default=false)'
    write(6,'(a)') ' active_orb_ortho_constraint = [logical] : impose active orbitals orthogonality constraint during optimization (default=true)'
    write(6,'(a)') ' deriv2nd = [logical] : default=true, compute second-order wave function derivatives if necessary?'
-   write(6,'(a)') ' delta_param_norm_max = [real] : maximum parameter variation norm allowed (default=10)'
+   write(6,'(a)') ' delta_param_norm_max_3d = [real] : maximum parameter variation norm allowed for 3-dim systems (default=10)'
+   write(6,'(a)') ' delta_param_norm_max_2d = [real] : maximum parameter variation norm allowed for 2,1-dim systems (default=10)'
    write(6,'(a)') ' hessian_variance = [linear|levenberg_marquardt|levenberg_marquardt_cov] : choice of variance hessian (default=linear)'
    write(6,'(a)') ' decrease_p_var= [bool] : decrease progressively proportion of variance (default=false)'
    write(6,'(a)') ' print_orbital_excitations = [bool] print orbital excitation information? (default=false)'
@@ -299,8 +301,11 @@ module optimization_mod
   case ('deriv2nd')
    call get_next_value (l_deriv2nd)
 
-  case ('delta_param_norm_max')
-   call get_next_value (delta_param_norm_max)
+  case ('delta_param_norm_max_3d')
+   call get_next_value (delta_param_norm_max_3d)
+
+  case ('delta_param_norm_max_2d')
+   call get_next_value (delta_param_norm_max_2d)
 
   case ('hessian_variance')
    call get_next_value (hessian_variance_type)
@@ -1308,6 +1313,7 @@ module optimization_mod
 ! Created     : J. Toulouse, 18 Jan 2006
 !---------------------------------------------------------------------------
   include 'modules.h'
+  use dim_mod, only: ndim
   implicit none
 
 ! output
@@ -1567,9 +1573,16 @@ module optimization_mod
 ! test norm of jastrow parameter variations
   if (l_opt_jas) then
     call object_provide ('delta_jas_norm')
-    if (delta_jas_norm > max(10.d0,1.d0/(5.d0*scalek(iwf)))) then
-      is_bad_move = 1
-      write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 10 or 1/5*scalek'
+    if (ndim == 3) then
+      if(delta_jas_norm > max(10.d0,5.d0/scalek(iwf))) then
+        is_bad_move = 1
+        write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 10 or 5/scalek'
+      endif
+    else
+      if(delta_jas_norm > max(500.d0,50.d0/scalek(iwf))) then
+        is_bad_move = 1
+        write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 500 or 50/scalek'
+      endif
     endif
   endif
 
@@ -1582,7 +1595,7 @@ module optimization_mod
    endif
   do ict = 1, nctype
     if (a4(2,ict,iwf) < parm2min) then
-     is_bad_move = 1
+     is_bad_move = 2
      write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because a2=',a4(2,ict,iwf),' < parm2min=',parm2min
     endif
     if (a4(2,ict,iwf) > AMAX_NONLIN) then
@@ -1593,7 +1606,7 @@ module optimization_mod
 
   do isp = nspin1, nspin2b
    if (b(2,isp,iwf) < parm2min) then
-     is_bad_move = 1
+     is_bad_move = 2
      write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because b2=',b(2,isp,iwf),' < parm2min=',parm2min
    endif
    if (b(2,isp,iwf) > AMAX_NONLIN) then
@@ -1610,7 +1623,7 @@ module optimization_mod
       do dexp_to_all_bas_i = 1, dexp_to_all_bas_nb (dexp_i)
         bas_i = dexp_to_all_bas (dexp_i)%row (dexp_to_all_bas_i)
         if (zex (bas_i, iwf) < 0.d0) then
-          is_bad_move = 1
+          is_bad_move = 2
           exponent_negative_nb = exponent_negative_nb + 1
         endif
         if (do_add_diag_mult_exp) then
@@ -1632,15 +1645,22 @@ module optimization_mod
 
 ! check total parameter variations norm
   call object_provide ('delta_param_norm')
-  if (delta_param_norm > delta_param_norm_max) then
-    is_bad_move = 1
-    write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the parameter variations is too large: delta_param_norm=',delta_param_norm,' > ',delta_param_norm_max
+  if (ndim == 3) then
+    if (delta_param_norm > delta_param_norm_max_3d) then
+      is_bad_move = max(is_bad_move,1)
+      write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the parameter variations is too large: delta_param_norm=',delta_param_norm,' > ',delta_param_norm_max_3d
+    endif
+   else
+    if (delta_param_norm > delta_param_norm_max_2d) then
+      is_bad_move = max(is_bad_move,1)
+      write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the parameter variations is too large: delta_param_norm=',delta_param_norm,' > ',delta_param_norm_max_2d
+    endif
   endif
 
 ! test norm of linear wave function variation
   if (l_opt_lin) then
    if (psi_lin_var_norm > psi_lin_var_norm_max) then
-    is_bad_move = 1
+    is_bad_move = max(is_bad_move,1)
     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the linear wave function variation is too large: psi_lin_var_norm=',psi_lin_var_norm,' > ',psi_lin_var_norm_max
    endif
   endif
@@ -1688,7 +1708,7 @@ module optimization_mod
    endif
 
 !  if the move is bad, increase add_diag and retry
-   if (l_stab .and. is_bad_move == 1) then
+   if ((l_stab .and. is_bad_move == 1) .or. is_bad_move == 2) then
      call wf_restore
      if (l_opt_pjas) call restore_pjas
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
@@ -2356,6 +2376,7 @@ module optimization_mod
   endif ! l_opt_geo
 
   write(6,*)
+  call flush(6)
 
   end subroutine write_wf_new
 

@@ -536,6 +536,11 @@ c parameters d2j IS taken to be second derivative of psi divided by psi.
         open(21,file='grad_hess',status='unknown')
 c       open(22,file='lin_ham_overlap',status='unknown')
        else
+cc      open(20,file='/dev/null')
+cc      open(21,file='/dev/null')
+c       open(20,file='hess_pieces20_junk')
+c       open(21,file='hess_pieces21_junk')
+cc      open(22,file='/dev/null')
         open(20,status='scratch')
         open(21,status='scratch')
 c       open(22,status='scratch')

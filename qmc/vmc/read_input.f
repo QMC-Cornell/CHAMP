@@ -1237,8 +1237,7 @@ c Jastrow section
       if(ianalyt_lap.eq.0 .and. nloc.gt.0)
      &stop 'Cannot have numerical Lap. with pseudopot'
       if(ianalyt_lap.eq.0 .and. iperiodic.gt.1)
-     &stop 'Cannot have numerical Lap. with periodic system: distances in
-     & jastrow_num not correct'
+     &stop 'Cannot have numerical Lap. with periodic system: distances in jastrow_num not correct'
       if(ianalyt_lap.eq.0 .and. iperiodic.eq.1)
      &write(6,'(''Warning: numerical Lap. might not be correct for
      & iperiodic = 1'')') 

@@ -91,6 +91,12 @@ c following spaces are for gnuplot convention:
           open(45,file=file5,status='unknown')
           open(46,file=file6,status='unknown')
          else
+cc        open(41,file='/dev/null',status='unknown')
+cc        open(42,file='/dev/null',status='unknown')
+cc        open(43,file='/dev/null',status='unknown')
+c         open(41,file='junk41',status='unknown')
+c         open(42,file='junk42',status='unknown')
+c         open(43,file='junk43',status='unknown')
           open(41,status='scratch')
           open(42,status='scratch')
           open(43,status='scratch')
