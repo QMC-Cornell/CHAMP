@@ -1,16 +1,19 @@
 # I do not know why but when this is called from champ/qmc/Makefile and we are compiling there
 # in MPI mode, using "make mpi" then it insists on using mpif90 instead of resetting the compiler
-# to gfortran.
-# So, I have to do a "make libs" from here before doing a "make mpi" in champ/qmc.
+# to gfortran.  Anyway, this does not seem to matter but we need the "FFLAGS = -DNOMPI" to prevent
+# quench_anneal from being compiled in MPI mode when CHAMP is being compiled in MPI mode.
+# Alternatively one can do a "make libs" from here before doing a "make mpi" in champ/qmc.
 
 ifdef F77
-FC = gfortran
 F77 = gfortran
-F77_MPI = gfortran
-F95 = gfortran
-F95_MPI = gfortran
+FFLAGS = -DNOMPI
+# FC = gfortran
+# F77_MPI = gfortran
+# F95 = gfortran
+# F95_MPI = gfortran
 endif
 
+>>>>>>> .r564
 ifndef F77
 
 FC = gfortran
@@ -193,6 +196,15 @@ ifeq ($(hostname),gauss)
   LDFLAGS_MPI = -static -nothread -lmpi
   FLINKER_MPI = /usr/bin/mpif90.openmpi
 endif
+
+#new nodes at cornell
+ifeq ($(findstring node,$(hostname)), node)
+  F77 = gfortran
+  FFLAGS = -finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
+  F77_MPI = gfortran
+  FFLAGS_MPI = -finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
+endif
+
 
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
   F77 = ifort
@@ -470,7 +482,7 @@ ifndef FFLAGS_NOOPT
   FFLAGS_NOOPT = $(FFLAGS)
 endif
 
-endif
+endif # End of ifndef at top of Makefile
 
 #######################
 # Using this Makefile #
@@ -646,6 +658,7 @@ $(LIB_MPI)(main/start_stop_mpi.o):        $(INC_MPI)
 # for them.  Ordinary (sequential) code is compiled using the default
 # rules defined further down.
 $(LIB_MPI)(main/func_mpi.o) : main/func_mpi.F
+	echo using MPI compiler $(F77_MPI)
 	$(F77_MPI) $(FFLAGS_MPI) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
@@ -669,14 +682,17 @@ $(LIB_MPI)(main/start_stop_mpi.o): main/start_stop_mpi.F
 # of the archive itself.
 .SUFFIXES: .F .f .for
 .F.a:
+	echo using sequential compiler $(F77)
 	$(F77) $(FFLAGS) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 .f.a:
+	echo using sequential compiler $(F77)
 	$(F77) $(FFLAGS) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o
 .for.a:
+	echo using sequential compiler $(F77)
 	$(F77) $(FFLAGS_NOOPT) -Iinclude -c $< -o $*.o
 	$(AR) $(ARFLAGS) $@ $*.o
 #	-rm $*.o

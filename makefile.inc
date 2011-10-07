@@ -30,7 +30,7 @@ PSPLINE=-L$(LIBHOME)/lib2/pspline/pspline -lpspline
 
 EINSPLINE=-L$(LIBHOME)/lib2/einspline/lib -leinspline
 
-LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE)
+LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE) $(QUENCH)
 
 LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/einspline/lib/libeinspline.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 
@@ -118,8 +118,6 @@ endif
 endif
 
 
-
-
 # New dft cluster at Cornell
 # We used to use -w to suppress warnings because otherwise the compilation of parser_tools fails after priting 10 error msgs. such as
 #  Error: parser_tools_mod.f90, line 581: The dimensions of this array have been defined more than once.   [VALUE_LIST]
@@ -140,6 +138,34 @@ ifeq ($(hostname),gauss)
   LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
+#new nodes at cornell
+ifeq ($(findstring node,$(hostname)), node)
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+  LD=gfortran
+  LD_FLAGS=-O3
+  LD_MPI=mpif90
+  EINSPLINE=
+endif
+
+ifeq ($(findstring dft,$(hostname)), dft)
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+  LD=gfortran
+  LD_FLAGS=-O3
+  LD_MPI=mpif90
+  EINSPLINE=
+endif
 
 # nanolab at Cornell
 ifeq ($(findstring cnf.cornell,$(hostname)),cnf.cornell)
@@ -618,6 +644,39 @@ LD_END_MPI=
 # acml has both the LAPACK and the BLAS
  LAPACK=-L/opt/acml-3.6.0/ifort64/lib -lacml
  BLAS=
+
+endif
+
+# IBM BlueGene/L at RPI CCNI
+ifeq ($(hostname), bgl16fen)
+# serial
+ F77 = /opt/ibmcmp/xlf/bg/10.1/bin/blrts_xlf
+ F95 = /opt/ibmcmp/xlf/bg/10.1/bin/blrts_xlf95
+ CC = /opt/ibmcmp/vac/bg/8.0/bin/blrts_xlc
+ CXX = /opt/ibmcmp/vacpp/bg/8.0/bin/blrts_xlC
+ LD = /opt/ibmcmp/xlf/bg/10.1/bin/blrts_xlf95
+
+ F77_FAST_FLAGS = -O3 -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE,-DNOQUENCH,-DNOEINSPLINE -qfixed=132
+ F95_FAST_FLAGS = -O3 -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f90 -WF,-DNOQUENCH,-DNOEINSPLINE
+ CC_FAST_FLAGS = -O3 -qstrict  -qarch=440 -qtune=440
+ LD_FLAGS = -qarch=440 -qtune=440
+ CC_FAST_FLAGS = -O3  -qstrict  -qarch=440 -qtune=440
+
+#MPI
+ F77_MPI = mpixlf90
+ F95_MPI = mpixlf90
+ LD_MPI = mpixlf90
+ CC_MPI = mpixlc
+ F77_MPI_FLAGS =  -O3 -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE,-DNOQUENCH,-DNOEINSPLINE,-DMPI -qfixed=132
+ F95_MPI_FLAGS =  -O3 -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DNOQUENCH,-DNOEINSPLINE,-DMPI
+
+#Libraries
+ EINSPLINE=
+ QUENCH=
+ LIBS_MAKE=$(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/lib2/lapack/liblapack.a
+
+# Math libraries
+ BLAS = -L/bgl/local/essl/lib/ -lesslbg
 
 endif
 

@@ -672,7 +672,7 @@ c This factor can be larger or smaller than 1
         else
 c The next line just avoids zero divides in rare cases. Division can probably
 c avoided altogether. (Peter, Wed May 19 1999)
-	  drift_rat_raw=cos_on
+          drift_rat_raw=cos_on
         endif
 c       drift_rat=(drift_rat_raw+factor_sav-ONE)/factor_sav
         drift_rat=drift_rat_raw+ONE-ONE/factor_sav
