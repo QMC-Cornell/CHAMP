@@ -603,6 +603,9 @@ c Zero out estimators for pair densities:
       call alloc_range ('den2d_t', den2d_t, -NAX, NAX, -NAX, NAX)
       call alloc_range ('den2d_u', den2d_u, -NAX, NAX, -NAX, NAX)
       call alloc_range ('den2d_d', den2d_d, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('pot_ee2d_t', pot_ee2d_t, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('pot_ee2d_u', pot_ee2d_u, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('pot_ee2d_d', pot_ee2d_d, -NAX, NAX, -NAX, NAX)
       call alloc_range ('xx0probdt', xx0probdt, 0, NAX, -NAX, NAX, -NAX, NAX)
       call alloc_range ('xx0probdu', xx0probdu, 0, NAX, -NAX, NAX, -NAX, NAX)
       call alloc_range ('xx0probdd', xx0probdd, 0, NAX, -NAX, NAX, -NAX, NAX)
@@ -614,6 +617,9 @@ c Zero out estimators for pair densities:
           den2d_t(i2,i3)=0
           den2d_u(i2,i3)=0
           den2d_d(i2,i3)=0
+          pot_ee2d_t(i2,i3)=0
+          pot_ee2d_u(i2,i3)=0
+          pot_ee2d_d(i2,i3)=0
           do 100 i1=0,NAX
             xx0probdt(i1,i2,i3)=0
             xx0probdu(i1,i2,i3)=0

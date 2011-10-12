@@ -65,6 +65,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pairden_mod
       use fourier_mod
       use pop_control_mod, only : ffn
+      use distance_mod, only: pot_ee
+      use config_mod, only: pot_ee_new, pot_ee_old
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -362,6 +364,10 @@ c Set weights and product of weights over last nwprod steps
           enowo=eoldw(iw,ifr)
           enown=enew(ifr)
 
+          ! used to plot interaction potential (ACM)
+          pot_ee_new = pot_ee ! array assignment
+          pot_ee_old = pot_ee_oldw(:,iw,ifr) ! array assignment
+
           if(ifr.eq.1) then
             psi2savo=2*(psijow(iw,1)+dlog(dabs(psidow(iw,1))))
             psi2savn=2*(psijn(1)+dlog(dabs(psidn(1))))
@@ -426,7 +432,7 @@ c Collect density only for primary walk
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
 c calculate 2d density related functions:
-              if(ifixe.eq.-1 .or. ifixe.ne.-3) then
+              if(ifixe.eq.-1 .or. ifixe.eq.-3) then
                 if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
                   call reduce_sim_cell(xoldw(:,i,iw,ifr))
                   call reduce_sim_cell(xnew(:,i,ifr))
@@ -447,18 +453,24 @@ c same trick adapted to circular coordinates
 
                 if(abs(ixo(1)).le.NAX .and. abs(ixo(2)).le.NAX) then
                   den2d_t(ixo(1),ixo(2))=den2d_t(ixo(1),ixo(2))+wtgq
+                  pot_ee2d_t(ixo(1),ixo(2))=pot_ee2d_t(ixo(1),ixo(2))+wtgq*pot_ee_old(i)
                   if(i.le.nup) then
                     den2d_u(ixo(1),ixo(2))=den2d_u(ixo(1),ixo(2))+wtgq
+                    pot_ee2d_u(ixo(1),ixo(2))=pot_ee2d_u(ixo(1),ixo(2))+wtgq*pot_ee_old(i)
                   else
                     den2d_d(ixo(1),ixo(2))=den2d_d(ixo(1),ixo(2))+wtgq
+                    pot_ee2d_d(ixo(1),ixo(2))=pot_ee2d_d(ixo(1),ixo(2))+wtgq*pot_ee_old(i)
                   endif
                 endif
                 if(abs(ixn(1)).le.NAX .and. abs(ixn(2)).le.NAX) then
                   den2d_t(ixn(1),ixn(2))=den2d_t(ixn(1),ixn(2))+wtgp
+                  pot_ee2d_t(ixn(1),ixn(2))=pot_ee2d_t(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   if(i.le.nup) then
                     den2d_u(ixn(1),ixn(2))=den2d_u(ixn(1),ixn(2))+wtgp
+                    pot_ee2d_u(ixn(1),ixn(2))=pot_ee2d_u(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   else
                     den2d_d(ixn(1),ixn(2))=den2d_d(ixn(1),ixn(2))+wtgp
+                    pot_ee2d_d(ixn(1),ixn(2))=pot_ee2d_d(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   endif
                 endif
               endif
@@ -497,6 +509,7 @@ c           if(dabs((enew(ifr)-etrial)/etrial).gt.0.2d+0) then
             peow(iw,ifr)=pen(ifr)
             peiow(iw,ifr)=pein(ifr)
             d2ow(iw,ifr)=d2n(ifr)
+            pot_ee_oldw(:,iw,ifr) = pot_ee_new ! array assignment
             do 260 i=1,nelec
               div_vow(i,iw)=div_vn(i)
               do 260 k=1,ndim

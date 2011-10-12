@@ -153,6 +153,23 @@ c Collect radial charge density for atoms
         do 13 i1=-NAX,NAX
           do 13 i2=-NAX,NAX
    13       den2d_u(i1,i2)=den2dt(i1,i2)
+
+        call mpi_reduce(pot_ee2d_t,pot_ee2dt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do 14 i1=-NAX,NAX
+          do 14 i2=-NAX,NAX
+   14       pot_ee2d_t(i1,i2)=pot_ee2dt(i1,i2)
+
+        call mpi_reduce(pot_ee2d_d,pot_ee2dt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do 15 i1=-NAX,NAX
+          do 15 i2=-NAX,NAX
+   15       pot_ee2d_d(i1,i2)=pot_ee2dt(i1,i2)
+
+        call mpi_reduce(pot_ee2d_u,pot_ee2dt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do 16 i1=-NAX,NAX
+          do 16 i2=-NAX,NAX
+   16       pot_ee2d_u(i1,i2)=pot_ee2dt(i1,i2)
+
+
       endif
 
       call mpi_allreduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,MPI_COMM_WORLD,ierr)
