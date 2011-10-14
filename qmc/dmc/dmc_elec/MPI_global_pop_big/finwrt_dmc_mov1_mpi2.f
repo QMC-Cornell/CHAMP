@@ -38,7 +38,7 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
       common /compferm/ emagv,nv,idot
 
       dimension rprobcollect(NRAD)
-      dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)
+      dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
 
       character*80 fmt
 !JT      character*80 title,fmt
