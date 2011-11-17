@@ -37,6 +37,11 @@ c cell indices
 c normalized displacement from (xorb_grid(ix),yorb_grid(iy)) corner of cell
 c  xscaled=0 @xorb_grid(ix)  xscaled=1 @xorb_grid(ix+1)
 c  yscaled=0 @yorb_grid(iy)  yscaled=1 @yorb_grid(iy+1)
+c       if (ix.le.0) then
+c         write (6,*) 'orbitals_loc_num_grade error'
+c         write (6,*) ix, xget, hxi 
+c         call flush(6)
+c       endif
         xscaled=(xget-xorb_grid(ix))*hxi
         yscaled=(yget-yorb_grid(iy))*hyi
 
@@ -90,7 +95,7 @@ c    &          *(yi-coeff4)*splineval(1)
           orb(iorb)=splineval(1)
           ddorb(iorb)=splineval(4)+splineval(5)
             do 10 k=1,ndim
-   10         dorb(k,iorb)=splineval(k+1)
-
+              dorb(k,iorb)=splineval(k+1)
+  10         continue
       return
       end

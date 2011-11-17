@@ -39,10 +39,20 @@ c rotate old and new coordinates
             call rotate(thetao,xold(1,ie2),xold(2,ie2),x1roto,x2roto)
             call rotate(thetan,xnew(1,ie2),xnew(2,ie2),x1rotn,x2rotn)
 c put on the grid:
-            ix1roto=nint(delxi*x1roto)
-            ix2roto=nint(delxi*x2roto)
-            ix1rotn=nint(delxi*x1rotn)
-            ix2rotn=nint(delxi*x2rotn)
+c           if(icoosys.eq.1) then 
+              ix1roto=nint(delxi*x1roto)
+              ix2roto=nint(delxi*x2roto)
+              ix1rotn=nint(delxi*x1rotn)
+              ix2rotn=nint(delxi*x2rotn)
+c           else
+c same trick adapted to circular coordinates
+c              ixo(1)=nint(delradi*(rold-rmean))
+c              ixn(1)=nint(delradi*(rnew-rmean))
+c              ixo(2)=nint(delti*(datan2(xold(2,i),xold(1,i))))
+c              ixn(2)=nint(delti*(datan2(xnew(2,i),xnew(1,i))))
+c           endif
+
+
 c check if we are within grid limits, check spins, and collect data
 c  -old config
             if(iro.le.NAX .and. abs(ix1roto).le.NAX .and. abs(ix2roto).le.NAX) then

@@ -533,13 +533,13 @@ c Zero out estimators for pair densities:
   100       xx0probud(i1,i2,i3)=0
       endif
       if (ifourier.ne.0) then
-      if (.not. allocated(fourierrk_t)) allocate(fourierrk_t(0:NAX,0:NAK1))
-      if (.not. allocated(fourierrk_u)) allocate(fourierrk_u(0:NAX,0:NAK1))
-      if (.not. allocated(fourierrk_d)) allocate(fourierrk_d(0:NAX,0:NAK1))
+      if (.not. allocated(fourierrk_t)) allocate(fourierrk_t(-NAX:NAX,0:NAK1))
+      if (.not. allocated(fourierrk_u)) allocate(fourierrk_u(-NAX:NAX,0:NAK1))
+      if (.not. allocated(fourierrk_d)) allocate(fourierrk_d(-NAX:NAX,0:NAK1))
       if (.not. allocated(fourierkk_t)) allocate(fourierkk_t(-NAK2:NAK2,-NAK2:NAK2))
       if (.not. allocated(fourierkk_u)) allocate(fourierkk_u(-NAK2:NAK2,-NAK2:NAK2))
       if (.not. allocated(fourierkk_d)) allocate(fourierkk_d(-NAK2:NAK2,-NAK2:NAK2))
-      do 110 i1=0,NAX
+      do 110 i1=-NAX,NAX
         do 110 i2=0,NAK1
           fourierrk_t(i1,i2)=0
           fourierrk_u(i1,i2)=0

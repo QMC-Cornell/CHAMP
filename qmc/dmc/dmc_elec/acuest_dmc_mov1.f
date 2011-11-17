@@ -578,13 +578,13 @@ c Zero out estimators for pair densities:
   100       xx0probud(i1,i2,i3)=0
       endif
       if (ifourier.ne.0) then
-      call alloc_range ('fourierrk_t', fourierrk_t, 0, NAX, 0, NAK1)
-      call alloc_range ('fourierrk_u', fourierrk_u, 0, NAX, 0, NAK1)
-      call alloc_range ('fourierrk_d', fourierrk_d, 0, NAX, 0, NAK1)
+      call alloc_range ('fourierrk_t', fourierrk_t, -NAX, NAX, 0, NAK1)
+      call alloc_range ('fourierrk_u', fourierrk_u, -NAX, NAX, 0, NAK1)
+      call alloc_range ('fourierrk_d', fourierrk_d, -NAX, NAX, 0, NAK1)
       call alloc_range ('fourierkk_t', fourierkk_t, -NAK2, NAK2, -NAK2, NAK2)
       call alloc_range ('fourierkk_u', fourierkk_u, -NAK2, NAK2, -NAK2, NAK2)
       call alloc_range ('fourierkk_d', fourierkk_d, -NAK2, NAK2, -NAK2, NAK2)
-      do 110 i1=0,NAX
+      do 110 i1=-NAX,NAX
         do 110 i2=0,NAK1
           fourierrk_t(i1,i2)=0
           fourierrk_u(i1,i2)=0
@@ -595,7 +595,7 @@ c Zero out estimators for pair densities:
           fourierkk_u(i1,i2)=0
   120     fourierkk_d(i1,i2)=0
       endif
-
+      
       call grad_hess_jas_save
 
       return

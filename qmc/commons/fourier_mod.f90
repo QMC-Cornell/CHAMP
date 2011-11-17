@@ -6,7 +6,7 @@ module fourier_mod
  double precision, allocatable :: fourierrk_u(:,:),fourierrk_d(:,:)
  double precision, allocatable :: fourierrk_t(:,:),fourierkk_u(:,:),fourierkk_d(:,:),fourierkk_t(:,:)
  double precision              :: delk1,delk2,fmax1,fmax2
- integer                       :: ifourier
+ integer                       :: ifourier,nmeshk1
  integer, parameter            :: NAK1=40
  integer, parameter            :: NAK2=1
 

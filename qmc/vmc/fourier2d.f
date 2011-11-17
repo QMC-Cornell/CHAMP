@@ -26,16 +26,26 @@ c FT(r,k=0)= electronic density
       implicit real*8(a-h,o-z)
 
       dimension xold(3,nelec),xnew(3,nelec)
-      dimension fcos_uo(NAX),fcos_do(NAX)
-      dimension fsin_uo(NAX),fsin_do(NAX)
-      dimension fcos_un(NAX),fcos_dn(NAX)
-      dimension fsin_un(NAX),fsin_dn(NAX)
-      dimension nr_uo(NAX),nr_do(NAX),nr_un(NAX),nr_dn(NAX)
+      dimension fcos_uo(-NAX:NAX),fcos_do(-NAX:NAX)
+      dimension fsin_uo(-NAX:NAX),fsin_do(-NAX:NAX)
+      dimension fcos_un(-NAX:NAX),fcos_dn(-NAX:NAX)
+      dimension fsin_un(-NAX:NAX),fsin_dn(-NAX:NAX)
+      dimension nr_uo(-NAX:NAX),nr_do(-NAX:NAX),nr_un(-NAX:NAX),nr_dn(-NAX:NAX)
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
+      common /dot/ rring
 
-      do ik=0,NAK1
+      if(rring.eq.0.d0) then
+        naxmin = 1
+        naxmax = NAX
+      else
+        naxmin = -nmeshr
+        naxmax = nmeshr
+      endif
+
+      do ik=0,nmeshk1
         fk=delk1*ik
 c reset temporary arrays:
-        do ix=1,NAX
+        do ix=-NAX,NAX
           fcos_uo(ix)=0.d0
           fcos_do(ix)=0.d0
           fsin_uo(ix)=0.d0
@@ -62,8 +72,13 @@ c reset temporary arrays:
           rnew=dsqrt(rnew)
           thetao=datan2(xold(2,ie),xold(1,ie))
           thetan=datan2(xnew(2,ie),xnew(1,ie))
-          iro=min(int(delxi*rold)+1,NAX)
-          irn=min(int(delxi*rnew)+1,NAX)
+          if (rring.eq.0.d0) then
+            iro=min(int(delxi*rold)+1,NAX)
+            irn=min(int(delxi*rnew)+1,NAX)
+          else
+            iro = min(max(nint(delradi*(rold-rmean)),-NAX), NAX)
+            irn = min(max(nint(delradi*(rnew-rmean)),-NAX), NAX)
+          endif
 
           if(ie.le.nup) then
             fcos_uo(iro)=fcos_uo(iro)+dcos(fk*thetao)
@@ -83,7 +98,7 @@ c reset temporary arrays:
 
         enddo
 
-        do ir=1,NAX
+        do ir=naxmin,naxmax
           fourierrk_u(ir,ik)=fourierrk_u(ir,ik)+(fcos_uo(ir)*fcos_uo(ir)+fsin_uo(ir)*fsin_uo(ir))*q
           fourierrk_d(ir,ik)=fourierrk_d(ir,ik)+(fcos_do(ir)*fcos_do(ir)+fsin_do(ir)*fsin_do(ir))*q
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)+((fcos_uo(ir)+fcos_do(ir))**2

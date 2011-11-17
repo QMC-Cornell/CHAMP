@@ -38,6 +38,7 @@ c routine to accumulate estimators for energy etc.
       use stats_mod
       use age_mod
       use pairden_mod
+      use fourier_mod
       use pop_control_mod, only : ffn
       implicit real*8(a-h,o-z)
 
@@ -628,7 +629,26 @@ c Zero out estimators for pair densities:
             xx0probuu(i1,i2,i3)=0
   100       xx0probud(i1,i2,i3)=0
       endif
-
+      if (ifourier.ne.0) then
+      call alloc_range ('fourierrk_t', fourierrk_t, -NAX, NAX, 0, NAK1)
+      call alloc_range ('fourierrk_u', fourierrk_u, -NAX, NAX, 0, NAK1)
+      call alloc_range ('fourierrk_d', fourierrk_d, -NAX, NAX, 0, NAK1)
+      call alloc_range ('fourierkk_t', fourierkk_t, -NAK2, NAK2, -NAK2, NAK2)
+      call alloc_range ('fourierkk_u', fourierkk_u, -NAK2, NAK2, -NAK2, NAK2)
+      call alloc_range ('fourierkk_d', fourierkk_d, -NAK2, NAK2, -NAK2, NAK2)
+      do 110 i1=-NAX,NAX
+        do 110 i2=0,NAK1
+          fourierrk_t(i1,i2)=0
+          fourierrk_u(i1,i2)=0
+  110     fourierrk_d(i1,i2)=0
+      do 120 i1=-NAK2,NAK2
+        do 120 i2=-NAK2,NAK2
+          fourierkk_t(i1,i2)=0
+          fourierkk_u(i1,i2)=0
+  120     fourierkk_d(i1,i2)=0
+      endif
+      
+ 
       call grad_hess_jas_save
 # endif
 

@@ -10,6 +10,7 @@ c routine to print out final results
       use denupdn_mod
       use stepv_mod
       use pairden_mod
+      use fourier_mod
       use est2cm_mod
       use estsig_mod
       use estcum_mod
@@ -19,7 +20,9 @@ c routine to print out final results
 c     common /forcjac/ ajacob
 
 c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
-      dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX)
+      dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
+      dimension fouriert(-NAX:NAX,0:NAK1), fourierkkt(-NAK2:NAK2,-NAK2:NAK2)
+
       dimension rprobt(NRAD),tryt(NRAD),suct(NRAD),work(nforce)
 
 
@@ -138,6 +141,69 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
         do 52 i1=-NAX,NAX
           do 52 i2=-NAX,NAX
    52       den2d_u(i1,i2)=den2dt(i1,i2)
+
+        call mpi_allreduce(pot_ee2d_t,pot_ee2dt,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do 54 i1=-NAX,NAX
+          do 54 i2=-NAX,NAX
+   54       pot_ee2d_t(i1,i2)=pot_ee2dt(i1,i2)
+
+        call mpi_allreduce(pot_ee2d_d,pot_ee2dt,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do 55 i1=-NAX,NAX
+          do 55 i2=-NAX,NAX
+   55       pot_ee2d_d(i1,i2)=pot_ee2dt(i1,i2)
+
+        call mpi_allreduce(pot_ee2d_u,pot_ee2dt,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do 56 i1=-NAX,NAX
+          do 56 i2=-NAX,NAX
+   56       pot_ee2d_u(i1,i2)=pot_ee2dt(i1,i2)
+
+      endif
+
+      if(ifourier .ne. 0) then
+        naxt = (2*NAX + 1) * (NAK1 + 1)         
+        call mpi_allreduce(fourierrk_t,fouriert,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do i1=-NAX,NAX
+          do i2=0,NAK1
+            fourierrk_t(i1,i2)=fouriert(i1,i2)
+          enddo
+        enddo
+
+        call mpi_allreduce(fourierrk_u,fouriert,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do i1=-NAX,NAX
+          do i2=0,NAK1
+            fourierrk_u(i1,i2)=fouriert(i1,i2)
+          enddo
+        enddo
+
+        call mpi_allreduce(fourierrk_d,fouriert,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do i1=-NAX,NAX
+          do i2=0,NAK1
+            fourierrk_d(i1,i2)=fouriert(i1,i2)
+          enddo
+        enddo
+
+        naxt = (2*NAK2 + 1) * (2*NAK2 + 1)
+
+        call mpi_allreduce(fourierkk_t,fourierkkt,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do i1=-NAK2,NAK2
+          do i2=-NAK2,NAK2
+            fourierkk_t(i1,i2)=fourierkkt(i1,i2)
+          enddo
+        enddo
+
+        call mpi_allreduce(fourierkk_d,fourierkkt,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do i1=-NAK2,NAK2
+          do i2=-NAK2,NAK2
+            fourierkk_d(i1,i2)=fourierkkt(i1,i2)
+          enddo
+        enddo
+
+        call mpi_allreduce(fourierkk_u,fourierkkt,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        do i1=-NAK2,NAK2
+          do i2=-NAK2,NAK2
+            fourierkk_u(i1,i2)=fourierkkt(i1,i2)
+          enddo
+        enddo
 
       endif
 

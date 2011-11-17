@@ -193,7 +193,6 @@ c Sample Green function for forward move
         drifdif=zero
         iaccept=0
         do 200 i=1,nelec
-
 c Use more accurate formula for the drift
           v2old=0
           do 75 k=1,ndim
@@ -213,7 +212,6 @@ c Tau primary -> tratio=one
 
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
-
 c calculate psi and velocity at new configuration
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
 
@@ -316,7 +314,11 @@ c If we are using weights rather than accept/reject
               drifdif=drifdif+(xoldw(k,i,iw,1)-xnew(k))**2
               xoldw(k,i,iw,1)=xnew(k)
               do 170 l=1,nelec
-  170           voldw(k,l,iw,1)=vnew(k,l)
+                voldw(k,l,iw,1)=vnew(k,l)
+!ACM            write (6,*) 'voldw:'
+!ACM            write (6,*) i, voldw(1,i,iw,1)
+  170           continue
+                
             psidow(iw,1)=psidn
             psijow(iw,1)=psijn
             call jassav(i)

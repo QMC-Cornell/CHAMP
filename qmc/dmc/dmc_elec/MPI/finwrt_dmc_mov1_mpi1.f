@@ -30,6 +30,7 @@ c routine to print out final results
       use stats_mod
       use age_mod
       use pairden_mod
+      use fourier_mod
       use opt_ovlp_fn_mod
       implicit real*8(a-h,o-z)
 
@@ -41,7 +42,8 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
 
       dimension eg1collect(nforce),eg21collect(nforce),wg1collect(nforce),wg21collect(nforce),rprobcollect(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
-
+      dimension fouriert(-NAX:NAX,0:NAK1), fourierkkt(-NAK2:NAK2,-NAK2:NAK2)
+      
       character*80 fmt
 !JT      character*80 title,fmt
 !JT      character*24 date
@@ -204,6 +206,54 @@ c Collect radial charge density for atoms
         do 16 i1=-NAX,NAX
           do 16 i2=-NAX,NAX
    16       pot_ee2d_u(i1,i2)=pot_ee2dt(i1,i2)
+
+      endif
+
+      if(ifourier .ne. 0) then
+        naxt = (2*NAX + 1) * (NAK1 + 1)         
+        call mpi_reduce(fourierrk_t,fouriert,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do i1=-NAX,NAX
+          do i2=0,NAK1
+            fourierrk_t(i1,i2)=fouriert(i1,i2)
+          enddo
+        enddo
+
+        call mpi_reduce(fourierrk_u,fouriert,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do i1=-NAX,NAX
+          do i2=0,NAK1
+            fourierrk_u(i1,i2)=fouriert(i1,i2)
+          enddo
+        enddo
+
+        call mpi_reduce(fourierrk_d,fouriert,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do i1=-NAX,NAX
+          do i2=0,NAK1
+            fourierrk_d(i1,i2)=fouriert(i1,i2)
+          enddo
+        enddo
+
+        naxt = (2*NAK2 + 1) * (2*NAK2 + 1)
+
+        call mpi_reduce(fourierkk_t,fourierkkt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do i1=-NAK2,NAK2
+          do i2=-NAK2,NAK2
+            fourierkk_t(i1,i2)=fourierkkt(i1,i2)
+          enddo
+        enddo
+
+        call mpi_reduce(fourierkk_u,fourierkkt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do i1=-NAK2,NAK2
+          do i2=-NAK2,NAK2
+            fourierkk_u(i1,i2)=fourierkkt(i1,i2)
+          enddo
+        enddo
+
+        call mpi_reduce(fourierkk_d,fourierkkt,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+        do i1=-NAK2,NAK2
+          do i2=-NAK2,NAK2
+            fourierkk_d(i1,i2)=fourierkkt(i1,i2)
+          enddo
+        enddo
 
       endif
 
@@ -425,7 +475,7 @@ c       write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2er
 c       write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
 c     endif
 
-      if(ifixe.ne.0) call den2dwrt(wgcum(1))
+      if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))
 
       call routines_write_final
       call reinit_routines_write_block

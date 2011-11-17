@@ -12,7 +12,7 @@ c called by finwrt from vmc,dmc,dmc_elec
       character*20 file1,file2,file3,file4,file5,file6
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
-
+      common /dot/ rring
 c verify the normalization later...
       delx=1/delxi
       if(icoosys.eq.1) then
@@ -212,9 +212,15 @@ c down electron:
       endif
 
       if(ifourier.eq.1 .or. ifourier.eq.3) then          ! 2d fourier t. of the density
-        file1='fourierrk_t'
-        file2='fourierrk_d'
-        file3='fourierrk_u'
+        if(index(mode,'vmc').ne.0) then
+          file1='fourierrk_t_vmc'
+          file2='fourierrk_d_vmc'
+          file3='fourierrk_u_vmc'
+        else
+          file1='fourierrk_t_dmc'
+          file2='fourierrk_d_dmc'
+          file3='fourierrk_u_dmc'
+        endif
         if(idtask.eq.0) then
           open(41,file=file1,status='unknown')
           open(42,file=file2,status='unknown')
@@ -226,11 +232,23 @@ c down electron:
         endif
 
 c verify the normalization later...
-        term=1/(passes*delx)
-        do in1=1,NAX
-          ri=(in1*1.d0-0.5d0)*delx
+        if(rring.eq.0.d0) then
+          term=1/(passes*delx)
+          naxmin = 1
+          naxmax = NAX
+        else ! for rings, use same r_min and r_max as density
+          term=delradi/passes
+          naxmin = -nmeshr
+          naxmax = nmeshr
+        endif
+        do in1=naxmin,naxmax
+          if(rring.eq.0.d0) then
+            ri=(in1*1.d0-0.5d0)*delx
+          else
+            ri = in1/delradi + rmean
+          endif
           ri2=ri*ri
-          do in2=0,NAK1
+          do in2=0,nmeshk1
             fk=delk1*in2
             write(41,'(2g19.8,g19.8)') ri,fk,fourierrk_t(in1,in2)*term/ri2
             write(42,'(2g19.8,g19.8)') ri,fk,fourierrk_d(in1,in2)*term/ri2
@@ -246,9 +264,15 @@ c verify the normalization later...
       endif
 
       if(ifourier.eq.2 .or. ifourier.eq.3) then
-        file1='fourierkk_t'
-        file2='fourierkk_d'
-        file3='fourierkk_u'
+        if(index(mode,'vmc').ne.0) then
+          file1='fourierkk_t_vmc'
+          file2='fourierkk_d_vmc'
+          file3='fourierkk_u_vmc'
+        else
+          file1='fourierkk_t_dmc'
+          file2='fourierkk_d_dmc'
+          file3='fourierkk_u_dmc'
+        endif
         if(idtask.eq.0) then
           open(41,file=file1,status='unknown')
           open(42,file=file2,status='unknown')

@@ -80,7 +80,7 @@ c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
       namelist /opt_list/ iring_coulomb, iantiferromagnetic, iper_gaussian_type, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
-     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius
+     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius, nmeshk1
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
 
@@ -315,7 +315,14 @@ c rmin,rmax radius limits for circular coordinates
 c nmeshr   2*nmeshr+1 is the number of radial mesh points for circular coordinates around rring
 c nmesht   2*nmesht+1 is the number of angular mesh points for circular coordinates
 c ifourier 1: "internal(?) fourier transform" of the 2 dimensional density is performed
+c              (ie, power spectrum of density f(r,k_theta) for rings or f(y, k_x) for periodic wires)
+c              The units of f are such that a density oscillation with period L/n 
+c              (where L is the length of the system; L=2*pi for rings and L=alattice for wires) 
+c              will cause the power spectrum have a peak at k = n.
 c          0: ... is not performed (default value)
+c nmeshk1   nmeshk1+1 is the number of mesh points in k space for the power spectrum 
+c           Note that it should be set so that delk1 = fmax1/nmeshk1 is an integer >=1, since the variable we are
+c            fourier transforming is periodic over a length L (ie, n = 1.)
 c idot     0: pure complex quantum dots
 c          1: dots with composite fermions
 c          2: dots with laughlin wave functions
@@ -1478,6 +1485,7 @@ c   default values:
       rmax=10.d0
       nmeshr=NAX
       nmesht=NAX
+      nmeshk1=NAK1
       icoosys=1
       iper_gaussian_type = 2
       if (nup.eq.ndn .and. ibasis.ge.3 .and. ibasis.le.7) then
@@ -1538,7 +1546,8 @@ c fourier transform :
      &    stop 'Fourier transform calculation only possible for idmc=2,nloc=-1 or -5 in dmc'
         if(ndim.ne.2) stop 'Fourier transform not implemented for 3D systems'
       endif
-      delk1=fmax1/NAK1
+      if(nmeshk1.gt.NAK1.or.nmeshk1.lt.1) stop 'we must have 1<nmeshk1<=NAK1'
+      delk1=fmax1/nmeshk1
       delk2=fmax2/NAK2
 
 c composite fermions:

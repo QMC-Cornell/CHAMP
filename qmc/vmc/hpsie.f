@@ -52,7 +52,9 @@ c combine to get derivatives of full wavefunction
 c Gradient of ln(JD) is the sum of the gradient of ln(J) and ln(D).
       do 10 i=1,nelec
         do 10 k=1,ndim
-   10     velocity(k,i)=vj(k,i)+vd(k,i)
-
+          velocity(k,i)=vj(k,i)+vd(k,i)
+c         write (6,*) 'in hpsie'
+c         write (6,*) i, velocity(k,i), vj(k,i), vd(k,i)
+   10     continue  
       return
       end
