@@ -176,8 +176,8 @@ c calculate 2d density related functions:
             if(icoosys.eq.1) then 
               do 27 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
-                ixo(idim)=nint(delxi*xold(idim,i))
-  27            ixn(idim)=nint(delxi*xnew(idim,i))
+                ixo(idim)=nint(delxi(idim)*xold(idim,i))
+  27            ixn(idim)=nint(delxi(idim)*xnew(idim,i))
              else
 c same trick adapted to circular coordinates
                ixo(1)=nint(delradi*(rold-rmean))

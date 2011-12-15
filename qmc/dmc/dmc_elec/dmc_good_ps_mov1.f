@@ -568,8 +568,8 @@ c electron-i is being moved
                   endif
                   do 265 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
-                    ixo(idim)=nint(delxi*xoci(idim,i,i))
-  265               ixn(idim)=nint(delxi*xnci(idim,i,i))
+                    ixo(idim)=nint(delxi(idim)*xoci(idim,i,i))
+  265               ixn(idim)=nint(delxi(idim)*xnci(idim,i,i))
                  else
 c same trick adapted to circular coordinates
                     ixo(1)=nint(delradi*(dsqrt(xoci(1,i,i)*xoci(1,i,i)+xoci(2,i,i)*xoci(2,i,i))-rmean))

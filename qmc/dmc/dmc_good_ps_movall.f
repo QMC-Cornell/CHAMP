@@ -67,6 +67,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use pop_control_mod, only : ffn
       use distance_mod, only: pot_ee
       use config_mod, only: pot_ee_new, pot_ee_old
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -441,8 +442,8 @@ c calculate 2d density related functions:
                 if(icoosys.eq.1) then 
                   do 247 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
-                    ixo(idim)=nint(delxi*xoldw(idim,i,iw,ifr))
-  247               ixn(idim)=nint(delxi*xnew(idim,i,ifr))
+                    ixo(idim)=nint(delxi(idim)*xoldw(idim,i,iw,ifr))
+  247               ixn(idim)=nint(delxi(idim)*xnew(idim,i,ifr))
                   else
 c same trick adapted to circular coordinates
                     ixo(1)=nint(delradi*(rmino-rmean))

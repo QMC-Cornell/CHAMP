@@ -1536,7 +1536,13 @@ c        if(ncent.ne.1) stop 'Pair-density calculation not implemented for ncent
      &    stop 'Pair-density calculation only possible for idmc=2 in dmc'
         if(ndim.ne.2) stop 'Pair-density calculation not implemented for 3D systems'
       endif
-      delxi=NAX/xmax
+      if(iperiodic.eq.1) then ! we print out densities for all x 
+        delxi(1) = (2.*NAX + 1.)/alattice
+        delxi(2) = NAX/xmax
+      else
+        delxi(1)=NAX/xmax
+        delxi(2)=delxi(1)
+      endif
 
 c fourier transform :
       if(ifourier.lt.0 .or. ifourier.gt.3 ) stop 'ifourier must be 0,1,2, or 3'

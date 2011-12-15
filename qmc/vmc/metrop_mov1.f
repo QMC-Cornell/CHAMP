@@ -197,8 +197,8 @@ c          if(ifourier.eq.1) call fourier2d(1.d0,0.d0,xold,xnew)
             if(icoosys.eq.1) then 
               do 170 idim=1,ndim
 c note that ix can be negative or positive. nint is a better choice.
-                ixo(idim)=nint(delxi*xold(idim,i))
-  170           ixn(idim)=nint(delxi*xnew(idim,i))
+                ixo(idim)=nint(delxi(idim)*xold(idim,i))
+  170           ixn(idim)=nint(delxi(idim)*xnew(idim,i))
              else
 c same trick adapted to circular coordinates
                ixo(1)=nint(delradi*(rold-rmean))

@@ -8,21 +8,24 @@ c called by finwrt from vmc,dmc,dmc_elec
       use contr3_mod
       use pairden_mod
       use fourier_mod
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
       character*20 file1,file2,file3,file4,file5,file6
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /dot/ rring
 c verify the normalization later...
-      delx=1/delxi
+c      delx=1/delxi    ! doesn't work now that delxi is an array
       if(icoosys.eq.1) then
-        del1=delx
-        del2=delx
+        del1=1/delxi(1)
+        del2=1/delxi(2)
+        dely=del2 !used for pair density - vary transverse coord ("y")
         nax1=NAX
         nax2=NAX
       else
         del1=1/delradi
         del2=1/delti
+        dely=del1 !used for pair density - vary transverse coord ("r")
         nax1=nmeshr
         nax2=nmesht
       endif
@@ -148,16 +151,16 @@ c up electron:
             open(43,status='scratch')
           endif
           do in0=0,NAX
-            r0=in0*delx
-            if(in0.ge.nint(xfix(1)*delxi) .and. in0.le.nint(xfix(2)*delxi)) then
+            r0=in0*dely
+            if(in0.ge.nint(xfix(1)/dely) .and. in0.le.nint(xfix(2)/dely)) then
               write(41,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(42,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(43,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               do in1=-NAX,NAX
                 do in2=-NAX,NAX
-                  write(41,'(2g19.8,g19.8)') in1*delx,in2*delx,xx0probut(in0,in1,in2)*term
-                  write(42,'(2g19.8,g19.8)') in1*delx,in2*delx,xx0probud(in0,in1,in2)*term
-                  write(43,'(2g19.8,g19.8)') in1*delx,in2*delx,xx0probuu(in0,in1,in2)*term
+                  write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probut(in0,in1,in2)*term
+                  write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probud(in0,in1,in2)*term
+                  write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probuu(in0,in1,in2)*term
                 enddo
                 write(41,*)
                 write(42,*)
@@ -187,16 +190,16 @@ c down electron:
           endif
 
           do in0=0,NAX
-            r0=in0*delx
-            if(in0.ge.nint(xfix(1)*delxi) .and. in0.le.nint(xfix(2)*delxi)) then
+            r0=in0*dely
+            if(in0.ge.nint(xfix(1)/dely) .and. in0.le.nint(xfix(2)/dely)) then
               write(41,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(42,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(43,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               do in1=-NAX,NAX
                 do in2=-NAX,NAX
-                  write(41,'(2g19.8,g19.8)') in1*delx,in2*delx,xx0probdt(in0,in1,in2)*term
-                  write(42,'(2g19.8,g19.8)') in1*delx,in2*delx,xx0probdd(in0,in1,in2)*term
-                  write(43,'(2g19.8,g19.8)') in1*delx,in2*delx,xx0probdu(in0,in1,in2)*term
+                  write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdt(in0,in1,in2)*term
+                  write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdd(in0,in1,in2)*term
+                  write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdu(in0,in1,in2)*term
                 enddo
                 write(41,*)
                 write(42,*)
@@ -232,8 +235,12 @@ c down electron:
         endif
 
 c verify the normalization later...
-        if(rring.eq.0.d0) then
-          term=1/(passes*delx)
+        if(iperiodic.eq.1) then
+          term = 1/(passes*dely)
+          naxmin = -NAX
+          naxmax = NAX
+        elseif(rring.eq.0.d0) then
+          term=1/(passes*del1)
           naxmin = 1
           naxmax = NAX
         else ! for rings, use same r_min and r_max as density
@@ -242,12 +249,16 @@ c verify the normalization later...
           naxmax = nmeshr
         endif
         do in1=naxmin,naxmax
-          if(rring.eq.0.d0) then
+          if(iperiodic.eq.1) then
+            ri = in1*dely
+            ri2 = 1.0  ! no need to normalize by 1/r^2 for wires
+          elseif(rring.eq.0.d0) then
             ri=(in1*1.d0-0.5d0)*delx
+            ri2 = ri*ri
           else
             ri = in1/delradi + rmean
+            ri2 = ri*ri
           endif
-          ri2=ri*ri
           do in2=0,nmeshk1
             fk=delk1*in2
             write(41,'(2g19.8,g19.8)') ri,fk,fourierrk_t(in1,in2)*term/ri2

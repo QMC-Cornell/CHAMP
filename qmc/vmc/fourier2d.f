@@ -17,12 +17,29 @@ c FT(renormalized)= r^2 FT - N(r)   where N(r) is number of electrons at r.
 c During the print out we divide everything by r^2 to get the final result.
 c FT(r,k=0)= electronic density
 
+c Modified by A. C. Mehta, November 2011 to work with periodic wires
+
+c  In this case, we replace "r" by "y" (the transverse coordinate),
+c    and we take the FT in the x-direction (rather than theta)
+c  There is no 1/r term in cartesian coordinates, so:
+c  FT(renormalized) = FT - N(r)
+c  and there is no need to divide everything by r^2  
+c   (we modify printout routines to reflect this)
+c   Note we take cos(k_x (x_i - x_j) *2*pi/alattice)
+c
+c  Also, for the purposes of the periodic wires, we use the variables
+c    labeled with "r" to represent quantities having to do with "y"
+c    and we use the variables labeled with "theta" to represent
+c    quantities having to do with "x" (the periodic direction in wires)
+
 
       use dets_mod
       use const_mod
       use dim_mod
       use pairden_mod
       use fourier_mod
+      use contrl_per_mod
+      use periodic_1d_mod
       implicit real*8(a-h,o-z)
 
       dimension xold(3,nelec),xnew(3,nelec)
@@ -34,7 +51,11 @@ c FT(r,k=0)= electronic density
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /dot/ rring
 
-      if(rring.eq.0.d0) then
+      if(iperiodic.eq.1) then
+        naxmin = -NAX
+        naxmax = NAX
+        thetafactor = 2.d0*pi/alattice
+      elseif(rring.eq.0.d0) then
         naxmin = 1
         naxmax = NAX
       else
@@ -61,23 +82,31 @@ c reset temporary arrays:
         enddo
 
         do ie=1,nelec
-
-          rold=0.d0
-          rnew=0.d0
-          do  idim=1,ndim
-            rold=rold+xold(idim,ie)**2
-            rnew=rnew+xnew(idim,ie)**2
-          enddo
-          rold=dsqrt(rold)
-          rnew=dsqrt(rnew)
-          thetao=datan2(xold(2,ie),xold(1,ie))
-          thetan=datan2(xnew(2,ie),xnew(1,ie))
-          if (rring.eq.0.d0) then
-            iro=min(int(delxi*rold)+1,NAX)
-            irn=min(int(delxi*rnew)+1,NAX)
+          if(iperiodic.eq.1) then
+            rold = xold(2,ie)
+            rnew = xnew(2,ie)
+            thetao = thetafactor*xold(1,ie)
+            thetan = thetafactor*xnew(1,ie)
+            iro = min(max(nint(delxi(2)*rold),-NAX), NAX)
+            irn = min(max(nint(delxi(2)*rnew),-NAX), NAX)
           else
-            iro = min(max(nint(delradi*(rold-rmean)),-NAX), NAX)
-            irn = min(max(nint(delradi*(rnew-rmean)),-NAX), NAX)
+            rold=0.d0
+            rnew=0.d0
+            do  idim=1,ndim
+              rold=rold+xold(idim,ie)**2
+              rnew=rnew+xnew(idim,ie)**2
+            enddo
+            rold=dsqrt(rold)
+            rnew=dsqrt(rnew)
+            thetao=datan2(xold(2,ie),xold(1,ie))
+            thetan=datan2(xnew(2,ie),xnew(1,ie))
+            if (rring.eq.0.d0) then
+              iro=min(int(delxi(2)*rold)+1,NAX)
+              irn=min(int(delxi(2)*rnew)+1,NAX)
+            else
+              iro = min(max(nint(delradi*(rold-rmean)),-NAX), NAX)
+              irn = min(max(nint(delradi*(rnew-rmean)),-NAX), NAX)
+            endif
           endif
 
           if(ie.le.nup) then
@@ -186,8 +215,8 @@ c reset temporary arrays:
           rnew=dsqrt(rnew)
           thetao=datan2(xold(2,ie),xold(1,ie))
           thetan=datan2(xnew(2,ie),xnew(1,ie))
-          iro=min(int(delxi*rold)+1,NAX)
-          irn=min(int(delxi*rnew)+1,NAX)
+          iro=min(int(delxi(2)*rold)+1,NAX)
+          irn=min(int(delxi(2)*rnew)+1,NAX)
 
           if(ie.le.nup) then
             fcos_uo(iro)=fcos_uo(iro)+dcos(fk*thetao)
