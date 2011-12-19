@@ -55,6 +55,7 @@ c Written by Cyrus Umrigar
       use rlobxy_mod
       use pairden_mod
       use fourier_mod
+      use zigzag_mod, only: izigzag
       use branch_mod
       use periodic2_mod
       use periodic_1d_mod
@@ -80,7 +81,8 @@ c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
       namelist /opt_list/ iring_coulomb, iantiferromagnetic, iper_gaussian_type, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
-     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys, dot_bump_height, dot_bump_radius, nmeshk1
+     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys,dot_bump_height,dot_bump_radius
+     &,nmeshk1,izigzag
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
 
@@ -323,6 +325,11 @@ c          0: ... is not performed (default value)
 c nmeshk1   nmeshk1+1 is the number of mesh points in k space for the power spectrum 
 c           Note that it should be set so that delk1 = fmax1/nmeshk1 is an integer >=1, since the variable we are
 c            fourier transforming is periodic over a length L (ie, n = 1.)
+c izigzag  >0: write out quantities related to zigzag phase transition, namely reduced
+c               pair density pden(r_i - r_j, theta_i - theta_j) if rings or 
+c               pden(y_i - y_j, x_i - x_j) if wires, as well as den(y_i - y_j, i-j)
+c             and write out zigzag amplitude (-1^i y_i) - quantity like staggered magnetization
+c          0: do not write out these quantities (default value)
 c idot     0: pure complex quantum dots
 c          1: dots with composite fermions
 c          2: dots with laughlin wave functions
@@ -1477,6 +1484,7 @@ c   default values:
       amp_perturb=0.d0
       shrp_perturb=0.d0
       ifourier=0
+      izigzag=0
       fmax1=10.d0
       fmax2=1.d0
       nv=0
@@ -1555,6 +1563,12 @@ c fourier transform :
       if(nmeshk1.gt.NAK1.or.nmeshk1.lt.1) stop 'we must have 1<nmeshk1<=NAK1'
       delk1=fmax1/nmeshk1
       delk2=fmax2/NAK2
+
+c ZigZag quantities:
+      if(izigzag.lt.0) stop 'izigzag must be greater than or equal to 0'
+      if(izigzag.gt.0) then
+        if(ndim.ne.2) stop 'ZigZag measurements not implemented in 3D'
+      endif
 
 c composite fermions:
       lv=0
