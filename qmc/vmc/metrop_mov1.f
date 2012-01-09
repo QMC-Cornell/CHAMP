@@ -32,6 +32,7 @@ c Minor mods by A.D.Guclu to include pair-density function calculation
       use estsum_mod
       use determinants_mod
       use distance_mod
+      use zigzag_mod, only: izigzag
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10)
@@ -189,6 +190,7 @@ c calculate 2d-density related functions
             call reduce_sim_cell(xold(:,i))
             call reduce_sim_cell(xnew(:,i))
           endif
+          if(izigzag.gt.0) call zigzag2d(p,q,xold,xnew,i)
           if(ifixe.le.-2) call pairden2d(p,q,xold,xnew)
           if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)
           if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)

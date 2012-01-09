@@ -24,6 +24,7 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       use contrl_per_mod
       use determinants_mod
       use distance_mod
+      use zigzag_mod, only: izigzag
 
       implicit real*8(a-h,o-z)
 
@@ -211,6 +212,7 @@ c same trick adapted to circular coordinates
          endif
 
    28 continue
+      if(izigzag.gt.0) call zigzag2d(p,q,xold,xnew,0)
       if(ifixe.le.-2) call pairden2d(p,q,xold,xnew)  ! full pair-density
       if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)
       if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)

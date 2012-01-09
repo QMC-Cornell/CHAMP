@@ -29,6 +29,7 @@ c routine to print out final results
       use estsig_mod
       use estcum_mod
       use estsum_mod
+      use zigzag_mod
       implicit real*8(a-h,o-z)
       character*80 fmt
 
@@ -74,6 +75,8 @@ c     endif
       tpbfin=tpbcum/passes
       tjffin=tjfcum/passes
       r2fin=r2cum/passes
+      zzfin=zzcum/passes
+      zz2fin=zz2cum/passes
       accfin=acccum/passes
 
 c In all-electron move algorithm, eerr1 differs from sigma in that eerr1 contains
@@ -93,6 +96,8 @@ c reflected when we get Tcorr < 1.
       tpberr=err(tpbcum,tpbcm2,1)
       tjferr=err(tjfcum,tjfcm2,1)
       r2err=err(r2cum,r2cm2,1)
+      zzerr=err(zzcum,zzcm2,1)
+      zz2err=err(zz2cum,zz2cm2,1)
 c     tcsq=eerr/eerr1
       tcsq=eerr/eer1s
       call alloc ('eloc_tc', eloc_tc, nforce)
@@ -226,6 +231,10 @@ c force and force_err are really the energy difference and the error in the ener
       if(iperiodic.eq.0.and.ncent.eq.1)
      & write(6,'(''<r2> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
 
+      if(izigzag.ge.1) then
+        write(6,'(''<ZigZag Amp> ='',t17,f21.7,'' +-'',f11.7,f9.5)') zzfin,zzerr,zzerr*rtpass
+        write(6,'(''<ZigZag Amp^2> ='',t17,f21.7,'' +-'',f11.7,f9.5)') zz2fin,zz2err,zz2err*rtpass
+      endif
       if(print_radial_probability .and. index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin,sucsum/trysum
        else

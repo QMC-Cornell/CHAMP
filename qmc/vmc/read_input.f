@@ -55,7 +55,7 @@ c Written by Cyrus Umrigar
       use rlobxy_mod
       use pairden_mod
       use fourier_mod
-      use zigzag_mod, only: izigzag
+      use zigzag_mod
       use branch_mod
       use periodic2_mod
       use periodic_1d_mod
@@ -325,10 +325,10 @@ c          0: ... is not performed (default value)
 c nmeshk1   nmeshk1+1 is the number of mesh points in k space for the power spectrum 
 c           Note that it should be set so that delk1 = fmax1/nmeshk1 is an integer >=1, since the variable we are
 c            fourier transforming is periodic over a length L (ie, n = 1.)
-c izigzag  >0: write out quantities related to zigzag phase transition, namely reduced
+c izigzag  1: Write out zigzag amplitude (-1^i y_i) - quantity like staggered magnetization
+c          2: Also write out quantities related to zigzag phase transition, namely reduced
 c               pair density pden(r_i - r_j, theta_i - theta_j) if rings or 
 c               pden(y_i - y_j, x_i - x_j) if wires, as well as den(y_i - y_j, i-j)
-c             and write out zigzag amplitude (-1^i y_i) - quantity like staggered magnetization
 c          0: do not write out these quantities (default value)
 c idot     0: pure complex quantum dots
 c          1: dots with composite fermions
@@ -1568,6 +1568,12 @@ c ZigZag quantities:
       if(izigzag.lt.0) stop 'izigzag must be greater than or equal to 0'
       if(izigzag.gt.0) then
         if(ndim.ne.2) stop 'ZigZag measurements not implemented in 3D'
+        call alloc ('xold_sav', xold_sav, 3, nelec)
+        call alloc ('xnew_sav', xnew_sav, 3, nelec)
+        call alloc ('zzposold', zzposold, 2, nelec)
+        call alloc ('zzposnew', zzposnew, 2, nelec)
+        call alloc ('iold_indices', iold_indices, nelec)
+        call alloc ('inew_indices', inew_indices, nelec)
       endif
 
 c composite fermions:

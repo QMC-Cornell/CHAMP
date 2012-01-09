@@ -1,97 +1,164 @@
-      subroutine zigzag2d(p,q,xold,xnew)
+      subroutine zigzag2d(p,q,xold,xnew,ielec)
 
 c Written by Abhijit Mehta, December 2011
 c  Calculates quantities useful for studying zigzag quantum phase
 c  transition in rings and wires.  
 c  -reduced pair density
 c  -"staggered amplitude"
+c  xold and xnew are the old and new configurations
+c  p and q are the probabilities of accept and reject
+c  ielec labels the electron that was moved for 1-electron moves
+c  if ielec=0, we are doing an all-electron move.
 
       use dets_mod
       use const_mod
       use dim_mod
+      use contrl_per_mod, only: iperiodic
       use pairden_mod
       use zigzag_mod
       implicit real*8(a-h,o-z)
+      logical l_oldneoldsav, l_oldnenewsav
 
       dimension xold(3,nelec),xnew(3,nelec)
+      dimension temppos(2)
 
-      do 30 ier=1,nelec      ! reference electron
+      if(ielec.lt.0 .or. ielec.gt.nelec) then
+        write (6,*) 'Bad value of ielec in zigzag2d, ', ielec
+        stop "Bad value of ielec in zigzag2d"
+      endif
 
-        rold=0.d0
-        rnew=0.d0
-        do 10 idim=1,ndim
-          rold=rold+xold(idim,ier)**2
-          rnew=rnew+xnew(idim,ier)**2
-   10   enddo
-        rold=dsqrt(rold)
-        rnew=dsqrt(rnew)
-        thetao=datan2(xold(2,ier),xold(1,ier))
-        thetan=datan2(xnew(2,ier),xnew(1,ier))
-        iro=nint(delxi(2)*rold)
-        irn=nint(delxi(2)*rnew)
+c   zzpos will ultimately hold the sorted electron positions.  The first index labels longitudinal
+c      or transverse coordinate (i.e., zzpos(1,nelec) is sorted in ascending order)
 
-c electron relative to the reference electron
-        do 20 ie2=1,nelec
-          if(ie2.ne.ier) then
-c rotate old and new coordinates
-            call rotate(thetao,xold(1,ie2),xold(2,ie2),x1roto,x2roto)
-            call rotate(thetan,xnew(1,ie2),xnew(2,ie2),x1rotn,x2rotn)
-c put on the grid:
-c           if(icoosys.eq.1) then 
-              ix1roto=nint(delxi(1)*x1roto)
-              ix2roto=nint(delxi(2)*x2roto)
-              ix1rotn=nint(delxi(1)*x1rotn)
-              ix2rotn=nint(delxi(2)*x2rotn)
-c           else
-c same trick adapted to circular coordinates
-c             ix1roto=nint(delradi
-c             ix1rotn=nint(delradi*
-c             ix2roto=nint(delti*(datan2(
-c             ix2rotn=nint(delti*(datan2(
-c           endif
-
-
-c check if we are within grid limits, check spins, and collect data
-c  -old config
-            if(iro.le.NAX .and. abs(ix1roto).le.NAX .and. abs(ix2roto).le.NAX) then
-              if(ier.le.nup) then
-                xx0probut(iro,ix1roto,ix2roto)=xx0probut(iro,ix1roto,ix2roto)+q
-                if(ie2.le.nup) then
-                  xx0probuu(iro,ix1roto,ix2roto)=xx0probuu(iro,ix1roto,ix2roto)+q
-                else
-                  xx0probud(iro,ix1roto,ix2roto)=xx0probud(iro,ix1roto,ix2roto)+q
-                endif
-              else
-                xx0probdt(iro,ix1roto,ix2roto)=xx0probdt(iro,ix1roto,ix2roto)+q
-                if(ie2.le.nup) then
-                  xx0probdu(iro,ix1roto,ix2roto)=xx0probdu(iro,ix1roto,ix2roto)+q
-                else
-                  xx0probdd(iro,ix1roto,ix2roto)=xx0probdd(iro,ix1roto,ix2roto)+q
-                endif
-              endif
-            endif
-c -new config
-            if(irn.le.NAX .and. abs(ix1rotn).le.NAX .and. abs(ix2rotn).le.NAX) then
-              if(ier.le.nup) then
-                xx0probut(irn,ix1rotn,ix2rotn)=xx0probut(irn,ix1rotn,ix2rotn)+p
-                if(ie2.le.nup) then
-                  xx0probuu(irn,ix1rotn,ix2rotn)=xx0probuu(irn,ix1rotn,ix2rotn)+p
-                else
-                  xx0probud(irn,ix1rotn,ix2rotn)=xx0probud(irn,ix1rotn,ix2rotn)+p
-                endif
-              else
-                xx0probdt(irn,ix1rotn,ix2rotn)=xx0probdt(irn,ix1rotn,ix2rotn)+p
-                if(ie2.le.nup) then
-                  xx0probdu(irn,ix1rotn,ix2rotn)=xx0probdu(irn,ix1rotn,ix2rotn)+p
-                else
-                  xx0probdd(irn,ix1rotn,ix2rotn)=xx0probdd(irn,ix1rotn,ix2rotn)+p
-                endif
-              endif
-            endif
+c   First, save some sorting work, and see if one of the configurations xnew or xold was already sorted
+c    xold_sav and xnew_sav contain the last values of xold and xnew used by this subroutine
+c    iold_indices and inew_indices contain the mapping of how the electrons in xold, xnew were sorted
+     
+      l_oldneoldsav = .false.
+      l_oldnenewsav = .false.
+      outerloop: do i1 = 1,nelec
+        do i2 = 1,2
+          if(xold(i2,i1).ne.xold_sav(i2,i1)) then
+            l_oldneoldsav = .true.
           endif
-   20   enddo
+          if(xold(i2,i1).ne.xnew_sav(i2,i1)) then
+            l_oldnenewsav = .true.
+          endif
+          if(l_oldneoldsav.and.l_oldnenewsav) exit outerloop 
+        enddo
+      end do outerloop
+      ! if(xold.ne.xold_sav)
+      if(l_oldneoldsav) then ! xold has changed
+        ! if(xold.eq.xnew_sav)
+        if(.not.l_oldnenewsav) then ! The last MC move was accepted, so 'xold' is the old 'xnew'
+          zzposold = zzposnew
+          iold_indices = inew_indices
+        else   ! This branch should probably only happen at the beginning of a block
+          if(iperiodic.eq.0) then !rings -> polar coords
+            do iering=1,nelec
+              zzposold(1,iering) = datan2(xold(2,iering),xold(1,iering)) !theta -> x coordinate
+              zzposold(2,iering) = dsqrt(xold(1,iering)**2 + xold(2,iering)**2) ! r -> y coord
+            enddo
+          elseif(iperiodic.eq.1) then ! wires, keep coords
+            zzposold = xold(1:2,:)
+          endif
+          ! Now, sort zzposold if we can't reuse an already sorted array
+          ! iold_indices will contain information on the ordering of electrons in xold
+          do i=1,nelec
+            iold_indices(i) = i
+          enddo
+          lognb2 = int(dlog(dfloat(nelec))/dlog(2.D0)+1.D-14)
+c   First, we need to sort the electron positions with respect to theta (for rings) or x (for wires)
+c   I am using Shell sort for now; it might be more efficient to use something like quicksort or merge sort
+c    This implementation of Shell sort is from Cyrus
+          M = nelec
+          do NN=1,lognb2
+            M = M/2
+            K = nelec - M
+            do J = 1,K
+              do I =J,1,-M
+                L = I + M
+                if(zzposold(1,L).gt.zzposold(1,I)) exit
+                temppos = zzposold(:,I)
+                itemp = iold_indices(I)
+                zzposold(:,I) = zzposold(:,L)
+                iold_indices(I) = iold_indices(L)
+                zzposold(:,L) = temppos
+                iold_indices(L) = itemp
+              enddo
+            enddo
+          enddo
+        endif
+      endif
 
-   30 enddo
+c Now, construct zzposnew so that it has about the same order as zzposold
 
+      if(ielec.eq.0) then ! all-electron move; we need to find r and theta 
+        if(iperiodic.eq.0) then !rings -> polar coords
+          do iering=1,nelec
+            ioi = iold_indices(iering)
+            zzposnew(1,iering) = datan2(xnew(2,ioi),xnew(1,ioi)) 
+            zzposnew(2,iering) = dsqrt(xnew(1,ioi)**2 + xnew(2,ioi)**2)
+          enddo
+        elseif(iperiodic.eq.1) then ! wires, keep coords
+          zzposnew = xnew(1:2,iold_indices)
+        endif
+      else ! one-electron move
+        zzposnew = zzposold ! start by setting new to old, since most of them will be the same
+        if(iperiodic.eq.0) then
+          temppos(1) = datan2(xnew(2,ielec),xnew(1,ielec))
+          temppos(2) = dsqrt(xnew(1,ielec)**2 + xnew(2,ielec)**2)
+        elseif(iperiodic.eq.1) then
+          temppos = xnew(1:2,ielec)
+        endif
+        do i=1,nelec !insert the new position into the list at the right place
+          if(iold_indices(i).eq.ielec) then
+            zzposnew(:,i) = temppos
+          endif
+        enddo
+      endif
+
+c   Now, sort zzposnew.  Hopefully, this will go very quickly for 1-electron moves, since zzposnew 
+c      will almost be sorted to begin with.
+      
+      inew_indices = iold_indices ! initally, zznewpos has same sorting as zzoldpos
+      lognb2 = int(dlog(dfloat(nelec))/dlog(2.D0)+1.D-14)
+      M = nelec
+      do NN=1,lognb2
+        M = M/2
+        K = nelec - M
+        do J = 1,K
+          do I =J,1,-M
+            L = I + M
+            if(zzposnew(1,L).gt.zzposnew(1,I)) exit
+            temppos = zzposnew(:,I)
+            itemp = inew_indices(I)
+            zzposnew(:,I) = zzposnew(:,L)
+            inew_indices(I) = inew_indices(L)
+            zzposnew(:,L) = temppos
+            inew_indices(L) = itemp
+          enddo
+        enddo
+      enddo
+
+c  Now all of the electrons are sorted, and we can calculate observables
+      
+      zzsumold = 0.d0
+      zzsumnew = 0.d0
+      stagsign = 1.0d0/dble(nelec)
+      do i =1,nelec
+        zzsumold = zzsumold + stagsign*zzposold(2,i)
+        zzsumnew = zzsumnew + stagsign*zzposnew(2,i)
+        stagsign = -stagsign
+      enddo
+      zzsum = zzsum + q*dabs(zzsumold) + p*dabs(zzsumnew)
+      zz2sum = zz2sum + q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
+
+      xold_sav = xold
+      xnew_sav = xnew
+c      if(izigzag.gt.1) then ! do all of the pair density stuff
+c      
+c      endif
+    
       return
       end

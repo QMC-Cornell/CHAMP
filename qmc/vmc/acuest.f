@@ -34,6 +34,7 @@ c routine to accumulate estimators for energy etc.
       use estsig_mod
       use estcum_mod
       use estsum_mod
+      use zigzag_mod
       implicit real*8(a-h,o-z)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -130,18 +131,24 @@ c       wnow=wsum(ifr)/nstep
           tpbnow=tpbsum/wsum(ifr)
           tjfnow=tjfsum/wsum(ifr)
           r2now=r2sum/(wsum(ifr)*nelec)
+          zznow=zzsum/wsum(ifr)
+          zz2now=zz2sum/wsum(ifr)
 
           pecm2=pecm2+pesum*penow
           peicm2=peicm2+peisum*peinow
           tpbcm2=tpbcm2+tpbsum*tpbnow
           tjfcm2=tjfcm2+tjfsum*tjfnow
           r2cm2=r2cm2+r2sum*r2now/nelec
+          zzcm2=zzcm2+zzsum*zznow
+          zz2cm2=zz2cm2+zz2sum*zz2now
 
           pecum=pecum+pesum
           peicum=peicum+peisum
           tpbcum=tpbcum+tpbsum
           tjfcum=tjfcum+tjfsum
           r2cum=r2cum+r2sum/nelec
+          zzcum=zzcum+zzsum
+          zz2cum=zz2cum+zz2sum
 c         acccum=acccum+accsum
           d_node_log_cum = d_node_log_cum + d_node_log_sum
           if(index(mode,'mov1').eq.0) then
@@ -257,6 +264,8 @@ c zero out xsum variables for metrop
       tjfsum=0
       r2sum=0
       accsum=0
+      zzsum=0
+      zz2sum=0
       d_node_log_sum = 0
 
       call systemflush(6)
@@ -336,6 +345,8 @@ c     call wf_secondary
       tpbcum=0
       tjfcum=0
       r2cum=0
+      zzcum=0
+      zz2cum=0
       acccum=0
       ecum1=0
 c     ecum1s=0
@@ -348,6 +359,8 @@ c     ecum1s=0
       tpbcm2=0
       tjfcm2=0
       r2cm2=0
+      zzcm2=0
+      zz2cm2=0
       ecm21=0
 c     ecm21s=0
 
@@ -356,6 +369,8 @@ c     ecm21s=0
       tpbsum=0
       tjfsum=0
       r2sum=0
+      zzsum=0
+      zz2sum=0
       accsum=0
 
       call grad_hess_jas_init
