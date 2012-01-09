@@ -232,8 +232,8 @@ c force and force_err are really the energy difference and the error in the ener
      & write(6,'(''<r2> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
 
       if(izigzag.ge.1) then
-        write(6,'(''<ZigZag Amp> ='',t17,f21.7,'' +-'',f11.7,f9.5)') zzfin,zzerr,zzerr*rtpass
-        write(6,'(''<ZigZag Amp^2> ='',t17,f21.7,'' +-'',f11.7,f9.5)') zz2fin,zz2err,zz2err*rtpass
+        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin,zzerr,zzerr*rtpass
+        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zz2fin,zz2err,zz2err*rtpass
       endif
       if(print_radial_probability .and. index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin,sucsum/trysum

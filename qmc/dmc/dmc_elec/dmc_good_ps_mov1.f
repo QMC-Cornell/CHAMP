@@ -84,6 +84,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use opt_ovlp_fn_mod, only : wt_lambda
       use distance_mod, only: pot_ee
       use config_mod, only: pot_ee_new, pot_ee_old
+      use zigzag_mod, only: izigzag
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -590,7 +591,7 @@ c same trick adapted to circular coordinates
                 endif
                 if(abs(ixn(1)).le.NAX .and. abs(ixn(2)).le.NAX) then
                   den2d_t(ixn(1),ixn(2))=den2d_t(ixn(1),ixn(2))+wtgp
-              pot_ee2d_t(ixn(1),ixn(2))=pot_ee2d_t(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
+                  pot_ee2d_t(ixn(1),ixn(2))=pot_ee2d_t(ixn(1),ixn(2))+wtgp*pot_ee_new(i)
                   if(i.le.nup) then
                     den2d_u(ixn(1),ixn(2))=den2d_u(ixn(1),ixn(2))+wtgp
                     pot_ee2d_u(ixn(1),ixn(2))=pot_ee2d_u(ixn(1),ixn(2))+wtgp*pot_ee_new(i)

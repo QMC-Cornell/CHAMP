@@ -29,6 +29,7 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use pairden_mod
       use fourier_mod
       use pop_control_mod, only : ffn
+      use zigzag_mod
       implicit real*8(a-h,o-z)
 
 c routine to accumulate estimators for energy etc.
@@ -61,7 +62,9 @@ c     wfnow=wfsum/nstep
       ei2now=wgsum(1)/wgdsum
       rinow=risum/wgsum(1)
       r2now=r2sum/wgsum(1)
-
+      zznow=zzsum/wgsum(1)
+      zz2now=zz2sum/wgsum(1)
+  
       wcm2=wcm2+wsum**2
       wfcm2=wfcm2+wfsum**2
       ecm2=ecm2+esum*enow
@@ -70,6 +73,8 @@ c     wfnow=wfsum/nstep
       ei2cm2=ei2cm2+ei2now**2
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
+      zzcm2=zzcm2+zzsum*zznow
+      zz2cm2=zz2cm2+zz2sum*zz2now
 
       wcum=wcum+wsum
       wfcum=wfcum+wfsum
@@ -81,6 +86,8 @@ c     wfnow=wfsum/nstep
       ei2cum=ei2cum+ei2now
       r2cum=r2cum+r2sum
       ricum=ricum+risum
+      zzcum=zzcum+zzsum
+      zz2cum=zz2cum+zz2sum
 
       do 15 ifr=1,nforce
 
@@ -216,6 +223,8 @@ c zero out xsum variables
       ei2sum=zero
       r2sum=zero
       risum=zero
+      zzsum=zero
+      zz2sum=zero
 
       do 20 ifr=1,nforce
         egsum(ifr)=zero
@@ -364,6 +373,8 @@ c zero out estimators
       ei3cum=zero
       r2cum=zero
       ricum=zero
+      zzcum=zero
+      zz2cum=zero
 
       wcm21=zero
       wfcm21=zero
@@ -380,6 +391,8 @@ c zero out estimators
       ei3cm2=zero
       r2cm2=zero
       ricm2=zero
+      zzcm2=zero
+      zz2cm2=zero
 
       wfsum1=zero
       wsum=zero
@@ -394,6 +407,8 @@ c zero out estimators
       ei3sum=zero
       r2sum=zero
       risum=zero
+      zzsum=zero
+      zz2sum=zero
 
       call alloc ('fgcum', fgcum, nforce)
       call alloc ('fgcm2', fgcm2, nforce)

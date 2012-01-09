@@ -151,9 +151,27 @@ c  Now all of the electrons are sorted, and we can calculate observables
         zzsumnew = zzsumnew + stagsign*zzposnew(2,i)
         stagsign = -stagsign
       enddo
-      zzsum = zzsum + q*dabs(zzsumold) + p*dabs(zzsumnew)
-      zz2sum = zz2sum + q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
+c  For debugging:
+c      write(6,*) 'in zigzag2d:'
+c      write(6,*) (zzposold(1,i),i=1,nelec)
+c      write(6,*) (zzposold(2,i),i=1,nelec)
+c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
+      zzterm = q*dabs(zzsumold) + p*dabs(zzsumnew)
+      zz2term = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
 
+c     This is a kludge to make sure that the averages come out correctly 
+c        for single-electron moves.  Since this routine gets called
+c        once per electron in the mov1 update, we need to divide by
+c        nelec. This is not needed for all-electron updates, though
+c        since we just call this routine once after the update.
+      if(ielec.gt.0) then
+        zzterm = zzterm/dble(nelec)
+        zz2term = zz2term/dble(nelec)
+      endif
+
+      zzsum = zzsum + zzterm
+      zz2sum = zz2sum + zz2term 
+      
       xold_sav = xold
       xnew_sav = xnew
 c      if(izigzag.gt.1) then ! do all of the pair density stuff

@@ -1485,6 +1485,7 @@ c   default values:
       shrp_perturb=0.d0
       ifourier=0
       izigzag=0
+      if(nloc.eq.-4 .or. nloc.eq.-1 .or. nloc.eq.-5) izigzag=1
       fmax1=10.d0
       fmax2=1.d0
       nv=0

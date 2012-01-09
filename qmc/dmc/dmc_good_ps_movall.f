@@ -68,6 +68,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use distance_mod, only: pot_ee
       use config_mod, only: pot_ee_new, pot_ee_old
       use contrl_per_mod
+      use zigzag_mod, only: izigzag
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -433,11 +434,12 @@ c Collect density only for primary walk
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
 c calculate 2d density related functions:
+              if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+                call reduce_sim_cell(xoldw(:,i,iw,ifr))
+                call reduce_sim_cell(xnew(:,i,ifr))
+              endif
+              if(izigzag.gt.0) call zigzag2d(wtgp,wtgq,xoldw(:,:,iw,ifr),xnew(:,:,ifr), i)
               if(ifixe.eq.-1 .or. ifixe.eq.-3) then
-                if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
-                  call reduce_sim_cell(xoldw(:,i,iw,ifr))
-                  call reduce_sim_cell(xnew(:,i,ifr))
-                endif
 
                 if(icoosys.eq.1) then 
                   do 247 idim=1,ndim
