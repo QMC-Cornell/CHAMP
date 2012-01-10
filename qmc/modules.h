@@ -82,3 +82,4 @@
           use slatn2_mod
           use velratio_mod
           use pop_control_mod
+          use zigzag_mod

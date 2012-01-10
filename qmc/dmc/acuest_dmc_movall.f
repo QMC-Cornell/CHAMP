@@ -431,6 +431,7 @@ c zero out estimators
       call alloc ('wgsum', wgsum, nforce)
       call alloc ('wsum1', wsum1, nforce)
       call alloc ('wgsum1', wgsum1, nforce)
+      call alloc ('esum1', esum1, nforce)
       call alloc ('egsum', egsum, nforce)
       call alloc ('egsum1', egsum1, nforce)
       call alloc ('pesum', pesum, nforce)
