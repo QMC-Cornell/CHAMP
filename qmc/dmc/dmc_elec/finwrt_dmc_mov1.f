@@ -30,6 +30,7 @@ c routine to print out final results
       use pairden_mod
       use fourier_mod
       use opt_ovlp_fn_mod
+      use zigzag_mod
       implicit real*8(a-h,o-z)
 
 c     common /force_dmc/ itausec,nwprod
@@ -117,6 +118,8 @@ c Write out radial charge density for atoms
 
       r2ave=r2cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
+      zzave=zzcum/wgcum(1)
+      zz2ave=zz2cum/wgcum(1)
       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
       e3ave=etrial-dlog(ei3ave)/(taucum(1)/wgcum(1))
@@ -135,6 +138,8 @@ c Write out radial charge density for atoms
         ei3err=0
         r2err=0
         rierr=0
+        zzerr=0
+        zz2err=0
        else
         werr=errw(wcum,wcm2)
         wferr=errw(wfcum,wfcm2)
@@ -149,6 +154,8 @@ c Write out radial charge density for atoms
         ei3err=erric1(ei3cum,ei3cm2)
         r2err=errg(r2cum,r2cm2,1)/nelec
         rierr=errg(ricum,ricm2,1)/nelec
+        zzerr=errg(zzcum,zzcm2,1)
+        zz2err=errg(zz2cum,zz2cm2,1)
       endif
 
       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
@@ -274,6 +281,11 @@ c save energy difference and error in energy difference for optimization
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_eff1
         write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
+      endif
+
+      if(izigzag.ge.1) then
+        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave,zzerr,zzerr*rtevalg_eff1
+        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zz2ave,zz2err,zz2err*rtevalg_eff1
       endif
 
       if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')')

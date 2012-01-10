@@ -38,6 +38,7 @@ c routine to accumulate estimators for energy etc.
       use pairden_mod
       use fourier_mod
       use pop_control_mod, only : ffn
+      use zigzag_mod
       implicit real*8(a-h,o-z)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -67,6 +68,8 @@ c     wfnow=wfsum/nstep
       ei2now=wgsum(1)/wgdsum
       rinow=risum/wgsum(1)
       r2now=r2sum/wgsum(1)
+      zznow=zzsum/wgsum(1)
+      zz2now=zz2sum/wgsum(1)
 
       wcm2=wcm2+wsum**2
       wfcm2=wfcm2+wfsum**2
@@ -76,6 +79,8 @@ c     wfnow=wfsum/nstep
       ei2cm2=ei2cm2+ei2now**2
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
+      zzcm2=zzcm2+zzsum*zznow
+      zz2cm2=zz2cm2+zz2sum*zz2now
 
       wcum=wcum+wsum
       wfcum=wfcum+wfsum
@@ -87,6 +92,8 @@ c     wfnow=wfsum/nstep
       ei2cum=ei2cum+ei2now
       r2cum=r2cum+r2sum
       ricum=ricum+risum
+      zzcum=zzcum+zzsum
+      zz2cum=zz2cum+zz2sum
 
 !JT      ovlp_ovlp_fn_cum = ovlp_ovlp_fn_cum + ovlp_ovlp_fn_sum
 
@@ -253,6 +260,8 @@ c zero out xsum variables for metrop
       ei2sum=zero
       r2sum=zero
       risum=zero
+      zzsum=zero
+      zz2sum=zero
 
 !JT      ovlp_ovlp_fn_sum=zero
 
@@ -426,6 +435,8 @@ c zero out estimators
       ei3cum=zero
       r2cum=zero
       ricum=zero
+      zzcum=zero
+      zz2cum=zero
 
       wcm21=zero
       wfcm21=zero
@@ -442,6 +453,8 @@ c zero out estimators
       ei3cm2=zero
       r2cm2=zero
       ricm2=zero
+      zzcm2=zero
+      zz2cm2=zero
 
       wfsum1=zero
       wsum=zero

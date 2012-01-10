@@ -32,6 +32,7 @@ c routine to print out final results
       use pairden_mod
       use fourier_mod
       use opt_ovlp_fn_mod
+      use zigzag_mod
       implicit real*8(a-h,o-z)
 
 c     common /force_dmc/ itausec,nwprod
@@ -314,8 +315,10 @@ c     ei1ave=wfcum/wdcum
 c     ei2ave=wgcum(1)/wgdcum
 c     ei3ave=ei3cum/passes
 
-c     r2ave=r2cum/(wgcum(1)*nelec)
-c     riave=ricum/(wgcum(1)*nelec)
+      r2ave=r2cum/(wgcum(1)*nelec)
+      riave=ricum/(wgcum(1)*nelec)
+      zzave=zzcum/wgcum(1)
+      zz2ave=zz2cum/wgcum(1)
 c     if(itau_eff.ge.1) then
 c       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
 c       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
@@ -343,8 +346,10 @@ c     endif
 c     ei1err=erri(ei1cum,ei1cm2)
 c     ei2err=erri(ei2cum,ei2cm2)
 c     ei3err=erri1(ei3cum,ei3cm2)
-c     r2err=errg(r2cum,r2cm2,1)/nelec
-c     rierr=errg(ricum,ricm2,1)/nelec
+      r2err=errg(r2cum,r2cm2,1)/nelec
+      rierr=errg(ricum,ricm2,1)/nelec
+      zzerr=errg(zzcum,zzcm2,1)
+      zz2err=errg(zz2cum,zz2cm2,1)
 c     if(itau_eff.ge.1) then
 c       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
 c       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*taucum(1)/wgcum(1))
@@ -469,11 +474,15 @@ c save energy difference and error in energy difference for optimization
         write(6,'(''total energy diff'',i2,t22,f14.7,'' +-'',f11.7,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_proc_eff1
   50  continue
 
-c These are not being collected at the moment.
-c     if(iperiodic.eq.0 .and. ncent.eq.1) then
-c       write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
-c       write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
-c     endif
+      if(iperiodic.eq.0 .and. ncent.eq.1) then
+        write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
+        write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
+      endif
+
+      if(izigzag.ge.1) then
+        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave,zzerr,zzerr*rtevalg_eff1
+        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zz2ave,zz2err,zz2err*rtevalg_eff1
+      endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))
 

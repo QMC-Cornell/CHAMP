@@ -544,18 +544,20 @@ c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
 c             r2sum=r2sum+wtg*(unacp(i)*r2o+(one-unacp(i)*r2n)
 c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
 
-              if(ifixe.le.-2 .or. ifourier.ne.0) then
-                do 263 j=1,nelec
-                  do 263 idim=1,ndim
+              if(ifixe.le.-2 .or. ifourier.ne.0 .or. izigzag.gt.0) then
+                do j=1,nelec
+                  do idim=1,ndim
 c note that xoci and xnci represent the old/new positions of all electrons-j when an
 c electron-i is being moved
                     xoc(idim,j)=xoci(idim,j,i)
                     xnc(idim,j)=xnci(idim,j,i)
-  263           continue
-                if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
-                  call reduce_sim_cell(xoc(:,j))
-                  call reduce_sim_cell(xnc(:,j))
-                endif
+                  enddo
+                  if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+                    call reduce_sim_cell(xoc(:,j))
+                    call reduce_sim_cell(xnc(:,j))
+                  endif
+                enddo
+                if(izigzag.gt.0) call zigzag2d(Wtgp,wtgq,xoc,xnc,i)
                 if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
