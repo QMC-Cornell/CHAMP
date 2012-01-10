@@ -287,7 +287,7 @@ c Calculate density and moments of r for primary walk
           itryn(i)=min(int(delri*rminn)+1,NRAD)
 
 c for pair-density calculation we will need full old/new positions:
-          if(ifixe.lt.0 .or. ifourier.ne.0) then
+          if(ifixe.lt.0 .or. ifourier.ne.0 .or. izigzag.gt.0) then
             do 167 k=1,ndim
               do 167 j=1,nelec
                 xoci(k,j,i)=xoldw(k,j,iw,1)
@@ -557,6 +557,10 @@ c electron-i is being moved
                     call reduce_sim_cell(xnc(:,j))
                   endif
                 enddo
+c               write (6,*) 'in dmc_good_ps_mov1:'
+c               write (6,*) wtgp, wtgq, i
+c               write (6,*) (xoc(1,iii),iii=1,nelec)
+c               write (6,*) (xnc(1,iii),iii=1,nelec)
                 if(izigzag.gt.0) call zigzag2d(Wtgp,wtgq,xoc,xnc,i)
                 if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
