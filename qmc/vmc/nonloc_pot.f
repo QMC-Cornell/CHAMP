@@ -50,7 +50,7 @@ c local component
 c non-local component (division by the Jastrow already in nonloc)
       call nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp)
       pe=pe+vpsp/psid
-c     write(6,'(''pe='',9d12.5)') pe,vpsp,psid,detu(1),detd(1)
+      if(ipr.ge.1) write(6,'(''nonloc_pot: vpsp, psid, pe after nonlocal psp'',9f12.5)') vpsp, psid, pe
       if(ipr.ge.4) write(6,'(''pe,vpsp/psid,vpsp,psid,detu(1),detd(1),r_en(1,1)='',2f9.4,9d12.4)')
      &pe,vpsp/psid,vpsp,psid,detu(1),detd(1),r_en(1,1)
 

@@ -127,6 +127,8 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
+                  if(ipr.ge.1) write(6,'(''l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)'',i3,9f20.15)')
+     &            l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)
 
 ! JT
 !                 For singly-excited wave functions
@@ -266,13 +268,13 @@ c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
            ratio(idet)=0
            do j=1,nup
               ratio(idet)=ratio(idet)+slmui(j+ikel,idet)*orbe(iworbdup(j,idet))
-           end do
-        end do
+           enddo
+        enddo
 
         if(.not. l_opt_exp) then
            do idet=1,ndetup
               detn(idet)=detu(idet)*ratio(idet)
-           end do
+           enddo
         else
            do idet=1,ndetup
               detn(idet)=detu(idet)*ratio(idet)
@@ -282,18 +284,18 @@ c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
                     sum=0
                     do j=1,nup
                        sum=sum+slmui(j+ik,idet)*orbe(iworbdup(j,idet))
-                    end do
+                    enddo
                     sum=sum/ratio(idet)
                     do j=1,nup
                        slmin(j+ik,idet)=slmui(j+ik,idet)-slmui(j+ikel,idet)*sum
-                    end do
+                    enddo
                  endif
-              end do
+              enddo
               do j=1,nup
                  slmin(j+ikel,idet)=slmui(j+ikel,idet)/ratio(idet)
-              end do
-           end do
-        end if
+              enddo
+           enddo
+        endif
 
       else
 
@@ -303,12 +305,12 @@ c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
            ratio(idet)=0
            do j=1,ndn
               ratio(idet)=ratio(idet)+slmdi(j+ikel,idet)*orbe(iworbddn(j,idet))
-           end do
-        end do
+           enddo
+        enddo
         if(.not. l_opt_exp) then
            do idet=1,ndetdn
               detn(idet)=detd(idet)*ratio(idet)
-           end do
+           enddo
         else
            do idet=1,ndetdn
               detn(idet)=detd(idet)*ratio(idet)
@@ -318,20 +320,20 @@ c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
                     sum=0
                     do j=1,ndn
                        sum=sum+slmdi(j+ik,idet)*orbe(iworbddn(j,idet))
-                    end do
+                    enddo
                     sum=sum/ratio(idet)
                     do j=1,ndn
                        slmin(j+ik,idet)=slmdi(j+ik,idet)-slmdi(j+ikel,idet)*sum
-                    end do
+                    enddo
                  endif
-              end do
+              enddo
               do j=1,ndn
                  slmin(j+ikel,idet)=slmdi(j+ikel,idet)/ratio(idet)
-              end do
-           end do
-        end if
+              enddo
+           enddo
+        endif
 
-      end if
+      endif
 
       call object_modified_by_index (detn_index) !JT
       call object_modified_by_index (slmin_index) !fp

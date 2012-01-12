@@ -1,4 +1,5 @@
       subroutine hpsiedmc(iel,iw,coord,psid,psij,force)
+c Set coordinates of all electrons other than the one being moved to the old coordinates and then call hpsie
 c Written by Claudia Filippi
 
       use const_mod
@@ -8,7 +9,6 @@ c Written by Claudia Filippi
       use forcest_dmc_mod
       use config_dmc_mod
       implicit real*8(a-h,o-z)
-
 
       dimension coord(3),force(3,*),x(3,nelec)
 

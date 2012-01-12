@@ -582,6 +582,9 @@ c     if(nparmg.eq.1) parm(nparml+nparme+nparmd+nparms+1)=a21
 c  If nucleii have been moved, move electrons
       if(istrch.ge.1) call strech_fit !JT
 
+c  Set the quadrature points for nonlocal pseudopotential evaluation
+      if(nloc.gt.0) call rotqua
+
       if(iopt.le.1) then
 
 c       if(ncalls.gt.0) call zxssq2(func,ndata2,nparm,nsig,zero,zero,

@@ -292,6 +292,8 @@ c Laplacian(JD)/JD = Laplacian(ln(JD)) + V^2
           do 45 k=1,ndim
    45       energy=energy-hb*velocity(k,i)**2
         if(ipr.ge.3) write(6,'(''ifr,energy='',i2,9f16.10)') ifr,energy,psid,psij,pe
+        if(ipr.ge.1) write(6,'(''ifr,psid,exp(psij),d2psi,energy-pe,pe,energy='',i2,6f16.10,/)')
+     &  ifr,psid,exp(psij),d2psi,energy-pe,pe,energy
 
         if(igradhess.ne.0 .or. l_opt) then
 

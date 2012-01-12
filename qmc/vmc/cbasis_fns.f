@@ -127,11 +127,11 @@ c ****************** The modified part ends here ***************************
             irb=iwrwf(ib2,ict)
             m=m_bas(ib)
             ylm=cph(m)
-c	    if(abs(m).gt.ML_BAS) then
-c	      write(6,*) 'm=',m
-c	      stop
-c	    endif
-	    cphin(ib,ie)=ylm*wfv(1,irb)
+c           if(abs(m).gt.ML_BAS) then
+c             write(6,*) 'm=',m
+c             stop
+c           endif
+            cphin(ib,ie)=ylm*wfv(1,irb)
             cdphin(1,ib,ie,1)=ylm*xhat*wfv(2,irb)+cdph(1,m)*wfv(1,irb)
             cdphin(2,ib,ie,1)=ylm*yhat*wfv(2,irb)+cdph(2,m)*wfv(1,irb)
             cd2phin(ib,ie)=ylm*(wfv(3,irb)+ri*wfv(2,irb)-m*m*ri2*wfv(1,irb))
@@ -208,9 +208,9 @@ c Decide whether we are computing all or one electron
 
         do 90 ib=1,nbasis
 c calculate all basis dependent functions to avoid repeating:
-	  wez=we*zex(ib,iwf)
-	  rho=r2*wez
-	  fexp=dexp(-0.5d0*rho)
+          wez=we*zex(ib,iwf)
+          rho=r2*wez
+          fexp=dexp(-0.5d0*rho)
           n=n_fd(ib)
           m=m_fd(ib)
           mabs=abs(m)
@@ -568,56 +568,56 @@ c locals:
       elseif(in.eq.6) then
 
         if(ie.eq.je) then
-	  ddf=6*dk(1)**5*dk(2)+60*dk(1)**3*dk(2)**2+15*dk(1)**4*dk(3)+45*dk(2)**2*dk(3)
-	  ddf=ddf+60*dk(1)**2*dk(2)*dk(3)+20*dk(1)**3*dk(4)+20*dk(3)*dk(4)
-	  ddf=ddf+15*(dk(3)*dk(4)+dk(2)*dk(5))
-	  ddf=ddf+90*(dk(1)*dk(2)**3+dk(1)**2*dk(2)*dk(3))
-	  ddf=ddf+15*(2*dk(1)*dk(2)*dk(4)+dk(1)**2*dk(5))
-	  ddf=ddf+60*(dk(2)**2*dk(3)+dk(1)*dk(3)**2+dk(1)*dk(2)*dk(4))
-	  ddf=ddf+6*(dk(2)*dk(5)+dk(1)*dk(6))+dk(7)
+          ddf=6*dk(1)**5*dk(2)+60*dk(1)**3*dk(2)**2+15*dk(1)**4*dk(3)+45*dk(2)**2*dk(3)
+          ddf=ddf+60*dk(1)**2*dk(2)*dk(3)+20*dk(1)**3*dk(4)+20*dk(3)*dk(4)
+          ddf=ddf+15*(dk(3)*dk(4)+dk(2)*dk(5))
+          ddf=ddf+90*(dk(1)*dk(2)**3+dk(1)**2*dk(2)*dk(3))
+          ddf=ddf+15*(2*dk(1)*dk(2)*dk(4)+dk(1)**2*dk(5))
+          ddf=ddf+60*(dk(2)**2*dk(3)+dk(1)*dk(3)**2+dk(1)*dk(2)*dk(4))
+          ddf=ddf+6*(dk(2)*dk(5)+dk(1)*dk(6))+dk(7)
         else
-	  ddf=6*dk(1)**5*ddk(1,ie)
-	  ddf=ddf+15*(4*dk(1)**3*ddk(1,ie)*dk(2)+dk(1)**4*ddk(2,ie)+3*dk(2)**2*ddk(2,ie))
-	  ddf=ddf+20*(3*dk(1)**2*ddk(1,ie)*dk(3)+dk(1)**3*ddk(3,ie)+dk(3)*ddk(3,ie))
-	  ddf=ddf+15*(ddk(2,ie)*dk(4)+dk(2)*ddk(4,ie))
-	  ddf=ddf+90*(dk(1)*ddk(1,ie)*dk(2)**2+dk(1)**2*dk(2)*ddk(2,ie))
-	  ddf=ddf+15*(2*dk(1)*ddk(1,ie)*dk(4)+dk(1)**2*ddk(4,ie))
-	  ddf=ddf+60*(ddk(1,ie)*dk(2)*dk(3)+dk(1)*ddk(2,ie)*dk(3)+dk(1)*dk(2)*ddk(3,ie))
-	  ddf=ddf+6*(ddk(1,ie)*dk(5)+dk(1)*ddk(5,ie))+ddk(6,ie)
+          ddf=6*dk(1)**5*ddk(1,ie)
+          ddf=ddf+15*(4*dk(1)**3*ddk(1,ie)*dk(2)+dk(1)**4*ddk(2,ie)+3*dk(2)**2*ddk(2,ie))
+          ddf=ddf+20*(3*dk(1)**2*ddk(1,ie)*dk(3)+dk(1)**3*ddk(3,ie)+dk(3)*ddk(3,ie))
+          ddf=ddf+15*(ddk(2,ie)*dk(4)+dk(2)*ddk(4,ie))
+          ddf=ddf+90*(dk(1)*ddk(1,ie)*dk(2)**2+dk(1)**2*dk(2)*ddk(2,ie))
+          ddf=ddf+15*(2*dk(1)*ddk(1,ie)*dk(4)+dk(1)**2*ddk(4,ie))
+          ddf=ddf+60*(ddk(1,ie)*dk(2)*dk(3)+dk(1)*ddk(2,ie)*dk(3)+dk(1)*dk(2)*ddk(3,ie))
+          ddf=ddf+6*(ddk(1,ie)*dk(5)+dk(1)*ddk(5,ie))+ddk(6,ie)
         endif
 
       elseif(in.eq.7) then
 
         if(ie.eq.je) then
-	  ddf=7*dk(1)**6*dk(2)
-	  ddf=ddf+21*(5*dk(1)**4*dk(2)*dk(2)+dk(1)**5*dk(3))
-	  ddf=ddf+35*(4*dk(1)**3*dk(2)*dk(3)+dk(1)**4*dk(4))
-	  ddf=ddf+105*(2*dk(2)*dk(3)*dk(3)+dk(2)**2*dk(4))
-	  ddf=ddf+35*(dk(4)*dk(4)+dk(3)*dk(5))
-	  ddf=ddf+105*(3*dk(1)**2*dk(2)*dk(2)**2+2*dk(1)**3*dk(2)*dk(3))
-	  ddf=ddf+35*(3*dk(1)**2*dk(2)*dk(4)+dk(1)**3*dk(5))
-	  ddf=ddf+21*(dk(3)*dk(5)+dk(2)*dk(6))
-	  ddf=ddf+210*(2*dk(1)*dk(2)*dk(2)*dk(3)+dk(1)**2*dk(3)*dk(3)+dk(1)**2*dk(2)*dk(4))
-	  ddf=ddf+21*(2*dk(1)*dk(2)*dk(5)+dk(1)**2*dk(6))
-	  ddf=ddf+105*(dk(2)*dk(2)**3+3*dk(1)*dk(2)**2*dk(3))
-	  ddf=ddf+70*(dk(2)*dk(3)**2+2*dk(1)*dk(3)*dk(4))
-	  ddf=ddf+105*(dk(2)*dk(2)*dk(4)+dk(1)*dk(3)*dk(4)+dk(1)*dk(2)*dk(5))
-	  ddf=ddf+7*(dk(2)*dk(6)+dk(1)*dk(7))+dk(8)
+          ddf=7*dk(1)**6*dk(2)
+          ddf=ddf+21*(5*dk(1)**4*dk(2)*dk(2)+dk(1)**5*dk(3))
+          ddf=ddf+35*(4*dk(1)**3*dk(2)*dk(3)+dk(1)**4*dk(4))
+          ddf=ddf+105*(2*dk(2)*dk(3)*dk(3)+dk(2)**2*dk(4))
+          ddf=ddf+35*(dk(4)*dk(4)+dk(3)*dk(5))
+          ddf=ddf+105*(3*dk(1)**2*dk(2)*dk(2)**2+2*dk(1)**3*dk(2)*dk(3))
+          ddf=ddf+35*(3*dk(1)**2*dk(2)*dk(4)+dk(1)**3*dk(5))
+          ddf=ddf+21*(dk(3)*dk(5)+dk(2)*dk(6))
+          ddf=ddf+210*(2*dk(1)*dk(2)*dk(2)*dk(3)+dk(1)**2*dk(3)*dk(3)+dk(1)**2*dk(2)*dk(4))
+          ddf=ddf+21*(2*dk(1)*dk(2)*dk(5)+dk(1)**2*dk(6))
+          ddf=ddf+105*(dk(2)*dk(2)**3+3*dk(1)*dk(2)**2*dk(3))
+          ddf=ddf+70*(dk(2)*dk(3)**2+2*dk(1)*dk(3)*dk(4))
+          ddf=ddf+105*(dk(2)*dk(2)*dk(4)+dk(1)*dk(3)*dk(4)+dk(1)*dk(2)*dk(5))
+          ddf=ddf+7*(dk(2)*dk(6)+dk(1)*dk(7))+dk(8)
         else
-	  ddf=7*dk(1)**6*ddk(1,ie)
-	  ddf=ddf+21*(5*dk(1)**4*ddk(1,ie)*dk(2)+dk(1)**5*ddk(2,ie))
-	  ddf=ddf+35*(4*dk(1)**3*ddk(1,ie)*dk(3)+dk(1)**4*ddk(3,ie))
-	  ddf=ddf+105*(2*dk(2)*ddk(2,ie)*dk(3)+dk(2)**2*ddk(3,ie))
-	  ddf=ddf+35*(ddk(3,ie)*dk(4)+dk(3)*ddk(4,ie))
-	  ddf=ddf+105*(3*dk(1)**2*ddk(1,ie)*dk(2)**2+2*dk(1)**3*dk(2)*ddk(2,ie))
-	  ddf=ddf+35*(3*dk(1)**2*ddk(1,ie)*dk(4)+dk(1)**3*ddk(4,ie))
-	  ddf=ddf+21*(ddk(2,ie)*dk(5)+dk(2)*ddk(5,ie))
-	  ddf=ddf+210*(2*dk(1)*ddk(1,ie)*dk(2)*dk(3)+dk(1)**2*ddk(2,ie)*dk(3)+dk(1)**2*dk(2)*ddk(3,ie))
-	  ddf=ddf+21*(2*dk(1)*ddk(1,ie)*dk(5)+dk(1)**2*ddk(5,ie))
-	  ddf=ddf+105*(ddk(1,ie)*dk(2)**3+3*dk(1)*dk(2)**2*ddk(2,ie))
-	  ddf=ddf+70*(ddk(1,ie)*dk(3)**2+2*dk(1)*dk(3)*ddk(3,ie))
-	  ddf=ddf+105*(ddk(1,ie)*dk(2)*dk(4)+dk(1)*ddk(2,ie)*dk(4)+dk(1)*dk(2)*ddk(4,ie))
-	  ddf=ddf+7*(ddk(1,ie)*dk(6)+dk(1)*ddk(6,ie))+ddk(7,ie)
+          ddf=7*dk(1)**6*ddk(1,ie)
+          ddf=ddf+21*(5*dk(1)**4*ddk(1,ie)*dk(2)+dk(1)**5*ddk(2,ie))
+          ddf=ddf+35*(4*dk(1)**3*ddk(1,ie)*dk(3)+dk(1)**4*ddk(3,ie))
+          ddf=ddf+105*(2*dk(2)*ddk(2,ie)*dk(3)+dk(2)**2*ddk(3,ie))
+          ddf=ddf+35*(ddk(3,ie)*dk(4)+dk(3)*ddk(4,ie))
+          ddf=ddf+105*(3*dk(1)**2*ddk(1,ie)*dk(2)**2+2*dk(1)**3*dk(2)*ddk(2,ie))
+          ddf=ddf+35*(3*dk(1)**2*ddk(1,ie)*dk(4)+dk(1)**3*ddk(4,ie))
+          ddf=ddf+21*(ddk(2,ie)*dk(5)+dk(2)*ddk(5,ie))
+          ddf=ddf+210*(2*dk(1)*ddk(1,ie)*dk(2)*dk(3)+dk(1)**2*ddk(2,ie)*dk(3)+dk(1)**2*dk(2)*ddk(3,ie))
+          ddf=ddf+21*(2*dk(1)*ddk(1,ie)*dk(5)+dk(1)**2*ddk(5,ie))
+          ddf=ddf+105*(ddk(1,ie)*dk(2)**3+3*dk(1)*dk(2)**2*ddk(2,ie))
+          ddf=ddf+70*(ddk(1,ie)*dk(3)**2+2*dk(1)*dk(3)*ddk(3,ie))
+          ddf=ddf+105*(ddk(1,ie)*dk(2)*dk(4)+dk(1)*ddk(2,ie)*dk(4)+dk(1)*dk(2)*ddk(4,ie))
+          ddf=ddf+7*(ddk(1,ie)*dk(6)+dk(1)*ddk(6,ie))+ddk(7,ie)
         endif
 
       elseif(in.eq.8) then

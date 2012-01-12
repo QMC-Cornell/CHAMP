@@ -233,16 +233,16 @@ module grid_mod
   write (6,'(a,es15.8)')  ' grid_x_step = ', grid_x_step
   write (6,'(a,es15.8)')  ' grid_x_min  = ', grid_x_min
   write (6,'(a,es15.8)')  ' grid_x_max  = ', grid_x_max
-  write (6,'(a,es15.8)')  ' grid_x_nb   = ', grid_x_nb
+  write (6,'(a,i5)')  ' grid_x_nb   = ', grid_x_nb
   write (6,'(a,es15.8)')  ' grid_y_step = ', grid_y_step
   write (6,'(a,es15.8)')  ' grid_y_min  = ', grid_y_min
   write (6,'(a,es15.8)')  ' grid_y_max  = ', grid_y_max
-  write (6,'(a,es15.8)')  ' grid_y_nb   = ', grid_y_nb
+  write (6,'(a,i5)')  ' grid_y_nb   = ', grid_y_nb
   write (6,'(a,es15.8)')  ' grid_z_step = ', grid_z_step
   write (6,'(a,es15.8)')  ' grid_z_min  = ', grid_z_min
   write (6,'(a,es15.8)')  ' grid_z_max  = ', grid_z_max
-  write (6,'(a,es15.8)')  ' grid_z_nb   = ', grid_z_nb
-  write (6,'(a,es15.8)')  ' grid_xyz_nb = ', grid_xyz_nb
+  write (6,'(a,i5)')  ' grid_z_nb   = ', grid_z_nb
+  write (6,'(a,i5)')  ' grid_xyz_nb = ', grid_xyz_nb
 
   call object_modified ('grid_x_step')
   call object_modified ('grid_x_max')

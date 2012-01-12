@@ -1454,26 +1454,28 @@ module density_mod
   write(unit,'(a,i20)')     'number of walkers         =',nwalk
   write(unit,'(a,i20)')     'number of steps per block =',nstep_total
   write(unit,'(a,i20)')     'number of blocks          =',block_iterations_nb
-  write(unit,'(a,3e25.15)') 'grid_x_max                =',grid_x_max
-  write(unit,'(a,3e25.15)') 'grid_x_min                =',grid_x_min
-  write(unit,'(a,3e25.15)') 'grid_x_step               =',grid_x_step
-  write(unit,'(a,3e25.15)') 'grid_y_max                =',grid_y_max
-  write(unit,'(a,3e25.15)') 'grid_y_min                =',grid_y_min
-  write(unit,'(a,3e25.15)') 'grid_x_step               =',grid_y_step
-  write(unit,'(a,3e25.15)') 'grid_z_max                =',grid_z_max
-  write(unit,'(a,3e25.15)') 'grid_z_min                =',grid_z_min
-  write(unit,'(a,3e25.15)') 'grid_z_step               =',grid_z_step
-  write(unit,'(a,i25)')     'grid_xyz_nb               =',grid_xyz_nb
+  write(unit,'(a,3es12.4)') 'grid_x_max                =',grid_x_max
+  write(unit,'(a,3es12.4)') 'grid_x_min                =',grid_x_min
+  write(unit,'(a,3es12.4)') 'grid_x_step               =',grid_x_step
+  write(unit,'(a,3es12.4)') 'grid_y_max                =',grid_y_max
+  write(unit,'(a,3es12.4)') 'grid_y_min                =',grid_y_min
+  write(unit,'(a,3es12.4)') 'grid_x_step               =',grid_y_step
+  write(unit,'(a,3es12.4)') 'grid_z_max                =',grid_z_max
+  write(unit,'(a,3es12.4)') 'grid_z_min                =',grid_z_min
+  write(unit,'(a,3es12.4)') 'grid_z_step               =',grid_z_step
+  write(unit,'(a,i12)')     'grid_xyz_nb               =',grid_xyz_nb
 
   write(unit,*) ''
-  write(unit,'(a)') '             x                        y                        z                       n(r)                   error n(r)'
+! write(unit,'(a)') '             x                        y                        z                       n(r)                   error n(r)'
+  write(unit,'(a)') '  x   y   z          n(r)      error n(r)'
 
   do grid_x_i = 1, grid_x_nb
    do grid_y_i = 1, grid_y_nb
     do grid_z_i = 1, grid_z_nb
 
        grid_i = grid_xyz_index (grid_x_i, grid_y_i, grid_z_i)
-       write(unit,'(5e25.15)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
+!      write(unit,'(5e25.15)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
+       write(unit,'(3es12.4,es18.8,es10.2)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
     enddo ! grid_z_i
     write(unit,'(a)') ''
    enddo  ! grid_y_i
