@@ -53,7 +53,8 @@ CC_MPI_FLAGS=$(CC_FLAGS)
 F95=ifort
 F95_MPI=mpif77
 
-F95_FAST_FLAGS= -zero -r8 -pad -align all -fpp -ip -O3
+# F95_FAST_FLAGS= -zero -r8 -pad -align all -fpp -ip -O3
+F95_FAST_FLAGS= -zero -r8 -pad -align all -O3 -ax,SSE3,SSE4.2 -ip -diag-disable vec -fpp -shared-intel -DNOEINSPLINE
 F95_PROF_FLAGS= -zero -r8 -pad -align all -fpp -pg -O3
 F95_DEBUG_FLAGS=-zero -r8 -pad -align all -fpp -ip -O0 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 
@@ -110,7 +111,8 @@ ifeq ($(uname),Linux)
      CC_MPI=mpicc
      F95=ifort
      F95_MPI=mpif90
-     F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xST -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+#    F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xST -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+     F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ax,SSE3,SSE4.2 -ip -diag-disable vec -fpp -shared-intel -DNOEINSPLINE
      F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
      EINSPLINE=
      LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
@@ -201,6 +203,26 @@ endif
 
 #qmc2 at cornell
 ifeq ($(hostname),qmc2)
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
+  F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check
+  F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check
+  F95_PROF_FLAGS=$(F95_FAST_FLAGS) -pg
+  F77_PROF_FLAGS=$(F77_FAST_FLAGS) -pg
+  LD_FLAGS=-O3
+  LD_DEBUG_FLAGS=-Wall -g -fbounds-check
+  LD_PROF_FLAGS=-pg
+  EINSPLINE=
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
+
+#qmc4 at cornell
+ifeq ($(hostname),qmc4)
   CC=gcc
   CXX=g++
   CC_MPI=mpicc

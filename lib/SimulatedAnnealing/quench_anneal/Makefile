@@ -13,7 +13,6 @@ FFLAGS = -DNOMPI
 # F95_MPI = gfortran
 endif
 
->>>>>>> .r564
 ifndef F77
 
 FC = gfortran

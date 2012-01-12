@@ -4,3 +4,8 @@ champ/tools/csf2csf/run_csf2csf
 or
 champ/tools/csf2csf/run_csf2csf_excited
 on GAMESS output. Creates (vmc.inp2 file in addition to vmc.inp file).
+
+Previously we were creating the basis files on a grid from running gamess2qmc on a GAMESS output.
+That basis using the gaussian expansion of the Gauss-Slater functions and so it differs a bit from the actual
+GS basis.  Frank has now written basis_grid.py which is run on a GAMESS input and outputs the actual GS
+functions on the same grid.
