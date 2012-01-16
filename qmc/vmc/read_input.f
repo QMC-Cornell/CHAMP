@@ -1716,9 +1716,10 @@ c if doing fit, allocate memory for saved configurations
 !        if(mod(iopt,10).eq.1) write(6,'(/,''Optimizing wave function using linear method'',/)')
 !        if(mod(iopt,10).eq.2) write(6,'(/,''Optimizing wave function using modified Newton method'',/)')
 !        if(mod(iopt,10).eq.3) write(6,'(/,''Optimizing wave function using perturbation theory'',/)')
-       elseif(index(mode,'fit').ne.0 .and. iopt.ne.2) then
+       elseif(index(mode,'fit').ne.0 .and. (iopt.le.1.or.iopt.ge.3)) then
         iopt=2
-        write(6,'(''Warning: iopt set to 2 because now fit uses quench only; zxssq is obsolete'')')
+        write(6,'(''Warning: iopt set to 2 because now fit uses quench (iopt=2) or possibly Transtrums levmar (iopt=3) only; zxssq
+     &  is obsolete'')')
       endif
       call systemflush(6)
 

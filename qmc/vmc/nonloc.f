@@ -37,12 +37,23 @@ c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),i
       endif
 
       vpsp=0
-      do 100 ic=1,ncent
+      do 150 i=1,nelec
 
-        ict=iwctype(ic)
-        do 100 i=1,nelec
+c Save position ith electron and its distances etc. from all nuclei
+        do 11 k=1,ndim
+   11     xsav(k)=x(k,i)
+        do 12 jc=1,ncent
+          r_en_sav(jc)=r_en(i,jc)
+          rr_en_sav(jc)=rr_en(i,jc)
+          rr_en2_sav(jc)=rr_en2(i,jc)
+          do 12 k=1,ndim
+            rshift_sav(k,jc)=rshift(k,i,jc)
+   12           rvec_en_sav(k,jc)=rvec_en(k,i,jc)
 
-c vps was calculated by calling getvps_tm from nonloc_pot
+        do 100 ic=1,ncent
+          ict=iwctype(ic)
+
+c vps was calculated by calling getvps_xx from nonloc_pot
           iskip=1
           do 15 l=1,npotd(ict)
    15       if(l.ne.lpotp1(ict) .and. dabs(vps(i,ic,l)).gt.1.d-4) iskip=0
@@ -58,20 +69,8 @@ c vps was calculated by calling getvps_tm from nonloc_pot
                vpot_ex = 0.d0           !JT
             endif                       !JT
 
-            do 28 k=1,ndim
-   28         xsav(k)=x(k,i)
-            do 30 jc=1,ncent
-              r_en_sav(jc)=r_en(i,jc)
-              rr_en_sav(jc)=rr_en(i,jc)
-              rr_en2_sav(jc)=rr_en2(i,jc)
-              do 30 k=1,ndim
-                rshift_sav(k,jc)=rshift(k,i,jc)
-   30           rvec_en_sav(k,jc)=rvec_en(k,i,jc)
-
             do 60 iq=1,nquad
-              costh=rvec_en_sav(1,ic)*xq(iq)
-     &             +rvec_en_sav(2,ic)*yq(iq)
-     &             +rvec_en_sav(3,ic)*zq(iq)
+              costh=rvec_en_sav(1,ic)*xq(iq)+rvec_en_sav(2,ic)*yq(iq)+rvec_en_sav(3,ic)*zq(iq)
               costh=costh*ri
 
               if(iperiodic.eq.0) then
@@ -84,6 +83,7 @@ c vps was calculated by calling getvps_tm from nonloc_pot
                 x(3,i)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
               endif
 
+c Since we are rotating on sphere around nucleus ic, that elec-nucl distance does not change but distances to other nuclei do
               do 40 jc=1,ncent
                 do 38 k=1,ndim
    38             rvec_en(k,i,jc)=x(k,i)-cent(k,jc)
@@ -109,13 +109,9 @@ c vps was calculated by calling getvps_tm from nonloc_pot
               call object_modified_by_index (electron_index) !JT
 
               call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-
-!WAS          call nonlocj(iel,x,rshift,rr_en,rr_en2,value)
               call nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
 
-!WAS
-              if (do_pjas) then
+              if (do_pjas) then ! periodic Jastrow implemented by WAS
                  call nonloc_pjas (iel, x(:,1:nelec), value)
               endif
 
@@ -126,12 +122,14 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
 
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
+c                 if(tmoves) then
+c                   vpsp_tmove(itmove,i)=vps(i,ic,l)*wq(iq)*yl0(l,costh)*deter*exp(value)*tau_eff
+c                 endif
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
                   if(ipr.ge.1) write(6,'(''l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)'',i3,9f20.15)')
      &            l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)
 
-! JT
-!                 For singly-excited wave functions
+! JT              For singly-excited wave functions
                   if (l_opt_orb_energy) then
                      call object_provide_by_index (psid_ex_in_x_index)
                      do iex = 1, param_orb_nb
@@ -140,9 +138,9 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
                   endif
 
                 endif
-   50         continue
+   50         continue ! npotd(ict)
 
-   60       continue
+   60       continue ! nquad
 
             do 68 k=1,ndim
    68         x(k,i)=xsav(k)
@@ -159,8 +157,7 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
                 vpsp=vpsp+vps(i,ic,l)*vpot(l)
                 if(ipr.ge.4) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l),vpsp
 
-! JT
-!               For singly-excited wave functions
+! JT            For singly-excited wave functions
                 if (l_opt_orb_energy) then
                    do iex = 1, param_orb_nb
                     vpsp_ex(iex)=vpsp_ex(iex)+vps(i,ic,l)*vpot_ex(l,iex)
@@ -171,10 +168,10 @@ c             call nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,deter)
    80       continue
 
           endif
-  100 continue
+  100   continue ! ncent
+  150 continue ! nelec
 
       call object_modified_by_index (vpsp_ex_index) ! JT
-
 
 c     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
 c     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)

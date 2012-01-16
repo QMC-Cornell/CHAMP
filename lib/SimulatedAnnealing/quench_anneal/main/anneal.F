@@ -97,9 +97,8 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 c common /quenchsim_pr/ to communicate amount of output
       logical called_by_qa
       common /quenchsim_pr/ ipr_com,called_by_qa
-c common /chi2_min/ stores parameters for stop_chi2
-      parameter (MAX_NUMBER_DIM=4)
-      common /chi2_min/ chi2_old(MAX_NUMBER_DIM),max_number
+c     parameter (MAX_NUMBER_DIM=4)
+c     common /chi2_min/ chi2_old(MAX_NUMBER_DIM),max_number ! stores parameters for stop_chi2
       dimension ajac(ndata,nparm)
       dimension s_svd(ndata+1),u_svd(nparm,ndata),v_svd(nparm,nparm)
       ipr_com=ipr
@@ -113,11 +112,10 @@ c common /chi2_min/ stores parameters for stop_chi2
         stop 'Anneal: nparm < 0'
       endif
 
-      if(max_number.gt.MAX_NUMBER_DIM) then
-        write(6,'(''max_number.gt.MAX_NUMBER_DIM'',2i20)')
-     &    max_number,MAX_NUMBER_DIM
-        stop 'Anneal: max_number.gt.MAX_NUMBER_DIM'
-      endif
+c     if(max_number.gt.MAX_NUMBER_DIM) then
+c       write(6,'(''max_number.gt.MAX_NUMBER_DIM'',2i20)') max_number,MAX_NUMBER_DIM
+c       stop 'Anneal: max_number.gt.MAX_NUMBER_DIM'
+c     endif
 
       ising=0
       central=.false.
@@ -472,9 +470,9 @@ c subroutine parameters
 c common /quenchsim_pr/ to communicate amount of output
       logical called_by_qa
       common /quenchsim_pr/ ipr_com,called_by_qa
-c common /chi2_min/ stores parameters for stop_chi2
-      parameter (MAX_NUMBER_DIM=4)
-      common /chi2_min/ chi2_old(MAX_NUMBER_DIM),max_number
+      parameter (MAX_NUMBER_DIM=5) ! MAX_NUMBER_DIM must be at least 1 greater than max_number
+      data max_number/4/
+      common /chi2_min/ chi2_old(MAX_NUMBER_DIM),max_number ! stores parameters for stop_chi2
       logical newA,pronly,central,use_sav,update_B,cholesky
       integer accepted
       external func,jacobian
@@ -496,12 +494,10 @@ c common /chi2_min/ stores parameters for stop_chi2
         stop 'Quench: nparm < 0'
       endif
 
-      if(max_number.gt.MAX_NUMBER_DIM) then
-        write(6,'(''max_number.gt.MAX_NUMBER_DIM'',2i20)')
-     &    max_number,MAX_NUMBER_DIM
-        stop 'Quench: max_number.gt.MAX_NUMBER_DIM'
-      endif
-
+c     if(max_number.gt.MAX_NUMBER_DIM) then
+c       write(6,'(''max_number.gt.MAX_NUMBER_DIM'',2i20)') max_number,MAX_NUMBER_DIM
+c       stop 'Quench: max_number.gt.MAX_NUMBER_DIM'
+c     endif
 
       number_cur=0
       ibold_sav=ibold
@@ -574,8 +570,7 @@ c main loop
       do istep=1,nstep
         pmarquardt_old=pmarquardt_orig
         drift_old=drift_orig
-        if(istep.ge.2) pmarquardt= parmarm(pmarquardt,av_mov_acc,
-     &    accepted,cos_on,cholesky)
+        if(istep.ge.2) pmarquardt= parmarm(pmarquardt,av_mov_acc,accepted,cos_on,cholesky,efo,efn)
 
         pronly=.false.
         update_B=.false.
@@ -857,7 +852,7 @@ c If no better minimum is found for some time temporarily reduce ibold
         endif
 
         if(converg) goto 10
-      enddo
+      enddo ! istep=1,nstep
 
  10   continue
 
@@ -889,7 +884,7 @@ c    & i6,f9.6,3(1x,g12.6))') istep_sav,acceptance,pmarquardt,efo,err
         write(6,*)
 c       if(ising.ne.0) write(6,'(''Quench: detected '',i6,
 c    &  '' numerical singularities; see fullrankQ'')') ising
-        call systemflush(6)
+        call flush(6)
       endif
 
 c save relevant information in common block quench_info
@@ -903,7 +898,7 @@ c restore some input parameters
       epsp=epsp_sav
       noutput=noutput_sav
       write(6,'(''Returning from quench'')')
-      call systemflush(6)
+      call flush(6)
       return
       end
 c-----------------------------------------------------------------------
@@ -973,7 +968,7 @@ c     write(6,'(''parmar,a'',d12.5,f6.3)') parmar,a
       end
 c-----------------------------------------------------------------------
 
-      function parmarm(parmar0,a,accepted,cos_on,cholesky)
+      function parmarm(parmar0,a,accepted,cos_on,cholesky,efo,efn)
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 c update Marquardt parameter for quench
 c the factor by which the parameter is changed is itself adjusted
@@ -989,22 +984,26 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       integer accepted
       logical cholesky
 
-      factor=min(100.d0,
-     &  max(1.1d0,ONE/(DBL_EPSILON+(ONE-abs(2*a-ONE)))**2))
+      factor=min(100.d0, max(1.1d0,ONE/(DBL_EPSILON+(ONE-abs(2*a-ONE)))**2))
 
       if(accepted.ge.1) then
         if(cos_on.ge.ZERO) then
           parmarm=parmar0/factor
-         else
+        else
           parmarm=parmar0
         endif
        elseif(accepted.le.-1) then
-        if(cos_on.gt.ZERO) then
-          parmarm=parmar0*sqrt(factor)
-         else
-          parmarm=parmar0*factor
+        if(efo-efn.le.0.d0 .and. efn-efo.lt.1.d-12*efo) then ! If it went up a tiny bit that may be because move is very small and we are computing noise
+          parmarm=1.d-4*parmar0
+        else
+          if(cos_on.gt.ZERO) then
+            parmarm=parmar0*sqrt(factor)
+          else
+            parmarm=parmar0*factor
+          endif
         endif
-       else
+c       write(6,'(''efo,efn,efo-efn,parmarm='',9d12.4)') efo,efn,efo-efn,parmarm
+      else
         parmarm=parmar0*sqrt(factor)
       endif
 
@@ -1043,7 +1042,7 @@ c common /quenchsim_pr/ to communicate amount of output
         write(6,'(''changeo,changen'',9d12.4)') changeo,changen
       endif
       write(6,*)
-      call systemflush(6) !JT
+      call flush(6) !JT
       return
       end
 c-----------------------------------------------------------------------
@@ -1086,7 +1085,7 @@ c common /quenchsim_pr/ to communicate amount of output
         write(6,'(''cosold cos_on'',9d12.4)') cosold,cos_on
       endif
       write(6,*)
-      call systemflush(6) !JT
+      call flush(6) !JT
       return
       end
 c-----------------------------------------------------------------------
@@ -1125,9 +1124,9 @@ c ??    endif
       end
 c-----------------------------------------------------------------------
 
-      block data chi2_min_block
-      implicit real*8(a-h,o-z)
-      parameter (MAX_NUMBER_DIM=4)
-      common /chi2_min/ chi2_old(MAX_NUMBER_DIM),max_number
-      data max_number/4/
-      end
+c     block data chi2_min_block
+c     implicit real*8(a-h,o-z)
+c     parameter (MAX_NUMBER_DIM=4)
+c     common /chi2_min/ chi2_old(MAX_NUMBER_DIM),max_number
+c     data max_number/4/
+c     end

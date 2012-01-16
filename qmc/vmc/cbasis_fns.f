@@ -668,7 +668,3 @@ c locals:
 
       return
       end
-
-
-
-

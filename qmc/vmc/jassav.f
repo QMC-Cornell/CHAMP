@@ -1,13 +1,11 @@
       subroutine jassav(iel)
 c Written by Claudia Filippi
+c Copies pieces of Jastrow factor that involve iel from new to old.
 
       use const_mod
       use jaso_mod
       use jasn_mod
       implicit real*8(a-h,o-z)
-
-
-
 
       fsumo=fsumn
       do 10 i=1,nelec

@@ -340,7 +340,7 @@ c Calculate moments of r and save rejection probability for primary walk
           risume=risume+(q/dsqrt(r2o)+p/dsqrt(r2n))
           unacp(i)=q
 
-  200   continue
+  200   continue ! nelec
 
 c Effective tau for branching
         tauprim=tau*dfus2ac/dfus2un
@@ -404,7 +404,7 @@ c               enew=max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_d
 c              else
 c               enew=max(eoldw(iw,1)-sigma_est,min(eoldw(iw,1)+sigma_est,enew))
 c             endif
-            endif
+            endif ! ifr.eq.1
 
             vav2sumn=zero
             v2sumn=zero
@@ -428,7 +428,7 @@ c Use more accurate formula for the drift and tau secondary in drift
             drifdifr=one
             fration=fratio(iw,ifr)
             enew=eoldw(iw,ifr)
-          endif
+          endif ! accept
 
           taunow=tauprim*drifdifr
 
@@ -673,7 +673,7 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
 
         call compute_averages_step !JT
-  300 continue
+  300 continue ! nwalk
 
 !JT      if(wsum1(1).gt.1.1d0*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
 

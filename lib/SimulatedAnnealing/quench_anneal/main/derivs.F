@@ -91,7 +91,7 @@ c derivatives
 c           write(6,*) 'derivs: incorrect value of num_deriv_points_qs',
 c    &        num_deriv_points_qs
             write(6,'(''derivs: incorrect value of num_deriv_points_qs''
-     &      ,i3)') num_deriv_points_qs
+     &      ,i30)') num_deriv_points_qs
             stop 'derivs: incorrect value of num_deriv_points_qs'
           endif
           cntr=central .or. central_derivs_qs
@@ -192,14 +192,16 @@ c rank-1 update of B
 
 c rescaling vector
       aiimax=a(1,1)
+      aiimin=a(1,1)
       do iparm=2,nparm
         aiimax=max(aiimax,a(iparm,iparm))
+        aiimin=min(aiimin,a(iparm,iparm))
       enddo
 
       f=sqrt(aiimax*pmarquardt)
       if(ipr_com.ge.2) then
-        write(6,'(''derivs: aiimax,pmarquardt'',2(1x,g12.6))')aiimax,
-     &  pmarquardt
+        write(6,'(''derivs: aiimax,aiimin,pmarquardt'',9(1x,g12.6))')aiimax,aiimin,pmarquardt
+c       write(6,'(''derivs: det for 2 parm prob'',9(1x,g12.6))') a(1,1)*a(2,2)-a(1,2)*a(2,1)
       endif
       do iparm=1,nparm
 c ?? This will scale the effective hessian so that all diagonal elements are

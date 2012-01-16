@@ -1854,10 +1854,10 @@ sub print_csf_cyrus{
     push @{$final_lcao_coef[0]}, "((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)";
 
     if ($ispher == 1) {
-	printf CSFFILE "%d %d %d %d %d 1.d-6 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$reduced_nbasis;
+	printf CSFFILE "%d %d %d %d %d 1.d-8 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$reduced_nbasis;
     }
     else {
-	printf CSFFILE "%d %d %d %d %d 1.d-6 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$nbasis;
+	printf CSFFILE "%d %d %d %d %d 1.d-8 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$nbasis;
     }
 
     # print determinantal coefficients

@@ -115,17 +115,16 @@ c ( phi_1(r1) )
 c | phi_1(r2) |
 c | phi_2(r1) |
 c ( phi_2(r2) )
-c !fp
+c
 c The 3 nested loops are over
 c 1) up electrons,
 c 2) determinants
 c 3) basis states setting up transpose of the Slater
 c matrix in slmui to get inverse transpose.
 c Also put derivatives in fpu and fppu.
-c iworbdup which orbitals enter which determinants
-c iworbdup(i,j) is ith orbitals of jth determinant
+c iworbdup(i,j) says which is the ith orbital of the jth up-determinant
 
-c fpu example: (for a idet=1)
+c fpu example: (for idet=1)
 c ( dphi_1(r1) / dx  dphi_2(r1) / dx  dphi_1(r2) / dx  dphi_2(r2) / dx )
 c | dphi_1(r1) / dy  dphi_2(r1) / dy  dphi_1(r2) / dy  dphi_2(r2) / dy |
 c ( dphi_1(r1) / dz  dphi_2(r1) / dz  dphi_1(r2) / dz  dphi_2(r2) / dz )

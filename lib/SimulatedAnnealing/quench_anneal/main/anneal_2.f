@@ -1,7 +1,4 @@
 c $Log: anneal_2.f,v $
-c Revision 1.1.1.1  2006/10/08 19:38:17  toulouse
-c champ
-c
 c Revision 1.10  2002/12/20 19:00:32  nigh
 c Cyrus's changes: some exact derivatives
 c
@@ -487,25 +484,24 @@ c ?? is it necessary to unscale the Jacobian ?
       end
 c-----------------------------------------------------------------------
 
-      logical function
-     &  stop_chi2(chi2_new,chi2_old,eps_chi2,max_number,number_cur)
+      logical function stop_chi2(chi2_new,chi2_old,eps_chi2,max_number,number_cur)
 c determines convergence of chi2
 c chi2_new          = latest chi2 value
-c chi2_old          = previous chi2_dim minimal chi2 values
-c eps_chi2          = converged if saved minimal chi2's differ less
-c                     than a factor eps_chi2 relative to the smallest
-c                     current chi2
+c chi2_old          = smallest chi2 values so far, in ascending order (upto max_number of them)
+c eps_chi2          = converged if smallest chi2 and the max_number^th smallest chisq differ by
+c                     less than a factor eps_chi2 relative to the smallest chi2
 c max_number        = number of chi2's saved and compared
 c number_cur        = number of chi2's currently saved
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 c Early version of non-linear least-squares optimizer
 c Copyright: M. Peter Nightingale and Cyrus J. Umrigar, September 1996.
+c Fixed bug (le in dowhile was lt) and improved stopping criterion, Cyrus, 18 Nov 2011
 c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       implicit real*8(a-h,o-z)
-      dimension chi2_old(max_number)
+      dimension chi2_old(max_number+1)
       i=1
       if(number_cur.gt.0) then
-        do while(i.lt.number_cur.and.chi2_new.gt.chi2_old(i))
+        do while(i.le.number_cur.and.chi2_new.gt.chi2_old(i))
           i=i+1
         enddo
       endif
@@ -514,15 +510,9 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
         chi2_old(j)=chi2_old(j-1)
       enddo
       chi2_old(i)=chi2_new
-c     print '((a),(4(g14.2,1x)))','stop_chi2:',(chi2_old(ip),
-c    &  ip=1,max_number)
-c     if(number_cur.eq.max_number) print '((a),(4(g14.2,1x)))',
-c    &  'stop_chi2:',chi2_old(max_number)-chi2_old(1),chi2_old(1)*
-c    &  eps_chi2
-      if( number_cur.eq.max_number.and.
-     &  chi2_old(max_number)-chi2_old(1).lt.chi2_old(1)*eps_chi2) then
+c     write(6,'(''stop_chi2:'',(100es12.3))') (chi2_old(ip),ip=1,number_cur)
+      if((number_cur.eq.max_number .and. chi2_old(max_number)-chi2_old(1).le.chi2_old(1)*eps_chi2) .or. chi2_old(1).eq.0.d0) then
         stop_chi2=.true.
-c       write(6,*) 'stop_chi2: stop_chi2=.true.'
       else
         stop_chi2=.false.
       endif

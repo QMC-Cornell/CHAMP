@@ -82,6 +82,12 @@ ifeq ($(hostname),qmc2)
   FFLAGS_DEBUG=$(FFLAGS) -g -fbounds-check
 endif
 
+ifeq ($(hostname),qmc4)
+  FC=gfortran
+  FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
+  FFLAGS_DEBUG=$(FFLAGS) -g -fbounds-check
+endif
+
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
   FC = ifort
 # FFLAGS = -g -CB -d4 -zero -save -extend_source -w -r8 -fpp2 -O0

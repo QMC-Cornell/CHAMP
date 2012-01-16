@@ -25,7 +25,8 @@ do
 
 # $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 $in
 # If you want the excited state of the same symmetry change the above line to:
-  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 -w 2 $in
+# $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 -w 2 $in
+  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.0001 -w 2 $in
   $HOME/champ/tools/csf2csf/csf2csf < $in_csf2csf > $out_csf2csf
 
 # nctype=`awk '/nctype,ncent/{print $1}' $vmc_input1` #determine number of center types

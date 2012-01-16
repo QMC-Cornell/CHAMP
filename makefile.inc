@@ -265,13 +265,6 @@ ifeq ($(hostname),jasmine)
   LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
-# zippy2 at home
-ifeq ($(hostname),zippy2)
-#F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
- CC=gcc
-#EINSPLINE=
-endif
-
 # Theory Center's linux cluster
 # ifeq ($(hostname),linuxlogin1.tc.cornell.edu)
 ifeq ($(findstring linuxlogin,$(hostname)), linuxlogin)

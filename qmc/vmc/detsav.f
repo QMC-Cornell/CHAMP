@@ -8,7 +8,6 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use slater_mod
       implicit real*8(a-h,o-z)
 
-
       if(iel.le.nup) then
         ikel=nup*(iel-1)
         do 60 idet=1,ndetup

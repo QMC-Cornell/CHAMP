@@ -619,8 +619,9 @@ c       do 400 jcsf=1,icsf-1
               times=dfloat(inum)/dfloat(iden)
               do 390 isignj=-1,1,2
                 if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps .and.
-     &             abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.1000*eps*sqrt(abs(csf_coef(icsf)))) then
-                  write(6,'(''inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i4,2f6.3)')
+     &             abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.100*eps*sqrt(abs(csf_coef(icsf))) .and.
+     &             abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.1.d-3*abs(csf_coef(icsf))) then
+                  write(6,'(''inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i5,2f12.8)')
      &            inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
                   if(ndet_in_csf(jcsf)+ndet_in_csf(icsf).gt.MDET_IN_CSF) stop 'ndet_in_csf(jcsf) > MDET_IN_CSF'
                   do 370 idet_in_csf=1,ndet_in_csf(jcsf)
@@ -646,13 +647,13 @@ c And do it again
       do 405 icsf=1,ncsf_tmp-1
         do 405 jcsf=icsf+1,ncsf_tmp
           if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps .and.
-     &       abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.1000*eps*sqrt(abs(csf_coef(icsf)))) then
+     &       abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.100*eps*sqrt(abs(csf_coef(icsf)))) then
             do 404 inum=2,20
             do 404 iden=2,10
               times=dfloat(inum)/dfloat(iden)
               do 404 isignj=-1,1,2
                 if(abs(csf_coef(icsf)-isignj*times*csf_coef(jcsf)).lt.eps*sqrt(abs(csf_coef(icsf)))) then
-                  write(6,'(''2nd round inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i4,2f6.3)')
+                  write(6,'(''2nd round inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)='',2i3,2i5,2f12.8)')
      &            inum,iden,icsf,jcsf,csf_coef(icsf),csf_coef(jcsf)
                   if(ndet_in_csf(jcsf)+ndet_in_csf(icsf).gt.MDET_IN_CSF) stop 'ndet_in_csf(jcsf) > MDET_IN_CSF'
                   do 402 idet_in_csf=1,ndet_in_csf(jcsf)

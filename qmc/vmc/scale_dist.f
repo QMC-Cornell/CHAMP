@@ -404,10 +404,8 @@ c gradient and laplacian.
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-
-!JT      parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+!JT   parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
       parameter (d4b3=4.d0/3.d0)
-
 
 c isc = 2,3 are exponential scalings
 c isc = 4,5 are inverse power scalings
@@ -596,8 +594,7 @@ c gradient and laplacian.
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-
-!JT      parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
+!JT   parameter (zero=0.d0,one=1.d0,two=2.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
       parameter (d4b3=4.d0/3.d0)
 
 
@@ -814,8 +811,6 @@ c that appropriate for C terms, for dist.
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-
-
       if(iflag.eq.1.or.iflag.eq.3) then
         c1_jas6=c1_jas6_en(iwf)
        elseif(iflag.eq.2.or.iflag.eq.4) then
@@ -841,8 +836,6 @@ c that appropriate for C terms, for dist and 1st deriv.
       use jaspar3_mod
       use jaspar6_mod
       implicit real*8(a-h,o-z)
-
-
 
       if(iflag.eq.1.or.iflag.eq.3) then
         c1_jas6=c1_jas6_en(iwf)
@@ -871,8 +864,6 @@ c that appropriate for C terms, for dist and 1st two derivs.
       use jaspar3_mod
       use jaspar6_mod
       implicit real*8(a-h,o-z)
-
-
 
       if(iflag.eq.1.or.iflag.eq.3) then
         c1_jas6=c1_jas6_en(iwf)
