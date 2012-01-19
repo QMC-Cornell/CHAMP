@@ -74,6 +74,8 @@ c xerr = current error of x
       call mpi_reduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldest,ioldest_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldestmx,ioldestmx_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(zzsum,zzsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(zz2sum,zz2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       ioldest=ioldest_collect
       ioldestmx=ioldestmx_collect
@@ -84,6 +86,9 @@ c xerr = current error of x
 
 c     wnow=wsum/nstep
 c     wfnow=wfsum/nstep
+      zzsum = zzsum_collect
+      zz2sum = zz2sum_collect
+
       enow=esum/wsum
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
