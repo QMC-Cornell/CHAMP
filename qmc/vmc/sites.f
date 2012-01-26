@@ -52,7 +52,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
           do 10 j=1,ju
             ielec=ielec+1
             if(ielec.gt.nelec) return
-            if(nloc.eq.-1 .or. nloc.eq.-5) then
+            if(nloc.eq.-1 .or. nloc.eq.-5 .or. nloc.eq.-4) then
               sitsca=1/znucc
              elseif(j.eq.1) then
               sitsca=1/max(znucc,1.d0)
@@ -80,9 +80,12 @@ c     if there's more than 1 slater determinant
                 x(1,ielec)=site*dcos(angle)
                 x(2,ielec)=site*dsin(angle)
               else
-                site=-dlog(rannyu(0))
-                site=dsqrt(site)
-                site=sign(site,(rannyu(0)-half))
+c               This code sampled from a gaussian:
+c                site=-dlog(rannyu(0))
+c                site=dsqrt(site)
+c                site=sign(site,(rannyu(0)-half))
+c               This code samples from a smaller, uniform region:
+                site = 2.0d0*(0.5d0 - rannyu(0))
                 angle=2*pi*rannyu(0)
                 x(1,ielec)=(sitsca*site+rring)*dcos(angle)
                 x(2,ielec)=(sitsca*site+rring)*dsin(angle)
