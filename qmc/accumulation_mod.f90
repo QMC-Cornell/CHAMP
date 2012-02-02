@@ -651,7 +651,7 @@ module accumulation_mod
   implicit none
 
 ! local
-  integer i, j, k, ifr
+  integer i, j, k, ifr, iz
   character*80 fmt
   real (dp) :: rn_eff, error, errorn, errc, errf, errg, errc1
   real (dp) :: errf1, errg1, errw, errw1
