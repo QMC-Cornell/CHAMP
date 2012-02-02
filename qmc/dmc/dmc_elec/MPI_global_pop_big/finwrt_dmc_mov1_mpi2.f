@@ -42,6 +42,7 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
       dimension rprobcollect(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
       dimension fouriert(-NAX:NAX,0:NAK1), fourierkkt(-NAK2:NAK2,-NAK2:NAK2)
+      dimension zzave(nzzvars), zzerr(nzzvars)
 
       character*80 fmt
 !JT      character*80 title,fmt
@@ -283,8 +284,7 @@ c     ei3ave=ei3cum/passes
 
       r2ave=r2cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
-      zzave=zzcum/wgcum(1)
-      zz2ave=zz2cum/wgcum(1)
+      zzave(:)=zzcum(:)/wgcum(1)
 c     if(itau_eff.ge.1) then
 c       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
 c       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
@@ -314,8 +314,9 @@ c     ei2err=erri(ei2cum,ei2cm2)
 c     ei3err=erri1(ei3cum,ei3cm2)
       r2err=errg(r2cum,r2cm2,1)/nelec
       rierr=errg(ricum,ricm2,1)/nelec
-      zzerr=errg(zzcum,zzcm2,1)
-      zz2err=errg(zz2cum,zz2cm2,1)
+      do iz=1,nzzvars
+        zzerr(iz)=errg(zzcum(iz),zzcm2(iz),1)
+      enddo
 c     if(itau_eff.ge.1) then
 c       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
 c       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*taucum(1)/wgcum(1))
@@ -443,8 +444,9 @@ c save energy difference and error in energy difference for optimization
       endif
 
       if(izigzag.ge.1) then
-        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave,zzerr,zzerr*rtevalg_eff1
-        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zz2ave,zz2err,zz2err*rtevalg_eff1
+        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
+        write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
+        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
       endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))

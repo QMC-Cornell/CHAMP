@@ -114,8 +114,7 @@ module accumulation_mod
       ei3cum=zero
       r2cum=zero
       ricum=zero
-      zzcum=zero
-      zz2cum=zero
+      zzcum(:)=zero
 
       wcm21=zero
       wfcm21=zero
@@ -132,8 +131,7 @@ module accumulation_mod
       ei3cm2=zero
       r2cm2=zero
       ricm2=zero
-      zzcm2=0
-      zz2cm2=0
+      zzcm2(:)=zero
 
       wfsum1=zero
       wsum=zero
@@ -148,8 +146,7 @@ module accumulation_mod
       ei3sum=zero
       r2sum=zero
       risum=zero
-      zzsum=zero
-      zz2sum=zero
+      zzsum(:)=zero
 
       call grad_hess_jas_init
 
@@ -333,7 +330,7 @@ module accumulation_mod
   integer i, npass, ifr
   real(dp) :: enow, efnow, ei1now, ei2now
   real(dp) :: rinow, r2now
-  real(dp) :: zznow, zz2now
+  real(dp) :: zznow(nzzvars)
   real(dp) :: egnow, penow, tpbnow, tjfnow
   real(dp) :: peerr, tpberr, tjferr, fgerr
   real(dp) :: egave, peave, tpbave, tjfave, fgave
@@ -378,8 +375,7 @@ module accumulation_mod
       ei2now=wgsum(1)/wgdsum
       rinow=risum/wgsum(1)
       r2now=r2sum/wgsum(1)
-      zznow=zzsum/wgsum(1)
-      zz2now=zz2sum/wgsum(1)
+      zznow(:)=zzsum(:)/wgsum(1)
 
 # if !defined (MPI)
       wcm2=wcm2+wsum**2
@@ -391,8 +387,7 @@ module accumulation_mod
       ei2cm2=ei2cm2+ei2now**2
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
-      zzcm2=zzcm2+zzsum*zznow
-      zz2cm2=zz2cm2+zz2sum*zz2now
+      zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
 
 # if !defined (MPI)
       wcum=wcum+wsum
@@ -408,8 +403,7 @@ module accumulation_mod
       ei2cum=ei2cum+ei2now
       r2cum=r2cum+r2sum
       ricum=ricum+risum
-      zzcum=zzcum+zzsum
-      zz2cum=zz2cum+zz2sum
+      zzcum(:)=zzcum(:)+zzsum(:)
 
 # if defined (MPI)
       w2sum=wsum**2
@@ -631,8 +625,7 @@ module accumulation_mod
       ei2sum=zero
       r2sum=zero
       risum=zero
-      zzsum=zero
-      zz2sum=zero
+      zzsum(:)=zero
 
       do 20 ifr=1,nforce
         egsum(ifr)=zero
@@ -684,7 +677,7 @@ module accumulation_mod
   real (dp) :: e1ave, e2ave, e3ave, ei1ave, ei2ave, ei3ave
   real (dp) :: e1err, e2err, e3err, ei1err, ei2err, ei3err
   real (dp) :: r2ave, r2err, riave, rierr
-  real (dp) :: zzave, zzerr, zz2ave, zz2err
+  real (dp) :: zzave(nzzvars), zzerr(nzzvars)
 # endif
 
 # if defined (MPI)
@@ -859,8 +852,7 @@ module accumulation_mod
 
       r2ave=r2cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
-      zzave=zzcum/wgcum(1)
-      zz2ave=zz2cum/wgcum(1)
+      zzave(:)=zzcum(:)/wgcum(1)
       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
       e3ave=etrial-dlog(ei3ave)/(taucum(1)/wgcum(1))
@@ -879,8 +871,7 @@ module accumulation_mod
         ei3err=0
         r2err=0
         rierr=0
-        zzerr=0
-        zz2err=0
+        zzerr(:)=0.d0
        else
 # endif
         werr=errw(wcum,wcm2)
@@ -897,8 +888,9 @@ module accumulation_mod
         ei3err=erric1(ei3cum,ei3cm2)
         r2err=errg(r2cum,r2cm2,1)/nelec
         rierr=errg(ricum,ricm2,1)/nelec
-        zzerr=errg(zzcum,zzcm2,1)
-        zz2err=errg(zz2cum,zz2cm2,1)
+        do iz = 1,nzzvars
+          zzerr(iz)=errg(zzcum(iz),zzcm2(iz),1)
+        enddo
       endif
 
       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
@@ -991,8 +983,9 @@ module accumulation_mod
       endif
 
       if(izigzag.ge.1) then
-        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave,zzerr,zzerr*rtevalg_proc_eff1
-        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zz2ave,zz2err,zz2err*rtevalg_proc_eff1
+        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_proc_eff1
+        write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_proc_eff1
+        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_proc_eff1
       endif
 
       if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')')nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)

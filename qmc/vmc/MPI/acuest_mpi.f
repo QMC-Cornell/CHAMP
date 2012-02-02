@@ -30,6 +30,7 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: pesum_collect, peisum_collect, tpbsum_collect, tjfsum_collect, r2sum_collect, accsum_collect
       real(dp) :: d_node_log_collect, walker_weights_sum_block_collect
 
+      dimension zzsum_collect(nzzvars)
 c statement function for error calculation
 c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
 !      err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk) ! JT: commented out because not used
@@ -64,8 +65,7 @@ c quantities in finwrt_mpi
       call mpi_allreduce(tpbsum,tpbsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjfsum,tjfsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(zzsum,zzsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(zz2sum,zz2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(accsum,accsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(d_node_log_sum,d_node_log_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(walker_weights_sum_block,walker_weights_sum_block_collect,1,mpi_double_precision,
@@ -87,8 +87,7 @@ c Warning this flush and barrier should not be necessary
       tpbsum = tpbsum_collect
       tjfsum = tjfsum_collect
       r2sum = r2sum_collect
-      zzsum = zzsum_collect
-      zz2sum = zz2sum_collect
+      zzsum(:) = zzsum_collect(:)
       accsum = accsum_collect
       d_node_log_sum = d_node_log_collect
       walker_weights_sum_block = walker_weights_sum_block_collect

@@ -1575,6 +1575,9 @@ c ZigZag quantities:
         call alloc ('zzposnew', zzposnew, 2, nelec)
         call alloc ('iold_indices', iold_indices, nelec)
         call alloc ('inew_indices', inew_indices, nelec)
+        call alloc ('zzcum', zzcum, nzzvars)
+        call alloc ('zzsum', zzsum, nzzvars)
+        call alloc ('zzcm2', zzcm2, nzzvars)
       endif
 
 c composite fermions:

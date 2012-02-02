@@ -20,7 +20,7 @@ c  if ielec=0, we are doing an all-electron move.
       logical l_oldneoldsav, l_oldnenewsav
 
       dimension xold(3,nelec),xnew(3,nelec)
-      dimension temppos(2)
+      dimension temppos(2), zzterm(nzzvars)
 
       if(ielec.lt.0 .or. ielec.gt.nelec) then
         write (6,*) 'Bad value of ielec in zigzag2d, ', ielec
@@ -145,19 +145,26 @@ c  Now all of the electrons are sorted, and we can calculate observables
       
       zzsumold = 0.d0
       zzsumnew = 0.d0
-      stagsign = 1.0d0/dble(nelec)
+      stagsignold = 1.0d0/dble(nelec)
+      stagsignnew = 1.0d0/dble(nelec)
+c     Set the sign of the staggered order such that the largest r (or y) has sign +1
+c       i.e., in the zigzag phase, sum_i (-1)^i y_i should always be positive
+      if(mod(maxloc(zzposold(2,:),1),2).eq.0) stagsignold = -stagsignold
+      if(mod(maxloc(zzposnew(2,:),1),2).eq.0) stagsignnew = -stagsignnew
       do i =1,nelec
-        zzsumold = zzsumold + stagsign*zzposold(2,i)
-        zzsumnew = zzsumnew + stagsign*zzposnew(2,i)
-        stagsign = -stagsign
+        zzsumold = zzsumold + stagsignold*zzposold(2,i)
+        zzsumnew = zzsumnew + stagsignnew*zzposnew(2,i)
+        stagsignold = -stagsignold
+        stagsignnew = -stagsignnew
       enddo
 c  For debugging:
 c      write(6,*) 'in zigzag2d:'
 c      write(6,*) (zzposold(1,i),i=1,nelec)
 c      write(6,*) (zzposold(2,i),i=1,nelec)
 c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
-      zzterm = q*dabs(zzsumold) + p*dabs(zzsumnew)
-      zz2term = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
+      zzterm(3) = q*zzsumold + p*zzsumnew
+      zzterm(1) = q*dabs(zzsumold) + p*dabs(zzsumnew)
+      zzterm(2) = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
 
 c     This is a kludge to make sure that the averages come out correctly 
 c        for single-electron moves.  Since this routine gets called
@@ -165,12 +172,10 @@ c        once per electron in the mov1 update, we need to divide by
 c        nelec. This is not needed for all-electron updates, though
 c        since we just call this routine once after the update.
       if(ielec.gt.0) then
-        zzterm = zzterm/dble(nelec)
-        zz2term = zz2term/dble(nelec)
+        zzterm(:) = zzterm(:)/dble(nelec)
       endif
 
-      zzsum = zzsum + zzterm
-      zz2sum = zz2sum + zz2term 
+      zzsum(:) = zzsum(:) + zzterm(:)
       
       xold_sav = xold
       xnew_sav = xnew

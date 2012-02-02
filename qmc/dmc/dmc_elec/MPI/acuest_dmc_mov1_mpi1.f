@@ -50,7 +50,7 @@ c routine to accumulate estimators for energy etc.
      &tpbcollect(nforce),tjfcollect(nforce),eg2collect(nforce),wg2collect(nforce),
      &pe2collect(nforce),pei2collect(nforce),tpb2collect(nforce),tjf2collect(nforce),fsum(nforce),
      &f2sum(nforce),eg2sum(nforce),wg2sum(nforce),pe2sum(nforce),pei2sum(nforce),tpb2sum(nforce),
-     &tjf2sum(nforce),taucollect(nforce)
+     &tjf2sum(nforce),taucollect(nforce),zznow(nzzvars),zzsum_collect(nzzvars)
 
 c statement function for error calculation
       rn_eff(w,w2)=w**2/w2
@@ -78,15 +78,13 @@ c     wfnow=wfsum/nstep
       ei2now=wgsum(1)/wgdsum
       rinow=risum/wgsum(1)
       r2now=r2sum/wgsum(1)
-      zznow=zzsum/wgsum(1)
-      zz2now=zz2sum/wgsum(1)
+      zznow(:)=zzsum(:)/wgsum(1)
 
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
-      zzcm2=zzcm2+zzsum*zznow
-      zz2cm2=zz2cm2+zz2sum*zz2now
+      zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
 
       wdcum=wdcum+wdsum
       wgdcum=wgdcum+wgdsum
@@ -94,8 +92,7 @@ c     wfnow=wfsum/nstep
       ei2cum=ei2cum+ei2now
       r2cum=r2cum+r2sum
       ricum=ricum+risum
-      zzcum=zzcum+zzsum
-      zz2cum=zz2cum+zz2sum
+      zzcum(:)=zzcum(:)+zzsum(:)
 
       w2sum=wsum**2
       wf2sum=wfsum**2
@@ -169,8 +166,7 @@ c Warning temp fix
 
       call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(risum,risum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(zzsum,zzsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(zz2sum,zz2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       
 
 !JT   if(idtask.ne.0) goto 17 ! The slaves also have to calculate egerr so that they can stop when egerr < error_threshold
@@ -187,8 +183,7 @@ c Warning temp fix
 
       r2sum = r2sum_collect
       risum = risum_collect
-      zzsum = zzsum_collect
-      zz2sum = zz2sum_collect
+      zzsum(:) = zzsum_collect(:)
 
       do 15 ifr=1,nforce
         wgcm2(ifr)=wgcm2(ifr)+wg2collect(ifr)
@@ -335,8 +330,7 @@ c zero out xsum variables for metrop
       ei2sum=zero
       r2sum=zero
       risum=zero
-      zzsum=zero
-      zz2sum=zero
+      zzsum(:)=zero
 
       do 20 ifr=1,nforce
         wgsum(ifr)=zero
@@ -508,8 +502,7 @@ c zero out estimators
       ei3cum=zero
       r2cum=zero
       ricum=zero
-      zzcum=zero
-      zz2cum=zero
+      zzcum(:)=zero
 
       wcm21=zero
       wfcm21=zero
@@ -526,8 +519,7 @@ c zero out estimators
       ei3cm2=zero
       r2cm2=zero
       ricm2=zero
-      zzcm2=zero
-      zz2cm2=zero
+      zzcm2(:)=zero
 
       wfsum1=zero
       wsum=zero
@@ -542,8 +534,7 @@ c zero out estimators
       ei3sum=zero
       r2sum=zero
       risum=zero
-      zzsum=zero
-      zz2sum=zero
+      zzsum(:)=zero
 
       call grad_hess_jas_init
 

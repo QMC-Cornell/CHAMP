@@ -39,6 +39,8 @@ c routine to print out final results
 
 !MS Jellium sphere
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
+      
+      dimension zzfin(nzzvars), zzerr(nzzvars)
 
       err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
       err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
@@ -75,8 +77,7 @@ c     endif
       tpbfin=tpbcum/passes
       tjffin=tjfcum/passes
       r2fin=r2cum/passes
-      zzfin=zzcum/passes
-      zz2fin=zz2cum/passes
+      zzfin(:)=zzcum(:)/passes
       accfin=acccum/passes
 
 c In all-electron move algorithm, eerr1 differs from sigma in that eerr1 contains
@@ -96,8 +97,9 @@ c reflected when we get Tcorr < 1.
       tpberr=err(tpbcum,tpbcm2,1)
       tjferr=err(tjfcum,tjfcm2,1)
       r2err=err(r2cum,r2cm2,1)
-      zzerr=err(zzcum,zzcm2,1)
-      zz2err=err(zz2cum,zz2cm2,1)
+      do iz=1,nzzvars
+        zzerr(iz)=err(zzcum(iz),zzcm2(iz),1)
+      enddo
 c     tcsq=eerr/eerr1
       tcsq=eerr/eer1s
       call alloc ('eloc_tc', eloc_tc, nforce)
@@ -232,8 +234,9 @@ c force and force_err are really the energy difference and the error in the ener
      & write(6,'(''<r2> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
 
       if(izigzag.ge.1) then
-        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin,zzerr,zzerr*rtpass
-        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zz2fin,zz2err,zz2err*rtpass
+        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(3),zzerr(3),zzerr(3)*rtpass
+        write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(1),zzerr(1),zzerr(1)*rtpass
+        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(2),zzerr(2),zzerr(2)*rtpass
       endif
       if(print_radial_probability .and. index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin,sucsum/trysum
