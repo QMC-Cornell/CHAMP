@@ -603,7 +603,18 @@ c Zero out estimators for pair densities:
           fourierkk_u(i1,i2)=0
   120     fourierkk_d(i1,i2)=0
       endif
-      
+      if (izigzag.ne.0) then
+        call alloc_range ('zzpairden_t', zzpairden_t, -NAX, NAX, -NAX, NAX)
+        call alloc_range ('zzdenij_t', zzdenij_t, -NAX, NAX, 0, (nelec-1))
+        call alloc_range ('zzcorr', zzcorr, 0, NAX)
+        call alloc_range ('zzcorrij', zzcorrij, 0, (nelec-1))
+        zzpairden_t(:,:) = 0
+        zzdenij_t(:,:) = 0
+        zzcorr(:) = 0
+        zzcorrij(:) = 0
+      endif
+ 
+     
       call grad_hess_jas_save
 
       return

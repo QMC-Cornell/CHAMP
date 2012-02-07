@@ -10,5 +10,5 @@ module zigzag_mod
  integer, allocatable          :: iold_indices(:), inew_indices(:)
  double precision, allocatable :: zzcum(:), zzsum(:), zzcm2(:)
  integer                       :: izigzag
- integer, parameter            :: nzzvars = 3
+ integer, parameter            :: nzzvars = 6
 end module zigzag_mod

@@ -15,6 +15,8 @@ c routine to print out final results
       use estsig_mod
       use estcum_mod
       use estsum_mod
+      use zigzag_mod
+      use const_mod
       implicit real*8(a-h,o-z)
 
 c     common /forcjac/ ajacob
@@ -22,7 +24,8 @@ c     common /forcjac/ ajacob
 c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
       dimension fouriert(-NAX:NAX,0:NAK1), fourierkkt(-NAK2:NAK2,-NAK2:NAK2)
-
+      dimension zzpairtot(-NAX:NAX,-NAX:NAX),zzdenijtot(-NAX:NAX,0:(nelec-1))
+      dimension zzcorrtot(0:NAX), zzcorrijtot(0:(nelec-1))
       dimension rprobt(NRAD),tryt(NRAD),suct(NRAD),work(nforce)
 
 
@@ -205,6 +208,23 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
           enddo
         enddo
 
+      endif
+
+      if(izigzag.gt.0) then
+        call mpi_allreduce(zzcorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorr(:) = zzcorrtot(:)
+        call mpi_allreduce(zzcorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorrij(:) = zzcorrijtot(:)
+        
+        if(izigzag.eq.2) then
+          naxt = (2*NAX + 1) * (2*NAX + 1)
+          call mpi_allreduce(zzpairden_t, zzpairtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+          zzpairden_t(:,:) = zzpairtot(:,:)
+          
+          naxt = (2*NAX + 1) * nelec
+          call mpi_allreduce(zzdenij_t, zzdenijtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+          zzdenij_t(:,:) = zzdenijtot(:,:)
+        endif
       endif
 
 c     call mpi_allreduce(trunfb,trunfbt,NRAD,mpi_double_precision

@@ -237,6 +237,9 @@ c force and force_err are really the energy difference and the error in the ener
         write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(3),zzerr(3),zzerr(3)*rtpass
         write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(1),zzerr(1),zzerr(1)*rtpass
         write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(2),zzerr(2),zzerr(2)*rtpass
+        write(6,'(''<ZigZag Amp> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(6),zzerr(6),zzerr(6)*rtpass
+        write(6,'(''<|ZigZag Amp|> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(4),zzerr(4),zzerr(4)*rtpass
+        write(6,'(''<ZigZag Amp^2> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(5),zzerr(5),zzerr(5)*rtpass
       endif
       if(print_radial_probability .and. index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin,sucsum/trysum
@@ -244,8 +247,8 @@ c force and force_err are really the energy difference and the error in the ener
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin
       endif
 
-      if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(passes)
-
+      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(passes)
+      
       call routines_write_final
       call reinit_routines_write_block
       call reinit_routines_write_final

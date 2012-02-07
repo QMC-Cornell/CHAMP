@@ -9,6 +9,8 @@ c called by finwrt from vmc,dmc,dmc_elec
       use pairden_mod
       use fourier_mod
       use contrl_per_mod
+      use zigzag_mod
+      use const_mod
       implicit real*8(a-h,o-z)
       character*20 file1,file2,file3,file4,file5,file6
 
@@ -308,6 +310,61 @@ c verify the normalization later...
         close(41)
         close(42)
         close(43)
+      endif
+      
+      if(izigzag.gt.0) then
+        if(index(mode,'vmc').ne.0) then
+          file1='zzcorr_vmc'
+          file2='zzcorrij_vmc'
+        else
+          file1='zzcorr_dmc'
+          file2='zzcorrij_dmc'
+        endif
+        if(idtask.eq.0) then
+          open(41,file=file1,status='unknown')
+          open(42,file=file2,status='unknown')
+         else
+          open(41,status='scratch')
+          open(42,status='scratch')
+        endif
+        do in2=0,nax2
+          write(41,'(g19.8,g19.8)') in2*del2,zzcorr(in2)/passes
+        enddo
+        do ine = 0,nelec-1
+          write(42,'(i8,g19.8)') ine,zzcorrij(ine)/passes
+        enddo
+        
+        if(izigzag.eq.2) then
+          if(index(mode,'vmc').ne.0) then
+            file3='zzparinden_t_vmc'
+            file4='zzdenij_t_vmc'
+          else
+            file3='zzparinden_t_dmc'
+            file4='zzdenij_t_dmc'
+          endif
+          if(idtask.eq.0) then
+            open(43,file=file3,status='unknown')
+            open(44,file=file4,status='unknown')
+           else
+            open(43,status='scratch')
+            open(44,status='scratch')
+          endif
+          
+          do in1=-nax1,nax1
+            do in2 = -nax2,nax2
+              write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,zzpairden_t(in1,in2)*term
+            enddo
+            do ine = 0,nelec-1
+              write(44,'(g19.8,i8,g19.8)') in1*del1,ine,zzdenij_t(in1,ine)/(passes*del1)
+            enddo
+            write(43,*)
+            write(44,*)
+          enddo
+          close(43)
+          close(44)
+        endif
+        close(41)
+        close(42)
       endif
 
       return

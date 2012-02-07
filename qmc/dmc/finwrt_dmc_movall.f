@@ -284,6 +284,9 @@ c save energy difference and error in energy difference for optimization
         write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
         write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
         write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
+        write(6,'(''<ZigZag Amp> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
+        write(6,'(''<|ZigZag Amp|> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
+        write(6,'(''<ZigZag Amp^2> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
       endif
 
 
@@ -293,7 +296,7 @@ c     write(6,'(9d20.12)') wcum,wcum1,wfcum,wfcum1,wgcum,wgcum1
       if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf_global,etrial,tau,taueff'')')
      &  nstep,iblk,nconf_global,etrial,tau,taueff(1)
 
-      if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))
+      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1))
 
       return
       end

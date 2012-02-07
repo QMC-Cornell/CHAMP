@@ -15,12 +15,16 @@ c  if ielec=0, we are doing an all-electron move.
       use dim_mod
       use contrl_per_mod, only: iperiodic
       use pairden_mod
+      use periodic_1d_mod, only: alattice
       use zigzag_mod
       implicit real*8(a-h,o-z)
       logical l_oldneoldsav, l_oldnenewsav
-
+c     common /circularmesh/ delti
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       dimension xold(3,nelec),xnew(3,nelec)
-      dimension temppos(2), zzterm(nzzvars)
+      dimension temppos(2),zzterm(nzzvars)
+      dimension zzmaglocal_new(nelec),zzmaglocal_old(nelec)
+      dimension zzcorrmat_old(nelec,nelec),zzcorrmat_new(nelec,nelec)
 
       if(ielec.lt.0 .or. ielec.gt.nelec) then
         write (6,*) 'Bad value of ielec in zigzag2d, ', ielec
@@ -149,11 +153,31 @@ c  Now all of the electrons are sorted, and we can calculate observables
       stagsignnew = 1.0d0/dble(nelec)
 c     Set the sign of the staggered order such that the largest r (or y) has sign +1
 c       i.e., in the zigzag phase, sum_i (-1)^i y_i should always be positive
-      if(mod(maxloc(zzposold(2,:),1),2).eq.0) stagsignold = -stagsignold
-      if(mod(maxloc(zzposnew(2,:),1),2).eq.0) stagsignnew = -stagsignnew
+      imaxold = maxloc(zzposold(2,:),1)
+      imaxnew = maxloc(zzposnew(2,:),1)
+      if (imaxold.eq.nelec) then
+        imaxoldn = 1
+      else
+        imaxoldn = imaxold+1
+      endif
+      if (imaxnew.eq.nelec) then
+        imaxnewn = 1
+      else
+        imaxnewn = imaxnew+1
+      endif
+      if(mod(imaxold,2).eq.0) stagsignold = -stagsignold
+      if(mod(imaxnew,2).eq.0) stagsignnew = -stagsignnew
+      rave = (q*sum(zzposold(2,:)) + p*sum(zzposnew(2,:)))/dble(nelec)
       do i =1,nelec
-        zzsumold = zzsumold + stagsignold*zzposold(2,i)
-        zzsumnew = zzsumnew + stagsignnew*zzposnew(2,i)
+        if (iperiodic.eq.0) then
+          zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rave)
+          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
+        else
+          zzmaglocal_old(i) = stagsignold*zzposold(2,i)
+          zzmaglocal_new(i) = stagsignnew*zzposnew(2,i)
+        endif
+        zzsumold = zzsumold + zzmaglocal_old(i)
+        zzsumnew = zzsumnew + zzmaglocal_new(i)
         stagsignold = -stagsignold
         stagsignnew = -stagsignnew
       enddo
@@ -165,17 +189,62 @@ c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
       zzterm(3) = q*zzsumold + p*zzsumnew
       zzterm(1) = q*dabs(zzsumold) + p*dabs(zzsumnew)
       zzterm(2) = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
-
+c     Calculate the values if we throw out max value of y or r and its neighbor
+      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(imaxoldn) 
+      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn) 
+      zzsumoldred = zzsumoldred*dble(nelec)/dble(nelec-2)
+      zzsumnewred = zzsumnewred*dble(nelec)/dble(nelec-2)
+      zzterm(6) = q*zzsumoldred + p*zzsumnewred
+      zzterm(4) = q*dabs(zzsumoldred) + p*dabs(zzsumnewred)
+      zzterm(5) = q*zzsumoldred*zzsumoldred + p*zzsumnewred*zzsumnewred
+      
 c     This is a kludge to make sure that the averages come out correctly 
 c        for single-electron moves.  Since this routine gets called
 c        once per electron in the mov1 update, we need to divide by
 c        nelec. This is not needed for all-electron updates, though
 c        since we just call this routine once after the update.
+      corrnorm = dble(nelec) !makes sure corr is counted properly
       if(ielec.gt.0) then
         zzterm(:) = zzterm(:)/dble(nelec)
+        corrnorm = 1.0
+      endif
+      zzsum(:) = zzsum(:) + zzterm(:)
+c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
+      zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
+      zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
+      
+      if(iperiodic.eq.0) then
+        delxt = delti
+      else
+        delxt = delxi(1)
       endif
 
-      zzsum(:) = zzsum(:) + zzterm(:)
+      do j = 0,nelec-1
+        do i = 1,nelec
+          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
+          ! compute difference in x or theta
+          xtdiffo = zzposold(1,i2) - zzposold(1,i)
+          xtdiffn = zzposnew(1,i2) - zzposnew(1,i)
+          if(iperiodic.eq.1) then
+            xtdiffo = modulo(xtdiffo,alattice)
+            xtdiffn = modulo(xtdiffn,alattice)
+            if (xtdiffo.ge.(alattice/2.)) xtdiffo = alattice - xtdiffo
+            if (xtdiffn.ge.(alattice/2.)) xtdiffn = alattice - xtdiffn
+          elseif(iperiodic.eq.0) then
+            xtdiffo = modulo(xtdiffo,2.*3.1415926)
+            xtdiffn = modulo(xtdiffn,2.*3.1415926)
+            if (xtdiffo.ge.3.1415926) xtdiffo = 2.*3.1415926 - xtdiffo
+            if (xtdiffn.ge.3.1415926) xtdiffn = 2.*3.1415926 - xtdiffn
+          endif
+          ixto = nint(delxt*xtdiffo)
+          ixtn = nint(delxt*xtdiffn)
+          zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
+          zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
+          zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
+          zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
+          zzcorrij(j) = zzcorr(j) + zzcorrtermo + zzcorrtermn
+        enddo
+      enddo
       
       xold_sav = xold
       xnew_sav = xnew

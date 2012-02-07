@@ -42,6 +42,8 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
       dimension rprobcollect(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
       dimension fouriert(-NAX:NAX,0:NAK1), fourierkkt(-NAK2:NAK2,-NAK2:NAK2)
+      dimension zzpairtot(-NAX:NAX,-NAX:NAX),zzdenijtot(-NAX:NAX,0:(nelec-1))
+      dimension zzcorrtot(0:NAX), zzcorrijtot(0:(nelec-1))
       dimension zzave(nzzvars), zzerr(nzzvars)
 
       character*80 fmt
@@ -222,6 +224,23 @@ c Collect radial charge density for atoms
           enddo
         enddo
 
+      endif
+      
+      if(izigzag.gt.0) then
+        call mpi_allreduce(zzcorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorr(:) = zzcorrtot(:)
+        call mpi_allreduce(zzcorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorrij(:) = zzcorrijtot(:)
+        
+        if(izigzag.eq.2) then
+          naxt = (2*NAX + 1) * (2*NAX + 1)
+          call mpi_allreduce(zzpairden_t, zzpairtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+          zzpairden_t(:,:) = zzpairtot(:,:)
+          
+          naxt = (2*NAX + 1) * nelec
+          call mpi_allreduce(zzdenij_t, zzdenijtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+          zzdenij_t(:,:) = zzdenijtot(:,:)
+        endif
       endif
  
       call mpi_allreduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -447,9 +466,12 @@ c save energy difference and error in energy difference for optimization
         write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
         write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
         write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
+        write(6,'(''<ZigZag Amp> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
+        write(6,'(''<|ZigZag Amp|> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
+        write(6,'(''<ZigZag Amp^2> (red)='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
       endif
 
-      if(ifixe.ne.0 .or. ifourier.ne.0) call den2dwrt(wgcum(1))
+      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1))
 
       call routines_write_final
       call reinit_routines_write_block
