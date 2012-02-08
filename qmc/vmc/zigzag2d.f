@@ -210,8 +210,8 @@ c        since we just call this routine once after the update.
       endif
       zzsum(:) = zzsum(:) + zzterm(:)
 c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
-      zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
-      zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
+c     zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
+c     zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
       
       if(iperiodic.eq.0) then
         delxt = delti
@@ -221,7 +221,9 @@ c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
 
       do j = 0,nelec-1
         do i = 1,nelec
-          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
+c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
+          i2 = i + j
+          if (i2.gt.nelec) i2 = i2 - nelec
           ! compute difference in x or theta
           xtdiffo = zzposold(1,i2) - zzposold(1,i)
           xtdiffn = zzposnew(1,i2) - zzposnew(1,i)
@@ -238,11 +240,13 @@ c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
           endif
           ixto = nint(delxt*xtdiffo)
           ixtn = nint(delxt*xtdiffn)
-          zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
-          zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
+c         zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
+c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
+          zzcorrtermo = q*corrnorm*zzmaglocal_old(i)*zzmaglocal_old(i2)
+          zzcorrtermn = p*corrnorm*zzmaglocal_new(i)*zzmaglocal_new(i2)
           zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
           zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
-          zzcorrij(j) = zzcorr(j) + zzcorrtermo + zzcorrtermn
+          zzcorrij(j) = zzcorrij(j) + zzcorrtermo + zzcorrtermn
         enddo
       enddo
       
