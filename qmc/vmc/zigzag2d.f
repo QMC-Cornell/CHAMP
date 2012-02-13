@@ -204,9 +204,11 @@ c        once per electron in the mov1 update, we need to divide by
 c        nelec. This is not needed for all-electron updates, though
 c        since we just call this routine once after the update.
       corrnorm = dble(nelec) !makes sure corr is counted properly
+      pairdennorm = 1.0d0
       if(ielec.gt.0) then
         zzterm(:) = zzterm(:)/dble(nelec)
         corrnorm = 1.0
+        pairdennorm = 1.0d0/dble(nelec)
       endif
       zzsum(:) = zzsum(:) + zzterm(:)
 c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
@@ -214,10 +216,11 @@ c     zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmagloc
 c     zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
       
       if(iperiodic.eq.0) then
-        delxt = delti
+        delxti = delti
       else
-        delxt = delxi(1)
+        delxti = delxi(1)
       endif
+      delyri = 1.0/zzdelyr
 
       do j = 0,nelec-1
         do i = 1,nelec
@@ -238,8 +241,8 @@ c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array in
             if (xtdiffo.ge.3.1415926) xtdiffo = 2.*3.1415926 - xtdiffo
             if (xtdiffn.ge.3.1415926) xtdiffn = 2.*3.1415926 - xtdiffn
           endif
-          ixto = nint(delxt*xtdiffo)
-          ixtn = nint(delxt*xtdiffn)
+          ixto = nint(delxti*xtdiffo)
+          ixtn = nint(delxti*xtdiffn)
 c         zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
 c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
           zzcorrtermo = q*corrnorm*zzmaglocal_old(i)*zzmaglocal_old(i2)
@@ -247,14 +250,24 @@ c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
           zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
           zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
           zzcorrij(j) = zzcorrij(j) + zzcorrtermo + zzcorrtermn
+          if(izigzag.gt.1 .and. j.ne.0) then ! do all of the pair density stuff
+            ytdiffo = zzposold(2,i2) - zzposold(2,i)
+            ytdiffn = zzposnew(2,i2) - zzposnew(2,i)
+            iyro = min(max(nint(delyri*ytdiffo),-NAX),NAX)
+            iyrn = min(max(nint(delyri*ytdiffn),-NAX),NAX)
+            zzpairden_t(iyro,ixto) = zzpairden_t(iyro,ixto) + q*pairdennorm*0.5
+            zzpairden_t(iyro,-ixto) = zzpairden_t(iyro,-ixto) + q*pairdennorm*0.5
+            zzpairdenij_t(iyro,j) = zzpairdenij_t(iyro,j) + q*pairdennorm
+            zzpairden_t(iyrn,ixtn) = zzpairden_t(iyrn,ixtn) + p*pairdennorm*0.5
+            zzpairden_t(iyrn,-ixtn) = zzpairden_t(iyrn,-ixtn) + p*pairdennorm*0.5
+            zzpairdenij_t(iyrn,j) = zzpairdenij_t(iyrn,j) + p*pairdennorm
+          endif
         enddo
       enddo
       
       xold_sav = xold
       xnew_sav = xnew
-c      if(izigzag.gt.1) then ! do all of the pair density stuff
-c      
-c      endif
+
     
       return
       end

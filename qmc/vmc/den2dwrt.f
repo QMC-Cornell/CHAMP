@@ -22,12 +22,14 @@ c      delx=1/delxi    ! doesn't work now that delxi is an array
         del1=1/delxi(1)
         del2=1/delxi(2)
         dely=del2 !used for pair density - vary transverse coord ("y")
+        delxt=del1  !used for zz pair density
         nax1=NAX
         nax2=NAX
       else
         del1=1/delradi
         del2=1/delti
         dely=del1 !used for pair density - vary transverse coord ("r")
+        delxt=del2
         nax1=nmeshr
         nax2=nmesht
       endif
@@ -328,7 +330,7 @@ c verify the normalization later...
           open(42,status='scratch')
         endif
         do in2=0,nax2
-          write(41,'(g19.8,g19.8)') in2*del2,zzcorr(in2)/passes
+          write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes
         enddo
         do ine = 0,nelec-1
           write(42,'(i8,g19.8)') ine,zzcorrij(ine)/passes
@@ -336,11 +338,11 @@ c verify the normalization later...
         
         if(izigzag.eq.2) then
           if(index(mode,'vmc').ne.0) then
-            file3='zzparinden_t_vmc'
-            file4='zzdenij_t_vmc'
+            file3='zzpairden_t_vmc'
+            file4='zzpairdenij_t_vmc'
           else
-            file3='zzparinden_t_dmc'
-            file4='zzdenij_t_dmc'
+            file3='zzpairden_t_dmc'
+            file4='zzpairdenij_t_dmc'
           endif
           if(idtask.eq.0) then
             open(43,file=file3,status='unknown')
@@ -352,10 +354,10 @@ c verify the normalization later...
           
           do in1=-nax1,nax1
             do in2 = -nax2,nax2
-              write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,zzpairden_t(in1,in2)*term
+              write(43,'(2g19.8,g19.8)') in1*zzdelyr,in2*delxt,zzpairden_t(in1,in2)*term
             enddo
             do ine = 0,nelec-1
-              write(44,'(g19.8,i8,g19.8)') in1*del1,ine,zzdenij_t(in1,ine)/(passes*del1)
+              write(44,'(g19.8,i8,g19.8)') in1*zzdelyr,ine,zzpairdenij_t(in1,ine)/(passes*del1)
             enddo
             write(43,*)
             write(44,*)

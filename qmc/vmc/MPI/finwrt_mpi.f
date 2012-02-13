@@ -222,8 +222,8 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
           zzpairden_t(:,:) = zzpairtot(:,:)
           
           naxt = (2*NAX + 1) * nelec
-          call mpi_allreduce(zzdenij_t, zzdenijtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-          zzdenij_t(:,:) = zzdenijtot(:,:)
+          call mpi_allreduce(zzpairdenij_t, zzdenijtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+          zzpairdenij_t(:,:) = zzdenijtot(:,:)
         endif
       endif
 

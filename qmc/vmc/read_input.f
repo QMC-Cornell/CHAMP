@@ -82,7 +82,7 @@ c     common /fit/ nsig,ncalls,iopt,ipr_opt
 c     namelist /opt_list/ igradhess
       namelist /opt_list/ iring_coulomb, iantiferromagnetic, iper_gaussian_type, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
      &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys,dot_bump_height,dot_bump_radius
-     &,nmeshk1,izigzag
+     &,nmeshk1,izigzag,zzdelyr
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
 
@@ -330,6 +330,8 @@ c          2: Also write out quantities related to zigzag phase transition, name
 c               pair density pden(r_i - r_j, theta_i - theta_j) if rings or 
 c               pden(y_i - y_j, x_i - x_j) if wires, as well as den(y_i - y_j, i-j)
 c          0: do not write out these quantities (default value)
+c zzdelyr  sets the size of delta r (or delta y) when plotting zigzag
+c            pair density if izigzag = 2
 c idot     0: pure complex quantum dots
 c          1: dots with composite fermions
 c          2: dots with laughlin wave functions
@@ -1485,6 +1487,7 @@ c   default values:
       shrp_perturb=0.d0
       ifourier=0
       izigzag=0
+      zzdelyr=0.25
       if(nloc.eq.-4 .or. nloc.eq.-1 .or. nloc.eq.-5) izigzag=1
       fmax1=10.d0
       fmax2=1.d0
