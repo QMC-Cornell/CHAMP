@@ -141,9 +141,15 @@ c verify the normalization later...
 
 c up electron:
         if(nup.gt.0) then
-          file1='pairden_ut'
-          file2='pairden_ud'
-          file3='pairden_uu'
+          if(index(mode,'vmc').ne.0) then
+            file1='pairden_ut_vmc'
+            file2='pairden_ud_vmc'
+            file3='pairden_uu_vmc'
+          else
+            file1='pairden_ut_dmc'
+            file2='pairden_ud_dmc'
+            file3='pairden_uu_dmc'
+          endif
 
           if(idtask.eq.0) then
             open(41,file=file1,status='unknown')
@@ -155,22 +161,29 @@ c up electron:
             open(43,status='scratch')
           endif
           do in0=0,NAX
-            r0=in0*dely
-            if(in0.ge.nint(xfix(1)/dely) .and. in0.le.nint(xfix(2)/dely)) then
+            if(icoosys.eq.1) then
+              r0=in0*dely
+              if(in0.lt.nint(xfix(1)/dely) .or. in0.gt.nint(xfix(2)/dely)) cycle
               write(41,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(42,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(43,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
-              do in1=-NAX,NAX
-                do in2=-NAX,NAX
-                  write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probut(in0,in1,in2)*term
-                  write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probud(in0,in1,in2)*term
-                  write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probuu(in0,in1,in2)*term
-                enddo
-                write(41,*)
-                write(42,*)
-                write(43,*)
-              enddo
+            else
+              r0=in0*dely + xfix(1)
+              if(r0.gt.xfix(2)) exit
+              write(41,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0-rmean
+              write(42,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0-rmean
+              write(43,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0-rmean
             endif
+            do in1=-NAX,NAX
+              do in2=-NAX,NAX
+                write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probut(in0,in1,in2)*term
+                write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probud(in0,in1,in2)*term
+                write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probuu(in0,in1,in2)*term
+              enddo
+              write(41,*)
+              write(42,*)
+              write(43,*)
+            enddo
           enddo
           close(41)
           close(42)
@@ -179,9 +192,15 @@ c up electron:
 
 c down electron:
         if(ndn.gt.0) then
-          file1='pairden_dt'
-          file2='pairden_dd'
-          file3='pairden_du'
+          if(index(mode,'vmc').ne.0) then
+            file1='pairden_dt_vmc'
+            file2='pairden_dd_vmc'
+            file3='pairden_du_vmc'
+          else
+            file1='pairden_dt_dmc'
+            file2='pairden_dd_dmc'
+            file3='pairden_du_dmc'
+          endif
 
           if(idtask.eq.0) then
             open(41,file=file1,status='unknown')
@@ -194,22 +213,29 @@ c down electron:
           endif
 
           do in0=0,NAX
-            r0=in0*dely
-            if(in0.ge.nint(xfix(1)/dely) .and. in0.le.nint(xfix(2)/dely)) then
+            if(icoosys.eq.1) then
+              r0=in0*dely
+              if(in0.lt.nint(xfix(1)/dely) .or. in0.gt.nint(xfix(2)/dely)) cycle
               write(41,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(42,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
               write(43,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0
-              do in1=-NAX,NAX
-                do in2=-NAX,NAX
-                  write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdt(in0,in1,in2)*term
-                  write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdd(in0,in1,in2)*term
-                  write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdu(in0,in1,in2)*term
-                enddo
-                write(41,*)
-                write(42,*)
-                write(43,*)
-              enddo
+            else
+              r0=in0*dely + xfix(1)
+              if(r0.gt.xfix(2)) exit
+              write(41,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0-rmean
+              write(42,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0-rmean
+              write(43,'(''# Grid point:'',i4,''  r0 ='',g19.8)') in0,r0-rmean
             endif
+            do in1=-NAX,NAX
+              do in2=-NAX,NAX
+                write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdt(in0,in1,in2)*term
+                write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdd(in0,in1,in2)*term
+                write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,xx0probdu(in0,in1,in2)*term
+              enddo
+              write(41,*)
+              write(42,*)
+              write(43,*)
+            enddo
           enddo
           close(41)
           close(42)

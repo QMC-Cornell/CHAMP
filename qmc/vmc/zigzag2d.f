@@ -207,7 +207,7 @@ c        since we just call this routine once after the update.
       pairdennorm = 1.0d0
       if(ielec.gt.0) then
         zzterm(:) = zzterm(:)/dble(nelec)
-        corrnorm = 1.0
+        corrnorm = 1.0 ! remember that zzmaglocal has a factor of 1/nelec^2 in it!!
         pairdennorm = 1.0d0/dble(nelec)
       endif
       zzsum(:) = zzsum(:) + zzterm(:)
@@ -251,10 +251,10 @@ c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
           zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
           zzcorrij(j) = zzcorrij(j) + zzcorrtermo + zzcorrtermn
           if(izigzag.gt.1 .and. j.ne.0) then ! do all of the pair density stuff
-            ytdiffo = zzposold(2,i2) - zzposold(2,i)
-            ytdiffn = zzposnew(2,i2) - zzposnew(2,i)
-            iyro = min(max(nint(delyri*ytdiffo),-NAX),NAX)
-            iyrn = min(max(nint(delyri*ytdiffn),-NAX),NAX)
+            yrdiffo = zzposold(2,i2) - zzposold(2,i)
+            yrdiffn = zzposnew(2,i2) - zzposnew(2,i)
+            iyro = min(max(nint(delyri*yrdiffo),-NAX),NAX)
+            iyrn = min(max(nint(delyri*yrdiffn),-NAX),NAX)
             zzpairden_t(iyro,ixto) = zzpairden_t(iyro,ixto) + q*pairdennorm*0.5
             zzpairden_t(iyro,-ixto) = zzpairden_t(iyro,-ixto) + q*pairdennorm*0.5
             zzpairdenij_t(iyro,j) = zzpairdenij_t(iyro,j) + q*pairdennorm

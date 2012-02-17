@@ -15,6 +15,7 @@ c (not impossible, can be optimized)
       use pairden_mod
       implicit real*8(a-h,o-z)
 
+      common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       dimension xold(3,nelec),xnew(3,nelec)
 
       do 30 ier=1,nelec      ! reference electron
@@ -29,9 +30,14 @@ c (not impossible, can be optimized)
         rnew=dsqrt(rnew)
         thetao=datan2(xold(2,ier),xold(1,ier))
         thetan=datan2(xnew(2,ier),xnew(1,ier))
-        iro=nint(delxi(2)*rold)
-        irn=nint(delxi(2)*rnew)
-
+        if(icoosys.eq.1) then
+          iro=nint(delxi(2)*rold)
+          irn=nint(delxi(2)*rnew)
+        else
+          iro=nint(delradi*(rold - xfix(1)))
+          irn=nint(delradi*(rnew - xfix(1)))
+        endif
+        if((iro.lt.0 .or. iro.gt.NAX) .and. (irn.lt.0 .or. irn.gt.NAX)) cycle
 c electron relative to the reference electron
         do 20 ie2=1,nelec
           if(ie2.ne.ier) then
@@ -39,23 +45,23 @@ c rotate old and new coordinates
             call rotate(thetao,xold(1,ie2),xold(2,ie2),x1roto,x2roto)
             call rotate(thetan,xnew(1,ie2),xnew(2,ie2),x1rotn,x2rotn)
 c put on the grid:
-c           if(icoosys.eq.1) then 
+            if(icoosys.eq.1) then 
               ix1roto=nint(delxi(1)*x1roto)
               ix2roto=nint(delxi(2)*x2roto)
               ix1rotn=nint(delxi(1)*x1rotn)
               ix2rotn=nint(delxi(2)*x2rotn)
-c           else
+            else
 c same trick adapted to circular coordinates
-c             ix1roto=nint(delradi
-c             ix1rotn=nint(delradi*
-c             ix2roto=nint(delti*(datan2(
-c             ix2rotn=nint(delti*(datan2(
-c           endif
+              ix1roto=nint(delradi*(sqrt(x1roto**2 + x2roto**2)-rmean))
+              ix1rotn=nint(delradi*(sqrt(x1rotn**2 + x2rotn**2)-rmean))
+              ix2roto=nint(delti*(datan2(x2roto,x1roto)))
+              ix2rotn=nint(delti*(datan2(x2rotn,x1rotn)))
+            endif
 
 
 c check if we are within grid limits, check spins, and collect data
 c  -old config
-            if(iro.le.NAX .and. abs(ix1roto).le.NAX .and. abs(ix2roto).le.NAX) then
+            if(iro.le.NAX .and. iro.ge.0 .and. abs(ix1roto).le.NAX .and. abs(ix2roto).le.NAX) then
               if(ier.le.nup) then
                 xx0probut(iro,ix1roto,ix2roto)=xx0probut(iro,ix1roto,ix2roto)+q
                 if(ie2.le.nup) then
@@ -73,7 +79,7 @@ c  -old config
               endif
             endif
 c -new config
-            if(irn.le.NAX .and. abs(ix1rotn).le.NAX .and. abs(ix2rotn).le.NAX) then
+            if(irn.le.NAX .and. irn.ge.0 .and. abs(ix1rotn).le.NAX .and. abs(ix2rotn).le.NAX) then
               if(ier.le.nup) then
                 xx0probut(irn,ix1rotn,ix2rotn)=xx0probut(irn,ix1rotn,ix2rotn)+p
                 if(ie2.le.nup) then
