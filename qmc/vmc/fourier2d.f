@@ -49,7 +49,7 @@ c    quantities having to do with "x" (the periodic direction in wires)
       dimension fsin_un(-NAX:NAX),fsin_dn(-NAX:NAX)
       dimension nr_uo(-NAX:NAX),nr_do(-NAX:NAX),nr_un(-NAX:NAX),nr_dn(-NAX:NAX)
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
-      common /dot/ rring
+      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       if(iperiodic.eq.1) then
         naxmin = -NAX

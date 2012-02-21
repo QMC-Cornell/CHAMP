@@ -232,9 +232,15 @@ c same trick adapted to circular coordinates
               endif
             endif
           endif
-
-          do 210 k=1,ndim
-  210       r2sum=r2sum+p*xnew(k,i)**2+q*xold(k,i)**2
+          
+          r2sumeo = 0.
+          r2sumen = 0.
+          do k=1,ndim
+            r2sumeo = r2sumeo + xold(k,i)**2
+            r2sumen = r2sumen + xnew(k,i)**2
+          enddo
+          r1sum=r1sum+p*sqrt(r2sumen) + q*sqrt(r2sumeo)
+          r2sum=r2sum+ p*r2sumen + q*r2sumeo
 
 c     eksum=zero
 c     do 26 ii=1,nelec

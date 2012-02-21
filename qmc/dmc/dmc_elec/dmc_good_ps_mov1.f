@@ -185,6 +185,7 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         call walkstrjas(iw)
 
 c Sample Green function for forward move
+        r1sume=zero
         r2sume=zero
         risume=zero
         dfus2ac=zero
@@ -336,6 +337,7 @@ c If we are using weights rather than accept/reject
           q=one-p
 
 c Calculate moments of r and save rejection probability for primary walk
+          r1sume=r1sume+(q*dsqrt(r2o)+p*dsqrt(r2n))
           r2sume=r2sume+(q*r2o+p*r2n)
           risume=risume+(q/dsqrt(r2o)+p/dsqrt(r2n))
           unacp(i)=q
@@ -527,6 +529,7 @@ c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
           
           if(ifr.eq.1) then
 
+            r1sum=r1sum+wtg*r1sume
             r2sum=r2sum+wtg*r2sume
             risum=risum+wtg*risume
             do 270 i=1,nelec

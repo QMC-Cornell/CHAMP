@@ -11,5 +11,5 @@ module zigzag_mod
  double precision, allocatable :: zzcum(:), zzsum(:), zzcm2(:)
  double precision              :: zzdelyr
  integer                       :: izigzag
- integer, parameter            :: nzzvars = 6
+ integer, parameter            :: nzzvars = 9
 end module zigzag_mod

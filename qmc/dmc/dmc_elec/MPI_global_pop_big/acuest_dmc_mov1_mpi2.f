@@ -43,7 +43,7 @@ c routine to accumulate estimators for energy etc.
 
 
 
-      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4
+      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
       dimension pecollect(nforce),peicollect(nforce),
@@ -75,6 +75,9 @@ c xerr = current error of x
       call mpi_reduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldest,ioldest_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldestmx,ioldestmx_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r1sum,r1sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(risum,risum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       ioldest=ioldest_collect
@@ -86,6 +89,9 @@ c xerr = current error of x
 
 c     wnow=wsum/nstep
 c     wfnow=wfsum/nstep
+      r1sum = r1sum_collect
+      r2sum = r2sum_collect
+      risum = risum_collect
       zzsum(:) = zzsum_collect(:)
 
       enow=esum/wsum
@@ -93,11 +99,13 @@ c     wfnow=wfsum/nstep
       ei1now=wfsum/wdsum
       ei2now=wgsum(1)/wgdsum
       rinow=risum/wgsum(1)
+      r1now=r1sum/wgsum(1)
       r2now=r2sum/wgsum(1)
       zznow(:)=zzsum(:)/wgsum(1)
 
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
+      r1cm2=r1cm2+r1sum*r1now
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
       zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
@@ -106,6 +114,7 @@ c     wfnow=wfsum/nstep
       wgdcum=wgdcum+wgdsum
       ei1cum=ei1cum+ei1now
       ei2cum=ei2cum+ei2now
+      r1cum=r1cum+r1sum
       r2cum=r2cum+r2sum
       ricum=ricum+risum
       zzcum(:)=zzcum(:)+zzsum(:)
@@ -276,6 +285,7 @@ c zero out xsum variables for metrop
       efsum=zero
       ei1sum=zero
       ei2sum=zero
+      r1sum=zero
       r2sum=zero
       risum=zero
       zzsum(:)=zero
@@ -493,6 +503,7 @@ c zero out estimators
       ei1cum=zero
       ei2cum=zero
       ei3cum=zero
+      r1cum=zero
       r2cum=zero
       ricum=zero
       zzcum(:)=zero
@@ -510,6 +521,7 @@ c zero out estimators
       ei1cm2=zero
       ei2cm2=zero
       ei3cm2=zero
+      r1cm2=zero
       r2cm2=zero
       ricm2=zero
       zzcm2(:)=zero
@@ -525,6 +537,7 @@ c zero out estimators
       ei1sum=zero
       ei2sum=zero
       ei3sum=zero
+      r1sum=zero
       r2sum=zero
       risum=zero
       zzsum(:)=zero

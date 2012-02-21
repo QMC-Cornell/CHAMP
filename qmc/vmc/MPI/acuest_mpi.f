@@ -27,7 +27,7 @@ c routine to accumulate estimators for energy etc.
       implicit real*8(a-h,o-z)
 
       real(dp) :: esum_collect(nforce), wcollect(nforce)
-      real(dp) :: pesum_collect, peisum_collect, tpbsum_collect, tjfsum_collect, r2sum_collect, accsum_collect
+      real(dp) :: pesum_collect, peisum_collect, tpbsum_collect, tjfsum_collect, r1sum_collect, r2sum_collect, accsum_collect
       real(dp) :: d_node_log_collect, walker_weights_sum_block_collect
 
       dimension zzsum_collect(nzzvars)
@@ -64,6 +64,7 @@ c quantities in finwrt_mpi
       call mpi_allreduce(peisum,peisum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tpbsum,tpbsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjfsum,tjfsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r1sum,r1sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(accsum,accsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -86,6 +87,7 @@ c Warning this flush and barrier should not be necessary
       peisum = peisum_collect
       tpbsum = tpbsum_collect
       tjfsum = tjfsum_collect
+      r1sum = r1sum_collect
       r2sum = r2sum_collect
       zzsum(:) = zzsum_collect(:)
       accsum = accsum_collect

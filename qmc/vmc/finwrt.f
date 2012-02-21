@@ -76,6 +76,7 @@ c     endif
       peifin=peicum/passes
       tpbfin=tpbcum/passes
       tjffin=tjfcum/passes
+      r1fin=r1cum/passes
       r2fin=r2cum/passes
       zzfin(:)=zzcum(:)/passes
       accfin=acccum/passes
@@ -96,6 +97,7 @@ c reflected when we get Tcorr < 1.
       peierr=err(peicum,peicm2,1)
       tpberr=err(tpbcum,tpbcm2,1)
       tjferr=err(tjfcum,tjfcm2,1)
+      r1err=err(r1cum,r1cm2,1)
       r2err=err(r2cum,r2cm2,1)
       do iz=1,nzzvars
         zzerr(iz)=err(zzcum(iz),zzcm2(iz),1)
@@ -230,8 +232,10 @@ c force and force_err are really the energy difference and the error in the ener
         write(6,'(''Zeeman E ='',t17,f12.7)') emagsz
       endif
 
-      if(iperiodic.eq.0.and.ncent.eq.1)
-     & write(6,'(''<r2> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
+      if(iperiodic.eq.0.and.ncent.eq.1) then
+        write(6,'(''<r> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r1fin,r1err,r1err*rtpass
+        write(6,'(''<r2> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
+      endif
 
       if(izigzag.ge.1) then
         write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(3),zzerr(3),zzerr(3)*rtpass
@@ -240,6 +244,9 @@ c force and force_err are really the energy difference and the error in the ener
         write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(6),zzerr(6),zzerr(6)*rtpass
         write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(4),zzerr(4),zzerr(4)*rtpass
         write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(5),zzerr(5),zzerr(5)*rtpass
+        write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(9),zzerr(9),zzerr(9)*rtpass
+        write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(7),zzerr(7),zzerr(7)*rtpass
+        write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(8),zzerr(8),zzerr(8)*rtpass
       endif
       if(print_radial_probability .and. index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin,sucsum/trysum

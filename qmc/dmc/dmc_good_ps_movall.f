@@ -430,6 +430,7 @@ c Collect density only for primary walk
               endif
               rprob(itryo)=rprob(itryo)+wtgq
               rprob(itryn)=rprob(itryn)+wtgp
+              r1sum=r1sum+wtg*(q*dsqrt(r2o)+p*dsqrt(r2n))
               r2sum=r2sum+wtg*(q*r2o+p*r2n)
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 

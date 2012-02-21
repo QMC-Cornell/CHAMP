@@ -21,7 +21,9 @@ c  if ielec=0, we are doing an all-electron move.
       logical l_oldneoldsav, l_oldnenewsav
 c     common /circularmesh/ delti
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
+      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       dimension xold(3,nelec),xnew(3,nelec)
+      dimension zztemp2(nelec), ransign(nelec)
       dimension temppos(2),zzterm(nzzvars)
       dimension zzmaglocal_new(nelec),zzmaglocal_old(nelec)
       dimension zzcorrmat_old(nelec,nelec),zzcorrmat_new(nelec,nelec)
@@ -151,27 +153,32 @@ c  Now all of the electrons are sorted, and we can calculate observables
       zzsumnew = 0.d0
       stagsignold = 1.0d0/dble(nelec)
       stagsignnew = 1.0d0/dble(nelec)
-c     Set the sign of the staggered order such that the largest r (or y) has sign +1
+c     Set the sign of the staggered order such that the n/3rd largest r (or y) has sign +1
 c       i.e., in the zigzag phase, sum_i (-1)^i y_i should always be positive
-      imaxold = maxloc(zzposold(2,:),1)
-      imaxnew = maxloc(zzposnew(2,:),1)
-      if (imaxold.eq.nelec) then
-        imaxoldn = 1
-      else
-        imaxoldn = imaxold+1
-      endif
-      if (imaxnew.eq.nelec) then
-        imaxnewn = 1
-      else
-        imaxnewn = imaxnew+1
-      endif
-      if(mod(imaxold,2).eq.0) stagsignold = -stagsignold
-      if(mod(imaxnew,2).eq.0) stagsignnew = -stagsignnew
-      rave = (q*sum(zzposold(2,:)) + p*sum(zzposnew(2,:)))/dble(nelec)
+c       Choosing the n/3rd (and not the largest) should hopefully cause zigzag amp = 0 in linear phase
+
+      zztemp2(:) = zzposold(2,:)
+      do ipos = 2,nelec/3
+        izagold = maxloc(zztemp2,1)
+        zztemp2(izagold) = -1.0
+      enddo
+      izagold = maxloc(zztemp2,1)
+      zztemp2(:) = zzposnew(2,:)
+      do ipos = 2,nelec/3
+        izagnew = maxloc(zztemp2,1)
+        zztemp2(izagnew) = -1.0
+      enddo
+      izagnew = maxloc(zztemp2,1)
+      if(mod(izagold,2).eq.0) stagsignold = -stagsignold
+      if(mod(izagnew,2).eq.0) stagsignnew = -stagsignnew
+c      rave = (q*sum(zzposold(2,:)) + p*sum(zzposnew(2,:)))/dble(nelec)
+
       do i =1,nelec
         if (iperiodic.eq.0) then
-          zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rave)
-          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
+          zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rring)
+          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rring)
+c          zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rave)
+c          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
         else
           zzmaglocal_old(i) = stagsignold*zzposold(2,i)
           zzmaglocal_new(i) = stagsignnew*zzposnew(2,i)
@@ -185,18 +192,54 @@ c  For debugging:
 c      write(6,*) 'in zigzag2d:'
 c      write(6,*) (zzposold(1,i),i=1,nelec)
 c      write(6,*) (zzposold(2,i),i=1,nelec)
+c      write(6,*) (zzposnew(1,i),i=1,nelec)
+c      write(6,*) (zzposnew(2,i),i=1,nelec)
+c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
 c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
       zzterm(3) = q*zzsumold + p*zzsumnew
       zzterm(1) = q*dabs(zzsumold) + p*dabs(zzsumnew)
       zzterm(2) = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
 c     Calculate the values if we throw out max value of y or r and its neighbor
-      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(imaxoldn) 
-      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn) 
+      imaxold = maxloc(zzposold(2,:),1)
+      imaxnew = maxloc(zzposnew(2,:),1)
+      iminold = minloc(zzposold(2,:),1)
+      iminnew = minloc(zzposnew(2,:),1)
+c     if (imaxold.eq.nelec) then
+c       imaxoldn = 1
+c     else
+c       imaxoldn = imaxold+1
+c     endif
+c     if (imaxnew.eq.nelec) then
+c       imaxnewn = 1
+c     else
+c       imaxnewn = imaxnew+1
+c     endif
+c      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(imaxoldn) 
+c      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn) 
+      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(iminold) 
+      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(iminnew) 
       zzsumoldred = zzsumoldred*dble(nelec)/dble(nelec-2)
       zzsumnewred = zzsumnewred*dble(nelec)/dble(nelec-2)
       zzterm(6) = q*zzsumoldred + p*zzsumnewred
       zzterm(4) = q*dabs(zzsumoldred) + p*dabs(zzsumnewred)
       zzterm(5) = q*zzsumoldred*zzsumoldred + p*zzsumnewred*zzsumnewred
+
+c     Pick sign randomly, so that N/2 have "-" sign
+      ransign(:) = 1.0d0/dble(nelec)
+      do itry = 1,nelec/2
+        do 
+          irand = int(nelec*rannyu(0)) + 1
+          if (ransign(irand).gt.0) then
+            ransign(irand) = -ransign(irand)
+            exit
+          endif
+        enddo
+      enddo
+      zzrandsumold = sum(zzposold(2,:)*ransign(:))
+      zzrandsumnew = sum(zzposnew(2,:)*ransign(:))
+      zzterm(9) = q*zzrandsumold + p*zzrandsumnew
+      zzterm(7) = q*dabs(zzrandsumold) + p*dabs(zzrandsumnew)
+      zzterm(8) = q*zzrandsumold*zzrandsumold + p*zzrandsumnew*zzrandsumnew
       
 c     This is a kludge to make sure that the averages come out correctly 
 c        for single-electron moves.  Since this routine gets called
@@ -207,7 +250,7 @@ c        since we just call this routine once after the update.
       pairdennorm = 1.0d0
       if(ielec.gt.0) then
         zzterm(:) = zzterm(:)/dble(nelec)
-        corrnorm = 1.0 ! remember that zzmaglocal has a factor of 1/nelec^2 in it!!
+        corrnorm = 1.0 ! remember that zzmaglocal^2 has a factor of 1/nelec^2 in it!!
         pairdennorm = 1.0d0/dble(nelec)
       endif
       zzsum(:) = zzsum(:) + zzterm(:)

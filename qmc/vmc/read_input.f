@@ -1636,6 +1636,7 @@ c circular coordinates
       delti=(2*nmesht+1)/(2*pi)
       delradi=(2*nmeshr+1)/(rmax-rmin)
       rmean=(rmin+rmax)*0.5d0
+      write(6,*) 'Value of r used in densities is relative to rmean = ', rmean
 
 c get normalization for basis functions
 c (used to be up)

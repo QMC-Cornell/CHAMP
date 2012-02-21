@@ -15,7 +15,7 @@ c called by finwrt from vmc,dmc,dmc_elec
       character*20 file1,file2,file3,file4,file5,file6
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
-      common /dot/ rring
+      common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 c verify the normalization later...
 c      delx=1/delxi    ! doesn't work now that delxi is an array
       if(icoosys.eq.1) then
