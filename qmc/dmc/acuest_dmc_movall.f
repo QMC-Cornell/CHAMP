@@ -64,7 +64,9 @@ c     wfnow=wfsum/nstep
       rinow=risum/wgsum(1)
       r1now=r1sum/wgsum(1)
       r2now=r2sum/wgsum(1)
-      zznow(:)=zzsum(:)/wgsum(1)
+      if(izigzag.gt.0) then
+       zznow(:)=zzsum(:)/wgsum(1)
+      endif
   
       wcm2=wcm2+wsum**2
       wfcm2=wfcm2+wfsum**2
@@ -75,7 +77,9 @@ c     wfnow=wfsum/nstep
       r1cm2=r1cm2+r1sum*r1now
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
-      zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
+      if(izigzag.gt.0) then
+       zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
+      endif
 
       wcum=wcum+wsum
       wfcum=wfcum+wfsum
@@ -88,7 +92,9 @@ c     wfnow=wfsum/nstep
       r1cum=r1cum+r1sum
       r2cum=r2cum+r2sum
       ricum=ricum+risum
-      zzcum(:)=zzcum(:)+zzsum(:)
+      if(izigzag.gt.0) then
+       zzcum(:)=zzcum(:)+zzsum(:)
+      endif
 
       do 15 ifr=1,nforce
 
@@ -225,7 +231,9 @@ c zero out xsum variables
       r1sum=zero
       r2sum=zero
       risum=zero
-      zzsum(:)=zero
+      if(izigzag.gt.0) then
+       zzsum(:)=zero
+      endif
 
       do 20 ifr=1,nforce
         egsum(ifr)=zero
@@ -375,7 +383,9 @@ c zero out estimators
       r1cum=zero
       r2cum=zero
       ricum=zero
-      zzcum(:)=zero
+      if(izigzag.gt.0) then
+       zzcum(:)=zero
+      endif
 
       wcm21=zero
       wfcm21=zero
@@ -393,7 +403,9 @@ c zero out estimators
       r1cm2=zero
       r2cm2=zero
       ricm2=zero
-      zzcm2(:)=zero
+      if(izigzag.gt.0) then
+       zzcm2(:)=zero
+      endif
 
       wfsum1=zero
       wsum=zero
@@ -409,7 +421,9 @@ c zero out estimators
       r1sum=zero
       r2sum=zero
       risum=zero
-      zzsum(:)=zero
+      if(izigzag.gt.0) then
+       zzsum(:)=zero
+      endif
 
       call alloc ('fgcum', fgcum, nforce)
       call alloc ('fgcm2', fgcm2, nforce)

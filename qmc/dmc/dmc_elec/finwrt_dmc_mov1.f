@@ -120,7 +120,9 @@ c Write out radial charge density for atoms
       r1ave=r1cum/(wgcum(1)*nelec)
       r2ave=r2cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
-      zzave(:)=zzcum(:)/wgcum(1)
+      if(izigzag.gt.0) then
+       zzave(:)=zzcum(:)/wgcum(1)
+      endif
       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
       e3ave=etrial-dlog(ei3ave)/(taucum(1)/wgcum(1))
@@ -139,8 +141,10 @@ c Write out radial charge density for atoms
         ei3err=0
         r1err=0
         r2err=0
-        rierr=0
-        zzerr(:)=0.d0
+        rierr=0 
+        if(izigzag.gt.0) then
+         zzerr(:)=0.d0
+        endif
        else
         werr=errw(wcum,wcm2)
         wferr=errw(wfcum,wfcm2)
@@ -156,9 +160,11 @@ c Write out radial charge density for atoms
         r1err=errg(r1cum,r1cm2,1)/nelec
         r2err=errg(r2cum,r2cm2,1)/nelec
         rierr=errg(ricum,ricm2,1)/nelec
-        do iz=1,nzzvars
+        if(izigzag.gt.0) then
+         do iz=1,nzzvars
           zzerr(iz)=errg(zzcum(iz),zzcm2(iz),1)
-        enddo
+         enddo
+        endif
       endif
 
       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))

@@ -304,7 +304,9 @@ c     ei3ave=ei3cum/passes
       r1ave=r1cum/(wgcum(1)*nelec)
       r2ave=r2cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
-      zzave(:)=zzcum(:)/wgcum(1)
+      if(izigzag.gt.0) then
+       zzave(:)=zzcum(:)/wgcum(1)
+      endif
 c     if(itau_eff.ge.1) then
 c       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
 c       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
@@ -335,9 +337,11 @@ c     ei3err=erri1(ei3cum,ei3cm2)
       r1err=errg(r1cum,r1cm2,1)/nelec
       r2err=errg(r2cum,r2cm2,1)/nelec
       rierr=errg(ricum,ricm2,1)/nelec
-      do iz=1,nzzvars
+      if(izigzag.gt.0) then
+       do iz=1,nzzvars
         zzerr(iz)=errg(zzcum(iz),zzcm2(iz),1)
-      enddo
+       enddo
+      endif
 c     if(itau_eff.ge.1) then
 c       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
 c       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*taucum(1)/wgcum(1))

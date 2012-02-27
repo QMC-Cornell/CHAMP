@@ -78,7 +78,9 @@ c xerr = current error of x
       call mpi_allreduce(r1sum,r1sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(risum,risum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      if(izigzag.gt.0) then
+       call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      endif
 
       ioldest=ioldest_collect
       ioldestmx=ioldestmx_collect
@@ -92,7 +94,9 @@ c     wfnow=wfsum/nstep
       r1sum = r1sum_collect
       r2sum = r2sum_collect
       risum = risum_collect
-      zzsum(:) = zzsum_collect(:)
+      if(izigzag.gt.0) then
+       zzsum(:) = zzsum_collect(:)
+      endif
 
       enow=esum/wsum
       efnow=efsum/wfsum
@@ -101,14 +105,18 @@ c     wfnow=wfsum/nstep
       rinow=risum/wgsum(1)
       r1now=r1sum/wgsum(1)
       r2now=r2sum/wgsum(1)
-      zznow(:)=zzsum(:)/wgsum(1)
+      if(izigzag.gt.0) then
+       zznow(:)=zzsum(:)/wgsum(1)
+      endif
 
       ei1cm2=ei1cm2+ei1now**2
       ei2cm2=ei2cm2+ei2now**2
       r1cm2=r1cm2+r1sum*r1now
       r2cm2=r2cm2+r2sum*r2now
       ricm2=ricm2+risum*rinow
-      zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
+      if(izigzag.gt.0) then
+       zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
+      endif
 
       wdcum=wdcum+wdsum
       wgdcum=wgdcum+wgdsum
@@ -117,7 +125,9 @@ c     wfnow=wfsum/nstep
       r1cum=r1cum+r1sum
       r2cum=r2cum+r2sum
       ricum=ricum+risum
-      zzcum(:)=zzcum(:)+zzsum(:)
+      if(izigzag.gt.0) then
+       zzcum(:)=zzcum(:)+zzsum(:)
+      endif
 
       wcm2=wcm2+wsum**2
       wfcm2=wfcm2+wfsum**2
@@ -288,7 +298,9 @@ c zero out xsum variables for metrop
       r1sum=zero
       r2sum=zero
       risum=zero
-      zzsum(:)=zero
+      if(izigzag.gt.0) then
+       zzsum(:)=zero
+      endif
 
       do 20 ifr=1,nforce
         wgsum(ifr)=zero
@@ -506,7 +518,9 @@ c zero out estimators
       r1cum=zero
       r2cum=zero
       ricum=zero
-      zzcum(:)=zero
+      if(izigzag.gt.0) then
+       zzcum(:)=zero
+      endif
 
       wcm21=zero
       wfcm21=zero
@@ -524,7 +538,9 @@ c zero out estimators
       r1cm2=zero
       r2cm2=zero
       ricm2=zero
-      zzcm2(:)=zero
+      if(izigzag.gt.0) then
+       zzcm2(:)=zero
+      endif
 
       wfsum1=zero
       wsum=zero
@@ -540,7 +556,9 @@ c zero out estimators
       r1sum=zero
       r2sum=zero
       risum=zero
-      zzsum(:)=zero
+      if(izigzag.gt.0) then
+       zzsum(:)=zero
+      endif
 
       call grad_hess_jas_init
 
