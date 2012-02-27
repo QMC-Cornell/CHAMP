@@ -66,7 +66,9 @@ c quantities in finwrt_mpi
       call mpi_allreduce(tjfsum,tjfsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r1sum,r1sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      if(izigzag.gt.0) then
       call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      endif
       call mpi_allreduce(accsum,accsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(d_node_log_sum,d_node_log_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(walker_weights_sum_block,walker_weights_sum_block_collect,1,mpi_double_precision,
@@ -89,7 +91,9 @@ c Warning this flush and barrier should not be necessary
       tjfsum = tjfsum_collect
       r1sum = r1sum_collect
       r2sum = r2sum_collect
+      if(izigzag.gt.0) then
       zzsum(:) = zzsum_collect(:)
+      endif
       accsum = accsum_collect
       d_node_log_sum = d_node_log_collect
       walker_weights_sum_block = walker_weights_sum_block_collect
