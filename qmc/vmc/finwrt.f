@@ -78,7 +78,9 @@ c     endif
       tjffin=tjfcum/passes
       r1fin=r1cum/passes
       r2fin=r2cum/passes
-      zzfin(:)=zzcum(:)/passes
+      if(izigzag.gt.0) then
+        zzfin(:)=zzcum(:)/passes
+      endif
       accfin=acccum/passes
 
 c In all-electron move algorithm, eerr1 differs from sigma in that eerr1 contains
@@ -99,9 +101,11 @@ c reflected when we get Tcorr < 1.
       tjferr=err(tjfcum,tjfcm2,1)
       r1err=err(r1cum,r1cm2,1)
       r2err=err(r2cum,r2cm2,1)
-      do iz=1,nzzvars
+      if(izigzag.gt.0) then
+       do iz=1,nzzvars
         zzerr(iz)=err(zzcum(iz),zzcm2(iz),1)
-      enddo
+       enddo
+      endif
 c     tcsq=eerr/eerr1
       tcsq=eerr/eer1s
       call alloc ('eloc_tc', eloc_tc, nforce)

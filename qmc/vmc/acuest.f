@@ -132,7 +132,9 @@ c       wnow=wsum(ifr)/nstep
           tjfnow=tjfsum/wsum(ifr)
           r1now=r1sum/(wsum(ifr)*nelec)
           r2now=r2sum/(wsum(ifr)*nelec)
-          zznow(:)=zzsum(:)/wsum(ifr)
+          if(izigzag.gt.0) then
+           zznow(:)=zzsum(:)/wsum(ifr)
+          endif
 
           pecm2=pecm2+pesum*penow
           peicm2=peicm2+peisum*peinow
@@ -140,7 +142,9 @@ c       wnow=wsum(ifr)/nstep
           tjfcm2=tjfcm2+tjfsum*tjfnow
           r1cm2=r1cm2+r1sum*r1now/nelec
           r2cm2=r2cm2+r2sum*r2now/nelec
-          zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
+          if(izigzag.gt.0) then
+            zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
+          endif
 
           pecum=pecum+pesum
           peicum=peicum+peisum
@@ -148,7 +152,9 @@ c       wnow=wsum(ifr)/nstep
           tjfcum=tjfcum+tjfsum
           r1cum=r1cum+r1sum/nelec
           r2cum=r2cum+r2sum/nelec
-          zzcum(:)=zzcum(:)+zzsum(:)
+          if(izigzag.gt.0) then 
+           zzcum(:)=zzcum(:)+zzsum(:)
+          endif
 c         acccum=acccum+accsum
           d_node_log_cum = d_node_log_cum + d_node_log_sum
           if(index(mode,'mov1').eq.0) then
@@ -265,7 +271,9 @@ c zero out xsum variables for metrop
       r1sum=0
       r2sum=0
       accsum=0
-      zzsum(:)=0.d0
+      if(izigzag.gt.0) then
+        zzsum(:)=0.d0
+      endif
       d_node_log_sum = 0
 
       call systemflush(6)
@@ -346,7 +354,9 @@ c     call wf_secondary
       tjfcum=0
       r1cum=0
       r2cum=0
-      zzcum(:)=0.d0
+      if(izigzag.gt.0) then
+        zzcum(:)=0.d0
+      endif
       acccum=0
       ecum1=0
 c     ecum1s=0
@@ -360,7 +370,9 @@ c     ecum1s=0
       tjfcm2=0
       r1cm2=0
       r2cm2=0
-      zzcm2(:)=0.d0
+      if(izigzag.gt.0) then
+        zzcm2(:)=0.d0
+      endif
       ecm21=0
 c     ecm21s=0
 
@@ -370,7 +382,9 @@ c     ecm21s=0
       tjfsum=0
       r1sum=0
       r2sum=0
-      zzsum(:)=0.d0
+      if(izigzag.gt.0) then
+        zzsum(:)=0.d0
+      endif
       accsum=0
 
       call grad_hess_jas_init
