@@ -27,24 +27,30 @@ c determinantal part of the wavefunction.
 c Also derivatives wrt csf_coefs for optimizing them.
 
 c Naming conventions are:
+c "u" at end means up-spin
+c "d" at end means dn-spin
 c "d" at beginning of name indicates gradient
 c "d2" at beginning of name indicates Laplacian
 c "i" at end of portion of name indicates derivative wrt. csf_coef(i).
 c "e" at end of portion of name indicates that it is not summed over all electrons
 c "ln" indicates natural logarithm
 c k=cartesian component, i=electron index
-c determ        =  sum of determinants
-c ddet_det(k,i) =  gradient(ln(det))
-c d2lndet       =  Laplacian(ln(det)) = Laplacian(det)/det - (gradient(det)/det)**2
-c div_vd(i)     =  Laplacian(ln(det)) = Laplacian(det)/det - (gradient(det)/det)**2 for each electron
-c ekinen(i)     =  -0.5 Laplacian(det)/det
+c slmui(i,idet)        = Inverse of transposed Slater matrix for idet stored as a vector
+c fpu(k,i,idet)        = Gradient of elements of transposed Slater matrix for idet stored as a vector
+c fppu(i,idet)         = Laplacian of elements of transposed Slater matrix for idet stored as a vector
+c ddeti_deti(1,i,idet) = gradient(ln(det)) for electron i and determinant idet
+c d2edeti_deti(i,idet) = Laplacian(det)/det for electron i and determinant idet
+c determ               = sum of products of determinants times their coeffs.
+c ddet_det(k,i)        = gradient(ln(determ))
+c d2lndet              = Laplacian(ln(determ)) = Laplacian(determ)/determ - (gradient(determ)/determ)**2
+c div_vd(i)            = Laplacian(ln(determ)) = Laplacian(determ)/determ - (gradient(determ)/determ)**2 for each electron
+c ekinen(i)            = -0.5 Laplacian(determ)/determ
 
 c Note that the first dimension of the slater matrices is MMAT_DIM = (MELEC/2)**2.
 c The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
 c So, we check in read_input that nup and ndn are each <= MELEC/2.
 
       common /dojasderiv/ ijasderiv
-
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*),div_vd(nelec)
       dimension dporb(notype,nelec,norb),d2porb(notype,notype,nelec,norb)

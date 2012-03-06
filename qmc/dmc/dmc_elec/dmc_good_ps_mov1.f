@@ -82,9 +82,12 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use eloc_mod
 !     use optimization_mod, only : l_opt_ovlp_fn
       use opt_ovlp_fn_mod, only : wt_lambda
-      use distance_mod, only: pot_ee
+      use distance_mod, only: pot_ee, rshift, rvec_en, r_en
       use config_mod, only: pot_ee_new, pot_ee_old
       use zigzag_mod, only: izigzag
+      use qua_mod, only: l_do_tmoves
+      use slaterw_mod, only: slmuiw, slmdiw, detuw, detdw
+
       implicit real*8(a-h,o-z)
 
       parameter (adrift=0.5d0)
@@ -184,6 +187,9 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         endif
         call walkstrjas(iw)
 
+c This was put in when working on tmoves.  Needs checking.
+        call distances(xoldw(1,1,iw,1),pe,pei)
+
 c Sample Green function for forward move
         r1sume=zero
         r2sume=zero
@@ -194,6 +200,7 @@ c Sample Green function for forward move
         dr2un=zero
         drifdif=zero
         iaccept=0
+        l_do_tmoves=.false.
         do 200 i=1,nelec
 c Use more accurate formula for the drift
           v2old=0
@@ -211,6 +218,14 @@ c Tau primary -> tratio=one
             dr2=dr2+dx**2
             dfus2o=dfus2o+dfus**2
    80       xnew(k)=xoldw(k,i,iw,1)+dx
+
+c      if(v2old.lt.-1.d99 .or. v2old.gt.1.d99) write(6,'(''v2old'',d12.4)') v2old
+c      if(abs(v2old).gt.1.d99) write(6,'(''v2old'',d12.4)') v2old
+c      write(6,'(''i, iw, adrift, v2old, (voldw(:,:,iw,1)'',2i4,99d12.4)')
+c    &  i, iw, adrift, v2old, ((voldw(k,ii,iw,1),k=1,3),ii=1,nelec)
+c      write(6,'(''(xoldw(:,:,iw,1)'',99d22.14)')
+c    &  ((xoldw(k,ii,iw,1),k=1,3),ii=1,nelec)
+c      call flush(6)
 
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
@@ -326,11 +341,11 @@ c If we are using weights rather than accept/reject
             call jassav(i)
             if(ibasis.eq.3) then                        ! complex calculations
                 call cdetsav(i)
-             else
+            else
                 call detsav(i)
             endif
 
-           else
+          else
             if(ipq.le.0) p=zero
             call distancese_restore(i)
           endif
@@ -353,8 +368,7 @@ c Effective tau for branching
             if(ifr.eq.1) then
 c Primary configuration
               drifdifr=one
-              if(nforce.gt.1)
-     &        call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+              if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
 
               psi_det = psidn                             !JT
@@ -676,6 +690,17 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
 
         call compute_averages_step !JT
+
+        if(tmoves) then
+          l_do_tmoves=.true.
+          call nonloc(xoldw(1,1,iw,1),rshift,rvec_en,r_en,detuw(1,iw),detdw(1,iw),slmuiw(1,1,iw),slmdiw(1,1,iw),vpsp)
+          l_do_tmoves=.false.
+        endif
+        call flush(6)
+
+c       write(6,'(''iw,xoldw(k,i,iw,1)'',i3,99d12.4)') iw,((xoldw(k,i,iw,1),k=1,3),i=1,nelec)
+c       write(6,'(''iw,voldw(k,i,iw,1)'',i3,99d12.4)') iw,((voldw(k,i,iw,1),k=1,3),i=1,nelec)
+
   300 continue ! nwalk
 
 !JT      if(wsum1(1).gt.1.1d0*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,

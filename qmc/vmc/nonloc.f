@@ -13,20 +13,29 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contrl_per_mod
       use periodic_mod
       use qua_mod
+      use contrldmc_mod, only : taunow
+      use config_dmc_mod, only : xoldw, voldw, psidow, psijow
+      use average_mod, only : current_walker
+c Temporary:
+      use div_v_dmc_mod
+      use delocc_mod
+
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,nelec,*),rvec_en(3,nelec,*),r_en(nelec,*)
      &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
       dimension rr_en(nelec,ncent),rr_en2(nelec,ncent),rr_en_sav(ncent),rr_en2_sav(ncent)
      &,xsav(3),rshift_sav(3,ncent),rvec_en_sav(3,ncent),r_en_sav(ncent),vpot(MPS_L)
+      dimension xnew(3),vnew(3,nelec) ! local variables for tmoves
+      dimension x_tmove_sav(3,nquad*ncent), vpsp_tmove(nquad*ncent), vpsp_tmove_heatbath(nquad*ncent)
 
       do 10 i=1,nelec
         do 10 ic=1,ncent
           call scale_dist(r_en(i,ic),rr_en(i,ic),1)
    10     call scale_dist(r_en(i,ic),rr_en2(i,ic),3)
 
-c     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
-c     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)
+c     write(6,'(''l_do_tmoves,x='',l2,30f9.4)') l_do_tmoves, ((x(k,i),k=1,ndim),i=1,nelec)
+c     write(6,'(''l_do_tmoves, r_en='',l2,30f9.4)') l_do_tmoves, ((r_en(i,ic),i=1,nelec),ic=1,ncent)
 c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
 
       if (l_opt_orb_energy) then
@@ -35,6 +44,12 @@ c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),i
         call object_alloc ('vpsp_ex', vpsp_ex, param_orb_nb)
         vpsp_ex = 0.d0
       endif
+
+c     do 3 i=1,nelec
+c       do 3 j=1,i-1
+c         if(abs(r_en(i,1)-r_en(j,1)).lt.1.d-6) write(6,'(''1 current_walker,i,j,r_en(i,1),r_en(j,1)'',3i3,9d16.8)')
+c    &    current_walker,i,j,r_en(i,1),r_en(j,1)
+c   3 continue
 
       vpsp=0
       do 150 i=1,nelec
@@ -50,6 +65,7 @@ c Save position ith electron and its distances etc. from all nuclei
             rshift_sav(k,jc)=rshift(k,i,jc)
    12           rvec_en_sav(k,jc)=rvec_en(k,i,jc)
 
+        ntmove_pts=0
         do 100 ic=1,ncent
           ict=iwctype(ic)
 
@@ -59,6 +75,8 @@ c vps was calculated by calling getvps_xx from nonloc_pot
    15       if(l.ne.lpotp1(ict) .and. dabs(vps(i,ic,l)).gt.1.d-4) iskip=0
 
           if(iskip.eq.0) then
+
+            if(l_do_tmoves) call rotqua ! If we are doing t-moves then the grid needs to be rotated more often to prevent electrons from being along rays
 
             ri=one/r_en(i,ic)
 
@@ -70,6 +88,7 @@ c vps was calculated by calling getvps_xx from nonloc_pot
             endif                       !JT
 
             do 60 iq=1,nquad
+              ntmove_pts=ntmove_pts+1
               costh=rvec_en_sav(1,ic)*xq(iq)+rvec_en_sav(2,ic)*yq(iq)+rvec_en_sav(3,ic)*zq(iq)
               costh=costh*ri
 
@@ -77,7 +96,7 @@ c vps was calculated by calling getvps_xx from nonloc_pot
                 x(1,i)=r_en(i,ic)*xq(iq)+cent(1,ic)
                 x(2,i)=r_en(i,ic)*yq(iq)+cent(2,ic)
                 x(3,i)=r_en(i,ic)*zq(iq)+cent(3,ic)
-               else
+              else
                 x(1,i)=r_en(i,ic)*xq(iq)+cent(1,ic)+rshift(1,i,ic)
                 x(2,i)=r_en(i,ic)*yq(iq)+cent(2,ic)+rshift(2,i,ic)
                 x(3,i)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
@@ -120,11 +139,26 @@ c Since we are rotating on sphere around nucleus ic, that elec-nucl distance doe
                 write(6,'(''ic,i,iq,deter,value'',3i3,2d14.6)') ic,i,iq,deter,value
               endif
 
+       if(current_walker.eq.0) current_walker=1
+       if(ipr.ge.1)
+     & write(6,'(''outside tmoves: vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow'',9d12.4)')
+     & vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
+
+              if(l_do_tmoves) then
+                vpsp_tmove(ntmove_pts)=0
+                x_tmove_sav(1:3,ntmove_pts)=x(1:3,i)
+                if(ipr.ge.1) write(6,'(''iw,ielec='',9i5)') current_walker, i
+              endif
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
-c                 if(tmoves) then
-c                   vpsp_tmove(itmove,i)=vps(i,ic,l)*wq(iq)*yl0(l,costh)*deter*exp(value)*tau_eff
-c                 endif
+                  if(l_do_tmoves) then
+                    if(ipr.ge.1)
+     &              write(6,'(''vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow'',9d12.4)')
+     & vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
+                    vpsp_tmove(ntmove_pts)=vpsp_tmove(ntmove_pts)
+     &              -vps(i,ic,l)*wq(iq)*yl0(l,costh)*(deter/psidow(current_walker,1))*exp(value)*taunow
+                    call flush(6)
+                  endif
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
                   if(ipr.ge.1) write(6,'(''l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)'',i3,9f20.15)')
      &            l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)
@@ -169,7 +203,87 @@ c                 endif
 
           endif
   100   continue ! ncent
+c       if(l_do_tmoves) write(6,'(''i, current_walker, x_tmove_sav='',2i3, 99d12.4)') i, current_walker,
+c    &  ((x_tmove_sav(k,ii),k=1,3),ii=1,ntmove_pts)
+
+c Warning: For the moment correlated sampling for forces does not work with t-moves.
+c Decide which if any tmove to perform for electron i
+c Note we are using the same array, vpsp_tmove, to store the cumulative values to be used for the heat bath.
+        if(l_do_tmoves .and. ntmove_pts.ne.0) then
+          vpsp_tmove_sum=1
+          do itmove_pts=1,ntmove_pts
+            vpsp_tmove_sum=vpsp_tmove_sum+max(vpsp_tmove(itmove_pts),0.d0)
+            if(itmove_pts.eq.1) then
+              vpsp_tmove_heatbath(itmove_pts)=1
+            else
+              vpsp_tmove_heatbath(itmove_pts)=vpsp_tmove_heatbath(itmove_pts-1)+max(vpsp_tmove(itmove_pts-1),0.d0)
+            endif
+          enddo
+          if(ipr.ge.1)
+     &    write(6,'(''vpsp_tmove_sum, vpsp_tmove_heatbath'',100f10.6)') vpsp_tmove_sum, (vpsp_tmove_heatbath(ii),ii=1,ntmove_pts)
+
+          if(abs(vpsp_tmove_sum-1).ge.1.d-6) random=rannyu(0)
+          if(vpsp_tmove_heatbath(1).gt.random*vpsp_tmove_sum) then ! No t-move
+            iwhich_tmove=0
+          else
+            iwhich_tmove=ntmove_pts ! Last quadrature point is chosen if we make it through loop without satisfying the if within the loop.
+            do itmove_pts=2,ntmove_pts
+              if(vpsp_tmove_heatbath(itmove_pts).gt.random*vpsp_tmove_sum) then
+                iwhich_tmove=itmove_pts-1
+                exit
+              endif
+            enddo
+!           x(1:3,i)=x_tmove_sav(1:3,iwhich_tmove)
+            xnew(1:3)=x_tmove_sav(1:3,iwhich_tmove)
+            xoldw(1:3,i,current_walker,1)=x_tmove_sav(1:3,iwhich_tmove)
+c           write(6,'(''1 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
+c           call flush(6)
+!           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
+            call hpsiedmc(i,current_walker,xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1))
+c           write(6,'(''2 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
+c           write(6,'(''2 xnew='',99d12.4)') (xnew(k),k=1,3)
+            call flush(6)
+            call jassav(i)
+            if(ibasis.eq.3) then                        ! complex calculations
+              call cdetsav(i)
+            else
+              call detsav(i)
+            endif
+
+c           write(6,'(''3 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
+c           if(l_do_tmoves) write(6,'(''3 xnew='',99d12.4)') (xnew(k),k=1,3)
+          endif
+
+        endif ! l_do_tmoves
+        call flush(6)
+
   150 continue ! nelec
+
+      if (l_do_tmoves) then !FP
+c       if(ifr.eq.1) then
+c Primary configuration
+c         drifdifr=one
+c         if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+
+c         call hpsi(xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1),
+c    &    div_vow(1,current_walker),d2n,pen,pein,enew,denergy,1)
+
+          psi_det = psidow(current_walker,1)
+          psi_jas = exp(psijow(current_walker,1))
+          call object_modified_by_index (voldw_index)
+          call object_modified_by_index (psi_det_index)
+          call object_modified_by_index (psi_jas_index)
+
+          if(ibasis.eq.3) then                     !complex basis set
+            call cwalksav_det(current_walker)
+          else
+            call walksav_det(current_walker)
+          endif
+          call walksav_jas(current_walker)
+c       else
+c Warning to be done
+c       endif
+      endif
 
       call object_modified_by_index (vpsp_ex_index) ! JT
 

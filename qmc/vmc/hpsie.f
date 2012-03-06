@@ -26,11 +26,11 @@ c changes the scaling of the code with number of electrons.  However, at present
 c we are not using een terms for the periodic code, so this is not a problem.
 c Also, once I fix it, possibly in hpsi there is no need to call distances
 c (just calculate pe instead) if nforce=1.
-      if(index(mode,'dmc').ne.0 .and. nordc.gt.0) then
-        call distances(coord,pe,pei)
-       else
+c     if(index(mode,'dmc').ne.0 .and. nordc.gt.0) then
+c       call distances(coord,pe,pei)
+c     else
         call distancese(iel,coord)
-      endif
+c     endif
 c     write(6,'(''r_en1='',9d12.5)') ((r_en(i,j),i=1,nelec),j=1,1,ncent)
 c     write(6,'(''r_ee1='',9d12.5)') (r_ee(ij),ij=1,nelec*(nelec-1)/2)
 
@@ -55,6 +55,6 @@ c Gradient of ln(JD) is the sum of the gradient of ln(J) and ln(D).
           velocity(k,i)=vj(k,i)+vd(k,i)
 c         write (6,*) 'in hpsie'
 c         write (6,*) i, velocity(k,i), vj(k,i), vd(k,i)
-   10     continue  
+   10     continue
       return
       end

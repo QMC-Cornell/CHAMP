@@ -47,7 +47,7 @@ c             emag=emag+0.125d0*(bext*r_en(i,ic))**2
                  pe_en = pe_en + dot_bump_height*dexp(1.0d0 - 1.0d0/(1.0d0 - dot_bump_radius_inv2*(r_en(i,ic)**2)))
               endif
               if(iperturb.eq.1) then
-c note that the perturbation potential is defined only for -pi<theta<pi  (it's not periodic)
+c note that the perturbation potential is defined only for -pi<theta<pi  (it is not periodic)
                 theta=datan2(x(2,i),x(1,i))
                 pe_en=pe_en+amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))
      &                            -tanh(shrp_perturb*(theta-ang_perturb)))
@@ -259,7 +259,6 @@ c restore interparticle distances (called if move rejected)
       use distance_mod
       use distance_sav_mod
       implicit real*8(a-h,o-z)
-
 
 c Restore e-N inter-particle distances
       do 25 ic=1,ncent

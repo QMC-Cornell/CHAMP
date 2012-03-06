@@ -58,6 +58,7 @@ module initialization_mod
   nwprod=1
   call object_modified ('nwprod')
   tau=0.01
+  tmoves = .false.
   nloc=0
   call object_modified ('nloc')
   numr=-3

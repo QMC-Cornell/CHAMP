@@ -121,6 +121,7 @@ module control_mod
   case ('icut_e');  call get_next_value (icut_e)
   case ('nfprod');  call get_next_value (nfprod); call object_modified ('nfprod')
   case ('tau');     call get_next_value (tau)
+  case ('tmoves');  call get_next_value (tmoves)
 
   case ('vmc')
    call vmc_menu
