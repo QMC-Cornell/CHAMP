@@ -4,22 +4,24 @@
 # quench_anneal from being compiled in MPI mode when CHAMP is being compiled in MPI mode.
 # Alternatively one can do a "make libs" from here before doing a "make mpi" in champ/qmc.
 
-ifdef F77
-F77 = gfortran
-FFLAGS = -DNOMPI
-# FC = gfortran
-# F77_MPI = gfortran
-# F95 = gfortran
-# F95_MPI = gfortran
-endif
+#ifdef F77
+#F77 = gfortran
+#FFLAGS = -ffixed-line-length-132 -DNOMPI
+## FC = gfortran
+## F77_MPI = gfortran
+## F95 = gfortran
+## F95_MPI = gfortran
+#endif
 
 ifndef F77
 
+F77 = gfortran
 FC = gfortran
 F77 = gfortran
 F77_MPI = gfortran
 F95 = gfortran
 F95_MPI = gfortran
+FFLAGS = -ffixed-line-length-132 -DNOMPI
 
 ##########
 # README #

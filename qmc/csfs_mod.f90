@@ -145,7 +145,7 @@ module csfs_mod
   call object_provide ('iwdet_in_csf')
   call object_provide ('cdet_in_csf')
   do csf_i = 1, ncsf
-    write(6,'(a,i3)') ' CSF # ',csf_i
+    write(6,'(a,i5)') ' CSF # ',csf_i
     write(6,'(a,200i4)') ' determinants in CSF:',(iwdet_in_csf(det_in_csf_i,csf_i),det_in_csf_i=1,ndet_in_csf(csf_i))
     write(6,'(a,200f8.5)') ' coefficients:',(cdet_in_csf(det_in_csf_i,csf_i),det_in_csf_i=1,ndet_in_csf(csf_i))
   enddo

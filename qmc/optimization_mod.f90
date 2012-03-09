@@ -1313,7 +1313,7 @@ module optimization_mod
 ! Created     : J. Toulouse, 18 Jan 2006
 !---------------------------------------------------------------------------
   include 'modules.h'
-  use dim_mod, only: ndim
+  use dim_mod
   implicit none
 
 ! output

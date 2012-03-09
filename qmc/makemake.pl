@@ -125,7 +125,8 @@ print MAKEFILE "\n";
 print MAKEFILE "../lib/lib2/einspline/lib/libeinspline.a:\n";
 print MAKEFILE "\tcd ../lib ; make\n";
 print MAKEFILE "\n";
-print MAKEFILE "../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a(main/anneal.o)\n";
+#print MAKEFILE "../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a: ../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a(main/anneal.o)\n";
+print MAKEFILE "../lib/SimulatedAnnealing/quench_anneal/lib/libquench.a:\n";
 print MAKEFILE "\tcd ../lib ; make\n";
 print MAKEFILE "\n";
 #
