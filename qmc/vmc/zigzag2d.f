@@ -276,13 +276,13 @@ c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array in
           if(iperiodic.eq.1) then
             xtdiffo = modulo(xtdiffo,alattice)
             xtdiffn = modulo(xtdiffn,alattice)
-            if (xtdiffo.ge.(alattice/2.)) xtdiffo = alattice - xtdiffo
-            if (xtdiffn.ge.(alattice/2.)) xtdiffn = alattice - xtdiffn
+            if (xtdiffo.ge.(alattice/2.d0)) xtdiffo = alattice - xtdiffo
+            if (xtdiffn.ge.(alattice/2.d0)) xtdiffn = alattice - xtdiffn
           elseif(iperiodic.eq.0) then
-            xtdiffo = modulo(xtdiffo,2.*3.1415926)
-            xtdiffn = modulo(xtdiffn,2.*3.1415926)
-            if (xtdiffo.ge.3.1415926) xtdiffo = 2.*3.1415926 - xtdiffo
-            if (xtdiffn.ge.3.1415926) xtdiffn = 2.*3.1415926 - xtdiffn
+            xtdiffo = modulo(xtdiffo,2.d0*3.1415926d0)
+            xtdiffn = modulo(xtdiffn,2.d0*3.1415926d0)
+            if (xtdiffo.ge.3.1415926d0) xtdiffo = 2.d0*3.1415926d0 - xtdiffo
+            if (xtdiffn.ge.3.1415926d0) xtdiffn = 2.d0*3.1415926d0 - xtdiffn
           endif
           ixto = nint(delxti*xtdiffo)
           ixtn = nint(delxti*xtdiffn)
