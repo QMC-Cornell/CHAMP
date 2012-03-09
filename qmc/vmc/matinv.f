@@ -60,7 +60,7 @@ c update determinant
           do irow=0,(n-1)
               write(6,'(100f6.2)') (a(irow*n+k),k=1,n)
           enddo
-          call flush(6)
+          call systemflush(6)
           stop 'adiag=0 in matinv'
         endif
         adiagi=one/adiag

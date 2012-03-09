@@ -40,7 +40,7 @@ c  yscaled=0 @yorb_grid(iy)  yscaled=1 @yorb_grid(iy+1)
 c       if (ix.le.0) then
 c         write (6,*) 'orbitals_loc_num_grade error'
 c         write (6,*) ix, xget, hxi 
-c         call flush(6)
+c         call systemflush(6)
 c       endif
         xscaled=(xget-xorb_grid(ix))*hxi
         yscaled=(yget-yorb_grid(iy))*hyi

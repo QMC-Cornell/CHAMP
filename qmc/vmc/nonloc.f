@@ -157,7 +157,7 @@ c Since we are rotating on sphere around nucleus ic, that elec-nucl distance doe
      & vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
                     vpsp_tmove(ntmove_pts)=vpsp_tmove(ntmove_pts)
      &              -vps(i,ic,l)*wq(iq)*yl0(l,costh)*(deter/psidow(current_walker,1))*exp(value)*taunow
-                    call flush(6)
+                    call systemflush(6)
                   endif
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
                   if(ipr.ge.1) write(6,'(''l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)'',i3,9f20.15)')
@@ -237,12 +237,12 @@ c Note we are using the same array, vpsp_tmove, to store the cumulative values t
             xnew(1:3)=x_tmove_sav(1:3,iwhich_tmove)
             xoldw(1:3,i,current_walker,1)=x_tmove_sav(1:3,iwhich_tmove)
 c           write(6,'(''1 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-c           call flush(6)
+c           call systemflush(6)
 !           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
             call hpsiedmc(i,current_walker,xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1))
 c           write(6,'(''2 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
 c           write(6,'(''2 xnew='',99d12.4)') (xnew(k),k=1,3)
-            call flush(6)
+            call systemflush(6)
             call jassav(i)
             if(ibasis.eq.3) then                        ! complex calculations
               call cdetsav(i)
@@ -255,7 +255,7 @@ c           if(l_do_tmoves) write(6,'(''3 xnew='',99d12.4)') (xnew(k),k=1,3)
           endif
 
         endif ! l_do_tmoves
-        call flush(6)
+        call systemflush(6)
 
   150 continue ! nelec
 

@@ -225,7 +225,7 @@ c      write(6,'(''i, iw, adrift, v2old, (voldw(:,:,iw,1)'',2i4,99d12.4)')
 c    &  i, iw, adrift, v2old, ((voldw(k,ii,iw,1),k=1,3),ii=1,nelec)
 c      write(6,'(''(xoldw(:,:,iw,1)'',99d22.14)')
 c    &  ((xoldw(k,ii,iw,1),k=1,3),ii=1,nelec)
-c      call flush(6)
+c      call systemflush(6)
 
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
@@ -696,7 +696,7 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
           call nonloc(xoldw(1,1,iw,1),rshift,rvec_en,r_en,detuw(1,iw),detdw(1,iw),slmuiw(1,1,iw),slmdiw(1,1,iw),vpsp)
           l_do_tmoves=.false.
         endif
-        call flush(6)
+        call systemflush(6)
 
 c       write(6,'(''iw,xoldw(k,i,iw,1)'',i3,99d12.4)') iw,((xoldw(k,i,iw,1),k=1,3),i=1,nelec)
 c       write(6,'(''iw,voldw(k,i,iw,1)'',i3,99d12.4)') iw,((voldw(k,i,iw,1),k=1,3),i=1,nelec)
