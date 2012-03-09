@@ -954,7 +954,7 @@ module opt_lin_mod
   else
     write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable eigenvalue windows so select eigenvector with smallest norm!'
   endif
-  call flush(6)
+  call systemflush(6)
 
 ! if target_state = 0, select eigenvector from one of the 3 criteria:
 ! 1) lowest reasonable eigenvalue,
@@ -1007,7 +1007,7 @@ module opt_lin_mod
     endif
     l_warning = .true.
   endif
-  call flush(6)
+  call systemflush(6)
 
 ! possibility of selecting an eigenvector above the selected ground state for excited states
 ! Using target_state_above_groundstate is less robust than using target_state_above_groundstate_or_target_smallest_norm

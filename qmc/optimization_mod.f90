@@ -2381,7 +2381,7 @@ module optimization_mod
   endif ! l_opt_geo
 
   write(6,*)
-  call flush(6)
+  call systemflush(6)
 
   end subroutine write_wf_new
 
