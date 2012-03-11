@@ -920,6 +920,7 @@ module optimization_mod
 !  request vb_weights
    if (l_vb_weights) then
       call object_block_average_request ('product_csf_over_psid_bav')
+      call object_average_request ('product_csf_over_psid_av')
       call object_block_average_request ('csf_over_psid_bav')
       call object_average_request ('vb_weights_chirgwin_coulson_av')
       call object_error_request ('vb_weights_chirgwin_coulson_av_err')

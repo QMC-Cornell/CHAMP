@@ -953,6 +953,7 @@ for l in range(len(lines)):
         file_output.write('%.8f ' %det_coef_in_csf[csf_i][det_i])
       file_output.write('\n')
     file_output.write(' end\n')
+    file_output.write(' vb_weights = true\n')
     file_output.write('end\n')
     continue
 
