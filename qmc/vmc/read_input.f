@@ -1116,10 +1116,10 @@ c to compactify the radial basis functions in read_bas_num.
 c       if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
 c       if((ibasis.eq.1.or.ibasis.eq.3) .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
         if((ibasis.eq.1.or.ibasis.eq.3) .and. inum_orb.eq.0) call read_bas_num(1)
-        if(minval(zex).ne.0.d0) write(6,'(/,''Purely analytical radial basis functions used'')')
-        if(maxval(zex).eq.0.d0) write(6,'(/,''Purely numerical radial basis functions used'')')
-        if(minval(zex).eq.0.d0 .and. maxval(zex).ne.0.d0) write(6,'(/,''Mixed analytical and numerical radial basis functions used''
-     &  )')
+        if(minval(zex(:,1)).ne.0.d0) write(6,'(/,''Purely analytical radial basis functions used'')')
+        if(maxval(zex(:,1)).eq.0.d0) write(6,'(/,''Purely numerical radial basis functions used'')')
+        if(minval(zex(:,1)).eq.0.d0 .and. maxval(zex(:,1)).ne.0.d0) 
+     &  write(6,'(/,''Mixed analytical and numerical radial basis functions used'')')
         write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)')
      &  (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
       endif
@@ -1511,7 +1511,9 @@ c        where w0, etc... are read in
 c Read optional variables if any:
 c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
 c (also for 2D systems with numerical orbitals)
-      if((ibasis.ge.3 .and. ibasis.le.7) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then 
+c     if((ibasis.ge.3 .and. ibasis.le.7) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then 
+c  ACM: I think we should read this in for ALL 2d systems. 
+      if((ibasis.ge.3 .and. ibasis.le.7) .or. (nloc.eq.-1 .and. ndim .eq. 2)) then 
         read(5,*) section
         write(6,'(/,a30,/)') section
         read(5,opt_list)
