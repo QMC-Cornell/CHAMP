@@ -176,6 +176,7 @@ c     allocate(n12n(-11:11,nctype))
 c     allocate(n13o(-12:12,nctype))
       allocate(nsa(nctype),npa(-1:1,nctype),nda(-2:2,nctype))
       call alloc ('nbasis_ctype', nbasis_ctype, nctype)
+      call alloc ('m_bas', m_bas, nbasis)
 
 c     initialize arrays
       n1s=0
@@ -203,6 +204,7 @@ c     n13o=0
            else ! numerical radial basis functions
             read(5,*) (m_bas(ib),ib=1,nbasis)
             write(6,'(/,''m for basis functions:'',/,100i5)') (m_bas(ib),ib=1,nbasis)
+            call object_modified ('m_bas')
           endif
          elseif(ndim.eq.3) then
           if(numr.le.0) then
@@ -469,7 +471,7 @@ c 2px'(3) for the second 2px function on the third center
 
       call alloc ('n_bas', n_bas, nbasis)
       call alloc ('l_bas', l_bas, nbasis)
-      call alloc ('m_bas', m_bas, nbasis)
+c      call alloc ('m_bas', m_bas, nbasis)  ! Call this above, in read_orb_loc_ana (ACM)
       call alloc ('icenter_basis', icenter_basis, nbasis)
       call alloc ('ictype_basis', ictype_basis, nbasis)
       call alloc ('lbasis', lbasis, nbasis)
@@ -877,7 +879,7 @@ c 2px'(3) for the second 2px function on the third center
 
       call alloc ('n_bas', n_bas, nbasis)
       call alloc ('l_bas', l_bas, nbasis)
-      call alloc ('m_bas', m_bas, nbasis)
+c      call alloc ('m_bas', m_bas, nbasis)  ! Call this above, in read_orb_loc_ana (ACM)
       call alloc ('icenter_basis', icenter_basis, nbasis)
       call alloc ('ictype_basis', ictype_basis, nbasis)
       call alloc ('lbasis', lbasis, nbasis)
