@@ -15,6 +15,15 @@ c We also verify that all the determinants have same angular momentum
 
       common /dot/    w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
+      if(numr.eq.1) then
+        write(6,'(''Warning: emagnetic is not correctly implemented for numr=1'')')
+        write(6,'(''Setting ltot = 0, emaglz = 0, emagsz = 0 (we assume bext = 0'')')
+        ltot = 0.
+        emaglz = 0.
+        emagsz = 0.
+        return
+      endif
+      
       write(6,'(''l_bas'',20i4)') (l_bas(ibas),ibas=1,nbasis)
 
 c If complex orbitals are used it calculates total L here.  Otherwise it is inputted.

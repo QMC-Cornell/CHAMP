@@ -44,9 +44,9 @@ c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
       call alloc ('m_bas', m_bas, nbasis)
 
       do 20 ib=1,nbasis
-        ict=ictype_basis(ib)
         n=n_bas(ib)
         if(ndim.eq.3) then
+          ict=ictype_basis(ib)
           l=l_bas(ib)
           if(iwrwf2(ib).le.nrbas_analytical(ict)) then           
             select case (trim(which_analytical_basis)) !fp

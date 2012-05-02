@@ -43,17 +43,18 @@ c       if(maxval(zex).gt.0.d0) call distinct_radial_bas
         call distinct_radial_bas
         write(6,'(''Done reading in LCAO coefs. of orbitals'')')
 
+        if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then !ACM
 c Check that irecursion_ylm=1 if l of basis function >=5
-        do 20 ibas=1,nbasis
-          if(irecursion_ylm.eq.0) then
-            write(6,'(''ibas,l_bas(ibas)='',9i5)') ibas,l_bas(ibas)
-            if(l_bas(ibas).ge.5) then
-              write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
-              stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
+          do 20 ibas=1,nbasis
+            if(irecursion_ylm.eq.0) then
+              write(6,'(''ibas,l_bas(ibas)='',9i5)') ibas,l_bas(ibas)
+              if(l_bas(ibas).ge.5) then
+                write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
+                stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
+              endif
             endif
-          endif
-   20   continue
-
+   20     continue
+        endif !ACM
       endif
 
 c The rest of this routine is for numerical orbs and so we could have one big if statement
@@ -176,7 +177,12 @@ c     allocate(n12n(-11:11,nctype))
 c     allocate(n13o(-12:12,nctype))
       allocate(nsa(nctype),npa(-1:1,nctype),nda(-2:2,nctype))
       call alloc ('nbasis_ctype', nbasis_ctype, nctype)
-      call alloc ('m_bas', m_bas, nbasis)
+      call alloc ('n_bas', n_bas, nbasis)
+      call alloc ('l_bas', l_bas, nbasis)
+      call alloc ('m_bas', m_bas, nbasis) 
+      call alloc ('icenter_basis', icenter_basis, nbasis)
+      call alloc ('ictype_basis', ictype_basis, nbasis)
+c     call alloc ('lbasis', lbasis, nbasis)
 
 c     initialize arrays
       n1s=0
@@ -248,27 +254,28 @@ c     n13o=0
           endif
         endif
 
+        if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then
 c Check that the total number of basis functions for each center type is correct
-        nbas_typ=           iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
-        nbas_tot=nbas_tot + iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
-        do 21 m=-1,1
-          nbas_typ=nbas_typ + iabs(n2p(m,ict)) + iabs(n3p(m,ict)) + iabs(n4p(m,ict)) + iabs(n5p(m,ict))
-   21     nbas_tot=nbas_tot + iabs(n2p(m,ict)) + iabs(n3p(m,ict)) + iabs(n4p(m,ict)) + iabs(n5p(m,ict))
-        do 22 m=-2,2
-          nbas_typ=nbas_typ + iabs(n3d(m,ict)) + iabs(n4d(m,ict)) + iabs(n5d(m,ict))
-   22     nbas_tot=nbas_tot + iabs(n3d(m,ict)) + iabs(n4d(m,ict)) + iabs(n5d(m,ict))
-        do 23 m=-3,3
-          nbas_typ=nbas_typ + iabs(n4f(m,ict)) + iabs(n5f(m,ict))
-   23     nbas_tot=nbas_tot + iabs(n4f(m,ict)) + iabs(n5f(m,ict))
-        do 24 m=-4,4
-          nbas_typ=nbas_typ + iabs(n5g(m,ict))
-   24     nbas_tot=nbas_tot + iabs(n5g(m,ict))
-        do 25 m=-5,5
-          nbas_typ=nbas_typ + iabs(n6h(m,ict))
-   25     nbas_tot=nbas_tot + iabs(n6h(m,ict))
+          nbas_typ=           iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
+          nbas_tot=nbas_tot + iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
+          do 21 m=-1,1
+            nbas_typ=nbas_typ + iabs(n2p(m,ict)) + iabs(n3p(m,ict)) + iabs(n4p(m,ict)) + iabs(n5p(m,ict))
+   21       nbas_tot=nbas_tot + iabs(n2p(m,ict)) + iabs(n3p(m,ict)) + iabs(n4p(m,ict)) + iabs(n5p(m,ict))
+          do 22 m=-2,2
+            nbas_typ=nbas_typ + iabs(n3d(m,ict)) + iabs(n4d(m,ict)) + iabs(n5d(m,ict))
+   22       nbas_tot=nbas_tot + iabs(n3d(m,ict)) + iabs(n4d(m,ict)) + iabs(n5d(m,ict))
+          do 23 m=-3,3
+            nbas_typ=nbas_typ + iabs(n4f(m,ict)) + iabs(n5f(m,ict))
+   23       nbas_tot=nbas_tot + iabs(n4f(m,ict)) + iabs(n5f(m,ict))
+          do 24 m=-4,4
+            nbas_typ=nbas_typ + iabs(n5g(m,ict))
+   24       nbas_tot=nbas_tot + iabs(n5g(m,ict))
+          do 25 m=-5,5
+            nbas_typ=nbas_typ + iabs(n6h(m,ict))
+   25       nbas_tot=nbas_tot + iabs(n6h(m,ict))
 
-        nbasis_ctype(ict)=nbas_typ
-
+          nbasis_ctype(ict)=nbas_typ
+        endif
 c Read in which radial basis function is used by each basis function
 c We are now reading this in even if the radial basis functions are analytical to allow for a mixed analyltical-numerical basis
         mbasis_ctype = maxval(nbasis_ctype)
@@ -279,76 +286,85 @@ c We are now reading this in even if the radial basis functions are analytical t
           write(6,'(''Center'',i5,'' uses radial bas. fns:'',(100i3))') ict,(iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
         endif
         nbas_tot=nbas_tot+(ncent_ctype(ict)-1)*nbasis_ctype(ict)
- 
+
+        if(ndim.eq.2.and.numr.eq.1) then
+          do ib=1,nbasis
+            ictype_basis(ib)=iwctype(ict) 
+          enddo
+        endif
+
+  
    50 continue
 
-      if(nbas_tot.ne.nbasis) then
-        write(6,'(''nbas_tot,nbasis='',9i4)') nbas_tot,nbasis
-        stop 'nbas_tot not equal to nbasis'
-      endif
+      if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then !ACM
+        if(nbas_tot.ne.nbasis) then
+          write(6,'(''nbas_tot,nbasis='',9i4)') nbas_tot,nbasis
+          stop 'nbas_tot not equal to nbasis'
+        endif
 
 c Calculate betaq for asymptotic basis functions
-      betaq=0
-      do 55 ic=1,ncent
-   55   betaq=betaq+znuc(iwctype(ic))
-      betaq=betaq-nelec+1
+        betaq=0
+        do 55 ic=1,ncent
+   55     betaq=betaq+znuc(iwctype(ic))
+        betaq=betaq-nelec+1
 
-      write(6,'(/,''Basis functions:'')')
-      write(6,'(''center type'',t12,(12i3))') (i,i=1,nctype)
+        write(6,'(/,''Basis functions:'')')
+        write(6,'(''center type'',t12,(12i3))') (i,i=1,nctype)
 
-      if(maxval(abs(n1s)).ne.0) write(6,'(''1s'',t12,(12i3))') (n1s(i),i=1,nctype)
+        if(maxval(abs(n1s)).ne.0) write(6,'(''1s'',t12,(12i3))') (n1s(i),i=1,nctype)
 
-      if(maxval(abs(n2s)).ne.0) write(6,'(''2s'',t12,(12i3))') (n2s(i),i=1,nctype)
-      if(maxval(abs(n2p(1,:))).ne.0)  write(6,'(''2px'',t12,(12i3))') (n2p(1,i),i=1,nctype)
-      if(maxval(abs(n2p(-1,:))).ne.0) write(6,'(''2py'',t12,(12i3))') (n2p(-1,i),i=1,nctype)
-      if(maxval(abs(n2p(0,:))).ne.0) write(6,'(''2pz'',t12,(12i3))') (n2p(0,i),i=1,nctype)
+        if(maxval(abs(n2s)).ne.0) write(6,'(''2s'',t12,(12i3))') (n2s(i),i=1,nctype)
+        if(maxval(abs(n2p(1,:))).ne.0)  write(6,'(''2px'',t12,(12i3))') (n2p(1,i),i=1,nctype)
+        if(maxval(abs(n2p(-1,:))).ne.0) write(6,'(''2py'',t12,(12i3))') (n2p(-1,i),i=1,nctype)
+        if(maxval(abs(n2p(0,:))).ne.0) write(6,'(''2pz'',t12,(12i3))') (n2p(0,i),i=1,nctype)
 
-      if(maxval(abs(n3s)).ne.0) write(6,'(''3s'',t12,(12i3))') (n3s(i),i=1,nctype)
-      if(maxval(abs(n3p(1,:))).ne.0)  write(6,'(''3px'',t12,(12i3))') (n3p(1,i),i=1,nctype)
-      if(maxval(abs(n3p(-1,:))).ne.0) write(6,'(''3py'',t12,(12i3))') (n3p(-1,i),i=1,nctype)
-      if(maxval(abs(n3p(0,:))).ne.0) write(6,'(''3pz'',t12,(12i3))') (n3p(0,i),i=1,nctype)
-      if(maxval(abs(n3d(0,:))).ne.0) write(6,'(''3dzr'',t12,(12i3))') (n3d(0,i),i=1,nctype)
-      if(maxval(abs(n3d(2,:))).ne.0) write(6,'(''3dx2'',t12,(12i3))') (n3d(2,i),i=1,nctype)
-      if(maxval(abs(n3d(-2,:))).ne.0) write(6,'(''3dxy'',t12,(12i3))') (n3d(-2,i),i=1,nctype)
-      if(maxval(abs(n3d(1,:))).ne.0) write(6,'(''3dxz'',t12,(12i3))') (n3d(1,i),i=1,nctype)
-      if(maxval(abs(n3d(-1,:))).ne.0) write(6,'(''3dyz'',t12,(12i3))') (n3d(-1,i),i=1,nctype)
+        if(maxval(abs(n3s)).ne.0) write(6,'(''3s'',t12,(12i3))') (n3s(i),i=1,nctype)
+        if(maxval(abs(n3p(1,:))).ne.0)  write(6,'(''3px'',t12,(12i3))') (n3p(1,i),i=1,nctype)
+        if(maxval(abs(n3p(-1,:))).ne.0) write(6,'(''3py'',t12,(12i3))') (n3p(-1,i),i=1,nctype)
+        if(maxval(abs(n3p(0,:))).ne.0) write(6,'(''3pz'',t12,(12i3))') (n3p(0,i),i=1,nctype)
+        if(maxval(abs(n3d(0,:))).ne.0) write(6,'(''3dzr'',t12,(12i3))') (n3d(0,i),i=1,nctype)
+        if(maxval(abs(n3d(2,:))).ne.0) write(6,'(''3dx2'',t12,(12i3))') (n3d(2,i),i=1,nctype)
+        if(maxval(abs(n3d(-2,:))).ne.0) write(6,'(''3dxy'',t12,(12i3))') (n3d(-2,i),i=1,nctype)
+        if(maxval(abs(n3d(1,:))).ne.0) write(6,'(''3dxz'',t12,(12i3))') (n3d(1,i),i=1,nctype)
+        if(maxval(abs(n3d(-1,:))).ne.0) write(6,'(''3dyz'',t12,(12i3))') (n3d(-1,i),i=1,nctype)
 
-      if(maxval(abs(n4s)).ne.0) write(6,'(''4s'',t12,(12i3))') (n4s(i),i=1,nctype)
-      if(maxval(abs(n4p(1,:))).ne.0)  write(6,'(''4px'',t12,(12i3))') (n4p(1,i),i=1,nctype)
-      if(maxval(abs(n4p(-1,:))).ne.0) write(6,'(''4py'',t12,(12i3))') (n4p(-1,i),i=1,nctype)
-      if(maxval(abs(n4p(0,:))).ne.0) write(6,'(''4pz'',t12,(12i3))') (n4p(0,i),i=1,nctype)
-      if(maxval(abs(n4d(0,:))).ne.0) write(6,'(''4dzr'',t12,(12i3))') (n4d(0,i),i=1,nctype)
-      if(maxval(abs(n4d(2,:))).ne.0) write(6,'(''4dx2'',t12,(12i3))') (n4d(2,i),i=1,nctype)
-      if(maxval(abs(n4d(-2,:))).ne.0) write(6,'(''4dxy'',t12,(12i3))') (n4d(-2,i),i=1,nctype)
-      if(maxval(abs(n4d(1,:))).ne.0) write(6,'(''4dxz'',t12,(12i3))') (n4d(1,i),i=1,nctype)
-      if(maxval(abs(n4d(-1,:))).ne.0) write(6,'(''4dyz'',t12,(12i3))') (n4d(-1,i),i=1,nctype)
-      do 60 m=-3,3
-   60   if(maxval(abs(n4f(m,:))).ne.0) write(6,'(''4f('',i2,'')'',t12,(12i3))') m,(n4f(m,i),i=1,nctype)
+        if(maxval(abs(n4s)).ne.0) write(6,'(''4s'',t12,(12i3))') (n4s(i),i=1,nctype)
+        if(maxval(abs(n4p(1,:))).ne.0)  write(6,'(''4px'',t12,(12i3))') (n4p(1,i),i=1,nctype)
+        if(maxval(abs(n4p(-1,:))).ne.0) write(6,'(''4py'',t12,(12i3))') (n4p(-1,i),i=1,nctype)
+        if(maxval(abs(n4p(0,:))).ne.0) write(6,'(''4pz'',t12,(12i3))') (n4p(0,i),i=1,nctype)
+        if(maxval(abs(n4d(0,:))).ne.0) write(6,'(''4dzr'',t12,(12i3))') (n4d(0,i),i=1,nctype)
+        if(maxval(abs(n4d(2,:))).ne.0) write(6,'(''4dx2'',t12,(12i3))') (n4d(2,i),i=1,nctype)
+        if(maxval(abs(n4d(-2,:))).ne.0) write(6,'(''4dxy'',t12,(12i3))') (n4d(-2,i),i=1,nctype)
+        if(maxval(abs(n4d(1,:))).ne.0) write(6,'(''4dxz'',t12,(12i3))') (n4d(1,i),i=1,nctype)
+        if(maxval(abs(n4d(-1,:))).ne.0) write(6,'(''4dyz'',t12,(12i3))') (n4d(-1,i),i=1,nctype)
+        do 60 m=-3,3
+   60     if(maxval(abs(n4f(m,:))).ne.0) write(6,'(''4f('',i2,'')'',t12,(12i3))') m,(n4f(m,i),i=1,nctype)
 
-      if(maxval(abs(n5s)).ne.0) write(6,'(''4s'',t12,(12i3))') (n5s(i),i=1,nctype)
-      if(maxval(abs(n5p(1,:))).ne.0)  write(6,'(''5px'',t12,(12i3))') (n5p(1,i),i=1,nctype)
-      if(maxval(abs(n5p(-1,:))).ne.0) write(6,'(''5py'',t12,(12i3))') (n5p(-1,i),i=1,nctype)
-      if(maxval(abs(n5p(0,:))).ne.0) write(6,'(''5pz'',t12,(12i3))') (n5p(0,i),i=1,nctype)
-      if(maxval(abs(n5d(0,:))).ne.0) write(6,'(''5dzr'',t12,(12i3))') (n5d(0,i),i=1,nctype)
-      if(maxval(abs(n5d(2,:))).ne.0) write(6,'(''5dx2'',t12,(12i3))') (n5d(2,i),i=1,nctype)
-      if(maxval(abs(n5d(-2,:))).ne.0) write(6,'(''5dxy'',t12,(12i3))') (n5d(-2,i),i=1,nctype)
-      if(maxval(abs(n5d(1,:))).ne.0) write(6,'(''5dxz'',t12,(12i3))') (n5d(1,i),i=1,nctype)
-      if(maxval(abs(n5d(-1,:))).ne.0) write(6,'(''5dyz'',t12,(12i3))') (n5d(-1,i),i=1,nctype)
-      do 70 m=-3,3
-   70   if(maxval(abs(n5f(m,:))).ne.0) write(6,'(''5f('',i2,'')'',t12,(12i3))') m,(n5f(m,i),i=1,nctype)
-      do 80 m=-4,4
-   80   if(maxval(abs(n5g(m,:))).ne.0) write(6,'(''5g('',i2,'')'',t12,(12i3))') m,(n5g(m,i),i=1,nctype)
+        if(maxval(abs(n5s)).ne.0) write(6,'(''4s'',t12,(12i3))') (n5s(i),i=1,nctype)
+        if(maxval(abs(n5p(1,:))).ne.0)  write(6,'(''5px'',t12,(12i3))') (n5p(1,i),i=1,nctype)
+        if(maxval(abs(n5p(-1,:))).ne.0) write(6,'(''5py'',t12,(12i3))') (n5p(-1,i),i=1,nctype)
+        if(maxval(abs(n5p(0,:))).ne.0) write(6,'(''5pz'',t12,(12i3))') (n5p(0,i),i=1,nctype)
+        if(maxval(abs(n5d(0,:))).ne.0) write(6,'(''5dzr'',t12,(12i3))') (n5d(0,i),i=1,nctype)
+        if(maxval(abs(n5d(2,:))).ne.0) write(6,'(''5dx2'',t12,(12i3))') (n5d(2,i),i=1,nctype)
+        if(maxval(abs(n5d(-2,:))).ne.0) write(6,'(''5dxy'',t12,(12i3))') (n5d(-2,i),i=1,nctype)
+        if(maxval(abs(n5d(1,:))).ne.0) write(6,'(''5dxz'',t12,(12i3))') (n5d(1,i),i=1,nctype)
+        if(maxval(abs(n5d(-1,:))).ne.0) write(6,'(''5dyz'',t12,(12i3))') (n5d(-1,i),i=1,nctype)
+        do 70 m=-3,3
+   70     if(maxval(abs(n5f(m,:))).ne.0) write(6,'(''5f('',i2,'')'',t12,(12i3))') m,(n5f(m,i),i=1,nctype)
+        do 80 m=-4,4
+   80     if(maxval(abs(n5g(m,:))).ne.0) write(6,'(''5g('',i2,'')'',t12,(12i3))') m,(n5g(m,i),i=1,nctype)
 
-      if(maxval(abs(nsa)).ne.0) write(6,'(''sa'',t12,(12i3))') (nsa(i),i=1,nctype)
-      if(maxval(abs(npa(1,:))).ne.0) write(6,'(''pxa'',t12,(12i3))') (npa(1,i),i=1,nctype)
-      if(maxval(abs(npa(-1,:))).ne.0) write(6,'(''pya'',t12,(12i3))') (npa(-1,i),i=1,nctype)
-      if(maxval(abs(npa(0,:))).ne.0) write(6,'(''pza'',t12,(12i3))') (npa(0,i),i=1,nctype)
-      if(maxval(abs(nda(0,:))).ne.0) write(6,'(''dzra'',t12,(12i3))') (nda(0,i),i=1,nctype)
-      if(maxval(abs(nda(2,:))).ne.0) write(6,'(''dx2a'',t12,(12i3))') (nda(2,i),i=1,nctype)
-      if(maxval(abs(nda(-2,:))).ne.0) write(6,'(''dxya'',t12,(12i3))') (nda(-2,i),i=1,nctype)
-      if(maxval(abs(nda(1,:))).ne.0) write(6,'(''dxza'',t12,(12i3))') (nda(1,i),i=1,nctype)
-      if(maxval(abs(nda(-1,:))).ne.0) write(6,'(''dyza'',t12,(12i3))') (nda(-1,i),i=1,nctype)
-
+        if(maxval(abs(nsa)).ne.0) write(6,'(''sa'',t12,(12i3))') (nsa(i),i=1,nctype)
+        if(maxval(abs(npa(1,:))).ne.0) write(6,'(''pxa'',t12,(12i3))') (npa(1,i),i=1,nctype)
+        if(maxval(abs(npa(-1,:))).ne.0) write(6,'(''pya'',t12,(12i3))') (npa(-1,i),i=1,nctype)
+        if(maxval(abs(npa(0,:))).ne.0) write(6,'(''pza'',t12,(12i3))') (npa(0,i),i=1,nctype)
+        if(maxval(abs(nda(0,:))).ne.0) write(6,'(''dzra'',t12,(12i3))') (nda(0,i),i=1,nctype)
+        if(maxval(abs(nda(2,:))).ne.0) write(6,'(''dx2a'',t12,(12i3))') (nda(2,i),i=1,nctype)
+        if(maxval(abs(nda(-2,:))).ne.0) write(6,'(''dxya'',t12,(12i3))') (nda(-2,i),i=1,nctype)
+        if(maxval(abs(nda(1,:))).ne.0) write(6,'(''dxza'',t12,(12i3))') (nda(1,i),i=1,nctype)
+        if(maxval(abs(nda(-1,:))).ne.0) write(6,'(''dyza'',t12,(12i3))') (nda(-1,i),i=1,nctype)
+      endif ! ACM
+      
       write(6,'(/,''charge'',t12,(12i3))')(nint(znuc(i)),i=1,nctype)
       write(6,*)
 
@@ -357,13 +373,15 @@ c The basis fns. in the LCAO coefs. are either in the atomic filling order
 c or in order of increasing l.  The former is the order I used to use the
 c latter is the order from GAMESS when doing all-electron calculations.
 c Either order will work when numr.eq.1.
-      if(numr.eq.0 .or. numr.eq.1) then
-        call orb_loc_ana_original_order
-       elseif(numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
-        call orb_loc_ana_gamess_order
-       else
-        stop 'numr must be between -3 and 1'
-      endif
+      if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then !ACM
+        if(numr.eq.0 .or. numr.eq.1) then
+          call orb_loc_ana_original_order
+         elseif(numr.eq.-1 .or. numr.eq.-2 .or. numr.eq.-3) then
+          call orb_loc_ana_gamess_order
+         else
+          stop 'numr must be between -3 and 1'
+        endif
+      endif 
 
       call object_modified ('nbasis_ctype')
       call object_modified ('mbasis_ctype')
@@ -469,11 +487,12 @@ c functions on centers for the printout of coefficients and
 c screening constants. Character strings are of form
 c 2px'(3) for the second 2px function on the third center
 
-      call alloc ('n_bas', n_bas, nbasis)
-      call alloc ('l_bas', l_bas, nbasis)
-c      call alloc ('m_bas', m_bas, nbasis)  ! Call this above, in read_orb_loc_ana (ACM)
-      call alloc ('icenter_basis', icenter_basis, nbasis)
-      call alloc ('ictype_basis', ictype_basis, nbasis)
+c   Call these above, in read_orb_loc_ana (ACM)
+c     call alloc ('n_bas', n_bas, nbasis)
+c     call alloc ('l_bas', l_bas, nbasis)
+c     call alloc ('m_bas', m_bas, nbasis) 
+c     call alloc ('icenter_basis', icenter_basis, nbasis)
+c     call alloc ('ictype_basis', ictype_basis, nbasis)
       call alloc ('lbasis', lbasis, nbasis)
 
       ib=0
@@ -877,11 +896,12 @@ c functions on centers for the printout of coefficients and
 c screening constants. Character strings are of form
 c 2px'(3) for the second 2px function on the third center
 
-      call alloc ('n_bas', n_bas, nbasis)
-      call alloc ('l_bas', l_bas, nbasis)
+c   Call these above, in read_orb_loc_ana (ACM)
+c     call alloc ('n_bas', n_bas, nbasis)
+c     call alloc ('l_bas', l_bas, nbasis)
 c      call alloc ('m_bas', m_bas, nbasis)  ! Call this above, in read_orb_loc_ana (ACM)
-      call alloc ('icenter_basis', icenter_basis, nbasis)
-      call alloc ('ictype_basis', ictype_basis, nbasis)
+c     call alloc ('icenter_basis', icenter_basis, nbasis)
+c     call alloc ('ictype_basis', ictype_basis, nbasis)
       call alloc ('lbasis', lbasis, nbasis)
 
       ib=0
