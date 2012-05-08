@@ -132,6 +132,8 @@ c       wnow=wsum(ifr)/nstep
           tjfnow=tjfsum/wsum(ifr)
           r1now=r1sum/(wsum(ifr)*nelec)
           r2now=r2sum/(wsum(ifr)*nelec)
+          r3now=r3sum/(wsum(ifr)*nelec)
+          r4now=r4sum/(wsum(ifr)*nelec)
           if(izigzag.gt.0) then
            zznow(:)=zzsum(:)/wsum(ifr)
           endif
@@ -142,6 +144,8 @@ c       wnow=wsum(ifr)/nstep
           tjfcm2=tjfcm2+tjfsum*tjfnow
           r1cm2=r1cm2+r1sum*r1now/nelec
           r2cm2=r2cm2+r2sum*r2now/nelec
+          r3cm2=r3cm2+r3sum*r3now/nelec
+          r4cm2=r4cm2+r4sum*r4now/nelec
           if(izigzag.gt.0) then
             zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
           endif
@@ -152,6 +156,8 @@ c       wnow=wsum(ifr)/nstep
           tjfcum=tjfcum+tjfsum
           r1cum=r1cum+r1sum/nelec
           r2cum=r2cum+r2sum/nelec
+          r3cum=r3cum+r3sum/nelec
+          r4cum=r4cum+r4sum/nelec
           if(izigzag.gt.0) then 
            zzcum(:)=zzcum(:)+zzsum(:)
           endif
@@ -270,6 +276,8 @@ c zero out xsum variables for metrop
       tjfsum=0
       r1sum=0
       r2sum=0
+      r3sum=0
+      r4sum=0
       accsum=0
       if(izigzag.gt.0) then
         zzsum(:)=0.d0
@@ -354,6 +362,8 @@ c     call wf_secondary
       tjfcum=0
       r1cum=0
       r2cum=0
+      r3cum=0
+      r4cum=0
       if(izigzag.gt.0) then
         zzcum(:)=0.d0
       endif
@@ -370,6 +380,8 @@ c     ecum1s=0
       tjfcm2=0
       r1cm2=0
       r2cm2=0
+      r3cm2=0
+      r4cm2=0
       if(izigzag.gt.0) then
         zzcm2(:)=0.d0
       endif
@@ -382,6 +394,8 @@ c     ecm21s=0
       tjfsum=0
       r1sum=0
       r2sum=0
+      r3sum=0
+      r4sum=0
       if(izigzag.gt.0) then
         zzsum(:)=0.d0
       endif

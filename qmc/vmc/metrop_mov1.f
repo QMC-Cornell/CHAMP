@@ -239,8 +239,10 @@ c same trick adapted to circular coordinates
             r2sumeo = r2sumeo + xold(k,i)**2
             r2sumen = r2sumen + xnew(k,i)**2
           enddo
-          r1sum=r1sum+p*sqrt(r2sumen) + q*sqrt(r2sumeo)
+          r1sum=r1sum+p*dsqrt(r2sumen) + q*dsqrt(r2sumeo)
           r2sum=r2sum+ p*r2sumen + q*r2sumeo
+          r3sum=r3sum+p*r2sumen*dsqrt(r2sumen) + q*r2sumeo*dsqrt(r2sumeo)
+          r4sum=r4sum+ p*r2sumen*r2sumen + q*r2sumeo*r2sumeo
 
 c     eksum=zero
 c     do 26 ii=1,nelec

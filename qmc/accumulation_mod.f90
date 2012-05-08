@@ -114,6 +114,8 @@ module accumulation_mod
       ei3cum=zero
       r1cum=zero
       r2cum=zero
+      r3cum=zero
+      r4cum=zero
       ricum=zero
       zzcum(:)=zero
 
@@ -132,6 +134,8 @@ module accumulation_mod
       ei3cm2=zero
       r1cm2=zero
       r2cm2=zero
+      r3cm2=zero
+      r4cm2=zero
       ricm2=zero
       zzcm2(:)=zero
 
@@ -148,6 +152,8 @@ module accumulation_mod
       ei3sum=zero
       r1sum=zero
       r2sum=zero
+      r3sum=zero
+      r4sum=zero
       risum=zero
       zzsum(:)=zero
 
@@ -332,7 +338,7 @@ module accumulation_mod
   real(dp) :: errg
   integer i, npass, ifr
   real(dp) :: enow, efnow, ei1now, ei2now
-  real(dp) :: rinow, r2now, r1now
+  real(dp) :: rinow, r2now, r1now, r3now, r4now
   real(dp) :: zznow(nzzvars)
   real(dp) :: egnow, penow, tpbnow, tjfnow
   real(dp) :: peerr, tpberr, tjferr, fgerr
@@ -379,6 +385,8 @@ module accumulation_mod
       rinow=risum/wgsum(1)
       r1now=r1sum/wgsum(1)
       r2now=r2sum/wgsum(1)
+      r3now=r3sum/wgsum(1)
+      r4now=r4sum/wgsum(1)
       zznow(:)=zzsum(:)/wgsum(1)
 
 # if !defined (MPI)
@@ -391,6 +399,8 @@ module accumulation_mod
       ei2cm2=ei2cm2+ei2now**2
       r1cm2=r1cm2+r1sum*r1now
       r2cm2=r2cm2+r2sum*r2now
+      r3cm2=r3cm2+r3sum*r3now
+      r4cm2=r4cm2+r4sum*r4now
       ricm2=ricm2+risum*rinow
       zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
 
@@ -408,6 +418,8 @@ module accumulation_mod
       ei2cum=ei2cum+ei2now
       r1cum=r1cum+r1sum
       r2cum=r2cum+r2sum
+      r3cum=r3cum+r3sum
+      r4cum=r4cum+r4sum
       ricum=ricum+risum
       zzcum(:)=zzcum(:)+zzsum(:)
 
@@ -631,6 +643,8 @@ module accumulation_mod
       ei2sum=zero
       r1sum=zero
       r2sum=zero
+      r3sum=zero
+      r4sum=zero
       risum=zero
       zzsum(:)=zero
 
@@ -683,7 +697,7 @@ module accumulation_mod
   real (dp) :: erric, erric1, errig, errori
   real (dp) :: e1ave, e2ave, e3ave, ei1ave, ei2ave, ei3ave
   real (dp) :: e1err, e2err, e3err, ei1err, ei2err, ei3err
-  real (dp) :: r2ave, r2err, riave, rierr, r1ave, r1err
+  real (dp) :: r2ave, r2err, riave, rierr, r1ave, r1err, r3ave, r3err, r4ave, r4err
   real (dp) :: zzave(nzzvars), zzerr(nzzvars)
 # endif
 
@@ -859,6 +873,8 @@ module accumulation_mod
 
       r1ave=r1cum/(wgcum(1)*nelec)
       r2ave=r2cum/(wgcum(1)*nelec)
+      r3ave=r3cum/(wgcum(1)*nelec)
+      r4ave=r4cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
       zzave(:)=zzcum(:)/wgcum(1)
       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
@@ -879,6 +895,8 @@ module accumulation_mod
         ei3err=0
         r1err=0
         r2err=0
+        r3err=0
+        r4err=0
         rierr=0
         zzerr(:)=0.d0
        else
@@ -897,6 +915,8 @@ module accumulation_mod
         ei3err=erric1(ei3cum,ei3cm2)
         r1err=errg(r1cum,r1cm2,1)/nelec
         r2err=errg(r2cum,r2cm2,1)/nelec
+        r3err=errg(r3cum,r3cm2,1)/nelec
+        r4err=errg(r4cum,r4cm2,1)/nelec
         rierr=errg(ricum,ricm2,1)/nelec
         do iz = 1,nzzvars
           zzerr(iz)=errg(zzcum(iz),zzcm2(iz),1)
@@ -986,23 +1006,26 @@ module accumulation_mod
   50  continue
 
 # if !defined (MPI)
-!     These are not being collected at the moment
+!     These are not being collected at the moment (they are for ndim=2)
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(6,'(''<r>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') r1ave,r1err,r1err*rtevalg_proc_eff1
         write(6,'(''<r2>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
+        write(6,'(''<r3>_av ='',t24,f12.4,'' +-'',f11.4,1x,f9.4)') r3ave,r3err,r3err*rtevalg_proc_eff1
+        write(6,'(''<r4>_av ='',t24,f12.2,'' +-'',f11.2,1x,f9.2)') r4ave,r4err,r4err*rtevalg_proc_eff1
         write(6,'(''<ri>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') riave,rierr,rierr*rtevalg_proc_eff1
       endif
 
       if(izigzag.ge.1) then
-        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_proc_eff1
-        write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_proc_eff1
-        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_proc_eff1
-        write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_proc_eff1
-        write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_proc_eff1
-        write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_proc_eff1
-        write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_proc_eff1
-        write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_proc_eff1
-        write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_proc_eff1
+        call print_zigzag_vars(zzave,zzerr,rtevalg_proc_eff1)
+!       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_proc_eff1
+!       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_proc_eff1
+!       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_proc_eff1
+!       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_proc_eff1
+!       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_proc_eff1
+!       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_proc_eff1
+!       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_proc_eff1
+!       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_proc_eff1
+!       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_proc_eff1
       endif
 
       if(ipr.gt.-2) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf,etrial,tau,taueff'')')nstep,iblk,nconf,etrial,tau,taucum(1)/wgcum(1)

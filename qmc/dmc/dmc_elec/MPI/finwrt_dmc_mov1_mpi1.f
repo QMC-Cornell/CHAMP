@@ -338,6 +338,8 @@ c     ei3ave=ei3cum/passes
 
       r1ave=r1cum/(wgcum(1)*nelec)
       r2ave=r2cum/(wgcum(1)*nelec)
+      r3ave=r3cum/(wgcum(1)*nelec)
+      r4ave=r4cum/(wgcum(1)*nelec)
       riave=ricum/(wgcum(1)*nelec)
       if(izigzag.gt.0) then
        zzave(:)=zzcum(:)/wgcum(1)
@@ -371,6 +373,8 @@ c     ei2err=erri(ei2cum,ei2cm2)
 c     ei3err=erri1(ei3cum,ei3cm2)
       r1err=errg(r1cum,r1cm2,1)/nelec
       r2err=errg(r2cum,r2cm2,1)/nelec
+      r3err=errg(r3cum,r3cm2,1)/nelec
+      r4err=errg(r4cum,r4cm2,1)/nelec
       rierr=errg(ricum,ricm2,1)/nelec
       if(izigzag.gt.0) then
        do iz=1,nzzvars
@@ -504,19 +508,22 @@ c save energy difference and error in energy difference for optimization
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(6,'(''<r>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r1ave,r1err,r1err*rtevalg_proc_eff1
         write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
+        write(6,'(''<r3>_av ='',t22,f14.4,'' +-'',f11.4,f9.4)') r3ave,r3err,r3err*rtevalg_proc_eff1
+        write(6,'(''<r4>_av ='',t22,f14.2,'' +-'',f11.2,f9.2)') r4ave,r4err,r4err*rtevalg_proc_eff1
         write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
       endif
 
       if(izigzag.ge.1) then
-        write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
-        write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
-        write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
-        write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
-        write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
-        write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
-        write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_eff1
-        write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_eff1
-        write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
+        call print_zigzag_vars(zzave,zzerr,rtevalg_eff1)
+c       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
+c       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
+c       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
+c       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
+c       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
+c       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
+c       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_eff1
+c       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_eff1
+c       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
       endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1))

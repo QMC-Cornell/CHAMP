@@ -193,6 +193,8 @@ c This was put in when working on tmoves.  Needs checking.
 c Sample Green function for forward move
         r1sume=zero
         r2sume=zero
+        r3sume=zero
+        r4sume=zero
         risume=zero
         dfus2ac=zero
         dfus2un=zero
@@ -354,6 +356,8 @@ c If we are using weights rather than accept/reject
 c Calculate moments of r and save rejection probability for primary walk
           r1sume=r1sume+(q*dsqrt(r2o)+p*dsqrt(r2n))
           r2sume=r2sume+(q*r2o+p*r2n)
+          r3sume=r3sume+(q*r2o*dsqrt(r2o)+p*r2n*dsqrt(r2n))
+          r4sume=r4sume+(q*r2o*r2o+p*r2n*r2n)
           risume=risume+(q/dsqrt(r2o)+p/dsqrt(r2n))
           unacp(i)=q
 
@@ -545,6 +549,8 @@ c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
 
             r1sum=r1sum+wtg*r1sume
             r2sum=r2sum+wtg*r2sume
+            r3sum=r3sum+wtg*r3sume
+            r4sum=r4sum+wtg*r4sume
             risum=risum+wtg*risume
             do 270 i=1,nelec
               wtgq=wtg*unacp(i)

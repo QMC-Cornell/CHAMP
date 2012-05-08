@@ -432,6 +432,8 @@ c Collect density only for primary walk
               rprob(itryn)=rprob(itryn)+wtgp
               r1sum=r1sum+wtg*(q*dsqrt(r2o)+p*dsqrt(r2n))
               r2sum=r2sum+wtg*(q*r2o+p*r2n)
+              r3sum=r3sum+wtg*(q*r2o*dsqrt(r2o)+p*r2n*dsqrt(r2n))
+              r4sum=r4sum+wtg*(q*r2o*r2o+p*r2n*r2n)
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
 c calculate 2d density related functions:

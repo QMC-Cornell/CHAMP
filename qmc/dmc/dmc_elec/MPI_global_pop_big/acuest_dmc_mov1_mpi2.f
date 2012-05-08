@@ -77,6 +77,8 @@ c xerr = current error of x
       call mpi_allreduce(ioldestmx,ioldestmx_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r1sum,r1sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r2sum,r2sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r3sum,r3sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r4sum,r4sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(risum,risum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       if(izigzag.gt.0) then
        call mpi_allreduce(zzsum,zzsum_collect,nzzvars,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -93,6 +95,8 @@ c     wnow=wsum/nstep
 c     wfnow=wfsum/nstep
       r1sum = r1sum_collect
       r2sum = r2sum_collect
+      r3sum = r3sum_collect
+      r4sum = r4sum_collect
       risum = risum_collect
       if(izigzag.gt.0) then
        zzsum(:) = zzsum_collect(:)
@@ -105,6 +109,8 @@ c     wfnow=wfsum/nstep
       rinow=risum/wgsum(1)
       r1now=r1sum/wgsum(1)
       r2now=r2sum/wgsum(1)
+      r3now=r3sum/wgsum(1)
+      r4now=r4sum/wgsum(1)
       if(izigzag.gt.0) then
        zznow(:)=zzsum(:)/wgsum(1)
       endif
@@ -113,6 +119,8 @@ c     wfnow=wfsum/nstep
       ei2cm2=ei2cm2+ei2now**2
       r1cm2=r1cm2+r1sum*r1now
       r2cm2=r2cm2+r2sum*r2now
+      r3cm2=r3cm2+r3sum*r3now
+      r4cm2=r4cm2+r4sum*r4now
       ricm2=ricm2+risum*rinow
       if(izigzag.gt.0) then
        zzcm2(:)=zzcm2(:)+zzsum(:)*zznow(:)
@@ -124,6 +132,8 @@ c     wfnow=wfsum/nstep
       ei2cum=ei2cum+ei2now
       r1cum=r1cum+r1sum
       r2cum=r2cum+r2sum
+      r3cum=r3cum+r3sum
+      r4cum=r4cum+r4sum
       ricum=ricum+risum
       if(izigzag.gt.0) then
        zzcum(:)=zzcum(:)+zzsum(:)
@@ -297,6 +307,8 @@ c zero out xsum variables for metrop
       ei2sum=zero
       r1sum=zero
       r2sum=zero
+      r3sum=zero
+      r4sum=zero
       risum=zero
       if(izigzag.gt.0) then
        zzsum(:)=zero
@@ -517,6 +529,8 @@ c zero out estimators
       ei3cum=zero
       r1cum=zero
       r2cum=zero
+      r3cum=zero
+      r4cum=zero
       ricum=zero
       if(izigzag.gt.0) then
        zzcum(:)=zero
@@ -537,6 +551,8 @@ c zero out estimators
       ei3cm2=zero
       r1cm2=zero
       r2cm2=zero
+      r3cm2=zero
+      r4cm2=zero
       ricm2=zero
       if(izigzag.gt.0) then
        zzcm2(:)=zero
@@ -555,6 +571,8 @@ c zero out estimators
       ei3sum=zero
       r1sum=zero
       r2sum=zero
+      r3sum=zero
+      r4sum=zero
       risum=zero
       if(izigzag.gt.0) then
        zzsum(:)=zero

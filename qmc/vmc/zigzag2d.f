@@ -10,6 +10,10 @@ c  p and q are the probabilities of accept and reject
 c  ielec labels the electron that was moved for 1-electron moves
 c  if ielec=0, we are doing an all-electron move.
 
+c  If you want to add a new observable, make sure you change
+c    nzzvars in zigzag_mod.f90 (and do a make clean!)
+c  You will also need to add a print out line to print_zigzag_vars()
+c       below
       use dets_mod
       use const_mod
       use dim_mod
@@ -199,6 +203,7 @@ c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
       zzterm(3) = q*zzsumold + p*zzsumnew
       zzterm(1) = q*dabs(zzsumold) + p*dabs(zzsumnew)
       zzterm(2) = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
+      zzterm(10) = q*(zzsumold**4) + p*(zzsumnew**4)
 c     Calculate the values if we throw out max value of y or r and its neighbor
       imaxold = maxloc(zzposold(2,:),1)
       imaxnew = maxloc(zzposnew(2,:),1)
@@ -223,6 +228,7 @@ c      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn)
       zzterm(6) = q*zzsumoldred + p*zzsumnewred
       zzterm(4) = q*dabs(zzsumoldred) + p*dabs(zzsumnewred)
       zzterm(5) = q*zzsumoldred*zzsumoldred + p*zzsumnewred*zzsumnewred
+      zzterm(11) = q*(zzsumoldred**4) + p*(zzsumnewred**4)
 
 c     Pick sign randomly, so that N/2 have "-" sign
       ransign(:) = 1.0d0/dble(nelec)
@@ -240,6 +246,7 @@ c     Pick sign randomly, so that N/2 have "-" sign
       zzterm(9) = q*zzrandsumold + p*zzrandsumnew
       zzterm(7) = q*dabs(zzrandsumold) + p*dabs(zzrandsumnew)
       zzterm(8) = q*zzrandsumold*zzrandsumold + p*zzrandsumnew*zzrandsumnew
+      zzterm(12) = q*(zzrandsumold**4) + p*(zzrandsumnew**4)
       
 c     This is a kludge to make sure that the averages come out correctly 
 c        for single-electron moves.  Since this routine gets called
@@ -312,5 +319,48 @@ c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
       xnew_sav = xnew
 
     
+      return
+      end
+
+c-------------------------------------------------------------------
+
+      subroutine print_zigzag_vars(zzave,zzerr,rtpass)
+
+c     Written by Abhijit Mehta, May 2012
+c      Routine to print out all the zigzag variables in the
+c       various finwrt routines.
+c      Inputs: 
+c       zzave - array of size nzzvars with averages of all zigzag vars
+c       zzerr - array of size nzzvars with errors in all of the averages
+c       rtpass - sqrt of the number of passes
+c
+c        We put all the print out statements here since this code was
+c         basically repeated several times throughout CHAMP
+c        Now, if we add a new variable, we only need to change the above
+c        subroutine (zigzag2d), this subroutine, and the parameter
+c        'nzzvars' in zigzag_mod.f90
+      
+      use zigzag_mod, only: nzzvars
+
+      implicit real*8(a-h,o-z)
+      dimension zzave(nzzvars), zzerr(nzzvars)
+
+c  This line is in the finwrt routines:      
+c     write(6,'(''physical variable'',t20,''average'',t34,''rms error''
+c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
+
+      write(6,'(''<ZigZag Amp> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtpass
+      write(6,'(''<|ZigZag Amp|> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtpass
+      write(6,'(''<ZigZag Amp^2> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtpass
+      write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtpass
+      write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtpass
+      write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtpass
+      write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtpass
+      write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtpass
+      write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtpass
+      write(6,'(''<ZigZag Amp^4> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(10),zzerr(10),zzerr(10)*rtpass
+      write(6,'(''<ZigZag Amp^4 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(11),zzerr(11),zzerr(11)*rtpass
+      write(6,'(''<ZigZag rand Amp^4>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(12),zzerr(12),zzerr(12)*rtpass
+      
       return
       end
