@@ -1010,8 +1010,8 @@ module accumulation_mod
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(6,'(''<r>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') r1ave,r1err,r1err*rtevalg_proc_eff1
         write(6,'(''<r2>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
-        write(6,'(''<r3>_av ='',t24,f12.4,'' +-'',f11.4,1x,f9.4)') r3ave,r3err,r3err*rtevalg_proc_eff1
-        write(6,'(''<r4>_av ='',t24,f12.2,'' +-'',f11.2,1x,f9.2)') r4ave,r4err,r4err*rtevalg_proc_eff1
+        write(6,'(''<r3>_av ='',t24,f12.4,'' +-'',f11.5,1x,f9.2)') r3ave,r3err,r3err*rtevalg_proc_eff1
+        write(6,'(''<r4>_av ='',t24,f12.2,'' +-'',f11.3,1x,f9.1)') r4ave,r4err,r4err*rtevalg_proc_eff1
         write(6,'(''<ri>_av ='',t24,f12.7,'' +-'',f11.7,1x,f9.5)') riave,rierr,rierr*rtevalg_proc_eff1
       endif
 

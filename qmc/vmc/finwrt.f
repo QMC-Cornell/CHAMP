@@ -243,8 +243,8 @@ c force and force_err are really the energy difference and the error in the ener
       if(iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''<r> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r1fin,r1err,r1err*rtpass
         write(6,'(''<r2> ='',t8,f21.7,'' +-'',f11.7,f9.5)') r2fin,r2err,r2err*rtpass
-        write(6,'(''<r3> ='',t8,f21.4,'' +-'',f11.4,f9.4)') r3fin,r3err,r3err*rtpass
-        write(6,'(''<r4> ='',t8,f21.2,'' +-'',f11.2,f9.2)') r4fin,r4err,r4err*rtpass
+        write(6,'(''<r3> ='',t8,f21.4,'' +-'',f11.5,f9.2)') r3fin,r3err,r3err*rtpass
+        write(6,'(''<r4> ='',t8,f21.2,'' +-'',f11.3,f9.1)') r4fin,r4err,r4err*rtpass
       endif
 
       if(izigzag.ge.1) then
