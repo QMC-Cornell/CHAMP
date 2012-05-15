@@ -34,12 +34,18 @@ c get basis functions
    10       cdorb(idim,iorb)=dcmplx(0,0)
           cddorb(iorb)=dcmplx(0,0)
           do 25 m=1,nbasis
-c           write(6,*) 'cphin,cdphin1,cdphin2,cd2phin='
-c     &              ,cphin(m,iel),cdphin(1,m,iel),cdphin(2,m,iel),cd2phin(m,iel)
+           write(6,*) 'cphin,cdphin1,cdphin2,cd2phin='
+     &              ,cphin(m,iel),cdphin(1,m,iel,1),cdphin(2,m,iel,1),cd2phin(m,iel)
            corb(iorb)=corb(iorb)+coef(m,iorb,iwf)*cphin(m,iel)
            do 15 idim=1,ndim
    15        cdorb(idim,iorb)=cdorb(idim,iorb)+coef(m,iorb,iwf)*cdphin(idim,m,iel,1)
    25      cddorb(iorb)=cddorb(iorb)+coef(m,iorb,iwf)*cd2phin(m,iel)
+
+      if(ipr.ge.4) then
+        write(6,'(''corb='',100es12.4)') (corb(iorb),iorb=1,norb)
+        write(6,'(''cdorb='',100es12.4)') ((cdorb(idim,iorb),idim=1,ndim),iorb=1,norb)
+        write(6,'(''cddorb='',100es12.4)') (cddorb(iorb),iorb=1,norb)
+      endif
 
       return
       end

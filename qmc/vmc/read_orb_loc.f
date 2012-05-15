@@ -128,7 +128,7 @@ c Construct the spline
       if(inum_orb.ne.0) call spline_orb(num_orb_exist)
 
       return
-      end
+      end subroutine read_orb_loc
 c-----------------------------------------------------------------------
 
       subroutine read_orb_loc_ana
@@ -208,9 +208,12 @@ c     n13o=0
             read(5,*) n1s(ict),n2p(1,ict),n2p(-1,ict),n3d(2,ict),n3d(-2,ict)
      &      ,n4f(3,ict),n4f(-3,ict),n5g(4,ict),n5g(-4,ict),n6h(5,ict),n6h(-5,ict)
            else ! numerical radial basis functions
-            read(5,*) (m_bas(ib),ib=1,nbasis)
-            write(6,'(/,''m for basis functions:'',/,100i5)') (m_bas(ib),ib=1,nbasis)
-            call object_modified ('m_bas')
+            if(ict.eq.1) then
+              read(5,*) (m_bas(ib),ib=1,nbasis)
+              write(6,'(/,''m for basis functions:'',/,100i5)') (m_bas(ib),ib=1,nbasis)
+              call object_modified ('m_bas')
+              ML_BAS = max(4, maxval(m_bas))
+            endif
           endif
          elseif(ndim.eq.3) then
           if(numr.le.0) then
@@ -254,7 +257,19 @@ c     n13o=0
           endif
         endif
 
-        if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then
+c       if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then
+        if(ndim.eq.2) then
+          if(numr.le.0) then
+            nbasis_ctype(ict)=n1s(ict)+n2p(1,ict)+n2p(-1,ict)+n3d(2,ict)+n3d(-2,ict)
+     &      +n4f(3,ict)+n4f(-3,ict)+n5g(4,ict)+n5g(-4,ict)+n6h(5,ict)+n6h(-5,ict)
+           else ! numerical radial basis functions in 2d
+            if(ict.eq.1) then ! All basis functions are at the center of the ring; none at the constriction
+               nbasis_ctype(ict)=nbasis
+            else
+               nbasis_ctype(ict)=0
+            endif
+          endif
+         elseif(ndim.eq.3) then
 c Check that the total number of basis functions for each center type is correct
           nbas_typ=           iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
           nbas_tot=nbas_tot + iabs(n1s(ict))+iabs(n2s(ict))+iabs(n3s(ict))+iabs(n4s(ict))+iabs(n5s(ict))
@@ -276,10 +291,12 @@ c Check that the total number of basis functions for each center type is correct
 
           nbasis_ctype(ict)=nbas_typ
         endif
+        write(6,'(''nbasis_ctype(ict)='',i5)') nbasis_ctype(ict)
+
 c Read in which radial basis function is used by each basis function
-c We are now reading this in even if the radial basis functions are analytical to allow for a mixed analyltical-numerical basis
+c We are now reading this in even if the radial basis functions are analytical to allow for a mixed analytical-numerical basis
         mbasis_ctype = maxval(nbasis_ctype)
-        if(ndim.eq.3 .or. (ndim.eq.2.and.numr.eq.1)) then
+        if(ndim.eq.3 .or. (ndim.eq.2.and.numr.eq.1.and.ict.eq.1)) then
           call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
           write(6,'(''Reading iwrwf'')')
           read(5,*) (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
@@ -287,14 +304,13 @@ c We are now reading this in even if the radial basis functions are analytical t
         endif
         nbas_tot=nbas_tot+(ncent_ctype(ict)-1)*nbasis_ctype(ict)
 
-        if(ndim.eq.2.and.numr.eq.1) then
-          do ib=1,nbasis
-            ictype_basis(ib)=iwctype(ict) 
-          enddo
-        endif
-
-  
    50 continue
+
+      if(ndim.eq.2.and.numr.eq.1) then
+        do ib=1,nbasis
+          ictype_basis(ib)=1 ! All basis functions are at the center of the ring, none are at the constriction.
+        enddo
+      endif
 
       if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then !ACM
         if(nbas_tot.ne.nbasis) then
@@ -417,7 +433,7 @@ c Now we use zex=0 to signal this. So, check to make sure that the value in the 
   262 continue
 
       return
-      end
+      end subroutine read_orb_loc_ana
 c-----------------------------------------------------------------------
 
       subroutine orb_loc_ana_original_order
@@ -811,7 +827,7 @@ c           if(iabs(nda(-m,i)).gt.nprime) stop 'number of da basis fns > nprime'
       write(6,'(/,(12a10))') (lbasis(j),j=1,nbasis)
 
       return
-      end
+      end subroutine orb_loc_ana_original_order
 c-----------------------------------------------------------------------
 
       subroutine orb_loc_ana_gamess_order
@@ -1285,7 +1301,7 @@ c           if(iabs(nda(-m,i)).gt.nprime) stop 'number of da basis fns > nprime'
       write(6,'(/,(12a10))') (lbasis(j),j=1,nbasis)
 
       return
-      end
+      end subroutine orb_loc_ana_gamess_order
 c-----------------------------------------------------------------------
 
       subroutine distinct_radial_bas
@@ -1331,6 +1347,11 @@ c The decision of which are analytical and which are numerical is based on wheth
       call alloc ('nrbas_analytical', nrbas_analytical, nctype)
 !     allocate iwrwf here in the case when it is not allocated and read in before (new style format input)
       call alloc ('iwrwf', iwrwf, mbasis_ctype ,nctype)
+
+      if(ndim.eq.2.and.numr.eq.1) then
+        nrbas_analytical(1)=0
+        return
+      endif
 
 c Figure out the number of different analytical radial basis functions
 c Note that we are checking not only for the equality of of n_bas and zex but also of l_bas.  The latter is not necessary if this is
@@ -1392,7 +1413,7 @@ c               if((index(mode,'fit').eq.0 .and. n_bas(ib).eq.n_bas(jbct+kbct) .
       call object_modified ('zex2')
 
       return
-      end
+      end subroutine distinct_radial_bas
 c-----------------------------------------------------------------------
 
       subroutine copy_zex_zex2
@@ -1419,7 +1440,7 @@ c zex and zex2 are the same, but indexed differently.
    20   ib=ib+(ncent_ctype(ict)-1)*nbasis_ctype(ict)
 
       return
-      end
+      end subroutine copy_zex_zex2
 c-----------------------------------------------------------------------
 
       subroutine read_orb_loc_num
@@ -1453,7 +1474,7 @@ c     write(6,'(''orb'',i2,(65d10.2))') (((orb_num(1,i,j,iorb),i=1,ngrid_orbx),j
       close(4)
 
       return
-      end
+      end subroutine read_orb_loc_num
 c-----------------------------------------------------------------------
 
       subroutine spline_orb(num_orb_exist)
@@ -1489,7 +1510,7 @@ c     do 35 iy=1,ngrid_orby
 c  35   yorb_grid(iy)=-sizey+(iy-1)*hy
 
 c Takes data in orb_num(1,ix,iy,iorb) as input and calculates bicubic spline
-c coeff's in orb_num(2-4,ix,iy,iorb)
+c coeffs in orb_num(2-4,ix,iy,iorb)
       do 40 iorb=1,norb
         if(num_orb_exist.eq.1) then
           do 10 iy=1,ngrid_orby
@@ -1522,5 +1543,5 @@ c   6 d2f/dxdy
       write(6,'(''orb_num1b'',10d12.4)') (orb_num(1,1,1,iorb),iorb=1,norb)
 
       return
-      end
+      end subroutine spline_orb
 c-----------------------------------------------------------------------

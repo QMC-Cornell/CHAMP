@@ -1802,6 +1802,7 @@ c 404   wght(i)=one
       write(6,'(''lo='',20i3)') (lo(iorb),iorb=1,norb)
 c     read(5,*) (n(ib),l(ib),ib=1,nbasis)
 c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
+      call systemflush(6)
 
       if(ijas.le.3) then
         na1=nspin1
@@ -1851,6 +1852,7 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
       if(nparmcsf.eq.ncsf) then
         write(6,'(a,i5,a,i5)') 'Warning: since normalization of wavefn. is arb. nparmcsf=',nparmcsf,' should be <= ncsf-1=',ncsf-1
       endif
+      call systemflush(6)
 
       if(ijas.ge.4.and.ijas.le.6) then
         do 405 it=1,nctype
@@ -1935,6 +1937,7 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
 !JT        write(6,'(''Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'')')
 !JT        stop 'Since normalization of wavefunction is arbitrary, nparmcsf must be <= ncsf-1'
 !JT      endif
+      call systemflush(6)
 
       call alloc ('iwo', iwo, norb, notype)
       do it=1,notype
@@ -1949,11 +1952,13 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
           endif
         enddo
       enddo
+      call systemflush(6)
 
       call alloc ('iworb', iworb, nparml)
       call alloc ('iwbasi', iwbasi, nparml)
       read(5,*) (iworb(iparm),iwbasi(iparm),iparm=1,nparml)
       write(6,'(''lin. coefs. of orbs varied='',10(2i3,2x))') (iworb(iparm),iwbasi(iparm),iparm=1,nparml)
+      call systemflush(6)
 
       call alloc ('iwbase', iwbase, nparme)
       read(5,*) (iwbase(iparm),iparm=1,nparme)
@@ -1969,6 +1974,7 @@ c    &(iwdet(iparm),iparm=1,nparmd)
      &(iwcsf(iparm),iparm=1,nparmcsf)
       do 412 iparm=1,nparmcsf
   412   if(iwcsf(iparm).gt.ncsf) stop 'iwcsf(iparm).gt.ncsf'
+      call systemflush(6)
 
       call object_modified ('iwcsf')
 
@@ -2010,6 +2016,7 @@ c    &(iwdet(iparm),iparm=1,nparmd)
      &      nparmf(it))
         endif
       endif
+      call systemflush(6)
 
       if(icusp2.ge.1 .and. ijas.eq.3 .and. isc.le.7) call cuspinit3(1)
       if(icusp2.ge.1 .and. ijas.eq.4 .and. isc.le.10) call cuspinit4(0)
@@ -2116,8 +2123,8 @@ c if antiferromagnetic constraint is desired, enforce it here.
         endif
       endif
 
-
       write(6,'(''ipr in read_input'',i5)') ipr
+      call systemflush(6)
 
       call object_modified ('nparma') !JT
       call object_modified ('nparmb') !JT
