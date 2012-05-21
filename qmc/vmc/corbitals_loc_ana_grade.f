@@ -25,7 +25,7 @@ c get basis functions
       if(numr.eq.0) then
         call cbasis_fns_fd(iel,rvec_en,r_en)
       else if(numr.eq.1) then
-	call cbasis_fns_num(iel,rvec_en,r_en)
+        call cbasis_fns_num(iel,rvec_en,r_en)
       endif
 
       do 25 iorb=1,norb
@@ -34,7 +34,7 @@ c get basis functions
    10       cdorb(idim,iorb)=dcmplx(0,0)
           cddorb(iorb)=dcmplx(0,0)
           do 25 m=1,nbasis
-           write(6,*) 'cphin,cdphin1,cdphin2,cd2phin='
+           if(ipr.ge.2) write(6,*) 'cphin,cdphin1,cdphin2,cd2phin='
      &              ,cphin(m,iel),cdphin(1,m,iel,1),cdphin(2,m,iel,1),cd2phin(m,iel)
            corb(iorb)=corb(iorb)+coef(m,iorb,iwf)*cphin(m,iel)
            do 15 idim=1,ndim

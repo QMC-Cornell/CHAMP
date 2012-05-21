@@ -235,8 +235,8 @@ c save energy, energy_sigma and energy_err for optimization
           write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') nfprod,egave,egerr,egerr*rtevalg_eff1,
      &    egerr1*rtevalg_eff1,(egerr/egerr1)**2
          else
-          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') nfprod,ifr,egave,egerr,egerr*rtevalg_eff1,
-     &    egerr1*rtevalg_eff1,(egerr/egerr1)**2
+          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') nfprod,ifr,egave,egerr,
+     &    egerr*rtevalg_eff1,egerr1*rtevalg_eff1,(egerr/egerr1)**2
         endif
   30  continue
 c Growth energy estimators
