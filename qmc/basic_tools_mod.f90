@@ -2828,7 +2828,7 @@ module basic_tools_mod
   character(len=*), allocatable, intent(inout) :: array (:)
 
 ! local
-  integer array_nb, i
+  integer array_nb !, i
 
 ! begin
 !  write(6,*) "string=",string

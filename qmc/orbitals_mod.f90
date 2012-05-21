@@ -436,18 +436,48 @@ module orbitals_mod
 !  loop over all orbitals
    do orb_i = 1, orb_tot_nb
 
-      if (.not. orb_occ_in_det_unq_up (orb_i, det_unq_up_i) .or. .not. orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i)) then
+      if (det_unq_up_i == 0 .or. det_unq_dn_i == 0) then
         orb_cls_in_wf (orb_i) = .false.
+      else
+       if (.not. orb_occ_in_det_unq_up (orb_i, det_unq_up_i) .or. .not. orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i)) then
+        orb_cls_in_wf (orb_i) = .false.
+       endif
       endif
 
-      if (orb_occ_in_det_unq_up (orb_i, det_unq_up_i) .or. orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i)) then
+      if (det_unq_up_i /= 0) then
+       if (orb_occ_in_det_unq_up (orb_i, det_unq_up_i)) then
         orb_occ_in_wf (orb_i) = .true.
         orb_vir_in_wf (orb_i)  = .false.
+       endif
+      endif
+      if (det_unq_dn_i /= 0) then
+       if (orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i)) then
+        orb_occ_in_wf (orb_i) = .true.
+        orb_vir_in_wf (orb_i)  = .false.
+       endif
       endif
 
-      if ( (orb_occ_in_det_unq_up (orb_i, det_unq_up_i) .and. .not. orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i) )  &
-         .or.  (.not. orb_occ_in_det_unq_up (orb_i, det_unq_up_i) .and. orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i) ) ) then
-        orb_opn_in_wf (orb_i) = .true.
+      if (det_unq_up_i /= 0) then
+       if (orb_occ_in_det_unq_up (orb_i, det_unq_up_i)) then
+        if (det_unq_dn_i == 0) then
+         orb_opn_in_wf (orb_i) = .true.
+        else
+         if (.not. orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i)) then
+          orb_opn_in_wf (orb_i) = .true.
+         endif
+        endif
+       endif
+      endif
+      if (det_unq_dn_i /= 0) then
+       if (orb_occ_in_det_unq_dn (orb_i, det_unq_dn_i)) then
+        if (det_unq_up_i == 0) then
+         orb_opn_in_wf (orb_i) = .true.
+        else
+         if (.not. orb_occ_in_det_unq_up (orb_i, det_unq_up_i)) then
+          orb_opn_in_wf (orb_i) = .true.
+         endif
+        endif
+       endif
       endif
 
     enddo ! orb_i
