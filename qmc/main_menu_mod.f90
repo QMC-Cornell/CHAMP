@@ -224,7 +224,7 @@ module main_menu_mod
   in_include_file = .true.
   write(6,*) trim(lhere),': include file >',trim(include_file),'<'
 
-  current_line_save = current_line
+  current_line_save = trim(current_line)
   current_line = ''
   position_in_current_line_save = position_in_current_line
   position_in_current_line = 0

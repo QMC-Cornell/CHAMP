@@ -38,7 +38,7 @@ c /config_dmc/ included to print out xold and vold for old walkers
       character*80 fmt
 !JT      character*24 date
 
-      dimension zznow(nzzvars), zzerr(nzzvars), zzave(nzzvars)
+      dimension zzerr(nzzvars), zzave(nzzvars)
 c statement functions for error calculation
       rn_eff(w,w2)=w**2/w2
 

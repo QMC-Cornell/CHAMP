@@ -223,7 +223,7 @@ module deriv_exp_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'exp_opt_lab_read_bld'
+!  character(len=max_string_len_rout), save :: lhere = 'exp_opt_lab_read_bld'
   integer bas_i, exp_opt_lab_read_i
 
 ! header

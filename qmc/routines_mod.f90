@@ -105,7 +105,7 @@ module routines_mod
 ! local
   integer rtn_i
   integer length, half
-  character(len=max_string_len_obj) current_routine_name
+  character(len=max_string_len) current_routine_name
 
 ! begin
   length = len_trim(routine_name)

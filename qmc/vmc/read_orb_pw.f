@@ -1447,7 +1447,6 @@ c-----------------------------------------------------------------------
       use contr_names_mod
       use periodic2_mod
       implicit real*8(a-h,o-z)
-      character*20 fmt
 
       parameter(eps=1.d-3)
 

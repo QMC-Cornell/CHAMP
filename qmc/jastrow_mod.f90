@@ -313,7 +313,7 @@ module jastrow_mod
   implicit none
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'jastrow_parameters_rd'
+!  character(len=max_string_len_rout), save :: lhere = 'jastrow_parameters_rd'
   integer isp, iparm, it
 
   integer, external :: nterms4

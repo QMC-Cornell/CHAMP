@@ -22,7 +22,7 @@ program champ
   character(len=256) :: command_line_arguments
   character(len=256) :: executable_name
   character(len=256) :: argument
-  character(len=16)  :: filename
+!  character(len=16)  :: filename
   character(len=max_string_len_file)       :: input_file_name = ''
   integer iostat, mode_i
 
@@ -117,7 +117,7 @@ program champ
     if (iarg > narg) then
      call die (lhere, 'value for option "-m{ode}" missing.')
     endif
-    mode = argument
+    mode = trim(argument)
    endif
 
 !  input file (necessary for MPI version)
@@ -127,7 +127,7 @@ program champ
     if (iarg > narg) then
      call die (lhere, 'value for option "-i{input}" missing.')
     endif
-    input_file_name  = argument
+    input_file_name  = trim(argument)
    endif
 
   enddo ! end loop over arguments

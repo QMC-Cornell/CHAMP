@@ -3128,7 +3128,7 @@ module optimization_mod
   implicit none
 
 ! local
-  integer orb_i, orb_j, dorb_i, ex_i, orb_1st, orb_2nd
+  integer orb_i, orb_j
   real(dp), allocatable :: coef_new (:,:)
 
 ! begin
@@ -3176,7 +3176,7 @@ module optimization_mod
   implicit none
 
 ! local
-  integer orb_i, orb_j, dorb_i, ex_i, orb_1st, orb_2nd
+  integer orb_i, orb_j
   real(dp), allocatable :: coef_new (:,:)
 
 ! begin
@@ -3224,7 +3224,7 @@ module optimization_mod
   implicit none
 
 ! local
-  integer orb_i, orb_j, dorb_i, ex_i, orb_1st, orb_2nd
+  integer orb_i, orb_j
   real(dp), allocatable :: coef_new (:,:)
 
 ! begin

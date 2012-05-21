@@ -293,7 +293,7 @@ module parser_tools_mod
   integer :: words_number_in_string
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'words_number_in_string'
+!  character(len=max_string_len_rout), save :: lhere = 'words_number_in_string'
   integer string_length, position_in_string
   character(len=1) current_char
   integer first_char_in_word_index, last_char_in_word_index
@@ -391,7 +391,7 @@ module parser_tools_mod
   character(len=max_string_len), intent(out) :: word
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'read_next_word_in_line'
+!  character(len=max_string_len_rout), save :: lhere = 'read_next_word_in_line'
   integer current_line_length
   character(len=1) current_char
   integer first_char_in_word_index, last_char_in_word_index

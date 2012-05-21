@@ -150,7 +150,7 @@ module nodes_mod
 ! local
   integer nod_i
   integer length, half
-  character(len=max_string_len_obj) current_node_name
+  character(len=max_string_len) current_node_name
 
 ! begin
 
