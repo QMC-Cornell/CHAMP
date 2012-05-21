@@ -254,7 +254,7 @@ module matrix_tools_mod
   real(dp), intent(out)  :: matrix_out (:,:)
 
 ! local
-  character(len=max_string_len_rout), save :: lhere = 'to_the_power'
+!  character(len=max_string_len_rout), save :: lhere = 'to_the_power'
   integer eigen_i, bas_i, bas_j, bas_k
   real(dp), allocatable  :: eigenvectors (:,:)
   real(dp), allocatable  :: eigenvalues (:)

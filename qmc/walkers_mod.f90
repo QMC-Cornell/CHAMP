@@ -581,7 +581,7 @@ module walkers_mod
   implicit none
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'generate_walkers_from_vmc'
+!  character (len=max_string_len_rout), save :: lhere = 'generate_walkers_from_vmc'
   integer nstep_save, nblk_save, nstep_total_save, nwalk_save, nblkeq_save
   real(dp) error_threshold_save
   character(len=max_string_len) :: mode_save
@@ -628,7 +628,7 @@ module walkers_mod
   nstep_total = nstep_total_save
   nwalk = nwalk_save
   error_threshold = error_threshold_save
-  mode = mode_save
+  mode = trim(mode_save)
   call set_mode
   write(6,*)
   write(6,'(i5,a)') nconf, ' walkers have been generated from the VMC run.'
@@ -647,7 +647,7 @@ module walkers_mod
   implicit none
 
 ! local
-  character (len=max_string_len_rout), save :: lhere = 'save_vmc_walkers_for_dmc'
+!  character (len=max_string_len_rout), save :: lhere = 'save_vmc_walkers_for_dmc'
   
 ! begin
   nconf_saved = nconf_saved + 1

@@ -109,7 +109,6 @@
 ! local
   character(len=max_string_len_rout), save :: lhere = 'forces_menu'
   character(len=max_string_len) estimator
-  integer force_i
 
 ! begin
   write(6,*)

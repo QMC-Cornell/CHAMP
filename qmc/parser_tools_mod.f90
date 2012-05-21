@@ -392,7 +392,6 @@ module parser_tools_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'read_next_word_in_line'
-  integer iostat
   integer current_line_length
   character(len=1) current_char
   integer first_char_in_word_index, last_char_in_word_index
@@ -714,7 +713,7 @@ module parser_tools_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'read_next_line_list_string'
   character(len=max_string_len) value_string
-  integer iostat, i
+  integer iostat
 
 ! begin
   value_string = ''

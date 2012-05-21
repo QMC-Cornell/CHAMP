@@ -30,7 +30,7 @@ module nuclei_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'nuclei_menu'
-  integer cent_i, dim_i, i, ic, it, ict, lpotp1_nb
+  integer cent_i, dim_i, i, ic, ict, lpotp1_nb
 
 ! initialization
   l_convert_from_angstrom_to_bohr = .false.

@@ -490,9 +490,6 @@ module average_mod
 ! input
   character(len=*), intent(in) :: object_name, object_av_name
 
-! local
-  integer object_av_ind
-
   call object_average_define (object_name, object_av_name, .true.)
 
   end subroutine object_average_unweighted_define
@@ -3584,7 +3581,7 @@ module average_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'compute_averages_block'
   integer object_ind, object_bav_ind, object_av_ind, ind
-  character(len=max_string_len_type)   :: object_type, object_bav_type, object_av_type
+  character(len=max_string_len_type)   :: object_type
 # if defined (MPI)
   integer ierr
   real(dp) collect_double_0

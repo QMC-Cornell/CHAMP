@@ -50,8 +50,9 @@ module basis_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'basis_menu'
-  real(dp), allocatable  :: exponents (:)
-  integer exponents_nb, bas_i, bas_c_i, cent_i, cent_type_i, ict, m
+!  real(dp), allocatable  :: exponents (:)
+!  integer exponents_nb, ict
+  integer bas_i, bas_c_i, cent_type_i
 
 ! begin
   write(6,*)
@@ -333,7 +334,7 @@ module basis_mod
   character(len=500) line
   character(len=max_string_len) basis_fns_type_temp
   real(dp) basis_fns_expo_temp
-  integer cent_type_i, bas_i, iostat,i, cent_i, bas_c_i
+  integer cent_type_i, bas_i, iostat, cent_i, bas_c_i
 
 ! begin
   call object_provide ('nctype')

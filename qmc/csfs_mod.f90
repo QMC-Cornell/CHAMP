@@ -184,10 +184,10 @@ module csfs_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'dets_in_csfs_rd'
   character(len=50000) line
-  integer iostat, csf_i, det_i, det_in_csf_i, ndet_in_csf_check, normalize_csf
-  integer iwdet_in_csf_temp_nb, cdet_csf_temp_nb
-  integer, allocatable :: iwdet_in_csf_temp (:)
-  real(dp), allocatable :: cdet_csf_temp (:)
+  integer iostat, csf_i, det_in_csf_i, ndet_in_csf_check, normalize_csf
+!  integer iwdet_in_csf_temp_nb, cdet_csf_temp_nb
+!  integer, allocatable :: iwdet_in_csf_temp (:)
+!  real(dp), allocatable :: cdet_csf_temp (:)
   real(dp) :: csf_norm
 
 ! begin
