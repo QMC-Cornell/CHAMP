@@ -187,8 +187,8 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         endif
         call walkstrjas(iw)
 
-c This was put in when working on tmoves.  Needs checking.
-        call distances(xoldw(1,1,iw,1),pe,pei)
+! This was put in when working on tmoves.  It is commented out because it appears to be unnecessary if distances is called from hpsie.f
+!       call distances(xoldw(1,1,iw,1),pe,pei)
 
 c Sample Green function for forward move
         r1sume=zero

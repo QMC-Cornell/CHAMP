@@ -139,10 +139,10 @@ c Since we are rotating on sphere around nucleus ic, that elec-nucl distance doe
                 write(6,'(''ic,i,iq,deter,value'',3i3,2d14.6)') ic,i,iq,deter,value
               endif
 
-       if(current_walker.eq.0) current_walker=1
-       if(ipr.ge.1)
-     & write(6,'(''outside tmoves: vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow'',9d12.4)')
-     & vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
+              if(current_walker.eq.0) current_walker=1
+              if(ipr.ge.1)
+     &          write(6,'(''outside tmoves: vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow'',
+     &          9d12.4)') vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
 
               if(l_do_tmoves) then
                 vpsp_tmove(ntmove_pts)=0
@@ -154,7 +154,7 @@ c Since we are rotating on sphere around nucleus ic, that elec-nucl distance doe
                   if(l_do_tmoves) then
                     if(ipr.ge.1)
      &              write(6,'(''vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow'',9d12.4)')
-     & vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
+     &              vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
                     vpsp_tmove(ntmove_pts)=vpsp_tmove(ntmove_pts)
      &              -vps(i,ic,l)*wq(iq)*yl0(l,costh)*(deter/psidow(current_walker,1))*exp(value)*taunow
                     call systemflush(6)
@@ -223,7 +223,7 @@ c Note we are using the same array, vpsp_tmove, to store the cumulative values t
      &    write(6,'(''vpsp_tmove_sum, vpsp_tmove_heatbath'',100f10.6)') vpsp_tmove_sum, (vpsp_tmove_heatbath(ii),ii=1,ntmove_pts)
 
           if(abs(vpsp_tmove_sum-1).ge.1.d-6) random=rannyu(0)
-          if(vpsp_tmove_heatbath(1).gt.random*vpsp_tmove_sum) then ! No t-move
+          if(vpsp_tmove_heatbath(1).gt.random*vpsp_tmove_sum) then ! No t-move (vpsp_tmove_heatbath(1)=1)
             iwhich_tmove=0
           else
             iwhich_tmove=ntmove_pts ! Last quadrature point is chosen if we make it through loop without satisfying the if within the loop.
