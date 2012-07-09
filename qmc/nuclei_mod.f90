@@ -162,9 +162,10 @@ module nuclei_mod
     call object_provide ('lpotp1')
     call require (lhere, 'lpotp1_nb = nctype', lpotp1_nb == nctype)
     write(6,'(a,20i3)') ' local components of pseudopotential: ',lpotp1(1:nctype)
-    do i=1,nctype
-       if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
-    enddo
+!JT    do i=1,nctype
+!JT       if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
+!JT    enddo
+    MPS_L=maxval(lpotp1(1:nctype))  ! JT: set MPS_L from input
   endif
 
   if(nloc > 0) then

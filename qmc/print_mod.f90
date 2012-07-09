@@ -8,6 +8,8 @@ module print_mod
 
   integer                      :: objects_print_at_each_block_nb = 0
   integer, allocatable         :: objects_print_at_each_block_index (:)
+  integer                      :: objects_print_at_each_block_nb_save = 0
+  integer, allocatable         :: objects_print_at_each_block_index_save (:)
 
   contains
 
@@ -67,7 +69,7 @@ module print_mod
     call object_provide (objects_to_print_now (obj_i))
    enddo
 
-   !write objects on separate lines
+!  write objects on separate lines
    do obj_i = 1, objects_to_print_now_nb
       call object_write (objects_to_print_now (obj_i))
    end do
@@ -153,11 +155,37 @@ module print_mod
 ! -----------------------------------------------------------------------------------
   implicit none
 
-
-! begin
   objects_print_at_each_block_nb = 0
   call release ('objects_print_at_each_block_index', objects_print_at_each_block_index)
 
  end subroutine reinit_objects_print_at_each_block
+
+! ===================================================================================
+  subroutine save_objects_print_at_each_block
+! -----------------------------------------------------------------------------------
+! Description   : save array of requested objects to be printed at each block
+!
+! Created       : J. Toulouse, 08 Jun 2012
+! -----------------------------------------------------------------------------------
+  implicit none
+
+  objects_print_at_each_block_nb_save = objects_print_at_each_block_nb
+  call copy (objects_print_at_each_block_index, objects_print_at_each_block_index_save)
+
+  end subroutine save_objects_print_at_each_block
+
+! ===================================================================================
+  subroutine restore_objects_print_at_each_block
+! -----------------------------------------------------------------------------------
+! Description   : restore array of requested objects to be printed at each block
+!
+! Created       : J. Toulouse, 08 Jun 2012
+! -----------------------------------------------------------------------------------
+  implicit none
+
+  objects_print_at_each_block_nb = objects_print_at_each_block_nb_save
+  call move (objects_print_at_each_block_index_save, objects_print_at_each_block_index)
+
+  end subroutine restore_objects_print_at_each_block
 
 end module print_mod

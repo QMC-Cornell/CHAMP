@@ -5,6 +5,7 @@ module walkers_mod
   use vmc_mod
   use initialization_mod
   use control_mod
+  use print_mod
 
 ! Declaration of global variables and default values
   character (len=max_string_len_file)   :: file_mc_configs_in  = 'mc_configs'
@@ -617,11 +618,14 @@ module walkers_mod
   call reinit_routines_write_block
   call save_routines_write_final
   call reinit_routines_write_final
+  call save_objects_print_at_each_block
+  call reinit_objects_print_at_each_block
   call vmc_run
   call vmc_release
   call restore_averages_and_errors
   call restore_routines_write_block
   call restore_routines_write_final
+  call restore_objects_print_at_each_block
   nstep = nstep_save
   nblk = nblk_save
   nblkeq = nblkeq_save
