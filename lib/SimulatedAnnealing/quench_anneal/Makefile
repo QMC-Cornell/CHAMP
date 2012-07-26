@@ -4,24 +4,25 @@
 # quench_anneal from being compiled in MPI mode when CHAMP is being compiled in MPI mode.
 # Alternatively one can do a "make libs" from here before doing a "make mpi" in champ/qmc.
 
-#ifdef F77
-#F77 = gfortran
-#FFLAGS = -ffixed-line-length-132 -DNOMPI
-## FC = gfortran
-## F77_MPI = gfortran
-## F95 = gfortran
-## F95_MPI = gfortran
-#endif
-
-ifndef F77
-
-F77 = gfortran
 FC = gfortran
 F77 = gfortran
 F77_MPI = gfortran
 F95 = gfortran
 F95_MPI = gfortran
-FFLAGS = -ffixed-line-length-132 -DNOMPI
+FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+# FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall
+export FC F77 FFLAGS LDFLAGS F77_MPI FFLAGS_MPI FLINKER_MPI
+
+ifdef F77
+F77 = gfortran
+FFLAGS = -finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOMPI
+# FC = gfortran
+# F77_MPI = gfortran
+# F95 = gfortran
+# F95_MPI = gfortran
+endif
+
+ifndef F77
 
 ##########
 # README #
@@ -71,7 +72,7 @@ hostname := $(shell uname -n)
 planck_compiler=ifort
 $(shell mkdir -p lib)
 # system = AIX
-export F77 FFLAGS LDFLAGS F77_MPI FFLAGS_MPI FLINKER_MPI
+export FC F77 FFLAGS LDFLAGS F77_MPI FFLAGS_MPI FLINKER_MPI
 
 # F77:         Sequential F77 compile command
 # FFLAGS:      Flags for sequential F77 compilations

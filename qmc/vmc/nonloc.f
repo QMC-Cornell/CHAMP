@@ -203,6 +203,7 @@ c Since we are rotating on sphere around nucleus ic, that elec-nucl distance doe
 
           endif
   100   continue ! ncent
+
 c       if(l_do_tmoves) write(6,'(''i, current_walker, x_tmove_sav='',2i3, 99d12.4)') i, current_walker,
 c    &  ((x_tmove_sav(k,ii),k=1,3),ii=1,ntmove_pts)
 

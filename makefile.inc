@@ -155,14 +155,16 @@ ifeq ($(findstring node,$(hostname)), node)
   EINSPLINE=
 endif
 
-ifeq ($(findstring dft,$(hostname)), dft)
+ifeq ($(findstring login,$(hostname)), login)
   CC=gcc
   CXX=g++
   CC_MPI=mpicc
   F95=gfortran
   F95_MPI=mpif90
-  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
-  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+# F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
+# F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+  F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
   LD=gfortran
   LD_FLAGS=-O3
   LD_MPI=mpif90
@@ -229,7 +231,8 @@ ifeq ($(hostname),qmc4)
   F95=gfortran
   F95_MPI=mpif90
   F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
-  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
+# F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE -fbounds-check -g
   F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check
   F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check
   F95_PROF_FLAGS=$(F95_FAST_FLAGS) -pg
@@ -488,7 +491,7 @@ ifeq ($(hostname),samos)
 endif
 
 # Argonne Blue-Gene BG/L, login1
-ifeq ($(hostname),login1)
+ifeq ($(hostname),login1a)
 
 # serial
   F77 = xlf
@@ -682,6 +685,7 @@ ifeq ($(hostname), bgl16fen)
  F95_MPI = mpixlf90
  LD_MPI = mpixlf90
  CC_MPI = mpixlc
+#F77_MPI_FLAGS =  -O3 -qcheck  -C -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE,-DNOQUENCH,-DNOEINSPLINE,-DMPI -qfixed=132
  F77_MPI_FLAGS =  -O3 -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f -WF,-DUNDERSCORE,-DNOQUENCH,-DNOEINSPLINE,-DMPI -qfixed=132
  F95_MPI_FLAGS =  -O3 -qstrict -qarch=440 -qtune=440 -qsuffix=cpp=f90  -WF,-DNOQUENCH,-DNOEINSPLINE,-DMPI
 
