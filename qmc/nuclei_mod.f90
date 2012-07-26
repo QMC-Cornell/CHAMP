@@ -1,6 +1,5 @@
 module nuclei_mod
 
-
   use all_tools_mod
 
 ! Declaration of global variables and default values
