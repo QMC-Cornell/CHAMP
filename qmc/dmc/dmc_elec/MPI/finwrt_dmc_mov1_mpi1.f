@@ -431,9 +431,9 @@ c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
      &    wgave,wgerr,wgerr*rtpass_proc1,wgerr1*rtpass_proc1,(wgerr/wgerr1)**2
   20    continue
         call object_provide('ovlp_trial_fn')
-        write(6,'(a,f7.5)') 'approx to normalized overlap of FN and trial wave functions=',ovlp_trial_fn
+        write(6,'(a,f10.8)') 'approx. normalized overlap of FN and trial wave functions= ',ovlp_trial_fn
         call object_provide('ovlp_trial_fn_over_ovlp_trial')
-        write(6,'(a,f7.5)') 'unnormalized overlap of FN and trial wave functions', ovlp_trial_fn_over_ovlp_trial
+        write(6,'(a,f10.8)') 'unnormalized overlap of FN and trial wave functions= ', ovlp_trial_fn_over_ovlp_trial
 
 c Mixed energy estimators
         write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')

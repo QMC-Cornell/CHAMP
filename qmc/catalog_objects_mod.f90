@@ -127,8 +127,6 @@ module catalog_objects_mod
   call catalog_one_object ('wgcum', wgcum_index)
   call catalog_one_object ('eold', eold_index)
   call catalog_one_object ('eoldw', eoldw_index)
-  call catalog_one_object ('walker_weights_sum_block', walker_weights_sum_block_index)
-  call catalog_one_object ('walker_weights_sum', walker_weights_sum_index)
   call catalog_one_object ('dist_ee_min', dist_ee_min_index)
   call catalog_one_object ('dist_ee_max', dist_ee_max_index)
   call catalog_one_object ('nwalk', nwalk_index)
@@ -184,6 +182,10 @@ module catalog_objects_mod
   call catalog_one_object ('current_walker_weight', current_walker_weight_index)
   call catalog_one_object ('total_iterations_block_nb', total_iterations_block_nb_index)
   call catalog_one_object ('total_iterations_nb', total_iterations_nb_index)
+  call catalog_one_object ('walker_weights_sum_block', walker_weights_sum_block_index)
+  call catalog_one_object ('walker_weights_sum', walker_weights_sum_index)
+  call catalog_one_object ('walker_weights_sq_sum_block', walker_weights_sq_sum_block_index)
+  call catalog_one_object ('walker_weights_sq_sum', walker_weights_sq_sum_index)
 
  end subroutine catalog_objects
 

@@ -149,11 +149,6 @@ c Warning temp fix
         taucum(ifr)=taucum(ifr)+taucollect(ifr)
   12  continue
 
-      walker_weights_sum_block = wgsum(1)
-      walker_weights_sum = wgcum(1)
-      call object_modified_by_index (walker_weights_sum_block_index) !JT
-      call object_modified_by_index (walker_weights_sum_index) !JT
-
       call mpi_allreduce(pesum,pecollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(peisum,peicollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tpbsum,tpbcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)

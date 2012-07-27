@@ -4,7 +4,7 @@ module optimization_mod
   use opt_nwt_mod
   use opt_lin_mod
   use opt_ptb_mod
-  use opt_ovlp_fn_mod, only: delta_ovlp_fn, delta_ovlp_fn_linear, opt_ovlp_fn_menu, l_opt_ovlp_fn_linear
+  use opt_ovlp_fn_mod, only: delta_ovlp_fn, delta_ovlp_fn_linear, opt_ovlp_fn_menu, l_opt_ovlp_fn_linear, ovlp_trial_fn, ovlp_trial_fn_sav, ovlp_trial_fn_over_ovlp_trial, ovlp_trial_fn_over_ovlp_trial_sav, l_opt_ovlp_branching, gradient_ovlp, gradient_ovlp_norm
   use opt_common_mod
   use nuclei_mod
   use orbitals_mod
@@ -41,7 +41,7 @@ module optimization_mod
   logical                 :: l_ortho_orb_vir_to_orb_occ = .false.
   logical                 :: l_approx_orb_rot = .false.
   logical                 :: l_reweight = .false.
-  logical                 :: l_reset_walker_weights_sum_block = .false.
+!  logical                 :: l_reset_walker_weights_sum_block = .false.
   integer                 :: reweight_power = 1
   real(dp)                :: reweight_scale = 10.d0
 
@@ -783,7 +783,7 @@ module optimization_mod
   write(6,'(3a)') 'Optimization will be done with the ',trim(opt_method),' method.'
   write(6,*)
 
-  if (l_opt_ovlp_fn) then
+  if (l_opt_ovlp_fn .and. .not. l_opt_ovlp_branching) then
    l_branching = .false.
    write(6,'(a)') 'Warning: turn off branching in DMC for overlap fixed-node optimization method.'
   endif
@@ -958,6 +958,17 @@ module optimization_mod
    enddo
    write(6,'(a,es15.8,a,es15.8)') 'gradient norm :              ',gradient_norm, ' +- ',gradient_norm_err
    write(6,*)
+   if (l_opt_ovlp_fn) then
+     call object_provide ('gradient_ovlp')
+     call object_provide ('gradient_ovlp_norm')
+      write(6,*)
+      write(6,'(a)') 'Gradient of overlap with respect to the parameters:'
+      do param_i = 1, param_nb
+        write(6,'(a,i5,a,es15.8,3a)') 'gradient ovlp component # ',param_i,' : ', gradient_ovlp (param_i), ' (',trim(param_type (param_i)),')'
+      enddo
+      write(6,'(a,es15.8,a,es15.8)') 'gradient ovlp norm :              ',gradient_ovlp_norm  !, ' +- ',gradient_ovlp_norm_err
+      write(6,*)
+   endif
 
 !  check vanishing components or linear dependencies in gradient
    do parm_i = 1, param_nb
@@ -1127,6 +1138,9 @@ module optimization_mod
       write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy(1),' +-', &
       energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
      endif
+     if (l_opt_ovlp_fn) then
+       write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
+     endif
      cycle
     endif
    endif
@@ -1139,6 +1153,10 @@ module optimization_mod
    energy_err_sav=energy_err(1)
    error_sigma_sav = error_sigma
    ene_var_sav=(1-p_var)*energy(1)+p_var*energy_sigma(1)**2
+   if (l_opt_ovlp_fn) then
+    ovlp_trial_fn_sav = ovlp_trial_fn
+    ovlp_trial_fn_over_ovlp_trial_sav = ovlp_trial_fn_over_ovlp_trial
+   endif
 
 !  save wavefunction, gradient, Hamiltonian and overlap
    call wf_save
@@ -1179,6 +1197,10 @@ module optimization_mod
    call object_provide ('sigma')
    call object_provide ('gradient_norm')
    call object_provide ('gradient_norm_err')
+   if (l_opt_ovlp_fn) then
+    call object_provide ('gradient_ovlp_norm')
+   endif
+
    if (iter == 1) then
     if (l_decrease_error) then
      write(6,'(a)') 'OPT: iter    energy         error      diff          sigma                grad norm        p_var  nxt err  nxt stab'
@@ -1202,6 +1224,9 @@ module optimization_mod
      write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
      energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab,' converged'
     endif
+   endif
+   if (l_opt_ovlp_fn) then
+      write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn_sav, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial_sav, ' gradient_ovlp_norm= ', gradient_ovlp_norm
    endif
 
 !  decrease p_var
@@ -1228,8 +1253,11 @@ module optimization_mod
    write(6,'(a)') 'Convergence reached.'
    write(6,'(a,f12.7,a,i2,a)') 'Threshold on energy ', energy_threshold,' reached for ', check_convergence_nb,' consecutive steps.'
    if (.not. l_last_run) then
-   write(6,*)
-   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+    write(6,*)
+    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+    if (l_opt_ovlp_fn) then
+      write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
+    endif
    endif
    iter = iter + 1
   else
@@ -1275,6 +1303,9 @@ module optimization_mod
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
+  if (l_opt_ovlp_fn) then
+   write(6,'(a,i3,a,f10.8,a,f10.8)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial
+  endif
 
 ! If this is the best yet, save it.  Since we are primarily interested in the energy we use
 ! that as part of the criterion.  By adding in energy_err we favor those iterations where the energy

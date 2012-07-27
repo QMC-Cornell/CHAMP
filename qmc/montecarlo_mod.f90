@@ -551,45 +551,4 @@ module montecarlo_mod
 
   end subroutine walker_weights_bld
 
-! ==============================================================================
-!  subroutine walker_weights_sum_bld
-! ------------------------------------------------------------------------------
-! Description   : sum of weights of walkers over step and blocks
-!
-! Created       : J. Toulouse, 14 Nov 2006
-! ------------------------------------------------------------------------------
-!  include 'modules.h'
-!  implicit none
-!
-!! local
-!  integer walk_i
-!
-!! header
-!  if (header_exe) then
-!
-!   call object_create ('walker_weights_sum', walker_weights_sum_index)
-!
-!   return
-!
-!  endif
-!
-!! begin
-!
-!! allocations
-!  if (index(mode, 'vmc') /= 0) then
-!   call object_provide_by_index (walker_weights_sum_index, block_iterations_nb_index)
-!   walker_weights_sum  = nstep_total*block_iterations_nb
-!
-!  elseif (index(mode, 'dmc') /= 0) then
-!   call object_provide_by_index (walker_weights_sum_bld_index, wgcum_index)
-!   walker_weights_sum  = wgcum(1)
-!
-!  else
-!   write(6,'(4a)') trim(here),': mode=',trim(mode),' should contain either vmc or dmc.'
-!   call die (here)
-!
-!  endif
-!
-!  end subroutine walker_weights_sum_bld
-
 end module montecarlo_mod

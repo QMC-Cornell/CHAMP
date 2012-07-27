@@ -12,11 +12,13 @@ module opt_ovlp_fn_mod
   real(dp)                        :: weight_trial = 1.0
   logical                         :: l_opt_ovlp_fn_linear = .false.
   logical                         :: l_ovlp_identity = .false.
+  logical                         :: l_opt_ovlp_branching = .false.
   real(dp), allocatable           :: delta_ovlp_fn (:)
   real(dp), allocatable           :: delta_ovlp_fn_linear (:)
-  real(dp)                        :: wt_lambda = 1.d0
   real(dp)                        :: ovlp_trial_fn
+  real(dp)                        :: ovlp_trial_fn_sav
   real(dp)                        :: ovlp_trial_fn_over_ovlp_trial
+  real(dp)                        :: ovlp_trial_fn_over_ovlp_trial_sav
   real(dp), allocatable           :: dpsi_over_jas2 (:)
   real(dp), allocatable           :: dpsi_over_jas2_av (:)
   real(dp), allocatable           :: dpsi_over_jas2_uwav (:)
@@ -32,6 +34,8 @@ module opt_ovlp_fn_mod
   real(dp)                        :: one_over_jas2
   real(dp)                        :: one_over_jas2_uwav
   real(dp)                        :: one_over_jas2_av
+  real(dp), allocatable           :: gradient_ovlp (:)
+  real(dp)                        :: gradient_ovlp_norm 
 
   contains
 
@@ -66,6 +70,7 @@ module opt_ovlp_fn_mod
    write(6,'(a)') '   opt_ovlp_fn_linear = [logical] : Perform overlap-fn method with weight of 1/J^2. Assume overlap matrix is diagonal. (default=false)'
    write(6,'(a)') '   ovlp_identity = [logical] : Assume overlap matrix is the identiry matrix. (default=false)'
    write(6,'(a)') '   wt_lambda = [real] : Power to which DMC wts are raised unit physical time later. (default=1.d0)'
+   write(6,'(a)') '   l_opt_ovlp_branching = [logical] : do branching (default=false)'
    write(6,'(a)') '   update_nonlinear = [original|semiorthogonal] : default=semiorthogonal, choice of update of nonlinear paramaters'
    write(6,'(a)') '   xi = [real] : update of nonlinear paramaters by orthogonalization to xi Psi_0 +(1-xi) Psi_lin'
    write(6,'(a)') '                - xi=1: orthogonalization to Psi_0 (default)'
@@ -85,6 +90,9 @@ module opt_ovlp_fn_mod
   case ('wt_lambda')
    call get_next_value( wt_lambda)
    write(6,'(''wt_lambda='',es10.3)') wt_lambda
+
+  case ('l_opt_ovlp_branching')
+   call get_next_value(l_opt_ovlp_branching)
 
   case ('update_nonlinear')
    call get_next_value (update_nonlinear)
@@ -111,8 +119,8 @@ module opt_ovlp_fn_mod
   subroutine ovlp_trial_fn_bld
 ! ------------------------------------------------------------------------------
 ! Description   : overlap of trial wavefunction with fn wavefunction
-!
 ! Description   : < Psi(0) Psi_FN > / sqrt(<Psi(0) Psi(0) > <Psi_FN Psi_FN>)
+! Description   : <Psi_FN Psi_FN> is approximated as the sum of the squares of the weights
 !
 ! Created       : Cyrus Umrigar and Frank Petruzielo  1 Jul 2010
 ! ------------------------------------------------------------------------------
@@ -124,20 +132,16 @@ module opt_ovlp_fn_mod
 
    call object_create('ovlp_trial_fn')
 
-   call object_needed('wgcum1')
-   call object_needed('wgcm21')
+   call object_needed ('walker_weights_sum')
+   call object_needed ('walker_weights_sq_sum')
    call object_needed ('total_iterations_nb')
-   call object_needed ('walker_weights_sum') !temp
 
    return
 
   endif
 
 ! begin
-!  ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) *(nstep*nblk*nwalk*nproc))
-
-  ovlp_trial_fn = wgcum1(1) / sqrt(wgcm21(1) * total_iterations_nb)
-!JT  write(6,*) "walker_weights_sum, wgcum1(1), wgcm21(1), total_iterations_nb =", walker_weights_sum, wgcum1(1), wgcm21(1), total_iterations_nb  !temp
+  ovlp_trial_fn = walker_weights_sum / sqrt(total_iterations_nb * walker_weights_sq_sum)
 
   end subroutine ovlp_trial_fn_bld
 
@@ -435,6 +439,72 @@ module opt_ovlp_fn_mod
 
 
    end subroutine delta_ovlp_fn_linear_bld
+
+!===========================================================================
+  subroutine gradient_ovlp_bld
+! ------------------------------------------------------------------------------
+! Description   : gradient of overlap for overlap FN method
+!
+! Created       : J. Toulouse, 26 Jul 2012
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('gradient_ovlp')
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_av')
+   call object_needed ('dpsi_uwav')
+
+   return
+
+  endif
+
+! allocation
+  call object_alloc ('gradient_ovlp', gradient_ovlp, param_nb)
+
+  do param_i = 1, param_nb
+   gradient_ovlp (param_i) = dpsi_av (param_i) - dpsi_uwav (param_i)
+  enddo
+
+  end subroutine gradient_ovlp_bld
+
+!===========================================================================
+  subroutine gradient_ovlp_norm_bld
+! ------------------------------------------------------------------------------
+! Description   : norm of gradient of overlap for overlap FN method
+!
+! Created       : J. Toulouse, 26 Jul 2012
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('gradient_ovlp_norm')
+
+   call object_needed ('param_nb')
+   call object_needed ('gradient_ovlp')
+
+   return
+
+  endif
+
+  gradient_ovlp_norm = 0.d0
+  do param_i = 1, param_nb
+   gradient_ovlp_norm =  gradient_ovlp_norm + gradient_ovlp (param_i)**2
+  enddo
+  gradient_ovlp_norm = dsqrt(gradient_ovlp_norm)
+
+  end subroutine gradient_ovlp_norm_bld
 
 !===========================================================================
   subroutine delta_ovlp_fn_bld

@@ -106,8 +106,6 @@ module indexes_mod
   integer     :: delta_coef_ex_lin_index
   integer     :: delta_coef_ex_ptb_index
   integer     :: walker_weights_index
-  integer     :: walker_weights_sum_block_index
-  integer     :: walker_weights_sum_index
   integer     :: wt_index
   integer     :: fprod_index
   integer     :: eold_index
@@ -245,5 +243,9 @@ module indexes_mod
   integer     :: current_walker_weight_index
   integer     :: total_iterations_block_nb_index
   integer     :: total_iterations_nb_index
+  integer     :: walker_weights_sum_block_index
+  integer     :: walker_weights_sum_index
+  integer     :: walker_weights_sq_sum_block_index
+  integer     :: walker_weights_sq_sum_index
 
 end module indexes_mod

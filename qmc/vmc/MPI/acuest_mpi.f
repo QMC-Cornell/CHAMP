@@ -29,7 +29,7 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: esum_collect(nforce), wcollect(nforce)
       real(dp) :: pesum_collect, peisum_collect, tpbsum_collect, tjfsum_collect, r1sum_collect, r2sum_collect, accsum_collect
       real(dp) :: r3sum_collect, r4sum_collect
-      real(dp) :: d_node_log_collect, walker_weights_sum_block_collect
+      real(dp) :: d_node_log_collect
 
       dimension zzsum_collect(nzzvars)
 c statement function for error calculation
@@ -74,8 +74,6 @@ c quantities in finwrt_mpi
       endif
       call mpi_allreduce(accsum,accsum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(d_node_log_sum,d_node_log_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(walker_weights_sum_block,walker_weights_sum_block_collect,1,mpi_double_precision,
-     & mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(wsum,wcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
 c Warning this flush and barrier should not be necessary
@@ -101,7 +99,6 @@ c Warning this flush and barrier should not be necessary
       endif
       accsum = accsum_collect
       d_node_log_sum = d_node_log_collect
-      walker_weights_sum_block = walker_weights_sum_block_collect
 
 c     pesum=ecollect(MFORCE+1)
 c     peisum=ecollect(MFORCE+2)

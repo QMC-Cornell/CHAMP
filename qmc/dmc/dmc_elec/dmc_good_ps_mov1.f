@@ -80,8 +80,6 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use velratio_mod
       use pop_control_mod, only : ffn
       use eloc_mod
-!     use optimization_mod, only : l_opt_ovlp_fn
-      use opt_ovlp_fn_mod, only : wt_lambda
       use distance_mod, only: pot_ee, rshift, rvec_en, r_en
       use config_mod, only: pot_ee_new, pot_ee_old
       use zigzag_mod, only: izigzag

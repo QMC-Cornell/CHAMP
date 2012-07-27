@@ -227,6 +227,8 @@ module catalog_routines_mod
   call catalog_one_node ('delta_ovlp_fn_bld', delta_ovlp_fn_bld)
   call catalog_one_node ('ovlp_trial_fn_bld', ovlp_trial_fn_bld)
   call catalog_one_node ('ovlp_trial_fn_over_ovlp_trial_bld', ovlp_trial_fn_over_ovlp_trial_bld)
+  call catalog_one_node ('gradient_ovlp_bld', gradient_ovlp_bld)
+  call catalog_one_node ('gradient_ovlp_norm_bld', gradient_ovlp_norm_bld)
 
 ! jastrow derivatives
   call catalog_one_node ('jas_pairs_bld', jas_pairs_bld)

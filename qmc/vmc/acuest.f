@@ -85,15 +85,15 @@ c write out header first time
 c write out current values of averages
 
       wsum(1)=dfloat(nstep)*dfloat(nproc)
-      if (l_reweight .and. l_opt .and. nforce .eq. 1) then
-         walker_weights_sum = walker_weights_sum + walker_weights_sum_block
-         l_reset_walker_weights_sum_block = .true.
-      else
-         walker_weights_sum_block = nstep_total
-         walker_weights_sum = dfloat(nstep_total)*dfloat(block_iterations_nb)
-         call object_modified_by_index (walker_weights_sum_block_index)
-      end if
-      call object_modified_by_index (walker_weights_sum_index)
+!      if (l_reweight .and. l_opt .and. nforce .eq. 1) then
+!         walker_weights_sum = walker_weights_sum + walker_weights_sum_block
+!         l_reset_walker_weights_sum_block = .true.
+!      else
+!         walker_weights_sum_block = nstep_total
+!         walker_weights_sum = dfloat(nstep_total)*dfloat(block_iterations_nb)
+!         call object_modified_by_index (walker_weights_sum_block_index)
+!      end if
+!      call object_modified_by_index (walker_weights_sum_index)
 
       do 10 ifr=1,nforce
 c       wnow=wsum(ifr)/nstep
@@ -298,20 +298,20 @@ c     during optimization calculate modified walker weights based on distance to
             d_node_log = log(d_node)
             d_node_log_sum = d_node_log_sum + d_node_log
             current_walker_weight = d_node**reweight_power/(d_node**reweight_power+(d_node_ave/reweight_scale)**reweight_power)
-            if (l_reset_walker_weights_sum_block) then  
-               walker_weights_sum_block = 0
-               l_reset_walker_weights_sum_block = .false.
-            end if
-            walker_weights_sum_block = walker_weights_sum_block + current_walker_weight     
+!            if (l_reset_walker_weights_sum_block) then  
+!               walker_weights_sum_block = 0
+!               l_reset_walker_weights_sum_block = .false.
+!            end if
+!            walker_weights_sum_block = walker_weights_sum_block + current_walker_weight     
 !            write(6,*) "!fp: ", esum1, d_node, current_walker_weight
          else
             current_walker_weight = 1.d0
-            walker_weights_sum_block = nstep_total
-            walker_weights_sum = dfloat(nstep_total)*dfloat(block_iterations_nb)
-            call object_modified_by_index (walker_weights_sum_index)      
+!            walker_weights_sum_block = nstep_total
+!            walker_weights_sum = dfloat(nstep_total)*dfloat(block_iterations_nb)
+!            call object_modified_by_index (walker_weights_sum_index)      
          end if
          call object_modified_by_index (current_walker_weight_index)
-         call object_modified_by_index (walker_weights_sum_block_index)
+!         call object_modified_by_index (walker_weights_sum_block_index)
       end if
 
 c statistical fluctuation (without blocking)
@@ -371,8 +371,8 @@ c     call wf_secondary
       ecum1=0
 c     ecum1s=0
       d_node_log_cum = 0
-      walker_weights_sum = 0
-      call object_modified_by_index (walker_weights_sum_index)
+!      walker_weights_sum = 0
+!      call object_modified_by_index (walker_weights_sum_index)
 
       pecm2=0
       peicm2=0

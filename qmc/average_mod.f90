@@ -15,6 +15,10 @@ module average_mod
   real(dp)                     :: total_iterations_block_nb = 0.d0
   integer                      :: current_walker 
   real(dp)                     :: current_walker_weight
+  real(dp)                     :: walker_weights_sum_block = 0.d0
+  real(dp)                     :: walker_weights_sq_sum_block = 0.d0
+  real(dp)                     :: walker_weights_sum = 0.d0
+  real(dp)                     :: walker_weights_sq_sum = 0.d0
 
   integer                      :: average_routines_nb = 0
   integer, allocatable         :: average_routines_index (:)
@@ -3483,11 +3487,17 @@ module average_mod
   if (current_walker == 1 .and. step_iterations_nb == 1) then
    total_iterations_block_nb = 0.d0
    total_iterations_nb = 0.d0
+   walker_weights_sum_block = 0.d0
+   walker_weights_sum = 0.d0
+   walker_weights_sq_sum_block = 0.d0
+   walker_weights_sq_sum = 0.d0
   endif
 
   total_iterations_block_nb = total_iterations_block_nb + 1
   call object_provide_by_index (current_walker_index)
   call object_provide_by_index (current_walker_weight_index)
+  walker_weights_sum_block = walker_weights_sum_block + current_walker_weight
+  walker_weights_sq_sum_block = walker_weights_sq_sum_block + current_walker_weight**2
 
 ! loop over block averages
   do ind = 1, block_averages_nb
@@ -3589,22 +3599,37 @@ module average_mod
   real(dp), allocatable :: collect_double_2 (:,:)
 # endif
 
+! number of interations and sum of weights of walkers over the current block
 # if defined (MPI)
 !   sum values from all processes
     call mpi_allreduce(total_iterations_block_nb,collect_double_0,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
     if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
     total_iterations_block_nb = collect_double_0
+    call mpi_allreduce(walker_weights_sum_block,collect_double_0,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
+    walker_weights_sum_block = collect_double_0
+    call mpi_allreduce(walker_weights_sq_sum_block,collect_double_0,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+    if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
+    walker_weights_sq_sum_block = collect_double_0
 # endif
+  call object_modified_by_index (total_iterations_block_nb_index)
+  call object_modified_by_index (walker_weights_sum_block_index)
+  call object_modified_by_index (walker_weights_sq_sum_block_index)
+
+! number of interations and sum of weights of walkers over entire run
   total_iterations_nb = total_iterations_nb + total_iterations_block_nb
   call object_modified_by_index (total_iterations_nb_index)
+  walker_weights_sum = walker_weights_sum + walker_weights_sum_block
+  call object_modified_by_index (walker_weights_sum_index)
+  walker_weights_sq_sum = walker_weights_sq_sum + walker_weights_sq_sum_block
+  call object_modified_by_index (walker_weights_sq_sum_index)
 
 !JT  if (block_averages_nb == 0) return
 
 ! sum of weights of walkers over current block
-  call object_provide_by_index (walker_weights_sum_block_index)
-
+!!  call object_provide_by_index (walker_weights_sum_block_index)
 ! sum of weights of walkers over entire run
-  call object_provide_by_index (walker_weights_sum_index)
+!!  call object_provide_by_index (walker_weights_sum_index)
 
 ! loop over block averages ------------------------------------------------------------------------------------------
   do ind = 1, block_averages_nb
@@ -3796,6 +3821,8 @@ module average_mod
 
 ! reinitilizations at the end of each block
   total_iterations_block_nb = 0.d0
+  walker_weights_sum_block = 0.d0
+  walker_weights_sq_sum_block = 0.d0
 
  end subroutine compute_averages_block
 

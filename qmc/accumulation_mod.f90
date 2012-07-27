@@ -451,11 +451,6 @@ module accumulation_mod
         tpbcum(ifr)=tpbcum(ifr)+tpbsum(ifr)
         tjfcum(ifr)=tjfcum(ifr)+tjfsum(ifr)
 
-        walker_weights_sum_block = wgsum(1)                            !JT
-        walker_weights_sum = wgcum(1)                                  !JT
-        call object_modified_by_index (walker_weights_sum_block_index) !JT
-        call object_modified_by_index (walker_weights_sum_index)       !JT
-
 # else
         wg2sum(ifr)=wgsum(ifr)**2
         eg2sum(ifr)=egsum(ifr)*egnow
@@ -482,11 +477,6 @@ module accumulation_mod
         egcum(ifr)=egcum(ifr)+egcollect(ifr)
         taucum(ifr)=taucum(ifr)+taucollect(ifr)
   12  continue
-
-      walker_weights_sum_block = wgsum(1)                            !JT
-      walker_weights_sum = wgcum(1)                                  !JT   
-      call object_modified_by_index (walker_weights_sum_block_index) !JT
-      call object_modified_by_index (walker_weights_sum_index)       !JT
 
 
 !      call compute_averages_walk_block !JT
