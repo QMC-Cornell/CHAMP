@@ -5,6 +5,7 @@ module opt_ovlp_fn_mod
   use csfs_mod
   use opt_common_mod
   use deriv_mod
+  use optim_mod
 
 ! Declaration of global variables and default values
   character(len=max_string_len)   :: update_nonlinear = 'semiorthogonal'

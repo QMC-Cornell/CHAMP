@@ -15,6 +15,8 @@ module optimization_mod
   use vmc_mod
   use dmc_mod
   use cusp_mod
+  use optim_mod
+  use dets_mod
 
 ! Declaration of global variables and default values
   character(len=max_string_len)   :: opt_method = 'linear'
