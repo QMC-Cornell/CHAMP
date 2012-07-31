@@ -106,7 +106,11 @@ c Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
       if(idmc.gt.0) then
-        ginv=min(1.d0,tau)
+        if (l_population_control) then
+         ginv=min(1.d0,tau)
+        else
+         ginv=0
+        endif
         ffn=eigv*(wdsumo/nconf_global)**ginv
         ffn=ffn**wt_lambda
         ffi=one/ffn

@@ -16,6 +16,7 @@ module control_mod
 ! branching in DMC?
   logical                 :: l_branching = .true.
   real(dp)                :: wt_lambda = 1.d0
+  logical                 :: l_population_control = .true.
 
   contains
 
@@ -71,6 +72,7 @@ module control_mod
    write(6,'(a)') ' idmc = [integer] type of DMC algorithm (default=2)'
    write(6,'(a)') ' branching = [logical] do branching in DMC? (default=true)'
    write(6,'(a)') ' wt_lambda = [real] Power to which DMC wts are raised unit physical time later. (default=1.d0)'
+   write(6,'(a)') ' population_control = [logical] do population control in DMC? (default=true)'
    write(6,'(a)') ' ipq = [integer]'
    write(6,'(a)') ' itau_eff = [integer]'
    write(6,'(a)') ' iacc_rej = [integer]'
@@ -114,6 +116,7 @@ module control_mod
   case ('idmc');   call get_next_value (idmc)
   case ('branching'); call get_next_value (l_branching)
   case ('wt_lambda'); call get_next_value (wt_lambda)
+  case ('population_control'); call get_next_value (l_population_control)
   case ('ipq');    call get_next_value (ipq)
   case ('itau_eff');  call get_next_value (itau_eff)
   case ('iacc_rej');  call get_next_value (iacc_rej)
@@ -277,6 +280,9 @@ module control_mod
     endif
     if (wt_lambda /= 1.d0) then
      write(6,'(a,f10.5)') ' Warning: the weights of each previous generation will be raised to the power wt_lambda=',wt_lambda
+    endif
+    if (.not. l_population_control) then
+     write(6,'(a)') ' Warning: population control turned off in DMC'
     endif
   endif
 

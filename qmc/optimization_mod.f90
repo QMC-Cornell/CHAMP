@@ -4,7 +4,7 @@ module optimization_mod
   use opt_nwt_mod
   use opt_lin_mod
   use opt_ptb_mod
-  use opt_ovlp_fn_mod, only: delta_ovlp_fn, delta_ovlp_fn_linear, opt_ovlp_fn_menu, l_opt_ovlp_fn_linear, ovlp_trial_fn, ovlp_trial_fn_sav, ovlp_trial_fn_over_ovlp_trial, ovlp_trial_fn_over_ovlp_trial_sav, l_opt_ovlp_branching, gradient_ovlp, gradient_ovlp_norm
+  use opt_ovlp_fn_mod, only: delta_ovlp_fn, delta_ovlp_fn_linear, opt_ovlp_fn_menu, l_opt_ovlp_fn_nonsemiortho, l_opt_ovlp_fn_linear, ovlp_trial_fn, ovlp_trial_fn_sav, ovlp_trial_fn_over_ovlp_trial, ovlp_trial_fn_over_ovlp_trial_sav, l_opt_ovlp_branching, gradient_ovlp, gradient_ovlp_norm, delta_ovlp_fn_nonsemiortho
   use opt_common_mod
   use nuclei_mod
   use orbitals_mod
@@ -176,6 +176,7 @@ module optimization_mod
    write(6,'(a)') ' reweight = [bool] : reweight expectation values in optimization with weights depending on distance to node (default=false)'
    write(6,'(a)') ' reweight_power = [integer] : value of power in reweighting expression (default=1)'
    write(6,'(a)') ' reweight_scale = [real] : value of scaling factor in reweighting expression (default=10.d0)'
+   write(6,'(a)') ' csfs ... end: list of csfs to optimize (default=all csfs)'
    write(6,'(a)') 'end'
 
   case ('optimize')
@@ -344,6 +345,10 @@ module optimization_mod
   case ('reweight_scale')
    call get_next_value (reweight_scale)
 
+  case ('csfs')
+   call get_next_value_list_object ('iwcsf', iwcsf, nparmcsf)
+   call object_modified ('nparmcsf')
+
   case ('end')
    exit
 
@@ -423,17 +428,17 @@ module optimization_mod
 
   if (use_parser) then
 
-! default csf parameters to optimize
   call object_provide ('ncsf')
-  nparmcsf=ncsf-1
- 
-  call alloc ('iwcsf', iwcsf, nparmcsf)
-  do param_i = 1, nparmcsf
-    iwcsf(param_i) = param_i + 1
-  enddo
-  call object_modified ('iwcsf')
+  call object_provide ('nparmcsf')
+  call object_provide ('iwcsf')
   if(nparmcsf == ncsf) then
      write(6,'(a,i5,a,i5)') ' Warning: since normalization of wavefn. is arb. nparmcsf=',nparmcsf,' should be <= ncsf-1=',ncsf-1
+  endif
+  if (l_opt_ovlp_fn_linear .and. l_opt_csf) then
+    if (iwcsf(1) /= 1) then
+     write(6,*) " Warning: first csf not optimized in ovlp_fn_linear method?"
+!     call die (lhere, 'with ovlp_fn_linear method the first csf must be optimized.')
+    endif
   endif
 
 
@@ -758,12 +763,12 @@ module optimization_mod
   write(6,'(a)') '************************* WAVE FUNCTION OPTIMIZATION *************************'
 
 ! Initializations
-  if(l_mode_vmc) then 
+  if (l_mode_vmc) then 
     call vmc_init
-   elseif(l_mode_dmc) then
+   elseif (l_mode_dmc) then
     call dmc_init
    else
-    call die(lhere, 'If doing new optimization then mode must be vmc or dmc.')
+    call die (lhere, 'If doing new optimization then mode must be vmc or dmc.')
   endif
   energy_plus_err_best=1.d99
   eloc_av_previous =  0.d0
@@ -878,6 +883,12 @@ module optimization_mod
 
    endif
 
+! for overlap_fn method
+    if (l_opt_ovlp_fn) then
+      call object_average_request ('dpsi_uwav')
+      call object_average_request ('dpsi_dpsi_uwav')
+    endif
+
 ! for overlap_fn method with linear scaling
     if (l_opt_ovlp_fn_linear) then
       call object_average_request ('dpsi_over_jas2_av')
@@ -889,12 +900,6 @@ module optimization_mod
       call object_average_request ('first_csf2_over_jas2_uwav')
       call object_average_request ('one_over_jas2_uwav')
       call object_average_request ('one_over_jas2_av') !temp
-    endif
-
-! for overlap_fn method
-    if (l_opt_ovlp_fn) then
-      call object_average_request ('dpsi_uwav')
-      call object_average_request ('dpsi_dpsi_uwav')
     endif
 
 !  request additional averages for bounds on dpsi and deloc
@@ -1194,7 +1199,7 @@ module optimization_mod
 
 !  pretty printing
    write(6,*)
-   call object_provide ('sigma')
+!   call object_provide ('sigma')
    call object_provide ('gradient_norm')
    call object_provide ('gradient_norm_err')
    if (l_opt_ovlp_fn) then
@@ -1254,7 +1259,7 @@ module optimization_mod
    write(6,'(a,f12.7,a,i2,a)') 'Threshold on energy ', energy_threshold,' reached for ', check_convergence_nb,' consecutive steps.'
    if (.not. l_last_run) then
     write(6,*)
-    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
+    write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
     if (l_opt_ovlp_fn) then
       write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
     endif
@@ -1276,7 +1281,7 @@ module optimization_mod
 ! do a last vmc with the last predicted parameters without calculating the derivatives
   if (l_last_run) then
   write(6,*)
-  write(6,'(a)') 'Performing last vmc run'
+  write(6,'(a)') 'Performing last qmc run'
 
 ! request vb_weights
   if (l_vb_weights) then
@@ -1302,7 +1307,7 @@ module optimization_mod
 
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
-  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, sigma, ' +-', error_sigma,'                                    last run'
+  write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma,'                                    last run'
   if (l_opt_ovlp_fn) then
    write(6,'(a,i3,a,f10.8,a,f10.8)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial
   endif
@@ -2634,6 +2639,9 @@ module optimization_mod
   elseif (l_opt_ovlp_fn_linear) then
       call object_provide_in_node (lhere, 'delta_ovlp_fn_linear')
       delta_param (:) = delta_ovlp_fn_linear (:)
+  elseif (l_opt_ovlp_fn_nonsemiortho) then
+      call object_provide_in_node (lhere, 'delta_ovlp_fn_nonsemiortho')
+      delta_param (:) = delta_ovlp_fn_nonsemiortho (:)
   elseif (l_opt_ovlp_fn) then
       call object_provide_in_node (lhere, 'delta_ovlp_fn')
       delta_param (:) = delta_ovlp_fn (:)
@@ -3369,5 +3377,46 @@ module optimization_mod
   enddo ! orb_i
 
   end subroutine delta_coef_pw_bld
+
+! ==============================================================================
+  subroutine iwcsf_bld
+! ------------------------------------------------------------------------------
+! Description : default csfs to optimize if not read
+!
+! Created     : J. Toulouse, 30 Jul 2012
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  integer param_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('nparmcsf')
+   call object_create ('iwcsf')
+
+   call object_needed ('ncsf')
+
+   return
+
+  endif
+
+! begin
+  if (l_opt_ovlp_fn_linear) then
+   nparmcsf=ncsf
+   call object_alloc ('iwcsf', iwcsf, nparmcsf)
+   do param_i = 1, nparmcsf
+    iwcsf (param_i) = param_i
+   enddo
+  else
+   nparmcsf=ncsf-1
+   call object_alloc ('iwcsf', iwcsf, nparmcsf)
+   do param_i = 1, nparmcsf
+    iwcsf (param_i) = param_i + 1
+   enddo
+  endif
+
+  end subroutine iwcsf_bld
 
 end module optimization_mod

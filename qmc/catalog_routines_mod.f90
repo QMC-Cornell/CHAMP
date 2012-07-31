@@ -172,6 +172,7 @@ module catalog_routines_mod
   call catalog_one_node ('vb_weights_chirgwin_coulson_bld', vb_weights_chirgwin_coulson_bld)
   call catalog_one_node ('vb_weights_lowdin_bav_bld', vb_weights_lowdin_bav_bld)
   call catalog_one_node ('vb_weights_lowdin_like_bav_bld', vb_weights_lowdin_like_bav_bld)
+  call catalog_one_node ('iwcsf_bld', iwcsf_bld)
 
 ! general optimization method
   call catalog_one_node ('delta_param_bld', delta_param_bld)
@@ -229,6 +230,8 @@ module catalog_routines_mod
   call catalog_one_node ('ovlp_trial_fn_over_ovlp_trial_bld', ovlp_trial_fn_over_ovlp_trial_bld)
   call catalog_one_node ('gradient_ovlp_bld', gradient_ovlp_bld)
   call catalog_one_node ('gradient_ovlp_norm_bld', gradient_ovlp_norm_bld)
+  call catalog_one_node ('ovlp_fn_bld', ovlp_fn_bld)
+  call catalog_one_node ('delta_ovlp_fn_nonsemiortho_bld', delta_ovlp_fn_nonsemiortho_bld)
 
 ! jastrow derivatives
   call catalog_one_node ('jas_pairs_bld', jas_pairs_bld)
