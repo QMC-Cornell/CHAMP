@@ -583,10 +583,11 @@ module opt_ovlp_fn_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'delta_ovlp_fn_bld'
-  integer param_i, param_j
+  integer param_i, param_j, info
   real(dp) transform_factor
   real(dp), allocatable :: dpsi_dpsi_uwcovar_stab (:,:)
   real(dp), allocatable :: dpsi_dpsi_uwcovar_stab_inv (:,:)
+  real(dp), allocatable :: vect (:)
   real(dp) threshold
 
 ! header
@@ -598,6 +599,7 @@ module opt_ovlp_fn_mod
    call object_needed ('dpsi_av')
    call object_needed ('dpsi_uwav')
    call object_needed ('dpsi_dpsi_uwcovar')
+   call object_needed ('gradient_ovlp')
    call object_needed ('diag_stab')
 
    return
@@ -619,18 +621,27 @@ module opt_ovlp_fn_mod
     dpsi_dpsi_uwcovar_stab (param_i, param_i) = dpsi_dpsi_uwcovar_stab (param_i, param_i) + diag_stab
   enddo
 
-! inverse overlap matrix
-  call alloc ('dpsi_dpsi_uwcovar_stab_inv', dpsi_dpsi_uwcovar_stab_inv, param_nb, param_nb)
-  threshold = 1.d-10
-  call inverse_by_svd (dpsi_dpsi_uwcovar_stab, dpsi_dpsi_uwcovar_stab_inv, param_nb, threshold)
+! find parameter variations by inverting overlap matrix
+!  call alloc ('dpsi_dpsi_uwcovar_stab_inv', dpsi_dpsi_uwcovar_stab_inv, param_nb, param_nb)
+!  threshold = 1.d-10
+!  threshold = 0.d0 !!!!!
+!  call inverse_by_svd (dpsi_dpsi_uwcovar_stab, dpsi_dpsi_uwcovar_stab_inv, param_nb, threshold)
+!  do param_i = 1, param_nb
+!   delta_ovlp_fn (param_i) = 0.d0
+!   do param_j = 1, param_nb
+!    delta_ovlp_fn (param_i) = delta_ovlp_fn (param_i) + dpsi_dpsi_uwcovar_stab_inv (param_i, param_j) * gradient_ovlp (param_j)
+!   enddo
+!  enddo
 
-! find parameter variations in semiorthogonalized basis
-  do param_i = 1, param_nb
-   delta_ovlp_fn (param_i) = 0.d0
-   do param_j = 1, param_nb
-    delta_ovlp_fn (param_i) = delta_ovlp_fn (param_i) + dpsi_dpsi_uwcovar_stab_inv (param_i, param_j) * (dpsi_av (param_j) - dpsi_uwav (param_j))
-   enddo
-  enddo
+! find parameter variations by solving the linear equation problem
+  call alloc ('vect', vect, param_nb)
+  vect(:) = gradient_ovlp (:)
+  call dposv('U',param_nb,1,dpsi_dpsi_uwcovar_stab,param_nb,vect,param_nb,info)
+!  do param_i = 1, param_nb
+!   write(6,'(a,i4,a,f12.6,a,f12.6)') 'param_i=',param_i,' delta_ovlp_fn=',delta_ovlp_fn (param_i), ' vect=',vect (param_i)
+!  enddo
+  delta_ovlp_fn (:) = vect (:)
+  
 
 ! norm of linear wave function variation for nonlinear parameter
   call object_provide ('nparmcsf')

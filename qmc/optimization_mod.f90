@@ -795,24 +795,30 @@ module optimization_mod
    write(6,'(a)') 'Warning: turn off branching in DMC for overlap fixed-node optimization method.'
   endif
 
-! choice of stabilization
-  select case (trim(stabilization))
-   case ('identity')
-    write (6,'(a)') 'optimization will be stabilized by adding multiple of identity matrix'
-   case ('overlap')
-    write (6,'(a)') 'optimization will be stabilized by adding multiple of overlap matrix'
-    if (.not. l_opt_lin) then
-     call die (lhere, 'stabilization = overlap is only implemented for the linear optimization method')
-    endif
-   case ('symmetrize')
-    write (6,'(a)') 'optimization will be stabilized by symmetrizing the hamiltonian matrix'
-   case default
-    call die (lhere, 'unknown stabilization choice >'+trim(stabilization)+'<.')
-  end select
   if (l_opt_ovlp_fn_linear) then
    l_stab = .false.
    write(6,'(a)') 'Warning: turn off stabilization for overlap-fn method with linear scaling.'
   endif
+
+! choice of stabilization
+  if (l_stab) then
+   select case (trim(stabilization))
+    case ('identity')
+     write (6,'(a)') 'optimization will be stabilized by adding multiple of identity matrix'
+    case ('overlap')
+     write (6,'(a)') 'optimization will be stabilized by adding multiple of overlap matrix'
+     if (.not. l_opt_lin) then
+      call die (lhere, 'stabilization = overlap is only implemented for the linear optimization method')
+     endif
+    case ('symmetrize')
+     write (6,'(a)') 'optimization will be stabilized by symmetrizing the hamiltonian matrix'
+    case default
+     call die (lhere, 'unknown stabilization choice >'+trim(stabilization)+'<.')
+   end select
+  else
+   write(6,'(a)') 'stabilization turned off in optimization.'
+  endif
+
 
 ! Nice printing
   write(6,'(a,i5,a,i5,a,i7,a,i5,a,i5,3a)') 'OPT: optimization of',nparmj+param_pjas_nb,' Jastrow,', nparmcsf,' CSF,',param_orb_nb,' orbital,', param_exp_nb, ' exponent and ',param_geo_nb," geometry parameters with ",trim(opt_method)," method:"
@@ -1747,7 +1753,7 @@ module optimization_mod
    endif
 
 !  if the move is bad, increase add_diag and retry
-   if ((l_stab .and. is_bad_move == 1) .or. is_bad_move == 2) then
+   if ((l_stab .and. is_bad_move == 1) .or. (is_bad_move == 2)) then !warning: is_bad_move == 2  forces stabilization
      call wf_restore
      if (l_opt_pjas) call restore_pjas
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
