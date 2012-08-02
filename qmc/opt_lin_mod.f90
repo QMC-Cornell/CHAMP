@@ -993,19 +993,20 @@ module opt_lin_mod
 !! If we are targeting the ground state ideally all 3 criteria for selecting the eigenvector should coincide
 ! Ideally all 3 criteria for selecting the eigenvector should coincide
 ! if((target_state == 0 .and. target_state_above_groundstate == 0 .and. target_state_above_groundstate_or_target_smallest_norm == 0) .and. (eigvec_lowest_eigval_ind /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind)) then
-  if((target_state == 0) .and. (eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eigvec_lowest_eigval_ind) + target_state_above_groundstate + target_state_above_groundstate_or_target_smallest_norm) /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind)) then
-    if(eigvec_lowest_eigval_ind /= 0) then
+  if(eigvec_lowest_eigval_ind == 0) then
+    write(6,'(a,a,2(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
+    'no reasonable eigenvalue', &
+    eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
+    eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+    l_warning = .true.
+  else
+    if((target_state == 0) .and. (eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eigvec_lowest_eigval_ind) + target_state_above_groundstate + target_state_above_groundstate_or_target_smallest_norm) /= eigvec_max_1st_compon_ind .or. eigvec_max_1st_compon_ind /= eigvec_smallest_norm_ind)) then
       write(6,'(a,3(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
       eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i', &
       eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
       eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
-     else
-      write(6,'(a,a,2(i4,a,2(f8.3,a)))') 'Warning: lowest_eigval, largest_1st_coef, smallest_norm eigenvecs are:', &
-      'no reasonable eigenvalue', &
-      eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i', &
-      eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i'
+      l_warning = .true.
     endif
-    l_warning = .true.
   endif
   call systemflush(6)
 

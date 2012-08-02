@@ -1309,6 +1309,7 @@ c Written by Cyrus Umrigar
 c Determine distinct radial basis functions
       use all_tools_mod
       use const_mod, only : ipr
+      use dim_mod, only : ndim
       use atom_mod
       use coefs_mod
       use basis1_mod
