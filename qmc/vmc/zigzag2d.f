@@ -345,6 +345,16 @@ c        'nzzvars' in zigzag_mod.f90
       implicit real*8(a-h,o-z)
       dimension zzave(nzzvars), zzerr(nzzvars)
 
+c     Fourth cumulants:
+      zzu4 = 1.0d0 - zzave(10)/(3.0d0*zzave(2)*zzave(2))
+      zzu4err = 1.0d0/(3.0d0*zzave(2)*zzave(2)) * ((2.0d0*zzave(10)/zzave(2))*zzerr(2) - zzerr(10))
+
+      zzu4red = 1.0d0 - zzave(11)/(3.0d0*zzave(5)*zzave(5))
+      zzu4rederr = 1.0d0/(3.0d0*zzave(5)*zzave(5)) * ((2.0d0*zzave(11)/zzave(5))*zzerr(5) - zzerr(11))
+
+      zzu4rand = 1.0d0 - zzave(12)/(3.0d0*zzave(8)*zzave(8))
+      zzu4randerr = 1.0d0/(3.0d0*zzave(8)*zzave(8)) * ((2.0d0*zzave(12)/zzave(8))*zzerr(8) - zzerr(12))
+
 c  This line is in the finwrt routines:      
 c     write(6,'(''physical variable'',t20,''average'',t34,''rms error''
 c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
@@ -361,6 +371,9 @@ c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
       write(6,'(''<ZigZag Amp^4> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(10),zzerr(10),zzerr(10)*rtpass
       write(6,'(''<ZigZag Amp^4 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(11),zzerr(11),zzerr(11)*rtpass
       write(6,'(''<ZigZag rand Amp^4>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(12),zzerr(12),zzerr(12)*rtpass
+      write(6,'(''<U4> = '',t22,f12.7,'' +-'',f11.7,f9.5)') zzu4, zzu4err, zzu4err*rtpass
+      write(6,'(''<U4 (red)> = '',t22,f12.7,'' +-'',f11.7,f9.5)') zzu4red, zzu4rederr, zzu4rederr*rtpass
+      write(6,'(''<U4 rand> = '',t22,f12.7,'' +-'',f11.7,f9.5)') zzu4rand, zzu4randerr, zzu4randerr*rtpass
       
       return
       end
