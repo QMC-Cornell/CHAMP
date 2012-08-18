@@ -434,6 +434,7 @@ module catalog_routines_mod
 
 ! grids
   call catalog_one_node ('grid_r_bld', grid_r_bld)
+  call catalog_one_node ('grid_xy_z_bld', grid_xy_z_bld)
   call catalog_one_node ('grid_xyz_bld', grid_xyz_bld)
 
 ! density
@@ -449,6 +450,8 @@ module catalog_routines_mod
   call catalog_one_node ('dens_q5_eloc_bld', dens_q5_eloc_bld)
   call catalog_one_node ('dens_zb5_av_bld', dens_zb5_av_bld)
   call catalog_one_node ('dens_zvzb5_av_bld', dens_zvzb5_av_bld)
+  call catalog_one_node ('dens_xy_z_bld', dens_xy_z_bld)
+  call catalog_one_node ('dens_xy_z_histo_bld', dens_xy_z_histo_bld)
   call catalog_one_node ('dens_3d_bld', dens_3d_bld)
   call catalog_one_node ('dens_3d_histo_bld', dens_3d_histo_bld)
   call catalog_one_node ('dens_3d_zv1_bld', dens_3d_zv1_bld)
@@ -678,6 +681,7 @@ module catalog_routines_mod
   call catalog_one_routine ('intra_wrt', intra_wrt)
   call catalog_one_routine ('intra_3d_wrt', intra_3d_wrt)
   call catalog_one_routine ('dens_wrt', dens_wrt)
+  call catalog_one_routine ('dens_xy_z_wrt', dens_xy_z_wrt)
   call catalog_one_routine ('dens_3d_wrt', dens_3d_wrt)
   call catalog_one_routine ('extracule_wrt', extracule_wrt)
   call catalog_one_routine ('dipole_moment_wrt', dipole_moment_wrt)

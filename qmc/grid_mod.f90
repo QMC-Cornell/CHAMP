@@ -5,29 +5,42 @@ module grid_mod
 
 ! Declaration of global variables and default values
 
-! grid r
+! grid r for spherically symmetric densities
   real(dp)                  :: grid_r_step
   real(dp)                  :: grid_r_min = 0.d0
   real(dp)                  :: grid_r_max
-  integer                   :: grid_r_nb = 0.d0
+  integer                   :: grid_r_nb = 0
   real(dp), allocatable     :: grid_r (:)
+
+! grid xy_z for axially symmetric densities
+  real(dp)                  :: grid_xy_step
+  real(dp)                  :: grid_xy_max
+  real(dp)                  :: grid_xy_min
+  integer                   :: grid_xy_nb = 0
+! real(dp)                  :: grid_z_step
+! real(dp)                  :: grid_z_max
+! real(dp)                  :: grid_z_min
+! integer                   :: grid_z_nb = 0
+  integer                   :: grid_xy_z_nb = 0
+  real(dp), allocatable     :: grid_xy_z (:,:)
+  integer, allocatable      :: grid_xy_z_index (:,:)
 
 ! grid xyz
   real(dp)                  :: grid_x_step
   real(dp)                  :: grid_x_max
   real(dp)                  :: grid_x_min
-  integer                   :: grid_x_nb = 0.d0
+  integer                   :: grid_x_nb = 0
   real(dp)                  :: grid_y_step
   real(dp)                  :: grid_y_max
   real(dp)                  :: grid_y_min
-  integer                   :: grid_y_nb = 0.d0
+  integer                   :: grid_y_nb = 0
   real(dp)                  :: grid_z_step
   real(dp)                  :: grid_z_max
   real(dp)                  :: grid_z_min
-  integer                   :: grid_z_nb = 0.d0
-  integer                   :: grid_xyz_nb = 0.d0
+  integer                   :: grid_z_nb = 0
+  integer                   :: grid_xyz_nb = 0
   real(dp), allocatable     :: grid_xyz (:,:)
-  real(dp), allocatable     :: grid_xyz_index (:,:,:)
+  integer, allocatable      :: grid_xyz_index (:,:,:)
 
 ! old grid for orbitals
   integer                   :: grid_on_x_nb
@@ -68,6 +81,9 @@ module grid_mod
 
   case ('grid_r')
    call grid_r_menu
+
+  case ('grid_xy_z')
+   call grid_xy_z_menu
 
   case ('grid_xyz')
    call grid_xyz_menu
@@ -149,6 +165,94 @@ module grid_mod
   call object_modified ('grid_r_nb')
 
   end subroutine grid_r_menu
+
+!===========================================================================
+  subroutine grid_xy_z_menu
+!---------------------------------------------------------------------------
+! Description : menu for grid over x, y, z
+!
+! Created       : C. Umrigar, 07 Jul 2012, by imitating J. Toulouse
+!---------------------------------------------------------------------------
+  implicit none
+
+  character(len=max_string_len_rout), save :: lhere = 'grid_xy_z_menu'
+
+! begin
+
+! loop over menu lines
+  do
+  call get_next_word (word)
+
+  select case(trim(word))
+  case ('help')
+   write(6,'(a)') 'HELP for menu grid_xy_z:'
+   write(6,'(a)') ' grid_xy_z'
+   write(6,'(a)') '  grid_xy_step   = [real] grid xy spacing'
+   write(6,'(a)') '  grid_xy_max    = [real] grid xy max value'
+   write(6,'(a)') '  grid_xy_min    = [real] grid xy min value'
+   write(6,'(a)') '  grid_z_step   = [real] grid z spacing'
+   write(6,'(a)') '  grid_z_max    = [real] grid z max value'
+   write(6,'(a)') '  grid_z_min    = [real] grid z min value'
+   write(6,'(a)') ' end'
+
+  case ('grid_xy_step')
+   call get_next_value (grid_xy_step)
+  case ('grid_xy_max')
+   call get_next_value (grid_xy_max)
+  case ('grid_xy_min')
+   call get_next_value (grid_xy_min)
+
+  case ('grid_z_step')
+   call get_next_value (grid_z_step)
+  case ('grid_z_max')
+   call get_next_value (grid_z_max)
+  case ('grid_z_min')
+   call get_next_value (grid_z_min)
+
+  case ('end')
+   exit
+
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
+  end select
+
+  enddo ! end loop over menu lines
+
+! Parameters for grid xy_z
+  call require (lhere, 'grid_xy_step > 0', grid_xy_step > 0.d0 )
+  call require (lhere, 'grid_xy_min <= grid_xy_max ', grid_xy_min <= grid_xy_max)
+  call require (lhere, 'grid_z_step > 0', grid_z_step > 0.d0 )
+  call require (lhere, 'grid_z_min <= grid_z_max ', grid_z_min <= grid_z_max)
+
+  grid_xy_nb = int((grid_xy_max - grid_xy_min)/grid_xy_step) + 1
+  grid_z_nb = int((grid_z_max - grid_z_min)/grid_z_step) + 1
+  grid_xy_z_nb = grid_xy_nb * grid_z_nb
+  call require (lhere, 'grid_xy_nb > 0', grid_xy_nb > 0 )
+  call require (lhere, 'grid_z_nb > 0', grid_z_nb > 0 )
+  call require (lhere, 'grid_xy_z_nb > 0', grid_xy_z_nb > 0 )
+
+  write (6,'(a)')  ' Parameters for grid xy_z:'
+  write (6,'(a,es15.8)')  ' grid_xy_step = ', grid_xy_step
+  write (6,'(a,es15.8)')  ' grid_xy_min  = ', grid_xy_min
+  write (6,'(a,es15.8)')  ' grid_xy_max  = ', grid_xy_max
+  write (6,'(a,i5)')  ' grid_xy_nb   = ', grid_xy_nb
+  write (6,'(a,es15.8)')  ' grid_z_step = ', grid_z_step
+  write (6,'(a,es15.8)')  ' grid_z_min  = ', grid_z_min
+  write (6,'(a,es15.8)')  ' grid_z_max  = ', grid_z_max
+  write (6,'(a,i5)')  ' grid_z_nb   = ', grid_z_nb
+  write (6,'(a,i5)')  ' grid_xy_z_nb = ', grid_xy_z_nb
+
+  call object_modified ('grid_xy_step')
+  call object_modified ('grid_xy_max')
+  call object_modified ('grid_xy_min')
+  call object_modified ('grid_xy_nb')
+  call object_modified ('grid_z_step')
+  call object_modified ('grid_z_max')
+  call object_modified ('grid_z_min')
+  call object_modified ('grid_z_nb')
+  call object_modified ('grid_xy_z_nb')
+
+  end subroutine grid_xy_z_menu
 
 !===========================================================================
   subroutine grid_xyz_menu
@@ -287,6 +391,7 @@ module grid_mod
   endif
 
 ! begin
+
   call require (lhere, 'grid_r_nb > 0', grid_r_nb > 0)
   call require (lhere, 'grid_r_step > 0', grid_r_step > 0)
 
@@ -298,6 +403,57 @@ module grid_mod
   enddo
 
   end subroutine grid_r_bld
+
+! ==============================================================================
+  subroutine grid_xy_z_bld
+! ------------------------------------------------------------------------------
+!
+! Created       : C. Umrigar, 07 Jul 2012, by imitating J. Toulouse
+! ------------------------------------------------------------------------------
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'grid_xy_z_bld'
+  integer grid_i, grid_xy_i, grid_z_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('grid_xy_z')
+   call object_create ('grid_xy_z_index')
+
+   call object_needed ('grid_xy_nb')
+   call object_needed ('grid_xy_min')
+   call object_needed ('grid_xy_step')
+   call object_needed ('grid_z_nb')
+   call object_needed ('grid_z_min')
+   call object_needed ('grid_z_step')
+   call object_needed ('grid_xy_z_nb')
+
+   return
+
+  endif
+
+! begin
+
+! allocation
+  call object_alloc ('grid_xy_z', grid_xy_z, 2, grid_xy_z_nb)
+  call object_alloc ('grid_xy_z_index', grid_xy_z_index, grid_xy_nb, grid_z_nb)
+
+  grid_i = 0
+
+  do grid_xy_i = 1, grid_xy_nb
+    do grid_z_i = 1, grid_z_nb
+     grid_i = grid_i + 1
+     grid_xy_z_index (grid_xy_i, grid_z_i) = grid_i
+     grid_xy_z (1, grid_i) = grid_xy_min + grid_xy_step * (grid_xy_i - 1)
+     grid_xy_z (2, grid_i) = grid_z_min + grid_z_step * (grid_z_i - 1)
+    enddo
+  enddo
+
+  call require (lhere, 'grid_i == grid_xy_z_nb', grid_i == grid_xy_z_nb)
+
+  end subroutine grid_xy_z_bld
 
 ! ==============================================================================
   subroutine grid_xyz_bld
