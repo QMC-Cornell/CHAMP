@@ -344,19 +344,29 @@ c verify the normalization later...
         if(index(mode,'vmc').ne.0) then
           file1='zzcorr_vmc'
           file2='zzcorrij_vmc'
+          file5='znncorr_vmc'
+          file6='zn2ncorr_vmc'
         else
           file1='zzcorr_dmc'
           file2='zzcorrij_dmc'
+          file5='znncorr_dmc'
+          file6='zn2ncorr_dmc'
         endif
         if(idtask.eq.0) then
           open(41,file=file1,status='unknown')
           open(42,file=file2,status='unknown')
+          open(45,file=file5,status='unknown')
+          open(46,file=file6,status='unknown')
          else
           open(41,status='scratch')
           open(42,status='scratch')
+          open(45,status='scratch')
+          open(46,status='scratch')
         endif
         do in2=0,nax2
           write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes
+          write(45,'(g19.8,g19.8)') in2*delxt*10./dble(nelec),znncorr(in2)/passes
+          write(46,'(g19.8,g19.8)') in2*delxt*10./dble(nelec),zn2ncorr(in2)/passes
         enddo
         do ine = 0,nelec-1
           write(42,'(i8,g19.8)') ine,zzcorrij(ine)/passes
@@ -393,6 +403,8 @@ c verify the normalization later...
         endif
         close(41)
         close(42)
+        close(45)
+        close(46)
       endif
 
       return

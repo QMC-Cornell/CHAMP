@@ -619,6 +619,8 @@ c    & system run dmc or dmc.mov1 with idmc < 0'
       write(6,'(''etrial'',t29,f12.6)') etrial
       write(6,'(''all energies are in'',t31,a10)') eunit
 
+      dos_dele = etrial/NAX   !set spacing for single-particle DOS histogram
+
       if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
         read(5,*) nstep,nblk,nblkeq,nconf,nconf_new
         write(6,'(''no. of steps/block ='',t31,i10)') nstep

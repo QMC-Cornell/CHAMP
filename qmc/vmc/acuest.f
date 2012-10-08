@@ -449,6 +449,8 @@ c Zero out estimators for pair densities:
       call alloc_range ('xx0probut', xx0probut, 0, NAX, -NAX, NAX, -NAX, NAX)
       call alloc_range ('xx0probuu', xx0probuu, 0, NAX, -NAX, NAX, -NAX, NAX)
       call alloc_range ('xx0probud', xx0probud, 0, NAX, -NAX, NAX, -NAX, NAX)
+      call alloc_range ('dos', dos, 0, NAX)
+      dos(:) = 0
       do 75 i2=-NAX,NAX
         do 75 i3=-NAX,NAX
           do 75 i1=0,NAX
@@ -488,10 +490,14 @@ c Zero out estimators for pair densities:
         call alloc_range ('zzpairdenij_t', zzpairdenij_t, -NAX, NAX, 0, (nelec-1))
         call alloc_range ('zzcorr', zzcorr, 0, NAX)
         call alloc_range ('zzcorrij', zzcorrij, 0, (nelec-1))
+        call alloc_range ('znncorr', znncorr, 0, NAX)
+        call alloc_range ('zn2ncorr', zn2ncorr, 0, NAX)
         zzpairden_t(:,:) = 0
         zzpairdenij_t(:,:) = 0
         zzcorr(:) = 0
         zzcorrij(:) = 0
+        znncorr(:) = 0
+        zn2ncorr(:) = 0
       endif
 
 c get wavefunction etc. at initial point

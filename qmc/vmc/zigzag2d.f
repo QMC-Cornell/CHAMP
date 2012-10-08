@@ -28,14 +28,29 @@ c     common /circularmesh/ delti
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       dimension xold(3,nelec),xnew(3,nelec)
       dimension zztemp2(nelec), ransign(nelec)
+      dimension iwouter_old(nelec), iwouter_new(nelec)
+      dimension evenfluct_old((nelec+1)/2), outerfluct_old((nelec+1)/2)
+      dimension evenfluct_new((nelec+1)/2), outerfluct_new((nelec+1)/2)
       dimension temppos(2),zzterm(nzzvars)
       dimension zzmaglocal_new(nelec),zzmaglocal_old(nelec)
       dimension zzcorrmat_old(nelec,nelec),zzcorrmat_new(nelec,nelec)
+      dimension cnndiffo(nelec), cn2ndiffo(nelec), cnndiffn(nelec), cn2ndiffn(nelec)
+      dimension cnndiffo2(nelec), cn2ndiffo2(nelec), cnndiffn2(nelec), cn2ndiffn2(nelec)
+      dimension cnndiffo3(nelec), cn2ndiffo3(nelec), cnndiffn3(nelec), cn2ndiffn3(nelec)
+      dimension cnndiffo4(nelec), cn2ndiffo4(nelec), cnndiffn4(nelec), cn2ndiffn4(nelec)
+      dimension zzxthetaold(nelec), zzxthetanew(nelec)
 
       if(ielec.lt.0 .or. ielec.gt.nelec) then
         write (6,*) 'Bad value of ielec in zigzag2d, ', ielec
         stop "Bad value of ielec in zigzag2d"
       endif
+
+      if(iperiodic.eq.0) then
+        delxti = delti
+      else
+        delxti = delxi(1)
+      endif
+      delyri = 1.0/zzdelyr
 
 c   zzpos will ultimately hold the sorted electron positions.  The first index labels longitudinal
 c      or transverse coordinate (i.e., zzpos(1,nelec) is sorted in ascending order)
@@ -160,23 +175,51 @@ c  Now all of the electrons are sorted, and we can calculate observables
 c     Set the sign of the staggered order such that the n/3rd largest r (or y) has sign +1
 c       i.e., in the zigzag phase, sum_i (-1)^i y_i should always be positive
 c       Choosing the n/3rd (and not the largest) should hopefully cause zigzag amp = 0 in linear phase
+c     Also, see which electrons are in outer half, which are in inner half
+c   iwouter(i) is 1 if ith electron has one of the n/2 largest radii, -1 otherwise
 
+
+      iwouter_old(:) = -1
+      iwouter_new(:) = -1
       zztemp2(:) = zzposold(2,:)
-      do ipos = 2,nelec/3
-        izagold = maxloc(zztemp2,1)
-        zztemp2(izagold) = -1.0
+      do ipos = 1,nelec/2
+        iztemp = maxloc(zztemp2,1)
+        zztemp2(iztemp) = -1.0
+        iwouter_old(iztemp) = 1
+        if (ipos.le.nelec/3) izagold = iztemp
       enddo
-      izagold = maxloc(zztemp2,1)
       zztemp2(:) = zzposnew(2,:)
-      do ipos = 2,nelec/3
-        izagnew = maxloc(zztemp2,1)
-        zztemp2(izagnew) = -1.0
+      do ipos = 1,nelec/2
+        iztemp = maxloc(zztemp2,1)
+        zztemp2(iztemp) = -1.0
+        iwouter_new(iztemp) = 1
+        if (ipos.le.nelec/3) izagnew = iztemp
       enddo
-      izagnew = maxloc(zztemp2,1)
       if(mod(izagold,2).eq.0) stagsignold = -stagsignold
       if(mod(izagnew,2).eq.0) stagsignnew = -stagsignnew
 c      rave = (q*sum(zzposold(2,:)) + p*sum(zzposnew(2,:)))/dble(nelec)
 
+c     Calculate <theta_i+1 - theta_i> and <theta_i+2 - theta_i>
+      zzxthetaold = zzposold(1,:)
+      zzxthetanew = zzposnew(1,:)
+      cnndiffo = cshift(zzxthetaold, SHIFT = 1) - zzxthetaold
+      cn2ndiffo = cshift(zzxthetaold, SHIFT = 2) - zzxthetaold
+      cnndiffn = cshift(zzxthetanew, SHIFT = 1) - zzxthetanew
+      cn2ndiffn = cshift(zzxthetanew, SHIFT = 2) - zzxthetanew
+      if (iperiodic.eq.0) then
+        cellsize = 2.*pi
+      else if (iperiodic.eq.1) then
+        cellsize = alattice
+      endif
+  
+      ioutero = 0   
+      ieveno = 0
+      ioutern = 0   
+      ievenn = 0
+c     xtspacing = cellsize/dble(nelec)
+c     xtshift = cellsize/2. - xtspacing/2. !since theta/x go from -pi..pi or -alattice/2..a/2
+      xtspacing = cellsize/dble(nelec/2)
+      xtshift = cellsize/2. - xtspacing/2. !since theta/x go from -pi..pi or -alattice/2..a/2
       do i =1,nelec
         if (iperiodic.eq.0) then
           zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rring)
@@ -189,8 +232,44 @@ c          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
         endif
         zzsumold = zzsumold + zzmaglocal_old(i)
         zzsumnew = zzsumnew + zzmaglocal_new(i)
+        if(stagsignold.gt.0) then
+          ieveno = ieveno + 1
+c         evenfluct_old(ieveno) = (zzposold(1,i)- xtspacing*i + xtshift)/dble(nelec)
+          evenfluct_old(ieveno) = (zzposold(1,i)- xtspacing*ieveno + xtshift)/dble(nelec)
+        endif 
+        if(stagsignnew.gt.0) then
+          ievenn = ievenn + 1
+c         evenfluct_new(ievenn) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(nelec)
+          evenfluct_new(ievenn) = (zzposnew(1,i)- xtspacing*ievenn + xtshift)/dble(nelec)
+        endif 
+        if(iwouter_old(i).gt.0) then
+          ioutero = ioutero + 1
+c         outerfluct_old(ioutero) = (zzposold(1,i)- xtspacing*i + xtshift)/dble(nelec)
+          outerfluct_old(ioutero) = (zzposold(1,i)- xtspacing*ioutero + xtshift)/dble(nelec)
+        endif 
+        if(iwouter_new(i).gt.0) then
+          ioutern = ioutern + 1
+c         outerfluct_new(ioutern) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(nelec)
+          outerfluct_new(ioutern) = (zzposnew(1,i)- xtspacing*ioutern + xtshift)/dble(nelec)
+        endif 
         stagsignold = -stagsignold
         stagsignnew = -stagsignnew
+        cnndiffo(i) = dabs(cnndiffo(i))
+        cn2ndiffo(i) = dabs(cn2ndiffo(i))
+        cnndiffn(i) = dabs(cnndiffn(i))
+        cn2ndiffn(i) = dabs(cn2ndiffn(i))
+        if (cnndiffo(i).ge.(cellsize/2.)) cnndiffo(i) = cellsize - cnndiffo(i)
+        if (cn2ndiffo(i).ge.(cellsize/2.)) cn2ndiffo(i) = cellsize - cn2ndiffo(i)
+        if (cnndiffn(i).ge.(cellsize/2.)) cnndiffn(i) = cellsize - cnndiffn(i)
+        if (cn2ndiffn(i).ge.(cellsize/2.)) cn2ndiffn(i) = cellsize - cn2ndiffn(i)
+        ixto_nn = nint(delxti*cnndiffo(i)*10./dble(nelec))
+        ixto_n2n = nint(delxti*cn2ndiffo(i)*10./dble(nelec))
+        ixtn_nn = nint(delxti*cnndiffn(i)*10./dble(nelec))
+        ixtn_n2n = nint(delxti*cn2ndiffn(i)*10./dble(nelec))
+        znncorr(ixto_nn) = znncorr(ixto_nn) + q/dble(nelec)
+        znncorr(ixtn_nn) = znncorr(ixtn_nn) + p/dble(nelec)
+        zn2ncorr(ixto_n2n) = zn2ncorr(ixto_n2n) + q/dble(nelec)
+        zn2ncorr(ixtn_n2n) = zn2ncorr(ixtn_n2n) + p/dble(nelec)
       enddo
 c  For debugging:
 c      write(6,*) 'in zigzag2d:'
@@ -230,6 +309,31 @@ c      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn)
       zzterm(5) = q*zzsumoldred*zzsumoldred + p*zzsumnewred*zzsumnewred
       zzterm(11) = q*(zzsumoldred**4) + p*(zzsumnewred**4)
 
+c     Averages of <x_i+1 - x_i>, <x_i+2 - x_i>, and higher moments
+      cnndiffo2(:) = cnndiffo(:)*cnndiffo(:)
+      cnndiffo3(:) = cnndiffo2(:)*cnndiffo(:)
+      cnndiffo4(:) = cnndiffo3(:)*cnndiffo(:)
+      cnndiffn2(:) = cnndiffn(:)*cnndiffn(:)
+      cnndiffn3(:) = cnndiffn2(:)*cnndiffn(:)
+      cnndiffn4(:) = cnndiffn3(:)*cnndiffn(:)
+      cn2ndiffo2(:) = cn2ndiffo(:)*cn2ndiffo(:)
+      cn2ndiffo3(:) = cn2ndiffo2(:)*cn2ndiffo(:)
+      cn2ndiffo4(:) = cn2ndiffo3(:)*cn2ndiffo(:)
+      cn2ndiffn2(:) = cn2ndiffn(:)*cn2ndiffn(:)
+      cn2ndiffn3(:) = cn2ndiffn2(:)*cn2ndiffn(:)
+      cn2ndiffn4(:) = cn2ndiffn3(:)*cn2ndiffn(:)
+      
+      zzterm(16) = q*sum(cnndiffo(:)) + p*sum(cnndiffn(:))
+      zzterm(17) = q*sum(cnndiffo2(:)) + p*sum(cnndiffn2(:))
+      zzterm(18) = q*sum(cnndiffo3(:)) + p*sum(cnndiffn3(:))
+      zzterm(19) = q*sum(cnndiffo4(:)) + p*sum(cnndiffn4(:))
+      zzterm(20) = q*sum(cn2ndiffo(:)) + p*sum(cn2ndiffn(:))
+      zzterm(21) = q*sum(cn2ndiffo2(:)) + p*sum(cn2ndiffn2(:))
+      zzterm(22) = q*sum(cn2ndiffo3(:)) + p*sum(cn2ndiffn3(:))
+      zzterm(23) = q*sum(cn2ndiffo4(:)) + p*sum(cn2ndiffn4(:))
+      zzterm(16:23) = zzterm(16:23)/dble(nelec) 
+
+
 c     Pick sign randomly, so that N/2 have "-" sign
       ransign(:) = 1.0d0/dble(nelec)
       do itry = 1,nelec/2
@@ -247,7 +351,22 @@ c     Pick sign randomly, so that N/2 have "-" sign
       zzterm(7) = q*dabs(zzrandsumold) + p*dabs(zzrandsumnew)
       zzterm(8) = q*zzrandsumold*zzrandsumold + p*zzrandsumnew*zzrandsumnew
       zzterm(12) = q*(zzrandsumold**4) + p*(zzrandsumnew**4)
-      
+     
+      zzevenout_numerator_new = sum(evenfluct_new(:)*outerfluct_new(:)) ! don't need to divide by n/2
+      zzevenout_numerator_old = sum(evenfluct_old(:)*outerfluct_old(:)) !  bc numerator and denominator
+      zzevenout_evensigma_old = sum(evenfluct_old(:)*evenfluct_old(:))  !  cancel out.
+      zzevenout_evensigma_new = sum(evenfluct_new(:)*evenfluct_new(:))
+      zzevenout_outersigma_old = sum(outerfluct_old(:)*outerfluct_old(:))
+      zzevenout_outersigma_new = sum(outerfluct_new(:)*outerfluct_new(:))
+!      zzevenout_denominator_new = dsqrt(zzevenout_evensigma_new*zzevenout_outersigma_new)
+!      zzevenout_denominator_old = dsqrt(zzevenout_evensigma_old*zzevenout_outersigma_old)
+
+!      zzterm(13) = q*zzevenout_numerator_old/zzevenout_denominator_old + p*zzevenout_numerator_new/zzevenout_denominator_new
+
+      zzterm(13) = q*zzevenout_numerator_old + p*zzevenout_numerator_new
+      zzterm(14) = q*zzevenout_evensigma_old + p*zzevenout_evensigma_new
+      zzterm(15) = q*zzevenout_outersigma_old + p*zzevenout_outersigma_new
+
 c     This is a kludge to make sure that the averages come out correctly 
 c        for single-electron moves.  Since this routine gets called
 c        once per electron in the mov1 update, we need to divide by
@@ -265,13 +384,6 @@ c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
 c     zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
 c     zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
       
-      if(iperiodic.eq.0) then
-        delxti = delti
-      else
-        delxti = delxi(1)
-      endif
-      delyri = 1.0/zzdelyr
-
       do j = 0,nelec-1
         do i = 1,nelec
 c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
@@ -355,6 +467,10 @@ c     Fourth cumulants:
       zzu4rand = 1.0d0 - zzave(12)/(3.0d0*zzave(8)*zzave(8))
       zzu4randerr = 1.0d0/(3.0d0*zzave(8)*zzave(8)) * ((2.0d0*zzave(12)/zzave(8))*zzerr(8) - zzerr(12))
 
+c  Even-outer correlation
+
+      zzeocorr = zzave(13)/dsqrt(zzave(14)*zzave(15))
+
 c  This line is in the finwrt routines:      
 c     write(6,'(''physical variable'',t20,''average'',t34,''rms error''
 c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
@@ -374,6 +490,18 @@ c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
       write(6,'(''<U4> = '',t22,f12.7,'' +-'',f11.7,f9.5)') zzu4, zzu4err, zzu4err*rtpass
       write(6,'(''<U4 (red)> = '',t22,f12.7,'' +-'',f11.7,f9.5)') zzu4red, zzu4rederr, zzu4rederr*rtpass
       write(6,'(''<U4 rand> = '',t22,f12.7,'' +-'',f11.7,f9.5)') zzu4rand, zzu4randerr, zzu4randerr*rtpass
+      write(6,'(''<Even-Outer Covariance>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(13),zzerr(13),zzerr(13)*rtpass
+      write(6,'(''<Even-elec fluct^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(14),zzerr(14),zzerr(14)*rtpass
+      write(6,'(''<Outer-elec fluct^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(15),zzerr(15),zzerr(15)*rtpass
+      write(6,'(''<Even-Outer Corr>='',t22,f12.7)') zzeocorr
+      write(6,'(''<th_(i+1) - th_i>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(16),zzerr(16),zzerr(16)*rtpass
+      write(6,'(''<(th_(i+1) - th_i)^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(17),zzerr(17),zzerr(17)*rtpass
+      write(6,'(''<(th_(i+1) - th_i)^3>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(18),zzerr(18),zzerr(18)*rtpass
+      write(6,'(''<(th_(i+1) - th_i)^4>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(19),zzerr(19),zzerr(19)*rtpass
+      write(6,'(''<th_(i+2) - th_i>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(20),zzerr(20),zzerr(20)*rtpass
+      write(6,'(''<(th_(i+2) - th_i)^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(21),zzerr(21),zzerr(21)*rtpass
+      write(6,'(''<(th_(i+2) - th_i)^3>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(22),zzerr(22),zzerr(22)*rtpass
+      write(6,'(''<(th_(i+2) - th_i)^4>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(23),zzerr(23),zzerr(23)*rtpass
       
       return
       end

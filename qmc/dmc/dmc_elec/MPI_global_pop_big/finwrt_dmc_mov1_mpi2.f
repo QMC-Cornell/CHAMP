@@ -229,6 +229,10 @@ c Collect radial charge density for atoms
       if(izigzag.gt.0) then
         call mpi_allreduce(zzcorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zzcorr(:) = zzcorrtot(:)
+        call mpi_allreduce(znncorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        znncorr(:) = zzcorrtot(:)
+        call mpi_allreduce(zn2ncorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zn2ncorr(:) = zzcorrtot(:)
         call mpi_allreduce(zzcorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zzcorrij(:) = zzcorrijtot(:)
         

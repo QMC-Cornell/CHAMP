@@ -709,10 +709,14 @@ c Zero out estimators for pair densities:
         call alloc_range ('zzpairdenij_t', zzpairdenij_t, -NAX, NAX, 0, (nelec-1))
         call alloc_range ('zzcorr', zzcorr, 0, NAX)
         call alloc_range ('zzcorrij', zzcorrij, 0, (nelec-1))
+        call alloc_range ('znncorr', znncorr, 0, NAX)
+        call alloc_range ('zn2ncorr', zn2ncorr, 0, NAX)
         zzpairden_t(:,:) = 0
         zzpairdenij_t(:,:) = 0
         zzcorr(:) = 0
         zzcorrij(:) = 0
+        znncorr(:) = 0
+        zn2ncorr(:) = 0
       endif
  
      
