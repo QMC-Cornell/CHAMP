@@ -5,6 +5,7 @@ c  Calculates quantities useful for studying zigzag quantum phase
 c  transition in rings and wires.  
 c  -reduced pair density
 c  -"staggered amplitude"
+c  - zigzag correlation functions
 c  xold and xnew are the old and new configurations
 c  p and q are the probabilities of accept and reject
 c  ielec labels the electron that was moved for 1-electron moves
@@ -279,6 +280,10 @@ c      write(6,*) (zzposnew(1,i),i=1,nelec)
 c      write(6,*) (zzposnew(2,i),i=1,nelec)
 c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
 c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
+c  For odd N, there's an extra rave.  We should correct this.
+c   The following 2 lines are to test n=29, rs=3.7, w=0.1 rings
+c      zzsumold = zzsumold + (35.486-rring)/29.
+c      zzsumnew = zzsumnew + (35.486-rring)/29. 
       zzterm(3) = q*zzsumold + p*zzsumnew
       zzterm(1) = q*dabs(zzsumold) + p*dabs(zzsumnew)
       zzterm(2) = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
@@ -383,7 +388,8 @@ c        since we just call this routine once after the update.
 c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
 c     zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
 c     zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
-      
+      corrfactor = (corrnorm/dble(nelec))/dble(nelec)
+      corrsgn = corrfactor
       do j = 0,nelec-1
         do i = 1,nelec
 c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
@@ -407,11 +413,38 @@ c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array in
           ixtn = nint(delxti*xtdiffn)
 c         zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
 c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
-          zzcorrtermo = q*corrnorm*zzmaglocal_old(i)*zzmaglocal_old(i2)
-          zzcorrtermn = p*corrnorm*zzmaglocal_new(i)*zzmaglocal_new(i2)
+c          zzcorrtermo = q*corrnorm*zzmaglocal_old(i)*zzmaglocal_old(i2)
+c          zzcorrtermn = p*corrnorm*zzmaglocal_new(i)*zzmaglocal_new(i2)
+c         <-1^(i+j) (r_i - rave)*(r_j - rave)> = 
+c                <-1^(i-j)(r_i*r_j)> - rave*<-1^(i-j)(r_i + r_j)> + rave^2*<-1^(i-j)>
+c         label terms:   zzcorr      - rave*zzcorr1               + rave^2*zzcorr2
+c         For yycorr, we do the same thing (only without the -1^(i-j)) 
+          zzcorrtermo = q*corrsgn*zzposold(2,i)*zzposold(2,i2)
+          zzcorrtermn = p*corrsgn*zzposnew(2,i)*zzposnew(2,i2)
           zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
           zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
+          zzcorrterm1o = q*corrsgn*(zzposold(2,i) + zzposold(2,i2))
+          zzcorrterm1n = p*corrsgn*(zzposnew(2,i) + zzposnew(2,i2))
+          zzcorr1(ixto) = zzcorr1(ixto) + zzcorrterm1o
+          zzcorr1(ixtn) = zzcorr1(ixtn) + zzcorrterm1n
+          zzcorrterm2o = q*corrsgn
+          zzcorrterm2n = p*corrsgn
+          zzcorr2(ixto) = zzcorr2(ixto) + zzcorrterm2o
+          zzcorr2(ixtn) = zzcorr2(ixtn) + zzcorrterm2n
           zzcorrij(j) = zzcorrij(j) + zzcorrtermo + zzcorrtermn
+          yycorrtermo = q*corrfactor*zzposold(2,i)*zzposold(2,i2)
+          yycorrtermn = p*corrfactor*zzposnew(2,i)*zzposnew(2,i2)
+          yycorr(ixto) = yycorr(ixto) + yycorrtermo
+          yycorr(ixtn) = yycorr(ixtn) + yycorrtermn
+          yycorrterm1o = q*corrfactor*(zzposold(2,i) + zzposold(2,i2))
+          yycorrterm1n = p*corrfactor*(zzposnew(2,i) + zzposnew(2,i2))
+          yycorr1(ixto) = yycorr1(ixto) + yycorrterm1o
+          yycorr1(ixtn) = yycorr1(ixtn) + yycorrterm1n
+          yycorrterm2o = q*corrfactor
+          yycorrterm2n = p*corrfactor
+          yycorr2(ixto) = yycorr2(ixto) + yycorrterm2o
+          yycorr2(ixtn) = yycorr2(ixtn) + yycorrterm2n
+          yycorrij(j) = yycorrij(j) + yycorrtermo + yycorrtermn
           if(izigzag.gt.1 .and. j.ne.0) then ! do all of the pair density stuff
             yrdiffo = zzposold(2,i2) - zzposold(2,i)
             yrdiffn = zzposnew(2,i2) - zzposnew(2,i)
@@ -425,6 +458,7 @@ c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
             zzpairdenij_t(iyrn,j) = zzpairdenij_t(iyrn,j) + p*pairdennorm
           endif
         enddo
+        corrsgn = -corrsgn
       enddo
       
       xold_sav = xold

@@ -229,12 +229,24 @@ c Collect radial charge density for atoms
       if(izigzag.gt.0) then
         call mpi_allreduce(zzcorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zzcorr(:) = zzcorrtot(:)
+        call mpi_allreduce(zzcorr1, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorr1(:) = zzcorrtot(:)
+        call mpi_allreduce(zzcorr2, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorr2(:) = zzcorrtot(:)
+        call mpi_allreduce(yycorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        yycorr(:) = zzcorrtot(:)
+        call mpi_allreduce(yycorr1, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        yycorr1(:) = zzcorrtot(:)
+        call mpi_allreduce(yycorr2, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        yycorr2(:) = zzcorrtot(:)
         call mpi_allreduce(znncorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         znncorr(:) = zzcorrtot(:)
         call mpi_allreduce(zn2ncorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zn2ncorr(:) = zzcorrtot(:)
         call mpi_allreduce(zzcorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zzcorrij(:) = zzcorrijtot(:)
+        call mpi_allreduce(yycorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        yycorrij(:) = zzcorrijtot(:)
         
         if(izigzag.eq.2) then
           naxt = (2*NAX + 1) * (2*NAX + 1)
@@ -492,7 +504,7 @@ c       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave
 c       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
       endif
 
-      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1))
+      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1),r1ave)
 
       call routines_write_final
       call reinit_routines_write_block

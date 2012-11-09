@@ -265,7 +265,7 @@ c       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin
       endif
 
-      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(passes)
+      if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(passes,r1fin)
       
       call routines_write_final
       call reinit_routines_write_block

@@ -33,6 +33,8 @@ c Select the nearest grid point in case (xi,yi) falls outside the grid.
 c cell indices
         ix=int((xget-xorb_grid(1)-1.d-12)*hxi)+1
         iy=int((yget-yorb_grid(1)-1.d-12)*hyi)+1
+!        write(6,*) xget, yget, ix, iy, hxi, hyi
+!        call systemflush(6)
 
 c normalized displacement from (xorb_grid(ix),yorb_grid(iy)) corner of cell
 c  xscaled=0 @xorb_grid(ix)  xscaled=1 @xorb_grid(ix+1)

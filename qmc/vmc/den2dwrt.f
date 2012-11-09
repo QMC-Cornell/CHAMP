@@ -1,4 +1,4 @@
-      subroutine den2dwrt(passes)
+      subroutine den2dwrt(passes,r1ave)
 c Written by A.D.Guclu, modified by Cyrus Umrigar for MPI
 c routine to print out 2d-density related quantities
 c called by finwrt from vmc,dmc,dmc_elec
@@ -12,7 +12,7 @@ c called by finwrt from vmc,dmc,dmc_elec
       use zigzag_mod
       use const_mod
       implicit real*8(a-h,o-z)
-      character*20 file1,file2,file3,file4,file5,file6
+      character*20 file1,file2,file3,file4,file5,file6,file7,file8
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -341,35 +341,59 @@ c verify the normalization later...
       endif
       
       if(izigzag.gt.0) then
+        if(iperiodic.eq.0) then  !ring
+          zzcorr(:) = zzcorr(:) - r1ave*zzcorr1(:) + r1ave*r1ave*zzcorr2(:)
+          yycorr(:) = yycorr(:) - r1ave*yycorr1(:) + r1ave*r1ave*yycorr2(:)
+        else if(iperiodic.eq.1) then
+          r1ave = 0.d0
+        endif
         if(index(mode,'vmc').ne.0) then
           file1='zzcorr_vmc'
           file2='zzcorrij_vmc'
           file5='znncorr_vmc'
           file6='zn2ncorr_vmc'
+          file7='yycorr_vmc'
+          file8='yycorrij_vmc'
         else
           file1='zzcorr_dmc'
           file2='zzcorrij_dmc'
           file5='znncorr_dmc'
           file6='zn2ncorr_dmc'
+          file7='yycorr_dmc'
+          file8='yycorrij_dmc'
         endif
         if(idtask.eq.0) then
           open(41,file=file1,status='unknown')
           open(42,file=file2,status='unknown')
           open(45,file=file5,status='unknown')
           open(46,file=file6,status='unknown')
+          open(47,file=file7,status='unknown')
+          open(48,file=file8,status='unknown')
          else
           open(41,status='scratch')
           open(42,status='scratch')
           open(45,status='scratch')
           open(46,status='scratch')
+          open(47,status='scratch')
+          open(48,status='scratch')
         endif
         do in2=0,nax2
-          write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes
+          zznorm = sum(zzpairden_t(:,in2))
+          !if(in2.eq.0) then
+          !  write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/(zznorm+passes)/delxt
+          !else  
+          !  write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes/delxt
+          !endif
+          write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes/delxt
+          write(47,'(g19.8,g19.8)') in2*delxt,yycorr(in2)/passes/delxt
           write(45,'(g19.8,g19.8)') in2*delxt*10./dble(nelec),znncorr(in2)/passes
           write(46,'(g19.8,g19.8)') in2*delxt*10./dble(nelec),zn2ncorr(in2)/passes
         enddo
+        zzsign = 1.0d0
         do ine = 0,nelec-1
-          write(42,'(i8,g19.8)') ine,zzcorrij(ine)/passes
+          write(42,'(i8,g19.8)') ine,(zzcorrij(ine)/passes - r1ave*r1ave*zzsign)
+          write(48,'(i8,g19.8)') ine,(yycorrij(ine)/passes - r1ave*r1ave)
+          zzsign = -zzsign
         enddo
         
         if(izigzag.eq.2) then
@@ -390,10 +414,10 @@ c verify the normalization later...
           
           do in1=-nax1,nax1
             do in2 = -nax2,nax2
-              write(43,'(2g19.8,g19.8)') in1*zzdelyr,in2*delxt,zzpairden_t(in1,in2)*term
+              write(43,'(2g19.8,g19.8)') in1*zzdelyr,in2*delxt,zzpairden_t(in1,in2)/(passes*zzdelyr*delxt)
             enddo
             do ine = 0,nelec-1
-              write(44,'(g19.8,i8,g19.8)') in1*zzdelyr,ine,zzpairdenij_t(in1,ine)/(passes*del1)
+              write(44,'(g19.8,i8,g19.8)') in1*zzdelyr,ine,zzpairdenij_t(in1,ine)/(passes*zzdelyr)
             enddo
             write(43,*)
             write(44,*)
@@ -405,6 +429,8 @@ c verify the normalization later...
         close(42)
         close(45)
         close(46)
+        close(47)
+        close(48)
       endif
 
       return
