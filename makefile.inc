@@ -857,3 +857,27 @@ ifeq ($(findstring lqcd,$(hostname)),lqcd)
   EINSPLINE=
   LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
+
+# condor submit host at Duke
+ifeq ($(hostname),condor.internal.phy.duke.edu)
+  CC=condor_compile gcc
+  CXX=condor_compile g++
+  CC_MPI=condor_compile mpicc
+  F95=condor_compile gfortran
+  F95_MPI=condor_compile mpif90
+  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F95_SLOW_FLAGS=-finit-local-zero -O0 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F77_SLOW_FLAGS=-finit-local-zero -O0 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOEINSPLINE
+  F95_DEBUG_FLAGS=$(F95_SLOW_FLAGS) -g -fbounds-check
+  F77_DEBUG_FLAGS=$(F77_SLOW_FLAGS) -g -fbounds-check
+  F95_PROF_FLAGS=$(F95_FAST_FLAGS) -pg
+  F77_PROF_FLAGS=$(F77_FAST_FLAGS) -pg
+  LD=condor_compile gfortran
+  LD_FLAGS=-O3
+  LD_MPI=condor_compile mpif90
+  LD_DEBUG_FLAGS=-Wall -g -fbounds-check
+  LD_PROF_FLAGS=-pg
+  EINSPLINE=
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
