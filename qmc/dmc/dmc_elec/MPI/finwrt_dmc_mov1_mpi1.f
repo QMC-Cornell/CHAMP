@@ -280,8 +280,16 @@ c Collect radial charge density for atoms
         zn2ncorr(:) = zzcorrtot(:)
         call mpi_allreduce(zzcorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zzcorrij(:) = zzcorrijtot(:)
+        call mpi_allreduce(zzcorrij1, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorrij1(:) = zzcorrijtot(:)
+        call mpi_allreduce(zzcorrij2, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        zzcorrij2(:) = zzcorrijtot(:)
         call mpi_allreduce(yycorrij, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         yycorrij(:) = zzcorrijtot(:)
+        call mpi_allreduce(yycorrij1, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        yycorrij1(:) = zzcorrijtot(:)
+        call mpi_allreduce(yycorrij2, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+        yycorrij2(:) = zzcorrijtot(:)
         
         if(izigzag.eq.2) then
           naxt = (2*NAX + 1) * (2*NAX + 1)

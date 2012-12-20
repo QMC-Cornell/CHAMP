@@ -421,30 +421,36 @@ c         label terms:   zzcorr      - rave*zzcorr1               + rave^2*zzcor
 c         For yycorr, we do the same thing (only without the -1^(i-j)) 
           zzcorrtermo = q*corrsgn*zzposold(2,i)*zzposold(2,i2)
           zzcorrtermn = p*corrsgn*zzposnew(2,i)*zzposnew(2,i2)
-          zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
-          zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
           zzcorrterm1o = q*corrsgn*(zzposold(2,i) + zzposold(2,i2))
           zzcorrterm1n = p*corrsgn*(zzposnew(2,i) + zzposnew(2,i2))
-          zzcorr1(ixto) = zzcorr1(ixto) + zzcorrterm1o
-          zzcorr1(ixtn) = zzcorr1(ixtn) + zzcorrterm1n
           zzcorrterm2o = q*corrsgn
           zzcorrterm2n = p*corrsgn
-          zzcorr2(ixto) = zzcorr2(ixto) + zzcorrterm2o
-          zzcorr2(ixtn) = zzcorr2(ixtn) + zzcorrterm2n
-          zzcorrij(j) = zzcorrij(j) + zzcorrtermo + zzcorrtermn
           yycorrtermo = q*corrfactor*zzposold(2,i)*zzposold(2,i2)
           yycorrtermn = p*corrfactor*zzposnew(2,i)*zzposnew(2,i2)
-          yycorr(ixto) = yycorr(ixto) + yycorrtermo
-          yycorr(ixtn) = yycorr(ixtn) + yycorrtermn
           yycorrterm1o = q*corrfactor*(zzposold(2,i) + zzposold(2,i2))
           yycorrterm1n = p*corrfactor*(zzposnew(2,i) + zzposnew(2,i2))
-          yycorr1(ixto) = yycorr1(ixto) + yycorrterm1o
-          yycorr1(ixtn) = yycorr1(ixtn) + yycorrterm1n
           yycorrterm2o = q*corrfactor
           yycorrterm2n = p*corrfactor
-          yycorr2(ixto) = yycorr2(ixto) + yycorrterm2o
-          yycorr2(ixtn) = yycorr2(ixtn) + yycorrterm2n
+          if (j.ne.0) then
+            zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
+            zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
+            zzcorr1(ixto) = zzcorr1(ixto) + zzcorrterm1o
+            zzcorr1(ixtn) = zzcorr1(ixtn) + zzcorrterm1n
+            zzcorr2(ixto) = zzcorr2(ixto) + zzcorrterm2o
+            zzcorr2(ixtn) = zzcorr2(ixtn) + zzcorrterm2n
+            yycorr(ixto) = yycorr(ixto) + yycorrtermo
+            yycorr(ixtn) = yycorr(ixtn) + yycorrtermn
+            yycorr1(ixto) = yycorr1(ixto) + yycorrterm1o
+            yycorr1(ixtn) = yycorr1(ixtn) + yycorrterm1n
+            yycorr2(ixto) = yycorr2(ixto) + yycorrterm2o
+            yycorr2(ixtn) = yycorr2(ixtn) + yycorrterm2n
+          endif
+          zzcorrij(j) = zzcorrij(j) + zzcorrtermo + zzcorrtermn
+          zzcorrij1(j) = zzcorrij1(j) + zzcorrterm1o + zzcorrterm1n
+          zzcorrij2(j) = zzcorrij2(j) + zzcorrterm2o + zzcorrterm2n
           yycorrij(j) = yycorrij(j) + yycorrtermo + yycorrtermn
+          yycorrij1(j) = yycorrij1(j) + yycorrterm1o + yycorrterm1n
+          yycorrij2(j) = yycorrij2(j) + yycorrterm2o + yycorrterm2n
           if(izigzag.gt.1 .and. j.ne.0) then ! do all of the pair density stuff
             yrdiffo = zzposold(2,i2) - zzposold(2,i)
             yrdiffn = zzposnew(2,i2) - zzposnew(2,i)

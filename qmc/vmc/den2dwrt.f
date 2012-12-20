@@ -343,7 +343,9 @@ c verify the normalization later...
       if(izigzag.gt.0) then
         if(iperiodic.eq.0) then  !ring
           zzcorr(:) = zzcorr(:) - r1ave*zzcorr1(:) + r1ave*r1ave*zzcorr2(:)
+          zzcorrij(:) = zzcorrij(:) - r1ave*zzcorrij1(:) + r1ave*r1ave*zzcorrij2(:)
           yycorr(:) = yycorr(:) - r1ave*yycorr1(:) + r1ave*r1ave*yycorr2(:)
+          yycorrij(:) = yycorrij(:) - r1ave*yycorrij1(:) + r1ave*r1ave*yycorrij2(:)
         else if(iperiodic.eq.1) then
           r1ave = 0.d0
         endif
@@ -389,11 +391,9 @@ c verify the normalization later...
           write(45,'(g19.8,g19.8)') in2*delxt*10./dble(nelec),znncorr(in2)/passes
           write(46,'(g19.8,g19.8)') in2*delxt*10./dble(nelec),zn2ncorr(in2)/passes
         enddo
-        zzsign = 1.0d0
         do ine = 0,nelec-1
-          write(42,'(i8,g19.8)') ine,(zzcorrij(ine)/passes - r1ave*r1ave*zzsign)
-          write(48,'(i8,g19.8)') ine,(yycorrij(ine)/passes - r1ave*r1ave)
-          zzsign = -zzsign
+          write(42,'(i8,g19.8)') ine,zzcorrij(ine)/passes
+          write(48,'(i8,g19.8)') ine,yycorrij(ine)/passes
         enddo
         
         if(izigzag.eq.2) then

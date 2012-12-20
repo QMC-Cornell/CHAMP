@@ -444,14 +444,14 @@ objects_mod.o: basic_tools_mod.o constants_mod.o nodes_mod.o routines_mod.o \
 opt_common_mod.o: all_tools_mod.o
 opt_lin_mod.o: all_tools_mod.o deriv_mod.o opt_common_mod.o modules.h
 opt_nwt_mod.o: all_tools_mod.o deriv_mod.o opt_lin_mod.o modules.h
-opt_ovlp_fn_mod.o: all_tools_mod.o csfs_mod.o deriv_mod.o jastrow_mod.o \
-	opt_common_mod.o modules.h
+opt_ovlp_fn_mod.o: all_tools_mod.o commons/optim_mod.o csfs_mod.o deriv_mod.o \
+	jastrow_mod.o opt_common_mod.o modules.h
 opt_ptb_mod.o: all_tools_mod.o deriv_mod.o montecarlo_mod.o opt_lin_mod.o
-optimization_mod.o: all_tools_mod.o commons/dim_mod.o control_mod.o \
-	cusp_mod.o deriv_mod.o dmc_mod.o montecarlo_mod.o nuclei_mod.o \
-	opt_common_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ovlp_fn_mod.o \
-	opt_ptb_mod.o orbitals_mod.o periodic_jastrow_mod.o vmc_mod.o \
-	modules.h
+optimization_mod.o: all_tools_mod.o commons/dets_mod.o commons/dim_mod.o \
+	commons/optim_mod.o control_mod.o cusp_mod.o deriv_mod.o dmc_mod.o \
+	montecarlo_mod.o nuclei_mod.o opt_common_mod.o opt_lin_mod.o \
+	opt_nwt_mod.o opt_ovlp_fn_mod.o opt_ptb_mod.o orbitals_mod.o \
+	periodic_jastrow_mod.o vmc_mod.o modules.h
 orbitals_mod.o: all_tools_mod.o basis_mod.o modules.h
 parser_tools_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o
 periodic_jastrow_mod.o: all_tools_mod.o crystal_symmetries_mod.o eloc_mod.o \
