@@ -16,7 +16,7 @@ c calculate interparticle distances
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
-      common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
+      common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,omg_perturb,iperturb
 c     common /compferm/ emagv,nv,idot
       common /jel_sph1/ dn_background,rs_jel,radius_b !RM
 
@@ -51,9 +51,13 @@ c note that the perturbation potential is defined only for -pi<theta<pi  (it is 
                 theta=datan2(x(2,i),x(1,i))
                 pe_en=pe_en+amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))
      &                            -tanh(shrp_perturb*(theta-ang_perturb)))
-               elseif(iperturb.eq.2) then               ! this is for testing
+              elseif(iperturb.eq.2) then               ! this is for testing
                 theta=datan2(x(2,i),x(1,i))
                 pe_en=pe_en+2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
+              elseif(iperturb.eq.3) then
+                theta=datan2(x(2,i),x(1,i))
+                pe_en=pe_en + (2.d0*amp_perturb - 0.5d0*omg_perturb*omg_perturb*(theta*rring)**2)
+     &                *0.5d0*(tanh(shrp_perturb*(theta+ang_perturb)) - tanh(shrp_perturb*(theta-ang_perturb)))
               endif
             endif
             if(nloc.eq.-2) pe_en=pe_en+p1*rvec_en(1,i,ic)**4+p2*rvec_en(2,i,ic)**4
@@ -77,6 +81,11 @@ c Contribution from Jellium to the potential energy. A temporary patch which sho
 c note that in wires, ang_perturb is the semi-width of the perturbation in the x-direction
                 pe_en=pe_en+amp_perturb*(tanh(shrp_perturb*(x(1,i)+ang_perturb))
      &                            -tanh(shrp_perturb*(x(1,i)-ang_perturb)))
+              elseif(iperturb.eq.2) then               ! this is for testing
+                pe_en=pe_en+2.d0*amp_perturb*dexp(-0.5d0*(x(1,i)/(ang_perturb))**2)
+              elseif(iperturb.eq.3) then
+                pe_en=pe_en + (2.d0*amp_perturb - 0.5d0*omg_perturb*omg_perturb*(x(1,i))**2)
+     &                *0.5d0*(tanh(shrp_perturb*(x(1,i)+ang_perturb)) - tanh(shrp_perturb*(x(1,i)-ang_perturb)))
               endif
 c      These are used to calculate confining, x-direction potential:
               xshift=x(1,i)+wire_length*0.5d0

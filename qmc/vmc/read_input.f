@@ -72,7 +72,7 @@ c Written by Cyrus Umrigar
       common /dotcenter/ dot_bump_height, dot_bump_radius, dot_bump_radius_inv2
       common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
-      common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,iperturb
+      common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,omg_perturb,iperturb
       common /compferm/ emagv,nv,idot
 
 c These commons for reading fit input.  We should separate these into another
@@ -81,7 +81,7 @@ c     common /fit/ nsig,ncalls,iopt,ipr_opt
 
 c     namelist /opt_list/ igradhess
       namelist /opt_list/ iring_coulomb, iantiferromagnetic, iper_gaussian_type, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
-     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,rmin,rmax,nmeshr,nmesht,icoosys,dot_bump_height,dot_bump_radius
+     &,iperturb,ang_perturb,amp_perturb,shrp_perturb,omg_perturb,rmin,rmax,nmeshr,nmesht,icoosys,dot_bump_height,dot_bump_radius
      &,nmeshk1,izigzag,zzdelyr
 
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
@@ -351,9 +351,24 @@ c          2: gaussian-like perturbation for quantum rings
 c     = 2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
 c              and for quantum wires:  (Note this is NOT periodic yet if iperiodic.eq.1)
 c     = 2.d0*amp_perturb*dexp(-0.5d0*(x(1,i)/(ang_perturb))**2)
+c          3: upside-down parabola, to give simple 1/2 w_y^2 y^2 - 1/2 w_x^2 x^2 
+c               saddle point for quantum wires.  Multiplied by a bump 
+c               function similar to that used in iperturb = 1 to make
+c               a smooth connections to the leads.
+c     = (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*((theta*rring)**2)
+c       *0.5*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
+c        where ang_perturb is set to be the value of theta where
+c       (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*((theta*rring)**2) = 0
+c       and shrp_perturb is hard-coded to make the bump function rise
+c       much more quickly than its width.
+c      and for quantum wires:
+c     = (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*(x(1,i)**2)
+c        *0.5*(tanh(shrp_perturb*(x(1,i)+ang_perturb))-tanh(x(1,i)*(theta-ang_perturb)))
+c
 c ang_perturb  angular perturbation range 
 c amp_perturb  amplitude of the angular perturbation
 c shrp_perturb sharpness of the angular perturbation
+c omg_perturb  omega for upside down parabola perturbation
 
 
 c Optimization parameters:
@@ -1487,6 +1502,7 @@ c   default values:
       ang_perturb=0.d0
       amp_perturb=0.d0
       shrp_perturb=0.d0
+      omg_perturb=0.1d0
       ifourier=0
       izigzag=0
       zzdelyr=0.25
@@ -1619,6 +1635,17 @@ c Quantum rings/wires:
         stop 'Modified coulomb potential for rings (iring_coulomb=1) only possible for quantum rings'
       endif
       if(iperturb.ne.0) then
+        if(iperturb.eq.3) then
+          shrp_perturb = 15.0d0
+          if (nloc.eq.-4) then
+            ang_perturb = 2.0d0*dsqrt(amp_perturb)/omg_perturb
+          else ! Quantum Ring
+            ang_perturb = 2.0d0*dsqrt(amp_perturb)/(omg_perturb*rring)
+          endif
+          write(6,*) 'iperturb = 3; parabolic perturbation:'
+          write(6,*) 'Resetting shrp_perturb = ', shrp_perturb
+          write(6,*) 'Resetting ang_perturb = ', ang_perturb
+        endif
         if (shrp_perturb.le.0 .or. shrp_perturb.gt.100) stop 'shrp_perturb must be between 0 and 100'
         if(nloc.eq.-4) then  ! Quantum Wires
           if (iperiodic.eq.0) then

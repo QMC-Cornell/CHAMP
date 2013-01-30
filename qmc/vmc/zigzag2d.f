@@ -431,6 +431,11 @@ c         For yycorr, we do the same thing (only without the -1^(i-j))
           yycorrterm1n = p*corrfactor*(zzposnew(2,i) + zzposnew(2,i2))
           yycorrterm2o = q*corrfactor
           yycorrterm2n = p*corrfactor
+c  Probably won't bother putting < (x_{i+1} - x_{i-1}) y_i^2> term in,
+c   but if I do, it goes here:
+c         if (j.eq.0) then ! Collect terms for < (x_{i+1}-x_{i-1} y_i^2) >
+c            zzterm(24) = !!! check corrfactor so that we have the right normalization factor!!!!
+c         else if (j.ne.0) then
           if (j.ne.0) then
             zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
             zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
