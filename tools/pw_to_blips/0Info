@@ -1,0 +1,18 @@
+To compile:
+	Set the Fortran compiler in src/Makefile and type 'make'
+
+To run:
+	From the example/ directory, type 'make'
+
+The input file has three values:
+(grid factor) (separate Laplacian or gradient approximation) (test against plane waves)
+
+A grid factor of 1.0 is natural grid spacing.  Smaller is a coarser grid.  Larger is a finer grid.
+
+0 approximates the wave function only.
+1 approximates the wave function and the Laplacian.
+2 approximates the wave function, the Laplacian and the gradient.
+
+.t. calculates the root mean square difference of the approximation and the plane waves at 100 random points for each orbital
+(NOTE: this test has not been corrected to use the separately approximated Laplacian and gradient and will yield identical values no matter what the previous variable is set to)
+.f. does not skips the test
