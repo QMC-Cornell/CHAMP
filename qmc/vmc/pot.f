@@ -1,6 +1,6 @@
       subroutine pot_nn(cent,znuc,iwctype,ncent,pecent)
-c Written by Cyrus Umrigar
-c get nuclear potential energy
+! Written by Cyrus Umrigar
+! get nuclear potential energy
       use control_mod
       use dim_mod
       use pseudo_mod

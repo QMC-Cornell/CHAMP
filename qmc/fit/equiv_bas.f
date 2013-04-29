@@ -1,7 +1,7 @@
       subroutine equiv_bas
-c Written by Cyrus Umrigar
-c Set coef2=coef for basis fns. related by symmetry to basis ibas, and
-c to zero otherwise.
+! Written by Cyrus Umrigar
+! Set coef2=coef for basis fns. related by symmetry to basis ibas, and
+! to zero otherwise.
 
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
       use all_tools_mod
@@ -34,9 +34,9 @@ c to zero otherwise.
              endif
    20     continue
 
-c     do 30 icent=1,ncent
-c       do 30 iorb=1,norb
-c  30     write(6,'(7f9.3)') (coef2(ibas,iorb,icent),ibas=1,7)
+!     do 30 icent=1,ncent
+!       do 30 iorb=1,norb
+!  30     write(6,'(7f9.3)') (coef2(ibas,iorb,icent),ibas=1,7)
 
       return
       end

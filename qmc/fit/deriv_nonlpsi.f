@@ -1,7 +1,7 @@
       function deriv_psinl(u,dkij,rshifti,rshiftj,ri,rj,rri,rrj,dki,dkj,gn,gns,it)
       use control_mod
-c Written by Claudia Filippi, modified by Cyrus Umrigar
-c minor modification by A.D.Guclu to add analytical scalek opt.
+! Written by Claudia Filippi, modified by Cyrus Umrigar
+! minor modification by A.D.Guclu to add analytical scalek opt.
       use constants_mod
       use dets_mod
       use optim_mod
@@ -32,7 +32,7 @@ c minor modification by A.D.Guclu to add analytical scalek opt.
       dlogs4(x) = 2*dlog((one-dexp(-a1(41,is,iwf)*x))/a1(41,is,iwf))
 
       if(ijas.eq.1) then
-c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
+!       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
         deriv_psinl=sspinn*cjas1(iwf)*u/(one+cjas2(iwf)*u)
 
        elseif(ijas.eq.2) then
@@ -260,16 +260,16 @@ c       deriv_psinl=sspinn*cjas1(iwf)*rij/(one+cjas2(iwf)*rij)
                   fj=fj+c(ll,it,iwf)*pj
                 endif
 
-c               ideriv=0
-c               if(ll.eq.iwc4(jj)) then
-c                 if(nvdepend(jj,it).gt.0) then
-c                   ideriv=1
-c                  else
-c                   jj=jj+1
-c                 endif
-c                elseif(ll.eq.iwjasc(jparm,it)) then
-c                 ideriv=2
-c               endif
+!               ideriv=0
+!               if(ll.eq.iwc4(jj)) then
+!                 if(nvdepend(jj,it).gt.0) then
+!                   ideriv=1
+!                  else
+!                   jj=jj+1
+!                 endif
+!                elseif(ll.eq.iwjasc(jparm,it)) then
+!                 ideriv=2
+!               endif
 
                 if(nparmc(it).gt.0) then
                   ideriv=0
@@ -288,7 +288,7 @@ c               endif
                     do 43 id=1,nvdepend(jj,it)
                       iparm=iwdepend(jj,id,it)
    43                 gn(iparm)=gn(iparm)+cdep(jj,id,it)*p
-c                   jj=jj+1
+!                   jj=jj+1
                    elseif(ideriv.eq.2) then
                     gn(jparm)=gn(jparm)+p
                     jparm=jparm+1
@@ -301,7 +301,7 @@ c                   jj=jj+1
           dkki=dki
           dkkj=dkj
           dkkij=dkij
-c dd1,dd2,dk2,dr,dr2 are unused variables with the 0 option
+! dd1,dd2,dk2,dr,dr2 are unused variables with the 0 option
           call switch_dscale(uu(1),dd1,dd2,dkkij,dk2,dr,dr2,4,0)
           call switch_dscale(rrri(1),dd1,dd2,dkki,dk2,dr,dr2,3,0)
           call switch_dscale(rrrj(1),dd1,dd2,dkkj,dk2,dr,dr2,3,0)
@@ -313,10 +313,10 @@ c dd1,dd2,dk2,dr,dr2 are unused variables with the 0 option
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function deriv_psianl(rri,dk,gn,gns,it)
-c Returns the e-n Jastrow exponent as the function value and
-c the derivs. wrt the parameters in gn(*).
+! Returns the e-n Jastrow exponent as the function value and
+! the derivs. wrt the parameters in gn(*).
       use optim_mod
       use contr2_mod
       use wfsec_mod
@@ -329,8 +329,8 @@ c the derivs. wrt the parameters in gn(*).
 
       dimension gn(*)
 
-c Note: This routine is only called with iwf=1, but parts of it are
-c written for general iwf, whereas others (asymp_r) assume iwf=1.
+! Note: This routine is only called with iwf=1, but parts of it are
+! written for general iwf, whereas others (asymp_r) assume iwf=1.
 
       if(rri.eq.asymp_r_en(iwf)) then
         deriv_psianl=0
@@ -387,10 +387,10 @@ c written for general iwf, whereas others (asymp_r) assume iwf=1.
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function deriv_psibnl(u,dk,gn,gns,isb,ipar)
-c Returns the e-e Jastrow exponent as the function value and
-c the derivs. wrt the parameters in gn(*).
+! Returns the e-e Jastrow exponent as the function value and
+! the derivs. wrt the parameters in gn(*).
 
       use optim_mod
       use contr2_mod
@@ -405,11 +405,11 @@ c the derivs. wrt the parameters in gn(*).
 
       dimension gn(*)
 
-c Note: This routine is only called with iwf=1, but parts of it are
-c written for general iwf, whereas others (asymp_r) assume iwf=1.
+! Note: This routine is only called with iwf=1, but parts of it are
+! written for general iwf, whereas others (asymp_r) assume iwf=1.
 
-c Not updated for ijas=5,6 because we will probably stay with ijas=4
-c If we want to use ijas=5,6 update this routine similarly to psi.f
+! Not updated for ijas=5,6 because we will probably stay with ijas=4
+! If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.ge.5) stop 'ijas >= 5 not implemented in psibnl'
 
       if(u.eq.asymp_r_ee(iwf)) then

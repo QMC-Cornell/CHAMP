@@ -1,5 +1,5 @@
       subroutine sites(x,nelec,nsite)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use constants_mod
       use atom_mod
       use dim_mod
@@ -11,21 +11,21 @@ c Written by Cyrus Umrigar
       use dorb_mod
       implicit real*8(a-h,o-z)
 
-c Routine to put electrons down around centers for a VERY crude initial
-c configuration if nothing else is available.  It is better to put them
-c too close than to put them too far away because they equilibrate faster
-c when they are too close.
+! Routine to put electrons down around centers for a VERY crude initial
+! configuration if nothing else is available.  It is better to put them
+! too close than to put them too far away because they equilibrate faster
+! when they are too close.
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
        common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
 
       dimension x(3,*),nsite(*)
 
-c Loop over spins and centers. If odd number of electrons on all
-c atoms then the up-spins have an additional electron.
-c So assumption is that system is not strongly polarized.
+! Loop over spins and centers. If odd number of electrons on all
+! atoms then the up-spins have an additional electron.
+! So assumption is that system is not strongly polarized.
 
-c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
+!     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
       pi=4*datan(1.d0)
 
       if((nloc.eq.-1).or.(nloc.eq.-5)) then ! parabolic quantum dot
@@ -44,7 +44,7 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
            elseif(nloc.eq.-4) then ! quantum wire
             znucc=dsqrt(wire_w)
            else ! atoms and molecules
-            if(znuc(iwctype(i)).eq.0.d0) 
+            if(znuc(iwctype(i)).eq.0.d0)
      &stop 'znuc should not be 0 in sites for atoms and molecules'
             znucc=znuc(iwctype(i))
           endif
@@ -67,24 +67,24 @@ c     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
             endif
 
 
-c sample position from exponentials or gaussian around center
-c A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots            
+! sample position from exponentials or gaussian around center
+! A.D.Guclu 5/2008: need circular coo. for ring shaped quantum dots
             if((nloc.eq.-1 .or. nloc.eq.-5) .and. rring.gt.0.d0) then
-              if(ibasis.eq.5) then 
+              if(ibasis.eq.5) then
                 site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(3, iworbd(ielec,1), iwf))
-                angle = (0.5d0 - rannyu(0))/dsqrt(oparm(4, iworbd(ielec,1), iwf)) 
+                angle = (0.5d0 - rannyu(0))/dsqrt(oparm(4, iworbd(ielec,1), iwf))
                 site = site + oparm(1, iworbd(ielec,1), iwf)
                 angle = angle + oparm(2, iworbd(ielec,1), iwf)
-c  Make sure electron is near the center of some gaussian - might not work 
-c     if there's more than 1 slater determinant
+!  Make sure electron is near the center of some gaussian - might not work
+!     if there's more than 1 slater determinant
                 x(1,ielec)=site*dcos(angle)
                 x(2,ielec)=site*dsin(angle)
               else
-c               This code sampled from a gaussian:
-c                site=-dlog(rannyu(0))
-c                site=dsqrt(site)
-c                site=sign(site,(rannyu(0)-half))
-c               This code samples from a smaller, uniform region:
+!               This code sampled from a gaussian:
+!                site=-dlog(rannyu(0))
+!                site=dsqrt(site)
+!                site=sign(site,(rannyu(0)-half))
+!               This code samples from a smaller, uniform region:
                 site = 2.0d0*(0.5d0 - rannyu(0))
                 angle=2*pi*rannyu(0)
                 x(1,ielec)=(sitsca*site+rring)*dcos(angle)
@@ -92,20 +92,20 @@ c               This code samples from a smaller, uniform region:
               endif
              else
                do 5 k=1,ndim
-c sample position from exponentials or gaussian around center
-c a.d.guclu: for wires distribute electrons linearly in y direction 
-c a.c.mehta: unless floating gaussians, then make sure electrons
-c             are close to centers of gaussians 
-c  Warning:  this might not work if we have multiple slater determinants
+! sample position from exponentials or gaussian around center
+! a.d.guclu: for wires distribute electrons linearly in y direction
+! a.c.mehta: unless floating gaussians, then make sure electrons
+!             are close to centers of gaussians
+!  Warning:  this might not work if we have multiple slater determinants
                  site=-dlog(rannyu(0))
                  if(nloc.eq.-1 .or. nloc.eq.-4 .or. nloc.eq.-5) site=dsqrt(site)
                  site=sign(site,(rannyu(0)-half))
 
-                 if(nloc.eq.-4) then 
+                 if(nloc.eq.-4) then
                    if (ibasis.eq.6 .or. ibasis.eq.7) then
                      site = (0.5d0 - rannyu(0))/dsqrt(we*oparm(k+2, iworbd(ielec,1), iwf))
-c  Make sure electron is near the center of some gaussian - might not work 
-c     if there's more than 1 slater determinant
+!  Make sure electron is near the center of some gaussian - might not work
+!     if there's more than 1 slater determinant
                      x(k,ielec) = site + oparm(k, iworbd(ielec,1), iwf)
                    else
                      if(k.eq.2) then

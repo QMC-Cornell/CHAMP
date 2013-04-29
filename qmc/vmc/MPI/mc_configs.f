@@ -1,7 +1,7 @@
       subroutine mc_configs_read_mpi
-c If isite<=0 reads initial MC configuration from mc_configs_start
-c         >=1 gets initial MC configuration by calling subroutine sites
-c Write mc_configs_new.<iproc> at end of run to provide configurations for fit optimization
+! If isite<=0 reads initial MC configuration from mc_configs_start
+!         >=1 gets initial MC configuration by calling subroutine sites
+! Write mc_configs_new.<iproc> at end of run to provide configurations for fit optimization
 
 
 # if defined (MPI)
@@ -21,17 +21,17 @@ c Write mc_configs_new.<iproc> at end of run to provide configurations for fit o
 
       character*30 filename
 
-c Set the random number seed differently on each processor.
-c Seed is set for serial run by calling setrn in read_input and is reset for all except the first process
-c by calling setrn again in vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
-c dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
-c It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
-c rnd itself is unused.
-c Frank's temporary fix for a better choice of random number seeds for parallel run.
+! Set the random number seed differently on each processor.
+! Seed is set for serial run by calling setrn in read_input and is reset for all except the first process
+! by calling setrn again in vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
+! dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
+! It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
+! rnd itself is unused.
+! Frank's temporary fix for a better choice of random number seeds for parallel run.
       if(irstar.ne.1) then
         do 95 id=1,ndim*nelec*idtask
    95     rnd=rannyu(0)
-c The next call to savern is not really needed but since Claudia put it in, I am too for consistency
+! The next call to savern is not really needed but since Claudia put it in, I am too for consistency
         call savern(irand_seed)
         do i =1,4
           irand_seed(i)=mod(irand_seed(i)+int(rannyu(0)*idtask*9999),9999)
@@ -41,7 +41,7 @@ c The next call to savern is not really needed but since Claudia put it in, I am
 
         call alloc ('xold', xold, 3, nelec)
 
-c if isite=1 then get initial configuration from sites routine
+! if isite=1 then get initial configuration from sites routine
         if(isite.ge.1) goto 393
           open(9,err=393,file='mc_configs_start')
           rewind 9
@@ -63,23 +63,23 @@ c if isite=1 then get initial configuration from sites routine
 !JT          write(6,'(/,''initial configuration from sites'')')
   395 continue
 
-c fix the position of electron i=ifixe for pair-density calculation:
+! fix the position of electron i=ifixe for pair-density calculation:
       if(ifixe.gt.0) then
         do 398 k=1,ndim
   398     xold(k,ifixe)=xfix(k)
       endif
 
-c If we are moving one electron at a time, then we need to initialize
-c xnew, since only the first electron gets initialized in metrop
-c       do 400 i=1,nelec
-c         do 400 k=1,ndim
-c 400       xnew(k,i)=xold(k,i)
+! If we are moving one electron at a time, then we need to initialize
+! xnew, since only the first electron gets initialized in metrop
+!       do 400 i=1,nelec
+!         do 400 k=1,ndim
+! 400       xnew(k,i)=xold(k,i)
       endif
 
-c If nconf_new > 0 then we want to dump configurations for a future
-c optimization or dmc calculation. So figure out how often we need to write a
-c configuration to produce nconf_new configurations. If nconf_new = 0
-c then set up so no configurations are written.
+! If nconf_new > 0 then we want to dump configurations for a future
+! optimization or dmc calculation. So figure out how often we need to write a
+! configuration to produce nconf_new configurations. If nconf_new = 0
+! then set up so no configurations are written.
       if(nconf_new.ne.0) then
         write(6,'(''idtask,nconf_new'',9i5)') idtask,nconf_new
         if(idtask.lt.10) then
@@ -91,24 +91,24 @@ c then set up so no configurations are written.
          else
           write(filename,'(i4)') idtask
         endif
-c The next line put in by Julien fails to put the numeric subscript on the filename.
-c So temporarily go back to the hard-coded name we had before.
-c       filename=file_mc_configs_out//filename(1:index(filename,' ')-1)
+! The next line put in by Julien fails to put the numeric subscript on the filename.
+! So temporarily go back to the hard-coded name we had before.
+!       filename=file_mc_configs_out//filename(1:index(filename,' ')-1)
         filename='mc_configs_new'//filename(1:index(filename,' ')-1)
         open(7,form='formatted',file=filename)
 !CU     open(7,form='formatted',file=file_mc_configs_out)
         rewind 7
-c       write(7,'(i5)') nconf_new
+!       write(7,'(i5)') nconf_new
       endif
 
 # endif
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       entry mc_configs_write_mpi
 
 # if defined (MPI)
 
-c write out last configuration to unit mc_configs_start
+! write out last configuration to unit mc_configs_start
       if(idtask.ne.0) then
         call mpi_isend(xold,3*nelec,mpi_double_precision,0
      &  ,1,MPI_COMM_WORLD,irequest,ierr)

@@ -1,5 +1,5 @@
       subroutine jastrowe(iel,x,v,value)
-c Written by Claudia Filippi by modifying jastrow
+! Written by Claudia Filippi by modifying jastrow
 
       use const_mod
       use contr2_mod

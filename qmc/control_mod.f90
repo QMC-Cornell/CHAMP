@@ -154,7 +154,9 @@ module control_mod
       case(5)
           write(6,'(a)') ' Printing out pp-spline orbitals'
       case(6)
-          write(6,'(a)') ' Printing out B-spline orbitals'
+          write(6,'(a)') ' Printing out smoothing B-spline orbitals'
+      case(8)
+          write(6,'(a)') ' Printing out interpolating B-spline orbitals'
       end select
       call print_orbitals_pw
    endif

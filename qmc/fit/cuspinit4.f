@@ -1,5 +1,5 @@
       subroutine cuspinit4(iprin)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use all_tools_mod
       use jaspar4_mod
       use cuspmat4_mod
@@ -8,13 +8,13 @@ c Written by Cyrus Umrigar
       parameter(MTERMS=55)
 
       if(nordc.eq.0) return
-      
-c iwc4 contains the indices of the dependent C terms resulting from
-c   the e-e and e-n cusp conditions for each order, starting at 2nd order.
-c   So, the number of dependent C terms is 2*(nordc-1)
-c nvdepend(i,it) is the number of independent variables that the ith
-c   dependent variable, of center-type it, depends on.
-c cdep is the constant of proportionality between dependent and independent variables.
+
+! iwc4 contains the indices of the dependent C terms resulting from
+!   the e-e and e-n cusp conditions for each order, starting at 2nd order.
+!   So, the number of dependent C terms is 2*(nordc-1)
+! nvdepend(i,it) is the number of independent variables that the ith
+!   dependent variable, of center-type it, depends on.
+! cdep is the constant of proportionality between dependent and independent variables.
 
       call alloc ('iwc4', iwc4, 2*(nordc-1))
       call alloc ('d', d, 2*(nordc-1), MTERMS)
@@ -69,7 +69,7 @@ c cdep is the constant of proportionality between dependent and independent vari
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine checkdepend4(iprin)
 
       use all_tools_mod
@@ -101,8 +101,8 @@ c-----------------------------------------------------------------------
           do 5 l=1,nparmc(it)
     5       iwdepend(i,l,it)=0
 
-c Figure out dependence of all dependent variables except that from
-c the 2nd order e-n cusp cond.
+! Figure out dependence of all dependent variables except that from
+! the 2nd order e-n cusp cond.
       do 40 i=1,neqs
         if(i.eq.nordc) goto 40
         do 20 j=1,nterms
@@ -120,13 +120,13 @@ c the 2nd order e-n cusp cond.
    20   continue
    40 continue
 
-c Now do the one from the 2nd order e-n cusp cond.
-c The dep. variable from the 2nd-order e-n cc depends directly on all the
-c other dependent variables and only on the other dependent variables.
-c Figure out what dependence on the independent variables is implied by that.
+! Now do the one from the 2nd order e-n cusp cond.
+! The dep. variable from the 2nd-order e-n cc depends directly on all the
+! other dependent variables and only on the other dependent variables.
+! Figure out what dependence on the independent variables is implied by that.
 
-c Since it depends directly on all other dependent variables, it depends
-c indirectly on all the independent variables that are being varied.
+! Since it depends directly on all other dependent variables, it depends
+! indirectly on all the independent variables that are being varied.
       do 50 it=1,nctype
       do 50 l=1,nparmc(it)
         nvdepend(nordc,it)=nvdepend(nordc,it)+1

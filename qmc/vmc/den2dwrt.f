@@ -1,7 +1,7 @@
       subroutine den2dwrt(passes,r1ave)
-c Written by A.D.Guclu, modified by Cyrus Umrigar for MPI
-c routine to print out 2d-density related quantities
-c called by finwrt from vmc,dmc,dmc_elec
+! Written by A.D.Guclu, modified by Cyrus Umrigar for MPI
+! routine to print out 2d-density related quantities
+! called by finwrt from vmc,dmc,dmc_elec
 
       use mpi_mod
       use dets_mod
@@ -16,8 +16,8 @@ c called by finwrt from vmc,dmc,dmc_elec
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-c verify the normalization later...
-c      delx=1/delxi    ! doesn't work now that delxi is an array
+! verify the normalization later...
+!      delx=1/delxi    ! doesn't work now that delxi is an array
       if(icoosys.eq.1) then
         del1=1/delxi(1)
         del2=1/delxi(2)
@@ -56,14 +56,14 @@ c      delx=1/delxi    ! doesn't work now that delxi is an array
           open(43,status='scratch')
         endif
 
-c verify the normalization later...
+! verify the normalization later...
         do in1=-nax1,nax1
           do in2=-nax2,nax2
             write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_t(in1,in2)*term
             write(42,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_d(in1,in2)*term
             write(43,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_u(in1,in2)*term
           enddo
-c following spaces are for gnuplot convention:
+! following spaces are for gnuplot convention:
           write(41,*)
           write(42,*)
           write(43,*)
@@ -89,7 +89,7 @@ c following spaces are for gnuplot convention:
           file5='pot_d_dmc'
           file6='pot_u_dmc'
         endif
-        
+
         if(idtask.eq.0) then
           open(41,file=file1,status='unknown')
           open(42,file=file2,status='unknown')
@@ -98,12 +98,12 @@ c following spaces are for gnuplot convention:
           open(45,file=file5,status='unknown')
           open(46,file=file6,status='unknown')
          else
-cc        open(41,file='/dev/null',status='unknown')
-cc        open(42,file='/dev/null',status='unknown')
-cc        open(43,file='/dev/null',status='unknown')
-c         open(41,file='junk41',status='unknown')
-c         open(42,file='junk42',status='unknown')
-c         open(43,file='junk43',status='unknown')
+!c        open(41,file='/dev/null',status='unknown')
+!c        open(42,file='/dev/null',status='unknown')
+!c        open(43,file='/dev/null',status='unknown')
+!         open(41,file='junk41',status='unknown')
+!         open(42,file='junk42',status='unknown')
+!         open(43,file='junk43',status='unknown')
           open(41,status='scratch')
           open(42,status='scratch')
           open(43,status='scratch')
@@ -112,7 +112,7 @@ c         open(43,file='junk43',status='unknown')
           open(46,status='scratch')
         endif
 
-c verify the normalization later...
+! verify the normalization later...
         do in1=-nax1,nax1
           do in2=-nax2,nax2
             write(41,'(2g19.8,g19.8)') in1*del1,in2*del2,den2d_t(in1,in2)*term
@@ -139,7 +139,7 @@ c verify the normalization later...
 
       if(ifixe.le.-2) then          ! full pair-density
 
-c up electron:
+! up electron:
         if(nup.gt.0) then
           if(index(mode,'vmc').ne.0) then
             file1='pairden_ut_vmc'
@@ -190,7 +190,7 @@ c up electron:
           close(43)
         endif
 
-c down electron:
+! down electron:
         if(ndn.gt.0) then
           if(index(mode,'vmc').ne.0) then
             file1='pairden_dt_vmc'
@@ -264,7 +264,7 @@ c down electron:
           open(43,status='scratch')
         endif
 
-c verify the normalization later...
+! verify the normalization later...
         if(iperiodic.eq.1) then
           term = 1/(passes*dely)
           naxmin = -NAX
@@ -324,7 +324,7 @@ c verify the normalization later...
           open(43,status='scratch')
         endif
 
-c verify the normalization later...
+! verify the normalization later...
         do in1=-NAK2,NAK2
           do in2=-NAK2,NAK2
             write(41,'(2g19.8,g19.8)') in1*delk2,in2*delk2,fourierkk_t(in1,in2)/passes
@@ -339,7 +339,7 @@ c verify the normalization later...
         close(42)
         close(43)
       endif
-      
+
       if(izigzag.gt.0) then
         if(iperiodic.eq.0) then  !ring
           zzcorr(:) = zzcorr(:) - r1ave*zzcorr1(:) + r1ave*r1ave*zzcorr2(:)
@@ -383,7 +383,7 @@ c verify the normalization later...
           zznorm = sum(zzpairden_t(:,in2))
           !if(in2.eq.0) then
           !  write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/(zznorm+passes)/delxt
-          !else  
+          !else
           !  write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes/delxt
           !endif
           write(41,'(g19.8,g19.8)') in2*delxt,zzcorr(in2)/passes/delxt
@@ -395,7 +395,7 @@ c verify the normalization later...
           write(42,'(i8,g19.8)') ine,zzcorrij(ine)/passes
           write(48,'(i8,g19.8)') ine,yycorrij(ine)/passes
         enddo
-        
+
         if(izigzag.eq.2) then
           if(index(mode,'vmc').ne.0) then
             file3='zzpairden_t_vmc'
@@ -411,7 +411,7 @@ c verify the normalization later...
             open(43,status='scratch')
             open(44,status='scratch')
           endif
-          
+
           do in1=-nax1,nax1
             do in2 = -nax2,nax2
               write(43,'(2g19.8,g19.8)') in1*zzdelyr,in2*delxt,zzpairden_t(in1,in2)/(passes*zzdelyr*delxt)

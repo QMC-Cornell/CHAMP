@@ -1,5 +1,5 @@
       subroutine set_scale_dist(ipr,iw)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use all_tools_mod
       use constants_mod
       use atom_mod
@@ -13,33 +13,33 @@ c Written by Cyrus Umrigar
       use forcepar_mod
       implicit real*8(a-h,o-z)
 
-c isc = 2,3 are exponential scalings
-c isc = 4,5 are inverse power scalings
-c isc = 3,5 have zero 2nd and 3rd derivatives at 0
-c isc = 6,7 are exponential and power law scalings resp. that have
-c       zero, value and 1st 2 derivatives at cut_jas.
-c isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c isc = 16,17, iflag=1,2 are the same as 6,7 resp.
-c       This is used to scale r_en in J_en and r_ee in J_ee for solids.
-c isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_en in J_een for solids.
-c isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_ee in J_een for solids.
-c isc = 8,10 are the same as 2,4 resp. but multiplied by scalek so that at very
-c       small scalek the normalizations of the basis functions while optimizing
-c       is not many orders of magnitude different.  No longer needed because I
-c       now use the diagonal of the overlap to normalize the basis functions.
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 have zero 2nd and 3rd derivatives at 0
+! isc = 6,7 are exponential and power law scalings resp. that have
+!       zero, value and 1st 2 derivatives at cut_jas.
+! isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+! isc = 16,17, iflag=1,2 are the same as 6,7 resp.
+!       This is used to scale r_en in J_en and r_ee in J_ee for solids.
+! isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_en in J_een for solids.
+! isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_ee in J_een for solids.
+! isc = 8,10 are the same as 2,4 resp. but multiplied by scalek so that at very
+!       small scalek the normalizations of the basis functions while optimizing
+!       is not many orders of magnitude different.  No longer needed because I
+!       now use the diagonal of the overlap to normalize the basis functions.
 
-c Evaluate constants that need to be reset if scalek is being varied.
-c Warning: At present we are assuming that the same scalek is used
-c for primary and secondary wavefns.  Otherwise c1_jas6i, c1_jas6, c2_jas6
-c should be dimensioned to MWF
-c Note val_cutjas is set isc=6,7 when isc=16,17 because isc=6,7 scalings are
-c used for J_en and J_ee when isc=16,17.
-       
+! Evaluate constants that need to be reset if scalek is being varied.
+! Warning: At present we are assuming that the same scalek is used
+! for primary and secondary wavefns.  Otherwise c1_jas6i, c1_jas6, c2_jas6
+! should be dimensioned to MWF
+! Note val_cutjas is set isc=6,7 when isc=16,17 because isc=6,7 scalings are
+! used for J_en and J_ee when isc=16,17.
+
       call alloc ('asymp_r_en', asymp_r_en, nwf)
       call alloc ('dasymp_r_en', dasymp_r_en, nwf)
       call alloc ('d2asymp_r_en', d2asymp_r_en, nwf)
@@ -155,7 +155,7 @@ c used for J_en and J_ee when isc=16,17.
       call alloc ('d2asymp_jasa', d2asymp_jasa, nctype, nwf)
       call alloc ('d2asymp_jasb', d2asymp_jasb, 2, nwf)
 
-c Calculate asymptotic value of A and B terms
+! Calculate asymptotic value of A and B terms
       do 10 it=1,nctype
         asymp_jasa(it,iw)=a4(1,it,iw)*asymp_r_en(iw)/(1+a4(2,it,iw)*asymp_r_en(iw))
         dasymp_jasa(it,iw)=a4(1,it,iw)/(1+a4(2,it,iw)*asymp_r_en(iw))**2
@@ -235,10 +235,10 @@ c Calculate asymptotic value of A and B terms
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine scale_dist(r,rr,iflag)
-c Written by Cyrus Umrigar
-c Scale interparticle distances.
+! Written by Cyrus Umrigar
+! Scale interparticle distances.
       use constants_mod
       use contr2_mod
       use wfsec_mod
@@ -246,26 +246,26 @@ c Scale interparticle distances.
       use jaspar6_mod
       implicit real*8(a-h,o-z)
 
-c isc = 2,3 are exponential scalings
-c isc = 4,5 are inverse power scalings
-c isc = 3,5 have zero 2nd and 3rd derivatives at 0
-c isc = 6,7 are exponential and power law scalings resp. that have
-c       zero, value and 1st 2 derivatives at cut_jas.
-c isc = 8,10 are like 2 and 4 but multiplied by scalek.
-c isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c isc = 16,17, iflag=1,2 are the same as 6,7 resp.
-c       This is used to scale r_en in J_en and r_ee in J_ee for solids.
-c isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_en in J_een for solids.
-c isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_ee in J_een for solids.
-c isc = 8,10 are the same as 2,4 resp. but multiplied by scalek so that at very
-c       small scalek the normalizations of the basis functions while optimizing
-c       is not many orders of magnitude different.  No longer needed because I
-c       now use the diagonal of the overlap to normalize the basis functions.
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 have zero 2nd and 3rd derivatives at 0
+! isc = 6,7 are exponential and power law scalings resp. that have
+!       zero, value and 1st 2 derivatives at cut_jas.
+! isc = 8,10 are like 2 and 4 but multiplied by scalek.
+! isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+! isc = 16,17, iflag=1,2 are the same as 6,7 resp.
+!       This is used to scale r_en in J_en and r_ee in J_ee for solids.
+! isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_en in J_een for solids.
+! isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_ee in J_een for solids.
+! isc = 8,10 are the same as 2,4 resp. but multiplied by scalek so that at very
+!       small scalek the normalizations of the basis functions while optimizing
+!       is not many orders of magnitude different.  No longer needed because I
+!       now use the diagonal of the overlap to normalize the basis functions.
 
       if(iflag.eq.1.or.iflag.eq.3) then
         cutjas=cutjas_en
@@ -391,12 +391,12 @@ c       now use the diagonal of the overlap to normalize the basis functions.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine scale_dist1(r,rr,dd1,iflag)
-c Written by Cyrus Umrigar
-c Scale interparticle distances and calculate the 1st derivative
-c of the scaled distances wrt the unscaled ones for calculating the
-c gradient and laplacian.
+! Written by Cyrus Umrigar
+! Scale interparticle distances and calculate the 1st derivative
+! of the scaled distances wrt the unscaled ones for calculating the
+! gradient and laplacian.
 
       use contr2_mod
       use wfsec_mod
@@ -407,21 +407,21 @@ c gradient and laplacian.
 !JT   parameter (zero=0.d0,one=1.d0,half=0.5d0,third=1.d0/3.d0,d4b3=4.d0/3.d0)
       parameter (d4b3=4.d0/3.d0)
 
-c isc = 2,3 are exponential scalings
-c isc = 4,5 are inverse power scalings
-c isc = 3,5 have zero 2nd and 3rd derivatives at 0
-c isc = 6,7 are exponential and power law scalings resp. that have
-c       zero, value and 1st 2 derivatives at cut_jas.
-c isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c isc = 16,17, iflag=1,2 are the same as 6,7 resp.
-c       This is used to scale r_en in J_en and r_ee in J_ee for solids.
-c isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_en in J_een for solids.
-c isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_ee in J_een for solids.
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 have zero 2nd and 3rd derivatives at 0
+! isc = 6,7 are exponential and power law scalings resp. that have
+!       zero, value and 1st 2 derivatives at cut_jas.
+! isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+! isc = 16,17, iflag=1,2 are the same as 6,7 resp.
+!       This is used to scale r_en in J_en and r_ee in J_ee for solids.
+! isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_en in J_een for solids.
+! isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_ee in J_een for solids.
 
       if(iflag.eq.1.or.iflag.eq.3) then
         cutjas=cutjas_en
@@ -471,12 +471,12 @@ c       This is used to scale r_ee in J_een for solids.
             term2=(1-2*r_by_cut+r_by_cut2)
             if(ijas.eq.4.or.ijas.eq.5) then
               rr=(1-dexp(-scalek(iwf)*r*term))/scalek(iwf)
-c             rr_plus_c2=rr+c2_jas6
+!             rr_plus_c2=rr+c2_jas6
               dd1=(one-scalek(iwf)*rr)*term2
              elseif(ijas.eq.6) then
               rr=c1_jas6*dexp(-scalek(iwf)*r*term)-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*term2
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*term2
             endif
           endif
          elseif(isc.eq.7 .or. (isc.eq.17.and.(iflag.eq.1.or.iflag.eq.2))) then
@@ -498,8 +498,8 @@ c             dd1=-scalek(iwf)*rr_plus_c2*term2
               dd1=term2*deni*deni
              elseif(ijas.eq.6) then
               rr=c1_jas6*deni-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
             endif
           endif
          elseif(isc.eq.8) then
@@ -527,8 +527,8 @@ c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
               dd1=2*r*(one-scalek(iwf)*rr)*term2
              elseif(ijas.eq.6) then
               rr=c1_jas6*dexp(-scalek(iwf)*r**2*term)-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*term2
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*term2
             endif
           endif
          elseif(isc.eq.12 .and. iflag.ge.3) then
@@ -537,8 +537,8 @@ c             dd1=-scalek(iwf)*rr_plus_c2*term2
             dd1=2*r*(one-scalek(iwf)*rr)
            elseif(ijas.eq.6) then
             rr=c1_jas6*dexp(-scalek(iwf)*r**2)-c2_jas6
-c           rr_plus_c2=rr+c2_jas6
-c           dd1=-scalek(iwf)*rr_plus_c2*term2
+!           rr_plus_c2=rr+c2_jas6
+!           dd1=-scalek(iwf)*rr_plus_c2*term2
           endif
          elseif(isc.eq.17 .and. iflag.ge.3) then
           if(r.gt.cutjas) then
@@ -559,8 +559,8 @@ c           dd1=-scalek(iwf)*rr_plus_c2*term2
               dd1=2*r*term2*deni*deni
              elseif(ijas.eq.6) then
               rr=c1_jas6*deni-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
             endif
           endif
          elseif(isc.eq.14 .and. iflag.ge.3) then
@@ -570,8 +570,8 @@ c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
             dd1=2*r*deni*deni
            elseif(ijas.eq.6) then
             rr=c1_jas6*deni-c2_jas6
-c           rr_plus_c2=rr+c2_jas6
-c           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
+!           rr_plus_c2=rr+c2_jas6
+!           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
           endif
         endif
        else
@@ -581,12 +581,12 @@ c           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine scale_dist2(r,rr,dd1,dd2,iflag)
-c Written by Cyrus Umrigar
-c Scale interparticle distances and calculate the 1st and 2nd derivs
-c of the scaled distances wrt the unscaled ones for calculating the
-c gradient and laplacian.
+! Written by Cyrus Umrigar
+! Scale interparticle distances and calculate the 1st and 2nd derivs
+! of the scaled distances wrt the unscaled ones for calculating the
+! gradient and laplacian.
 
       use contr2_mod
       use wfsec_mod
@@ -598,21 +598,21 @@ c gradient and laplacian.
       parameter (d4b3=4.d0/3.d0)
 
 
-c isc = 2,3 are exponential scalings
-c isc = 4,5 are inverse power scalings
-c isc = 3,5 have zero 2nd and 3rd derivatives at 0
-c isc = 6,7 are exponential and power law scalings resp. that have
-c       zero, value and 1st 2 derivatives at cut_jas.
-c isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c isc = 16,17, iflag=1,2 are the same as 6,7 resp.
-c       This is used to scale r_en in J_en and r_ee in J_ee for solids.
-c isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_en in J_een for solids.
-c isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
-c       to not contribute to the cusp without having to impose cusp conditions.
-c       This is used to scale r_ee in J_een for solids.
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 have zero 2nd and 3rd derivatives at 0
+! isc = 6,7 are exponential and power law scalings resp. that have
+!       zero, value and 1st 2 derivatives at cut_jas.
+! isc = 12,14, are  are similar 2,4 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+! isc = 16,17, iflag=1,2 are the same as 6,7 resp.
+!       This is used to scale r_en in J_en and r_ee in J_ee for solids.
+! isc = 16,17, iflag=3 are similar 6,7 resp. but are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_en in J_een for solids.
+! isc = 16,17, iflag=4 have infinite range and are quadratic at 0 so as
+!       to not contribute to the cusp without having to impose cusp conditions.
+!       This is used to scale r_ee in J_een for solids.
 
       if(iflag.eq.1.or.iflag.eq.3) then
         cutjas=cutjas_en
@@ -667,14 +667,14 @@ c       This is used to scale r_ee in J_een for solids.
             term2=(1-2*r_by_cut+r_by_cut2)
             if(ijas.eq.4.or.ijas.eq.5) then
               rr=(1-dexp(-scalek(iwf)*r*term))/scalek(iwf)
-c             rr_plus_c2=rr+c2_jas6
+!             rr_plus_c2=rr+c2_jas6
               dd1=(one-scalek(iwf)*rr)*term2
               dd2=-scalek(iwf)*dd1*term2+2*(one-scalek(iwf)*rr)*cutjasi*(r_by_cut-1)
              elseif(ijas.eq.6) then
               rr=c1_jas6*dexp(-scalek(iwf)*r*term)-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*term2
-c             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*term2
+!             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
             endif
           endif
          elseif(isc.eq.7 .or. (isc.eq.17.and.(iflag.eq.1.or.iflag.eq.2))) then
@@ -698,9 +698,9 @@ c             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
               dd2=-2*deni**2*(scalek(iwf)*deni*term2**2-cutjasi*(r_by_cut-1))
              elseif(ijas.eq.6) then
               rr=c1_jas6*deni-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
-c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
+!             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
             endif
           endif
          elseif(isc.eq.8) then
@@ -729,14 +729,14 @@ c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1)
             if(ijas.eq.4.or.ijas.eq.5) then
               rr=(1-dexp(-scalek(iwf)*r**2*term))/scalek(iwf)
               dd1=2*r*(one-scalek(iwf)*rr)*term2
-c             dd2=-scalek(iwf)*dd1*term2+2*(one-scalek(iwf)*rr)*cutjasi*(r_by_cut-1)
+!             dd2=-scalek(iwf)*dd1*term2+2*(one-scalek(iwf)*rr)*cutjasi*(r_by_cut-1)
               dd2=-2*(scalek(iwf)*r*dd1*term2
      &        -(one-scalek(iwf)*rr)*(1-4*r_by_cut+3*r_by_cut2))
              elseif(ijas.eq.6) then
               rr=c1_jas6*dexp(-scalek(iwf)*r**2*term)-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*term2
-c             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*term2
+!             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
             endif
           endif
          elseif(isc.eq.12 .and. iflag.ge.3) then
@@ -746,9 +746,9 @@ c             dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
             dd2=-2*(scalek(iwf)*r*dd1-(one-scalek(iwf)*rr))
            elseif(ijas.eq.6) then
             rr=c1_jas6*dexp(-scalek(iwf)*r**2)-c2_jas6
-c           rr_plus_c2=rr+c2_jas6
-c           dd1=-scalek(iwf)*rr_plus_c2*term2
-c           dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
+!           rr_plus_c2=rr+c2_jas6
+!           dd1=-scalek(iwf)*rr_plus_c2*term2
+!           dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
           endif
          elseif(isc.eq.17 .and. iflag.ge.3) then
           if(r.gt.cutjas) then
@@ -768,14 +768,14 @@ c           dd2=-scalek(iwf)*(dd1*term2+rr_plus_c2*2*cutjasi*(r_by_cut-1))
             if(ijas.eq.4.or.ijas.eq.5) then
               rr=r**2*term*deni
               dd1=2*r*term2*deni*deni
-c             dd2=-2*deni**2*(scalek(iwf)*deni*term2**2-cutjasi*(r_by_cut-1))
+!             dd2=-2*deni**2*(scalek(iwf)*deni*term2**2-cutjasi*(r_by_cut-1))
               dd2=-2*deni**2*(4*scalek(iwf)*r**2*deni*term2**2
      &        -(1-4*r_by_cut+3*r_by_cut2))
              elseif(ijas.eq.6) then
               rr=c1_jas6*deni-c2_jas6
-c             rr_plus_c2=rr+c2_jas6
-c             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
-c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
+!             rr_plus_c2=rr+c2_jas6
+!             dd1=-scalek(iwf)*rr_plus_c2*deni*term2
+!             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
             endif
           endif
          elseif(isc.eq.14 .and. iflag.ge.3) then
@@ -786,9 +786,9 @@ c             dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1)
             dd2=-2*deni**2*(4*scalek(iwf)*r**2*deni-1)
            elseif(ijas.eq.6) then
             rr=c1_jas6*deni-c2_jas6
-c           rr_plus_c2=rr+c2_jas6
-c           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
-c           dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
+!           rr_plus_c2=rr+c2_jas6
+!           dd1=-scalek(iwf)*rr_plus_c2*deni*term2
+!           dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
           endif
         endif
        else
@@ -799,11 +799,11 @@ c           dd2=-2*scalek(iwf)*deni*(dd1*term2+rr_plus_c2*cutjasi*(r_by_cut-1))
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine switch_scale(rr,iflag)
-c Written by Cyrus Umrigar
-c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
-c that appropriate for C terms, for dist.
+! Written by Cyrus Umrigar
+! Switch scaling for ijas=4,5 from that appropriate for A,B terms to
+! that appropriate for C terms, for dist.
 
       use contr2_mod
       use wfsec_mod
@@ -825,11 +825,11 @@ c that appropriate for C terms, for dist.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine switch_scale1(rr,dd1,iflag)
-c Written by Cyrus Umrigar
-c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
-c that appropriate for C terms, for dist and 1st deriv.
+! Written by Cyrus Umrigar
+! Switch scaling for ijas=4,5 from that appropriate for A,B terms to
+! that appropriate for C terms, for dist and 1st deriv.
 
       use contr2_mod
       use wfsec_mod
@@ -853,11 +853,11 @@ c that appropriate for C terms, for dist and 1st deriv.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine switch_scale2(rr,dd1,dd2,iflag)
-c Written by Cyrus Umrigar
-c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
-c that appropriate for C terms, for dist and 1st two derivs.
+! Written by Cyrus Umrigar
+! Switch scaling for ijas=4,5 from that appropriate for A,B terms to
+! that appropriate for C terms, for dist and 1st two derivs.
 
       use contr2_mod
       use wfsec_mod
@@ -883,4 +883,4 @@ c that appropriate for C terms, for dist and 1st two derivs.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------

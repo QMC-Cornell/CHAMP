@@ -1,17 +1,17 @@
       subroutine redistribute
-c Figure out who communicates a walker to whom to achieve load balance.
-c It communicates only 1 walker at a time between processors, but it does
-c this as many times as needed to achieve load balance.  Most of the time
-c only one go around will be needed.
-c nwalk_stack > 0 there are  nwalk_stack processors with extra walkers on stack
-c             < 0 there are -nwalk_stack processors with fewer walkers on stack
-c iwalk_stack(i)  which processors are on the stack
-c icommunicate(i) = 0 processor i does not communicate with others
-c                 > 0 processor i sends walker to processor icommunicate(i)-1
-c                 < 0 processor i receives walker from processor abs(icommunicate(i))-1
-c nlo                 # of processors that should have nwalk_av_int walkers
-c nhi                 # of processors that should have nwalk_av_int+1 walkers
-c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
+! Figure out who communicates a walker to whom to achieve load balance.
+! It communicates only 1 walker at a time between processors, but it does
+! this as many times as needed to achieve load balance.  Most of the time
+! only one go around will be needed.
+! nwalk_stack > 0 there are  nwalk_stack processors with extra walkers on stack
+!             < 0 there are -nwalk_stack processors with fewer walkers on stack
+! iwalk_stack(i)  which processors are on the stack
+! icommunicate(i) = 0 processor i does not communicate with others
+!                 > 0 processor i sends walker to processor icommunicate(i)-1
+!                 < 0 processor i receives walker from processor abs(icommunicate(i))-1
+! nlo                 # of processors that should have nwalk_av_int walkers
+! nhi                 # of processors that should have nwalk_av_int+1 walkers
+! Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
 
 # if defined (MPI)
       use all_tools_mod
@@ -29,8 +29,8 @@ c Written by Cyrus Umrigar and Claudia Filippi, Oct. 2001.
       dimension nwalk_all(0:nproc),icommunicate_all(0:nproc),
      &iwalk_stack(nproc)
 
-c Use all_gather rather than gather, so that all processors can do this
-c computation and there is no need to scatter the computed information to processors.
+! Use all_gather rather than gather, so that all processors can do this
+! computation and there is no need to scatter the computed information to processors.
       call mpi_allgather(nwalk,1,mpi_integer,nwalk_all,1,mpi_integer,
      &MPI_COMM_WORLD,ierr)
 
@@ -95,8 +95,8 @@ c computation and there is no need to scatter the computed information to proces
       endif
 
       call systemflush(6)
-c call routine to move walkers as specified in icommunicate_all
-c and to update the values of nwalk on each processor
+! call routine to move walkers as specified in icommunicate_all
+! and to update the values of nwalk on each processor
       icomm=icommunicate_all(idtask)
       if(icomm.lt.0) nwalk=nwalk+1
 

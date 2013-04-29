@@ -1,16 +1,16 @@
       subroutine strech(x,xstrech,ajacob,ifr,istrech_el)
-c Written by Cyrus Umrigar and Claudia Filippi
-c Uses the coordinate transform described in:
-c 1) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
-c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
-c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
-c 2) Correlated sampling in quantum Monte Carlo: A route to forces,
-c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
+! Written by Cyrus Umrigar and Claudia Filippi
+! Uses the coordinate transform described in:
+! 1) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
+!    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
+!    Int. J. Quant. Chem. Symp., 23, 217 (1989).
+! 2) Correlated sampling in quantum Monte Carlo: A route to forces,
+!    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
-c stretch space so that electrons close to a nucleus move almost
-c rigidly with that nucleus
-c returns secondary geom. nuclear positions, stretched electron positions and
-c jacobian of the transformation
+! stretch space so that electrons close to a nucleus move almost
+! rigidly with that nucleus
+! returns secondary geom. nuclear positions, stretched electron positions and
+! jacobian of the transformation
       use constants_mod
       use nuclei_mod
       use atom_mod
@@ -51,7 +51,7 @@ c jacobian of the transformation
 
       do 50 i=1,nelec
         wtsm=zero
-c initialize volume change matrix
+! initialize volume change matrix
         do 5 k=1,ndim
           dwtsm(k)=zero
           do 5 j=1,ndim
@@ -101,9 +101,9 @@ c initialize volume change matrix
    50 continue
 
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
-c read force parameters and set up n-n potential energy at displaced positions
+! read force parameters and set up n-n potential energy at displaced positions
       entry readforce
 
       open(3,file='input.force',status='old',form='formatted')
@@ -120,7 +120,7 @@ c read force parameters and set up n-n potential energy at displaced positions
 
       call alloc ('iwftype', iwftype, nforce)
       read(3,*) nwftype,(iwftype(i),i=1,nforce),filename
-      
+
       if(nwftype.gt.nforce) stop 'nwftype gt nforce'
 !JT      if(nwftype.gt.MWF) stop 'nwftype gt MWF'
       if(iwftype(1).ne.1) stop 'iwftype(1) ne 1'
@@ -140,17 +140,17 @@ c read force parameters and set up n-n potential energy at displaced positions
         do 65 icent=1,ncent
    65     cent_ref(k,icent)=cent(k,icent)
 
-c     do 80 ifl=1,nforce
-c       pecentn(ifl)=zero
-c       do 80 i=2,ncent
-c         j1=i-1
-c         do 80 j=1,j1
-c           r2=zero
-c           do 70 k=1,ndim
-c  70         r2=r2+(cent(k,i)-cent(k,j)
-c    &             +delc(k,i,ifl)-delc(k,j,ifl))**2
-c         r=dsqrt(r2)
-c  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
+!     do 80 ifl=1,nforce
+!       pecentn(ifl)=zero
+!       do 80 i=2,ncent
+!         j1=i-1
+!         do 80 j=1,j1
+!           r2=zero
+!           do 70 k=1,ndim
+!  70         r2=r2+(cent(k,i)-cent(k,j)
+!    &             +delc(k,i,ifl)-delc(k,j,ifl))**2
+!         r=dsqrt(r2)
+!  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
 
 !      write(6,'(''pecentn(ifl)1'',9f9.4)') (pecentn(ifl),ifl=1,nforce)
       call alloc ('pecentn', pecentn, nwf)
@@ -177,16 +177,16 @@ c  80     pecentn(ifl)=pecentn(ifl)+znuc(iwctype(i))*znuc(iwctype(j))/r
             rcm=rcm/ncent
   100       deltot(ifl)=deltot(ifl)+(delc(k,jc,ifl)-rcm)**2
         if(ifl.eq.1) rsq1=rsq
-c Warning: TEMPORARY: multiplication by ncent right for diatomics
+! Warning: TEMPORARY: multiplication by ncent right for diatomics
         deltot(ifl)=sign(dsqrt(deltot(ifl)*ncent),rsq-rsq1)
-c Warning: this is a temporary fix to put deltot=1 if one is doing excited
-c states rather than forces
+! Warning: this is a temporary fix to put deltot=1 if one is doing excited
+! states rather than forces
   110   if(deltot(ifl).eq.zero) deltot(ifl)=1
 
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
-c For wf. optim. copy first geometry info to next two
+! For wf. optim. copy first geometry info to next two
       entry wf_copy2
 
       call alloc ('pecentn', pecentn, nwf)
@@ -205,8 +205,8 @@ c For wf. optim. copy first geometry info to next two
           do 165 k=1,ndim
   165       cent_ref(k,ic)=cent(k,ic)
 
-c     do 170 iwf=2,nwftype
-c 170   call basis_norm(iwf,1)
+!     do 170 iwf=2,nwftype
+! 170   call basis_norm(iwf,1)
 
 
       return

@@ -27,8 +27,8 @@
       enddo
       if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
 
-c loop over spins and centers. If odd number of electrons on all
-c atoms then the up-spins have an additional electron.
+! loop over spins and centers. If odd number of electrons on all
+! atoms then the up-spins have an additional electron.
 
       l=0
       do 10 ispin=1,2

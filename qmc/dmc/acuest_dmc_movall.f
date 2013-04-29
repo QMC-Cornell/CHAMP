@@ -1,5 +1,5 @@
       subroutine acuest_dmc_movall
-c Written by Cyrus Umrigar and Claudia Filippi
+! Written by Cyrus Umrigar and Claudia Filippi
       use constants_mod
       use control_mod
       use atom_mod
@@ -32,31 +32,31 @@ c Written by Cyrus Umrigar and Claudia Filippi
       use zigzag_mod
       implicit real*8(a-h,o-z)
 
-c routine to accumulate estimators for energy etc.
+! routine to accumulate estimators for energy etc.
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
-c     common /compferm/ emagv,nv,idot
-      
+!     common /compferm/ emagv,nv,idot
+
       dimension zznow(nzzvars)
 
-c statement function for error calculation
+! statement function for error calculation
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
-c wt   = weight of configurations
-c xsum = sum of values of x from dmc
-c xnow = average of values of x from dmc
-c xcum = accumulated sums of xnow
-c xcm2 = accumulated sums of xnow**2
-c xave = current average value of x
-c xerr = current error of x
+! wt   = weight of configurations
+! xsum = sum of values of x from dmc
+! xnow = average of values of x from dmc
+! xcum = accumulated sums of xnow
+! xcm2 = accumulated sums of xnow**2
+! xave = current average value of x
+! xerr = current error of x
 
       iblk=iblk+1
       npass=iblk*nstep
 
-c     wnow=wsum/nstep
-c     wfnow=wfsum/nstep
+!     wnow=wsum/nstep
+!     wfnow=wfsum/nstep
       enow=esum/wsum
       efnow=efsum/wfsum
       ei1now=wfsum/wdsum
@@ -69,7 +69,7 @@ c     wfnow=wfsum/nstep
       if(izigzag.gt.0) then
        zznow(:)=zzsum(:)/wgsum(1)
       endif
-  
+
       wcm2=wcm2+wsum**2
       wfcm2=wfcm2+wfsum**2
       ecm2=ecm2+esum*enow
@@ -104,7 +104,7 @@ c     wfnow=wfsum/nstep
 
       do 15 ifr=1,nforce
 
-c       wgnow=wgsum(ifr)/nstep
+!       wgnow=wgsum(ifr)/nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum(ifr)/wgsum(ifr)
         peinow=peisum(ifr)/wgsum(ifr)
@@ -160,9 +160,9 @@ c       wgnow=wgsum(ifr)/nstep
           endif
         endif
 
-c       if(iblk.eq.1) write(6,*) ecum,ecm2,dsqrt(ecm2),wcum,ecm2/wcum,(ecum/wcum)**2
+!       if(iblk.eq.1) write(6,*) ecum,ecm2,dsqrt(ecm2),wcum,ecm2/wcum,(ecum/wcum)**2
 
-c write out header first time
+! write out header first time
 
         if(iblk.eq.1.and.ifr.eq.1) then
           if(ibasis.eq.3) then
@@ -175,7 +175,7 @@ c write out header first time
           endif
         endif
 
-c write out current values of averages etc.
+! write out current values of averages etc.
 
         if(ndim.eq.2) then
           iegerr=nint(10000000*egerr)
@@ -192,16 +192,16 @@ c write out current values of averages etc.
           ifgerr=nint(100000*fgerr)
         endif
 
-c magnetic energy for quantum dots...
-c right definition of the potential energy does not include magnetic energy.
+! magnetic energy for quantum dots...
+! right definition of the potential energy does not include magnetic energy.
         if(ndim.eq.2) then
-c         emave=0.125*bext*bext*r2cum/wgcum(ifr)+emaglz+emagsz+emagv
+!         emave=0.125*bext*bext*r2cum/wgcum(ifr)+emaglz+emagsz+emagv
           temp=0.25d0*bext*bext/(we*we)
           emave=(peave-peiave-emag)*temp+emag
           emerr=(peerr+peierr)*temp
           iemerr=nint(10000000*emerr)
           peave=peave-emave
-c         ipeerr=ipeerr+iemerr
+!         ipeerr=ipeerr+iemerr
           ipeerr=nint(10000000*(peerr*(1-temp)+temp*peierr))
         endif
 
@@ -224,7 +224,7 @@ c         ipeerr=ipeerr+iemerr
         endif
    15 continue
 
-c zero out xsum variables
+! zero out xsum variables
 
       wsum=zero
       wfsum=zero
@@ -256,7 +256,7 @@ c zero out xsum variables
       return
 
       entry acues1_dmc_movall
-c statistical fluctuations without blocking
+! statistical fluctuations without blocking
 
       if(ipr.gt.-2) then
          write(11,'(i8,f11.8,f15.8,f13.8,i5)') ipass,ffn,wsum1(1),esum1(1)/wsum1(1),nwalk
@@ -295,13 +295,13 @@ c statistical fluctuations without blocking
       return
 
       entry zeres0_dmc_movall
-c Initialize various quantities at beginning of run
-c the initial values of energy psi etc. are calculated here
+! Initialize various quantities at beginning of run
+! the initial values of energy psi etc. are calculated here
       ipass=0
 
-c set quadrature points
+! set quadrature points
 
-c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
+!     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
       eigv=one
@@ -316,12 +316,12 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
 
       do 80 iw=1,nconf
         wt(iw)=one
-c       if(istrech.eq.0) then
-c         do 71 ifr=2,nforce
-c           do 71 ie=1,nelec
-c             do 71 k=1,ndim
-c  71           xoldw(k,ie,iw,ifr)=xoldw(k,ie,iw,1)
-c       endif
+!       if(istrech.eq.0) then
+!         do 71 ifr=2,nforce
+!           do 71 ie=1,nelec
+!             do 71 k=1,ndim
+!  71           xoldw(k,ie,iw,ifr)=xoldw(k,ie,iw,1)
+!       endif
         do 72 ifr=1,nforce
           if(nforce.gt.1) then
             call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,ifr),ajacob,ifr,1)
@@ -362,18 +362,18 @@ c       endif
    75          xoldw(k,nup+2,iw,ifr)=temp
              else
                write(6,'(5x,''negative psi for boson wave function'')')
-c              stop
+!              stop
             endif
    76     continue
         endif
    80 continue
 
       entry zerest_dmc_movall
-c entry point to zero out all averages etc. after equilibration runs
+! entry point to zero out all averages etc. after equilibration runs
 
       iblk=0
 
-c zero out estimators
+! zero out estimators
 
       wcum1=zero
       wfcum1=zero
@@ -500,7 +500,7 @@ c zero out estimators
       nbrnch=0
 
       call alloc ('taueff', taueff, nforce)
-c **Warning** taueff temporarily set low.  Not any more
+! **Warning** taueff temporarily set low.  Not any more
       if(try_int.eq.0) then
         taueff(1)=tau/(one+(znuc(iwctype(1))**2*tau)/10)
         write(6,'(''taueff set equal to'',f9.5)') taueff(1)
@@ -541,13 +541,13 @@ c **Warning** taueff temporarily set low.  Not any more
       acc_int=0
       nodecr=0
 
-c Zero out estimators for charge density of atom.
+! Zero out estimators for charge density of atom.
       do 90 i=1,NRAD
         rprobup(i)=zero
         rprobdn(i)=zero
    90   rprob(i)=zero
 
-c Zero out estimators for pair densities:
+! Zero out estimators for pair densities:
       if (ifixe.ne.0) then
       if (.not. allocated(den2d_t)) allocate (den2d_t(-NAX:NAX,-NAX:NAX))
       if (.not. allocated(den2d_u)) allocate (den2d_u(-NAX:NAX,-NAX:NAX))
@@ -629,8 +629,8 @@ c Zero out estimators for pair densities:
         znncorr(:) = 0
         zn2ncorr(:) = 0
       endif
- 
-     
+
+
 
       return
       end

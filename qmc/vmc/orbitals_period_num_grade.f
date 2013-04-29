@@ -1,7 +1,7 @@
       subroutine orbitals_period_num_grade(x,orb,dorb,ddorb)
-c Written by Cyrus Umrigar. Modified by William Parker to interface to Einspline.
-c Calculate pw orbitals, gradient and laplacian for electron at x
-c by interpolating on a grid.
+! Written by Cyrus Umrigar. Modified by William Parker to interface to Einspline.
+! Calculate pw orbitals, gradient and laplacian for electron at x
+! by interpolating on a grid.
       use bwfdet_mod
       use bsplines_mod
       use orbital_grid_mod
@@ -17,22 +17,22 @@ c by interpolating on a grid.
 
       dimension orb_blip_tmp(norb,ndet),dorb_blip_tmp(3,norb,ndet),ddorb_blip_tmp(norb,ndet)
 
-c Determine position in lattice coordinates
-c Find vector in basis coordinates
-c Note we add 1 to r_basis because interpol_orb expects a positive input
+! Determine position in lattice coordinates
+! Find vector in basis coordinates
+! Note we add 1 to r_basis because interpol_orb expects a positive input
 
 
-cwparker This was what was originally here
-c     do 20 k=1,ndim
-c       r_basis(k)=0
-c       do 10 i=1,ndim
-c  10     r_basis(k)=r_basis(k)+rlatt_sim_inv(k,i)*x(i)
-c  20   r_basis(k)=r_basis(k)-nint(r_basis(k))+1
+!wparker This was what was originally here
+!     do 20 k=1,ndim
+!       r_basis(k)=0
+!       do 10 i=1,ndim
+!  10     r_basis(k)=r_basis(k)+rlatt_sim_inv(k,i)*x(i)
+!  20   r_basis(k)=r_basis(k)-nint(r_basis(k))+1
 
-cwparker Here is what came from the later version of this subroutine
-cr_basis in the line after 10 is between  0 and 1 if r_basis in line 10 is > 0
-c                            but between -1 and 0 if r_basis in line 10 is < 0
-c r_basis in line 20 is always between 0 and 1
+!wparker Here is what came from the later version of this subroutine
+!r_basis in the line after 10 is between  0 and 1 if r_basis in line 10 is > 0
+!                            but between -1 and 0 if r_basis in line 10 is < 0
+! r_basis in line 20 is always between 0 and 1
         isgn=1
         do 20 k=1,ndim
           r_basis(k)=0
@@ -53,14 +53,14 @@ c r_basis in line 20 is always between 0 and 1
       yi=r_basis(2)*ngrid_orby
       zi=r_basis(3)*ngrid_orbz
 
-c     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
-cwparker Get the values from Lagrange interpolation routine
+!     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
+!wparker Get the values from Lagrange interpolation routine
 
       if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
          call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,
      &                     orb,dorb,ddorb)
 
-cwparker Added from the later version of this subroutine
+!wparker Added from the later version of this subroutine
                do 40 iorb=1,norb
                   orb(iorb)=orb(iorb)*isgn
                   do 30 k=1,ndim

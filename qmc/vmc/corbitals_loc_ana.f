@@ -1,6 +1,6 @@
       subroutine corbitals_loc_ana(iel,rvec_en,r_en,corb,cdorb,cddorb)
-c orbitals_loc_ana adapted to complex orbitals by A.D.Guclu, Feb2004
-c Calculate localized orbitals and derivatives for all or 1 electrons
+! orbitals_loc_ana adapted to complex orbitals by A.D.Guclu, Feb2004
+! Calculate localized orbitals and derivatives for all or 1 electrons
       use all_tools_mod
       use coefs_mod
       use const_mod
@@ -22,7 +22,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       call alloc ('cdphin', cdphin, 3, nbasis, nelec, nelec)
       call alloc ('cd2phin', cd2phin, nbasis, nelec)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -31,8 +31,8 @@ c Decide whether we are computing all or one electron
         nelec2=iel
       endif
 
-c get basis functions
-c nej controls whether if we have correlated basis set
+! get basis functions
+! nej controls whether if we have correlated basis set
       if(numr.eq.1) then
 	call cbasis_fns_num(iel,rvec_en,r_en)
 	nej=1
@@ -45,11 +45,11 @@ c nej controls whether if we have correlated basis set
         nej=1
       endif
 
-c      do 5 ib=1,nbasis
-c        write(6,'(''ib,cphin='',i3,(30f9.5))') ib,(cphin(i,ib),i=1,nelec)
-c        write(6,'(''ib,cdphin1='',i3,(30f9.5))') ib,(cdphin(1,i,ib),i=1,nelec)
-c        write(6,'(''ib,cdphin2='',i3,(30f9.5))') ib,(cdphin(1,i,ib),i=1,nelec)
-c 5      write(6,'(''ib,cd2phin='',i3,(30f9.5))') ib,(cd2phin(i,ib),i=1,nelec)
+!      do 5 ib=1,nbasis
+!        write(6,'(''ib,cphin='',i3,(30f9.5))') ib,(cphin(i,ib),i=1,nelec)
+!        write(6,'(''ib,cdphin1='',i3,(30f9.5))') ib,(cdphin(1,i,ib),i=1,nelec)
+!        write(6,'(''ib,cdphin2='',i3,(30f9.5))') ib,(cdphin(1,i,ib),i=1,nelec)
+! 5      write(6,'(''ib,cd2phin='',i3,(30f9.5))') ib,(cd2phin(i,ib),i=1,nelec)
 
       do 25 iorb=1,norb
         do 25 ie=nelec1,nelec2
@@ -68,5 +68,5 @@ c 5      write(6,'(''ib,cd2phin='',i3,(30f9.5))') ib,(cd2phin(i,ib),i=1,nelec)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 

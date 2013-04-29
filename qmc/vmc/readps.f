@@ -1,6 +1,6 @@
       subroutine readps
-c Written by Claudia Filippi
-c Read pseudopotential in Fahy format
+! Written by Claudia Filippi
+! Read pseudopotential in Fahy format
       use all_tools_mod
       use atom_mod
       use pseudo_mod
@@ -10,11 +10,11 @@ c Read pseudopotential in Fahy format
 
       character*20 filename,atomtyp
 
-c nquad = number of quadrature points
-c nlang = number of non-local potentials
-c rcmax = cutoff radius for non-local potential
-c npotl = number of mesh point for local potential
-c dradl = spacing of uniform mesh for local potential
+! nquad = number of quadrature points
+! nlang = number of non-local potentials
+! rcmax = cutoff radius for non-local potential
+! npotl = number of mesh point for local potential
+! dradl = spacing of uniform mesh for local potential
 
       call alloc ('potl', potl, MPS_GRID, nctype)
       call alloc ('ptnlc', ptnlc, MPS_GRID, nctype, MPS_L)
@@ -42,13 +42,13 @@ c dradl = spacing of uniform mesh for local potential
       write(6,'(''quadrature points'',i4)') nquad
 
       read(3,*) nlang,rcmax(ict)
-c If the local pseudopot component is not set in input, set it here
+! If the local pseudopot component is not set in input, set it here
       if(lpotp1(ict).lt.0) then
         lpotp1(ict)=nlang+1
         write(6,'(''local pseudopot component is'',i3)') lpotp1(ict)
       endif
 
-c local potential
+! local potential
       read(3,*)
       read(3,*) npotl(ict),nzion,dradl(ict)
       if(npotl(ict).gt.MPS_GRID) stop 'npotl gt MPS_GRID'
@@ -59,7 +59,7 @@ c local potential
       do 5 i=1,npotl(ict)
   5     write(33,*) (i-1)*dradl(ict),potl(i,ict)
 
-c non-local potential
+! non-local potential
       read(3,*)
       read(3,*) nlrad(ict),drad(ict)
       if(nlrad(ict).gt.MPS_GRID) stop 'nlrad gt MPS_GRID'
@@ -81,20 +81,20 @@ c non-local potential
  20   continue
 
 
-c     call gesqua (nquad,xq0,yq0,zq0,wq)
-c     call gesqua (nquad,xq0,yq0,zq0,wq)
-c     call gesqua (nquad,xq,yq,zq,wq)
+!     call gesqua (nquad,xq0,yq0,zq0,wq)
+!     call gesqua (nquad,xq0,yq0,zq0,wq)
+!     call gesqua (nquad,xq,yq,zq,wq)
 
-c     write(6,'(''quadrature points'')')
-c     do 30 i=1,nquad
-c30     write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
+!     write(6,'(''quadrature points'')')
+!     do 30 i=1,nquad
+!30     write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine getvps_fahy(rad,iel)
-c Written by Claudia Filippi
-c compute Fahy-pseudopotential for electron iel
+! Written by Claudia Filippi
+! compute Fahy-pseudopotential for electron iel
       use atom_mod
       use const_mod
       use pseudo_mod
@@ -106,7 +106,7 @@ c compute Fahy-pseudopotential for electron iel
       do 10 ic=1,ncent
         ict=iwctype(ic)
         r=rad(iel,ic)
-c local potential
+! local potential
         if(r.lt.(npotl(ict)-1)*dradl(ict)) then
           ri=r/dradl(ict)
           ir=int(ri)
@@ -116,7 +116,7 @@ c local potential
          else
           vps(iel,ic,lpotp1(ict))=-znuc(ict)/r
         endif
-c non-local pseudopotential
+! non-local pseudopotential
         do 10 l=1,npotd(ict)
           if(l.ne.lpotp1(ict)) then
             if(r.lt.rcmax(ict)) then

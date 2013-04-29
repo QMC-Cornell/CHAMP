@@ -15,7 +15,7 @@
       endif
 
       return !JT
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       entry mc_configs_write !JT
 
       if(index(mode,'mpi').ne.0) then
@@ -27,11 +27,11 @@ c-----------------------------------------------------------------------
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine mc_configs_read_notmpi !JT
-c If isite<=0 reads initial MC configuration from mc_configs_start
-c         >=1 gets initial MC configuration by calling subroutine sites
-c Write mc_configs_new at end of run to provide configurations for fit optimization
+! If isite<=0 reads initial MC configuration from mc_configs_start
+!         >=1 gets initial MC configuration by calling subroutine sites
+! Write mc_configs_new at end of run to provide configurations for fit optimization
 
       use all_tools_mod
       use walkers_mod
@@ -45,16 +45,16 @@ c Write mc_configs_new at end of run to provide configurations for fit optimizat
 
       dimension nsite(ncent)
 
-c Truncate fbias so that it is never negative, and the quantity
-c sampled is never negative
-c     fbias=dmin1(two,dmax1(zero,fbias))
+! Truncate fbias so that it is never negative, and the quantity
+! sampled is never negative
+!     fbias=dmin1(two,dmax1(zero,fbias))
 
       call alloc ('xold', xold, 3, nelec)
 
       if(irstar.ne.1) then
 
-c if isite<=0 then get initial configuration from mc_configs_start
-c if isite>=1 then get initial configuration from sites routine
+! if isite<=0 then get initial configuration from mc_configs_start
+! if isite>=1 then get initial configuration from sites routine
         if(isite.ge.1) goto 393
         open(9,err=393,file='mc_configs_start')
         rewind 9
@@ -79,34 +79,34 @@ c if isite>=1 then get initial configuration from sites routine
 
   395   continue
 
-c fix the position of electron i=ifixe for pair-density calculation:
+! fix the position of electron i=ifixe for pair-density calculation:
         if(ifixe.gt.0) then
           do 398 k=1,ndim
   398       xold(k,ifixe)=xfix(k)
         endif
 
 
-c If we are moving one electron at a time, then we need to initialize
-c xnew, since only the first electron gets initialized in metrop
-c       do 400 i=1,nelec
-c         do 400 k=1,ndim
-c 400       xnew(k,i)=xold(k,i)
+! If we are moving one electron at a time, then we need to initialize
+! xnew, since only the first electron gets initialized in metrop
+!       do 400 i=1,nelec
+!         do 400 k=1,ndim
+! 400       xnew(k,i)=xold(k,i)
       endif
 
-c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
-c optimization or dmc calculation. So figure out how often we need to write a
-c configuration to produce nconf_new configurations. If nconf_new = 0
-c then set up so no configurations are written.
+! If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
+! optimization or dmc calculation. So figure out how often we need to write a
+! configuration to produce nconf_new configurations. If nconf_new = 0
+! then set up so no configurations are written.
       if(nconf_new.ne.0) then
         open(7,form='formatted',file=trim(file_mc_configs_out))
         rewind 7
-c       write(7,'(i5)') nconf_new
+!       write(7,'(i5)') nconf_new
       endif
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       entry mc_configs_write_notmpi !JT
 
-c write out last configuration to unit mc_configs_start
+! write out last configuration to unit mc_configs_start
       open(9,status='unknown',file='mc_configs_start')
       write(9,*) ((xold(k,i),k=1,ndim),i=1,nelec)
       close(9)

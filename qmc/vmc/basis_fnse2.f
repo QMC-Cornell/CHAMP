@@ -1,15 +1,15 @@
       subroutine basis_fnse2(ie,rvec_en,r_en)
-c Written by Cyrus Umrigar
-c Calculate 3-dim localised basis functions for electron ie
+! Written by Cyrus Umrigar
+! Calculate 3-dim localised basis functions for electron ie
 
-c In input:
-c n1s,n2s,...     > 0 : Slater basis
-c n1s,n2s,...     < 0 : Gaussian basis
-c nsa,npa,nda         : asymptotic basis
-c Here:
-c n_bas2(irb,ict) > 0 : Slater basis
-c                 < 0 : Gaussian basis
-c                 = 0 : asymptotic basis
+! In input:
+! n1s,n2s,...     > 0 : Slater basis
+! n1s,n2s,...     < 0 : Gaussian basis
+! nsa,npa,nda         : asymptotic basis
+! Here:
+! n_bas2(irb,ict) > 0 : Slater basis
+!                 < 0 : Gaussian basis
+!                 = 0 : asymptotic basis
 
       use all_tools_mod
       use constants_mod
@@ -31,16 +31,16 @@ c                 = 0 : asymptotic basis
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
       dimension wfv(3,MRWF),xc(3),th(0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS)
 
-c Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
-c The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
-c JWL added cg0-4
+! Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
+! The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
+! JWL added cg0-4
       data cd0,cd1,cd2,cf0,cf1,cf2,cf3,cg0,cg1,cg2,cg3,cg4/
      &0.5d0,1.73205080756888d0,0.866025403784439d0,0.5d0,0.612372435695794d0,1.93649167310371d0,0.790569415042095d0,
      &0.125d0,0.790569415042095d0,0.559016994374947d0,2.09165006633519d0,0.739509972887452d0/
 
       ider=0
 
-c     do 40 ie=1,nelec
+!     do 40 ie=1,nelec
         ib=0
         do 40 ic=1,ncent
           ict=iwctype(ic)
@@ -59,7 +59,7 @@ c     do 40 ie=1,nelec
           ri3=ri2*ri
           ri4=ri3*ri
 
-c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+! Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
           do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
@@ -75,14 +75,14 @@ c Loops over analytical basis functions, then numerical.  One can optimize the e
                  case ('gauss-slater') !fp
                     zr=(zex2(irb,ict,iwf)*r)**2/(1+zex2(irb,ict,iwf)*r)**2 * (2+zex2(irb,ict,iwf)*r) !fp
 !                    ex=dexp(-zr * (1+zex2(irb,ict,iwf)*r) / (2+zex2(irb,ict,iwf)*r) ) !fp
-                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp 
+                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp
                  case default
                     write(6,*) 'basis_fnse2: Allowed basis types are slater gaussian gauss-slater!'
                     stop 'basis_fnse2: Allowed basis types are slater gaussian gauss-slater!'
                  end select     !fp
               elseif(n.eq.0) then
-c     Warning: Asymptotic and Gaussian not yet tested.
-c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+!     Warning: Asymptotic and Gaussian not yet tested.
+! Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
                  stop 'asymptotic not yet fully tested'
                  rn=betaq/zex2(irb,ict,iwf)
                  rm1=r**(rn-1)
@@ -95,7 +95,7 @@ c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqr
               if(wfv(1,nrbas_analytical(ict)+irb).eq.0.d0) wfv(1,nrbas_analytical(ict)+irb)=DBLMIN
    20     continue
 
-c         write(6,'(''ict,nbasis_ctype'',9i5)') ict,nbasis_ctype(ict)
+!         write(6,'(''ict,nbasis_ctype'',9i5)') ict,nbasis_ctype(ict)
 
 !**RM(8)
           if(irecursion_ylm.eq.0)  then
@@ -110,11 +110,11 @@ c         write(6,'(''ict,nbasis_ctype'',9i5)') ict,nbasis_ctype(ict)
             yy2=yy*yy
             zz2=zz*zz
 
-c           xhat=xx*ri
-c           yhat=yy*ri
+!           xhat=xx*ri
+!           yhat=yy*ri
             zhat=zz*ri
 
-c Phi function
+! Phi function
 
             ph(0)=1
 
@@ -124,22 +124,22 @@ c Phi function
             ph(2)=xx2-yy2
             ph(-2)=2*xx*yy
 
-c           ph(3)=(xx2-yy2)*xx-2*xx*yy2
+!           ph(3)=(xx2-yy2)*xx-2*xx*yy2
             ph(3)=ph(2)*ph(1)-ph(-2)*ph(-1)
             ph(-3)=ph(-2)*ph(1)+ph(-1)*ph(2)
 
-c JWL added l=4
+! JWL added l=4
             ph(4)=xx2*xx2-6*xx2*yy2+yy2*yy2
             ph(-4)=4*xx*yy*(xx2-yy2)
 
-c Theta function
+! Theta function
 
             th(0,0)=1
 
             th(1,0)=ri*zz
             th(1,1)=ri
 
-c           th(2,0)=cd0*ri3*(3*zz**2-r2)
+!           th(2,0)=cd0*ri3*(3*zz**2-r2)
             th(2,0)=cd0*(3*zhat**2-1)
             th(2,1)=cd1*ri2*zz
             th(2,2)=cd2*ri2
@@ -149,7 +149,7 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
             th(3,2)=cf2*ri3*zz
             th(3,3)=cf3*ri3
 
-c JWL added l=4
+! JWL added l=4
             th(4,0)=cg0*(35*zz2*zz2-30*r2*zz2+3*r2*r2)*ri4
             th(4,1)=cg1*zz*(7*zz2-3*r2)*ri4
             th(4,2)=cg2*(7*zz2-r2)*ri4
@@ -265,20 +265,20 @@ c JWL added l=4
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine basis_fns_2de2(ie,rvec_en,r_en)
-c Written by Cyrus Umrigar
-c Calculate 2-dim localised basis functions for electron ie
+! Written by Cyrus Umrigar
+! Calculate 2-dim localised basis functions for electron ie
 
-c In input:
-c n1s,n2s,...     > 0 : Slater basis
-c nsa,npa,nda     = 0 : asymptotic basis
-c n1s,nsa,...     < 0 : Gaussian basis
-c Here:
-c n_bas2(irb,ict) > 0 : Slater basis
-c                 = 0 : asymptotic basis
-c                 < 0 : Gaussian basis
+! In input:
+! n1s,n2s,...     > 0 : Slater basis
+! nsa,npa,nda     = 0 : asymptotic basis
+! n1s,nsa,...     < 0 : Gaussian basis
+! Here:
+! n_bas2(irb,ict) > 0 : Slater basis
+!                 = 0 : asymptotic basis
+!                 < 0 : Gaussian basis
 
       use atom_mod
       use basis1_mod
@@ -295,7 +295,7 @@ c                 < 0 : Gaussian basis
 
       ider=0
 
-c     do 40 ie=nelec1,nelec2
+!     do 40 ie=nelec1,nelec2
         ib=0
         do 40 ic=1,ncent
           ict=iwctype(ic)
@@ -310,7 +310,7 @@ c     do 40 ie=nelec1,nelec2
           r2=r*r
           ri=1/r
 
-c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+! Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
           do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
@@ -326,14 +326,14 @@ c Loops over analytical basis functions, then numerical.  One can optimize the e
                  case ('gauss-slater') !fp
                     zr=(zex2(irb,ict,iwf)*r)**2/(1+zex2(irb,ict,iwf)*r)**2 * (2+zex2(irb,ict,iwf)*r) !fp
 !                    ex=dexp(-zr * (1+zex2(irb,ict,iwf)*r) / (2+zex2(irb,ict,iwf)*r) ) !fp
-                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp 
+                    ex=dexp(-(zex2(irb,ict,iwf)*r)**2 / (1+zex2(irb,ict,iwf)*r) ) !fp
                  case default
                     write(6,*) 'basis_fns_2de2: Allowed basis types are slater gaussian gauss-slater!'
                     stop 'basis_fns_2de2: Allowed basis types are slater gaussian gauss-slater!'
                  end select     !fp
               elseif(n.eq.0) then
-c     Warning: Asymptotic and Gaussian not yet tested.
-c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+!     Warning: Asymptotic and Gaussian not yet tested.
+! Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
                  stop 'asymptotic not yet fully tested'
                  rn=betaq/zex2(irb,ict,iwf)
                  rm1=r**(rn-1)
@@ -353,7 +353,7 @@ c Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqr
             xhat=xx*ri
             yhat=yy*ri
 
-c Phi function
+! Phi function
 
             ph(0)=1
             ph(1)=xhat

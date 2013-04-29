@@ -1,26 +1,26 @@
       subroutine basis_norm(iwf,iflag)
-c Written by Cyrus Umrigar
-c Set normalization of basis fns.
-c In 3d:
-c Norm of radial part: ((2*zeta)^{2n+1}/(2n)!)^{1/2} for Slaters (n>0).
-c                      (2*(2*zeta)^(n+1/2)/Gamma(n+1/2))^{1/2} for gaussians
-c where                Gamma(n+1/2) = integral {t^{n+1/2} e^-t dt} = (2n-1)!! sqrt(pi)/2^n for gaussians
-c                      Gamma(1/2)=sqrt(pi), Gamma(a+1)=a*Gamma(a), Gamma(a)=(a-1)!
-c obtained by Integrate[r^2 (r^{n-1} Exp[-zeta r])^2,{r,0,Infinity}] for Slaters
-c obtained by Integrate[r^2 (r^{n-1} Exp[-zeta r^2])^2,{r,0,Infinity}] for Gaussians
-c Norm of angular part: ((2*l+1)/(4*pi))^{1/2}.
-c In 2d:
-c Norm of radial part: ((2*zeta)^{2n}/(2n-1)!)^{1/2}.
-c Norm of angular part: (min(m+1,2)/(2*pi))^{1/2}.
-c If numr =0 or -1 we are using analytic basis functions and we use normalization
-c                  for angular and radial parts.  The -1 is just to tell it to order
-c                  basis functions by all the s's first, then all the p's etc.
-c                  instead of 1s,2s,2p,3s,3p,3d,...
-c         =1       we are using numerical basis functions and we use normalization
-c                  for angular part only
-c                  The check has now been changed to iwrwf2(ib).le.nrbas_analytical(ict) 14 Oct 09
-c Whether one is using Slater or gaussian basis fns. used to be inputted by having
-c n1s,n2s etc. be either > 0 or < 0.  Now use which_analytical_basis
+! Written by Cyrus Umrigar
+! Set normalization of basis fns.
+! In 3d:
+! Norm of radial part: ((2*zeta)^{2n+1}/(2n)!)^{1/2} for Slaters (n>0).
+!                      (2*(2*zeta)^(n+1/2)/Gamma(n+1/2))^{1/2} for gaussians
+! where                Gamma(n+1/2) = integral {t^{n+1/2} e^-t dt} = (2n-1)!! sqrt(pi)/2^n for gaussians
+!                      Gamma(1/2)=sqrt(pi), Gamma(a+1)=a*Gamma(a), Gamma(a)=(a-1)!
+! obtained by Integrate[r^2 (r^{n-1} Exp[-zeta r])^2,{r,0,Infinity}] for Slaters
+! obtained by Integrate[r^2 (r^{n-1} Exp[-zeta r^2])^2,{r,0,Infinity}] for Gaussians
+! Norm of angular part: ((2*l+1)/(4*pi))^{1/2}.
+! In 2d:
+! Norm of radial part: ((2*zeta)^{2n}/(2n-1)!)^{1/2}.
+! Norm of angular part: (min(m+1,2)/(2*pi))^{1/2}.
+! If numr =0 or -1 we are using analytic basis functions and we use normalization
+!                  for angular and radial parts.  The -1 is just to tell it to order
+!                  basis functions by all the s's first, then all the p's etc.
+!                  instead of 1s,2s,2p,3s,3p,3d,...
+!         =1       we are using numerical basis functions and we use normalization
+!                  for angular part only
+!                  The check has now been changed to iwrwf2(ib).le.nrbas_analytical(ict) 14 Oct 09
+! Whether one is using Slater or gaussian basis fns. used to be inputted by having
+! n1s,n2s etc. be either > 0 or < 0.  Now use which_analytical_basis
       use all_tools_mod
       use const_mod
       use control_mod
@@ -36,7 +36,7 @@ c n1s,n2s etc. be either > 0 or < 0.  Now use which_analytical_basis
       use contr2_mod
       use contrl_per_mod
       implicit real*8(a-h,o-z)
-c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
+! anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
 
       call alloc ('anorm', anorm, nbasis)
       call alloc ('n_bas', n_bas, nbasis)
@@ -48,7 +48,7 @@ c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
         if(ndim.eq.3) then
           ict=ictype_basis(ib)
           l=l_bas(ib)
-          if(iwrwf2(ib).le.nrbas_analytical(ict)) then           
+          if(iwrwf2(ib).le.nrbas_analytical(ict)) then
             select case (trim(which_analytical_basis)) !fp
              case ('slater')    !fp
                 anorm(ib)=sqrt((2*zex(ib,iwf))**(2*n+1)*(2*l+1)/(fact(2*n)*4*pi))
@@ -67,15 +67,15 @@ c anorm stored for reuse in fit.  Since iwf=1 in fit, we omit iwf dependence.
          elseif(ndim.eq.2) then
           m=m_bas(ib)
           if(numr.le.0 .and. ibasis.lt.4) then
-c         if(iwrwf2(ib).le.nrbas_analytical(ict) .and. ibasis.lt.4) then
+!         if(iwrwf2(ib).le.nrbas_analytical(ict) .and. ibasis.lt.4) then
             anorm(ib)=sqrt((2*zex(ib,iwf))**(2*n)*min(abs(m)+1,2)/(fact(2*n-1)*2*pi))
-c The following change is not necessary at this time and has not been tested.
+! The following change is not necessary at this time and has not been tested.
            elseif(numr.le.0 .and. (ibasis.ge.4 .and. ibasis.le.7)) then
-c          elseif(iwrwf2(ib).le.nrbas_analytical(ict) .and. (ibasis.ge.4 .and. ibasis.le.7)) then
+!          elseif(iwrwf2(ib).le.nrbas_analytical(ict) .and. (ibasis.ge.4 .and. ibasis.le.7)) then
             anorm(ib)=dsqrt(1/pi)
            else
-c Warning: temporarily commented out diff norm for m=0
-c           anorm(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
+! Warning: temporarily commented out diff norm for m=0
+!           anorm(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
             anorm(ib)=sqrt(1/pi)
           endif
         endif
@@ -98,7 +98,7 @@ c           anorm(ib)=sqrt(min(abs(m)+1,2)/(2*pi))
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function fact(n)
       implicit real*8(a-h,o-z)
@@ -108,11 +108,11 @@ c-----------------------------------------------------------------------
    10   fact=fact*i
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function gamma1(n)
-c W. Al-Saidi 4/11/07
-c Used for norm of 3D Guassians, gamma1(n) = gamma(n+1/2) = integral {t^{n+1/2} e^-t dt} = (2n-1)!! sqrt(pi)/2^n
+! W. Al-Saidi 4/11/07
+! Used for norm of 3D Guassians, gamma1(n) = gamma(n+1/2) = integral {t^{n+1/2} e^-t dt} = (2n-1)!! sqrt(pi)/2^n
       implicit real*8(a-h,o-z)
 
       spi=1.77245385090552d0 ! sqrt{pi}

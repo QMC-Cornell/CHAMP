@@ -1,5 +1,5 @@
       subroutine grad_hess_jas_mpi
-c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
+! Written by Claudia Filippi.  Modified by Cyrus Umrigar.
 
 # if defined (MPI)
 
@@ -18,7 +18,7 @@ c Written by Claudia Filippi.  Modified by Cyrus Umrigar.
       if(igradhess.eq.0) return
 
       MPARM2=nparm*nparm
-c Note, to do: error is not collected
+! Note, to do: error is not collected
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
@@ -28,7 +28,7 @@ c Note, to do: error is not collected
       do 10 i=1,nparm
   10    dj(i)=collect(i)
 
-c Note that if we use mpi_reduce rather than mpi_allreduce we need a '0,' before the MPI_COMM_WORLD
+! Note that if we use mpi_reduce rather than mpi_allreduce we need a '0,' before the MPI_COMM_WORLD
       call mpi_allreduce(dj_e,collect,nparm
      &     ,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
@@ -121,24 +121,24 @@ c Note that if we use mpi_reduce rather than mpi_allreduce we need a '0,' before
 
       endif
 
-c these averages should be set to zero on the slaves but grad_hess_jas_allreduce
-c is only called at the end of run (differently than prop_allreduce) and
-c only the master writes to output and dumper
+! these averages should be set to zero on the slaves but grad_hess_jas_allreduce
+! is only called at the end of run (differently than prop_allreduce) and
+! only the master writes to output and dumper
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-c     write(6,'(''nparm='',10i5)') nparm,MPARM2
-c     write(6,'(''dj='',10f14.5)') (dj(i),i=1,nparm)
-c     write(6,'(''de='',10f14.5)') (de(i),i=1,nparm)
-c     do i=1,nparm
-c       write(6,'(''dj_dj='',10f14.5)') (dj_dj(i,j),j=1,nparm)
-c     enddo
-c     do i=1,nparm
-c       write(6,'(''dj_dj_e='',10f14.5)') (dj_dj_e(i,j),j=1,nparm)
-c     enddo
-c     do i=1,nparm
-c       write(6,'(''dj_de='',10f14.5)') (dj_de(i,j),j=1,nparm)
-c     enddo
+!     write(6,'(''nparm='',10i5)') nparm,MPARM2
+!     write(6,'(''dj='',10f14.5)') (dj(i),i=1,nparm)
+!     write(6,'(''de='',10f14.5)') (de(i),i=1,nparm)
+!     do i=1,nparm
+!       write(6,'(''dj_dj='',10f14.5)') (dj_dj(i,j),j=1,nparm)
+!     enddo
+!     do i=1,nparm
+!       write(6,'(''dj_dj_e='',10f14.5)') (dj_dj_e(i,j),j=1,nparm)
+!     enddo
+!     do i=1,nparm
+!       write(6,'(''dj_de='',10f14.5)') (dj_de(i,j),j=1,nparm)
+!     enddo
 
 # endif
 

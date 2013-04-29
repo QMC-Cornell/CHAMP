@@ -7,7 +7,7 @@
 !     Purpose : Calculate value of error-function in point X
 !               using splines
 !
-!               Based on f90-code from : 
+!               Based on f90-code from :
 !               Naval Surface Warfare Center Mathematical Library
 !               (http://www.math.iastate.edu/burkardt/f_src/nswc/nswc.html)
 !*****************************************************************************
@@ -63,8 +63,8 @@
       ELSE
         FN_VAL = SIGN(ONE, X)
       END IF
-!      
+!
       erf_spline = FN_VAL
       RETURN
-      END 
+      END
 !*****************************************************************************

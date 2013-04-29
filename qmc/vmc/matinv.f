@@ -1,33 +1,33 @@
       subroutine matinv(a,nsub,det)
-c Written by Kevin Schmidt or from some standard library?
+! Written by Kevin Schmidt or from some standard library?
 
       implicit real*8(a-h,o-z)
       parameter (zero=0.d0,one=1.d0)
 
-c routine to calculate inverse and determinant of matrix a
-c assumed to be dimensioned a(nsub,nsub).
-c the matrix a is replaced by its inverse.
+! routine to calculate inverse and determinant of matrix a
+! assumed to be dimensioned a(nsub,nsub).
+! the matrix a is replaced by its inverse.
 
       dimension a(*)
       dimension ipivot(nsub),atemp(nsub)
 
       n=nsub
-c      write(6,*) 'Inverting this matrix:'
-c      do irow=0,(n-1)
-c         write(6,'(100f6.2)') (a(n*irow+k),k=1,n)
-c      enddo
+!      write(6,*) 'Inverting this matrix:'
+!      do irow=0,(n-1)
+!         write(6,'(100f6.2)') (a(n*irow+k),k=1,n)
+!      enddo
       do 5 i=1,n
     5   ipivot(i)=i
 
-c initialize determinant
+! initialize determinant
       determ=one
 
-c loop through columns
+! loop through columns
       iclm=-n
       do 25 i=1,n
         iclm=iclm+n
 
-c loop through rows and select row with largest element
+! loop through rows and select row with largest element
         adiag=a(ipivot(i)+iclm)
         idiag=i
         do 15 k=i,n
@@ -37,9 +37,9 @@ c loop through rows and select row with largest element
           endif
    15   continue
 
-c interchange pointers if row different from
-c original is selected and change sign of determinant because
-c of interchange
+! interchange pointers if row different from
+! original is selected and change sign of determinant because
+! of interchange
         if(idiag.ne.i) then
           determ=-determ
           itemp=ipivot(i)
@@ -47,7 +47,7 @@ c of interchange
           ipivot(idiag)=itemp
         endif
 
-c update determinant
+! update determinant
         determ=adiag*determ
         a(ipivot(i)+iclm)=one
         if(adiag.eq.0.d0) then
@@ -65,11 +65,11 @@ c update determinant
         endif
         adiagi=one/adiag
 
-c scale row by inverse diagonal
+! scale row by inverse diagonal
         call scal(n,adiagi,a(ipivot(i)),n)
 
-c loop through other rows
-c if not current row, then row reduce
+! loop through other rows
+! if not current row, then row reduce
         do 20 j=1,n
           if(j.ne.ipivot(i)) then
             t=-a(j+iclm)
@@ -79,9 +79,9 @@ c if not current row, then row reduce
    20   continue
    25 continue
 
-c interchange elements to unpivot inverse matrix
-c the following is equivalent to:
-c      anew(i,ipivot(j))=aold(ipivot(i),j)
+! interchange elements to unpivot inverse matrix
+! the following is equivalent to:
+!      anew(i,ipivot(j))=aold(ipivot(i),j)
       jn=-n
       do 52 j=1,n
         jn=jn+n
@@ -107,15 +107,15 @@ c      anew(i,ipivot(j))=aold(ipivot(i),j)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine axpy(n,a,x,nxskip,y,nyskip)
       implicit real*8(a-h,o-z)
 
-c simplified blas routine to calculate y=a*x+y where
-c x and y are arrays, and a is a scalar
-c n      = number of elements in x and y to calculate
-c nxskip = x stride
-c nyskip = y stride
+! simplified blas routine to calculate y=a*x+y where
+! x and y are arrays, and a is a scalar
+! n      = number of elements in x and y to calculate
+! nxskip = x stride
+! nyskip = y stride
 
       dimension x(*),y(*)
 
@@ -127,13 +127,13 @@ c nyskip = y stride
    10   y(iy)=a*x(ix)+y(iy)
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine scal(n,scalor,x,nskip)
       implicit real*8(a-h,o-z)
 
-c simplified blas routine to scale x by scalor
-c n     = number of elements in x to be scaled
-c nskip = stride
+! simplified blas routine to scale x by scalor
+! n     = number of elements in x to be scaled
+! nskip = stride
 
       dimension x(*)
 

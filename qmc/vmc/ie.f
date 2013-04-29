@@ -1,12 +1,12 @@
       subroutine ie
-c Written by Cyrus Umrigar
-c Figure out iwbase, iwbasi, iworb, iebase, iebasi, ieorb
-c for imposing symmetries while optimizing orbital parameters
-c Make nparml too large and so has too many iworb's because it does not
-c know about pivoting and cusp conditions yet.
-c Also, needs to be corrected for more than one atom or atom type or for
-c parameters that are negatives of each other
-c necn -> necoef
+! Written by Cyrus Umrigar
+! Figure out iwbase, iwbasi, iworb, iebase, iebasi, ieorb
+! for imposing symmetries while optimizing orbital parameters
+! Make nparml too large and so has too many iworb's because it does not
+! know about pivoting and cusp conditions yet.
+! Also, needs to be corrected for more than one atom or atom type or for
+! parameters that are negatives of each other
+! necn -> necoef
       use all_tools_mod
       use atom_mod
       use coefs_mod
@@ -19,7 +19,7 @@ c necn -> necoef
       implicit real*8(a-h,o-z)
       parameter(eps=1.d-5)
 
-c      character*80 fmt
+!      character*80 fmt
 
 
 !      read(5,*) nctype,ncent
@@ -47,10 +47,10 @@ c      character*80 fmt
 
 !JT      write(6,'(''lbasis'',20a)') (lbasis(i),i=1,nbasis)
 
-c I have to put in more features.
-c At present I assume that if a coef is zero, then it is not to be varied and
-c it need not be equal to other zero coefs.  Neither assumption is correct.
-c 1st basis function is not varied because normalization not relevant
+! I have to put in more features.
+! At present I assume that if a coef is zero, then it is not to be varied and
+! it need not be equal to other zero coefs.  Neither assumption is correct.
+! 1st basis function is not varied because normalization not relevant
 
 ! JT: use basis_fns_name instead of lbasis
       call object_provide ('basis_fns_name')
@@ -133,9 +133,9 @@ c 1st basis function is not varied because normalization not relevant
 !JT      write(fmt,'(''(''i3,''(2i3,x),a)'')') nebase
 !JT      write(6,fmt) ((iebase(k,i),k=1,2),i=1,nebase),' ((iebase(k,i),k=1,2),i=1,nebase)'
 
-c For imposing the cusp conditions figure out which orbs are s-like
-c and encode that in the lo array.
-c Warning: this is presently programmed only for certain molecules.
+! For imposing the cusp conditions figure out which orbs are s-like
+! and encode that in the lo array.
+! Warning: this is presently programmed only for certain molecules.
 !JT    do 50 iorb=1,norb
 !JT      if(coef(1,iorb,1).ne.0.d0) then
 !JT        lo(iorb)=0

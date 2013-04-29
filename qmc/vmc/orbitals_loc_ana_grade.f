@@ -1,6 +1,6 @@
       subroutine orbitals_loc_ana_grade(iel,rvec_en,r_en,orb,dorb,ddorb)
-c Written by Cyrus Umrigar
-c Calculate localized orbitals and derivatives for all or 1 electrons
+! Written by Cyrus Umrigar
+! Calculate localized orbitals and derivatives for all or 1 electrons
       use control_mod
       use coefs_mod
       use dim_mod
@@ -14,7 +14,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,orb(norb),dorb(3,norb),ddorb(norb)
 
-c get basis functions
+! get basis functions
       if(ndim.eq.3) then
         call basis_fns(iel,rvec_en,r_en)
        elseif(ndim.eq.2) then
@@ -27,9 +27,9 @@ c get basis functions
          elseif(ibasis.eq.6) then
            call basis_fns_2dgauss_noncirc(iel, rvec_en,r_en)
          elseif(ibasis.eq.7) then
-           if(iper_gaussian_type.eq.1) then 
+           if(iper_gaussian_type.eq.1) then
              call basis_fns_2dgauss_periodic(iel,rvec_en,r_en)
-           else 
+           else
              call basis_fns_2dgauss_periodic2(iel,rvec_en,r_en)
            endif
          else

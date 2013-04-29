@@ -1,6 +1,6 @@
       subroutine jassav(iel)
-c Written by Claudia Filippi
-c Copies pieces of Jastrow factor that involve iel from new to old.
+! Written by Claudia Filippi
+! Copies pieces of Jastrow factor that involve iel from new to old.
 
       use const_mod
       use jaso_mod

@@ -8,6 +8,6 @@ module pseudo_mod
  double precision, allocatable ::  vps(:,:,:)
  integer, allocatable ::  npotd(:), lpotp1(:)
  integer :: MPS_L=4
- integer :: MPS_GRID=2501
+ integer :: MPS_GRID=3501
      
 end module pseudo_mod

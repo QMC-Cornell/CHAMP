@@ -1,6 +1,6 @@
       subroutine orbitals_loc_ana(iel,rvec_en,r_en,orb,dorb,ddorb)
-c Written by Cyrus Umrigar
-c Calculate localized orbitals and derivatives for all or 1 electrons
+! Written by Cyrus Umrigar
+! Calculate localized orbitals and derivatives for all or 1 electrons
       use all_tools_mod
       use control_mod
       use coefs_mod
@@ -15,7 +15,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,orb(nelec,norb),dorb(3,nelec,norb),ddorb(nelec,norb)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -24,7 +24,7 @@ c Decide whether we are computing all or one electron
         nelec2=iel
       endif
 
-c get basis functions
+! get basis functions
       if(ndim.eq.3) then
         call basis_fns(iel,rvec_en,r_en)
        elseif(ndim.eq.2) then
@@ -37,9 +37,9 @@ c get basis functions
          elseif(ibasis.eq.6) then
            call basis_fns_2dgauss_noncirc(iel,rvec_en,r_en)
          elseif(ibasis.eq.7) then
-           if(iper_gaussian_type.eq.1) then 
+           if(iper_gaussian_type.eq.1) then
              call basis_fns_2dgauss_periodic(iel,rvec_en,r_en)
-           else 
+           else
              call basis_fns_2dgauss_periodic2(iel,rvec_en,r_en)
            endif
          else
@@ -56,26 +56,26 @@ c get basis functions
           ddorb(ie,iorb)=0
           do 25 m=1,nbasis
       if(ipr.ge.5) write(6,'(''iorb,ie,m,iwf,coef(m,iorb,iwf),phin(m,ie)'',3i3,9g13.6)') iorb,ie,m,iwf,coef(m,iorb,iwf),phin(m,ie)
-c     &,coef(m,iorb,iwf)*phin(m,ie)
+!     &,coef(m,iorb,iwf)*phin(m,ie)
             orb(ie,iorb)=orb(ie,iorb)+coef(m,iorb,iwf)*phin(m,ie)
             dorb(1,ie,iorb)=dorb(1,ie,iorb)+coef(m,iorb,iwf)*dphin(1,m,ie)
             dorb(2,ie,iorb)=dorb(2,ie,iorb)+coef(m,iorb,iwf)*dphin(2,m,ie)
             dorb(3,ie,iorb)=dorb(3,ie,iorb)+coef(m,iorb,iwf)*dphin(3,m,ie)
    25       ddorb(ie,iorb)=ddorb(ie,iorb)+coef(m,iorb,iwf)*d2phin(m,ie)
 
-c      do  iorb=1,norb
-c        do  ie=nelec1,nelec2
-c          write(6,*) 'orb(ie,iorb),ie,iorb=',orb(ie,iorb),ie,iorb
-c        enddo
-c      enddo
+!      do  iorb=1,norb
+!        do  ie=nelec1,nelec2
+!          write(6,*) 'orb(ie,iorb),ie,iorb=',orb(ie,iorb),ie,iorb
+!        enddo
+!      enddo
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine orbitals_loc_anae(iel,rvec_en,r_en,orb)
-c Written by Cyrus Umrigar
-c Calculate localized orbitals for electron iel
+! Written by Cyrus Umrigar
+! Calculate localized orbitals for electron iel
       use coefs_mod
       use dim_mod
       use wfsec_mod
@@ -87,7 +87,7 @@ c Calculate localized orbitals for electron iel
       dimension rvec_en(3,nelec,ncent),r_en(nelec,ncent)
      &,orb(norb)
 
-c get basis functions
+! get basis functions
       if(ndim.eq.3) then
         call basis_fnse2(iel,rvec_en,r_en)
        elseif(ndim.eq.2) then
@@ -101,12 +101,12 @@ c get basis functions
       return
       end
 
-c---------------------------------------------------------------------------
+!---------------------------------------------------------------------------
 
       subroutine deriv_orbitals(rvec_en,r_en,orb,dorb,ddorb,dporb,d2porb
      &          ,ddporb,d2dporb)
-c Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
-c Calculate localized orbitals, coo. and parameter derivatives for all electrons
+! Written by A.D.Guclu (Apr 2005) starting from orbitals_loc_ana.f
+! Calculate localized orbitals, coo. and parameter derivatives for all electrons
       use control_mod
       use coefs_mod
       use const_mod
@@ -133,7 +133,7 @@ c Calculate localized orbitals, coo. and parameter derivatives for all electrons
       call alloc ('ddparam', ddparam, 3, notype, nbasis, nelec)
       call alloc ('d2dparam', d2dparam, notype, nbasis, nelec)
 
-c get basis functions
+! get basis functions
       if(ndim.ne.2) stop 'deriv_orbitals: ndim must be 2'
       if(ibasis.eq.4) then
         call deriv_2dgauss(rvec_en,r_en)
@@ -144,7 +144,7 @@ c get basis functions
       elseif(ibasis.eq.7) then
         if (iper_gaussian_type.eq.1) then
           call deriv_2dgauss_periodic(rvec_en,r_en)
-        else 
+        else
           call deriv_2dgauss_periodic2(rvec_en,r_en)
         endif
       else
@@ -175,8 +175,8 @@ c get basis functions
           do m=1,nbasis
 
             orb(ie,iorb)=orb(ie,iorb)+coef(m,iorb,iwf)*phin(m,ie)
-c            write(6,*) 'ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)='
-c     &,ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)
+!            write(6,*) 'ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)='
+!     &,ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)
             do idim=1,ndim
               dorb(idim,ie,iorb)=dorb(idim,ie,iorb)+coef(m,iorb,iwf)*dphin(idim,m,ie)
             enddo
@@ -198,8 +198,8 @@ c     &,ie,iorb,m,coef(m,iorb,iwf),phin(m,ie)
           enddo
         enddo
 
-c        write(6,*) 'iorb,orb(ie,iorb)=',(orb(ie,iorb),ie=1,nelec)
-c        write(6,*) 'phin(m,ie)=',(phin(iorb,ie),ie=1,nelec)
+!        write(6,*) 'iorb,orb(ie,iorb)=',(orb(ie,iorb),ie=1,nelec)
+!        write(6,*) 'phin(m,ie)=',(phin(iorb,ie),ie=1,nelec)
 
       enddo
 

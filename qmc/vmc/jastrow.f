@@ -1,5 +1,5 @@
       subroutine jastrow(x,v,d2,div_vj,value)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use const_mod
       use contr2_mod

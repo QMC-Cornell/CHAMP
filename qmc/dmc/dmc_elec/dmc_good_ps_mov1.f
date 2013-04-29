@@ -1,48 +1,48 @@
       subroutine dmc_good_ps_mov1
-c Written by Cyrus Umrigar and Claudia Filippi
-c Uses the diffusion Monte Carlo algorithm described in:
-c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
-c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993)
-c modified to do accept/reject after single-electron moves and to
-c remove portions related to nuclear cusps.
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c Control variables are:
-c idmc         < 0     VMC
-c              > 0     DMC
-c abs(idmc)    = 1 **  simple kernel using dmc.brock.f
-c              = 2     good kernel using dmc_good or dmc_good_inhom
-c ipq         <= 0 *   do not use expected averages
-c             >= 1     use expected averages (mostly in all-electron move algorithm)
-c itau_eff    <=-1 *   always use tau in branching (not implemented)
-c              = 0     use 0 / tau for acc /acc_int moves in branching
-c             >= 1     use tau_eff (calcul in equilibration runs) for all moves
-c iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
-c              = 0 **  use weights rather than accept/reject
-c             >= 1     use accept/reject
-c icross      <=-1 **  kill walkers that cross nodes (not implemented)
-c              = 0     reject walkers that cross nodes
-c             >= 1     allow walkers to cross nodes
-c                      (OK since crossing prob. goes as tau^(3/2))
-c icuspg      <= 0     approximate cusp in Green function
-c             >= 1     impose correct cusp condition on Green function
-c idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
-c              = 1     use homog. div_v to modify diffusion in good kernel
-c             >= 2     use inhomog. div_v to modify diffusion in good kernel
-c icut_br     <= 0     do not limit branching
-c              = 1 *   use first 2 terms in Taylor expansion of Exp if exponent>0
-c             >= 2 *   use smooth formulae to limit branching to (1/2,2)
-c                      (bad because it makes energies depend on E_trial)
-c icut_e      <= 0     do not limit energy
-c             >= 1 *   use smooth formulae to limit energy (not implemented)
+! Written by Cyrus Umrigar and Claudia Filippi
+! Uses the diffusion Monte Carlo algorithm described in:
+! 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
+!    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993)
+! modified to do accept/reject after single-electron moves and to
+! remove portions related to nuclear cusps.
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Control variables are:
+! idmc         < 0     VMC
+!              > 0     DMC
+! abs(idmc)    = 1 **  simple kernel using dmc.brock.f
+!              = 2     good kernel using dmc_good or dmc_good_inhom
+! ipq         <= 0 *   do not use expected averages
+!             >= 1     use expected averages (mostly in all-electron move algorithm)
+! itau_eff    <=-1 *   always use tau in branching (not implemented)
+!              = 0     use 0 / tau for acc /acc_int moves in branching
+!             >= 1     use tau_eff (calcul in equilibration runs) for all moves
+! iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
+!              = 0 **  use weights rather than accept/reject
+!             >= 1     use accept/reject
+! icross      <=-1 **  kill walkers that cross nodes (not implemented)
+!              = 0     reject walkers that cross nodes
+!             >= 1     allow walkers to cross nodes
+!                      (OK since crossing prob. goes as tau^(3/2))
+! icuspg      <= 0     approximate cusp in Green function
+!             >= 1     impose correct cusp condition on Green function
+! idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
+!              = 1     use homog. div_v to modify diffusion in good kernel
+!             >= 2     use inhomog. div_v to modify diffusion in good kernel
+! icut_br     <= 0     do not limit branching
+!              = 1 *   use first 2 terms in Taylor expansion of Exp if exponent>0
+!             >= 2 *   use smooth formulae to limit branching to (1/2,2)
+!                      (bad because it makes energies depend on E_trial)
+! icut_e      <= 0     do not limit energy
+!             >= 1 *   use smooth formulae to limit energy (not implemented)
 
-c *  => bad option, modest deterioration in efficiency or time-step error
-c ** => very bad option, big deterioration in efficiency or time-step error
-c So, idmc=6,66 correspond to the foll. two:
-c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c Another reasonable choice is:
-c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! *  => bad option, modest deterioration in efficiency or time-step error
+! ** => very bad option, big deterioration in efficiency or time-step error
+! So, idmc=6,66 correspond to the foll. two:
+! 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! Another reasonable choice is:
+! 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -103,27 +103,27 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       data ncall,ipr_sav /0,0/
       save ipr_sav
 
-c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
+!     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
       sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
-c     rn_eff(w,w2)=w**2/w2
-c     error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
-c     errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
+!     rn_eff(w,w2)=w**2/w2
+!     error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
+!     errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
       if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move algorithm'
 
-c     term=(sqrt(two*pi*tau))**3/pi
+!     term=(sqrt(two*pi*tau))**3/pi
 
-c Temporarily create wt_lambda_tau here, but it should be done at start of program
+! Temporarily create wt_lambda_tau here, but it should be done at start of program
       wt_lambda_tau=wt_lambda**tau
 
-c Undo products
+! Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
       if(idmc.gt.0) then
-c     if(idmc.gt.0 .and. .not. l_opt_ovlp_fn) then
+!     if(idmc.gt.0 .and. .not. l_opt_ovlp_fn) then
         ginv=min(1.d0,tau)
-c       ginv=min(1.d0,10*tau)
+!       ginv=min(1.d0,10*tau)
         ffn=eigv*(wdsumo/nconf_global)**ginv
         ffi=one/ffn
         fprod=fprod*ffn/ff(ipmod)
@@ -138,10 +138,10 @@ c       ginv=min(1.d0,10*tau)
         dwt=1
       endif
 
-c Undo weights
+! Undo weights
       iwmod=mod(ipass,nwprod)
 
-c Store (well behaved velocity/velocity)
+! Store (well behaved velocity/velocity)
       if(ncall.eq.0.and.irstar.eq.0) then
         do 7 iw=1,nwalk
           do 7 ifr=1,nforce
@@ -150,7 +150,7 @@ c Store (well behaved velocity/velocity)
             v2sumo=zero
             do 6 i=1,nelec
 
-c Tau secondary in drift is one (first time around)
+! Tau secondary in drift is one (first time around)
               tratio=one
 
               v2old=0
@@ -170,11 +170,11 @@ c Tau secondary in drift is one (first time around)
 
       ioldest=0
       do 300 iw=1,nwalk
-c Loop over primary walker
+! Loop over primary walker
         current_walker = iw !JT
         call object_modified_by_index (current_walker_index) !JT
 
-c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
+! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         if(nforce.gt.1)
      &  call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
 
@@ -188,7 +188,7 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
 ! This was put in when working on tmoves.  It is commented out because it appears to be unnecessary if distances is called from hpsie.f
 !       call distances(xoldw(1,1,iw,1),pe,pei)
 
-c Sample Green function for forward move
+! Sample Green function for forward move
         r1sume=zero
         r2sume=zero
         r3sume=zero
@@ -202,11 +202,11 @@ c Sample Green function for forward move
         iaccept=0
         l_do_tmoves=.false.
         do 200 i=1,nelec
-c Use more accurate formula for the drift
+! Use more accurate formula for the drift
           v2old=0
           do 75 k=1,ndim
    75       v2old=v2old+voldw(k,i,iw,1)**2
-c Tau primary -> tratio=one
+! Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
           dr2=zero
@@ -219,20 +219,20 @@ c Tau primary -> tratio=one
             dfus2o=dfus2o+dfus**2
    80       xnew(k)=xoldw(k,i,iw,1)+dx
 
-c      if(v2old.lt.-1.d99 .or. v2old.gt.1.d99) write(6,'(''v2old'',d12.4)') v2old
-c      if(abs(v2old).gt.1.d99) write(6,'(''v2old'',d12.4)') v2old
-c      write(6,'(''i, iw, adrift, v2old, (voldw(:,:,iw,1)'',2i4,99d12.4)')
-c    &  i, iw, adrift, v2old, ((voldw(k,ii,iw,1),k=1,3),ii=1,nelec)
-c      write(6,'(''(xoldw(:,:,iw,1)'',99d22.14)')
-c    &  ((xoldw(k,ii,iw,1),k=1,3),ii=1,nelec)
-c      call systemflush(6)
+!      if(v2old.lt.-1.d99 .or. v2old.gt.1.d99) write(6,'(''v2old'',d12.4)') v2old
+!      if(abs(v2old).gt.1.d99) write(6,'(''v2old'',d12.4)') v2old
+!      write(6,'(''i, iw, adrift, v2old, (voldw(:,:,iw,1)'',2i4,99d12.4)')
+!    &  i, iw, adrift, v2old, ((voldw(k,ii,iw,1),k=1,3),ii=1,nelec)
+!      write(6,'(''(xoldw(:,:,iw,1)'',99d22.14)')
+!    &  ((xoldw(k,ii,iw,1),k=1,3),ii=1,nelec)
+!      call systemflush(6)
 
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
-c calculate psi and velocity at new configuration
+! calculate psi and velocity at new configuration
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
 
-c Check for node crossings
+! Check for node crossings
           if(psidn*psidow(iw,1).le.zero) then
             nodecr=nodecr+1
             if(icross.le.0) then
@@ -241,7 +241,7 @@ c Check for node crossings
             endif
           endif
 
-c Calculate Green function for the reverse move
+! Calculate Green function for the reverse move
 
           v2new=0
             do 149 k=1,ndim
@@ -271,12 +271,12 @@ c Calculate Green function for the reverse move
      &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psidow(iw,1),
      &    psijn,psijow(iw,1),dfus2o,dfus2n
 
-c The following is one reasonable way to cure persistent configurations
-c Not needed if itau_eff <=0 and in practice we have never needed it even
-c otherwise
+! The following is one reasonable way to cure persistent configurations
+! Not needed if itau_eff <=0 and in practice we have never needed it even
+! otherwise
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
-c         pp=p
+!         pp=p
           p=dmin1(one,p)
   160     q=one-p
 
@@ -287,7 +287,7 @@ c         pp=p
           dr2ac=dr2ac+p*dr2
           dr2un=dr2un+dr2
 
-c Calculate density and moments of r for primary walk
+! Calculate density and moments of r for primary walk
           r2o=zero
           r2n=zero
           rmino=zero
@@ -302,7 +302,7 @@ c Calculate density and moments of r for primary walk
           itryo(i)=min(int(delri*rmino)+1,NRAD)
           itryn(i)=min(int(delri*rminn)+1,NRAD)
 
-c for pair-density calculation we will need full old/new positions:
+! for pair-density calculation we will need full old/new positions:
           if(ifixe.lt.0 .or. ifourier.ne.0 .or. izigzag.gt.0) then
             do 167 k=1,ndim
               do 167 j=1,nelec
@@ -315,7 +315,7 @@ c for pair-density calculation we will need full old/new positions:
   167       continue
           endif
 
-c If we are using weights rather than accept/reject
+! If we are using weights rather than accept/reject
           if(iacc_rej.le.0) then
             p=one
             q=zero
@@ -335,7 +335,7 @@ c If we are using weights rather than accept/reject
 !ACM            write (6,*) 'voldw:'
 !ACM            write (6,*) i, voldw(1,i,iw,1)
   170           continue
-                
+
             psidow(iw,1)=psidn
             psijow(iw,1)=psijn
             call jassav(i)
@@ -351,7 +351,7 @@ c If we are using weights rather than accept/reject
           endif
           q=one-p
 
-c Calculate moments of r and save rejection probability for primary walk
+! Calculate moments of r and save rejection probability for primary walk
           r1sume=r1sume+(q*dsqrt(r2o)+p*dsqrt(r2n))
           r2sume=r2sume+(q*r2o+p*r2n)
           r3sume=r3sume+(q*r2o*dsqrt(r2o)+p*r2n*dsqrt(r2n))
@@ -361,14 +361,14 @@ c Calculate moments of r and save rejection probability for primary walk
 
   200   continue ! nelec
 
-c Effective tau for branching
+! Effective tau for branching
         tauprim=tau*dfus2ac/dfus2un
 
         do 280 ifr=1,nforce
 
           if(iaccept.eq.1) then   ! If any of the 1-electron moves were accepted then
             if(ifr.eq.1) then
-c Primary configuration
+! Primary configuration
               drifdifr=one
               if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
@@ -387,16 +387,16 @@ c Primary configuration
               endif
               call walksav_jas(iw)
              else
-c Secondary configuration
+! Secondary configuration
               if(istrech.eq.0) then
                 drifdifr=one
-c No streched positions for electrons
+! No streched positions for electrons
                 do 210 i=1,nelec
                   do 210 k=1,ndim
   210               xoldw(k,i,iw,ifr)=xoldw(k,i,iw,1)
                 ajacold(iw,ifr)=one
                else
-c Compute streched electronic positions for all nucleus displacement
+! Compute streched electronic positions for all nucleus displacement
                 call strech(xoldw(1,1,iw,1),xstrech,ajacob,ifr,1)
                 drifdifs=zero
                 do 220 i=1,nelec
@@ -407,28 +407,28 @@ c Compute streched electronic positions for all nucleus displacement
                 drifdifr=drifdifs/drifdif
               endif
               call hpsi(xoldw(1,1,iw,ifr),psidn,psijn,voldw(1,1,iw,ifr),div_vow(1,iw),d2n,pen,pein,enew,denergy,ifr)
-c Temporary test to see how well correlated sampling works for excited states
-c Limit outliers such that tau->0 limit is unchanged
-c Warning: I should calculate sigma_est
-c             sigma_est=0.2d0
-c             if(wgcum(1)+wgsum(1).ne.0.d0) then
-c               eest_pri=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
-c               eest_sec=(egcum(ifr)+egsum(ifr))/(wgcum(ifr)+wgsum(ifr))
-c               eest_dif=eest_sec-eest_pri
-c               write(6,'(''enew'',9f9.5)')
-c    & enew,eest_pri,eest_sec,eest_dif,max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_dif+3*sigma_est,enew))
-ccc             enew=max(eoldw(iw,1)+eest_dif-1/tau,min(eoldw(iw,1)+eest_dif+1/tau,enew))
-c               enew=max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_dif+3*sigma_est,enew))
-c              else
-c               enew=max(eoldw(iw,1)-sigma_est,min(eoldw(iw,1)+sigma_est,enew))
-c             endif
+! Temporary test to see how well correlated sampling works for excited states
+! Limit outliers such that tau->0 limit is unchanged
+! Warning: I should calculate sigma_est
+!             sigma_est=0.2d0
+!             if(wgcum(1)+wgsum(1).ne.0.d0) then
+!               eest_pri=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
+!               eest_sec=(egcum(ifr)+egsum(ifr))/(wgcum(ifr)+wgsum(ifr))
+!               eest_dif=eest_sec-eest_pri
+!               write(6,'(''enew'',9f9.5)')
+!    & enew,eest_pri,eest_sec,eest_dif,max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_dif+3*sigma_est,enew))
+!cc             enew=max(eoldw(iw,1)+eest_dif-1/tau,min(eoldw(iw,1)+eest_dif+1/tau,enew))
+!               enew=max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_dif+3*sigma_est,enew))
+!              else
+!               enew=max(eoldw(iw,1)-sigma_est,min(eoldw(iw,1)+sigma_est,enew))
+!             endif
             endif ! ifr.eq.1
 
             vav2sumn=zero
             v2sumn=zero
             do 260 i=1,nelec
 
-c Use more accurate formula for the drift and tau secondary in drift
+! Use more accurate formula for the drift and tau secondary in drift
               tratio=one
               if(ifr.gt.1.and.itausec.eq.1) tratio=drifdifr
 
@@ -461,8 +461,8 @@ c Use more accurate formula for the drift and tau secondary in drift
 
           if(idmc.gt.0) then
             expon=(etrial-half*(ewto+ewtn))*taunow
-c Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
-c it should be small compared to the term that we keep.
+! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
+! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm
   264         dexponent(iparm)=-half*(dewto(iparm)+dewtn(iparm))*taunow
             if(icut_br.le.0) then
@@ -471,8 +471,8 @@ c it should be small compared to the term that we keep.
               if(expon.le.0.d0) then
                 dwt=dexp(expon)
                else
-c Warning: tmp
-c               dwt=1+expon+0.5d0*expon**2
+! Warning: tmp
+!               dwt=1+expon+0.5d0*expon**2
                 dwt=1+expon/(1+expon)
               endif
              else
@@ -480,16 +480,16 @@ c               dwt=1+expon+0.5d0*expon**2
             endif
           endif
 
-c Warning: These lines were added to reduce the probability of population explosions.
-c These occur mostly for nonlocal psps.
-c A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
-c We truncate wts that come from energies that are too low by more than 10*energy_sigma.
-c This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
-c For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
-c For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
-c So, multiply energy_sigma by sqrt(float(nproc)).
-c It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
-c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
+! Warning: These lines were added to reduce the probability of population explosions.
+! These occur mostly for nonlocal psps.
+! A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
+! We truncate wts that come from energies that are too low by more than 10*energy_sigma.
+! This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
+! For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+! For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
+! So, multiply energy_sigma by sqrt(float(nproc)).
+! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
+!         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
           if(ipass-nstep*2*nblkeq .gt. 5) then
             energy_sigma=sigma(ecum1,ecm21,wcum1)
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
@@ -506,18 +506,18 @@ c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
             endif
           endif
 
-c ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
+! ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
           dwt=dwt**wt_lambda
 
-c Exercise population control if dmc or vmc with weights
+! Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
 
-c Set weights and product of weights over last nwprod steps
+! Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
-c Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
+! Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
             wt(iw)=(wt(iw)**wt_lambda_tau)*dwt
-c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
+!           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
             do 266 iparm=1,nparm
   266         wi_w(iparm,iw)=wt_lambda_tau*wi_w(iparm,iw)+dexponent(iparm)
             wtnow=wt(iw)
@@ -538,11 +538,11 @@ c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
           wtg=wtnow*fprod
           current_walker_weight = wt(iw) * fprod !JT
           call object_modified_by_index (current_walker_weight_index) !JT
-          
+
           ! used to plot interaction potential (ACM)
           pot_ee_new = pot_ee ! array assignment
           pot_ee_old = pot_ee_oldw(:,iw,ifr) ! array assignment
-          
+
           if(ifr.eq.1) then
 
             r1sum=r1sum+wtg*r1sume
@@ -562,14 +562,14 @@ c           write(6,'(''wt_lambda_tau='',9d20.12)') wt_lambda_tau, wt(iw)
               endif
               rprob(itryo(i))=rprob(itryo(i))+wtgq
               rprob(itryn(i))=rprob(itryn(i))+wtgp
-c             r2sum=r2sum+wtg*(unacp(i)*r2o+(one-unacp(i)*r2n)
-c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
+!             r2sum=r2sum+wtg*(unacp(i)*r2o+(one-unacp(i)*r2n)
+! 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
 
               if(ifixe.le.-2 .or. ifourier.ne.0 .or. izigzag.gt.0) then
                 do j=1,nelec
                   do idim=1,ndim
-c note that xoci and xnci represent the old/new positions of all electrons-j when an
-c electron-i is being moved
+! note that xoci and xnci represent the old/new positions of all electrons-j when an
+! electron-i is being moved
                     xoc(idim,j)=xoci(idim,j,i)
                     xnc(idim,j)=xnci(idim,j,i)
                   enddo
@@ -578,28 +578,28 @@ c electron-i is being moved
                     call reduce_sim_cell(xnc(:,j))
                   endif
                 enddo
-c               write (6,*) 'in dmc_good_ps_mov1:'
-c               write (6,*) wtgp, wtgq, i
-c               write (6,*) (xoc(1,iii),iii=1,nelec)
-c               write (6,*) (xnc(1,iii),iii=1,nelec)
+!               write (6,*) 'in dmc_good_ps_mov1:'
+!               write (6,*) wtgp, wtgq, i
+!               write (6,*) (xoc(1,iii),iii=1,nelec)
+!               write (6,*) (xnc(1,iii),iii=1,nelec)
                 if(izigzag.gt.0) call zigzag2d(Wtgp,wtgq,xoc,xnc,i)
                 if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
                 if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
               endif
-              
+
               if(ifixe.eq.-1 .or. ifixe.eq.-3) then
-                if(icoosys.eq.1) then 
+                if(icoosys.eq.1) then
                   if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
                     call reduce_sim_cell(xoci(:,i,i))
                     call reduce_sim_cell(xnci(:,i,i))
                   endif
                   do 265 idim=1,ndim
-c note that ix can be negative or positive. nint is a better choice.
+! note that ix can be negative or positive. nint is a better choice.
                     ixo(idim)=nint(delxi(idim)*xoci(idim,i,i))
   265               ixn(idim)=nint(delxi(idim)*xnci(idim,i,i))
                  else
-c same trick adapted to circular coordinates
+! same trick adapted to circular coordinates
                     ixo(1)=nint(delradi*(dsqrt(xoci(1,i,i)*xoci(1,i,i)+xoci(2,i,i)*xoci(2,i,i))-rmean))
                     ixn(1)=nint(delradi*(dsqrt(xnci(1,i,i)*xnci(1,i,i)+xnci(2,i,i)*xnci(2,i,i))-rmean))
                     ixo(2)=nint(delti*(datan2(xoci(2,i,i),xoci(1,i,i))))
@@ -678,8 +678,8 @@ c same trick adapted to circular coordinates
            else
             ro=ajacold(iw,ifr)*psidow(iw,ifr)**2*
      &         exp(2*psijow(iw,ifr)-psi2savo)
-c Warning: Limit weight ratio
-c           write(6,'(''eest_pri,eest_sec,eest_dif,ro='',9f9.5)') eest_pri,eest_sec,eest_dif,ro
+! Warning: Limit weight ratio
+!           write(6,'(''eest_pri,eest_sec,eest_dif,ro='',9f9.5)') eest_pri,eest_sec,eest_dif,ro
 
             wsum1(ifr)=wsum1(ifr)+wtnow*ro
             esum1(ifr)=esum1(ifr)+wtnow*eoldw(iw,ifr)*ro
@@ -690,7 +690,7 @@ c           write(6,'(''eest_pri,eest_sec,eest_dif,ro='',9f9.5)') eest_pri,eest_
           endif
 
   280   continue
-c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
+! Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
 
         call compute_averages_step !JT
@@ -702,8 +702,8 @@ c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic sys
         endif
         call systemflush(6)
 
-c       write(6,'(''iw,xoldw(k,i,iw,1)'',i3,99d12.4)') iw,((xoldw(k,i,iw,1),k=1,3),i=1,nelec)
-c       write(6,'(''iw,voldw(k,i,iw,1)'',i3,99d12.4)') iw,((voldw(k,i,iw,1),k=1,3),i=1,nelec)
+!       write(6,'(''iw,xoldw(k,i,iw,1)'',i3,99d12.4)') iw,((xoldw(k,i,iw,1),k=1,3),i=1,nelec)
+!       write(6,'(''iw,voldw(k,i,iw,1)'',i3,99d12.4)') iw,((voldw(k,i,iw,1),k=1,3),i=1,nelec)
 
   300 continue ! nwalk
 

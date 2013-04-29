@@ -1,14 +1,14 @@
       subroutine strech_fit
-c Written by Cyrus Umrigar and Claudia Filippi
-c Uses the coordinate transform described in:
-c 1) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
-c    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
-c    Int. J. Quant. Chem. Symp., 23, 217 (1989).
-c 2) Correlated sampling in quantum Monte Carlo: A route to forces,
-c    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
+! Written by Cyrus Umrigar and Claudia Filippi
+! Uses the coordinate transform described in:
+! 1) Two Aspects of Quantum Monte Carlo: Determination of Accurate Wavefunctions and
+!    Determination of Potential Energy Surfaces of Molecules, C.J. Umrigar,
+!    Int. J. Quant. Chem. Symp., 23, 217 (1989).
+! 2) Correlated sampling in quantum Monte Carlo: A route to forces,
+!    Claudia Filippi and C. J. Umrigar, Phys. Rev. B., 61, R16291, (2000).
 
-c Stretch space so that electrons close to a nucleus move almost
-c rigidly with that nucleus
+! Stretch space so that electrons close to a nucleus move almost
+! rigidly with that nucleus
       use atom_mod
       use const_mod
       use dim_mod
@@ -26,7 +26,7 @@ c rigidly with that nucleus
       write(6,'(''istrch,alfstr'',i5,f7.2)') istrch,alfstr
       if(alfstr.eq.0.d0) return
 
-c Read in old atom positions and find shift in positions
+! Read in old atom positions and find shift in positions
       do 5 icent=1,ncent
         read(5,*) (oldcent(k,icent),k=1,ndim)
         do 5 k=1,ndim
@@ -36,7 +36,7 @@ c Read in old atom positions and find shift in positions
         do 50 i=1,nelec
           wtsm=0
 
-c Initialize volume change matrix
+! Initialize volume change matrix
           do 7 k=1,ndim
             dwtsm(k)=0
             do 7 j=1,ndim

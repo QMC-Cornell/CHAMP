@@ -1,7 +1,7 @@
       subroutine hpsiedmc(iel,iw,coord,psid,psij,v)
-c Store in local array, x, the proposed coordinates, coord, for electron iel, and, the old coordinates xoldw
-c for all other electrons and then call hpsie
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Store in local array, x, the proposed coordinates, coord, for electron iel, and, the old coordinates xoldw
+! for all other electrons and then call hpsie
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use const_mod
       use dim_mod

@@ -1,5 +1,5 @@
       subroutine walksav_jas(iw)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
 
       use const_mod
       use jaso_mod

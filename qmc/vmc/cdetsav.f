@@ -1,6 +1,6 @@
       subroutine cdetsav(iel)
-c same as detsav
-c adapted to complex calculations by A.D.Guclu Feb2004
+! same as detsav
+! adapted to complex calculations by A.D.Guclu Feb2004
       use basic_tools_mod
       use cslater_mod
       use dorb_mod
@@ -10,7 +10,7 @@ c adapted to complex calculations by A.D.Guclu Feb2004
       use dim_mod
       implicit real*8(a-h,o-z)
 
-c allocate memory (will allocate only if it is not already allocated):
+! allocate memory (will allocate only if it is not already allocated):
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)
       call alloc('cslmdi',cslmdi,n2,ndetdn)

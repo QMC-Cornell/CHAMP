@@ -1,20 +1,20 @@
       subroutine zigzag2d(p,q,xold,xnew,ielec)
 
-c Written by Abhijit Mehta, December 2011
-c  Calculates quantities useful for studying zigzag quantum phase
-c  transition in rings and wires.  
-c  -reduced pair density
-c  -"staggered amplitude"
-c  - zigzag correlation functions
-c  xold and xnew are the old and new configurations
-c  p and q are the probabilities of accept and reject
-c  ielec labels the electron that was moved for 1-electron moves
-c  if ielec=0, we are doing an all-electron move.
+! Written by Abhijit Mehta, December 2011
+!  Calculates quantities useful for studying zigzag quantum phase
+!  transition in rings and wires.
+!  -reduced pair density
+!  -"staggered amplitude"
+!  - zigzag correlation functions
+!  xold and xnew are the old and new configurations
+!  p and q are the probabilities of accept and reject
+!  ielec labels the electron that was moved for 1-electron moves
+!  if ielec=0, we are doing an all-electron move.
 
-c  If you want to add a new observable, make sure you change
-c    nzzvars in zigzag_mod.f90 (and do a make clean!)
-c  You will also need to add a print out line to print_zigzag_vars()
-c       below
+!  If you want to add a new observable, make sure you change
+!    nzzvars in zigzag_mod.f90 (and do a make clean!)
+!  You will also need to add a print out line to print_zigzag_vars()
+!       below
       use dets_mod
       use const_mod
       use dim_mod
@@ -24,7 +24,7 @@ c       below
       use zigzag_mod
       implicit real*8(a-h,o-z)
       logical l_oldneoldsav, l_oldnenewsav
-c     common /circularmesh/ delti
+!     common /circularmesh/ delti
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       dimension xold(3,nelec),xnew(3,nelec)
@@ -53,13 +53,13 @@ c     common /circularmesh/ delti
       endif
       delyri = 1.0/zzdelyr
 
-c   zzpos will ultimately hold the sorted electron positions.  The first index labels longitudinal
-c      or transverse coordinate (i.e., zzpos(1,nelec) is sorted in ascending order)
+!   zzpos will ultimately hold the sorted electron positions.  The first index labels longitudinal
+!      or transverse coordinate (i.e., zzpos(1,nelec) is sorted in ascending order)
 
-c   First, save some sorting work, and see if one of the configurations xnew or xold was already sorted
-c    xold_sav and xnew_sav contain the last values of xold and xnew used by this subroutine
-c    iold_indices and inew_indices contain the mapping of how the electrons in xold, xnew were sorted
-     
+!   First, save some sorting work, and see if one of the configurations xnew or xold was already sorted
+!    xold_sav and xnew_sav contain the last values of xold and xnew used by this subroutine
+!    iold_indices and inew_indices contain the mapping of how the electrons in xold, xnew were sorted
+
       l_oldneoldsav = .false.
       l_oldnenewsav = .false.
       outerloop: do i1 = 1,nelec
@@ -70,7 +70,7 @@ c    iold_indices and inew_indices contain the mapping of how the electrons in x
           if(xold(i2,i1).ne.xnew_sav(i2,i1)) then
             l_oldnenewsav = .true.
           endif
-          if(l_oldneoldsav.and.l_oldnenewsav) exit outerloop 
+          if(l_oldneoldsav.and.l_oldnenewsav) exit outerloop
         enddo
       end do outerloop
       ! if(xold.ne.xold_sav)
@@ -94,9 +94,9 @@ c    iold_indices and inew_indices contain the mapping of how the electrons in x
             iold_indices(i) = i
           enddo
           lognb2 = int(dlog(dfloat(nelec))/dlog(2.D0)+1.D-14)
-c   First, we need to sort the electron positions with respect to theta (for rings) or x (for wires)
-c   I am using Shell sort for now; it might be more efficient to use something like quicksort or merge sort
-c    This implementation of Shell sort is from Cyrus
+!   First, we need to sort the electron positions with respect to theta (for rings) or x (for wires)
+!   I am using Shell sort for now; it might be more efficient to use something like quicksort or merge sort
+!    This implementation of Shell sort is from Cyrus
           M = nelec
           do NN=1,lognb2
             M = M/2
@@ -117,13 +117,13 @@ c    This implementation of Shell sort is from Cyrus
         endif
       endif
 
-c Now, construct zzposnew so that it has about the same order as zzposold
+! Now, construct zzposnew so that it has about the same order as zzposold
 
-      if(ielec.eq.0) then ! all-electron move; we need to find r and theta 
+      if(ielec.eq.0) then ! all-electron move; we need to find r and theta
         if(iperiodic.eq.0) then !rings -> polar coords
           do iering=1,nelec
             ioi = iold_indices(iering)
-            zzposnew(1,iering) = datan2(xnew(2,ioi),xnew(1,ioi)) 
+            zzposnew(1,iering) = datan2(xnew(2,ioi),xnew(1,ioi))
             zzposnew(2,iering) = dsqrt(xnew(1,ioi)**2 + xnew(2,ioi)**2)
           enddo
         elseif(iperiodic.eq.1) then ! wires, keep coords
@@ -144,9 +144,9 @@ c Now, construct zzposnew so that it has about the same order as zzposold
         enddo
       endif
 
-c   Now, sort zzposnew.  Hopefully, this will go very quickly for 1-electron moves, since zzposnew 
-c      will almost be sorted to begin with.
-      
+!   Now, sort zzposnew.  Hopefully, this will go very quickly for 1-electron moves, since zzposnew
+!      will almost be sorted to begin with.
+
       inew_indices = iold_indices ! initally, zznewpos has same sorting as zzoldpos
       lognb2 = int(dlog(dfloat(nelec))/dlog(2.D0)+1.D-14)
       M = nelec
@@ -167,17 +167,17 @@ c      will almost be sorted to begin with.
         enddo
       enddo
 
-c  Now all of the electrons are sorted, and we can calculate observables
-      
+!  Now all of the electrons are sorted, and we can calculate observables
+
       zzsumold = 0.d0
       zzsumnew = 0.d0
       stagsignold = 1.0d0/dble(nelec)
       stagsignnew = 1.0d0/dble(nelec)
-c     Set the sign of the staggered order such that the n/3rd largest r (or y) has sign +1
-c       i.e., in the zigzag phase, sum_i (-1)^i y_i should always be positive
-c       Choosing the n/3rd (and not the largest) should hopefully cause zigzag amp = 0 in linear phase
-c     Also, see which electrons are in outer half, which are in inner half
-c   iwouter(i) is 1 if ith electron has one of the n/2 largest radii, -1 otherwise
+!     Set the sign of the staggered order such that the n/3rd largest r (or y) has sign +1
+!       i.e., in the zigzag phase, sum_i (-1)^i y_i should always be positive
+!       Choosing the n/3rd (and not the largest) should hopefully cause zigzag amp = 0 in linear phase
+!     Also, see which electrons are in outer half, which are in inner half
+!   iwouter(i) is 1 if ith electron has one of the n/2 largest radii, -1 otherwise
 
 
       iwouter_old(:) = -1
@@ -198,9 +198,9 @@ c   iwouter(i) is 1 if ith electron has one of the n/2 largest radii, -1 otherwi
       enddo
       if(mod(izagold,2).eq.0) stagsignold = -stagsignold
       if(mod(izagnew,2).eq.0) stagsignnew = -stagsignnew
-c      rave = (q*sum(zzposold(2,:)) + p*sum(zzposnew(2,:)))/dble(nelec)
+!      rave = (q*sum(zzposold(2,:)) + p*sum(zzposnew(2,:)))/dble(nelec)
 
-c     Calculate <theta_i+1 - theta_i> and <theta_i+2 - theta_i>
+!     Calculate <theta_i+1 - theta_i> and <theta_i+2 - theta_i>
       zzxthetaold = zzposold(1,:)
       zzxthetanew = zzposnew(1,:)
       cnndiffo = cshift(zzxthetaold, SHIFT = 1) - zzxthetaold
@@ -212,21 +212,21 @@ c     Calculate <theta_i+1 - theta_i> and <theta_i+2 - theta_i>
       else if (iperiodic.eq.1) then
         cellsize = alattice
       endif
-  
-      ioutero = 0   
+
+      ioutero = 0
       ieveno = 0
-      ioutern = 0   
+      ioutern = 0
       ievenn = 0
-c     xtspacing = cellsize/dble(nelec)
-c     xtshift = cellsize/2. - xtspacing/2. !since theta/x go from -pi..pi or -alattice/2..a/2
+!     xtspacing = cellsize/dble(nelec)
+!     xtshift = cellsize/2. - xtspacing/2. !since theta/x go from -pi..pi or -alattice/2..a/2
       xtspacing = cellsize/dble(nelec/2)
       xtshift = cellsize/2. - xtspacing/2. !since theta/x go from -pi..pi or -alattice/2..a/2
       do i =1,nelec
         if (iperiodic.eq.0) then
           zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rring)
           zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rring)
-c          zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rave)
-c          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
+!          zzmaglocal_old(i) = stagsignold*(zzposold(2,i)-rave)
+!          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
         else
           zzmaglocal_old(i) = stagsignold*zzposold(2,i)
           zzmaglocal_new(i) = stagsignnew*zzposnew(2,i)
@@ -235,24 +235,24 @@ c          zzmaglocal_new(i) = stagsignnew*(zzposnew(2,i)-rave)
         zzsumnew = zzsumnew + zzmaglocal_new(i)
         if(stagsignold.gt.0) then
           ieveno = ieveno + 1
-c         evenfluct_old(ieveno) = (zzposold(1,i)- xtspacing*i + xtshift)/dble(nelec)
+!         evenfluct_old(ieveno) = (zzposold(1,i)- xtspacing*i + xtshift)/dble(nelec)
           evenfluct_old(ieveno) = (zzposold(1,i)- xtspacing*ieveno + xtshift)/dble(nelec)
-        endif 
+        endif
         if(stagsignnew.gt.0) then
           ievenn = ievenn + 1
-c         evenfluct_new(ievenn) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(nelec)
+!         evenfluct_new(ievenn) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(nelec)
           evenfluct_new(ievenn) = (zzposnew(1,i)- xtspacing*ievenn + xtshift)/dble(nelec)
-        endif 
+        endif
         if(iwouter_old(i).gt.0) then
           ioutero = ioutero + 1
-c         outerfluct_old(ioutero) = (zzposold(1,i)- xtspacing*i + xtshift)/dble(nelec)
+!         outerfluct_old(ioutero) = (zzposold(1,i)- xtspacing*i + xtshift)/dble(nelec)
           outerfluct_old(ioutero) = (zzposold(1,i)- xtspacing*ioutero + xtshift)/dble(nelec)
-        endif 
+        endif
         if(iwouter_new(i).gt.0) then
           ioutern = ioutern + 1
-c         outerfluct_new(ioutern) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(nelec)
+!         outerfluct_new(ioutern) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(nelec)
           outerfluct_new(ioutern) = (zzposnew(1,i)- xtspacing*ioutern + xtshift)/dble(nelec)
-        endif 
+        endif
         stagsignold = -stagsignold
         stagsignnew = -stagsignnew
         cnndiffo(i) = dabs(cnndiffo(i))
@@ -272,41 +272,41 @@ c         outerfluct_new(ioutern) = (zzposnew(1,i)- xtspacing*i + xtshift)/dble(
         zn2ncorr(ixto_n2n) = zn2ncorr(ixto_n2n) + q/dble(nelec)
         zn2ncorr(ixtn_n2n) = zn2ncorr(ixtn_n2n) + p/dble(nelec)
       enddo
-c  For debugging:
-c      write(6,*) 'in zigzag2d:'
-c      write(6,*) (zzposold(1,i),i=1,nelec)
-c      write(6,*) (zzposold(2,i),i=1,nelec)
-c      write(6,*) (zzposnew(1,i),i=1,nelec)
-c      write(6,*) (zzposnew(2,i),i=1,nelec)
-c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
-c      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
-c  For odd N, there's an extra rave.  We should correct this.
-c   The following 2 lines are to test n=29, rs=3.7, w=0.1 rings
-c      zzsumold = zzsumold + (35.486-rring)/29.
-c      zzsumnew = zzsumnew + (35.486-rring)/29. 
+!  For debugging:
+!      write(6,*) 'in zigzag2d:'
+!      write(6,*) (zzposold(1,i),i=1,nelec)
+!      write(6,*) (zzposold(2,i),i=1,nelec)
+!      write(6,*) (zzposnew(1,i),i=1,nelec)
+!      write(6,*) (zzposnew(2,i),i=1,nelec)
+!      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
+!      write(6,*) zzsumold, zzsumnew, q*dabs(zzsumold)+p*dabs(zzsumnew)
+!  For odd N, there's an extra rave.  We should correct this.
+!   The following 2 lines are to test n=29, rs=3.7, w=0.1 rings
+!      zzsumold = zzsumold + (35.486-rring)/29.
+!      zzsumnew = zzsumnew + (35.486-rring)/29.
       zzterm(3) = q*zzsumold + p*zzsumnew
       zzterm(1) = q*dabs(zzsumold) + p*dabs(zzsumnew)
       zzterm(2) = q*zzsumold*zzsumold + p*zzsumnew*zzsumnew
       zzterm(10) = q*(zzsumold**4) + p*(zzsumnew**4)
-c     Calculate the values if we throw out max value of y or r and its neighbor
+!     Calculate the values if we throw out max value of y or r and its neighbor
       imaxold = maxloc(zzposold(2,:),1)
       imaxnew = maxloc(zzposnew(2,:),1)
       iminold = minloc(zzposold(2,:),1)
       iminnew = minloc(zzposnew(2,:),1)
-c     if (imaxold.eq.nelec) then
-c       imaxoldn = 1
-c     else
-c       imaxoldn = imaxold+1
-c     endif
-c     if (imaxnew.eq.nelec) then
-c       imaxnewn = 1
-c     else
-c       imaxnewn = imaxnew+1
-c     endif
-c      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(imaxoldn) 
-c      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn) 
-      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(iminold) 
-      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(iminnew) 
+!     if (imaxold.eq.nelec) then
+!       imaxoldn = 1
+!     else
+!       imaxoldn = imaxold+1
+!     endif
+!     if (imaxnew.eq.nelec) then
+!       imaxnewn = 1
+!     else
+!       imaxnewn = imaxnew+1
+!     endif
+!      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(imaxoldn)
+!      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn)
+      zzsumoldred = zzsumold-zzmaglocal_old(imaxold)-zzmaglocal_old(iminold)
+      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(iminnew)
       zzsumoldred = zzsumoldred*dble(nelec)/dble(nelec-2)
       zzsumnewred = zzsumnewred*dble(nelec)/dble(nelec-2)
       zzterm(6) = q*zzsumoldred + p*zzsumnewred
@@ -314,7 +314,7 @@ c      zzsumnewred = zzsumnew-zzmaglocal_new(imaxnew)-zzmaglocal_new(imaxnewn)
       zzterm(5) = q*zzsumoldred*zzsumoldred + p*zzsumnewred*zzsumnewred
       zzterm(11) = q*(zzsumoldred**4) + p*(zzsumnewred**4)
 
-c     Averages of <x_i+1 - x_i>, <x_i+2 - x_i>, and higher moments
+!     Averages of <x_i+1 - x_i>, <x_i+2 - x_i>, and higher moments
       cnndiffo2(:) = cnndiffo(:)*cnndiffo(:)
       cnndiffo3(:) = cnndiffo2(:)*cnndiffo(:)
       cnndiffo4(:) = cnndiffo3(:)*cnndiffo(:)
@@ -327,7 +327,7 @@ c     Averages of <x_i+1 - x_i>, <x_i+2 - x_i>, and higher moments
       cn2ndiffn2(:) = cn2ndiffn(:)*cn2ndiffn(:)
       cn2ndiffn3(:) = cn2ndiffn2(:)*cn2ndiffn(:)
       cn2ndiffn4(:) = cn2ndiffn3(:)*cn2ndiffn(:)
-      
+
       zzterm(16) = q*sum(cnndiffo(:)) + p*sum(cnndiffn(:))
       zzterm(17) = q*sum(cnndiffo2(:)) + p*sum(cnndiffn2(:))
       zzterm(18) = q*sum(cnndiffo3(:)) + p*sum(cnndiffn3(:))
@@ -336,13 +336,13 @@ c     Averages of <x_i+1 - x_i>, <x_i+2 - x_i>, and higher moments
       zzterm(21) = q*sum(cn2ndiffo2(:)) + p*sum(cn2ndiffn2(:))
       zzterm(22) = q*sum(cn2ndiffo3(:)) + p*sum(cn2ndiffn3(:))
       zzterm(23) = q*sum(cn2ndiffo4(:)) + p*sum(cn2ndiffn4(:))
-      zzterm(16:23) = zzterm(16:23)/dble(nelec) 
+      zzterm(16:23) = zzterm(16:23)/dble(nelec)
 
 
-c     Pick sign randomly, so that N/2 have "-" sign
+!     Pick sign randomly, so that N/2 have "-" sign
       ransign(:) = 1.0d0/dble(nelec)
       do itry = 1,nelec/2
-        do 
+        do
           irand = int(nelec*rannyu(0)) + 1
           if (ransign(irand).gt.0) then
             ransign(irand) = -ransign(irand)
@@ -356,7 +356,7 @@ c     Pick sign randomly, so that N/2 have "-" sign
       zzterm(7) = q*dabs(zzrandsumold) + p*dabs(zzrandsumnew)
       zzterm(8) = q*zzrandsumold*zzrandsumold + p*zzrandsumnew*zzrandsumnew
       zzterm(12) = q*(zzrandsumold**4) + p*(zzrandsumnew**4)
-     
+
       zzevenout_numerator_new = sum(evenfluct_new(:)*outerfluct_new(:)) ! don't need to divide by n/2
       zzevenout_numerator_old = sum(evenfluct_old(:)*outerfluct_old(:)) !  bc numerator and denominator
       zzevenout_evensigma_old = sum(evenfluct_old(:)*evenfluct_old(:))  !  cancel out.
@@ -372,11 +372,11 @@ c     Pick sign randomly, so that N/2 have "-" sign
       zzterm(14) = q*zzevenout_evensigma_old + p*zzevenout_evensigma_new
       zzterm(15) = q*zzevenout_outersigma_old + p*zzevenout_outersigma_new
 
-c     This is a kludge to make sure that the averages come out correctly 
-c        for single-electron moves.  Since this routine gets called
-c        once per electron in the mov1 update, we need to divide by
-c        nelec. This is not needed for all-electron updates, though
-c        since we just call this routine once after the update.
+!     This is a kludge to make sure that the averages come out correctly
+!        for single-electron moves.  Since this routine gets called
+!        once per electron in the mov1 update, we need to divide by
+!        nelec. This is not needed for all-electron updates, though
+!        since we just call this routine once after the update.
       corrnorm = dble(nelec) !makes sure corr is counted properly
       pairdennorm = 1.0d0
       if(ielec.gt.0) then
@@ -385,14 +385,14 @@ c        since we just call this routine once after the update.
         pairdennorm = 1.0d0/dble(nelec)
       endif
       zzsum(:) = zzsum(:) + zzterm(:)
-c     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
-c     zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
-c     zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
+!     'spread(v,dim,ncopies)' copies an array v, ncopies times along dim
+!     zzcorrmat_old = spread(zzmaglocal_old,dim=2,ncopies=nelec)*spread(zzmaglocal_old,dim=1,ncopies=nelec)
+!     zzcorrmat_new = spread(zzmaglocal_new,dim=2,ncopies=nelec)*spread(zzmaglocal_new,dim=1,ncopies=nelec)
       corrfactor = (corrnorm/dble(nelec))/dble(nelec)
       corrsgn = corrfactor
       do j = 0,nelec-1
         do i = 1,nelec
-c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
+!          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array index is [1,n]
           i2 = i + j
           if (i2.gt.nelec) i2 = i2 - nelec
           ! compute difference in x or theta
@@ -411,14 +411,14 @@ c          i2 = mod(i+j-1,nelec) + 1  !mod returns a number in [0,n-1], array in
           endif
           ixto = nint(delxti*xtdiffo)
           ixtn = nint(delxti*xtdiffn)
-c         zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
-c         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
-c          zzcorrtermo = q*corrnorm*zzmaglocal_old(i)*zzmaglocal_old(i2)
-c          zzcorrtermn = p*corrnorm*zzmaglocal_new(i)*zzmaglocal_new(i2)
-c         <-1^(i+j) (r_i - rave)*(r_j - rave)> = 
-c                <-1^(i-j)(r_i*r_j)> - rave*<-1^(i-j)(r_i + r_j)> + rave^2*<-1^(i-j)>
-c         label terms:   zzcorr      - rave*zzcorr1               + rave^2*zzcorr2
-c         For yycorr, we do the same thing (only without the -1^(i-j)) 
+!         zzcorrtermo = q*corrnorm*zzcorrmat_old(i,i2)
+!         zzcorrtermn = p*corrnorm*zzcorrmat_new(i,i2)
+!          zzcorrtermo = q*corrnorm*zzmaglocal_old(i)*zzmaglocal_old(i2)
+!          zzcorrtermn = p*corrnorm*zzmaglocal_new(i)*zzmaglocal_new(i2)
+!         <-1^(i+j) (r_i - rave)*(r_j - rave)> =
+!                <-1^(i-j)(r_i*r_j)> - rave*<-1^(i-j)(r_i + r_j)> + rave^2*<-1^(i-j)>
+!         label terms:   zzcorr      - rave*zzcorr1               + rave^2*zzcorr2
+!         For yycorr, we do the same thing (only without the -1^(i-j))
           zzcorrtermo = q*corrsgn*zzposold(2,i)*zzposold(2,i2)
           zzcorrtermn = p*corrsgn*zzposnew(2,i)*zzposnew(2,i2)
           zzcorrterm1o = q*corrsgn*(zzposold(2,i) + zzposold(2,i2))
@@ -431,11 +431,11 @@ c         For yycorr, we do the same thing (only without the -1^(i-j))
           yycorrterm1n = p*corrfactor*(zzposnew(2,i) + zzposnew(2,i2))
           yycorrterm2o = q*corrfactor
           yycorrterm2n = p*corrfactor
-c  Probably won't bother putting < (x_{i+1} - x_{i-1}) y_i^2> term in,
-c   but if I do, it goes here:
-c         if (j.eq.0) then ! Collect terms for < (x_{i+1}-x_{i-1} y_i^2) >
-c            zzterm(24) = !!! check corrfactor so that we have the right normalization factor!!!!
-c         else if (j.ne.0) then
+!  Probably won't bother putting < (x_{i+1} - x_{i-1}) y_i^2> term in,
+!   but if I do, it goes here:
+!         if (j.eq.0) then ! Collect terms for < (x_{i+1}-x_{i-1} y_i^2) >
+!            zzterm(24) = !!! check corrfactor so that we have the right normalization factor!!!!
+!         else if (j.ne.0) then
           if (j.ne.0) then
             zzcorr(ixto) = zzcorr(ixto) + zzcorrtermo
             zzcorr(ixtn) = zzcorr(ixtn) + zzcorrtermn
@@ -471,38 +471,38 @@ c         else if (j.ne.0) then
         enddo
         corrsgn = -corrsgn
       enddo
-      
+
       xold_sav = xold
       xnew_sav = xnew
 
-    
+
       return
       end
 
-c-------------------------------------------------------------------
+!-------------------------------------------------------------------
 
       subroutine print_zigzag_vars(zzave,zzerr,rtpass)
 
-c     Written by Abhijit Mehta, May 2012
-c      Routine to print out all the zigzag variables in the
-c       various finwrt routines.
-c      Inputs: 
-c       zzave - array of size nzzvars with averages of all zigzag vars
-c       zzerr - array of size nzzvars with errors in all of the averages
-c       rtpass - sqrt of the number of passes
-c
-c        We put all the print out statements here since this code was
-c         basically repeated several times throughout CHAMP
-c        Now, if we add a new variable, we only need to change the above
-c        subroutine (zigzag2d), this subroutine, and the parameter
-c        'nzzvars' in zigzag_mod.f90
-      
+!     Written by Abhijit Mehta, May 2012
+!      Routine to print out all the zigzag variables in the
+!       various finwrt routines.
+!      Inputs:
+!       zzave - array of size nzzvars with averages of all zigzag vars
+!       zzerr - array of size nzzvars with errors in all of the averages
+!       rtpass - sqrt of the number of passes
+!
+!        We put all the print out statements here since this code was
+!         basically repeated several times throughout CHAMP
+!        Now, if we add a new variable, we only need to change the above
+!        subroutine (zigzag2d), this subroutine, and the parameter
+!        'nzzvars' in zigzag_mod.f90
+
       use zigzag_mod, only: nzzvars
 
       implicit real*8(a-h,o-z)
       dimension zzave(nzzvars), zzerr(nzzvars)
 
-c     Fourth cumulants:
+!     Fourth cumulants:
       zzu4 = 1.0d0 - zzave(10)/(3.0d0*zzave(2)*zzave(2))
       zzu4err = 1.0d0/(3.0d0*zzave(2)*zzave(2)) * ((2.0d0*zzave(10)/zzave(2))*zzerr(2) - zzerr(10))
 
@@ -512,13 +512,13 @@ c     Fourth cumulants:
       zzu4rand = 1.0d0 - zzave(12)/(3.0d0*zzave(8)*zzave(8))
       zzu4randerr = 1.0d0/(3.0d0*zzave(8)*zzave(8)) * ((2.0d0*zzave(12)/zzave(8))*zzerr(8) - zzerr(12))
 
-c  Even-outer correlation
+!  Even-outer correlation
 
       zzeocorr = zzave(13)/dsqrt(zzave(14)*zzave(15))
 
-c  This line is in the finwrt routines:      
-c     write(6,'(''physical variable'',t20,''average'',t34,''rms error''
-c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
+!  This line is in the finwrt routines:
+!     write(6,'(''physical variable'',t20,''average'',t34,''rms error''
+!    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
 
       write(6,'(''<ZigZag Amp> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtpass
       write(6,'(''<|ZigZag Amp|> ='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtpass
@@ -547,6 +547,6 @@ c    &,t47,''rms er*rt(pass)'',t65,''sigma'',t86,''Tcor'')')  !JT
       write(6,'(''<(th_(i+2) - th_i)^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(21),zzerr(21),zzerr(21)*rtpass
       write(6,'(''<(th_(i+2) - th_i)^3>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(22),zzerr(22),zzerr(22)*rtpass
       write(6,'(''<(th_(i+2) - th_i)^4>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(23),zzerr(23),zzerr(23)*rtpass
-      
+
       return
       end

@@ -15,8 +15,8 @@
 !       real spherical harmonics.
 !---------------
       use all_tools_mod !JT
-c Warning: If you change lmax, you need to recompile not only basis_fns.f but also basis_fns2e.f because
-c module real_spherical_harmonics is used in both
+! Warning: If you change lmax, you need to recompile not only basis_fns.f but also basis_fns2e.f because
+! module real_spherical_harmonics is used in both
       integer,parameter   :: lmax=4
 !     integer,parameter   :: lmax=6
 !MS Jellium sphere
@@ -36,21 +36,21 @@ c module real_spherical_harmonics is used in both
 
       subroutine basis_fns(iel,rvec_en,r_en)
 
-c Written by Cyrus Umrigar.  L=4 added in by John Lawson(JWL).  Recursive Ylm for all L added in by Ryo Maezono
-c Calculate 3-dim localised basis functions and their derivatives
-c iel = 0, for all electrons
-c    != 0, for electron iel
+! Written by Cyrus Umrigar.  L=4 added in by John Lawson(JWL).  Recursive Ylm for all L added in by Ryo Maezono
+! Calculate 3-dim localised basis functions and their derivatives
+! iel = 0, for all electrons
+!    != 0, for electron iel
 
-c In input:
-c n1s,n2s,...     > 0 : Slater basis
-c n1s,n2s,...     < 0 : Gaussian basis
-c nsa,npa,nda         : asymptotic basis
-c Here:
-c n_bas2(irb,ict) > 0 : Slater basis
-c                 < 0 : Gaussian basis
-c                 = 0 : asymptotic basis
+! In input:
+! n1s,n2s,...     > 0 : Slater basis
+! n1s,n2s,...     < 0 : Gaussian basis
+! nsa,npa,nda         : asymptotic basis
+! Here:
+! n_bas2(irb,ict) > 0 : Slater basis
+!                 < 0 : Gaussian basis
+!                 = 0 : asymptotic basis
 
-c     For notes on basis functions in QMC see fp notes (contain slater and gaussian 3-d)
+!     For notes on basis functions in QMC see fp notes (contain slater and gaussian 3-d)
 
       use all_tools_mod
       use constants_mod
@@ -73,9 +73,9 @@ c     For notes on basis functions in QMC see fp notes (contain slater and gauss
 
       dimension wfv(3,MRWF),xc(3),th(0:ML_BAS,0:ML_BAS),dth(3,0:ML_BAS,0:ML_BAS),ph(-ML_BAS:ML_BAS),dph(3,-ML_BAS:ML_BAS)
 
-c Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
-c The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
-c JWL added cg0-4
+! Here we have additional normalization factors beyond those in basis_norm, viz., sqrt((2*l+1)/(4*pi))
+! The additional normalization factors for d,f,g are Sqrt of 1/4, 3, 3/4; 1/4, 3/8, 15/4, 5/8; 1/64, 10/16, 5/16, 70/16, 35/64.
+! JWL added cg0-4
       data cd0,cd1,cd2,cf0,cf1,cf2,cf3,cg0,cg1,cg2,cg3,cg4/
      &0.5d0,1.73205080756888d0,0.866025403784439d0,0.5d0,0.612372435695794d0,1.93649167310371d0,0.790569415042095d0,
      &0.125d0,0.790569415042095d0,0.559016994374947d0,2.09165006633519d0,0.739509972887452d0/
@@ -83,7 +83,7 @@ c JWL added cg0-4
 
       ider=1
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -112,7 +112,7 @@ c Decide whether we are computing all or one electron
           ri4=ri3*ri
           ri5=ri4*ri
 
-c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+! Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
           do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
@@ -139,8 +139,8 @@ c Loops over analytical basis functions, then numerical.  One can optimize the e
                     stop 'basis_fns: Allowed basis types are slater gaussian gauss-slater!'
                  end select     !fp
               elseif(n.eq.0) then
-c     Warning: Asymptotic and Gaussian not yet tested.
-c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+!     Warning: Asymptotic and Gaussian not yet tested.
+!     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
                  write(6,*) 'basis_fns: ict=',ict
                  write(6,*) 'basis_fns: irb=',irb
                  write(6,*) 'basis_fns: n=',n
@@ -152,9 +152,9 @@ c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta
                  wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
               endif
               wfv(1,irb)=rm1*ex
-   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex              
+   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex
 
-c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
+!       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
 
           do 20 irb=1,nrbas_numerical(ict)
             rk=r
@@ -195,7 +195,7 @@ c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(w
 !            zhat=zz*ri
 !**EndRM(2)
 
-c Phi function
+! Phi function
 
             ph(0)=1
             dph(1,0)=0
@@ -217,17 +217,17 @@ c Phi function
             dph(1,-2)=2*yy
             dph(2,-2)=2*xx
 
-c           ph(3)=(xx2-yy2)*xx-2*xx*yy2
+!           ph(3)=(xx2-yy2)*xx-2*xx*yy2
             ph(3)=ph(2)*ph(1)-ph(-2)*ph(-1)
             dph(1,3)=3*ph(2)
             dph(2,3)=-3*ph(-2)
 
-c           ph(-3)=3*xx2*y-yy2*y
+!           ph(-3)=3*xx2*y-yy2*y
             ph(-3)=ph(-2)*ph(1)+ph(-1)*ph(2)
             dph(1,-3)=3*ph(-2)
             dph(2,-3)=3*ph(2)
 
-c JWL added l=4
+! JWL added l=4
             ph(4)=xx2*xx2-6*xx2*yy2+yy2*yy2
             dph(1,4)=4*xx*xx2-12*xx*yy2
             dph(2,4)=-12*xx2*yy+4*yy*yy2
@@ -236,7 +236,7 @@ c JWL added l=4
             dph(1,-4)=12*xx2*yy-4*yy*yy2
             dph(2,-4)=4*xx*xx2-12*xx*yy2
 
-c Theta function
+! Theta function
 
             th(0,0)=1
             dth(1,0,0)=0
@@ -253,7 +253,7 @@ c Theta function
             dth(2,1,1)=-ri3*yy
             dth(3,1,1)=-ri3*zz
 
-c           th(2,0)=cd0*ri3*(3*zz**2-r2)
+!           th(2,0)=cd0*ri3*(3*zz**2-r2)
             th(2,0)=cd0*(3*zhat**2-1)
             dth(1,2,0)=-6*cd0*ri*zhat**2*xhat
             dth(2,2,0)=-6*cd0*ri*zhat**2*yhat
@@ -289,7 +289,7 @@ c           th(2,0)=cd0*ri3*(3*zz**2-r2)
             dth(2,3,3)=-3*cf3*ri5*yy
             dth(3,3,3)=-3*cf3*ri5*zz
 
-c JWL added l=4
+! JWL added l=4
             th(4,0)=cg0*(35*zz2*zz2-30*r2*zz2+3*r2*r2)*ri4
             dth(1,4,0)=cg0*(-60*xx*zz2+12*r2*xx)*ri4 + th(4,0)*(-4*ri2*xx)
             dth(2,4,0)=cg0*(-60*yy*zz2+12*r2*yy)*ri4 + th(4,0)*(-4*ri2*yy)
@@ -331,20 +331,20 @@ c JWL added l=4
               write(*,'(''ib2,l,m,mabs,ylm:'',4i6,4f16.8)') ib2,l,m,mabs,ylm,(dphin(k,ib,ie),k=1,ndim)
             endif
 
-c     write(6,'(''irb,l,m,ylm,xhat,wfv(1,irb),wfv(2,irb),th(l,mabs),dph(1,m),dth(1,l,mabs),ph(m))'',3i4,9d16.8)')
-c    &irb,l,m,ylm,xhat,wfv(1,irb),wfv(2,irb),th(l,mabs),dph(1,m),dth(1,l,mabs),ph(m)
+!     write(6,'(''irb,l,m,ylm,xhat,wfv(1,irb),wfv(2,irb),th(l,mabs),dph(1,m),dth(1,l,mabs),ph(m))'',3i4,9d16.8)')
+!    &irb,l,m,ylm,xhat,wfv(1,irb),wfv(2,irb),th(l,mabs),dph(1,m),dth(1,l,mabs),ph(m)
       if(ipr.ge.4) write(6,'(''ie,ib,irb,l,m,ph(m),(dph(k,m),k=1,ndim),th(l,mabs),(dth(k,l,mabs),k=1,ndim)
      &,wfv(1,irb),wfv(2,irb),wfv(3,irb)'',5i3,20f8.1)')
      & ie,ib,irb,l,m,ph(m),(dph(k,m),k=1,ndim),th(l,mabs),(dth(k,l,mabs),k=1,ndim),wfv(1,irb),wfv(2,irb),wfv(3,irb)
-c     write(6,'(''ie,ib,ib2,irb,phin(ib,ie),dphin,d2phin'',4i5,9d12.5)') ie,ib,ib2,irb,phin(ib,ie),(dphin(kk,ib,ie),kk=1,ndim),d2phin(ib,ie),wfv(1,irb)
-c    &,wfv(1,irb)
-c        write(6,'(''ib1,ylm'',i3,9f16.10)') ib,ylm
-c        write(6,'(''ib1,etc'',i3,9f16.10)')
-c    &   ib,ylm*wfv(1,irb),
-c    &   ylm*xhat*wfv(2,irb)+(th(l,mabs)*dph(1,m)+dth(1,l,mabs)*ph(m))*wfv(1,irb),
-c    &   ylm*yhat*wfv(2,irb)+(th(l,mabs)*dph(2,m)+dth(2,l,mabs)*ph(m))*wfv(1,irb),
-c    &   ylm*zhat*wfv(2,irb)+(                    dth(3,l,mabs)*ph(m))*wfv(1,irb),
-c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
+!     write(6,'(''ie,ib,ib2,irb,phin(ib,ie),dphin,d2phin'',4i5,9d12.5)') ie,ib,ib2,irb,phin(ib,ie),(dphin(kk,ib,ie),kk=1,ndim),d2phin(ib,ie),wfv(1,irb)
+!    &,wfv(1,irb)
+!        write(6,'(''ib1,ylm'',i3,9f16.10)') ib,ylm
+!        write(6,'(''ib1,etc'',i3,9f16.10)')
+!    &   ib,ylm*wfv(1,irb),
+!    &   ylm*xhat*wfv(2,irb)+(th(l,mabs)*dph(1,m)+dth(1,l,mabs)*ph(m))*wfv(1,irb),
+!    &   ylm*yhat*wfv(2,irb)+(th(l,mabs)*dph(2,m)+dth(2,l,mabs)*ph(m))*wfv(1,irb),
+!    &   ylm*zhat*wfv(2,irb)+(                    dth(3,l,mabs)*ph(m))*wfv(1,irb),
+!    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
 !**RM(5)
       enddo
       else
@@ -442,15 +442,15 @@ c    &   ylm*(wfv(3,irb)+2*ri*wfv(2,irb)-l*(l+1)*ri2*wfv(1,irb))
      &                     *r_inv_power_minus(l)
           dphin(3,ib,ie) = coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb))
      &                     *r_inv_power_minus(l)
-c       write(6,'(''ib2,ylm'',i3,9f16.10)') ib,ylm
-c       write(6,'(''ib2,etc'',i3,9f16.10)')
-c    &  ib,ylm*wfv(1,irb)*coef_ylm(l,mabs),
-c    &  coef_ylm(l,mabs)*(aux1*xc(1) + d_large_p(1,l,m)*wfv(1,irb))*r_inv_power_minus(l),
-c    &  coef_ylm(l,mabs)*(aux1*xc(2) + d_large_p(2,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
-c    &  coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
-c    &  coef_ylm(l,mabs)*ylm*( wfv(3,irb) + 2.d0*wfv(2,irb)*r_inv_power_minus(1) - dble(l*(l+1))*wfv(1,irb)*r_inv_power_minus(2))
+!       write(6,'(''ib2,ylm'',i3,9f16.10)') ib,ylm
+!       write(6,'(''ib2,etc'',i3,9f16.10)')
+!    &  ib,ylm*wfv(1,irb)*coef_ylm(l,mabs),
+!    &  coef_ylm(l,mabs)*(aux1*xc(1) + d_large_p(1,l,m)*wfv(1,irb))*r_inv_power_minus(l),
+!    &  coef_ylm(l,mabs)*(aux1*xc(2) + d_large_p(2,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
+!    &  coef_ylm(l,mabs)*(aux1*xc(3) + d_large_p(3,l,m)*wfv(1,irb)) *r_inv_power_minus(l),
+!    &  coef_ylm(l,mabs)*ylm*( wfv(3,irb) + 2.d0*wfv(2,irb)*r_inv_power_minus(1) - dble(l*(l+1))*wfv(1,irb)*r_inv_power_minus(2))
 
-cJWL,CJU
+!JWL,CJU
         if(ipr.ge.1) then
           write(*,'(''ib2,l,m,mabs,ylm:'',4i6,4f16.8)') ib2,l,m,mabs,coef_ylm(l,mabs)*ylm,(dphin(k,ib,ie),k=1,ndim)
         endif
@@ -461,8 +461,8 @@ cJWL,CJU
 
    40 continue
 
-c     do 2000 l=1,nbasis
-c2000   write(6,'(''basisfns='',20d12.5)') phin(l,nelec),(dphin(ie,l,nelec),ie=1,ndim),d2phin(l,nelec)
+!     do 2000 l=1,nbasis
+!2000   write(6,'(''basisfns='',20d12.5)') phin(l,nelec),(dphin(ie,l,nelec),ie=1,ndim),d2phin(l,nelec)
 
       call object_modified_by_index (phin_index) !JT
       call object_modified_by_index (dphin_index) !JT
@@ -470,20 +470,20 @@ c2000   write(6,'(''basisfns='',20d12.5)') phin(l,nelec),(dphin(ie,l,nelec),ie=1
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine basis_fns_2d(iel,rvec_en,r_en)
-c Written by Cyrus Umrigar
-c Calculate 2-dim localised basis functions and their derivatives for all electrons
+! Written by Cyrus Umrigar
+! Calculate 2-dim localised basis functions and their derivatives for all electrons
 
-c In input:
-c n1s,n2s,...     > 0 : Slater basis
-c nsa,npa,nda     = 0 : asymptotic basis
-c n1s,nsa,...     < 0 : Gaussian basis
-c Here:
-c n_bas2(irb,ict) > 0 : Slater basis
-c                 = 0 : asymptotic basis
-c                 < 0 : Gaussian basis
+! In input:
+! n1s,n2s,...     > 0 : Slater basis
+! nsa,npa,nda     = 0 : asymptotic basis
+! n1s,nsa,...     < 0 : Gaussian basis
+! Here:
+! n_bas2(irb,ict) > 0 : Slater basis
+!                 = 0 : asymptotic basis
+!                 < 0 : Gaussian basis
 
       use atom_mod
       use basis1_mod
@@ -501,7 +501,7 @@ c                 < 0 : Gaussian basis
 
       ider=1
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -527,7 +527,7 @@ c Decide whether we are computing all or one electron
           ri2=ri*ri
           ri3=ri2*ri
 
-c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+! Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
           do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
@@ -554,8 +554,8 @@ c Loops over analytical basis functions, then numerical.  One can optimize the e
                     stop 'basis_fns_2d: Allowed basis types are slater gaussian gauss-slater!'
                  end select     !fp
               elseif(n.eq.0) then
-c     Warning: Asymptotic and Gaussian not yet tested.
-c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+!     Warning: Asymptotic and Gaussian not yet tested.
+!     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
                  write(6,*) 'basis_fns: ict=',ict
                  write(6,*) 'basis_fns: irb=',irb
                  write(6,*) 'basis_fns: n=',n
@@ -567,9 +567,9 @@ c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta
                  wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
               endif
               wfv(1,irb)=rm1*ex
-   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex              
+   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex
 
-c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
+!       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
 
             do 20 irb=1,nrbas_numerical(ict)
               rk=r
@@ -582,7 +582,7 @@ c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(w
           xhat=xx*ri
           yhat=yy*ri
 
-c Phi function
+! Phi function
 
           ph(0)=1
           dph(1,0)=0
@@ -599,8 +599,8 @@ c Phi function
             dph(1,i) = i*ph(-i)*ph(-1)*ri
             dph(2,i) =-i*ph(-i)*ph(1)*ri
             dph(1,-i)=-i*ph(i)*ph(-1)*ri
-c           write(6,'(''xx,yy,ri,xhat,yhat,ph(i),ph(-i)='',19f9.5)')
-c    &      xx,yy,ri,xhat,yhat,ph(i),ph(-i),dph(1,i),dph(2,i),dph(1,-i)
+!           write(6,'(''xx,yy,ri,xhat,yhat,ph(i),ph(-i)='',19f9.5)')
+!    &      xx,yy,ri,xhat,yhat,ph(i),ph(-i),dph(1,i),dph(2,i),dph(1,-i)
    30       dph(2,-i)= i*ph(i)*ph(1)*ri
 
           do 40 ib2=1,nbasis_ctype(ict)
@@ -612,39 +612,39 @@ c    &      xx,yy,ri,xhat,yhat,ph(i),ph(-i),dph(1,i),dph(2,i),dph(1,-i)
             dphin(1,ib,ie)=ylm*xhat*wfv(2,irb)+dph(1,m)*wfv(1,irb)
             dphin(2,ib,ie)=ylm*yhat*wfv(2,irb)+dph(2,m)*wfv(1,irb)
             d2phin(ib,ie)=ylm*(wfv(3,irb)+ri*wfv(2,irb)-m*m*ri2*wfv(1,irb))
-c     write(6,'(''m_bas'',9i5)') m
-c     write(6,'(''ie,ib,ph(m),(dph(k,m),ddph(m)'',2i5,9d12.5)')
-c    & ie,ib,ph(m),(dph(k,m),k=1,ndim),-m*m*ri2*wfv(1,irb),wfv(1,irb),wfv(2,irb),wfv(3,irb),ylm*(wfv(3,irb)+ri*wfv(2,irb)),ylm*(-m*m*ri2*wfv(1,irb))
-c     write(6,'(''ie,ib,irb,m,ph(m),(dph(k,m),k=1,ndim),wfv(1,irb),wfv(2,irb),wfv(3,irb)'',4i5,9d12.5)')
-c    & ie,ib,irb,m,ph(m),(dph(k,m),k=1,ndim),wfv(1,irb),wfv(2,irb),wfv(3,irb)
-c     write(6,'(''ie,ib,ib2,irb,phin(ib,ie),dphin,d2phin'',4i5,9d12.5)')
-c    & ie,ib,ib2,irb,phin(ib,ie),(dphin(kk,ib,ie),kk=1,ndim),d2phin(ib,ie)
+!     write(6,'(''m_bas'',9i5)') m
+!     write(6,'(''ie,ib,ph(m),(dph(k,m),ddph(m)'',2i5,9d12.5)')
+!    & ie,ib,ph(m),(dph(k,m),k=1,ndim),-m*m*ri2*wfv(1,irb),wfv(1,irb),wfv(2,irb),wfv(3,irb),ylm*(wfv(3,irb)+ri*wfv(2,irb)),ylm*(-m*m*ri2*wfv(1,irb))
+!     write(6,'(''ie,ib,irb,m,ph(m),(dph(k,m),k=1,ndim),wfv(1,irb),wfv(2,irb),wfv(3,irb)'',4i5,9d12.5)')
+!    & ie,ib,irb,m,ph(m),(dph(k,m),k=1,ndim),wfv(1,irb),wfv(2,irb),wfv(3,irb)
+!     write(6,'(''ie,ib,ib2,irb,phin(ib,ie),dphin,d2phin'',4i5,9d12.5)')
+!    & ie,ib,ib2,irb,phin(ib,ie),(dphin(kk,ib,ie),kk=1,ndim),d2phin(ib,ie)
    40 continue
 
-c     do 2000 l=1,nbasis
-c2000   write(6,'(''basisfns='',20d12.5)') phin(l,nelec),(dphin(ie,l,nelec),ie=1,ndim),d2phin(l,nelec)
+!     do 2000 l=1,nbasis
+!2000   write(6,'(''basisfns='',20d12.5)') phin(l,nelec),(dphin(ie,l,nelec),ie=1,ndim),d2phin(l,nelec)
 
       return
       end
-c-------------------------------------------------------------------------
+!-------------------------------------------------------------------------
 
       subroutine basis_fns_2dgauss(iel,rvec_en,r_en)
 
-c Written by A.D.Guclu, Apr 2006
-c 2-dimensional localized gaussian basis set.
-c Main purpose is the study 2d wigner crystal.
+! Written by A.D.Guclu, Apr 2006
+! 2-dimensional localized gaussian basis set.
+! Main purpose is the study 2d wigner crystal.
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: phin,dphin, and d2phin are calculated
+! output: phin,dphin, and d2phin are calculated
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
-c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
-c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
-c normalization is taken care in (..)
+! Wave functions are given by (except the normalization sqrt(we/pi)):
+! phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
+! x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
+! normalization is taken care in (..)
 
       use coefs_mod
       use const_mod
@@ -654,12 +654,12 @@ c normalization is taken care in (..)
       implicit real*8(a-h,o-z)
 
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -669,13 +669,13 @@ c Decide whether we are computing all or one electron
       endif
 
       ic=1
-c      write(6,*) 'in basis_fns'
+!      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(6,*) 'x1,x2,we=',x1,x2,we
+!       write(6,*) 'x1,x2,we=',x1,x2,we
 
         do ib=1,nbasis
           wez=we*oparm(3,ib,iwf)
@@ -688,8 +688,8 @@ c       write(6,*) 'x1,x2,we=',x1,x2,we
 
           phin(ib,ie)=dsqrt(wez)*dexp(-0.5d0*wez*rrel2)
 
-c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(6,*) 'oparm1,oparm2,oparm3=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf)
+!         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+!         write(6,*) 'oparm1,oparm2,oparm3=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf)
 
           dphin(1,ib,ie)=-wez*x1rel*phin(ib,ie)
           dphin(2,ib,ie)=-wez*x2rel*phin(ib,ie)
@@ -701,28 +701,28 @@ c         write(6,*) 'oparm1,oparm2,oparm3=',oparm(1,ib,iwf),oparm(2,ib,iwf),opa
 
       return
       end
-c--------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
       subroutine deriv_2dgauss(rvec_en,r_en)
 
-c Written by A.D.Guclu, Apr 2006
-c 2-dimensional localized gaussian basis set,
-c and his derivatives wrt parameters.
-c Main purpose is the study of 2d wigner crystal.
+! Written by A.D.Guclu, Apr 2006
+! 2-dimensional localized gaussian basis set,
+! and his derivatives wrt parameters.
+! Main purpose is the study of 2d wigner crystal.
 
-c arguments:
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments:
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: phin,dphin,d2phin  = wfs and coo. derivatives
-c         dparam, d2param  = parameter derivatives
+! output: phin,dphin,d2phin  = wfs and coo. derivatives
+!         dparam, d2param  = parameter derivatives
 
-c Wave functions are given by (except the normalization sqrt(1/pi)):
-c phi=dsqrt(we*xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
-c x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
-c normalization is taken care in (..)
+! Wave functions are given by (except the normalization sqrt(1/pi)):
+! phi=dsqrt(we*xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
+! x1,x2 are the electronic positions, xg1 xg2 are the gaussian positions.
+! normalization is taken care in (..)
 
-c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
+! parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
 
       use coefs_mod
       use const_mod
@@ -733,7 +733,7 @@ c parameter xg1,xg2,xg3 correspond to nparmo1,nparmo2,nparmo3 respectively.
       implicit real*8(a-h,o-z)
 
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -742,16 +742,16 @@ c     common /dim/ ndim
       nelec2=nelec
 
       ic=1
-c      write(6,*) 'in deriv_2dgauss'
+!      write(6,*) 'in deriv_2dgauss'
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c in the following we are losing some efficiency by calculating all the
-c gaussians for each electron. Because up and down electrons do not share
-c the same gaussian in crystals we could restrict the calculations...
-c I will however keep it this way in case we are interested in other
-c application than crystals.
+! in the following we are losing some efficiency by calculating all the
+! gaussians for each electron. Because up and down electrons do not share
+! the same gaussian in crystals we could restrict the calculations...
+! I will however keep it this way in case we are interested in other
+! application than crystals.
         do ib=1,nbasis
           if(oparm(3,ib,iwf).lt.0.d0) then
             stop 'oparm(3,ib,iwf).lt.0.d0 in deriv_2dgauss. '
@@ -765,7 +765,7 @@ c application than crystals.
           x2rel2=x2rel*x2rel
           rrel2=x1rel2+x2rel2
 
-c wfs and coo. derivatives:
+! wfs and coo. derivatives:
           phin(ib,ie)=dsqrt(wez)*dexp(-0.5d0*wez*rrel2)
 
           dphin(1,ib,ie)=-wez*x1rel*phin(ib,ie)
@@ -773,7 +773,7 @@ c wfs and coo. derivatives:
 
           d2phin(ib,ie)=(wez2*rrel2-2*wez)*phin(ib,ie)
 
-c parameter derivatives:
+! parameter derivatives:
           dparam(1,ib,ie)=-dphin(1,ib,ie)                                  ! wrt xg1
           dparam(2,ib,ie)=-dphin(2,ib,ie)                                  ! wrt xg2
           dparam(3,ib,ie)=0.5d0*(xg3i-we*rrel2)*phin(ib,ie)                ! wrt xg3
@@ -790,7 +790,7 @@ c parameter derivatives:
           d2param(3,1,ib,ie)=d2param(1,3,ib,ie)
           d2param(3,2,ib,ie)=d2param(2,3,ib,ie)
 
-c coo. derivatives of parameter derivatives:
+! coo. derivatives of parameter derivatives:
           ddparam(1,1,ib,ie)=-d2param(1,1,ib,ie)                             ! wrt x1,xg1
           ddparam(2,1,ib,ie)=-d2param(2,1,ib,ie)                             ! wrt x2,xg1
 
@@ -804,9 +804,9 @@ c coo. derivatives of parameter derivatives:
           d2dparam(2,ib,ie)=wez*(2*dparam(2,ib,ie)+x2rel*d2phin(ib,ie))   ! laplacian of dparam(2,ib,ie)
           d2dparam(3,ib,ie)=xg3i*d2phin(ib,ie)-2*wez*dparam(3,ib,ie)
      &+wez*we*(phin(ib,ie)+oparm(3,ib,iwf)*dparam(3,ib,ie))*rrel2     ! laplacian of dparam(3,ib,ie)
-c         test=2*we*phin(ib,ie)+0.5d0*(5*xg3i-we*rrel2)*d2phin(ib,ie)
-c         write(6,*) 'ib,ie,d2dparam,test=',ib,ie,d2dparam(3,ib,ie),test
-c         d2dparam(3,ib,ie)=test
+!         test=2*we*phin(ib,ie)+0.5d0*(5*xg3i-we*rrel2)*d2phin(ib,ie)
+!         write(6,*) 'ib,ie,d2dparam,test=',ib,ie,d2dparam(3,ib,ie),test
+!         d2dparam(3,ib,ie)=test
 
         enddo
       enddo
@@ -814,33 +814,33 @@ c         d2dparam(3,ib,ie)=test
       return
       end
 
-c--------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
       subroutine basis_fns_polargauss(iel,rvec_en,r_en)
 
-c Written by A.D.Guclu, Jan 2007
-c 2-dimensional localized gaussian basis set in polar coordinates
-c Main purpose is the study quasi-1D wigner crystal. It can
-c also be applied to 2d wigner crystals.
+! Written by A.D.Guclu, Jan 2007
+! 2-dimensional localized gaussian basis set in polar coordinates
+! Main purpose is the study quasi-1D wigner crystal. It can
+! also be applied to 2d wigner crystals.
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: phin,dphin, and d2phin are calculated
+! output: phin,dphin, and d2phin are calculated
 
-c Wave functions are given by (except the normalization csnt)
+! Wave functions are given by (except the normalization csnt)
 
-c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
+! phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 
-c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*(cos(xt-xt0)-1))
+! phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*(cos(xt-xt0)-1))
 
-c where  xr=r and xt=\theta  are polar coordinates of electrons
-c        xg1 and xg2 are polar coordinates of gaussians
-c        xg3 and xg4 are gaussian width parameters.
+! where  xr=r and xt=\theta  are polar coordinates of electrons
+!        xg1 and xg2 are polar coordinates of gaussians
+!        xg3 and xg4 are gaussian width parameters.
 
-c Here, we do not normalize the wfs
+! Here, we do not normalize the wfs
 
 
 
@@ -852,14 +852,14 @@ c Here, we do not normalize the wfs
       implicit real*8(a-h,o-z)
 
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-c      write(6,*) 'oparm1s=',oparm(1,1,iwf),oparm(1,2,iwf),oparm(1,3,iwf),oparm(1,4,iwf)
+!      write(6,*) 'oparm1s=',oparm(1,1,iwf),oparm(1,2,iwf),oparm(1,3,iwf),oparm(1,4,iwf)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -870,7 +870,7 @@ c Decide whether we are computing all or one electron
 
       ic=1
       expnorm=1.d0
-c      write(6,*) 'in basis_fns'
+!      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
@@ -880,7 +880,7 @@ c      write(6,*) 'in basis_fns'
         xri=1/xr
         xri2=xri*xri
 
-c        write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
+!        write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
 
         do ib=1,nbasis
 
@@ -900,31 +900,31 @@ c        write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
           phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
-c         if(abs(phir).lt.1.d-300) then
-c           write(6,'(''phir='',9d12.4)') phir
-c           stop 'phir too small'
-c         endif
+!         if(abs(phir).lt.1.d-300) then
+!           write(6,'(''phir='',9d12.4)') phir
+!           stop 'phir too small'
+!         endif
 
           if(abs(phir).gt.1.d+300) then
             write(6,'(''phir='',9d12.4)') phir
             stop 'phir too large'
           endif
 
-c         if(abs(phir).lt.1.d-300) then
-c           write(6,'(''phit='',9d12.4)') phit
-c           stop 'phit too small'
-c         endif
+!         if(abs(phir).lt.1.d-300) then
+!           write(6,'(''phit='',9d12.4)') phit
+!           stop 'phit too small'
+!         endif
 
           if(abs(phit).gt.1.d+300) then
             write(6,'(''phit='',9d12.4)') phit
             stop 'phit too large'
           endif
 
-c          write(6,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
-c          write(6,*) 'xg1,xg2,xg3,xg4,wez,wez2,',
-c     &'xrrel,xrrel2,xtrel,cxtrel,sxtrel=',
-c     &xg1,xg2,xg3,xg4,wez,wez2,xrrel,xrrel2,xtrel,cxtrel,sxtrel
-c          write(6,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
+!          write(6,*) 'phin(ib,ie),phir,phit,ib,ie=',phin(ib,ie),phir,phit,ib,ie
+!          write(6,*) 'xg1,xg2,xg3,xg4,wez,wez2,',
+!     &'xrrel,xrrel2,xtrel,cxtrel,sxtrel=',
+!     &xg1,xg2,xg3,xg4,wez,wez2,xrrel,xrrel2,xtrel,cxtrel,sxtrel
+!          write(6,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           dpdxr=-wez*xrrel
           dpdxt=-xg4*sxtrel
@@ -936,11 +936,11 @@ c          write(6,*) 'xg1,xg2,xg3,xg4=',xg1,xg2,xg3,xg4
 
           d2phin(ib,ie)=(dpdxr*xri+d2pdxr2+d2pdxt2*xri2)*phin(ib,ie)
 
-c         if(abs(phin(ib,ie)).lt.1.d-300) then
-c           write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
-c    &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
-c           stop 'phir,phit,phin(ib,ie) too small'
-c         endif
+!         if(abs(phin(ib,ie)).lt.1.d-300) then
+!           write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
+!    &      phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)
+!           stop 'phir,phit,phin(ib,ie) too small'
+!         endif
 
           if(abs(phin(ib,ie)).gt.1.d+300) then
             write(6,'(''phir,phit,phin(ib,ie),dphin(1,ib,ie),dphin(2,ib,ie),d2phin(ib,ie)='',9d12.4)')
@@ -951,9 +951,9 @@ c         endif
         enddo
       enddo
 
-c Check that every electron has at least one nonzero basis function.
+! Check that every electron has at least one nonzero basis function.
       phimax=maxval(abs(phin))
-c     write(6,'(''phimax='',d12.4)') phimax
+!     write(6,'(''phimax='',d12.4)') phimax
 
       do ie=nelec1,nelec2
         phicolmax=maxval(abs(phin(:,ie)))
@@ -964,45 +964,45 @@ c     write(6,'(''phimax='',d12.4)') phimax
         endif
       enddo
 
-c     do ib=1,nbasis
-c       phirowmax=maxval(abs(phin(ib,:)))
-c       if(phirowmax.lt.1.d-100*phimax) write(6,'(''Warning: ib, phirowmax, phimax='',i5,9e12.4)')  ib, phirowmax, phimax
-c       if(phirowmax.eq.0.d0) then
-c         write(6,'(''Warning stop: ib, phirowmax, phimax='',i5,9e12.4)')  ib, phicolmax, phimax
-c         stop 'phirowmax = 0'
-c       endif
-c     enddo
+!     do ib=1,nbasis
+!       phirowmax=maxval(abs(phin(ib,:)))
+!       if(phirowmax.lt.1.d-100*phimax) write(6,'(''Warning: ib, phirowmax, phimax='',i5,9e12.4)')  ib, phirowmax, phimax
+!       if(phirowmax.eq.0.d0) then
+!         write(6,'(''Warning stop: ib, phirowmax, phimax='',i5,9e12.4)')  ib, phicolmax, phimax
+!         stop 'phirowmax = 0'
+!       endif
+!     enddo
 
       return
       end
 
-c-------------------------------------------------------------------------
+!-------------------------------------------------------------------------
       subroutine deriv_polargauss(rvec_en,r_en)
 
-c Written by A.D.Guclu, Jan 2007
-c 2-dimensional localized gaussian basis set in polar coordinates
-c Main purpose is the study quasi-1D wigner crystal. It can
-c also be applied to 2d wigner crystals.
+! Written by A.D.Guclu, Jan 2007
+! 2-dimensional localized gaussian basis set in polar coordinates
+! Main purpose is the study quasi-1D wigner crystal. It can
+! also be applied to 2d wigner crystals.
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: phin,dphin, and d2phin are calculated
-c         dparam, d2param  = parameter derivatives
+! output: phin,dphin, and d2phin are calculated
+!         dparam, d2param  = parameter derivatives
 
-c Wave functions are given by (except the normalization csnt)
+! Wave functions are given by (except the normalization csnt)
 
-c phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
+! phi=dsqrt(xg3)*exp(-we*xg3/2*((x1-xg1)^2+(x2-xg2)^2))
 
-c phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
+! phi=dsqrt(xg3) * exp(-we*xg3/2*(xr-xr0)^2) * exp(xg4*cos(xt-xt0))
 
-c where  xr=r and xt=\theta  are polar coordinates of electrons
-c        xg1 and xg2 are polar coordinates of gaussians
-c        xg3 and xg4 are gaussian width parameters.
+! where  xr=r and xt=\theta  are polar coordinates of electrons
+!        xg1 and xg2 are polar coordinates of gaussians
+!        xg3 and xg4 are gaussian width parameters.
 
-c Here, we do not normalize the wfs
+! Here, we do not normalize the wfs
 
       use coefs_mod
       use const_mod
@@ -1013,7 +1013,7 @@ c Here, we do not normalize the wfs
       implicit real*8(a-h,o-z)
 
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -1032,7 +1032,7 @@ c     common /dim/ ndim
         xri=1/xr
         xri2=xri*xri
 
-c       write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
+!       write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
 
         do ib=1,nbasis
 
@@ -1047,18 +1047,18 @@ c       write(6,*) 'x,y,xr,xt,xr*dcos(xt)=',x1,x2,xr,xt,xr*dcos(xt)
           xtrel=xt-xg2
           cxtrel=dcos(xtrel)
           sxtrel=dsin(xtrel)
-c jacobian:
+! jacobian:
           dxrdx1=x1*xri
           dxrdx2=x2*xri
           dxtdx1=-x2*xri2
           dxtdx2=x1*xri2
 
-c wfs and coo. derivatives:
+! wfs and coo. derivatives:
           phir=dsqrt(we)*dexp(-0.5d0*wez*xrrel2)
           phit=dexp(xg4*(cxtrel-expnorm))
           phin(ib,ie)=phir*phit
 
-c         write(6,*) 'phir,phit=',phir,phit
+!         write(6,*) 'phir,phit=',phir,phit
 
           tempr1=-wez*xrrel
           tempt1=-xg4*sxtrel
@@ -1074,7 +1074,7 @@ c         write(6,*) 'phir,phit=',phir,phit
 
           d2phin(ib,ie)=dpdxr*xri+d2pdxr2+d2pdxt2*xri2
 
-c parameter derivatives:
+! parameter derivatives:
           dparam(1,ib,ie)=-dpdxr                                 ! wrt xg1
           dparam(2,ib,ie)=-dpdxt                                 ! wrt xg2
           dparam(3,ib,ie)=-0.5d0*we*xrrel2*phin(ib,ie)           ! wrt xg3
@@ -1099,7 +1099,7 @@ c parameter derivatives:
           d2param(4,2,ib,ie)=d2param(2,4,ib,ie)
           d2param(4,3,ib,ie)=d2param(3,4,ib,ie)
 
-c coo. derivatives of parameter derivatives:
+! coo. derivatives of parameter derivatives:
 
           ddparam(1,1,ib,ie)=                                 ! wrt x1,xg1
      &-(d2param(1,1,ib,ie)*dxrdx1+d2param(1,2,ib,ie)*dxtdx1)
@@ -1144,33 +1144,33 @@ c coo. derivatives of parameter derivatives:
       end
 
 
-c-------------------------------------------------------------------------
+!-------------------------------------------------------------------------
 
       subroutine basis_fns_2dgauss_noncirc(iel,rvec_en,r_en)
 
-c Written by Abhijit C. Mehta, October 2008
-c (modified version of basis_fns_2dgauss)
-c 2-dimensional localized gaussian basis set, 
-c    gaussians can have diffferent widths in x- and y- directions
-c Main purpose is the study 2d wigner crystal in quantum wires
+! Written by Abhijit C. Mehta, October 2008
+! (modified version of basis_fns_2dgauss)
+! 2-dimensional localized gaussian basis set,
+!    gaussians can have diffferent widths in x- and y- directions
+! Main purpose is the study 2d wigner crystal in quantum wires
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot/"wire" center in this context)
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot/"wire" center in this context)
 
-c output: phin,dphin, and d2phin are calculated
+! output: phin,dphin, and d2phin are calculated
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
+! Wave functions are given by (except the normalization sqrt(we/pi)):
 
-c phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2)) 
-c                           * exp(-we*xg4/2*((x2-xg2)^2))
+! phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2))
+!                           * exp(-we*xg4/2*((x2-xg2)^2))
 
-c where x1,x2 are the electronic x and y positions, 
-c       xg1, xg2 are the gaussian x and y positions.
-c       xg3, xg4 are the gaussian x and y width parameters
-c       (Note that xg3 and xg4 are the "omegas" (1/width)
-c         in units of we (or wire_w in case of wire)))
+! where x1,x2 are the electronic x and y positions,
+!       xg1, xg2 are the gaussian x and y positions.
+!       xg3, xg4 are the gaussian x and y width parameters
+!       (Note that xg3 and xg4 are the "omegas" (1/width)
+!         in units of we (or wire_w in case of wire)))
 
 
       use coefs_mod
@@ -1181,12 +1181,12 @@ c         in units of we (or wire_w in case of wire)))
       implicit real*8(a-h,o-z)
 
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -1196,13 +1196,13 @@ c Decide whether we are computing all or one electron
       endif
 
       ic=1
-c      write(6,*) 'in basis_fns'
+!      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(6,*) 'x1,x2,we=',x1,x2,we
+!       write(6,*) 'x1,x2,we=',x1,x2,we
 
         do ib=1,nbasis
           wex=we*oparm(3,ib,iwf)
@@ -1213,11 +1213,11 @@ c       write(6,*) 'x1,x2,we=',x1,x2,we
           x1rel2=x1rel*x1rel
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
-     
+
           phin(ib,ie)=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wex*x1rel2)*dexp(-0.5d0*wey*x2rel2)
 
-c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
+!         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+!         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
 
           dphin(1,ib,ie)=-wex*x1rel*phin(ib,ie)
           dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
@@ -1230,35 +1230,35 @@ c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,i
       return
       end
 
-c--------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
       subroutine deriv_2dgauss_noncirc(rvec_en,r_en)
 
-c Written by Abhijit C. Mehta, October 2008
-c modified version of deriv_2dgauss
-c 2-dimensional localized gaussian basis set, with different x- and y- widths,
-c and the derivatives wrt parameters.
-c Main purpose is the study of 2d wigner crystal in quantum wires
+! Written by Abhijit C. Mehta, October 2008
+! modified version of deriv_2dgauss
+! 2-dimensional localized gaussian basis set, with different x- and y- widths,
+! and the derivatives wrt parameters.
+! Main purpose is the study of 2d wigner crystal in quantum wires
 
-c arguments:
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments:
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: phin,dphin,d2phin  = wfs and coo. derivatives
-c         dparam, d2param, ddparam, d2dparam  = parameter derivatives
+! output: phin,dphin,d2phin  = wfs and coo. derivatives
+!         dparam, d2param, ddparam, d2dparam  = parameter derivatives
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
+! Wave functions are given by (except the normalization sqrt(we/pi)):
 
-c phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2)) 
-c                           * exp(-we*xg4/2*((x2-xg2)^2))
+! phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2))
+!                           * exp(-we*xg4/2*((x2-xg2)^2))
 
-c where x1,x2 are the electronic x and y positions, 
-c       xg1, xg2 are the gaussian x and y positions.
-c       xg3, xg4 are the gaussian x and y width parameters
-c       (Note that xg3 and xg4 are the "omegas" (1/width)
-c         in units of we (or wire_w in case of wire)))
+! where x1,x2 are the electronic x and y positions,
+!       xg1, xg2 are the gaussian x and y positions.
+!       xg3, xg4 are the gaussian x and y width parameters
+!       (Note that xg3 and xg4 are the "omegas" (1/width)
+!         in units of we (or wire_w in case of wire)))
 
-c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
+! parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       use coefs_mod
       use const_mod
       use wfsec_mod
@@ -1268,7 +1268,7 @@ c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       implicit real*8(a-h,o-z)
 
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -1277,16 +1277,16 @@ c     common /dim/ ndim
       nelec2=nelec
 
       ic=1
-c      write(6,*) 'in deriv_2dgauss'
+!      write(6,*) 'in deriv_2dgauss'
       do ie=nelec1,nelec2
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c in the following we are losing some efficiency by calculating all the
-c gaussians for each electron. Because up and down electrons do not share
-c the same gaussian in crystals we could restrict the calculations...
-c I will however keep it this way in case we are interested in other
-c application than crystals.
+! in the following we are losing some efficiency by calculating all the
+! gaussians for each electron. Because up and down electrons do not share
+! the same gaussian in crystals we could restrict the calculations...
+! I will however keep it this way in case we are interested in other
+! application than crystals.
         do ib=1,nbasis
           if(oparm(3,ib,iwf).lt.0.d0) then
             stop 'oparm(3,ib,iwf).lt.0.d0 in deriv_2dgauss_noncirc. '
@@ -1297,7 +1297,7 @@ c application than crystals.
           wex=we*oparm(3,ib,iwf)
           wex2=wex*wex
           wey=we*oparm(4,ib,iwf)
-          wey2=wey*wey 
+          wey2=wey*wey
           xg3i=1/oparm(3,ib,iwf)
           xg4i=1/oparm(4,ib,iwf)
           x1rel=x1-oparm(1,ib,iwf)
@@ -1305,7 +1305,7 @@ c application than crystals.
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
 
-c wfs and coo. derivatives:
+! wfs and coo. derivatives:
           phin(ib,ie)=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wex*x1rel2)*dexp(-0.5d0*wey*x2rel2)
 
           dphin(1,ib,ie)=-wex*x1rel*phin(ib,ie)
@@ -1314,7 +1314,7 @@ c wfs and coo. derivatives:
           d2phin(ib,ie)=tempd2*phin(ib,ie)
 
 
-c parameter derivatives:
+! parameter derivatives:
           dparam(1,ib,ie)=-dphin(1,ib,ie)                                  ! wrt xg1
           dparam(2,ib,ie)=-dphin(2,ib,ie)                                  ! wrt xg2
           dparam(3,ib,ie)=0.5d0*(0.5d0*xg3i - we*x1rel2)* phin(ib,ie)      ! wrt xg3
@@ -1328,7 +1328,7 @@ c parameter derivatives:
           d2param(4,4,ib,ie)=(0.25d0*we*x2rel2*(we*x2rel2 - xg4i)
      &                        - 0.1875d0*xg4i*xg4i)*phin(ib,ie)            ! wrt xg4,xg4
           d2param(1,2,ib,ie)=wex*wey*x1rel*x2rel*phin(ib,ie)               ! wrt xg1,xg2
-          
+
           d2param(1,3,ib,ie)=x1rel*(wex*dparam(3,ib,ie) + we*phin(ib,ie))  ! wrt xg1,xg3
           d2param(1,4,ib,ie)=x1rel*wex*dparam(4,ib,ie)                     ! wrt xg1,xg3
           d2param(2,3,ib,ie)=x2rel*wey*dparam(3,ib,ie)                     ! wrt xg2,xg3
@@ -1342,10 +1342,10 @@ c parameter derivatives:
           d2param(4,2,ib,ie)=d2param(2,4,ib,ie)
           d2param(4,3,ib,ie)=d2param(3,4,ib,ie)
 
-c coo. derivatives of parameter derivatives:
+! coo. derivatives of parameter derivatives:
           ddparam(1,1,ib,ie)=-d2param(1,1,ib,ie)                            ! wrt x1,xg1
           ddparam(2,1,ib,ie)=-d2param(2,1,ib,ie)                            ! wrt x2,xg1
-          
+
           ddparam(1,2,ib,ie)= ddparam(2,1,ib,ie)                            ! wrt x1,xg2
           ddparam(2,2,ib,ie)=-d2param(2,2,ib,ie)                             ! wrt x2,xg2
 
@@ -1357,9 +1357,9 @@ c coo. derivatives of parameter derivatives:
 
           d2dparam(1,ib,ie)=wex*(2*dparam(1,ib,ie)+x1rel*d2phin(ib,ie))  ! laplacian of dparam(1,ib,ie)
           d2dparam(2,ib,ie)=wey*(2*dparam(2,ib,ie)+x2rel*d2phin(ib,ie))   ! laplacian of dparam(2,ib,ie)
-          d2dparam(3,ib,ie)=(2*wex2*xg3i*x1rel2 - we)*phin(ib,ie) 
+          d2dparam(3,ib,ie)=(2*wex2*xg3i*x1rel2 - we)*phin(ib,ie)
      &                      + tempd2*dparam(3,ib,ie)  ! laplacian of dparam(3,ib,ie)
-          d2dparam(4,ib,ie)=(2*wey2*xg4i*x2rel2 - we)*phin(ib,ie) 
+          d2dparam(4,ib,ie)=(2*wey2*xg4i*x2rel2 - we)*phin(ib,ie)
      &                      + tempd2*dparam(4,ib,ie)  ! laplacian of dparam(4,ib,ie)
 
         enddo
@@ -1370,38 +1370,38 @@ c coo. derivatives of parameter derivatives:
 
 
 
-c-------------------------------------------------------------------------
+!-------------------------------------------------------------------------
 
       subroutine basis_fns_2dgauss_periodic(iel,rvec_en,r_en)
 
-c Written by Abhijit C. Mehta, December 2009
-c (modified version of basis_fns_2dgauss)
-c 2-dimensional localized gaussian basis set, 
-c    gaussians can have diffferent widths in x- and y- directions
-c    periodic in x-direction (designed for iperiodic = 1)
-c Main purpose is the study 2d wigner crystal in quantum wires 
-c    (infinite periodic wire - i.e., 1D periodic boundary conditions)
+! Written by Abhijit C. Mehta, December 2009
+! (modified version of basis_fns_2dgauss)
+! 2-dimensional localized gaussian basis set,
+!    gaussians can have diffferent widths in x- and y- directions
+!    periodic in x-direction (designed for iperiodic = 1)
+! Main purpose is the study 2d wigner crystal in quantum wires
+!    (infinite periodic wire - i.e., 1D periodic boundary conditions)
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot/"wire" center in this context)                          
-c                    (i.e., distance from (0,0))
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot/"wire" center in this context)
+!                    (i.e., distance from (0,0))
 
-c output: phin,dphin, and d2phin are calculated
+! output: phin,dphin, and d2phin are calculated
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
+! Wave functions are given by (except the normalization sqrt(we/pi)):
 
-c phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2))
-c                           * exp(-we*xg4/2*((x2-xg2)^2))
-c                + all periodic images
-c  i.e. we take phi(x1) + phi(x1 + a) + phi(x1 + 2a) + phi(x1 - a) + ... 
+! phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2))
+!                           * exp(-we*xg4/2*((x2-xg2)^2))
+!                + all periodic images
+!  i.e. we take phi(x1) + phi(x1 + a) + phi(x1 + 2a) + phi(x1 - a) + ...
 
-c where x1,x2 are the electronic x and y positions, 
-c       xg1, xg2 are the gaussian x and y positions.
-c       xg3, xg4 are the gaussian x and y width parameters
-c       (Note that xg3 and xg4 are the "omegas" (1/width)
-c         in units of we (or wire_w in case of wire)))
+! where x1,x2 are the electronic x and y positions,
+!       xg1, xg2 are the gaussian x and y positions.
+!       xg3, xg4 are the gaussian x and y width parameters
+!       (Note that xg3 and xg4 are the "omegas" (1/width)
+!         in units of we (or wire_w in case of wire)))
 
 
       use coefs_mod
@@ -1418,7 +1418,7 @@ c         in units of we (or wire_w in case of wire)))
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
       gausseps = 1.d-12  ! We sum gaussians with value greater than gausseps
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -1428,49 +1428,49 @@ c Decide whether we are computing all or one electron
       endif
 
       ic=1
-c      write(6,*) 'in basis_fns'
+!      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
-c       modulo math was done in distances.f, so we don't need to do it here
+!       modulo math was done in distances.f, so we don't need to do it here
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(6,*) 'x1,x2,we=',x1,x2,we
+!       write(6,*) 'x1,x2,we=',x1,x2,we
 
-c       assume that input parameters oparm are scaled to periodic BC's
+!       assume that input parameters oparm are scaled to periodic BC's
         do ib=1,nbasis
           wex=we*oparm(3,ib,iwf)
           wex2=wex*wex
           wey=we*oparm(4,ib,iwf)
           wey2=wey*wey
-          x1rel=x1-oparm(1,ib,iwf)         
-c         modulo math:
+          x1rel=x1-oparm(1,ib,iwf)
+!         modulo math:
           if(x1rel.ge.(alattice/2.0)) then
              x1rel = x1rel - alattice
           elseif(x1rel.lt.(-alattice/2.0)) then
              x1rel = alattice + x1rel
           endif
-          
+
           if((x1rel.gt.(alattice/2.0).or.(x1rel.lt.(-alattice/2.0)))) then
              write(6,*) 'Error in modulo math in basis_fns_2dgauss_periodic'
              stop 'Error in modulo math in basis_fns_2dgauss_periodic'
           endif
-          
+
           x1rel2=x1rel*x1rel
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
-          
+
           phinypart=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(-0.5d0*wex*x1rel2)
-c         The following line was the way we originally wanted to do this, but
-c            there were strange compiler errors, and the code would often fail to
-c            exit the following do loop if gausseps was too small.
-c          For now, we just set gausseps = 1.d-12, but another thing to try
-c            would be to try gausseps = abs(1.d-12 * phinxpart)
-c          gausseps = 1.d-12 * phinxpart
+!         The following line was the way we originally wanted to do this, but
+!            there were strange compiler errors, and the code would often fail to
+!            exit the following do loop if gausseps was too small.
+!          For now, we just set gausseps = 1.d-12, but another thing to try
+!            would be to try gausseps = abs(1.d-12 * phinxpart)
+!          gausseps = 1.d-12 * phinxpart
           dphinxpart = x1rel*phinxpart
           d2phinxpart = x1rel2*phinxpart
-          
+
           do icell = 1,3
              x1relleft = x1rel - alattice*icell
              x1relright = x1rel + alattice*icell
@@ -1482,16 +1482,16 @@ c          gausseps = 1.d-12 * phinxpart
              phinxpart = phinxpart + phileft + phiright
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright
-c             if (icell.gt.2) then
-c                write (6,*) 'Warning: in basis_fns_2dgauss_periodic: gaussians are wider than 2 unit cells.'
-c             endif
+!             if (icell.gt.2) then
+!                write (6,*) 'Warning: in basis_fns_2dgauss_periodic: gaussians are wider than 2 unit cells.'
+!             endif
           enddo
 
           phin(ib,ie)=phinypart*phinxpart
-                             
 
-c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
+
+!         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+!         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
 
           dphin(1,ib,ie)=-wex*dphinxpart*phinypart
           dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
@@ -1504,38 +1504,38 @@ c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,i
       return
       end
 
-c--------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
       subroutine deriv_2dgauss_periodic(rvec_en,r_en)
 
-c Written by Abhijit C. Mehta, January 2010
-c modified version of deriv_2dgauss
-c 2-dimensional localized gaussian basis set, with different x- and y- widths,
-c and the derivatives wrt parameters. for a periodic system
-c Main purpose is the study of 2d wigner crystal in quantum wires
-c  (Infinite wire, periodic BC's)
+! Written by Abhijit C. Mehta, January 2010
+! modified version of deriv_2dgauss
+! 2-dimensional localized gaussian basis set, with different x- and y- widths,
+! and the derivatives wrt parameters. for a periodic system
+! Main purpose is the study of 2d wigner crystal in quantum wires
+!  (Infinite wire, periodic BC's)
 
-c arguments:
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments:
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: phin,dphin,d2phin  = wfs and coo. derivatives
-c         dparam, d2param, ddparam, d2dparam  = parameter derivatives
+! output: phin,dphin,d2phin  = wfs and coo. derivatives
+!         dparam, d2param, ddparam, d2dparam  = parameter derivatives
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
+! Wave functions are given by (except the normalization sqrt(we/pi)):
 
-c phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2)) 
-c                           * exp(-we*xg4/2*((x2-xg2)^2))
-c                + all periodic images
-c  i.e. we take phi(x1) + phi(x1 + a) + phi(x1 + 2a) + phi(x1 - a) + ... 
+! phi=dsqrt(dsqrt(xg3*xg4)) * exp(-we*xg3/2*((x1-xg1)^2))
+!                           * exp(-we*xg4/2*((x2-xg2)^2))
+!                + all periodic images
+!  i.e. we take phi(x1) + phi(x1 + a) + phi(x1 + 2a) + phi(x1 - a) + ...
 
-c where x1,x2 are the electronic x and y positions, 
-c       xg1, xg2 are the gaussian x and y positions.
-c       xg3, xg4 are the gaussian x and y width parameters
-c       (Note that xg3 and xg4 are the "omegas" (1/width)
-c         in units of we (or wire_w in case of wire)))
+! where x1,x2 are the electronic x and y positions,
+!       xg1, xg2 are the gaussian x and y positions.
+!       xg3, xg4 are the gaussian x and y width parameters
+!       (Note that xg3 and xg4 are the "omegas" (1/width)
+!         in units of we (or wire_w in case of wire)))
 
-c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
+! parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       use coefs_mod
       use const_mod
       use wfsec_mod
@@ -1554,17 +1554,17 @@ c parameters xg1,xg2,xg3,xg4 correspond to nparmo1,nparmo2,nparmo3,nparmo4
       nelec2=nelec
 
       ic=1
-c      write(6,*) 'in deriv_2dgauss'
+!      write(6,*) 'in deriv_2dgauss'
       do ie=nelec1,nelec2
-c       modulo math already done in distances.f
+!       modulo math already done in distances.f
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c in the following we are losing some efficiency by calculating all the
-c gaussians for each electron. Because up and down electrons do not share
-c the same gaussian in crystals we could restrict the calculations...
-c I will however keep it this way in case we are interested in other
-c application than crystals.
+! in the following we are losing some efficiency by calculating all the
+! gaussians for each electron. Because up and down electrons do not share
+! the same gaussian in crystals we could restrict the calculations...
+! I will however keep it this way in case we are interested in other
+! application than crystals.
         do ib=1,nbasis
           if(oparm(3,ib,iwf).lt.0.d0) then
             stop 'oparm(3,ib,iwf).lt.0.d0 in deriv_2dgauss_periodic. '
@@ -1575,16 +1575,16 @@ c application than crystals.
           wex=we*oparm(3,ib,iwf)
           wex2=wex*wex
           wey=we*oparm(4,ib,iwf)
-          wey2=wey*wey 
+          wey2=wey*wey
           xg3i=1/oparm(3,ib,iwf)
           xg4i=1/oparm(4,ib,iwf)
           x1rel=x1-oparm(1,ib,iwf)
-c         modulo math:
+!         modulo math:
           if(x1rel.ge.(alattice/2.0)) then
              x1rel = x1rel - alattice
           elseif(x1rel.lt.(-alattice/2.0)) then
              x1rel = alattice + x1rel
-          endif          
+          endif
           if((x1rel.gt.(alattice/2.0).or.(x1rel.lt.(-alattice/2.0)))) then
              write(6,*) 'Error in modulo math in deriv_2dgauss_periodic'
              stop 'Error in modulo math in basis_fns_2dgauss_periodic'
@@ -1594,16 +1594,16 @@ c         modulo math:
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
 
-c wfs and coo. derivatives:
+! wfs and coo. derivatives:
 
           phinypart=dsqrt(dsqrt(wex*wey))*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(-0.5d0*wex*x1rel2)
-c         The following line was the way we originally wanted to do this, but
-c            there were strange compiler errors, and the code would often fail to
-c            exit the following do loop if gausseps was too small.
-c          For now, we just set gausseps = 1.d-12, but another thing to try
-c            would be to try gausseps = abs(1.d-12 * phinxpart)
-c          gausseps = 1.0d-12*phinxpart
+!         The following line was the way we originally wanted to do this, but
+!            there were strange compiler errors, and the code would often fail to
+!            exit the following do loop if gausseps was too small.
+!          For now, we just set gausseps = 1.d-12, but another thing to try
+!            would be to try gausseps = abs(1.d-12 * phinxpart)
+!          gausseps = 1.0d-12*phinxpart
           dphinxpart = x1rel*phinxpart
           d2phinxpart = x1rel2*phinxpart
           d3phinxpart = x1rel*x1rel2*phinxpart
@@ -1619,28 +1619,28 @@ c          gausseps = 1.0d-12*phinxpart
              phinxpart = phinxpart + phileft + phiright
              dphinxpart = dphinxpart + x1relleft*phileft + x1relright*phiright
              d2phinxpart = d2phinxpart + x1relleft2*phileft + x1relright2*phiright
-             d3phinxpart = d3phinxpart + x1relleft*x1relleft2*phileft 
+             d3phinxpart = d3phinxpart + x1relleft*x1relleft2*phileft
      &            + x1relright*x1relright2*phiright
-             d4phinxpart = d4phinxpart + x1relleft2*x1relleft2*phileft 
+             d4phinxpart = d4phinxpart + x1relleft2*x1relleft2*phileft
      &            + x1relright2*x1relright2*phiright
-c             if (icell.gt.2) then
-c                write (6,*) 'Warning: in deriv_2dgauss_periodic gaussians are wider than 2 unit cells.'
-c             endif
+!             if (icell.gt.2) then
+!                write (6,*) 'Warning: in deriv_2dgauss_periodic gaussians are wider than 2 unit cells.'
+!             endif
           enddo
 
           phin(ib,ie)=phinypart*phinxpart
-                             
+
           dphin(1,ib,ie)=-wex*dphinxpart*phinypart
           dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
 
           d2phin(ib,ie)=wex2*d2phinxpart*phinypart + (wey2*x2rel2 - wex - wey)*phin(ib,ie)
 
-c          tempd2 = (wex2*x1rel2 + wey2*x2rel2 - wex - wey)
+!          tempd2 = (wex2*x1rel2 + wey2*x2rel2 - wex - wey)
 
-          tempd4parm = 0.5d0*(0.5d0*xg4i - we*x2rel2) 
+          tempd4parm = 0.5d0*(0.5d0*xg4i - we*x2rel2)
 
 
-c parameter derivatives:
+! parameter derivatives:
           dparam(1,ib,ie)=-dphin(1,ib,ie)                                  ! wrt xg1
           dparam(2,ib,ie)=-dphin(2,ib,ie)                                  ! wrt xg2
           dparam(3,ib,ie)= phinypart*(0.5d0*(0.5d0*xg3i*phinxpart - we*d2phinxpart))     ! wrt xg3
@@ -1655,7 +1655,7 @@ c parameter derivatives:
      &                        - 0.1875d0*xg4i*xg4i)*phin(ib,ie)            ! wrt xg4,xg4
 
 
-          d2param(1,2,ib,ie)=wey*x2rel*dparam(1,ib,ie)                     ! wrt xg1,xg2          
+          d2param(1,2,ib,ie)=wey*x2rel*dparam(1,ib,ie)                     ! wrt xg1,xg2
           d2param(1,3,ib,ie)=we*phinypart*(1.25d0*dphinxpart - 0.5d0*d3phinxpart)    ! wrt xg1,xg3
           d2param(1,4,ib,ie)=tempd4parm*dparam(1,ib,ie)     ! wrt xg1,xg3
 
@@ -1671,10 +1671,10 @@ c parameter derivatives:
           d2param(4,2,ib,ie)=d2param(2,4,ib,ie)
           d2param(4,3,ib,ie)=d2param(3,4,ib,ie)
 
-c coo. derivatives of parameter derivatives:
+! coo. derivatives of parameter derivatives:
           ddparam(1,1,ib,ie)=-d2param(1,1,ib,ie)                            ! wrt x1,xg1
           ddparam(2,1,ib,ie)=-d2param(2,1,ib,ie)                            ! wrt x2,xg1
-          
+
           ddparam(1,2,ib,ie)= ddparam(2,1,ib,ie)                            ! wrt x1,xg2
           ddparam(2,2,ib,ie)=-d2param(2,2,ib,ie)                             ! wrt x2,xg2
 
@@ -1698,39 +1698,39 @@ c coo. derivatives of parameter derivatives:
 
       return
       end
-c-------------------------------------------------------------------------
+!-------------------------------------------------------------------------
 
       subroutine basis_fns_2dgauss_periodic2(iel,rvec_en,r_en)
 
-c Written by Abhijit C. Mehta, July 2011
-c (modified version of basis_fns_polargauss)
-c 2-dimensional localized gaussian basis set, 
-c    gaussians can have diffferent widths in x- and y- directions
-c    periodic in x-direction (designed for iperiodic = 1)
-c Main purpose is the study 2d wigner crystal in quantum wires 
-c    (infinite periodic wire - i.e., 1D periodic boundary conditions)
-c  This version uses an exp(cos(2*pi*x/alattice)) term instead of
-c      starting with the exp(-x^2) term and summing images 
+! Written by Abhijit C. Mehta, July 2011
+! (modified version of basis_fns_polargauss)
+! 2-dimensional localized gaussian basis set,
+!    gaussians can have diffferent widths in x- and y- directions
+!    periodic in x-direction (designed for iperiodic = 1)
+! Main purpose is the study 2d wigner crystal in quantum wires
+!    (infinite periodic wire - i.e., 1D periodic boundary conditions)
+!  This version uses an exp(cos(2*pi*x/alattice)) term instead of
+!      starting with the exp(-x^2) term and summing images
 
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot/"wire" center in this context)                          
-c                    (i.e., distance from (0,0))
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot/"wire" center in this context)
+!                    (i.e., distance from (0,0))
 
-c output: phin,dphin, and d2phin are calculated
+! output: phin,dphin, and d2phin are calculated
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
+! Wave functions are given by (except the normalization sqrt(we/pi)):
 
-c phi=dsqrt(we) * exp(-we*xg4/2*(x2-xg2)^2) * exp(xg3*cos(xt-xt0))
-c    (xt - xt0) = 2*pi*(x1-xg1)/alattice
+! phi=dsqrt(we) * exp(-we*xg4/2*(x2-xg2)^2) * exp(xg3*cos(xt-xt0))
+!    (xt - xt0) = 2*pi*(x1-xg1)/alattice
 
-c where x1,x2 are the electronic x and y positions, 
-c       xg1, xg2 are the gaussian x and y positions.
-c       xg3, xg4 are the gaussian x and y width parameters
-c       (Note that xg3 and xg4 are the "omegas" (1/width)
-c         in units of we (or wire_w in case of wire)))
+! where x1,x2 are the electronic x and y positions,
+!       xg1, xg2 are the gaussian x and y positions.
+!       xg3, xg4 are the gaussian x and y width parameters
+!       (Note that xg3 and xg4 are the "omegas" (1/width)
+!         in units of we (or wire_w in case of wire)))
 
 
       use coefs_mod
@@ -1746,7 +1746,7 @@ c         in units of we (or wire_w in case of wire)))
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -1757,16 +1757,16 @@ c Decide whether we are computing all or one electron
 
       ic=1
       expnorm = 1.d0
-c      write(6,*) 'in basis_fns'
+!      write(6,*) 'in basis_fns'
 
       do ie=nelec1,nelec2
-c       modulo math was done in distances.f, so we don't need to do it here
+!       modulo math was done in distances.f, so we don't need to do it here
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(6,*) 'x1,x2,we=',x1,x2,we
+!       write(6,*) 'x1,x2,we=',x1,x2,we
 
-c       assume that input parameters oparm are scaled to periodic BC's
+!       assume that input parameters oparm are scaled to periodic BC's
         do ib=1,nbasis
           xg3 = oparm(3,ib,iwf)
           wey=we*oparm(4,ib,iwf)
@@ -1776,20 +1776,20 @@ c       assume that input parameters oparm are scaled to periodic BC's
           sxtrel=dsin(2.*pi*x1rel/alattice)
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
-          
+
           phinypart=dsqrt(we)*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(xg3*(cxtrel - expnorm))
-          
-          phin(ib,ie)=phinypart*phinxpart
-                             
 
-c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
+          phin(ib,ie)=phinypart*phinxpart
+
+
+!         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+!         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
 
           dphin(1,ib,ie)=-(xg3*2.*pi*sxtrel/alattice)*phin(ib,ie)
           dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
 
-          d2dx2term = xg3*(2.*pi/alattice)**2*(xg3*sxtrel**2-cxtrel) 
+          d2dx2term = xg3*(2.*pi/alattice)**2*(xg3*sxtrel**2-cxtrel)
           d2dy2term = wey2*x2rel2 - wey
 
           d2phin(ib,ie) = (d2dx2term + d2dy2term)*phin(ib,ie)
@@ -1800,39 +1800,39 @@ c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,i
       return
       end
 
-c--------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
       subroutine deriv_2dgauss_periodic2(rvec_en,r_en)
 
-c Written by Abhijit C. Mehta, July 2011
-c (modified version of deriv_polargauss)
-c 2-dimensional localized gaussian basis set, and derivatives 
-c    gaussians can have diffferent widths in x- and y- directions
-c    periodic in x-direction (designed for iperiodic = 1)
-c Main purpose is the study 2d wigner crystal in quantum wires 
-c    (infinite periodic wire - i.e., 1D periodic boundary conditions)
-c  This version uses an exp(cos(2*pi*x/alattice)) term instead of
-c      starting with the exp(-x^2) term and summing images 
+! Written by Abhijit C. Mehta, July 2011
+! (modified version of deriv_polargauss)
+! 2-dimensional localized gaussian basis set, and derivatives
+!    gaussians can have diffferent widths in x- and y- directions
+!    periodic in x-direction (designed for iperiodic = 1)
+! Main purpose is the study 2d wigner crystal in quantum wires
+!    (infinite periodic wire - i.e., 1D periodic boundary conditions)
+!  This version uses an exp(cos(2*pi*x/alattice)) term instead of
+!      starting with the exp(-x^2) term and summing images
 
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot/"wire" center in this context)                          
-c                    (i.e., distance from (0,0))
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot/"wire" center in this context)
+!                    (i.e., distance from (0,0))
 
-c output: phin,dphin, and d2phin are calculated
+! output: phin,dphin, and d2phin are calculated
 
-c Wave functions are given by (except the normalization sqrt(we/pi)):
+! Wave functions are given by (except the normalization sqrt(we/pi)):
 
-c phi=dsqrt(we) * exp(-we*xg4/2*(x2-xg2)^2) * exp(xg3*cos(xt-xt0))
-c    (xt - xt0) = 2*pi*(x1-xg1)/alattice
+! phi=dsqrt(we) * exp(-we*xg4/2*(x2-xg2)^2) * exp(xg3*cos(xt-xt0))
+!    (xt - xt0) = 2*pi*(x1-xg1)/alattice
 
-c where x1,x2 are the electronic x and y positions, 
-c       xg1, xg2 are the gaussian x and y positions.
-c       xg3, xg4 are the gaussian x and y width parameters
-c       (Note that xg3 and xg4 are the "omegas" (1/width)
-c         in units of we (or wire_w in case of wire)))
+! where x1,x2 are the electronic x and y positions,
+!       xg1, xg2 are the gaussian x and y positions.
+!       xg3, xg4 are the gaussian x and y width parameters
+!       (Note that xg3 and xg4 are the "omegas" (1/width)
+!         in units of we (or wire_w in case of wire)))
 
 
       use coefs_mod
@@ -1854,16 +1854,16 @@ c         in units of we (or wire_w in case of wire)))
 
       ic=1
       expnorm = 1.d0
-c      write(6,*) 'in deriv_2dgauss'
+!      write(6,*) 'in deriv_2dgauss'
 
       do ie=nelec1,nelec2
-c       modulo math was done in distances.f, so we don't need to do it here
+!       modulo math was done in distances.f, so we don't need to do it here
         x1=rvec_en(1,ie,ic)
         x2=rvec_en(2,ie,ic)
 
-c       write(6,*) 'x1,x2,we=',x1,x2,we
+!       write(6,*) 'x1,x2,we=',x1,x2,we
 
-c       assume that input parameters oparm are scaled to periodic BC's
+!       assume that input parameters oparm are scaled to periodic BC's
         do ib=1,nbasis
           xg3 = oparm(3,ib,iwf)
           wey=we*oparm(4,ib,iwf)
@@ -1873,27 +1873,27 @@ c       assume that input parameters oparm are scaled to periodic BC's
           sxtrel=dsin(2.*pi*x1rel/alattice)
           x2rel=x2-oparm(2,ib,iwf)
           x2rel2=x2rel*x2rel
-         
+
           temp2pida = 2.*pi/alattice
 
           phinypart=dsqrt(we)*dexp(-0.5d0*wey*x2rel2)
           phinxpart=dexp(xg3*(cxtrel - expnorm))
-          
-          phin(ib,ie)=phinypart*phinxpart
-                             
 
-c         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
-c         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
+          phin(ib,ie)=phinypart*phinxpart
+
+
+!         write(6,*) 'ib,ie,phin(ib,ie)=',ib,ie,phin(ib,ie)
+!         write(6,*) 'oparm1,oparm2,oparm3,oparm4=',oparm(1,ib,iwf),oparm(2,ib,iwf),oparm(3,ib,iwf),oparm(4,ib,iwf)
 
           dphin(1,ib,ie)=-xg3*temp2pida*sxtrel*phin(ib,ie)
           dphin(2,ib,ie)=-wey*x2rel*phin(ib,ie)
 
-          d2dx2term = xg3*(temp2pida*temp2pida)*(xg3*sxtrel**2-cxtrel) 
+          d2dx2term = xg3*(temp2pida*temp2pida)*(xg3*sxtrel**2-cxtrel)
           d2dy2term = wey2*x2rel2 - wey
 
           d2phin(ib,ie) = (d2dx2term + d2dy2term)*phin(ib,ie)
 
-c parameter derivatives:
+! parameter derivatives:
           dparam(1,ib,ie)=-dphin(1,ib,ie)                ! wrt xg1
           dparam(2,ib,ie)=-dphin(2,ib,ie)                ! wrt xg2
           dparam(3,ib,ie)=(cxtrel - expnorm)*phin(ib,ie) ! wrt xg3
@@ -1904,7 +1904,7 @@ c parameter derivatives:
           d2param(3,3,ib,ie)=(cxtrel - expnorm)*dparam(3,ib,ie)  ! wrt xg3,xg3
           d2param(4,4,ib,ie)=-0.5d0*we*x2rel2*dparam(4,ib,ie)    ! wrt xg4,xg4
 
-          d2param(1,2,ib,ie)=wey*x2rel*dparam(1,ib,ie)  ! wrt xg1,xg2          
+          d2param(1,2,ib,ie)=wey*x2rel*dparam(1,ib,ie)  ! wrt xg1,xg2
           d2param(1,3,ib,ie)=-temp2pida*sxtrel*(phin(ib,ie) + xg3*dparam(3,ib,ie))   ! wrt xg1,xg3
           d2param(1,4,ib,ie)=-0.5d0*we*x2rel2*dparam(1,ib,ie)    ! wrt xg1,xg3
 
@@ -1920,10 +1920,10 @@ c parameter derivatives:
           d2param(4,2,ib,ie)=d2param(2,4,ib,ie)
           d2param(4,3,ib,ie)=d2param(3,4,ib,ie)
 
-c coo. derivatives of parameter derivatives:
+! coo. derivatives of parameter derivatives:
           ddparam(1,1,ib,ie)=-d2param(1,1,ib,ie)        ! wrt x1,xg1
           ddparam(2,1,ib,ie)=-d2param(2,1,ib,ie)        ! wrt x2,xg1
-          
+
           ddparam(1,2,ib,ie)= ddparam(2,1,ib,ie)        ! wrt x1,xg2
           ddparam(2,2,ib,ie)=-d2param(2,2,ib,ie)        ! wrt x2,xg2
 
@@ -1933,14 +1933,14 @@ c coo. derivatives of parameter derivatives:
           ddparam(1,4,ib,ie)=-d2param(1,4,ib,ie)        ! wrt x1,xg4
           ddparam(2,4,ib,ie)=-d2param(2,4,ib,ie)        ! wrt x2,xg4
 
-c  parameter derivatives of laplacian:
+!  parameter derivatives of laplacian:
           d2dparam(1,ib,ie)=(d2dx2term + d2dy2term)*dparam(1,ib,ie)
-     &     - xg3*(temp2pida**3)*sxtrel*(2.*xg3*cxtrel + 1.)*phin(ib,ie) 
-          d2dparam(2,ib,ie)=(d2dx2term + d2dy2term)*dparam(2,ib,ie)  
-     &     - 2.*wey2*x2rel*phin(ib,ie) 
-          d2dparam(3,ib,ie)=(d2dx2term + d2dy2term)*dparam(3,ib,ie)  
+     &     - xg3*(temp2pida**3)*sxtrel*(2.*xg3*cxtrel + 1.)*phin(ib,ie)
+          d2dparam(2,ib,ie)=(d2dx2term + d2dy2term)*dparam(2,ib,ie)
+     &     - 2.*wey2*x2rel*phin(ib,ie)
+          d2dparam(3,ib,ie)=(d2dx2term + d2dy2term)*dparam(3,ib,ie)
      &     + temp2pida*temp2pida*(2.*xg3*sxtrel**2 - cxtrel)*phin(ib,ie)
-          d2dparam(4,ib,ie)=(d2dx2term + d2dy2term)*dparam(4,ib,ie)  
+          d2dparam(4,ib,ie)=(d2dx2term + d2dy2term)*dparam(4,ib,ie)
      &     + we*(2.*wey*x2rel2 - 1.)*phin(ib,ie)
 
         enddo
@@ -1950,7 +1950,7 @@ c  parameter derivatives of laplacian:
       end
 
 
-c--------------------------------------------------------------------------
+!--------------------------------------------------------------------------
 
 
 

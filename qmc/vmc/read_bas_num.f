@@ -1,7 +1,7 @@
       subroutine read_bas_num(iwf)
-c Written by Claudia Filippi. Modified by Cyrus Umrigar
-c Reads in localized orbitals on a radial grid
-c If igrid(ict).eq.2 .and. (r0_bas(ict).le.0.d0 .or. exp_h_bas(ict).le.0.d0) then grid parameters are deduced later from r values
+! Written by Claudia Filippi. Modified by Cyrus Umrigar
+! Reads in localized orbitals on a radial grid
+! If igrid(ict).eq.2 .and. (r0_bas(ict).le.0.d0 .or. exp_h_bas(ict).le.0.d0) then grid parameters are deduced later from r values
       use all_tools_mod
       use atom_mod
       use const_mod
@@ -18,7 +18,7 @@ c If igrid(ict).eq.2 .and. (r0_bas(ict).le.0.d0 .or. exp_h_bas(ict).le.0.d0) the
 
       character*20 filename,wforce,atomtyp
       character*80 title
-c     character*20 lcent
+!     character*20 lcent
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
@@ -27,14 +27,14 @@ c     character*20 lcent
       integer, allocatable :: l(:)
       dimension y(NCOEF),dmatr(NCOEF*NCOEF),icusp(nctype)
 
-c nrbas_numerical = number of radial basis functions for each centertype
+! nrbas_numerical = number of radial basis functions for each centertype
 
-c igrid = 1 linear              r(i+1)=h_bas+r(i), r(1)=r0_bas
-c         2 exponential         r(i+1)=exp_h_bas*r(i), r(1)=r0_bas
-c         3 shifted exponential r(i+1)=r0_bas*(exp_h_bas**(i-1)-1)
-c           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
+! igrid = 1 linear              r(i+1)=h_bas+r(i), r(1)=r0_bas
+!         2 exponential         r(i+1)=exp_h_bas*r(i), r(1)=r0_bas
+!         3 shifted exponential r(i+1)=r0_bas*(exp_h_bas**(i-1)-1)
+!           r(n) is read in, r0_bas=r(n)/(exp_h_bas**(nr-1)-1)
 
-c If there are no numerical radial basis functions just initialize nrbas_numerical, nrbas and return
+! If there are no numerical radial basis functions just initialize nrbas_numerical, nrbas and return
       call alloc ('nrbas_numerical', nrbas_numerical, nctype)
       call alloc ('nrbas', nrbas, nctype)
       if (l_purely_analytical_basis) then
@@ -42,7 +42,7 @@ c If there are no numerical radial basis functions just initialize nrbas_numeric
         nrbas=nrbas_analytical
         return
       endif
-        
+
       MRWF =  0
       MRWF_PTS = 0
 
@@ -61,7 +61,7 @@ c If there are no numerical radial basis functions just initialize nrbas_numeric
 
       if(ipr.ge.2) write(6,'(/,''beginning of read_bas_num: iwrwf2='',40i3)') (iwrwf2(ib),ib=1,nbasis)
 
-c     write(6,'(''iwrwf2 before compact='',40i3)') (iwrwf2(ib),ib=1,nbasis)
+!     write(6,'(''iwrwf2 before compact='',40i3)') (iwrwf2(ib),ib=1,nbasis)
 
       ib=0
       kbct=0
@@ -82,15 +82,15 @@ c     write(6,'(''iwrwf2 before compact='',40i3)') (iwrwf2(ib),ib=1,nbasis)
         if(iwf.ge.2) filename=filename(1:index(filename,' ')-1)//'.'//wforce
         open(21,file=filename,status='old',err=999)
 
-c position file to skip comments
+! position file to skip comments
         write(6,'(/3a)') 'Reading numerical radial basis function file >',trim(filename),'<'
         title(1:1)='#'
         do while(title(1:1).eq.'#')
           read(21,'(a80)') title
-c         write(6,'(a80)') title
+!         write(6,'(a80)') title
         enddo
 
-c       read(21,*) nrbas_numerical(ict),igrid(ict),nr(ict),exp_h_bas(ict),r0_bas(ict),icusp(ict)
+!       read(21,*) nrbas_numerical(ict),igrid(ict),nr(ict),exp_h_bas(ict),r0_bas(ict),icusp(ict)
         read(title,*) nrbas_numerical(ict),igrid(ict),nr(ict),exp_h_bas(ict),r0_bas(ict),icusp(ict)
         write(6,'(''ict,nrbas_numerical,igrid,nr,exp_h_bas,r0_bas,icusp=''i3,3i5,2f10.6,i3)')
      &  ict,nrbas_numerical(ict),igrid(ict),nr(ict),exp_h_bas(ict),r0_bas(ict),icusp(ict)
@@ -113,12 +113,12 @@ c       read(21,*) nrbas_numerical(ict),igrid(ict),nr(ict),exp_h_bas(ict),r0_bas
           read(21,*) x(ir),(rwf(ir,irb,ict,iwf),irb=1,nrbas_numerical(ict))
    10     continue
 
-c Write out L value for each numerical basis function read in.
-c Check that the 1s basis fns are listed before the 3d basis fns. etc. in GAMESS input if numr<0 by checking the log derivs of the
-c numerical radial basis functions read in from the basis files.  Note that in GAMESS the Gaussians always have N=L+1.
-c The reason we need this check is that if ISPHER=1 is not used, then the 3d fns. create 3s functions and CHAMP expects the LCAO coefs of these
-c 3s functions to appear after those of the 1s functions.
-c Check that the 1s basis fns are listed before the 3s basis fns. coming from the 3d fns. etc. in GAMESS if numr<0.
+! Write out L value for each numerical basis function read in.
+! Check that the 1s basis fns are listed before the 3d basis fns. etc. in GAMESS input if numr<0 by checking the log derivs of the
+! numerical radial basis functions read in from the basis files.  Note that in GAMESS the Gaussians always have N=L+1.
+! The reason we need this check is that if ISPHER=1 is not used, then the 3d fns. create 3s functions and CHAMP expects the LCAO coefs of these
+! 3s functions to appear after those of the 1s functions.
+! Check that the 1s basis fns are listed before the 3s basis fns. coming from the 3d fns. etc. in GAMESS if numr<0.
         write(6,'(/,''Log deriv of radial basis fns. as they are read in, before reordering them:'')')
         do 11 irb=1,nrbas_numerical(ict)
           rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
@@ -141,8 +141,8 @@ c Check that the 1s basis fns are listed before the 3s basis fns. coming from th
           l_bas_num_prev=l_bas_num
    11   continue
 
-c Compactify numerical basis read in from basis files, redefine nrbas_numerical and modify iwrwf correspondingly.
-c Those basis functions with zex(ib)==0.d0 are numerical contracted functions
+! Compactify numerical basis read in from basis files, redefine nrbas_numerical and modify iwrwf correspondingly.
+! Those basis functions with zex(ib)==0.d0 are numerical contracted functions
         if(ipr.ge.2) write(6,'(''iwrwf before compact='',40i3)') (iwrwf(ibct,ict),ibct=1,nbasis_ctype(ict))
         call alloc ('rwf_tmp', rwf_tmp, nr(ict), nrbas_numerical(ict))
         call alloc ('iwrwf_tmp', iwrwf_tmp, nbasis_ctype(ict))
@@ -151,7 +151,7 @@ c Those basis functions with zex(ib)==0.d0 are numerical contracted functions
    12     iwrwf_tmp(ibct)=iwrwf(ibct,ict)
         nrbas_numerical(ict)=0
 
-c Warning: In the lines ... we assume that the centers are listed in order of increasing center type.
+! Warning: In the lines ... we assume that the centers are listed in order of increasing center type.
         do 20 ibct=1,nbasis_ctype(ict)
           ib=ib+1
           if(ib.ne.ibct+kbct) stop 'ib .ne. ibct+kbct'
@@ -159,7 +159,7 @@ c Warning: In the lines ... we assume that the centers are listed in order of in
           if(zex(ib,iwf).eq.0.d0) then
             do 14 jbct=1,ibct-1
               if(zex(jbct+kbct,iwf).eq.0.d0 .and. iwrwf(ibct,ict).eq.iwrwf(jbct,ict)) then
-c             if(iwrwf(ibct,ict).eq.iwrwf(jbct,ict)) then
+!             if(iwrwf(ibct,ict).eq.iwrwf(jbct,ict)) then
                 jrb=iwrwf_tmp(jbct)-nrbas_analytical(ict)
                 goto 18
               endif
@@ -199,7 +199,7 @@ c             if(iwrwf(ibct,ict).eq.iwrwf(jbct,ict)) then
           write(6,'(''rwf='',20f9.6)') (rwf(2,irb,1,1),irb=1,nrbas_numerical(ict))
         endif
 
-c Write out L value for each numerical basis function after compactification
+! Write out L value for each numerical basis function after compactification
         write(6,'(/,''Log deriv of radial basis fns. that are treated numerically after reordering them:'')')
         do 25 irb=1,nrbas_numerical(ict)
           rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
@@ -218,7 +218,7 @@ c Write out L value for each numerical basis function after compactification
 
         if(igrid(ict).eq.2 .and. (r0_bas(ict).le.0.d0 .or. exp_h_bas(ict).le.0.d0)) then
           r0_bas(ict)=x(1)
-c         r0_bas(ict)=x(nr(ict))
+!         r0_bas(ict)=x(nr(ict))
           exp_h_bas(ict)=x(2)/x(1)
           write(6,'('' Grid parameters deduced from grid values are, r0_bas(ict),exp_h_bas(ict)='',9f10.5)')
      &    r0_bas(ict),exp_h_bas(ict)
@@ -231,7 +231,7 @@ c         r0_bas(ict)=x(nr(ict))
 
           if(nloc.eq.0.and.l(irb).eq.0.and.icusp(ict).eq.1) then
 
-c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
+! small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
             do 40 ii=1,ncoef-1
    40         dmatr(ii)=1.d0-znuc(ict)*x(ii)
             y(1)=rwf(1,irb,ict,iwf)
@@ -251,7 +251,7 @@ c small radii wf(r)=ce1-znuc*ce1*r+ce3*r**2+ce4*r**3+ce5*r**4
 
            else
 
-c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
+! small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
             ll=0
             do 50 jj=1,ncoef
               y(jj)=rwf(jj,irb,ict,iwf)
@@ -278,7 +278,7 @@ c small radii wf(r)=ce1+ce2*r+ce3*r**2+ce4*r**3+ce5*r**4
             if(abs(val-rwf(ir,irb,ict,iwf))/rwf(ir,irb,ict,iwf).gt.1.d-2 .and. rwf(ir,irb,ict,iwf).ne.0.d0) then
               write(6,'('' irb,ir,val,rwf(ir,irb,ict,iwf)'',2i5,9d12.4)') irb,ir,val,rwf(ir,irb,ict,iwf)
               write(6,'('' Warning: fit of radial function at small radii not good'')')
-c             stop 'fit of radial function at small radii not good'
+!             stop 'fit of radial function at small radii not good'
             endif
    70     continue
 
@@ -286,9 +286,9 @@ c             stop 'fit of radial function at small radii not good'
           do 80 icoef=2,ncoef
    80     dwf1=dwf1+(icoef-1)*ce(icoef,irb,ict,iwf)*x(1)**(icoef-2)
 
-c large radii wf(r)=a0*exp(-ak*r) for ndim=3
-c         wf(r)=a0*exp(-ak*r^2) for ndim=2, ak should give weff/2
-c         xm=0.5d0*(x(nr(ict))+x(nr(ict)-1))
+! large radii wf(r)=a0*exp(-ak*r) for ndim=3
+!         wf(r)=a0*exp(-ak*r^2) for ndim=2, ak should give weff/2
+!         xm=0.5d0*(x(nr(ict))+x(nr(ict)-1))
           wfm=0.5d0*(rwf(nr(ict),irb,ict,iwf)+rwf(nr(ict)-1,irb,ict,iwf))
           dwfm=(rwf(nr(ict),irb,ict,iwf)-rwf(nr(ict)-1,irb,ict,iwf))/
      &    (x(nr(ict))-x(nr(ict)-1))
@@ -314,12 +314,12 @@ c         xm=0.5d0*(x(nr(ict))+x(nr(ict)-1))
             if(dabs(wfm).gt.1.d-99) then
               if(dwfm/wfm.lt.0) then
                 ae(2,irb,ict,iwf)=-0.5d0*dwfm/(wfm*x(nr(ict)))
-c               ae(2,irb,ict,iwf)=we/2   !  correct expression for parabolic confinement
+!               ae(2,irb,ict,iwf)=we/2   !  correct expression for parabolic confinement
                else
                 write(6,'(''Warning: Basis fn is growing at large distances because match to exponential is at wrong place'',/,
      &          ''irb,ict,iwf,ae(2,irb,ict,iwf)='',3i5,es10.2)') irb,ict,iwf,ae(2,irb,ict,iwf)
                 ae(2,irb,ict,iwf)=0.01d0
-                write(6,'(''Warning: exponent is being reset to'',es12.4)') ae(2,irb,ict,iwf)      
+                write(6,'(''Warning: exponent is being reset to'',es12.4)') ae(2,irb,ict,iwf)
               endif
               ae(1,irb,ict,iwf)=rwf(nr(ict),irb,ict,iwf)*
      &                       dexp(ae(2,irb,ict,iwf)*x(nr(ict))*x(nr(ict)))
@@ -352,7 +352,7 @@ c               ae(2,irb,ict,iwf)=we/2   !  correct expression for parabolic con
      &      ,val-rwf(nr(ict)-ir,irb,ict,iwf)
             if(abs(val-rwf(nr(ict)-ir,irb,ict,iwf))/rwf(nr(ict)-ir,irb,ict,iwf).gt.1.d0)
      &         write(6,*) 'Warning: fit of radial function at large radii not good'
-c    &         stop 'fit of radial function at large radii not good'
+!    &         stop 'fit of radial function at large radii not good'
    90     enddo
           if(ipr.ge.1) write(6,*) 'dwf1,dwfn',dwf1,dwfn
 
@@ -366,29 +366,29 @@ c    &         stop 'fit of radial function at large radii not good'
   110 continue
       if(ipr.ge.2) write(6,'(''end       of read_bas_num: iwrwf2='',40i3)') (iwrwf2(ib),ib=1,nbasis)
 
-c TEMPORARY debug
-c     do 130 jwf=1,nforce
-c       do 130 ict=1,nctype
-c         if(ict.lt.10) then
-c           write(lcent,'(i1)') ict
-c          elseif(ict.lt.100) then
-c           write(lcent,'(i2)') ict
-c         else
-c           stop 'problem with spline.test'
-c         endif
-c         if(jwf.lt.10) then
-c           write(wforce,'(i1)') jwf
-c          elseif(jwf.lt.100) then
-c           write(wforce,'(i2)') jwf
-c         endif
-c         filename='spline.chk.'//lcent(1:index(lcent,' ')-1)//wforce
-c         open(22,file=filename,status='unknown')
-c         do 120 ir=1,nr(ict)-1
-c           ii=1
-c           do 110 irb=1,nrbas_numerical(ict)
-c             call splfit_bas(x(ir),irb,ict,jwf,work(ii),1)
-c110          ii=ii+3
-c120        write(22,'(1p40e20.12)') x(ir),(work(j),j=1,ndim*nrbas_numerical(ict))
+! TEMPORARY debug
+!     do 130 jwf=1,nforce
+!       do 130 ict=1,nctype
+!         if(ict.lt.10) then
+!           write(lcent,'(i1)') ict
+!          elseif(ict.lt.100) then
+!           write(lcent,'(i2)') ict
+!         else
+!           stop 'problem with spline.test'
+!         endif
+!         if(jwf.lt.10) then
+!           write(wforce,'(i1)') jwf
+!          elseif(jwf.lt.100) then
+!           write(wforce,'(i2)') jwf
+!         endif
+!         filename='spline.chk.'//lcent(1:index(lcent,' ')-1)//wforce
+!         open(22,file=filename,status='unknown')
+!         do 120 ir=1,nr(ict)-1
+!           ii=1
+!           do 110 irb=1,nrbas_numerical(ict)
+!             call splfit_bas(x(ir),irb,ict,jwf,work(ii),1)
+!110          ii=ii+3
+!120        write(22,'(1p40e20.12)') x(ir),(work(j),j=1,ndim*nrbas_numerical(ict))
 
       return
 

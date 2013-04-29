@@ -2,7 +2,7 @@
       INTEGER m,mp,n,np,NMAX
       DOUBLE PRECISION a(mp,np),v(np,np),w(np)
       PARAMETER (NMAX=500)
-CU    USES pythag1
+!U    USES pythag1
       INTEGER i,its,j,jj,k,l,nm
       DOUBLE PRECISION anorm,c,f,g,h,s,scale,x,y,z,rv1(NMAX),pythag1
       g=0.0

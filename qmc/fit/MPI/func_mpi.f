@@ -1,11 +1,11 @@
-c Named func_qmc_mpi to avoid name conflict with func_mpi in quench_anneal
+! Named func_qmc_mpi to avoid name conflict with func_mpi in quench_anneal
       subroutine func_qmc_mpi(diff)
 # if defined (MPI)
-c MPI communication introduced by Claudia Filippi
-c MPI communication redone by Richard Hennig to make it work with
-c ifort compiler on OSC Pentium4 cluster.  Otherwise it mysteriously
-c hangs during the mpi-gatherv on psij.
-c Richard Hennig also fixed the load balancing.
+! MPI communication introduced by Claudia Filippi
+! MPI communication redone by Richard Hennig to make it work with
+! ifort compiler on OSC Pentium4 cluster.  Otherwise it mysteriously
+! hangs during the mpi-gatherv on psij.
+! Richard Hennig also fixed the load balancing.
 
       use all_tools_mod
       use confg_mod
@@ -18,8 +18,8 @@ c Richard Hennig also fixed the load balancing.
       ni=idispls(idtask)+1
       nscounts=ircounts(idtask)
 
-c     RGH
-c     call mpi_barrier(MPI_COMM_WORLD, ierr)
+!     RGH
+!     call mpi_barrier(MPI_COMM_WORLD, ierr)
 
       call mpi_gatherv(diff(ni),nscounts,mpi_double_precision
      &     ,diff,ircounts,idispls,mpi_double_precision,0
@@ -28,8 +28,8 @@ c     call mpi_barrier(MPI_COMM_WORLD, ierr)
       call mpi_bcast(diff,ndata,mpi_double_precision,0
      &     ,MPI_COMM_WORLD,ierr)
 
-c     RGH
-c     call mpi_barrier(MPI_COMM_WORLD, ierr)
+!     RGH
+!     call mpi_barrier(MPI_COMM_WORLD, ierr)
 
       call mpi_gatherv(psid(ni),nscounts,mpi_double_precision
      &     ,psid,ircounts,idispls,mpi_double_precision,0
@@ -38,8 +38,8 @@ c     call mpi_barrier(MPI_COMM_WORLD, ierr)
       call mpi_bcast(psid,ndata,mpi_double_precision,0
      &     ,MPI_COMM_WORLD,ierr)
 
-c     RGH
-c     call mpi_barrier(MPI_COMM_WORLD, ierr)
+!     RGH
+!     call mpi_barrier(MPI_COMM_WORLD, ierr)
 
       call mpi_gatherv(psij(ni),nscounts,mpi_double_precision
      &     ,psij,ircounts,idispls,mpi_double_precision,0
@@ -48,8 +48,8 @@ c     call mpi_barrier(MPI_COMM_WORLD, ierr)
       call mpi_bcast(psij,ndata,mpi_double_precision,0
      &     ,MPI_COMM_WORLD,ierr)
 
-c     RGH
-c     call mpi_barrier(MPI_COMM_WORLD, ierr)
+!     RGH
+!     call mpi_barrier(MPI_COMM_WORLD, ierr)
 
 # endif
       return

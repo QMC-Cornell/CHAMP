@@ -1,7 +1,7 @@
       subroutine open_files_mpi
-c Written by Cyrus Umrigar
-c Open files that are different for serial and parallel runs
-c Also do other things that differ for serial and parallel runs, such as setting random number seeds
+! Written by Cyrus Umrigar
+! Open files that are different for serial and parallel runs
+! Also do other things that differ for serial and parallel runs, such as setting random number seeds
 
 # if defined (MPI)
       use all_tools_mod
@@ -20,17 +20,17 @@ c Also do other things that differ for serial and parallel runs, such as setting
       character*27 fmt
       character*20 filename
 
-c Set the random number seed differently on each processor.
-c Seed is set for serial run by calling setrn in read_input and is reset for all except the first process
-c by calling setrn again in vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
-c dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
-c It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
-c rnd itself is unused.
-c Frank's temporary fix for a better choice of random number seeds for parallel run.
+! Set the random number seed differently on each processor.
+! Seed is set for serial run by calling setrn in read_input and is reset for all except the first process
+! by calling setrn again in vmc/MPI/mc_configs_read_mpi for vmc mpi runs and in
+! dmc/dmc_elec/MPI/open_files_mpi for dmc mpi runs.
+! It is also set in startr (entry in dumper.f) after reading in irand_seed from unit 10.
+! rnd itself is unused.
+! Frank's temporary fix for a better choice of random number seeds for parallel run.
       if(irstar.ne.1) then
         do 95 id=1,ndim*nelec*idtask
    95     rnd=rannyu(0)
-c The next call to savern is not really needed but since Claudia put it in, I am too for consistency
+! The next call to savern is not really needed but since Claudia put it in, I am too for consistency
         call savern(irand_seed)
         do i =1,4
           irand_seed(i)=mod(irand_seed(i)+int(rannyu(0)*idtask*9999),9999)
@@ -41,7 +41,7 @@ c The next call to savern is not really needed but since Claudia put it in, I am
 
       if(ipr.gt.-2 .and. irstar.eq.0) then
         if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
-          if(idtask == 0) then 
+          if(idtask == 0) then
             filename='walkalize'
             open(11,file=filename)
             rewind 11
@@ -65,32 +65,32 @@ c The next call to savern is not really needed but since Claudia put it in, I am
           endif
           open(11,file=filename)
           rewind 11
-c         write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
+!         write(11,*) 'Move line nstep*(2*nblkeq+nblk)+1 here and delete this line'
           write(11,'(i3,'' nblkeq to be added to nblock at file end'')') nblkeq
         endif
       endif
 
       call get_initial_walkers
 
-c initialize sums and averages and reset nconf_global if there is one global population on all processors
-c I do not see why another call to zeres0_dmc is needed for a global population.  I am commenting it out so mpi1 and mpi2,mpi3 give same energies for 1 processor.
-c     if(irstar.ne.1 .and. (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3')) then
-c       call my_second(1,'zeres0')
-c       call zeres0_dmc
-ccThis is now done in read_input
-cc      if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
-cc        nconf_global=nconf_global*nproc
-cc      endif
-c     endif
+! initialize sums and averages and reset nconf_global if there is one global population on all processors
+! I do not see why another call to zeres0_dmc is needed for a global population.  I am commenting it out so mpi1 and mpi2,mpi3 give same energies for 1 processor.
+!     if(irstar.ne.1 .and. (mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3')) then
+!       call my_second(1,'zeres0')
+!       call zeres0_dmc
+!cThis is now done in read_input
+!c      if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+!c        nconf_global=nconf_global*nproc
+!c      endif
+!     endif
 
-c If nconf_new > 0 then we want to dump configurations for a future
-c optimization or dmc calculation. So figure out how often we need to write a
-c configuration to produce nconf_new configurations. If nconf_new = 0
-c then set up so no configurations are written.
+! If nconf_new > 0 then we want to dump configurations for a future
+! optimization or dmc calculation. So figure out how often we need to write a
+! configuration to produce nconf_new configurations. If nconf_new = 0
+! then set up so no configurations are written.
       if(nconf_new.eq.0) then
-c       ngfmc=2*nstep*nblk
+!       ngfmc=2*nstep*nblk
        else
-c       ngfmc=max(1,(nstep*nblk)*nconf/nconf_new)
+!       ngfmc=max(1,(nstep*nblk)*nconf/nconf_new)
         if(idtask.lt.10) then
           write(filename,'(i1)') idtask
          elseif(idtask.lt.100) then
@@ -105,7 +105,7 @@ c       ngfmc=max(1,(nstep*nblk)*nconf/nconf_new)
         filename='mc_configs_new'//filename(1:index(filename,' ')-1)
         open(7,form='formatted',file=filename)
         rewind 7
-c       write(7,'(i5)') nconf_new
+!       write(7,'(i5)') nconf_new
       endif
 
 # endif

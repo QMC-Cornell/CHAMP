@@ -1,5 +1,5 @@
       subroutine maindmc_mov1_mpi
-c MPI version created by Claudia Filippi and Cyrus Umrigar
+! MPI version created by Claudia Filippi and Cyrus Umrigar
 
 # if defined(MPI)
       use all_tools_mod
@@ -13,14 +13,14 @@ c MPI version created by Claudia Filippi and Cyrus Umrigar
       dimension iblocklen(nelec),idispl(nelec)
 
       call MPI_ATTR_GET(MPI_COMM_WORLD,MPI_TAG_UB,ivalue,flag,ierr)
-c     write(6,*) 'In main.f from MPI_ATTR_GET',ivalue
+!     write(6,*) 'In main.f from MPI_ATTR_GET',ivalue
       if(ierr.ne.0) write(6,*) 'Warning:? in main.f from MPI_ATTR_GET',ierr
 
-c dmc_init and opt_wf are the same for serial and parallel, open_files is different.
+! dmc_init and opt_wf are the same for serial and parallel, open_files is different.
       call dmc_init
 
-c To minimize the length of what is passed, use jas_typ to pick certain
-c elements of matrix
+! To minimize the length of what is passed, use jas_typ to pick certain
+! elements of matrix
       if(mode.eq.'dmc_mov1_mpi3') then
         do 1 i=1,nelec
           iblocklen(i)=nelec-(i-1)

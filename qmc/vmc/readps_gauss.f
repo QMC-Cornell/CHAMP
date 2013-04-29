@@ -1,17 +1,17 @@
       subroutine readps_gauss
-c Written by Claudia Filippi (or Friedemann Schautz?), modified by Cyrus Umrigar
-c read 'Quantum-chemist' gauss pseudopotentials
-c file format: one text file with basename gauss_ecp.dat
-c              for each atom type
-c first line : arbitrary label (written to log-file)
-c second line: number of projectors + 1 (i.e. total number of components)
-c remaining lines: components in the order (local,L=0,L=1 ...)
-c     repeated for each component
-c        number terms
-c        repeated for each term in this component
-c          coefficient, power, exponent
+! Written by Claudia Filippi (or Friedemann Schautz?), modified by Cyrus Umrigar
+! read 'Quantum-chemist' gauss pseudopotentials
+! file format: one text file with basename gauss_ecp.dat
+!              for each atom type
+! first line : arbitrary label (written to log-file)
+! second line: number of projectors + 1 (i.e. total number of components)
+! remaining lines: components in the order (local,L=0,L=1 ...)
+!     repeated for each component
+!        number terms
+!        repeated for each term in this component
+!          coefficient, power, exponent
 
-c NOTE: as usual power n means r**(n-2)
+! NOTE: as usual power n means r**(n-2)
 
       use all_tools_mod
       use atom_mod
@@ -45,10 +45,10 @@ c NOTE: as usual power n means r**(n-2)
         read(1,'(a100)',err=1000,end=1001) label
         write(6,'('' ECP for center type'',i4,'' label= '',a80)') ict,label
 
-c Number of l components
+! Number of l components
         read(1,*,err=1000,end=1001) npotd(ict)
 
-c If the local pseudopot component is not set in input, set it here
+! If the local pseudopot component is not set in input, set it here
         if(lpotp1(ict).lt.0) then
           lpotp1(ict)=npotd(ict)
           write(6,'('' Center type'',i4,'' local pseudopot component is'',i3)') ict,lpotp1(ict)
@@ -63,12 +63,12 @@ c If the local pseudopot component is not set in input, set it here
         endif
         if(npotd(ict).gt.MPS_L) stop 'npotd(ict).gt.MPS_L'
 
-c read terms of local part and all non-local parts
-c local part first in file, but stored at index lpotp1
-c since psps. are stored in order of ascending l.
+! read terms of local part and all non-local parts
+! local part first in file, but stored at index lpotp1
+! since psps. are stored in order of ascending l.
 
         do 50 l=1,npotd(ict)
-c         if(l.eq.lpotp1(ict))then
+!         if(l.eq.lpotp1(ict))then
           if(l.eq.1)then
             idx=lpotp1(ict)
            else
@@ -90,9 +90,9 @@ c         if(l.eq.lpotp1(ict))then
 
    50   continue
 
-c Find the point beyond which the various v components differ from each other by no more than .5*d-6
-c The angular integration needs to be done only within rmax_nloc, so the smaller this number is the
-c less the computational expense per MC step.
+! Find the point beyond which the various v components differ from each other by no more than .5*d-6
+! The angular integration needs to be done only within rmax_nloc, so the smaller this number is the
+! less the computational expense per MC step.
         r=5.d0
         do 70 ir=1,500
           do 70 l=1,npotd(ict)
@@ -104,7 +104,7 @@ c less the computational expense per MC step.
    80   rmax_nloc=r
   100 write(6,'('' center '',i3,'' pseudopot rmax_nloc= '',f6.2)') ict,rmax_nloc
 
-c     call gesqua(nquad,xq0,yq0,zq0,wq)
+!     call gesqua(nquad,xq0,yq0,zq0,wq)
 
       return
 
@@ -118,9 +118,9 @@ c     call gesqua(nquad,xq0,yq0,zq0,wq)
       stop 'readps_gauss: end of file while reading gaussian pseudopotential'
 
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
-c compute gauss-pseudopotential for electron iel
+! compute gauss-pseudopotential for electron iel
       subroutine getvps_gauss(r_en,iel)
 
       use atom_mod
@@ -140,7 +140,7 @@ c compute gauss-pseudopotential for electron iel
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine gauss_pot(r,l,ict,vpot)
       use gauss_ecp_mod
       implicit real*8(a-h,o-z)

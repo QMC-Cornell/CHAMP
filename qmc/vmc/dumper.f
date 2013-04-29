@@ -14,8 +14,8 @@
       end
 
       subroutine dumper_serial
-c Written by Cyrus Umrigar, modified by Claudia Filippi
-c Routine to pick up and dump everything needed to restart job where it left off.
+! Written by Cyrus Umrigar, modified by Claudia Filippi
+! Routine to pick up and dump everything needed to restart job where it left off.
       use all_tools_mod
       use constants_mod
       use contrl_mod
@@ -52,7 +52,7 @@ c Routine to pick up and dump everything needed to restart job where it left off
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(nctype)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
-c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
+!    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,n4sx(nctype),n4px(-1:1,nctype)
      &,n4fx(-3:3,nctype),n5gx(-4:4,nctype),n6hx(-5:5,nctype)
      &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
@@ -78,7 +78,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       call alloc ('wcum', wcum, nforce)
       if(nforce.gt.0) write(10) (wcum(i),fcum(i),fcm2(i),i=1,nforce)
       do 3 i=1,nforce
-c   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
+!   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     3   write(10) ecum1s(i),ecm21s(i)
       write(10) rejmax
       write(10) (try(i),suc(i),trunfb(i),rprob(i),
@@ -103,7 +103,7 @@ c   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
       if(numr.le.0) then
         write(10) (n4s(i),i=1,nctype)
         write(10) ((n4p(m,i),m=-1,1),i=1,nctype)
-c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
+!       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
         write(10) (nsa(i),i=1,nctype)
         write(10) ((npa(m,i),m=-1,1),i=1,nctype)
         write(10) ((nda(m,i),m=-2,2),i=1,nctype)
@@ -128,7 +128,7 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       entry startr_serial
       write(6,'(1x,''attempting restart from restart_vmc'')')
 
-c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
+!     call pot_nn(cent,znuc,iwctype,ncent,pecent)
 
       rewind 10
       read(10) irand_seed
@@ -158,7 +158,7 @@ c     call pot_nn(cent,znuc,iwctype,ncent,pecent)
       call alloc ('ecum1s', ecum1s, nforce)
       call alloc ('ecm21s', ecm21s, nforce)
       do 6 i=1,nforce
-c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
+!   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     6   read(10) ecum1s(i),ecm21s(i)
       read(10) rejmax
       call alloc ('try', try, NRAD)
@@ -199,7 +199,7 @@ c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
       if(numr.le.0) then
         read(10) (n4sx(i),i=1,nctype)
         read(10) ((n4px(m,i),m=-1,1),i=1,nctype)
-c       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
+!       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
         read(10) (nsax(i),i=1,nctype)
         read(10) ((npax(m,i),m=-1,1),i=1,nctype)
         read(10) ((ndax(m,i),m=-2,2),i=1,nctype)
@@ -237,7 +237,7 @@ c       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
         do 45 m=-2,2
           if(n3d(m,i).ne.n3dx(m,i)) stop 'n3d'
           if(numr.le.0) then
-c           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
+!           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
             if(nda(m,i).ne.ndax(m,i)) stop 'nda'
           endif
    45   continue
@@ -278,15 +278,15 @@ c           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
         iwftype(1)=1
       endif
 
-c loop over secondary config
+! loop over secondary config
       do 80 ifr=2,nforce
-c set n- and e-coord and n-n potential
+! set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,vold,div_vo,d2,peo,peio,eold(ifr),denergy,ifr)
    80   psi2o(ifr)=2*(dlog(dabs(psido))+psijo)+dlog(ajacob)
 
-c primary config
-c set n-coord and n-n potential
+! primary config
+! set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)

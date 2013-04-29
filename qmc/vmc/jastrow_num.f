@@ -1,8 +1,8 @@
       subroutine jastrow_num(x,v,d2,div_vj,value)
-c Written by Cyrus Umrigar
-c **Warning** This routine needs to be upgraded to calculate distances
-c correctly for periodic systems if we add in capability to use
-c numerical Laplacian for periodic systems.
+! Written by Cyrus Umrigar
+! **Warning** This routine needs to be upgraded to calculate distances
+! correctly for periodic systems if we add in capability to use
+! numerical Laplacian for periodic systems.
       use constants_mod
       use atom_mod
       use dets_mod
@@ -14,11 +14,11 @@ c numerical Laplacian for periodic systems.
       use jaspar3_mod
       use jaspar6_mod
       use bparm_mod
-c  Warning: Do not use distance_mod! Local values of r_ee, r_en, etc...
-c     will overwrite those calculated in distance_mod
-c    (The reason I don't get rid of the recalculations here is that it
-c      would require rewriting parts of this for iperiodic=1)
-c      (do not) !use distance_mod
+!  Warning: Do not use distance_mod! Local values of r_ee, r_en, etc...
+!     will overwrite those calculated in distance_mod
+!    (The reason I don't get rid of the recalculations here is that it
+!      would require rewriting parts of this for iperiodic=1)
+!      (do not) !use distance_mod
       use contrl_per_mod
       use pseudo_mod
       implicit real*8(a-h,o-z)
@@ -28,9 +28,9 @@ c      (do not) !use distance_mod
       parameter (d1b12=8.333333333333333d-2,d2b3=0.666666666666667d0,
      &d4b3=1.333333333333333d0)
 
-c subroutine to calculate jastrow factor,its derivatives
-c and the potential
-c Warning: div_vj not yet implememnted
+! subroutine to calculate jastrow factor,its derivatives
+! and the potential
+! Warning: div_vj not yet implememnted
 
       dimension x(3,*),v(3,*),div_vj(nelec), rtemp(3)
       dimension rp(3,nelec,ncent),rm(3,nelec,ncent)
@@ -51,7 +51,7 @@ c Warning: div_vj not yet implememnted
         ncentt=ncent
       endif
 
-c Calculate e-N and e-e inter-particle distances
+! Calculate e-N and e-e inter-particle distances
         do 29 ic=1,ncent
         ij=0
         do 29 i=1,nelec
@@ -129,17 +129,17 @@ c Calculate e-N and e-e inter-particle distances
    28       r_ee(ij)=dsqrt(r_ee(ij))
    29   continue
 
-c if nelec is < 2 then no pairs so exit
+! if nelec is < 2 then no pairs so exit
       if(nelec.lt.2) goto 60
 
       ij=0
       do 40 i=2,nelec
-c3      jk=0
+!3      jk=0
         im1=i-1
         do 40 j=1,im1
           ij=ij+1
           if(i.le.nup .or. j.gt.nup) then
-c           parallel spins
+!           parallel spins
             if(nspin2.ge.2) then
               is=2
               sspinn=one
@@ -153,7 +153,7 @@ c           parallel spins
               endif
             endif
            else
-c           anti-parallel spins
+!           anti-parallel spins
             sspinn=one
             is=1
           endif
@@ -225,54 +225,54 @@ c           anti-parallel spins
      &           -d1b12*((psimj2-psic)+(psipj2-psic))
      &           +d4b3 *((psimj -psic)+(psipj -psic))
 
-c Calculate e-e-e-n terms.  Presently only for parallel-spin electrons.
-c Needs to be checked and more important 2 par and 1 anti par terms need
-c to be added.
-c3        if(i3body.ge.1) then
-c3        do 37 k=1,j-1
-c3          ik=((i-1)*(i-2))/2+k
-c3          jk=jk+1
-c3          f31c=f31(r_ee(ij),r_ee(ik),r_ee(jk),r_en(i,ic),
-c3   &      r_en(j,ic),r_en(k,ic))
-c3          usum=usum+f31c
-c3          do 37 m=1,ndim
-c3          f31pi=f31(rrp(m,ij),rrp(m,ik),r_ee(jk),rp(m,i,ic),
-c3   &      r_en( j,ic),r_en( k,ic))
-c3          f31mi=f31(rrm(m,ij),rrm(m,ik),r_ee(jk),rm(m,i,ic),
-c3   &      r_en( j,ic),r_en( k,ic))
-c3          f31pj=f31(rrm(m,ij),r_ee(ik),rrp(m,jk),r_en( i,ic),
-c3   &      rp(m,j,ic),r_en( k,ic))
-c3          f31mj=f31(rrp(m,ij),r_ee(ik),rrm(m,jk),r_en( i,ic),
-c3   &      rm(m,j,ic),r_en( k,ic))
-c3          f31pk=f31(r_ee(ij),rrm(m,ik),rrm(m,jk),r_en( i,ic),
-c3   &      r_en( j,ic),rp(m,k,ic))
-c3          f31mk=f31(r_ee(ij),rrp(m,ik),rrp(m,jk),r_en( i,ic),
-c3   &      r_en( j,ic),rm(m,k,ic))
-c3          f31pi2=f31(rrp2(m,ij),rrp2(m,ik),r_ee(jk),rp2(m,i,ic),
-c3   &      r_en( j,ic),r_en( k,ic))
-c3          f31mi2=f31(rrm2(m,ij),rrm2(m,ik),r_ee(jk),rm2(m,i,ic),
-c3   &      r_en( j,ic),r_en( k,ic))
-c3          f31pj2=f31(rrm2(m,ij),r_ee(ik),rrp2(m,jk),r_en( i,ic),
-c3   &      rp2(m,j,ic),r_en( k,ic))
-c3          f31mj2=f31(rrp2(m,ij),r_ee(ik),rrm2(m,jk),r_en( i,ic),
-c3   &      rm2(m,j,ic),r_en( k,ic))
-c3          f31pk2=f31(r_ee(ij),rrm2(m,ik),rrm2(m,jk),r_en( i,ic),
-c3   &      r_en( j,ic),rp2(m,k,ic))
-c3          f31mk2=f31(r_ee(ij),rrp2(m,ik),rrp2(m,jk),r_en( i,ic),
-c3   &      r_en( j,ic),rm2(m,k,ic))
-c3          v(m,i)=v(m,i)+(-d1b12*(f31pi2-f31mi2) + d2b3*(f31pi-f31mi))
-c3   &      /eps
-c3          v(m,j)=v(m,j)+(-d1b12*(f31pj2-f31mj2) + d2b3*(f31pj-f31mj))
-c3   &      /eps
-c3          v(m,k)=v(m,k)+(-d1b12*(f31pk2-f31mk2) + d2b3*(f31pk-f31mk))
-c3   &      /eps
-c3 37       d2=d2-d1b12*((f31mi2-f31c)+(f31pi2-f31c))
-c3   &           +d4b3 *((f31mi -f31c)+(f31pi -f31c))
-c3   &           -d1b12*((f31mj2-f31c)+(f31pj2-f31c))
-c3   &           +d4b3 *((f31mj -f31c)+(f31pj -f31c))
-c3   &           -d1b12*((f31mk2-f31c)+(f31pk2-f31c))
-c3   &           +d4b3 *((f31mk -f31c)+(f31pk -f31c))
-c3          endif
+! Calculate e-e-e-n terms.  Presently only for parallel-spin electrons.
+! Needs to be checked and more important 2 par and 1 anti par terms need
+! to be added.
+!3        if(i3body.ge.1) then
+!3        do 37 k=1,j-1
+!3          ik=((i-1)*(i-2))/2+k
+!3          jk=jk+1
+!3          f31c=f31(r_ee(ij),r_ee(ik),r_ee(jk),r_en(i,ic),
+!3   &      r_en(j,ic),r_en(k,ic))
+!3          usum=usum+f31c
+!3          do 37 m=1,ndim
+!3          f31pi=f31(rrp(m,ij),rrp(m,ik),r_ee(jk),rp(m,i,ic),
+!3   &      r_en( j,ic),r_en( k,ic))
+!3          f31mi=f31(rrm(m,ij),rrm(m,ik),r_ee(jk),rm(m,i,ic),
+!3   &      r_en( j,ic),r_en( k,ic))
+!3          f31pj=f31(rrm(m,ij),r_ee(ik),rrp(m,jk),r_en( i,ic),
+!3   &      rp(m,j,ic),r_en( k,ic))
+!3          f31mj=f31(rrp(m,ij),r_ee(ik),rrm(m,jk),r_en( i,ic),
+!3   &      rm(m,j,ic),r_en( k,ic))
+!3          f31pk=f31(r_ee(ij),rrm(m,ik),rrm(m,jk),r_en( i,ic),
+!3   &      r_en( j,ic),rp(m,k,ic))
+!3          f31mk=f31(r_ee(ij),rrp(m,ik),rrp(m,jk),r_en( i,ic),
+!3   &      r_en( j,ic),rm(m,k,ic))
+!3          f31pi2=f31(rrp2(m,ij),rrp2(m,ik),r_ee(jk),rp2(m,i,ic),
+!3   &      r_en( j,ic),r_en( k,ic))
+!3          f31mi2=f31(rrm2(m,ij),rrm2(m,ik),r_ee(jk),rm2(m,i,ic),
+!3   &      r_en( j,ic),r_en( k,ic))
+!3          f31pj2=f31(rrm2(m,ij),r_ee(ik),rrp2(m,jk),r_en( i,ic),
+!3   &      rp2(m,j,ic),r_en( k,ic))
+!3          f31mj2=f31(rrp2(m,ij),r_ee(ik),rrm2(m,jk),r_en( i,ic),
+!3   &      rm2(m,j,ic),r_en( k,ic))
+!3          f31pk2=f31(r_ee(ij),rrm2(m,ik),rrm2(m,jk),r_en( i,ic),
+!3   &      r_en( j,ic),rp2(m,k,ic))
+!3          f31mk2=f31(r_ee(ij),rrp2(m,ik),rrp2(m,jk),r_en( i,ic),
+!3   &      r_en( j,ic),rm2(m,k,ic))
+!3          v(m,i)=v(m,i)+(-d1b12*(f31pi2-f31mi2) + d2b3*(f31pi-f31mi))
+!3   &      /eps
+!3          v(m,j)=v(m,j)+(-d1b12*(f31pj2-f31mj2) + d2b3*(f31pj-f31mj))
+!3   &      /eps
+!3          v(m,k)=v(m,k)+(-d1b12*(f31pk2-f31mk2) + d2b3*(f31pk-f31mk))
+!3   &      /eps
+!3 37       d2=d2-d1b12*((f31mi2-f31c)+(f31pi2-f31c))
+!3   &           +d4b3 *((f31mi -f31c)+(f31pi -f31c))
+!3   &           -d1b12*((f31mj2-f31c)+(f31pj2-f31c))
+!3   &           +d4b3 *((f31mj -f31c)+(f31pj -f31c))
+!3   &           -d1b12*((f31mk2-f31c)+(f31pk2-f31c))
+!3   &           +d4b3 *((f31mk -f31c)+(f31pk -f31c))
+!3          endif
 
    40   continue
 
@@ -304,16 +304,16 @@ c3          endif
 
    60 continue
 
-c Warning: c1_jas6 below needs changing now that we have different
-c ones for en and ee, but since ijas=6  is never used, do not bother.
-c     if(ijas.eq.6) then
-c       term=1/(c1_jas6*scalek(iwf))
-c       usum=term*usum
-c       d2=term*d2
-c       do 70 i=1,nelec
-c         do 70 k=1,ndim
-c  70       v(k,i)=term*v(k,i)
-c     endif
+! Warning: c1_jas6 below needs changing now that we have different
+! ones for en and ee, but since ijas=6  is never used, do not bother.
+!     if(ijas.eq.6) then
+!       term=1/(c1_jas6*scalek(iwf))
+!       usum=term*usum
+!       d2=term*d2
+!       do 70 i=1,nelec
+!         do 70 k=1,ndim
+!  70       v(k,i)=term*v(k,i)
+!     endif
 
       value=usum
 

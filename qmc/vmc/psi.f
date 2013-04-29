@@ -1,11 +1,11 @@
       function psi(rij,ri,rj,it)
-c Written by Cyrus Umrigar, modified by Claudia Filippi
-c **Warning** This routine needs to be upgraded to check rshifts
-c if we add in the capability to use numerical Laplacian for
-c periodic systems.
-c  NOTE:  this should work for at least a 1D periodic system now
-c    I have added in the scaling for een jastrow (ACM, June 2011)
-      use constants_mod 
+! Written by Cyrus Umrigar, modified by Claudia Filippi
+! **Warning** This routine needs to be upgraded to check rshifts
+! if we add in the capability to use numerical Laplacian for
+! periodic systems.
+!  NOTE:  this should work for at least a 1D periodic system now
+!    I have added in the scaling for een jastrow (ACM, June 2011)
+      use constants_mod
       use dets_mod
       use contr2_mod
       use wfsec_mod
@@ -16,7 +16,7 @@ c    I have added in the scaling for een jastrow (ACM, June 2011)
       use pars_mod
       use jaspar1_mod
       use jaspar2_mod
-      use contrl_per_mod 
+      use contrl_per_mod
       implicit real*8(a-h,o-z)
 
       common /chck/ bot
@@ -171,28 +171,28 @@ c    I have added in the scaling for een jastrow (ACM, June 2011)
 
        elseif(ijas.ge.4.and.ijas.le.6) then
 
-c       een Jastrow:
+!       een Jastrow:
         if(nordc.le.1) return
 
         if(ri.gt.cutjas_en .or. rj.gt.cutjas_en) return
-c       do 37 k=1,ndim
-c  37     if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) return
+!       do 37 k=1,ndim
+!  37     if(abs(rshift(k,i,ic)-rshift(k,j,ic)).gt.eps) return
 
         if(ijas.eq.4.or.ijas.eq.5) then
           call switch_scale(u,4)
           call switch_scale(rri,3)
           call switch_scale(rrj,3)
         endif
-c     write(6,'(''rij,u in een'',2f12.9)') rij,u
-c     write(6,'(''ri,rri in een'',2f12.9)') ri,rri
+!     write(6,'(''rij,u in een'',2f12.9)') rij,u
+!     write(6,'(''ri,rri in een'',2f12.9)') ri,rri
 
-c       Extra scaling function for een jastrow in periodic case (ACM)
+!       Extra scaling function for een jastrow in periodic case (ACM)
         psic = 0.d0
         fscale = 1.0d0
         if(iperiodic.ne.0) then
           call f_een_cuts_nd(cutjas_en, ri, rj, fscale)
         endif
-        
+
         uu(0)=one
         ss(0)=2
         tt(0)=one
@@ -215,7 +215,7 @@ c       Extra scaling function for een jastrow in periodic case (ACM)
                 ll=ll+1
                 psic=psic+c(ll,it,iwf)*uu(k)*ss(l)*tt(m)
               endif
-c     write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,u,rri,rrj
+!     write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,u,rri,rrj
    50   continue
       psi = psi + fscale*psic
 
@@ -225,7 +225,7 @@ c     write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,u,rri,rrj
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function psia(ri,it)
 
       use contr2_mod
@@ -247,7 +247,7 @@ c-----------------------------------------------------------------------
       if(ri.gt.cutjas_en) return
 
       call scale_dist(ri,rri,1)
-c     write(6,'(''ri,rri in en'',2f9.5)') ri,rri
+!     write(6,'(''ri,rri in en'',2f9.5)') ri,rri
 
       if(ijas.eq.3) then
         psia=a(1,iwf)*rri/(one+a(2,iwf)*rri)
@@ -264,7 +264,7 @@ c     write(6,'(''ri,rri in en'',2f9.5)') ri,rri
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function psib(rij,isb,ipar)
 
@@ -287,7 +287,7 @@ c-----------------------------------------------------------------------
 
       u=rij
       call scale_dist(rij,u,2)
-c     write(6,'(''rij,u in ee'',2f9.5)') rij,u
+!     write(6,'(''rij,u in ee'',2f9.5)') rij,u
 
       if(ijas.eq.4) then
         psib=sspinn*b(1,isb,iwf)*u/(one+b(2,isb,iwf)*u)-asymp_jasb(ipar+1,iwf)

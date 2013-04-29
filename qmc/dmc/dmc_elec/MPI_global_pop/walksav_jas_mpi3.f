@@ -1,6 +1,6 @@
       subroutine walksav_jas_mpi3
-c Written by Claudia Filippi
-c Only the entries are called, not the subroutine
+! Written by Claudia Filippi
+! Only the entries are called, not the subroutine
 
 # if defined (MPI)
       use all_tools_mod
@@ -19,7 +19,7 @@ c Only the entries are called, not the subroutine
 
       entry send_jas_mpi3(irecv)
 
-c     write(6,'(''send_jas_mpi3'')')
+!     write(6,'(''send_jas_mpi3'')')
       itag=0
       call mpi_isend(fsumow(nwalk),1,mpi_double_precision,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call MPI_Wait(irequest,istatus,ierr)
@@ -34,7 +34,7 @@ c     write(6,'(''send_jas_mpi3'')')
 
       entry recv_jas_mpi3(isend)
 
-c     write(6,'(''recv_jas_mpi3'')')
+!     write(6,'(''recv_jas_mpi3'')')
       itag=0
       call mpi_recv(fsumow(nwalk),1,mpi_double_precision,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
       call mpi_recv(fjow(1,1,nwalk),3*nelec,mpi_double_precision,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)

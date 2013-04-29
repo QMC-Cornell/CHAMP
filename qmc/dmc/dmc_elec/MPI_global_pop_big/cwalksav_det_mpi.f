@@ -1,6 +1,6 @@
       subroutine cwalksav_det_mpi(iw)
-c Same as walksav_det, adapted to complex orbitals
-c by A.D.Guclu, Oct2005.
+! Same as walksav_det, adapted to complex orbitals
+! by A.D.Guclu, Oct2005.
 
 # if defined (MPI)
 
@@ -19,7 +19,7 @@ c by A.D.Guclu, Oct2005.
 
       dimension istatus(MPI_STATUS_SIZE)
 
-c allocate memory (will allocate only if it is not already allocated):
+! allocate memory (will allocate only if it is not already allocated):
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)
       call alloc('cslmdi',cslmdi,n2,ndetdn)
@@ -29,9 +29,9 @@ c allocate memory (will allocate only if it is not already allocated):
       call alloc('cdetd',cdetd,ndetdn)
       call alloc('cddeti_deti',cddeti_deti,ndim,nelec,ndet)
 
-c nwalk does not represent the actual size of the arrays.
-c it is not clear to me what should be the actual size so
-c so for the moment I use MWALK instead of nwalk :
+! nwalk does not represent the actual size of the arrays.
+! it is not clear to me what should be the actual size so
+! so for the moment I use MWALK instead of nwalk :
       ndimw=MWALK
       call alloc('cslmuiw',cslmuiw,n2,ndetup,ndimw)
       call alloc('cslmdiw',cslmdiw,n2,ndetdn,ndimw)
@@ -41,43 +41,43 @@ c so for the moment I use MWALK instead of nwalk :
       call alloc('cdetdw',cdetdw,ndetdn,ndimw)
       call alloc('cddeti_detiw',cddeti_detiw,ndim,nelec,ndet,ndimw)
 
-c     call cwalksav_det
+!     call cwalksav_det
 
-c     return
+!     return
 
       entry csend_det(irecv)
 
       itag=0
       call mpi_isend(cdetuw(1,nwalk),ndet,mpi_double_complex,irecv
      &,itag+1,MPI_COMM_WORLD,irequest,ierr)
-C     RGH
+!     RGH
       call MPI_Wait(irequest,istatus,ierr)
       call mpi_isend(cdetdw(1,nwalk),ndet,mpi_double_complex,irecv
      &,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
-C     RGH
+!     RGH
       call MPI_Wait(irequest,istatus,ierr)
       do 150 k=1,ndet
         call mpi_isend(cslmuiw(1,k,nwalk),nup*nup,mpi_double_complex
      &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-C     RGH
+!     RGH
         call MPI_Wait(irequest,istatus,ierr)
         call mpi_isend(cfpuw(1,1,k,nwalk),3*nup*nup,mpi_double_complex
      &  ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
-C     RGH
+!     RGH
         call MPI_Wait(irequest,istatus,ierr)
         call mpi_isend(cslmdiw(1,k,nwalk),ndn*ndn,mpi_double_complex
      &  ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
-C     RGH
+!     RGH
         call MPI_Wait(irequest,istatus,ierr)
         call mpi_isend(cfpdw(1,1,k,nwalk),3*ndn*ndn,mpi_double_complex
      &  ,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
-C     RGH
+!     RGH
         call MPI_Wait(irequest,istatus,ierr)
         call mpi_isend(cddeti_detiw(1,1,k,nwalk),3*nelec,mpi_double_complex
      &  ,irecv,itag+5,MPI_COMM_WORLD,irequest,ierr)
   150   itag=itag+5
-C     RGH
+!     RGH
         call MPI_Wait(irequest,istatus,ierr)
       return
 

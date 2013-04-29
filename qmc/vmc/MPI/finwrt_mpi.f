@@ -1,6 +1,6 @@
       subroutine finwrt_mpi
-c MPI version created by Claudia Filippi starting from serial version
-c routine to print out final results
+! MPI version created by Claudia Filippi starting from serial version
+! routine to print out final results
 
 # if defined (MPI)
 
@@ -19,9 +19,9 @@ c routine to print out final results
       use const_mod
       implicit real*8(a-h,o-z)
 
-c     common /forcjac/ ajacob
+!     common /forcjac/ ajacob
 
-c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
+!     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
       dimension xx0probt(0:NAX,-NAX:NAX,-NAX:NAX),den2dt(-NAX:NAX,-NAX:NAX),pot_ee2dt(-NAX:NAX,-NAX:NAX)
       dimension fouriert(-NAX:NAX,0:NAK1), fourierkkt(-NAK2:NAK2,-NAK2:NAK2)
       dimension zzpairtot(-NAX:NAX,-NAX:NAX),zzdenijtot(-NAX:NAX,0:(nelec-1))
@@ -29,8 +29,8 @@ c     dimension trunfbt(NRAD),rprobt(NRAD),ekint(NRAD),ekin2t(NRAD)
       dimension rprobt(NRAD),tryt(NRAD),suct(NRAD),work(nforce)
 
 
-c     err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
-c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
+!     err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
+!     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
 
       call mpi_allreduce(ecum1,ecum1t,1,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -163,7 +163,7 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
       endif
 
       if(ifourier .ne. 0) then
-        naxt = (2*NAX + 1) * (NAK1 + 1)         
+        naxt = (2*NAX + 1) * (NAK1 + 1)
         call mpi_allreduce(fourierrk_t,fouriert,naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         do i1=-NAX,NAX
           do i2=0,NAK1
@@ -239,39 +239,39 @@ c     err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
         yycorrij1(:) = zzcorrijtot(:)
         call mpi_allreduce(yycorrij2, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         yycorrij2(:) = zzcorrijtot(:)
-        
+
         if(izigzag.eq.2) then
           naxt = (2*NAX + 1) * (2*NAX + 1)
           call mpi_allreduce(zzpairden_t, zzpairtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
           zzpairden_t(:,:) = zzpairtot(:,:)
-          
+
           naxt = (2*NAX + 1) * nelec
           call mpi_allreduce(zzpairdenij_t, zzdenijtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
           zzpairdenij_t(:,:) = zzdenijtot(:,:)
         endif
       endif
 
-c     call mpi_allreduce(trunfb,trunfbt,NRAD,mpi_double_precision
-c    &,mpi_sum,MPI_COMM_WORLD,ierr)
-c     do 40 i=1,NRAD
-c  40   trunfb(i)=trunfbt(i)
-c     call mpi_allreduce(ekin,ekint,NRAD,mpi_double_precision
-c    &,mpi_sum,MPI_COMM_WORLD,ierr)
-c     do 50 i=1,NRAD
-c  50   ekin(i)=ekint(i)
-c     call mpi_allreduce(ekin2,ekin2t,NRAD,mpi_double_precision
-c    &,mpi_sum,MPI_COMM_WORLD,ierr)
-c     do 60 i=1,NRAD
-c  60   ekin2(i)=ekin2t(i)
+!     call mpi_allreduce(trunfb,trunfbt,NRAD,mpi_double_precision
+!    &,mpi_sum,MPI_COMM_WORLD,ierr)
+!     do 40 i=1,NRAD
+!  40   trunfb(i)=trunfbt(i)
+!     call mpi_allreduce(ekin,ekint,NRAD,mpi_double_precision
+!    &,mpi_sum,MPI_COMM_WORLD,ierr)
+!     do 50 i=1,NRAD
+!  50   ekin(i)=ekint(i)
+!     call mpi_allreduce(ekin2,ekin2t,NRAD,mpi_double_precision
+!    &,mpi_sum,MPI_COMM_WORLD,ierr)
+!     do 60 i=1,NRAD
+!  60   ekin2(i)=ekin2t(i)
 
       call mpi_allreduce(accsum,accept,1,mpi_double_precision
      &,mpi_sum,MPI_COMM_WORLD,ierr)
       accsum=accept
 
-c call to grad_hess_jas_mpi moved to ../finwrt.f for the moment
-c     write(6,*) 'before grad_hess_jas_mpi'
-c     call grad_hess_jas_mpi
-c     write(6,*) 'after grad_hess_jas_mpi'
+! call to grad_hess_jas_mpi moved to ../finwrt.f for the moment
+!     write(6,*) 'before grad_hess_jas_mpi'
+!     call grad_hess_jas_mpi
+!     write(6,*) 'after grad_hess_jas_mpi'
 
 # endif
       return

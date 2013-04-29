@@ -1,6 +1,6 @@
       subroutine corbitals_loc_ana_grade(iel,rvec_en,r_en,corb,cdorb,cddorb)
-c orbitals_loc_ana_grade adapted to complex orbitals by A.D.Guclu Feb2004
-c Calculate localized orbitals and derivatives for all or 1 electrons
+! orbitals_loc_ana_grade adapted to complex orbitals by A.D.Guclu Feb2004
+! Calculate localized orbitals and derivatives for all or 1 electrons
       use all_tools_mod
       use coefs_mod
       use const_mod
@@ -21,7 +21,7 @@ c Calculate localized orbitals and derivatives for all or 1 electrons
       call alloc ('cdphin', cdphin, 3, nbasis, nelec, nelec)
       call alloc ('cd2phin', cd2phin, nbasis, nelec)
 
-c get basis functions
+! get basis functions
       if(numr.eq.0) then
         call cbasis_fns_fd(iel,rvec_en,r_en)
       else if(numr.eq.1) then

@@ -1,11 +1,11 @@
       subroutine open_files
-c Written by Cyrus Umrigar
-c Open files that are different for serial and parallel runs
-c Also do other things that differ for serial and parallel runs.
+! Written by Cyrus Umrigar
+! Open files that are different for serial and parallel runs
+! Also do other things that differ for serial and parallel runs.
 
-c Diffusion Monte Carlo and wave function optimization
-c Warning: Check that we are fitting to the right linear combination of energy and variance.
-c Used both for all-electon and 1-electron move versions.
+! Diffusion Monte Carlo and wave function optimization
+! Warning: Check that we are fitting to the right linear combination of energy and variance.
+! Used both for all-electon and 1-electron move versions.
 
       use all_tools_mod
       use walkers_mod
@@ -21,24 +21,24 @@ c Used both for all-electon and 1-electron move versions.
 
       if(irstar.ne.1) then
         if(ipr.gt.-2) then
-c         open(11,file='walkalize',status='new')
+!         open(11,file='walkalize',status='new')
           open(11,file='walkalize')
           rewind 11
-c         write(11,*)
-c    &    'Move line 2*nstep*nblkeq+1 here and delete this line'
+!         write(11,*)
+!    &    'Move line 2*nstep*nblkeq+1 here and delete this line'
           write(11,'(i3,'' nblkeq to be added to nblock at file end'')')
      &    nblkeq
         endif
       endif
 
-c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
-c optimization or dmc calculation. So figure out how often we need to write a
-c configuration to produce nconf_new configurations. If nconf_new = 0
-c then set up so no configurations are written.
+! If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
+! optimization or dmc calculation. So figure out how often we need to write a
+! configuration to produce nconf_new configurations. If nconf_new = 0
+! then set up so no configurations are written.
       if(nconf_new.eq.0) then
-c       ngfmc=2*nstep*nblk
+!       ngfmc=2*nstep*nblk
        else
-c       ngfmc=max(1,(nstep*nblk)*nconf/nconf_new)
+!       ngfmc=max(1,(nstep*nblk)*nconf/nconf_new)
         open(7,form='formatted',file='mc_configs_new')
         rewind 7
       endif

@@ -1,5 +1,5 @@
       subroutine set_ewald
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use all_tools_mod
       use control_mod
       use atom_mod
@@ -23,11 +23,11 @@ c Written by Cyrus Umrigar
 
       dimension rdist(3),gdist(3),rdist_sim(3),gdist_sim(3)
 
-c Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
+! Note vbare_coul is used both for prim. and simul. cells, so dimension it for simul. cell
       double precision, allocatable :: vbare_coul(:),vbare_jas(:),vbare_psp(:)
       double precision f
- 
-c Temporary
+
+! Temporary
       dimension r_tmp(3)
 
       integer, allocatable :: testob (:)
@@ -43,33 +43,33 @@ c Temporary
       call alloc ('b_jas', b_jas, ncoef)
 
 
-c Check that the lattice vectors are the smallest possible ones and return the smallest
-c which is used to set the range of the real-space Ewald sums so that only one image
-c of a nucleus or an electron is present within cutr and cutr_sim respectively.
+! Check that the lattice vectors are the smallest possible ones and return the smallest
+! which is used to set the range of the real-space Ewald sums so that only one image
+! of a nucleus or an electron is present within cutr and cutr_sim respectively.
       call check_lattice(rlatt,cutr,0)
       call check_lattice(rlatt_sim,cutr_sim,1)
       write(6,'(''cutr,cutr_sim ='',9f9.5)') cutr,cutr_sim
 
-c Make sure that the radius rmax_coul(ict) beyond which the local pseudopotential becomes -Z/r
-c is smaller than cutr.  cutr is the cutoff radius for the optimal Ewald separation.
-c It can be no longer than half the shortest lattice generator to make sure that
-c no more than one image of an atom is needed in the Ewald real-space sum.
-c At present the separation for the pseudopotential is taken to be the same as
-c that for the Coulomb potential -Z/r, with only the first short-range function being
-c differnt.  So, for r > cutr, the Ewald sum gives -Z/r.  So, if some rmax_coul(ict) is
-c larger than cutr, then I should do a separate Ewald separation for the pseudopotential.
-c This occurs for example in the Si betatin structure.
-c At present I am not doing this, so I just have a warning or a stop.
-c Note that there is also the issue of when we need to calculate nonlocal psp. components.
-c The various L components become equal at the specified rcut in the psp. generation input
-c file, and this rcut, here called rmax_nloc, is smaller than the point at which the components become -Z/r.
-c This is done with the check: (vps(i,ic,l)).gt.1.d-4) in nonloc.
-c If cutr is smaller than this, then we should stop, since otherwise we may have to include
-c more than one image atom when evaluating the nonlocal psp.
+! Make sure that the radius rmax_coul(ict) beyond which the local pseudopotential becomes -Z/r
+! is smaller than cutr.  cutr is the cutoff radius for the optimal Ewald separation.
+! It can be no longer than half the shortest lattice generator to make sure that
+! no more than one image of an atom is needed in the Ewald real-space sum.
+! At present the separation for the pseudopotential is taken to be the same as
+! that for the Coulomb potential -Z/r, with only the first short-range function being
+! differnt.  So, for r > cutr, the Ewald sum gives -Z/r.  So, if some rmax_coul(ict) is
+! larger than cutr, then I should do a separate Ewald separation for the pseudopotential.
+! This occurs for example in the Si betatin structure.
+! At present I am not doing this, so I just have a warning or a stop.
+! Note that there is also the issue of when we need to calculate nonlocal psp. components.
+! The various L components become equal at the specified rcut in the psp. generation input
+! file, and this rcut, here called rmax_nloc, is smaller than the point at which the components become -Z/r.
+! This is done with the check: (vps(i,ic,l)).gt.1.d-4) in nonloc.
+! If cutr is smaller than this, then we should stop, since otherwise we may have to include
+! more than one image atom when evaluating the nonlocal psp.
       do 3 ict=1,nctype
         if(rmax_coul(ict).gt.cutr) then
           write(6,'(''Warning: ict,rmax_coul(ict),cutr='',i2,2f9.5)') ict,rmax_coul(ict),cutr
-c         stop 'rmax_coul(ict) > cutr'
+!         stop 'rmax_coul(ict) > cutr'
         endif
         if(rmax_nloc(ict).gt.cutr) then
           write(6,'(''Warning: ict,rmax_nloc(ict),cutr='',i2,2f9.5)') ict,rmax_nloc(ict),cutr
@@ -77,12 +77,12 @@ c         stop 'rmax_coul(ict) > cutr'
         endif
     3 continue
 
-c Calculate inverse transformations (from lattice coordinates to real coordinates)
-c and cell volumes
-c Note glatt = 2*pi*rlatt_inv^{transpose} and
-c      rlatt = 2*pi*glatt_inv^{transpose}
-c Warning: make sure that there are no errors pertaining to transposes when the
-c rlatt is not a symmetric matrix.
+! Calculate inverse transformations (from lattice coordinates to real coordinates)
+! and cell volumes
+! Note glatt = 2*pi*rlatt_inv^{transpose} and
+!      rlatt = 2*pi*glatt_inv^{transpose}
+! Warning: make sure that there are no errors pertaining to transposes when the
+! rlatt is not a symmetric matrix.
       call alloc ('rlatt_inv', rlatt_inv, 3, 3)
       call alloc ('rlatt_sim_inv', rlatt_sim_inv, 3, 3)
       do 5 i=1,ndim
@@ -92,16 +92,16 @@ c rlatt is not a symmetric matrix.
       call matinv(rlatt_inv,3,det)
       call matinv(rlatt_sim_inv,3,det_sim)
 
-c     write(6,'(/,''Inverse lattice basis vectors'',3(/,3f10.6))')
-c    & ((rlatt_inv(k,j),k=1,ndim),j=1,ndim)
+!     write(6,'(/,''Inverse lattice basis vectors'',3(/,3f10.6))')
+!    & ((rlatt_inv(k,j),k=1,ndim),j=1,ndim)
 
-c Primitive cell volume and reciprocal lattice
-c     det=rlatt(1,1)*rlatt(2,2)*rlatt(3,3)
-c    &   +rlatt(2,1)*rlatt(3,2)*rlatt(1,3)
-c    &   +rlatt(3,1)*rlatt(1,2)*rlatt(2,3)
-c    &   -rlatt(3,1)*rlatt(2,2)*rlatt(1,3)
-c    &   -rlatt(1,1)*rlatt(3,2)*rlatt(2,3)
-c    &   -rlatt(2,1)*rlatt(1,2)*rlatt(3,3)
+! Primitive cell volume and reciprocal lattice
+!     det=rlatt(1,1)*rlatt(2,2)*rlatt(3,3)
+!    &   +rlatt(2,1)*rlatt(3,2)*rlatt(1,3)
+!    &   +rlatt(3,1)*rlatt(1,2)*rlatt(2,3)
+!    &   -rlatt(3,1)*rlatt(2,2)*rlatt(1,3)
+!    &   -rlatt(1,1)*rlatt(3,2)*rlatt(2,3)
+!    &   -rlatt(2,1)*rlatt(1,2)*rlatt(3,3)
       call alloc ('glatt', glatt, 3, 3)
       det1=twopi/det
       glatt(1,1)=det1*(rlatt(2,2)*rlatt(3,3)-rlatt(2,3)*rlatt(3,2))
@@ -120,13 +120,13 @@ c    &   -rlatt(2,1)*rlatt(1,2)*rlatt(3,3)
       vcell=dabs(det)
       write(6,'(/,''Cell volume'',f15.8)') det
 
-c Simulation cell volume and reciprocal lattice
-c     det=rlatt_sim(1,1)*rlatt_sim(2,2)*rlatt_sim(3,3)
-c    &   +rlatt_sim(2,1)*rlatt_sim(3,2)*rlatt_sim(1,3)
-c    &   +rlatt_sim(3,1)*rlatt_sim(1,2)*rlatt_sim(2,3)
-c    &   -rlatt_sim(3,1)*rlatt_sim(2,2)*rlatt_sim(1,3)
-c    &   -rlatt_sim(1,1)*rlatt_sim(3,2)*rlatt_sim(2,3)
-c    &   -rlatt_sim(2,1)*rlatt_sim(1,2)*rlatt_sim(3,3)
+! Simulation cell volume and reciprocal lattice
+!     det=rlatt_sim(1,1)*rlatt_sim(2,2)*rlatt_sim(3,3)
+!    &   +rlatt_sim(2,1)*rlatt_sim(3,2)*rlatt_sim(1,3)
+!    &   +rlatt_sim(3,1)*rlatt_sim(1,2)*rlatt_sim(2,3)
+!    &   -rlatt_sim(3,1)*rlatt_sim(2,2)*rlatt_sim(1,3)
+!    &   -rlatt_sim(1,1)*rlatt_sim(3,2)*rlatt_sim(2,3)
+!    &   -rlatt_sim(2,1)*rlatt_sim(1,2)*rlatt_sim(3,3)
       call alloc ('glatt_sim', glatt_sim, 3, 3)
       det1=twopi/det_sim
       glatt_sim(1,1)=det1*(rlatt_sim(2,2)*rlatt_sim(3,3)-rlatt_sim(2,3)*rlatt_sim(3,2))
@@ -154,15 +154,15 @@ c    &   -rlatt_sim(2,1)*rlatt_sim(1,2)*rlatt_sim(3,3)
         write(6,'(''Warning: vcell_sim/vcell='',f9.5, '' not an integer'')') vcell_sim/vcell
         stop 'Simulation cell volume is not a multiple of the primitive cell volume'
       endif
-c Do not stop below because if k is not G/2 then orbitals with k and -k are independent and
-c so you get 2 orbitals rather than 1 for each such k-pt.
-c     if(nint(vcell_sim/vcell).gt.MKPTS) then
-c       write(6,'(''Warning: vcell_sim/vcell > MKPTS'',2i4)') nint(vcell_sim/vcell),MKPTS
-c       stop 'vcell_sim/vcell > MKPTS'
-c     endif
+! Do not stop below because if k is not G/2 then orbitals with k and -k are independent and
+! so you get 2 orbitals rather than 1 for each such k-pt.
+!     if(nint(vcell_sim/vcell).gt.MKPTS) then
+!       write(6,'(''Warning: vcell_sim/vcell > MKPTS'',2i4)') nint(vcell_sim/vcell),MKPTS
+!       stop 'vcell_sim/vcell > MKPTS'
+!     endif
 
-c Calculate inverse transformation for reciprocal lattice (from lattice coordinates to real coordinates)
-c Needed to transform k-vectors
+! Calculate inverse transformation for reciprocal lattice (from lattice coordinates to real coordinates)
+! Needed to transform k-vectors
       call alloc ('glatt_inv', glatt_inv, 3, 3)
       call alloc ('glatt_sim_inv', glatt_sim_inv, 3, 3)
       do 7 i=1,ndim
@@ -172,34 +172,34 @@ c Needed to transform k-vectors
       call matinv(glatt_inv,3,det)
       call matinv(glatt_sim_inv,3,det)
 
-c     write(6,'(/,''Inverse Reciprocal lattice basis vectors'',3(/,3f10.6))')
-c    & ((glatt_inv(k,j),k=1,ndim),j=1,ndim)
+!     write(6,'(/,''Inverse Reciprocal lattice basis vectors'',3(/,3f10.6))')
+!    & ((glatt_inv(k,j),k=1,ndim),j=1,ndim)
 
-c real-space distances
-c primitive cell
+! real-space distances
+! primitive cell
       call short_distance(rlatt,vcell,dist_min,rdist)
-c     cutr=0.5d0*dist_min
-c     cutr=min(rmax_coul(ict),cutr)
+!     cutr=0.5d0*dist_min
+!     cutr=min(rmax_coul(ict),cutr)
       write(6,'(/,''Shortest distance to cell boundary'',f14.8)') dist_min/2
 
-c simulation cell
+! simulation cell
       call short_distance(rlatt_sim,vcell_sim,dist_min,rdist_sim)
-c     cutr_sim=0.5d0*dist_min
+!     cutr_sim=0.5d0*dist_min
       write(6,'(/,''Shortest distance to simu cell boundary'',f14.8)') dist_min/2
 
-c reciprocal-space distances
-c primitive cell
+! reciprocal-space distances
+! primitive cell
       vgcell=twopi**3/vcell
       call short_distance(glatt,vgcell,gdistmin,gdist)
       write(6,'(/,''Shortest distance to recip. cell boundary'',f14.8)') gdistmin
 
-c simulation cell
+! simulation cell
       vgcell_sim=twopi**3/vcell_sim
       call short_distance(glatt_sim,vgcell_sim,gdistmin_sim,gdist_sim)
       write(6,'(/,''Shortest distance to sim. recip. cell boundary'',f14.8)') gdistmin_sim
 
 
-c generate shells of primitive cell g-vectors
+! generate shells of primitive cell g-vectors
       call shells(cutg_big,glatt,gdist,igvec,gvec,gnorm,igmult,ngvec_big,
      &ngnorm_big,ng1d,0)
 
@@ -212,9 +212,11 @@ c generate shells of primitive cell g-vectors
         endif
         ngvec=ngvec+igmult(k)
    10 continue
-      call object_modified ('ngvec')
+   20 call object_modified ('ngvec')
 
-   20 write(6,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
+      write(6,'(/,''ngvec='',i6,/)') ngvec
+
+      write(6,'(/,''Shells within cutg_big,cutg'',2i8)') ngnorm_big,ngnorm
       write(6,'(/,''Vects. within cutg_big,cutg'',2i8)') ngvec_big,ngvec
       write(6,'(/,''ng1d for primitive cell'',3i4)') (ng1d(k),k=1,ndim)
 !JT      if(ngvec.gt.NGVECX) then
@@ -248,8 +250,8 @@ c generate shells of primitive cell g-vectors
       call alloc ('sin_e_sum', sin_e_sum, ngvec)
       call alloc ('cos_p_sum', cos_p_sum, ngvec)
       call alloc ('sin_p_sum', sin_p_sum, ngvec)
-       
-c generate shells of simulation cell g-vectors
+
+! generate shells of simulation cell g-vectors
       call shells(cutg_sim_big,glatt_sim,gdist_sim,igvec_sim,gvec_sim,gnorm_sim,igmult_sim,ngvec_sim_big,
      & ngnorm_sim_big,ng1d_sim,1)
 
@@ -277,7 +279,7 @@ c generate shells of simulation cell g-vectors
       call alloc ('y_coul_sim', y_coul_sim, ngnorm_sim)
       call alloc ('y_jas', y_jas, ngnorm_sim)
 
-c Convert k-vector shift from simulation-cell recip. lattice vector units to cartesian coordinates
+! Convert k-vector shift from simulation-cell recip. lattice vector units to cartesian coordinates
       call alloc ('rkvec_shift', rkvec_shift, 3)
       do 65 k=1,ndim
         rkvec_shift(k)=0
@@ -286,28 +288,28 @@ c Convert k-vector shift from simulation-cell recip. lattice vector units to car
       write(6,'(/,''rkvec_shift in sim-cell recip. lat. vec. units'',9f9.4)') (rkvec_shift_latt(k),k=1,ndim)
       write(6,'(''rkvec_shift in cartesian coodinates'',9f9.4)') (rkvec_shift(k),k=1,ndim)
 
-c Generate k-vectors, i.e. simulation-cell recip. lattice vectors shifted by rkvec_shift that are
-c not related by a primitive-cell recip. lattice vector.
+! Generate k-vectors, i.e. simulation-cell recip. lattice vectors shifted by rkvec_shift that are
+! not related by a primitive-cell recip. lattice vector.
       call k_vectors
 
 
-c Coulomb interactions in primitive and simulation cells
-c nconstraint=2 imposes that linear part of vsrange 1/r is zero.
+! Coulomb interactions in primitive and simulation cells
+! nconstraint=2 imposes that linear part of vsrange 1/r is zero.
       lowest_pow=-1
       b0=1.d0
-c     nconstraint=2
-c     nconstraint=1
+!     nconstraint=2
+!     nconstraint=1
       nconstraint=5
-c     nconstraint=7
-c     isrange=0
+!     nconstraint=7
+!     isrange=0
       isrange=4
 
-c n-n, e-n interactions (primitive cell)
-c put in uniform background by setting k=0 term to zero
+! n-n, e-n interactions (primitive cell)
+! put in uniform background by setting k=0 term to zero
       call alloc ('vbare_coul', vbare_coul, ngnorm_big)
       vbare_coul(1)=0.d0
       do 70 k=2,ngnorm_big
-c Fourier transfom of 1/r
+! Fourier transfom of 1/r
    70   vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
 
       call separate(vbare_coul,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
@@ -328,8 +330,8 @@ c Fourier transfom of 1/r
       if(ipr.ge.0) write(6,'(''y_coul = '',20d12.4)') (y_coul(k),k=1,ngnorm)
       if(ipr.ge.0) write(6,'(''b_coul = '',20d12.4)') (b_coul(k),k=1,ncoef)
 
-c debug n-n and e-n interaction (primitive cell)
-c check on 2*npts points along two different lines.
+! debug n-n and e-n interaction (primitive cell)
+! check on 2*npts points along two different lines.
       if(ipr.ge.0) then
         write(6,'(''      r       "true"      ewald       test       ewald-true   test-true       1/r     d_true   d_test    vsrange
      &    vlrange'')')
@@ -346,7 +348,7 @@ c check on 2*npts points along two different lines.
           vs=vsrange4(rr,cutr,lowest_pow,ncoef,np,b_coul,junk,junk)
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_coul)
           test=vs+vl
-c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
+!         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
           true=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell)
           ewa=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell)
           rms=rms+(true-test)**2
@@ -359,7 +361,7 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
           true_s=true
    75   test_s=test
 
-c Check along second line
+! Check along second line
         dx=cutr/((npts-1)*sqrt(1.d0+4.d0+9.d0))
         dr=cutr/(npts-1)
 
@@ -371,7 +373,7 @@ c Check along second line
           vs=vsrange4(rr,cutr,lowest_pow,ncoef,np,b_coul,junk,junk)
           vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_coul)
           test=vs+vl
-c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
+!         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
           true=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell)
           ewa=ewald_pot(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell)
           rms=rms+(true-test)**2
@@ -389,17 +391,17 @@ c         true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_coul)
       endif
 
 
-c e-e interactions (simulation cell) (we can reuse vbare_coul)
-c put in uniform background by setting k=0 term to zero
+! e-e interactions (simulation cell) (we can reuse vbare_coul)
+! put in uniform background by setting k=0 term to zero
       call release ('vbare_coul', vbare_coul)
       call alloc ('vbare_coul', vbare_coul, ngnorm_sim_big)
       call alloc ('vbare_jas', vbare_jas, ngnorm_sim_big)
       vbare_coul(1)=0.d0
       vbare_jas(1)=0.d0
       do 80 k=2,ngnorm_sim_big
-c Fourier transfom of 1/r
+! Fourier transfom of 1/r
         vbare_coul(k)=2*twopi/(vcell_sim*gnorm_sim(k)**2)
-c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
+! Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
    80 continue !JT
 !JT   80   vbare_jas(k)=-vbare_coul(k)/(1+(f*gnorm_sim(k))**2) ! JT: comment this out because f is not initialized!
 
@@ -421,9 +423,9 @@ c Fourier transform of -1/r*(1-exp(-r/f)) for Jastrow
       if(ipr.ge.0) write(6,'(''y_coul_sim = '',20d12.4)') (y_coul_sim(k),k=1,ngnorm_sim)
       if(ipr.ge.0) write(6,'(''b_coul_sim = '',20d12.4)') (b_coul_sim(k),k=1,ncoef)
 
-c debug e-e interaction (simulation cell)
-c check on 2*npts points along two different lines.
-c Note vbare_coul is used both for primitive and simulation cells
+! debug e-e interaction (simulation cell)
+! check on 2*npts points along two different lines.
+! Note vbare_coul is used both for primitive and simulation cells
       if(ipr.ge.0) then
         write(6,'(''      r       "true"      ewald       test       ewald-true   test-true       1/r     d_true   d_test    vsrange
      &    vlrange'')')
@@ -440,7 +442,7 @@ c Note vbare_coul is used both for primitive and simulation cells
           vs=vsrange4(rr,cutr_sim,lowest_pow,ncoef,np,b_coul_sim,junk,junk)
           vl=vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_coul_sim)
           test=vs+vl
-c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
+!         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
           true=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim_big,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
           ewa=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
           rms=rms+(true-test)**2
@@ -453,7 +455,7 @@ c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
           true_s=true
    85   test_s=test
 
-c Check along second line
+! Check along second line
         dx=cutr_sim/((npts-1)*sqrt(1.d0+4.d0+9.d0))
         dr=cutr_sim/(npts-1)
 
@@ -465,7 +467,7 @@ c Check along second line
           vs=vsrange4(rr,cutr_sim,lowest_pow,ncoef,np,b_coul_sim,junk,junk)
           vl=vlrange_old(r_tmp,gvec_sim,ngnorm_sim,igmult_sim,y_coul_sim)
           test=vs+vl
-c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
+!         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
           true=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim_big,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
           ewa=ewald_pot(r_tmp,rr,gvec_sim,gnorm_sim,ngnorm_sim,igmult_sim,vbare_coul,cutr_sim,vcell_sim)
           rms=rms+(true-test)**2
@@ -483,7 +485,7 @@ c         true=vlrange_old(r_tmp,gvec_sim,ngnorm_sim_big,igmult_sim,vbare_coul)
       endif
 
 
-c e-e Jastrow
+! e-e Jastrow
       if(iperiodic.eq.1) goto 88
       lowest_pow=0
       b0=0.5d0/f**2
@@ -508,9 +510,9 @@ c e-e Jastrow
       if(ipr.ge.0) write(6,'(''y_jas = '',20d12.4)') (y_jas(k),k=1,ngnorm_sim)
       if(ipr.ge.0) write(6,'(''b_jas = '',20d12.4)') (b_jas(k),k=1,ncoef)
 
-c debug e-e Jastrow
-c Since Jastrow has singlularity at 0, cannot match there, so evaluate
-c rms error only for latter 3/4 of interval
+! debug e-e Jastrow
+! Since Jastrow has singlularity at 0, cannot match there, so evaluate
+! rms error only for latter 3/4 of interval
       if(ipr.ge.0) then
         write(6,'(''      r       "true"       test      test-true -1/r*(1-exp(-r/f) d_true d_test'')')
         lowest_pow=0
@@ -541,14 +543,14 @@ c rms error only for latter 3/4 of interval
 
       if(nloc.eq.0) goto 197
 
-c e-ion local pseudopotential
-c Since local pseudopotential goes as -Z/r at large r (r >rmax_coul(ict)), we do not need to do the
-c separation for it.  Instead we use the separation for the Coulomb potential
-c and just multiply the coefs. by -znuc and use the pseudopotential, rather
-c than  1/r for one of the short-range functions.
-c This is fine provided that rmax_coul(ict)<cutr, the cutoff radius for the optimized
-c Ewald sum.  If this is not the case, then one should do a different separation
-c for the pseudopotential.  At present I am not -- I just have a stop.
+! e-ion local pseudopotential
+! Since local pseudopotential goes as -Z/r at large r (r >rmax_coul(ict)), we do not need to do the
+! separation for it.  Instead we use the separation for the Coulomb potential
+! and just multiply the coefs. by -znuc and use the pseudopotential, rather
+! than  1/r for one of the short-range functions.
+! This is fine provided that rmax_coul(ict)<cutr, the cutoff radius for the optimized
+! Ewald sum.  If this is not the case, then one should do a different separation
+! for the pseudopotential.  At present I am not -- I just have a stop.
 
       lowest_pow=0
       nconstraint=5
@@ -562,67 +564,67 @@ c for the pseudopotential.  At present I am not -- I just have a stop.
       do 100 k=1,ncoef
   100   b_psp(k,ict)=-znuc(ict)*b_coul(k)
 
-c The foll. is needed for checking only
-c Warning it changes vpseudo and so should be removed.
-c      do 110 ir=2,nr_ps(ict)
-c        r(ir)=r0_ps(ict)*(exp_h_ps(ict)**(ir-1)-1.d0)
-c        vps_short(ir)=vpseudo(ir,ict,lpotp1(ict))+znuc(ict)*(1-derfc(alpha*r(ir)))/r(ir)
-cc       write(6,'(''r,vpseudo,z*derf/r,z/r'',9d12.4)') r(ir),vpseudo(ir,ict,lpotp1(ict))+znuc(ict)/r(ir),
-cc    & -znuc(ict)*(1-derfc(alpha*r(ir)))/r(ir)+znuc(ict)/r(ir),vpseudo(ir,ict,lpotp1(ict))+znuc(ict)*(1-derfc(alpha*r(ir)))/r(ir)
+! The foll. is needed for checking only
+! Warning it changes vpseudo and so should be removed.
+!      do 110 ir=2,nr_ps(ict)
+!        r(ir)=r0_ps(ict)*(exp_h_ps(ict)**(ir-1)-1.d0)
+!        vps_short(ir)=vpseudo(ir,ict,lpotp1(ict))+znuc(ict)*(1-derfc(alpha*r(ir)))/r(ir)
+!c       write(6,'(''r,vpseudo,z*derf/r,z/r'',9d12.4)') r(ir),vpseudo(ir,ict,lpotp1(ict))+znuc(ict)/r(ir),
+!c    & -znuc(ict)*(1-derfc(alpha*r(ir)))/r(ir)+znuc(ict)/r(ir),vpseudo(ir,ict,lpotp1(ict))+znuc(ict)*(1-derfc(alpha*r(ir)))/r(ir)
 
-c  110   vpseudo(ir,ict,lpotp1(ict))=vps_short(ir)
+!  110   vpseudo(ir,ict,lpotp1(ict))=vps_short(ir)
 
-cc Derivative at origin 0 because of nature of psp, and at last pt 0 because we subtracted out asymp behaviour
-c      dpot1=0
-c      dpotn=0
-c      call spline2(r,vpseudo(1,ict,lpotp1(ict)),nr_ps(ict),dpot1,dpotn,d2pot(1,ict,lpotp1(ict)),work)
+!c Derivative at origin 0 because of nature of psp, and at last pt 0 because we subtracted out asymp behaviour
+!      dpot1=0
+!      dpotn=0
+!      call spline2(r,vpseudo(1,ict,lpotp1(ict)),nr_ps(ict),dpot1,dpotn,d2pot(1,ict,lpotp1(ict)),work)
 
       if(ipr.ge.0) write(6,'(''y_psp = '',20d12.4)') (y_psp(k,ict),k=1,ngnorm)
       if(ipr.ge.0) write(6,'(''b_psp = '',20d12.4)') (b_psp(k,ict),k=1,ncoef)
 
-c If sim cell is not primitive cell, vbare_coul has been overwritten, so restore it
-c n-n, e-n interactions (primitive cell)
-c put in uniform background by setting k=0 term to zero
+! If sim cell is not primitive cell, vbare_coul has been overwritten, so restore it
+! n-n, e-n interactions (primitive cell)
+! put in uniform background by setting k=0 term to zero
       if(vcell_sim.ne.vcell) then
         call release ('vbare_coul', vbare_coul)
         call alloc ('vbare_coul', vbare_coul, ngnorm_big)
         vbare_coul(1)=0.d0
         do 185 k=2,ngnorm_big
-c Fourier transfom of 1/r
+! Fourier transfom of 1/r
   185     vbare_coul(k)=2*twopi/(vcell*gnorm(k)**2)
       endif
 
-c     if(ipr.ge.0) then
-c       write(6,'(''      r       "true"      ewald       test       ewald-true   test-true       1/r     d_true   d_test    vsrange
-c    &    vlrange'')')
-c       npts=101
-c       dx=cutr/(npts-1)
-c       rms=0
-c       do 191 i=1,npts
-c         r_tmp(1)=(i-1)*dx+1.d-3
-c         r_tmp(2)=0
-c         r_tmp(3)=0
-c         rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
-c         if(isrange.eq.4) vs=vsrange4(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpotp1(ict))
-c         vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_psp(1,ict))
-c         test=vs+vl
-c         call alloc ('vbare_psp', vbare_psp, ngnorm_big)
-cc        true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
-c         true=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell,ict,lpotp1(ict),znuc(ict))
-c         ewa=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell,ict,lpotp1(ict),znuc(ict))
-c         rms=rms+(true-test)**2
-c         if(i.eq.1) then
-c           write(6,'(''vps'',f8.4,3f12.6,2f12.8,21x,f9.3,2f12.6)') rr,true,ewa,test,ewa-true,test-true,vs,vl
-c          else
-c           write(6,'(''vps'',f8.4,3f12.6,2f12.8,f12.6,2f9.3,2f12.6)') rr,true,ewa,test,ewa-true,test-true
-c    &      ,(true-true_s)/dx,(test-test_s)/dx,vs,vl
-c         endif
-c         true_s=true
-c 191   test_s=test
-c       rms=sqrt(rms/npts)
-c       write(6,'(''Rms error of psp fit (prim. cell)'',d12.4)') rms
-c       if(rms.gt.1.d-2) write(6,'(''Warning: rms error of psp fit too large'',d12.4)') rms
-c     endif
+!     if(ipr.ge.0) then
+!       write(6,'(''      r       "true"      ewald       test       ewald-true   test-true       1/r     d_true   d_test    vsrange
+!    &    vlrange'')')
+!       npts=101
+!       dx=cutr/(npts-1)
+!       rms=0
+!       do 191 i=1,npts
+!         r_tmp(1)=(i-1)*dx+1.d-3
+!         r_tmp(2)=0
+!         r_tmp(3)=0
+!         rr=sqrt(r_tmp(1)**2+r_tmp(2)**2+r_tmp(3)**2)
+!         if(isrange.eq.4) vs=vsrange4(rr,cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpotp1(ict))
+!         vl=vlrange_old(r_tmp,gvec,ngnorm,igmult,y_psp(1,ict))
+!         test=vs+vl
+!         call alloc ('vbare_psp', vbare_psp, ngnorm_big)
+!c        true=vlrange_old(r_tmp,gvec,ngnorm_big,igmult,vbare_psp)
+!         true=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm_big,igmult,vbare_coul,cutr,vcell,ict,lpotp1(ict),znuc(ict))
+!         ewa=ewald_pot_psp(r_tmp,rr,gvec,gnorm,ngnorm,igmult,vbare_coul,cutr,vcell,ict,lpotp1(ict),znuc(ict))
+!         rms=rms+(true-test)**2
+!         if(i.eq.1) then
+!           write(6,'(''vps'',f8.4,3f12.6,2f12.8,21x,f9.3,2f12.6)') rr,true,ewa,test,ewa-true,test-true,vs,vl
+!          else
+!           write(6,'(''vps'',f8.4,3f12.6,2f12.8,f12.6,2f9.3,2f12.6)') rr,true,ewa,test,ewa-true,test-true
+!    &      ,(true-true_s)/dx,(test-test_s)/dx,vs,vl
+!         endif
+!         true_s=true
+! 191   test_s=test
+!       rms=sqrt(rms/npts)
+!       write(6,'(''Rms error of psp fit (prim. cell)'',d12.4)') rms
+!       if(rms.gt.1.d-2) write(6,'(''Warning: rms error of psp fit too large'',d12.4)') rms
+!     endif
   195 continue
 
   197 znuc_sum=0
@@ -631,30 +633,30 @@ c     endif
         znuc_sum=znuc_sum+znuc(iwctype(i))
   200   znuc2_sum=znuc2_sum+znuc(iwctype(i))**2
 
-c     call pot_nn_ewald_old(cent,znuc,iwctype,ncent,pecent)
-c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
-c     write(6,'(''pecent (old)='',f10.6)') pecent
-c     write(6,'(''c_madelung_o='',f10.6)') c_madelung
+!     call pot_nn_ewald_old(cent,znuc,iwctype,ncent,pecent)
+!     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
+!     write(6,'(''pecent (old)='',f10.6)') pecent
+!     write(6,'(''c_madelung_o='',f10.6)') c_madelung
 
-c We do not really need to call pot_nn_ewald since it is called
-c from read_input via pot_nn later on anyway.
+! We do not really need to call pot_nn_ewald since it is called
+! from read_input via pot_nn later on anyway.
       call pot_nn_ewald(cent,znuc,iwctype,ncent,pecent)
-c     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
+!     c_madelung=pecent*dist_nn/(znuc(1)*znuc(2)*ncent/2)
       write(6,'(''pecent='',f13.6)') pecent
-c     write(6,'(''c_madelung='',f10.6)') c_madelung
+!     write(6,'(''c_madelung='',f10.6)') c_madelung
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine short_distance(vector,volume,dist_min,distcell)
-c Written by Cyrus Umrigar
-c distcell(i) is the perpendicular distance between cell faces parallel
-c to the other 2 directions from i.
-c dist_min is the shortest of these three.
-c By choosing the range of the short-range part of the Ewald sums to be
-c <= half the shortest perpendicular distance we ensure that the short-range
-c part has zero or one terms.
+! Written by Cyrus Umrigar
+! distcell(i) is the perpendicular distance between cell faces parallel
+! to the other 2 directions from i.
+! dist_min is the shortest of these three.
+! By choosing the range of the short-range part of the Ewald sums to be
+! <= half the shortest perpendicular distance we ensure that the short-range
+! part has zero or one terms.
 
       implicit real*8(a-h,o-z)
       dimension vector(3,3),v1(3),v2(3),v3(3),distcell(3)
@@ -700,10 +702,10 @@ c part has zero or one terms.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine cross(v1,v2,v3)
-c evaluates the cross-product of v1 and v2 and puts it in v3
+! evaluates the cross-product of v1 and v2 and puts it in v3
 
       implicit real*8(a-h,o-z)
 
@@ -715,16 +717,16 @@ c evaluates the cross-product of v1 and v2 and puts it in v3
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine k_vectors
-c Written by Cyrus Umrigar
-c Generate the unique k-vectors, i.e., those that are not related by a
-c primitive cell reciprocal lattice vector and are not the inverses of
-c existing vectors.  Note that for the moment we keep vectors that are
-c related by primitive cell reciprocal lattice vectors to inverses of
-c other vectors.  We should come back to the issue of whether that is
-c a symmetry one could use later on.
+! Written by Cyrus Umrigar
+! Generate the unique k-vectors, i.e., those that are not related by a
+! primitive cell reciprocal lattice vector and are not the inverses of
+! existing vectors.  Note that for the moment we keep vectors that are
+! related by primitive cell reciprocal lattice vectors to inverses of
+! other vectors.  We should come back to the issue of whether that is
+! a symmetry one could use later on.
 
       use all_tools_mod
       use dim_mod
@@ -742,17 +744,17 @@ c a symmetry one could use later on.
       do 10 k=1,ndim
         kvec(k,1)=0
    10   rkvec(k,1)=rkvec_shift(k)
-c     write(6,'(''k-vec( 1)='',3i5,3f9.4)') (kvec(k,1),k=1,ndim),(rkvec(k,1),k=1,ndim)
+!     write(6,'(''k-vec( 1)='',3i5,3f9.4)') (kvec(k,1),k=1,ndim),(rkvec(k,1),k=1,ndim)
 
       nkvec=0
-c Warning: Need to think more about do loop limit
-c     do 120 i=1,min(ngvec_sim,vcell_sim*NSYM/vcell)
+! Warning: Need to think more about do loop limit
+!     do 120 i=1,min(ngvec_sim,vcell_sim*NSYM/vcell)
       do 120 i=1,min(ngvec_sim,nint(8*vcell_sim/vcell))
-c     do 120 i=1,ngvec_sim
+!     do 120 i=1,ngvec_sim
         do 20 k=1,ndim
    20     rkvec_try(k)=rkvec_shift(k)+gvec_sim(k,i)
-c Check if after translation by primitive cell reciprocal lattice vector it is
-c the same as an existing k-vector
+! Check if after translation by primitive cell reciprocal lattice vector it is
+! the same as an existing k-vector
         do 50 j=2,ngvec
           do 50 l=1,nkvec
             rnorm=0
@@ -764,9 +766,9 @@ c the same as an existing k-vector
    40         rnorm=rnorm+(rkvec_try(k)+gvec(k,j)-rkvec(k,l))**2
             if(rnorm.lt.eps) goto 120
    50   continue
-c Check if after translation by some primitive cell reciprocal lattice vector G it is
-c the inverse of an existing k-vector, or equivalently if there exists G such that k=G/2.
-c If yes, then k and -k give only one indep. state, else they give two.
+! Check if after translation by some primitive cell reciprocal lattice vector G it is
+! the inverse of an existing k-vector, or equivalently if there exists G such that k=G/2.
+! If yes, then k and -k give only one indep. state, else they give two.
         do 80 j=2,ngvec
           do 80 l=1,nkvec
             rnorm=0
@@ -784,7 +786,7 @@ c If yes, then k and -k give only one indep. state, else they give two.
               goto 120
             endif
    80   continue
-c Voila, found a new one
+! Voila, found a new one
         nkvec=nkvec+1
 !JT        if(nkvec.gt.MKPTS) stop 'nkvec > MKPTS in k_vectors'
         call alloc ('k_inv', k_inv, nkvec)
@@ -798,17 +800,17 @@ c Voila, found a new one
           rkvec(k,nkvec)=rkvec_try(k)
   110     rknorm(nkvec)=rknorm(nkvec)+rkvec_try(k)**2
         rknorm(nkvec)=sqrt(rknorm(nkvec))
-c       write(6,'(''k-vec('',i2,'')='',3i5,3f9.4,f11.6)') nkvec,(kvec(k,nkvec),k=1,ndim),(rkvec(k,nkvec),k=1,ndim),rknorm(nkvec)
+!       write(6,'(''k-vec('',i2,'')='',3i5,3f9.4,f11.6)') nkvec,(kvec(k,nkvec),k=1,ndim),(rkvec(k,nkvec),k=1,ndim),rknorm(nkvec)
   120 continue
 
       call object_modified ('nkvec')
       call object_modified ('rkvec')
 
-c Sort into some standard order independent of cutg_sim_big
+! Sort into some standard order independent of cutg_sim_big
       call sort_kvec(k_inv,kvec,rkvec,rknorm,nkvec)
 
-c I could just get out of the above loop after finding vcell_sim/vcell
-c but instead do check after loop to be safe.
+! I could just get out of the above loop after finding vcell_sim/vcell
+! but instead do check after loop to be safe.
       write(6,'(/,''k-vector k-inv      kvec               rkvec'')')
       nkvec_tot=0
       do 130 i=1,nkvec
@@ -817,14 +819,14 @@ c but instead do check after loop to be safe.
      &,rknorm(i)
       write(6,'(''nkvec,nkvec_tot='',2i5)') nkvec,nkvec_tot
 
-c Write out k-pts in reciprocal lattice units and wts for input to pw program
+! Write out k-pts in reciprocal lattice units and wts for input to pw program
       write(6,'(/,i2,'' k-vectors (shifted) in recip. latt. units, and wts, for input to pw program'')') nkvec
       do 150 ikv=1,nkvec
         do 140 k=1,ndim
           rkvec_latt(k)=0
           do 140 i=1,ndim
   140       rkvec_latt(k)=rkvec_latt(k)+glatt_inv(k,i)*rkvec(i,ikv)
-c 150 write(6,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt(k),k=1,ndim)
+! 150 write(6,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt(k),k=1,ndim)
   150 write(6,'(''k-vec('',i2,'')='',3f14.10,f4.0)') ikv,(rkvec_latt(k),k=1,ndim),dfloat(k_inv(ikv))
 
       if(nkvec_tot.ne.nint(vcell_sim/vcell)) then
@@ -838,12 +840,12 @@ c 150 write(6,'(''k-vec('',i2,'')='',i2,2x,3f14.10)') ikv,k_inv(ikv),(rkvec_latt
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine sort_kvec(k_inv,kvec,rkvec,rknorm,nkvec)
-c Written by Cyrus Umrigar
-c Use Shell-Metzger sort to put k-vectors in some standard order, so that
-c the order they appear in is independent of cutg_sim_big.
+! Written by Cyrus Umrigar
+! Use Shell-Metzger sort to put k-vectors in some standard order, so that
+! the order they appear in is independent of cutg_sim_big.
 
       use dim_mod
       implicit real*8(a-h,o-z)
@@ -877,15 +879,15 @@ c the order they appear in is independent of cutg_sim_big.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine fourier_transform(r,exp_h_ps,r0_ps,nr,vps_short,vcell,gnorm,
      & ngnorm_big,vbare_psp)
-c Written by Cyrus Umrigar and Claudia Filippi
+! Written by Cyrus Umrigar and Claudia Filippi
 
-c Note: vps_short overwritten
-c g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
-c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
+! Note: vps_short overwritten
+! g > 0 (4pi/vcell)*(int r*vps_short*sin(g*r)*dr)/g
+! g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
       use basic_tools_mod, only: alloc
       use pseudo_mod
@@ -901,22 +903,22 @@ c g = 0 (4pi/vcell)*(int r*2*vps_short*dr)
 
       call alloc ('y', y, nr)
 
-c shifted exponential grid
+! shifted exponential grid
       h_ps=dlog(exp_h_ps)
       do 10 ir=1,nr
    10   vps_short(ir)=(r(ir)+r0_ps)*vps_short(ir)*h_ps
 
       dx=1.d0
-c g != 0 components
+! g != 0 components
       do 30 ig=2,ngnorm_big
         do 20  ir=1,nr
    20     y(ir)=r(ir)*vps_short(ir)*sin(gnorm(ig)*r(ir))
         call simson(y,vbare_psp(ig),dx,nr)
-c       nrr=((nr-1)/4)*4+1
-c       vbare_psp(ig)=bode(y,dx,nrr)
+!       nrr=((nr-1)/4)*4+1
+!       vbare_psp(ig)=bode(y,dx,nrr)
    30   vbare_psp(ig)=anorm*vbare_psp(ig)/gnorm(ig)
 
-c g=0 component
+! g=0 component
       do 40  ir=1,nr
    40   y(ir)=r(ir)*r(ir)*vps_short(ir)
       call simson(y,vbare_psp(1),dx,nr)
@@ -924,10 +926,10 @@ c g=0 component
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine separate(v,b0,lowest_pow,ngnorm_big,igmult,gnorm,ngnorm
      &,cutr,vcell,ncoef,np,b,y,chisq,nconstraint,isrange)
-c Written by Cyrus Umrigar and Claudia Filippi
+! Written by Cyrus Umrigar and Claudia Filippi
 
       implicit real*8(a-h,o-z)
 
@@ -935,13 +937,13 @@ c Written by Cyrus Umrigar and Claudia Filippi
       parameter(d35b16=35.d0/16.d0,d21b16=21.d0/16.d0,d5b16=5.d0/16.d0)
       parameter(d693b256=693.d0/256.d0,d1155b256=1155.d0/256.d0,d693b128=693.d0/128.d0
      &,d495b128=495.d0/128.d0,d385b256=385.d0/256.d0,d63b256=63.d0/256.d0)
-c                      693           1155            693           495
-c Out[24]= {{t[1] -> -(---), t[2] -> ----, t[3] -> -(---), t[4] -> ---,
-c                      256           256             128           128
+!                      693           1155            693           495
+! Out[24]= {{t[1] -> -(---), t[2] -> ----, t[3] -> -(---), t[4] -> ---,
+!                      256           256             128           128
 
-c                 385           63
-c       t[5] -> -(---), t[6] -> ---}}
-c                 256           256
+!                 385           63
+!       t[5] -> -(---), t[6] -> ---}}
+!                 256           256
 
       common /constant/ twopi
 
@@ -950,21 +952,21 @@ c                 256           256
 
       anorm=2*twopi*cutr**3/vcell
 
-c reduce number of free parameters due to constraints and shift the
-c pointer to the first parameter to be optimized.
+! reduce number of free parameters due to constraints and shift the
+! pointer to the first parameter to be optimized.
       nfree=ncoef-nconstraint
       i0=1+nconstraint
 
       write(6,'(/,''Ncoef ='',i5)') ncoef
 
-c zero right and left hand side of fitting equation
+! zero right and left hand side of fitting equation
       do 10 i=1,ncoef
         b(i)=0.d0
         do 10 j=1,ncoef
    10     a(j,i)=0.d0
 
       chisq=0.d0
-c go over k values larger than those explicitly used
+! go over k values larger than those explicitly used
       do 20 k=ngnorm+1,ngnorm_big
         gr=gnorm(k)*cutr
         ig=k
@@ -976,8 +978,8 @@ c go over k values larger than those explicitly used
           call integral_sin_poly4(gr,lowest_pow,ncoef,np,anorm,c)
         endif
 
-c Constraints.
-c nconstraint=2 imposes that linear part of vsrange 1/r is zero.
+! Constraints.
+! nconstraint=2 imposes that linear part of vsrange 1/r is zero.
         if(isrange.le.3) then
           if(nconstraint.eq.2) then
             vk=v(k)-beta1*(c(1)+0.5d0*(np-1)*c(2))
@@ -985,7 +987,7 @@ c nconstraint=2 imposes that linear part of vsrange 1/r is zero.
            else
             vk=v(k)-beta1*c(1)
           endif
-c   Constraint for cusp.
+!   Constraint for cusp.
           c(2)=c(2)+beta2*c(1)
          elseif(isrange.eq.4) then
           if(nconstraint.eq.1) then
@@ -1001,21 +1003,21 @@ c   Constraint for cusp.
           endif
         endif
 
-c       write(6,'(''vk='',i4,9d12.4)') k,v(k),beta1*c(1),(c(i),i=1,3)
+!       write(6,'(''vk='',i4,9d12.4)') k,v(k),beta1*c(1),(c(i),i=1,3)
 
         chisq=chisq+igmult(k)*vk**2
 
-c add to right hand side
+! add to right hand side
         do 20 i=i0,ncoef
           b(i)=b(i)+igmult(k)*vk*c(i)
-c add to left hand side
+! add to left hand side
           do 20 j=i0,ncoef
    20       a(j,i)=a(j,i)+igmult(k)*c(i)*c(j)
 
-c     write(6,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef),j=i0,ncoef)
-c     write(6,'(''b='',10d14.5)') (b(i),i=i0,ncoef)
+!     write(6,'(''a='',10d14.5)') ((a(i,j),i=i0,ncoef),j=i0,ncoef)
+!     write(6,'(''b='',10d14.5)') (b(i),i=i0,ncoef)
 
-c factor matrix a
+! factor matrix a
       if(nfree.gt.0) then
         call dpoco(a(i0,i0),ncoef,nfree,rcond,work,info)
         write(6,'(''condition #, rcond, after return from dpoco'',d12.4)') rcond
@@ -1024,30 +1026,30 @@ c factor matrix a
         if(info.ne.0) stop 'info in dpoco.ne.0 when called from separate'
       endif
 
-c make a spare copy of right hand side
+! make a spare copy of right hand side
       do 30 i=i0,ncoef
    30   work(i)=b(i)
 
 
-c solve linear equations
+! solve linear equations
       if(nfree.gt.0) call dposl(a(i0,i0),ncoef,nfree,b(i0))
-c     write(6,*) (b(i),i=i0,ncoef)
+!     write(6,*) (b(i),i=i0,ncoef)
 
-c b is now the solution (t in Ceperley's paper)
+! b is now the solution (t in Ceperley's paper)
       do 40 i=i0,ncoef
    40   chisq=chisq-work(i)*b(i)
-c     if(chisq.gt.0) then
-c       write(6,'(''Rms error '',d12.5)') dsqrt(chisq)
-c      else
-c       write(6,'(''Warning: Rms error missing, chisq negative in separate'',d12.4)') chisq
-c       if(chisq.lt.0.d0) stop 'chisq<0 in separate'
-c     endif
+!     if(chisq.gt.0) then
+!       write(6,'(''Rms error '',d12.5)') dsqrt(chisq)
+!      else
+!       write(6,'(''Warning: Rms error missing, chisq negative in separate'',d12.4)') chisq
+!       if(chisq.lt.0.d0) stop 'chisq<0 in separate'
+!     endif
 
       if(isrange.le.3) then
-c beta2 !=0 only for cusp constraint
+! beta2 !=0 only for cusp constraint
         if(nconstraint.eq.1) then
           b(1)=beta1+beta2*b(2)
-c nconstraint=2 imposes that linear part of vsrange 1/r is zero.
+! nconstraint=2 imposes that linear part of vsrange 1/r is zero.
          elseif(nconstraint.eq.2) then
           b(1)=beta1
           b(2)=0.5d0*(np-1)*b(1)+b(3)/np
@@ -1056,15 +1058,15 @@ c nconstraint=2 imposes that linear part of vsrange 1/r is zero.
         cutri=1/cutr
         b(1)=cutri
 
-c       b(2)=-d15b8*cutri
-c       b(3)=d5b4*cutri
-c       b(4)=-d3b8*cutri
-c       b(5)=0
+!       b(2)=-d15b8*cutri
+!       b(3)=d5b4*cutri
+!       b(4)=-d3b8*cutri
+!       b(5)=0
 
-c       b(2)=-d35b16*cutri
-c       b(3)=d35b16*cutri
-c       b(4)=-d21b16*cutri
-c       b(5)=d5b16*cutri
+!       b(2)=-d35b16*cutri
+!       b(3)=d35b16*cutri
+!       b(4)=-d21b16*cutri
+!       b(5)=d5b16*cutri
 
         if(nconstraint.eq.5) then
           b(2)=-d35b16*cutri+b(6)+4*b(7)+10*b(8)+20*b(9)
@@ -1080,10 +1082,10 @@ c       b(5)=d5b16*cutri
           b(7)=d63b256*cutri
         endif
       endif
-       
+
       write(6,*) (b(i),i=1,ncoef)
 
-c subtract effect of short range potential on fourier components
+! subtract effect of short range potential on fourier components
 
       rms2=0
       do 70 k=1,ngnorm_big
@@ -1096,7 +1098,7 @@ c subtract effect of short range potential on fourier components
          elseif(isrange.eq.4) then
           call integral_sin_poly4(gr,lowest_pow,ncoef,np,anorm,c)
         endif
-c       write(6,'(''vk2='',i4,9d12.4)') k,v(k),b(1)*c(1),(c(i),i=1,3)
+!       write(6,'(''vk2='',i4,9d12.4)') k,v(k),b(1)*c(1),(c(i),i=1,3)
         if(k.le.ngnorm) then
         y(k)=v(k)
         do 50 i=1,ncoef
@@ -1109,31 +1111,31 @@ c       write(6,'(''vk2='',i4,9d12.4)') k,v(k),b(1)*c(1),(c(i),i=1,3)
         endif
    70 continue
       rms2=sqrt(rms2)
-c     write(6,'(''rms,rms2='',2d12.5)') sqrt(chisq),rms2
+!     write(6,'(''rms,rms2='',2d12.5)') sqrt(chisq),rms2
 
-c     write(6,'(/,''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef)
+!     write(6,'(/,''Poly coefs (t) = '',5d14.6)') (b(i),i=1,ncoef)
       write(6,'(/,''vk = '',20d12.4)') (v(k),k=1,ngnorm)
       write(6,'(/,''Yk = '',20d12.4)') (y(k),k=1,ngnorm)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine integral_sin_poly(g,lowest_pow,ncoef,np,anorm,c)
-c Written by Cyrus Umrigar and Claudia Filippi
-c anorm = 4*pi*cutr^3/volume
-c g = g*cutr
-c x = r/cutr
-c output coefficients c
+! Written by Cyrus Umrigar and Claudia Filippi
+! anorm = 4*pi*cutr^3/volume
+! g = g*cutr
+! x = r/cutr
+! output coefficients c
 
       implicit real*8(a-h,o-z)
       complex*16 ti,et,em
 
       parameter(NPTS=1001)
       dimension c(*)
-c     dimension c(*),y(NPTS)
+!     dimension c(*),y(NPTS)
 
-c integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 0 to 1
+! integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
         gi=1.d0/g
         ti=dcmplx(0.d0,-gi)
@@ -1147,54 +1149,54 @@ c integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 
    20     c(i)=1.d0/(i+2+lowest_pow)
       endif
 
-c take care that expansion functions are h_i(x) = x**i*(1-x)**np
-c Warning check if we need to go one more.
+! take care that expansion functions are h_i(x) = x**i*(1-x)**np
+! Warning check if we need to go one more.
       do 30 k=1,np
         do 30 i=1,ncoef+np-k
    30     c(i)=c(i)-c(i+1)
 
-c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
+!     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
 
-c Calculate c from numerical integral rather than recursion for small non-zero g's
-c to check eval above.  Agrees well.
-c      if(g.ne.0.d0 .and. g.lt.10.d0) then
-c      dx=1.d0/(NPTS-1)
-c      do 36 i=1,ncoef
-c        do 35 j=1,NPTS
-c          x=(j-1)*dx
-c          if(g.gt.1.d-9) then
-c            if(i+lowest_pow.ne.0) then
-c              y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
-c             else
-c              y(j)=(1-x)**np*sin(g*x)
-c            endif
-c           else
-c            y(j)=x**(i+1+lowest_pow)*(1-x)**np
-c          endif
-c  35    continue
-c        c(i)=bode(y,dx,NPTS)
-c        if(g.gt.1.d-6) then
-c          c(i)=c(i)/g
-c        endif
-c  36 continue
+! Calculate c from numerical integral rather than recursion for small non-zero g's
+! to check eval above.  Agrees well.
+!      if(g.ne.0.d0 .and. g.lt.10.d0) then
+!      dx=1.d0/(NPTS-1)
+!      do 36 i=1,ncoef
+!        do 35 j=1,NPTS
+!          x=(j-1)*dx
+!          if(g.gt.1.d-9) then
+!            if(i+lowest_pow.ne.0) then
+!              y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
+!             else
+!              y(j)=(1-x)**np*sin(g*x)
+!            endif
+!           else
+!            y(j)=x**(i+1+lowest_pow)*(1-x)**np
+!          endif
+!  35    continue
+!        c(i)=bode(y,dx,NPTS)
+!        if(g.gt.1.d-6) then
+!          c(i)=c(i)/g
+!        endif
+!  36 continue
 
-cc    write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
-c     endif
+!c    write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
+!     endif
 
-c multiply by anorm
+! multiply by anorm
       do 40 i=1,ncoef
    40   c(i)=anorm*c(i)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine integral_sin_poly1(g,ig,lowest_pow,ncoef,np,anorm,c)
-c Written by Cyrus Umrigar and Claudia Filippi
-c anorm = 4*pi*cutr^3/volume
-c g = g*cutr
-c x = r/cutr
-c output coefficients c
+! Written by Cyrus Umrigar and Claudia Filippi
+! anorm = 4*pi*cutr^3/volume
+! g = g*cutr
+! x = r/cutr
+! output coefficients c
 
       implicit real*8(a-h,o-z)
       complex*16 ti,et,em
@@ -1203,9 +1205,9 @@ c output coefficients c
 
 !JT      common /ewald_basis/ vps_basis_fourier(NGNORM_BIGX)
       dimension c(*)
-c     dimension c(*),y(NPTS)
+!     dimension c(*),y(NPTS)
 
-c integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 0 to 1
+! integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
         gi=1.d0/g
         ti=dcmplx(0.d0,-gi)
@@ -1219,63 +1221,63 @@ c integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 
    20     c(i)=1.d0/(i+2+lowest_pow)
       endif
 
-c take care that expansion functions are h_i(x) = x**i*(1-x)**np
-c Warning check if we need to go one more.
+! take care that expansion functions are h_i(x) = x**i*(1-x)**np
+! Warning check if we need to go one more.
       do 30 k=1,np
-c       do 30 i=1,ncoef+np-k
+!       do 30 i=1,ncoef+np-k
         do 30 i=1,ncoef+np-k-1
    30     c(i)=c(i)-c(i+1)
 
 !JT      if(ncoef.gt.0) c(ncoef)=vps_basis_fourier(ig) !JT : WARNING vps_basis_fourier is never initialized!!!
 
-c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
+!     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
 
-c Calculate c from numerical integral rather than recursion for small non-zero g's
-c      if(g.ne.0.d0 .and. g.lt.10.d0) then
-c      dx=1.d0/(NPTS-1)
-cc     do 36 i=1,ncoef
-c      do 36 i=1,ncoef-1
-c        do 35 j=1,NPTS
-c          x=(j-1)*dx
-c          if(g.gt.1.d-6) then
-c            y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
-c           else
-c            y(j)=x**(i+1+lowest_pow)*(1-x)**np
-c          endif
-c  35    continue
-c        c(i)=bode(y,dx,NPTS)
-c        if(g.gt.1.d-6) then
-c          c(i)=c(i)/g
-c        endif
-c  36 continue
+! Calculate c from numerical integral rather than recursion for small non-zero g's
+!      if(g.ne.0.d0 .and. g.lt.10.d0) then
+!      dx=1.d0/(NPTS-1)
+!c     do 36 i=1,ncoef
+!      do 36 i=1,ncoef-1
+!        do 35 j=1,NPTS
+!          x=(j-1)*dx
+!          if(g.gt.1.d-6) then
+!            y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
+!           else
+!            y(j)=x**(i+1+lowest_pow)*(1-x)**np
+!          endif
+!  35    continue
+!        c(i)=bode(y,dx,NPTS)
+!        if(g.gt.1.d-6) then
+!          c(i)=c(i)/g
+!        endif
+!  36 continue
 
-cc    write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
-c     endif
+!c    write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
+!     endif
 
-c multiply by anorm
-c     do 40 i=1,ncoef
+! multiply by anorm
+!     do 40 i=1,ncoef
       do 40 i=1,ncoef-1
    40   c(i)=anorm*c(i)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine integral_sin_poly4(g,lowest_pow,ncoef,np,anorm,c)
-c Written by Cyrus Umrigar
-c anorm = 4*pi*cutr^3/volume
-c g = g*cutr
-c x = r/cutr
-c output coefficients c
+! Written by Cyrus Umrigar
+! anorm = 4*pi*cutr^3/volume
+! g = g*cutr
+! x = r/cutr
+! output coefficients c
 
       implicit real*8(a-h,o-z)
       complex*16 ti,et,em
 
       parameter(NPTS=1001)
       dimension c(*)
-c     dimension c(*),y(NPTS)
+!     dimension c(*),y(NPTS)
 
-c integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 0 to 1
+! integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 0 to 1
       if(dabs(g).gt.1.d-10) then
         gi=1.d0/g
         ti=dcmplx(0.d0,-gi)
@@ -1289,7 +1291,7 @@ c integrates sin(g*x)*x**i for i=lowest_pow+1 to ncoef+np+lowest_pow and x from 
    20     c(i)=1.d0/(i+2+lowest_pow)
       endif
 
-c Shift them so that we save integrals for powers -1,0,2,4,6
+! Shift them so that we save integrals for powers -1,0,2,4,6
       c(3)=c(4)
       c(4)=c(6)
       c(5)=c(8)
@@ -1298,45 +1300,45 @@ c Shift them so that we save integrals for powers -1,0,2,4,6
       c(8)=c(14)
       c(9)=c(16)
 
-c     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
+!     write(6,'(''g,c1='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
 
-c Calculate c from numerical integral rather than recursion for small non-zero g's
-c to check eval above.  Agrees well.
-c      if(g.ne.0.d0 .and. g.lt.10.d0) then
-c      dx=1.d0/(NPTS-1)
-c      do 36 i=1,ncoef
-c        do 35 j=1,NPTS
-c          x=(j-1)*dx
-c          if(g.gt.1.d-9) then
-c            if(i+lowest_pow.ne.0) then
-c              y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
-c             else
-c              y(j)=(1-x)**np*sin(g*x)
-c            endif
-c           else
-c            y(j)=x**(i+1+lowest_pow)*(1-x)**np
-c          endif
-c  35    continue
-c        c(i)=bode(y,dx,NPTS)
-c        if(g.gt.1.d-6) then
-c          c(i)=c(i)/g
-c        endif
-c  36 continue
+! Calculate c from numerical integral rather than recursion for small non-zero g's
+! to check eval above.  Agrees well.
+!      if(g.ne.0.d0 .and. g.lt.10.d0) then
+!      dx=1.d0/(NPTS-1)
+!      do 36 i=1,ncoef
+!        do 35 j=1,NPTS
+!          x=(j-1)*dx
+!          if(g.gt.1.d-9) then
+!            if(i+lowest_pow.ne.0) then
+!              y(j)=x**(i+lowest_pow)*(1-x)**np*sin(g*x)
+!             else
+!              y(j)=(1-x)**np*sin(g*x)
+!            endif
+!           else
+!            y(j)=x**(i+1+lowest_pow)*(1-x)**np
+!          endif
+!  35    continue
+!        c(i)=bode(y,dx,NPTS)
+!        if(g.gt.1.d-6) then
+!          c(i)=c(i)/g
+!        endif
+!  36 continue
 
-cc    write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
-c     endif
+!c    write(6,'(''g,c2='',f5.1,9f9.5)') g,(c(i),i=1,ncoef)
+!     endif
 
-c multiply by anorm
+! multiply by anorm
       do 40 i=1,ncoef
    40   c(i)=anorm*c(i)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function choose(n,m)
-c Written by Cyrus Umrigar
-c Binomial coefficients ^nC_m
+! Written by Cyrus Umrigar
+! Binomial coefficients ^nC_m
       implicit real*8(a-h,o-z)
 
       choose=1
@@ -1344,11 +1346,11 @@ c Binomial coefficients ^nC_m
    10   choose=choose*(n-i+1)/dfloat(i)
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vsrange(r,cutr,lowest_pow,ncoef,np,b)
-c Written by Cyrus Umrigar and Claudia Filippi
-c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
+! Written by Cyrus Umrigar and Claudia Filippi
+! h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
@@ -1368,11 +1370,11 @@ c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vsrange1(r,cutr,lowest_pow,ncoef,np,b,ict,l)
-c Written by Cyrus Umrigar
-c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
+! Written by Cyrus Umrigar
+! h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
 
       implicit real*8(a-h,o-z)
 
@@ -1383,29 +1385,29 @@ c h(x)= \sum_{i=1}^ncoef b_i x^{i-1} (1-x)^np, x=r/cutr
       vsrange1=0
       if(x.gt.1.d0) return
 
-c     do 10 i=1,ncoef
-c  10   vsrange1=b(ncoef-i+1)+x*vsrange1
+!     do 10 i=1,ncoef
+!  10   vsrange1=b(ncoef-i+1)+x*vsrange1
       do 10 i=1,ncoef-1
    10   vsrange1=b(ncoef-i)+x*vsrange1
 
       vsrange1=vsrange1*(1-x)**np
 
       call splfit_ps(r,l,ict,vpot)
-c     write(6,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
+!     write(6,'(''ict,l,r,vsrange1,vpot'',2i3,9f9.5)') ict,l,r,vsrange1,vpot
       vsrange1=vsrange1+b(ncoef)*vpot
 
-c     if(lowest_pow.eq.-1) vsrange1=vsrange1/x
+!     if(lowest_pow.eq.-1) vsrange1=vsrange1/x
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vsrange4(r,cutr,lowest_pow,ncoef,np,b,ict,l)
-c Written by Cyrus Umrigar
-c h(x)= 1/r + \sum_{i=1}^4 b(1+i)*x^{2(i-1)},  x=r/cutr
-c The b(i) are chosen so that h,h',h'',h''' =0 at x=1.
-c Aside from the potential itself, the rest has only even powers at r=0
-c as required by analyticity.
+! Written by Cyrus Umrigar
+! h(x)= 1/r + \sum_{i=1}^4 b(1+i)*x^{2(i-1)},  x=r/cutr
+! The b(i) are chosen so that h,h',h'',h''' =0 at x=1.
+! Aside from the potential itself, the rest has only even powers at r=0
+! as required by analyticity.
 
       implicit real*8(a-h,o-z)
 
@@ -1415,7 +1417,7 @@ c as required by analyticity.
       if(r.ge.cutr) return
 
       x=r/cutr
-c     xi=1/x
+!     xi=1/x
       x2=x*x
       x4=x2*x2
       x6=x4*x2
@@ -1430,21 +1432,21 @@ c     xi=1/x
         call splfit_ps(r,l,ict,vpot)
       endif
 
-c     write(6,'(''b='',9f9.5)') (b(i),i=1,7)
+!     write(6,'(''b='',9f9.5)') (b(i),i=1,7)
       vsrange4=vpot + b(2)+b(3)*x2+b(4)*x4+b(5)*x6+b(6)*x8+b(7)*x10
      &+b(8)*x12+b(9)*x14
 
-c     vsrange4=0
-c     do 10 i=1,ncoef
-c  10   vsrange4=b(ncoef-i+1)+x2*vsrange4
-c     vsrange4=vsrange4+1/r
+!     vsrange4=0
+!     do 10 i=1,ncoef
+!  10   vsrange4=b(ncoef-i+1)+x2*vsrange4
+!     vsrange4=vsrange4+1/r
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use const_mod
       implicit real*8(a-h,o-z)
@@ -1453,8 +1455,8 @@ c Written by Cyrus Umrigar
 
       gaus_exp=5/cutr
       ivec=1
-c The factor of 2 in the next line is just to compensate for the 2 in the
-c last line, which is there because we keep only half the vectors in the star.
+! The factor of 2 in the next line is just to compensate for the 2 in the
+! last line, which is there because we keep only half the vectors in the star.
       ewald_pot=-pi/(2*vcell*gaus_exp**2)
       do 10 k=2,ngnorm
         expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
@@ -1468,10 +1470,10 @@ c last line, which is there because we keep only half the vectors in the star.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use const_mod
       implicit real*8(a-h,o-z)
@@ -1481,8 +1483,8 @@ c Written by Cyrus Umrigar
 
       gaus_exp=5/cutr
       ivec=1
-c The factor of 2 in the next line is just to compensate for the 2 in the
-c last line, which is there because we keep only half the vectors in the star.
+! The factor of 2 in the next line is just to compensate for the 2 in the
+! last line, which is there because we keep only half the vectors in the star.
       ewald_pot_psp=-pi/(2*vcell*gaus_exp**2)
       do 10 k=2,ngnorm
         expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
@@ -1493,19 +1495,19 @@ c last line, which is there because we keep only half the vectors in the star.
      &            rvec(3)*gvec(3,ivec)
   10      ewald_pot_psp=ewald_pot_psp+cos(product)*y(k)*expon
       call splfit_ps(rr,l,ict,vpot)
-c     write(6,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
+!     write(6,'(''rr,ewald_pot_psp'',f8.4,9f9.5)') rr,-z*(2*ewald_pot_psp+y(1)),vpot,-z*(2*ewald_pot_psp+y(1))+vpot
       ewald_pot_psp=-z*(2*ewald_pot_psp+y(1))+vpot
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function vlrange_old(rvec,gvec,ngnorm,igmult,y)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
       dimension rvec(3),gvec(3,*),igmult(*),y(*)
-c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_SIM_BIGX)
+!     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_SIM_BIGX)
 
       ivec=1
       vlrange=0
@@ -1520,10 +1522,10 @@ c     dimension rvec(3),gvec(3,NGVEC_SIM_BIGX),igmult(NGNORM_SIM_BIGX),y(NGNORM_
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use const_mod
       implicit real*8(a-h,o-z)
@@ -1546,10 +1548,10 @@ c Written by Cyrus Umrigar
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vlrange_ee_old2(nelec,ngnorm,igmult,cos_g,sin_g,y)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
@@ -1570,10 +1572,10 @@ c Written by Cyrus Umrigar
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vlrange(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum,y)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
@@ -1589,10 +1591,10 @@ c Written by Cyrus Umrigar
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function vlrange_p(ngnorm,igmult,cos1_sum,cos2_sum,sin1_sum,sin2_sum)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       implicit real*8(a-h,o-z)
 
@@ -1608,10 +1610,10 @@ c Written by Cyrus Umrigar
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine pot_nn_ewald_old(cent,znuc,iwctype,ncent,pecent)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use dim_mod
       use periodic_mod
@@ -1622,7 +1624,7 @@ c Written by Cyrus Umrigar
       dimension r(3)
 
       lowest_pow=-1
-c     c0=(b_coul(2)-np*b_coul(1))/2
+!     c0=(b_coul(2)-np*b_coul(1))/2
       c0=b_coul(2)/2
       vs=c0*znuc2_sum
       vl=0
@@ -1646,10 +1648,10 @@ c     c0=(b_coul(2)-np*b_coul(1))/2
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine pot_nn_ewald(cent,znuc,iwctype,ncent,pecent)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use constants_mod
       use dim_mod
@@ -1660,10 +1662,10 @@ c Written by Cyrus Umrigar
       dimension znuc(*),cent(3,ncent),iwctype(ncent)
       dimension r(3)
 
-c short-range sum
+! short-range sum
       shortest_dist=DBLMAX
       lowest_pow=-1
-c     c0=(b_coul(2)-np*b_coul(1))/2
+!     c0=(b_coul(2)-np*b_coul(1))/2
       c0=b_coul(2)/2
       vs=c0*znuc2_sum
       do 40 i=1,ncent
@@ -1679,24 +1681,24 @@ c     c0=(b_coul(2)-np*b_coul(1))/2
           endif
    40     vs=vs+zprod*vsrange4(rnorm,cutr,lowest_pow,ncoef,np,b_coul,junk,junk)
 
-c long-range sum
-c     call cossin_old2(glatt,igvec,ngvec,cent,ncent,ng1d,cos_g,sin_g)
+! long-range sum
+!     call cossin_old2(glatt,igvec,ngvec,cent,ncent,ng1d,cos_g,sin_g)
       call cossin_n(znuc,iwctype,glatt,igvec,ngvec,cent,ncent,ng1d,cos_n_sum,sin_n_sum)
 
-c     vl=vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y_coul)
-c     r(1)=1.d-20
-c     r(2)=1.d-20
-c     r(3)=1.d-20
-c     vl_tmp1=vlrange_old(r,gvec,ngnorm,igmult,y_coul)
-c     r(1)=cent(1,2)
-c     r(2)=cent(2,2)
-c     r(3)=cent(3,2)
-c     vl_tmp2=vlrange_old(r,gvec,ngnorm,igmult,y_coul)
-c     vl_tmp=vl_tmp1+vl_tmp2
+!     vl=vlrange_nn_old2(ncent,znuc,iwctype,ngnorm,igmult,cos_g,sin_g,y_coul)
+!     r(1)=1.d-20
+!     r(2)=1.d-20
+!     r(3)=1.d-20
+!     vl_tmp1=vlrange_old(r,gvec,ngnorm,igmult,y_coul)
+!     r(1)=cent(1,2)
+!     r(2)=cent(2,2)
+!     r(3)=cent(3,2)
+!     vl_tmp2=vlrange_old(r,gvec,ngnorm,igmult,y_coul)
+!     vl_tmp=vl_tmp1+vl_tmp2
 
       vl=vlrange(ngnorm,igmult,cos_n_sum,cos_n_sum,sin_n_sum,sin_n_sum,y_coul)
-c     write(6,'(''vl_tmp,vl'',4f9.6)') vl_tmp1,vl_tmp2,vl_tmp,vl
-c     vl=vl+0.5d0*y_coul(1)*znuc_sum**2
+!     write(6,'(''vl_tmp,vl'',4f9.6)') vl_tmp1,vl_tmp2,vl_tmp,vl
+!     vl=vl+0.5d0*y_coul(1)*znuc_sum**2
 
       pecent=vs+vl
       vs=vs*2/ncent
@@ -1707,10 +1709,10 @@ c     vl=vl+0.5d0*y_coul(1)*znuc_sum**2
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine pot_en_ewald(x,pe_en)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use atom_mod
       use const_mod
@@ -1723,39 +1725,39 @@ c Written by Cyrus Umrigar
 
       dimension x(3,*)
 
-c short-range sum
-c Warning: I need to call the appropriate vsrange
+! short-range sum
+! Warning: I need to call the appropriate vsrange
       vs=0
       do 40 i=1,ncent
         ict=iwctype(i)
         do 40 j=1,nelec
           do 10 k=1,ndim
    10       rvec_en(k,j,i)=x(k,j)-cent(k,i)
-c         call find_image3(rvec_en(1,j,i),r_en(j,i),rlatt,rlatt_inv)
+!         call find_image3(rvec_en(1,j,i),r_en(j,i),rlatt,rlatt_inv)
           call find_image4(rshift(1,j,i),rvec_en(1,j,i),r_en(j,i),rlatt,rlatt_inv)
           if(nloc.eq.0) then
             lowest_pow=-1
             vs=vs-znuc(iwctype(i))*vsrange4(r_en(j,i),cutr,lowest_pow,ncoef,np,b_coul,junk,junk)
            else
             lowest_pow=0
-c           vs=vs+vsrange4(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict))
+!           vs=vs+vsrange4(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict))
             if(isrange.eq.0) vs=vs+vsrange(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict))
             if(isrange.eq.1) vs=vs+vsrange1(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpotp1(ict))
             if(isrange.eq.4) vs=vs+vsrange4(r_en(j,i),cutr,lowest_pow,ncoef,np,b_psp(1,ict),ict,lpotp1(ict))
           endif
    40 continue
 
-c long-range sum
-c     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
+! long-range sum
+!     call cossin_e(glatt,igvec,ngvec,xold,nelec,ng1d,cos_e_sum,sin_e_sum)
       call cossin_e(glatt,igvec,ngvec,x,nelec,ng1d,cos_e_sum,sin_e_sum)
 
       if(nloc.eq.0) then
         vl=-2*vlrange(ngnorm,igmult,cos_n_sum,cos_e_sum,sin_n_sum,sin_e_sum,y_coul)
-c       vl=vl-y_coul(1)*znuc_sum*nelec
+!       vl=vl-y_coul(1)*znuc_sum*nelec
        else
         call cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,cent,ncent,ng1d,cos_p_sum,sin_p_sum)
         vl=+2*vlrange_p(ngnorm,igmult,cos_p_sum,cos_e_sum,sin_p_sum,sin_e_sum)
-c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
+!       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
       endif
 
       pe_en=vs+vl
@@ -1768,10 +1770,10 @@ c       vl=vl+y_psp(1,iwctype(i))*znuc_sum*nelec
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine pot_ee_ewald(x,pe_ee)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use const_mod
       use dim_mod
@@ -1782,9 +1784,9 @@ c Written by Cyrus Umrigar
 
       dimension x(3,*)
 
-c short-range sum
+! short-range sum
       lowest_pow=-1
-c     c0=(b_coul_sim(2)-np*b_coul_sim(1))/2
+!     c0=(b_coul_sim(2)-np*b_coul_sim(1))/2
       c0=b_coul_sim(2)/2
       vs=c0*nelec
       ij=0
@@ -1796,14 +1798,14 @@ c     c0=(b_coul_sim(2)-np*b_coul_sim(1))/2
           call find_image3(rvec_ee(1,ij),r_ee(ij),rlatt_sim,rlatt_sim_inv)
    40     vs=vs+vsrange4(r_ee(ij),cutr_sim,lowest_pow,ncoef,np,b_coul_sim,junk,junk)
 
-c long-range sum
-c     call cossin_old2(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_g,sin_g)
-c     call cossin_e(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_e_sum_sim,sin_e_sum_sim)
+! long-range sum
+!     call cossin_old2(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_g,sin_g)
+!     call cossin_e(glatt_sim,igvec_sim,ngvec_sim,xold,nelec,ng1d_sim,cos_e_sum_sim,sin_e_sum_sim)
       call cossin_e(glatt_sim,igvec_sim,ngvec_sim,x,nelec,ng1d_sim,cos_e_sum_sim,sin_e_sum_sim)
 
-c     vl=vlrange_ee_old2(nelec,ngnorm_sim,igmult_sim,cos_g,sin_g,y_coul_sim)
+!     vl=vlrange_ee_old2(nelec,ngnorm_sim,igmult_sim,cos_g,sin_g,y_coul_sim)
       vl=vlrange(ngnorm_sim,igmult_sim,cos_e_sum_sim,cos_e_sum_sim,sin_e_sum_sim,sin_e_sum_sim,y_coul_sim)
-c     vl=vl+0.5d0*y_coul_sim(1)*nelec**2
+!     vl=vl+0.5d0*y_coul_sim(1)*nelec**2
 
       pe_ee=vs+vl
       vs=vs*2/nelec
@@ -1812,10 +1814,10 @@ c     vl=vl+0.5d0*y_coul_sim(1)*nelec**2
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine cossin_old2(glatt,igvec,ngvec,r,nr,ng1d,cos_g,sin_g)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use dim_mod
       use const_mod
@@ -1826,7 +1828,7 @@ c Written by Cyrus Umrigar
      &,ng1d(3)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
-c Calculate cosines and sines for all positions and reciprocal lattice vectors
+! Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 30 ir=1,nr
       do 20 i=1,ndim
         dot=0
@@ -1858,15 +1860,15 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine cossin_psi(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift,iflag)
-c Written by Cyrus Umrigar
-c iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
-c       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
-c Needed for orbitals and their Laplacian.
-c Presently using cossin_psi_g and cossin_psi_k instead.
+! Written by Cyrus Umrigar
+! iflag = 0 Calculate cos(gr) and sin(gr) and first 2 derivs at electron positions.
+!       = 1 Calculate cos(kr) and sin(kr) and first 2 derivs at electron positions.
+! Needed for orbitals and their Laplacian.
+! Presently using cossin_psi_g and cossin_psi_k instead.
 
       use dim_mod
       use const_mod
@@ -1879,7 +1881,7 @@ c Presently using cossin_psi_g and cossin_psi_k instead.
      &,ddcos_g(nelec,*),ddsin_g(nelec,*),g_shift(*)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
-c Calculate cosines and sines for recip. lattice vectors along axes first.
+! Calculate cosines and sines for recip. lattice vectors along axes first.
       do 30 ir=1,nr
       do 20 i=1,ndim
         dot=0
@@ -1897,7 +1899,7 @@ c Calculate cosines and sines for recip. lattice vectors along axes first.
           cos_gr(-n,i)=cos_gr(n,i)
    20     sin_gr(-n,i)=-sin_gr(n,i)
 
-c If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
+! If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
       if(iflag.eq.0) then
         cos_tmp0=1.d0
         sin_tmp0=0.d0
@@ -1927,21 +1929,21 @@ c If the calculation is for g-vectors then no shift; if for k-vectors there coul
         do 27 k=1,ndim
           dcos_g(k,ir,i)=-gvec(k,i)*sin_g(ir,i)
    27     dsin_g(k,ir,i)= gvec(k,i)*cos_g(ir,i)
-c       if(i.lt.5) write(6,'(''ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),dcos_g(k,ir,i),dsin_g(k,ir,i)'',2i5,9d12.4)')
-c    & ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),(dcos_g(k,ir,i),dsin_g(k,ir,i),k=1,ndim)
+!       if(i.lt.5) write(6,'(''ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),dcos_g(k,ir,i),dsin_g(k,ir,i)'',2i5,9d12.4)')
+!    & ir,i,gnorm(i),cos_g(ir,i),sin_g(ir,i),(dcos_g(k,ir,i),dsin_g(k,ir,i),k=1,ndim)
         ddcos_g(ir,i)=-gnorm(i)*gnorm(i)*cos_g(ir,i)
    30   ddsin_g(ir,i)=-gnorm(i)*gnorm(i)*sin_g(ir,i)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
-c     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
+!     subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_g(glatt,gnorm,igmult,ngnorm,gvec,igvec,ngvec,r,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-c Written by Cyrus Umrigar
-c Calculate cos(gr) and sin(gr) and first 2 derivs at electron position r.
-c Needed for orbitals and their Laplacian.
+! Written by Cyrus Umrigar
+! Calculate cos(gr) and sin(gr) and first 2 derivs at electron position r.
+! Needed for orbitals and their Laplacian.
 
       use dim_mod
       use ewald_mod, only: NG1DX
@@ -1953,8 +1955,8 @@ c Needed for orbitals and their Laplacian.
      &,ddcos_g(*),ddsin_g(*),g_shift(*)
       dimension cos_gr(-NG1DX:NG1DX,3),sin_gr(-NG1DX:NG1DX,3)
 
-c Calculate cosines and sines for recip. lattice vectors along axes first.
-c     do 30 ir=1,nr
+! Calculate cosines and sines for recip. lattice vectors along axes first.
+!     do 30 ir=1,nr
       do 20 i=1,ndim
         dot=0
         do 10 k=1,ndim
@@ -1972,22 +1974,22 @@ c     do 30 ir=1,nr
    20     sin_gr(-n,i)=-sin_gr(n,i)
 
 
-c If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
-c     if(iflag.eq.0) then
-c       cos_tmp0=1.d0
-c       sin_tmp0=0.d0
-c      elseif(iflag.eq.1) then
-c       dot=0
-c       do 25 k=1,ndim
-c  25     dot=dot+g_shift(k)*r(k,ir)
-c       cos_tmp0=cos(dot)
-c       sin_tmp0=sin(dot)
-c      else
-c       stop 'iflag must be 0 or 1 in cossin_psi'
-c     endif
+! If the calculation is for g-vectors then no shift; if for k-vectors there could be one.
+!     if(iflag.eq.0) then
+!       cos_tmp0=1.d0
+!       sin_tmp0=0.d0
+!      elseif(iflag.eq.1) then
+!       dot=0
+!       do 25 k=1,ndim
+!  25     dot=dot+g_shift(k)*r(k,ir)
+!       cos_tmp0=cos(dot)
+!       sin_tmp0=sin(dot)
+!      else
+!       stop 'iflag must be 0 or 1 in cossin_psi'
+!     endif
 
-c     cos_g(1)=1.d0
-c     sin_g(1)=0.d0
+!     cos_g(1)=1.d0
+!     sin_g(1)=0.d0
       i=0
       do 30 in=1,ngnorm
         do 30 im=1,igmult(in)
@@ -2001,37 +2003,37 @@ c     sin_g(1)=0.d0
         sin_g(i)=sin_tmp*cos_gr(igvec(3,i),3)
      &          +cos_tmp*sin_gr(igvec(3,i),3)
 
-c     do 30 i=1,ngvec
-c       cos_tmp1=cos_tmp0*cos_gr(igvec(1,i),1)
-c    &          -sin_tmp0*sin_gr(igvec(1,i),1)
-c       sin_tmp1=sin_tmp0*cos_gr(igvec(1,i),1)
-c    &          +cos_tmp0*sin_gr(igvec(1,i),1)
-c       cos_tmp2=cos_tmp1*cos_gr(igvec(2,i),2)
-c    &          -sin_tmp1*sin_gr(igvec(2,i),2)
-c       sin_tmp2=sin_tmp1*cos_gr(igvec(2,i),2)
-c    &          +cos_tmp1*sin_gr(igvec(2,i),2)
-c       cos_g(i)=cos_tmp2*cos_gr(igvec(3,i),3)
-c    &          -sin_tmp2*sin_gr(igvec(3,i),3)
-c       sin_g(i)=sin_tmp2*cos_gr(igvec(3,i),3)
-c    &          +cos_tmp2*sin_gr(igvec(3,i),3)
+!     do 30 i=1,ngvec
+!       cos_tmp1=cos_tmp0*cos_gr(igvec(1,i),1)
+!    &          -sin_tmp0*sin_gr(igvec(1,i),1)
+!       sin_tmp1=sin_tmp0*cos_gr(igvec(1,i),1)
+!    &          +cos_tmp0*sin_gr(igvec(1,i),1)
+!       cos_tmp2=cos_tmp1*cos_gr(igvec(2,i),2)
+!    &          -sin_tmp1*sin_gr(igvec(2,i),2)
+!       sin_tmp2=sin_tmp1*cos_gr(igvec(2,i),2)
+!    &          +cos_tmp1*sin_gr(igvec(2,i),2)
+!       cos_g(i)=cos_tmp2*cos_gr(igvec(3,i),3)
+!    &          -sin_tmp2*sin_gr(igvec(3,i),3)
+!       sin_g(i)=sin_tmp2*cos_gr(igvec(3,i),3)
+!    &          +cos_tmp2*sin_gr(igvec(3,i),3)
         do 27 k=1,ndim
           dcos_g(k,i)=-gvec(k,i)*sin_g(i)
    27     dsin_g(k,i)= gvec(k,i)*cos_g(i)
-c       if(i.lt.5) write(6,'(''i,gnorm(in),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
-c    & i,gnorm(in),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,ndim)
+!       if(i.lt.5) write(6,'(''i,gnorm(in),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
+!    & i,gnorm(in),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,ndim)
         ddcos_g(i)=-gnorm(in)*gnorm(in)*cos_g(i)
    30   ddsin_g(i)=-gnorm(in)*gnorm(in)*sin_g(i)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
-c     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
+!     subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,nr,ng1d,cos_g,sin_g
       subroutine cossin_psi_k(glatt,gnorm,gvec,igvec,ngvec,r,ng1d,cos_g,sin_g
      &,dcos_g,dsin_g,ddcos_g,ddsin_g,g_shift)
-c Written by Cyrus Umrigar
-c Needed for orbitals and their Laplacian.
-c For the k-vectors do it straightforwardly since there are few of them
+! Written by Cyrus Umrigar
+! Needed for orbitals and their Laplacian.
+! For the k-vectors do it straightforwardly since there are few of them
 
       use dim_mod
       implicit real*8(a-h,o-z)
@@ -2041,7 +2043,7 @@ c For the k-vectors do it straightforwardly since there are few of them
      &,dcos_g(3,*),dsin_g(3,*)
      &,ddcos_g(*),ddsin_g(*),g_shift(*)
 
-c     do 30 ir=1,nr
+!     do 30 ir=1,nr
       do 30 i=1,ngvec
         dot=0
         do 10 k=1,ndim
@@ -2051,23 +2053,23 @@ c     do 30 ir=1,nr
         do 27 k=1,ndim
           dcos_g(k,i)=-gvec(k,i)*sin_g(i)
    27     dsin_g(k,i)= gvec(k,i)*cos_g(i)
-c       if(i.lt.5) write(6,'(''i,gnorm(i),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
-c    & i,gnorm(i),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,ndim)
+!       if(i.lt.5) write(6,'(''i,gnorm(i),cos_g(i),sin_g(i),dcos_g(k,i),dsin_g(k,i)'',2i5,9d12.4)')
+!    & i,gnorm(i),cos_g(i),sin_g(i),(dcos_g(k,i),dsin_g(k,i),k=1,ndim)
         ddcos_g(i)=-gnorm(i)*gnorm(i)*cos_g(i)
    30   ddsin_g(i)=-gnorm(i)*gnorm(i)*sin_g(i)
 
       return
       end
 
-c-----------------------------------------------------------------------
-c The only diff. between cossin_n, cossin_p and cossin_e is whether the
-c nuclear charge, pseudopotential or electronic charge is used, so they
-c could be merged, but I did not do that to get a small gain in efficiency.
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
+! The only diff. between cossin_n, cossin_p and cossin_e is whether the
+! nuclear charge, pseudopotential or electronic charge is used, so they
+! could be merged, but I did not do that to get a small gain in efficiency.
+!-----------------------------------------------------------------------
 
       subroutine cossin_n(znuc,iwctype,glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
-c Written by Cyrus Umrigar
-c Calculate cos_sum and sin_sum for nuclei
+! Written by Cyrus Umrigar
+! Calculate cos_sum and sin_sum for nuclei
 
       use dim_mod
       use ewald_mod, only: NG1DX
@@ -2076,7 +2078,7 @@ c Calculate cos_sum and sin_sum for nuclei
       dimension znuc(*),iwctype(*),glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
 
-c Calculate cosines and sines for all positions and reciprocal lattice vectors
+! Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
         do 20 i=1,ndim
           dot=0
@@ -2111,11 +2113,11 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine cossin_p(y_psp,iwctype,glatt,igvec,ngnorm,igmult,r,nr,ng1d,cos_sum,sin_sum)
-c Written by Cyrus Umrigar
-c Calculate cos_sum and sin_sum for pseudopotentials
+! Written by Cyrus Umrigar
+! Calculate cos_sum and sin_sum for pseudopotentials
 
       use dim_mod
       use ewald_mod, only: NG1DX
@@ -2125,7 +2127,7 @@ c Calculate cos_sum and sin_sum for pseudopotentials
      &,ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,nr),sin_gr(-NG1DX:NG1DX,3,nr)
 
-c Calculate cosines and sines for all positions and reciprocal lattice vectors
+! Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
         do 20 i=1,ndim
           dot=0
@@ -2163,11 +2165,11 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine cossin_e(glatt,igvec,ngvec,r,nr,ng1d,cos_sum,sin_sum)
-c Written by Cyrus Umrigar
-c Calculate cos_sum and sin_sum for electrons
+! Written by Cyrus Umrigar
+! Calculate cos_sum and sin_sum for electrons
 
       use dim_mod
       use const_mod
@@ -2177,7 +2179,7 @@ c Calculate cos_sum and sin_sum for electrons
       dimension glatt(3,3),igvec(3,*),r(3,*),ng1d(3),cos_sum(*),sin_sum(*)
       dimension cos_gr(-NG1DX:NG1DX,3,nelec),sin_gr(-NG1DX:NG1DX,3,nelec)
 
-c Calculate cosines and sines for all positions and reciprocal lattice vectors
+! Calculate cosines and sines for all positions and reciprocal lattice vectors
       do 20 ir=1,nr
         do 20 i=1,ndim
           dot=0
@@ -2212,35 +2214,35 @@ c Calculate cosines and sines for all positions and reciprocal lattice vectors
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
 
       subroutine set_ewald_1d
-c     Written by Abhijit Mehta
-c       does initial calculations for 1d ewald sum
-c       - calculates g-vectors (reciprocal lattice vectors)
-c       - calculates Gamma(0,g^2/4 G^2) for these lattice vector
-      
+!     Written by Abhijit Mehta
+!       does initial calculations for 1d ewald sum
+!       - calculates g-vectors (reciprocal lattice vectors)
+!       - calculates Gamma(0,g^2/4 G^2) for these lattice vector
+
       use const_mod
       use periodic_1d_mod
       use atom_mod
       implicit real*8(a-h,o-z)
       parameter(itmax = 20, eps=1d-12, cutoff_factor=5.1d0)
-c     quick fix for seg fault:
+!     quick fix for seg fault:
       allocate(gvec_1d(itmax), gamma_gvec(itmax))
-c     pecent (n-n potential energy) set to 0, since it's just a constant
+!     pecent (n-n potential energy) set to 0, since it's just a constant
       pecent=0.d0
-c     erfc(cutoff_factor) should be small (< eps) to make ewald_1d_cutoff
-c     large enough that erfc(ewald_1d_cutoff*alattice) is very small
-c     note that erfc(5.1) = 5.49e-13
+!     erfc(cutoff_factor) should be small (< eps) to make ewald_1d_cutoff
+!     large enough that erfc(ewald_1d_cutoff*alattice) is very small
+!     note that erfc(5.1) = 5.49e-13
       ewald_1d_cutoff = cutoff_factor/alattice
       gamma_coeff = Pi**2 / (cutoff_factor**2)
       series_eps = eps*gammai_u0(gamma_coeff)
-c     Calculate reciprocal lattice vectors and gamma functions
+!     Calculate reciprocal lattice vectors and gamma functions
       do i = 1,itmax
          gvec_1d(i) = 2.d0*pi/alattice
          gamma_gvec(i) = gammai_u0(gamma_coeff*i*i)
-         if (gamma_gvec(i).lt.series_eps)then 
+         if (gamma_gvec(i).lt.series_eps)then
             ngvecs_1d = i
             return
          endif
@@ -2250,16 +2252,16 @@ c     Calculate reciprocal lattice vectors and gamma functions
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine pot_ee_ewald_1d(x,pe_ee)
-c     Written by Abhijit Mehta
-c       calculates e-e interaction energy for 1d periodic system
+!     Written by Abhijit Mehta
+!       calculates e-e interaction energy for 1d periodic system
       use distance_mod
       use periodic_1d_mod
       use dim_mod
       use const_mod
-      implicit real*8(a-h,o-z)     
+      implicit real*8(a-h,o-z)
 
       dimension x(3,*)
 
@@ -2280,6 +2282,6 @@ c       calculates e-e interaction energy for 1d periodic system
         enddo
       enddo
       pe_ee = pe_ee + pe_ee_gammapart*2.*nelec/alattice
-               
+
       return
       end

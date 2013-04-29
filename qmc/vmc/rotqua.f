@@ -1,5 +1,5 @@
       subroutine gesqua(nq,xq,yq,zq,wq)
-c Written by Lubos Mitas
+! Written by Lubos Mitas
 
       use dim_mod
       implicit real*8(a-h,o-z)
@@ -19,7 +19,7 @@ c Written by Lubos Mitas
       data i86/6,0,8,24,24,24/
       data pi/3.14159265359d0/
 
-c Find closest number of points to 4,6,12,18,20,24,26,32,50,86
+! Find closest number of points to 4,6,12,18,20,24,26,32,50,86
       icasem=1
       mindif=iabs(nq-iq(1))
       do 2 ic=2,ncase
@@ -91,7 +91,7 @@ c Find closest number of points to 4,6,12,18,20,24,26,32,50,86
 
       go to (10,20,130,20,20,130,20,230,130,530) icase
 
-c tetrahedron symmetry quadrature
+! tetrahedron symmetry quadrature
 
    10 continue
       do 12 j=1,4
@@ -104,7 +104,7 @@ c tetrahedron symmetry quadrature
    12 continue
       return
 
-c octahedron symmetry quadrature
+! octahedron symmetry quadrature
 
    20 continue
       ip=0
@@ -152,7 +152,7 @@ c octahedron symmetry quadrature
    40   continue
       return
 
-c icosahedron symmetry quadrature
+! icosahedron symmetry quadrature
 
  130  zq(1)=1.d0
       zq(2)=-1.d0
@@ -309,10 +309,10 @@ c icosahedron symmetry quadrature
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine rotqua
-c Written by Lubos Mitas
+! Written by Lubos Mitas
       use qua_mod
       implicit real*8(a-h,o-z)
 
@@ -354,12 +354,12 @@ c Written by Lubos Mitas
       uu=dsqrt(usum)
       u1=u1/uu
       u2=u2/uu
-c     yu1=yy1*u1
-c     yu2=yy2*u1
-c     yu3=yy3*u1
-c     zu1=zz1*u2
-c     zu2=zz2*u2
-c     zu3=zz3*u2
+!     yu1=yy1*u1
+!     yu2=yy2*u1
+!     yu3=yy3*u1
+!     zu1=zz1*u2
+!     zu2=zz2*u2
+!     zu3=zz3*u2
       y1=yy1*u1+zz1*u2
       y2=yy2*u1+zz2*u2
       y3=yy3*u1+zz3*u2

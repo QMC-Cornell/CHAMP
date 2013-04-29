@@ -1,6 +1,6 @@
       subroutine walksav_det_mpi
-c Written by Claudia Filippi, modified by Cyrus Umrigar
-c Only the entries are called, not the subroutine
+! Written by Claudia Filippi, modified by Cyrus Umrigar
+! Only the entries are called, not the subroutine
 
 # if  defined (MPI)
       use all_tools_mod

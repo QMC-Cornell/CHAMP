@@ -1,47 +1,47 @@
       subroutine dmc_good_mov1
-c Written by Cyrus Umrigar and Claudia Filippi
-c Uses the diffusion Monte Carlo algorithm described in:
-c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
-c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993)
-c modified to do accept/reject after single-electron moves.
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c Control variables are:
-c idmc         < 0     VMC
-c              > 0     DMC
-c abs(idmc)    = 1 **  simple kernel using dmc.brock.f
-c              = 2     good kernel using dmc_good or dmc_good_inhom
-c ipq         <= 0 *   do not use expected averages
-c             >= 1     use expected averages (mostly in all-electron move algorithm)
-c itau_eff    <=-1 *   always use tau in branching (not implemented)
-c              = 0     use 0 / tau for acc /acc_int moves in branching
-c             >= 1     use tau_eff (calcul in equilibration runs) for all moves
-c iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
-c              = 0 **  use weights rather than accept/reject
-c             >= 1     use accept/reject
-c icross      <=-1 **  kill walkers that cross nodes (not implemented)
-c              = 0     reject walkers that cross nodes
-c             >= 1     allow walkers to cross nodes
-c                      (OK since crossing prob. goes as tau^(3/2))
-c icuspg      <= 0     approximate cusp in Green function
-c             >= 1     impose correct cusp condition on Green function
-c idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
-c              = 1     use homog. div_v to modify diffusion in good kernel
-c             >= 2     use inhomog. div_v to modify diffusion in good kernel
-c icut_br     <= 0     do not limit branching
-c              = 1 *   use first 2 terms in Taylor expansion of Exp if exponent>0
-c             >= 2 *   use smooth formulae to limit branching to (1/2,2)
-c                      (bad because it makes energies depend on E_trial)
-c icut_e      <= 0     do not limit energy
-c             >= 1 *   use smooth formulae to limit energy (not implemented)
+! Written by Cyrus Umrigar and Claudia Filippi
+! Uses the diffusion Monte Carlo algorithm described in:
+! 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
+!    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993)
+! modified to do accept/reject after single-electron moves.
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Control variables are:
+! idmc         < 0     VMC
+!              > 0     DMC
+! abs(idmc)    = 1 **  simple kernel using dmc.brock.f
+!              = 2     good kernel using dmc_good or dmc_good_inhom
+! ipq         <= 0 *   do not use expected averages
+!             >= 1     use expected averages (mostly in all-electron move algorithm)
+! itau_eff    <=-1 *   always use tau in branching (not implemented)
+!              = 0     use 0 / tau for acc /acc_int moves in branching
+!             >= 1     use tau_eff (calcul in equilibration runs) for all moves
+! iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
+!              = 0 **  use weights rather than accept/reject
+!             >= 1     use accept/reject
+! icross      <=-1 **  kill walkers that cross nodes (not implemented)
+!              = 0     reject walkers that cross nodes
+!             >= 1     allow walkers to cross nodes
+!                      (OK since crossing prob. goes as tau^(3/2))
+! icuspg      <= 0     approximate cusp in Green function
+!             >= 1     impose correct cusp condition on Green function
+! idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
+!              = 1     use homog. div_v to modify diffusion in good kernel
+!             >= 2     use inhomog. div_v to modify diffusion in good kernel
+! icut_br     <= 0     do not limit branching
+!              = 1 *   use first 2 terms in Taylor expansion of Exp if exponent>0
+!             >= 2 *   use smooth formulae to limit branching to (1/2,2)
+!                      (bad because it makes energies depend on E_trial)
+! icut_e      <= 0     do not limit energy
+!             >= 1 *   use smooth formulae to limit energy (not implemented)
 
-c *  => bad option, modest deterioration in efficiency or time-step error
-c ** => very bad option, big deterioration in efficiency or time-step error
-c So, idmc=6,66 correspond to the foll. two:
-c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c Another reasonable choice is:
-c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! *  => bad option, modest deterioration in efficiency or time-step error
+! ** => very bad option, big deterioration in efficiency or time-step error
+! So, idmc=6,66 correspond to the foll. two:
+! 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! Another reasonable choice is:
+! 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -91,7 +91,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       data ncall,ipr_sav /0,0/
       save ipr_sav
 
-c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
+!     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
       sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
       if(icuspg.ge.1) stop 'exact cusp in G not implemented yet in 1-electron move algorithm'
@@ -99,10 +99,10 @@ c     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
 
       term=(sqrt(two*pi*tau))**3/pi
 
-c Temporarily create wt_lambda_tau here, but it should be done at start of program
+! Temporarily create wt_lambda_tau here, but it should be done at start of program
       wt_lambda_tau=wt_lambda**tau
 
-c Undo products
+! Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
       if(idmc.gt.0) then
@@ -126,20 +126,20 @@ c Undo products
         dwt=1
       endif
 
-c Undo weights
+! Undo weights
       iwmod=mod(ipass,nwprod)
 
-c Store (well behaved velocity/velocity)
+! Store (well behaved velocity/velocity)
       if(ncall.eq.0.and.irstar.eq.0) then
         do 7 iw=1,nwalk
           do 7 ifr=1,nforce
-c Set nuclear coordinates (0 flag = no strech e-coord)
+! Set nuclear coordinates (0 flag = no strech e-coord)
             if(nforce.gt.1)
      &      call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,ifr),ajacob,ifr,0)
             vav2sumo=zero
             v2sumo=zero
             do 6 i=1,nelec
-c Find the nearest nucleus
+! Find the nearest nucleus
               ren2mn=huge
               do 1 icent=1,ncent
                 ren2=(xoldw(1,i,iw,ifr)-cent(1,icent))**2
@@ -163,7 +163,7 @@ c Find the nearest nucleus
               voldr=voldr/rmino
 
 
-c Tau secondary in drift is one (first time around)
+! Tau secondary in drift is one (first time around)
               tratio=one
 
               hafzr2=(half*znuc(iwctype(iwnuc))*rmino)**2
@@ -189,11 +189,11 @@ c Tau secondary in drift is one (first time around)
 
       ioldest=0
       do 300 iw=1,nwalk
-c Loop over primary walker
+! Loop over primary walker
         current_walker = iw !JT
         call object_modified_by_index (current_walker_index) !JT
 
-c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
+! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         if(nforce.gt.1)
      &  call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
 
@@ -204,7 +204,7 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         endif
         call walkstrjas(iw)
 
-c Sample Green function for forward move
+! Sample Green function for forward move
         r2sume=zero
         risume=zero
         dfus2ac=zero
@@ -214,8 +214,8 @@ c Sample Green function for forward move
         drifdif=zero
         iaccept=0
         do 200 i=1,nelec
-c Find the nearest nucleus & vector from that nucleus to electron
-c & component of velocity in that direction
+! Find the nearest nucleus & vector from that nucleus to electron
+! & component of velocity in that direction
           ren2mn=huge
           do 10 icent=1,ncent
             ren2=0
@@ -239,9 +239,9 @@ c & component of velocity in that direction
           volda=sqrt(v2old)
           zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
 
-c Place zaxis along direction from nearest nucleus to electron and
-c x-axis along direction of angular component of velocity.
-c Calculate the velocity in the phi direction
+! Place zaxis along direction from nearest nucleus to electron and
+! x-axis along direction of angular component of velocity.
+! Calculate the velocity in the phi direction
           voldp=zero
           do 40 k=1,ndim
             zaxis(k)=rvmino(k)/rmino
@@ -257,36 +257,36 @@ c Calculate the velocity in the phi direction
           do 50 k=1,ndim
    50       xaxis(k)=xaxis(k)/voldp
 
-c Use more accurate formula for the drift
+! Use more accurate formula for the drift
           hafzr2=(half*znuc(iwctype(iwnuc))*rmino)**2
           adrift=(half*(1+eps+voldr/volda))+adrift0*hafzr2/(1+hafzr2)
 
-c Tau primary -> tratio=one
+! Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
           driftr=vavvt*voldr
           rtry=rmino+driftr
 
-c Prob. of sampling exponential rather than gaussian is
-c half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
-c We use both expressions because under AIX the former is faster if rtry>0
-c and the latter is faster if rtry<0.
-c Note that if adrift is always set to 1 then it may be better to use
-c vavvt rather than tau since the max drift distance is dsqrt(2*tau/adrift),
-c so both the position of the gaussian and its width are prop to dsqrt(tau)
-c if tau is used in derfc, and so qgaus does not tend to 1 for large tau.
-c However, we are using a variable adrift that can be very small and then
-c using tau is the better choice.
+! Prob. of sampling exponential rather than gaussian is
+! half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
+! We use both expressions because under AIX the former is faster if rtry>0
+! and the latter is faster if rtry<0.
+! Note that if adrift is always set to 1 then it may be better to use
+! vavvt rather than tau since the max drift distance is dsqrt(2*tau/adrift),
+! so both the position of the gaussian and its width are prop to dsqrt(tau)
+! if tau is used in derfc, and so qgaus does not tend to 1 for large tau.
+! However, we are using a variable adrift that can be very small and then
+! using tau is the better choice.
 
           if(rtry.gt.zero) then
             qgaus=half*derfc(rtry/dsqrt(two*tau))
 
-c Calculate drifted x and y coordinates in local coordinate system centered
-c on nearest nucleus
+! Calculate drifted x and y coordinates in local coordinate system centered
+! on nearest nucleus
             xprime=vavvt*voldp*rtry/(half*(rmino+rtry))
             zprime=rtry
 
-c Convert back to original coordinate system
+! Convert back to original coordinate system
             do 60 k=1,ndim
    60         xnew(k)=cent(k,iwnuc)+xaxis(k)*xprime
      &                             +zaxis(k)*zprime
@@ -301,10 +301,10 @@ c Convert back to original coordinate system
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
 
-c Do the diffusion.  Actually, this diffusion contains part of the drift too
-c if idiv_v.ge.1
+! Do the diffusion.  Actually, this diffusion contains part of the drift too
+! if idiv_v.ge.1
 
-c Sample gaussian with prob pgaus, exponential with prob. qgaus
+! Sample gaussian with prob pgaus, exponential with prob. qgaus
           dr2=zero
           dfus2a=zero
           if(rannyu(0).lt.pgaus) then
@@ -341,10 +341,10 @@ c Sample gaussian with prob pgaus, exponential with prob. qgaus
           fnormo=(pgaus+qgaus*term*(zeta**3)*
      &           dexp(-two*zeta*dfusb+half*dfus2a/tau))
 
-c calculate psi and velocity at new configuration
+! calculate psi and velocity at new configuration
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
 
-c Check for node crossings
+! Check for node crossings
           if(psidn*psidow(iw,1).le.zero) then
             nodecr=nodecr+1
             if(icross.le.0) then
@@ -354,10 +354,10 @@ c Check for node crossings
           endif
 
 
-c Calculate Green function for the reverse move
+! Calculate Green function for the reverse move
 
-c Find the nearest nucleus & vector from that nucleus to electron
-c & component of velocity in that direction
+! Find the nearest nucleus & vector from that nucleus to electron
+! & component of velocity in that direction
           ren2mn=huge
           do 110 icent=1,ncent
             ren2=0
@@ -381,9 +381,9 @@ c & component of velocity in that direction
           vnewa=sqrt(v2new)
           zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
 
-c Place zaxis along direction from nearest nucleus to electron and
-c x-axis along direction of angular component of velocity.
-c Calculate the velocity in the phi direction
+! Place zaxis along direction from nearest nucleus to electron and
+! x-axis along direction of angular component of velocity.
+! Calculate the velocity in the phi direction
           vnewp=zero
           do 140 k=1,ndim
             zaxis(k)=rvminn(k)/rminn
@@ -399,7 +399,7 @@ c Calculate the velocity in the phi direction
           do 150 k=1,ndim
   150       xaxis(k)=xaxis(k)/vnewp
 
-c Use more accurate formula for the drift
+! Use more accurate formula for the drift
           hafzr2=(half*znuc(iwctype(iwnuc))*rminn)**2
           adrift=(half*(1+eps+vnewr/vnewa))+adrift0*hafzr2/(1+hafzr2)
 
@@ -412,12 +412,12 @@ c Use more accurate formula for the drift
           if(rtry.gt.zero) then
             qgaus=half*derfc(rtry/dsqrt(two*tau))
 
-c Calculate drifted x and y coordinates in local coordinate system centered
-c on nearest nucleus
+! Calculate drifted x and y coordinates in local coordinate system centered
+! on nearest nucleus
             xprime=vavvt*vnewp*rtry/(half*(rminn+rtry))
             zprime=rtry
 
-c Convert back to original coordinate system
+! Convert back to original coordinate system
             do 153 k=1,ndim
               xbac(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
               dfus2b=dfus2b+(cent(k,iwnuc)-xoldw(k,i,iw,1))**2
@@ -455,12 +455,12 @@ c Convert back to original coordinate system
      &    psijn,psijow(iw,1),dfus2o,dfus2n,fnormo,fnormn
 
 
-c The following is one reasonable way to cure persistent configurations
-c Not needed if itau_eff <=0 and in practice we have never needed it even
-c otherwise
+! The following is one reasonable way to cure persistent configurations
+! Not needed if itau_eff <=0 and in practice we have never needed it even
+! otherwise
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
-c         pp=p
+!         pp=p
           p=dmin1(one,p)
   160     q=one-p
 
@@ -471,7 +471,7 @@ c         pp=p
           dr2ac=dr2ac+p*dr2
           dr2un=dr2un+dr2
 
-c Calculate density and moments of r for primary walk
+! Calculate density and moments of r for primary walk
           r2o=zero
           r2n=zero
           rmino=zero
@@ -486,7 +486,7 @@ c Calculate density and moments of r for primary walk
           itryo(i)=min(int(delri*rmino)+1,NRAD)
           itryn(i)=min(int(delri*rminn)+1,NRAD)
 
-c If we are using weights rather than accept/reject
+! If we are using weights rather than accept/reject
           if(iacc_rej.le.0) then
             p=one
             q=zero
@@ -519,7 +519,7 @@ c If we are using weights rather than accept/reject
           endif
           q=one-p
 
-c Calculate moments of r and save rejection probability for primary walk
+! Calculate moments of r and save rejection probability for primary walk
           r2sume=r2sume+(q*r2o+p*r2n)
           risume=risume+(q/dsqrt(r2o)+p/dsqrt(r2n))
           unacp(i)=q
@@ -527,17 +527,17 @@ c Calculate moments of r and save rejection probability for primary walk
   200   continue
 
 
-c Effective tau for branching
+! Effective tau for branching
         tauprim=tau*dfus2ac/dfus2un
-c       tauprim=tau*dr2ac/dr2un
-c       write(6,'(''dfus2ac,dfus2un,dr2ac,dr2un,dfus2ac/dfus2un,dr2ac/dr2un,dfus2ac/dfus2un/(dr2ac/dr2un)'',9f8.5)')
-c    &  dfus2ac,dfus2un,dr2ac,dr2un,dfus2ac/dfus2un,dr2ac/dr2un,dfus2ac/dfus2un/(dr2ac/dr2un)
+!       tauprim=tau*dr2ac/dr2un
+!       write(6,'(''dfus2ac,dfus2un,dr2ac,dr2un,dfus2ac/dfus2un,dr2ac/dr2un,dfus2ac/dfus2un/(dr2ac/dr2un)'',9f8.5)')
+!    &  dfus2ac,dfus2un,dr2ac,dr2un,dfus2ac/dfus2un,dr2ac/dr2un,dfus2ac/dfus2un/(dr2ac/dr2un)
 
         do 280 ifr=1,nforce
 
           if(iaccept.eq.1) then   ! If any of the 1-electron moves were accepted then
             if(ifr.eq.1) then
-c Primary configuration
+! Primary configuration
               drifdifr=one
               if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
@@ -556,16 +556,16 @@ c Primary configuration
               endif
               call walksav_jas(iw)
              else
-c Secondary configuration
+! Secondary configuration
               if(istrech.eq.0) then
                 drifdifr=one
-c No streched positions for electrons
+! No streched positions for electrons
                 do 210 i=1,nelec
                   do 210 k=1,ndim
   210               xoldw(k,i,iw,ifr)=xoldw(k,i,iw,1)
                 ajacold(iw,ifr)=one
                else
-c Compute streched electronic positions for all nucleus displacement
+! Compute streched electronic positions for all nucleus displacement
                 call strech(xoldw(1,1,iw,1),xstrech,ajacob,ifr,1)
                 drifdifs=zero
                 do 220 i=1,nelec
@@ -581,8 +581,8 @@ c Compute streched electronic positions for all nucleus displacement
             vav2sumn=zero
             v2sumn=zero
             do 260 i=1,nelec
-c Find the nearest nucleus & vector from that nucleus to electron
-c & component of velocity in that direction
+! Find the nearest nucleus & vector from that nucleus to electron
+! & component of velocity in that direction
               ren2mn=huge
               do 230 icent=1,ncent
                 ren2=0
@@ -605,11 +605,11 @@ c & component of velocity in that direction
   250           voldr=voldr+voldw(k,i,iw,ifr)*rvminn(k)
               voldr=voldr/rminn
 
-c Tau secondary in drift
+! Tau secondary in drift
               tratio=one
               if(ifr.gt.1.and.itausec.eq.1) tratio=drifdifr
 
-c Use more accurate formula for the drift
+! Use more accurate formula for the drift
               hafzr2=(half*znuc(iwctype(iwnuc))*rminn)**2
               v2old=0
               do 255 k=1,ndim
@@ -647,8 +647,8 @@ c Use more accurate formula for the drift
 
           if(idmc.gt.0) then
             expon=(etrial-half*(ewto+ewtn))*taunow
-c Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
-c it should be small compared to the term that we keep.
+! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
+! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm
   264         dexponent(iparm)=-half*(dewto(iparm)+dewtn(iparm))*taunow
             if(icut_br.le.0) then
@@ -657,8 +657,8 @@ c it should be small compared to the term that we keep.
               if(expon.le.0.d0) then
                 dwt=dexp(expon)
                else
-c Warning: tmp
-c               dwt=1+expon+0.5d0*expon**2
+! Warning: tmp
+!               dwt=1+expon+0.5d0*expon**2
                 dwt=1+expon/(1+expon)
               endif
              else
@@ -666,16 +666,16 @@ c               dwt=1+expon+0.5d0*expon**2
             endif
           endif
 
-c Warning: These lines were added to reduce the probability of population explosions.
-c These occur mostly for nonlocal psps.
-c A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
-c We truncate wts that come from energies that are too low by more than 10*energy_sigma.
-c This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
-c For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
-c For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
-c So, multiply energy_sigma by sqrt(float(nproc)).
-c It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
-c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
+! Warning: These lines were added to reduce the probability of population explosions.
+! These occur mostly for nonlocal psps.
+! A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
+! We truncate wts that come from energies that are too low by more than 10*energy_sigma.
+! This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
+! For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
+! For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
+! So, multiply energy_sigma by sqrt(float(nproc)).
+! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
+!         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
           if(ipass-nstep*2*nblkeq .gt. 5) then
             energy_sigma=sigma(ecum1,ecm21,wcum1)
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
@@ -692,16 +692,16 @@ c         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
             endif
           endif
 
-c ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
+! ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
           dwt=dwt**wt_lambda
 
-c Exercise population control if dmc or vmc with weights
+! Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
 
-c Set weights and product of weights over last nwprod steps
+! Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
-c Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
+! Raise product of previous generation wts to power wt_lambda_tau to keep product under control if branching is turned off
             wt(iw)=(wt(iw)**wt_lambda_tau)*dwt
             do 266 iparm=1,nparm
   266         wi_w(iparm,iw)=wt_lambda_tau*wi_w(iparm,iw)+dexponent(iparm)
@@ -738,8 +738,8 @@ c Raise product of previous generation wts to power wt_lambda_tau to keep produc
               endif
               rprob(itryo(i))=rprob(itryo(i))+wtg*unacp(i)
   270         rprob(itryn(i))=rprob(itryn(i))+wtg*(one-unacp(i))
-c             r2sum=r2sum+wtg*(unacp(i)*r2o+(one-unacp(i)*r2n)
-c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
+!             r2sum=r2sum+wtg*(unacp(i)*r2o+(one-unacp(i)*r2n)
+! 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
 
           endif
           tausum(ifr)=tausum(ifr)+wtg*taunow
@@ -798,7 +798,7 @@ c 270         risum=risum+wtg*(unacp(i)/dsqrt(r2o)+(one-unacp(i)/dsqrt(r2n))
           endif
 
   280   continue
-c Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
+! Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
 
         call compute_averages_step !JT

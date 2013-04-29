@@ -1,6 +1,6 @@
       subroutine acuest_mpi
-c MPI version created by Claudia Filippi starting from serial version
-c routine to accumulate estimators for energy etc.
+! MPI version created by Claudia Filippi starting from serial version
+! routine to accumulate estimators for energy etc.
 
 # if defined (MPI)
 
@@ -32,30 +32,30 @@ c routine to accumulate estimators for energy etc.
       real(dp) :: d_node_log_collect
 
       dimension zzsum_collect(nzzvars)
-c statement function for error calculation
-c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
+! statement function for error calculation
+!     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
 !      err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk) ! JT: commented out because not used
 
-c xsum = sum of values of x from metrop
-c xnow = average of values of x from metrop
-c xcum = accumulated sums of xnow
-c xcm2 = accumulated sums of xnow**2
-c xave = current average value of x
-c xerr = current error of x
+! xsum = sum of values of x from metrop
+! xnow = average of values of x from metrop
+! xcum = accumulated sums of xnow
+! xcm2 = accumulated sums of xnow**2
+! xave = current average value of x
+! xerr = current error of x
 
-c eaverage(1-MFORCE) = esum(1-MFORCE)
-c eaverage(MFORCE+1) = pesum
-c eaverage(MFORCE+2) = peisum
-c eaverage(MFORCE+3) = tpbsum
-c eaverage(MFORCE+4) = tjfsum
-c eaverage(MFORCE+5) = r2sum
-c eaverage(MFORCE+6) = accsum
+! eaverage(1-MFORCE) = esum(1-MFORCE)
+! eaverage(MFORCE+1) = pesum
+! eaverage(MFORCE+2) = peisum
+! eaverage(MFORCE+3) = tpbsum
+! eaverage(MFORCE+4) = tjfsum
+! eaverage(MFORCE+5) = r2sum
+! eaverage(MFORCE+6) = accsum
 
 
-c Note we do not reduce the 1-electron move quantities here because
-c they are not printed out from acuest.  So we just cumulate the
-c quantities on individual processors, and reduce the cumulated
-c quantities in finwrt_mpi
+! Note we do not reduce the 1-electron move quantities here because
+! they are not printed out from acuest.  So we just cumulate the
+! quantities on individual processors, and reduce the cumulated
+! quantities in finwrt_mpi
 
 !JT      call mpi_allreduce(eaverage,ecollect,MFORCE+6,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
@@ -76,7 +76,7 @@ c quantities in finwrt_mpi
       call mpi_allreduce(d_node_log_sum,d_node_log_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(wsum,wcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-c Warning this flush and barrier should not be necessary
+! Warning this flush and barrier should not be necessary
       call systemflush(6)
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
@@ -100,12 +100,12 @@ c Warning this flush and barrier should not be necessary
       accsum = accsum_collect
       d_node_log_sum = d_node_log_collect
 
-c     pesum=ecollect(MFORCE+1)
-c     peisum=ecollect(MFORCE+2)
-c     tpbsum=ecollect(MFORCE+3)
-c     tjfsum=ecollect(MFORCE+4)
-c     r2sum=ecollect(MFORCE+5)
-c     accsum=ecollect(MFORCE+6)
+!     pesum=ecollect(MFORCE+1)
+!     peisum=ecollect(MFORCE+2)
+!     tpbsum=ecollect(MFORCE+3)
+!     tjfsum=ecollect(MFORCE+4)
+!     r2sum=ecollect(MFORCE+5)
+!     accsum=ecollect(MFORCE+6)
 
 # endif
 

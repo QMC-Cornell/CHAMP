@@ -1,7 +1,7 @@
       subroutine orbitals_period_num(x,orb,dorb,ddorb)
-c Written by Cyrus Umrigar.  Modified by William Parker to interface to Einspline.
-c Calculate pw orbitals, gradient and laplacian
-c by interpolating on a grid.
+! Written by Cyrus Umrigar.  Modified by William Parker to interface to Einspline.
+! Calculate pw orbitals, gradient and laplacian
+! by interpolating on a grid.
       use bwfdet_mod
       use bsplines_mod
       use orbital_grid_mod
@@ -21,26 +21,26 @@ c by interpolating on a grid.
       dimension orb_blip_tmp(norb,ndet),dorb_blip_tmp(3,norb,ndet),ddorb_blip_tmp(norb,ndet)
 
 
-cwparker Set up the ict array to tell PSPLINE to return the value
-c        of the function, its first derivative in every direction
-c        and its second derivative in every direction and the mixed
-c        derivatives
+!wparker Set up the ict array to tell PSPLINE to return the value
+!        of the function, its first derivative in every direction
+!        and its second derivative in every direction and the mixed
+!        derivatives
 
-c     do i=1,10
-c       ict(i)=1
-c     enddo
+!     do i=1,10
+!       ict(i)=1
+!     enddo
 
       do iel=1,nelec
 
-c Determine position in lattice coordinates in line 10, same modulo 1 in line 20, and whether phase factor, isgn, is +1 or -1.
-c Note that modulo and mod are different functions in fortran.
-c Note we add 1 to r_basis because interpol_orb expects a positive input
-c The 'if' after 10 does the foll.  Since the k-vectors can be half sim-cell reciprocal lattice vectors
-c and we reduce r_basis(k) to be between 0 and 1 in line 20, we need to multiply by -1 for
-c each rbasis(k) in line 10 for which floor(r_basis) is odd.
-c r_basis in the line just before 20 is between  0 and 1 if r_basis in line 10 is > 0
-c                                   but between -1 and 0 if r_basis in line 10 is < 0
-c r_basis in line 20 is always between 0 and 1.
+! Determine position in lattice coordinates in line 10, same modulo 1 in line 20, and whether phase factor, isgn, is +1 or -1.
+! Note that modulo and mod are different functions in fortran.
+! Note we add 1 to r_basis because interpol_orb expects a positive input
+! The 'if' after 10 does the foll.  Since the k-vectors can be half sim-cell reciprocal lattice vectors
+! and we reduce r_basis(k) to be between 0 and 1 in line 20, we need to multiply by -1 for
+! each rbasis(k) in line 10 for which floor(r_basis) is odd.
+! r_basis in the line just before 20 is between  0 and 1 if r_basis in line 10 is > 0
+!                                   but between -1 and 0 if r_basis in line 10 is < 0
+! r_basis in line 20 is always between 0 and 1.
         isgn=1
         do 20 k=1,ndim
           r_basis(k)=0
@@ -56,20 +56,20 @@ c r_basis in line 20 is always between 0 and 1.
           r_basis(k)=r_basis(k)-int(r_basis(k))
    20     if(r_basis(k).lt.0.d0) r_basis(k)=r_basis(k)+1
 
-c Warning: I could replace the above with the foll., but since I do not have the time to test it I am
-c for the moment just putting in the foll. commented lines:
-c Determine position in lattice coordinates in line 10, same modulo 1 in line 20, and whether phase factor, isgn, is +1 or -1.
-c Note that modulo and mod are different functions in fortran.
-c Since the k-vectors can be half sim-cell reciprocal lattice vectors
-c and we reduce r_basis(k) to be between 0 and 1 in line 20, we need to multiply by -1 for 
-c each rbasis(k) in line 10 for which floor(r_basis) is odd. 
-c       isgn=1
-c       do 20 k=1,ndim
-c         r_basis(k)=0
-c         do 10 i=1,ndim
-c  10       r_basis(k)=r_basis(k)+rlatt_sim_inv(k,i)*x(i,iel)
-c         isgn=isgn*(-1)**floor(r_basis(k))
-c  20     r_basis(k)=r_basis(k)-floor(r_basis(k))
+! Warning: I could replace the above with the foll., but since I do not have the time to test it I am
+! for the moment just putting in the foll. commented lines:
+! Determine position in lattice coordinates in line 10, same modulo 1 in line 20, and whether phase factor, isgn, is +1 or -1.
+! Note that modulo and mod are different functions in fortran.
+! Since the k-vectors can be half sim-cell reciprocal lattice vectors
+! and we reduce r_basis(k) to be between 0 and 1 in line 20, we need to multiply by -1 for
+! each rbasis(k) in line 10 for which floor(r_basis) is odd.
+!       isgn=1
+!       do 20 k=1,ndim
+!         r_basis(k)=0
+!         do 10 i=1,ndim
+!  10       r_basis(k)=r_basis(k)+rlatt_sim_inv(k,i)*x(i,iel)
+!         isgn=isgn*(-1)**floor(r_basis(k))
+!  20     r_basis(k)=r_basis(k)-floor(r_basis(k))
 
 
         if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
@@ -77,10 +77,10 @@ c  20     r_basis(k)=r_basis(k)-floor(r_basis(k))
           yi=r_basis(2)*ngrid_orby
           zi=r_basis(3)*ngrid_orbz
 
-c       write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
+!       write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
 
-c Warning:  If we changed the order of iel and iorb then we would not need _tmp arrays
-c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),dorb(1,1,iel),ddorb(1,iel))
+! Warning:  If we changed the order of iel and iorb then we would not need _tmp arrays
+!       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),dorb(1,1,iel),ddorb(1,iel))
         call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb_tmp,dorb_tmp,ddorb_tmp)
 
           do iorb=1,norb
@@ -89,24 +89,24 @@ c       call interpol_orb(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb(1,iel),d
               dorb(k,iel,iorb)=dorb_tmp(k,iorb)*isgn
             enddo
             ddorb(iel,iorb)=ddorb_tmp(iorb)*isgn
-c            if((iorb.eq.1).and.(iel.eq.1)) then
-c              write(6,'(''r_basis='',3f9.4)')r_basis(1),r_basis(2),r_basis(3)
-c             write(6,*)'ddorb_lagrange=',ddorb(iel,iorb)
-c            endif
+!            if((iorb.eq.1).and.(iel.eq.1)) then
+!              write(6,'(''r_basis='',3f9.4)')r_basis(1),r_basis(2),r_basis(3)
+!             write(6,*)'ddorb_lagrange=',ddorb(iel,iorb)
+!            endif
           enddo
         endif
 
-cwparker Have to think about whether it works for more than one det.
+!wparker Have to think about whether it works for more than one det.
         if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
 
-          if(ndet.gt.1) stop 'Interpolating splines implementation can only handle one determinant'
+          if(ndet.gt.1) stop 'Smoothing splines implementation can handle only one determinant'
 
-cwparker Use x since bwfdet_main converts to crystal lattice units for us
-c	 Pass 1 for iw because we need the wavefunction here
-c	 Pass 1 for igl because we need the gradient and Laplacian here
-c	 Pass 1 for spin because we don't differentiate between spins yet
+!wparker Use x since bwfdet_main converts to crystal lattice units for us
+! Pass 1 for iw because we need the wavefunction here
+! Pass 1 for igl because we need the gradient and Laplacian here
+! Pass 1 for spin because we don't differentiate between spins yet
 
-cwparker Loop over orbitals and set temporary arrays equal to permanent ones
+!wparker Loop over orbitals and set temporary arrays equal to permanent ones
 
           call bwfdet_main(x(:,iel),1,1,1,orb_blip_tmp,dorb_blip_tmp,ddorb_blip_tmp)
 
@@ -116,14 +116,14 @@ cwparker Loop over orbitals and set temporary arrays equal to permanent ones
              dorb(:,iel,iorb)=dorb_blip_tmp(:,iorb,1)
              ddorb(iel,iorb)=ddorb_blip_tmp(iorb,1)
 
-cwparker End of loop over orbitals
+!wparker End of loop over orbitals
           enddo
 
-cwparker End of if statement for blips
+!wparker End of if statement for blips
         endif
 
         if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
-          if(ndet.gt.1) stop 'interpolating b-splines implementation can only handle one determinant currently'
+          if(ndet.gt.1) stop 'Interpolating b-splines implementation can handle only one determinant currently'
 
 #ifdef NOEINSPLINE
           write(6,*) 'the code must be linked to einspline library'
@@ -139,23 +139,23 @@ cwparker End of if statement for blips
              enddo
              ddorb(iel,iorb)=ddorb_tmp(iorb)
 
-cwparker End of do loop over the orbitals
+!wparker End of do loop over the orbitals
            enddo
 
-cwparker End of if statement for interpolating B-splines
+!wparker End of if statement for interpolating B-splines
         endif
 
-cwparker End of loop over the electrons
+!wparker End of loop over the electrons
       enddo
 
-cwp   write(6,*)'End of orbitals_period_num'
+!wp   write(6,*)'End of orbitals_period_num'
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine orbitals_period_nume(x,orb)
-c Written by Cyrus Umrigar
-c Calculate pw orbitals for electron iel by interpolating on a grid.
+! Written by Cyrus Umrigar
+! Calculate pw orbitals for electron iel by interpolating on a grid.
       use bwfdet_mod
       use bsplines_mod
       use orbital_grid_mod
@@ -171,12 +171,12 @@ c Calculate pw orbitals for electron iel by interpolating on a grid.
 
       dimension orb_blip_tmp(norb,ndet),dorb_blip_tmp(3,norb,ndet),ddorb_blip_tmp(norb,ndet)
 
-c Determine position in lattice coordinates
-c Find vector in basis coordinates
-c Note we add 1 to r_basis because interpol_orb expects a positive input
-c r_basis in the line after 10 is between  0 and 1 if r_basis in line 10 is > 0
-c                             but between -1 and 0 if r_basis in line 10 is < 0
-c r_basis in line 20 is always between 0 and 1
+! Determine position in lattice coordinates
+! Find vector in basis coordinates
+! Note we add 1 to r_basis because interpol_orb expects a positive input
+! r_basis in the line after 10 is between  0 and 1 if r_basis in line 10 is > 0
+!                             but between -1 and 0 if r_basis in line 10 is < 0
+! r_basis in line 20 is always between 0 and 1
         isgn=1
         do 20 k=1,ndim
           r_basis(k)=0
@@ -196,7 +196,7 @@ c r_basis in line 20 is always between 0 and 1
       yi=r_basis(2)*ngrid_orby
       zi=r_basis(3)*ngrid_orbz
 
-c     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
+!     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
 
       if(inum_orb.eq.4 .or. inum_orb.eq.-4) then
          call interpol_orbe(ngrid_orbx,ngrid_orby,ngrid_orbz,xi,yi,zi,orb)
@@ -219,7 +219,7 @@ c     write(6,'(''r_basis'',9f9.4)') r_basis,xi,yi,zi
 
       endif
 
-c Interpolating B-splines
+! Interpolating B-splines
       if(inum_orb.eq.8 .or. inum_orb.eq.-8) then
 #ifdef NOEINSPLINE
          write(6,*) 'the code must be linked to einspline library'

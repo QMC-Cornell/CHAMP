@@ -1,66 +1,66 @@
       subroutine checkjas2(scalek,isp,ncnstr,diff,ipr,iprin,icalcul_diff)
-c Written by Cyrus Umrigar
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c Prints out the values of the Jastrow factor and various partial    :::
-c 1st and 2nd partial derivatives on a non-uniform grid and          :::
-c imposes various prejudices as regards the signs of these.          :::
-c The normalization is such that the value when both electrons are   :::
-c at the nucleus is 1.                                               :::
-c Note: |t| <= u <= s  is the allowed range of the variables and     :::
-c the wf must be even in t (non-spin polarized system)               :::
-c The penalty diffs are calculated only if icalcul_diff>=1.          :::
-c                                                                    :::
-c CONDITIONS IMPOSED ON JASTROW                                      :::
-c Note that the u-dependence of psi comes only from the Jastrow      :::
-c whereas the s and t dependence comes from both parts of psi.       :::
-c Hence, the conditions on u should always be true, but the          :::
-c conditions involving s and t make assumptions on the determinantal :::
-c part.  It is assumed that both parts of psi have the same behaviour:::
-c and assist each other, rather than fighting each other.  This      :::
-c assumption is in general not valid everywhere.  All the conditions :::
-c are true for the special case of a He wavefn using a single Slater :::
-c basis function in the determinantal part.                          :::
-c                                                                    :::
-c The conditions imposed on the Jastrow factor are:                  :::
-c (Note the order here is different than in the program.)            :::
-c (The exponent of the Jastrow is written as c=a/b                   :::
-c                                                                    :::
-c 1) dc/du  >0  because electrons want to stay apart                 :::
-c 2) d2c/du2<0  flatten out at large u                               :::
-c               The linear term is known at u=0 and so if this is    :::
-c               subtracted out the remainder is quadratic at u=0.    :::
-c                                                                    :::
-c 3) dc/ds  <0    x    o------->                                     :::
-c 4) d2c/ds2>0       o------->                                       :::
-c               - the effective exponent of psi starts out at Z      :::
-c               at s=0 and goes to some smaller value at large s     :::
-c               The linear term is known at s=0 and so if this is    :::
-c               subtracted out the remainder is quadratic at s=0.    :::
-c                                                                    :::
-c 5) dc/dt  >0      o----> x      o---->                             :::
-c 6) d2c/dt2>0  if the electrons start at t=0 and one moves towards  :::
-c               the nucleus and one away, then the increase in psi   :::
-c               from the one going in is larger than the decrease    :::
-c               from the one going out.  At t=0, the linear term is  :::
-c               zero since the 2 exponents start out the same and    :::
-c               get different for t.ne.0.  The absence of the linear :::
-c               term is automatically enforced since only even powers:::
-c               of t are included.                                   :::
-c                                                                    :::
-c 7) b      >0  It is 1 for s=u=t=0, so if it becomes negative it    :::
-c               must go through 0 and then Jastrow is +- infinite.   :::
-c           >1  We do not want it to get even close to 0, so we use  :::
-c               a penalty exp(1-bot)-1 that kicks in when bot<1.     :::
-c                                                                    :::
-c 8) db/du  >0  These are attempts to make sure that b does not      :::
-c 9) db/ds  >0  get small.  What I really wanted to do is have b     :::
-c10) db/dt  >0  be non-decreasing along the 3 edges of the           :::
-c               tetrahedron emanating from s=u=t=0.  So, what I      :::
-c               should impose is                                     :::
-c               db/ds>=0,                                            :::
-c               db/ds+db/du>=0,                                      :::
-c               db/ds+db/du+db/dt>=0.                                :::
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Written by Cyrus Umrigar
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Prints out the values of the Jastrow factor and various partial    :::
+! 1st and 2nd partial derivatives on a non-uniform grid and          :::
+! imposes various prejudices as regards the signs of these.          :::
+! The normalization is such that the value when both electrons are   :::
+! at the nucleus is 1.                                               :::
+! Note: |t| <= u <= s  is the allowed range of the variables and     :::
+! the wf must be even in t (non-spin polarized system)               :::
+! The penalty diffs are calculated only if icalcul_diff>=1.          :::
+!                                                                    :::
+! CONDITIONS IMPOSED ON JASTROW                                      :::
+! Note that the u-dependence of psi comes only from the Jastrow      :::
+! whereas the s and t dependence comes from both parts of psi.       :::
+! Hence, the conditions on u should always be true, but the          :::
+! conditions involving s and t make assumptions on the determinantal :::
+! part.  It is assumed that both parts of psi have the same behaviour:::
+! and assist each other, rather than fighting each other.  This      :::
+! assumption is in general not valid everywhere.  All the conditions :::
+! are true for the special case of a He wavefn using a single Slater :::
+! basis function in the determinantal part.                          :::
+!                                                                    :::
+! The conditions imposed on the Jastrow factor are:                  :::
+! (Note the order here is different than in the program.)            :::
+! (The exponent of the Jastrow is written as c=a/b                   :::
+!                                                                    :::
+! 1) dc/du  >0  because electrons want to stay apart                 :::
+! 2) d2c/du2<0  flatten out at large u                               :::
+!               The linear term is known at u=0 and so if this is    :::
+!               subtracted out the remainder is quadratic at u=0.    :::
+!                                                                    :::
+! 3) dc/ds  <0    x    o------->                                     :::
+! 4) d2c/ds2>0       o------->                                       :::
+!               - the effective exponent of psi starts out at Z      :::
+!               at s=0 and goes to some smaller value at large s     :::
+!               The linear term is known at s=0 and so if this is    :::
+!               subtracted out the remainder is quadratic at s=0.    :::
+!                                                                    :::
+! 5) dc/dt  >0      o----> x      o---->                             :::
+! 6) d2c/dt2>0  if the electrons start at t=0 and one moves towards  :::
+!               the nucleus and one away, then the increase in psi   :::
+!               from the one going in is larger than the decrease    :::
+!               from the one going out.  At t=0, the linear term is  :::
+!               zero since the 2 exponents start out the same and    :::
+!               get different for t.ne.0.  The absence of the linear :::
+!               term is automatically enforced since only even powers:::
+!               of t are included.                                   :::
+!                                                                    :::
+! 7) b      >0  It is 1 for s=u=t=0, so if it becomes negative it    :::
+!               must go through 0 and then Jastrow is +- infinite.   :::
+!           >1  We do not want it to get even close to 0, so we use  :::
+!               a penalty exp(1-bot)-1 that kicks in when bot<1.     :::
+!                                                                    :::
+! 8) db/du  >0  These are attempts to make sure that b does not      :::
+! 9) db/ds  >0  get small.  What I really wanted to do is have b     :::
+!10) db/dt  >0  be non-decreasing along the 3 edges of the           :::
+!               tetrahedron emanating from s=u=t=0.  So, what I      :::
+!               should impose is                                     :::
+!               db/ds>=0,                                            :::
+!               db/ds+db/du>=0,                                      :::
+!               db/ds+db/du+db/dt>=0.                                :::
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use atom_mod
       use contr2_mod
       implicit real*8(a-h,o-z)
@@ -75,11 +75,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 !JT      data zero,one/0.d0,1.d0/
       data itranp,smin,d1m1,eps,eps2/2,1.d-6,.1,.01,1.d-10/
 
-c  **Warning: Assume there is just one nucleus
+!  **Warning: Assume there is just one nucleus
       scalep=d1m1*znuc(iwctype(1))
 
-c Note itrank=1 if isc=2
-c             2        3
+! Note itrank=1 if isc=2
+!             2        3
       nstep=MDIM-1
       smax=(one-eps)/scalep
       step=(smax-smin)/nstep-eps2
@@ -109,7 +109,7 @@ c             2        3
           it=0
           do 10 ttt=zero,uuu+eps2,step
           it=it+1
-c Transform from print scaled variable to physical variable
+! Transform from print scaled variable to physical variable
           if(itranp.eq.1) then
             s=-dlog(one-scalep*sss)/scalep
             t=-dlog(one-scalep*ttt)/scalep
@@ -261,7 +261,7 @@ c Transform from print scaled variable to physical variable
       return
       end
 
-c-----------------------------------------------------------------------------
+!-----------------------------------------------------------------------------
 
       subroutine pade(u,s,t,cor,isp)
 
@@ -283,7 +283,7 @@ c-----------------------------------------------------------------------------
       iss=isp
       sspinn=one
       sspin=sspinn
-c Warning: Next line needs to be fixed
+! Warning: Next line needs to be fixed
       ipar=0
 
       r1=half*(s+t)

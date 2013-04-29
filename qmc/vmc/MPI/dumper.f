@@ -1,6 +1,6 @@
       subroutine dumper_mpi
-c MPI version created by Claudia Filippi starting from Cyrus' serial version.
-c Routine to pick up and dump everything needed to restart job where it left off.
+! MPI version created by Claudia Filippi starting from Cyrus' serial version.
+! Routine to pick up and dump everything needed to restart job where it left off.
 
 # if defined (MPI)
 
@@ -38,14 +38,14 @@ c Routine to pick up and dump everything needed to restart job where it left off
       common /stats_vmc/ rejmax
       common /forcjac/ ajacob
 
-c Warning: need to change the following to allocate
+! Warning: need to change the following to allocate
       dimension irand_seed_loc(4,0:nproc),istatus(MPI_STATUS_SIZE)
       dimension ircounts(0:nproc),idispls(0:nproc)
 
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(nctype)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
-c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
+!    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,n4sx(nctype),n4px(-1:1,nctype)
      &,n4fx(-3:3,nctype),n5gx(-4:4,nctype),n6hx(-5:5,nctype)
      &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
@@ -56,7 +56,7 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
       rewind 10
       if(idtask.eq.0) write(10) nproc
 
-c Retrieve current value of seed for this processor
+! Retrieve current value of seed for this processor
       call savern(irand_seed_loc(1,idtask))
 
       do 124 i=0,nproc-1
@@ -98,14 +98,14 @@ c Retrieve current value of seed for this processor
       write(10) (rmino(i),i=1,nelec)
       write(10) (nearesto(i),i=1,nelec)
       write(10) (psi2o(i),eold(i),i=1,nforce),peo,tjfo
-c     write(10) ecum1/nproc,(ecum(i),i=1,nforce),pecum,tpbcum,
+!     write(10) ecum1/nproc,(ecum(i),i=1,nforce),pecum,tpbcum,
       write(10) ecum1,(ecum(i),i=1,nforce),pecum,tpbcum,tjfcum,r2cum,acccum
       write(10) iblk
-c     write(10) ecm21/nproc,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
+!     write(10) ecm21/nproc,(ecm2(i),i=1,nforce),pecm2,tpbcm2,
       write(10) ecm21,(ecm2(i),i=1,nforce),pecm2,tpbcm2,tjfcm2,r2cm2
       if(nforce.gt.0) write(10) (wcum(i),fcum(i),fcm2(i),i=1,nforce)
       do 3 i=1,nforce
-c   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
+!   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     3   write(10) ecum1s(i),ecm21s(i)
 
       write(10) rejmax
@@ -130,7 +130,7 @@ c   3   write(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
       if(numr.le.0) then
         write(10) (n4s(i),i=1,nctype)
         write(10) ((n4p(m,i),m=-1,1),i=1,nctype)
-c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
+!       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
         write(10) (nsa(i),i=1,nctype)
         write(10) ((npa(m,i),m=-1,1),i=1,nctype)
         write(10) ((nda(m,i),m=-2,2),i=1,nctype)
@@ -146,23 +146,23 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
       write(6,'(1x,''successful dump to restart_vmc'')')
 
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       entry startr_mpi
       write(6,'(1x,''attempting restart from restart_vmc'')')
 
       call pot_nn(cent,znuc,iwctype,ncent,pecent)
-c     pecent=0
-c     if(ncent.lt.2) goto 3
-c     do 2 i=2,ncent
-c       j1=i-1
-c       do 2 j=1,j1
-c         r2=0
-c         do 1 k=1,ndim
-c   1       r2=r2+(cent(k,i)-cent(k,j))**2
-c       r=dsqrt(r2)
-c   2   pecent=pecent+znuc(iwctype(i))*znuc(iwctype(j))/r
-c   3 continue
+!     pecent=0
+!     if(ncent.lt.2) goto 3
+!     do 2 i=2,ncent
+!       j1=i-1
+!       do 2 j=1,j1
+!         r2=0
+!         do 1 k=1,ndim
+!   1       r2=r2+(cent(k,i)-cent(k,j))**2
+!       r=dsqrt(r2)
+!   2   pecent=pecent+znuc(iwctype(i))*znuc(iwctype(j))/r
+!   3 continue
 
       rewind 10
       read(10) nprocx
@@ -196,7 +196,7 @@ c   3 continue
       call alloc ('ecum1s', ecum1s, nforce)
       call alloc ('ecm21s', ecm21s, nforce)
       do 6 i=1,nforce
-c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
+!   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
     6   read(10) ecum1s(i),ecm21s(i)
 
       read(10) rejmax
@@ -236,7 +236,7 @@ c   6   read(10) wsum1s(i),esum1s(i),ecum1s(i),ecm21s(i)
       if(numr.le.0) then
         read(10) (n4sx(i),i=1,nctype)
         read(10) ((n4px(m,i),m=-1,1),i=1,nctype)
-c       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
+!       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
         read(10) (nsax(i),i=1,nctype)
         read(10) ((npax(m,i),m=-1,1),i=1,nctype)
         read(10) ((ndax(m,i),m=-2,2),i=1,nctype)
@@ -273,7 +273,7 @@ c       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
         do 45 m=-2,2
           if(n3d(m,i).ne.n3dx(m,i)) stop 'n3d'
           if(numr.le.0) then
-c           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
+!           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
             if(nda(m,i).ne.ndax(m,i)) stop 'nda'
           endif
    45   continue
@@ -312,15 +312,15 @@ c           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
         iwftype(1)=1
       endif
 
-c loop over secondary config
+! loop over secondary config
       do 80 ifr=2,nforce
-c set n- and e-coord and n-n potential
+! set n- and e-coord and n-n potential
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,vold,div_vo,d2,peo,peio,eold(ifr),denergy,ifr)
    80   psi2o(ifr)=2*(dlog(dabs(psido))+psijo)+dlog(ajacob)
 
-c primary config
-c set n-coord and n-n potential
+! primary config
+! set n-coord and n-n potential
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
@@ -367,7 +367,7 @@ c set n-coord and n-n potential
       tjfsum=0
       r2sum=0
 
-c Zero out all except master processor
+! Zero out all except master processor
       if(idtask.eq.0) return
 
       acccum=0
@@ -403,9 +403,9 @@ c Zero out all except master processor
         ekin2(i)=0
   190   rprob(i)=0
 
-c     call prop_init(0)
-c     call efpci_init(0)
-c     call eh_ex_init(0)
+!     call prop_init(0)
+!     call efpci_init(0)
+!     call eh_ex_init(0)
       call grad_hess_jas_init
 
 # endif

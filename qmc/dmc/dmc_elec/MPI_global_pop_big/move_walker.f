@@ -1,5 +1,5 @@
       subroutine send_walker(irecv)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
 
 # if defined (MPI)
       use all_tools_mod
@@ -24,8 +24,8 @@ c Written by Claudia Filippi
      &,MPI_COMM_WORLD,irequest,ierr)
       call MPI_Request_free(irequest,ierr)
 
-c MPI_Request_free is faster than MPI_wait and is OK if there is a barrier
-c before variables are reused.
+! MPI_Request_free is faster than MPI_wait and is OK if there is a barrier
+! before variables are reused.
       itag=2
       do 15 ifr=1,nforce
         call mpi_isend(ajacold(nwalk,ifr),1,mpi_double_precision,irecv
@@ -68,16 +68,16 @@ c before variables are reused.
         call MPI_Request_free(irequest,ierr)
    15 continue
 
-c     call send_det(itag,irecv)
-c     call send_jas(itag,irecv)
+!     call send_det(itag,irecv)
+!     call send_jas(itag,irecv)
 
-c     nwalk=nwalk-1
+!     nwalk=nwalk-1
 
       return
 
       entry recv_walker(isend)
 
-c     nwalk=nwalk+1
+!     nwalk=nwalk+1
 
       call mpi_recv(wt(nwalk),1,mpi_double_precision,isend,1
      &,MPI_COMM_WORLD,istatus,ierr)
@@ -115,8 +115,8 @@ c     nwalk=nwalk+1
      &  ,itag,MPI_COMM_WORLD,istatus,ierr)
    25 continue
 
-c     call recv_det(itag,isend)
-c     call recv_jas(itag,isend)
+!     call recv_det(itag,isend)
+!     call recv_jas(itag,isend)
 
 # endif
       return

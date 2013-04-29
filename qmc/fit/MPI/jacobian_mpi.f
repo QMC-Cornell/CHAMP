@@ -1,5 +1,5 @@
       subroutine jacobian_mpi(ndata2,nanalytic,nparm,ajac)
-c Written by Claudia Filippi and Cyrus Umrigar
+! Written by Claudia Filippi and Cyrus Umrigar
 # if defined (MPI)
 
       use all_tools_mod

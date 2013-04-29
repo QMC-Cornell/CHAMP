@@ -1,5 +1,5 @@
       subroutine cuspexact3(iprin)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
 
       use constants_mod
       use atom_mod

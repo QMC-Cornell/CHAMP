@@ -17,9 +17,10 @@ MODULE bwfdet_mod
 
  USE constants_mod
  USE mpi_mod
+ USE orbital_grid_mod, only: igrad_lap
  IMPLICIT NONE
  INTEGER,DIMENSION(3) :: nrbwf ! Blip grid
- INTEGER nwvec,nkvec_bwfdet,maxband,nemax,ndet_bwfdet
+ INTEGER :: nwvec,nkvec_bwfdet,maxband,nemax,ndet_bwfdet
  INTEGER,PARAMETER :: maxgidx=50,nspin=2
  INTEGER,PARAMETER :: r2s_length=80
  INTEGER,DIMENSION(:),ALLOCATABLE :: nele
@@ -35,8 +36,16 @@ MODULE bwfdet_mod
  REAL(dp),DIMENSION(:,:,:),ALLOCATABLE :: eigenvalue
 ! Blip coefficients
  REAL(dp),ALLOCATABLE :: avc(:,:,:,:), avc2(:,:,:,:)
+ REAL(dp),ALLOCATABLE :: avclap(:,:,:,:), avclap2(:,:,:,:)
+ REAL(dp),ALLOCATABLE :: avcgrad1(:,:,:,:), avcgrad12(:,:,:,:)
+ REAL(dp),ALLOCATABLE :: avcgrad2(:,:,:,:), avcgrad22(:,:,:,:)
+ REAL(dp),ALLOCATABLE :: avcgrad3(:,:,:,:), avcgrad32(:,:,:,:)
  COMPLEX(dp),PARAMETER :: zi=(0.d0,1.d0)
  COMPLEX(dp),ALLOCATABLE :: cavc(:,:,:,:,:), cavc2(:,:,:,:,:)
+ COMPLEX(dp),ALLOCATABLE :: cavclap(:,:,:,:,:), cavclap2(:,:,:,:,:)
+ COMPLEX(dp),ALLOCATABLE :: cavcgrad1(:,:,:,:,:), cavcgrad12(:,:,:,:,:)
+ COMPLEX(dp),ALLOCATABLE :: cavcgrad2(:,:,:,:,:), cavcgrad22(:,:,:,:,:)
+ COMPLEX(dp),ALLOCATABLE :: cavcgrad3(:,:,:,:,:), cavcgrad32(:,:,:,:,:)
  COMPLEX(dp),DIMENSION(:),ALLOCATABLE :: zdum,lzdum,ztemp
  COMPLEX(dp),DIMENSION(:,:),ALLOCATABLE :: gzdum
  LOGICAL spin_polarized,pwreal,open_unit(99)
@@ -77,7 +86,7 @@ CONTAINS
 
 #ifdef MPI
  INTEGER, DIMENSION(3) :: blen, indices, types
- INTEGER MPI_bwfsizetype
+ INTEGER MPI_bwfsizetype, mpi_err
 
  TYPE bwfsize_type
     sequence
@@ -117,10 +126,15 @@ CONTAINS
 ! Rapid scan of file to get relevant array dimensions. Allocate arrays.
     call skip(io,15)
     read(io,*,end=20,err=30)spin_polarized               ; call skip(io,18)
+    write(6,'(''spin_polarized='',l2)') spin_polarized   ; call systemflush(6)
     read(io,*,end=20,err=30)nbasisbwf                    ; call skip(io,nbasisbwf+9)
+    write(6,'(''nbasisbwf='',i3)') nbasisbwf             ; call systemflush(6)
     read(io,*,end=20,err=30)nwvec                        ; call skip(io,nwvec+2)
+    write(6,'(''nwvec='',i6)') nwvec                     ; call systemflush(6)
     read(io,*,end=20,err=30)nrbwf(1),nrbwf(2),nrbwf(3)   ; call skip(io,4)
+    write(6,'(''nrbwf='',3i5)') (nrbwf(i),i=1,3)         ; call systemflush(6)
     read(io,*,end=20,err=30)nkvec_bwfdet
+    write(6,'(''nkvec_bwfdet='',i5)') nkvec_bwfdet       ; call systemflush(6)
     if(nkvec_bwfdet /= nkvec) then
        write(6,*)'Warning: number of k-vectors in bwfn.data is different than what CHAMP expects'
        write(6,*)'Number of k-points in bwfn.data:',nkvec_bwfdet
@@ -136,11 +150,17 @@ CONTAINS
     do k=1,nkvec_bwfdet
        call skip(io,1)
        read(io,*,end=20,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2)
+       write(6,'(''idum, nband_bwfdet='',9i5)') k, idum, nband_bwfdet(k,1), nband_bwfdet(k,2) ; call systemflush(6)
        do ispin=1,num_spins
           do band=1,nband_bwfdet(k,ispin)
-             call skip(io,3)
+             if(igrad_lap.eq.0) then
+               call skip(io,3)
+             else
+               call skip(io,4)
+             endif
              if(k==1.and.band==1)then
                 read(io,fmt='(a)',end=20,err=30)sline
+                write(6,'(''ispin, band, sline'',2i5,a)') ispin, band, sline ; call systemflush(6)
                 if(scan(sline,",")/=0)then
                    pwreal=.false. ! No inversion symmetry --> complex PW coefficients
                 else
@@ -148,7 +168,11 @@ CONTAINS
                 endif
                 backspace(io)
              endif
-             call skip(io,nrbwf(1)*nrbwf(2)*nrbwf(3))
+             if(igrad_lap.eq.0) then
+               call skip(io,nrbwf(1)*nrbwf(2)*nrbwf(3))
+             else
+               call skip(io,2*nrbwf(1)*nrbwf(2)*nrbwf(3)+1)
+             endif
           enddo ! bands
        enddo ! spins
     enddo ! k
@@ -183,25 +207,128 @@ CONTAINS
  allocate(eigenvalue(maxband,nkvec_bwfdet,2),stat=ialloc)
  if(ialloc/=0)call errstop('READBWF','Eigenvalue allocation problem.')
 
- if(pwreal)then
-    allocate(avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
-    if(ialloc/=0)call errstop('READBWF','AVC allocation problem 1.')
-    avc=0.d0
-    if(spin_polarized)then
-       allocate(avc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
-       if(ialloc/=0)call errstop('READBWF','AVC allocation problem 2.')
-       avc2=0.d0
-    endif
- else
-    allocate(cavc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
-    if(ialloc/=0)call errstop('READBWF','AVC allocation problem 3.')
-    cavc=0.d0
-    if(spin_polarized)then
-       allocate(cavc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
-       if(ialloc/=0)call errstop('READBWF','AVC allocation problem 4.')
-       cavc2=0.d0
-    endif
- endif
+ select case (igrad_lap)
+ case(0)
+   if(pwreal)then
+      allocate(avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVC allocation problem 1.')
+      avc=0.d0
+      if(spin_polarized)then
+         allocate(avc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVC allocation problem 2.')
+         avc2=0.d0
+      endif
+   else
+      allocate(cavc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVC allocation problem 3.')
+      cavc=0.d0
+      if(spin_polarized)then
+         allocate(cavc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVC allocation problem 4.')
+         cavc2=0.d0
+      endif
+   endif
+ case(1)
+   if(pwreal)then
+      allocate(avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVC allocation problem 1.')
+      avc=0.d0
+      allocate(avclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 1.')
+      avclap=0.d0
+      if(spin_polarized)then
+         allocate(avc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVC allocation problem 2.')
+         avc2=0.d0
+         allocate(avclap2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 2.')
+         avclap2=0.d0
+      endif
+   else
+      allocate(cavc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVC allocation problem 3.')
+      cavc=0.d0
+      allocate(cavclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 3.')
+      cavclap=0.d0
+      if(spin_polarized)then
+         allocate(cavc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVC allocation problem 4.')
+         cavc2=0.d0
+         allocate(cavclap2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 4.')
+         cavclap2=0.d0
+      endif
+   endif
+ case(2)
+   if(pwreal)then
+      allocate(avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVC allocation problem 1.')
+      avc=0.d0
+      allocate(avclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 1.')
+      avclap=0.d0
+      allocate(avcgrad1(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCGRAD1 allocation problem 1.')
+      avcgrad1=0.d0
+      allocate(avcgrad2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCGRAD2 allocation problem 1.')
+      avcgrad2=0.d0
+      allocate(avcgrad3(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCGRAD3 allocation problem 1.')
+      avcgrad3=0.d0
+      if(spin_polarized)then
+         allocate(avc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVC allocation problem 2.')
+         avc2=0.d0
+         allocate(avclap2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 2.')
+         avclap2=0.d0
+         allocate(avcgrad12(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCGRAD1 allocation problem 2.')
+         avcgrad12=0.d0
+         allocate(avcgrad22(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCGRAD2 allocation problem 2.')
+         avcgrad22=0.d0
+         allocate(avcgrad32(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCGRAD3 allocation problem 2.')
+         avcgrad32=0.d0
+      endif
+   else
+      allocate(cavc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVC allocation problem 3.')
+      cavc=0.d0
+      allocate(cavclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 3.')
+      cavclap=0.d0
+      allocate(cavcgrad1(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCGRAD1 allocation problem 3.')
+      cavcgrad1=0.d0
+      allocate(cavcgrad2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCGRAD2 allocation problem 3.')
+      cavcgrad2=0.d0
+      allocate(cavcgrad3(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+      if(ialloc/=0)call errstop('READBWF','AVCGRAD3 allocation problem 3.')
+      cavcgrad3=0.d0
+      if(spin_polarized)then
+         allocate(cavc2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVC allocation problem 4.')
+         cavc2=0.d0
+         allocate(cavclap2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCLAP allocation problem 4.')
+         cavclap2=0.d0
+         allocate(cavcgrad12(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCGRAD1 allocation problem 4.')
+         cavcgrad12=0.d0
+         allocate(cavcgrad22(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCGRAD2 allocation problem 4.')
+         cavcgrad22=0.d0
+         allocate(cavcgrad32(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),stat=ialloc)
+         if(ialloc/=0)call errstop('READBWF','AVCGRAD3 allocation problem 4.')
+         cavcgrad32=0.d0
+      endif
+   endif
+ end select
 
  if(idtask == 0) then
     rewind(io)
@@ -223,6 +350,7 @@ CONTAINS
     read(io,*,err=30,end=30)electron_electron_energy            ; call skip(io,1)
     read(io,*,err=30,end=30)teionion                            ; call skip(io,1)
     read(io,*,err=30,end=30)num_electrons                       ; call skip(io,4)
+    write(6,'(''num_electrons='',i5)') num_electrons            ; call systemflush(6)
 
     gtitle=ltitle ; dtitle=ltitle
 
@@ -300,37 +428,196 @@ CONTAINS
     do k=1,nkvec_bwfdet
        call skip(io,1)
        read(io,*,err=30)idum,nband_bwfdet(k,1),nband_bwfdet(k,2),kvec_bwfdet(1,k),kvec_bwfdet(2,k),kvec_bwfdet(3,k)
+       write(6,'(/,''idum, nband, kvec='',3i6,3f10.6)') idum,nband_bwfdet(k,1),nband_bwfdet(k,2),kvec_bwfdet(1,k),kvec_bwfdet(2,k),kvec_bwfdet(3,k) ; call systemflush(6)
        if(kvec_bwfdet(1,k)-rkvec(1,k) > tolerance .or. kvec_bwfdet(2,k)-rkvec(2,k) > tolerance .or. kvec_bwfdet(3,k)-rkvec(3,k) > tolerance) then
           write(6,*)
-          write(6,'(''K-point '',i8,'' in bwfn.data different from what CHAMP expects'')')k
+          write(6,'(''K-point '',i4,'' in bwfn.data different from what CHAMP expects'')')k
           write(6,'(''K-point CHAMP expects:   '')')
           write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')rkvec(:,k)
           write(6,'(''K-point in bwfn.data:    '')')
           write(6,'(f12.8,'' '',f12.8,'' '',f12.8)')kvec_bwfdet(:,k)
        endif
+! Why do cavc and cavc2 have k-vector indices on them when avc and avc2 do not?
        do ispin=1,num_spins ! 2 if spin_polarized, 1 if not
           do band=1,nband_bwfdet(k,ispin)
              call skip(io,1)
              read(io,*)i,j,eigenvalue(band,k,ispin)                    ; call skip(io,1)
-             do n1=0,nrbwf(1)-1
-                do n2=0,nrbwf(2)-1
-                   do n3=0,nrbwf(3)-1
-                      if(pwreal)then
-                         if(ispin==1)then
-                            read(io,*,end=20,err=30)avc(n1,n2,n3,band)
-                         else
-                            read(io,*,end=20,err=30)avc2(n1,n2,n3,band)
-                         endif
-                      else
-                         if(ispin==1)then
-                            read(io,*,end=20,err=30)cavc(n1,n2,n3,band,k)
-                         else
-                            read(io,*,end=20,err=30)cavc2(n1,n2,n3,band,k)
-                         endif
-                      endif
-                   enddo
-                enddo
-             enddo
+             write(6,'(''kvec, band, eigenvalue'',2i5,f10.6)') i,j,eigenvalue(band,k,ispin) ; call systemflush(6)
+             write(6,'(''igrad_lap,nrbwf(1),nrbwf(2),nrbwf(3)='',9i5)') igrad_lap, nrbwf(1),nrbwf(2),nrbwf(3) ; call systemflush(6)
+             select case(igrad_lap)
+             case(0)
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avc(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avc2(n1,n2,n3,band)
+                           endif
+                           !write(6,*) avc(n1,n2,n3,band) ; call systemflush(6)
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavc(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavc2(n1,n2,n3,band,k)
+                           endif
+                           !write(6,*) cavc(n1,n2,n3,band,k) ; call systemflush(6)
+                        endif
+                     enddo
+                  enddo
+               enddo
+             case(1)
+               call skip(io,1) !line= 'Orbital'
+               write(6,'(''reading orbitals before lap'',i10)') nrbwf(2)*nrbwf(1)*nrbwf(3)
+               write(6,*) pwreal ; call systemflush(6)
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avc(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avc2(n1,n2,n3,band)
+                           endif
+                           !write(6,*) avc(n1,n2,n3,band) ; call systemflush(6)
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavc(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavc2(n1,n2,n3,band,k)
+                           endif
+                           !write(6,*) cavc(n1,n2,n3,band,k) ; call systemflush(6)
+                        endif
+                     enddo
+                  enddo
+               enddo
+               call skip(io,1) !line= 'Laplacian'
+               write(6,'(''reading  lap'')') ; call systemflush(6)
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avclap(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avclap2(n1,n2,n3,band)
+                           endif
+                           !write(6,*) avclap(n1,n2,n3,band) ; call systemflush(6)
+                        else
+                           if(ispin==1)then
+                              !read(io,*,end=20,err=30)cavclap(n1,n2,n3,band,k)
+                              read(io,*)cavclap(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavclap2(n1,n2,n3,band,k)
+                           endif
+                           !write(6,*) cavclap(n1,n2,n3,band,k) ; call systemflush(6)
+                        endif
+                     enddo
+                  enddo
+               enddo
+             case(2)
+               call skip(io,1) !line= 'Orbital'
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avc(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avc2(n1,n2,n3,band)
+                           endif
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavc(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavc2(n1,n2,n3,band,k)
+                           endif
+                        endif
+                     enddo
+                  enddo
+               enddo
+               call skip(io,1) !line= 'Laplacian'
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avclap(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avclap2(n1,n2,n3,band)
+                           endif
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavclap(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavclap2(n1,n2,n3,band,k)
+                           endif
+                        endif
+                     enddo
+                  enddo
+               enddo
+               call skip(io,1) !line= 'Gradient - a1 direction'
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avcgrad1(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avcgrad12(n1,n2,n3,band)
+                           endif
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavcgrad1(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavcgrad12(n1,n2,n3,band,k)
+                           endif
+                        endif
+                     enddo
+                  enddo
+               enddo
+               call skip(io,1) !line= 'Gradient - a2 direction'
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avcgrad2(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avcgrad22(n1,n2,n3,band)
+                           endif
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavcgrad2(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavcgrad22(n1,n2,n3,band,k)
+                           endif
+                        endif
+                     enddo
+                  enddo
+               enddo
+               call skip(io,1) !Line= 'Gradient - a3 direction'
+               do n1=0,nrbwf(1)-1
+                  do n2=0,nrbwf(2)-1
+                     do n3=0,nrbwf(3)-1
+                        if(pwreal)then
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)avcgrad3(n1,n2,n3,band)
+                           else
+                              read(io,*,end=20,err=30)avcgrad32(n1,n2,n3,band)
+                           endif
+                        else
+                           if(ispin==1)then
+                              read(io,*,end=20,err=30)cavcgrad3(n1,n2,n3,band,k)
+                           else
+                              read(io,*,end=20,err=30)cavcgrad32(n1,n2,n3,band,k)
+                           endif
+                        endif
+                     enddo
+                  enddo
+               enddo
+             end select
           enddo ! bands
        enddo ! spin states
     enddo ! k
@@ -338,34 +625,32 @@ CONTAINS
     write(6,*)
     close(io) ; open_unit(io)=.false.
 
-    write(6,'(t2,''Title: '',a)')trim(ltitle)
-    write(6,'(t2,''Generating code                           : '',a)')trim(code)
-    write(6,'(t2,''Method                                    : '',a)')trim(method)
-    write(6,'(t2,''DFT functional                            : '',a)') &
-         &trim(functional)
-    write(6,'(t2,''Pseudopotential type                      : '',a)') &
-         &trim(pseudo_type)
+    write(6,'(t2,''Title: '',a)') trim(ltitle)
+    write(6,'(t2,''Generating code                           : '',a)') trim(code)
+    write(6,'(t2,''Method                                    : '',a)') trim(method)
+    write(6,'(t2,''DFT functional                            : '',a)') trim(functional)
+    write(6,'(t2,''Pseudopotential type                      : '',a)') trim(pseudo_type)
     tmpr=r2s(plane_wave_cutoff,'(f12.3)')
-    write(6,'(t2,''Plane-wave cutoff (au)                    : '',a)') &
-         &trim(tmpr)
+    write(6,'(t2,''Plane-wave cutoff (au)                    : '',a)') trim(tmpr)
+    write(6,'(t2,''Smoothing B-spline grid:                  : '',3i5)') nrbwf(1:3)
     write(6,*)
-    write(6,*)'Number of k points                        : ',trim(i2s(nkvec_bwfdet))
-    write(6,*)'Max # bands per k point                   : ',trim(i2s(maxband))
-    write(6,*)'Number of G vectors                       : ',trim(i2s(nwvec))
+    write(6,*)'Number of k points                        : ', trim(i2s(nkvec_bwfdet))
+    write(6,*)'Max # bands per k point                   : ', trim(i2s(maxband))
+    write(6,*)'Number of G vectors                       : ', trim(i2s(nwvec))
     write(6,*)
     write(6,*)'DFT ENERGY AND COMPONENTS (au per primitive cell):'
     tmpr=r2s(total_energy,'(f16.10)')
-    write(6,'(t2,''Total energy                              : '',a)')trim(tmpr)
+    write(6,'(t2,''Total energy                              : '',a)') trim(tmpr)
     tmpr=r2s(kinetic_energy,'(f16.10)')
-    write(6,'(t2,''Kinetic energy                            : '',a)')trim(tmpr)
+    write(6,'(t2,''Kinetic energy                            : '',a)') trim(tmpr)
     tmpr=r2s(local_potential_energy,'(f16.10)')
-    write(6,'(t2,''Local potential energy                    : '',a)')trim(tmpr)
+    write(6,'(t2,''Local potential energy                    : '',a)') trim(tmpr)
     tmpr=r2s(non_local_potential_energy,'(f16.10)')
-    write(6,'(t2,''Non-local potential energy                : '',a)')trim(tmpr)
+    write(6,'(t2,''Non-local potential energy                : '',a)') trim(tmpr)
     tmpr=r2s(electron_electron_energy,'(f16.10)')
-    write(6,'(t2,''Electron-electron energy                  : '',a)')trim(tmpr)
+    write(6,'(t2,''Electron-electron energy                  : '',a)') trim(tmpr)
     tmpr=r2s(teionion,'(f16.10)')
-    write(6,'(t2,''Ion-ion energy                            : '',a)')trim(tmpr)
+    write(6,'(t2,''Ion-ion energy                            : '',a)') trim(tmpr)
     write(6,*)
     if(pwreal)then
        write(6,*)'Real blip coefficients ==> GAMMA calculation'
@@ -382,19 +667,70 @@ CONTAINS
 ! CALL MPI_BCAST(eionion, 1, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
 
 ! Broadcast coefficients
- if(pwreal)then
-    CALL MPI_BCAST(avc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
-    if (spin_polarized) then
-       CALL MPI_BCAST(avc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
-    endif
- else
-!   CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
-    CALL MPI_BCAST(cavc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
-    if (spin_polarized) then
-       write(6,'(''starting bcast of cavc2'')')
-       CALL MPI_BCAST(cavc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
-    endif
- endif
+ select case(igrad_lap)
+ case (0)
+   if(pwreal)then
+      CALL MPI_BCAST(avc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      if (spin_polarized) then
+         CALL MPI_BCAST(avc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      endif
+   else
+!!!   CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      if (spin_polarized) then
+         write(6,'(''starting bcast of cavc2'')')
+         CALL MPI_BCAST(cavc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      endif
+   endif
+ case (1)
+   if(pwreal)then
+      CALL MPI_BCAST(avc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(avclap, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      if (spin_polarized) then
+         CALL MPI_BCAST(avc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(avclap2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      endif
+   else
+!!!   CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavclap, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      if (spin_polarized) then
+         write(6,'(''starting bcast of cavc2'')')
+         CALL MPI_BCAST(cavc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(cavclap2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      endif
+   endif
+ case (2)
+   if(pwreal)then
+      CALL MPI_BCAST(avc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(avclap, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(avcgrad1, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(avcgrad2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(avcgrad3, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      if (spin_polarized) then
+         CALL MPI_BCAST(avc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(avclap2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(avcgrad12, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(avcgrad22, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(avcgrad32, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      endif
+   else
+!!!   CALL MPI_BCAST(cavc(0,0,0,1,1), nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavc, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavclap, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavclap, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavcgrad2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      CALL MPI_BCAST(cavcgrad3, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      if (spin_polarized) then
+         write(6,'(''starting bcast of cavc2'')')
+         CALL MPI_BCAST(cavc2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(cavclap2, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(cavcgrad12, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(cavcgrad22, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+         CALL MPI_BCAST(cavcgrad32, nrbwf(1)*nrbwf(2)*nrbwf(3)*maxband*nkvec_bwfdet, MPI_DOUBLE_COMPLEX, 0, MPI_COMM_WORLD, ierr)
+      endif
+   endif
+ end select
 #endif
  write(6,'(''end of readbwf'')')
 
@@ -419,28 +755,37 @@ CONTAINS
  REAL(dp),INTENT(in) :: orb_norm
  INTEGER, PARAMETER :: mdet_max_mods=15,lsize=500,num_g=lsize+lsize-1, &
   &twonum_g=num_g*2,sixnum_g=num_g*6,fournum_gp2=twonum_g+twonum_g+2
- INTEGER ialloc,ik,jk,ig,ispin,ix,iy,iz,num_spins,band,k,        &
+ INTEGER ialloc,ik,jk,ig,ispin,eff_nele(2),ix,iy,iz,num_spins,band,k,        &
   &ngridpoints,i,nstates,ne,                 &
-  &i1m,i2m,i3m,i1,i2,i3,j1,j2,j3,jmax,kmax,n,l,m,&
-  &ngpri,j,iband
-!eff_nele(2)
+  &i1m,i2m,i3m,i1,i2,i3,j1,j2,j3,jmax,kmax,n,l,m,istart,&
+  &nep,nseg,ngpri,j,nentry,iband
+
  INTEGER,ALLOCATABLE :: indx(:),kcheck(:),wf_np(:,:),wf_nm(:,:),&
   &istart_array(:),nentry_array(:),temp_i(:),vector_index(:),jm(:)
  REAL(dp) ksum(3),rvec(3),temp1,temp2,temp3,k_s(3),ktemp(1:3),             &
   &average_real_part,average_imaginary_part,pb1(3),pb2(3),pb3(3),              &
   &b1(3),b2(3),b3(3),           &
-  &a1b(3),a2b(3),a3b(3),           &
-  &glatt_inv_squared(3),r,z,           &
-  &glatt_sim_inv_squared(3)
+  &a1_bwfdet(3),a2_bwfdet(3),a3_bwfdet(3),           &
+  &rkvec_shift_latt,glatt_inv_squared(3),r,z,low,high,current,           &
+  &low2,current2,mean,glatt_sim_inv_squared(3)
  REAL(dp),ALLOCATABLE,DIMENSION(:) :: eigtemp,temp_r,low_array,high_array,d
  REAL(dp),ALLOCATABLE,DIMENSION(:,:) :: pr_lattice,sr_lattice
  COMPLEX(dp),ALLOCATABLE :: sum_orbs(:,:)
  LOGICAL :: metal=.false.
  LOGICAL,ALLOCATABLE :: ltemp(:)
 
+ INTEGER :: irealimag
+ REAL(dp) :: real_part,real_coefficient_sum,abs_real_coefficient_sum
+
+ REAL(dp),ALLOCATABLE,DIMENSION(:,:) :: rpsi,lap
+ REAL(dp) :: eps
+ COMPLEX(dp),ALLOCATABLE,DIMENSION(:,:) :: rpsi_c,lap_c
+
+ common /periodic2/ rkvec_shift_latt(3)
+
 !Set local variables equal to common block equivalents
 
- painv=rlatt_inv
+ painv=transpose(rlatt_inv)
  pb1=glatt(:,1)
  pb2=glatt(:,2)
  pb3=glatt(:,3)
@@ -476,14 +821,14 @@ CONTAINS
  z=max(z,glatt_inv_squared(1))
 
  r=twonum_g
- i=r**(1.d0/3.d0)
+ i=int(r**(1.d0/3.d0))
  i=(i-1)/2
  r=i/z
  z=r+tolerance
 
-4 i1m=z*glatt_inv_squared(1)
-  i2m=z*glatt_inv_squared(2)
-  i3m=z*glatt_inv_squared(3)
+4 i1m=int(z*glatt_inv_squared(1))
+  i2m=int(z*glatt_inv_squared(2))
+  i3m=int(z*glatt_inv_squared(3))
  if(((i1m+i1m+1)*(i2m+i2m+1)*(i3m+i3m+1))>=fournum_gp2)goto 5
  i1=i1m ; i2=i2m ; i3=i3m
  z=z+r
@@ -580,14 +925,14 @@ CONTAINS
  z=max(z,glatt_sim_inv_squared(1))
 
  r=twonum_g
- i=r**(1.d0/3.d0)
+ i=int(r**(1.d0/3.d0))
  i=(i-1)/2
  r=i/z
  z=r+tolerance
 
-8 i1m=z*glatt_sim_inv_squared(1)
-  i2m=z*glatt_sim_inv_squared(2)
-  i3m=z*glatt_sim_inv_squared(3)
+8 i1m=int(z*glatt_sim_inv_squared(1))
+  i2m=int(z*glatt_sim_inv_squared(2))
+  i3m=int(z*glatt_sim_inv_squared(3))
  if(((i1m+i1m+1)*(i2m+i2m+1)*(i3m+i3m+1))>=fournum_gp2)goto 9
  i1=i1m ; i2=i2m ; i3=i3m
  z=z+r
@@ -660,9 +1005,9 @@ CONTAINS
 !end of sr_lattice setup
 
 !lattice vectors
- a1b=rlatt_sim(:,1)
- a2b=rlatt_sim(:,2)
- a3b=rlatt_sim(:,3)
+ a1_bwfdet=rlatt_sim(:,1)
+ a2_bwfdet=rlatt_sim(:,2)
+ a3_bwfdet=rlatt_sim(:,3)
 
 ! Allocate workspace.
  allocate(gmap(3,nwvec),kdotr(nkvec_bwfdet),zdum(nkvec_bwfdet),lzdum(nkvec_bwfdet),gzdum(3,nkvec_bwfdet),  &
@@ -769,6 +1114,7 @@ aloop: do jk=ik+1,nkvec_bwfdet
  allocate(nele(2))
  nele(1)=nup
  nele(2)=ndn
+ nemax=maxval(nele(:))
 
  boccband(:,:)=0
 
@@ -882,37 +1228,156 @@ s:do ispin=1,num_spins
 ! grid point in the sum_orbs(band,k) vector, summing over grid points as
 ! we go.
 
+! Changed by WDP to reflect CHAMP current method of choosing real or imaginary
+! with plane waves (in read_orb_pw_pwscf and read_orb_pw_tm)
+! Sums over real part of coefficients and divide by the sum of the absolute 
+! values -- if absolute value greater than 10^-6, use real part
   use_real_part=.false.
+  irealimag=0
 ! If we have only gamma then all this stuff can be skipped
   if(.not.pwreal)then
    do ispin=1,num_spins ! i.e. 2 for spin-polarized systems, 1 otherwise
-    ngridpoints=0
-    sum_orbs=0.d0
-    do ix=-3,3
-     do iy=-3,3
-      do iz=-3,3
-       rvec(1)=dble(ix)*12.3456d0-0.01234d0
-       rvec(2)=dble(iy)*12.3456d0-0.04567d0
-       rvec(3)=dble(iz)*12.3456d0-0.08910d0
-       call sum_orbs_over_grid_with_blips(rvec,sum_orbs,ispin)
-       ngridpoints=ngridpoints+1
-      enddo
-     enddo
-    enddo
     do k=1,nkvec_bwfdet
      if(lkedge(k))then
+      irealimag=2
       do band=1,boccband(k,ispin)
-       average_real_part=sqrt(dble(sum_orbs(band,k))/(dble(ngridpoints)))
-       average_imaginary_part=sqrt(aimag(sum_orbs(band,k))/(dble(ngridpoints)))
-       if(average_real_part>average_imaginary_part)then
-        use_real_part(band,k,ispin)=.true.
-       endif
+        if(ispin==1)then
+          real_coefficient_sum=sum(dble(cavc(:,:,:,band,k)))
+          abs_real_coefficient_sum=sum(abs(dble(cavc(:,:,:,band,k))))
+          real_part=abs(real_coefficient_sum/abs_real_coefficient_sum)
+          if(real_part > 1.d-6) then
+            use_real_part(band,k,ispin)=.true.
+          endif
+          if(use_real_part(band,k,ispin)) irealimag=1
+          write(6,'(''ikv,iband,ireal_imag,sum,sum_abs='',3i4,9d12.4)')& 
+             &k,band,irealimag,real_coefficient_sum,abs_real_coefficient_sum
+        else
+          real_coefficient_sum=sum(dble(cavc2(:,:,:,band,k)))
+          abs_real_coefficient_sum=sum(abs(dble(cavc2(:,:,:,band,k))))
+          real_part=real_coefficient_sum/abs_real_coefficient_sum
+          if(real_part > 1.d-6) then
+            use_real_part(band,k,ispin)=.true.
+          endif
+          if(use_real_part(band,k,ispin)) irealimag=2
+          write(6,'(''ikv,iband,ireal_imag,sum,sum_abs='',3i4,9d12.4)')& 
+             &k,band,irealimag,real_coefficient_sum,abs_real_coefficient_sum
+        endif !ispin 1 or 2
       enddo ! occupied bands at k
      endif
     enddo ! k
    enddo ! spins
    if(.not.spin_polarized)use_real_part(:,:,2)=use_real_part(:,:,1)
-  endif
+
+  !next step in deciding between real and imaginary parts
+!loop over ikv (kpoint index), set jorba
+!call get_real_and_imaginary_parts_of_blips for orb_si and ddorb_si
+!how do I choose r???
+!it looks like it's just /0.1, 0.2, 0.3/
+
+!  allocate(rpsi(nemax,nkvec_bwfdet),lap(nemax,nkvec_bwfdet))
+!  allocate(rpsi_c(nemax,nkvec_bwfdet),lap_c(nemax,nkvec_bwfdet))
+!
+!  rvec(1)=0.1d0
+!  rvec(2)=0.2d0
+!  rvec(3)=0.3d0
+!
+!  eps=1.d-4
+!
+!  do ispin=1,num_spins ! i.e. 2 for spin-polarized systems, 1 otherwise
+!   call get_real_and_imaginary_parts_of_blips(rvec,rpsi_c,lap_c,ispin)
+!   do k=1,nkvec_bwfdet
+!     do band=1,boccband(k,ispin)
+!        write(6,'(''real orb_si,ddorb_si='',i5,9d12.4)') &
+!             & band,dble(rpsi_c(band,k)),dble(lap_c(band,k))
+!        write(6,'(''imag orb_si,ddorb_si='',i5,9d12.4)') &
+!             & band,aimag(rpsi_c(band,k)),aimag(lap_c(band,k))
+!     end do!band
+!   end do!k
+!   rpsi=dble(rpsi_c)-aimag(rpsi_c)
+!   lap=dble(lap_c)-aimag(lap_c)
+!   do k=1,nkvec_bwfdet
+!    if(lkedge(k)) then
+!      do band=1,boccband(k,ispin)
+!       if(band <= boccband(k,ispin)) then
+!         if(band >= 3) then
+!           if(abs(rpsi(band,k)*lap(band-2,k)/&
+!                &(rpsi(band-2,k)*lap(band,k))-1) < eps) then
+!             continue
+!           else if(abs(rpsi(band-1,k)*lap(band-2,k)/&
+!                     &(rpsi(band-2,k)*lap(band-1,k))-1) < eps) then
+!            use_real_part(band,k,ispin)=.true.
+!            continue
+!           endif
+!         else if(band >= 4) then
+!           if(abs(rpsi(band,k)*lap(band-3,k)/&
+!                &(rpsi(band-3,k)*lap(band,k))-1) < eps) then
+!             continue
+!           else if(abs(rpsi(band-1,k)*lap(band-3,k)/&
+!                     &(rpsi(band-3,k)*lap(band-1,k))-1) < eps) then
+!             use_real_part(band,k,ispin)=.true.
+!             continue
+!           endif
+!        endif ! band >= 2 or 3
+!        if(band >=2) then
+!          if(abs(rpsi(band-1,k)/rpsi(band,k)) < 1.d0) then
+!            use_real_part(band,k,ispin)=.true.
+!          endif
+!        endif
+!      endif ! band+1 <= boccbands(band,k,ispin)
+!     enddo ! bands
+!    endif ! lkedge
+!   enddo ! k
+!  enddo ! spins
+!
+!  deallocate(rpsi)
+!  deallocate(lap)
+!  deallocate(rpsi_c)
+!  deallocate(lap_c)
+
+   do ispin=1,num_spins
+    do k=1,nkvec_bwfdet
+     write(6,*)'For k-point ',k
+     do band=1,boccband(k,ispin)
+      if(use_real_part(band,k,ispin)) then
+         write(6,*)'Using real part of band ',band
+      else
+         write(6,*)'Using imaginary part of band ',band
+      end if
+     enddo !band
+    enddo ! k
+   enddo ! spins
+        
+  endif ! pwreal
+
+
+!  do ispin=1,num_spins ! i.e. 2 for spin-polarized systems, 1 otherwise
+!   ngridpoints=0
+!   sum_orbs=0.d0
+!   do ix=-3,3
+!    do iy=-3,3
+!     do iz=-3,3
+!      rvec(1)=dble(ix)*12.3456d0-0.01234d0
+!      rvec(2)=dble(iy)*12.3456d0-0.04567d0
+!      rvec(3)=dble(iz)*12.3456d0-0.08910d0
+!      call sum_orbs_over_grid_with_blips(rvec,sum_orbs,ispin)
+!      ngridpoints=ngridpoints+1
+!     enddo
+!    enddo
+!   enddo
+!   do k=1,nkvec_bwfdet
+!    if(lkedge(k))then
+!     do band=1,boccband(k,ispin)
+!      average_real_part=sqrt(dble(sum_orbs(band,k))/(dble(ngridpoints)))
+!      average_imaginary_part=sqrt(aimag(sum_orbs(band,k))/(dble(ngridpoints)))
+!      if(average_real_part>average_imaginary_part)then
+!       use_real_part(band,k,ispin)=.true.
+!      endif
+!     enddo ! occupied bands at k
+!    endif
+!   enddo ! k
+!  enddo ! spins
+!  if(.not.spin_polarized)use_real_part(:,:,2)=use_real_part(:,:,1)
+! endif
 
 ! Generate potential k_s vector from each k point in pwfn.data
  kvec2=1.d5
@@ -920,9 +1385,9 @@ s:do ispin=1,num_spins
  do jk=1,nkvec_bwfdet
 bloop:do ik=1,num_g
    ktemp(1:3)=kvec_bwfdet(1:3,jk)-0.5d0*sr_lattice(1:3,ik)
-   temp1=one_over_twopi*dot_product(ktemp,a1b)
-   temp2=one_over_twopi*dot_product(ktemp,a2b)
-   temp3=one_over_twopi*dot_product(ktemp,a3b)
+   temp1=one_over_twopi*dot_product(ktemp,a1_bwfdet)
+   temp2=one_over_twopi*dot_product(ktemp,a2_bwfdet)
+   temp3=one_over_twopi*dot_product(ktemp,a3_bwfdet)
    if(abs(temp1-anint(temp1))<tolerance.and.abs(temp2-anint(temp2))<tolerance.and. &
     &abs(temp3-anint(temp3))<tolerance)then ! i.e. if projections are integer
     ltemp(jk)=.false.
@@ -984,9 +1449,9 @@ bloop:do ik=1,num_g
    write(6,*)'MAPPING ONTO UNIQUE K_S VECTOR:'
    write(6,'(3f20.8,a)')k_s(1:3),' (Cartesian a.u.)'
    if(any(abs(k_s(1:3))>tolerance))then
-    temp1=one_over_twopi*dot_product(k_s,a1b)
-    temp2=one_over_twopi*dot_product(k_s,a2b)
-    temp3=one_over_twopi*dot_product(k_s,a3b)
+    temp1=one_over_twopi*dot_product(k_s,a1_bwfdet)
+    temp2=one_over_twopi*dot_product(k_s,a2_bwfdet)
+    temp3=one_over_twopi*dot_product(k_s,a3_bwfdet)
     write(6,'(3f20.8,a)')temp1,temp2,temp3,' (frac supercell reciprocal &
      &lattice vectors)'
    endif
@@ -1074,13 +1539,12 @@ bloop:do ik=1,num_g
  endif ! (idtask == 0
  call qmc_barrier
 
- norm=0.d0
- nemax=maxval(nele(:))
- do i=2,nemax
-  norm=norm+log(dble(i))
- enddo
- norm=exp(-norm/(2.d0*dble(nemax)))
-!norm=1.d0
+!norm=0.d0
+!do i=2,nemax
+! norm=norm+log(dble(i))
+!enddo
+!norm=exp(-norm/(2.d0*dble(nemax)))
+ norm=1.d0
  norm=norm*orb_norm
 
  END SUBROUTINE bwfdet_setup
@@ -1113,7 +1577,8 @@ bloop:do ik=1,num_g
  enddo
 
 ! Position must be in units of crystal lattice
- r=matmul(transpose(painv),rvec)
+!r=matmul(transpose(painv),rvec)
+ r=matmul(rvec,painv)
 
 ! Warning: Just as William split blip3dgamma into blip3dgamma_w and blip3dgamma_gl (no derivs and derivs) to save time
 ! one could do the same for blip3d
@@ -1123,12 +1588,13 @@ bloop:do ik=1,num_g
     call blip3dgamma_w(rpsi,lap,grad,r,avc,nrbwf,painv,igl,boccband(1,ispin), &
      &nemax,maxband)
    else
-    call blip3dgamma_gl(rpsi,lap,grad,r,avc,nrbwf,painv,igl,boccband(1,ispin), &
-     &nemax,maxband)
+    call blip3dgamma_gl(rpsi,lap,grad,r,avc,avclap,avcgrad1,avcgrad2,avcgrad3, &
+     &nrbwf,painv,igl,boccband(1,ispin),nemax,maxband)
    endif
   else
-   call blip3d(rpsi,lap,grad,r,cavc,nrbwf,painv,iw,igl,boccband(1,ispin),nemax, &
-    &nkvec_bwfdet,maxband,use_real_part(1,1,ispin))
+   call blip3d(rpsi,lap,grad,r,cavc,cavclap,cavcgrad1,cavcgrad2,cavcgrad3,nrbwf,&
+    &painv,iw,igl,boccband(1,ispin),nemax,nkvec_bwfdet,maxband,&
+    &use_real_part(1,1,ispin))
   endif
  else          ! spin 2 (in spin unrbwfestricted case)
   if(pwreal)then
@@ -1136,12 +1602,13 @@ bloop:do ik=1,num_g
     call blip3dgamma_w(rpsi,lap,grad,r,avc2,nrbwf,painv,igl,boccband(1,ispin), &
      &nemax,maxband)
    else
-    call blip3dgamma_gl(rpsi,lap,grad,r,avc,nrbwf,painv,igl,boccband(1,ispin), &
-     &nemax,maxband)
+    call blip3dgamma_gl(rpsi,lap,grad,r,avc2,avclap2,avcgrad12,avcgrad22,avcgrad32, &
+     &nrbwf,painv,igl,boccband(1,ispin),nemax,maxband)
    endif
   else
-   call blip3d(rpsi,lap,grad,r,cavc2,nrbwf,painv,iw,igl,boccband(1,ispin),nemax, &
-    &nkvec_bwfdet,maxband,use_real_part(1,1,ispin))
+   call blip3d(rpsi,lap,grad,r,cavc2,cavclap2,cavcgrad12,cavcgrad22,cavcgrad32,&
+    &nrbwf,painv,iw,igl,boccband(1,ispin),nemax,nkvec_bwfdet,maxband,          &
+    &use_real_part(1,1,ispin))
   endif
  endif
 
@@ -1157,8 +1624,8 @@ bloop:do ik=1,num_g
  END SUBROUTINE bwfdet_main
 
 
- SUBROUTINE blip3d(rpsi,lap,grad,r,avc,nrbwf,bg,iw,igl,boccband,nemax,nkvec_bwfdet,      &
-  &maxband,use_real_part)
+ SUBROUTINE blip3d(rpsi,lap,grad,r,avc,avclap,avcgrad1,avcgrad2,avcgrad3,nrbwf,&
+  &bg,iw,igl,boccband,nemax,nkvec_bwfdet,maxband,use_real_part)
 !---------------------------------------------------------------------------!
 ! This subroutine evaluates the value of a function, its gradient and its   !
 ! Laplacian at a vector point r, using the overlapping of blip functions.   !
@@ -1187,6 +1654,10 @@ bloop:do ik=1,num_g
   &dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
  COMPLEX(dp) :: avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),d1(16),rdum,  &
   &ldum,gdum(3)
+ COMPLEX(dp) :: avclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),l1(16)
+ COMPLEX(dp) :: avcgrad1(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),g1(16)
+ COMPLEX(dp) :: avcgrad2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),g2(16)
+ COMPLEX(dp) :: avcgrad3(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),g3(16)
  LOGICAL use_real_part(maxband,nkvec_bwfdet)
 
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
@@ -1219,80 +1690,216 @@ bloop:do ik=1,num_g
  t=mod(r+abs(int(r))+1,1.d0)*nrbwf
  t=mod(t,dble(nrbwf))
 
- x=t(1)-ix+1.d0
- txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
- if(igl==1)then
-  dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
-  d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
- endif
- x=t(1)-ix
- tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
- if(igl==1)then
-  dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
-  d2tx=(-3.d0+4.5d0*x)*nrbwf(1)*nrbwf(1)
- endif
- x=t(1)-ix-1.d0
- txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
- if(igl==1)then
-  dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
-  d2txp=(-3.d0-4.5d0*x)*nrbwf(1)*nrbwf(1)
- endif
- x=t(1)-ix-2.d0
- txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
- if(igl==1)then
-  dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
-  d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
- endif
+!Alternate method with only one definition of x
+!x=t(1)-ix
+!txm   = 0.25d0-0.75d0*x+0.75d0*x*x-0.25d0*x*x*x
+!tx    = 1.d0           -1.5d0 *x*x+0.75d0*x*x*x
+!txp   =-1.25d0+5.25d0*x-3.75d0*x*x+0.75d0*x*x*x
+!txpp  =                            0.75d0*x*x*x
+!y=t(1)-iy
+!tym   = 0.25d0-0.75d0*y+0.75d0*y*y-0.25d0*y*y*y
+!ty    = 1.d0           -1.5d0 *y*y+0.75d0*y*y*y
+!typ   =-1.25d0+5.25d0*y-3.75d0*y*y+0.75d0*y*y*y
+!typp  =                            0.75d0*y*y*y
+!z=t(1)-iz
+!tzm   = 0.25d0-0.75d0*z+0.75d0*z*z-0.25d0*z*z*z
+!tz    = 1.d0           -1.5d0 *z*z+0.75d0*z*z*z
+!tzp   =-1.25d0+5.25d0*z-3.75d0*z*z+0.75d0*z*z*z
+!tzpp  =                            0.75d0*z*z*z
+!if(igl==1)then
+!  dtxm  =(       -0.75d0  +1.5d0*x   -0.75d0*x*x)*nrbwf(1)
+!  dtx   =(                -3.d0*x    +2.25d0*x*x)*nrbwf(1)
+!  dtxp  =(        5.25d0  -7.5d0*x   +2.25d0*x*x)*nrbwf(1)
+!  dtxpp =(                            2.25d0*x*x)*nrbwf(1)
+!  d2txm =(                 1.5d0     -1.5d0*x   )*nrbwf(1)**2
+!  d2tx  =(                -3.d0      +4.5d0*x   )*nrbwf(1)**2
+!  d2txp =(                -7.5d0     +4.5d0*x   )*nrbwf(1)**2
+!  d2txpp=(                            4.5d0*x   )*nrbwf(1)**2
+!  dtym  =(       -0.75d0  +1.5d0*y   -0.75d0*y*y)*nrbwf(2)
+!  dty   =(                -3.d0*y    +2.25d0*y*y)*nrbwf(2)
+!  dtyp  =(        5.25d0  -7.5d0*y   +2.25d0*y*y)*nrbwf(2)
+!  dtypp =(                            2.25d0*y*y)*nrbwf(2)
+!  d2tym =(                 1.5d0     -1.5d0*y   )*nrbwf(2)**2
+!  d2ty  =(                -3.d0      +4.5d0*y   )*nrbwf(2)**2
+!  d2typ =(                -7.5d0     +4.5d0*y   )*nrbwf(2)**2
+!  d2typp=(                            4.5d0*y   )*nrbwf(2)**2
+!  dtzm  =(       -0.75d0  +1.5d0*z   -0.75d0*z*z)*nrbwf(3)
+!  dtz   =(                -3.d0*z    +2.25d0*z*z)*nrbwf(3)
+!  dtzp  =(        5.25d0  -7.5d0*z   +2.25d0*z*z)*nrbwf(3)
+!  dtzpp =(                            2.25d0*z*z)*nrbwf(3)
+!  d2tzm =(                 1.5d0     -1.5d0*z   )*nrbwf(3)**2
+!  d2tz  =(                -3.d0      +4.5d0*z   )*nrbwf(3)**2
+!  d2tzp =(                -7.5d0     +4.5d0*z   )*nrbwf(3)**2
+!  d2tzpp=(                            4.5d0*z   )*nrbwf(3)**2
+!endif
 
- y=t(2)-iy+1.d0
- tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
- if(igl==1)then
-  dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
-  d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
- endif
- y=t(2)-iy
- ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
- if(igl==1)then
-  dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
-  d2ty=(-3.d0+4.5d0*y)*nrbwf(2)*nrbwf(2)
- endif
- y=t(2)-iy-1.d0
- typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
- if(igl==1)then
-  dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
-  d2typ=(-3.d0-4.5d0*y)*nrbwf(2)*nrbwf(2)
- endif
- y=t(2)-iy-2.d0
- typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
- if(igl==1) then
-  dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
-  d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
- endif
+ select case (igrad_lap)
+ case(0)
+   x=t(1)-ix+1.d0
+   txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+   if(igl==1)then
+    dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
+    d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
+   endif
+   x=t(1)-ix
+   tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+   if(igl==1)then
+    dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
+    d2tx=(-3.d0+4.5d0*x)*nrbwf(1)*nrbwf(1)
+   endif
+   x=t(1)-ix-1.d0
+   txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+   if(igl==1)then
+    dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
+    d2txp=(-3.d0-4.5d0*x)*nrbwf(1)*nrbwf(1)
+   endif
+   x=t(1)-ix-2.d0
+   txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+   if(igl==1)then
+    dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
+    d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
+   endif
 
- z=t(3)-iz+1.d0
- tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
- if(igl==1)then
-  dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
-  d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
- endif
- z=t(3)-iz
- tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
- if(igl==1)then
-  dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
-  d2tz=(-3.d0+4.5d0*z)*nrbwf(3)*nrbwf(3)
- endif
- z=t(3)-iz-1.d0
- tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
- if(igl==1)then
-  dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
-  d2tzp=(-3.d0-4.5d0*z)*nrbwf(3)*nrbwf(3)
- endif
- z=t(3)-iz-2.d0
- tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
- if(igl==1)then
-  dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
-  d2tzpp=(3.d0+1.5d0*z)*nrbwf(3)*nrbwf(3)
- endif
+   y=t(2)-iy+1.d0
+   tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+   if(igl==1)then
+    dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
+    d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
+   endif
+   y=t(2)-iy
+   ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+   if(igl==1)then
+    dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
+    d2ty=(-3.d0+4.5d0*y)*nrbwf(2)*nrbwf(2)
+   endif
+   y=t(2)-iy-1.d0
+   typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+   if(igl==1)then
+    dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
+    d2typ=(-3.d0-4.5d0*y)*nrbwf(2)*nrbwf(2)
+   endif
+   y=t(2)-iy-2.d0
+   typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+   if(igl==1) then
+    dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
+    d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
+   endif
+
+   z=t(3)-iz+1.d0
+   tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+   if(igl==1)then
+    dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
+    d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
+   endif
+   z=t(3)-iz
+   tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+   if(igl==1)then
+    dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
+    d2tz=(-3.d0+4.5d0*z)*nrbwf(3)*nrbwf(3)
+   endif
+   z=t(3)-iz-1.d0
+   tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+   if(igl==1)then
+    dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
+    d2tzp=(-3.d0-4.5d0*z)*nrbwf(3)*nrbwf(3)
+   endif
+   z=t(3)-iz-2.d0
+   tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+   if(igl==1)then
+    dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
+    d2tzpp=(3.d0+1.5d0*z)*nrbwf(3)*nrbwf(3)
+   endif
+ case(1)
+   x=t(1)-ix+1.d0
+   txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+   if(igl==1)then
+    dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
+   endif
+   x=t(1)-ix
+   tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+   if(igl==1)then
+    dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
+   endif
+   x=t(1)-ix-1.d0
+   txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+   if(igl==1)then
+    dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
+   endif
+   x=t(1)-ix-2.d0
+   txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+   if(igl==1)then
+    dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
+   endif
+
+   y=t(2)-iy+1.d0
+   tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+   if(igl==1)then
+    dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
+   endif
+   y=t(2)-iy
+   ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+   if(igl==1)then
+    dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
+   endif
+   y=t(2)-iy-1.d0
+   typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+   if(igl==1)then
+    dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
+   endif
+   y=t(2)-iy-2.d0
+   typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+   if(igl==1) then
+    dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
+   endif
+
+   z=t(3)-iz+1.d0
+   tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+   if(igl==1)then
+    dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
+   endif
+   z=t(3)-iz
+   tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+   if(igl==1)then
+    dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
+   endif
+   z=t(3)-iz-1.d0
+   tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+   if(igl==1)then
+    dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
+   endif
+   z=t(3)-iz-2.d0
+   tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+   if(igl==1)then
+    dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
+   endif
+ case(2)
+   x=t(1)-ix+1.d0
+   txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+   x=t(1)-ix
+   tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+   x=t(1)-ix-1.d0
+   txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+   x=t(1)-ix-2.d0
+   txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+
+   y=t(2)-iy+1.d0
+   tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+   y=t(2)-iy
+   ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+   y=t(2)-iy-1.d0
+   typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+   y=t(2)-iy-2.d0
+   typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+
+   z=t(3)-iz+1.d0
+   tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+   z=t(3)-iz
+   tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+   z=t(3)-iz-1.d0
+   tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+   z=t(3)-iz-2.d0
+   tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+ end select
 
 ! bg are the primitive? cell reciprocal lattice vectors
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
@@ -1360,6 +1967,8 @@ bloop:do ik=1,num_g
     endif
 
     if(igl==1)then
+     select case (igrad_lap)
+     case (0)
 ! The Laplacian: first term involving Theta''(x)
      ldum=((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*d2tx+(d1(5)*ty+d1(6)*typ+ &
           d1(7)*typp+d1(8)*tym)*d2txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)* &
@@ -1517,6 +2126,330 @@ bloop:do ik=1,num_g
       grad(2,idum+2)=aimag(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
       grad(3,idum+2)=aimag(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
      endif
+    case(1)
+    l1(1)=avclap(ix,iy,iz,ib,ik)*tz+avclap(ix,iy,izp,ib,ik)*tzp+        &
+         avclap(ix,iy,izpp,ib,ik)*tzpp+avclap(ix,iy,izm,ib,ik)*tzm
+    l1(2)=avclap(ix,iyp,iz,ib,ik)*tz+avclap(ix,iyp,izp,ib,ik)*tzp+      &
+         avclap(ix,iyp,izpp,ib,ik)*tzpp+avclap(ix,iyp,izm,ib,ik)*tzm
+    l1(3)=avclap(ix,iypp,iz,ib,ik)*tz+avclap(ix,iypp,izp,ib,ik)*tzp+    &
+         avclap(ix,iypp,izpp,ib,ik)*tzpp+avclap(ix,iypp,izm,ib,ik)*tzm
+    l1(4)=avclap(ix,iym,iz,ib,ik)*tz+avclap(ix,iym,izp,ib,ik)*tzp+      &
+         avclap(ix,iym,izpp,ib,ik)*tzpp+avclap(ix,iym,izm,ib,ik)*tzm
+
+    l1(5)=avclap(ixp,iy,iz,ib,ik)*tz+avclap(ixp,iy,izp,ib,ik)*tzp       &
+         +avclap(ixp,iy,izpp,ib,ik)*tzpp+avclap(ixp,iy,izm,ib,ik)*tzm
+    l1(6)=avclap(ixp,iyp,iz,ib,ik)*tz+avclap(ixp,iyp,izp,ib,ik)*tzp     &
+         +avclap(ixp,iyp,izpp,ib,ik)*tzpp+avclap(ixp,iyp,izm,ib,ik)*tzm
+    l1(7)=avclap(ixp,iypp,iz,ib,ik)*tz+avclap(ixp,iypp,izp,ib,ik)*tzp   &
+         +avclap(ixp,iypp,izpp,ib,ik)*tzpp+avclap(ixp,iypp,izm,ib,ik)*tzm
+    l1(8)=avclap(ixp,iym,iz,ib,ik)*tz+avclap(ixp,iym,izp,ib,ik)*tzp     &
+         +avclap(ixp,iym,izpp,ib,ik)*tzpp+avclap(ixp,iym,izm,ib,ik)*tzm
+
+    l1(9)=avclap(ixpp,iy,iz,ib,ik)*tz+avclap(ixpp,iy,izp,ib,ik)*tzp     &
+         +avclap(ixpp,iy,izpp,ib,ik)*tzpp+avclap(ixpp,iy,izm,ib,ik)*tzm
+    l1(10)=avclap(ixpp,iyp,iz,ib,ik)*tz+avclap(ixpp,iyp,izp,ib,ik)*tzp  &
+         +avclap(ixpp,iyp,izpp,ib,ik)*tzpp+avclap(ixpp,iyp,izm,ib,ik)*tzm
+    l1(11)=avclap(ixpp,iypp,iz,ib,ik)*tz+avclap(ixpp,iypp,izp,ib,ik)*tzp&
+         +avclap(ixpp,iypp,izpp,ib,ik)*tzpp+avclap(ixpp,iypp,izm,ib,ik)*tzm
+    l1(12)=avclap(ixpp,iym,iz,ib,ik)*tz+avclap(ixpp,iym,izp,ib,ik)*tzp  &
+         +avclap(ixpp,iym,izpp,ib,ik)*tzpp+avclap(ixpp,iym,izm,ib,ik)*tzm
+
+    l1(13)=avclap(ixm,iy,iz,ib,ik)*tz+avclap(ixm,iy,izp,ib,ik)*tzp      &
+         +avclap(ixm,iy,izpp,ib,ik)*tzpp+avclap(ixm,iy,izm,ib,ik)*tzm
+    l1(14)=avclap(ixm,iyp,iz,ib,ik)*tz+avclap(ixm,iyp,izp,ib,ik)*tzp    &
+         +avclap(ixm,iyp,izpp,ib,ik)*tzpp+avclap(ixm,iyp,izm,ib,ik)*tzm
+    l1(15)=avclap(ixm,iypp,iz,ib,ik)*tz+avclap(ixm,iypp,izp,ib,ik)*tzp  &
+         +avclap(ixm,iypp,izpp,ib,ik)*tzpp+avclap(ixm,iypp,izm,ib,ik)*tzm
+    l1(16)=avclap(ixm,iym,iz,ib,ik)*tz+avclap(ixm,iym,izp,ib,ik)*tzp    &
+         +avclap(ixm,iym,izpp,ib,ik)*tzpp+avclap(ixm,iym,izm,ib,ik)*tzm
+
+    ldum=(l1(1)*ty+l1(2)*typ+l1(3)*typp+l1(4)*tym)*tx+(l1(5)*ty+l1(6)*typ      &
+         +l1(7)*typp+l1(8)*tym)*txp+(l1(9)*ty+l1(10)*typ+l1(11)*typp+l1(12)*   &
+         tym)*txpp+(l1(13)*ty+l1(14)*typ+l1(15)*typp+l1(16)*tym)*txm
+
+! The gradient, first term involving Theta'(x)
+     gdum(1)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*dtx+(d1(5)*ty+d1(6)*    &
+          typ+d1(7)*typp+d1(8)*tym)*dtxp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+     &
+          d1(12)*tym)*dtxpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*dtxm
+
+! Second term of the gradient involving Theta'(y)
+     gdum(2)=(d1(1)*dty+d1(2)*dtyp+d1(3)*dtypp+d1(4)*dtym)*tx+(d1(5)*dty+      &
+          d1(6)*dtyp+d1(7)*dtypp+d1(8)*dtym)*txp+(d1(9)*dty+d1(10)*dtyp+       &
+          d1(11)*dtypp+d1(12)*dtym)*txpp+(d1(13)*dty+d1(14)*dtyp+d1(15)*dtypp+ &
+          d1(16)*dtym)*txm
+
+! And the third term of the gradient involving Theta'(z)
+     d1(1)=avc(ix,iy,iz,ib,ik)*dtz+avc(ix,iy,izp,ib,ik)*dtzp+                  &
+          avc(ix,iy,izpp,ib,ik)*dtzpp+avc(ix, iy, izm,ib,ik)*dtzm
+     d1(2)=avc(ix,iyp,iz,ib,ik)*dtz+avc(ix,iyp,izp,ib,ik)*dtzp+                &
+          avc(ix,iyp,izpp,ib,ik)*dtzpp+avc(ix,iyp,izm,ib,ik)*dtzm
+     d1(3)=avc(ix,iypp,iz,ib,ik)*dtz+avc(ix,iypp,izp,ib,ik)*dtzp+              &
+          avc(ix,iypp,izpp,ib,ik)*dtzpp+avc(ix,iypp,izm,ib,ik)*dtzm
+     d1(4)=avc(ix,iym,iz,ib,ik)*dtz+avc(ix,iym,izp,ib,ik)*dtzp+                &
+          avc(ix,iym,izpp,ib,ik)*dtzpp+avc(ix,iym,izm,ib,ik)*dtzm
+
+     d1(5)=avc(ixp,iy,iz,ib,ik)*dtz+avc(ixp,iy,izp,ib,ik)*dtzp+                &
+          avc(ixp,iy,izpp,ib,ik)*dtzpp+avc(ixp,iy,izm,ib,ik)*dtzm
+     d1(6)=avc(ixp,iyp,iz,ib,ik)*dtz+avc(ixp,iyp,izp,ib,ik)*dtzp+              &
+          avc(ixp,iyp,izpp,ib,ik)*dtzpp+avc(ixp,iyp,izm,ib,ik)*dtzm
+     d1(7)=avc(ixp,iypp,iz,ib,ik)*dtz+avc(ixp,iypp,izp,ib,ik)*dtzp+            &
+          avc(ixp,iypp,izpp,ib,ik)*dtzpp+avc(ixp,iypp,izm,ib,ik)*dtzm
+     d1(8)=avc(ixp,iym,iz,ib,ik)*dtz+avc(ixp,iym,izp,ib,ik)*dtzp+              &
+          avc(ixp,iym,izpp,ib,ik)*dtzpp+avc(ixp,iym,izm,ib,ik)*dtzm
+
+     d1(9)=avc(ixpp,iy,iz,ib,ik)*dtz+avc(ixpp,iy,izp,ib,ik)*dtzp+              &
+          avc(ixpp,iy,izpp,ib,ik)*dtzpp+avc(ixpp,iy,izm,ib,ik)*dtzm
+     d1(10)=avc(ixpp,iyp,iz,ib,ik)*dtz+avc(ixpp,iyp,izp,ib,ik)*dtzp+           &
+          avc(ixpp,iyp,izpp,ib,ik)*dtzpp+avc(ixpp,iyp,izm,ib,ik)*dtzm
+     d1(11)=avc(ixpp,iypp,iz,ib,ik)*dtz+avc(ixpp,iypp,izp,ib,ik)*dtzp+         &
+          avc(ixpp,iypp,izpp,ib,ik)*dtzpp+avc(ixpp,iypp,izm,ib,ik)*dtzm
+     d1(12)=avc(ixpp,iym,iz,ib,ik)*dtz+avc(ixpp,iym,izp,ib,ik)*dtzp+           &
+          avc(ixpp,iym,izpp,ib,ik)*dtzpp+avc(ixpp,iym,izm,ib,ik)*dtzm
+
+     d1(13)=avc(ixm,iy,iz,ib,ik)*dtz+avc(ixm,iy,izp,ib,ik)*dtzp+               &
+          avc(ixm,iy,izpp,ib,ik)*dtzpp+avc(ixm,iy,izm,ib,ik)*dtzm
+     d1(14)=avc(ixm,iyp,iz,ib,ik)*dtz+avc(ixm,iyp,izp,ib,ik)*dtzp+             &
+          avc(ixm,iyp,izpp,ib,ik)*dtzpp+avc(ixm,iyp,izm,ib,ik)*dtzm
+     d1(15)=avc(ixm,iypp,iz,ib,ik)*dtz+avc(ixm,iypp,izp,ib,ik)*dtzp+           &
+          avc(ixm,iypp,izpp,ib,ik)*dtzpp+avc(ixm,iypp,izm,ib,ik)*dtzm
+     d1(16)=avc(ixm,iym,iz,ib,ik)*dtz+avc(ixm,iym,izp,ib,ik)*dtzp+             &
+          avc(ixm,iym,izpp,ib,ik)*dtzpp+avc(ixm,iym,izm,ib,ik)*dtzm
+
+     gdum(3)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*     &
+          typ+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+      &
+          d1(12)*tym)*txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+! go to the Cartesian grid
+     gdum=matmul(bg,gdum)
+
+     if(lkedge(ik))then
+      if(use_real_part(ib,ik))then
+       lap(idum+ib)=dble(lzdum(ik)*rdum+                                       &
+            2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+   &
+                          zdum(ik)*ldum)
+       grad(1,idum+ib)=dble(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+       grad(2,idum+ib)=dble(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+       grad(3,idum+ib)=dble(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+      else
+         lap(idum+ib)=aimag(lzdum(ik)*rdum+                                    &
+              2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+ &
+                             zdum(ik)*ldum)
+         grad(1,idum+ib)=aimag(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+         grad(2,idum+ib)=aimag(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+         grad(3,idum+ib)=aimag(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+      endif
+     else
+      lap(idum+1)=dble(lzdum(ik)*rdum+                                         &
+            2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+   &
+                        zdum(ik)*ldum)
+      lap(idum+2)=aimag(lzdum(ik)*rdum+                                        &
+             2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+  &
+                         zdum(ik)*ldum)
+      grad(1,idum+1)=dble(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+      grad(2,idum+1)=dble(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+      grad(3,idum+1)=dble(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+      grad(1,idum+2)=aimag(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+      grad(2,idum+2)=aimag(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+      grad(3,idum+2)=aimag(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+     endif
+    case(2)
+    l1(1)=avclap(ix,iy,iz,ib,ik)*tz+avclap(ix,iy,izp,ib,ik)*tzp+        &
+         avclap(ix,iy,izpp,ib,ik)*tzpp+avclap(ix,iy,izm,ib,ik)*tzm
+    l1(2)=avclap(ix,iyp,iz,ib,ik)*tz+avclap(ix,iyp,izp,ib,ik)*tzp+      &
+         avclap(ix,iyp,izpp,ib,ik)*tzpp+avclap(ix,iyp,izm,ib,ik)*tzm
+    l1(3)=avclap(ix,iypp,iz,ib,ik)*tz+avclap(ix,iypp,izp,ib,ik)*tzp+    &
+         avclap(ix,iypp,izpp,ib,ik)*tzpp+avclap(ix,iypp,izm,ib,ik)*tzm
+    l1(4)=avclap(ix,iym,iz,ib,ik)*tz+avclap(ix,iym,izp,ib,ik)*tzp+      &
+         avclap(ix,iym,izpp,ib,ik)*tzpp+avclap(ix,iym,izm,ib,ik)*tzm
+
+    l1(5)=avclap(ixp,iy,iz,ib,ik)*tz+avclap(ixp,iy,izp,ib,ik)*tzp       &
+         +avclap(ixp,iy,izpp,ib,ik)*tzpp+avclap(ixp,iy,izm,ib,ik)*tzm
+    l1(6)=avclap(ixp,iyp,iz,ib,ik)*tz+avclap(ixp,iyp,izp,ib,ik)*tzp     &
+         +avclap(ixp,iyp,izpp,ib,ik)*tzpp+avclap(ixp,iyp,izm,ib,ik)*tzm
+    l1(7)=avclap(ixp,iypp,iz,ib,ik)*tz+avclap(ixp,iypp,izp,ib,ik)*tzp   &
+         +avclap(ixp,iypp,izpp,ib,ik)*tzpp+avclap(ixp,iypp,izm,ib,ik)*tzm
+    l1(8)=avclap(ixp,iym,iz,ib,ik)*tz+avclap(ixp,iym,izp,ib,ik)*tzp     &
+         +avclap(ixp,iym,izpp,ib,ik)*tzpp+avclap(ixp,iym,izm,ib,ik)*tzm
+
+    l1(9)=avclap(ixpp,iy,iz,ib,ik)*tz+avclap(ixpp,iy,izp,ib,ik)*tzp     &
+         +avclap(ixpp,iy,izpp,ib,ik)*tzpp+avclap(ixpp,iy,izm,ib,ik)*tzm
+    l1(10)=avclap(ixpp,iyp,iz,ib,ik)*tz+avclap(ixpp,iyp,izp,ib,ik)*tzp  &
+         +avclap(ixpp,iyp,izpp,ib,ik)*tzpp+avclap(ixpp,iyp,izm,ib,ik)*tzm
+    l1(11)=avclap(ixpp,iypp,iz,ib,ik)*tz+avclap(ixpp,iypp,izp,ib,ik)*tzp&
+         +avclap(ixpp,iypp,izpp,ib,ik)*tzpp+avclap(ixpp,iypp,izm,ib,ik)*tzm
+    l1(12)=avclap(ixpp,iym,iz,ib,ik)*tz+avclap(ixpp,iym,izp,ib,ik)*tzp  &
+         +avclap(ixpp,iym,izpp,ib,ik)*tzpp+avclap(ixpp,iym,izm,ib,ik)*tzm
+
+    l1(13)=avclap(ixm,iy,iz,ib,ik)*tz+avclap(ixm,iy,izp,ib,ik)*tzp      &
+         +avclap(ixm,iy,izpp,ib,ik)*tzpp+avclap(ixm,iy,izm,ib,ik)*tzm
+    l1(14)=avclap(ixm,iyp,iz,ib,ik)*tz+avclap(ixm,iyp,izp,ib,ik)*tzp    &
+         +avclap(ixm,iyp,izpp,ib,ik)*tzpp+avclap(ixm,iyp,izm,ib,ik)*tzm
+    l1(15)=avclap(ixm,iypp,iz,ib,ik)*tz+avclap(ixm,iypp,izp,ib,ik)*tzp  &
+         +avclap(ixm,iypp,izpp,ib,ik)*tzpp+avclap(ixm,iypp,izm,ib,ik)*tzm
+    l1(16)=avclap(ixm,iym,iz,ib,ik)*tz+avclap(ixm,iym,izp,ib,ik)*tzp    &
+         +avclap(ixm,iym,izpp,ib,ik)*tzpp+avclap(ixm,iym,izm,ib,ik)*tzm
+
+    ldum=(l1(1)*ty+l1(2)*typ+l1(3)*typp+l1(4)*tym)*tx+(l1(5)*ty+l1(6)*typ      &
+         +l1(7)*typp+l1(8)*tym)*txp+(l1(9)*ty+l1(10)*typ+l1(11)*typp+l1(12)*   &
+         tym)*txpp+(l1(13)*ty+l1(14)*typ+l1(15)*typp+l1(16)*tym)*txm
+
+    g1(1)=avcgrad1(ix,iy,iz,ib,ik)*tz+avcgrad1(ix,iy,izp,ib,ik)*tzp+        &
+         avcgrad1(ix,iy,izpp,ib,ik)*tzpp+avcgrad1(ix,iy,izm,ib,ik)*tzm
+    g1(2)=avcgrad1(ix,iyp,iz,ib,ik)*tz+avcgrad1(ix,iyp,izp,ib,ik)*tzp+      &
+         avcgrad1(ix,iyp,izpp,ib,ik)*tzpp+avcgrad1(ix,iyp,izm,ib,ik)*tzm
+    g1(3)=avcgrad1(ix,iypp,iz,ib,ik)*tz+avcgrad1(ix,iypp,izp,ib,ik)*tzp+    &
+         avcgrad1(ix,iypp,izpp,ib,ik)*tzpp+avcgrad1(ix,iypp,izm,ib,ik)*tzm
+    g1(4)=avcgrad1(ix,iym,iz,ib,ik)*tz+avcgrad1(ix,iym,izp,ib,ik)*tzp+      &
+         avcgrad1(ix,iym,izpp,ib,ik)*tzpp+avcgrad1(ix,iym,izm,ib,ik)*tzm
+
+    g1(5)=avcgrad1(ixp,iy,iz,ib,ik)*tz+avcgrad1(ixp,iy,izp,ib,ik)*tzp       &
+         +avcgrad1(ixp,iy,izpp,ib,ik)*tzpp+avcgrad1(ixp,iy,izm,ib,ik)*tzm
+    g1(6)=avcgrad1(ixp,iyp,iz,ib,ik)*tz+avcgrad1(ixp,iyp,izp,ib,ik)*tzp     &
+         +avcgrad1(ixp,iyp,izpp,ib,ik)*tzpp+avcgrad1(ixp,iyp,izm,ib,ik)*tzm
+    g1(7)=avcgrad1(ixp,iypp,iz,ib,ik)*tz+avcgrad1(ixp,iypp,izp,ib,ik)*tzp   &
+         +avcgrad1(ixp,iypp,izpp,ib,ik)*tzpp+avcgrad1(ixp,iypp,izm,ib,ik)*tzm
+    g1(8)=avcgrad1(ixp,iym,iz,ib,ik)*tz+avcgrad1(ixp,iym,izp,ib,ik)*tzp     &
+         +avcgrad1(ixp,iym,izpp,ib,ik)*tzpp+avcgrad1(ixp,iym,izm,ib,ik)*tzm
+
+    g1(9)=avcgrad1(ixpp,iy,iz,ib,ik)*tz+avcgrad1(ixpp,iy,izp,ib,ik)*tzp     &
+         +avcgrad1(ixpp,iy,izpp,ib,ik)*tzpp+avcgrad1(ixpp,iy,izm,ib,ik)*tzm
+    g1(10)=avcgrad1(ixpp,iyp,iz,ib,ik)*tz+avcgrad1(ixpp,iyp,izp,ib,ik)*tzp  &
+         +avcgrad1(ixpp,iyp,izpp,ib,ik)*tzpp+avcgrad1(ixpp,iyp,izm,ib,ik)*tzm
+    g1(11)=avcgrad1(ixpp,iypp,iz,ib,ik)*tz+avcgrad1(ixpp,iypp,izp,ib,ik)*tzp&
+         +avcgrad1(ixpp,iypp,izpp,ib,ik)*tzpp+avcgrad1(ixpp,iypp,izm,ib,ik)*tzm
+    g1(12)=avcgrad1(ixpp,iym,iz,ib,ik)*tz+avcgrad1(ixpp,iym,izp,ib,ik)*tzp  &
+         +avcgrad1(ixpp,iym,izpp,ib,ik)*tzpp+avcgrad1(ixpp,iym,izm,ib,ik)*tzm
+
+    g1(13)=avcgrad1(ixm,iy,iz,ib,ik)*tz+avcgrad1(ixm,iy,izp,ib,ik)*tzp      &
+         +avcgrad1(ixm,iy,izpp,ib,ik)*tzpp+avcgrad1(ixm,iy,izm,ib,ik)*tzm
+    g1(14)=avcgrad1(ixm,iyp,iz,ib,ik)*tz+avcgrad1(ixm,iyp,izp,ib,ik)*tzp    &
+         +avcgrad1(ixm,iyp,izpp,ib,ik)*tzpp+avcgrad1(ixm,iyp,izm,ib,ik)*tzm
+    g1(15)=avcgrad1(ixm,iypp,iz,ib,ik)*tz+avcgrad1(ixm,iypp,izp,ib,ik)*tzp  &
+         +avcgrad1(ixm,iypp,izpp,ib,ik)*tzpp+avcgrad1(ixm,iypp,izm,ib,ik)*tzm
+    g1(16)=avcgrad1(ixm,iym,iz,ib,ik)*tz+avcgrad1(ixm,iym,izp,ib,ik)*tzp    &
+         +avcgrad1(ixm,iym,izpp,ib,ik)*tzpp+avcgrad1(ixm,iym,izm,ib,ik)*tzm
+
+    gdum(1)=(g1(1)*ty+g1(2)*typ+g1(3)*typp+g1(4)*tym)*tx+ &
+            (g1(5)*ty+g1(6)*typ+g1(7)*typp+g1(8)*tym)*txp+&
+            (g1(9)*ty+g1(10)*typ+g1(11)*typp+g1(12)*tym)*txpp+&
+            (g1(13)*ty+g1(14)*typ+g1(15)*typp+g1(16)*tym)*txm
+
+    g2(1)=avcgrad2(ix,iy,iz,ib,ik)*tz+avcgrad2(ix,iy,izp,ib,ik)*tzp+        &
+         avcgrad2(ix,iy,izpp,ib,ik)*tzpp+avcgrad2(ix,iy,izm,ib,ik)*tzm
+    g2(2)=avcgrad2(ix,iyp,iz,ib,ik)*tz+avcgrad2(ix,iyp,izp,ib,ik)*tzp+      &
+         avcgrad2(ix,iyp,izpp,ib,ik)*tzpp+avcgrad2(ix,iyp,izm,ib,ik)*tzm
+    g2(3)=avcgrad2(ix,iypp,iz,ib,ik)*tz+avcgrad2(ix,iypp,izp,ib,ik)*tzp+    &
+         avcgrad2(ix,iypp,izpp,ib,ik)*tzpp+avcgrad2(ix,iypp,izm,ib,ik)*tzm
+    g2(4)=avcgrad2(ix,iym,iz,ib,ik)*tz+avcgrad2(ix,iym,izp,ib,ik)*tzp+      &
+         avcgrad2(ix,iym,izpp,ib,ik)*tzpp+avcgrad2(ix,iym,izm,ib,ik)*tzm
+
+    g2(5)=avcgrad2(ixp,iy,iz,ib,ik)*tz+avcgrad2(ixp,iy,izp,ib,ik)*tzp       &
+         +avcgrad2(ixp,iy,izpp,ib,ik)*tzpp+avcgrad2(ixp,iy,izm,ib,ik)*tzm
+    g2(6)=avcgrad2(ixp,iyp,iz,ib,ik)*tz+avcgrad2(ixp,iyp,izp,ib,ik)*tzp     &
+         +avcgrad2(ixp,iyp,izpp,ib,ik)*tzpp+avcgrad2(ixp,iyp,izm,ib,ik)*tzm
+    g2(7)=avcgrad2(ixp,iypp,iz,ib,ik)*tz+avcgrad2(ixp,iypp,izp,ib,ik)*tzp   &
+         +avcgrad2(ixp,iypp,izpp,ib,ik)*tzpp+avcgrad2(ixp,iypp,izm,ib,ik)*tzm
+    g2(8)=avcgrad2(ixp,iym,iz,ib,ik)*tz+avcgrad2(ixp,iym,izp,ib,ik)*tzp     &
+         +avcgrad2(ixp,iym,izpp,ib,ik)*tzpp+avcgrad2(ixp,iym,izm,ib,ik)*tzm
+
+    g2(9)=avcgrad2(ixpp,iy,iz,ib,ik)*tz+avcgrad2(ixpp,iy,izp,ib,ik)*tzp     &
+         +avcgrad2(ixpp,iy,izpp,ib,ik)*tzpp+avcgrad2(ixpp,iy,izm,ib,ik)*tzm
+    g2(10)=avcgrad2(ixpp,iyp,iz,ib,ik)*tz+avcgrad2(ixpp,iyp,izp,ib,ik)*tzp  &
+         +avcgrad2(ixpp,iyp,izpp,ib,ik)*tzpp+avcgrad2(ixpp,iyp,izm,ib,ik)*tzm
+    g2(11)=avcgrad2(ixpp,iypp,iz,ib,ik)*tz+avcgrad2(ixpp,iypp,izp,ib,ik)*tzp&
+         +avcgrad2(ixpp,iypp,izpp,ib,ik)*tzpp+avcgrad2(ixpp,iypp,izm,ib,ik)*tzm
+    g2(12)=avcgrad2(ixpp,iym,iz,ib,ik)*tz+avcgrad2(ixpp,iym,izp,ib,ik)*tzp  &
+         +avcgrad2(ixpp,iym,izpp,ib,ik)*tzpp+avcgrad2(ixpp,iym,izm,ib,ik)*tzm
+
+    g2(13)=avcgrad2(ixm,iy,iz,ib,ik)*tz+avcgrad2(ixm,iy,izp,ib,ik)*tzp      &
+         +avcgrad2(ixm,iy,izpp,ib,ik)*tzpp+avcgrad2(ixm,iy,izm,ib,ik)*tzm
+    g2(14)=avcgrad2(ixm,iyp,iz,ib,ik)*tz+avcgrad2(ixm,iyp,izp,ib,ik)*tzp    &
+         +avcgrad2(ixm,iyp,izpp,ib,ik)*tzpp+avcgrad2(ixm,iyp,izm,ib,ik)*tzm
+    g2(15)=avcgrad2(ixm,iypp,iz,ib,ik)*tz+avcgrad2(ixm,iypp,izp,ib,ik)*tzp  &
+         +avcgrad2(ixm,iypp,izpp,ib,ik)*tzpp+avcgrad2(ixm,iypp,izm,ib,ik)*tzm
+    g2(16)=avcgrad2(ixm,iym,iz,ib,ik)*tz+avcgrad2(ixm,iym,izp,ib,ik)*tzp    &
+         +avcgrad2(ixm,iym,izpp,ib,ik)*tzpp+avcgrad2(ixm,iym,izm,ib,ik)*tzm
+
+    gdum(2)=(g2(1)*ty+g2(2)*typ+g2(3)*typp+g2(4)*tym)*tx+ &
+            (g2(5)*ty+g2(6)*typ+g2(7)*typp+g2(8)*tym)*txp+&
+            (g2(9)*ty+g2(10)*typ+g2(11)*typp+g2(12)*tym)*txpp+&
+            (g2(13)*ty+g2(14)*typ+g2(15)*typp+g2(16)*tym)*txm
+
+    g3(1)=avcgrad3(ix,iy,iz,ib,ik)*tz+avcgrad3(ix,iy,izp,ib,ik)*tzp+        &
+         avcgrad3(ix,iy,izpp,ib,ik)*tzpp+avcgrad3(ix,iy,izm,ib,ik)*tzm
+    g3(2)=avcgrad3(ix,iyp,iz,ib,ik)*tz+avcgrad3(ix,iyp,izp,ib,ik)*tzp+      &
+         avcgrad3(ix,iyp,izpp,ib,ik)*tzpp+avcgrad3(ix,iyp,izm,ib,ik)*tzm
+    g3(3)=avcgrad3(ix,iypp,iz,ib,ik)*tz+avcgrad3(ix,iypp,izp,ib,ik)*tzp+    &
+         avcgrad3(ix,iypp,izpp,ib,ik)*tzpp+avcgrad3(ix,iypp,izm,ib,ik)*tzm
+    g3(4)=avcgrad3(ix,iym,iz,ib,ik)*tz+avcgrad3(ix,iym,izp,ib,ik)*tzp+      &
+         avcgrad3(ix,iym,izpp,ib,ik)*tzpp+avcgrad3(ix,iym,izm,ib,ik)*tzm
+
+    g3(5)=avcgrad3(ixp,iy,iz,ib,ik)*tz+avcgrad3(ixp,iy,izp,ib,ik)*tzp       &
+         +avcgrad3(ixp,iy,izpp,ib,ik)*tzpp+avcgrad3(ixp,iy,izm,ib,ik)*tzm
+    g3(6)=avcgrad3(ixp,iyp,iz,ib,ik)*tz+avcgrad3(ixp,iyp,izp,ib,ik)*tzp     &
+         +avcgrad3(ixp,iyp,izpp,ib,ik)*tzpp+avcgrad3(ixp,iyp,izm,ib,ik)*tzm
+    g3(7)=avcgrad3(ixp,iypp,iz,ib,ik)*tz+avcgrad3(ixp,iypp,izp,ib,ik)*tzp   &
+         +avcgrad3(ixp,iypp,izpp,ib,ik)*tzpp+avcgrad3(ixp,iypp,izm,ib,ik)*tzm
+    g3(8)=avcgrad3(ixp,iym,iz,ib,ik)*tz+avcgrad3(ixp,iym,izp,ib,ik)*tzp     &
+         +avcgrad3(ixp,iym,izpp,ib,ik)*tzpp+avcgrad3(ixp,iym,izm,ib,ik)*tzm
+
+    g3(9)=avcgrad3(ixpp,iy,iz,ib,ik)*tz+avcgrad3(ixpp,iy,izp,ib,ik)*tzp     &
+         +avcgrad3(ixpp,iy,izpp,ib,ik)*tzpp+avcgrad3(ixpp,iy,izm,ib,ik)*tzm
+    g3(10)=avcgrad3(ixpp,iyp,iz,ib,ik)*tz+avcgrad3(ixpp,iyp,izp,ib,ik)*tzp  &
+         +avcgrad3(ixpp,iyp,izpp,ib,ik)*tzpp+avcgrad3(ixpp,iyp,izm,ib,ik)*tzm
+    g3(11)=avcgrad3(ixpp,iypp,iz,ib,ik)*tz+avcgrad3(ixpp,iypp,izp,ib,ik)*tzp&
+         +avcgrad3(ixpp,iypp,izpp,ib,ik)*tzpp+avcgrad3(ixpp,iypp,izm,ib,ik)*tzm
+    g3(12)=avcgrad3(ixpp,iym,iz,ib,ik)*tz+avcgrad3(ixpp,iym,izp,ib,ik)*tzp  &
+         +avcgrad3(ixpp,iym,izpp,ib,ik)*tzpp+avcgrad3(ixpp,iym,izm,ib,ik)*tzm
+
+    g3(13)=avcgrad3(ixm,iy,iz,ib,ik)*tz+avcgrad3(ixm,iy,izp,ib,ik)*tzp      &
+         +avcgrad3(ixm,iy,izpp,ib,ik)*tzpp+avcgrad3(ixm,iy,izm,ib,ik)*tzm
+    g3(14)=avcgrad3(ixm,iyp,iz,ib,ik)*tz+avcgrad3(ixm,iyp,izp,ib,ik)*tzp    &
+         +avcgrad3(ixm,iyp,izpp,ib,ik)*tzpp+avcgrad3(ixm,iyp,izm,ib,ik)*tzm
+    g3(15)=avcgrad3(ixm,iypp,iz,ib,ik)*tz+avcgrad3(ixm,iypp,izp,ib,ik)*tzp  &
+         +avcgrad3(ixm,iypp,izpp,ib,ik)*tzpp+avcgrad3(ixm,iypp,izm,ib,ik)*tzm
+    g3(16)=avcgrad3(ixm,iym,iz,ib,ik)*tz+avcgrad3(ixm,iym,izp,ib,ik)*tzp    &
+         +avcgrad3(ixm,iym,izpp,ib,ik)*tzpp+avcgrad3(ixm,iym,izm,ib,ik)*tzm
+
+    gdum(3)=(g3(1)*ty+g3(2)*typ+g3(3)*typp+g3(4)*tym)*tx+ &
+            (g3(5)*ty+g3(6)*typ+g3(7)*typp+g3(8)*tym)*txp+&
+            (g3(9)*ty+g3(10)*typ+g3(11)*typp+g3(12)*tym)*txpp+&
+            (g3(13)*ty+g3(14)*typ+g3(15)*typp+g3(16)*tym)*txm
+
+! go to the Cartesian grid
+!    gdum=matmul(bg,gdum)
+
+     if(lkedge(ik))then
+      if(use_real_part(ib,ik))then
+       lap(idum+ib)=dble(lzdum(ik)*rdum+                                       &
+            2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+   &
+                        zdum(ik)*ldum)
+       grad(1,idum+ib)=dble(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+       grad(2,idum+ib)=dble(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+       grad(3,idum+ib)=dble(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+      else
+        lap(idum+ib)=aimag(lzdum(ik)*rdum+                                     &
+            2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+   &
+                        zdum(ik)*ldum)
+         grad(1,idum+ib)=aimag(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+         grad(2,idum+ib)=aimag(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+         grad(3,idum+ib)=aimag(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+      endif
+     else
+       lap(idum+1)=dble(lzdum(ik)*rdum+                                        &
+            2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+   &
+                         zdum(ik)*ldum)
+       lap(idum+2)=aimag(lzdum(ik)*rdum+                                       &
+            2*(gdum(1)*gzdum(1,ik)+gdum(2)*gzdum(2,ik)+gdum(3)*gzdum(3,ik))+   &
+                          zdum(ik)*ldum)
+      grad(1,idum+1)=dble(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+      grad(2,idum+1)=dble(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+      grad(3,idum+1)=dble(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+      grad(1,idum+2)=aimag(gzdum(1,ik)*rdum+zdum(ik)*gdum(1))
+      grad(2,idum+2)=aimag(gzdum(2,ik)*rdum+zdum(ik)*gdum(2))
+      grad(3,idum+2)=aimag(gzdum(3,ik)*rdum+zdum(ik)*gdum(3))
+     endif
+    end select
     endif
 ! Increment idum by 2 if not at BZ edge and by occup of band if at edge set around line 763? Don't follow logic.
     if(.not.lkedge(ik))idum=idum+2
@@ -1667,7 +2600,8 @@ bloop:do ik=1,num_g
 
  END SUBROUTINE blip3dgamma_w
 
- SUBROUTINE blip3dgamma_gl(rpsi,lap,grad,r,avc,nrbwf,bg,igl,boccband,nemax,maxband)
+ SUBROUTINE blip3dgamma_gl(rpsi,lap,grad,r,avc,avclap,avcgrad1,avcgrad2,avcgrad3,&
+ &nrbwf,bg,igl,boccband,nemax,maxband)
 
 !---------------------------------------------------------------------------!
 ! This subroutine evaluates the value of a function,its gradient and        !
@@ -1693,6 +2627,10 @@ bloop:do ik=1,num_g
  REAL(dp) avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),r(3),t(3),txm,tx,txp,txpp,&
   &tym,ty,typ,typp,tzm,tz,tzp,tzpp,bg(3,3),d1(16),rpsi(nemax),lap(nemax),      &
   &grad(3,nemax),x,y,z,b(6)
+ REAL(dp) avclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband)
+ REAL(dp) avcgrad1(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband), &
+  &avcgrad2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),        &
+  &avcgrad3(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband)
  REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0,     &
   &dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0,   &
   &d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0,  &
@@ -1728,56 +2666,127 @@ bloop:do ik=1,num_g
  t=mod(r+abs(int(r))+1,1.d0)*nrbwf
  t=mod(t,dble(nrbwf))
 
- x=t(1)-ix+1.d0
- txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
-  dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
-  d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
- x=t(1)-ix
- tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
-  dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
-  d2tx=(-3.d0+4.5d0*x)*nrbwf(1)*nrbwf(1)
- x=t(1)-ix-1.d0
- txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
-  dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
-  d2txp=(-3.d0-4.5d0*x)*nrbwf(1)*nrbwf(1)
- x=t(1)-ix-2.d0
- txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
-  dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
-  d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
+! write(6,*)"In bwfdet_mod, igrad_lap=",igrad_lap
 
- y=t(2)-iy+1.d0
- tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
-  dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
-  d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
- y=t(2)-iy
- ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
-  dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
-  d2ty=(-3.d0+4.5d0*y)*nrbwf(2)*nrbwf(2)
- y=t(2)-iy-1.d0
- typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
-  dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
-  d2typ=(-3.d0-4.5d0*y)*nrbwf(2)*nrbwf(2)
- y=t(2)-iy-2.d0
- typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
-  dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
-  d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
+ select case(igrad_lap)
+ case (0)
+   x=t(1)-ix+1.d0
+   txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+    dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
+    d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
+   x=t(1)-ix
+   tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+    dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
+    d2tx=(-3.d0+4.5d0*x)*nrbwf(1)*nrbwf(1)
+   x=t(1)-ix-1.d0
+   txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+    dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
+    d2txp=(-3.d0-4.5d0*x)*nrbwf(1)*nrbwf(1)
+   x=t(1)-ix-2.d0
+   txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+    dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
+    d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
 
- z=t(3)-iz+1.d0
- tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
-  dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
-  d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
- z=t(3)-iz
- tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
-  dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
-  d2tz=(-3.d0+4.5d0*z)*nrbwf(3)*nrbwf(3)
- z=t(3)-iz-1.d0
- tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
-  dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
-  d2tzp=(-3.d0-4.5d0*z)*nrbwf(3)*nrbwf(3)
- z=t(3)-iz-2.d0
- tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
-  dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
-  d2tzpp=(3.d0+1.5d0*z)*nrbwf(3)*nrbwf(3)
+   y=t(2)-iy+1.d0
+   tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+    dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
+    d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
+   y=t(2)-iy
+   ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+    dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
+    d2ty=(-3.d0+4.5d0*y)*nrbwf(2)*nrbwf(2)
+   y=t(2)-iy-1.d0
+   typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+    dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
+    d2typ=(-3.d0-4.5d0*y)*nrbwf(2)*nrbwf(2)
+   y=t(2)-iy-2.d0
+   typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+    dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
+    d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
+
+   z=t(3)-iz+1.d0
+   tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+    dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
+    d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
+   z=t(3)-iz
+   tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+    dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
+    d2tz=(-3.d0+4.5d0*z)*nrbwf(3)*nrbwf(3)
+   z=t(3)-iz-1.d0
+   tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+    dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
+    d2tzp=(-3.d0-4.5d0*z)*nrbwf(3)*nrbwf(3)
+   z=t(3)-iz-2.d0
+   tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+    dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
+    d2tzpp=(3.d0+1.5d0*z)*nrbwf(3)*nrbwf(3)
+ case (1)
+   x=t(1)-ix+1.d0
+   txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+    dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
+   x=t(1)-ix
+   tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+    dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
+   x=t(1)-ix-1.d0
+   txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+    dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
+   x=t(1)-ix-2.d0
+   txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+    dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
+
+   y=t(2)-iy+1.d0
+   tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+    dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
+   y=t(2)-iy
+   ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+    dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
+   y=t(2)-iy-1.d0
+   typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+    dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
+   y=t(2)-iy-2.d0
+   typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+    dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
+
+   z=t(3)-iz+1.d0
+   tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+    dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
+   z=t(3)-iz
+   tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+    dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
+   z=t(3)-iz-1.d0
+   tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+    dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
+   z=t(3)-iz-2.d0
+   tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+    dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
+ case (2)
+   x=t(1)-ix+1.d0
+   txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+   x=t(1)-ix
+   tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+   x=t(1)-ix-1.d0
+   txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+   x=t(1)-ix-2.d0
+   txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+
+   y=t(2)-iy+1.d0
+   tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+   y=t(2)-iy
+   ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+   y=t(2)-iy-1.d0
+   typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+   y=t(2)-iy-2.d0
+   typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+
+   z=t(3)-iz+1.d0
+   tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+   z=t(3)-iz
+   tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+   z=t(3)-iz-1.d0
+   tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+   z=t(3)-iz-2.d0
+   tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+ end select
 
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
@@ -1831,6 +2840,8 @@ bloop:do ik=1,num_g
    &txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
 
   if(igl==1)then
+   select case (igrad_lap)
+   case(0)
 ! The Laplacian: first term involving Theta''(x)
    lap(idum)=((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*d2tx+(d1(5)*ty+d1(6)* &
     &typ+d1(7)*typp+d1(8)*tym)*d2txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)  &
@@ -1956,19 +2967,297 @@ bloop:do ik=1,num_g
 ! Go to the Cartesian grid
    grad(:,idum)=matmul(bg,grad(:,idum))
 
+   case(1)
+
+! The gradient, first term involving Theta'(x)
+   grad(1,idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*dtx+(d1(5)*ty+d1(6)*&
+    &typ+d1(7)*typp+d1(8)*tym)*dtxp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*  &
+    &tym)*dtxpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*dtxm
+
+! Second term of the gradient involving Theta'(y)
+   grad(2,idum)=(d1(1)*dty+d1(2)*dtyp+d1(3)*dtypp+d1(4)*dtym)*tx+(d1(5)*dty+  &
+    &d1(6)*dtyp+d1(7)*dtypp+d1(8)*dtym)*txp+(d1(9)*dty+d1(10)*dtyp+d1(11)*    &
+    &dtypp+d1(12)*dtym)*txpp+(d1(13)*dty+d1(14)*dtyp+d1(15)*dtypp+d1(16)*     &
+    &dtym)*txm
+
+! And the third term of the gradient involving Theta'(z)
+   d1(1)=avc(ix,iy,iz,ib)*dtz+avc(ix,iy,izp,ib)*dtzp+                    &
+    &avc(ix,iy,izpp,ib)*dtzpp+avc(ix,iy,izm,ib)*dtzm
+   d1(2)=avc(ix,iyp,iz,ib)*dtz+avc(ix,iyp,izp,ib)*dtzp+                  &
+    &avc(ix,iyp,izpp,ib)*dtzpp+avc(ix,iyp,izm,ib)*dtzm
+   d1(3)=avc(ix,iypp,iz,ib)*dtz+avc(ix,iypp,izp,ib)*dtzp+                &
+    &avc(ix,iypp,izpp,ib)*dtzpp+avc(ix,iypp,izm,ib)*dtzm
+   d1(4)=avc(ix,iym,iz,ib)*dtz+avc(ix,iym,izp,ib)*dtzp+                  &
+    &avc(ix,iym,izpp,ib)*dtzpp+avc(ix,iym,izm,ib)*dtzm
+
+   d1(5)=avc(ixp,iy,iz,ib)*dtz+avc(ixp,iy,izp,ib)*dtzp+                  &
+    &avc(ixp,iy,izpp,ib)*dtzpp+avc(ixp,iy,izm,ib)*dtzm
+   d1(6)=avc(ixp,iyp,iz,ib)*dtz+avc(ixp,iyp,izp,ib)*dtzp+                &
+    &avc(ixp,iyp,izpp,ib)*dtzpp+avc(ixp,iyp,izm,ib)*dtzm
+   d1(7)=avc(ixp,iypp,iz,ib)*dtz+avc(ixp,iypp,izp,ib)*dtzp+              &
+    &avc(ixp,iypp,izpp,ib)*dtzpp+avc(ixp,iypp,izm,ib)*dtzm
+   d1(8)=avc(ixp,iym,iz,ib)*dtz+avc(ixp,iym,izp,ib)*dtzp+                &
+    &avc(ixp,iym,izpp,ib)*dtzpp+avc(ixp,iym,izm,ib)*dtzm
+
+   d1(9)=avc(ixpp,iy,iz,ib)*dtz+avc(ixpp,iy,izp,ib)*dtzp+                &
+    &avc(ixpp,iy,izpp,ib)*dtzpp+avc(ixpp,iy,izm,ib)*dtzm
+   d1(10)=avc(ixpp,iyp,iz,ib)*dtz+avc(ixpp,iyp,izp,ib)*dtzp+             &
+    &avc(ixpp,iyp,izpp,ib)*dtzpp+avc(ixpp,iyp,izm,ib)*dtzm
+   d1(11)=avc(ixpp,iypp,iz,ib)*dtz+avc(ixpp,iypp,izp,ib)*dtzp+           &
+    &avc(ixpp,iypp,izpp,ib)*dtzpp+avc(ixpp,iypp,izm,ib)*dtzm
+   d1(12)=avc(ixpp,iym,iz,ib)*dtz+avc(ixpp,iym,izp,ib)*dtzp+             &
+    &avc(ixpp,iym,izpp,ib)*dtzpp+avc(ixpp,iym,izm,ib)*dtzm
+
+   d1(13)=avc(ixm,iy,iz,ib)*dtz+avc(ixm,iy,izp,ib)*dtzp+                 &
+    &avc(ixm,iy,izpp,ib)*dtzpp+avc(ixm,iy,izm,ib)*dtzm
+   d1(14)=avc(ixm,iyp,iz,ib)*dtz+avc(ixm,iyp,izp,ib)*dtzp+               &
+    &avc(ixm,iyp,izpp,ib)*dtzpp+avc(ixm,iyp,izm,ib)*dtzm
+   d1(15)=avc(ixm,iypp,iz,ib)*dtz+avc(ixm,iypp,izp,ib)*dtzp+             &
+    &avc(ixm,iypp,izpp,ib)*dtzpp+avc(ixm,iypp,izm,ib)*dtzm
+   d1(16)=avc(ixm,iym,iz,ib)*dtz+avc(ixm,iym,izp,ib)*dtzp+               &
+    &avc(ixm,iym,izpp,ib)*dtzpp+avc(ixm,iym,izm,ib)*dtzm
+
+   grad(3,idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*  &
+    &typ+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)* &
+    &tym)*txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+! Go to the Cartesian grid
+   grad(:,idum)=matmul(bg,grad(:,idum))
+
+   d1(1)=avclap(ix,iy,iz,ib)*tz+avclap(ix,iy,izp,ib)*tzp+                       &
+    &avclap(ix,iy,izpp,ib)*tzpp+avclap(ix,iy,izm,ib)*tzm
+   d1(2)=avclap(ix,iyp,iz,ib)*tz+avclap(ix,iyp,izp,ib)*tzp+                     &
+    &avclap(ix,iyp,izpp,ib)*tzpp+avclap(ix,iyp,izm,ib)*tzm
+   d1(3)=avclap(ix,iypp,iz,ib)*tz+avclap(ix,iypp,izp,ib)*tzp+                   &
+    &avclap(ix,iypp,izpp,ib)*tzpp+avclap(ix,iypp,izm,ib)*tzm
+   d1(4)=avclap(ix,iym,iz,ib)*tz+avclap(ix,iym,izp,ib)*tzp+                     &
+    &avclap(ix,iym,izpp,ib)*tzpp+avclap(ix,iym,izm,ib)*tzm
+  
+   d1(5)=avclap(ixp,iy,iz,ib)*tz+avclap(ixp,iy,izp,ib)*tzp                      &
+    &+avclap(ixp,iy,izpp,ib)*tzpp+avclap(ixp,iy,izm,ib)*tzm
+   d1(6)=avclap(ixp,iyp,iz,ib)*tz+avclap(ixp,iyp,izp,ib)*tzp                    &
+    &+avclap(ixp,iyp,izpp,ib)*tzpp+avclap(ixp,iyp,izm,ib)*tzm
+   d1(7)=avclap(ixp,iypp,iz,ib)*tz+avclap(ixp,iypp,izp,ib)*tzp                  &
+    &+avclap(ixp,iypp,izpp,ib)*tzpp+avclap(ixp,iypp,izm,ib)*tzm
+   d1(8)=avclap(ixp,iym,iz,ib)*tz+avclap(ixp,iym,izp,ib)*tzp                    &
+    &+avclap(ixp,iym,izpp,ib)*tzpp+avclap(ixp,iym,izm,ib)*tzm
+  
+   d1(9)=avclap(ixpp,iy,iz,ib)*tz+avclap(ixpp,iy,izp,ib)*tzp                    &
+    &+avclap(ixpp,iy,izpp,ib)*tzpp+avclap(ixpp,iy,izm,ib)*tzm
+   d1(10)=avclap(ixpp,iyp,iz,ib)*tz+avclap(ixpp,iyp,izp,ib)*tzp                 &
+    &+avclap(ixpp,iyp,izpp,ib)*tzpp+avclap(ixpp,iyp,izm,ib)*tzm
+   d1(11)=avclap(ixpp,iypp,iz,ib)*tz+avclap(ixpp,iypp,izp,ib)*tzp               &
+    &+avclap(ixpp,iypp,izpp,ib)*tzpp+avclap(ixpp,iypp,izm,ib)*tzm
+   d1(12)=avclap(ixpp,iym,iz,ib)*tz+avclap(ixpp,iym,izp,ib)*tzp                 &
+    &+avclap(ixpp,iym,izpp,ib)*tzpp+avclap(ixpp,iym,izm,ib)*tzm
+  
+   d1(13)=avclap(ixm,iy,iz,ib)*tz+avclap(ixm,iy,izp,ib)*tzp                     &
+    &+avclap(ixm,iy,izpp,ib)*tzpp+avclap(ixm,iy,izm,ib)*tzm
+   d1(14)=avclap(ixm,iyp,iz,ib)*tz+avclap(ixm,iyp,izp,ib)*tzp                   &
+    &+avclap(ixm,iyp,izpp,ib)*tzpp+avclap(ixm,iyp,izm,ib)*tzm
+   d1(15)=avclap(ixm,iypp,iz,ib)*tz+avclap(ixm,iypp,izp,ib)*tzp                 &
+    &+avclap(ixm,iypp,izpp,ib)*tzpp+avclap(ixm,iypp,izm,ib)*tzm
+   d1(16)=avclap(ixm,iym,iz,ib)*tz+avclap(ixm,iym,izp,ib)*tzp                   &
+    &+avclap(ixm,iym,izpp,ib)*tzpp+avclap(ixm,iym,izm,ib)*tzm
+  
+!  The Laplacian
+   lap(idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
+    &+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*tym)*  &
+    &txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+   case(2)
+
+   d1(1)=avclap(ix,iy,iz,ib)*tz+avclap(ix,iy,izp,ib)*tzp+                       &
+    &avclap(ix,iy,izpp,ib)*tzpp+avclap(ix,iy,izm,ib)*tzm
+   d1(2)=avclap(ix,iyp,iz,ib)*tz+avclap(ix,iyp,izp,ib)*tzp+                     &
+    &avclap(ix,iyp,izpp,ib)*tzpp+avclap(ix,iyp,izm,ib)*tzm
+   d1(3)=avclap(ix,iypp,iz,ib)*tz+avclap(ix,iypp,izp,ib)*tzp+                   &
+    &avclap(ix,iypp,izpp,ib)*tzpp+avclap(ix,iypp,izm,ib)*tzm
+   d1(4)=avclap(ix,iym,iz,ib)*tz+avclap(ix,iym,izp,ib)*tzp+                     &
+    &avclap(ix,iym,izpp,ib)*tzpp+avclap(ix,iym,izm,ib)*tzm
+  
+   d1(5)=avclap(ixp,iy,iz,ib)*tz+avclap(ixp,iy,izp,ib)*tzp                      &
+    &+avclap(ixp,iy,izpp,ib)*tzpp+avclap(ixp,iy,izm,ib)*tzm
+   d1(6)=avclap(ixp,iyp,iz,ib)*tz+avclap(ixp,iyp,izp,ib)*tzp                    &
+    &+avclap(ixp,iyp,izpp,ib)*tzpp+avclap(ixp,iyp,izm,ib)*tzm
+   d1(7)=avclap(ixp,iypp,iz,ib)*tz+avclap(ixp,iypp,izp,ib)*tzp                  &
+    &+avclap(ixp,iypp,izpp,ib)*tzpp+avclap(ixp,iypp,izm,ib)*tzm
+   d1(8)=avclap(ixp,iym,iz,ib)*tz+avclap(ixp,iym,izp,ib)*tzp                    &
+    &+avclap(ixp,iym,izpp,ib)*tzpp+avclap(ixp,iym,izm,ib)*tzm
+  
+   d1(9)=avclap(ixpp,iy,iz,ib)*tz+avclap(ixpp,iy,izp,ib)*tzp                    &
+    &+avclap(ixpp,iy,izpp,ib)*tzpp+avclap(ixpp,iy,izm,ib)*tzm
+   d1(10)=avclap(ixpp,iyp,iz,ib)*tz+avclap(ixpp,iyp,izp,ib)*tzp                 &
+    &+avclap(ixpp,iyp,izpp,ib)*tzpp+avclap(ixpp,iyp,izm,ib)*tzm
+   d1(11)=avclap(ixpp,iypp,iz,ib)*tz+avclap(ixpp,iypp,izp,ib)*tzp               &
+    &+avclap(ixpp,iypp,izpp,ib)*tzpp+avclap(ixpp,iypp,izm,ib)*tzm
+   d1(12)=avclap(ixpp,iym,iz,ib)*tz+avclap(ixpp,iym,izp,ib)*tzp                 &
+    &+avclap(ixpp,iym,izpp,ib)*tzpp+avclap(ixpp,iym,izm,ib)*tzm
+  
+   d1(13)=avclap(ixm,iy,iz,ib)*tz+avclap(ixm,iy,izp,ib)*tzp                     &
+    &+avclap(ixm,iy,izpp,ib)*tzpp+avclap(ixm,iy,izm,ib)*tzm
+   d1(14)=avclap(ixm,iyp,iz,ib)*tz+avclap(ixm,iyp,izp,ib)*tzp                   &
+    &+avclap(ixm,iyp,izpp,ib)*tzpp+avclap(ixm,iyp,izm,ib)*tzm
+   d1(15)=avclap(ixm,iypp,iz,ib)*tz+avclap(ixm,iypp,izp,ib)*tzp                 &
+    &+avclap(ixm,iypp,izpp,ib)*tzpp+avclap(ixm,iypp,izm,ib)*tzm
+   d1(16)=avclap(ixm,iym,iz,ib)*tz+avclap(ixm,iym,izp,ib)*tzp                   &
+    &+avclap(ixm,iym,izpp,ib)*tzpp+avclap(ixm,iym,izm,ib)*tzm
+  
+!  The Laplacian
+   lap(idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
+    &+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*tym)*  &
+    &txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+   d1(1)=avcgrad1(ix,iy,iz,ib)*tz+avcgrad1(ix,iy,izp,ib)*tzp+                       &
+    &avcgrad1(ix,iy,izpp,ib)*tzpp+avcgrad1(ix,iy,izm,ib)*tzm
+   d1(2)=avcgrad1(ix,iyp,iz,ib)*tz+avcgrad1(ix,iyp,izp,ib)*tzp+                     &
+    &avcgrad1(ix,iyp,izpp,ib)*tzpp+avcgrad1(ix,iyp,izm,ib)*tzm
+   d1(3)=avcgrad1(ix,iypp,iz,ib)*tz+avcgrad1(ix,iypp,izp,ib)*tzp+                   &
+    &avcgrad1(ix,iypp,izpp,ib)*tzpp+avcgrad1(ix,iypp,izm,ib)*tzm
+   d1(4)=avcgrad1(ix,iym,iz,ib)*tz+avcgrad1(ix,iym,izp,ib)*tzp+                     &
+    &avcgrad1(ix,iym,izpp,ib)*tzpp+avcgrad1(ix,iym,izm,ib)*tzm
+  
+   d1(5)=avcgrad1(ixp,iy,iz,ib)*tz+avcgrad1(ixp,iy,izp,ib)*tzp                      &
+    &+avcgrad1(ixp,iy,izpp,ib)*tzpp+avcgrad1(ixp,iy,izm,ib)*tzm
+   d1(6)=avcgrad1(ixp,iyp,iz,ib)*tz+avcgrad1(ixp,iyp,izp,ib)*tzp                    &
+    &+avcgrad1(ixp,iyp,izpp,ib)*tzpp+avcgrad1(ixp,iyp,izm,ib)*tzm
+   d1(7)=avcgrad1(ixp,iypp,iz,ib)*tz+avcgrad1(ixp,iypp,izp,ib)*tzp                  &
+    &+avcgrad1(ixp,iypp,izpp,ib)*tzpp+avcgrad1(ixp,iypp,izm,ib)*tzm
+   d1(8)=avcgrad1(ixp,iym,iz,ib)*tz+avcgrad1(ixp,iym,izp,ib)*tzp                    &
+    &+avcgrad1(ixp,iym,izpp,ib)*tzpp+avcgrad1(ixp,iym,izm,ib)*tzm
+  
+   d1(9)=avcgrad1(ixpp,iy,iz,ib)*tz+avcgrad1(ixpp,iy,izp,ib)*tzp                    &
+    &+avcgrad1(ixpp,iy,izpp,ib)*tzpp+avcgrad1(ixpp,iy,izm,ib)*tzm
+   d1(10)=avcgrad1(ixpp,iyp,iz,ib)*tz+avcgrad1(ixpp,iyp,izp,ib)*tzp                 &
+    &+avcgrad1(ixpp,iyp,izpp,ib)*tzpp+avcgrad1(ixpp,iyp,izm,ib)*tzm
+   d1(11)=avcgrad1(ixpp,iypp,iz,ib)*tz+avcgrad1(ixpp,iypp,izp,ib)*tzp               &
+    &+avcgrad1(ixpp,iypp,izpp,ib)*tzpp+avcgrad1(ixpp,iypp,izm,ib)*tzm
+   d1(12)=avcgrad1(ixpp,iym,iz,ib)*tz+avcgrad1(ixpp,iym,izp,ib)*tzp                 &
+    &+avcgrad1(ixpp,iym,izpp,ib)*tzpp+avcgrad1(ixpp,iym,izm,ib)*tzm
+  
+   d1(13)=avcgrad1(ixm,iy,iz,ib)*tz+avcgrad1(ixm,iy,izp,ib)*tzp                     &
+    &+avcgrad1(ixm,iy,izpp,ib)*tzpp+avcgrad1(ixm,iy,izm,ib)*tzm
+   d1(14)=avcgrad1(ixm,iyp,iz,ib)*tz+avcgrad1(ixm,iyp,izp,ib)*tzp                   &
+    &+avcgrad1(ixm,iyp,izpp,ib)*tzpp+avcgrad1(ixm,iyp,izm,ib)*tzm
+   d1(15)=avcgrad1(ixm,iypp,iz,ib)*tz+avcgrad1(ixm,iypp,izp,ib)*tzp                 &
+    &+avcgrad1(ixm,iypp,izpp,ib)*tzpp+avcgrad1(ixm,iypp,izm,ib)*tzm
+   d1(16)=avcgrad1(ixm,iym,iz,ib)*tz+avcgrad1(ixm,iym,izp,ib)*tzp                   &
+    &+avcgrad1(ixm,iym,izpp,ib)*tzpp+avcgrad1(ixm,iym,izm,ib)*tzm
+  
+!  The Gradient in direction of a1
+   grad(1,idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
+    &+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*tym)*  &
+    &txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+   d1(1)=avcgrad2(ix,iy,iz,ib)*tz+avcgrad2(ix,iy,izp,ib)*tzp+                       &
+    &avcgrad2(ix,iy,izpp,ib)*tzpp+avcgrad2(ix,iy,izm,ib)*tzm
+   d1(2)=avcgrad2(ix,iyp,iz,ib)*tz+avcgrad2(ix,iyp,izp,ib)*tzp+                     &
+    &avcgrad2(ix,iyp,izpp,ib)*tzpp+avcgrad2(ix,iyp,izm,ib)*tzm
+   d1(3)=avcgrad2(ix,iypp,iz,ib)*tz+avcgrad2(ix,iypp,izp,ib)*tzp+                   &
+    &avcgrad2(ix,iypp,izpp,ib)*tzpp+avcgrad2(ix,iypp,izm,ib)*tzm
+   d1(4)=avcgrad2(ix,iym,iz,ib)*tz+avcgrad2(ix,iym,izp,ib)*tzp+                     &
+    &avcgrad2(ix,iym,izpp,ib)*tzpp+avcgrad2(ix,iym,izm,ib)*tzm
+  
+   d1(5)=avcgrad2(ixp,iy,iz,ib)*tz+avcgrad2(ixp,iy,izp,ib)*tzp                      &
+    &+avcgrad2(ixp,iy,izpp,ib)*tzpp+avcgrad2(ixp,iy,izm,ib)*tzm
+   d1(6)=avcgrad2(ixp,iyp,iz,ib)*tz+avcgrad2(ixp,iyp,izp,ib)*tzp                    &
+    &+avcgrad2(ixp,iyp,izpp,ib)*tzpp+avcgrad2(ixp,iyp,izm,ib)*tzm
+   d1(7)=avcgrad2(ixp,iypp,iz,ib)*tz+avcgrad2(ixp,iypp,izp,ib)*tzp                  &
+    &+avcgrad2(ixp,iypp,izpp,ib)*tzpp+avcgrad2(ixp,iypp,izm,ib)*tzm
+   d1(8)=avcgrad2(ixp,iym,iz,ib)*tz+avcgrad2(ixp,iym,izp,ib)*tzp                    &
+    &+avcgrad2(ixp,iym,izpp,ib)*tzpp+avcgrad2(ixp,iym,izm,ib)*tzm
+  
+   d1(9)=avcgrad2(ixpp,iy,iz,ib)*tz+avcgrad2(ixpp,iy,izp,ib)*tzp                    &
+    &+avcgrad2(ixpp,iy,izpp,ib)*tzpp+avcgrad2(ixpp,iy,izm,ib)*tzm
+   d1(10)=avcgrad2(ixpp,iyp,iz,ib)*tz+avcgrad2(ixpp,iyp,izp,ib)*tzp                 &
+    &+avcgrad2(ixpp,iyp,izpp,ib)*tzpp+avcgrad2(ixpp,iyp,izm,ib)*tzm
+   d1(11)=avcgrad2(ixpp,iypp,iz,ib)*tz+avcgrad2(ixpp,iypp,izp,ib)*tzp               &
+    &+avcgrad2(ixpp,iypp,izpp,ib)*tzpp+avcgrad2(ixpp,iypp,izm,ib)*tzm
+   d1(12)=avcgrad2(ixpp,iym,iz,ib)*tz+avcgrad2(ixpp,iym,izp,ib)*tzp                 &
+    &+avcgrad2(ixpp,iym,izpp,ib)*tzpp+avcgrad2(ixpp,iym,izm,ib)*tzm
+  
+   d1(13)=avcgrad2(ixm,iy,iz,ib)*tz+avcgrad2(ixm,iy,izp,ib)*tzp                     &
+    &+avcgrad2(ixm,iy,izpp,ib)*tzpp+avcgrad2(ixm,iy,izm,ib)*tzm
+   d1(14)=avcgrad2(ixm,iyp,iz,ib)*tz+avcgrad2(ixm,iyp,izp,ib)*tzp                   &
+    &+avcgrad2(ixm,iyp,izpp,ib)*tzpp+avcgrad2(ixm,iyp,izm,ib)*tzm
+   d1(15)=avcgrad2(ixm,iypp,iz,ib)*tz+avcgrad2(ixm,iypp,izp,ib)*tzp                 &
+    &+avcgrad2(ixm,iypp,izpp,ib)*tzpp+avcgrad2(ixm,iypp,izm,ib)*tzm
+   d1(16)=avcgrad2(ixm,iym,iz,ib)*tz+avcgrad2(ixm,iym,izp,ib)*tzp                   &
+    &+avcgrad2(ixm,iym,izpp,ib)*tzpp+avcgrad2(ixm,iym,izm,ib)*tzm
+  
+!  The Gradient in direction of a2
+   grad(2,idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
+    &+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*tym)*  &
+    &txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+   d1(1)=avcgrad3(ix,iy,iz,ib)*tz+avcgrad3(ix,iy,izp,ib)*tzp+                       &
+    &avcgrad3(ix,iy,izpp,ib)*tzpp+avcgrad3(ix,iy,izm,ib)*tzm
+   d1(2)=avcgrad3(ix,iyp,iz,ib)*tz+avcgrad3(ix,iyp,izp,ib)*tzp+                     &
+    &avcgrad3(ix,iyp,izpp,ib)*tzpp+avcgrad3(ix,iyp,izm,ib)*tzm
+   d1(3)=avcgrad3(ix,iypp,iz,ib)*tz+avcgrad3(ix,iypp,izp,ib)*tzp+                   &
+    &avcgrad3(ix,iypp,izpp,ib)*tzpp+avcgrad3(ix,iypp,izm,ib)*tzm
+   d1(4)=avcgrad3(ix,iym,iz,ib)*tz+avcgrad3(ix,iym,izp,ib)*tzp+                     &
+    &avcgrad3(ix,iym,izpp,ib)*tzpp+avcgrad3(ix,iym,izm,ib)*tzm
+  
+   d1(5)=avcgrad3(ixp,iy,iz,ib)*tz+avcgrad3(ixp,iy,izp,ib)*tzp                      &
+    &+avcgrad3(ixp,iy,izpp,ib)*tzpp+avcgrad3(ixp,iy,izm,ib)*tzm
+   d1(6)=avcgrad3(ixp,iyp,iz,ib)*tz+avcgrad3(ixp,iyp,izp,ib)*tzp                    &
+    &+avcgrad3(ixp,iyp,izpp,ib)*tzpp+avcgrad3(ixp,iyp,izm,ib)*tzm
+   d1(7)=avcgrad3(ixp,iypp,iz,ib)*tz+avcgrad3(ixp,iypp,izp,ib)*tzp                  &
+    &+avcgrad3(ixp,iypp,izpp,ib)*tzpp+avcgrad3(ixp,iypp,izm,ib)*tzm
+   d1(8)=avcgrad3(ixp,iym,iz,ib)*tz+avcgrad3(ixp,iym,izp,ib)*tzp                    &
+    &+avcgrad3(ixp,iym,izpp,ib)*tzpp+avcgrad3(ixp,iym,izm,ib)*tzm
+  
+   d1(9)=avcgrad3(ixpp,iy,iz,ib)*tz+avcgrad3(ixpp,iy,izp,ib)*tzp                    &
+    &+avcgrad3(ixpp,iy,izpp,ib)*tzpp+avcgrad3(ixpp,iy,izm,ib)*tzm
+   d1(10)=avcgrad3(ixpp,iyp,iz,ib)*tz+avcgrad3(ixpp,iyp,izp,ib)*tzp                 &
+    &+avcgrad3(ixpp,iyp,izpp,ib)*tzpp+avcgrad3(ixpp,iyp,izm,ib)*tzm
+   d1(11)=avcgrad3(ixpp,iypp,iz,ib)*tz+avcgrad3(ixpp,iypp,izp,ib)*tzp               &
+    &+avcgrad3(ixpp,iypp,izpp,ib)*tzpp+avcgrad3(ixpp,iypp,izm,ib)*tzm
+   d1(12)=avcgrad3(ixpp,iym,iz,ib)*tz+avcgrad3(ixpp,iym,izp,ib)*tzp                 &
+    &+avcgrad3(ixpp,iym,izpp,ib)*tzpp+avcgrad3(ixpp,iym,izm,ib)*tzm
+  
+   d1(13)=avcgrad3(ixm,iy,iz,ib)*tz+avcgrad3(ixm,iy,izp,ib)*tzp                     &
+    &+avcgrad3(ixm,iy,izpp,ib)*tzpp+avcgrad3(ixm,iy,izm,ib)*tzm
+   d1(14)=avcgrad3(ixm,iyp,iz,ib)*tz+avcgrad3(ixm,iyp,izp,ib)*tzp                   &
+    &+avcgrad3(ixm,iyp,izpp,ib)*tzpp+avcgrad3(ixm,iyp,izm,ib)*tzm
+   d1(15)=avcgrad3(ixm,iypp,iz,ib)*tz+avcgrad3(ixm,iypp,izp,ib)*tzp                 &
+    &+avcgrad3(ixm,iypp,izpp,ib)*tzpp+avcgrad3(ixm,iypp,izm,ib)*tzm
+   d1(16)=avcgrad3(ixm,iym,iz,ib)*tz+avcgrad3(ixm,iym,izp,ib)*tzp                   &
+    &+avcgrad3(ixm,iym,izpp,ib)*tzpp+avcgrad3(ixm,iym,izm,ib)*tzm
+  
+!  The Gradient in direction of a3
+   grad(3,idum)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
+    &+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*tym)*  &
+    &txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+   end select
+
   endif
  enddo
 
  END SUBROUTINE blip3dgamma_gl
 
 ! Called by sum_orbs_over_grid_with_blips to check if orbs are pure real or imag
- SUBROUTINE blip_one_band(rpsi,r,avc,nrbwf,bg)
+ SUBROUTINE blip_one_band(rpsi,grad,lap,r,avc,nrbwf,bg,igl)
 
  IMPLICIT NONE
- INTEGER nrbwf(3),ix,iy,iz,ixp,ixpp,ixm,iyp,iypp,iym,izp,izpp,izm
- REAL(dp) r(3),t(3),txm,tx,txp,txpp,tym,ty,typ,typp,tzm,tz,tzp,tzpp,  &
-  &bg(3,3),x,y,z,b(6)
- COMPLEX(dp) avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1),d1(16),rpsi
+
+ INTEGER,INTENT(in) :: igl
+ INTEGER,INTENT(in) :: nrbwf(3)
+ REAL(dp),INTENT(in) :: r(3),bg(3,3)
+ COMPLEX(dp),INTENT(in) :: avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1)
+
+ COMPLEX(dp),INTENT(out) :: rpsi,grad(3),lap
+ 
+ INTEGER :: ix,iy,iz,ixp,ixpp,ixm,iyp,iypp,iym,izp,izpp,izm
+ REAL(dp) :: t(3),txm,tx,txp,txpp,tym,ty,typ,typp,tzm,tz,tzp,tzpp,  &
+  &x,y,z,b(6)
+ REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0,     &
+  &dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0,   &
+  &d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0,  &
+  &dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
+ COMPLEX(dp) :: d1(16)
 
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
  iy=int(mod(r(2)+abs(int(r(2)))+1,1.d0)*nrbwf(2))
@@ -2002,30 +3291,78 @@ bloop:do ik=1,num_g
 
  x=t(1)-ix+1.d0
  txm=2.d0-3*x+1.5d0*x*x-0.25d0*x*x*x
+ if(igl==1)then
+  dtxm=(-3.d0+3*x-0.75d0*x*x)*nrbwf(1)
+  d2txm=(3.d0-1.5d0*x)*nrbwf(1)*nrbwf(1)
+ endif
  x=t(1)-ix
  tx=1.d0-1.5d0*x*x+0.75d0*x*x*x
+ if(igl==1)then
+  dtx=(-3.d0*x+2.25d0*x*x)*nrbwf(1)
+  d2tx=(-3.d0+4.5d0*x)*nrbwf(1)*nrbwf(1)
+ endif
  x=t(1)-ix-1.d0
  txp=1.d0-1.5d0*x*x-0.75d0*x*x*x
+ if(igl==1)then
+  dtxp=(-3.d0*x-2.25d0*x*x)*nrbwf(1)
+  d2txp=(-3.d0-4.5d0*x)*nrbwf(1)*nrbwf(1)
+ endif
  x=t(1)-ix-2.d0
  txpp=2.d0+3*x+1.5d0*x*x+0.25d0*x*x*x
+ if(igl==1)then
+  dtxpp=(3.d0+3*x+0.75d0*x*x)*nrbwf(1)
+  d2txpp=(3.d0+1.5d0*x)*nrbwf(1)*nrbwf(1)
+ endif
 
  y=t(2)-iy+1.d0
  tym=2.d0-3*y+1.5d0*y*y-0.25d0*y*y*y
+ if(igl==1)then
+  dtym=(-3.d0+3*y-0.75d0*y*y)*nrbwf(2)
+  d2tym=(3.d0-1.5d0*y)*nrbwf(2)*nrbwf(2)
+ endif
  y=t(2)-iy
  ty=1.d0-1.5d0*y*y+0.75d0*y*y*y
+ if(igl==1)then
+  dty=(-3.d0*y+2.25d0*y*y)*nrbwf(2)
+  d2ty=(-3.d0+4.5d0*y)*nrbwf(2)*nrbwf(2)
+ endif
  y=t(2)-iy-1.d0
  typ=1.d0-1.5d0*y*y-0.75d0*y*y*y
+ if(igl==1)then
+  dtyp=(-3.d0*y-2.25d0*y*y)*nrbwf(2)
+  d2typ=(-3.d0-4.5d0*y)*nrbwf(2)*nrbwf(2)
+ endif
  y=t(2)-iy-2.d0
  typp=2.d0+3*y+1.5d0*y*y+0.25d0*y*y*y
+ if(igl==1) then
+  dtypp=(3.d0+3*y+0.75d0*y*y)*nrbwf(2)
+  d2typp=(3.d0+1.5d0*y)*nrbwf(2)*nrbwf(2)
+ endif
 
  z=t(3)-iz+1.d0
  tzm=2.d0-3*z+1.5d0*z*z-0.25d0*z*z*z
+ if(igl==1)then
+  dtzm=(-3.d0+3*z-0.75d0*z*z)*nrbwf(3)
+  d2tzm=(3.d0-1.5d0*z)*nrbwf(3)*nrbwf(3)
+ endif
  z=t(3)-iz
  tz=1.d0-1.5d0*z*z+0.75d0*z*z*z
+ if(igl==1)then
+  dtz=(-3.d0*z+2.25d0*z*z)*nrbwf(3)
+  d2tz=(-3.d0+4.5d0*z)*nrbwf(3)*nrbwf(3)
+ endif
  z=t(3)-iz-1.d0
  tzp=1.d0-1.5d0*z*z-0.75d0*z*z*z
+ if(igl==1)then
+  dtzp=(-3.d0*z-2.25d0*z*z)*nrbwf(3)
+  d2tzp=(-3.d0-4.5d0*z)*nrbwf(3)*nrbwf(3)
+ endif
  z=t(3)-iz-2.d0
  tzpp=2.d0+3*z+1.5d0*z*z+0.25d0*z*z*z
+ if(igl==1)then
+  dtzpp=(3.d0+3*z+0.75d0*z*z)*nrbwf(3)
+  d2tzpp=(3.d0+1.5d0*z)*nrbwf(3)*nrbwf(3)
+ endif
 
  b(1)=(bg(1,1)**2+bg(2,1)**2+bg(3,1)**2)
  b(2)=(bg(1,2)**2+bg(2,2)**2+bg(3,2)**2)
@@ -2075,6 +3412,134 @@ bloop:do ik=1,num_g
  rpsi=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*typ &
       +d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)*tym)* &
       txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+ if(igl == 1) then
+! The gradient, first term involving Theta'(x)
+     grad(1)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*dtx+(d1(5)*ty+d1(6)*    &
+          typ+d1(7)*typp+d1(8)*tym)*dtxp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+     &
+          d1(12)*tym)*dtxpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*dtxm
+
+! Second term of the gradient involving Theta'(y)
+     grad(2)=(d1(1)*dty+d1(2)*dtyp+d1(3)*dtypp+d1(4)*dtym)*tx+(d1(5)*dty+      &
+          d1(6)*dtyp+d1(7)*dtypp+d1(8)*dtym)*txp+(d1(9)*dty+d1(10)*dtyp+       &
+          d1(11)*dtypp+d1(12)*dtym)*txpp+(d1(13)*dty+d1(14)*dtyp+d1(15)*dtypp+ &
+          d1(16)*dtym)*txm
+
+! Third term of the gradient involving Theta'(z)
+     grad(3)=(d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*     &
+          typ+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+      &
+          d1(12)*tym)*txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm
+
+! The Laplacian: first term involving Theta''(x)
+     lap=((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*d2tx+(d1(5)*ty+d1(6)*typ+ &
+          d1(7)*typp+d1(8)*tym)*d2txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+d1(12)* &
+          tym)*d2txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*d2txm)*b(1)
+
+! The Laplacian: term involving Theta'(x)Theta'(y)
+     lap=lap+((d1(1)*dty+d1(2)*dtyp+d1(3)*dtypp+d1(4)*dtym)*dtx+(d1(5)*dty+  &
+          d1(6)*dtyp+d1(7)*dtypp+d1(8)*dtym)*dtxp+(d1(9)*dty+d1(10)*dtyp+      &
+          d1(11)*dtypp+d1(12)*dtym)*dtxpp+(d1(13)*dty+d1(14)*dtyp+d1(15)*      &
+          dtypp+d1(16)*dtym)*dtxm)*b(4)
+
+! Second term of the laplacian involving Theta''(y)
+     lap=lap+((d1(1)*d2ty+d1(2)*d2typ+d1(3)*d2typp+d1(4)*d2tym)*tx+          &
+          (d1(5)*d2ty+d1(6)*d2typ+d1(7)*d2typp+d1(8)*d2tym)*txp+(d1(9)*d2ty+   &
+          d1(10)*d2typ+d1(11)*d2typp+d1(12)*d2tym)*txpp+(d1(13)*d2ty+d1(14)*   &
+          d2typ+d1(15)*d2typp+d1(16)*d2tym)*txm)*b(2)
+
+! And now the third term of the laplacian involving Theta''(z)
+     d1(1)=avc(ix,iy,iz)*d2tz+avc(ix,iy,izp)*d2tzp+                &
+          avc(ix,iy,izpp)*d2tzpp+avc(ix,iy,izm)*d2tzm
+     d1(2)=avc(ix,iyp,iz)*d2tz+avc(ix,iyp,izp)*d2tzp+              &
+          avc(ix,iyp,izpp)*d2tzpp+avc(ix,iyp,izm)*d2tzm
+     d1(3)=avc(ix,iypp,iz)*d2tz+avc(ix,iypp,izp)*d2tzp+            &
+          avc(ix,iypp,izpp)*d2tzpp+avc(ix,iypp,izm)*d2tzm
+     d1(4)=avc(ix,iym,iz)*d2tz+avc(ix,iym,izp)*d2tzp+              &
+          avc(ix,iym,izpp)*d2tzpp+avc(ix,iym,izm)*d2tzm
+
+     d1(5)=avc(ixp,iy,iz)*d2tz+avc(ixp,iy,izp)*d2tzp+              &
+          avc(ixp,iy,izpp)*d2tzpp+avc(ixp,iy,izm)*d2tzm
+     d1(6)=avc(ixp,iyp,iz)*d2tz+avc(ixp,iyp,izp)*d2tzp+            &
+          avc(ixp,iyp,izpp)*d2tzpp+avc(ixp,iyp,izm)*d2tzm
+     d1(7)=avc(ixp,iypp,iz)*d2tz+avc(ixp,iypp,izp)*d2tzp+          &
+          avc(ixp,iypp,izpp)*d2tzpp+avc(ixp, iypp, izm)*d2tzm
+     d1(8)=avc(ixp,iym,iz)*d2tz+avc(ixp,iym,izp)*d2tzp+            &
+          avc(ixp,iym,izpp)*d2tzpp+avc(ixp,iym,izm)*d2tzm
+
+     d1(9)=avc(ixpp,iy,iz)*d2tz+avc(ixpp,iy,izp)*d2tzp+            &
+          avc(ixpp,iy,izpp)*d2tzpp+avc(ixpp,iy,izm)*d2tzm
+     d1(10)=avc(ixpp,iyp,iz)*d2tz+avc(ixpp,iyp,izp)*d2tzp+         &
+          avc(ixpp,iyp,izpp)*d2tzpp+avc(ixpp,iyp,izm)*d2tzm
+     d1(11)=avc(ixpp,iypp,iz)*d2tz+avc(ixpp,iypp,izp)*d2tzp+       &
+          avc(ixpp,iypp,izpp)*d2tzpp+avc(ixpp,iypp,izm)*d2tzm
+     d1(12)=avc(ixpp,iym,iz)*d2tz+avc(ixpp,iym,izp)*d2tzp+         &
+          avc(ixpp,iym,izpp)*d2tzpp+avc(ixpp,iym,izm)*d2tzm
+
+     d1(13)=avc(ixm,iy,iz)*d2tz+avc(ixm,iy,izp)*d2tzp+             &
+          avc(ixm,iy,izpp)*d2tzpp+avc(ixm,iy,izm)*d2tzm
+     d1(14)=avc(ixm,iyp,iz)*d2tz+avc(ixm,iyp,izp)*d2tzp+           &
+          avc(ixm,iyp,izpp)*d2tzpp+avc(ixm,iyp,izm)*d2tzm
+     d1(15)=avc(ixm,iypp,iz)*d2tz+avc(ixm,iypp,izp)*d2tzp+         &
+          avc(ixm,iypp,izpp)*d2tzpp+avc(ixm,iypp,izm)*d2tzm
+     d1(16)=avc(ixm,iym,iz)*d2tz+avc(ixm,iym,izp)*d2tzp+           &
+          avc(ixm,iym,izpp)*d2tzpp+avc(ixm,iym,izm)*d2tzm
+
+! Theta''(z)
+     lap=lap+((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*tx+(d1(5)*ty+d1(6)*  &
+          typ+d1(7)*typp+d1(8)*tym)*txp+(d1(9)*ty+d1(10)*typ+d1(11)*typp+      &
+          d1(12)* tym)*txpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym)*txm) &
+          *b(3)
+
+! And the third term of the gradient involving Theta'(z)
+     d1(1)=avc(ix,iy,iz)*dtz+avc(ix,iy,izp)*dtzp+                  &
+          avc(ix,iy,izpp)*dtzpp+avc(ix, iy, izm)*dtzm
+     d1(2)=avc(ix,iyp,iz)*dtz+avc(ix,iyp,izp)*dtzp+                &
+          avc(ix,iyp,izpp)*dtzpp+avc(ix,iyp,izm)*dtzm
+     d1(3)=avc(ix,iypp,iz)*dtz+avc(ix,iypp,izp)*dtzp+              &
+          avc(ix,iypp,izpp)*dtzpp+avc(ix,iypp,izm)*dtzm
+     d1(4)=avc(ix,iym,iz)*dtz+avc(ix,iym,izp)*dtzp+                &
+          avc(ix,iym,izpp)*dtzpp+avc(ix,iym,izm)*dtzm
+
+     d1(5)=avc(ixp,iy,iz)*dtz+avc(ixp,iy,izp)*dtzp+                &
+          avc(ixp,iy,izpp)*dtzpp+avc(ixp,iy,izm)*dtzm
+     d1(6)=avc(ixp,iyp,iz)*dtz+avc(ixp,iyp,izp)*dtzp+              &
+          avc(ixp,iyp,izpp)*dtzpp+avc(ixp,iyp,izm)*dtzm
+     d1(7)=avc(ixp,iypp,iz)*dtz+avc(ixp,iypp,izp)*dtzp+            &
+          avc(ixp,iypp,izpp)*dtzpp+avc(ixp,iypp,izm)*dtzm
+     d1(8)=avc(ixp,iym,iz)*dtz+avc(ixp,iym,izp)*dtzp+              &
+          avc(ixp,iym,izpp)*dtzpp+avc(ixp,iym,izm)*dtzm
+
+     d1(9)=avc(ixpp,iy,iz)*dtz+avc(ixpp,iy,izp)*dtzp+              &
+          avc(ixpp,iy,izpp)*dtzpp+avc(ixpp,iy,izm)*dtzm
+     d1(10)=avc(ixpp,iyp,iz)*dtz+avc(ixpp,iyp,izp)*dtzp+           &
+          avc(ixpp,iyp,izpp)*dtzpp+avc(ixpp,iyp,izm)*dtzm
+     d1(11)=avc(ixpp,iypp,iz)*dtz+avc(ixpp,iypp,izp)*dtzp+         &
+          avc(ixpp,iypp,izpp)*dtzpp+avc(ixpp,iypp,izm)*dtzm
+     d1(12)=avc(ixpp,iym,iz)*dtz+avc(ixpp,iym,izp)*dtzp+           &
+          avc(ixpp,iym,izpp)*dtzpp+avc(ixpp,iym,izm)*dtzm
+
+     d1(13)=avc(ixm,iy,iz)*dtz+avc(ixm,iy,izp)*dtzp+               &
+          avc(ixm,iy,izpp)*dtzpp+avc(ixm,iy,izm)*dtzm
+     d1(14)=avc(ixm,iyp,iz)*dtz+avc(ixm,iyp,izp)*dtzp+             &
+          avc(ixm,iyp,izpp)*dtzpp+avc(ixm,iyp,izm)*dtzm
+     d1(15)=avc(ixm,iypp,iz)*dtz+avc(ixm,iypp,izp)*dtzp+           &
+          avc(ixm,iypp,izpp)*dtzpp+avc(ixm,iypp,izm)*dtzm
+     d1(16)=avc(ixm,iym,iz)*dtz+avc(ixm,iym,izp)*dtzp+             &
+          avc(ixm,iym,izpp)*dtzpp+avc(ixm,iym,izm)*dtzm
+
+! The Laplacian: term involving Theta'(x)Theta'(z)
+     lap=lap+((d1(1)*ty+d1(2)*typ+d1(3)*typp+d1(4)*tym)*dtx+(d1(5)*ty+       &
+          d1(6)*typ+d1(7)*typp+d1(8)*tym)*dtxp+(d1(9)*ty+d1(10)*typ+d1(11)*    &
+          typp+d1(12)*tym)*dtxpp+(d1(13)*ty+d1(14)*typ+d1(15)*typp+d1(16)*tym) &
+          *dtxm)*b(6)
+
+! the Laplacian: term involving Theta'(y)Theta'(z)
+     lap=lap+((d1(1)*dty+d1(2)*dtyp+d1(3)*dtypp+d1(4)*dtym)*tx+(d1(5)        &
+          *dty+d1(6)*dtyp+d1(7)*dtypp+d1(8)*dtym)*txp+(d1(9)*dty+d1(10)*dtyp+  &
+          d1(11)*dtypp+d1(12)*dtym)*txpp+(d1(13)*dty+d1(14)*dtyp+d1(15)*dtypp+ &
+          d1(16)*dtym)*txm)*b(5)
+
+     grad=matmul(bg,grad)
+  end if !il == 1
 
  END SUBROUTINE blip_one_band
 
@@ -2090,7 +3555,7 @@ bloop:do ik=1,num_g
  COMPLEX(dp),INTENT(inout) :: sum_orbs(maxband,nkvec_bwfdet)
  INTEGER band,k
  REAL(dp) kdotrprime,r1(3)
- COMPLEX(dp) tot,ekdr
+ COMPLEX(dp) tot,totg(3),totl,ekdr
  LOGICAL spin1
 
  spin1=.true. ; if(ispin==2.and.spin_polarized)spin1=.false.
@@ -2103,9 +3568,9 @@ bloop:do ik=1,num_g
    do band=1,boccband(k,ispin)
     tot=0.d0
     if(spin1)then ! spin 1 (and spin 2 in spin restricted case)
-     if(.not.pwreal)call blip_one_band(tot,r1,cavc(0,0,0,band,k),nrbwf,painv)
+     if(.not.pwreal)call blip_one_band(tot,totg,totl,r1,cavc(0,0,0,band,k),nrbwf,painv,0)
     else ! spin 2 in spin unrbwfestricted case
-     if(.not.pwreal)call blip_one_band(tot,r1,cavc2(0,0,0,band,k),nrbwf,painv)
+     if(.not.pwreal)call blip_one_band(tot,totg,totl,r1,cavc2(0,0,0,band,k),nrbwf,painv,0)
     endif
     tot=ekdr*tot ! = u(r) * exp[ik.r]
 ! 'Accumulate' the squared components of the orbital
@@ -2114,6 +3579,47 @@ bloop:do ik=1,num_g
   endif
  enddo ! k
  END SUBROUTINE sum_orbs_over_grid_with_blips
+
+ SUBROUTINE get_real_and_imaginary_parts_of_blips(r,rpsi,lap,ispin)
+! This routine called repeatedly by bwfdet_setup to accumulate the squared
+! real and imaginary parts of all orbitals summed over points on a grid.
+! in order to check whether BZ edge orbitals are pure real, pure imaginary, or
+! neither.
+ IMPLICIT NONE
+ INTEGER,INTENT(in) :: ispin
+ REAL(dp),INTENT(in) :: r(3)
+ COMPLEX(dp),INTENT(out) :: rpsi(nemax,nkvec_bwfdet),lap(nemax,nkvec_bwfdet)
+ INTEGER band,k
+ REAL(dp) kdotrprime,r1(3)
+ COMPLEX(dp) tot,totg(3),totl,ekdr,kekdr(3),k2ekdr
+ LOGICAL spin1
+
+ spin1=.true. ; if(ispin==2.and.spin_polarized)spin1=.false.
+
+ r1=matmul(transpose(painv),r)
+ do k=1,nkvec_bwfdet
+  if(lkedge(k))then
+   kdotrprime=kvec_bwfdet(1,k)*r(1)+kvec_bwfdet(2,k)*r(2)+kvec_bwfdet(3,k)*r(3)
+   ekdr=exp(kdotrprime*zi)
+   kekdr=zi*kvec_bwfdet(:,k)*ekdr
+   k2ekdr=-dot_product(kvec_bwfdet(:,k),kvec_bwfdet(:,k))*ekdr
+   do band=1,boccband(k,ispin)
+    tot=0.d0
+    if(spin1)then ! spin 1 (and spin 2 in spin restricted case)
+     if(.not.pwreal)call blip_one_band(tot,totg,totl,r1,cavc(0,0,0,band,k),nrbwf,painv,1)
+    else ! spin 2 in spin unrbwfestricted case
+     if(.not.pwreal)call blip_one_band(tot,totg,totl,r1,cavc2(0,0,0,band,k),nrbwf,painv,1)
+    endif
+    rpsi(band,k)=ekdr*tot         ! = u(r) * exp[ik.r]
+    lap(band,k)=ekdr*totl  &      ! = Lap[u(r)] * exp[ik.r] 
+    &+2*(kekdr(1)*totg(1)+ &      !+ 2*Grad[u(r)].k*exp[ik.r] 
+    &    kekdr(2)*totg(2)+ &
+    &    kekdr(3)*totg(3)) &
+    &+k2ekdr*tot                   !+ u(r) * -k.k exp[ik.r]
+   enddo ! band
+  endif
+ enddo ! k
+ END SUBROUTINE get_real_and_imaginary_parts_of_blips
 
 
  SUBROUTINE bwfdet_wrapper(rvec,iw,igl,ispin,rpsi,grad,lap)

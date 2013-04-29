@@ -1,5 +1,5 @@
       subroutine jacobian(ndata2,nparm,nanalytic,parm,ajac)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use basic_tools_mod
       use fitdet_mod
@@ -25,9 +25,9 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use mpioffset_mod
       implicit real*8(a-h,o-z)
 
-c epsder1f=sqrt(max(eps_diff,dbl_epsilon))
-c     parameter (eps_diff=1.d-15,dbl_epsilon=2.2204460492503131d-16
-c    &,epsder1f=3.16227766016838d-8)
+! epsder1f=sqrt(max(eps_diff,dbl_epsilon))
+!     parameter (eps_diff=1.d-15,dbl_epsilon=2.2204460492503131d-16
+!    &,epsder1f=3.16227766016838d-8)
 
       dimension parm(nparm),ajac(ndata2,nparm),velocity(3,nelec),div_v(nelec)
 
@@ -35,13 +35,13 @@ c    &,epsder1f=3.16227766016838d-8)
    10   coef(iwbasi(iparm),iworb(iparm),1)=parm(iparm)
       do 20 iparm=1,nparme
    20   zex(iwbase(iparm),1)=parm(nparml+iparm)
-c     do 22 iparm=1,nparmd
-c  22   cdet(iwdet(iparm),1)=parm(nparml+nparme+iparm)
+!     do 22 iparm=1,nparmd
+!  22   cdet(iwdet(iparm),1)=parm(nparml+nparme+iparm)
       do 22 iparm=1,nparmcsf
    22   csf_coef(iwcsf(iparm),1)=parm(nparml+nparme+iparm)
 
-c     if(nparms.eq.1) scalek(1)=parm(nparml+nparme+nparmd+1)
-c     if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmd+nparms+1)
+!     if(nparms.eq.1) scalek(1)=parm(nparml+nparme+nparmd+1)
+!     if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmd+nparms+1)
       if(nparms.eq.1) scalek(1)=parm(nparml+nparme+nparmcsf+1)
       if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmcsf+nparms+1)
       if(ijas.eq.1) then
@@ -103,14 +103,14 @@ c     if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmd+nparms+1)
         if(ijas.ge.4.and.ijas.le.6) call cuspexact4(0,1)
       endif
 
-c Here we are calculating analytical derivs. wrt. wavefn. params so turn igradhess on before calling hpsi.
+! Here we are calculating analytical derivs. wrt. wavefn. params so turn igradhess on before calling hpsi.
       igradhess=1
 
       nnumerical=nparm-nanalytic
-c     do 125 i=1,ndata
+!     do 125 i=1,ndata
       do 125 i=idispls(idtask)+1,idispls(idtask+1)
         iconfg=i
-c       call deriv_hpsi(x(1,1,i),psid(i),psij(i),energy,denergy,1)
+!       call deriv_hpsi(x(1,1,i),psid(i),psij(i),energy,denergy,1)
         call hpsi(x(1,1,i),psid(i),psij(i),velocity,div_v,d2psi,pe,pei,energy,denergy,1)
         do 125 iparm=1,nanalytic
           ajac(i,nnumerical+iparm)=denergy(iparm)

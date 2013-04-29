@@ -1,5 +1,5 @@
       subroutine walksav_det(iw)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use dorb_mod
       use dets_mod

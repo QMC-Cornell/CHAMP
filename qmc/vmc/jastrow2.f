@@ -1,5 +1,5 @@
       subroutine jastrow2(x,v,d2,div_vj,value)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
       use atom_mod
       use dets_mod
@@ -68,12 +68,12 @@ c Written by Cyrus Umrigar
         ri=r_en(i,ic)
         rj=r_en(j,ic)
 
-c isc = 2,3 are exponential scalings
-c isc = 4,5 are inverse power scalings
-c isc = 3,5 are supposed to have zero 2nd and 3rd derivatives at 0
-c however, isc = 3 has an error.  It should be
-c exprij=dexp(-rijs-half*rijs2-(5./6.)*rijs3)
-c with other corresponding changes.
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 are supposed to have zero 2nd and 3rd derivatives at 0
+! however, isc = 3 has an error.  It should be
+! exprij=dexp(-rijs-half*rijs2-(5./6.)*rijs3)
+! with other corresponding changes.
         if(scalek(iwf).ne.zero) then
           scale2=half*scalek(iwf)
           if(isc.eq.2) then
@@ -185,7 +185,7 @@ c with other corresponding changes.
         s2mt2=ss*ss-tt*tt
 
         term38=(rr2-u2)*rrlog
-c       term1=u*(12*rr2+u2)/rr3
+!       term1=u*(12*rr2+u2)/rr3
         terma1=(a1(35,is,iwf)*u/rr - a1(37,is,iwf)*u3/rr3)/2
      &  +((rr2*rrlog+rr2-u2)/rr2)*(a1(38,is,iwf)+a1(39,is,iwf)*u)
         terma2=(a1(35,is,iwf)/rr-3*a1(37,is,iwf)*u2/rr3)/2
@@ -595,11 +595,11 @@ c       term1=u*(12*rr2+u2)/rr3
         v(2,j)=v(2,j) + sspin*(fsftj*rvec_en(2,j,ic)-fubu*rvec_ee(2,ij))
         v(3,j)=v(3,j) + sspin*(fsftj*rvec_en(3,j,ic)-fubu*rvec_ee(3,ij))
 
-c Warning: The generalization to arbitrary dimension is to be checked but is most likely OK.
-c We never use this for anything except 3d anyway.
-c       d2ij= sspin*2*(fuu + fssftt    + 2*(fu/rij +
-c    &  (ss*u2mt2*fus+tt*s2mu2*fut)/(rij*s2mt2) + 2*(ss*fs-tt*ft)/
-c    &  s2mt2))
+! Warning: The generalization to arbitrary dimension is to be checked but is most likely OK.
+! We never use this for anything except 3d anyway.
+!       d2ij= sspin*2*(fuu + fssftt    + 2*(fu/rij +
+!    &  (ss*u2mt2*fus+tt*s2mu2*fut)/(rij*s2mt2) + 2*(ss*fs-tt*ft)/
+!    &  s2mt2))
         d2ij= sspin*2*((ndim-1)*(fu/rij + (ss*fs-tt*ft)/s2mt2)
      &  + fuu + fssftt + (ss*u2mt2*fus+tt*s2mu2*fut)/(rij*s2mt2))
         div_vj(i)=div_vj(i)+d2ij/2
@@ -613,7 +613,7 @@ c    &  s2mt2))
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine psigm2(u,s,t,phi21,phi20,phi31)
 

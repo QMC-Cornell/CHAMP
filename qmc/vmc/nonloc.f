@@ -1,5 +1,5 @@
       subroutine nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use constants_mod
       use control_mod
@@ -16,7 +16,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
       use contrldmc_mod, only : taunow
       use config_dmc_mod, only : xoldw, voldw, psidow, psijow
       use average_mod, only : current_walker
-c Temporary:
+! Temporary:
       use div_v_dmc_mod
       use delocc_mod
 
@@ -34,9 +34,9 @@ c Temporary:
           call scale_dist(r_en(i,ic),rr_en(i,ic),1)
    10     call scale_dist(r_en(i,ic),rr_en2(i,ic),3)
 
-c     write(6,'(''l_do_tmoves,x='',l2,30f9.4)') l_do_tmoves, ((x(k,i),k=1,ndim),i=1,nelec)
-c     write(6,'(''l_do_tmoves, r_en='',l2,30f9.4)') l_do_tmoves, ((r_en(i,ic),i=1,nelec),ic=1,ncent)
-c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
+!     write(6,'(''l_do_tmoves,x='',l2,30f9.4)') l_do_tmoves, ((x(k,i),k=1,ndim),i=1,nelec)
+!     write(6,'(''l_do_tmoves, r_en='',l2,30f9.4)') l_do_tmoves, ((r_en(i,ic),i=1,nelec),ic=1,ncent)
+!     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
 
       if (l_opt_orb_energy) then
         call object_provide_by_index (param_orb_nb_index)
@@ -45,16 +45,16 @@ c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),i
         vpsp_ex = 0.d0
       endif
 
-c     do 3 i=1,nelec
-c       do 3 j=1,i-1
-c         if(abs(r_en(i,1)-r_en(j,1)).lt.1.d-6) write(6,'(''1 current_walker,i,j,r_en(i,1),r_en(j,1)'',3i3,9d16.8)')
-c    &    current_walker,i,j,r_en(i,1),r_en(j,1)
-c   3 continue
+!     do 3 i=1,nelec
+!       do 3 j=1,i-1
+!         if(abs(r_en(i,1)-r_en(j,1)).lt.1.d-6) write(6,'(''1 current_walker,i,j,r_en(i,1),r_en(j,1)'',3i3,9d16.8)')
+!    &    current_walker,i,j,r_en(i,1),r_en(j,1)
+!   3 continue
 
       vpsp=0
       do 150 i=1,nelec
 
-c Save position ith electron and its distances etc. from all nuclei
+! Save position ith electron and its distances etc. from all nuclei
         do 11 k=1,ndim
    11     xsav(k)=x(k,i)
         do 12 jc=1,ncent
@@ -69,7 +69,7 @@ c Save position ith electron and its distances etc. from all nuclei
         do 100 ic=1,ncent
           ict=iwctype(ic)
 
-c vps was calculated by calling getvps_xx from nonloc_pot
+! vps was calculated by calling getvps_xx from nonloc_pot
           iskip=1
           do 15 l=1,npotd(ict)
    15       if(l.ne.lpotp1(ict) .and. dabs(vps(i,ic,l)).gt.1.d-4) iskip=0
@@ -102,7 +102,7 @@ c vps was calculated by calling getvps_xx from nonloc_pot
                 x(3,i)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
               endif
 
-c Since we are rotating on sphere around nucleus ic, that elec-nucl distance does not change but distances to other nuclei do
+! Since we are rotating on sphere around nucleus ic, that elec-nucl distance does not change but distances to other nuclei do
               do 40 jc=1,ncent
                 do 38 k=1,ndim
    38             rvec_en(k,i,jc)=x(k,i)-cent(k,jc)
@@ -204,12 +204,12 @@ c Since we are rotating on sphere around nucleus ic, that elec-nucl distance doe
           endif
   100   continue ! ncent
 
-c       if(l_do_tmoves) write(6,'(''i, current_walker, x_tmove_sav='',2i3, 99d12.4)') i, current_walker,
-c    &  ((x_tmove_sav(k,ii),k=1,3),ii=1,ntmove_pts)
+!       if(l_do_tmoves) write(6,'(''i, current_walker, x_tmove_sav='',2i3, 99d12.4)') i, current_walker,
+!    &  ((x_tmove_sav(k,ii),k=1,3),ii=1,ntmove_pts)
 
-c Warning: For the moment correlated sampling for forces does not work with t-moves.
-c Decide which if any tmove to perform for electron i
-c Note we are using the same array, vpsp_tmove, to store the cumulative values to be used for the heat bath.
+! Warning: For the moment correlated sampling for forces does not work with t-moves.
+! Decide which if any tmove to perform for electron i
+! Note we are using the same array, vpsp_tmove, to store the cumulative values to be used for the heat bath.
         if(l_do_tmoves .and. ntmove_pts.ne.0) then
           vpsp_tmove_sum=1
           do itmove_pts=1,ntmove_pts
@@ -237,12 +237,12 @@ c Note we are using the same array, vpsp_tmove, to store the cumulative values t
 !           x(1:3,i)=x_tmove_sav(1:3,iwhich_tmove)
             xnew(1:3)=x_tmove_sav(1:3,iwhich_tmove)
             xoldw(1:3,i,current_walker,1)=x_tmove_sav(1:3,iwhich_tmove)
-c           write(6,'(''1 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-c           call systemflush(6)
+!           write(6,'(''1 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
+!           call systemflush(6)
 !           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
             call hpsiedmc(i,current_walker,xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1))
-c           write(6,'(''2 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-c           write(6,'(''2 xnew='',99d12.4)') (xnew(k),k=1,3)
+!           write(6,'(''2 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
+!           write(6,'(''2 xnew='',99d12.4)') (xnew(k),k=1,3)
             call systemflush(6)
             call jassav(i)
             if(ibasis.eq.3) then                        ! complex calculations
@@ -251,8 +251,8 @@ c           write(6,'(''2 xnew='',99d12.4)') (xnew(k),k=1,3)
               call detsav(i)
             endif
 
-c           write(6,'(''3 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-c           if(l_do_tmoves) write(6,'(''3 xnew='',99d12.4)') (xnew(k),k=1,3)
+!           write(6,'(''3 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
+!           if(l_do_tmoves) write(6,'(''3 xnew='',99d12.4)') (xnew(k),k=1,3)
           endif
 
         endif ! l_do_tmoves
@@ -261,13 +261,13 @@ c           if(l_do_tmoves) write(6,'(''3 xnew='',99d12.4)') (xnew(k),k=1,3)
   150 continue ! nelec
 
       if (l_do_tmoves) then !FP
-c       if(ifr.eq.1) then
-c Primary configuration
-c         drifdifr=one
-c         if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+!       if(ifr.eq.1) then
+! Primary configuration
+!         drifdifr=one
+!         if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
 
-c         call hpsi(xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1),
-c    &    div_vow(1,current_walker),d2n,pen,pein,enew,denergy,1)
+!         call hpsi(xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1),
+!    &    div_vow(1,current_walker),d2n,pen,pein,enew,denergy,1)
 
           psi_det = psidow(current_walker,1)
           psi_jas = exp(psijow(current_walker,1))
@@ -281,26 +281,26 @@ c    &    div_vow(1,current_walker),d2n,pen,pein,enew,denergy,1)
             call walksav_det(current_walker)
           endif
           call walksav_jas(current_walker)
-c       else
-c Warning to be done
-c       endif
+!       else
+! Warning to be done
+!       endif
       endif
 
       call object_modified_by_index (vpsp_ex_index) ! JT
 
-c     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
-c     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)
-c     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
+!     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
+!     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)
+!     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function yl0(l,costh)
-c (2L+1)*P_L(costh)
-c This is not quite Y_L0 but sqrt(4pi/(2L+1)) Y_L0
-c Note that the associated P_L^m and the unassociated P_L Legendre polynomials are the same for m=0.
-c l is actually L+1.
+! (2L+1)*P_L(costh)
+! This is not quite Y_L0 but sqrt(4pi/(2L+1)) Y_L0
+! Note that the associated P_L^m and the unassociated P_L Legendre polynomials are the same for m=0.
+! l is actually L+1.
 
       implicit real*8(a-h,o-z)
 
@@ -320,10 +320,10 @@ c l is actually L+1.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine nonlocd(iel,x,rvec_en,r_en,detu,detd,slmui,slmdi,determ)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
       use all_tools_mod
       use control_mod
       use eloc_mod
@@ -347,11 +347,11 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
      &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
       dimension ratio(ndet)
 
-c     determ=0
+!     determ=0
 
-c get orbitals for all electron iel
-c Note x is 3-dim but rvec_en,r_en have info about all electrons.
-c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
+! get orbitals for all electron iel
+! Note x is 3-dim but rvec_en,r_en have info about all electrons.
+! So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
       if(iperiodic.eq.0) then
 
         if(inum_orb.eq.0) then
@@ -461,7 +461,7 @@ c So, iel is passed to select elements of rvec_en,r_en,phin and for IO.
           endif
   115     determ=determ+term
 
-c Derivatives wrt to csf_coefs for optimizing them
+! Derivatives wrt to csf_coefs for optimizing them
       if(index(mode,'fit').ne.0 .or. igradhess.ge.1 .or. l_opt_csf) then
         do 140 iparm=1,nparmcsf
           icsf=iwcsf(iparm)
@@ -478,11 +478,11 @@ c Derivatives wrt to csf_coefs for optimizing them
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
 !WAS  subroutine nonlocj(iel,x,rshift,rr_en,rr_en2,value)
       subroutine nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,value)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use control_mod
       use atom_mod
@@ -539,14 +539,14 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
           call find_image3(dx,rij,rlatt_sim,rlatt_sim_inv)
         endif
 
-c e-e terms
+! e-e terms
         call scale_dist(rij,u,2)
 
         fsn(i,j)=psibnl(u,isb,ipar)
 
-c e-e-n terms
-c The scaling is switched in psinl, so do not do it here.
-c     if(isc.ge.12) call scale_dist(rij,u,3)
+! e-e-n terms
+! The scaling is switched in psinl, so do not do it here.
+!     if(isc.ge.12) call scale_dist(rij,u,3)
       call scale_dist(rij,u,4)
 
         do 40 ic=1,ncent
@@ -557,7 +557,7 @@ c     if(isc.ge.12) call scale_dist(rij,u,3)
 
    45 continue
 
-c e-n terms
+! e-n terms
    47 fsn(iel,iel)=0
       do 50 ic=1,ncent
         it=iwctype(ic)

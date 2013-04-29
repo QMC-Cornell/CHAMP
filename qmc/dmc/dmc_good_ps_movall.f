@@ -1,46 +1,46 @@
       subroutine dmc_good_ps_movall
-c Written by Cyrus Umrigar and Claudia Filippi starting from dmc_good
-c Uses the diffusion Monte Carlo algorithm described in:
-c 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
-c    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
-c with portions related to nuclear cusps removed.
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c Control variables are:
-c idmc         < 0     VMC
-c              > 0     DMC
-c abs(idmc)    = 1 **  simple kernel using dmc.brock.f
-c              = 2     good kernel using dmc_good or dmc_good_inhom
-c ipq         <= 0 *   do not use expected averages
-c             >= 1     use expected averages (mostly in all-electron move algorithm)
-c itau_eff    <=-1 *   always use tau in branching (not implemented)
-c              = 0     use 0 / tau for acc /acc_int moves in branching
-c             >= 1     use tau_eff (calcul in equilibration runs) for all moves
-c iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
-c              = 0 **  use weights rather than accept/reject
-c             >= 1     use accept/reject
-c icross      <=-1 **  kill walkers that cross nodes (not implemented)
-c              = 0     reject walkers that cross nodes
-c             >= 1     allow walkers to cross nodes
-c                      (OK since crossing prob. goes as tau^(3/2))
-c icuspg      <= 0     approximate cusp in Green function
-c             >= 1     impose correct cusp condition on Green function
-c idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
-c              = 1     use homog. div_v to modify diffusion in good kernel
-c             >= 2     use inhomog. div_v to modify diffusion in good kernel
-c icut_br     <= 0     do not limit branching
-c             >= 1 *   use smooth formulae to limit branching to (1/2,2)
-c                      (bad because it makes energies depend on E_trial)
-c icut_e      <= 0     do not limit energy
-c             >= 1 *   use smooth formulae to limit energy (not implemented)
+! Written by Cyrus Umrigar and Claudia Filippi starting from dmc_good
+! Uses the diffusion Monte Carlo algorithm described in:
+! 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
+!    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
+! with portions related to nuclear cusps removed.
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Control variables are:
+! idmc         < 0     VMC
+!              > 0     DMC
+! abs(idmc)    = 1 **  simple kernel using dmc.brock.f
+!              = 2     good kernel using dmc_good or dmc_good_inhom
+! ipq         <= 0 *   do not use expected averages
+!             >= 1     use expected averages (mostly in all-electron move algorithm)
+! itau_eff    <=-1 *   always use tau in branching (not implemented)
+!              = 0     use 0 / tau for acc /acc_int moves in branching
+!             >= 1     use tau_eff (calcul in equilibration runs) for all moves
+! iacc_rej    <=-1 **  accept all moves (except possibly node crossings)
+!              = 0 **  use weights rather than accept/reject
+!             >= 1     use accept/reject
+! icross      <=-1 **  kill walkers that cross nodes (not implemented)
+!              = 0     reject walkers that cross nodes
+!             >= 1     allow walkers to cross nodes
+!                      (OK since crossing prob. goes as tau^(3/2))
+! icuspg      <= 0     approximate cusp in Green function
+!             >= 1     impose correct cusp condition on Green function
+! idiv_v      <= 0     do not use div_v to modify diffusion in good kernel
+!              = 1     use homog. div_v to modify diffusion in good kernel
+!             >= 2     use inhomog. div_v to modify diffusion in good kernel
+! icut_br     <= 0     do not limit branching
+!             >= 1 *   use smooth formulae to limit branching to (1/2,2)
+!                      (bad because it makes energies depend on E_trial)
+! icut_e      <= 0     do not limit energy
+!             >= 1 *   use smooth formulae to limit energy (not implemented)
 
-c *  => bad option, modest deterioration in efficiency or time-step error
-c ** => very bad option, big deterioration in efficiency or time-step error
-c So, idmc=6,66 correspond to the foll. two:
-c 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c Another reasonable choice is:
-c 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! *  => bad option, modest deterioration in efficiency or time-step error
+! ** => very bad option, big deterioration in efficiency or time-step error
+! So, idmc=6,66 correspond to the foll. two:
+! 2 1 1 1 0 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! 2 1 0 1 1 0 0 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! Another reasonable choice is:
+! 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use constants_mod
       use atom_mod
       use dets_mod
@@ -84,11 +84,11 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
 
-c     term=(sqrt(two*pi*tau))**3/pi
+!     term=(sqrt(two*pi*tau))**3/pi
 
       ajacnew(1)=one
 
-c Undo products
+! Undo products
       ipmod=mod(ipass,nfprod)
       ipmod2=mod(ipass+1,nfprod)
       if(idmc.gt.0) then
@@ -109,18 +109,18 @@ c Undo products
         fprodd=1
       endif
 
-c Undo weights
+! Undo weights
       iwmod=mod(ipass,nwprod)
 
       ioldest=0
       do 300 iw=1,nwalk
-c Loop over primary+secondary paths to compute forces
+! Loop over primary+secondary paths to compute forces
         do 300 ifr=1,nforce
 
-c Stretch nuclei and electrons if calculating forces
+! Stretch nuclei and electrons if calculating forces
           if(nforce.gt.1) then
             if(ifr.eq.1.or.istrech.eq.0) then
-c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
+! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
               call strech(xnew(1,1,1),xnew(1,1,ifr),ajacob,ifr,0)
               ajacnew(ifr)=one
              else
@@ -129,15 +129,15 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
             endif
           endif
 
-c Sample Green function for forward move
+! Sample Green function for forward move
           dr2=zero
           dfus2o=zero
           vav2sumo=zero
           v2sumo=zero
           fnormo=one
           do 100 i=1,nelec
-c Tau secondary in drift in order to compute tau_s in second equil. block
-c Note: vavvo=vav2sumo/v2sumo appears in the branching
+! Tau secondary in drift in order to compute tau_s in second equil. block
+! Note: vavvo=vav2sumo/v2sumo appears in the branching
             if(ifr.gt.1.and.itausec.eq.1) then
               if(itau_eff.ge.1) then
                 tauu=tau*taueff(ifr)/taueff(1)
@@ -148,7 +148,7 @@ c Note: vavvo=vav2sumo/v2sumo appears in the branching
               tauu=tau
             endif
 
-c Use more accurate formula for the drift
+! Use more accurate formula for the drift
             v2old=0
             do 5 k=1,ndim
     5         v2old=v2old+voldw(k,i,iw,ifr)**2
@@ -157,7 +157,7 @@ c Use more accurate formula for the drift
             vav2sumo=vav2sumo+vav**2
             v2sumo=v2sumo+v2old
 
-c Calculate drifted position
+! Calculate drifted position
             do 60 k=1,ndim
               xbac(k)=xoldw(k,i,iw,ifr)+voldw(k,i,iw,ifr)*tauu*vav/volda
               if(ifr.gt.1) then
@@ -166,9 +166,9 @@ c Calculate drifted position
               endif
    60       continue
 
-c Do the diffusion.  Actually, this diffusion contains part of the drift too
-c if idiv_v.ge.1
-c Use div_v_hom to set tau_hom
+! Do the diffusion.  Actually, this diffusion contains part of the drift too
+! if idiv_v.ge.1
+! Use div_v_hom to set tau_hom
             div_v_hom=div_vow(i,iw)/3
 
             if(ifr.eq.1) then
@@ -186,7 +186,7 @@ c Use div_v_hom to set tau_hom
               endif
               rttau_hom=dsqrt(tau_hom)
 
-c Sample gaussian
+! Sample gaussian
               dfus2a=0
               do 80 k=1,ndim
                 drift=xbac(k)-xoldw(k,i,iw,ifr)
@@ -201,10 +201,10 @@ c Sample gaussian
   100       fnormo=fnormo*gaus_norm*exp(-half*dfus2a/tau_hom)
           vavvo=sqrt(vav2sumo/v2sumo)
 
-c calculate psi etc. at new configuration
+! calculate psi etc. at new configuration
           call hpsi(xnew(1,1,ifr),psidn(ifr),psijn(ifr),vnew(1,1,ifr),div_vn,d2n(ifr),pen(ifr),pein(ifr),enew(ifr),denergy,ifr)
 
-c Check for node crossings
+! Check for node crossings
           if(psidn(ifr)*psidow(iw,ifr).le.zero.and.ifr.eq.1) then
             nodecr=nodecr+1
             if(icross.le.0) then
@@ -213,7 +213,7 @@ c Check for node crossings
             endif
           endif
 
-c Calculate Green function for the reverse move
+! Calculate Green function for the reverse move
           dfus2n=zero
           vav2sumn=zero
           v2sumn=zero
@@ -227,13 +227,13 @@ c Calculate Green function for the reverse move
             vav2sumn=vav2sumn+vav**2
             v2sumn=v2sumn+v2new
 
-c Calculate drifted position
+! Calculate drifted position
             dfus2a=0
             do 160 k=1,ndim
               xbac(k)=xnew(k,i,ifr)+vnew(k,i,ifr)*tauu*vav/vnewa
   160         dfus2a=dfus2a+(xoldw(k,i,iw,ifr)-xbac(k))**2
 
-c Use div_v_hom to set tau_hom
+! Use div_v_hom to set tau_hom
             div_v_hom=div_vn(i)/3
 
             if(idiv_v.ge.1) then
@@ -268,9 +268,9 @@ c Use div_v_hom to set tau_hom
      &    psijow(iw,ifr))),exp((dfus2o-dfus2n)/(two*tau)),psidn(ifr),
      &    psidow(iw,ifr),psijn(ifr),psijow(iw,ifr),dfus2o,dfus2n
 
-c The following is one reasonable way to cure persistent configurations
-c Not needed if itau_eff <=0 and in practice we have never needed it even
-c otherwise
+! The following is one reasonable way to cure persistent configurations
+! Not needed if itau_eff <=0 and in practice we have never needed it even
+! otherwise
           if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
           pp=p
@@ -279,10 +279,10 @@ c otherwise
 
           dfus2unf(ifr)=dfus2unf(ifr)+dfus2o
 
-c Set taunow for branching.  Note that for primary walk taueff(1) always
-c is tau*dfus2ac/dfus2unf so if itau_eff.le.0 then we reset taunow to tau
-c On the other hand, secondary walk only has dfus2ac/dfus2unf if
-c itau_eff.ge.1 so there is no need to reset taunow.
+! Set taunow for branching.  Note that for primary walk taueff(1) always
+! is tau*dfus2ac/dfus2unf so if itau_eff.le.0 then we reset taunow to tau
+! On the other hand, secondary walk only has dfus2ac/dfus2unf if
+! itau_eff.ge.1 so there is no need to reset taunow.
           if(ifr.eq.1) then
             acc=acc+p
             try_int=try_int+1
@@ -291,7 +291,7 @@ c itau_eff.ge.1 so there is no need to reset taunow.
             dr2un=dr2un+dr2
             tautot=tautot+tau*dfus2ac/dfus2unf(1)
 
-c If we are using weights rather than accept/reject
+! If we are using weights rather than accept/reject
             if(iacc_rej.le.0) then
               p=one
               q=zero
@@ -334,21 +334,21 @@ c If we are using weights rather than accept/reject
               dwt=dexp(expon)
              else
               dwt=0.5d0+1/(1+exp(-4*expon))
-c             if(expon.gt.0) then
-c               dwt=(1+2*expon)/(1+expon)
-c              else
-c               dwt=(1-expon)/(1-2*expon)
-c             endif
+!             if(expon.gt.0) then
+!               dwt=(1+2*expon)/(1+expon)
+!              else
+!               dwt=(1-expon)/(1-2*expon)
+!             endif
             endif
           endif
 
-c If we are using weights rather than accept/reject
+! If we are using weights rather than accept/reject
           if(iacc_rej.eq.0) dwt=dwt*pp
 
-c Exercise population control if dmc or vmc with weights
+! Exercise population control if dmc or vmc with weights
           if(idmc.gt.0.or.iacc_rej.eq.0) dwt=dwt*ffi
 
-c Set weights and product of weights over last nwprod steps
+! Set weights and product of weights over last nwprod steps
           pwt(iw,ifr)=pwt(iw,ifr)*dwt/wthist(iw,iwmod,ifr)
           wthist(iw,iwmod,ifr)=dwt
           if(ifr.eq.1) then
@@ -402,7 +402,7 @@ c Set weights and product of weights over last nwprod steps
      &                                           psav*d2n(ifr)*rn)
           endif
 
-c Collect density only for primary walk
+! Collect density only for primary walk
           if(ifr.eq.1) then
             wtgp=wtg*p
             wtgq=wtg*q
@@ -436,7 +436,7 @@ c Collect density only for primary walk
               r4sum=r4sum+wtg*(q*r2o*r2o+p*r2n*r2n)
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
-c calculate 2d density related functions:
+! calculate 2d density related functions:
               if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
                 call reduce_sim_cell(xoldw(:,i,iw,ifr))
                 call reduce_sim_cell(xnew(:,i,ifr))
@@ -444,13 +444,13 @@ c calculate 2d density related functions:
               if(izigzag.gt.0) call zigzag2d(wtgp,wtgq,xoldw(:,:,iw,ifr),xnew(:,:,ifr), i)
               if(ifixe.eq.-1 .or. ifixe.eq.-3) then
 
-                if(icoosys.eq.1) then 
+                if(icoosys.eq.1) then
                   do 247 idim=1,ndim
-c note that ix can be negative or positive. nint is a better choice.
+! note that ix can be negative or positive. nint is a better choice.
                     ixo(idim)=nint(delxi(idim)*xoldw(idim,i,iw,ifr))
   247               ixn(idim)=nint(delxi(idim)*xnew(idim,i,ifr))
                   else
-c same trick adapted to circular coordinates
+! same trick adapted to circular coordinates
                     ixo(1)=nint(delradi*(rmino-rmean))
                     ixn(1)=nint(delradi*(rminn-rmean))
                     ixo(2)=nint(delti*(datan2(xoldw(2,i,iw,ifr),xoldw(1,i,iw,ifr))))
@@ -491,14 +491,14 @@ c same trick adapted to circular coordinates
               if(ifixe.le.-2) call pairden2d(wtgp,wtgq,xoc,xnc)
               if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(wtgp,wtgq,xoc,xnc)
               if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(wtgp,wtgq,xoc,xnc)
-c             if(ifourier.eq.1) call fourier2d(wtgp,wtgq,xoc,xnc)
+!             if(ifourier.eq.1) call fourier2d(wtgp,wtgq,xoc,xnc)
             endif
 
           endif
 
           if(iaccept.eq.1) then
 
-c           if(dabs((enew(ifr)-etrial)/etrial).gt.0.2d+0) then
+!           if(dabs((enew(ifr)-etrial)/etrial).gt.0.2d+0) then
             if(dabs((enew(ifr)-etrial)/etrial).gt.5.0d+0) then
                write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,
      &         enew(ifr)-etrial,psidn(ifr),psijn(ifr),
@@ -539,7 +539,7 @@ c           if(dabs((enew(ifr)-etrial)/etrial).gt.0.2d+0) then
 
       wdsumn=wsum1(1)
       wdsum1=wdsumo
-c     wgdsum1=wgdsumo
+!     wgdsum1=wgdsumo
       if(idmc.gt.0.or.iacc_rej.eq.0) then
         wfsum1=wsum1(1)*ffn
         wgdsumn=wsum1(1)*fprodd
@@ -570,10 +570,10 @@ c     wgdsum1=wgdsumo
         wgsum(ifr)=wgsum(ifr)+wgsum1(ifr)
   305   egsum(ifr)=egsum(ifr)+egsum1(ifr)
 
-c Do split-join
+! Do split-join
 !JT      call splitj ! moved outside the routine
 
-c Estimate eigenvalue of G from the energy
+! Estimate eigenvalue of G from the energy
       eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
       if(itau_eff.ge.1) then
         eigv=dexp((etrial-eest)*taueff(1))

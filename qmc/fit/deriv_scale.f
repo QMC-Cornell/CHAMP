@@ -1,19 +1,19 @@
       subroutine deriv_scale(r,dk,dk2,dr,dr2,iflag,id)
-c Written by A.D.Guclu, jun2005, following the subroutine scale_dist2
-c Calculates quantities related to derivatives of scaling function R:
-c dk = dR/dk
-c dr = d/dr(dk)
-c dr2= d2/dr2(dk)
-c called by deriv_jastrow4. Assuming ijas is 4.
-c iflag = 1  e-n terms in f_{en}
-c         2  e-e terms in f_{ee}
-c         3  e-n terms in f_{een}
-c         4  e-e terms in f_{een}
-c id != 0   calculate only dk
-c     = 1   calculate dk,dr,dr2
-c     = 2   calculate dk2,dk,dr,dr2
-c input: r,iflag
-c output: dk,dk2,dr,dr2
+! Written by A.D.Guclu, jun2005, following the subroutine scale_dist2
+! Calculates quantities related to derivatives of scaling function R:
+! dk = dR/dk
+! dr = d/dr(dk)
+! dr2= d2/dr2(dk)
+! called by deriv_jastrow4. Assuming ijas is 4.
+! iflag = 1  e-n terms in f_{en}
+!         2  e-e terms in f_{ee}
+!         3  e-n terms in f_{een}
+!         4  e-e terms in f_{een}
+! id != 0   calculate only dk
+!     = 1   calculate dk,dr,dr2
+!     = 2   calculate dk2,dk,dr,dr2
+! input: r,iflag
+! output: dk,dk2,dr,dr2
 
       use contr2_mod
       use wfsec_mod
@@ -29,26 +29,26 @@ c output: dk,dk2,dr,dr2
       if(iflag.eq.1.or.iflag.eq.3) then
         cutjas=cutjas_en
         cutjasi=cutjasi_en
-c        asymp_r=asymp_r_en(iwf)
+!        asymp_r=asymp_r_en(iwf)
        elseif(iflag.eq.2.or.iflag.eq.4) then
         cutjas=cutjas_ee
         cutjasi=cutjasi_ee
-c        asymp_r=asymp_r_ee(iwf)
+!        asymp_r=asymp_r_ee(iwf)
       endif
 
       if(isc.eq.2 .or. (isc.eq.12.and.(iflag.eq.1.or.iflag.eq.2))) then
         call deriv_isc2(r,dk,dk2,dr,dr2,scalek(iwf),id)
 
-c isc=3 not used
-c      elseif(isc.eq.3) then
-c        call deriv_isc3(r,dk,dk2,dr,dr2,scalek(iwf),id)
+! isc=3 not used
+!      elseif(isc.eq.3) then
+!        call deriv_isc3(r,dk,dk2,dr,dr2,scalek(iwf),id)
 
       elseif(isc.eq.4 .or. (isc.eq.14.and.(iflag.eq.1.or.iflag.eq.2))) then
         call deriv_isc4(r,dk,dk2,dr,dr2,scalek(iwf),id)
 
-c isc=5 not used
-c      elseif(isc.eq.5) then
-c        call deriv_isc5(r,dk,dk2,dr,dr2,scalek(iwf),id)
+! isc=5 not used
+!      elseif(isc.eq.5) then
+!        call deriv_isc5(r,dk,dk2,dr,dr2,scalek(iwf),id)
 
       elseif(isc.eq.6 .or. (isc.eq.16.and.(iflag.eq.1.or.iflag.eq.2))) then
         call deriv_isc6(r,dk,dk2,dr,dr2,scalek(iwf),cutjas,cutjasi,id)
@@ -81,7 +81,7 @@ c        call deriv_isc5(r,dk,dk2,dr,dr2,scalek(iwf),id)
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc2(r,dk,dk2,dr,dr2,sk,id)
 
@@ -103,7 +103,7 @@ c------------------------------------------------------------------------------
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc4(r,dk,dk2,dr,dr2,sk,id)
 
@@ -127,7 +127,7 @@ c------------------------------------------------------------------------------
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc6(r,dk,dk2,dr,dr2,sk,cutjas,cutjasi,id)
 
@@ -154,7 +154,7 @@ c------------------------------------------------------------------------------
           endif
         endif
 
-c perhaps following is redundant?
+! perhaps following is redundant?
       else
 
         rckby3=sk*cutjas*third
@@ -172,7 +172,7 @@ c perhaps following is redundant?
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc7(r,dk,dk2,dr,dr2,sk,cutjas,cutjasi,id)
 
@@ -218,7 +218,7 @@ c------------------------------------------------------------------------------
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc8(r,dk,dk2,dr,dr2,sk,id)
 
@@ -242,7 +242,7 @@ c------------------------------------------------------------------------------
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc10(r,dk,dk2,dr,dr2,sk,id)
 
@@ -269,10 +269,10 @@ c------------------------------------------------------------------------------
       end
 
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc12(r,dk,dk2,dr,dr2,sk,id)
-c this function can be optimized little more
+! this function can be optimized little more
 
       implicit real*8(a-h,o-z)
 
@@ -295,10 +295,10 @@ c this function can be optimized little more
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc14(r,dk,dk2,dr,dr2,sk,id)
-c this function can be optimized little more
+! this function can be optimized little more
 
       implicit real*8(a-h,o-z)
 
@@ -323,7 +323,7 @@ c this function can be optimized little more
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine deriv_isc16(r,dk,dk2,dr,dr2,sk,cutjas,cutjasi,id)
 
@@ -352,7 +352,7 @@ c------------------------------------------------------------------------------
 
       else
 
-c using isc=6 asymptotic value:
+! using isc=6 asymptotic value:
         rckby3=sk*cutjas*third
         exp=dexp(-rckby3)
 
@@ -368,7 +368,7 @@ c using isc=6 asymptotic value:
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
       subroutine deriv_isc17(r,dk,dk2,dr,dr2,sk,cutjas,cutjasi,id)
 
       implicit real*8(a-h,o-z)
@@ -413,12 +413,12 @@ c------------------------------------------------------------------------------
       return
       end
 
-c------------------------------------------------------------------------------
+!------------------------------------------------------------------------------
 
       subroutine switch_dscale(rr,dd1,dd2,dk,dk2,dr,dr2,iflag,id)
-c by A.D.Guclu, 2005jul
-c Switch scaling for ijas=4,5 from that appropriate for A,B terms to
-c that appropriate for C terms, for d/dk(R) and 1st two derivs.
+! by A.D.Guclu, 2005jul
+! Switch scaling for ijas=4,5 from that appropriate for A,B terms to
+! that appropriate for C terms, for d/dk(R) and 1st two derivs.
 
       use wfsec_mod
       use jaspar3_mod
@@ -443,10 +443,10 @@ c that appropriate for C terms, for d/dk(R) and 1st two derivs.
         dr2=-(dd2*dasymp+dr2)*asympi
         if(id.eq.2) then
           dk2=(-2*dk*dasymp+(1-rr)*d2asymp-dk2)*asympi
-c          dk2=(-dk*dasymp+(1-rr)*d2asymp-dk2-dk)*asympi
+!          dk2=(-dk*dasymp+(1-rr)*d2asymp-dk2-dk)*asympi
         endif
       endif
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------

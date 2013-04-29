@@ -1,5 +1,5 @@
       subroutine determinant_up_dn
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use all_tools_mod
       use dorb_mod
       use dets_mod

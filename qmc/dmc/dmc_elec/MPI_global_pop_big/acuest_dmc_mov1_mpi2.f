@@ -1,6 +1,6 @@
       subroutine acuest_dmc_mov1_mpi2
-c MPI version created by Claudia Filippi starting from serial version
-c routine to accumulate estimators for energy etc.
+! MPI version created by Claudia Filippi starting from serial version
+! routine to accumulate estimators for energy etc.
 
 # if defined (MPI)
 
@@ -51,18 +51,18 @@ c routine to accumulate estimators for energy etc.
      &collect(2*nforce+5),collect_t(2*nforce+5),
      &zzsum_collect(nzzvars),zznow(nzzvars)
 
-c statement function for error calculation
+! statement function for error calculation
       rn_eff(w,w2)=w**2/w2
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
       errg(x,x2,i)=error(x,x2,wgcum(i),wgcm2(i))
 
-c wt   = weight of configurations
-c xsum = sum of values of x from dmc
-c xnow = average of values of x from dmc
-c xcum = accumulated sums of xnow
-c xcm2 = accumulated sums of xnow**2
-c xave = current average value of x
-c xerr = current error of x
+! wt   = weight of configurations
+! xsum = sum of values of x from dmc
+! xnow = average of values of x from dmc
+! xcum = accumulated sums of xnow
+! xcm2 = accumulated sums of xnow**2
+! xave = current average value of x
+! xerr = current error of x
 
       iblk=iblk+1
 
@@ -91,8 +91,8 @@ c xerr = current error of x
 
 !     if(idtask.ne.0) goto 17 ! The slaves also have to calculate egerr so that they can stop when egerr < error_threshold
 
-c     wnow=wsum/nstep
-c     wfnow=wfsum/nstep
+!     wnow=wsum/nstep
+!     wfnow=wfsum/nstep
       r1sum = r1sum_collect
       r2sum = r2sum_collect
       r3sum = r3sum_collect
@@ -157,7 +157,7 @@ c     wfnow=wfsum/nstep
         tjfsum(ifr)=tjfcollect(ifr)
         tausum(ifr)=taucollect(ifr)
 
-c       wgnow=wgsum(ifr)/nstep
+!       wgnow=wgsum(ifr)/nstep
         egnow=egsum(ifr)/wgsum(ifr)
         penow=pesum(ifr)/wgsum(ifr)
         peinow=peisum(ifr)/wgsum(ifr)
@@ -207,7 +207,7 @@ c       wgnow=wgsum(ifr)/nstep
           fgcm2(ifr)=fgcm2(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
           fgave=egcum(1)/wgcum(1)-egcum(ifr)/wgcum(ifr)
           if(iblk.eq.1) then
-c           ifgerr=0
+!           ifgerr=0
             fgerr=0
            else
             fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
@@ -218,7 +218,7 @@ c           ifgerr=0
           endif
         endif
 
-c write out header first time
+! write out header first time
 
         if(iblk.eq.1.and.ifr.eq.1) then
           if(ndim.eq.2) then
@@ -231,7 +231,7 @@ c write out header first time
           endif
         endif
 
-c write out current values of averages etc.
+! write out current values of averages etc.
 
         if(ndim.eq.2) then
           iegerr=nint(10000000*egerr)
@@ -248,16 +248,16 @@ c write out current values of averages etc.
           if(ifr.gt.1) ifgerr=nint(100000*fgerr)
         endif
 
-c magnetic energy for quantum dots...
-c right definition of the potential energy does not include magnetic energy.
+! magnetic energy for quantum dots...
+! right definition of the potential energy does not include magnetic energy.
         if(ndim.eq.2) then
-c         emave=0.125*bext*bext*r2cum/wgcum(ifr)+emaglz+emagsz+emagv
+!         emave=0.125*bext*bext*r2cum/wgcum(ifr)+emaglz+emagsz+emagv
           temp=0.25d0*bext*bext/(we*we)
           emave=(peave-peiave-emag)*temp+emag
           emerr=(peerr+peierr)*temp
           iemerr=nint(10000000*emerr)
           peave=peave-emave
-c         ipeerr=ipeerr+iemerr
+!         ipeerr=ipeerr+iemerr
           ipeerr=nint(10000000*(peerr*(1-temp)+temp*peierr))
         endif
 
@@ -280,17 +280,17 @@ c         ipeerr=ipeerr+iemerr
         endif
    15 continue
 
-c I have changed the dwt limit in the dmc routines so it does not depend on etrial so  there is no need for these warning msgs.
-c The dwt limit is there to prevent population explosions with nonlocal psps. but there are
-c better solutions than dwt limits.
-c     if(wgsum(1).gt.1.5d0*nstep*nconf*nproc .or. (iblk.gt.2*nblkeq+5 .and. etrial .gt. egave+200*egerr))
-c    &write(6,'(''Warning: etrial too high? It should be reasonably close to DMC energy because of dwt in dmc'')')
-c     if(wgsum(1).lt.0.7d0*nstep*nconf*nproc .or. (iblk.gt.2*nblkeq+5 .and. etrial .lt. egave-200*egerr))
-c    &write(6,'(''Warning: etrial too low?  It should be reasonably close to DMC energy because of dwt in dmc'')')
+! I have changed the dwt limit in the dmc routines so it does not depend on etrial so  there is no need for these warning msgs.
+! The dwt limit is there to prevent population explosions with nonlocal psps. but there are
+! better solutions than dwt limits.
+!     if(wgsum(1).gt.1.5d0*nstep*nconf*nproc .or. (iblk.gt.2*nblkeq+5 .and. etrial .gt. egave+200*egerr))
+!    &write(6,'(''Warning: etrial too high? It should be reasonably close to DMC energy because of dwt in dmc'')')
+!     if(wgsum(1).lt.0.7d0*nstep*nconf*nproc .or. (iblk.gt.2*nblkeq+5 .and. etrial .lt. egave-200*egerr))
+!    &write(6,'(''Warning: etrial too low?  It should be reasonably close to DMC energy because of dwt in dmc'')')
 
       call systemflush(6)
 
-c zero out xsum variables for metrop
+! zero out xsum variables for metrop
 
    17 wsum=zero
       wfsum=zero
@@ -322,22 +322,22 @@ c zero out xsum variables for metrop
 
       entry acues1_dmc_mov1_mpi2
 
-c Warning: next 7 lines were attempt to save communication time
-c if running in vmc mode.  But they do not work.
-c     eigv=1
-c     eest=etrial
-c     wdsumo=nwalk
-c     wgdsumo=nwalk
-c     ipmod=mod(ipass,nfprod)
-c     wtgen(ipmod)=nwalk
-c     if(idmc.lt.0) goto 38
+! Warning: next 7 lines were attempt to save communication time
+! if running in vmc mode.  But they do not work.
+!     eigv=1
+!     eest=etrial
+!     wdsumo=nwalk
+!     wgdsumo=nwalk
+!     ipmod=mod(ipass,nfprod)
+!     wtgen(ipmod)=nwalk
+!     if(idmc.lt.0) goto 38
 
       call systemflush(11)
-c statistical fluctuations without blocking
+! statistical fluctuations without blocking
       wdsum1=wdsumo
       wgdsum1=wgdsumo
 
-c Put all variable in one array, so we can do a single MPI call
+! Put all variable in one array, so we can do a single MPI call
       collect(1)=esum1(1)
       collect(2)=wsum1(1)
       collect(3)=efsum1
@@ -347,20 +347,20 @@ c Put all variable in one array, so we can do a single MPI call
         collect(5+ifr)=wgsum1(ifr)
    22   collect(5+nforce+ifr)=egsum1(ifr)
 
-c Need mpi_allreduce so that all processors can put upper bounds on weights for psp. calculations
-c     call mpi_reduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
+! Need mpi_allreduce so that all processors can put upper bounds on weights for psp. calculations
+!     call mpi_reduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(collect,collect_t,2*nforce+5,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
 !     if(idtask.ne.0) goto 36 ! The slaves also have to calculate either wcum1,ecum1,ecm21 or wgcum1,egcum1,egcm21 to put bounds on branching in psp. calcul.
 
-c Warning: The tausum is being done in an ugly way, and should be cleaned up
+! Warning: The tausum is being done in an ugly way, and should be cleaned up
       esum1(1)=collect_t(1)
       wsum1(1)=collect_t(2)
       efsum1=collect_t(3)
       wfsum1=collect_t(4)
-c     tausum(1)=collect_t(5)
+!     tausum(1)=collect_t(5)
 
       if(ipr.gt.-2 .and. idtask .eq. 0) then
          write(11,'(i8,f11.8,f15.8,f13.8)') ipass,ffn,wsum1(1),esum1(1)/wsum1(1)
@@ -395,26 +395,26 @@ c     tausum(1)=collect_t(5)
       call object_modified('wgcum1') !worry about speed
       call object_modified('wgcm21')
 
-c collect block averages
+! collect block averages
       wsum=wsum+wsum1(1)
       wfsum=wfsum+wfsum1
       wdsum=wdsum+wdsum1
       wgdsum=wgdsum+wgdsum1
       esum=esum+esum1(1)
       efsum=efsum+efsum1
-c     eisum=eisum+wfsum1/wdsum1
+!     eisum=eisum+wfsum1/wdsum1
       do 35 ifr=1,nforce
         wgsum(ifr)=wgsum(ifr)+wgsum1(ifr)
    35   egsum(ifr)=egsum(ifr)+egsum1(ifr)
 
-c Estimate eigenvalue of G from the energy
+! Estimate eigenvalue of G from the energy
       ipmod=mod(ipass,nfprod)
       if(iabs(idmc).eq.1) then
         nfpro=min(nfprod,ipass)
         eigv=(wgsum1(1)/wtgen(ipmod))**(one/nfpro)
        else
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
-c       eigv=dexp((etrial-eest)*(taucum(1)+taublock)/
+!       eigv=dexp((etrial-eest)*(taucum(1)+taublock)/
         eigv=dexp((etrial-eest)*(taucum(1)+collect_t(5))/(wgcum(1)+wgsum(1)))
         if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif
@@ -433,11 +433,11 @@ c       eigv=dexp((etrial-eest)*(taucum(1)+taublock)/
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-c zero out step averages
+! zero out step averages
    38 wfsum1=zero
       wdsum1=zero
       efsum1=zero
-c     tausum(1)=zero
+!     tausum(1)=zero
       do 40 ifr=1,nforce
         wsum1(ifr)=zero
         wgsum1(ifr)=zero
@@ -447,14 +447,14 @@ c     tausum(1)=zero
       return
 
       entry zeres0_dmc_mov1_mpi2
-c Initialize various quantities at beginning of run
-c the initial values of energy psi etc. are calculated here
+! Initialize various quantities at beginning of run
+! the initial values of energy psi etc. are calculated here
 
       ipass=0
 
-c set quadrature points
+! set quadrature points
 
-c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
+!     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
       eigv=one
@@ -503,11 +503,11 @@ c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
    80 continue
 
       entry zerest_dmc_mov1_mpi2
-c entry point to zero out all averages etc. after equilibration runs
+! entry point to zero out all averages etc. after equilibration runs
 
       iblk=0
 
-c zero out estimators
+! zero out estimators
 
       wcum1=zero
       wfcum1=zero
@@ -605,7 +605,7 @@ c zero out estimators
       call alloc ('tjfsum', tjfsum, nforce)
       call alloc ('tausum', tausum, nforce)
       call alloc ('esum1', esum1, nforce)
-c Do it for MFORCE rather than nforce because in optimization at the start nforce=1 but later nforce=3
+! Do it for MFORCE rather than nforce because in optimization at the start nforce=1 but later nforce=3
 !JT: this should not be necessary and it is annoying for dynamic allocation!
       do 85 ifr=1,nforce
 !JT   do 85 ifr=1,MFORCE
@@ -647,13 +647,13 @@ c Do it for MFORCE rather than nforce because in optimization at the start nforc
       acc_int=0
       nodecr=0
 
-c Zero out estimators for charge density of atom.
+! Zero out estimators for charge density of atom.
       do 90 i=1,NRAD
         rprobup(i)=zero
         rprobdn(i)=zero
    90   rprob(i)=zero
 
-c Zero out estimators for pair densities:
+! Zero out estimators for pair densities:
       if (ifixe.ne.0) then
       call alloc_range ('den2d_t', den2d_t, -NAX, NAX, -NAX, NAX)
       call alloc_range ('den2d_u', den2d_u, -NAX, NAX, -NAX, NAX)
@@ -735,10 +735,10 @@ c Zero out estimators for pair densities:
         znncorr(:) = 0
         zn2ncorr(:) = 0
       endif
- 
-     
-      
- 
+
+
+
+
       call grad_hess_jas_save
 # endif
 

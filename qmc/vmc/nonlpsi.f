@@ -1,8 +1,8 @@
-c     function psinl(u,rshifti,rshiftj,rri,rrj,it)
+!     function psinl(u,rshifti,rshiftj,rri,rrj,it)
 !WAS
       function psinl(u,rshifti,rshiftj,ri, rj, rri,rrj,it)
 !
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use constants_mod
       use control_mod
@@ -28,8 +28,8 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
 
       dimension uu(0:max(nord,nordb,nordc)),ss(0:max(nord,norda,nordc)),tt(0:max(nord,norda,nordc)),rshifti(3),rshiftj(3)
 
-c Not updated for ijas=5,6 because we will probably stay with ijas=4
-c If we want to use ijas=5,6 update this routine similarly to psi.f
+! Not updated for ijas=5,6 because we will probably stay with ijas=4
+! If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.ge.5) stop 'ijas >= 5 not implemented in psinl'
 
       if(ijas.eq.1) then
@@ -146,7 +146,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       function psianl(rri,it)
 
@@ -158,8 +158,8 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-c Not updated for ijas=5,6 because we will probably stay with ijas=4
-c If we want to use ijas=5,6 update this routine similarly to psi.f
+! Not updated for ijas=5,6 because we will probably stay with ijas=4
+! If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.ge.5) stop 'ijas >= 5 not implemented in psianl'
 
       psianl=0.d0
@@ -177,7 +177,7 @@ c If we want to use ijas=5,6 update this routine similarly to psi.f
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function psibnl(u,isb,ipar)
 
       use contr2_mod
@@ -189,8 +189,8 @@ c-----------------------------------------------------------------------
       implicit real*8(a-h,o-z)
 
 
-c Not updated for ijas=5,6 because we will probably stay with ijas=4
-c If we want to use ijas=5,6 update this routine similarly to psi.f
+! Not updated for ijas=5,6 because we will probably stay with ijas=4
+! If we want to use ijas=5,6 update this routine similarly to psi.f
       if(ijas.ge.5) stop 'ijas >= 5 not implemented in psibnl'
 
       psibnl=0.d0

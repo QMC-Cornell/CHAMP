@@ -1,5 +1,5 @@
       subroutine deriv_jastrow3(x,v,d2,value)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
       use constants_mod
       use atom_mod
       use dets_mod
@@ -133,7 +133,7 @@ c Written by Claudia Filippi
 
       d2=d2 + two*(feeuu+ndim1*feeu)
 
-c derivatives of wave function wrt b(2)
+! derivatives of wave function wrt b(2)
 
       iparm0=nparma(1)
       if(isb.eq.2) iparm0=iparm0+nparmb(1)
@@ -311,7 +311,7 @@ c derivatives of wave function wrt b(2)
     	        fptt=fptt+c(ll,it,iwf)*ptt
      	        fpst=fpst+c(ll,it,iwf)*pst
 
-c derivatives of wave function wrt c-parameters
+! derivatives of wave function wrt c-parameters
                 ideriv=0
                 if(ll.eq.iwc(jj)) then
                   if(nvdepend(jj,it).gt.0) then
@@ -446,7 +446,7 @@ c derivatives of wave function wrt c-parameters
 
   45  continue
 
-c e-n terms
+! e-n terms
   47  do 55 i=1,nelec
 
         fso(i,i)=zero
@@ -488,8 +488,8 @@ c e-n terms
           endif
 
           rri2=rri*rri
-c         rri3=rri2*rri
-c         rri4=rri3*rri
+!         rri3=rri2*rri
+!         rri4=rri3*rri
 
           top=a(1,iwf)*rri
           topi=a(1,iwf)

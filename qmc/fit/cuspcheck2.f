@@ -1,10 +1,10 @@
       subroutine cuspcheck2(scalek,a,b,diff,isp,nspin1,ncuspc,iprin)
-c Written by Cyrus Umrigar
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c impose cusp-conditions via a penalty.
-c note that for the log terms from the e-e cusp, the coefficients are
-c those of (s**n/2)*log(s**2/2), rather than (s**n)*log(s**2)
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Written by Cyrus Umrigar
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! impose cusp-conditions via a penalty.
+! note that for the log terms from the e-e cusp, the coefficients are
+! those of (s**n/2)*log(s**2/2), rather than (s**n)*log(s**2)
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use constants_mod
       use atom_mod
       use dim_mod
@@ -22,27 +22,27 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       dimension a(*),b(*),diff(*)
 
-c     the shifting is done in the calling routine, so do not shift here
-c     for e-e cusp, but do shift for e-n cusp and for making coefs of
-c     s and r pos and neg respectively.
+!     the shifting is done in the calling routine, so do not shift here
+!     for e-e cusp, but do shift for e-n cusp and for making coefs of
+!     s and r pos and neg respectively.
       ishft=0
 
-c coordinates: r,s,t
+! coordinates: r,s,t
 
-c Warning: temporarily assume only one nucleus type
+! Warning: temporarily assume only one nucleus type
 
-c f2e    o(s^2) from phi20(r12=0)
-c f2elog o(s^2 log(s)) from phi21(r12=0)
-c f2n    o(r^2) from phi20(r1=0)
+! f2e    o(s^2) from phi20(r12=0)
+! f2elog o(s^2 log(s)) from phi21(r12=0)
+! f2n    o(r^2) from phi20(r1=0)
       f2e=-d1b12*eguess + (const1-d1b4*znuc(iwctype(1)))*znuc(iwctype(1))
       f2elog=const2*znuc(iwctype(1))
       f2n=-d1b6*(eguess+znuc(iwctype(1))*(znuc(iwctype(1))-dln2)) - d1b24
 
-c Focks's terms are evaluated using scaled variables. Scaled variables
-c in phi10 originate a 2nd order in the real variables that has to be
-c subtracted from phi20. This is done by redifining the coeffs a(4-7).
-c If wf is a Pade', for small hyper-rad wf=P(a)(1-P(b)+..) and the 2nd
-c order contribution from P(a)P(b) etc. has also to be subtracted out.
+! Focks's terms are evaluated using scaled variables. Scaled variables
+! in phi10 originate a 2nd order in the real variables that has to be
+! subtracted from phi20. This is done by redifining the coeffs a(4-7).
+! If wf is a Pade', for small hyper-rad wf=P(a)(1-P(b)+..) and the 2nd
+! order contribution from P(a)P(b) etc. has also to be subtracted out.
       if(ifock.gt.0) then
         if(isc.eq.2) then
           scalel=half*scalek
@@ -55,8 +55,8 @@ c order contribution from P(a)P(b) etc. has also to be subtracted out.
         a(6)=a6sav+a(44)*(a(2)*half*scalel-a6sav)
         a(7)=a7sav+a(44)*(a(1)*b(2)+a(2)*b(1)-a7sav)
 
-c Same as before for terms generated from phi21 contributing to phi31.
-c The coeffs a(47-52) are defined to cancel this contribution from phi31.
+! Same as before for terms generated from phi21 contributing to phi31.
+! The coeffs a(47-52) are defined to cancel this contribution from phi31.
         a(47)=const3*(-(a(1)*b(40)+a(40)*b(1))-scalel*a(40))
         a(48)=const3*(half*(a(2)*b(40)+a(40)*b(2))+scalel*a(40)/four)
         a(49)=const3*(-(a(2)*b(40)+a(40)*b(2)))
@@ -182,9 +182,9 @@ c The coeffs a(47-52) are defined to cancel this contribution from phi31.
         write(6,'(''coefs o s6lg2'',9f12.6)') -ap1*bl3**2
       endif
 
-c     e-n cusp
-c     note that ishft is one less that the number of cusps already
-c     imposed because, the next cusp-condit has argument (ishft+2)
+!     e-n cusp
+!     note that ishft is one less that the number of cusps already
+!     imposed because, the next cusp-condit has argument (ishft+2)
       ishft=17
 
       a1=0

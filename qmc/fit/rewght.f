@@ -1,8 +1,8 @@
       subroutine rewght(diff)
-c Written by Cyrus Umrigar
-c Calculate the weights due to the fact that we have sampled from
-c one probability distribution, but want to calculate the expectation
-c value with respect to another.
+! Written by Cyrus Umrigar
+! Calculate the weights due to the fact that we have sampled from
+! one probability distribution, but want to calculate the expectation
+! value with respect to another.
       use constants_mod
       use contr2_mod
       use confg_mod
@@ -14,10 +14,10 @@ c value with respect to another.
 
       wtmax=iabs(mod(irewgt,100))
 
-c If the normalizations of the old and new wavefns. is very different then
-c when we take the exp it could be outside the range of the smallest and
-c largest numbers that can be represented on the computer, so in that case
-c renormalize the old wavefn. and recompute weights.
+! If the normalizations of the old and new wavefns. is very different then
+! when we take the exp it could be outside the range of the smallest and
+! largest numbers that can be represented on the computer, so in that case
+! renormalize the old wavefn. and recompute weights.
       av=0
       do 20 i=1,ndata
    20   av=av+psij(i)+dlog(dabs(psid(i)))-psio(i)
@@ -39,7 +39,7 @@ c renormalize the old wavefn. and recompute weights.
         wghtsm=wghtsm+wght(i)
   100 continue
 
-c Put max lim. on wght and calculate new wghtsm
+! Put max lim. on wght and calculate new wghtsm
       do 120 iter=1,5
         term=dfloat(ndata)/wghtsm
         eav=zero
@@ -56,7 +56,7 @@ c Put max lim. on wght and calculate new wghtsm
         if(iflag.eq.0) goto 130
   120 continue
 
-c scale diffs by wght
+! scale diffs by wght
   130 term=dfloat(ndata)/wghtsm
       eav=eguess+eav/wghtsm
       do 134 i=1,ndata
@@ -64,7 +64,7 @@ c scale diffs by wght
         if(iaver.ge.1) diff(i)=diff(i)+eguess-eav
         diff(i)=diff(i)*dsqrt(wght(i))
   134 continue
-c     wghtsm=ndata
+!     wghtsm=ndata
 
       return
       end

@@ -1,12 +1,12 @@
       subroutine deriv_jastrow4(x,v,d2,value)
-c Written by Cyrus Umrigar and Claudia Filippi
-c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
-c Jastrow 6   must be used with one of isc=6,7
+! Written by Cyrus Umrigar and Claudia Filippi
+! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
+! Jastrow 6   must be used with one of isc=6,7
 
-c When iperiodic=1, nloc=-4 (infinite quantum wire), then the "en" distance
-c  used in en and een terms for the first center (ic = 1) is the distance
-c  between the electron and the middle (y-axis) of the wire, rather than
-c   the distance between (0,0) and an electron.  ACM, July 2010 
+! When iperiodic=1, nloc=-4 (infinite quantum wire), then the "en" distance
+!  used in en and een terms for the first center (ic = 1) is the distance
+!  between the electron and the middle (y-axis) of the wire, rather than
+!   the distance between (0,0) and an electron.  ACM, July 2010
 
       use all_tools_mod
       use constants_mod
@@ -44,7 +44,7 @@ c   the distance between (0,0) and an electron.  ACM, July 2010
       common /focktmp/ fc,fcu,fcuu,fcs,fcss,fct,fctt,fcst,fcus,fcut
 
       dimension x(3,*),v(3,*)
-c     dimension uu(-3:nord),ss(-3:nord),tt(-3:nord),rri(-3:nord),rrj(-3:nord)
+!     dimension uu(-3:nord),ss(-3:nord),tt(-3:nord),rri(-3:nord),rrj(-3:nord)
       dimension uu(-3:max(nord,nordb,nordc)),ss(-3:max(nord,norda,nordc)),tt(-3:max(nord,norda,nordc)),rri(-3:max(nord,norda,nordc))
      &,rrj(-3:max(nord,norda,nordc))
 
@@ -88,7 +88,7 @@ c     dimension uu(-3:nord),ss(-3:nord),tt(-3:nord),rri(-3:nord),rrj(-3:nord)
 
       if(nelec.lt.2) goto 65
 
-c e-e and e-e-n terms
+! e-e and e-e-n terms
       ij=0
       do 60 i=2,nelec
       im1=i-1
@@ -138,10 +138,10 @@ c e-e and e-e-n terms
       bot2=bot*bot
 
 
-c      feeu=topu/bot-botu*top/bot2
-c      feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
-c      feeuu=feeuu/bot
-c simpler expressions are :
+!      feeu=topu/bot-botu*top/bot2
+!      feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
+!      feeuu=feeuu/bot
+! simpler expressions are :
       fee=top/bot
       feeu=topu/bot2
       feeuu=-2*feeu*botu/bot
@@ -160,7 +160,7 @@ c simpler expressions are :
         feeu=feeu+b(iord+1,isb,iwf)*iord*uu(iord-1)
    20   feeuu=feeuu+b(iord+1,isb,iwf)*iord*(iord-1)*uu(iord-2)
 
-c for scale derivatives we also need feeuuu:
+! for scale derivatives we also need feeuuu:
       if(nparms.eq.1) then
         if(isc.eq.8 .or. isc.eq.10) then
           stop 'scalek opt not fully implemented for isc=8,10'
@@ -170,9 +170,9 @@ c for scale derivatives we also need feeuuu:
    21     feeuuu=feeuuu+b(iord+1,isb,iwf)*iord*(iord-1)*(iord-2)*uu(iord-3)
       endif
 
-c      feeuu=feeuu*dd1*dd1+feeu*dd2
-c      feeu=feeu*dd1/rij
-c we will need feeuu and feeu later
+!      feeuu=feeuu*dd1*dd1+feeu*dd2
+!      feeu=feeu*dd1/rij
+! we will need feeuu and feeu later
       tempuu=feeuu*dd1*dd1+feeu*dd2
       tempu=feeu*dd1/rij
 
@@ -182,16 +182,16 @@ c we will need feeuu and feeu later
    22   fijo(k,j,i)= fijo(k,j,i) - tempu*rvec_ee(k,ij)
       d2ijo(i,j)=d2ijo(i,j)+2.*(tempuu+ndim1*tempu)
 
-c     v(1,i)=v(1,i) + tempu*rvec_ee(1,ij)
-c     v(2,i)=v(2,i) + tempu*rvec_ee(2,ij)
-c     v(3,i)=v(3,i) + tempu*rvec_ee(3,ij)
-c     v(1,j)=v(1,j) - tempu*rvec_ee(1,ij)
-c     v(2,j)=v(2,j) - tempu*rvec_ee(2,ij)
-c     v(3,j)=v(3,j) - tempu*rvec_ee(3,ij)
+!     v(1,i)=v(1,i) + tempu*rvec_ee(1,ij)
+!     v(2,i)=v(2,i) + tempu*rvec_ee(2,ij)
+!     v(3,i)=v(3,i) + tempu*rvec_ee(3,ij)
+!     v(1,j)=v(1,j) - tempu*rvec_ee(1,ij)
+!     v(2,j)=v(2,j) - tempu*rvec_ee(2,ij)
+!     v(3,j)=v(3,j) - tempu*rvec_ee(3,ij)
 
-c     d2 =d2 + two*(tempuu+ndim1*feeu)
+!     d2 =d2 + two*(tempuu+ndim1*feeu)
 
-c derivatives of wave function wrt b(1),b(2) and rest of b(i)
+! derivatives of wave function wrt b(1),b(2) and rest of b(i)
 
       iparma=nparma(1)
       do 23 it=2,nctype
@@ -215,9 +215,9 @@ c derivatives of wave function wrt b(1),b(2) and rest of b(i)
           botasymp=1+b(2,isb,iwf)*asymp_r_ee(iwf)
 
           gee=top/bot-sspinn*asymp_r_ee(iwf)/botasymp
-c         geeu=topu/bot-botu*top/bot2
-c         geeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
-c         geeuu=geeuu/bot
+!         geeu=topu/bot-botu*top/bot2
+!         geeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
+!         geeuu=geeuu/bot
           geeu=topu/bot2
           geeuu=-2*botu*geeu/bot
           if(isc.eq.8 .or. isc.eq.10) then
@@ -231,7 +231,7 @@ c         geeuu=geeuu/bot
               stop 'scalek opt not fully implemented for isc=8,10'
             endif
             asympterm=sspinn/(botasymp*botasymp)*dasymp_r_ee(iwf)
-c            asympterm=0
+!            asympterm=0
             didk(iparm)=didk(iparm)+geeu*dk-asympterm
           endif
 
@@ -250,9 +250,9 @@ c            asympterm=0
           botasymp2=botasymp*botasymp
 
           gee=top/bot+sspinn*b(1,isb,iwf)*asymp_r_ee(iwf)**2/botasymp2
-c          geeu=topu/bot-botu*top/bot2
-c          geeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
-c          geeuu=geeuu/bot
+!          geeu=topu/bot-botu*top/bot2
+!          geeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
+!          geeuu=geeuu/bot
           geeu=topu/(bot*bot0)
           geeuu=topuu*(1-2*b(2,isb,iwf)*uu(1))/bot2
           if(isc.eq.8 .or. isc.eq.10) then
@@ -291,7 +291,7 @@ c          geeuu=geeuu/bot
             geeuu=iord*(iord-1)*uu(iord-2)
             if(nparms.eq.1 .and. igradhess.gt.0) then
               asympterm=asympiord/asymp_r_ee(iwf)*dasymp_r_ee(iwf)
-c              asympterm=0
+!              asympterm=0
               didk(iparm)=didk(iparm)+iord*(uu(iord-1)*dk-asympterm)
             endif
            elseif(ijas.eq.5) then
@@ -319,13 +319,13 @@ c              asympterm=0
 
    25 continue
 
-c derivatives (go,gvalue and g) wrt scalek parameter
+! derivatives (go,gvalue and g) wrt scalek parameter
       if(nparms.eq.1) then
         if(isc.eq.8 .or. isc.eq.10) then
           stop 'scalek opt not fully implemented for isc=8,10'
         endif
         iparm=1
-c        call deriv_scale(rij,dk,dk2,dr,dr2,2,iderivk)
+!        call deriv_scale(rij,dk,dk2,dr,dr2,2,iderivk)
 
         gee=feeu*dk-dasymp_jasb(ipar+1,iwf)*dasymp_r_ee(iwf)
         geeu=(feeuu*dk*dd1+feeu*dr)/rij
@@ -350,10 +350,10 @@ c        call deriv_scale(rij,dk,dk2,dr,dr2,2,iderivk)
 
       endif
 
-c There are no C terms to order 1.
+! There are no C terms to order 1.
    30 if(nordc.le.1) goto 58
 
-c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
+!     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
       call scale_dist2(rij,uu(1),dd1,dd2,4)
       if(ijas.eq.4.or.ijas.eq.5) then
         call switch_scale2(uu(1),dd1,dd2,4)
@@ -363,8 +363,8 @@ c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
 
       do 57 ic=1,ncent
         it=iwctype(ic)
-c       if we have an infinite wire, then for the en and een terms, for ic=1,
-c         we only use the distance from the electron to the y-axis of the wire
+!       if we have an infinite wire, then for the en and een terms, for ic=1,
+!         we only use the distance from the electron to the y-axis of the wire
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
            ri=abs(rvec_en(2,i,ic))  ! y-component of rvec_en is dist to wire center
            rj=abs(rvec_en(2,j,ic))
@@ -388,7 +388,7 @@ c         we only use the distance from the electron to the y-axis of the wire
 
 !!!! WAS
         if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
+!           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
            call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut,
      +          dfcuti, dfcutj, d2fcuti, d2fcutj)
         endif
@@ -405,15 +405,15 @@ c           call f_een_cuts (cutjasc, ri, rj, fcuti, fcutj, fcut,
 
         s=ri+rj
         t=ri-rj
-c       u2mt2=rij*rij-t*t
+!       u2mt2=rij*rij-t*t
         u2pst=rij*rij+s*t
         u2mst=rij*rij-s*t
-c       s2mu2=s*s-rij*rij
-c       s2mt2=s*s-t*t
+!       s2mu2=s*s-rij*rij
+!       s2mt2=s*s-t*t
 
         do 50 iord=1,nordc
-c         rri(iord)=rri(1)**iord
-c         rrj(iord)=rrj(1)**iord
+!         rri(iord)=rri(1)**iord
+!         rrj(iord)=rrj(1)**iord
           rri(iord)=rri(1)*rri(iord-1)
           rrj(iord)=rrj(1)*rrj(iord-1)
           ss(iord)=rri(iord)+rrj(iord)
@@ -472,23 +472,23 @@ c         rrj(iord)=rrj(1)**iord
                 pui=p1u*p2i
                 puj=p1u*p2j
 
-c                pc=uu(k)*ss(l)*tt(m)
-c                pu=k*uu(k-1)*ss(l)*tt(m)
-c                puu=k*(k-1)*uu(k-2)*ss(l)*tt(m)
-c                ppi=uu(k)
-c     &          *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
-c                pii=uu(k)
-c     &          *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m)
-c     &          +m*(m-1)*rri(m-2)*rrj(l+m))
-c                pj=uu(k)
-c     &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
-c                pjj=uu(k)
-c     &          *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m)
-c     &          +m*(m-1)*rrj(m-2)*rri(l+m))
-c                pui=k*uu(k-1)
-c     &          *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
-c                puj=k*uu(k-1)
-c     &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
+!                pc=uu(k)*ss(l)*tt(m)
+!                pu=k*uu(k-1)*ss(l)*tt(m)
+!                puu=k*(k-1)*uu(k-2)*ss(l)*tt(m)
+!                ppi=uu(k)
+!     &          *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
+!                pii=uu(k)
+!     &          *((l+m)*(l+m-1)*rri(l+m-2)*rrj(m)
+!     &          +m*(m-1)*rri(m-2)*rrj(l+m))
+!                pj=uu(k)
+!     &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
+!                pjj=uu(k)
+!     &          *((l+m)*(l+m-1)*rrj(l+m-2)*rri(m)
+!     &          +m*(m-1)*rrj(m-2)*rri(l+m))
+!                pui=k*uu(k-1)
+!     &          *((l+m)*rri(l+m-1)*rrj(m)+m*rri(m-1)*rrj(l+m))
+!                puj=k*uu(k-1)
+!     &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
 
                 fc=fc+c(ll,it,iwf)*pc
                 fu=fu+c(ll,it,iwf)*pu
@@ -500,7 +500,7 @@ c     &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
                 fui=fui+c(ll,it,iwf)*pui
                 fuj=fuj+c(ll,it,iwf)*puj
 
-c quantities needed for scale derivatives:
+! quantities needed for scale derivatives:
                 if(nparms.eq.1) then
 
                   p1uuu=k*(k-1)*(k-2)*uu(k-3)
@@ -524,17 +524,17 @@ c quantities needed for scale derivatives:
 
                 endif
 
-c derivatives of wave function wrt c-parameters
-c ideriv = 0 parameter is not varied and is not dependent
-c        = 1 parameter is a dependent parameter
-c        = 2 parameter is an independent parameter that is varied
+! derivatives of wave function wrt c-parameters
+! ideriv = 0 parameter is not varied and is not dependent
+!        = 1 parameter is a dependent parameter
+!        = 2 parameter is an independent parameter that is varied
                 ideriv=0
                 if(nparmj.gt.0) then
-c                  jparm_tempacm = jparm
-c                  if (jparm.gt.nparmc(1)) then
-c                    write(6,'(''Error: jparm too big!!'', i4)') jparm
-c                    jparm = 1
-c                  endif
+!                  jparm_tempacm = jparm
+!                  if (jparm.gt.nparmc(1)) then
+!                    write(6,'(''Error: jparm too big!!'', i4)') jparm
+!                    jparm = 1
+!                  endif
                   if(jparm.le.nparmc(it)) then
                     if(ll.eq.iwjasc(jparm,it)) then
                       ideriv=2
@@ -554,18 +554,18 @@ c                  endif
                       endif
                     enddo
                   endif
-                    
-c                 if(ll.eq.iwjasc(jparm,it)) then
-c                   ideriv=2
-c                  else
-c                   do 31 id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
-c                     if(ll.eq.iwc4(id)) then
-c                       jj=id
-c                       if(nvdepend(jj,it).gt.0) ideriv=1
-c                     endif
-c  31               continue
-c                 endif ! ll
-cc                 jparm = jparm_tempacm
+
+!                 if(ll.eq.iwjasc(jparm,it)) then
+!                   ideriv=2
+!                  else
+!                   do 31 id=1,2*(nordc-1)           !   dowhile loop would be more efficient here?
+!                     if(ll.eq.iwc4(id)) then
+!                       jj=id
+!                       if(nvdepend(jj,it).gt.0) ideriv=1
+!                     endif
+!  31               continue
+!                 endif ! ll
+!c                 jparm = jparm_tempacm
                 endif ! nparmj
 
                 if(ideriv.gt.0) then
@@ -616,17 +616,17 @@ cc                 jparm = jparm_tempacm
 
                       go(i,j,iparm)=go(i,j,iparm)+cd*gp
                       gvalue(iparm)=gvalue(iparm)+cd*gp
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
                       if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
                         g(1,i,iparm)=g(1,i,iparm)+cd*(gu*rvec_ee(1,ij))
                         g(2,i,iparm)=g(2,i,iparm)+cd*(gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij))
                         g(3,i,iparm)=g(3,i,iparm)+cd*(gu*rvec_ee(3,ij))
                         g(1,j,iparm)=g(1,j,iparm)+cd*(-gu*rvec_ee(1,ij))
                         g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
-                        g(3,j,iparm)=g(3,j,iparm)+cd*(-gu*rvec_ee(3,ij)) 
+                        g(3,j,iparm)=g(3,j,iparm)+cd*(-gu*rvec_ee(3,ij))
                       else
                         g(1,i,iparm)=g(1,i,iparm)+cd*(gi*rvec_en(1,i,ic)+gu*rvec_ee(1,ij))
                         g(2,i,iparm)=g(2,i,iparm)+cd*(gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij))
@@ -635,26 +635,26 @@ c          thus, derivatives only depend on en distance in the y-direction
                         g(2,j,iparm)=g(2,j,iparm)+cd*(gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij))
                         g(3,j,iparm)=g(3,j,iparm)+cd*(gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij))
                       endif
-c      This equation (and the subsequent u,s,t notation) comes from 
-c        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
-c        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
-c      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
-c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
+!      This equation (and the subsequent u,s,t notation) comes from
+!        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
+!        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
+!      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
+!        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
                       if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
-                         d2g(iparm)=d2g(iparm) + cd*((ndim- 1.)*2.*gu  
+                         d2g(iparm)=d2g(iparm) + cd*((ndim- 1.)*2.*gu
      &                   + 2.*guu + gii + gjj + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij)
                       else
                          d2g(iparm)=d2g(iparm) + cd*((ndim-1)*(2*gu+gi+gj)
      &                   + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij))
                       endif
-c  33                 d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu)
-c    &                + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
-c    &                + gii + 2*gi + gjj + 2*gj)
+!  33                 d2g(iparm)=d2g(iparm) + cd*(2*(guu + 2*gu)
+!    &                + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
+!    &                + gii + 2*gi + gjj + 2*gj)
 
                     enddo        ! loop over id.  Used to be labeled 33.
-c                   jj=jj+1
+!                   jj=jj+1
 
- 
+
 
                     if(igradhess.gt.0 .and. nparms.eq.1) then
                       didk(iparm)=didk(iparm)+cd*(pu*dkij+ppi*dki+pj*dkj)
@@ -666,10 +666,10 @@ c                   jj=jj+1
 
                     go(i,j,iparm)=go(i,j,iparm)+gp
                     gvalue(iparm)=gvalue(iparm)+gp
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
                     if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
                       g(1,i,iparm)=g(1,i,iparm)+gu*rvec_ee(1,ij)
                       g(2,i,iparm)=g(2,i,iparm)+gi*rvec_en(2,i,ic)+gu*rvec_ee(2,ij)
@@ -685,17 +685,17 @@ c          thus, derivatives only depend on en distance in the y-direction
                       g(2,j,iparm)=g(2,j,iparm)+gj*rvec_en(2,j,ic)-gu*rvec_ee(2,ij)
                       g(3,j,iparm)=g(3,j,iparm)+gj*rvec_en(3,j,ic)-gu*rvec_ee(3,ij)
                     endif
-                      
+
                     if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
-                       d2g(iparm)=d2g(iparm) + (ndim- 1.)*2.*gu  
+                       d2g(iparm)=d2g(iparm) + (ndim- 1.)*2.*gu
      &                   + 2.*guu + gii + gjj + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij
                     else
                        d2g(iparm)=d2g(iparm) + (ndim-1)*(2*gu+gi+gj)
      &                   + 2*guu + gii +  gjj + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
                     endif
-c                   d2g(iparm)=d2g(iparm) + 2*(guu + 2*gu)
-c    &              + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
-c    &              + gii + 2*gi + gjj + 2*gj
+!                   d2g(iparm)=d2g(iparm) + 2*(guu + 2*gu)
+!    &              + gui*u2pst/(ri*rij) + guj*u2mst/(rj*rij)
+!    &              + gii + 2*gi + gjj + 2*gj
 
                     jparm=jparm+1
 
@@ -704,14 +704,14 @@ c    &              + gii + 2*gi + gjj + 2*gj
                     endif
 
                   endif
-c               write(6,'(''i,j,iparm,go(i,j,iparm),gvalue(iparm),(g(k,i,iparm),g(k,j,iparm),k=1,3)'',3i5,12d12.4)')
-c    &          i,j,iparm,go(i,j,iparm),gvalue(iparm),(g(kk,i,iparm),g(kk,j,iparm),kk=1,3)
+!               write(6,'(''i,j,iparm,go(i,j,iparm),gvalue(iparm),(g(k,i,iparm),g(k,j,iparm),k=1,3)'',3i5,12d12.4)')
+!    &          i,j,iparm,go(i,j,iparm),gvalue(iparm),(g(kk,i,iparm),g(kk,j,iparm),kk=1,3)
 
                 endif
               endif
    55   continue
 
-c derivatives (go,gvalue and g) wrt scalek parameter
+! derivatives (go,gvalue and g) wrt scalek parameter
         if(nparms.eq.1) then
 
           iparm=1
@@ -723,10 +723,10 @@ c derivatives (go,gvalue and g) wrt scalek parameter
 
           go(i,j,iparm)=go(i,j,iparm) + gp
           gvalue(iparm)=gvalue(iparm) + gp
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
             g(1,i,iparm)=g(1,i,iparm) + gu*rvec_ee(1,ij)
             g(2,i,iparm)=g(2,i,iparm) + gi*rvec_en(2,i,ic) + gu*rvec_ee(2,ij)
@@ -752,7 +752,7 @@ c          thus, derivatives only depend on en distance in the y-direction
           gtj=dd10*(fuj*dkij + fjj*dkj + fij*dki) + fj*dr2j + 2*fjj*dd8*drj
      &       + dd8*dd8*(fujj*dkij + fjjj*dkj + fijj*dki)
 
-c        check to see what gtu and gti are!
+!        check to see what gtu and gti are!
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
              d2g(iparm)=d2g(iparm) + (ndim- 1.)*2.*gu + 2.*gui*(ri-rj)/rij + 2.*guj*(rj-ri)/rij
      &          + 2.*gtu + gti + gtj
@@ -803,10 +803,10 @@ c        check to see what gtu and gti are!
         fso(i,j)=fso(i,j) + fc
 
 
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
           fijo(1,i,j)=fijo(1,i,j) + fu*rvec_ee(1,ij)
           fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
@@ -822,36 +822,36 @@ c          thus, derivatives only depend on en distance in the y-direction
           fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
           fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
         endif
-c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
+!       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
 
-c       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
-c    &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
+!       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
+!    &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
 
-c      This equation (and the subsequent u,s,t notation) comes from 
-c        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
-c        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
-c      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
-c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
+!      This equation (and the subsequent u,s,t notation) comes from
+!        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
+!        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
+!      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
+!        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
-           d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu  
+           d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu
      &          + 2.*fuu + fii + fjj + 2.*fui*(ri-rj)/rij + 2.*fuj*(rj-ri)/rij
-        else  ! Pekeris, Phys Rev 112, 1649 (1958) eqn 5:   
+        else  ! Pekeris, Phys Rev 112, 1649 (1958) eqn 5:
            d2ijo(i,j)=d2ijo(i,j) + ndim1*(2*fu+fi+fj)
      &          + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
         endif
 
-c       v(1,i)=v(1,i) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
-c       v(2,i)=v(2,i) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
-c       v(3,i)=v(3,i) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
-c       v(1,j)=v(1,j) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
-c       v(2,j)=v(2,j) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
-c       v(3,j)=v(3,j) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
+!       v(1,i)=v(1,i) + fi*rvec_en(1,i,ic)+fu*rvec_ee(1,ij)
+!       v(2,i)=v(2,i) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
+!       v(3,i)=v(3,i) + fi*rvec_en(3,i,ic)+fu*rvec_ee(3,ij)
+!       v(1,j)=v(1,j) + fj*rvec_en(1,j,ic)-fu*rvec_ee(1,ij)
+!       v(2,j)=v(2,j) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
+!       v(3,j)=v(3,j) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
 
-c       d2 = d2 + ndim1*(2*fu+fi+fj)
-c    &  + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
+!       d2 = d2 + ndim1*(2*fu+fi+fj)
+!    &  + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
 
-cc      d2 = d2 + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
-cc   &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
+!c      d2 = d2 + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
+!c   &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
 
    57 continue
 
@@ -862,13 +862,13 @@ cc   &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
       v(1,j)=v(1,j)+fijo(1,j,i)
       v(2,j)=v(2,j)+fijo(2,j,i)
       v(3,j)=v(3,j)+fijo(3,j,i)
-c  write(6,'(''v='',2i2,9d12.4)') i,j,(v(k,i),v(k,j),k=1,3)
-c     div_vj(i)=div_vj(i)+d2ijo(i,j)/2
-c     div_vj(j)=div_vj(j)+d2ijo(i,j)/2
+!  write(6,'(''v='',2i2,9d12.4)') i,j,(v(k,i),v(k,j),k=1,3)
+!     div_vj(i)=div_vj(i)+d2ijo(i,j)/2
+!     div_vj(j)=div_vj(j)+d2ijo(i,j)/2
    60 d2=d2+d2ijo(i,j)
-c     write(6,'(''fsum,d2='',9d12.4)') fsum,d2
+!     write(6,'(''fsum,d2='',9d12.4)') fsum,d2
 
-c e-n terms
+! e-n terms
    65 do 90 i=1,nelec
 
         fso(i,i)=0
@@ -883,14 +883,14 @@ c e-n terms
         do 80 ic=1,ncent
           it=iwctype(ic)
 
-c       if we have an infinite wire, then for the en and een terms, for ic=1,
-c         we only use the distance from the electron to the y-axis of the wire
+!       if we have an infinite wire, then for the en and een terms, for ic=1,
+!         we only use the distance from the electron to the y-axis of the wire
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
              ri=abs(rvec_en(2,i,ic)) ! y-component of rvec_en is dist to wire center
           else
              ri=r_en(i,ic)
           endif
-         
+
           if(ri.gt.cutjas_en) goto 80
 
           call scale_dist2(ri,rri(1),dd7,dd9,1)
@@ -905,10 +905,10 @@ c         we only use the distance from the electron to the y-axis of the wire
           botii=0
           bot2=bot*bot
 
-c          feni=topi/bot-boti*top/bot2
-c          fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
-c          fenii=fenii/bot
-c simpler expressions are :
+!          feni=topi/bot-boti*top/bot2
+!          fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
+!          fenii=fenii/bot
+! simpler expressions are :
           fen=top/bot
           feni=topi/bot2
           fenii=-2*feni*boti/bot
@@ -926,7 +926,7 @@ c simpler expressions are :
             feni=feni+a4(iord+1,it,iwf)*iord*rri(iord-1)
    70       fenii=fenii+a4(iord+1,it,iwf)*iord*(iord-1)*rri(iord-2)
 
-c for scale derivatives we also need feniii:
+! for scale derivatives we also need feniii:
           if(nparms.eq.1) then
             if(isc.eq.8 .or. isc.eq.10) then
               stop 'scalek opt not fully implemented for isc=8,10'
@@ -940,27 +940,27 @@ c for scale derivatives we also need feniii:
           tempi=feni*dd7/ri
 
           fso(i,i)=fso(i,i)+fen
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
             fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
-            d2ijo(i,i) = d2ijo(i,i) + tempii 
+            d2ijo(i,i) = d2ijo(i,i) + tempii
           else
             fijo(1,i,i)=fijo(1,i,i) + tempi*rvec_en(1,i,ic)
             fijo(2,i,i)=fijo(2,i,i) + tempi*rvec_en(2,i,ic)
             fijo(3,i,i)=fijo(3,i,i) + tempi*rvec_en(3,i,ic)
             d2ijo(i,i) = d2ijo(i,i) + tempii + ndim1*tempi
           endif
-c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
+!         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
 
 
-c         v(1,i)=v(1,i) + feni*rvec_en(1,i,ic)
-c         v(2,i)=v(2,i) + feni*rvec_en(2,i,ic)
-c         v(3,i)=v(3,i) + feni*rvec_en(3,i,ic)
+!         v(1,i)=v(1,i) + feni*rvec_en(1,i,ic)
+!         v(2,i)=v(2,i) + feni*rvec_en(2,i,ic)
+!         v(3,i)=v(3,i) + feni*rvec_en(3,i,ic)
 
-c         d2 = d2 + fenii + ndim1*feni
+!         d2 = d2 + fenii + ndim1*feni
 
           do 78 jparm=1,nparma(it)
             iparm=npointa(it)+jparm+nparms
@@ -978,9 +978,9 @@ c         d2 = d2 + fenii + ndim1*feni
               botasymp=1+a4(2,it,iwf)*asymp_r_en(iwf)
 
               gen=top/bot-asymp_r_en(iwf)/botasymp
-c              geni=topi/bot-boti*top/bot2
-c              genii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
-c              genii=genii/bot
+!              geni=topi/bot-boti*top/bot2
+!              genii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
+!              genii=genii/bot
               geni=topi/bot2
               genii=-2*boti*geni/bot
               if(isc.eq.8 .or. isc.eq.10) then
@@ -994,7 +994,7 @@ c              genii=genii/bot
                   stop 'scalek opt not fully implemented for isc=8,10'
                 endif
                 asympterm=dasymp_r_en(iwf)/(botasymp*botasymp)
-c                asympterm=0
+!                asympterm=0
                 didk(iparm)=didk(iparm)+geni*dk-asympterm
               endif
 
@@ -1013,9 +1013,9 @@ c                asympterm=0
               botasymp2=botasymp*botasymp
 
               gen=top/bot+a4(1,it,iwf)*asymp_r_en(iwf)**2/botasymp2
-c             geni=topi/bot-boti*top/bot2
-c             genii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
-c             genii=genii/bot
+!             geni=topi/bot-boti*top/bot2
+!             genii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
+!             genii=genii/bot
               geni=topi/(bot*bot0)
               genii=topii*(1-2*a4(2,it,iwf)*rri(1))/bot2
               if(isc.eq.8 .or. isc.eq.10) then
@@ -1039,7 +1039,7 @@ c             genii=genii/bot
                     stop 'scalek opt not fully implemented for isc=8,10'
                   endif
                   asympterm=topii*asymp_r_en(iwf)/(botasymp*botasymp2)*dasymp_r_en(iwf)
-c                  asympterm=0
+!                  asympterm=0
                   didk(iparm)=didk(iparm)+geni*dk-asympterm
                 endif
               endif
@@ -1052,23 +1052,23 @@ c                  asympterm=0
               genii=iord*(iord-1)*rri(iord-2)
               if(nparms.eq.1 .and. igradhess.gt.0) then
                 asympterm=asympiord/asymp_r_en(iwf)*dasymp_r_en(iwf)
-c                asympterm=0
+!                asympterm=0
                 didk(iparm)=didk(iparm)+iord*(rri(iord-1)*dk-asympterm)
               endif
             endif
 
             genii=genii*dd7*dd7+geni*dd9
-c            geni=geni*dd7/r_en(i,ic)
-c           Changed above line to avoid 'if iperiodic=1 and nloc=-4?' statement
+!            geni=geni*dd7/r_en(i,ic)
+!           Changed above line to avoid 'if iperiodic=1 and nloc=-4?' statement
             geni=geni*dd7/ri      ! ACM - I think this is equivalent
 
             go(i,i,iparm)=go(i,i,iparm)+gen
             gvalue(iparm)=gvalue(iparm)+gen
 
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
             if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
               g(2,i,iparm)=g(2,i,iparm)+geni*rvec_en(2,i,ic)
               d2g(iparm)=d2g(iparm)+genii
@@ -1078,18 +1078,18 @@ c          thus, derivatives only depend on en distance in the y-direction
               g(3,i,iparm)=g(3,i,iparm)+geni*rvec_en(3,i,ic)
               d2g(iparm)=d2g(iparm)+genii+ndim1*geni
             endif
-c  Put this line in the above if...else block (ACM):
-c   78       d2g(iparm)=d2g(iparm)+genii+ndim1*geni
+!  Put this line in the above if...else block (ACM):
+!   78       d2g(iparm)=d2g(iparm)+genii+ndim1*geni
   78        continue
 
-c derivatives (go,gvalue and g) wrt scalek parameter
+! derivatives (go,gvalue and g) wrt scalek parameter
           if(nparms.eq.1) then
             if(isc.eq.8 .or. isc.eq.10) then
               stop 'scalek opt not fully implemented for isc=8,10'
             endif
 
             iparm=1
-c            call deriv_scale(ri,dk,dk2,dr,dr2,1,iderivk)
+!            call deriv_scale(ri,dk,dk2,dr,dr2,1,iderivk)
 
             gen=feni*dk-dasymp_jasa(it,iwf)*dasymp_r_en(iwf)
             geni=(fenii*dk*dd7+feni*dr)/ri
@@ -1098,12 +1098,12 @@ c            call deriv_scale(ri,dk,dk2,dr,dr2,1,iderivk)
             go(i,i,iparm)=go(i,i,iparm)+gen
             gvalue(iparm)=gvalue(iparm)+gen
 
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
             if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
-              g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic) 
+              g(2,i,iparm)=g(2,i,iparm) + geni*rvec_en(2,i,ic)
               d2g(iparm)=d2g(iparm) + genii
             else
               g(1,i,iparm)=g(1,i,iparm) + geni*rvec_en(1,i,ic)
@@ -1112,8 +1112,8 @@ c          thus, derivatives only depend on en distance in the y-direction
               d2g(iparm)=d2g(iparm) + genii+ndim1*geni
             endif
 
-c       Placed this line in the above if...else block (ACM):
-c            d2g(iparm)=d2g(iparm) + genii+ndim1*geni
+!       Placed this line in the above if...else block (ACM):
+!            d2g(iparm)=d2g(iparm) + genii+ndim1*geni
 
             if(igradhess.gt.0) then
               didk(1)=didk(1)+fenii*dk*dk+feni*dk2
@@ -1128,8 +1128,8 @@ c            d2g(iparm)=d2g(iparm) + genii+ndim1*geni
         v(1,i)=v(1,i)+fijo(1,i,i)
         v(2,i)=v(2,i)+fijo(2,i,i)
         v(3,i)=v(3,i)+fijo(3,i,i)
-c       write(6,'(''v='',9d12.4)') (v(k,i),k=1,ndim)
-c       div_vj(i)=div_vj(i)+d2ijo(i,i)
+!       write(6,'(''v='',9d12.4)') (v(k,i),k=1,ndim)
+!       div_vj(i)=div_vj(i)+d2ijo(i,i)
    90   d2=d2+d2ijo(i,i)
 
       if(ijas.eq.6) then
@@ -1137,7 +1137,7 @@ c       div_vj(i)=div_vj(i)+d2ijo(i,i)
         fsum=term*fsum
         d2=term*d2
         do 100 i=1,nelec
-c         div_vj(i)=term*div_vj(i)
+!         div_vj(i)=term*div_vj(i)
           do 95 k=1,ndim
    95       v(k,i)=term*v(k,i)
           do 100 j=1,nelec

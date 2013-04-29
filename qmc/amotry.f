@@ -3,7 +3,7 @@
       DOUBLE PRECISION amotry,fac,p(mp,np),psum(np),y(mp),funk
       PARAMETER (NMAX=200)
       EXTERNAL funk
-CU    USES funk
+!U    USES funk
       INTEGER j
       DOUBLE PRECISION fac1,fac2,ytry,ptry(NMAX)
       fac1=(1.-fac)/ndim

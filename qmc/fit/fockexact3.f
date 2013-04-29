@@ -1,5 +1,5 @@
       subroutine fockexact3(o,op,it,ipr)
-c Written by Cyrus Umrigar and Claudia Filippi
+! Written by Cyrus Umrigar and Claudia Filippi
       use constants_mod
       use atom_mod
       use contr2_mod

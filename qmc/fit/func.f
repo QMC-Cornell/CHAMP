@@ -1,6 +1,6 @@
       function func(ndata2,nparm,parm,diff,iflag)
-c Written by Cyrus Umrigar, modified by Claudia Filippi
-c If iflag=0 then it computes diffs otherwise it just does sum of squares
+! Written by Cyrus Umrigar, modified by Claudia Filippi
+! If iflag=0 then it computes diffs otherwise it just does sum of squares
       use constants_mod
       use mpi_mod
       use basic_tools_mod
@@ -46,26 +46,26 @@ c If iflag=0 then it computes diffs otherwise it just does sum of squares
         ict=ictype_basis(iwbase(iparm))
         irb=iwrwf2(iwbase(iparm))
    20   zex2(irb,ict,1)=zex(iwbase(iparm),1)
-c     do 22 iparm=1,nparmd
-c  22   cdet(iwdet(iparm),1)=parm(nparml+nparme+iparm)
+!     do 22 iparm=1,nparmd
+!  22   cdet(iwdet(iparm),1)=parm(nparml+nparme+iparm)
       do 22 iparm=1,nparmcsf
    22   csf_coef(iwcsf(iparm),1)=parm(nparml+nparme+iparm)
 
-cc Calculate coefs to construct the piece of the orbital that comes
-cc from basis fns that are related by symmetry.  This is needed to
-cc impose cusp conditions when there is more than one atom.
-c      if(nloc.eq.0.and.numr.le.0) call equiv_bas
+!c Calculate coefs to construct the piece of the orbital that comes
+!c from basis fns that are related by symmetry.  This is needed to
+!c impose cusp conditions when there is more than one atom.
+!      if(nloc.eq.0.and.numr.le.0) call equiv_bas
 
       if(nparms.eq.1) then
-c       scalek(1)=parm(nparml+nparme+nparmd+1)
+!       scalek(1)=parm(nparml+nparme+nparmd+1)
         scalek(1)=parm(nparml+nparme+nparmcsf+1)
-c If we are varying scalek reset dependent constants
-c       if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
-c         call set_scale_dist(0,1)
-c       endif
+! If we are varying scalek reset dependent constants
+!       if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
+!         call set_scale_dist(0,1)
+!       endif
       endif
 
-c     if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmd+nparms+1)
+!     if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmd+nparms+1)
       if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmcsf+nparms+1)
       if(ijas.eq.1) then
         if(nparmj.ge.1) cjas2(1)=parm(nparm)
@@ -120,33 +120,33 @@ c     if(nparmg.eq.1) a21   =parm(nparml+nparme+nparmd+nparms+1)
    44     ntmp=ntmp-nparmc(it)
       endif
 
-c Foll. is now in cuspco
-c     if(ijas.eq.2) then
-c       if(nspin1.eq.1 .and. nspin2.eq.1) then
-c         if(nelec.eq.2) then
-c           aa1=a1(2,1,1)
-c          else
-c           aa1=d1b4*(three*(nup+ndn)-2)*a1(2,1,1)
-c         endif
-c        elseif(nspin1.eq.2 .and. nspin2.eq.2) then
-c         aa1=(nup-1)*a1(2,2,1)
-c        elseif(nspin1.eq.1 .and. nspin2.eq.2) then
-c         aa1=half*((nup+ndn)*a1(2,1,1)+(nup+ndn-2)*a1(2,2,1))
-c        elseif(nspin1.eq.1 .and. nspin2.eq.3) then
-c         aa1=nup*a1(2,1,1)+(ndown-1)*a1(2,3,1)
-c       endif
-c      elseif(ijas.eq.3) then
-c       aa1=a(1,1)
-c      elseif(ijas.ge.4.and.ijas.le.6) then
-c       aa1=a4(1,1,1)
-c      else
-c       aa1=zero
-c     endif
+! Foll. is now in cuspco
+!     if(ijas.eq.2) then
+!       if(nspin1.eq.1 .and. nspin2.eq.1) then
+!         if(nelec.eq.2) then
+!           aa1=a1(2,1,1)
+!          else
+!           aa1=d1b4*(three*(nup+ndn)-2)*a1(2,1,1)
+!         endif
+!        elseif(nspin1.eq.2 .and. nspin2.eq.2) then
+!         aa1=(nup-1)*a1(2,2,1)
+!        elseif(nspin1.eq.1 .and. nspin2.eq.2) then
+!         aa1=half*((nup+ndn)*a1(2,1,1)+(nup+ndn-2)*a1(2,2,1))
+!        elseif(nspin1.eq.1 .and. nspin2.eq.3) then
+!         aa1=nup*a1(2,1,1)+(ndown-1)*a1(2,3,1)
+!       endif
+!      elseif(ijas.eq.3) then
+!       aa1=a(1,1)
+!      elseif(ijas.ge.4.and.ijas.le.6) then
+!       aa1=a4(1,1,1)
+!      else
+!       aa1=zero
+!     endif
 
-c If we are varying scalek, a or b parms reset dependent constants
-c      if((ijas.eq.4.or.ijas.eq.5).and.(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17)) then
+! If we are varying scalek, a or b parms reset dependent constants
+!      if((ijas.eq.4.or.ijas.eq.5).and.(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17)) then
         call set_scale_dist(-1,1)    ! always call this in the analytical scalek opt
-c      endif
+!      endif
 
       if(icusp2.ge.1.and.isc.le.7) then
         do 45 isp=nspin1,nspin2
@@ -169,8 +169,8 @@ c      endif
    47       diff(ndata+i)=diff(ndata+i)*cuspwt
       endif
 
-c If icusp>=0 impose cusp condition for each s orbital.
-c In any case calculate cusp-violation penalty. Should be 0 if icusp>=0.
+! If icusp>=0 impose cusp condition for each s orbital.
+! In any case calculate cusp-violation penalty. Should be 0 if icusp>=0.
       ishft=ncuspc*(nspin2-nspin1+1)+nfockc
       if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),0)
 
@@ -184,11 +184,11 @@ c In any case calculate cusp-violation penalty. Should be 0 if icusp>=0.
         irb=iwrwf2(iebase(1,i))
    70   zex2(irb,ict,1)=zex(iebase(2,i),1)
 
-c     do 80 i=1,iabs(nedet)
-c       cdet(iedet(1,i),1)=zero
-c       do 80 j=2,icsf(i)
-c  80     cdet(iedet(1,i),1)=cdet(iedet(1,i),1)+frac(j,i)*
-c    &    sign(one,dfloat(iedet(j,i)))*cdet(iabs(iedet(j,i)),1)
+!     do 80 i=1,iabs(nedet)
+!       cdet(iedet(1,i),1)=zero
+!       do 80 j=2,icsf(i)
+!  80     cdet(iedet(1,i),1)=cdet(iedet(1,i),1)+frac(j,i)*
+!    &    sign(one,dfloat(iedet(j,i)))*cdet(iabs(iedet(j,i)),1)
 
       if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. ijas.eq.2) then
         ishft=ndata+ncuspc*(nspin2-nspin1+1)+nfockc+ncent*norbc+1
@@ -198,7 +198,7 @@ c    &    sign(one,dfloat(iedet(j,i)))*cdet(iabs(iedet(j,i)),1)
   121     ishft=ishft+ncnstr
       endif
 
-c Data distribution for parallel run.  Modified by RGH.
+! Data distribution for parallel run.  Modified by RGH.
       isize=ndata/nproc
       imod=mod(ndata,nproc)
 
@@ -218,17 +218,17 @@ c Data distribution for parallel run.  Modified by RGH.
         enddo
       endif
       idispls(nproc)=ndata
-c RGH: End modification
+! RGH: End modification
 
-c Here we are calculating numerical derivs. wrt. wavefn. params so turn igradhess off before calling hpsi.
+! Here we are calculating numerical derivs. wrt. wavefn. params so turn igradhess off before calling hpsi.
       igradhess=0
 
-c For a serial run this reduces to a "do 123 i=1,ndata"
+! For a serial run this reduces to a "do 123 i=1,ndata"
       do 123 i=idispls(idtask)+1,idispls(idtask+1)
         iconfg=i
         call hpsi(x(1,1,i),psid(i),psij(i),velocity,div_v,d2psi,pe,pei,energy,denergy,1)
   123   diff(i)=energy-eguess
-c 123   uwdiff(i)=diff(i)
+! 123   uwdiff(i)=diff(i)
       if(nparml+nparme+nparmcsf.eq.0) isaved=1
 
       if(index(mode,'mpi').ne.0) call func_qmc_mpi(diff)
@@ -250,10 +250,10 @@ c 123   uwdiff(i)=diff(i)
       do 128 i=1,ndata
   128   diff(i)=diff(i)*eavri
 
-c     err=zero
-c     do 130 i=1,ndata2
-c 130   err=err+diff(i)**2
-c     func=err
+!     err=zero
+!     do 130 i=1,ndata2
+! 130   err=err+diff(i)**2
+!     func=err
       func=0  ! needed for ifort compiler but not for gfortran
 
       else

@@ -1,14 +1,14 @@
       subroutine basis_norm_dot(iwf,iflag)
 
-c Written by A.D.Guclu, Feb 2004.to replace basis_norm.f
-c for complex wf quantum dot calculations
-c calculates normalization of Fock-Darwin basis functions to
-c avoid multiple calculations in cbasis*.f
-c output -> anorm is calculated
-c           coef updated if iflag=1
-c iflag is useless for the moment since we don't optimize in fit
-c any "exponent term" in coefficients for dots. maybe could be useful later?
-c also see basis_norm.dot for real wfs
+! Written by A.D.Guclu, Feb 2004.to replace basis_norm.f
+! for complex wf quantum dot calculations
+! calculates normalization of Fock-Darwin basis functions to
+! avoid multiple calculations in cbasis*.f
+! output -> anorm is calculated
+!           coef updated if iflag=1
+! iflag is useless for the moment since we don't optimize in fit
+! any "exponent term" in coefficients for dots. maybe could be useful later?
+! also see basis_norm.dot for real wfs
       use all_tools_mod
       use const_mod
       use coefs_mod
@@ -32,12 +32,12 @@ c also see basis_norm.dot for real wfs
  5        enddo
         endif
         if(idot.eq.3) then
-c we need this to be consistent with G.S.Jeon&J.Jain's convention:
+! we need this to be consistent with G.S.Jeon&J.Jain's convention:
           anorm(ib)=(-1.d0)**n_cf(ib)
         else
           anorm(ib)=dsqrt((zex(ib,iwf)*we)**(mabs+1)/pi/fac)
         endif
-c        write(6,*) 'ib,n_fd,m_fd,anorm=',ib,n_fd(ib),m_fd(ib),anorm(ib)
+!        write(6,*) 'ib,n_fd,m_fd,anorm=',ib,n_fd(ib),m_fd(ib),anorm(ib)
         if(iflag.eq.1) then
           do 10 iorb=1,norb
             coef(ib,iorb,iwf)=coef(ib,iorb,iwf)*anorm(ib)

@@ -1,8 +1,8 @@
       subroutine cdeterminant(x,rvec_en,r_en,cddet_det,d2lndet,div_vd,determ)
-c same subroutine as determinant() adapted to complex orbitals/determinants
-c by A.D.Guclu Feb2004
-c can deal with any complex determinant, provided that the determinantal
-c coefficients are real.
+! same subroutine as determinant() adapted to complex orbitals/determinants
+! by A.D.Guclu Feb2004
+! can deal with any complex determinant, provided that the determinantal
+! coefficients are real.
       use constants_mod
       use control_mod
       use basic_tools_mod
@@ -22,23 +22,23 @@ c coefficients are real.
       implicit real*8(a-h,o-z)
 
 
-c routine to calculate the value, gradient and Laplacian of the
-c determinantal part of the wavefunction
-c Also derivatives wrt csf_coefs for optimizing them.
+! routine to calculate the value, gradient and Laplacian of the
+! determinantal part of the wavefunction
+! Also derivatives wrt csf_coefs for optimizing them.
 
-c cdeterm =  complex value of the determinants
-c determ  =  magnitude of cdeterm
-c cddet_det   =  d/dx(ln(det)))
-c d2lndet  =  real(d2/dx2(det)/det) - abs(cddet_det)**2
+! cdeterm =  complex value of the determinants
+! determ  =  magnitude of cdeterm
+! cddet_det   =  d/dx(ln(det)))
+! d2lndet  =  real(d2/dx2(det)/det) - abs(cddet_det)**2
 
-c Note that the first dimension of the slater matrices is MMAT_DIM = (MELEC/2)**2.
-c The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
-c So, we check in read_input that nup and ndn are each <= MELEC/2.
+! Note that the first dimension of the slater matrices is MMAT_DIM = (MELEC/2)**2.
+! The first dimension of the Slater matrices must be at least max(nup**2,ndn**2)
+! So, we check in read_input that nup and ndn are each <= MELEC/2.
 
-c complex argument:
+! complex argument:
       complex*16 cddet_det(3,*)
 
-c complex local:
+! complex local:
       complex*16 cd2lndet,cdeterm,cterm,cdetinv
       complex*16 corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
       complex*16 cekinen(nelec)
@@ -48,7 +48,7 @@ c complex local:
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(nelec)
 
-c allocate memory (maybe better to allocate in read_input ?) :
+! allocate memory (maybe better to allocate in read_input ?) :
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)
       call alloc('cslmdi',cslmdi,n2,ndetdn)
@@ -61,21 +61,21 @@ c allocate memory (maybe better to allocate in read_input ?) :
       call alloc('cddeti_deti',cddeti_deti,ndim,nelec,ndet)
       call alloc('cd2edeti_deti',cd2edeti_deti,nelec,ndet)
 
-c initialize the derivative arrays to zero
+! initialize the derivative arrays to zero
       do 10 i=1,nelec
         cekinen(i)=dcmplx(0,0)
         do 10 idim=1,ndim
    10     cddet_det(idim,i)=dcmplx(0,0)
       cd2lndet=dcmplx(0,0)
 
-c initialize the determinant arrays to one
+! initialize the determinant arrays to one
       do 20 idet=1,ndetup
    20   cdetu(idet)=dcmplx(one,0)
       do 22 idet=1,ndetdn
    22   cdetd(idet)=dcmplx(one,0)
-c      cdeterm=dcmplx(0,0)
+!      cdeterm=dcmplx(0,0)
 
-c get orbitals and derivatives for all electrons
+! get orbitals and derivatives for all electrons
       if(iperiodic.eq.0) then
 
         if(inum_orb.eq.0) then
@@ -97,12 +97,12 @@ c get orbitals and derivatives for all electrons
       endif
 
 
-c The 3 nested loops are over
-c 1) up electrons,
-c 2) determinants
-c 3) basis states setting up transpose of the Slater
-c matrix in slmui to get inverse transpose.
-c Also put derivatives in fpu and fppu.
+! The 3 nested loops are over
+! 1) up electrons,
+! 2) determinants
+! 3) basis states setting up transpose of the Slater
+! matrix in slmui to get inverse transpose.
+! Also put derivatives in fpu and fppu.
       ik=-nup
       do 30 i=1,nup
         ik=ik+nup
@@ -115,9 +115,9 @@ c Also put derivatives in fpu and fppu.
    28         cfpu(idim,j+ik,idet)=cdorb(idim,i,1,iworbdup(j,idet))
    30       cfppu(j+ik,idet)=cddorb(i,iworbdup(j,idet))
 
-c loop through number of determinants calculating the inverse
-c transpose matrices and their determinants
-c (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
+! loop through number of determinants calculating the inverse
+! transpose matrices and their determinants
+! (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
       do 40 idet=1,ndetup
         do in=0,nup*nup-1
             i=in/nup+1
@@ -132,7 +132,7 @@ c (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
         enddo
    40 continue
 
-c repeat above for down spins
+! repeat above for down spins
       ik=-ndn
       do 50 i=1,ndn
         ik=ik+ndn
@@ -159,22 +159,22 @@ c repeat above for down spins
         enddo
    60 continue
 
-c      if(ipr.ge.4) write(6,'(''cdetu,cdetd,cdet'',9d12.5)') cdetu(1),cdetd(1),cdet(1,1)
+!      if(ipr.ge.4) write(6,'(''cdetu,cdetd,cdet'',9d12.5)') cdetu(1),cdetd(1),cdet(1,1)
 
-c set up sum of slater determinants along with their
-c coefficients that were included in input data
+! set up sum of slater determinants along with their
+! coefficients that were included in input data
       do 70 idet=1,max(ndetup,ndetdn)
-c        cdeterm=cdeterm+cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
+!        cdeterm=cdeterm+cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
 
-c zero out temporary derivative arrays
+! zero out temporary derivative arrays
         do 70 i=1,nelec
           do 65 idim=1,ndim
    65       cddeti_deti(idim,i,idet)=dcmplx(0,0)
    70     cd2edeti_deti(i,idet)=dcmplx(0,0)
 
-c loop through up spin electrons
-c take inner product of transpose inverse with derivative
-c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+! loop through up spin electrons
+! take inner product of transpose inverse with derivative
+! vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 
       do 80 idet=1,ndetup
         ik=-nup
@@ -185,7 +185,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
    75         cddeti_deti(idim,i,idet)=cddeti_deti(idim,i,idet)+cslmui(j+ik,idet)*cfpu(idim,j+ik,idet)
    80       cd2edeti_deti(i,idet)=cd2edeti_deti(i,idet)+cslmui(j+ik,idet)*cfppu(j+ik,idet)
 
-c repeat above for down spins
+! repeat above for down spins
       do 90 idet=1,ndetdn
         ik=-ndn
         do 90 i=nup+1,nelec
@@ -195,14 +195,14 @@ c repeat above for down spins
    85         cddeti_deti(idim,i,idet)=cddeti_deti(idim,i,idet)+cslmdi(j+ik,idet)*cfpd(idim,j+ik,idet)
    90         cd2edeti_deti(i,idet)=cd2edeti_deti(i,idet)+cslmdi(j+ik,idet)*cfppd(j+ik,idet)
 
-c combine results for up and down spins to get d(det)/dx
-c and d2(det)/dx in ddet_det and d2lndet respectively
+! combine results for up and down spins to get d(det)/dx
+! and d2(det)/dx in ddet_det and d2lndet respectively
 
       cdeterm=0
       do 117 icsf=1,ncsf
         do 117 idet_in_csf=1,ndet_in_csf(icsf)
           idet=iwdet_in_csf(idet_in_csf,icsf)
-c         cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
+!         cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
           if(ndn.ge.1) then
             cterm=cdetu(iwdetup(idet))*cdetd(iwdetdn(idet))*csf_coef(icsf,iwf)*cdet_in_csf(idet_in_csf,icsf)
            else
@@ -222,17 +222,17 @@ c         cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
             cekinen(i)=cekinen(i)+cd2edeti_deti(i,iwdet)*cterm
   117       cd2lndet=cd2lndet+cd2edeti_deti(i,iwdet)*cterm
 
-c form inverse of full sum of determinants
+! form inverse of full sum of determinants
       cdetinv=one/cdeterm
       determ=cdabs(cdeterm)
 
-c multiply through to set up logarithmic first and second derivatives.
+! multiply through to set up logarithmic first and second derivatives.
 
-c      cd2lndet=cd2lndet*cdetinv
-c d2lndet=dreal(cd2lndet), but ignore the imaginary part
+!      cd2lndet=cd2lndet*cdetinv
+! d2lndet=dreal(cd2lndet), but ignore the imaginary part
       d2lndet=dreal(cd2lndet)*dreal(cdetinv)-dimag(cd2lndet)*dimag(cdetinv)
       do 120 i=1,nelec
-c div_vd(i)=dreal(cdiv_vd(i))
+! div_vd(i)=dreal(cdiv_vd(i))
         div_vd(i)=dreal(cekinen(i))*dreal(cdetinv)-dimag(cekinen(i))*dimag(cdetinv)
         ekinen(i)=-half*div_vd(i)
         do 120 k=1,ndim
@@ -241,9 +241,9 @@ c div_vd(i)=dreal(cdiv_vd(i))
           div_vd(i)=div_vd(i)-temp
   120     d2lndet=d2lndet-temp
 
-c Derivatives wrt to csf_coefs for optimizing them
-c Note that the arrays that are needed for vmc and dmc are over ndet but
-c those that are needed for optimization only are over nparmd.
+! Derivatives wrt to csf_coefs for optimizing them
+! Note that the arrays that are needed for vmc and dmc are over ndet but
+! those that are needed for optimization only are over nparmd.
       if(index(mode,'fit').ne.0 .or. igradhess.gt.0) then
         d2det_det=0
         do 125 i=1,nelec
@@ -256,13 +256,13 @@ c those that are needed for optimization only are over nparmd.
       return
       end
 
-c----------------------------------------------------------------------------------
+!----------------------------------------------------------------------------------
 
       subroutine cdeterminant_cf(x,rvec_en,r_en,cddet_det,d2lndet,div_vd,determ)
-c same subroutine as cdeterminant() adapted to composite fermions
-c laplacian (LLL wfs are analytical) is zero and ignored here.
-c by A.D.Guclu sep2004
-c can deal only with spin polarized systems for the moment
+! same subroutine as cdeterminant() adapted to composite fermions
+! laplacian (LLL wfs are analytical) is zero and ignored here.
+! by A.D.Guclu sep2004
+! can deal only with spin polarized systems for the moment
       use constants_mod
       use control_mod
       use basic_tools_mod
@@ -281,21 +281,21 @@ c can deal only with spin polarized systems for the moment
       use kinet_mod
       implicit real*8(a-h,o-z)
 
-c cdeterm =  complex value of the determinants
-c determ  =  magnitude of cdeterm
-c cddet_det   =  d/dx(ln(det)))
-c d2lndet  =  real(d2/dx2(det)/det) - abs(cddet_det)**2
+! cdeterm =  complex value of the determinants
+! determ  =  magnitude of cdeterm
+! cddet_det   =  d/dx(ln(det)))
+! d2lndet  =  real(d2/dx2(det)/det) - abs(cddet_det)**2
 
-c note that the dimension of the slater matrices is assumed
-c to be given by MMAT_DIM = (MELEC/2)**2, that is there are
-c as many ups as downs. If this is not true then be careful if
-c nelec is close to MELEC. The Slater matrices must be
-c dimensioned at least max(nup**2,ndn**2)
+! note that the dimension of the slater matrices is assumed
+! to be given by MMAT_DIM = (MELEC/2)**2, that is there are
+! as many ups as downs. If this is not true then be careful if
+! nelec is close to MELEC. The Slater matrices must be
+! dimensioned at least max(nup**2,ndn**2)
 
-c complex argument:
+! complex argument:
       complex*16 cddet_det(3,*)
 
-c complex local:
+! complex local:
       complex*16 cd2lndet,cdeterm
       complex*16 corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
       complex*16 cekinen(nelec)
@@ -306,7 +306,7 @@ c complex local:
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),div_vd(nelec)
 
-c allocate memory:
+! allocate memory:
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)
       call alloc('cslmdi',cslmdi,n2,ndetdn)
@@ -317,25 +317,25 @@ c allocate memory:
       call alloc('cddeti_deti',cddeti_deti,ndim,nelec,ndet)
       call alloc('cd2edeti_deti',cd2edeti_deti,nelec,ndet)
 
-c initialize the derivative arrays to zero
+! initialize the derivative arrays to zero
       do 10 i=1,nelec
         cekinen(i)=dcmplx(0,0)   ! not used
         do 10 idim=1,ndim
    10     cddet_det(idim,i)=dcmplx(0,0)
       cd2lndet=dcmplx(0,0)       ! not used
 
-c initialize the determinant arrays to one
+! initialize the determinant arrays to one
       do 20 idet=1,ndetup
    20   cdetu(idet)=dcmplx(one,0)
       do 22 idet=1,ndetdn
    22   cdetd(idet)=dcmplx(one,0)
       cdeterm=dcmplx(0,0)
 
-c      write(6,*) 'flag1'
+!      write(6,*) 'flag1'
 
-c      if(nelec.ne.nup) stop 'system must be fully polarized for projected composite fermions!'
+!      if(nelec.ne.nup) stop 'system must be fully polarized for projected composite fermions!'
 
-c get orbitals and derivatives for all electrons
+! get orbitals and derivatives for all electrons
       if(iperiodic.eq.0) then
 
         if(inum_orb.eq.0) then
@@ -348,19 +348,19 @@ c get orbitals and derivatives for all electrons
           stop 'complex calculations of periodic system not implemented'
       endif
 
-c      if(ipr.ge.4) then
-c        do 26 iorb=1,norb
-c          write(6,'(''iorb,corb='',i3,(30f9.5))') iorb,(corb(i,iorb),i=1,nelec)
-c          write(6,'(''iorb,cdorb1='',i3,(30f9.5))') iorb,(cdorb(1,i,iorb),i=1,nelec)
-c          write(6,'(''iorb,cdorb2='',i3,(30f9.5))') iorb,(cdorb(2,i,iorb),i=1,nelec)
-c   26     write(6,'(''iorb,cddorb='',i3,(30f9.5))') iorb,(cddorb(i,iorb),i=1,nelec)
-c      endif
+!      if(ipr.ge.4) then
+!        do 26 iorb=1,norb
+!          write(6,'(''iorb,corb='',i3,(30f9.5))') iorb,(corb(i,iorb),i=1,nelec)
+!          write(6,'(''iorb,cdorb1='',i3,(30f9.5))') iorb,(cdorb(1,i,iorb),i=1,nelec)
+!          write(6,'(''iorb,cdorb2='',i3,(30f9.5))') iorb,(cdorb(2,i,iorb),i=1,nelec)
+!   26     write(6,'(''iorb,cddorb='',i3,(30f9.5))') iorb,(cddorb(i,iorb),i=1,nelec)
+!      endif
 
-c The 3 nested loops are over
-c 1) up electrons,
-c 2) determinants
-c 3) basis states setting up transpose of the Slater
-c matrix in slmui to get inverse transpose.
+! The 3 nested loops are over
+! 1) up electrons,
+! 2) determinants
+! 3) basis states setting up transpose of the Slater
+! matrix in slmui to get inverse transpose.
 
       ik=-nup
       do 30 i=1,nup
@@ -371,16 +371,16 @@ c matrix in slmui to get inverse transpose.
             jk=jk+nup
             cslmui(i+jk,idet)=corb(i,iworbdup(j,idet))  ! transpose
             do 30 idim=1,ndim
-c WARNING, should the following loop go up to nelec for partial
-c polarization? need to think about it. composite fermions have never been
-c tested for partially polarized systems.
+! WARNING, should the following loop go up to nelec for partial
+! polarization? need to think about it. composite fermions have never been
+! tested for partially polarized systems.
               do 30 k=1,nup
                 cfpu(idim,j+ik,k,idet)=cdorb(idim,i,k,iworbdup(j,idet))
    30 continue
 
-c loop through number of determinants calculating the inverse
-c transpose matrices and their determinants
-c (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
+! loop through number of determinants calculating the inverse
+! transpose matrices and their determinants
+! (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
       do 40 idet=1,ndetup
         do in=0,nup*nup-1
             i=in/nup+1
@@ -388,7 +388,7 @@ c (cmatinv from Wolfgang's subroutine. is the matrix transfer really necessary?)
             cauxx(i,j)=cslmui(in+1,idet)
         enddo
         call cmatinv(cauxx,nup,cdetu(idet))
-c        write(6,*) 'det=',cdetu(idet)
+!        write(6,*) 'det=',cdetu(idet)
         do in=0,nup*nup-1
             i=in/nup+1
             j=mod(in,nup)+1
@@ -396,7 +396,7 @@ c        write(6,*) 'det=',cdetu(idet)
         enddo
    40   continue
 
-c repeat above for down spins
+! repeat above for down spins
       ik=-ndn
       do 50 i=1,ndn
         stop 'down electron not tested for composite fermions'
@@ -425,24 +425,24 @@ c repeat above for down spins
         enddo
    60 continue
 
-c      write(6,*) 'flag3'
+!      write(6,*) 'flag3'
 
-c      if(ipr.ge.4) write(6,'(''cdetu,cdetd,cdet'',9d12.5)') cdetu(1),cdetd(1),cdet(1,1)
+!      if(ipr.ge.4) write(6,'(''cdetu,cdetd,cdet'',9d12.5)') cdetu(1),cdetd(1),cdet(1,1)
 
-c set up sum of slater determinants along with their
-c coefficients that were included in input data
+! set up sum of slater determinants along with their
+! coefficients that were included in input data
       do 70 idet=1,max(ndetup,ndetdn)
-c        cdeterm=cdeterm+cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
+!        cdeterm=cdeterm+cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
 
-c zero out temporary derivative arrays
+! zero out temporary derivative arrays
         do 70 i=1,nelec
           do 65 idim=1,ndim
    65       cddeti_deti(idim,i,idet)=dcmplx(0,0)
    70     cd2edeti_deti(i,idet)=dcmplx(0,0)   !  not used
 
-c loop through up spin electrons
-c take inner product of transpose inverse with derivative
-c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
+! loop through up spin electrons
+! take inner product of transpose inverse with derivative
+! vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
 
       do 75 idet=1,ndetup
         do 75 i=1,nup
@@ -453,7 +453,7 @@ c vectors to get (1/detup)*d(detup)/dx and (1/detup)*d2(detup)/dx**2
               do 75 idim=1,ndim
    75           cddeti_deti(idim,i,idet)=cddeti_deti(idim,i,idet)+cslmui(j+kk,idet)*cfpu(idim,j+kk,i,idet)
 
-c repeat above for down spins
+! repeat above for down spins
       do 85 idet=1,ndetdn
         do 85 i=1,ndn
           kk=-ndn
@@ -464,19 +464,19 @@ c repeat above for down spins
    85           cddeti_deti(idim,i+nup,idet)=cddeti_deti(idim,i+nup,idet)+cslmdi(j+kk,idet)*cfpd(idim,j+kk,i,idet)
 
 
-c        cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
-c        do 95 i=1,nelec
-c          do 95 idim=1,ndim
-c   95       cddet_det(idim,i)=cddet_det(idim,i)+cddeti_deti(idim,i,idet)*cterm
+!        cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
+!        do 95 i=1,nelec
+!          do 95 idim=1,ndim
+!   95       cddet_det(idim,i)=cddet_det(idim,i)+cddeti_deti(idim,i,idet)*cterm
   110 continue
 
-c      write(6,*) 'flag4'
+!      write(6,*) 'flag4'
 
       cdeterm=0
       do 115 icsf=1,ncsf
         do 115 idet_in_csf=1,ndet_in_csf(icsf)
           idet=iwdet_in_csf(idet_in_csf,icsf)
-c         cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
+!         cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
           if(ndn.ge.1) then
             cterm=cdetu(iwdetup(idet))*cdetd(iwdetdn(idet))*csf_coef(icsf,iwf)*cdet_in_csf(idet_in_csf,icsf)
            else
@@ -487,13 +487,13 @@ c         cterm=cdetu(idet)*cdetd(idet)*cdet(idet,iwf)
             do 115 idim=1,ndim
   115         cddet_det(idim,i)=cddet_det(idim,i)+cddeti_deti(idim,i,idet)*cterm
 
-c form inverse of full sum of determinants
+! form inverse of full sum of determinants
       cdetinv=one/cdeterm
       determ=cdabs(cdeterm)
 
       d2lndet=0.d0
       do 120 i=1,nelec
-c div_vd(i)=dreal(cdiv_vd(i))
+! div_vd(i)=dreal(cdiv_vd(i))
         div_vd(i)=0.d0
         ekinen(i)=0.d0
         do 120 k=1,ndim
@@ -502,11 +502,11 @@ c div_vd(i)=dreal(cdiv_vd(i))
           div_vd(i)=div_vd(i)-temp
   120     d2lndet=d2lndet-temp
 
-c      write(6,*) 'flag5'
+!      write(6,*) 'flag5'
 
-c Derivatives wrt to csf_coefs for optimizing them
-c Note that the arrays that are needed for vmc and dmc are over ndet but
-c those that are needed for optimization only are over nparmd.
+! Derivatives wrt to csf_coefs for optimizing them
+! Note that the arrays that are needed for vmc and dmc are over ndet but
+! those that are needed for optimization only are over nparmd.
       if(index(mode,'fit').ne.0 .or. igradhess.gt.0) then
         d2det_det=0
         do 125 i=1,nelec
@@ -514,32 +514,32 @@ c those that are needed for optimization only are over nparmd.
         do 140 iparm=1,nparmcsf
           stop 'optimization of cfs coefficients not possible for complex wfs yet'
 
-c          icsf=iwcsf(iparm)
-c          d2deti_det(iparm)=0
-c          deti_det(iparm)=0
-c          do 130 i=1,nelec
-c            do 130 k=1,ndim
-c  130         ddeti_det(k,i,iparm)=0
-c          do 140 idet_in_csf=1,ndet_in_csf(icsf)
-c            idet=iwdet_in_csf(idet_in_csf,icsf)
-c            term=detu(idet)*detd(idet)*cdet_in_csf(idet_in_csf,icsf)*detinv
-c            deti_det(iparm)=deti_det(iparm)+term
-c            do 140 i=1,nelec
-c              d2deti_det(iparm)=d2deti_det(iparm)+d2edeti_deti(i,idet)*term
-c              do 140 k=1,ndim
-c  140           ddeti_det(k,i,iparm)=ddeti_det(k,i,iparm)+ddeti_deti(k,i,idet)*term
+!          icsf=iwcsf(iparm)
+!          d2deti_det(iparm)=0
+!          deti_det(iparm)=0
+!          do 130 i=1,nelec
+!            do 130 k=1,ndim
+!  130         ddeti_det(k,i,iparm)=0
+!          do 140 idet_in_csf=1,ndet_in_csf(icsf)
+!            idet=iwdet_in_csf(idet_in_csf,icsf)
+!            term=detu(idet)*detd(idet)*cdet_in_csf(idet_in_csf,icsf)*detinv
+!            deti_det(iparm)=deti_det(iparm)+term
+!            do 140 i=1,nelec
+!              d2deti_det(iparm)=d2deti_det(iparm)+d2edeti_deti(i,idet)*term
+!              do 140 k=1,ndim
+!  140           ddeti_det(k,i,iparm)=ddeti_det(k,i,iparm)+ddeti_deti(k,i,idet)*term
 
   140   continue
 
-c      if(ipr.ge.4) write(6,'(''deti_det(iparm) in determinant'',40d12.4)') (deti_det(iparm),iparm=1,nparmcsf)
+!      if(ipr.ge.4) write(6,'(''deti_det(iparm) in determinant'',40d12.4)') (deti_det(iparm),iparm=1,nparmcsf)
 
       endif
 
-c      write(6,*) 'flag6'
+!      write(6,*) 'flag6'
 
-c release memory. we do not need to keep these because no vmc_mov1 for cfermions.
-c on the other hand, releasing not very meaningful since the rest of the code
-c do not use memory allocation? keep it for now.
+! release memory. we do not need to keep these because no vmc_mov1 for cfermions.
+! on the other hand, releasing not very meaningful since the rest of the code
+! do not use memory allocation? keep it for now.
       call release('cslmui',cslmui)
       call release('cslmdi',cslmdi)
       call release('cfpu',cfpu)
@@ -549,7 +549,7 @@ c do not use memory allocation? keep it for now.
       call release('cddeti_deti',cddeti_deti)
       call release('cd2edeti_deti',cd2edeti_deti)
 
-c      write(6,*) 'flag7'
+!      write(6,*) 'flag7'
 
       return
       end

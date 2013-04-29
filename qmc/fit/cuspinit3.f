@@ -1,5 +1,5 @@
       subroutine cuspinit3(iprin)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
       use all_tools_mod
       use constants_mod
       use jaspar3_mod
@@ -17,7 +17,7 @@ c Written by Claudia Filippi
       call alloc ('cm', cm, neqs, neqs)
       call alloc ('iwc', iwc, neqs)
 
-c Put the i^th dependent variable in iwc(i)
+! Put the i^th dependent variable in iwc(i)
       jj=1
       ll=0
       do 3 jp=1,nord
@@ -34,9 +34,9 @@ c Put the i^th dependent variable in iwc(i)
 
       do 25 ii=1,nvar
         do 25 jp=1,nord
-c         q(jp+nord,ii)=zero
+!         q(jp+nord,ii)=zero
           qp(jp+nord-1,ii)=zero
-c         q(jp,ii)=zero
+!         q(jp,ii)=zero
   25      qp(jp-1,ii)=zero
 
       jj=1
@@ -52,11 +52,11 @@ c         q(jp,ii)=zero
 
             if(jj.le.nvar.and.ll.eq.iwc(jj)) then
               if(jt.eq.0) then
-c               if(ju.eq.0) q(jpsh,jj)=one
+!               if(ju.eq.0) q(jpsh,jj)=one
                 if(ju.eq.1) qp(jpsh-1,jj)=one
               endif
               if(mod(jt,2).ne.0) jsg=-1
-c             q(jp,jj)=jsg
+!             q(jp,jj)=jsg
               qp(jp-1,jj)=jsg*(js-jt)
               jj=jj+1
             endif
@@ -88,7 +88,7 @@ c             q(jp,jj)=jsg
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function iorder(n)
 
       implicit real*8(a-h,o-z)
@@ -99,7 +99,7 @@ c-----------------------------------------------------------------------
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine checkdepend3
 
       use all_tools_mod
@@ -147,7 +147,7 @@ c-----------------------------------------------------------------------
                           cdep(i,nvdepend(i,it),it)=-cm(i,j)
                         endif
   10                continue
-c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-cm(i,j),ll
+!                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-cm(i,j),ll
                   endif
                   if(j.le.ishe.and.js-jt.ne.0) then
                     if(mod(jt,2).ne.0) jsg=-1
@@ -159,18 +159,18 @@ c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-cm(i,j)
                           cdep(i,nvdepend(i,it),it)=-jsg*(js-jt)*cm(i,j)
                         endif
   20                continue
-c                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-jsg*(js-jt)*cm(i,j),ll
+!                   write(6,'(''ivar'',i3,'' coef,idep'',f10.5,2i3)') i,-jsg*(js-jt)*cm(i,j),ll
                   endif
                 endif
   30        continue
           endif
   40  continue
 
-c     do 60 it=1,nctype
-c       do 60 i=1,nvar
-c         write(6,'(''ivar'',i3,'' ndep'',i3)') i,nvdepend(i,it)
-c         write(6,'(10i3)') (iwdepend(i,j,it),j=1,nvdepend(i,it))
-c 60      write(6,'(10f10.3)') (cdep(i,j,it),j=1,nvdepend(i,it))
+!     do 60 it=1,nctype
+!       do 60 i=1,nvar
+!         write(6,'(''ivar'',i3,'' ndep'',i3)') i,nvdepend(i,it)
+!         write(6,'(10i3)') (iwdepend(i,j,it),j=1,nvdepend(i,it))
+! 60      write(6,'(10f10.3)') (cdep(i,j,it),j=1,nvdepend(i,it))
 
       return
       end

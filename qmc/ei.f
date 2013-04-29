@@ -1,7 +1,7 @@
       FUNCTION ei(x)
       INTEGER MAXIT
       REAL*8 ei,x,EPS,EULER,FPMIN
-c EULER is the Euler-Mascheroni constant, EulerGamma in Mathematica
+! EULER is the Euler-Mascheroni constant, EulerGamma in Mathematica
       PARAMETER (EPS=6.d-8,EULER=.5772156649015328d0,MAXIT=100)
       PARAMETER (FPMIN=1.d-30)
       INTEGER k

@@ -1,5 +1,5 @@
       subroutine cuspexact2(a,b)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use constants_mod
       use atom_mod
       use dim_mod
@@ -13,22 +13,22 @@ c Written by Cyrus Umrigar
      &,dln2=0.6931471805599453d0, pi=3.141592653589793d0
      &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
-c if(nparmb(1)+nparmb(2)+nparmb(3).ne.0) stop 'cuspab implemented so
-c &far only ijas=2 and denominator terms=0'
+! if(nparmb(1)+nparmb(2)+nparmb(3).ne.0) stop 'cuspab implemented so
+! &far only ijas=2 and denominator terms=0'
 
-c Warning: temporarily assume only one nucleus type
+! Warning: temporarily assume only one nucleus type
 
-c f2e    o(s^2) from phi20(r12=0)
-c f2elog o(s^2 log(s)) from phi21(r12=0)
-c f2n    o(r^2) from phi20(r1=0)
+! f2e    o(s^2) from phi20(r12=0)
+! f2elog o(s^2 log(s)) from phi21(r12=0)
+! f2n    o(r^2) from phi20(r1=0)
       f2e=-d1b12*eguess +
      &(const1-d1b4*znuc(iwctype(1)))*znuc(iwctype(1))
       f2elog=const2*znuc(iwctype(1))
       f2n=-d1b6*(eguess+znuc(iwctype(1))*(znuc(iwctype(1))-dln2))
      &- d1b24
 
-c b(21), b(20) are determined by b4=0 for e-e and e-n resp.
-c The rest are determined by bp=0 for e-e and e-n.
+! b(21), b(20) are determined by b4=0 for e-e and e-n resp.
+! The rest are determined by bp=0 for e-e and e-n.
       b(7)=-rt2i*b(35)
       b(14)=0
       b(24)=0

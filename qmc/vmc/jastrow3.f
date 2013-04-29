@@ -1,5 +1,5 @@
       subroutine jastrow3(x,v,d2,div_vj,value)
-c Written by Claudia Filippi and Cyrus Umrigar
+! Written by Claudia Filippi and Cyrus Umrigar
 
       use constants_mod
       use atom_mod
@@ -33,7 +33,7 @@ c Written by Claudia Filippi and Cyrus Umrigar
 
       if(nelec.lt.2) goto 47
 
-c e-e and e-e-n terms
+! e-e and e-e-n terms
       ij=0
       do 45 i=2,nelec
       im1=i-1
@@ -65,12 +65,12 @@ c e-e and e-e-n terms
 
       rij=r_ee(ij)
 
-c isc = 2,3 are exponential scalings
-c isc = 4,5 are inverse power scalings
-c isc = 3,5 are supposed to have 0 2nd and 3rd derivatives at 0
-c however, isc = 3 has an error.  It should be
-c exprij=dexp(-rijs-half*rijs2-(5./6.)*rijs3)
-c with other corresponding changes.
+! isc = 2,3 are exponential scalings
+! isc = 4,5 are inverse power scalings
+! isc = 3,5 are supposed to have 0 2nd and 3rd derivatives at 0
+! however, isc = 3 has an error.  It should be
+! exprij=dexp(-rijs-half*rijs2-(5./6.)*rijs3)
+! with other corresponding changes.
       if(scalek(iwf).ne.0) then
         if(isc.eq.2) then
           u(1)=(one-dexp(-scalek(iwf)*rij))/scalek(iwf)
@@ -271,7 +271,7 @@ c with other corresponding changes.
 	    fcut=fcut+pcu*fpt
    36	    fcst=fcst+pc*fpst
 
-c     write(6,'(''u,s,t,fc,fcu,fcs,fct'',9f9.5)') u(1),s(1),t(1),fc,fcu,fcs,fct,fcss,fctt,fcus,fcut,fcst
+!     write(6,'(''u,s,t,fc,fcu,fcs,fct'',9f9.5)') u(1),s(1),t(1),fc,fcu,fcs,fct,fcss,fctt,fcus,fcut,fcst
         if(ifock.gt.0) call fock(u(1),s(1),t(1),rri,rrj,it)
 
         top=fc
@@ -309,11 +309,11 @@ c     write(6,'(''u,s,t,fc,fcu,fcs,fct'',9f9.5)') u(1),s(1),t(1),fc,fcu,fcs,fct,
         fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
         fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
 
-c Warning: The generalization to arbitrary dimension is to be checked but is most likely OK.
-c We never use this for anything except 3d anyway.
-c       d2ijo(i,j)=d2ijo(i,j) + two*(fuu + fsstt  + two*(fu +
-c    &  (ss*u2mt2*fus+tt*s2mu2*fut)/(rij*s2mt2) +
-c    &  two*(ss*fs-tt*ft)/s2mt2))
+! Warning: The generalization to arbitrary dimension is to be checked but is most likely OK.
+! We never use this for anything except 3d anyway.
+!       d2ijo(i,j)=d2ijo(i,j) + two*(fuu + fsstt  + two*(fu +
+!    &  (ss*u2mt2*fus+tt*s2mu2*fut)/(rij*s2mt2) +
+!    &  two*(ss*fs-tt*ft)/s2mt2))
         d2ijo(i,j)=d2ijo(i,j) + 2*((ndim-1)*(fu + 2*(ss*fs-tt*ft)/s2mt2)
      &  + fuu + fsstt + 2*(ss*u2mt2*fus+tt*s2mu2*fut)/(rij*s2mt2))
 
@@ -332,10 +332,10 @@ c    &  two*(ss*fs-tt*ft)/s2mt2))
 
   45  continue
 
-c     write(6,'(''fu,fuu,fus,fut,fsstt,d2,f(1,1)='',9f9.5)')
-c    &fu,fuu,fus,fut,fsstt,d2,v(1,1)
+!     write(6,'(''fu,fuu,fus,fut,fsstt,d2,f(1,1)='',9f9.5)')
+!    &fu,fuu,fus,fut,fsstt,d2,v(1,1)
 
-c e-n terms
+! e-n terms
   47  do 55 i=1,nelec
 
         fijo(1,i,i)=0

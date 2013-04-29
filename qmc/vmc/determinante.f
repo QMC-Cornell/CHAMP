@@ -1,5 +1,5 @@
       subroutine determinante(iel,x,rvec_en,r_en,ddet_det,determ)
-c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
+! Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
       use constants_mod
       use control_mod
       use dorb_mod
@@ -21,9 +21,9 @@ c Written by Claudia Filippi by modifying determinant, modified by Cyrus Umrigar
         ddet_det(1,i)=0
         ddet_det(2,i)=0
    10   ddet_det(3,i)=0
-c     determ=0
+!     determ=0
 
-c get orbitals and derivatives for all electron iel
+! get orbitals and derivatives for all electron iel
       if(iperiodic.eq.0 .or. iperiodic.eq.1) then
 
         if(inum_orb.eq.0) then
@@ -43,7 +43,7 @@ c get orbitals and derivatives for all electron iel
       endif
 
 
-c     write(6,'(''iel,orbe='',i3,(30f9.5))') iel,(orbe(iorb),iorb=1,nelec)
+!     write(6,'(''iel,orbe='',i3,(30f9.5))') iel,(orbe(iorb),iorb=1,nelec)
 
       if(iel.le.nup) then
 
@@ -101,7 +101,7 @@ c     write(6,'(''iel,orbe='',i3,(30f9.5))') iel,(orbe(iorb),iorb=1,nelec)
       if(iel.le.nup) then
         do 85 idet=1,ndetup
 
-c         term=detn(idet)*detd(idet)*cdet(idet,iwf)
+!         term=detn(idet)*detd(idet)*cdet(idet,iwf)
           do 80 i=1,nup
             ddeti_detin(1,i,idet)=0
             ddeti_detin(2,i,idet)=0
@@ -126,7 +126,7 @@ c         term=detn(idet)*detd(idet)*cdet(idet,iwf)
          else
 
        do 95 idet=1,ndetdn
-c         term=detu(idet)*detn(idet)*cdet(idet,iwf)
+!         term=detu(idet)*detn(idet)*cdet(idet,iwf)
           do 90 i=nup+1,nelec
             ddeti_detin(1,i,idet)=0
             ddeti_detin(2,i,idet)=0

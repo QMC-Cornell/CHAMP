@@ -1,5 +1,5 @@
       subroutine piksrt(n,arr)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
 
       implicit real*8(a-h,o-z)
 

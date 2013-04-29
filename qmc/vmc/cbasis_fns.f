@@ -1,5 +1,5 @@
       subroutine cbasis_fns_num(iel,rvec_en,r_en)
-c written by Amit Ghosal starting from basis_fns.f
+! written by Amit Ghosal starting from basis_fns.f
       use constants_mod
       use const_mod
       use atom_mod
@@ -11,16 +11,16 @@ c written by Amit Ghosal starting from basis_fns.f
       use cphifun_mod
       implicit real*8(a-h,o-z)
 
-c New temporary variables defined ************************
+! New temporary variables defined ************************
       complex*16 temp_p,temp_n,cph,cdph,ylm
-c Definition of new temporary variables ends here ********
+! Definition of new temporary variables ends here ********
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
       dimension wfv(3,MRWF),xc(3),cph(-ML_BAS:ML_BAS),cdph(3,-ML_BAS:ML_BAS)
 
       ider=1
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -46,7 +46,7 @@ c Decide whether we are computing all or one electron
           ri2=ri*ri
           ri3=ri2*ri
 
-c Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
+! Loops over analytical basis functions, then numerical.  One can optimize the exponents of the analytic ones.
           do 10 irb=1,nrbas_analytical(ict)
               n=n_bas2(irb,ict)
               rn=abs(n)
@@ -73,8 +73,8 @@ c Loops over analytical basis functions, then numerical.  One can optimize the e
                     stop 'cbasis_fns_num: Allowed basis types are slater gaussian gauss-slater!'
                  end select     !fp
               elseif(n.eq.0) then
-c     Warning: Asymptotic and Gaussian not yet tested.
-c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
+!     Warning: Asymptotic and Gaussian not yet tested.
+!     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta=sqrt(-2*E_ion)?
                  write(6,*) 'basis_fns: ict=',ict
                  write(6,*) 'basis_fns: irb=',irb
                  write(6,*) 'basis_fns: n=',n
@@ -86,9 +86,9 @@ c     Asymptotic r^(rn-1)*Exp(-zeta*r), where rn=beta+1, beta=betaq/zeta-1, zeta
                  wfv(3,irb)=rm3*((rn-1)*(rn-2-zr)-(rn-1-zr)*zr)*ex
               endif
               wfv(1,irb)=rm1*ex
-   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex              
+   10         wfv(2,irb)=rm2*((rn-1)-zr)*ex
 
-c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
+!       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(wfv(1,irb),irb=1,nrbas(ict))
 
             do 20 irb=1,nrbas_numerical(ict)
               rk=r
@@ -103,8 +103,8 @@ c       write(6,'(''ic,ict,nrbas(ict),wfv='',3i5,29d12.5)') ic,ict,nrbas(ict),(w
             xhat=xx*ri
             yhat=yy*ri
 
-c Phi function
-c ****************** The following is the modified part ********************
+! Phi function
+! ****************** The following is the modified part ********************
             theta=datan2(yy,xx)
             cph(0)=dcmplx(1.d0,0.d0)
             cdph(1,0)=dcmplx(0.d0,0.d0)
@@ -121,16 +121,16 @@ c ****************** The following is the modified part ********************
               cdph(2,i)=i*xhat*ri*temp_p
               cdph(1,-i)=-i*yhat*ri*temp_n
    30         cdph(2,-i)=i*xhat*ri*temp_n
-c ****************** The modified part ends here ***************************
+! ****************** The modified part ends here ***************************
 
             ib=ib+1
             irb=iwrwf(ib2,ict)
             m=m_bas(ib)
             ylm=cph(m)
-c           if(abs(m).gt.ML_BAS) then
-c             write(6,*) 'm=',m
-c             stop
-c           endif
+!           if(abs(m).gt.ML_BAS) then
+!             write(6,*) 'm=',m
+!             stop
+!           endif
             cphin(ib,ie)=ylm*wfv(1,irb)
             cdphin(1,ib,ie,1)=ylm*xhat*wfv(2,irb)+cdph(1,m)*wfv(1,irb)
             cdphin(2,ib,ie,1)=ylm*yhat*wfv(2,irb)+cdph(2,m)*wfv(1,irb)
@@ -140,34 +140,34 @@ c           endif
       return
       end
 
-c------------------------------------------------------------------------
+!------------------------------------------------------------------------
 
       subroutine cbasis_fns_fd(iel,rvec_en,r_en)
 
-c Written by A.D.Guclu, Feb 2004
-c to replace basis_fns for quantum dots.
-c Calculate Fock-Darwin basis functions and their derivatives for all
-c or 1 electron
+! Written by A.D.Guclu, Feb 2004
+! to replace basis_fns for quantum dots.
+! Calculate Fock-Darwin basis functions and their derivatives for all
+! or 1 electron
 
-c arguments: iel=0 -> all electron
-c               >0 -> only electron iel
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments: iel=0 -> all electron
+!               >0 -> only electron iel
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: complex functions cphin,dcphin, and d2cphin are calculated
+! output: complex functions cphin,dcphin, and d2cphin are calculated
 
-c Fock-Darwin wavefunctions are:
-c phi = norm * r^abs(m) L_n^abs(m)(we r^2) exp(-0.5 we r^2) exp(-imtheta)
-c (norm is taken care before in basis_norm_dot)
+! Fock-Darwin wavefunctions are:
+! phi = norm * r^abs(m) L_n^abs(m)(we r^2) exp(-0.5 we r^2) exp(-imtheta)
+! (norm is taken care before in basis_norm_dot)
 
-c For the first derivative, use chain rule.
-c Also remember: d/dx L_n^k(x) =-L_(n-1)^(k+1)(x)
+! For the first derivative, use chain rule.
+! Also remember: d/dx L_n^k(x) =-L_(n-1)^(k+1)(x)
 
-c Laplacian can be directly obtained from Shrodinger equation:
-c -1/2 d2cphin + 1/2 we^2 r^2 phin = (2n+1+abs(m)) we phin
-c (part due to angular momentum excess cancels out )
+! Laplacian can be directly obtained from Shrodinger equation:
+! -1/2 d2cphin + 1/2 we^2 r^2 phin = (2n+1+abs(m)) we phin
+! (part due to angular momentum excess cancels out )
 
-c In this version we replace we by zex*we for basis set optimization.
+! In this version we replace we by zex*we for basis set optimization.
 
       use coefs_mod
       use basis1_mod
@@ -179,12 +179,12 @@ c In this version we replace we by zex*we for basis set optimization.
 
       complex*16 ctemp1,ctemp2
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
 
-c Decide whether we are computing all or one electron
+! Decide whether we are computing all or one electron
       if(iel.eq.0) then
         nelec1=1
         nelec2=nelec
@@ -207,7 +207,7 @@ c Decide whether we are computing all or one electron
         theta=datan2(x2,x1)
 
         do 90 ib=1,nbasis
-c calculate all basis dependent functions to avoid repeating:
+! calculate all basis dependent functions to avoid repeating:
           wez=we*zex(ib,iwf)
           rho=r2*wez
           fexp=dexp(-0.5d0*rho)
@@ -223,13 +223,13 @@ c calculate all basis dependent functions to avoid repeating:
           fac_phi=fexp*pow*flagr
           fac_dphi=fexp*pow2
 
-c calculate cphin:
+! calculate cphin:
           cphin(ib,ie)=dcmplx(cosm,-sinm)
           cphin(ib,ie)=cphin(ib,ie)*fac_phi
 
-c calculate cdphin:
+! calculate cdphin:
           temp=flagr*(mabs-rho)
-c following "if" is necessary
+! following "if" is necessary
           if(n.gt.0) temp=temp-2*rho*flaguerre(n-1,mabs+1,rho)
           ctemp1=dcmplx(temp*cosm,-temp*sinm)
 
@@ -239,7 +239,7 @@ c following "if" is necessary
           cdphin(1,ib,ie,1)=(x1*ctemp1+x2*ctemp2)*fac_dphi
           cdphin(2,ib,ie,1)=(x2*ctemp1-x1*ctemp2)*fac_dphi
 
-c calculate cd2phin:
+! calculate cd2phin:
           cd2phin(ib,ie)=wez*(rho-2*(2*n+mabs+1))*cphin(ib,ie)
 
  90     enddo
@@ -248,11 +248,11 @@ c calculate cd2phin:
       return
       end
 
-c---------------------------------------------------------------------
+!---------------------------------------------------------------------
 
       function flaguerre(n,m,x)
-c calculate laguerre function using recursion relation.
-c n and m must be positive real
+! calculate laguerre function using recursion relation.
+! n and m must be positive real
 
       implicit real*8(a-h,o-z)
 
@@ -269,34 +269,34 @@ c n and m must be positive real
       return
       end
 
-c----------------------------------------------------------------------
+!----------------------------------------------------------------------
 
       subroutine cbasis_fns_cf(rvec_en)
 
-c Written by A.D.Guclu, sep 2004
-c inspired from the code by Gun Sang Jeon & J.Jain
+! Written by A.D.Guclu, sep 2004
+! inspired from the code by Gun Sang Jeon & J.Jain
 
-c Calculates projected composite fermion basis functions and their derivatives for all
-c electron case.
+! Calculates projected composite fermion basis functions and their derivatives for all
+! electron case.
 
-c arguments:
-c            rvec_en=vector electron-nucleus
-c                    (or electron-dot center in this context)
+! arguments:
+!            rvec_en=vector electron-nucleus
+!                    (or electron-dot center in this context)
 
-c output: complex functions cphin, and dcphin
+! output: complex functions cphin, and dcphin
 
-c projected cf functions are:
-c phi(j) = norm * z^(m+n_landau) * (d^n/dz_j^n \Pi_k (z_j-z_k)^p) / \Pi_k (z_j-z_k)^p
-c (norm is taken care before in basis_norm_dot)
+! projected cf functions are:
+! phi(j) = norm * z^(m+n_landau) * (d^n/dz_j^n \Pi_k (z_j-z_k)^p) / \Pi_k (z_j-z_k)^p
+! (norm is taken care before in basis_norm_dot)
 
-c local variables: djnkj = d^n/dz_j^m K_j
-c                 didjnkj = d/dz_i d^n/dz_j^m K_j
-c                  where e^K = \Pi_k (z_j-z_k)^p)
-c                 djnflux = (d^n/dz_j^n \Pi_k (z_j-z_k)^p) / \Pi_k (z_j-z_k)^p
-c                 didjnflux = d/dz_i djnflux
-c Laplacian is zero and ignored here
+! local variables: djnkj = d^n/dz_j^m K_j
+!                 didjnkj = d/dz_i d^n/dz_j^m K_j
+!                  where e^K = \Pi_k (z_j-z_k)^p)
+!                 djnflux = (d^n/dz_j^n \Pi_k (z_j-z_k)^p) / \Pi_k (z_j-z_k)^p
+!                 didjnflux = d/dz_i djnflux
+! Laplacian is zero and ignored here
 
-c note: one complication here is that the orbitals depend on all electrons...
+! note: one complication here is that the orbitals depend on all electrons...
 
       use coefs_mod
       use const_mod
@@ -310,7 +310,7 @@ c note: one complication here is that the orbitals depend on all electrons...
       complex*16 df(0:nbasis+1),ddf(0:nbasis+1,nelec)
       complex*16 ctemp1,ctemp2,zjpowmn1,zjpowmn
 
-c     common /dim/ ndim
+!     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -324,12 +324,12 @@ c     common /dim/ ndim
           didjnkj(in,je)=dcmplx(0.d0,0.d0)    ! undefined
         enddo
 
-c calculate djnkj and didjnkj in one go:
+! calculate djnkj and didjnkj in one go:
         do ke=1,nelec
           if(ke.ne.je) then
             zk=dcmplx(rvec_en(1,ke,ic),-rvec_en(2,ke,ic))
             zjk=zj-zk
-c   ctemp1 should be precaculated for faster processing...
+!   ctemp1 should be precaculated for faster processing...
             ctemp1=dcmplx(-1.d0,0.d0)/zjk
             ctemp2=dcmplx(1.d0,0.d0)
             do in=1,ncfmax+1
@@ -339,7 +339,7 @@ c   ctemp1 should be precaculated for faster processing...
             enddo
           endif
         enddo
-c normalize:
+! normalize:
         djnkj(1)=djnkj(1)*nv
         tempfac=1.d0            ! integer but can be big?
         do in=1,ncfmax
@@ -350,9 +350,9 @@ c normalize:
           enddo
         enddo
 
-c now get derivatives of the flux term for all landau levels.
-c they are calculated a part because they only depend on landau level index.
-c        write(6,*) ncfmax
+! now get derivatives of the flux term for all landau levels.
+! they are calculated a part because they only depend on landau level index.
+!        write(6,*) ncfmax
         do in=0,ncfmax
           df(in)=djnflux(in,djnkj)
           do ie=1,nelec
@@ -360,7 +360,7 @@ c        write(6,*) ncfmax
           enddo
         enddo
 
-c loop on all basis functions
+! loop on all basis functions
         do ib=1,nbasis
           n=n_cf(ib)
           m=m_fd(ib)
@@ -368,10 +368,10 @@ c loop on all basis functions
           zjpowmn1=zj**(mn-1)      ! should we care about zj near zero?
           zjpowmn=zjpowmn1*zj
 
-c calculate orbital:
+! calculate orbital:
           cphin(ib,je)=zjpowmn*df(n)
-c          write(6,*) 'je,n,m,zj,cphin',je,n,m,zj,cphin(ib,je)
-c calculate gradient of the orbital with respect to the electron ie's coord.:
+!          write(6,*) 'je,n,m,zj,cphin',je,n,m,zj,cphin(ib,je)
+! calculate gradient of the orbital with respect to the electron ie's coord.:
           do ie=1,nelec
             if(ie.eq.je) then
               cdphin(1,ib,je,ie)=mn*zjpowmn1*df(n)+zjpowmn*ddf(n,ie)
@@ -388,25 +388,25 @@ c calculate gradient of the orbital with respect to the electron ie's coord.:
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       function djnflux(in,dk)
-c written by A.D.Guclu, sep 2004
-c following Gun Sang Jeon & J.Jain's code.
+! written by A.D.Guclu, sep 2004
+! following Gun Sang Jeon & J.Jain's code.
 
-c calculates (d^n/dj^n e^k)/e^k for given d^n/dj^n k
+! calculates (d^n/dj^n e^k)/e^k for given d^n/dj^n k
 
-c code not well optimized. the powers of dk's should be
-c precalculated for faster processing.
+! code not well optimized. the powers of dk's should be
+! precalculated for faster processing.
 
       use coefs_mod
 
       complex*16 djnflux
 
-c arguments:
+! arguments:
       integer in
       complex*16 dk(nbasis+1)
 
-c locals:
+! locals:
       complex*16 df
 
       if(in.eq.0) then
@@ -478,25 +478,25 @@ c locals:
       return
       end
 
-c---------------------------------------------------------------------
+!---------------------------------------------------------------------
 
       function didjnflux(in,ie,je,dk,ddk)
-c written by A.D.Guclu, sep 2004
+! written by A.D.Guclu, sep 2004
 
-c calculates d/di ((d^n/dj^n e^k)/e^k) for given d/di d^n/dj^n k and d^n/dj^n k
+! calculates d/di ((d^n/dj^n e^k)/e^k) for given d/di d^n/dj^n k and d^n/dj^n k
 
-c far from being optimized. too risky!
-     
+! far from being optimized. too risky!
+
       use coefs_mod
       use const_mod
 
       complex*16 didjnflux
 
-c arguments:
+! arguments:
       integer in,ie,je
       complex*16 dk(nbasis+1),ddk(nbasis+1,nelec)
 
-c locals:
+! locals:
       complex*16 ddf
 
 

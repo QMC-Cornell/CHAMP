@@ -1,5 +1,5 @@
       subroutine jastrow3e(iel,x,v,value)
-c Written by Claudia Filippi by modifying jastrow3
+! Written by Claudia Filippi by modifying jastrow3
 
       use constants_mod
       use atom_mod
@@ -76,7 +76,7 @@ c Written by Claudia Filippi by modifying jastrow3
       endif
 
       rij=r_ee(ij)
-c     riji=one/rij
+!     riji=one/rij
 
       if(scalek(iwf).ne.0) then
         if(isc.eq.2) then
@@ -105,11 +105,11 @@ c     riji=one/rij
 
       top=b(1,isb,iwf)*u(1)
       topu=b(1,isb,iwf)
-c     topuu=0
+!     topuu=0
 
       bot=b(2,isb,iwf)*u(1)
       botu=b(2,isb,iwf)
-c     botuu=0
+!     botuu=0
 
       bot=one+bot
       bot2=bot*bot
@@ -154,8 +154,8 @@ c     botuu=0
             rrj=(one-exprj)/scalek(iwf)
             driri=(one+ris+ris2)*expri
             drjrj=(one+rjs+rjs2)*exprj
-c           d2riri=-scalek(iwf)*ris2*(3+2*ris+ris2)*expri
-c           d2rjrj=-scalek(iwf)*rjs2*(3+2*rjs+rjs2)*exprj
+!           d2riri=-scalek(iwf)*ris2*(3+2*ris+ris2)*expri
+!           d2rjrj=-scalek(iwf)*rjs2*(3+2*rjs+rjs2)*exprj
             dd3=half*(driri+drjrj)
             dd4=half*(driri-drjrj)
            elseif(isc.eq.4) then
@@ -172,8 +172,8 @@ c           d2rjrj=-scalek(iwf)*rjs2*(3+2*rjs+rjs2)*exprj
             rrj=rj*denj
             driri=deni**4
             drjrj=denj**4
-c           d2riri=-four*(scalek(iwf)*ri)**2*scalek(iwf)*deni**7
-c           d2rjrj=-four*(scalek(iwf)*rj)**2*scalek(iwf)*denj**7
+!           d2riri=-four*(scalek(iwf)*ri)**2*scalek(iwf)*deni**7
+!           d2rjrj=-four*(scalek(iwf)*rj)**2*scalek(iwf)*denj**7
             dd3=half*(driri+drjrj)
             dd4=half*(driri-drjrj)
           endif

@@ -1,5 +1,5 @@
       subroutine splitj_movall
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use constants_mod
       use const_mod
       use dim_mod
@@ -21,9 +21,9 @@ c Written by Cyrus Umrigar
         write(6,'(''eold='',100f6.2)') (eoldw(iww,1),iww=1,nwalk)
       endif
 
-c Identify the walkers that are to be killed because their wt. is zero, or that are
-c to be merged because their wts are less than 1/2.  For each pair whose wts are < 1/2
-c give the one that is to be kept the additional wt of the other and put the other one on a stack.
+! Identify the walkers that are to be killed because their wt. is zero, or that are
+! to be merged because their wts are less than 1/2.  For each pair whose wts are < 1/2
+! give the one that is to be kept the additional wt of the other and put the other one on a stack.
       iunder=0
       ipair=0
       wtsm=zero
@@ -55,7 +55,7 @@ c give the one that is to be kept the additional wt of the other and put the oth
         endif
    10 continue
 
-c Figure out what weight walkers can be split without exceeding MWALK
+! Figure out what weight walkers can be split without exceeding MWALK
       nwalk_after_join=nwalk-iunder
       nwalk_max_dupl=MWALK-nwalk_after_join
       do iw=1,nwalk
@@ -64,8 +64,8 @@ c Figure out what weight walkers can be split without exceeding MWALK
       call shell(wt_sav,nwalk)
       wt_split=wt_sav(max(1,nwalk-nwalk_max_dupl))
 
-c Split the walkers whose wt is >max(two,wt_split).  If there are walkers that were eliminated, so that iunder>0
-c then put the new walker in that location.  Otherwise put it at the end.
+! Split the walkers whose wt is >max(two,wt_split).  If there are walkers that were eliminated, so that iunder>0
+! then put the new walker in that location.  Otherwise put it at the end.
       nwalk2=nwalk
       do 20 iw=1,nwalk
         if(wt(iw).gt.max(two,wt_split)) then
@@ -110,8 +110,8 @@ c then put the new walker in that location.  Otherwise put it at the end.
         endif
    20 continue
 
-c If more walkers were eliminated than the number duplicated then consolidate
-c the remaining walkers so that they are they occupy the first positions.
+! If more walkers were eliminated than the number duplicated then consolidate
+! the remaining walkers so that they are they occupy the first positions.
       do 30 j=iunder,1,-1
         iw2=iwundr(j)
         iw=nwalk2
@@ -145,10 +145,10 @@ c the remaining walkers so that they are they occupy the first positions.
       wtsm2=zero
       do 40 iw=1,nwalk
         wtsm2=wtsm2+wt(iw)
-c       if(wt(iw).lt.half) write(11,'(i4,9d12.5)') iw,wt(iw),eoldw(iw)
-c       if(wt(iw).gt.two) write(11,'(i4,9d12.5)') iw,wt(iw),eoldw(iw)
+!       if(wt(iw).lt.half) write(11,'(i4,9d12.5)') iw,wt(iw),eoldw(iw)
+!       if(wt(iw).gt.two) write(11,'(i4,9d12.5)') iw,wt(iw),eoldw(iw)
    40 continue
-c     if(dabs(wtsm-wtsm2).gt.1.d-10) write(11,'(2f12.6)') wtsm,wtsm2
+!     if(dabs(wtsm-wtsm2).gt.1.d-10) write(11,'(2f12.6)') wtsm,wtsm2
 
       return
       end

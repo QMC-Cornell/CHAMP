@@ -1,32 +1,32 @@
       subroutine vmc
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
 
-c Program to do variational monte carlo calculations on
-c atoms and molecules.
-c Various types of Metropolis moves can be done, including a few
-c versions of directed Metropolis in spherical polar coordinates.
-c Also, one or all electrons can be moved at once.
-c Currently this program contains
-c 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater or gaussian basis functions.
-c and sa, pa, da asymptotic functions
-c MELEC must be >= number of electrons
+! Program to do variational monte carlo calculations on
+! atoms and molecules.
+! Various types of Metropolis moves can be done, including a few
+! versions of directed Metropolis in spherical polar coordinates.
+! Also, one or all electrons can be moved at once.
+! Currently this program contains
+! 1s, 2s, 2p, 3s, 3p, 3d, 4s,  and 4p  Slater or gaussian basis functions.
+! and sa, pa, da asymptotic functions
+! MELEC must be >= number of electrons
 
-c The dimension of the Slater matrices in determinant is taken from
-c above assuming equal number of up and down spins.
-c That is the Slater matrices are dimensioned (MELEC/2)**2.
-c MELEC would have to be correspondingly larger if spin
-c polarized calculations were attempted.
+! The dimension of the Slater matrices in determinant is taken from
+! above assuming equal number of up and down spins.
+! That is the Slater matrices are dimensioned (MELEC/2)**2.
+! MELEC would have to be correspondingly larger if spin
+! polarized calculations were attempted.
 
-      use all_tools_mod       
-      use main_menu_mod       
-      use intracule_mod       
-      use montecarlo_mod      
-      use eloc_mod            
-      use average_mod         
-      use control_mod         
-      use print_mod           
-      use deriv_exp_mod       
-      use walkers_mod         
+      use all_tools_mod
+      use main_menu_mod
+      use intracule_mod
+      use montecarlo_mod
+      use eloc_mod
+      use average_mod
+      use control_mod
+      use print_mod
+      use deriv_exp_mod
+      use walkers_mod
       use atom_mod
       use config_mod
       use dorb_mod
@@ -61,84 +61,84 @@ c polarized calculations were attempted.
 
       common /rnyucm/ m1,m2,m3,m4,l1,l2,l3,l4
 
-c common block variables:
+! common block variables:
 
-c   /const/
-c        nelec  = number of electrons
-c        pi     = 3.14159...
-c        hb     = hbar**2/(2m)
-c        delta  = side of box in which metropolis steps are made
-c        deltai = 1/delta
-c        fbias  = force bias parameter
-c   /contrl/
-c        nstep  = number of metropolis steps/block
-c        nblk   = number of blocks od nstep steps after the
-c                equilibrium steps
-c        nblkeq = number of equilibrium blocks
-c        nconf_global  = target number of mc configurations (dmc only)
-c        nconf_new = number of mc configurations generated for optim and dmc
-c        idump  =  1 dump out stuff for a restart
-c        irstar =  1 pick up stuff for a restart
-c   /config/
-c        xold   = current position of the electrons
-c        xnew   = new position after a trial move
-c        vold   = grad(psi)/psi at current position
-c        vnew   = same after trial move
-c        psi2o  = psi**2 at current position
-c        psi2n  = same after trial move
-c        eold   = local energy at current position
-c        enew   = same after trial move
-c        peo    = local potential at current position
-c        pen    = same after trial move
-c        peio   = local e-e interaction potential at current position
-c        pein   = same after trial move
-c        tjfo   = Jackson Feenberg kinetic energy at current position
-c        tjfn   = same after trial move
-c        psido  = determinantal part of wave function
-c        psijo  = log(Jastrow)
-c        pot_ee_old(ielec) = interaction potential felt by ith electron
-c                              at current position
-c        pot_ee_new(ielec) = same after trial move
-c   /coefs/
-c        coef   = read in coefficients of the basis functions
-c                 to get the molecular orbitals used in determinant
-c        nbasis = number of basis functions read in
-c   /basis/
-c        ncent  = number of centers
-c        zex    = screening constants for each basis function
-c        cent   = positions of each center
-c        pecent = potential energy of the centers
-c        znuc   = charge of the nuclei (centers)
-c        n1s    = number of 1s functions at each center
-c        n2s    = number of 2s functions at each center
-c        n2p    = number of 2p functions of each type at each center
-c        n3s    = number of 3s functions at each center
-c        n3p    = number of 3p functions of each type at each center
-c        n3dzr  = number of z**2-r**2 d functions at each center
-c        n3dx2  = number of x**2-y**2 d functions at each center
-c        n3dxy  = number of xy d functions at each center
-c        n3dxz  = number of xz d functions at each center
-c        n3dyz  = number of yz d functions at each center
-c        n4s    = number of 4s functions at each center
-c        n4p    = number of 4p functions of each type at each center
-c   /dets/
-c        cdet   = coefficients of the determinants
-c        ndet   = number of determinants of molecular orbitals
-c                 used
-c        nup    = number of up spin electrons
-c        ndn    = number of down spin electrons
-c   /jaspar/
-c        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij)) if ijas=1
+!   /const/
+!        nelec  = number of electrons
+!        pi     = 3.14159...
+!        hb     = hbar**2/(2m)
+!        delta  = side of box in which metropolis steps are made
+!        deltai = 1/delta
+!        fbias  = force bias parameter
+!   /contrl/
+!        nstep  = number of metropolis steps/block
+!        nblk   = number of blocks od nstep steps after the
+!                equilibrium steps
+!        nblkeq = number of equilibrium blocks
+!        nconf_global  = target number of mc configurations (dmc only)
+!        nconf_new = number of mc configurations generated for optim and dmc
+!        idump  =  1 dump out stuff for a restart
+!        irstar =  1 pick up stuff for a restart
+!   /config/
+!        xold   = current position of the electrons
+!        xnew   = new position after a trial move
+!        vold   = grad(psi)/psi at current position
+!        vnew   = same after trial move
+!        psi2o  = psi**2 at current position
+!        psi2n  = same after trial move
+!        eold   = local energy at current position
+!        enew   = same after trial move
+!        peo    = local potential at current position
+!        pen    = same after trial move
+!        peio   = local e-e interaction potential at current position
+!        pein   = same after trial move
+!        tjfo   = Jackson Feenberg kinetic energy at current position
+!        tjfn   = same after trial move
+!        psido  = determinantal part of wave function
+!        psijo  = log(Jastrow)
+!        pot_ee_old(ielec) = interaction potential felt by ith electron
+!                              at current position
+!        pot_ee_new(ielec) = same after trial move
+!   /coefs/
+!        coef   = read in coefficients of the basis functions
+!                 to get the molecular orbitals used in determinant
+!        nbasis = number of basis functions read in
+!   /basis/
+!        ncent  = number of centers
+!        zex    = screening constants for each basis function
+!        cent   = positions of each center
+!        pecent = potential energy of the centers
+!        znuc   = charge of the nuclei (centers)
+!        n1s    = number of 1s functions at each center
+!        n2s    = number of 2s functions at each center
+!        n2p    = number of 2p functions of each type at each center
+!        n3s    = number of 3s functions at each center
+!        n3p    = number of 3p functions of each type at each center
+!        n3dzr  = number of z**2-r**2 d functions at each center
+!        n3dx2  = number of x**2-y**2 d functions at each center
+!        n3dxy  = number of xy d functions at each center
+!        n3dxz  = number of xz d functions at each center
+!        n3dyz  = number of yz d functions at each center
+!        n4s    = number of 4s functions at each center
+!        n4p    = number of 4p functions of each type at each center
+!   /dets/
+!        cdet   = coefficients of the determinants
+!        ndet   = number of determinants of molecular orbitals
+!                 used
+!        nup    = number of up spin electrons
+!        ndn    = number of down spin electrons
+!   /jaspar/
+!        Jastrow function is dexp(cjas1*rij/(1+cjas2*rij)) if ijas=1
 
-c   Other variables main program
-c        title  = title of run
-c        date   = date of run
-c        eunit  = energy units
-c        sitsca = scaling factor to set up initial configuration of
-c                 electrons on sites
-c        nsite  = number of electrons to put on each site initially
-c        isite  = flag if 1 then take initial configuration from
-c                 sites routine
+!   Other variables main program
+!        title  = title of run
+!        date   = date of run
+!        eunit  = energy units
+!        sitsca = scaling factor to set up initial configuration of
+!                 electrons on sites
+!        nsite  = number of electrons to put on each site initially
+!        isite  = flag if 1 then take initial configuration from
+!                 sites routine
 
 
 !      initial printing
@@ -161,25 +161,25 @@ c                 sites routine
       call object_associate ('error_sigma', error_sigma) !JT
       call object_average_request ('eloc_sq_av') !JT
       call object_error_request ('error_sigma') !JT
-    
+
       call print_list_of_averages_and_errors
-      
+
       nparma_read=2+max(0,norda-1)
       nparmb_read=2+max(0,nordb-1)
       nparmc_read=nterms4(nordc)
 
-c Temporary print out of Jastrow params.
-c     do 156 iwf=1,nforce
-c     write(6,'(''iwf='',i3)') iwf
-c     do 152 ict=1,nctype
-c 152   write(6,'(''a='',9f10.6)') (a4(i,ict,iwf),i=1,nparma_read)
-c     do 154 isp=nspin1,nspin2b
-c 154   write(6,'(''b='',9f10.6)') (b(i,isp,iwf),i=1,nparmb_read)
-c     do 156 ict=1,nctype
-c 156   write(6,'(''c='',9f10.6)') (c(i,ict,iwf),i=1,nparmc_read)
+! Temporary print out of Jastrow params.
+!     do 156 iwf=1,nforce
+!     write(6,'(''iwf='',i3)') iwf
+!     do 152 ict=1,nctype
+! 152   write(6,'(''a='',9f10.6)') (a4(i,ict,iwf),i=1,nparma_read)
+!     do 154 isp=nspin1,nspin2b
+! 154   write(6,'(''b='',9f10.6)') (b(i,isp,iwf),i=1,nparmb_read)
+!     do 156 ict=1,nctype
+! 156   write(6,'(''c='',9f10.6)') (c(i,ict,iwf),i=1,nparmc_read)
 
-c If we are moving one electron at a time, then we need to initialize
-c xnew, since only the first electron gets initialized in metrop
+! If we are moving one electron at a time, then we need to initialize
+! xnew, since only the first electron gets initialized in metrop
       call alloc ('xnew', xnew, 3, nelec)
       if(irstar.ne.1) then
         do 400 i=1,nelec
@@ -187,30 +187,30 @@ c xnew, since only the first electron gets initialized in metrop
   400       xnew(k,i)=xold(k,i)
       endif
 
-c We need to set pot_ee_old(:)
-c  also, zero out rshift(k,i,ic) to start with
+! We need to set pot_ee_old(:)
+!  also, zero out rshift(k,i,ic) to start with
       rshift(:,:,:) = 0.
       call distances(xold, pe, pei)
       pot_ee_old = pot_ee    ! this is an array assignment
 
-c If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
-c optimization or dmc calculation. So figure out how often we need to write a
-c configuration to produce nconf_new configurations. If nconf_new = 0
-c then set up so no configurations are written.
+! If nconf_new > 0 then we want to write nconf_new configurations from each processor for a future
+! optimization or dmc calculation. So figure out how often we need to write a
+! configuration to produce nconf_new configurations. If nconf_new = 0
+! then set up so no configurations are written.
       if(nconf_new.eq.0) then
         ngfmc=2*nstep*nblk
        else
         ngfmc=max(1,(nstep*nblk)/nconf_new)
       endif
-    
-c zero out estimators and averages
+
+! zero out estimators and averages
       if(irstar.ne.1) then
 !JT        call my_second(1,'zerest')
          call zerest
       endif
-      
-c check if restart flag is on. If so then read input from
-c dumped data to restart
+
+! check if restart flag is on. If so then read input from
+! dumped data to restart
 
       if(irstar.eq.1) then
         open(10,file='restart_vmc',err=401,form='unformatted')
@@ -220,16 +220,16 @@ c dumped data to restart
         call startr
         close(unit=10)
       endif
-  
+
 ! Start equilibration steps
       call print_cpu_time_in_seconds ('Beginning of equilibration')
 
-c if there are equilibrium steps to take, do them here
-c skip equilibrium steps if restart run
-c imetro = 1 original force-bias
-c        = 5 spherical-polar with exponential/linear T
-c        = 6 spherical-polar with slater T
-c        = 7 spherical-polar with slater T
+! if there are equilibrium steps to take, do them here
+! skip equilibrium steps if restart run
+! imetro = 1 original force-bias
+!        = 5 spherical-polar with exponential/linear T
+!        = 6 spherical-polar with slater T
+!        = 7 spherical-polar with slater T
       if(nblkeq.ge.1.and.irstar.ne.1) then
         l=0
 
@@ -249,12 +249,12 @@ c        = 7 spherical-polar with slater T
   420   call acuest
         l_equilibration = .false.
 
-c       Equilibration steps done. Zero out estimators again.
+!       Equilibration steps done. Zero out estimators again.
         call print_cpu_time_in_seconds ('End       of equilibration')
         call zerest
       endif
 
-c now do averaging steps
+! now do averaging steps
       l=0
       do 440 i=1,1000000  !JT
         block_iterations_nb = block_iterations_nb + 1  !JT
@@ -278,7 +278,7 @@ c now do averaging steps
 
         call compute_averages_walk_step   !JT
 
-c       write out configuration for optimization/dmc/gfmc here
+!       write out configuration for optimization/dmc/gfmc here
         if (nconf_new /= 0) then
          if(mod(l,ngfmc).eq.1 .or. ngfmc.eq.1) then
           if(ndim*nelec.lt.100) then
@@ -338,12 +338,12 @@ c       write out configuration for optimization/dmc/gfmc here
       endif                               !JT
   440 continue
 
-c      if( nforce == 1) then
-c         write(6, *) "fp: biased sigma", sigma
-c         write(6, *) "fp: biased energy", eloc_av
-c         write(6, *) "fp: biased energy error", sqrt(eloc_av_var)
-c         write(6, *) "fp: biased sigma error", error_sigma
-c      end if
+!      if( nforce == 1) then
+!         write(6, *) "fp: biased sigma", sigma
+!         write(6, *) "fp: biased energy", eloc_av
+!         write(6, *) "fp: biased energy error", sqrt(eloc_av_var)
+!         write(6, *) "fp: biased sigma error", error_sigma
+!      end if
 !     reinitilization at the end of MC iterations
       block_nb = block_iterations_nb !JT save final block number
       step_iterations_nb  = 0   !JT
@@ -353,20 +353,20 @@ c      end if
 
       call print_cpu_time_in_seconds ('End       of accumulation ')
 
-c print out final results
+! print out final results
       call finwrt
 
-c Presently grad_hess_jas_fin needs to be called after finwrt
-c     if(ijasderiv.eq.1 .and. idtask.eq.0) then
-c       passes=dfloat(iblk)*dfloat(nstep)*dfloat(nproc)
-c       efin=ecum(1)/passes
-c       call grad_hess_fin(passes,efin)
-c     endif
+! Presently grad_hess_jas_fin needs to be called after finwrt
+!     if(ijasderiv.eq.1 .and. idtask.eq.0) then
+!       passes=dfloat(iblk)*dfloat(nstep)*dfloat(nproc)
+!       efin=ecum(1)/passes
+!       call grad_hess_fin(passes,efin)
+!     endif
 
-c Write out last MC configuration on mc_configs_start
+! Write out last MC configuration on mc_configs_start
       call mc_configs_write
 
-c if dump flag is on then dump out data for a restart
+! if dump flag is on then dump out data for a restart
       if(idump.eq.1) then
         open(10,form='unformatted',file='restart_vmc')
         rewind 10
@@ -375,8 +375,8 @@ c if dump flag is on then dump out data for a restart
       endif
 
       close(unit=9)
-c     close(unit=5)
-c     close(unit=6)
+!     close(unit=5)
+!     close(unit=6)
       if(nconf_new.ne.0) close(unit=7)
 
       return

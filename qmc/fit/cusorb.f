@@ -1,6 +1,6 @@
       subroutine cusorb(icent,orb)
-c Written by Cyrus Umrigar
-c Calculate all orbitals, orb, at position of nucleus icent
+! Written by Cyrus Umrigar
+! Calculate all orbitals, orb, at position of nucleus icent
 ! J. Toulouse - 08 Jan 05: change coef(i,j,1) -> coef(i,j,iwf)
       use all_tools_mod
       use atom_mod
@@ -34,17 +34,17 @@ c Calculate all orbitals, orb, at position of nucleus icent
       call alloc ('dphin', dphin, 3, nbasis, nelec)
       call alloc ('d2phin', d2phin, nbasis, nelec)
 
-c Calculate basis functions, phin, at position of nucleus icent
+! Calculate basis functions, phin, at position of nucleus icent
       if(ndim.eq.3) then
         call basis_fnse2(1,rvec_en,r_en)
        elseif(ndim.eq.2) then
         call basis_fns_2de2(1,rvec_en,r_en)
       endif
 
-c     write(6,'(''r_en='',9f9.5)') (r_en(1,ic),ic=1,ncent)
-c     write(6,'(''phin='',9f19.15)') (phin(ib,1),ib=1,nbasis)
+!     write(6,'(''r_en='',9f9.5)') (r_en(1,ic),ic=1,ncent)
+!     write(6,'(''phin='',9f19.15)') (phin(ib,1),ib=1,nbasis)
 
-c Calculate orbitals, orb, at position of nucleus icent
+! Calculate orbitals, orb, at position of nucleus icent
       do 10 iorb=1,norb
         orb(iorb)=0
         do 10 m=1,nbasis

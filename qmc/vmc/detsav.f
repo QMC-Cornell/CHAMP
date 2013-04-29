@@ -1,5 +1,5 @@
       subroutine detsav(iel)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
 
       use dorb_mod
       use slatn_mod

@@ -1,8 +1,8 @@
       subroutine cmatinv(a,n,det)
 
-c from Wolfgang's qdot.f
-c invert a complex nxn matrix using gauss elimination
-c with row pivoting. Note matrix must be dimension (n,n) or equivalently
+! from Wolfgang's qdot.f
+! invert a complex nxn matrix using gauss elimination
+! with row pivoting. Note matrix must be dimension (n,n) or equivalently
       use const_mod
       implicit double precision (a-h,o-z)
 
@@ -21,12 +21,12 @@ c with row pivoting. Note matrix must be dimension (n,n) or equivalently
    10   ipvt(i)=i
       det=cone
 
-c loop through columns
+! loop through columns
       do 20 i=1,n
         adiag=a(ipvt(i),i)
         idiag=i
 
-c find best pivot element in column and record pivot
+! find best pivot element in column and record pivot
 
       do 30 k=i,n
       if(abs(a(ipvt(k),i)).gt.abs(adiag)) then
@@ -42,7 +42,7 @@ c find best pivot element in column and record pivot
       endif
       det=adiag*det
 
-c row reduce matrix
+! row reduce matrix
 
       a(ipvt(i),i)=cone
       adiagi=cone/adiag
@@ -58,9 +58,9 @@ c row reduce matrix
    50 continue
    20 continue
 
-c interchange elements to unpivot inverse matrix
-c the following is equivalent to:
-c      anew(i,ipvt(j))=aold(ipvt(i),j)
+! interchange elements to unpivot inverse matrix
+! the following is equivalent to:
+!      anew(i,ipvt(j))=aold(ipvt(i),j)
 
       do 70 j=1,n
       do 80 i=1,n

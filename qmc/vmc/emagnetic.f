@@ -1,7 +1,7 @@
       subroutine emagnetic(ltot)
-c Written by A.D.Guclu, Feb 2004.  Modified by Cyrus Umrigar
-c Magnetic energies due to excess of angular momentum and spin are calculated.
-c We also verify that all the determinants have same angular momentum
+! Written by A.D.Guclu, Feb 2004.  Modified by Cyrus Umrigar
+! Magnetic energies due to excess of angular momentum and spin are calculated.
+! We also verify that all the determinants have same angular momentum
 
       use control_mod
       use dorb_mod
@@ -23,17 +23,17 @@ c We also verify that all the determinants have same angular momentum
         emagsz = 0.
         return
       endif
-      
+
       write(6,'(''l_bas'',20i4)') (l_bas(ibas),ibas=1,nbasis)
 
-c If complex orbitals are used it calculates total L here.  Otherwise it is inputted.
+! If complex orbitals are used it calculates total L here.  Otherwise it is inputted.
       if(ibasis.eq.3) then
         do 60 idet=1,ndet
           ltoti=0
           do 50 iel=1,nup+ndn
-c Find angular mom. of the first non-zero basis function.
-c Warning: we assume without verification that all the basis functions of a
-c given orbital have same l, as should be the case for a "restricted" calculation
+! Find angular mom. of the first non-zero basis function.
+! Warning: we assume without verification that all the basis functions of a
+! given orbital have same l, as should be the case for a "restricted" calculation
               nonzero_coef=0
               ibas=0
               do 40 while(nonzero_coef.eq.0)
@@ -41,18 +41,18 @@ c given orbital have same l, as should be the case for a "restricted" calculatio
                 if(coef(ibas,iworbd(iel,idet),1).ne.0.d0) then
                   nonzero_coef=1
                   if(numr.eq.0) then
-c Fock-Darwin basis
+! Fock-Darwin basis
                     ltoti=ltoti+m_fd(ibas)
                    else
-c Radial fn. times complex spherical harmonic (should this be m_bas instead of l_bas?)
+! Radial fn. times complex spherical harmonic (should this be m_bas instead of l_bas?)
                     ltoti=ltoti+l_bas(ibas)
                   endif
                 endif
                 if(ibas.gt.nbasis) stop 'all the coefficients are zero in emagnetic.f'
    40         enddo
    50       enddo
-c       save the total angular momentum of the first determinant and
-c       keep evaluating ltot for remaining determinants for debuging:
+!       save the total angular momentum of the first determinant and
+!       keep evaluating ltot for remaining determinants for debuging:
             if(idet.eq.1) then
               ltot=ltoti
              elseif(ltot.ne.ltoti) then
@@ -61,9 +61,9 @@ c       keep evaluating ltot for remaining determinants for debuging:
    60   enddo
       endif
 
-c calculate magnetic energy due to angular momentum:
+! calculate magnetic energy due to angular momentum:
       emaglz=-0.5d0*bext*ltot
-c calculate magnetic energy due to spin (zeeman term):
+! calculate magnetic energy due to spin (zeeman term):
       emagsz=-0.25d0*glande*bext*(nup-ndn)
       write(6,*)
       write(6,'(''determinantal angular momentum, ltot ='',t31,i10)') ltot

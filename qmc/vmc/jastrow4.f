@@ -1,12 +1,12 @@
       subroutine jastrow4(x,v,d2,div_vj,value)
-c Written by Cyrus Umrigar
-c Jastrow 4,5 must be used with one of isc=2,4,6,7,8,10,12,14,16,17
-c Jastrow 6   must be used with one of isc=6,7
+! Written by Cyrus Umrigar
+! Jastrow 4,5 must be used with one of isc=2,4,6,7,8,10,12,14,16,17
+! Jastrow 6   must be used with one of isc=6,7
 
-c When iperiodic=1, nloc=-4 (infinite quantum wire), then the "en" distance
-c  used in en and een terms for the first center (ic = 1) is the distance
-c  between the electron and the middle (y-axis) of the wire, rather than
-c   the distance between (0,0) and an electron.  ACM, July 2010  
+! When iperiodic=1, nloc=-4 (infinite quantum wire), then the "en" distance
+!  used in en and een terms for the first center (ic = 1) is the distance
+!  between the electron and the middle (y-axis) of the wire, rather than
+!   the distance between (0,0) and an electron.  ACM, July 2010
 
       use constants_mod
       use control_mod
@@ -56,7 +56,7 @@ c   the distance between (0,0) and an electron.  ACM, July 2010
 
       if(nelec.lt.2) goto 65
 
-c e-e and e-e-n terms
+! e-e and e-e-n terms
       ij=0
       do 60 i=2,nelec
       im1=i-1
@@ -88,9 +88,9 @@ c e-e and e-e-n terms
       rij=r_ee(ij)
 
       call scale_dist2(rij,uu(1),dd1,dd2,2)
-c     write(6,'(''rij,u in ee'',2f9.5)') rij,uu(1)
+!     write(6,'(''rij,u in ee'',2f9.5)') rij,uu(1)
 
-c Check rij after scaling because uu(1) used in e-e-n terms too
+! Check rij after scaling because uu(1) used in e-e-n terms too
       if(rij.gt.cutjas_ee) goto 30
 
       top=sspinn*b(1,isb,iwf)*uu(1)
@@ -108,10 +108,10 @@ c Check rij after scaling because uu(1) used in e-e-n terms too
       bot2=bot*bot
 
 
-c      feeu=topu/bot-botu*top/bot2
-c      feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
-c      feeuu=feeuu/bot
-c simpler expressions are :
+!      feeu=topu/bot-botu*top/bot2
+!      feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
+!      feeuu=feeuu/bot
+! simpler expressions are :
       fee=top/bot
       feeu=topu/bot2
       feeuu=-2*feeu*botu/bot
@@ -145,22 +145,22 @@ c simpler expressions are :
    21   fijo(k,j,i)= fijo(k,j,i) - feeu*rvec_ee(k,ij)
       d2ijo(i,j)=d2ijo(i,j)+2.*(feeuu+ndim1*feeu)
 
-c There are no C terms to order 1.
+! There are no C terms to order 1.
    30 if(nordc.le.1) goto 58
 
-c     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
+!     if(isc.ge.12) call scale_dist2(rij,uu(1),dd1,dd2,3)
       call scale_dist2(rij,uu(1),dd1,dd2,4)
       if(ijas.eq.4.or.ijas.eq.5) then
         call switch_scale2(uu(1),dd1,dd2,4)
         do 35 iord=2,nordc
    35     uu(iord)=uu(1)*uu(iord-1)
       endif
-c     write(6,'(''rij,u in een'',2f12.9)') rij,uu(1)
+!     write(6,'(''rij,u in een'',2f12.9)') rij,uu(1)
 
       do 57 ic=1,ncent
         it=iwctype(ic)
-c       if we have an infinite wire, then for the en and een terms, for ic=1,
-c         we only use the distance from the electron to the y-axis of the wire
+!       if we have an infinite wire, then for the en and een terms, for ic=1,
+!         we only use the distance from the electron to the y-axis of the wire
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
            ri=abs(rvec_en(2,i,ic))  ! y-component of rvec_en is dist to wire center
            rj=abs(rvec_en(2,j,ic))
@@ -169,8 +169,8 @@ c         we only use the distance from the electron to the y-axis of the wire
            rj=r_en(j,ic)
         endif
 
-c       write(6,'(''ri,rj'',9f9.4)') ri,rj
-c       write(6,'(''rshift(k,i,ic)'',9f9.4)') (rshift(k,i,ic),k=1,ndim),(rshift(k,j,ic),k=1,ndim),(rshift(k,i,ic)-rshift(k,j,ic),k=1,ndim)
+!       write(6,'(''ri,rj'',9f9.4)') ri,rj
+!       write(6,'(''rshift(k,i,ic)'',9f9.4)') (rshift(k,i,ic),k=1,ndim),(rshift(k,j,ic),k=1,ndim),(rshift(k,i,ic)-rshift(k,j,ic),k=1,ndim)
 
         if(ri.gt.cutjas_en .or. rj.gt.cutjas_en) goto 57
         do 37 k=1,ndim
@@ -183,20 +183,20 @@ c       write(6,'(''rshift(k,i,ic)'',9f9.4)') (rshift(k,i,ic),k=1,ndim),(rshift(
           call switch_scale2(rri(1),dd7,dd9,3)
           call switch_scale2(rrj(1),dd8,dd10,3)
         endif
-c       write(6,'(''ri,rri in een'',2f12.9)') ri,rri(1)
+!       write(6,'(''ri,rri in een'',2f12.9)') ri,rri(1)
 
-c Moved to line 252
-c       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
-c       endif
+! Moved to line 252
+!       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+!          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
+!       endif
 
         s=ri+rj
         t=ri-rj
-c       u2mt2=rij*rij-t*t
+!       u2mt2=rij*rij-t*t
         u2pst=rij*rij+s*t
         u2mst=rij*rij-s*t
-c       s2mu2=s*s-rij*rij
-c       s2mt2=s*s-t*t
+!       s2mu2=s*s-rij*rij
+!       s2mt2=s*s-t*t
 
         do 50 iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
@@ -243,7 +243,7 @@ c       s2mt2=s*s-t*t
                 fuj=fuj+c(ll,it,iwf)*k*uu(k-1)
      &          *((l+m)*rrj(l+m-1)*rri(m)+m*rrj(m-1)*rri(l+m))
               endif
-c             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
+!             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
    55   continue
 
         if(ifock.gt.0) call fock(uu(1),ss(1),tt(1),rri(1),rrj(1),it)
@@ -277,10 +277,10 @@ c             write(6,'(''rij,ri,rj'',9f10.5)') rij,ri,rj,uu(1),rri(1),rrj(1)
 
         fso(i,j)=fso(i,j) + fc
 
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
            fijo(1,i,j)=fijo(1,i,j)                     +fu*rvec_ee(1,ij)
            fijo(2,i,j)=fijo(2,i,j) + fi*rvec_en(2,i,ic)+fu*rvec_ee(2,ij)
@@ -296,24 +296,24 @@ c          thus, derivatives only depend on en distance in the y-direction
            fijo(2,j,i)=fijo(2,j,i) + fj*rvec_en(2,j,ic)-fu*rvec_ee(2,ij)
            fijo(3,j,i)=fijo(3,j,i) + fj*rvec_en(3,j,ic)-fu*rvec_ee(3,ij)
         endif
-c       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
+!       write(6,'(''i,j,fijo2='',2i5,9d12.4)') i,j,(fijo(k,i,j),k=1,ndim)
 
-c       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
-c    &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
+!       d2ijo(i,j)=d2ijo(i,j) + 2*(fuu + 2*fu) + fui*u2pst/(ri*rij)
+!    &  + fuj*u2mst/(rj*rij) + fii + 2*fi + fjj + 2*fj
 
-c      This equation (and the subsequent u,s,t notation) comes from 
-c        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
-c        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
-c      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
-c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
+!      This equation (and the subsequent u,s,t notation) comes from
+!        eqn 5 of Pekeris, Phys Rev., 112, 1649 (1958), which
+!        is derived in eqns. 3-5 of Hylleraas, Z. Physik 54, 347 (1929)
+!      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
+!        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
-           d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu  
+           d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu
      &          + 2.*fuu + fii + fjj + 2.*fui*(ri-rj)/rij + 2.*fuj*(rj-ri)/rij
-        else  ! Pekeris, Phys Rev 112, 1649 (1958) eqn 5:   
+        else  ! Pekeris, Phys Rev 112, 1649 (1958) eqn 5:
            d2ijo(i,j)=d2ijo(i,j) + ndim1*(2*fu+fi+fj)
      &          + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
-        endif  
-           
+        endif
+
 
    57 continue
 
@@ -328,7 +328,7 @@ c        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
       div_vj(j)=div_vj(j)+d2ijo(i,j)/2
    60 d2=d2+d2ijo(i,j)
 
-c e-n terms
+! e-n terms
    65 do 90 i=1,nelec
 
         fso(i,i)=0
@@ -339,8 +339,8 @@ c e-n terms
 
         do 80 ic=1,ncent
           it=iwctype(ic)
-c       if we have an infinite wire, then for the en and een terms, for ic=1,
-c         we only use the distance from the electron to the y-axis of the wire
+!       if we have an infinite wire, then for the en and een terms, for ic=1,
+!         we only use the distance from the electron to the y-axis of the wire
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
              ri=abs(rvec_en(2,i,ic)) ! y-component of rvec_en is dist to wire center
           else
@@ -350,7 +350,7 @@ c         we only use the distance from the electron to the y-axis of the wire
           if(ri.gt.cutjas_en) goto 80
 
           call scale_dist2(ri,rri(1),dd7,dd9,1)
-c         write(6,'(''ri,rri in en'',2f9.5)') ri,rri(1)
+!         write(6,'(''ri,rri in en'',2f9.5)') ri,rri(1)
 
           top=a4(1,it,iwf)*rri(1)
           topi=a4(1,it,iwf)
@@ -367,10 +367,10 @@ c         write(6,'(''ri,rri in en'',2f9.5)') ri,rri(1)
           bot2=bot*bot
 
 
-c          feni=topi/bot-boti*top/bot2
-c          fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
-c          fenii=fenii/bot
-c simpler expressions are :
+!          feni=topi/bot-boti*top/bot2
+!          fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
+!          fenii=fenii/bot
+! simpler expressions are :
           fen=top/bot
           feni=topi/bot2
           fenii=-2*feni*boti/bot
@@ -393,10 +393,10 @@ c simpler expressions are :
 
           fso(i,i)=fso(i,i)+fen
 
-c       if we have an infinite wire, then for the en and een terms, we only
-c          use the distance from the electron to the center of the wire
-c          (for the first center, anyway)
-c          thus, derivatives only depend on en distance in the y-direction
+!       if we have an infinite wire, then for the en and een terms, we only
+!          use the distance from the electron to the center of the wire
+!          (for the first center, anyway)
+!          thus, derivatives only depend on en distance in the y-direction
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
              fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
              d2ijo(i,i) = d2ijo(i,i) + fenii  ! check this...
@@ -407,22 +407,22 @@ c          thus, derivatives only depend on en distance in the y-direction
              d2ijo(i,i) = d2ijo(i,i) + fenii + ndim1*feni
           endif
 
-c         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
+!         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
 
-c   Place this line in the if..else block above (ACM):
-c          d2ijo(i,i) = d2ijo(i,i) + fenii + ndim1*feni
+!   Place this line in the if..else block above (ACM):
+!          d2ijo(i,i) = d2ijo(i,i) + fenii + ndim1*feni
    80   continue
 
         fsum=fsum+fso(i,i)
         v(1,i)=v(1,i)+fijo(1,i,i)
         v(2,i)=v(2,i)+fijo(2,i,i)
         v(3,i)=v(3,i)+fijo(3,i,i)
-c       write(6,'(''v='',9d12.4)') (v(k,i),k=1,ndim)
+!       write(6,'(''v='',9d12.4)') (v(k,i),k=1,ndim)
         div_vj(i)=div_vj(i)+d2ijo(i,i)
    90   d2=d2+d2ijo(i,i)
 
-c Warning: c1_jas6 below needs changing now that we have different
-c c1_jas6_en and c1_jas6_ee.  Since I no longer use ijaas=6, I do not bother.
+! Warning: c1_jas6 below needs changing now that we have different
+! c1_jas6_en and c1_jas6_ee.  Since I no longer use ijaas=6, I do not bother.
       if(ijas.eq.6) then
         stop 'ijas6 needs updating'
         term=1/(c1_jas6*scalek(iwf))
@@ -450,9 +450,9 @@ c c1_jas6_en and c1_jas6_ee.  Since I no longer use ijaas=6, I do not bother.
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       integer function nterms4(nord)
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       implicit real*8(a-h,o-z)
 
       i=0
@@ -470,6 +470,6 @@ c Written by Cyrus Umrigar
             endif
    20 continue
       nterms4=i
-c     write(6,'(''nterms4='',i5)') nterms4
+!     write(6,'(''nterms4='',i5)') nterms4
       return
       end

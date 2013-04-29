@@ -1,7 +1,7 @@
 
       subroutine cjastrow(cv,d2,div,absval)
-c written by A.D.Guclu jul2004
-c calculates composite fermion jastrow factor (vortices, e^k) related quantities.
+! written by A.D.Guclu jul2004
+! calculates composite fermion jastrow factor (vortices, e^k) related quantities.
 
       use const_mod
       use dim_mod
@@ -18,28 +18,28 @@ c calculates composite fermion jastrow factor (vortices, e^k) related quantities
       nn=2*nv
       if(idot.eq.2) nn=nn+1     ! for laughlin wave function
 
-c first calculate e^K = PI_{j<i} (zji)^(2nv)
-c with z=x-iy, zji=zj-zi (or zi-zj, doesnot matter..)
+! first calculate e^K = PI_{j<i} (zji)^(2nv)
+! with z=x-iy, zji=zj-zi (or zi-zj, doesnot matter..)
 
       ij=0
-c      z=(1.d0,0.d0)
+!      z=(1.d0,0.d0)
       absval=1.d0
       do 40 i=2,nelec
         do 40 j=1,i-1
           ij=ij+1
-c         zij=(-rvec(1,ij),rvec(2,ij))
+!         zij=(-rvec(1,ij),rvec(2,ij))
           absval=absval*r_ee(ij)
    40 continue
       absval=absval**nn
 
-c now calculate the velocities. we only need the real parts. divergences are
-c not needed for now...
+! now calculate the velocities. we only need the real parts. divergences are
+! not needed for now...
 
       do 60 i1=1,nelec
         sumx=0.d0
         sumy=0.d0
         do 50 i2=1,nelec
-c confusing part (reverify this later):
+! confusing part (reverify this later):
           if(i1.lt.i2) then
             ij=((i2-1)*(i2-2))/2+i1
             r2_ee=r_ee(ij)*r_ee(ij)
@@ -61,7 +61,7 @@ c confusing part (reverify this later):
         div(i)=0.d0
       enddo
 
-c there are pieces due to the gaussian tail of laughlin functions and proj. cfs:
+! there are pieces due to the gaussian tail of laughlin functions and proj. cfs:
       if(idot.ge.2) then
         sumr2=0.d0
         do 80 i=1,nelec

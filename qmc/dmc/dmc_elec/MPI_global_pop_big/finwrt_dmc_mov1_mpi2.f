@@ -1,6 +1,6 @@
       subroutine finwrt_dmc_mov1_mpi2
-c MPI version created by Claudia Filippi starting from serial version
-c routine to print out final results
+! MPI version created by Claudia Filippi starting from serial version
+! routine to print out final results
 
 # if defined (MPI)
 
@@ -35,7 +35,7 @@ c routine to print out final results
       use zigzag_mod
       implicit real*8(a-h,o-z)
 
-c /config_dmc/ included to print out xoldw and voldw for old walkers
+! /config_dmc/ included to print out xoldw and voldw for old walkers
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot
 
@@ -50,7 +50,7 @@ c /config_dmc/ included to print out xoldw and voldw for old walkers
 !JT      character*80 title,fmt
 !JT      character*24 date
 
-c statement functions for error calculation
+! statement functions for error calculation
       rn_eff(w,w2)=w**2/w2
 
       error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
@@ -70,12 +70,12 @@ c statement functions for error calculation
 
       passes=dfloat(iblk)*dfloat(nstep)
       eval=nconf_global*passes
-c Either the next 3 lines or the 3 lines following them could be used.
-c They should give nearly (but not exactly) the same result.
-c Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
-c     eval_eff=dfloat(nconf_global)*rn_eff(wcum1,wcm21)
-c     evalf_eff=dfloat(nconf_global)*rn_eff(wfcum1,wfcm21)
-c     evalg_eff=dfloat(nconf_global)*rn_eff(wgcum1(1),wgcm21(1))
+! Either the next 3 lines or the 3 lines following them could be used.
+! They should give nearly (but not exactly) the same result.
+! Strictly the 1st 3 are for step-by-step quantities and the last 3 for blk-by-blk
+!     eval_eff=dfloat(nconf_global)*rn_eff(wcum1,wcm21)
+!     evalf_eff=dfloat(nconf_global)*rn_eff(wfcum1,wfcm21)
+!     evalg_eff=dfloat(nconf_global)*rn_eff(wgcum1(1),wgcm21(1))
       eval_eff=dfloat(nconf_global)*nstep*rn_eff(wcum,wcm2)
       evalf_eff=dfloat(nconf_global)*nstep*rn_eff(wfcum,wfcm2)
       write(6,'(''evalf_eff,nconf_global,nstep,wfcum,wfcm2'',d12.4,2i5,9d12.4)') evalf_eff,nconf_global,nstep,wfcum,wfcm2
@@ -88,11 +88,11 @@ c     evalg_eff=dfloat(nconf_global)*rn_eff(wgcum1(1),wgcm21(1))
 
       write(6,'(/,''Final write:'')')
 
-c     write(6,'(''wfcum,wfcm2='',9d12.4)') wfcum,wfcm2
+!     write(6,'(''wfcum,wfcm2='',9d12.4)') wfcum,wfcm2
 
       write(6,'(''passes, eval, eval_eff, evalf_eff, evalg_eff'',19f11.0)') passes,eval,eval_eff,evalf_eff,evalg_eff
 
-c Collect radial charge density for atoms
+! Collect radial charge density for atoms
       if(iperiodic.eq.0) then
         call mpi_reduce(rprob,rprobcollect,NRAD,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do 2 i=1,NRAD
@@ -179,7 +179,7 @@ c Collect radial charge density for atoms
       endif
 
       if(ifourier .ne. 0) then
-        naxt = (2*NAX + 1) * (NAK1 + 1)         
+        naxt = (2*NAX + 1) * (NAK1 + 1)
         call mpi_reduce(fourierrk_t,fouriert,naxt,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
         do i1=-NAX,NAX
           do i2=0,NAK1
@@ -225,7 +225,7 @@ c Collect radial charge density for atoms
         enddo
 
       endif
-      
+
       if(izigzag.gt.0) then
         call mpi_allreduce(zzcorr, zzcorrtot, NAX+1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         zzcorr(:) = zzcorrtot(:)
@@ -255,18 +255,18 @@ c Collect radial charge density for atoms
         yycorrij1(:) = zzcorrijtot(:)
         call mpi_allreduce(yycorrij2, zzcorrijtot, nelec,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
         yycorrij2(:) = zzcorrijtot(:)
-        
+
         if(izigzag.eq.2) then
           naxt = (2*NAX + 1) * (2*NAX + 1)
           call mpi_allreduce(zzpairden_t, zzpairtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
           zzpairden_t(:,:) = zzpairtot(:,:)
-          
+
           naxt = (2*NAX + 1) * nelec
           call mpi_allreduce(zzpairdenij_t, zzdenijtot, naxt,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
           zzpairdenij_t(:,:) = zzdenijtot(:,:)
         endif
       endif
- 
+
       call mpi_allreduce(nodecr,nodecr_collect,1,mpi_integer,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(try_int,try_int_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -278,14 +278,14 @@ c Collect radial charge density for atoms
 
       call grad_hess_jas_mpi
 
-c     write(11,'(4i5,f11.5,f7.4,f10.7,'' nstep,nblk,nblkeq,nconf_global,etrial,tau,taueff'')')
-c    &nstep,nblk,nblkeq,nconf_global,etrial,tau,taucum(1)/wgcum(1)
+!     write(11,'(4i5,f11.5,f7.4,f10.7,'' nstep,nblk,nblkeq,nconf_global,etrial,tau,taueff'')')
+!    &nstep,nblk,nblkeq,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
       if(ipr.gt.-2 .and. idtask .eq. 0) write(11,'(3i5,f11.5,f7.4,f10.7,'' nstep,nblk,nconf_global,etrial,tau,taueff'')')
      &  nstep,iblk,nconf_global,etrial,tau,taucum(1)/wgcum(1)
 
-c Warning tmp
-c     if(idtask.ne.0) return
+! Warning tmp
+!     if(idtask.ne.0) return
 
       if(print_radial_probability .and. iperiodic.eq.0 .and. ncent.eq.1 .and. ipr.ge.-4) then
         if(ndim.eq.3) write(6,'(/,'' r  4*pi*r^2*rho 4*pi*r^2*rhoup 4*pi*r^2*rhodn'')')
@@ -321,9 +321,9 @@ c     if(idtask.ne.0) return
       wfave=wfcum/passes
       eave=ecum/wcum
       efave=efcum/wfcum
-c     ei1ave=wfcum/wdcum
-c     ei2ave=wgcum(1)/wgdcum
-c     ei3ave=ei3cum/passes
+!     ei1ave=wfcum/wdcum
+!     ei2ave=wgcum(1)/wgdcum
+!     ei3ave=ei3cum/passes
 
       r1ave=r1cum/(wgcum(1)*nelec)
       r2ave=r2cum/(wgcum(1)*nelec)
@@ -333,21 +333,21 @@ c     ei3ave=ei3cum/passes
       if(izigzag.gt.0) then
        zzave(:)=zzcum(:)/wgcum(1)
       endif
-c     if(itau_eff.ge.1) then
-c       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
-c       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
-c       e3ave=etrial-dlog(ei3ave)/(taucum(1)/wgcum(1))
-c      else
-c       if(icut_br.le.0) then
-c         e1ave=etrial-dlog((ei1ave-one+accavn)/accavn)/tau
-c         e2ave=etrial-dlog((ei2ave-one+accavn)/accavn)/tau
-c         e3ave=etrial-dlog((ei3ave-one+accavn)/accavn)/tau
-c        else
-c         e1ave=etrial+dlog((accavn+2-2*ei1ave)/(accavn-2+2*ei1ave))/(4*tau)
-c         e2ave=etrial+dlog((accavn+2-2*ei2ave)/(accavn-2+2*ei2ave))/(4*tau)
-c         e3ave=etrial+dlog((accavn+2-2*ei3ave)/(accavn-2+2*ei3ave))/(4*tau)
-c       endif
-c     endif
+!     if(itau_eff.ge.1) then
+!       e1ave=etrial-dlog(ei1ave)/(taucum(1)/wgcum(1))
+!       e2ave=etrial-dlog(ei2ave)/(taucum(1)/wgcum(1))
+!       e3ave=etrial-dlog(ei3ave)/(taucum(1)/wgcum(1))
+!      else
+!       if(icut_br.le.0) then
+!         e1ave=etrial-dlog((ei1ave-one+accavn)/accavn)/tau
+!         e2ave=etrial-dlog((ei2ave-one+accavn)/accavn)/tau
+!         e3ave=etrial-dlog((ei3ave-one+accavn)/accavn)/tau
+!        else
+!         e1ave=etrial+dlog((accavn+2-2*ei1ave)/(accavn-2+2*ei1ave))/(4*tau)
+!         e2ave=etrial+dlog((accavn+2-2*ei2ave)/(accavn-2+2*ei2ave))/(4*tau)
+!         e3ave=etrial+dlog((accavn+2-2*ei3ave)/(accavn-2+2*ei3ave))/(4*tau)
+!       endif
+!     endif
 
       werr=errw(wcum,wcm2)
       wferr=errw(wfcum,wfcm2)
@@ -357,9 +357,9 @@ c     endif
       eferr=errf(efcum,efcm2)
       eerr1=errc1(ecum1,ecm21)
       eferr1=errf1(efcum1,efcm21)
-c     ei1err=erri(ei1cum,ei1cm2)
-c     ei2err=erri(ei2cum,ei2cm2)
-c     ei3err=erri1(ei3cum,ei3cm2)
+!     ei1err=erri(ei1cum,ei1cm2)
+!     ei2err=erri(ei2cum,ei2cm2)
+!     ei3err=erri1(ei3cum,ei3cm2)
       r1err=errg(r1cum,r1cm2,1)/nelec
       r2err=errg(r2cum,r2cm2,1)/nelec
       r3err=errg(r3cum,r3cm2,1)/nelec
@@ -370,17 +370,17 @@ c     ei3err=erri1(ei3cum,ei3cm2)
         zzerr(iz)=errg(zzcum(iz),zzcm2(iz),1)
        enddo
       endif
-c     if(itau_eff.ge.1) then
-c       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
-c       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*taucum(1)/wgcum(1))
-c       e3err=dlog((ei3ave+ei3err)/(ei3ave-ei3err))/(2*taucum(1)/wgcum(1))
-c      else
-c       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*tau)
-c       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*tau)
-c       e3err=dlog((ei3ave+ei3err)/(ei3ave-ei3err))/(2*tau)
-c     endif
+!     if(itau_eff.ge.1) then
+!       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*taucum(1)/wgcum(1))
+!       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*taucum(1)/wgcum(1))
+!       e3err=dlog((ei3ave+ei3err)/(ei3ave-ei3err))/(2*taucum(1)/wgcum(1))
+!      else
+!       e1err=dlog((ei1ave+ei1err)/(ei1ave-ei1err))/(2*tau)
+!       e2err=dlog((ei2ave+ei2err)/(ei2ave-ei2err))/(2*tau)
+!       e3err=dlog((ei3ave+ei3err)/(ei3ave-ei3err))/(2*tau)
+!     endif
 
-c     write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title,date
+!     write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title,date
       write(fmt,'(''(/,a16,2x,a'',i3,'')'')') len_trim(title)
       write(6,fmt) mode,title
       write(6,'(''No/frac. of node crossings,acceptance='',i9,3f10.6)')nodecr,dfloat(nodecr)/try_int,accav,accavn
@@ -388,9 +388,9 @@ c     write(6,'(''dmc_mov1_mpi_globalpop '',2a10)') title,date
       if(idmc.ge.0.and.accav.lt.0.7d0) write(6,'(''Warning: Low acceptance, reduce time-step tau'')')
 
       if(idmc.ge.0) then
-c       write(6,'(''Actual, expected # of branches for 0, inf corr time='',i6,2f9.0)') nbrnch,nconf_global*passes*
-c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2,nconf_global*passes*
-c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
+!       write(6,'(''Actual, expected # of branches for 0, inf corr time='',i6,2f9.0)') nbrnch,nconf_global*passes*
+!    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))**2,nconf_global*passes*
+!    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
 
         write(6,'(''No. of walkers at end of run='',i5)') nwalk
 
@@ -402,9 +402,9 @@ c    &  (dlog(one+eerr1*rteval*taucum(1)/wgcum(1))/dlog(two))
       write(6,'(''nconf*nproc*passes'',t20,''nconf nproc     passes nstep  nblk nblkeq
      &     tau   taueff'',/,f18.0,2i6,f11.0,3i6,2f9.5)')
      &eval*nproc,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
-c     write(6,'(''nconf_global*passes'',t19,''passes  nconf_global nstep  nblk nblkeq
-c    & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
-c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
+!     write(6,'(''nconf_global*passes'',t19,''passes  nconf_global nstep  nblk nblkeq
+!    & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
+!    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
       write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
         write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)') wave,werr,werr*rtpass1,werr1*rtpass1,(werr/werr1)**2
@@ -421,7 +421,7 @@ c    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
         call object_provide('ovlp_trial_fn_over_ovlp_trial')
         write(6,'(a,f10.8)') 'unnormalized overlap of FN and trial wave functions= ', ovlp_trial_fn_over_ovlp_trial
 
-c Mixed energy estimators
+! Mixed energy estimators
         write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
      &  eave,eerr,eerr*rteval_eff1,eerr1*rteval_eff1,(eerr/eerr1)**2
         write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
@@ -433,7 +433,7 @@ c Mixed energy estimators
         egerr=errg(egcum(ifr),egcm2(ifr),ifr)
         egerr1=errg1(egcum1(ifr),egcm21(ifr),ifr)
         eloc_tc (ifr) = (egerr/egerr1)**2 !JT
-c save energy, energy_sigma and energy_err for optimization
+! save energy, energy_sigma and energy_err for optimization
         energy(ifr)=egave
         energy_sigma(ifr)=egerr1*rtevalg_eff1
         energy_err(ifr)=egerr
@@ -446,9 +446,9 @@ c save energy, energy_sigma and energy_err for optimization
         endif
   30  continue
       call object_modified ('eloc_tc') !JT
-c     write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f9.5)') e1ave,e1err,e1err*rteval
-c     write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f9.5)') nfprod-1,e2ave,e2err,e2err*rteval
-c     write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval
+!     write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f9.5)') e1ave,e1err,e1err*rteval
+!     write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f9.5)') nfprod-1,e2ave,e2err,e2err*rteval
+!     write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval
       do 40 ifr=1,nforce
         peave=pecum(ifr)/wgcum(ifr)
         peiave=peicum(ifr)/wgcum(ifr)
@@ -465,7 +465,7 @@ c     write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e
           tmave=(peave-peiave-emag)*temp
           tmerr=(peerr+peierr)*temp
           peave=peave-tmave-emag
-c         peerr=peerr+tmerr     ! is this correct?
+!         peerr=peerr+tmerr     ! is this correct?
           peerr=peerr*(1-temp)+peierr*temp
         endif
 
@@ -483,9 +483,9 @@ c         peerr=peerr+tmerr     ! is this correct?
       do 50 ifr=2,nforce
         fgave=egcum(ifr)/wgcum(ifr)-egcum(1)/wgcum(1)
         fgerr=errg(fgcum(ifr),fgcm2(ifr),1)
-c       fgave=fgave/deltot(ifr)
-c       fgerr=fgerr/abs(deltot(ifr))
-c save energy difference and error in energy difference for optimization
+!       fgave=fgave/deltot(ifr)
+!       fgerr=fgerr/abs(deltot(ifr))
+! save energy difference and error in energy difference for optimization
         force(ifr)=fgave
         force_err(ifr)=fgerr
         write(6,'(''total energy diff'',i2,t22,f14.7,'' +-'',f11.7,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_eff1
@@ -501,15 +501,15 @@ c save energy difference and error in energy difference for optimization
 
       if(izigzag.ge.1) then
         call print_zigzag_vars(zzave,zzerr,rtevalg_eff1)
-c       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
-c       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
-c       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
-c       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
-c       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
-c       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
-c       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_eff1
-c       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_eff1
-c       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
+!       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
+!       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
+!       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_eff1
+!       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_eff1
+!       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
       endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1),r1ave)

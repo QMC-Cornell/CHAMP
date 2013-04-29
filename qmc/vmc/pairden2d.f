@@ -1,13 +1,13 @@
       subroutine pairden2d(p,q,xold,xnew)
 
-c Written by A.D.Guclu jun2005.
-c Calculates the full pair-densities reducing the dimensionality
-c by 1 due to circular symmetry (2+1d instead of 2+2d).
-c For the moment does not distinguish between all and 1 electron calculation.
-c The reason is that even when only 1 electron is moved, several of
-c the relative distances changes, making it diffcult to
-c keep track of all the rotated-relative distances.
-c (not impossible, can be optimized)
+! Written by A.D.Guclu jun2005.
+! Calculates the full pair-densities reducing the dimensionality
+! by 1 due to circular symmetry (2+1d instead of 2+2d).
+! For the moment does not distinguish between all and 1 electron calculation.
+! The reason is that even when only 1 electron is moved, several of
+! the relative distances changes, making it diffcult to
+! keep track of all the rotated-relative distances.
+! (not impossible, can be optimized)
 
       use dets_mod
       use const_mod
@@ -38,20 +38,20 @@ c (not impossible, can be optimized)
           irn=nint(delradi*(rnew - xfix(1)))
         endif
         if((iro.lt.0 .or. iro.gt.NAX) .and. (irn.lt.0 .or. irn.gt.NAX)) cycle
-c electron relative to the reference electron
+! electron relative to the reference electron
         do 20 ie2=1,nelec
           if(ie2.ne.ier) then
-c rotate old and new coordinates
+! rotate old and new coordinates
             call rotate(thetao,xold(1,ie2),xold(2,ie2),x1roto,x2roto)
             call rotate(thetan,xnew(1,ie2),xnew(2,ie2),x1rotn,x2rotn)
-c put on the grid:
-            if(icoosys.eq.1) then 
+! put on the grid:
+            if(icoosys.eq.1) then
               ix1roto=nint(delxi(1)*x1roto)
               ix2roto=nint(delxi(2)*x2roto)
               ix1rotn=nint(delxi(1)*x1rotn)
               ix2rotn=nint(delxi(2)*x2rotn)
             else
-c same trick adapted to circular coordinates
+! same trick adapted to circular coordinates
               ix1roto=nint(delradi*(sqrt(x1roto**2 + x2roto**2)-rmean))
               ix1rotn=nint(delradi*(sqrt(x1rotn**2 + x2rotn**2)-rmean))
               ix2roto=nint(delti*(datan2(x2roto,x1roto)))
@@ -59,8 +59,8 @@ c same trick adapted to circular coordinates
             endif
 
 
-c check if we are within grid limits, check spins, and collect data
-c  -old config
+! check if we are within grid limits, check spins, and collect data
+!  -old config
             if(iro.le.NAX .and. iro.ge.0 .and. abs(ix1roto).le.NAX .and. abs(ix2roto).le.NAX) then
               if(ier.le.nup) then
                 xx0probut(iro,ix1roto,ix2roto)=xx0probut(iro,ix1roto,ix2roto)+q
@@ -78,7 +78,7 @@ c  -old config
                 endif
               endif
             endif
-c -new config
+! -new config
             if(irn.le.NAX .and. irn.ge.0 .and. abs(ix1rotn).le.NAX .and. abs(ix2rotn).le.NAX) then
               if(ier.le.nup) then
                 xx0probut(irn,ix1rotn,ix2rotn)=xx0probut(irn,ix1rotn,ix2rotn)+p
@@ -104,11 +104,11 @@ c -new config
       return
       end
 
-c------------------------------------------------------------------------------------
+!------------------------------------------------------------------------------------
 
       subroutine rotate(theta,x1,x2,xrot1,xrot2)
 
-c rotates (x1,x2) by theta. Result is (xrot1,xrot2)
+! rotates (x1,x2) by theta. Result is (xrot1,xrot2)
 
       implicit real*8(a-h,o-z)
 

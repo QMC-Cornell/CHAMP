@@ -1,14 +1,14 @@
       subroutine deriv_nonloc_pot(x,rshift,rvec_en,r_en,detu,detd,deti_det,slmui,slmdi,vpsp,psid,pe,dpe,ifr)
-c Written by Claudia Filippi; modified by Cyrus Umrigar
-c Calculates non-local potential and its derivatives wrt Jastrow parameters
-c V_1=A/B, where V_1 is the nonlocal part of the potential on electron 1
-c A=(1/N_quad) \sum_l (2l+1) (V_l-V_L) \sum_j^{N_quad} P_l(cos \theta_j) Psi(r_1j,...)
-c the sum on j is over the N_quad quadrature points.
-c B = Psi = JD
-c V' = A'/B - A*B'/B^2
-c The arrays in the routine are:
-c vpot = (1/N_quad) \sum_l (2l+1) (V_l-V_L) \sum_j^{N_quad} P_l(cos \theta_j) Psi(r_j,...)
-c vps  = (V_l-V_L)
+! Written by Claudia Filippi; modified by Cyrus Umrigar
+! Calculates non-local potential and its derivatives wrt Jastrow parameters
+! V_1=A/B, where V_1 is the nonlocal part of the potential on electron 1
+! A=(1/N_quad) \sum_l (2l+1) (V_l-V_L) \sum_j^{N_quad} P_l(cos \theta_j) Psi(r_1j,...)
+! the sum on j is over the N_quad quadrature points.
+! B = Psi = JD
+! V' = A'/B - A*B'/B^2
+! The arrays in the routine are:
+! vpot = (1/N_quad) \sum_l (2l+1) (V_l-V_L) \sum_j^{N_quad} P_l(cos \theta_j) Psi(r_j,...)
+! vps  = (V_l-V_L)
       use control_mod
       use deriv_orb_mod
       use eloc_mod
@@ -39,7 +39,7 @@ c vps  = (V_l-V_L)
         endif
    20 continue
 
-c local component
+! local component
       if(iperiodic.eq.0) then
         do 30 ic=1,ncent
           do 30 i=1,nelec
@@ -50,7 +50,7 @@ c local component
       eloc_pot_loc = pe                      !JT
       call object_modified_by_index (eloc_pot_loc_index)  !JT
 
-c non-local component and its derivative (division by the Jastrow already in nonloc)
+! non-local component and its derivative (division by the Jastrow already in nonloc)
       call deriv_nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,dvpsp)
       do 35 iparm=1,nparmcsf
   35    dpe(iparm)=(dvpsp(iparm)-vpsp*deti_det(iparm))/psid

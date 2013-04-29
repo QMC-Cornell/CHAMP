@@ -1,6 +1,6 @@
       subroutine cwalksav_det(iw)
-c Same as walksav_det, adapted to complex orbitals
-c by A.D.Guclu, Feb2004.
+! Same as walksav_det, adapted to complex orbitals
+! by A.D.Guclu, Feb2004.
 
       use basic_tools_mod
       use cslater_mod
@@ -14,7 +14,7 @@ c by A.D.Guclu, Feb2004.
       use branch_mod
       implicit real*8(a-h,o-z)
 
-c allocate memory (will allocate only if it is not already allocated):
+! allocate memory (will allocate only if it is not already allocated):
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)
       call alloc('cslmdi',cslmdi,n2,ndetdn)
@@ -24,9 +24,9 @@ c allocate memory (will allocate only if it is not already allocated):
       call alloc('cdetd',cdetd,ndetdn)
       call alloc('cddeti_deti',cddeti_deti,ndim,nelec,ndet)
 
-c nwalk does not represent the actual size of the arrays.
-c it is not clear to me what should be the actual size so
-c so for the moment I use MWALK instead of nwalk :
+! nwalk does not represent the actual size of the arrays.
+! it is not clear to me what should be the actual size so
+! so for the moment I use MWALK instead of nwalk :
       ndimw=MWALK
       call alloc('cslmuiw',cslmuiw,n2,ndetup,ndimw)
       call alloc('cslmdiw',cslmdiw,n2,ndetdn,ndimw)

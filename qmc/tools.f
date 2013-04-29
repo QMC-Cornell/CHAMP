@@ -59,7 +59,7 @@
       character*(*) string
       character*30  text
       integer value, lenstr
- 
+
       call strim (string, lenstr)
 
       if(lenstr.ne.0) then

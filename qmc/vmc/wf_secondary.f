@@ -1,6 +1,6 @@
       subroutine wf_secondary
-c Written by Claudia Filippi and Cyrus Umrigar
-c Read parameters for secondary wavefns.
+! Written by Claudia Filippi and Cyrus Umrigar
+! Read parameters for secondary wavefns.
       use constants_mod
       use control_mod
       use orbitals_mod
@@ -42,7 +42,7 @@ c Read parameters for secondary wavefns.
       wfile=filename(1:index(filename,' ')-1)//'.'//wfile(1:index(wfile,' ')-1)
       open(3,file=wfile,status='old')
 
-c Determinantal section
+! Determinantal section
       read(3,*) section
       write(6,'(/,a30,''(secondary)'',/)') section
 
@@ -64,21 +64,21 @@ c Determinantal section
         write(6,'(12f10.6)') (zex(i,iwt),i=1,nbasis)
       endif
 
-c     read(3,*) (cdet(i,iwt),i=1,ndet)
-c     write(6,'(/,''determinant coefficients'')')
-c     write(6,'(20f10.6)') (cdet(idet,iwt),idet=1,ndet)
+!     read(3,*) (cdet(i,iwt),i=1,ndet)
+!     write(6,'(/,''determinant coefficients'')')
+!     write(6,'(20f10.6)') (cdet(idet,iwt),idet=1,ndet)
 
-c     do 30 i=1,ndet
-c       read(3,*) (iworbd(j,i),j=1,nelec)
-c       write(6,*) (iworbd(j,i),j=1,nelec)
-c       do 25 j=1,nelec
-c         if(iworbd(j,i).gt.norb) then
-c           write(6,'(''j,i,iwt,iworbd(j,i),norb='',9i5)') j,i,iwt,iworbd(j,i),norb
-c           stop 'iworbd(j,i) > norb'
-c         endif
-c  25   continue
-c       write(fmt,'(''('',i3,''i4,3x,'',i3,''i4)'')') nup,ndn
-c  30   write(6,fmt) (iworbd(j,i),j=1,nup),(iworbd(j+nup,i),j=1,ndn)
+!     do 30 i=1,ndet
+!       read(3,*) (iworbd(j,i),j=1,nelec)
+!       write(6,*) (iworbd(j,i),j=1,nelec)
+!       do 25 j=1,nelec
+!         if(iworbd(j,i).gt.norb) then
+!           write(6,'(''j,i,iwt,iworbd(j,i),norb='',9i5)') j,i,iwt,iworbd(j,i),norb
+!           stop 'iworbd(j,i) > norb'
+!         endif
+!  25   continue
+!       write(fmt,'(''('',i3,''i4,3x,'',i3,''i4)'')') nup,ndn
+!  30   write(6,fmt) (iworbd(j,i),j=1,nup),(iworbd(j+nup,i),j=1,ndn)
 
       write(6,'(/,''secondary orbitals in determinants'')')
       do 72 i=1,ndet
@@ -106,31 +106,31 @@ c  30   write(6,fmt) (iworbd(j,i),j=1,nup),(iworbd(j+nup,i),j=1,ndn)
       read(3,*)
       read(3,*) (csf_coef(icsf,iwt),icsf=1,ncsf)
       write(6,'(/,''secondary CSF coefs='',20f10.6)') (csf_coef(icsf,iwt),icsf=1,ncsf)
-c     read(3,*) (ndet_in_csf(icsf),icsf=1,ncsf)
+!     read(3,*) (ndet_in_csf(icsf),icsf=1,ncsf)
       read(3,*)
-c     write(6,'(''ndet_in_csf='',20i4)') (ndet_in_csf(icsf),icsf=1,ncsf)
-c     do 75 idet=1,ndet
-c  75   iflag(idet)=0
+!     write(6,'(''ndet_in_csf='',20i4)') (ndet_in_csf(icsf),icsf=1,ncsf)
+!     do 75 idet=1,ndet
+!  75   iflag(idet)=0
       do 85 icsf=1,ncsf
-c       read(3,*) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+!       read(3,*) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         read(3,*)
-c       write(6,'(''CSF'',i4,'' iwdet_in_csf='',10i4)') icsf,(iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
-c       read(3,*) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+!       write(6,'(''CSF'',i4,'' iwdet_in_csf='',10i4)') icsf,(iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+!       read(3,*) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         read(3,*)
-c       write(6,'(''CSF'',i4,'' cdet_in_csf='',10f8.5)') icsf,(cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
-c       do 85 idet_in_csf=1,ndet_in_csf(icsf)
-c         iflag(iwdet_in_csf(idet_in_csf,icsf))=1
-c  85     if(iwdet_in_csf(idet_in_csf,icsf).gt.ndet) stop 'iwdet_in_csf(idet_in_csf,icsf) > ndet'
+!       write(6,'(''CSF'',i4,'' cdet_in_csf='',10f8.5)') icsf,(cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+!       do 85 idet_in_csf=1,ndet_in_csf(icsf)
+!         iflag(iwdet_in_csf(idet_in_csf,icsf))=1
+!  85     if(iwdet_in_csf(idet_in_csf,icsf).gt.ndet) stop 'iwdet_in_csf(idet_in_csf,icsf) > ndet'
    85 continue
-ccCheck if all the determinants are used in CSFs
-c     do 90 idet=1,ndet
-c  90   if(iflag(idet).eq.0) write(6,'(''Warning: determinant'',i3,'' is unused'')') idet
+!cCheck if all the determinants are used in CSFs
+!     do 90 idet=1,ndet
+!  90   if(iflag(idet).eq.0) write(6,'(''Warning: determinant'',i3,'' is unused'')') idet
 
-c     if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) call read_bas_num(iwt)
-c     if((ibasis.eq.1.or.ibasis.eq.3).and.minval(zex(:,1)).eq.0.d0) call read_bas_num(iwt)
+!     if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0) call read_bas_num(iwt)
+!     if((ibasis.eq.1.or.ibasis.eq.3).and.minval(zex(:,1)).eq.0.d0) call read_bas_num(iwt)
       if(ibasis.eq.1.or.ibasis.eq.3) call read_bas_num(iwt)
 
-c Jastrow section
+! Jastrow section
       read(3,*) section
       write(6,'(/,a30,''(secondary)'',/)') section
 
@@ -212,7 +212,7 @@ c Jastrow section
           read(3,*) (c(iparm,it,iwt),iparm=1,nparmc_read)
   303     write(6,'(''c='',x,7f10.6,(8f10.6))') (c(iparm,it,iwt),
      &    iparm=1,nparmc_read)
-c Note: Fock terms yet to be put in ijas=4,5,6.
+! Note: Fock terms yet to be put in ijas=4,5,6.
       endif
 
       close(3)
@@ -223,10 +223,10 @@ c Note: Fock terms yet to be put in ijas=4,5,6.
       return
       end
 
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine wf_copy
-c Written by Cyrus Umrigar
-c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
+! Written by Cyrus Umrigar
+! Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
       use control_mod
       use orbitals_mod
       use atom_mod
@@ -256,13 +256,13 @@ c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 fo
       nwftype=3
       istrech=0
 
-c Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
+! Copy all the parameters that are read in, from iadd_diag=1 to iadd_diag=2,3 for use in correlated sampling
 
-c Determinants
-c Warning: I need to do this for other types of basis functions, both analytic and numerical
-c Warning: I have not been careful about doing it only when needed, because it does not
-c matter to do extra anyway.
-c Analytical basis functions
+! Determinants
+! Warning: I need to do this for other types of basis functions, both analytic and numerical
+! Warning: I have not been careful about doing it only when needed, because it does not
+! matter to do extra anyway.
+! Analytical basis functions
       do 42 iadd_diag=2,3
         if(inum_orb.eq.0) then
           if(ibasis.eq.1 .or. ibasis.eq.3) then
@@ -289,7 +289,7 @@ c Analytical basis functions
           do 42 ip=1,nbasis
    42       oparm(it,ip,iadd_diag)=oparm(it,ip,1)
 
-c Analytical orbitals and numerical radial basis functions
+! Analytical orbitals and numerical radial basis functions
       if(inum_orb.eq.0 .and. (ibasis.eq.1.or.ibasis.eq.3)) then
       do 45 iadd_diag=2,nwftype
         do 45 ict=1,nctype
@@ -298,7 +298,7 @@ c Analytical orbitals and numerical radial basis functions
               rwf(ir,irb,ict,iadd_diag)=rwf(ir,irb,ict,1)
    45         d2rwf(ir,irb,ict,iadd_diag)=d2rwf(ir,irb,ict,1)
 
-c Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I think they should be MWF
+! Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I think they should be MWF
       do 50 ifr=2,nforce
         do 50 ict=1,nctype
           do 50 irb=1,nrbas_numerical(ict)
@@ -308,7 +308,7 @@ c Warning: Although ae and ce have MFORCE rather than MWF in the dimensions, I t
 
       endif
 
-c Jastrow
+! Jastrow
       call alloc ('iwftype', iwftype, max(3,nforce))
       do 90 iadd_diag=2,3
       iwftype(iadd_diag)=iadd_diag
@@ -323,8 +323,8 @@ c Jastrow
         do 56 i=1,nparmc_read
    56     c(i,ict,iadd_diag)=c(i,ict,1)
 
-c Warning: Is this call to basis_norm needed?
-c  90 call basis_norm(iadd_diag,1)
+! Warning: Is this call to basis_norm needed?
+!  90 call basis_norm(iadd_diag,1)
    90 continue
 
 !     Copy orbital coefficients
@@ -332,7 +332,7 @@ c  90 call basis_norm(iadd_diag,1)
         do iadd_diag = 2, 3
           coef_orb_on_norm_basis (:,:,iadd_diag) = coef_orb_on_norm_basis (:,:,1)
         enddo
-      
+
         if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
           do iadd_diag = 2, 3
             coef_orb_on_ortho_basis (:,:,iadd_diag) = coef_orb_on_ortho_basis (:,:,1)
@@ -342,9 +342,9 @@ c  90 call basis_norm(iadd_diag,1)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine wf_save
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use all_tools_mod
       use nuclei_mod
       use basis_mod
@@ -367,7 +367,7 @@ c Written by Cyrus Umrigar
       use orbpar_mod
       use numbas_mod
       implicit real*8(a-h,o-z)
-c     common /contrl_per/ iperiodic,ibasis
+!     common /contrl_per/ iperiodic,ibasis
 
       save scalek_sav,nparma_read,nparmb_read,nparmc_read
 
@@ -375,21 +375,21 @@ c     common /contrl_per/ iperiodic,ibasis
       nparmb_read=2+max(0,nordb-1)
       nparmc_read=nterms4(nordc)
 
-ccDeterminants
-ccWarning: I need to do this for other types of basis functions, both analytic and numerical
-c Warning: Also I need to edit and uncomment foll. lines
-c     if(ibasis.eq.1 .or. ibasis.eq.3) then
-c       do 20 i=1,norb
-c         do 20 j=1,nbasis
-c  20     coef(j,i,iadd_diag)=coef(j,i,1)
-c       do 30 j=1,nbasis
-c  30     zex(j,iadd_diag)=zex(j,1)
-c       do 35 ictype=1,nctype
-c         do 35 irwf=1,MRWF
-c  35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
-c     endif
-c     do 40 i=1,ndet
-c  40 cdet(i,iadd_diag)=cdet(i,1)
+!cDeterminants
+!cWarning: I need to do this for other types of basis functions, both analytic and numerical
+! Warning: Also I need to edit and uncomment foll. lines
+!     if(ibasis.eq.1 .or. ibasis.eq.3) then
+!       do 20 i=1,norb
+!         do 20 j=1,nbasis
+!  20     coef(j,i,iadd_diag)=coef(j,i,1)
+!       do 30 j=1,nbasis
+!  30     zex(j,iadd_diag)=zex(j,1)
+!       do 35 ictype=1,nctype
+!         do 35 irwf=1,MRWF
+!  35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
+!     endif
+!     do 40 i=1,ndet
+!  40 cdet(i,iadd_diag)=cdet(i,1)
 
       call alloc ('csf_coef_sav', csf_coef_sav, ncsf)
       do 50 i=1,ncsf
@@ -400,7 +400,7 @@ c  40 cdet(i,iadd_diag)=cdet(i,1)
         do 51 ip=1,nbasis
    51     oparm_sav(it,ip)=oparm(it,ip,1)
 
-c Jastrow
+! Jastrow
       call alloc ('a4_sav', a4_sav, nparma_read, nctype)
       call alloc ('b_sav', b_sav, nparmb_read, nspin2b-nspin1+1)
       call alloc ('c_sav', c_sav, nparmc_read, nctype)
@@ -419,32 +419,32 @@ c Jastrow
       if (inum_orb == 0) then
        call object_provide ('nbasis')
        call object_provide ('orb_tot_nb')
-       
+
        call object_provide ('coef')
        call object_alloc ('coef_sav', coef_sav, nbasis, orb_tot_nb)
        coef_sav (1:nbasis, 1:orb_tot_nb) = coef (1:nbasis, 1:orb_tot_nb, 1)
        call object_modified ('coef_sav')
-       
+
        call object_provide ('coef_orb_on_norm_basis')
        call object_alloc ('coef_orb_on_norm_basis_sav', coef_orb_on_norm_basis_sav, nbasis, orb_tot_nb)
        coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb) = coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1)
        call object_modified ('coef_orb_on_norm_basis_sav')
-       
+
        if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
         call object_provide ('coef_orb_on_ortho_basis')
         call object_alloc ('coef_orb_on_ortho_basis_sav', coef_orb_on_ortho_basis_sav, nbasis, orb_tot_nb)
         coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb) = coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1)
         call object_modified ('coef_orb_on_ortho_basis_sav')
        endif
-       
+
 !      save exponents
-c      if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
+!      if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
        if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
          call object_provide ('nctype')
          call object_alloc ('zex_sav', zex_sav, nbasis)
          call object_alloc ('zex2_sav', zex2_sav, MRWF, nctype)
          zex_sav (1:nbasis) = zex (1:nbasis,1)
-c        zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
+!        zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
          do ict=1,nctype
            zex2_sav (1:nrbas_analytical(ict),1:nctype) = zex2 (1:nrbas_analytical(ict),1:nctype,1)
          enddo
@@ -462,7 +462,7 @@ c        zex2_sav (1:MRWF,1:nctype) = zex2 (1:MRWF,1:nctype,1)
       call object_modified ('cent_sav')
 
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       entry wf_restore
 
       write(6,*)
@@ -491,24 +491,24 @@ c-----------------------------------------------------------------------
         call object_valid_or_die ('coef_sav')
         coef (1:nbasis, 1:orb_tot_nb, 1) = coef_sav (1:nbasis, 1:orb_tot_nb)
         call object_modified ('coef')
-        
+
         call object_valid_or_die ('coef_orb_on_norm_basis_sav')
         coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_sav (1:nbasis, 1:orb_tot_nb)
         call object_modified ('coef_orb_on_norm_basis')
-        
+
         if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
          call object_valid_or_die ('coef_orb_on_ortho_basis_sav')
          coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_sav (1:nbasis, 1:orb_tot_nb)
          call object_modified ('coef_orb_on_ortho_basis')
         endif
-        
+
 !       restore exponents (must restore only for iwf=1 to avoid problems)
 !       if (numr.le.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
         if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
           call object_valid_or_die ('zex_sav')
           call object_valid_or_die ('zex2_sav')
           zex (1:nbasis,1) = zex_sav (1:nbasis)
-c         zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
+!         zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
           do ict=1,nctype
             zex2 (1:nrbas_analytical(ict),1:nctype,1) = zex2_sav (1:nrbas_analytical(ict),1:nctype)
           enddo
@@ -524,11 +524,11 @@ c         zex2 (1:MRWF,1:nctype,1) = zex2_sav (1:MRWF,1:nctype)
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine wf_best_save
 
-c Written by Cyrus Umrigar
-c Saves the best wf yet and writes it out at end of run
+! Written by Cyrus Umrigar
+! Saves the best wf yet and writes it out at end of run
       use all_tools_mod
       use orbitals_mod
       use basis_mod
@@ -555,7 +555,7 @@ c Saves the best wf yet and writes it out at end of run
 
       character*30 fmt
 
-c     common /contrl_per/ iperiodic,ibasis
+!     common /contrl_per/ iperiodic,ibasis
 
       save nparma_read,nparmb_read,nparmc_read
 
@@ -563,21 +563,21 @@ c     common /contrl_per/ iperiodic,ibasis
       nparmb_read=2+max(0,nordb-1)
       nparmc_read=nterms4(nordc)
 
-ccDeterminants
-ccWarning: I need to do this for other types of basis functions, both analytic and numerical
-c Warning: Also I need to edit and uncomment foll. lines and then I need common /coefs/ too.
-c     if(ibasis.eq.1 .or. ibasis.eq.3) then
-c       do 20 i=1,norb
-c         do 20 j=1,nbasis
-c  20     coef(j,i,iadd_diag)=coef(j,i,1)
-c       do 30 j=1,nbasis
-c  30     zex(j,iadd_diag)=zex(j,1)
-c       do 35 ictype=1,nctype
-c         do 35 irwf=1,MRWF
-c  35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
-c     endif
-c     do 40 i=1,ndet
-c  40 cdet(i,iadd_diag)=cdet(i,1)
+!cDeterminants
+!cWarning: I need to do this for other types of basis functions, both analytic and numerical
+! Warning: Also I need to edit and uncomment foll. lines and then I need common /coefs/ too.
+!     if(ibasis.eq.1 .or. ibasis.eq.3) then
+!       do 20 i=1,norb
+!         do 20 j=1,nbasis
+!  20     coef(j,i,iadd_diag)=coef(j,i,1)
+!       do 30 j=1,nbasis
+!  30     zex(j,iadd_diag)=zex(j,1)
+!       do 35 ictype=1,nctype
+!         do 35 irwf=1,MRWF
+!  35       zex2(irwf,ictype,iadd_diag)=zex2(irwf,ictype,1)
+!     endif
+!     do 40 i=1,ndet
+!  40 cdet(i,iadd_diag)=cdet(i,1)
 
       call alloc ('csf_coef_best', csf_coef_best, ncsf)
       do 50 i=1,ncsf
@@ -590,9 +590,9 @@ c  40 cdet(i,iadd_diag)=cdet(i,1)
         do 51 ip=1,nbasis
    51     oparm_best(it,ip)=oparm(it,ip,1)
 
-c Jastrow
+! Jastrow
       call alloc ('a4_best', a4_best, nparma_read, nctype)
-      call alloc ('b_best', b_best, nparmb_read, nspin2b-nspin1+1) 
+      call alloc ('b_best', b_best, nparmb_read, nspin2b-nspin1+1)
       call alloc ('c_best', c_best, nparmc_read, nctype)
       scalek_best=scalek(1)
       do 52 ict=1,nctype
@@ -631,9 +631,9 @@ c Jastrow
          coef_orb_on_ortho_basis_best (1:nbasis, 1:orb_tot_nb) = coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1)
          call object_modified ('coef_orb_on_ortho_basis_best')
         endif
-        
+
 !       save exponents
-c       if (numr.le.0) then
+!       if (numr.le.0) then
 !       if (maxval(zex).ne.0.d0) then
         if (maxval(zex).ne.0.d0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
           call object_provide ('nctype')
@@ -657,7 +657,7 @@ c       if (numr.le.0) then
       call object_modified ('cent_best')
 
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       entry wf_best_restore
 
       write(6,*)
@@ -686,11 +686,11 @@ c-----------------------------------------------------------------------
         call object_valid_or_die ('coef_best')
         coef (1:nbasis, 1:orb_tot_nb, 1) = coef_best (1:nbasis, 1:orb_tot_nb)
         call object_modified ('coef')
-        
+
         call object_valid_or_die ('coef_orb_on_norm_basis_best')
         coef_orb_on_norm_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_norm_basis_best (1:nbasis, 1:orb_tot_nb)
         call object_modified ('coef_orb_on_norm_basis')
-        
+
         if (l_opt_exp .and. trim(basis_functions_varied) == 'orthonormalized') then
          call object_valid_or_die ('coef_orb_on_ortho_basis_best')
          coef_orb_on_ortho_basis (1:nbasis, 1:orb_tot_nb, 1) = coef_orb_on_ortho_basis_best (1:nbasis, 1:orb_tot_nb)
@@ -718,7 +718,7 @@ c-----------------------------------------------------------------------
       call object_modified ('cent')
 
       return
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       entry wf_best_write
 
       close(2)
@@ -785,10 +785,10 @@ c-----------------------------------------------------------------------
         nparmc_read=nterms4(nordc)
 
         if(nparma_read.gt.0) then
-c         write(fmt,'(''(''i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
+!         write(fmt,'(''(''i2,''f15.8,\'\' (a(iparmj),iparmj=1,nparma)\'\')'')') nparma_read
           write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparma_read
          else
-c         write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
+!         write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
           write(fmt,'(''(a)'')')
         endif
         do 80 ict=1,nctype
@@ -796,10 +796,10 @@ c         write(fmt,'(''(\'\' (a(iparmj),iparmj=1,nparma)\'\')'')')
    80     write(2,fmt) (a4_best(i,ict),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
 
         if(nparmb_read.gt.0) then
-c         write(fmt,'(''(''i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
+!         write(fmt,'(''(''i2,''f15.8,\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')') nparmb_read
           write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmb_read
          else
-c         write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
+!         write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
           write(fmt,'(''(a)'')')
         endif
         do 85 isp=nspin1,nspin2b
@@ -807,10 +807,10 @@ c         write(fmt,'(''(\'\' (b(iparmj),iparmj=1,nparmb)\'\')'')')
    85     write(2,fmt) (b_best(i,isp),i=1,nparmb_read),' (b(iparmj),iparmj=1,nparmb)'
 
         if(nparmc_read.gt.0) then
-c         write(fmt,'(''(''i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
+!         write(fmt,'(''(''i2,''f15.8,\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')') nparmc_read
           write(fmt,'(''(1p'',i2,''g22.14,a)'')') nparmc_read
          else
-c         write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
+!         write(fmt,'(''(\'\' (c(iparmj),iparmj=1,nparmc)\'\')'')')
           write(fmt,'(''(a)'')')
         endif
         do 90 ict=1,nctype

@@ -1,8 +1,8 @@
       subroutine splfit_bas(r,irb,ic,iwf,wfv,ider)
-c Written by Claudia Filippi
-c get spline_fit at r of basis fn irb of center ic and force iwf
-c 1st and 2nd derivs also calculated if ider=1.
-c ref0 is the nearest point smaller than r and ref1 the nearest one larger.
+! Written by Claudia Filippi
+! get spline_fit at r of basis fn irb of center ic and force iwf
+! 1st and 2nd derivs also calculated if ider=1.
+! ref0 is the nearest point smaller than r and ref1 the nearest one larger.
 
       use numbas_mod
       use numexp_mod
@@ -17,9 +17,9 @@ c ref0 is the nearest point smaller than r and ref1 the nearest one larger.
         ref1=ref0+exp_h_bas(ic)
         delh=exp_h_bas(ic)
        elseif(igrid(ic).eq.2)then
-c       dlrad0=dlog(r0_bas(ic))
+!       dlrad0=dlog(r0_bas(ic))
         h_bas=dlog(exp_h_bas(ic))
-c       xr=(dlog(r)-dlrad0)/h_bas+1
+!       xr=(dlog(r)-dlrad0)/h_bas+1
         xr=dlog(r/r0_bas(ic))/h_bas+1
         jx=int(xr)
         ref0=r0_bas(ic)*exp_h_bas(ic)**(jx-1)
@@ -35,7 +35,7 @@ c       xr=(dlog(r)-dlrad0)/h_bas+1
       endif
 
       if(jx.lt.1) then
-c use small radius polynomial
+! use small radius polynomial
 
         wfv(1)=ce(1,irb,ic,iwf)
         do 10 ii=2,ncoef
@@ -49,7 +49,7 @@ c use small radius polynomial
         endif
 
        elseif(jx.ge.nr(ic)) then
-c use large radius exponential
+! use large radius exponential
 
         wfv(1)=ae(1,irb,ic,iwf)*dexp(-ae(2,irb,ic,iwf)*r)
         if(ider.eq.1) then
@@ -58,7 +58,7 @@ c use large radius exponential
         endif
 
        else
-c cubic spline interpolation
+! cubic spline interpolation
 
         bb=(r-ref0)/delh
         aa=(ref1-r)/delh

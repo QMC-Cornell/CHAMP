@@ -1,6 +1,6 @@
       subroutine finwrt
-c Written by Cyrus Umrigar
-c routine to print out final results
+! Written by Cyrus Umrigar
+! routine to print out final results
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -39,12 +39,12 @@ c routine to print out final results
 
 !MS Jellium sphere
       common /jel_sph1/ dn_background,rs_jel,radius_b ! RM
-      
+
       dimension zzfin(nzzvars), zzerr(nzzvars)
 
       err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
       err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
-c     err1s(x,x2,i)=dsqrt(dabs(x2/wcum1(i)-(x/wcum1(i))**2)/passes)
+!     err1s(x,x2,i)=dsqrt(dabs(x2/wcum1(i)-(x/wcum1(i))**2)/passes)
       err1s(x,x2,i)=dsqrt(dabs(x2/wcum(i)-(x/wcum(i))**2)/passes)
 
       if(index(mode,'mpi').ne.0) then
@@ -52,10 +52,10 @@ c     err1s(x,x2,i)=dsqrt(dabs(x2/wcum1(i)-(x/wcum1(i))**2)/passes)
         call grad_hess_jas_mpi
       endif
 
-c     write(6,'(''ecum1,ecum(1)'',9d16.8)') ecum1,ecum(1)
-c     write(6,'(''wcum1,wcum(1)'',9d16.8)') wcum1,wcum(1)
+!     write(6,'(''ecum1,ecum(1)'',9d16.8)') ecum1,ecum(1)
+!     write(6,'(''wcum1,wcum(1)'',9d16.8)') wcum1,wcum(1)
 
-c     if(idtask.ne.0) return
+!     if(idtask.ne.0) return
 
       if(index(mode,'mpi').eq.0) then
         passes=dfloat(iblk)*dfloat(nstep)
@@ -64,11 +64,11 @@ c     if(idtask.ne.0) return
       endif
       rtpass=dsqrt(passes)
 
-c     if(index(mode,'mov1').eq.0) then
-c       accfin=acccum/passes
-c      else
-c       accfin=acccum/(passes*nelec)
-c     endif
+!     if(index(mode,'mov1').eq.0) then
+!       accfin=acccum/passes
+!      else
+!       accfin=acccum/(passes*nelec)
+!     endif
 
       efin=ecum(1)/passes
       energy(1)=efin
@@ -85,15 +85,15 @@ c     endif
       endif
       accfin=acccum/passes
 
-c In all-electron move algorithm, eerr1 differs from sigma in that eerr1 contains
-c p*new+q*old, so eerr1 is a bit smaller than sigma.  sigma is a property
-c of the wavefn. only, whereas eerr1 depends on how quickly
-c one evolves the system.  In the calculation of T_corr, if one
-c uses Tcorr=(eerr/eerr1)^2 then Tcorr=1 when nstep=1, whereas if one
-c uses Tcorr=(eerr/sigma)^2 then Tcorr will be a bit < 1 when nstep=1.
-c However, it makes sense to use the latter definition because
-c p*new+q*old does reduce Tcorr and that is precisely what is being
-c reflected when we get Tcorr < 1.
+! In all-electron move algorithm, eerr1 differs from sigma in that eerr1 contains
+! p*new+q*old, so eerr1 is a bit smaller than sigma.  sigma is a property
+! of the wavefn. only, whereas eerr1 depends on how quickly
+! one evolves the system.  In the calculation of T_corr, if one
+! uses Tcorr=(eerr/eerr1)^2 then Tcorr=1 when nstep=1, whereas if one
+! uses Tcorr=(eerr/sigma)^2 then Tcorr will be a bit < 1 when nstep=1.
+! However, it makes sense to use the latter definition because
+! p*new+q*old does reduce Tcorr and that is precisely what is being
+! reflected when we get Tcorr < 1.
       eerr1=err1(ecum1,ecm21)
       eer1s=err1(ecum1s(1),ecm21s(1))
       eerr=err(ecum(1),ecm2(1),1)
@@ -110,7 +110,7 @@ c reflected when we get Tcorr < 1.
         zzerr(iz)=err(zzcum(iz),zzcm2(iz),1)
        enddo
       endif
-c     tcsq=eerr/eerr1
+!     tcsq=eerr/eerr1
       tcsq=eerr/eer1s
       call alloc ('eloc_tc', eloc_tc, nforce)
       eloc_tc (1) = tcsq**2 !JT
@@ -119,25 +119,25 @@ c     tcsq=eerr/eerr1
       call object_modified ('eerr')  !JT
       call object_modified ('sigma') !JT
 
-c separate "magnetic energy" for quantum dots:
+! separate "magnetic energy" for quantum dots:
       if(ndim.eq.2) then
         temp=0.25d0*bext*bext/(we*we)
         tmfin=(pefin-peifin-emag)*temp
         tmerr=(peerr+peierr)*temp
         pefin=pefin-tmfin-emag
-c       peerr=peerr+tmerr                          ! is this correct?
-c note that temp is always smaller than 1
+!       peerr=peerr+tmerr                          ! is this correct?
+! note that temp is always smaller than 1
         peerr=peerr*(1-temp)+peierr*temp
       endif
 
-c save energy, energy_sigma and energy_err for optimization
+! save energy, energy_sigma and energy_err for optimization
       energy(1)=efin
       energy_sigma(1)=sigma
       energy_err(1)=eerr
 
-c     write(6,*) 'before grad_hess_jas_fin'
+!     write(6,*) 'before grad_hess_jas_fin'
       if(igradhess.ge.1) call grad_hess_jas_fin(passes,efin)
-c     write(6,*) 'after grad_hess_jas_fin'
+!     write(6,*) 'after grad_hess_jas_fin'
 
       trysum=0.d0 !JT
       sucsum=0.d0 !JT
@@ -151,7 +151,7 @@ c     write(6,*) 'after grad_hess_jas_fin'
         delr=one/delri
         term=one/(passes*delr)
         do 100 i=1,NRAD
-c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
+! 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
   100     write(6,'(f8.4,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,rprobdn(i)*term
       endif
 
@@ -202,14 +202,14 @@ c 100     write(6,'(f5.3,3f10.6)') delr*(i-half),rprob(i)*term,rprobup(i)*term,r
         sigma=eer1s*rtpass
         ffin=efin-ecum(1)/passes
         if(deltot(ifr).ne.0.d0) then
-c         ffin=ffin/deltot(ifr)
-c         ferr=err(fcum(ifr),fcm2(ifr),1)/abs(deltot(ifr))
+!         ffin=ffin/deltot(ifr)
+!         ferr=err(fcum(ifr),fcm2(ifr),1)/abs(deltot(ifr))
           ferr=err(fcum(ifr),fcm2(ifr),1)
          else
           ferr=err(fcum(ifr),fcm2(ifr),1)
         endif
-c save energy, force, energy_sigma, energy_err and force_err for optimization
-c force and force_err are really the energy difference and the error in the energy difference.
+! save energy, force, energy_sigma, energy_err and force_err for optimization
+! force and force_err are really the energy difference and the error in the energy difference.
         energy(ifr)=efin
         energy_err(ifr)=eerr
         energy_sigma(ifr)=sigma
@@ -249,15 +249,15 @@ c force and force_err are really the energy difference and the error in the ener
 
       if(izigzag.ge.1) then
         call print_zigzag_vars(zzfin,zzerr,rtpass)
-c       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(3),zzerr(3),zzerr(3)*rtpass
-c       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(1),zzerr(1),zzerr(1)*rtpass
-c       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(2),zzerr(2),zzerr(2)*rtpass
-c       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(6),zzerr(6),zzerr(6)*rtpass
-c       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(4),zzerr(4),zzerr(4)*rtpass
-c       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(5),zzerr(5),zzerr(5)*rtpass
-c       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(9),zzerr(9),zzerr(9)*rtpass
-c       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(7),zzerr(7),zzerr(7)*rtpass
-c       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(8),zzerr(8),zzerr(8)*rtpass
+!       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(3),zzerr(3),zzerr(3)*rtpass
+!       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(1),zzerr(1),zzerr(1)*rtpass
+!       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzfin(2),zzerr(2),zzerr(2)*rtpass
+!       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(6),zzerr(6),zzerr(6)*rtpass
+!       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(4),zzerr(4),zzerr(4)*rtpass
+!       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(5),zzerr(5),zzerr(5)*rtpass
+!       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(9),zzerr(9),zzerr(9)*rtpass
+!       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(7),zzerr(7),zzerr(7)*rtpass
+!       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin(8),zzerr(8),zzerr(8)*rtpass
       endif
       if(print_radial_probability .and. index(mode,'mov1').ne.0.and.iperiodic.eq.0.and.ncent.eq.1) then
         write(6,'(''acceptance          ='',t17,2f12.7)') accfin,sucsum/trysum
@@ -266,7 +266,7 @@ c       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzfin
       endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(passes,r1fin)
-      
+
       call routines_write_final
       call reinit_routines_write_block
       call reinit_routines_write_final

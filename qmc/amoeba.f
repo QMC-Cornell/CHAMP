@@ -1,10 +1,10 @@
       SUBROUTINE amoeba(p,y,mp,np,ndim,ftol,funk,iter,itmax,converged)
       INTEGER iter,mp,ndim,np,NMAX,ITMAX
       DOUBLE PRECISION ftol,p(mp,np),y(mp),funk
-CJT      PARAMETER (NMAX=200,ITMAX=5000)
+!JT      PARAMETER (NMAX=200,ITMAX=5000)
       PARAMETER (NMAX=200)
       EXTERNAL funk
-CU    USES amotry,funk
+!U    USES amotry,funk
       INTEGER i,ihi,ilo,inhi,j,m,n
       DOUBLE PRECISION rtol,sum,swap,ysave,ytry,psum(NMAX),amotry
       LOGICAL converged
@@ -47,7 +47,7 @@ CU    USES amotry,funk
         converged = .true. !JT
         return
       endif
-CJT      if (iter.ge.ITMAX) pause 'ITMAX exceeded in amoeba'
+!JT      if (iter.ge.ITMAX) pause 'ITMAX exceeded in amoeba'
       if (iter.ge.ITMAX) return !JT
       iter=iter+2
       ytry=amotry(p,y,psum,mp,np,ndim,funk,ihi,-1.0d0)

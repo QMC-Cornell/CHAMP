@@ -1,23 +1,23 @@
       subroutine dmc_brock_mov1
-c Written by Cyrus Umrigar
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-c  Does either VMC or simple DMC
-c  if  idmc < 0  VMC
-c  if  idmc >=0  DMC  (Note until Jan92 idmc=0 did VMC)
-c           = 0  DMC without accept/reject, kill   , not limit E,F
-c           = 1  DMC without accept/reject, kill   , limit E,F
-c           = 2  DMC with    accept/reject, kill   , not limit E,F
-c           = 3  DMC with    accept/reject, reject , not limit E,F
-c           = 4  DMC with    accept/reject, reject , limit E,F
-c           = 5  DMC with    accept/reject, cross  , limit E,F
-c  If idmc =2 walkers that cross nodes while doing DMC are killed.
-c  Hence detailed balance is violated.  This is done only for comparing
-c  with Reynolds et. al. J. Chem. Phys. 1982.
-c  However, this is not quite the Reynolds algorithm since they do the
-c  accept/reject on each electron and calculate taueff differently.
-c  He and Ceperley told me that they have also now switched to rejecting
-c  node crossing moves.
-c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+! Written by Cyrus Umrigar
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+!  Does either VMC or simple DMC
+!  if  idmc < 0  VMC
+!  if  idmc >=0  DMC  (Note until Jan92 idmc=0 did VMC)
+!           = 0  DMC without accept/reject, kill   , not limit E,F
+!           = 1  DMC without accept/reject, kill   , limit E,F
+!           = 2  DMC with    accept/reject, kill   , not limit E,F
+!           = 3  DMC with    accept/reject, reject , not limit E,F
+!           = 4  DMC with    accept/reject, reject , limit E,F
+!           = 5  DMC with    accept/reject, cross  , limit E,F
+!  If idmc =2 walkers that cross nodes while doing DMC are killed.
+!  Hence detailed balance is violated.  This is done only for comparing
+!  with Reynolds et. al. J. Chem. Phys. 1982.
+!  However, this is not quite the Reynolds algorithm since they do the
+!  accept/reject on each electron and calculate taueff differently.
+!  He and Ceperley told me that they have also now switched to rejecting
+!  node crossing moves.
+!:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -63,17 +63,17 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
       fprodd=fprod/ff(ipmod2)
 
-c Undo weights
+! Undo weights
       iwmod=mod(ipass,nwprod)
 
       idmcab=iabs(idmc)
       ioldest=0
       do 200 iw=1,nwalk
-c primary path
+! primary path
         current_walker = iw !JT
         call object_modified_by_index (current_walker_index) !JT
 
-c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
+! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
         if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
 
         if(ibasis.eq.3) then                  !complex basis set
@@ -91,8 +91,8 @@ c Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
           v2old=0
           do 5 k=1,ndim
     5       v2old=v2old+voldw(k,i,iw,1)**2
-c Note that it is better to limit the drift term for VMC also,
-c so idmc=-1,-4,-5 are preferable
+! Note that it is better to limit the drift term for VMC also,
+! so idmc=-1,-4,-5 are preferable
           if(idmcab.eq.1 .or. idmcab.eq.4. or. idmcab.eq.5 ) then
             term=min(one/(dsqrt(v2old)*tau),one)
            else
@@ -112,13 +112,13 @@ c so idmc=-1,-4,-5 are preferable
           if(ipr.ge.1)
      &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
 
-c calculate psi and velocity at new configurations
+! calculate psi and velocity at new configurations
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
 
-c Check if walker has crossed a node.
-c Note that the better thing to do is to reject the move (p=zero)
-c rather than to kill the walker (wt(iw)=zero).  The latter is only
-c done for the sake of consistency with Reynolds et. al. 1982.
+! Check if walker has crossed a node.
+! Note that the better thing to do is to reject the move (p=zero)
+! rather than to kill the walker (wt(iw)=zero).  The latter is only
+! done for the sake of consistency with Reynolds et. al. 1982.
           if((psidn*psidow(iw,1)).le.zero .and.ifr.eq.1) then
             nodecr=nodecr+1
             if(idmc.ge.0 .and. idmc.le. 2) then
@@ -132,10 +132,10 @@ c done for the sake of consistency with Reynolds et. al. 1982.
           if(idmc.eq.0 .or. idmc.eq.1) then
             p=one
            else
-c Calculate gaussian for the reverse move
+! Calculate gaussian for the reverse move
             dfus2n=zero
-c Note that it is better to limit the drift term for VMC also,
-c so idmc=-1,-4 are preferable
+! Note that it is better to limit the drift term for VMC also,
+! so idmc=-1,-4 are preferable
             if(idmcab.eq.1 .or. idmcab.eq.4 .or. idmcab.eq.5 ) then
               v2new=0
                 do 151 k=1,ndim
@@ -199,7 +199,7 @@ c so idmc=-1,-4 are preferable
           if(iaccept.eq.1) then   ! If any of the 1-electron moves were accepted then
 
             if(ifr.eq.1) then
-c Primary configuration
+! Primary configuration
               drifdifr=one
               if(nforce.gt.1)
      &        call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
@@ -211,16 +211,16 @@ c Primary configuration
               endif
               call walksav_jas(iw)
              else
-c Secondary configuration
+! Secondary configuration
               if(istrech.eq.0) then
                 drifdifr=one
-c No streched positions for electrons
+! No streched positions for electrons
                 do 161 i=1,nelec
                   do 161 k=1,ndim
   161               xoldw(k,i,iw,ifr)=xoldw(k,i,iw,1)
                 ajacold(iw,ifr)=one
                else
-c Compute streched electronic positions for all nucleus displacement
+! Compute streched electronic positions for all nucleus displacement
                 call strech(xoldw(1,1,iw,1),xstrech,ajacob,ifr,1)
                 drifdifs=zero
                 do 162 i=1,nelec
@@ -236,7 +236,7 @@ c Compute streched electronic positions for all nucleus displacement
             drifdifr=one
             enew=eoldw(iw,ifr)
           endif
-c Truncate energy as in Brock if iabs(idmc) = 1 or 4 or 5
+! Truncate energy as in Brock if iabs(idmc) = 1 or 4 or 5
           if((idmcab.eq.1 .or. idmcab.eq.4 .or. idmcab.eq.5 ) .and.
      &    dabs(enew-etrial).gt.two/rttau)
      &    enew=etrial+sign(two/rttau,enew-etrial)
@@ -247,7 +247,7 @@ c Truncate energy as in Brock if iabs(idmc) = 1 or 4 or 5
      &    wtmult=dexp((etrial-half*(eoldw(iw,ifr)+enew))*taunow)
 
           dwt=wtmult*ffi
-c Set weights and product of weights over last nwprod steps
+! Set weights and product of weights over last nwprod steps
           if(ifr.eq.1) then
 
             wt(iw)=wt(iw)*dwt

@@ -1,5 +1,5 @@
       subroutine read_input
-c Written by Cyrus Umrigar
+! Written by Cyrus Umrigar
       use all_tools_mod
       use constants_mod
       use variables_mod
@@ -75,11 +75,11 @@ c Written by Cyrus Umrigar
       common /angularpert/ ang_perturb,amp_perturb,shrp_perturb,omg_perturb,iperturb
       common /compferm/ emagv,nv,idot
 
-c These commons for reading fit input.  We should separate these into another
-c subroutine that is called both from fit and read_input.
-c     common /fit/ nsig,ncalls,iopt,ipr_opt
+! These commons for reading fit input.  We should separate these into another
+! subroutine that is called both from fit and read_input.
+!     common /fit/ nsig,ncalls,iopt,ipr_opt
 
-c     namelist /opt_list/ igradhess
+!     namelist /opt_list/ igradhess
       namelist /opt_list/ iring_coulomb, iantiferromagnetic, iper_gaussian_type, xmax,xfix,fmax1,fmax2,rring,ifixe,nv,idot,ifourier
      &,iperturb,ang_perturb,amp_perturb,shrp_perturb,omg_perturb,rmin,rmax,nmeshr,nmesht,icoosys,dot_bump_height,dot_bump_radius
      &,nmeshk1,izigzag,zzdelyr
@@ -91,418 +91,418 @@ c     namelist /opt_list/ igradhess
 
       character*25 lhere
 
-c Inputs not described in mainvmc:
-c The first line of input is fixed-format, all the rest are free.
-c title      title
-c irand_seed random number seeds (four 4-digit integers)
-c ijas       form of Jastrow. (between 1 and 6, mostly we use 4)
-c isc        form of scaling function for ri,rj,rij in Jastrow (between 1 and 10, mostly use 2,4,6,7,16,17)
-c iperiodic  0  finite system, 
-c            >0: numer of dimensions in which system is periodic 
-c            =1 system periodic in one dimension
-c            =3 system periodic in three dimensions
+! Inputs not described in mainvmc:
+! The first line of input is fixed-format, all the rest are free.
+! title      title
+! irand_seed random number seeds (four 4-digit integers)
+! ijas       form of Jastrow. (between 1 and 6, mostly we use 4)
+! isc        form of scaling function for ri,rj,rij in Jastrow (between 1 and 10, mostly use 2,4,6,7,16,17)
+! iperiodic  0  finite system,
+!            >0: numer of dimensions in which system is periodic
+!            =1 system periodic in one dimension
+!            =3 system periodic in three dimensions
 
-c ibasis     =1 localized Slater or gaussian or numerical basis
-c            =2 planewave basis, also for extended orbitals on grid
-c            =3 complex basis for 2D quantum dots / composite fermions (if numr=0 then Fock-Darwin basis)
-c            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
-c            =5 2d localized floating gaussians in circular coord. (wigner crystal)
-c            =6 2d localized non-circular floating gaussians in cartesian coord. (wigner crystal)
-c            =7 2d localized periodic floating gaussians in cartesian coord (periodic 1d wigner crystal)
-c            Warning I would like to be able to use for dots a gaussian radial basis with complex
-c            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
-c which_analytical_basis  If ibasis==1, then this is used to select between slater, gaussian and gauss-slater
-c hb         hbar=0.5 for Hartree units
-c etrial     guess for energy
-c eunit      'Hartree'
-c nstep      number of steps per block
-c nblk       number of blocks
-c nblkeq     number of equilibration blocks
-c nconf      target number of MC configurations per processor in all dmc modes
-c nconf_global = nconf in dmc, dmc_mov1 and dmc_mov1_mpi1 modes
-c nconf_new  number of new MC configs. saved per processor.
-c idump      = 1 dump restart file
-c irstar     = 1 restart from restart file
-c isite      if le 0, read starting MC config. in vmc from mc_configs_start
-c isite      if ge 1, call sites to generate starting MC config. in vmc
-c ipr        print level
-c ipr_opt    print level in fit
-c imetro     form of Metropolis (6 is most efficient choice for most systems)
-c            1 simple algorithm with force-bias
-c            6 accelerated Metropolis algorithm from Cyrus' 1993 PRL
-c delta      step-size for simple algorithm
-c deltar     radial step-size for accelerated algorithm
-c deltat     angular step-size for accelerated algorithm
-c fbias      force-bias.  (Use 1 always).
-c idmc       form of dmc algorithm
-c            1  simple dmc
-c            2  improved dmc from Umrigar, Nightingale, Runge 1993 JCP
-c            < 0, same as |idmc| but turn off branching to do vmc
-c ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v
-c nfprod     number of products to undo for estimating population control bias in dmc
-c tau        time-step in dmc
-c nloc       external potential (a positive value => nonlocal pseudopotential)
-c            -9 numerical dot potential read in from potential_num (not yet implemented)
-c            -5 quadratic dot potential 0.5*w0^2*r^2 with barrier at center
-c                (dot_bump_height)*exp(1 - 1/(1-(x/dot_bump_radius)^2))
-c            -4 quantum wire, if finite:   Vwire(x) + 0.5 w0 * y^2
-c                   if iperiodic.eq.1, then no V(x) - periodic in x direction
-c            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
-c            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
-c            -1 quadratic dot potential .5*w0*(r-rring)^2
-c               If rring=0 then it is a dot, if it is not 0 it is a ring.
-c            0  local, -Z/r
-c            1  in Fahy format
-c            2  in Troullier-Martins format (unformatted)
-c            3  in Troullier-Martins format (formatted)
-c            4  in CHAMP format (formatted)
-c            5  in fhi format (formatted)
-c            6  chemistry pseudopotentials in GAMESS-like format with 1 extra line (formatted)
-c numr     <=0 analytic radial basis functions (Slater, asymptotic, gaussian, gauss-slater. Used also for mixed analytical and numerical radial basis.
-c              specified by n1s, n2s, n2p, ...)
-c            0 analytic radial basis functions with usual normalization
-c           -1 analytic basis functions, but with LCAO coefs. generated by GAMESS that have
-c              normalization similar to numerical basis function.  So use anorm of numerical
-c              radial functions
-c              In this case it is assumed in read_orb_loc.f that the LCAO coefs are not
-c              in the atomic filling order but instead the order is all s's, all px's etc.
-c              The basis functions read in are: 1s,2s,2p,3s,3p,3d,4s,4p,sa,pa,da
-c           -2 same as -1 but read in up to 4f functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,sa,pa,da
-c           -3 same as -2 but read in up to 5g functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
-c            1 numerical radial functions read in from file basis.<ictype>.
-c            Whether one is using Slater or gaussian basis fns. was inputted by having n1s,n2s etc. be either > 0 or < 0
-c            but now use which_analytical_basis.
-c            For 2-dim systems
-c           =0 The basis functions read in are: n1s,n2p(1)2p(-1),n3d(2),n3d(-2),etc since |m|=l
-c          =-1 Read in (m_bas(ib),ib=1,nbasis) instead of n1s etc.
-c numr      3-d systems:
-c                 Use purely numerical radial basis functions (read in by read_bas_num).
-c             <=0 Read in 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
-c                 Use purely analytical radial basis functions or mixed analytical and numerical
-c              =0 The LCAO coefs. are read in the order 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
-c                 For efficiency, within the code the coefs get multiplied by the normalization of the radial and the angular part of the basis fn.
-c            <=-1 The LCAO coefs. are read in the order 1s,2s,3s,4s,5s,2p,3p,4p,5p,3d,4d,5d,4f,5f,5g,sa,pa,da
-c                (Note however that the order in which n1s etc. is read in is the same for numr=0 and -1,-2,-3
-c                 For efficiency, Within the code the coefs get multiplied by the normalization of just the radial part of the basis fn.
-c               The analytic radial basis functions can be slater, gaussian or gauss-slater.
-c               In addition the ones at the end (sa,pa,da) are asymptotic functions that I have not used in a long time.
-c               Whether one is using Slater or gaussian basis fns. was inputted by having n1s,n2s etc. be either > 0 or < 0
-c               but now use which_analytical_basis to select between slater, gaussian and gauss-slater.
-c           2-dim systems
-c              =0 The basis functions read in are: n1s,n2p(1)2p(-1),n3d(2),n3d(-2),etc since |m|=l
-c             =-1 Read in (m_bas(ib),ib=1,nbasis) instead of n1s etc.
-c nforce     number of geometries (i.e. # of forces +1)
-c nefp       effective fluctuation potential for optimizing wf.
-c w0         spring constant for quantum dot
-c bext       external magnetic field in a.u. (only for quantum dots)
-c            1 a.u. = (meff/epsilon_rel)^2 epsilon_0 /(2 mu_bohr) = 6.86219 Tesla for GaAs
-c we         effective spring constant = sqrt(w0*w0+0.25*bext*bext)
-c wire_w       "omega" in transverse harmonic potential 0.5 r^2 wire_w^2 for finite quantum wire
-c wire_length  Length of finite quantum wire
-c wire_radius2 "radius" of 3D cylindrical leads used to calculate confining potential at edges of finite quantum wire ( = 1/ (2 wire_w)
-c wire_potential_cutoff  Number of wire-lengths of the 3D cylindrical leads on each side to consider when calculating quantum wire confining potential
-c wire_prefactor  constant used in calculation of confining potential of quantum wire, saved to speed up calculation
-c wire_root1  constant used in calculation of confining potential of quantum wire, saved to speed up calculation.
-c emaglz     "magnetic energy" due to B-Lz coupling=-0.5*B*Lz (favor positive Lz)
-c emagsz     "magnetic energy" due to B-Sz coupling=-0.5*B*glande*Sz (favor spin up)
-c glande     effective lande factor (only for quantum dots) considered positive
-c nquad      number of angular quadrature points for nonlocal psp.
-c nelec      number of electrons
-c nup        number of up-spin electrons
-c npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
-c cutg       max g-vector in primitive cell.  Value determined by 2 factors:
-c            a) must be large enough that all plane-wave components in wf. are covered
-c            b) controls quality of Ewald fit for -Z/r and pseudopot. in primitive cell
-c cutg_sim   max g-vector in simulation cell.
-c            Controls quality of Ewald fit for 1/r in simulation cell
-c alattice   lattice constant to multiply rlatt 
-c            (i.e., length of system if iperiodic=1)
-c rlatt      lattice vectors of primitive cell
-c rlatt_sim  lattice vectors of simulation cell
-c rkvec_shift_latt k-shift for generating k-vector lattice, in reciprocal simulation cell units
-c rkvec_shift k-shift for generating k-vector lattice, in cartesian units (computed, not input)
-c nctype     number of atom/center types
-c ncent      number of atoms/centers
-c iwctype    specify atom-type for each atom
-c znuc       nuclear charge
-c cent       atom positions
-c ndet       number of determinants in wavefunction
-c nbasis     number of basis functions
-c norb       number of orbitals
-c cdet       coefficients of determinants (obsolete)
-c ncsf       number of configuration state functions (CSFs)
-c csf_coef   coefficients of each CSF
-c ndet_in_csf  number of determinants in each CSF
-c iwdet_in_csf which determinants enter in each CSF
-c cdet_in_csf  coef. of determinants in each CSF
-c iworbd     which orbitals enter in which determinants
-c inum_orb   numerical orbitals on grid or not
-c         =0 analytic orbs
-c        !=0 use Lagrange-interpolated orbitals for periodic systems (4-pt in each direction)
-c            and cubic spline-interpolated orbitals for finite systems
-c         =4 numerical orbitals using 4-pt interpolation in each direction
-c            if file orbitals_num exists, read from it, else write to it
-c        =-4 numerical orbitals using 4-pt interpolation in each direction
-c            if file orbitals_num exists, read from it, but do not write to it
-c         =+-5 numerical orbitals using 4-pt interpolating pp-spline in each direction
-cWP       =+-6 numerical orbitals using 4-pt approximating B-spline in each direction
-c         =+-8 numerical orbitals using 4-pt interpolating B-spline in each direction
-c iorb_used =1 compute only occupied orbitals
-c           =0 compute all occupied and virtual orbitals if necessary (for orbital optimization)
-c iorb_format 'tm' for orbitals file orbitals_pw_tm generated from Jose-Luis Martins' program
-c             'pwscf' for orbitals file orbitals_pw_tm generated from PWSCF.
-c ianalyt_lap analytic laplacian or not
-c ijas       form of Jastrow. (between 1 and 6, mostly we use 4)
-c isc        form of scaling function for ri,rj,rij in Jastrow (between 1 and 7, mostly use 2,4,6,7)
-c          2  [1-exp(scalek*r)]/scalek
-c          3  [1-exp{-scalek*r-(scalek*r)**2/2}]/scalek
-c          4  r/(1+scalek*r)
-c          5  r/{1+(scalek*r)**2}**.5
-c          6  Short-range version of 2 (range given by cutjas)
-c          7  Short-range version of 4 (range given by cutjas)
-c          8  [1-exp(scalek*r)]
-c          10 scalek*r/(1+scalek*r)
+! ibasis     =1 localized Slater or gaussian or numerical basis
+!            =2 planewave basis, also for extended orbitals on grid
+!            =3 complex basis for 2D quantum dots / composite fermions (if numr=0 then Fock-Darwin basis)
+!            =4 2d localized floating gaussians in cartesian coord. (wigner crystal).
+!            =5 2d localized floating gaussians in circular coord. (wigner crystal)
+!            =6 2d localized non-circular floating gaussians in cartesian coord. (wigner crystal)
+!            =7 2d localized periodic floating gaussians in cartesian coord (periodic 1d wigner crystal)
+!            Warning I would like to be able to use for dots a gaussian radial basis with complex
+!            spherical harmonics, but at present we cannot do that because the radial and angular bases are tied together.
+! which_analytical_basis  If ibasis==1, then this is used to select between slater, gaussian and gauss-slater
+! hb         hbar=0.5 for Hartree units
+! etrial     guess for energy
+! eunit      'Hartree'
+! nstep      number of steps per block
+! nblk       number of blocks
+! nblkeq     number of equilibration blocks
+! nconf      target number of MC configurations per processor in all dmc modes
+! nconf_global = nconf in dmc, dmc_mov1 and dmc_mov1_mpi1 modes
+! nconf_new  number of new MC configs. saved per processor.
+! idump      = 1 dump restart file
+! irstar     = 1 restart from restart file
+! isite      if le 0, read starting MC config. in vmc from mc_configs_start
+! isite      if ge 1, call sites to generate starting MC config. in vmc
+! ipr        print level
+! ipr_opt    print level in fit
+! imetro     form of Metropolis (6 is most efficient choice for most systems)
+!            1 simple algorithm with force-bias
+!            6 accelerated Metropolis algorithm from Cyrus' 1993 PRL
+! delta      step-size for simple algorithm
+! deltar     radial step-size for accelerated algorithm
+! deltat     angular step-size for accelerated algorithm
+! fbias      force-bias.  (Use 1 always).
+! idmc       form of dmc algorithm
+!            1  simple dmc
+!            2  improved dmc from Umrigar, Nightingale, Runge 1993 JCP
+!            < 0, same as |idmc| but turn off branching to do vmc
+! ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v
+! nfprod     number of products to undo for estimating population control bias in dmc
+! tau        time-step in dmc
+! nloc       external potential (a positive value => nonlocal pseudopotential)
+!            -9 numerical dot potential read in from potential_num (not yet implemented)
+!            -5 quadratic dot potential 0.5*w0^2*r^2 with barrier at center
+!                (dot_bump_height)*exp(1 - 1/(1-(x/dot_bump_radius)^2))
+!            -4 quantum wire, if finite:   Vwire(x) + 0.5 w0 * y^2
+!                   if iperiodic.eq.1, then no V(x) - periodic in x direction
+!            -3 Jellium sphere with nucleus at center, Ryo Maezono(RM) and Masayoshi Shimomoto(MS)
+!            -2 quartic dot potential p1*x^4 + p2*y^4-2*p3*(xy)^2 + p4*(x-y)*x*y*r
+!            -1 quadratic dot potential .5*w0*(r-rring)^2
+!               If rring=0 then it is a dot, if it is not 0 it is a ring.
+!            0  local, -Z/r
+!            1  in Fahy format
+!            2  in Troullier-Martins format (unformatted)
+!            3  in Troullier-Martins format (formatted)
+!            4  in CHAMP format (formatted)
+!            5  in fhi format (formatted)
+!            6  chemistry pseudopotentials in GAMESS-like format with 1 extra line (formatted)
+! numr     <=0 analytic radial basis functions (Slater, asymptotic, gaussian, gauss-slater. Used also for mixed analytical and numerical radial basis.
+!              specified by n1s, n2s, n2p, ...)
+!            0 analytic radial basis functions with usual normalization
+!           -1 analytic basis functions, but with LCAO coefs. generated by GAMESS that have
+!              normalization similar to numerical basis function.  So use anorm of numerical
+!              radial functions
+!              In this case it is assumed in read_orb_loc.f that the LCAO coefs are not
+!              in the atomic filling order but instead the order is all s's, all px's etc.
+!              The basis functions read in are: 1s,2s,2p,3s,3p,3d,4s,4p,sa,pa,da
+!           -2 same as -1 but read in up to 4f functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,sa,pa,da
+!           -3 same as -2 but read in up to 5g functions: 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
+!            1 numerical radial functions read in from file basis.<ictype>.
+!            Whether one is using Slater or gaussian basis fns. was inputted by having n1s,n2s etc. be either > 0 or < 0
+!            but now use which_analytical_basis.
+!            For 2-dim systems
+!           =0 The basis functions read in are: n1s,n2p(1)2p(-1),n3d(2),n3d(-2),etc since |m|=l
+!          =-1 Read in (m_bas(ib),ib=1,nbasis) instead of n1s etc.
+! numr      3-d systems:
+!                 Use purely numerical radial basis functions (read in by read_bas_num).
+!             <=0 Read in 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
+!                 Use purely analytical radial basis functions or mixed analytical and numerical
+!              =0 The LCAO coefs. are read in the order 1s,2s,2p,3s,3p,3d,4s,4p,4d,4f,5s,5p,5d,5f,5g,sa,pa,da
+!                 For efficiency, within the code the coefs get multiplied by the normalization of the radial and the angular part of the basis fn.
+!            <=-1 The LCAO coefs. are read in the order 1s,2s,3s,4s,5s,2p,3p,4p,5p,3d,4d,5d,4f,5f,5g,sa,pa,da
+!                (Note however that the order in which n1s etc. is read in is the same for numr=0 and -1,-2,-3
+!                 For efficiency, Within the code the coefs get multiplied by the normalization of just the radial part of the basis fn.
+!               The analytic radial basis functions can be slater, gaussian or gauss-slater.
+!               In addition the ones at the end (sa,pa,da) are asymptotic functions that I have not used in a long time.
+!               Whether one is using Slater or gaussian basis fns. was inputted by having n1s,n2s etc. be either > 0 or < 0
+!               but now use which_analytical_basis to select between slater, gaussian and gauss-slater.
+!           2-dim systems
+!              =0 The basis functions read in are: n1s,n2p(1)2p(-1),n3d(2),n3d(-2),etc since |m|=l
+!             =-1 Read in (m_bas(ib),ib=1,nbasis) instead of n1s etc.
+! nforce     number of geometries (i.e. # of forces +1)
+! nefp       effective fluctuation potential for optimizing wf.
+! w0         spring constant for quantum dot
+! bext       external magnetic field in a.u. (only for quantum dots)
+!            1 a.u. = (meff/epsilon_rel)^2 epsilon_0 /(2 mu_bohr) = 6.86219 Tesla for GaAs
+! we         effective spring constant = sqrt(w0*w0+0.25*bext*bext)
+! wire_w       "omega" in transverse harmonic potential 0.5 r^2 wire_w^2 for finite quantum wire
+! wire_length  Length of finite quantum wire
+! wire_radius2 "radius" of 3D cylindrical leads used to calculate confining potential at edges of finite quantum wire ( = 1/ (2 wire_w)
+! wire_potential_cutoff  Number of wire-lengths of the 3D cylindrical leads on each side to consider when calculating quantum wire confining potential
+! wire_prefactor  constant used in calculation of confining potential of quantum wire, saved to speed up calculation
+! wire_root1  constant used in calculation of confining potential of quantum wire, saved to speed up calculation.
+! emaglz     "magnetic energy" due to B-Lz coupling=-0.5*B*Lz (favor positive Lz)
+! emagsz     "magnetic energy" due to B-Sz coupling=-0.5*B*glande*Sz (favor spin up)
+! glande     effective lande factor (only for quantum dots) considered positive
+! nquad      number of angular quadrature points for nonlocal psp.
+! nelec      number of electrons
+! nup        number of up-spin electrons
+! npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
+! cutg       max g-vector in primitive cell.  Value determined by 2 factors:
+!            a) must be large enough that all plane-wave components in wf. are covered
+!            b) controls quality of Ewald fit for -Z/r and pseudopot. in primitive cell
+! cutg_sim   max g-vector in simulation cell.
+!            Controls quality of Ewald fit for 1/r in simulation cell
+! alattice   lattice constant to multiply rlatt
+!            (i.e., length of system if iperiodic=1)
+! rlatt      lattice vectors of primitive cell
+! rlatt_sim  lattice vectors of simulation cell
+! rkvec_shift_latt k-shift for generating k-vector lattice, in reciprocal simulation cell units
+! rkvec_shift k-shift for generating k-vector lattice, in cartesian units (computed, not input)
+! nctype     number of atom/center types
+! ncent      number of atoms/centers
+! iwctype    specify atom-type for each atom
+! znuc       nuclear charge
+! cent       atom positions
+! ndet       number of determinants in wavefunction
+! nbasis     number of basis functions
+! norb       number of orbitals
+! cdet       coefficients of determinants (obsolete)
+! ncsf       number of configuration state functions (CSFs)
+! csf_coef   coefficients of each CSF
+! ndet_in_csf  number of determinants in each CSF
+! iwdet_in_csf which determinants enter in each CSF
+! cdet_in_csf  coef. of determinants in each CSF
+! iworbd     which orbitals enter in which determinants
+! inum_orb   numerical orbitals on grid or not
+!         =0 analytic orbs
+!        !=0 use Lagrange-interpolated orbitals for periodic systems (4-pt in each direction)
+!            and cubic spline-interpolated orbitals for finite systems
+!         =4 numerical orbitals using 4-pt interpolation in each direction
+!            if file orbitals_num exists, read from it, else write to it
+!        =-4 numerical orbitals using 4-pt interpolation in each direction
+!            if file orbitals_num exists, read from it, but do not write to it
+!         =+-5 numerical orbitals using 4-pt interpolating pp-spline in each direction
+!WP       =+-6 numerical orbitals using 4-pt approximating B-spline in each direction
+!         =+-8 numerical orbitals using 4-pt interpolating B-spline in each direction
+! iorb_used =1 compute only occupied orbitals
+!           =0 compute all occupied and virtual orbitals if necessary (for orbital optimization)
+! iorb_format 'tm' for orbitals file orbitals_pw_tm generated from Jose-Luis Martins' program
+!             'pwscf' for orbitals file orbitals_pw_tm generated from PWSCF.
+! ianalyt_lap analytic laplacian or not
+! ijas       form of Jastrow. (between 1 and 6, mostly we use 4)
+! isc        form of scaling function for ri,rj,rij in Jastrow (between 1 and 7, mostly use 2,4,6,7)
+!          2  [1-exp(scalek*r)]/scalek
+!          3  [1-exp{-scalek*r-(scalek*r)**2/2}]/scalek
+!          4  r/(1+scalek*r)
+!          5  r/{1+(scalek*r)**2}**.5
+!          6  Short-range version of 2 (range given by cutjas)
+!          7  Short-range version of 4 (range given by cutjas)
+!          8  [1-exp(scalek*r)]
+!          10 scalek*r/(1+scalek*r)
 
-c ifock    0  no Fock's terms
-c          1  phi20-like + phi21
-c          2  phi20-like + phi21 + phi31-like terms
-c          3  phi20-like + phi21 + phi31 + scale3
-c          4  phi20-like + phi21 + phi31 + scale3 + phi20 + scale20
+! ifock    0  no Fock's terms
+!          1  phi20-like + phi21
+!          2  phi20-like + phi21 + phi31-like terms
+!          3  phi20-like + phi21 + phi31 + scale3
+!          4  phi20-like + phi21 + phi31 + scale3 + phi20 + scale20
 
-c nspin2   1,2,3,-1,-2 -> nspin2b=abs(nspin2)
-c nspin2   > 0  nspin2 sets of a, c parms, nspin2b sets of b parms
-c             nocuspb=0  parallel e-e cusp conditions satisfied (b=1/2,1/4)
-c nspin2   < 0  -> nspin2=1
-c               nspin2=1 sets of a and c parms, nspin2b sets of b parms
-c               -1 nocuspb=1 parallel e-e cusp conditions not satisfied (1/2,1/2)
-c               -2 nocuspb=0 parallel e-e cusp conditions satisfied (1/2,1/4)
-c nord     order of the polynmial
-c norda    order of the e-n polynmial in Jastrow4
-c nordb    order of the e-e polynmial in Jastrow4
-c nordc    order of the e-e-n polynmial in Jastrow4
-c cjas1    simple jastrow1 (0.5 to satisfy cusps, parallel-spins automatically take half this value)
-c cjas2    simple jastrow1 parameter
-c scalek   scale factor for Jastrow
-c a1,a2    Jastrow parameters for Jastrow2
-c a,b,c    Jastrow parameters for Jastrow3
-c a4,b,c   Jastrow parameters for Jastrow4,5,6
-c cutjas   cutoff for Jastrow4,5,6 if isc=6,7
-c rlobx(y) Lobachevsky parameters for Fock expansion
-c iantiferromagnetic  Whether to constrain optimization so that
-c           floating gaussians have antiferromagnetic order
-c           Not implemented for odd number of electrons, or if nup \= ndn
-c           = 1 by default for nup=ndn, = 0 otherwise
-c iper_gaussian_type  Type of floating gaussian to use for periodic wires
-c           = 1 for standard gaussian, periodic by summing images in each cell
-c           = 2 (default) for form similar to that used in rings, made periodic with cos term
-c iring_coulomb  whether to use a modified form of the coulomb potential
-c                in rings
-c           = 0  (default), V ~ 1/|rvec_i - rvec_j|
-c           = 1: V ~ 1/r, where "r" is given by r^2 = "x"^2 + "y"^2,
-c                   "x" = r_1 - r_2
-c                   "y" = 2 * rring * sin((theta_1 - theta_2) / 2)
-c            (useful for making "ringlike" geometry less important when
-c               studying qpc's in rings.)
-c ifixe   if > 0: which electron is fixed at a given position. 0 means none.
-c          -1: calculate 2d density (not pair density)
-c          -2: calculate full 2d pair density (no fixed electron)
-c          -3: calculate full 2d pair density  AND 2d density.
-c xfix(3)  can represent 2 different things:
-c          if ifixe>0   :  coordinates of fixed electron
-c                  -2/-3:  full pair-densities is written for x1 coord. between xfix(1) and xfix(2)
-c icoosys  coordinate system for calculating 2d density/pairdensity
-c          1: cartesian 
-c          2: circular
-c rmin,rmax radius limits for circular coordinates
-c nmeshr   2*nmeshr+1 is the number of radial mesh points for circular coordinates around rring
-c nmesht   2*nmesht+1 is the number of angular mesh points for circular coordinates
-c ifourier 1: "internal(?) fourier transform" of the 2 dimensional density is performed
-c              (ie, power spectrum of density f(r,k_theta) for rings or f(y, k_x) for periodic wires)
-c              The units of f are such that a density oscillation with period L/n 
-c              (where L is the length of the system; L=2*pi for rings and L=alattice for wires) 
-c              will cause the power spectrum have a peak at k = n.
-c          0: ... is not performed (default value)
-c nmeshk1   nmeshk1+1 is the number of mesh points in k space for the power spectrum 
-c           Note that it should be set so that delk1 = fmax1/nmeshk1 is an integer >=1, since the variable we are
-c            fourier transforming is periodic over a length L (ie, n = 1.)
-c izigzag  1: Write out zigzag amplitude (-1^i y_i) - quantity like staggered magnetization
-c          2: Also write out quantities related to zigzag phase transition, namely reduced
-c               pair density pden(r_i - r_j, theta_i - theta_j) if rings or 
-c               pden(y_i - y_j, x_i - x_j) if wires, as well as den(y_i - y_j, i-j)
-c          0: do not write out these quantities (default value)
-c zzdelyr  sets the size of delta r (or delta y) when plotting zigzag
-c            pair density if izigzag = 2
-c idot     0: pure complex quantum dots
-c          1: dots with composite fermions
-c          2: dots with laughlin wave functions
-c          3: dots with projected composite fermions
-c nv       2nv is the vorticity (or number of vortices per electron)
-c          of composite fermions.nv is usually denoted as p in the litterature.
-c          also used for laughlin wave functions (m = 2 nv + 1).
-c emagv    vortices angular momentum magnetic energy due to the extra-momentum
-c          carried by vortices of composite fermions (or laughlin wfs).
-c rring    >0 quantum ring with potential given by 0.5 w0^2 (r-rring)^2
-c iperturb 0: off (no angular perturbation for quantum rings)
-c          1: smoothed-square-like perturbation for quantum rings
-c     = amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
-c             and for quantum wires: (ang_perturb becomes semi-length of constriction)
-c     = amp_perturb*(tanh(shrp_perturb*(x(1,i)+ang_perturb))-tanh(shrp_perturb*(x(1,i)-ang_perturb)))
-c          2: gaussian-like perturbation for quantum rings  
-c     = 2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
-c              and for quantum wires:  (Note this is NOT periodic yet if iperiodic.eq.1)
-c     = 2.d0*amp_perturb*dexp(-0.5d0*(x(1,i)/(ang_perturb))**2)
-c          3: upside-down parabola, to give simple 1/2 w_y^2 y^2 - 1/2 w_x^2 x^2 
-c               saddle point for quantum wires.  Multiplied by a bump 
-c               function similar to that used in iperturb = 1 to make
-c               a smooth connections to the leads.
-c     = (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*((theta*rring)**2)
-c       *0.5*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
-c        where ang_perturb is set to be the value of theta where
-c       (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*((theta*rring)**2) = 0
-c       and shrp_perturb is hard-coded to make the bump function rise
-c       much more quickly than its width.
-c      and for quantum wires:
-c     = (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*(x(1,i)**2)
-c        *0.5*(tanh(shrp_perturb*(x(1,i)+ang_perturb))-tanh(x(1,i)*(theta-ang_perturb)))
-c
-c ang_perturb  angular perturbation range 
-c amp_perturb  amplitude of the angular perturbation
-c shrp_perturb sharpness of the angular perturbation
-c omg_perturb  omega for upside down parabola perturbation
-
-
-c Optimization parameters:
-c 10 10000 1.d-1 0. 1.d-3     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy
-c This line is used only by vmc and dmc programs, not by fit
-c nopt_iter   Number of wavefunction optimization steps to be done in vmc or dmc programs
-c             = 0 one vmc run, no grad/hess
-c             < 0 one vmc run, but calculate grad/hess, hamiltonian/overlap and save to file
-c             > 0 do nopt_iter optimization steps, i.e., nopt_iter+1 vmc runs (unless convergence reached earlier)
-c nblk_max    For the optimization the program starts with with nblk blocks and increases it
-c             upto nblk_max if that is needed to get the desired to_energy
-c add_diag(1) The starting value of add_diag.
-c             If add_diag < 0, do not do correlated sampling runs to adjust add_diag automatically.
-c             Instead use abs(add_diag) always.
-c p_var       Specifies the linear combination of energy and variance to be optimized.
-c          0. Optimize energy
-c          1. Optimize variance
-c tol_energy  The desired error bar on the energy.  This variable is also used to see if the
-c             energy difference between the 3 wavefunctions (1 primary and 2 secondary) is small
-c             enough to say that the wavefunction optimization is converged.
-c 2000 26 1 1 5 1000 2 1 ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
-c ndata       Number of MC configurations (data points) to optimize over
-c nparm       Number of parameters to be optimized
-c icusp,icusp2
-c nsig        Crude estimate of number if significant digits
-c ncalls      Maximum number of calls to func permitted
-c iopt        In fit:
-c               Choose between zxssq and quench
-c             = 0,1 call zxssq from IMSL (obsolete)
-c             = 2   call quench written by Peter Nightingale and Cyrus Umrigar
-c             = 0 Do not check for strict downward descent in zxssq
-c             = 1 Strict downward descent in zxssq
-c               zxssq is obsolete so, if in fit mode, we reset iopt to 2 in read_input
-c             In vmc:
-c               Choose between linear, Newton and perturbation theory
-c             = 1 linear method
-c             = 2 modified Newton method
-c             = 3 perturbation theory
-c               At present other digits also have the foll. meaning for linear and Newton (but these will change)
-c                             linear                          |           Newton
-c             10 digit = 0   nonsym Ham (good choice)         |       nonsym Hess (not implemented)
-c                        1      sym Ham (bad  choice)         |          sym Hess (not implemented)
-c                        2      sym Ham (with covariances,    |
-c                               not as bad as 1)              |
-c             100      = 0   nonorthog basis                  |           rescale Hess
-c                        1   semiorthog basis                 |       not rescale Hess
-c             1000     = 0   use state with largest 0 coef    |
-c                        1   use state with lowest eig        |
-c             10000    = 0   c_i/c_0 for everything                           |
-c                        1   c_i/(c_0-sum_1^{Nparm } S_i0*c_i) for everything |
-c                        2   c_i/(c_0-sum_1^{NCSF-1} S_i0*c_i) for everything |
-c                        3   c_i/(c_0-sum_1^{NCSF-1} S_i0*c_i) for CSF        |
-c                            c_i/c_0                           for J          |
-c                        4   c_i/(c_0+sum_1^{Nparmj} a_i*c_i)  for everything |
-c                            where a_i=(S_0i*c_0 + sum_j^Nparmj S_ij*c_j)
-c                                      ----------------------------------
-c                                      (S_00*c_0 + sum_j^Nparmj S_0j*c_j)
-c                            Note that the sum 4 lines up and the sume in the def. of a_i
-c                            are over the nonlin parms only
-c                            In practice c_0 is set to 1.
-c                        5   c_i/(c_0+sum_1^{Nparmj} a_i*c_i)  for everything |
-c                            where a_i=(S_0i*c_0 + sum_j^Nparm S_ij*c_j)
-c                                      ----------------------------------
-c                                      (S_00*c_0 + sum_j^Nparm S_0j*c_j)
-c                            Note that the sum 4 lines up is over the nonlin parms only
-c                            but the sums in the def. of a_i are over all parameters.
-c                        In practice c_0 is set to 1.
-c             So, good choices are:
-c             = 21101 for linear
-c             = 31101 for linear
-c             = 41001 for linear (2nd semiorthog. -- too small changes)
-c             = 51001 for linear (2nd semiorthog. -- too small changes)
-c             =     2 for modified Newton with rescaling of J params.
-c             =   102 for modified Newton without rescaling of J params (not as good when far from min).
-c             =     3 perturbation theory (little used in this version; used more in Julien's version).
-c             Bad choices useful for testing are
-c             = 21111 for linear (symmetrized Nightingale)
-c             = 21121 for linear (symmetric Hamiltonian different from symmetrized Nightingale (a bit better))
-c ipr_opt     Print flag for optimization
-c             <= -2  Minimal print out
-c             >= -1  Print cusp monotonicity conditions
-c             >=  0  Print configs and errors on 6
-c             >=  2  Print out configs and wavefunction on 2
-
-c 7  0 0 0 0  2 0 0  nparml, nparma,nparmb,nparmc,nparmf, nparmd,nparms,nparmg
-c nparml      Number of LCAO coefs to be optimized
-c nparma      Number of en  Jastrow coefs to be optimized
-c nparmb      Number of ee  Jastrow coefs to be optimized
-c nparmc      Number of een Jastrow coefs to be optimized
-c Note: nparma and nparmc are specified for each center type
-c       nparmb are specified for both spin types if nspin2=2
-c nparmf      Number of Fock Jastrow coefs to be optimized (not yet implemented for Jastrow4)
-c nparmd      Number of determinantal coefs to be optimized (obsolete)
-c nparmcsf    Number of determinantal coefs to be optimized
-c nparms      Number of Jastrow scale factor coefs to be optimized (0 or 1)
-c nparmo(i)   Number of Orbital parameters of type i to be optimized
-c             At present this is used for floating
-c             gaussians and there are 3-4 types (x,y positions and width).
-c             setting this to be negative indicates that there are constraints, the 
-c             absolute value is the number of free parameters
-c nparmg      Do not use this.
-c norb_constraints(i)  Number of constraints imposed on orbital params of type i to be optimized
-c orb_constraints(type,constraint #, orb1:orb2) For each type and constraint, 
-c              the first orbital is set equal to the value (or negative of, if it has a '-' sign)
-c              of the second orbital (orb2 must be one of the orbitals being optimized, ie.
-c              it should be in iwo).
-c    Eg, sample input if orbitals 1 and 3 have the same first coordinate, and
-c         if the second coordinate of 2 had mirror symmetry with 30, and 3 with 29: 
-c  1 2 0 0    (norb_constraints(i),i=1,notype)  ! a total of 3 constraints
-c  3 1             ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
-c  30 -2   29 -3   ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
-c                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
-c                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+! nspin2   1,2,3,-1,-2 -> nspin2b=abs(nspin2)
+! nspin2   > 0  nspin2 sets of a, c parms, nspin2b sets of b parms
+!             nocuspb=0  parallel e-e cusp conditions satisfied (b=1/2,1/4)
+! nspin2   < 0  -> nspin2=1
+!               nspin2=1 sets of a and c parms, nspin2b sets of b parms
+!               -1 nocuspb=1 parallel e-e cusp conditions not satisfied (1/2,1/2)
+!               -2 nocuspb=0 parallel e-e cusp conditions satisfied (1/2,1/4)
+! nord     order of the polynmial
+! norda    order of the e-n polynmial in Jastrow4
+! nordb    order of the e-e polynmial in Jastrow4
+! nordc    order of the e-e-n polynmial in Jastrow4
+! cjas1    simple jastrow1 (0.5 to satisfy cusps, parallel-spins automatically take half this value)
+! cjas2    simple jastrow1 parameter
+! scalek   scale factor for Jastrow
+! a1,a2    Jastrow parameters for Jastrow2
+! a,b,c    Jastrow parameters for Jastrow3
+! a4,b,c   Jastrow parameters for Jastrow4,5,6
+! cutjas   cutoff for Jastrow4,5,6 if isc=6,7
+! rlobx(y) Lobachevsky parameters for Fock expansion
+! iantiferromagnetic  Whether to constrain optimization so that
+!           floating gaussians have antiferromagnetic order
+!           Not implemented for odd number of electrons, or if nup \= ndn
+!           = 1 by default for nup=ndn, = 0 otherwise
+! iper_gaussian_type  Type of floating gaussian to use for periodic wires
+!           = 1 for standard gaussian, periodic by summing images in each cell
+!           = 2 (default) for form similar to that used in rings, made periodic with cos term
+! iring_coulomb  whether to use a modified form of the coulomb potential
+!                in rings
+!           = 0  (default), V ~ 1/|rvec_i - rvec_j|
+!           = 1: V ~ 1/r, where "r" is given by r^2 = "x"^2 + "y"^2,
+!                   "x" = r_1 - r_2
+!                   "y" = 2 * rring * sin((theta_1 - theta_2) / 2)
+!            (useful for making "ringlike" geometry less important when
+!               studying qpc's in rings.)
+! ifixe   if > 0: which electron is fixed at a given position. 0 means none.
+!          -1: calculate 2d density (not pair density)
+!          -2: calculate full 2d pair density (no fixed electron)
+!          -3: calculate full 2d pair density  AND 2d density.
+! xfix(3)  can represent 2 different things:
+!          if ifixe>0   :  coordinates of fixed electron
+!                  -2/-3:  full pair-densities is written for x1 coord. between xfix(1) and xfix(2)
+! icoosys  coordinate system for calculating 2d density/pairdensity
+!          1: cartesian
+!          2: circular
+! rmin,rmax radius limits for circular coordinates
+! nmeshr   2*nmeshr+1 is the number of radial mesh points for circular coordinates around rring
+! nmesht   2*nmesht+1 is the number of angular mesh points for circular coordinates
+! ifourier 1: "internal(?) fourier transform" of the 2 dimensional density is performed
+!              (ie, power spectrum of density f(r,k_theta) for rings or f(y, k_x) for periodic wires)
+!              The units of f are such that a density oscillation with period L/n
+!              (where L is the length of the system; L=2*pi for rings and L=alattice for wires)
+!              will cause the power spectrum have a peak at k = n.
+!          0: ... is not performed (default value)
+! nmeshk1   nmeshk1+1 is the number of mesh points in k space for the power spectrum
+!           Note that it should be set so that delk1 = fmax1/nmeshk1 is an integer >=1, since the variable we are
+!            fourier transforming is periodic over a length L (ie, n = 1.)
+! izigzag  1: Write out zigzag amplitude (-1^i y_i) - quantity like staggered magnetization
+!          2: Also write out quantities related to zigzag phase transition, namely reduced
+!               pair density pden(r_i - r_j, theta_i - theta_j) if rings or
+!               pden(y_i - y_j, x_i - x_j) if wires, as well as den(y_i - y_j, i-j)
+!          0: do not write out these quantities (default value)
+! zzdelyr  sets the size of delta r (or delta y) when plotting zigzag
+!            pair density if izigzag = 2
+! idot     0: pure complex quantum dots
+!          1: dots with composite fermions
+!          2: dots with laughlin wave functions
+!          3: dots with projected composite fermions
+! nv       2nv is the vorticity (or number of vortices per electron)
+!          of composite fermions.nv is usually denoted as p in the litterature.
+!          also used for laughlin wave functions (m = 2 nv + 1).
+! emagv    vortices angular momentum magnetic energy due to the extra-momentum
+!          carried by vortices of composite fermions (or laughlin wfs).
+! rring    >0 quantum ring with potential given by 0.5 w0^2 (r-rring)^2
+! iperturb 0: off (no angular perturbation for quantum rings)
+!          1: smoothed-square-like perturbation for quantum rings
+!     = amp_perturb*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
+!             and for quantum wires: (ang_perturb becomes semi-length of constriction)
+!     = amp_perturb*(tanh(shrp_perturb*(x(1,i)+ang_perturb))-tanh(shrp_perturb*(x(1,i)-ang_perturb)))
+!          2: gaussian-like perturbation for quantum rings
+!     = 2.d0*amp_perturb*dexp(-0.5d0*(theta/(ang_perturb))**2)
+!              and for quantum wires:  (Note this is NOT periodic yet if iperiodic.eq.1)
+!     = 2.d0*amp_perturb*dexp(-0.5d0*(x(1,i)/(ang_perturb))**2)
+!          3: upside-down parabola, to give simple 1/2 w_y^2 y^2 - 1/2 w_x^2 x^2
+!               saddle point for quantum wires.  Multiplied by a bump
+!               function similar to that used in iperturb = 1 to make
+!               a smooth connections to the leads.
+!     = (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*((theta*rring)**2)
+!       *0.5*(tanh(shrp_perturb*(theta+ang_perturb))-tanh(shrp_perturb*(theta-ang_perturb)))
+!        where ang_perturb is set to be the value of theta where
+!       (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*((theta*rring)**2) = 0
+!       and shrp_perturb is hard-coded to make the bump function rise
+!       much more quickly than its width.
+!      and for quantum wires:
+!     = (2.d0*amp_perturb - 0.5d0*(omg_perturb**2)*(x(1,i)**2)
+!        *0.5*(tanh(shrp_perturb*(x(1,i)+ang_perturb))-tanh(x(1,i)*(theta-ang_perturb)))
+!
+! ang_perturb  angular perturbation range
+! amp_perturb  amplitude of the angular perturbation
+! shrp_perturb sharpness of the angular perturbation
+! omg_perturb  omega for upside down parabola perturbation
 
 
-c For each of the nparms's we now
-c To be completed!
+! Optimization parameters:
+! 10 10000 1.d-1 0. 1.d-3     nopt_iter,nblk_max,add_diag(1),p_var,tol_energy
+! This line is used only by vmc and dmc programs, not by fit
+! nopt_iter   Number of wavefunction optimization steps to be done in vmc or dmc programs
+!             = 0 one vmc run, no grad/hess
+!             < 0 one vmc run, but calculate grad/hess, hamiltonian/overlap and save to file
+!             > 0 do nopt_iter optimization steps, i.e., nopt_iter+1 vmc runs (unless convergence reached earlier)
+! nblk_max    For the optimization the program starts with with nblk blocks and increases it
+!             upto nblk_max if that is needed to get the desired to_energy
+! add_diag(1) The starting value of add_diag.
+!             If add_diag < 0, do not do correlated sampling runs to adjust add_diag automatically.
+!             Instead use abs(add_diag) always.
+! p_var       Specifies the linear combination of energy and variance to be optimized.
+!          0. Optimize energy
+!          1. Optimize variance
+! tol_energy  The desired error bar on the energy.  This variable is also used to see if the
+!             energy difference between the 3 wavefunctions (1 primary and 2 secondary) is small
+!             enough to say that the wavefunction optimization is converged.
+! 2000 26 1 1 5 1000 2 1 ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
+! ndata       Number of MC configurations (data points) to optimize over
+! nparm       Number of parameters to be optimized
+! icusp,icusp2
+! nsig        Crude estimate of number if significant digits
+! ncalls      Maximum number of calls to func permitted
+! iopt        In fit:
+!               Choose between zxssq and quench
+!             = 0,1 call zxssq from IMSL (obsolete)
+!             = 2   call quench written by Peter Nightingale and Cyrus Umrigar
+!             = 0 Do not check for strict downward descent in zxssq
+!             = 1 Strict downward descent in zxssq
+!               zxssq is obsolete so, if in fit mode, we reset iopt to 2 in read_input
+!             In vmc:
+!               Choose between linear, Newton and perturbation theory
+!             = 1 linear method
+!             = 2 modified Newton method
+!             = 3 perturbation theory
+!               At present other digits also have the foll. meaning for linear and Newton (but these will change)
+!                             linear                          |           Newton
+!             10 digit = 0   nonsym Ham (good choice)         |       nonsym Hess (not implemented)
+!                        1      sym Ham (bad  choice)         |          sym Hess (not implemented)
+!                        2      sym Ham (with covariances,    |
+!                               not as bad as 1)              |
+!             100      = 0   nonorthog basis                  |           rescale Hess
+!                        1   semiorthog basis                 |       not rescale Hess
+!             1000     = 0   use state with largest 0 coef    |
+!                        1   use state with lowest eig        |
+!             10000    = 0   c_i/c_0 for everything                           |
+!                        1   c_i/(c_0-sum_1^{Nparm } S_i0*c_i) for everything |
+!                        2   c_i/(c_0-sum_1^{NCSF-1} S_i0*c_i) for everything |
+!                        3   c_i/(c_0-sum_1^{NCSF-1} S_i0*c_i) for CSF        |
+!                            c_i/c_0                           for J          |
+!                        4   c_i/(c_0+sum_1^{Nparmj} a_i*c_i)  for everything |
+!                            where a_i=(S_0i*c_0 + sum_j^Nparmj S_ij*c_j)
+!                                      ----------------------------------
+!                                      (S_00*c_0 + sum_j^Nparmj S_0j*c_j)
+!                            Note that the sum 4 lines up and the sume in the def. of a_i
+!                            are over the nonlin parms only
+!                            In practice c_0 is set to 1.
+!                        5   c_i/(c_0+sum_1^{Nparmj} a_i*c_i)  for everything |
+!                            where a_i=(S_0i*c_0 + sum_j^Nparm S_ij*c_j)
+!                                      ----------------------------------
+!                                      (S_00*c_0 + sum_j^Nparm S_0j*c_j)
+!                            Note that the sum 4 lines up is over the nonlin parms only
+!                            but the sums in the def. of a_i are over all parameters.
+!                        In practice c_0 is set to 1.
+!             So, good choices are:
+!             = 21101 for linear
+!             = 31101 for linear
+!             = 41001 for linear (2nd semiorthog. -- too small changes)
+!             = 51001 for linear (2nd semiorthog. -- too small changes)
+!             =     2 for modified Newton with rescaling of J params.
+!             =   102 for modified Newton without rescaling of J params (not as good when far from min).
+!             =     3 perturbation theory (little used in this version; used more in Julien's version).
+!             Bad choices useful for testing are
+!             = 21111 for linear (symmetrized Nightingale)
+!             = 21121 for linear (symmetric Hamiltonian different from symmetrized Nightingale (a bit better))
+! ipr_opt     Print flag for optimization
+!             <= -2  Minimal print out
+!             >= -1  Print cusp monotonicity conditions
+!             >=  0  Print configs and errors on 6
+!             >=  2  Print out configs and wavefunction on 2
 
-c nparma
-c 1 2  1 9  1 10  1 19    2 4  2 11  2 20 (iworb(iparm),iwbasi(iparm),iparm=1,nlarml)
-c 1 2 3 4 9 10 11 14 19 20 (iwbase(iparm),iparm=1,nparm-nparml)
-c 2 3 (iwdet(iparm),iparm=1,nparmd) (obsolete)
-c 2 3 (iwcsf(iparm),iparm=1,nparmcsf)
-c     (iwjasa(iparm),iparm=1,nparma)
-c   2 (iwjasb(iparm),iparm=1,nparmb)
-c  4 9 10 11 15 18 20 21 23 25 28 32 34 35 36 38 40 41 43 47 49 52 54 (iwjasc(iparm),iparm=1,nparmc)
-c 8 12 -8     necn,nebase,nedet
-c 3 5  2 3   3 6   2 4   3 12  2 11   3 21  2 20
-c 4 7  2 3   4 8   2 4   4 13  2 11   4 22  2 20 ((ieorb(j,i),iebasi(j,i),j=1,2),i=1,necn)
-c 5 3  6 4  7 3  8 4  12 11  13 11  15 14  16 14  17 14  18 14  21 20  22 20   ((iebase(j,i),j=1,2),i=1,nebase)
-c 2  2  2  2  2  2  2  2
-c 4 3    5 3   6 3    7 3    8 3   9 3   10 9  11 9 ((iedet(j,i),j=1,2),i=1,nedet)
-c 1. -1.  1. .5  1. -.5  1. -.5  1. .5  1. -1.1547005 1. .5  1. -.5
-c 0 0 0 0 0 0 0 0 0  (ipivot(j),j=1,norb)
+! 7  0 0 0 0  2 0 0  nparml, nparma,nparmb,nparmc,nparmf, nparmd,nparms,nparmg
+! nparml      Number of LCAO coefs to be optimized
+! nparma      Number of en  Jastrow coefs to be optimized
+! nparmb      Number of ee  Jastrow coefs to be optimized
+! nparmc      Number of een Jastrow coefs to be optimized
+! Note: nparma and nparmc are specified for each center type
+!       nparmb are specified for both spin types if nspin2=2
+! nparmf      Number of Fock Jastrow coefs to be optimized (not yet implemented for Jastrow4)
+! nparmd      Number of determinantal coefs to be optimized (obsolete)
+! nparmcsf    Number of determinantal coefs to be optimized
+! nparms      Number of Jastrow scale factor coefs to be optimized (0 or 1)
+! nparmo(i)   Number of Orbital parameters of type i to be optimized
+!             At present this is used for floating
+!             gaussians and there are 3-4 types (x,y positions and width).
+!             setting this to be negative indicates that there are constraints, the
+!             absolute value is the number of free parameters
+! nparmg      Do not use this.
+! norb_constraints(i)  Number of constraints imposed on orbital params of type i to be optimized
+! orb_constraints(type,constraint #, orb1:orb2) For each type and constraint,
+!              the first orbital is set equal to the value (or negative of, if it has a '-' sign)
+!              of the second orbital (orb2 must be one of the orbitals being optimized, ie.
+!              it should be in iwo).
+!    Eg, sample input if orbitals 1 and 3 have the same first coordinate, and
+!         if the second coordinate of 2 had mirror symmetry with 30, and 3 with 29:
+!  1 2 0 0    (norb_constraints(i),i=1,notype)  ! a total of 3 constraints
+!  3 1             ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+!  30 -2   29 -3   ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+!                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+!                  ((orb_constraints(1,i,j),j=1,2),i=1,norb_constrants(1))
+
+
+! For each of the nparms's we now
+! To be completed!
+
+! nparma
+! 1 2  1 9  1 10  1 19    2 4  2 11  2 20 (iworb(iparm),iwbasi(iparm),iparm=1,nlarml)
+! 1 2 3 4 9 10 11 14 19 20 (iwbase(iparm),iparm=1,nparm-nparml)
+! 2 3 (iwdet(iparm),iparm=1,nparmd) (obsolete)
+! 2 3 (iwcsf(iparm),iparm=1,nparmcsf)
+!     (iwjasa(iparm),iparm=1,nparma)
+!   2 (iwjasb(iparm),iparm=1,nparmb)
+!  4 9 10 11 15 18 20 21 23 25 28 32 34 35 36 38 40 41 43 47 49 52 54 (iwjasc(iparm),iparm=1,nparmc)
+! 8 12 -8     necn,nebase,nedet
+! 3 5  2 3   3 6   2 4   3 12  2 11   3 21  2 20
+! 4 7  2 3   4 8   2 4   4 13  2 11   4 22  2 20 ((ieorb(j,i),iebasi(j,i),j=1,2),i=1,necn)
+! 5 3  6 4  7 3  8 4  12 11  13 11  15 14  16 14  17 14  18 14  21 20  22 20   ((iebase(j,i),j=1,2),i=1,nebase)
+! 2  2  2  2  2  2  2  2
+! 4 3    5 3   6 3    7 3    8 3   9 3   10 9  11 9 ((iedet(j,i),j=1,2),i=1,nedet)
+! 1. -1.  1. .5  1. -.5  1. -.5  1. .5  1. -1.1547005 1. .5  1. -.5
+! 0 0 0 0 0 0 0 0 0  (ipivot(j),j=1,norb)
 ! MGRID_ORB_PER for 3d periodic system part of code (not needed since now it is allocated)
 ! MGRID_ORB     for 2d localised system part of code (not needed since now it is allocated)
 
@@ -543,19 +543,19 @@ c 0 0 0 0 0 0 0 0 0  (ipivot(j),j=1,norb)
       iwf = 1
       call object_modified ('iwf')
 
-c     write(6,'(''CHAMP version 2.05.1, mode='',a)') mode
+!     write(6,'(''CHAMP version 2.05.1, mode='',a)') mode
       write(fmt,'(''(a,a'',i3,'')'')') len_trim(mode)
       write(6,fmt) 'CHAMP version 3.08.0, mode=', mode
 
       if(mode.eq.'fit') write(6,'(''Wavefn. optimization'')')
       if(mode.eq.'fit_mpi') write(6,'(''Wavefn. optimization mpi'')')
       if(mode.eq.'vmc') write(6,'(''Variational MC'')')
-c     if(mode.eq.'vmc_all') write(6,'(''Variational MC all-electron move'')')
+!     if(mode.eq.'vmc_all') write(6,'(''Variational MC all-electron move'')')
       if(mode.eq.'vmc_mov1') write(6,'(''Variational MC one-electron move'')')
       if(mode.eq.'vmc_mov1_mpi') write(6,'(''Variational MC one-electron move mpi'')')
       if(mode.eq.'dmc') write(6,'(''Diffusion MC'')')
-c     if(mode.eq.'dmc_all') write(6,'(''Diffusion MC all-electron move'')')
-c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
+!     if(mode.eq.'dmc_all') write(6,'(''Diffusion MC all-electron move'')')
+!     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
       if(mode.eq.'dmc_mov1_mpi1') write(6,'(''Diffusion MC 1-electron move, mpi no global pop'')')
       if(mode.eq.'dmc_mov1_mpi2') write(6,'(''Diffusion MC 1-electron move, mpi global pop big comm'')')
       if(mode.eq.'dmc_mov1_mpi3') write(6,'(''Diffusion MC 1-electron move, mpi global pop small comm'')')
@@ -572,7 +572,7 @@ c     if(mode.eq.'dmc_mov1') write(6,'(''Diffusion MC 1-electron move'')')
       nwf = 3 ! for optimization runs
       call object_modified ('nwf')
 
-c     read(5,'(a20,4x,4i4)') title,irand_seed
+!     read(5,'(a20,4x,4i4)') title,irand_seed
       read(5,*) title
       write(fmt,'(''(a'',i3,'')'')') len_trim(title)
       write(6,fmt) title
@@ -621,8 +621,8 @@ c     read(5,'(a20,4x,4i4)') title,irand_seed
         stop 'read_input: ibasis must be between 1 and 7'
       endif
 
-c     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC calculation for periodic
-c    & system run dmc or dmc.mov1 with idmc < 0'
+!     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC calculation for periodic
+!    & system run dmc or dmc.mov1 with idmc < 0'
 
       if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
         write(6,'(/,''random number seeds'',t25,4i4)') irand_seed
@@ -649,7 +649,7 @@ c    & system run dmc or dmc.mov1 with idmc < 0'
         write(6,'(''no. configurations saved ='',t31,i10)') nconf_new
         call object_modified ('nstep') !JT
         call object_modified ('nconf') !JT
-c Make sure that the printout is not huge
+! Make sure that the printout is not huge
         if(nstep*(nblk+2*nblkeq).gt.104000 .and. ipr.gt.-1) then
           ipr=min(ipr,-1)
           write(6,'(''Warning: ipr set to'',i3,'' to avoid large output'')') ipr
@@ -684,8 +684,8 @@ c Make sure that the printout is not huge
           write(6,*) '**Warning value of deltat reset to 2.'
           deltat=two
         endif
-c Truncate fbias so that it is never negative, and the quantity
-c sampled is never negative
+! Truncate fbias so that it is never negative, and the quantity
+! sampled is never negative
         fbias=dmin1(two,dmax1(zero,fbias))
         write(6,'(''Version of Metropolis ='',t31,i10)') imetro
         write(6,'(''step size ='',t31,f10.5)') delta
@@ -699,8 +699,8 @@ c sampled is never negative
 !JT        read(5,*)
 !JT      endif
 
-c It has been updated now, but rather quickly
-c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not been updated'
+! It has been updated now, but rather quickly
+!     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not been updated'
 
       if(index(mode,'dmc').ne.0) then
         read(5,*) idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v
@@ -721,7 +721,7 @@ c     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not
       read(5,*) nloc,numr,nforce,nefp
       write(6,'(''nloc,numr ='',t31,4i5)') nloc,numr
       write(6,'(''nforce,nefp ='',t31,4i5)') nforce,nefp
-c     if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
+!     if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
       if(nloc.lt.-5 .or. nloc.gt.6) stop 'nloc must be between -5 and 6 inclusive'
       if(nloc.ge.2) then
         read(5,*) nquad
@@ -736,7 +736,7 @@ c     if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
        elseif(nloc.eq.-2) then
         read(5,*) p1,p2,p3,p4
         write(6,'(''quartic dot pot. p1,p2,p3,p4='',t31,9f9.6)') p1,p2,p3,p4
-       elseif(nloc.eq.-4) then 
+       elseif(nloc.eq.-4) then
         if(iperiodic.eq.0)then
          read(5,*) wire_w,wire_length,wire_potential_cutoff
          write(6,'(''wire_w,wire_length,wire_potential_cutoff='',t31,9f9.6)') wire_w,wire_length,wire_potential_cutoff
@@ -744,9 +744,9 @@ c     if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
          read(5,*) wire_w
          write(6,'(''wire_w='',t31,f10.5)') wire_w
         endif
-        
+
         we=wire_w  !  this is a quick fix:  needed for the subroutine basis_fns_2dgauss
-       
+
        elseif(nloc.eq.-5) then
         read(5,*) w0,bext,glande
         we=dsqrt(w0*w0+0.25d0*bext*bext)
@@ -783,21 +783,21 @@ c     if(numr.gt.0) write(6,'(/,''numerical basis functions used'')')
       if(nloc.eq.-4 .and. iperiodic.eq.0) then ! values used for quantum wire
         wire_length2 = wire_length*wire_length
         wire_radius2 = 1 / (2 * wire_w)
-        wire_prefactor = nelec / (wire_radius2 * wire_length) 
+        wire_prefactor = nelec / (wire_radius2 * wire_length)
         wire_root1 = dsqrt((wire_potential_cutoff **2)  * wire_length2 + wire_radius2)
       endif
 
       call object_modified ('nelec') !JT
       call object_modified ('nup') !JT
       call object_modified ('ndn') !JT
-      
 
-c The foll. does not work because mode is set in maindmc.f and the same maindmc.f is used for all-electron and 1-electron move versions.
-c     if(nelec.gt.4 .and. index(mode,'one').eq.0) write(6,'(''Warning: for more'',
-c    &'' than 4 electrons, you should use mov1 version of program.'',/,
-c    &''Otherwise acceptance will be low and for nelec a few hundred there will be under or overflows'')')
 
-c Geometrical section
+! The foll. does not work because mode is set in maindmc.f and the same maindmc.f is used for all-electron and 1-electron move versions.
+!     if(nelec.gt.4 .and. index(mode,'one').eq.0) write(6,'(''Warning: for more'',
+!    &'' than 4 electrons, you should use mov1 version of program.'',/,
+!    &''Otherwise acceptance will be low and for nelec a few hundred there will be under or overflows'')')
+
+! Geometrical section
       read(5,*) section
       write(6,'(/,a30,/)') section
 
@@ -810,14 +810,14 @@ c Geometrical section
      &stop 'imetro!=1 not yet implemented for ndim=2'
 
       call object_modified ('ndim') ! JT
-      
+
       if(iperiodic.eq.1) then
         read(5,*) alattice
         if(nloc.eq.-4) wire_length = alattice
         write(6,'(''Length of 1d periodic system, alattice='',t31,f10.5)') alattice
       else if(iperiodic.eq.3) then
-       
-c npoly is the polynomial order for short-range part
+
+! npoly is the polynomial order for short-range part
         read(5,*) npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
         write(6,'(/,''Npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big'',2i4,9f8.2)')
      &   npoly,np,cutg,cutg_sim,cutg_big,cutg_sim_big
@@ -838,7 +838,7 @@ c npoly is the polynomial order for short-range part
         write(6,'(/,''Lattice basis vectors'',3(/,3f10.6))')
      &   ((rlatt(k,j),k=1,ndim),j=1,ndim)
 
-c read the dimensions of the simulation 'cube'
+! read the dimensions of the simulation 'cube'
         call alloc ('rlatt_sim', rlatt_sim, 3, 3)
         do 20 i=1,ndim
           read(5,*) (rlatt_sim(k,i),k=1,ndim)
@@ -848,7 +848,7 @@ c read the dimensions of the simulation 'cube'
         write(6,'(/,''Simulation lattice basis vectors'',3(/,3f10.6))')
      &   ((rlatt_sim(k,j),k=1,ndim),j=1,ndim)
 
-c read k-shift for generating k-vector lattice
+! read k-shift for generating k-vector lattice
         call alloc ('rkvec_shift_latt', rkvec_shift_latt, 3)
         read(5,*) (rkvec_shift_latt(k),k=1,ndim)
         do 22 k=1,ndim
@@ -870,7 +870,7 @@ c read k-shift for generating k-vector lattice
 
       call object_modified ('iwctype')  !JT
 
-c Store the number of centers of each center type in ncent_ctype()
+! Store the number of centers of each center type in ncent_ctype()
       call alloc ('ncent_ctype', ncent_ctype, nctype)
       do 26 ict=1,nctype
    26   ncent_ctype(ict)=0
@@ -894,7 +894,7 @@ c Store the number of centers of each center type in ncent_ctype()
         zconst = 0  ! normal case
       endif
 
-c Read in which is the local component of the potential
+! Read in which is the local component of the potential
       if(nloc.gt.0) then
         call alloc ('lpotp1', lpotp1, nctype)
         read(5,*) (lpotp1(i),i=1,nctype)
@@ -903,22 +903,22 @@ c Read in which is the local component of the potential
    35     if(lpotp1(i).gt.MPS_L) stop 'lpotp1(i) > MPS_L'
       endif
 
-c     if(iperiodic.eq.0 .or iperiodic.eq.1) then
-c       write(6,'(/,''center positions'')')
-c      else
-c       write(6,'(/,''center positions in primitive lattice vector units'')')
-c     endif
+!     if(iperiodic.eq.0 .or iperiodic.eq.1) then
+!       write(6,'(/,''center positions'')')
+!      else
+!       write(6,'(/,''center positions in primitive lattice vector units'')')
+!     endif
       call alloc ('cent', cent, 3, ncent)
       if(iperiodic.eq.0 .or. iperiodic.eq.1) write(6,'(/,''center positions'')')
       do 50 ic=1,ncent
         read(5,*) (cent(k,ic),k=1,ndim)
-c       if(iperiodic.eq.3) then
-c         do 40 k=1,ndim
-c  40       cent(k,ic)=cent(k,ic)*alattice
-c       endif
+!       if(iperiodic.eq.3) then
+!         do 40 k=1,ndim
+!  40       cent(k,ic)=cent(k,ic)*alattice
+!       endif
    50   if(iperiodic.eq.0 .or. iperiodic.eq.1) write(6,'(''center'',i4,1x,''('',3f8.5,'')'')') ic,(cent(k,ic),k=1,ndim)
 
-c Convert center positions from primitive lattice vector units to cartesian coordinates
+! Convert center positions from primitive lattice vector units to cartesian coordinates
       if(iperiodic.eq.3) then
         write(6,'(/,''center positions in primitive lattice vector units and in cartesian coordinates'')')
         do 66 ic=1,ncent
@@ -974,12 +974,12 @@ c Convert center positions from primitive lattice vector units to cartesian coor
    68       write(6,'(''xyz,w'',4f10.5)') xq0(i),yq0(i),zq0(i),wq(i)
         endif
       endif
-  
+
       if(iperiodic.eq.3) call set_ewald
       if(iperiodic.eq.1) call set_ewald_1d
-      
-c Compute total nuclear charge and compare to number of electrons
-c Warn if not equal, stop if they differ by more than 2.
+
+! Compute total nuclear charge and compare to number of electrons
+! Warn if not equal, stop if they differ by more than 2.
       znuc_tot=0
       do 69 ic=1,ncent
         ict=iwctype(ic)
@@ -992,7 +992,7 @@ c Warn if not equal, stop if they differ by more than 2.
         if(abs(znuc_tot-dfloat(nelec)).gt.6) stop 'abs(znuc_tot - nelec) > 6'
       endif
 
-c TEMPORARY: Warning: we are not calling readforce and only using one geometry
+! TEMPORARY: Warning: we are not calling readforce and only using one geometry
       if(index(mode,'fit').ne.0) then
         nforce=1
         nwftype=1
@@ -1000,7 +1000,7 @@ c TEMPORARY: Warning: we are not calling readforce and only using one geometry
         iwftype(1)=1
       endif
 
-c Determinantal section
+! Determinantal section
       read(5,*) section
       write(6,'(/,a30,/)') section
 
@@ -1016,10 +1016,11 @@ c Determinantal section
      &   .and.abs(inum_orb).ne.8)) then
          stop 'abs(inum_orb) must be 0, 4 or 5 or 6 or 8'
       endif
-c If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
+! If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
       if(inum_orb .ne. 0 .and. ndim.eq.3) then
-        read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap
-        write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
+        read(5,*)ngrid_orbx,ngrid_orby,ngrid_orbz,igrad_lap ! This grid is not used for smoothing B-splines, it is read in from the bwfn.data file
+        if(abs(inum_orb)==4 .or. abs(inum_orb)==5 .or. abs(inum_orb)==8)
+     &  write(6,'(''Number of grid points for interpolating orbitals='',3i5)') ngrid_orbx,ngrid_orby,ngrid_orbz
          if(abs(inum_orb).eq.8) then
            if(igrad_lap .eq. 0) then
              write(6,'(''Interpolate orbitals, calculate gradient and Laplacian from interpolated orbitals'')')
@@ -1046,13 +1047,13 @@ c If ndim=2 then ngrid_orbx,ngrid_orby are read in from the orbital file itself
       orb_tot_nb = norb
       call object_modified ('orb_tot_nb')
 
-c For Lagrange interpolation allocate orb, dorb and ddorb; for interpolating splines allocate just orb
-c For the moment, interpolating splines are being done in the bsplines_mode module, so allocate nothing for them.
-c     if(abs(inum_orb).eq.4 .or. abs(inum_orb).eq.8) then
+! For Lagrange interpolation allocate orb, dorb and ddorb; for interpolating splines allocate just orb
+! For the moment, interpolating splines are being done in the bsplines_mode module, so allocate nothing for them.
+!     if(abs(inum_orb).eq.4 .or. abs(inum_orb).eq.8) then
       if(abs(inum_orb).eq.4) then
-c       call alloc('orb_num',orb_num,norb,0:ngrid_orbx-1,ngrid_orbx-1,ngrid_orbx-1)
-c       call alloc('dorb_num',dorb_num,3,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1)
-c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1)
+!       call alloc('orb_num',orb_num,norb,0:ngrid_orbx-1,ngrid_orbx-1,ngrid_orbx-1)
+!       call alloc('dorb_num',dorb_num,3,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1)
+!       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1)
         allocate(orb_num(norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ngrid_orbz-1),stat=istat)
         if(istat.ne.0) then
           stop "Error in allocating orb_num"
@@ -1074,19 +1075,19 @@ c       call alloc('ddorb_num',ddorb_num,norb,0:ngrid_orbx-1,0:ngrid_orby-1,0:ng
       call alloc ('coef', coef, nbasis, orb_tot_nb, nwf)
       call alloc ('zex', zex, nbasis, nwf)
 
-c---swapped
-c Call setup routines for Ylm's if we are using recursion to generate them
-c irecursion_ylm=0 use Cyrus' and John's spherical harmonics (upto g functions (L=4))
-c irecursion_ylm=1 use Ryo' spherical harmonics (any L)
-c Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
-c Change it to calculate upto largest l actually used.
+!---swapped
+! Call setup routines for Ylm's if we are using recursion to generate them
+! irecursion_ylm=0 use Cyrus' and John's spherical harmonics (upto g functions (L=4))
+! irecursion_ylm=1 use Ryo' spherical harmonics (any L)
+! Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
+! Change it to calculate upto largest l actually used.
       if(ibasis.eq.1) then
         if(nloc.eq.-3) then ! Je spheres
           irecursion_ylm=1
          else
           irecursion_ylm=0
-c         irecursion_ylm=1
-c         write(6,'(''Warning temporarily set irecursion_ylm=1'')')
+!         irecursion_ylm=1
+!         write(6,'(''Warning temporarily set irecursion_ylm=1'')')
         endif
         if(irecursion_ylm.eq.0)then
           write(6,*) 'Not using recursion for Ylm'
@@ -1099,7 +1100,7 @@ c         write(6,'(''Warning temporarily set irecursion_ylm=1'')')
         endif
       endif
 
-c Read in analytical or numerical orbitals
+! Read in analytical or numerical orbitals
       if(ibasis.eq.1) then
         call read_orb_loc
        elseif(ibasis.eq.3.and.numr.eq.1) then
@@ -1120,38 +1121,38 @@ c Read in analytical or numerical orbitals
         call object_modified ('ictype_basis') !JT
         call object_modified ('zex')   !JT
       endif
- 
-c Read in numerical radial basis
-c This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
-c to compactify the radial basis functions in read_bas_num.
+
+! Read in numerical radial basis
+! This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
+! to compactify the radial basis functions in read_bas_num.
       if(inum_orb.eq.0 .and. ibasis.le.3) then
         if(minval(zex(:,1)).ne.0.d0) then
           l_purely_analytical_basis = .true.
         else
           l_purely_analytical_basis = .false.
         endif
-c       if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
-c       if((ibasis.eq.1.or.ibasis.eq.3) .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
+!       if((ibasis.eq.1.or.ibasis.eq.3).and.numr.gt.0.and.inum_orb.eq.0) call read_bas_num(1)
+!       if((ibasis.eq.1.or.ibasis.eq.3) .and. minval(zex(:,1)).eq.0.d0 .and. inum_orb.eq.0) call read_bas_num(1)
         if((ibasis.eq.1.or.ibasis.eq.3) .and. inum_orb.eq.0) call read_bas_num(1)
         if(minval(zex(:,1)).ne.0.d0) write(6,'(/,''Purely analytical radial basis functions used'')')
         if(maxval(zex(:,1)).eq.0.d0) write(6,'(/,''Purely numerical radial basis functions used'')')
-        if(minval(zex(:,1)).eq.0.d0 .and. maxval(zex(:,1)).ne.0.d0) 
+        if(minval(zex(:,1)).eq.0.d0 .and. maxval(zex(:,1)).ne.0.d0)
      &  write(6,'(/,''Mixed analytical and numerical radial basis functions used'')')
         write(6,'(''ict,nrbas_analytical,nrbas_numerical,nrbas='',4i5)')
      &  (ict,nrbas_analytical(ict),nrbas_numerical(ict),nrbas(ict),ict=1,nctype)
       endif
 
-c get normalization for basis functions
-c Devrims note: moved down; basis_norm_dot need idot to be defined
-c      if(ibasis.eq.3.and.numr.eq.0) then
-c        call basis_norm_dot(1,1)
-c       else
-c        call basis_norm(1,1)
-c      endif
+! get normalization for basis functions
+! Devrims note: moved down; basis_norm_dot need idot to be defined
+!      if(ibasis.eq.3.and.numr.eq.0) then
+!        call basis_norm_dot(1,1)
+!       else
+!        call basis_norm(1,1)
+!      endif
 
-c     read(5,*) (cdet(i,1),i=1,ndet)
-c     write(6,'(/,''determinant coefficients'')')
-c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
+!     read(5,*) (cdet(i,1),i=1,ndet)
+!     write(6,'(/,''determinant coefficients'')')
+!     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
 
       write(6,'(/,''orbitals in determinants'')')
 !     norb_used=0
@@ -1198,10 +1199,10 @@ c     write(6,'(20f10.6)') (cdet(k,1),k=1,ndet)
       do 75 idet=1,ndet
    75   iflag(idet)=0
 
-c If all the cdet_in_csf are inputted in integer format (no dots in those lines) then csf_coef are
-c assumed to correspond to normalized CSF's and the cdet_in_csf are renormalized so that the
-c CSF's are normalized.
-c normalize_csf is reset to 0 if any of the cdet_in_csf's are in floating format.
+! If all the cdet_in_csf are inputted in integer format (no dots in those lines) then csf_coef are
+! assumed to correspond to normalized CSF's and the cdet_in_csf are renormalized so that the
+! CSF's are normalized.
+! normalize_csf is reset to 0 if any of the cdet_in_csf's are in floating format.
       call alloc ('iwdet_in_csf', iwdet_in_csf, maxval(ndet_in_csf), ncsf)
       call alloc ('cdet_in_csf', cdet_in_csf, maxval(ndet_in_csf), ncsf)
       normalize_csf=1
@@ -1217,7 +1218,7 @@ c normalize_csf is reset to 0 if any of the cdet_in_csf's are in floating format
    85     if(iwdet_in_csf(idet_in_csf,icsf).gt.ndet) stop 'iwdet_in_csf(idet_in_csf,icsf) > ndet'
 
       if(normalize_csf.eq.1) then
-c First calculate normalization and adjust csf_coef to correspond to that.
+! First calculate normalization and adjust csf_coef to correspond to that.
         write(6,'(''Normalizing cdet_in_csf'')')
         do 88 icsf=1,ncsf
           csf_norm=0
@@ -1228,7 +1229,7 @@ c First calculate normalization and adjust csf_coef to correspond to that.
   88       cdet_in_csf(idet_in_csf,icsf)=cdet_in_csf(idet_in_csf,icsf)/csf_norm
       endif
 
-c Check if all the determinants are used in CSFs
+! Check if all the determinants are used in CSFs
       do 90 idet=1,ndet
    90   if(iflag(idet).eq.0) write(6,'(''Warning: determinant'',i3,'' is unused'')') idet
 
@@ -1237,7 +1238,7 @@ c Check if all the determinants are used in CSFs
       call object_modified ('iworbd')  !JT
       write(6,'(''Determine unique up and dn determinants'')')
       call determinant_up_dn
-      
+
       call object_modified ('ncsf')         !JT
       call object_modified ('csf_coef')     !JT
       call object_modified ('ndet_in_csf')  !JT
@@ -1249,12 +1250,12 @@ c Check if all the determinants are used in CSFs
         write(6,'(''L_tot='',i3)') ltot
       endif
       if(ndim.eq.2.and.(ibasis.eq.1.or.ibasis.eq.3).and.inum_orb.eq.0) call emagnetic(ltot)
-c     if(ndim.eq.2 .and. (iperiodic.eq.0 .and. nloc.ne.-4)) call emagnetic(ltot)
-c     if(ibasis.eq.2) call read_orb_pw_real
+!     if(ndim.eq.2 .and. (iperiodic.eq.0 .and. nloc.ne.-4)) call emagnetic(ltot)
+!     if(ibasis.eq.2) call read_orb_pw_real
       if(ibasis.eq.2) call read_orb_pw
-c     if(iperiodic.eq.0 .and. inum_orb.gt.0) call read_orb_num
+!     if(iperiodic.eq.0 .and. inum_orb.gt.0) call read_orb_num
 
-c Jastrow section
+! Jastrow section
       read(5,*) section
       write(6,'(/,a30,/)') section
       call systemflush(6)
@@ -1273,7 +1274,7 @@ c Jastrow section
      &stop 'Cannot have numerical Lap. with periodic system: distances in jastrow_num not correct'
       if(ianalyt_lap.eq.0 .and. iperiodic.eq.1)
      &write(6,'(''Warning: numerical Lap. might not be correct for
-     & iperiodic = 1'')') 
+     & iperiodic = 1'')')
       if(ijas.ne.4 .and. iperiodic.gt.0)
      &stop 'Only ijas=4 implemented for periodic systems'
       if(ijas.gt.6) stop 'only ijas=1,2,3,4,5,6 implemented'
@@ -1367,9 +1368,9 @@ c Jastrow section
         nparmc_read=nterms4(nordc)
         write(6,'(''nparma_read,nparmb_read,nparmc_read='',3i5)') nparma_read,nparmb_read,
      &  nparmc_read
-c WAS
+! WAS
         if(iperiodic.gt.0 .and. nordc.gt.0 .and. ijas .le. 3) stop 'J_een only implemented with ijas= 4,5,6'
-ccWAS
+!cWAS
         if(isc.ge.2) then
           call alloc ('scalek', scalek, nwf)
           read(5,*) scalek(1),a21
@@ -1404,7 +1405,7 @@ ccWAS
           read(5,*) (c(iparm,it,1),iparm=1,nparmc_read)
   303     write(6,'(''c='',x,7f10.6,(8f10.6))') (c(iparm,it,1),
      &    iparm=1,nparmc_read)
-c Note: Fock terms yet to be put in ijas=4,5,6.
+! Note: Fock terms yet to be put in ijas=4,5,6.
       endif
       call systemflush(6)
 
@@ -1421,12 +1422,12 @@ c Note: Fock terms yet to be put in ijas=4,5,6.
       call object_modified ('c') !JT
       call object_modified ('nspin2b') !JT
 
-c Read cutoff for Jastrow4,5,6 and call set_scale_dist to evaluate constants
-c that need to be reset if scalek is being varied.
-c If cutjas=0, then reset cutjas_en, cutjas_ee to infinity
-c Warning: At present we are assuming that the same scalek is used
-c for primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
-c should be dimensioned to MWF
+! Read cutoff for Jastrow4,5,6 and call set_scale_dist to evaluate constants
+! that need to be reset if scalek is being varied.
+! If cutjas=0, then reset cutjas_en, cutjas_ee to infinity
+! Warning: At present we are assuming that the same scalek is used
+! for primary and secondary wavefns.  Otherwise c1_jas6i,c1_jas6,c2_jas6
+! should be dimensioned to MWF
       if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
         if(iperiodic.eq.1)then  ! set maximum allowed value for cutjas
           cutjas_en = alattice/2.
@@ -1434,8 +1435,8 @@ c should be dimensioned to MWF
         endif
         read(5,*) cutjas_en_tmp,cutjas_ee_tmp
         if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
-c         write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
-c    &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+!         write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
+!    &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
           write(6,'(''Warning: input cutjas_en > half shortest primitive cell lattice vector; cutjas_en='',d12.5)') cutjas_en_tmp
           write(6,'(''cutjas_en will NOT be reset.  I hope you know what you are doing!'')')
           cutjas_en = cutjas_en_tmp
@@ -1452,7 +1453,7 @@ c    &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
      &cutjas_ee reset from'',f9.5,'' to'',f9.5)') cutjas_ee_tmp,cutjas_ee
         else
           if(cutjas_ee_tmp.lt.cutjas_ee-eps) then
-            write(6,'(''Warning: Could use larger cutjas_ee='',f9.5, 
+            write(6,'(''Warning: Could use larger cutjas_ee='',f9.5,
      &'' instead of the input value='',f9.5)') cutjas_ee,cutjas_ee_tmp
          endif
          write(6,'(''input cutjas_ee='',d12.5)') cutjas_ee_tmp
@@ -1471,11 +1472,11 @@ c    &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
       call systemflush(6)
 
       if(ifock.gt.0) then
-c Setup for Chris' Fock
-c       fflag=7
+! Setup for Chris' Fock
+!       fflag=7
 
-c Read pars for Chris's wf
-c       call wfpars
+! Read pars for Chris's wf
+!       call wfpars
         if(ifock.eq.4) then
           open(11, file =
      &    '/afs/theory.cornell.edu/user/tc/cyrus/qmc/vmc/lob.dat')
@@ -1489,8 +1490,8 @@ c       call wfpars
         endif
       endif
 
-c Optional section:
-c   default values:
+! Optional section:
+!   default values:
       ifixe=0
       xmax=5.d0
       xfix(1)=0.d0
@@ -1522,16 +1523,16 @@ c   default values:
         iantiferromagnetic = 1
       else
         iantiferromagnetic = 0
-      endif 
-c     default values of dot_bump_height and dot_bump_radius are set above
-c        where w0, etc... are read in
+      endif
+!     default values of dot_bump_height and dot_bump_radius are set above
+!        where w0, etc... are read in
 
-c Read optional variables if any:
-c ADG: used only for 2D systems (dots, rings, composite fermions etc..)
-c (also for 2D systems with numerical orbitals)
-c     if((ibasis.ge.3 .and. ibasis.le.7) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then 
-c  ACM: I think we should read this in for ALL 2d systems. 
-      if((ibasis.ge.3 .and. ibasis.le.7) .or. (nloc.eq.-1 .and. ndim .eq. 2)) then 
+! Read optional variables if any:
+! ADG: used only for 2D systems (dots, rings, composite fermions etc..)
+! (also for 2D systems with numerical orbitals)
+!     if((ibasis.ge.3 .and. ibasis.le.7) .or. (inum_orb .ne. 0 .and. ndim .eq. 2)) then
+!  ACM: I think we should read this in for ALL 2d systems.
+      if((ibasis.ge.3 .and. ibasis.le.7) .or. (nloc.eq.-1 .and. ndim .eq. 2)) then
         read(5,*) section
         write(6,'(/,a30,/)') section
         read(5,opt_list)
@@ -1543,32 +1544,32 @@ c  ACM: I think we should read this in for ALL 2d systems.
          dot_bump_radius_inv2 = 1.0d0 / (dot_bump_radius * dot_bump_radius)
       endif
 
-c make sure that iantiferromagnetic makes sense
+! make sure that iantiferromagnetic makes sense
       if(iantiferromagnetic.eq.1) then
         if(nup.ne.ndn) then
           stop 'iantiferromagnetic can be 1 only if nup=ndn'
-        else 
+        else
           do i =1,nup
             if (iworbddn(i,1).ne.(iworbdup(i,1)+1))  then
-              stop 'Incorrect input format for iantiferromagnetic=1. Orbitals must alternate 
+              stop 'Incorrect input format for iantiferromagnetic=1. Orbitals must alternate
      &            between spin-up and spin-down (ie, up = 1 3 5 7..., dn = 2 4 6 8 ...)'
             endif
           enddo
         endif
       endif
 
-c pair density calculation parameters:
+! pair density calculation parameters:
       if(ifixe.lt.-4 .or. ifixe.gt.nelec) stop 'ifixe must be between -4 and nelec'
       if(abs(ifixe).gt.0) then
         if(ifixe.gt.0 .and. index(mode,'vmc').eq.0) stop 'fixed electron not possible in fit or dmc!'
-c        if(ifixe.gt.0 .and. nopt_iter.ne.0) stop 'fixed electron not possible with optimization'
-c        if(ncent.ne.1) stop 'Pair-density calculation not implemented for ncent.ne.1'
+!        if(ifixe.gt.0 .and. nopt_iter.ne.0) stop 'fixed electron not possible with optimization'
+!        if(ncent.ne.1) stop 'Pair-density calculation not implemented for ncent.ne.1'
         if(index(mode,'vmc').ne.0 .and. imetro.ne.1) stop 'Pair-density calculation only possible for imetro=1 in vmc'
         if(index(mode,'dmc').ne.0 .and. abs(idmc).ne.2)
      &    stop 'Pair-density calculation only possible for idmc=2 in dmc'
         if(ndim.ne.2) stop 'Pair-density calculation not implemented for 3D systems'
       endif
-      if(iperiodic.eq.1) then ! we print out densities for all x 
+      if(iperiodic.eq.1) then ! we print out densities for all x
         delxi(1) = (2.*NAX + 1.)/alattice
         delxi(2) = NAX/xmax
       else
@@ -1576,7 +1577,7 @@ c        if(ncent.ne.1) stop 'Pair-density calculation not implemented for ncent
         delxi(2)=delxi(1)
       endif
 
-c fourier transform :
+! fourier transform :
       if(ifourier.lt.0 .or. ifourier.gt.3 ) stop 'ifourier must be 0,1,2, or 3'
       if(ifourier.gt.1) then
         if(index(mode,'vmc').ne.0 .and. imetro.ne.1) stop 'Fourier transform only possible for imetro=1 in vmc'
@@ -1588,7 +1589,7 @@ c fourier transform :
       delk1=fmax1/nmeshk1
       delk2=fmax2/NAK2
 
-c ZigZag quantities:
+! ZigZag quantities:
       if(izigzag.lt.0) stop 'izigzag must be greater than or equal to 0'
       if(izigzag.gt.0) then
         if(ndim.ne.2) stop 'ZigZag measurements not implemented in 3D'
@@ -1603,7 +1604,7 @@ c ZigZag quantities:
         call alloc ('zzcm2', zzcm2, nzzvars)
       endif
 
-c composite fermions:
+! composite fermions:
       lv=0
       emagv=0.d0
       if(idot.lt.0 .or. idot.gt.3) stop 'idot must be 0,1,2 or 3'
@@ -1629,7 +1630,7 @@ c composite fermions:
       write(6,'(''emaglz,emagsz,emagv,emag='',9f10.6)') emaglz,emagsz,emagv,emag
       call systemflush(6)
 
-c Quantum rings/wires:
+! Quantum rings/wires:
       if(bext.ne.0.d0 .and. rring.ne.0.d0) stop 'Quantum rings in magnetic field not yet implemented'
       if(iring_coulomb.ne.0 .and. rring.eq.0.d0) then
         stop 'Modified coulomb potential for rings (iring_coulomb=1) only possible for quantum rings'
@@ -1660,8 +1661,8 @@ c Quantum rings/wires:
       endif
       call systemflush(6)
 
-c circular coordinates
-      if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2' 
+! circular coordinates
+      if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2'
       if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) stop 'we must have 0<rmin<rmax'
       if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1) stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
       delti=(2*nmesht+1)/(2*pi)
@@ -1669,8 +1670,8 @@ c circular coordinates
       rmean=(rmin+rmax)*0.5d0
       write(6,*) 'Value of r used in densities is relative to rmean = ', rmean
 
-c get normalization for basis functions
-c (used to be up)
+! get normalization for basis functions
+! (used to be up)
       if(inum_orb.eq.0) then
         if(ibasis.eq.3.and.numr.eq.0) then
           call basis_norm_dot(1,1)
@@ -1679,30 +1680,30 @@ c (used to be up)
         endif
       endif
 
-c get nuclear potential energy
+! get nuclear potential energy
       call pot_nn(cent,znuc,iwctype,ncent,pecent)
       write(6,'(''pecent='',f14.7)') pecent
       call systemflush(6)
 
-c get interparticle distances
-c Don't need to call distances if hpsi always calls it.
-cc    call distances(xold,rvec_en,r_en,rvec_ee,r_ee,pe)
-c     call distances(xold,pe)
+! get interparticle distances
+! Don't need to call distances if hpsi always calls it.
+!c    call distances(xold,rvec_en,r_en,rvec_ee,r_ee,pe)
+!     call distances(xold,pe)
 
-c Find the minimum distance of each electron to any nucleus
-c     do 386 i=1,nelec
-c       rmino(i)=99.d9
-c       do 385 ic=1,ncent
-c         if(r_en(i,ic).lt.rmino(i)) then
-c           rmino(i)=r_en(i,ic)
-c           nearesto(i)=ic
-c         endif
-c 385     continue
-c       do 386  k=1,ndim
-c 386     rvmino(k,i)=rvec_en(k,i,nearesto(i))
+! Find the minimum distance of each electron to any nucleus
+!     do 386 i=1,nelec
+!       rmino(i)=99.d9
+!       do 385 ic=1,ncent
+!         if(r_en(i,ic).lt.rmino(i)) then
+!           rmino(i)=r_en(i,ic)
+!           nearesto(i)=ic
+!         endif
+! 385     continue
+!       do 386  k=1,ndim
+! 386     rvmino(k,i)=rvec_en(k,i,nearesto(i))
 
 
-c Optimization section
+! Optimization section
       read(5,*) section
       write(6,'(a)') section
       call systemflush(6)
@@ -1719,7 +1720,7 @@ c Optimization section
       if(nopt_iter.ne.0) igradhess=1
       if(nopt_iter.ne.0 .and. nforce.gt.1) stop 'nopt_iter != 0 .and. nforce > 1 not allowed. At present can optim 1 wf only'
 
-c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
+!     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
       if(p_var.lt.0.d0 .or. p_var.gt.1.d0) stop 'p_var must be in [0,1]'
       if(tol_energy.le.0.d0) stop 'tol_energy must be >0'
 
@@ -1732,10 +1733,10 @@ c     if(add_diag(1).le.0.d0) stop 'add_diag(1) must be >0'
       write(6,'(/,''ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt=''
      &,6i4,i6,20i4)') ndata,nparm,icusp,icusp2,nsig,ncalls,iopt,ipr_opt
 
-c initialize saved configuration indice iconfg (necessary for some compilers)
+! initialize saved configuration indice iconfg (necessary for some compilers)
       isaved=0
       iconfg=1
-c if doing fit, allocate memory for saved configurations
+! if doing fit, allocate memory for saved configurations
       if(index(mode,'fit').ne.0) then
         call alloc('cvd_sav',cvd_sav,ndim,nelec,ndata)
         call alloc('vd_sav',vd_sav,ndim,nelec,ndata)
@@ -1781,8 +1782,8 @@ c if doing fit, allocate memory for saved configurations
         write(6,*) '**Warning irewgt=1 reset to irewgt=10'
         irewgt=irewgt+9
       endif
-c     do 404 i=1,ndata
-c 404   wght(i)=one
+!     do 404 i=1,ndata
+! 404   wght(i)=one
       write(6,'(''i3body,irewgt,iaver,istrch'',9i5)')
      &i3body,irewgt,iaver,istrch
       call systemflush(6)
@@ -1796,8 +1797,8 @@ c 404   wght(i)=one
         write(6,*) '**Warning irewgt=1 reset to irewgt=10'
         irewgt=irewgt+9
       endif
-c     do 404 i=1,ndata
-c 404   wght(i)=one
+!     do 404 i=1,ndata
+! 404   wght(i)=one
       write(6,'(''ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt'',10i8)')
      & ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdt,idbdu
 
@@ -1829,8 +1830,8 @@ c 404   wght(i)=one
 ! JT constuct lo internally instead
 !      call object_provide ('lo') !JT
       write(6,'(''lo='',20i3)') (lo(iorb),iorb=1,norb)
-c     read(5,*) (n(ib),l(ib),ib=1,nbasis)
-c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
+!     read(5,*) (n(ib),l(ib),ib=1,nbasis)
+!     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
       call systemflush(6)
 
       if(ijas.le.3) then
@@ -1851,7 +1852,7 @@ c     write(6,'(''n,l='',20(2i3,1x))') (n(ib),l(ib),ib=1,nbasis)
       if(ibasis.le.3) then
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
      &  (nparmb(isp),isp=nspin1,nspin2b),(nparmc(it),it=1,nctype),
-c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
+!    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
      &  (nparmf(it),it=1,nctype),nparmcsf,nparms,nparmg
       else
         read(5,*) nparml,(nparma(ia),ia=na1,na2),
@@ -1864,8 +1865,8 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
             write(6, '(''nparmo must be between (-norb+1) and norb'')')
             stop 'nparmo must be between (-norb+1) and norb'
           elseif(nparmo(it).lt.0) then  !some orbitals of type 'it' constrained
-            iconstrain_gauss_orbs = 1 
-            write(6,'(''Constraint imposed in optimization over orbital parameters.'')')  
+            iconstrain_gauss_orbs = 1
+            write(6,'(''Constraint imposed in optimization over orbital parameters.'')')
           endif
         enddo
       endif
@@ -1886,14 +1887,14 @@ c    &  (nparmf(it),it=1,nctype),nparmd,nparms,nparmg
       if(ijas.ge.4.and.ijas.le.6) then
         do 405 it=1,nctype
           if(nloc.eq.0) then
-c     All-electron with analytic slater basis
+!     All-electron with analytic slater basis
             if((norda.eq.0.and.nparma(it).gt.0)
      &      .or.(norda.gt.0 .and. nparma(it).gt.norda+1)) then
               write(6,'(''it,norda,nparma(it)'',3i5)') it,norda,nparma(it)
               stop 'nparma too large for norda in all-electron calculation'
             endif
            else
-c Pseudopotential with numerical basis (cannot vary a(1) or a(2)
+! Pseudopotential with numerical basis (cannot vary a(1) or a(2)
             if(norda.eq.1) stop 'makes no sense to have norda=1 for numr>0'
             if((norda.eq.0.and.nparma(it).gt.0)
      &      .or.(norda.gt.0 .and. nparma(it).gt.norda-1)) then
@@ -1923,7 +1924,7 @@ c Pseudopotential with numerical basis (cannot vary a(1) or a(2)
             stop 'nparmc too large for nordc without cusp conds'
           endif
   405   continue
-c For the b coefs. we assume that b(1) is fixed by the cusp-cond.
+! For the b coefs. we assume that b(1) is fixed by the cusp-cond.
         do 406 isp=1,nspin1,nspin2b
             if((nordb.eq.0.and.nparmb(isp).gt.0).or.(nordb.gt.0 .and. nparmb(isp).gt.nordb)) then
               write(6,'(''isp,nordb,nparmb(isp)'',3i5)') isp,nordb,nparmb(isp)
@@ -1932,7 +1933,7 @@ c For the b coefs. we assume that b(1) is fixed by the cusp-cond.
   406   continue
       endif
 
-c compute nparmj and nparme
+! compute nparmj and nparme
       nparmj=0
       call alloc ('npoint', npoint, nctype)
       call alloc ('npointa', npointa, na2)
@@ -1946,17 +1947,17 @@ c compute nparmj and nparme
       do 409 it=1,nctype
         if(it.gt.1) npoint(it)=npoint(it-1)+nparmc(it-1)
   409   nparmj=nparmj+nparmc(it)+nparmf(it)
-c     nparme=nparm-nparml-nparmj-nparmd-nparms-nparmg
+!     nparme=nparm-nparml-nparmj-nparmd-nparms-nparmg
       nparme=nparm-nparml-nparmj-nparmcsf-nparms-nparmg-nparmot
       write(6,'(''No of linear coefs, exponents, Jastrow, det, scale parms varied='',9i5)')
-c    &nparml, nparme, nparmj, nparmd, nparms
+!    &nparml, nparme, nparmj, nparmd, nparms
      &nparml, nparme, nparmj, nparmcsf, nparms
       if(nparme.lt.0) stop 'nparme < 0'
       if(nparme.gt.nbasis) stop 'nparme > nbasis'
       if(nparme.gt.0 .and. numr.gt.0) stop 'nparme > 0 and numr > 0'
       if(nparme.gt.0 .and. ibasis.eq.3 .and. idot.ne.0)
      &stop 'for quantum dots, nparme.gt.0 only possible for Fock-Darwin states'
-c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.nparmg.lt.0)
+!     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.nparmg.lt.0)
       if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmcsf.lt.0 .or. nparms.lt.0 .or.nparmg.lt.0)
      &stop 'nparm? must be >= 0'
       if(nparms.gt.1) stop 'nparms must be 0 or 1'
@@ -1973,7 +1974,7 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
         read(5,*) (iwo(iparm,it),iparm=1,iabs(nparmo(it)))
         if(nparmo(it).lt.0) then  !constrained orbital optimization
           write(6,'(''Constraints applied to orbital parameters - constraints printed below'')')
-        endif 
+        endif
         write(6,'(''orbital parameters varied='',10(2i3,2x))')(iwo(iparm,it),iparm=1,iabs(nparmo(it)))
         do iparm=1,iabs(nparmo(it))
           if(iwo(iparm,it).lt.0 .or. iwo(iparm,it).gt.norb) then
@@ -1993,9 +1994,9 @@ c     if(nparml.lt.0 .or. nparmj.lt.0 .or. nparmd.lt.0 .or. nparms.lt.0 .or.npar
       read(5,*) (iwbase(iparm),iparm=1,nparme)
       write(6,'(''exponents varied='',20i3)') (iwbase(iparm),iparm=1,nparme)
 
-c     read(5,*) (iwdet(iparm),iparm=1,nparmd)
-c     write(6,'(''determinantal coefs varied='',20i3)')
-c    &(iwdet(iparm),iparm=1,nparmd)
+!     read(5,*) (iwdet(iparm),iparm=1,nparmd)
+!     write(6,'(''determinantal coefs varied='',20i3)')
+!    &(iwdet(iparm),iparm=1,nparmd)
 
       call alloc ('iwcsf', iwcsf, nparmcsf)
       read(5,*) (iwcsf(iparm),iparm=1,nparmcsf)
@@ -2092,7 +2093,7 @@ c    &(iwdet(iparm),iparm=1,nparmd)
             endif
             is_first_ok = 1 ! check to see if first orbital of pair is one that we aren't optimizing
             is_second_ok = 0 ! check that second orbital is one that we are optimizing
-            do iparm=1,iabs(nparmo(it)) 
+            do iparm=1,iabs(nparmo(it))
               if (iabs(orb_constraints(it,icon,2)).eq.iwo(iparm,it)) then
                 is_second_ok = 1
               endif
@@ -2115,9 +2116,9 @@ c    &(iwdet(iparm),iparm=1,nparmd)
             oparm(it,orb_constraints(it,icon,1),1) = consgn*oparm(it,iabs(orb_constraints(it,icon,2)),1)
           enddo  ! finished check do icon=1,norbconstrain(it)
 
-c         now we make sure all parameters of this type are the same
+!         now we make sure all parameters of this type are the same
           write(6,'(''Read-in values reset to enforce constraint:'')')
-          
+
           if(ibasis.eq.4) then
             if(it.eq.1) write(6,'(''New (constrained) floating gaussian x-positions:'')')
             if(it.eq.2) write(6,'(''New (constrained) floating gaussian y-positions:'')')
@@ -2133,9 +2134,9 @@ c         now we make sure all parameters of this type are the same
             if(it.eq.3) write(6,'(''New (constrained) floating gaussian x-widths:'')')
             if(it.eq.4) write(6,'(''New (constrained) floating gaussian y-widths:'')')
           endif
-          write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis) 
+          write(6,'(1000f12.6)') (oparm(it,ib,1),ib=1,nbasis)
         enddo ! do it=1,notype
-c if antiferromagnetic constraint is desired, enforce it here.
+! if antiferromagnetic constraint is desired, enforce it here.
         if (iantiferromagnetic.eq.1) then
           call sort_af_gauss_orbs(1)
           write(6,'(''Constrained values adjusted to enforce antiferromagnetic arrangement'')')
@@ -2162,18 +2163,18 @@ c if antiferromagnetic constraint is desired, enforce it here.
       call object_modified ('iwjasb') !JT
       call object_modified ('iwjasc') !JT
       call object_modified ('nparmj') !JT
-      call object_modified ('nparmcsf') !JT 
-      call object_modified ('norb_constraints') 
-      call object_modified ('orb_constraints') 
+      call object_modified ('nparmcsf') !JT
+      call object_modified ('norb_constraints')
+      call object_modified ('orb_constraints')
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
       subroutine sort_iworbd
-c Written by Cyrus Umrigar
-c Order iworbd for each determinant to be monotonically increasing for up and dn electrons separately
-c and change signs of cdet_in_csf accordingly.  This is needed for orbital optimization.
+! Written by Cyrus Umrigar
+! Order iworbd for each determinant to be monotonically increasing for up and dn electrons separately
+! and change signs of cdet_in_csf accordingly.  This is needed for orbital optimization.
 
       use dorb_mod
       use dets_mod
@@ -2210,19 +2211,19 @@ c and change signs of cdet_in_csf accordingly.  This is needed for orbital optim
       return
       end
 
- 
-c-----------------------------------------------------------------------
+
+!-----------------------------------------------------------------------
 
       subroutine sort_af_gauss_orbs(iadd_diag)
-c Written by Abhijit Mehta
-c Order orbitals so that they alternate between spin-up and spin-down 
-c   (i.e., make floating gaussians antiferromagnetic)
-c  This should only work if nup=ndn and iantiferromagnetic=1
-c   We use the positions in oparm(it,i_orbital,iadd_diag)
-c   So, set iadd_diag = 1 by default
-c  Note that for rings, this changes angles so that they are in the range 0 .. 2pi rather than -pi..pi
-c  We're not worrying about sign of permutation when we reorder orbitals since we 
-c      don't use CSF's
+! Written by Abhijit Mehta
+! Order orbitals so that they alternate between spin-up and spin-down
+!   (i.e., make floating gaussians antiferromagnetic)
+!  This should only work if nup=ndn and iantiferromagnetic=1
+!   We use the positions in oparm(it,i_orbital,iadd_diag)
+!   So, set iadd_diag = 1 by default
+!  Note that for rings, this changes angles so that they are in the range 0 .. 2pi rather than -pi..pi
+!  We're not worrying about sign of permutation when we reorder orbitals since we
+!      don't use CSF's
 
       use dorb_mod
       use dets_mod
@@ -2231,7 +2232,7 @@ c      don't use CSF's
       use contrl_per_mod
       use optimo_mod
       implicit real*8(a-h,o-z)
-      
+
       dimension oparmtemp(notype)   ! used for swap
 
       if(nup.ne.ndn) then
@@ -2245,15 +2246,15 @@ c      don't use CSF's
         it = 1
       endif
 
-c      do idet=1,ndet
-c     Use Shell sort to put orbitals in order of position along wire/ring
-c       Adapted from routine written by Cyrus in December 1983
+!      do idet=1,ndet
+!     Use Shell sort to put orbitals in order of position along wire/ring
+!       Adapted from routine written by Cyrus in December 1983
         M=nup+ndn
         LOGNB2=INT(DLOG(DFLOAT(M))/DLOG(2.D0)+1.D-14)
         if(ibasis.eq.5) then
           do ib=1,M
              oparm(it,ib,iadd_diag) = modulo(oparm(it,ib,iadd_diag), 2*pi)
-          enddo 
+          enddo
         endif
         DO 20 NN=1,LOGNB2
          M=M/2
@@ -2267,46 +2268,46 @@ c       Adapted from routine written by Cyrus in December 1983
              oparmtemp(:) = oparm(:,I,iadd_diag)
              oparm(:,I,iadd_diag) = oparm(:,L,iadd_diag)
              oparm(:,L,iadd_diag) = oparmtemp(:)
-c      looping method
-c             do it_temp = 1,notype
-c               oparmtemp(it_temp) = oparm(it_temp,I,iadd_diag)
-c               oparm(it_temp,I,iadd_diag) = oparm(it_temp,L,iadd_diag)
-c               oparm(it_temp,L,iadd_diag) = oparmtemp(it_temp)
-c             enddo
+!      looping method
+!             do it_temp = 1,notype
+!               oparmtemp(it_temp) = oparm(it_temp,I,iadd_diag)
+!               oparm(it_temp,I,iadd_diag) = oparm(it_temp,L,iadd_diag)
+!               oparm(it_temp,L,iadd_diag) = oparmtemp(it_temp)
+!             enddo
 
-c      Old code to swap indices instead of values -  ACM                
-c              itemp=iworbd(I,idet)
-c              iworbd(I,idet)=iworbd(L,idet)
-c              iworbd(L,idet)=itemp
+!      Old code to swap indices instead of values -  ACM
+!              itemp=iworbd(I,idet)
+!              iworbd(I,idet)=iworbd(L,idet)
+!              iworbd(L,idet)=itemp
    10      CONTINUE
    20   CONTINUE
-  
+
       write(6,'(''sort_af_gauss_orbs: orbs have order:'', 100g12.6)') (oparm(it,ib,iadd_diag),ib=1,(nup+ndn))  ! ACM debug
 
-c     Now make sure that orbitals alternate between up and down - only needed if swapping indices
-c        do iorb=1,nup  
-c          iworbdup(iorb,idet) = iworbd((2*iorb-1), idet)
-c          iworbddn(iorb,idet) = iworbd(2*iorb, idet)
-c        enddo
-c        do iorb=1,nup
-c          iworbd(iorb,idet) = iworbdup(iorb,idet)
-c          iworbd(iorb+nup, idet) = iworbddn(iorb,idet)
-c        enddo
-c        write(6,'(a)') 'After sort_af_gauss_orbs, spin-up determinants have orbitals:'
-c        write(6,'(a,i5,a,100i4)') ' det # ',idetup, ': ',(iworbdup(iup,idet),iup=1,nup)
-c        write(6,'(a)') 'After sort_af_gauss_orbs, spin-down determinants have orbitals:'
-c        write(6,'(a,i5,a,100i4)') ' det # ',idetdn, ': ',(iworbddn(idn,idet),idn=1,ndn)
-c      enddo
+!     Now make sure that orbitals alternate between up and down - only needed if swapping indices
+!        do iorb=1,nup
+!          iworbdup(iorb,idet) = iworbd((2*iorb-1), idet)
+!          iworbddn(iorb,idet) = iworbd(2*iorb, idet)
+!        enddo
+!        do iorb=1,nup
+!          iworbd(iorb,idet) = iworbdup(iorb,idet)
+!          iworbd(iorb+nup, idet) = iworbddn(iorb,idet)
+!        enddo
+!        write(6,'(a)') 'After sort_af_gauss_orbs, spin-up determinants have orbitals:'
+!        write(6,'(a,i5,a,100i4)') ' det # ',idetup, ': ',(iworbdup(iup,idet),iup=1,nup)
+!        write(6,'(a)') 'After sort_af_gauss_orbs, spin-down determinants have orbitals:'
+!        write(6,'(a,i5,a,100i4)') ' det # ',idetdn, ': ',(iworbddn(idn,idet),idn=1,ndn)
+!      enddo
 
-c     Make sure iworbd is properly sorted, then make sure iworbdup and iworbddn are too 
-c      call sort_iworbd
-c      
-c      do idet=1,ndet
-c        do iorb=1,nup
-c          iworbdup(iorb,idet) = iworbd(iorb,idet)
-c          iworbddn(iorb,idet) = iworbd(iorb+nup, idet)
-c        enddo
-c      enddo
-c
+!     Make sure iworbd is properly sorted, then make sure iworbdup and iworbddn are too
+!      call sort_iworbd
+!
+!      do idet=1,ndet
+!        do iorb=1,nup
+!          iworbdup(iorb,idet) = iworbd(iorb,idet)
+!          iworbddn(iorb,idet) = iworbd(iorb+nup, idet)
+!        enddo
+!      enddo
+!
       return
       end

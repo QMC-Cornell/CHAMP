@@ -1,5 +1,5 @@
       subroutine deriv_nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,dvpsp)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -30,7 +30,7 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
         do 10 ic=1,ncent
           call scale_dist(r_en(i,ic),rr_en(i,ic),1)
           call scale_dist(r_en(i,ic),rr_en2(i,ic),3)
-c note: dk2,dr and dr2 are unused variables here
+! note: dk2,dr and dr2 are unused variables here
           if(nparms.eq.1) then
             call deriv_scale(r_en(i,ic),dk_en(i,ic),dk2,dr,dr2,1,0)
             call deriv_scale(r_en(i,ic),dk_en2(i,ic),dk2,dr,dr2,3,0)
@@ -75,7 +75,7 @@ c note: dk2,dr and dr2 are unused variables here
         ict=iwctype(ic)
         do 100 i=1,nelec
 
-c vps was calculated by calling getvps_tm from deriv_nonloc_pot
+! vps was calculated by calling getvps_tm from deriv_nonloc_pot
           iskip=1
           do 15 l=1,npotd(ict)
    15       if(l.ne.lpotp1(ict) .and. dabs(vps(i,ic,l)).gt.1.d-4) iskip=0
@@ -167,15 +167,15 @@ c vps was calculated by calling getvps_tm from deriv_nonloc_pot
               call object_modified_by_index (electron_index) !JT
 
               call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-c             call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
-c WAS
+!             call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+! WAS
               call deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
 
-cWAS
+!WAS
               if (l_opt_pjas) then
                  call deriv_nonloc_pjas ( iel, x(:,1:nelec), value )
               endif
-cWAS
+!WAS
 
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
@@ -296,12 +296,12 @@ cWAS
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
 
 
 !     subroutine deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn) ! WAS
       subroutine deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
-c Written by Claudia Filippi, modified by Cyrus Umrigar
+! Written by Claudia Filippi, modified by Cyrus Umrigar
       use constants_mod
       use control_mod
       use atom_mod
@@ -340,16 +340,16 @@ c Written by Claudia Filippi, modified by Cyrus Umrigar
     7     ipara=ipara+nparma(it)
       endif
 
-c     do 15 i=1,nelec
-c       if(i.ne.iel) then
-c         rvec_ee(1)=x(1,i)-x(1,iel)
-c         rvec_ee(2)=x(2,i)-x(2,iel)
-c         rvec_ee(3)=x(3,i)-x(3,iel)
-c         rij=rvec_ee(1)**2+rvec_ee(2)**2+rvec_ee(3)**2
-c         rij=dsqrt(rij)
-c         call scale_dist(rij,u(i),1)
-c       endif
-c  15 continue
+!     do 15 i=1,nelec
+!       if(i.ne.iel) then
+!         rvec_ee(1)=x(1,i)-x(1,iel)
+!         rvec_ee(2)=x(2,i)-x(2,iel)
+!         rvec_ee(3)=x(3,i)-x(3,iel)
+!         rij=rvec_ee(1)**2+rvec_ee(2)**2+rvec_ee(3)**2
+!         rij=dsqrt(rij)
+!         call scale_dist(rij,u(i),1)
+!       endif
+!  15 continue
 
       do 45 jj=1,nelec
 
@@ -398,7 +398,7 @@ c  15 continue
           call find_image3(dx,rij,rlatt_sim,rlatt_sim_inv)
         endif
 
-c e-e terms
+! e-e terms
         call scale_dist(rij,u,2)
         if(nparms.eq.1) call deriv_scale(rij,dk,dk2,dr,dr2,2,0)
 
@@ -406,34 +406,34 @@ c e-e terms
         iparm0=ipara+nparms
         if(isb.eq.2) iparm0=iparm0+nparmb(1)
         fsn(i,j)=deriv_psibnl(u,dk,gn(iparm0+1),gns,isb,ipar)
-c       fsn(i,j)=fsn(i,j) + deriv_psibnl(u(jj),gn(iparm0+1),isb,ipar)
+!       fsn(i,j)=fsn(i,j) + deriv_psibnl(u(jj),gn(iparm0+1),isb,ipar)
 
         do 25 jparm=1,nparmb(isb)
           iparm=iparm0+jparm
    25     gn(iparm)=gn(iparm)-go(i,j,iparm)
         if(nparms.eq.1) gn(1)=gn(1)+gns-go(i,j,1)
 
-c e-e-n terms
-c The scaling is switched in deriv_psinl, so do not do it here.
-c     if(isc.ge.12) call scale_dist(rij,u,3)
+! e-e-n terms
+! The scaling is switched in deriv_psinl, so do not do it here.
+!     if(isc.ge.12) call scale_dist(rij,u,3)
         call scale_dist(rij,u,4)
         if(nparms.eq.1) call deriv_scale(rij,dk,dk2,dr,dr2,4,0)
         gns=0
         do 40 ic=1,ncent
           it=iwctype(ic)
-c         ri=r_en(i,ic)
-c         rj=r_en(j,ic)
+!         ri=r_en(i,ic)
+!         rj=r_en(j,ic)
           iparm0=npoint(it)+nparms
    40     fsn(i,j)=fsn(i,j) +
-c     &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic)
-c     &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
-c    &    deriv_psinl(u(jj),rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
-cc WAS
-cc
+!     &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),rr_en2(i,ic),rr_en2(j,ic)
+!     &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
+!    &    deriv_psinl(u(jj),rr_en2(i,ic),rr_en2(j,ic),gn(iparm0+1),it)
+!c WAS
+!c
      &    deriv_psinl(u,dk,rshift(1,i,ic),rshift(1,j,ic),r_en(i,ic),r_en(j,ic),
      &         rr_en2(i,ic),rr_en2(j,ic)
      &               ,dk_en2(i,ic),dk_en2(j,ic),gn(iparm0+1),gns,it)
-CCC
+!CC
 
         do 42 it=1,nctype
           iparm0=npoint(it)+nparms
@@ -445,7 +445,7 @@ CCC
         fsumn=fsumn+fsn(i,j)-fso(i,j)
    45 continue
 
-c e-n terms
+! e-n terms
    47 fsn(iel,iel)=0
 
       if(ijas.eq.3) then

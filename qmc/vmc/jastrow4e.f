@@ -1,7 +1,7 @@
       subroutine jastrow4e(iel,x,v,value)
-c Written by Cyrus Umrigar and Claudia Filippi
-c Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
-c Jastrow 6   must be used with one of isc=6,7
+! Written by Cyrus Umrigar and Claudia Filippi
+! Jastrow 4,5 must be used with one of isc=2,4,6,7,12,14,16,17
+! Jastrow 6   must be used with one of isc=6,7
 
       use constants_mod
       use control_mod
@@ -97,15 +97,15 @@ c Jastrow 6   must be used with one of isc=6,7
 
       top=sspinn*b(1,isb,iwf)*uu(1)
       topu=sspinn*b(1,isb,iwf)
-c     topuu=0
+!     topuu=0
 
       bot=1+b(2,isb,iwf)*uu(1)
       botu=b(2,isb,iwf)
-c     botuu=0
+!     botuu=0
       bot2=bot*bot
 
-c      fee=top/bot-asymp_jasb(ipar+1,iwf)
-c      feeu=topu/bot-botu*top/bot2
+!      fee=top/bot-asymp_jasb(ipar+1,iwf)
+!      feeu=topu/bot-botu*top/bot2
       fee=top/bot
       feeu=topu/bot2
       if(isc.eq.8 .or. isc.eq.10) then
@@ -130,10 +130,10 @@ c      feeu=topu/bot-botu*top/bot2
       fijn(2,j,i)=fijn(2,j,i) - feeu*rvec_ee(2,ij)
       fijn(3,j,i)=fijn(3,j,i) - feeu*rvec_ee(3,ij)
 
-c There are no C terms to order 1.
+! There are no C terms to order 1.
    22 if(nordc.le.1) goto 55
 
-c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
+!     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
       call scale_dist1(rij,uu(1),dd1,4)
       if(ijas.eq.4.or.ijas.eq.5) then
         call switch_scale1(uu(1),dd1,4)
@@ -141,10 +141,10 @@ c     if(isc.ge.12) call scale_dist1(rij,uu(1),dd1,3)
    25     uu(iord)=uu(1)*uu(iord-1)
       endif
 
-c    Can't call this yet! ri, rj not defined! (ACM)
-c      if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
-c      endif
+!    Can't call this yet! ri, rj not defined! (ACM)
+!      if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+!         call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj,d2fcuti,d2fcutj)
+!      endif
 
       do 50 ic=1,ncent
         it=iwctype(ic)
@@ -169,11 +169,11 @@ c      endif
           call switch_scale1(rrj(1),dd8,3)
         endif
 
-c Moved back here, from above the do 50 loop (ACM)
-c   Don't think we should call it here either, since we call it just after the continue at 40
-c       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
-c          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj, d2fcuti, d2fcutj)
-c       endif
+! Moved back here, from above the do 50 loop (ACM)
+!   Don't think we should call it here either, since we call it just after the continue at 40
+!       if(icutjasc .gt. 0 .or. iperiodic .ne. 0) then
+!          call f_een_cuts (cutjas_en, ri, rj, fcuti, fcutj, fcut, dfcuti, dfcutj, d2fcuti, d2fcutj)
+!       endif
 
         do 30 iord=1,nordc
           rri(iord)=rri(1)*rri(iord-1)
@@ -248,7 +248,7 @@ c       endif
       fjn(3,j)=fjn(3,j)+fijn(3,j,i)-fijo(3,j,i)
    60 continue
 
-c e-n terms
+! e-n terms
 
    65 fijn(1,iel,iel)=0
       fijn(2,iel,iel)=0
@@ -275,8 +275,8 @@ c e-n terms
 
         bot=1+bot
         bot2=bot*bot
-c       fen=top/bot-asymp_jasa(it,iwf)
-c       feni=topi/bot-boti*top/bot2
+!       fen=top/bot-asymp_jasa(it,iwf)
+!       feni=topi/bot-boti*top/bot2
         fen=top/bot
         feni=topi/bot2
 
@@ -294,7 +294,7 @@ c       feni=topi/bot-boti*top/bot2
         feni=feni*dd7/ri
 
         fsn(iel,iel)=fsn(iel,iel)+fen
-        
+
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then  !infinte wires
           fijn(2,iel,iel)=fijn(2,iel,iel) + feni*rvec_en(2,iel,ic)
         else
@@ -302,7 +302,7 @@ c       feni=topi/bot-boti*top/bot2
           fijn(2,iel,iel)=fijn(2,iel,iel) + feni*rvec_en(2,iel,ic)
           fijn(3,iel,iel)=fijn(3,iel,iel) + feni*rvec_en(3,iel,ic)
         endif
-        
+
    80 continue
 
       fsumn=fsumn+fsn(iel,iel)-fso(iel,iel)

@@ -1,36 +1,36 @@
       subroutine fourierrk(p,q,xold,xnew)
 
-c Written by A.D.Guclu aug2006.
-c Calculates the power spectrum estimator in polar coo., defined as:
-c     FT=abs( sum_i Fourier[Delta^2(r_i-r)])^2
-c taking the absolute value before the data accumulation is essential to get the
-c "internal structure" of the density.
+! Written by A.D.Guclu aug2006.
+! Calculates the power spectrum estimator in polar coo., defined as:
+!     FT=abs( sum_i Fourier[Delta^2(r_i-r)])^2
+! taking the absolute value before the data accumulation is essential to get the
+! "internal structure" of the density.
 
-c Notes:
-c Delta^2(ri-r)=Delta(ri_r) Delta(thetai-theta) / r
-c We consider only angular FT here.
-c Fourier[Delta]=cos + i sin
+! Notes:
+! Delta^2(ri-r)=Delta(ri_r) Delta(thetai-theta) / r
+! We consider only angular FT here.
+! Fourier[Delta]=cos + i sin
 
-c In practice, there is a uninteresting constant term that we substract:
-c FT(renormalized)= r^2 FT - N(r)   where N(r) is number of electrons at r.
+! In practice, there is a uninteresting constant term that we substract:
+! FT(renormalized)= r^2 FT - N(r)   where N(r) is number of electrons at r.
 
-c During the print out we divide everything by r^2 to get the final result.
-c FT(r,k=0)= electronic density
+! During the print out we divide everything by r^2 to get the final result.
+! FT(r,k=0)= electronic density
 
-c Modified by A. C. Mehta, November 2011 to work with periodic wires
+! Modified by A. C. Mehta, November 2011 to work with periodic wires
 
-c  In this case, we replace "r" by "y" (the transverse coordinate),
-c    and we take the FT in the x-direction (rather than theta)
-c  There is no 1/r term in cartesian coordinates, so:
-c  FT(renormalized) = FT - N(r)
-c  and there is no need to divide everything by r^2  
-c   (we modify printout routines to reflect this)
-c   Note we take cos(k_x (x_i - x_j) *2*pi/alattice)
-c
-c  Also, for the purposes of the periodic wires, we use the variables
-c    labeled with "r" to represent quantities having to do with "y"
-c    and we use the variables labeled with "theta" to represent
-c    quantities having to do with "x" (the periodic direction in wires)
+!  In this case, we replace "r" by "y" (the transverse coordinate),
+!    and we take the FT in the x-direction (rather than theta)
+!  There is no 1/r term in cartesian coordinates, so:
+!  FT(renormalized) = FT - N(r)
+!  and there is no need to divide everything by r^2
+!   (we modify printout routines to reflect this)
+!   Note we take cos(k_x (x_i - x_j) *2*pi/alattice)
+!
+!  Also, for the purposes of the periodic wires, we use the variables
+!    labeled with "r" to represent quantities having to do with "y"
+!    and we use the variables labeled with "theta" to represent
+!    quantities having to do with "x" (the periodic direction in wires)
 
 
       use dets_mod
@@ -65,7 +65,7 @@ c    quantities having to do with "x" (the periodic direction in wires)
 
       do ik=0,nmeshk1
         fk=delk1*ik
-c reset temporary arrays:
+! reset temporary arrays:
         do ix=-NAX,NAX
           fcos_uo(ix)=0.d0
           fcos_do(ix)=0.d0
@@ -136,7 +136,7 @@ c reset temporary arrays:
           fourierrk_d(ir,ik)=fourierrk_d(ir,ik)+(fcos_dn(ir)*fcos_dn(ir)+fsin_dn(ir)*fsin_dn(ir))*p
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)+((fcos_un(ir)+fcos_dn(ir))**2
      &                                               +(fsin_un(ir)+fsin_dn(ir))**2)*p
-c substract the infinite k limit:
+! substract the infinite k limit:
           fourierrk_u(ir,ik)=fourierrk_u(ir,ik)-nr_uo(ir)*q
           fourierrk_d(ir,ik)=fourierrk_d(ir,ik)-nr_do(ir)*q
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)-(nr_uo(ir)+nr_do(ir))*q
@@ -146,28 +146,28 @@ c substract the infinite k limit:
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)-(nr_un(ir)+nr_dn(ir))*p
 
         enddo
-c        write(6,*) 'fourierrk_t=',fourierrk_t(ir,ik)
+!        write(6,*) 'fourierrk_t=',fourierrk_t(ir,ik)
       enddo
 
       return
       end
 
-c-------------------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------
       subroutine fourierrk_old(p,q,xold,xnew)
 
-c Written by A.D.Guclu aug2006.
-c Calculates the "internal fourier transform" estimator in polar coo., defined as:
-c     FT=abs( sum_i Fourier[Delta^2(r_i-r)])
-c taking the absolute value before the data accumlation is essential to get the
-c "internal structure" of the density. We are indeed calculation the following
-c quantity:
-c     <FT>=<Psi| abs( Fourier[rho(r)] ) |Psi>
-c Notes:
-c Delta^2(ri-r)=Delta(ri_r) Delta(thetai-theta) / r
-c We consider only angular FT here.
-c Fourier[Delta]=cos + i sin
+! Written by A.D.Guclu aug2006.
+! Calculates the "internal fourier transform" estimator in polar coo., defined as:
+!     FT=abs( sum_i Fourier[Delta^2(r_i-r)])
+! taking the absolute value before the data accumlation is essential to get the
+! "internal structure" of the density. We are indeed calculation the following
+! quantity:
+!     <FT>=<Psi| abs( Fourier[rho(r)] ) |Psi>
+! Notes:
+! Delta^2(ri-r)=Delta(ri_r) Delta(thetai-theta) / r
+! We consider only angular FT here.
+! Fourier[Delta]=cos + i sin
 
-c FT(r,k=0)= electronic density
+! FT(r,k=0)= electronic density
 
 
       use dets_mod
@@ -191,7 +191,7 @@ c FT(r,k=0)= electronic density
         else
           fk=delk1*ik
         endif
-c reset temporary arrays:
+! reset temporary arrays:
         do ix=1,NAX
           fcos_uo(ix)=0.d0
           fcos_do(ix)=0.d0
@@ -242,26 +242,26 @@ c reset temporary arrays:
           fourierrk_t(ir,ik)=fourierrk_t(ir,ik)+dsqrt((fcos_un(ir)+fcos_dn(ir))**2
      &                                               +(fsin_un(ir)+fsin_dn(ir))**2)*p
         enddo
-c        write(6,*) 'fourierrk_t=',fourierrk_t(ir,ik)
+!        write(6,*) 'fourierrk_t=',fourierrk_t(ir,ik)
       enddo
 
       return
       end
 
-c-------------------------------------------------------------------------------------
+!-------------------------------------------------------------------------------------
 
       subroutine fourierkk(p,q,xold,xnew)
 
-c Written by A.D.Guclu aug2006.
-c Calculates the "internal fourier transform" estimator in cartesian coo., defined as:
-c     FT=abs( sum_i Fourier[Delta^2(r_i-r)])
-c taking the absolute value before the data accumlation is essential to get the
-c "internal structure" of the density. We are indeed calculation the following
-c quantity:
-c     <FT>=<Psi| abs( Fourier[rho(r)] ) |Psi>
-c Notes:
-c Delta^2(ri-r)=Delta(xi-x) Delta(yi-y)
-c Fourier[Delta]=cos + i sin
+! Written by A.D.Guclu aug2006.
+! Calculates the "internal fourier transform" estimator in cartesian coo., defined as:
+!     FT=abs( sum_i Fourier[Delta^2(r_i-r)])
+! taking the absolute value before the data accumlation is essential to get the
+! "internal structure" of the density. We are indeed calculation the following
+! quantity:
+!     <FT>=<Psi| abs( Fourier[rho(r)] ) |Psi>
+! Notes:
+! Delta^2(ri-r)=Delta(xi-x) Delta(yi-y)
+! Fourier[Delta]=cos + i sin
 
       use dets_mod
       use const_mod
@@ -277,7 +277,7 @@ c Fourier[Delta]=cos + i sin
         fkx=delk2*ikx
         do iky=-NAK2,NAK2
           fky=delk2*iky
-c first, for old x values:
+! first, for old x values:
           sumr_u=0.d0
           sumi_u=0.d0
           sumr_d=0.d0
@@ -298,7 +298,7 @@ c first, for old x values:
           fourierkk_d(ikx,iky)=fourierkk_d(ikx,iky)+q*(sumr_d*sumr_d+sumi_d*sumi_d)
           fourierkk_t(ikx,iky)=fourierkk_t(ikx,iky)+q*(sumr_t*sumr_t+sumi_t*sumi_t)
 
-c now repeat above for new x values:
+! now repeat above for new x values:
           sumr_u=0.d0
           sumi_u=0.d0
           sumr_d=0.d0

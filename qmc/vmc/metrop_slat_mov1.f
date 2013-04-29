@@ -1,13 +1,13 @@
       subroutine metrop_slat_mov1(ipass)
-c     subroutine metrop6(ipass)
-c Written by Cyrus Umrigar
-c Uses the accelerated Metropolis method described in:
-c 1) Accelerated Metropolis Method, C.J. Umrigar, PRL 71, 408 (1993).
-c 2) Variational Monte Carlo Basics and Applications to Atoms and Molecules,
-c    C.J. Umrigar, in {\it Quantum Monte Carlo Methods in Physics and Chemistry},
-c    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
-c    Mathematical and Physical Sciences, Vol. C-525,
-c    (Kluwer Academic Publishers, Boston, 1999)
+!     subroutine metrop6(ipass)
+! Written by Cyrus Umrigar
+! Uses the accelerated Metropolis method described in:
+! 1) Accelerated Metropolis Method, C.J. Umrigar, PRL 71, 408 (1993).
+! 2) Variational Monte Carlo Basics and Applications to Atoms and Molecules,
+!    C.J. Umrigar, in {\it Quantum Monte Carlo Methods in Physics and Chemistry},
+!    edited by M.~P. Nightingale and C.~J. Umrigar. NATO ASI Series, Series C,
+!    Mathematical and Physical Sciences, Vol. C-525,
+!    (Kluwer Academic Publishers, Boston, 1999)
 
       use all_tools_mod
       use constants_mod
@@ -40,20 +40,20 @@ c    (Kluwer Academic Publishers, Boston, 1999)
 
       parameter (d3b2=1.5d0,d5b2=2.5d0,d2b3=.666666666666667d0)
       parameter (eps=1.d-10)
-c     parameter (g3b2=.886226925452758d0)
+!     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
-c g3b2, g5b2 are gamma3/2), gamma(5/2)
+! g3b2, g5b2 are gamma3/2), gamma(5/2)
 
-c The moves are now being made in local r,theta phi coordinates.
+! The moves are now being made in local r,theta phi coordinates.
 
-c The foll. additions have been made:
-c 1) Slater form of Tij.
-c 2) Make theta_max a function of r
-c 3) Generalize to molecules. This requires geometric rejections.
+! The foll. additions have been made:
+! 1) Slater form of Tij.
+! 2) Make theta_max a function of r
+! 3) Generalize to molecules. This requires geometric rejections.
 
-c The foll. still need to be tried:
-c 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
-c    Last 2 are prob. best
+! The foll. still need to be tried:
+! 1) Quadratic, gaussian, Morse and Exp(-zeta*r)+co*Exp(-r) forms of Tij
+!    Last 2 are prob. best
 
       common /stats_vmc/ rejmax
 
@@ -61,9 +61,9 @@ c    Last 2 are prob. best
 
       dimension xstrech(3,nelec)
 
-c     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
-c    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
-c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
+!     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
+!    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
+!    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
 
       thetamx(r,z)=deltat+(two-deltat)/(one+(z*r)**2)
 
@@ -87,20 +87,20 @@ c    &-r1**d3b2*(two*(one-v*ri)/3+.4d0*v*r1)))
          else
           zcusp=zero
         endif
-c Although rmino is saved, recalculate it, otherwise there may be a
-c build up of errors via zaxis. I don't think so.
+! Although rmino is saved, recalculate it, otherwise there may be a
+! build up of errors via zaxis. I don't think so.
         rmino(i)=dsqrt(rvmino(1,i)**2+rvmino(2,i)**2+rvmino(3,i)**2)
-c Choose lower and upper values of r sampling
+! Choose lower and upper values of r sampling
         rbot=rmino(i)*deltri
         rtop=rmino(i)*deltar
-c Calculate magnitude of the velocity in the radial direction
+! Calculate magnitude of the velocity in the radial direction
         voldr=zero
         do 10 k=1,ndim
    10     voldr=voldr+vold(k,i)*rvmino(k,i)
         voldr=voldr/rmino(i)
 
-c Place x-axis along direction of angular change and
-c Calculate the velocity in the phi direction
+! Place x-axis along direction of angular change and
+! Calculate the velocity in the phi direction
         voldp=zero
         do 20 k=1,ndim
           zaxis(k)=rvmino(k,i)/rmino(i)
@@ -116,22 +116,22 @@ c Calculate the velocity in the phi direction
         do 30 k=1,ndim
    30     xaxis(k)=xaxis(k)/voldp
 
-c Limit radial component of velocity.
-c It may be a good idea to limit it if it is positive too.
+! Limit radial component of velocity.
+! It may be a good idea to limit it if it is positive too.
         if(zconst.ne.0)then ! Jellium RM
           voldr=max(voldr,-2*zconst)
          else
           voldr=max(voldr,-2*znuc(iwctype(nearo)))
-c         voldr=min(voldr,2*znuc(iwctype(nearo)))
+!         voldr=min(voldr,2*znuc(iwctype(nearo)))
         endif
 
-c y-axis is cross-product of z and x axes
+! y-axis is cross-product of z and x axes
         yaxis(1)=zaxis(2)*xaxis(3)-zaxis(3)*xaxis(2)
         yaxis(2)=zaxis(3)*xaxis(1)-zaxis(1)*xaxis(3)
         yaxis(3)=zaxis(1)*xaxis(2)-zaxis(2)*xaxis(1)
 
-c Temporary test of fbias
-c       voldr=voldr*fbias
+! Temporary test of fbias
+!       voldr=voldr*fbias
         voldp=voldp*fbias
 
         root=(zcusp+voldr)*(zcusp+voldr-four/rmino(i))
@@ -149,12 +149,12 @@ c       voldr=voldr*fbias
         endif
         co=(zeta+voldr)/(one-(zeta+voldr)*rmino(i))
 
-c       write(6,'(''rmino(i),voldr,zeta,co='',9f10.5)')
-c    &  rmino(i),voldr,zeta,co,(co-zeta-co*zeta*rmino(i))/
-c    &  (one+co*rmino(i))
+!       write(6,'(''rmino(i),voldr,zeta,co='',9f10.5)')
+!    &  rmino(i),voldr,zeta,co,(co-zeta-co*zeta*rmino(i))/
+!    &  (one+co*rmino(i))
 
-c Use Slater approx for radial fn
-c Determine the maximum value of radial function for rejection sampling
+! Use Slater approx for radial fn
+! Determine the maximum value of radial function for rejection sampling
         root=dsqrt((d3b2*co-zeta)**2+two*zeta*co)
 ! JT: add test on co for special case such as H atom for which co=0 and rmax1=infinity
 ! rmax1 was being limited to the interval [rbot,rtop] in the next lines but may be the compiler does not like comparing +-infinity.
@@ -175,7 +175,7 @@ c Determine the maximum value of radial function for rejection sampling
           fmax=max(fmax,fmax2)
         endif
 
-c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
+!   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
         bot=sqrt(rmino(i))*abs(one+co*rmino(i))*dexp(-zeta*rmino(i))
    40   rtry=((deltar-deltri)*rannyu(0)+deltri)*rmino(i)
           top=sqrt(rtry)*abs(one+co*rtry)*dexp(-zeta*rtry)
@@ -185,7 +185,7 @@ c   Sample sqrt(r_f)*abs(1+co*r_f)*exp(-zeta*r_f) by rejection
         goto 40
    50   fxop=fxop*top/bot
 
-c   Calculate the integral of T
+!   Calculate the integral of T
         rzero=-one/co
         zrbot=zeta*rbot
         zrtop=zeta*rtop
@@ -222,7 +222,7 @@ c   Calculate the integral of T
      &          (bot*dsqrt(zeta**3))
         endif
 
-c Sample cos(theta)
+! Sample cos(theta)
         raver=half*(rmino(i)+rtry)
         deltt=thetamx(raver,znuc(iwctype(nearo)))
         if(zconst.ne.0) deltt=thetamx(raver,zconst) ! Jellium RM
@@ -230,44 +230,44 @@ c Sample cos(theta)
         zprime=rtry*costht
         sintht=dsqrt(one-costht*costht)
 
-c For molecules deltt may not be the same for forward and reverse
-c moves, so it is necessary to include this in areao and arean
+! For molecules deltt may not be the same for forward and reverse
+! moves, so it is necessary to include this in areao and arean
         areao=areao*deltt
 
-c Truncate phi variation if it goes through zero
-c Sample phi by rejection. Note it is OK to have a) theta or sin(theta)
-c and b) rtry/rold(i) or raver, as long as the forward and reverse probs.
-c are consistent.
-c If we do not limit term to be <=1 then use commented out lines.
+! Truncate phi variation if it goes through zero
+! Sample phi by rejection. Note it is OK to have a) theta or sin(theta)
+! and b) rtry/rold(i) or raver, as long as the forward and reverse probs.
+! are consistent.
+! If we do not limit term to be <=1 then use commented out lines.
         term=dmin1(voldp*raver*sintht,one)
-clim    term=voldp*raver*sintht
+!lim    term=voldp*raver*sintht
         fmax=one+term
    60   phitry=pi*rannyu(0)
           cosphi=dcos(phitry)
           top=one+term*cosphi
-clim      top=abs(one+term*cosphi)
+!lim      top=abs(one+term*cosphi)
           if(top.gt.rannyu(0)*fmax) goto 70
         goto 60
    70   fxop=fxop*top
 
-clim    if(term.gt.one) then
-clim      phizer=dacos(-one/term)
-clim      areao=areao*((two/pi)*(phizer+term*dsin(phizer))-one)
-clim    endif
+!lim    if(term.gt.one) then
+!lim      phizer=dacos(-one/term)
+!lim      areao=areao*((two/pi)*(phizer+term*dsin(phizer))-one)
+!lim    endif
 
-c Calculate x and y coordinates in local coordinate system
+! Calculate x and y coordinates in local coordinate system
         xprime=rtry*sintht*dcos(phitry)
         yprime=dsqrt(max(zero,rtry*rtry-xprime**2-zprime**2))
         if(rannyu(0).lt.half) yprime=-yprime
 
-c Convert back to original coordinate system
+! Convert back to original coordinate system
         do 80 k=1,ndim
           rvminno(k,i)=xaxis(k)*xprime+yaxis(k)*yprime+zaxis(k)
      &    *zprime
    80     xnew(k,i)=rvminno(k,i)+cent(k,nearo)
         rminno(i)=rtry
 
-c Do geometrical rejections for molecules
+! Do geometrical rejections for molecules
         rminn(i)=99.d9
         do 85 j=1,ncent
           dist=zero
@@ -302,7 +302,7 @@ c Do geometrical rejections for molecules
           goto 208
         endif
 
-c rratio^2 is needed for the density of the angular moves
+! rratio^2 is needed for the density of the angular moves
         rratio=rminno(i)/rminon(i)
 
         if(ipr.ge.1) then
@@ -320,31 +320,31 @@ c rratio^2 is needed for the density of the angular moves
           write(6,'(''fxop'',9f12.4)') fxop
         endif
 
-c Write warning msg. if electron is going far away
+! Write warning msg. if electron is going far away
         if(rminn(i).gt.100.d0 .and. ndim.eq.3 .and. periodic.eq.0) then
           write(6,'(''Warning: rminn(i) too large, i, rminn(i) ='',i4,d12.4)') i,rminn(i)
           write(6,'(''Warning: xold,xnew='',9es12.4)') (xold(k,i),k=1,ndim),(xnew(k,i),k=1,ndim)
           if(rminn(i).gt.1000.d0) stop 'rminn(i) too large'
         endif
 
-c calculate psi at new configuration
+! calculate psi at new configuration
       iel=i
       call hpsie(iel,xnew,psidn,psijn,vnew)
       psi2n(1)=2*(dlog(dabs(psidn))+psijn)
 
-c calculate probability for reverse transition
+! calculate probability for reverse transition
       fxnp=one
-c Choose lower and upper values of r sampling
+! Choose lower and upper values of r sampling
         rbot=rminn(i)*deltri
         rtop=rminn(i)*deltar
-c Calculate magnitude of the velocity in the radial direction
+! Calculate magnitude of the velocity in the radial direction
         vnewr=zero
         do 110 k=1,ndim
   110     vnewr=vnewr+vnew(k,i)*rvminn(k,i)
         vnewr=vnewr/rminn(i)
 
-c Place x-axis along direction of angular change and
-c Calculate the velocity in the phi direction
+! Place x-axis along direction of angular change and
+! Calculate the velocity in the phi direction
         vnewp=zero
         do 120 k=1,ndim
           xaxis(k)=vnew(k,i)-vnewr*rvminn(k,i)/rminn(i)
@@ -359,8 +359,8 @@ c Calculate the velocity in the phi direction
         do 130 k=1,ndim
   130     xaxis(k)=xaxis(k)/vnewp
 
-c Limit radial component of velocity.
-c It may be a good idea to limit it if it is positive too.
+! Limit radial component of velocity.
+! It may be a good idea to limit it if it is positive too.
         nearn=nearestn(i)
         if(nloc.eq.0) then
           zcusp=znuc(iwctype(nearn))
@@ -371,11 +371,11 @@ c It may be a good idea to limit it if it is positive too.
           vnewr=max(vnewr,-2*zconst)
          else
           vnewr=max(vnewr,-2*znuc(iwctype(nearn)))
-c         vnewr=min(vnewr,2*znuc(iwctype(nearn)))
+!         vnewr=min(vnewr,2*znuc(iwctype(nearn)))
         endif
 
-c Temporary test of fbias
-c       vnewr=vnewr*fbias
+! Temporary test of fbias
+!       vnewr=vnewr*fbias
         vnewp=vnewp*fbias
 
         root=(zcusp+vnewr)*(zcusp+vnewr-four/rminn(i))
@@ -397,7 +397,7 @@ c       vnewr=vnewr*fbias
         top=sqrt(rminon(i))*abs(one+co*rminon(i))*dexp(-zeta*rminon(i))
         fxnp=fxnp*top/bot
 
-c Calculate the integral of T
+! Calculate the integral of T
         rzero=-one/co
         zrbot=zeta*rbot
         zrtop=zeta*rtop
@@ -434,18 +434,18 @@ c Calculate the integral of T
      &          (bot*dsqrt(zeta**3))
         endif
 
-c For molecules deltt may not be the same for forward and reverse
-c moves, so it is necessary to include this in areao and arean
+! For molecules deltt may not be the same for forward and reverse
+! moves, so it is necessary to include this in areao and arean
         arean=arean*delttn(i)
 
-c Truncate phi variation if it goes through zero
-c Note it is OK to have a) theta or sin(theta)
-c and b) rtry/rold(i) or raver, as long as the forward and reverse probs.
-c are consistent.
-c If we do not limit term to be <=1 then use commented out lines.
+! Truncate phi variation if it goes through zero
+! Note it is OK to have a) theta or sin(theta)
+! and b) rtry/rold(i) or raver, as long as the forward and reverse probs.
+! are consistent.
+! If we do not limit term to be <=1 then use commented out lines.
         term=dmin1(vnewp*ravern*sintht,one)
-clim    term=vnewp*raver*sintht
-c Determine cos(phi)
+!lim    term=vnewp*raver*sintht
+! Determine cos(phi)
         cosphi=zero
         rnorm=zero
         do 160 k=1,ndim
@@ -454,14 +454,14 @@ c Determine cos(phi)
   160     cosphi=cosphi+term2*xaxis(k)
         cosphi=cosphi/dsqrt(rnorm)
         fxnp=fxnp*(one+term*cosphi)
-clim    fxnp=fxnp*abs(one+term*cosphi)
+!lim    fxnp=fxnp*abs(one+term*cosphi)
 
-clim    if(term.gt.one) then
-clim      phizer=dacos(-one/term)
-clim      arean=arean*((two/pi)*(phizer+term*dsin(phizer))-one)
-clim    endif
+!lim    if(term.gt.one) then
+!lim      phizer=dacos(-one/term)
+!lim      arean=arean*((two/pi)*(phizer+term*dsin(phizer))-one)
+!lim    endif
 
-c p is the probability of accepting new move
+! p is the probability of accepting new move
       p=rratio**2*exp(psi2n(1)-psi2o(1))*dabs((fxnp*areao)/(fxop*arean))
 
         if(ipr.ge.1) then
@@ -482,26 +482,26 @@ c p is the probability of accepting new move
       q=one-p
 
   208 continue
-c Calculate as a function of the distance to the nucleus
-c 1) acceptance,  2) force-bias truncation probability,
-c 3) kinetic energy and it's fluctuation
-c The K.E. is not quite correct, since we should use p times new
-c and q times old, and keep track of which bin the old was in
-c The reason why I changed
-c itryo=min(int(delri*rold)+1,NRAD)  to
-c itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
-c is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
+! Calculate as a function of the distance to the nucleus
+! 1) acceptance,  2) force-bias truncation probability,
+! 3) kinetic energy and it's fluctuation
+! The K.E. is not quite correct, since we should use p times new
+! and q times old, and keep track of which bin the old was in
+! The reason why I changed
+! itryo=min(int(delri*rold)+1,NRAD)  to
+! itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+! is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
       rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
       rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
-c     itryo=min(int(delri*rold)+1,NRAD)
-c     itryn=min(int(delri*rnew)+1,NRAD)
+!     itryo=min(int(delri*rold)+1,NRAD)
+!     itryn=min(int(delri*rnew)+1,NRAD)
       itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
       itryn=int(min(delri*rnew+1,dfloat(NRAD))+eps)
       try(itryo)=try(itryo)+1
       suc(itryo)=suc(itryo)+p
       if(try(itryo).lt.0.d0) write(6,'(''itryo,try'',i5,d13.5)')itryo,try(itryo)
-c     if(suc(itryo).lt.0.d0) write(6,'(''itryo,suc'',i5,9d13.5)')itryo,
-c    &suc(itryo),rratio,psi2n(1),psi2o(1),fxnp,areao,fxop,arean
+!     if(suc(itryo).lt.0.d0) write(6,'(''itryo,suc'',i5,9d13.5)')itryo,
+!    &suc(itryo),rratio,psi2n(1),psi2o(1),fxnp,areao,fxop,arean
       if(voldp*raver*sintht.gt.one) trunfb(itryo)=trunfb(itryo)+1
       if(i.le.nup) then
         rprobup(itryo)=rprobup(itryo)+q
@@ -515,8 +515,8 @@ c    &suc(itryo),rratio,psi2n(1),psi2o(1),fxnp,areao,fxop,arean
       do 210 k=1,ndim
   210   r2sum=r2sum+p*xnew(k,i)**2+q*xold(k,i)**2
 
-c accept new move with probability p
-c Note when one electron moves the velocity on all electrons change.
+! accept new move with probability p
+! Note when one electron moves the velocity on all electrons change.
       if(rannyu(0).lt.p) then
         idist(i)=itryn
         rmino(i)=rminn(i)
@@ -536,7 +536,7 @@ c Note when one electron moves the velocity on all electrons change.
         idist(i)=itryo
         do 250 k=1,ndim
   250     xnew(k,i)=xold(k,i)
-c       call distancese_restore(i,rvec_en,r_en,rvec_ee,r_ee)
+!       call distancese_restore(i,rvec_en,r_en,rvec_ee,r_ee)
         if(igeometrical.eq.0) call distancese_restore(i)
       endif
 
@@ -544,13 +544,13 @@ c       call distancese_restore(i,rvec_en,r_en,rvec_ee,r_ee)
 
       call object_modified_by_index (xold_index)  !JT
 
-c loop over secondary configurations
+! loop over secondary configurations
       do 350 ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,vold,div_vo,d2,peo,peio,eold(ifr),denergy,ifr)
   350   psi2o(ifr)=2*(dlog(dabs(psido))+psijo)+dlog(ajacob)
 
-c primary configuration
+! primary configuration
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
@@ -599,7 +599,7 @@ c primary configuration
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
       tjfo=-d2o*half*hb
-c form expected values of e, pe, etc.
+! form expected values of e, pe, etc.
       esum1=eold(1)
       esum(1)=esum(1)+eold(1)
       pesum=pesum+peo

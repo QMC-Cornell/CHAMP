@@ -1,9 +1,9 @@
       subroutine metrop_movall(ipass)
-c     subroutine metrop(ipass)
-c Written by Cyrus Umrigar
-c routine to move configuration by one step using a
-c force-bias type Monte Carlo.
-c Minor mods added by A.D.Guclu to include correlated sampling.
+!     subroutine metrop(ipass)
+! Written by Cyrus Umrigar
+! routine to move configuration by one step using a
+! force-bias type Monte Carlo.
+! Minor mods added by A.D.Guclu to include correlated sampling.
       use all_tools_mod
       use constants_mod
       use config_mod
@@ -34,30 +34,30 @@ c Minor mods added by A.D.Guclu to include correlated sampling.
       dimension xstrech(3,nelec)
       parameter(eps=1.d-10)
 
-c Sample transition probability from current state to new state
-c and record value of probability in fxop.
-c The transition probabilty is given by statement label 17
-c for the reverse transition.
-c The transition probability is an approximately psi(new)/psi(old)
-c and is positive definite.
+! Sample transition probability from current state to new state
+! and record value of probability in fxop.
+! The transition probabilty is given by statement label 17
+! for the reverse transition.
+! The transition probability is an approximately psi(new)/psi(old)
+! and is positive definite.
 
 
       deltfi=two*fbias*deltai
       fxop=one
       do 10 i=1,nelec
-c worry about the fixe electron only in this loop
+! worry about the fixe electron only in this loop
         if(i.ne.ifixe) then
           do 5 k=1,ndim
             fx=dmin1(dabs(vold(k,i)),deltfi)
             ftest=fx*delta*half
             fx=sign(fx,vold(k,i))
             if(ftest.le.rannyu(0)) then
-c           sample from 1 piece
+!           sample from 1 piece
               dx(k,i)=(rannyu(0)-half)*delta
              else
-c           sample from the (xnew-xold) piece assuming velocity positive
+!           sample from the (xnew-xold) piece assuming velocity positive
               dx(k,i)=(dmax1(rannyu(0),rannyu(0))-half)*delta
-c           if velocity was negative then dx has opposite sign
+!           if velocity was negative then dx has opposite sign
               if(vold(k,i).lt.zero) dx(k,i)=-dx(k,i)
             endif
             fxop=fxop*(one+fx*dx(k,i))
@@ -71,39 +71,39 @@ c           if velocity was negative then dx has opposite sign
         endif
  10   continue
 
-c calculate psi etc. at new configuration
-c loop over secondary configurations
+! calculate psi etc. at new configuration
+! loop over secondary configurations
 
       do 15 ifr=2,nforce
         call strech(xnew,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psidn,psijn,vnew,div_vn,d2,pen,pein,enew(ifr),denergy,ifr)
  15     psi2n(ifr)=2*(dlog(dabs(psidn))+psijn)+dlog(ajacob)
 
-c primary configuration
+! primary configuration
       if(nforce.gt.1) call strech(xnew,xstrech,ajacob,1,0)
       call hpsi(xnew,psidn,psijn,vnew,div_vn,d2,pen,pein,enew(1),denergy,1)
       psi2n(1)=2*(dlog(dabs(psidn))+psijn)
 
-c save electrostatic potential at new configuration
-c   Note that we already called distances.f from hpsi, otherwise
-c   we should add a call to distances here (ACM)
+! save electrostatic potential at new configuration
+!   Note that we already called distances.f from hpsi, otherwise
+!   we should add a call to distances here (ACM)
 
           pot_ee_new = pot_ee  ! this is an array assignment
 
-c If error is large then save config. to use in optimizing routine
+! If error is large then save config. to use in optimizing routine
 
-c     if(dabs((enew(1)-etrial)/etrial).gt.1.d0.and.iwrit8.le.1000) then
-c        iwrit8=iwrit8+1
-c        write(8,'(i6,f8.2,2d10.2,(8f8.4))') ipass,enew(1)-etrial,psin,
-c    &   (enew(1)-etrial)*psin,((xnew(k,jj),k=1,ndim),jj=1,nelec)
-cc       write(8,'(10f8.4)') ((xnew(k,jj),k=1,ndim),jj=1,nelec)
-cc    endif
-c     if(dabs(psin*(enew(1)-etrial)/etrial).gt.1.d-7) then
-c        write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,enew(1)-etrial,psin,
-c    &   (enew(1)-etrial)*psin,((xnew(k,jj),k=1,ndim),jj=1,nelec)
-c     endif
+!     if(dabs((enew(1)-etrial)/etrial).gt.1.d0.and.iwrit8.le.1000) then
+!        iwrit8=iwrit8+1
+!        write(8,'(i6,f8.2,2d10.2,(8f8.4))') ipass,enew(1)-etrial,psin,
+!    &   (enew(1)-etrial)*psin,((xnew(k,jj),k=1,ndim),jj=1,nelec)
+!c       write(8,'(10f8.4)') ((xnew(k,jj),k=1,ndim),jj=1,nelec)
+!c    endif
+!     if(dabs(psin*(enew(1)-etrial)/etrial).gt.1.d-7) then
+!        write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass,enew(1)-etrial,psin,
+!    &   (enew(1)-etrial)*psin,((xnew(k,jj),k=1,ndim),jj=1,nelec)
+!     endif
 
-c calculate probability for reverse transition
+! calculate probability for reverse transition
 
       fxnp=one
       do 20 k=1,ndim
@@ -111,18 +111,18 @@ c calculate probability for reverse transition
    20 fxnp=fxnp*(one-dx(k,i)
      &   *sign(dmin1(dabs(vnew(k,i)),deltfi),vnew(k,i)))
 
-c form the Jackson Feenberg kinetic energy expression
+! form the Jackson Feenberg kinetic energy expression
 
       tjfn=d2
       tjfn=-tjfn*half*hb
 
-c p is the probability of accepting new move
+! p is the probability of accepting new move
 
       p=exp(psi2n(1)-psi2o(1))*fxnp/fxop
       p=dmin1(one,p)
       q=one-p
 
-c form expected values of e, pe, etc.
+! form expected values of e, pe, etc.
 
       esum1=          p*enew(1)+q*eold(1)
       esum(1)=esum(1)+p*enew(1)+q*eold(1)
@@ -148,15 +148,15 @@ c form expected values of e, pe, etc.
         esum(ifr)=esum(ifr)+p*enew(ifr)*wstrn+q*eold(ifr)*wstro
  26     wsum(ifr)=wsum(ifr)+p*wstrn+q*wstro
 
-c The reason why I changed
-c itryo=min(int(delri*rold)+1,NRAD)  to
-c itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
-c is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
+! The reason why I changed
+! itryo=min(int(delri*rold)+1,NRAD)  to
+! itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
+! is that 2147483647 is the largest 32-bit integer and 1 more than that gives -2147483648.
       do 28 i=1,nelec
         rold=dsqrt(xold(1,i)**2+xold(2,i)**2+xold(3,i)**2)
         rnew=dsqrt(xnew(1,i)**2+xnew(2,i)**2+xnew(3,i)**2)
-c       itryo=min(int(delri*rold)+1,NRAD)
-c       itryn=min(int(delri*rnew)+1,NRAD)
+!       itryo=min(int(delri*rold)+1,NRAD)
+!       itryn=min(int(delri*rnew)+1,NRAD)
         itryo=int(min(delri*rold+1,dfloat(NRAD))+eps)
         itryn=int(min(delri*rnew+1,dfloat(NRAD))+eps)
         if(i.le.nup) then
@@ -168,19 +168,19 @@ c       itryn=min(int(delri*rnew)+1,NRAD)
         endif
         rprob(itryo)=rprob(itryo)+q
         rprob(itryn)=rprob(itryn)+p
-c calculate 2d density related functions:
+! calculate 2d density related functions:
         if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
           call reduce_sim_cell(xold(:,i))
           call reduce_sim_cell(xnew(:,i))
         endif
         if(ifixe.ne.0 .and. ifixe.ne.i .and. ifixe.ne.-2) then     ! fixed electron density or 2d density
-            if(icoosys.eq.1) then 
+            if(icoosys.eq.1) then
               do 27 idim=1,ndim
-c note that ix can be negative or positive. nint is a better choice.
+! note that ix can be negative or positive. nint is a better choice.
                 ixo(idim)=nint(delxi(idim)*xold(idim,i))
   27            ixn(idim)=nint(delxi(idim)*xnew(idim,i))
              else
-c same trick adapted to circular coordinates
+! same trick adapted to circular coordinates
                ixo(1)=nint(delradi*(rold-rmean))
                ixn(1)=nint(delradi*(rnew-rmean))
                ixo(2)=nint(delti*(datan2(xold(2,i),xold(1,i))))
@@ -217,11 +217,11 @@ c same trick adapted to circular coordinates
       if(ifourier.eq.1 .or. ifourier.eq.3) call fourierrk(p,q,xold,xnew)
       if(ifourier.eq.2 .or. ifourier.eq.3) call fourierkk(p,q,xold,xnew)
 
-c accept new move with probability p
+! accept new move with probability p
 
       if(rannyu(0).le.p) then
 
-c move is accepted so update positions etc.
+! move is accepted so update positions etc.
         pot_ee_old = pot_ee_new
 
         do 30 k=1,ndim

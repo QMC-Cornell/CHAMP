@@ -1,5 +1,5 @@
       subroutine deriv_jastrow(x,v,d2,div_vj,value)
-c Written by Claudia Filippi
+! Written by Claudia Filippi
       use constants_mod
       use const_mod
       use contr2_mod
@@ -28,13 +28,13 @@ c Written by Claudia Filippi
 !!! add contrib due to long range jastrow
       if (ido_pjas .eq. 1) then
 
-c$$$         write(55,'(a,100F10.6)') "bv=",  v(:,1:nelec)
-c$$$         write(55,'(a,10F10.6)') "bd2and value ",  d2, value
-c$$$
+!$$$         write(55,'(a,100F10.6)') "bv=",  v(:,1:nelec)
+!$$$         write(55,'(a,10F10.6)') "bd2and value ",  d2, value
+!$$$
          call pjas_deriv_jas_interface (x,rvec_ee, v, d2, div_vj, value)
-c$$$
-c$$$         write(55,'(a,100F10.6)') "v=",  v(:,1:nelec)
-c$$$         write(55,'(a,10F10.6)') "d2and value ",  d2, value
+!$$$
+!$$$         write(55,'(a,100F10.6)') "v=",  v(:,1:nelec)
+!$$$         write(55,'(a,10F10.6)') "d2and value ",  d2, value
       endif
 !!!
 

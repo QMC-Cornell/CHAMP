@@ -1,6 +1,6 @@
       subroutine plot_jas
-c Written by Cyrus Umrigar
-c subroutine to plot e-n and e-e Jastrow
+! Written by Cyrus Umrigar
+! subroutine to plot e-n and e-e Jastrow
 
       use atom_mod
       use contr2_mod
@@ -12,8 +12,8 @@ c subroutine to plot e-n and e-e Jastrow
 
       write(6,'('' r    f_en(1-nctype)    f_ee(1,2)'')')
       np=101
-c Warning: I should really be plotting f_en to cutjas_en and f_ee to cutjas_ee but
-c for the moment plot both to larger distance.
+! Warning: I should really be plotting f_en to cutjas_en and f_ee to cutjas_ee but
+! for the moment plot both to larger distance.
       if(isc.eq.6.or.isc.eq.7.or.isc.eq.16.or.isc.eq.17) then
         rmax=cutjas_ee
        else
@@ -28,11 +28,11 @@ c for the moment plot both to larger distance.
 
       return
       end
-c-----------------------------------------------------------------------
+!-----------------------------------------------------------------------
       subroutine jastrow4ab(r,fen,fee)
-c Written by Cyrus Umrigar
-c Jastrow 4,5 must be used with one of isc=2,4,6,7
-c Jastrow 6   must be used with one of isc=6,7
+! Written by Cyrus Umrigar
+! Jastrow 4,5 must be used with one of isc=2,4,6,7
+! Jastrow 6   must be used with one of isc=6,7
 
       use constants_mod
       use atom_mod
@@ -60,8 +60,8 @@ c Jastrow 6   must be used with one of isc=6,7
       ss(0)=2
       tt(0)=1
 
-c ipar=0 antiparallel
-c ipar=1 parallel
+! ipar=0 antiparallel
+! ipar=1 parallel
       do 20 ipar=0,1
 
       if(ipar.eq.0) then
@@ -96,7 +96,7 @@ c ipar=1 parallel
         endif
    20 continue
 
-c e-n terms
+! e-n terms
       do 70 it=1,nctype
 
           call scale_dist(r,rri(1),1)

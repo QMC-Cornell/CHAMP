@@ -1,8 +1,8 @@
       subroutine cdeterminante(iel,x,rvec_en,r_en,ddet_det,determ)
-c same subroutine as determinant() adapted to complex orbitals/determinants
-c by A.D.Guclu Feb2004
-c can deal with any complex determinant, provided that the determinantal
-c coefficients are real.
+! same subroutine as determinant() adapted to complex orbitals/determinants
+! by A.D.Guclu Feb2004
+! can deal with any complex determinant, provided that the determinantal
+! coefficients are real.
       use constants_mod
       use control_mod
       use basic_tools_mod
@@ -19,14 +19,14 @@ c coefficients are real.
       implicit real*8(a-h,o-z)
 
 
-c complex locals:
+! complex locals:
       complex*16 cddet_det(3,nelec),cdeterm,cdetinv
       complex*16 corb(norb)
       complex*16 cratio(ndet),csum,cterm
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*)
 
-c allocate memory:
+! allocate memory:
       n2=nelec*nelec
       call alloc('cslmui',cslmui,n2,ndetup)
       call alloc('cslmdi',cslmdi,n2,ndetdn)
@@ -44,9 +44,9 @@ c allocate memory:
       do 10 i=1,nelec
         do 10 idim=1,ndim
    10     cddet_det(idim,i)=dcmplx(0,0)
-c      cdeterm=dcmplx(0,0)
+!      cdeterm=dcmplx(0,0)
 
-c get orbitals and derivatives for all electron iel
+! get orbitals and derivatives for all electron iel
       if(iperiodic.eq.0) then
 
         if(inum_orb.eq.0) then
@@ -123,11 +123,11 @@ c get orbitals and derivatives for all electron iel
         if(iel.le.nup) then
           do 85 idet=1,ndetup
 
-c        cterm=cdetn(idet)*cdetd(idet)*cdet(idet,iwf)
+!        cterm=cdetn(idet)*cdetd(idet)*cdet(idet,iwf)
           do 80 i=1,nup
             do 78 idim=1,ndim
    78         cddeti_detin(idim,i,idet)=dcmplx(0,0)
-c what is the next line for?? :
+! what is the next line for?? :
    80         cd2edeti_detin(i,idet)=dcmplx(0,0)
           ik=-nup
           do 85 i=1,nup
@@ -146,7 +146,7 @@ c what is the next line for?? :
          else
 
        do 95 idet=1,ndetdn
-c        cterm=cdetu(idet)*cdetn(idet)*cdet(idet,iwf)
+!        cterm=cdetu(idet)*cdetn(idet)*cdet(idet,iwf)
           do 90 i=nup+1,nelec
             do 90 idim=1,ndim
    90         cddeti_detin(idim,i,idet)=dcmplx(0,0)

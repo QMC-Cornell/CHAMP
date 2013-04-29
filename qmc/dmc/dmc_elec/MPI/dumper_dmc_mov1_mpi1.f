@@ -1,7 +1,7 @@
       subroutine dumper_dmc_mov1_mpi1
-c MPI version created by Claudia Filippi starting from serial version
-c routine to pick up and dump everything needed to restart
-c job where it left off
+! MPI version created by Claudia Filippi starting from serial version
+! routine to pick up and dump everything needed to restart
+! job where it left off
 
 # if defined (MPI)
 
@@ -44,12 +44,12 @@ c job where it left off
 
       character*13 filename
 
-c Warning need to change to allocate
+! Warning need to change to allocate
       dimension irand_seed_loc(4,0:nproc)
       dimension coefx(nbasis,norb),zexx(nbasis),centx(3,ncent),znucx(ncent)
      &,n1sx(nctype),n2sx(nctype),n2px(-1:1,nctype)
      &,n3sx(nctype),n3px(-1:1,nctype),n3dx(-2:2,nctype)
-c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
+!    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
      &,n4sx(nctype),n4px(-1:1,nctype)
      &,n4fx(-3:3,nctype),n5gx(-4:4,nctype),n6hx(-5:5,nctype)
      &,nsax(nctype),npax(-1:1,nctype),ndax(-2:2,nctype)
@@ -122,9 +122,9 @@ c    &,n4sx(nctype),n4px(-1:1,nctype),n4dx(-2:2,nctype)
         write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
         if(nloc.gt.0)
      &  write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
-c       if(nforce.gt.1) write(10) nwprod
-c    &  ,((pwt(i,j),i=1,nwalk),j=1,nforce)
-c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+!       if(nforce.gt.1) write(10) nwprod
+!    &  ,((pwt(i,j),i=1,nwalk),j=1,nforce)
+!    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         do 450 id=1,nproc-1
           call mpi_recv(nwalk,1,mpi_integer,id
      &    ,1,MPI_COMM_WORLD,istatus,ierr)
@@ -164,9 +164,9 @@ c    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
           write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
           if(nloc.gt.0)
      &    write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
-c         if(nforce.gt.1) write(10) nwprod
-c    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
-c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+!         if(nforce.gt.1) write(10) nwprod
+!    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
+!    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
   450   continue
       endif
       call mpi_barrier(MPI_COMM_WORLD,ierr)
@@ -213,7 +213,7 @@ c    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if(numr.le.0) then
         write(10) (n4s(i),i=1,nctype)
         write(10) ((n4p(m,i),m=-1,1),i=1,nctype)
-c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
+!       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
         write(10) (nsa(i),i=1,nctype)
         write(10) ((npa(m,i),m=-1,1),i=1,nctype)
         write(10) ((nda(m,i),m=-2,2),i=1,nctype)
@@ -241,9 +241,9 @@ c       write(10) ((n4d(m,i),m=-2,2),i=1,nctype)
      &  ,eigv,eest,wdsumo
         read(10) (iage(i),i=1,nwalk),ioldest,ioldestmx
         read(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
-c       read(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i),
-c    &  wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i),
-c    &  i=1,nforce)
+!       read(10) (wgcum(i),egcum(i),pecum(i),tpbcum(i),tjfcum(i),
+!    &  wgcm2(i),egcm2(i),pecm2(i),tpbcm2(i),tjfcm2(i),taucum(i),
+!    &  i=1,nforce)
     4   if(nloc.gt.0)
      &  read(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
       do 5 id=idtask+1,nproc-1
@@ -253,14 +253,14 @@ c    &  i=1,nforce)
      &  ,eigv_id,eest_id,wdsumo_id
         read(10) (iage_id,i=1,nwalk_id),ioldest_id,ioldestmx_id
         read(10) n2_id,((fratio_id,iw=1,nwalk_id),ifr=1,n2_id)
-c       read(10) (wgcum_id,egcum_id,pecum_id,tpbcum_id,tjfcum_id,
-c    &  wgcm2_id,egcm2_id,pecm2_id,tpbcm2_id,tjfcm2_id,taucum_id,
-c    &  i=1,nforce)
+!       read(10) (wgcum_id,egcum_id,pecum_id,tpbcum_id,tjfcum_id,
+!    &  wgcm2_id,egcm2_id,pecm2_id,tpbcm2_id,tjfcm2_id,taucum_id,
+!    &  i=1,nforce)
     5   if(nloc.gt.0)
      &  read(10) nq_id,(xq_id,yq_id,zq_id,wq_id,i=1,nquad)
-c     if(nforce.gt.1) read(10) nwprod
-c    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
-c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+!     if(nforce.gt.1) read(10) nwprod
+!    &,((pwt(i,j),i=1,nwalk),j=1,nforce)
+!    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       call alloc ('wgcm2', wgcm2, nforce)
       call alloc ('egcm2', egcm2, nforce)
       call alloc ('pecm2', pecm2, nforce)
@@ -337,7 +337,7 @@ c    &,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
       if(numr.le.0) then
         read(10) (n4sx(i),i=1,nctype)
         read(10) ((n4px(m,i),m=-1,1),i=1,nctype)
-c       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
+!       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
         read(10) (nsax(i),i=1,nctype)
         read(10) ((npax(m,i),m=-1,1),i=1,nctype)
         read(10) ((ndax(m,i),m=-2,2),i=1,nctype)
@@ -376,7 +376,7 @@ c       read(10) ((n4dx(m,i),m=-2,2),i=1,nctype)
         do 45 m=-2,2
           if(n3d(m,i).ne.n3dx(m,i)) stop 'n3d'
           if(numr.le.0) then
-c           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
+!           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
             if(nda(m,i).ne.ndax(m,i)) stop 'nda'
           endif
    45   continue
@@ -433,7 +433,7 @@ c           if(n4d(m,i).ne.n4dx(m,i)) stop 'n4d'
           endif
    70 continue
 
-c zero out xsum variables
+! zero out xsum variables
 
       wsum=zero
       wfsum=zero

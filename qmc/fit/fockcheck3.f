@@ -1,5 +1,5 @@
       subroutine fockcheck3(o,op,diff,isht,nfsh,it,ipr)
-c Written by Cyrus Umrigar and Claudia Filippi
+! Written by Cyrus Umrigar and Claudia Filippi
       use constants_mod
       use atom_mod
       use contr2_mod
@@ -12,13 +12,13 @@ c Written by Cyrus Umrigar and Claudia Filippi
       parameter(d1b24=1.d0/24.d0,d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0
      &,rt2=1.414213562373095d0,dln2=0.6931471805599453d0
      &,const1=(1.d0-dln2)/12.d0)
-c    &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
+!    &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
       dimension o(2*nord),op(0:2*nord),diff(*)
 
-c f2e o(s^2) from phi20(r12=0)
-c f2n o(r^2) from phi20(r1=0)
-c f2elog o(s^2 log(s)) from phi21(r12=0)
+! f2e o(s^2) from phi20(r12=0)
+! f2n o(r^2) from phi20(r1=0)
+! f2elog o(s^2 log(s)) from phi21(r12=0)
 
       if(ifock.eq.4) then
         zfock=znuc(iwctype(it))

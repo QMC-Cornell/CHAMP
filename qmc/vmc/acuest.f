@@ -1,6 +1,6 @@
       subroutine acuest
-c Written by Cyrus Umrigar, modified by Claudia Filippi
-c routine to accumulate estimators for energy etc.
+! Written by Cyrus Umrigar, modified by Claudia Filippi
+! routine to accumulate estimators for energy etc.
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -42,26 +42,26 @@ c routine to accumulate estimators for energy etc.
 
       dimension xstrech(3,nelec)
       dimension zznow(nzzvars)
-c statement function for error calculation
-c     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
+! statement function for error calculation
+!     err(x,x2)=dsqrt(dabs(x2/iblk-(x/iblk)**2)/iblk)
       err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
 
-c xsum = sum of values of x from metrop
-c xnow = average of values of x from metrop
-c xcum = accumulated sums of xnow
-c xcm2 = accumulated sums of xnow**2
-c xave = current average value of x
-c xerr = current error of x
+! xsum = sum of values of x from metrop
+! xnow = average of values of x from metrop
+! xcum = accumulated sums of xnow
+! xcm2 = accumulated sums of xnow**2
+! xave = current average value of x
+! xerr = current error of x
 
       if(index(mode,'mpi').ne.0) call acuest_mpi
 
-c Warning: At present we have nblk blocks of size nstep*nproc each.
-c It would be a bit better to have nblk*nproc blocks of size nstep each,
-c which just requires a bit of reorganizing.
+! Warning: At present we have nblk blocks of size nstep*nproc each.
+! It would be a bit better to have nblk*nproc blocks of size nstep each,
+! which just requires a bit of reorganizing.
       iblk=iblk+1
       it=iblk*nstep
 
-c write out header first time
+! write out header first time
       if(iblk.eq.1) then
         if(ndim.eq.2) then
           write(6,'(t5,''enow'',t15,''eave'',t21,''(eerr )''
@@ -82,7 +82,7 @@ c write out header first time
         endif
       endif
 
-c write out current values of averages
+! write out current values of averages
 
       wsum(1)=dfloat(nstep)*dfloat(nproc)
 !      if (l_reweight .and. l_opt .and. nforce .eq. 1) then
@@ -96,7 +96,7 @@ c write out current values of averages
 !      call object_modified_by_index (walker_weights_sum_index)
 
       do 10 ifr=1,nforce
-c       wnow=wsum(ifr)/nstep
+!       wnow=wsum(ifr)/nstep
         enow=esum(ifr)/wsum(ifr)
         wcum(ifr)=wcum(ifr)+wsum(ifr)
         ecum(ifr)=ecum(ifr)+esum(ifr)
@@ -158,10 +158,10 @@ c       wnow=wsum(ifr)/nstep
           r2cum=r2cum+r2sum/nelec
           r3cum=r3cum+r3sum/nelec
           r4cum=r4cum+r4sum/nelec
-          if(izigzag.gt.0) then 
+          if(izigzag.gt.0) then
            zzcum(:)=zzcum(:)+zzsum(:)
           endif
-c         acccum=acccum+accsum
+!         acccum=acccum+accsum
           d_node_log_cum = d_node_log_cum + d_node_log_sum
           if(index(mode,'mov1').eq.0) then
             acccum=acccum+accsum
@@ -184,7 +184,7 @@ c         acccum=acccum+accsum
             peierr=err(peicum,peicm2,ifr)
             tpberr=err(tpbcum,tpbcm2,ifr)
             tjferr=err(tjfcum,tjfcm2,ifr)
-c           if(ibasis.eq.3) emerr=nelec*0.125*bext*bext*err(r2cum,r2cm2,ifr)
+!           if(ibasis.eq.3) emerr=nelec*0.125*bext*bext*err(r2cum,r2cm2,ifr)
           endif
 
           peave=pecum/wcum(ifr)
@@ -208,17 +208,17 @@ c           if(ibasis.eq.3) emerr=nelec*0.125*bext*bext*err(r2cum,r2cm2,ifr)
 
           ierror_sigma=nint(100000*error_sigma)  !JT
 
-c magnetic energy for quantum dots...
-c right definition of the potential energy does not include magnetic energy.
+! magnetic energy for quantum dots...
+! right definition of the potential energy does not include magnetic energy.
           if(ndim.eq.2) then
-c           emave=nelec*0.125*bext*bext*r2cum/wcum(ifr)+emaglz+emagsz+emagv
+!           emave=nelec*0.125*bext*bext*r2cum/wcum(ifr)+emaglz+emagsz+emagv
             temp=0.25d0*bext*bext/(we*we)
             emave=(peave-peiave-emag)*temp+emag
             emerr=(peerr+peierr)*temp
             iemerr=nint(10000000*emerr)
-c           peave=peave-emave
+!           peave=peave-emave
             peave=peave*(1-temp)+(peiave+emag)*temp-emag
-c           ipeerr=ipeerr+iemerr
+!           ipeerr=ipeerr+iemerr
             ipeerr=nint(10000000*(peerr*(1-temp)+temp*peierr))
           endif
 
@@ -236,11 +236,11 @@ c           ipeerr=ipeerr+iemerr
      &      accave,it,sigma,ierror_sigma
           endif
 
-c         if(it.ge.1000 .and. accave.lt.0.3d0)
+!         if(it.ge.1000 .and. accave.lt.0.3d0)
           if(it.ge.1000 .and. accave.lt.0.1d0)
      &    write(6,'(''Warning: Low acceptance.  Are you sure you are running the mov1 version and deltas are OK?'')')
-c         if(it.ge.1000 .and. accave.lt.0.1d0)
-c    &    stop 'Low acceptance. Are you sure you are running the mov1 version and delta or deltar deltat are set correctly?'
+!         if(it.ge.1000 .and. accave.lt.0.1d0)
+!    &    stop 'Low acceptance. Are you sure you are running the mov1 version and delta or deltar deltat are set correctly?'
 
          else
 
@@ -265,7 +265,7 @@ c    &    stop 'Low acceptance. Are you sure you are running the mov1 version an
         endif
    10 continue
 
-c zero out xsum variables for metrop
+! zero out xsum variables for metrop
 
       do 20 ifr=1,nforce
         esum(ifr)=0
@@ -290,7 +290,7 @@ c zero out xsum variables for metrop
 
       entry acues1
 
-c     during optimization calculate modified walker weights based on distance to node
+!     during optimization calculate modified walker weights based on distance to node
       if (l_reweight .and. l_opt) then
          if (nforce .eq. 1) then
             call object_provide_by_index(vold_index)
@@ -298,32 +298,32 @@ c     during optimization calculate modified walker weights based on distance to
             d_node_log = log(d_node)
             d_node_log_sum = d_node_log_sum + d_node_log
             current_walker_weight = d_node**reweight_power/(d_node**reweight_power+(d_node_ave/reweight_scale)**reweight_power)
-!            if (l_reset_walker_weights_sum_block) then  
+!            if (l_reset_walker_weights_sum_block) then
 !               walker_weights_sum_block = 0
 !               l_reset_walker_weights_sum_block = .false.
 !            end if
-!            walker_weights_sum_block = walker_weights_sum_block + current_walker_weight     
+!            walker_weights_sum_block = walker_weights_sum_block + current_walker_weight
 !            write(6,*) "!fp: ", esum1, d_node, current_walker_weight
          else
             current_walker_weight = 1.d0
 !            walker_weights_sum_block = nstep_total
 !            walker_weights_sum = dfloat(nstep_total)*dfloat(block_iterations_nb)
-!            call object_modified_by_index (walker_weights_sum_index)      
+!            call object_modified_by_index (walker_weights_sum_index)
          end if
          call object_modified_by_index (current_walker_weight_index)
 !         call object_modified_by_index (walker_weights_sum_block_index)
       end if
 
-c statistical fluctuation (without blocking)
+! statistical fluctuation (without blocking)
       ecum1=ecum1+esum1
       ecm21=ecm21+esum1**2
-c     call grad_hess_jas_save
+!     call grad_hess_jas_save
       esum1=0
 
       return
 
       entry acusig
-c statistical fluctuation, sigma, (without blocking and without p,q)
+! statistical fluctuation, sigma, (without blocking and without p,q)
       do 30 ifr=1,nforce
         ecum1s(ifr)=ecum1s(ifr)+esum1s(ifr)
         if(ifr.eq.1) then
@@ -336,9 +336,9 @@ c statistical fluctuation, sigma, (without blocking and without p,q)
 
       entry zerest
 
-c entry point to zero out all averages etc.
-c the initial values of energy psi etc. is also calculated here
-c although that really only needs to be done before the equil. blocks.
+! entry point to zero out all averages etc.
+! the initial values of energy psi etc. is also calculated here
+! although that really only needs to be done before the equil. blocks.
 
 
 !     allocations
@@ -347,14 +347,14 @@ c although that really only needs to be done before the equil. blocks.
 
       iblk=0
 
-c set quadrature points
+! set quadrature points
 
-c     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
+!     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
-c zero out estimators
+! zero out estimators
 
-c     call wf_secondary
+!     call wf_secondary
 
       pecum=0
       peicum=0
@@ -369,7 +369,7 @@ c     call wf_secondary
       endif
       acccum=0
       ecum1=0
-c     ecum1s=0
+!     ecum1s=0
       d_node_log_cum = 0
 !      walker_weights_sum = 0
 !      call object_modified_by_index (walker_weights_sum_index)
@@ -386,7 +386,7 @@ c     ecum1s=0
         zzcm2(:)=0.d0
       endif
       ecm21=0
-c     ecm21s=0
+!     ecm21s=0
 
       pesum=0
       peisum=0
@@ -423,7 +423,7 @@ c     ecm21s=0
         esum(ifr)=0
    65   wsum(ifr)=0
 
-c Zero out estimators for acceptance, force-bias trun., kin. en. and density
+! Zero out estimators for acceptance, force-bias trun., kin. en. and density
       do 70 i=1,NRAD
         try(i)=0
         suc(i)=0
@@ -435,7 +435,7 @@ c Zero out estimators for acceptance, force-bias trun., kin. en. and density
    70   rprob(i)=0
 
 
-c Zero out estimators for pair densities:
+! Zero out estimators for pair densities:
       if (ifixe.ne.0) then
       call alloc_range ('den2d_t', den2d_t, -NAX, NAX, -NAX, NAX)
       call alloc_range ('den2d_u', den2d_u, -NAX, NAX, -NAX, NAX)
@@ -520,17 +520,17 @@ c Zero out estimators for pair densities:
         zn2ncorr(:) = 0
       endif
 
-c get wavefunction etc. at initial point
+! get wavefunction etc. at initial point
 
-c secondary configs
-c set n- and e-coords and n-n potentials before getting wavefn. etc.
+! secondary configs
+! set n- and e-coords and n-n potentials before getting wavefn. etc.
       do 80 ifr=2,nforce
         call strech(xold,xstrech,ajacob,ifr,1)
         call hpsi(xstrech,psido,psijo,vold,div_vo,d2,peo,peio,eold(ifr),denergy,ifr)
    80   psi2o(ifr)=2*(dlog(dabs(psido))+psijo)+dlog(ajacob)
 
-c primary config
-c set n- and e-coords and n-n potentials before getting wavefn. etc.
+! primary config
+! set n- and e-coords and n-n potentials before getting wavefn. etc.
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
@@ -545,25 +545,25 @@ c set n- and e-coords and n-n potentials before getting wavefn. etc.
 
       call grad_hess_jas_save
 
-c get interparticle distances
-c     call distances(xold,rvec_en,r_en,rvec_ee,r_ee,pe)
+! get interparticle distances
+!     call distances(xold,rvec_en,r_en,rvec_ee,r_ee,pe)
       call distances(xold,pe,pei)
 
-c Find the minimum distance of each electron to any nucleus
-c     do 86 i=1,nelec
-c       rmino(i)=99.d9
-c       do 85 j=1,ncent
-c         dist=0
-c         do 84 k=1,ndim
-c  84       dist=dist+(xold(k,i)-cent(k,j))**2
-c         if(dist.lt.rmino(i)) then
-c           rmino(i)=dist
-c           nearesto(i)=j
-c         endif
-c  85     continue
-c       rmino(i)=dsqrt(rmino(i))
-c       do 86  k=1,ndim
-c  86     rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
+! Find the minimum distance of each electron to any nucleus
+!     do 86 i=1,nelec
+!       rmino(i)=99.d9
+!       do 85 j=1,ncent
+!         dist=0
+!         do 84 k=1,ndim
+!  84       dist=dist+(xold(k,i)-cent(k,j))**2
+!         if(dist.lt.rmino(i)) then
+!           rmino(i)=dist
+!           nearesto(i)=j
+!         endif
+!  85     continue
+!       rmino(i)=dsqrt(rmino(i))
+!       do 86  k=1,ndim
+!  86     rvmino(k,i)=xold(k,i)-cent(k,nearesto(i))
 
       do 86 i=1,nelec
         rmino(i)=99.d9
