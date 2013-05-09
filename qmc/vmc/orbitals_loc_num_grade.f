@@ -39,11 +39,19 @@
 ! normalized displacement from (xorb_grid(ix),yorb_grid(iy)) corner of cell
 !  xscaled=0 @xorb_grid(ix)  xscaled=1 @xorb_grid(ix+1)
 !  yscaled=0 @yorb_grid(iy)  yscaled=1 @yorb_grid(iy+1)
+! ACM: There's something wrong here when using gfortran and MPI
+!      Even though ix is within bounds, I occasionally get an "Array reference out of bounds"
+!      error when I try to reference xorb_grid(ix)
+!      I do not know if this is a compiler bug or an error in CHAMP
+!       write (6,*) ix 
+!       write (6,*) xorb_grid(ix)
 !       if (ix.le.0) then
 !         write (6,*) 'orbitals_loc_num_grade error'
 !         write (6,*) ix, xget, hxi
 !         call systemflush(6)
 !       endif
+!       call systemflush(6)
+
         xscaled=(xget-xorb_grid(ix))*hxi
         yscaled=(yget-yorb_grid(iy))*hyi
 

@@ -85,10 +85,13 @@
 !                site=dsqrt(site)
 !                site=sign(site,(rannyu(0)-half))
 !               This code samples from a smaller, uniform region:
-                site = 2.0d0*(0.5d0 - rannyu(0))
-                angle=2*pi*rannyu(0)
-                x(1,ielec)=(sitsca*site+rring)*dcos(angle)
-                x(2,ielec)=(sitsca*site+rring)*dsin(angle)
+!                site = 2.0d0*(0.5d0 - rannyu(0))
+                site = (0.5d0 - rannyu(0))/dsqrt(we)
+                angle=2.0d0*pi*(dble(ielec) - rannyu(0))/dble(nelec)
+                x(1,ielec)=(site+rring)*dcos(angle)
+                x(2,ielec)=(site+rring)*dsin(angle)
+!               x(1,ielec)=(sitsca*site+rring)*dcos(angle)
+!               x(2,ielec)=(sitsca*site+rring)*dsin(angle)
               endif
              else
                do 5 k=1,ndim
