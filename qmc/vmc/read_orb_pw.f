@@ -910,6 +910,7 @@
    16   read(30,*)
 
       read(30,*) ngvec_dft
+      write(6,'(''ngvec_dft='',i6)') ngvec_dft
 !JT      if(ngvec_dft.gt.NGVEC_BIGX) stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'
 ! In orbitals_pw_tm ngvec_dftorb depends on k vector and can be smaller than ngvec_dft.
 ! Here it is the same.
@@ -935,7 +936,7 @@
    20   read(30,*)
 
       read(30,*) nkvec_tmp
-      write(6,*) nkvec_tmp
+      write(6,'(''nkvec_tmp='',i5)') nkvec_tmp
       if(nkvec_tmp.ne.nkvec) then
         write(6,'(''nkvec_tmp,nkvec='',9i5)') nkvec_tmp,nkvec
         stop 'nkvec_tmp != nkvec in read_orb_pw_pwscf'
@@ -1081,11 +1082,11 @@
 !JT          if(iorba.gt.MORB) stop 'iorba>MORB in read_orb_pw_tm'
           morb = max (morb, iorba) !JT
           read(30,*)
-!         write(6,*) 'Skipped "Band, spin, eigenvalue (au)" line'
+          write(6,*) 'Skipped "Band, spin, eigenvalue (au)" line'
           read(30,*) ibandx,ispin,eig
-!         write(6,*) ibandx,ispin,eig
+          write(6,'(''ibandx,ispin,eig='',2i4,f10.6)') ibandx,ispin,eig
           read(30,*)
-!         write(6,*) 'Skipped "Eigenvector coefficients" line'
+          write(6,*) 'Skipped "Eigenvector coefficients" line'
 ! I am commenting out the next line because pwscf numbers the band index separately for up and down spins, when the orbitals for these are not the same.
 !         if(ibandx.ne.iband) stop 'ibandx.ne.iband in read_orb_pw_pwscf'
           if(ispin.ne.1 .and. ispin.ne.2) stop 'ispin.ne.1 or 2 in read_orb_pw_pwscf'

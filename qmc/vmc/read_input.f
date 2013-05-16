@@ -1125,7 +1125,7 @@
 ! Read in numerical radial basis
 ! This has to be done after reading in the LCAO coefs. in read_orb_loc because we will use information read in read_orb_loc
 ! to compactify the radial basis functions in read_bas_num.
-      if(inum_orb.eq.0 .and. ibasis.le.3) then
+      if(inum_orb.eq.0 .and. (ibasis.eq.1 .or. ibasis.eq.3)) then
         if(minval(zex(:,1)).ne.0.d0) then
           l_purely_analytical_basis = .true.
         else
