@@ -1969,7 +1969,7 @@ module density_mod
   write(unit,'(a,i12)')     'ngvec_big                 =',ngvec_big
 
   write(unit,*) ''
-  write(unit,'(a)') '  gvec_i                    n(g)                        error n(g)'
+  write(unit,'(a)') '    gvec          density Fourier components          statistical error'
 
   do gvec_i = 1, ngvec_big
     write(unit,'(i8,es18.8,a,es18.8,es10.2,a,es10.2)') gvec_i, real(dens_fourier_av (gvec_i)), ' + i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' + i*',aimag(dens_fourier_av_err(gvec_i))
