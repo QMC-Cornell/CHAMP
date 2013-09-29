@@ -143,6 +143,7 @@
      & ((glatt_sim(k,j),k=1,ndim),j=1,ndim)
 
       vcell_sim=dabs(det_sim)
+      call object_modified ('vcell_sim')
       write(6,'(/,''Simulation cell volume'',f15.8)') det_sim
       write(6,'(/,''Simulation cell volume is'',i3,'' times primitive cell volume'')')
      &nint(vcell_sim/vcell)

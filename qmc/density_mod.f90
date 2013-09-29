@@ -1702,7 +1702,8 @@ module density_mod
   implicit none
 
 ! local
-  integer gvec_i, elec_i
+  integer gvec_i, elec_i, dim_i
+  real(dp) dotproduct
 
 ! begin
 
@@ -1713,10 +1714,12 @@ module density_mod
    call object_average_define ('dens_fourier', 'dens_fourier_av')
    call object_error_define ('dens_fourier_av', 'dens_fourier_av_err')
 
+   call object_needed ('ndim')
    call object_needed ('gvec')
    call object_needed ('ngvec_big')
    call object_needed ('nelec')
    call object_needed ('coord_elec')
+   call object_needed ('vcell_sim')
 
    return
 
@@ -1728,11 +1731,23 @@ module density_mod
   call object_alloc ('dens_fourier_av_err', dens_fourier_av_err, ngvec_big)
 
   do gvec_i = 1, ngvec_big
+
     dens_fourier(gvec_i) = 0.d0
+
     do elec_i = 1, nelec
-     dens_fourier(gvec_i) = dens_fourier(gvec_i) + cexp(-(0.0d0,1.0d0)*(coord_elec(1,elec_i)*gvec(1,gvec_i) + coord_elec(2,elec_i)*gvec(2,gvec_i) + coord_elec(3,elec_i)*gvec(3,gvec_i)))
-    enddo
-  enddo 
+ 
+      dotproduct = 0.d0
+      do dim_i = 1, ndim
+       dotproduct = dotproduct + gvec(dim_i,gvec_i)*coord_elec(dim_i,elec_i)
+      enddo ! dim_i
+
+    dens_fourier(gvec_i) = dens_fourier(gvec_i) + cexp(-(0.0d0,1.0d0)*dotproduct)
+
+    enddo ! elec_i
+
+    dens_fourier(gvec_i) = dens_fourier(gvec_i) / vcell_sim
+
+  enddo ! gvec_i
 
   end subroutine dens_fourier_bld
 
