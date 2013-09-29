@@ -73,6 +73,7 @@ module main_menu_mod
    write(6,'(a)') ' density_xy_z ... end: menu for histogram calculation of density of axially symmetric systems'
    write(6,'(a)') ' density ... end: menu for ZVZB  calculation of radial density of spherically symmetric systems'
    write(6,'(a)') ' density_3d ... end: menu for ZVZB calculation of 3d density'
+   write(6,'(a)') ' density_fourier ... end: menu for density in fourier space for periodic calculations'
    write(6,'(a)') ' intracule ... end: menu for calculation of 1D intracules'
    write(6,'(a)') ' intracule3d ... end: menu for calculation of 3D intracules'
    write(6,'(a)') ' extracule ... end: menu for calculation of 1D extracules'
@@ -107,6 +108,7 @@ module main_menu_mod
   case ('density')           ; call dens_menu
   case ('density_xy_z')      ; call dens_xy_z_menu
   case ('density_3d')        ; call dens_3d_menu
+  case ('density_fourier')   ; call dens_fourier_menu
   case ('intracule')         ; call intra_menu
   case ('intracule_3d')      ; call intra_3d_menu
   case ('extracule')         ; call extracule_menu

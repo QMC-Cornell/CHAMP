@@ -461,6 +461,7 @@ module catalog_routines_mod
   call catalog_one_node ('dens_3d_zv2_deloc_covar_bld', dens_3d_zv2_deloc_covar_bld)
   call catalog_one_node ('dens_3d_zv2_deloc_bld', dens_3d_zv2_deloc_bld)
   call catalog_one_node ('dens_3d_zv2_linear_av_var_bld', dens_3d_zv2_linear_av_var_bld)
+  call catalog_one_node ('dens_fourier_bld', dens_fourier_bld)
 
 ! intracule
   call catalog_one_node ('intra_bld', intra_bld)
@@ -683,6 +684,7 @@ module catalog_routines_mod
   call catalog_one_routine ('dens_wrt', dens_wrt)
   call catalog_one_routine ('dens_xy_z_wrt', dens_xy_z_wrt)
   call catalog_one_routine ('dens_3d_wrt', dens_3d_wrt)
+  call catalog_one_routine ('dens_fourier_wrt', dens_fourier_wrt)
   call catalog_one_routine ('extracule_wrt', extracule_wrt)
   call catalog_one_routine ('dipole_moment_wrt', dipole_moment_wrt)
   call catalog_one_routine ('forces_wrt', forces_wrt)

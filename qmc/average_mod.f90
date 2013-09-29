@@ -2043,6 +2043,83 @@ module average_mod
  end subroutine object_variance_by_index_double_2
 
 ! ===================================================================================
+  subroutine object_variance_by_index_complex_1 (object_av_ind, object_var_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate variance of an average object over MC iterations
+!
+! Created       : J. Toulouse, 28 Sep 2013
+! -----------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! input
+  integer, intent(in) :: object_av_ind, object_var_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_variance_by_index_complex_1'
+  character(len=max_string_len_type) object_av_type, object_var_type
+  integer dim_av1, dim_var1
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_av_ind)
+    call object_associated_or_die_by_index (object_var_ind)
+
+!   test on type
+    object_av_type = objects(object_av_ind)%type
+    object_var_type = objects(object_var_ind)%type
+
+    if (object_av_type /= object_var_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_av_ind)%name),' is ', object_av_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_av1 = objects(object_av_ind)%dimensions(1)
+    dim_var1 = objects(object_var_ind)%dimensions(1)
+
+    if (dim_av1 /= dim_var1) then
+     write(6,*) trim(lhere),': dimension of object', trim(objects(object_av_ind)%name),' is ', dim_av1
+     write(6,*) trim(lhere),': dimension of object ',trim(objects(object_var_ind)%name),' is ', dim_var1
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   intermediate objects
+    call alloc ('objects(object_var_ind)%sum_blk_square_complex_1', objects(object_var_ind)%sum_blk_square_complex_1, dim_var1)
+    call alloc('objects(object_var_ind)%previous_av1_complex_1', objects(object_var_ind)%previous_av1_complex_1, dim_av1)
+    objects(object_var_ind)%sum_blk_square_complex_1 = 0.d0
+    objects(object_var_ind)%previous_av1_complex_1 = 0.d0
+
+   endif ! first block
+
+
+!  calculate sum of square of averages over blocks (treat real and imaginary parts separately)
+   objects(object_var_ind)%sum_blk_square_complex_1 = objects(object_var_ind)%sum_blk_square_complex_1   &
+       + cmplx((real(objects(object_av_ind)%pointer_complex_1 * block_iterations_nb - objects(object_var_ind)%previous_av1_complex_1 * (block_iterations_nb - 1)))**2, &
+               (aimag(objects(object_av_ind)%pointer_complex_1 * block_iterations_nb - objects(object_var_ind)%previous_av1_complex_1 * (block_iterations_nb - 1)))**2)
+
+!  calculate variance
+   if (block_iterations_nb == 1) then
+    objects(object_var_ind)%pointer_complex_1 = 0.d0
+   else
+    objects(object_var_ind)%pointer_complex_1 = cmplx((real(objects(object_var_ind)%sum_blk_square_complex_1/block_iterations_nb - objects(object_av_ind)%pointer_complex_1)**2), & 
+   (aimag(objects(object_var_ind)%sum_blk_square_complex_1/block_iterations_nb - objects(object_av_ind)%pointer_complex_1)**2))/(block_iterations_nb-1)
+   endif
+   call object_modified_by_index (object_var_ind)
+
+!  save current average value for next iteration
+   objects(object_var_ind)%previous_av1_complex_1 = objects(object_av_ind)%pointer_complex_1
+
+ end subroutine object_variance_by_index_complex_1
+
+! ===================================================================================
   subroutine object_covariance_by_index_double_0_double_0 (object_av1_ind, object_av2_ind, object_covar_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate covariance of two averaged objects
@@ -2584,6 +2661,63 @@ module average_mod
    call object_modified_by_index (object_err_ind)
 
  end subroutine object_error_by_index_double_2
+
+! ===================================================================================
+  subroutine object_error_by_index_complex_1 (object_var_ind, object_err_ind)
+! -----------------------------------------------------------------------------------
+! Description   : calculate statistical error corresponding to a variance
+!
+! Created       : J. Toulouse, 28 Sep 2013
+! -----------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! input
+  integer, intent(in) :: object_var_ind, object_err_ind
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_error_by_index_complex_1'
+  character(len=max_string_len_type) object_var_type, object_err_type
+  integer dim_var1, dim_err1
+
+! begin
+
+! only for first block
+  if (block_iterations_nb == 1) then
+
+!   test association
+    call object_associated_or_die_by_index (object_var_ind)
+    call object_associated_or_die_by_index (object_err_ind)
+
+!   test on type
+    object_var_type = objects(object_var_ind)%type
+    object_err_type = objects(object_err_ind)%type
+
+    if (object_var_type /= object_err_type) then
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_var_ind)%name),' is ', object_var_type
+     write(6,*) trim(lhere),': type of object ',trim(objects(object_err_ind)%name),' is ', object_err_type
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+!   test on dimensions
+    dim_var1 = objects(object_var_ind)%dimensions(1)
+    dim_err1 = objects(object_err_ind)%dimensions(1)
+
+    if (dim_var1 /= dim_err1) then
+     write(6,*) trim(lhere),': dimension of object', trim(objects(object_var_ind)%name),' is ', dim_var1
+     write(6,*) trim(lhere),': dimension of object ',trim(objects(object_err_ind)%name),' is ', dim_err1
+     write(6,*) trim(lhere),': they should be identical'
+     call die (lhere)
+    endif
+
+   endif ! first block
+
+!  calculate error (take sqrt of real and imaginary parts)
+   objects(object_err_ind)%pointer_complex_1 = cmplx(dsqrt(real(objects(object_var_ind)%pointer_complex_1)),dsqrt(aimag(objects(object_var_ind)%pointer_complex_1)))
+   call object_modified_by_index (object_err_ind)
+
+ end subroutine object_error_by_index_complex_1
 
 ! ===================================================================================
   subroutine object_average_walk_step_by_index_double_0 (object_ind)
@@ -3174,19 +3308,20 @@ module average_mod
     endif
 
     if (trim(object_av_type) == 'double_0') then
-
       call object_associate_by_index_double_0 (object_var_ind)
       call object_variance_by_index_double_0 (object_av_ind, object_var_ind)
 
     elseif (trim(object_av_type) == 'double_1') then
-
       call object_associate_by_index_double_1 (object_var_ind, objects(object_av_ind)%dimensions(1))
       call object_variance_by_index_double_1 (object_av_ind, object_var_ind)
 
     elseif (trim(object_av_type) == 'double_2') then
-
       call object_associate_by_index_double_2 (object_var_ind, objects(object_av_ind)%dimensions(1), objects(object_av_ind)%dimensions(2))
       call object_variance_by_index_double_2 (object_av_ind, object_var_ind)
+
+    elseif (trim(object_av_type) == 'complex_1') then
+      call object_associate_by_index_complex_1 (object_var_ind, objects(object_av_ind)%dimensions(1))
+      call object_variance_by_index_complex_1 (object_av_ind, object_var_ind)
 
     else
      call die (lhere, 'object type >'+trim(object_av_type)+'< not handled.')
@@ -3302,16 +3437,16 @@ module average_mod
     endif
 
     if (trim(object_var_type) == 'double_0') then
-
       call object_error_by_index_double_0 (object_var_ind, object_err_ind)
 
     elseif (trim(object_var_type) == 'double_1') then
-
       call object_error_by_index_double_1 (object_var_ind, object_err_ind)
 
     elseif (trim(object_var_type) == 'double_2') then
-
       call object_error_by_index_double_2 (object_var_ind, object_err_ind)
+
+    elseif (trim(object_var_type) == 'complex_1') then
+      call object_error_by_index_complex_1 (object_var_ind, object_err_ind)
 
     else
 
@@ -3533,6 +3668,10 @@ module average_mod
         call require (lhere, 'objects(object_ind)%dimensions(2) > 0', objects(object_ind)%dimensions(2) > 0)
         call alloc ('objects(object_bav_ind)%sum_double_2', objects(object_bav_ind)%sum_double_2, objects(object_ind)%dimensions(1), objects(object_ind)%dimensions(2))
         objects(object_bav_ind)%sum_double_2 (:,:) = 0.d0
+      case ('complex_1')
+        call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
+        call alloc ('objects(object_bav_ind)%sum_complex_1', objects(object_bav_ind)%sum_complex_1, objects(object_ind)%dimensions(1))
+        objects(object_bav_ind)%sum_complex_1 (:) = 0.d0
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
@@ -3557,6 +3696,12 @@ module average_mod
        objects(object_bav_ind)%sum_double_2 = objects(object_bav_ind)%sum_double_2 + objects(object_ind)%pointer_double_2 
       else
        objects(object_bav_ind)%sum_double_2 = objects(object_bav_ind)%sum_double_2 + objects(object_ind)%pointer_double_2 * current_walker_weight
+      endif
+     case ('complex_1')
+      if (objects(object_bav_ind)%unweighted) then
+       objects(object_bav_ind)%sum_complex_1 = objects(object_bav_ind)%sum_complex_1 + objects(object_ind)%pointer_complex_1 
+      else
+       objects(object_bav_ind)%sum_complex_1 = objects(object_bav_ind)%sum_complex_1 + objects(object_ind)%pointer_complex_1 * current_walker_weight
       endif
      case default
        call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
@@ -3661,6 +3806,10 @@ module average_mod
         call require (lhere, 'type of '+trim(objects(object_ind)%name)+' = type of '+trim(objects(object_bav_ind)%name), objects(object_ind)%type == objects(object_bav_ind)%type)
         call require (lhere, 'dim # 1 of '+trim(objects(object_ind)%name)+' = dim # 1 of '+trim(objects(object_bav_ind)%name), objects(object_ind)%dimensions(1) == objects(object_bav_ind)%dimensions(1))
         call require (lhere, 'dim # 2 of '+trim(objects(object_ind)%name)+' = dim # 2 of '+trim(objects(object_bav_ind)%name), objects(object_ind)%dimensions(2) == objects(object_bav_ind)%dimensions(2))
+      case ('complex_1') 
+        call object_associate_by_index_complex_1 (object_bav_ind, objects(object_ind)%dimensions(1))
+        call require (lhere, 'type of '+trim(objects(object_ind)%name)+' = type of '+trim(objects(object_bav_ind)%name), objects(object_ind)%type == objects(object_bav_ind)%type)
+        call require (lhere, 'dim # 1 of '+trim(objects(object_ind)%name)+' = dim # 1 of '+trim(objects(object_bav_ind)%name), objects(object_ind)%dimensions(1) == objects(object_bav_ind)%dimensions(1))
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
@@ -3717,6 +3866,24 @@ module average_mod
     endif
 !   reinitialization of sum for each block
     objects(object_bav_ind)%sum_double_2 = 0.d0
+
+    case ('complex_1') 
+#   if defined (MPI)
+!   sum values from all processes
+    call alloc ('collect_complex_1', collect_complex_1, objects(object_ind)%dimensions(1))
+    call mpi_allreduce(objects(object_bav_ind)%sum_complex_1,collect_complex_1,objects(object_ind)%dimensions(1),mpi_complex,mpi_sum,MPI_COMM_WORLD,ierr)
+    if (ierr /= 0) call die (lhere, 'error in mpi_allreduce')
+    objects(object_bav_ind)%sum_complex_1 = collect_complex_1
+#   endif
+!   calculate block average
+    if (objects(object_bav_ind)%unweighted) then
+     objects(object_bav_ind)%pointer_complex_1 = objects(object_bav_ind)%sum_complex_1 / total_iterations_block_nb
+    else
+     objects(object_bav_ind)%pointer_complex_1 = objects(object_bav_ind)%sum_complex_1 / walker_weights_sum_block
+    endif
+!   reinitialization of sum for each block
+    objects(object_bav_ind)%sum_complex_1 = 0.d0
+
     case default
       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
     end select
@@ -3765,6 +3932,10 @@ module average_mod
         call require (lhere, 'dim # 2 of '+trim(objects(object_bav_ind)%name)+' = dim # 2 of '+trim(objects(object_av_ind)%name), objects(object_bav_ind)%dimensions(2) == objects(object_av_ind)%dimensions(2))
         call alloc ('objects(object_av_ind)%sum_double_2', objects(object_av_ind)%sum_double_2, objects(object_bav_ind)%dimensions(1), objects(object_bav_ind)%dimensions(2))
         objects(object_av_ind)%sum_double_2 = 0.d0
+      case ('complex_1') 
+        call require (lhere, 'dim # 1 of '+trim(objects(object_bav_ind)%name)+' = dim # 1 of '+trim(objects(object_av_ind)%name), objects(object_bav_ind)%dimensions(1) == objects(object_av_ind)%dimensions(1))
+        call alloc ('objects(object_av_ind)%sum_complex_1', objects(object_av_ind)%sum_complex_1, objects(object_bav_ind)%dimensions(1))
+        objects(object_av_ind)%sum_complex_1 = 0.d0
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
@@ -3809,6 +3980,19 @@ module average_mod
       objects(object_av_ind)%sum_double_2 = objects(object_av_ind)%sum_double_2 + objects(object_bav_ind)%pointer_double_2 * walker_weights_sum_block
 !     calculate global average
       objects(object_av_ind)%pointer_double_2 = objects(object_av_ind)%sum_double_2 / walker_weights_sum
+     endif
+
+    case ('complex_1') 
+     if (objects(object_bav_ind)%unweighted) then
+!     sum over blocks
+      objects(object_av_ind)%sum_complex_1 = objects(object_av_ind)%sum_complex_1 + objects(object_bav_ind)%pointer_complex_1 * total_iterations_block_nb
+!     calculate global average
+      objects(object_av_ind)%pointer_complex_1 = objects(object_av_ind)%sum_complex_1 / total_iterations_nb
+     else
+!     sum over blocks
+      objects(object_av_ind)%sum_complex_1 = objects(object_av_ind)%sum_complex_1 + objects(object_bav_ind)%pointer_complex_1 * walker_weights_sum_block
+!     calculate global average
+      objects(object_av_ind)%pointer_complex_1 = objects(object_av_ind)%sum_complex_1 / walker_weights_sum
      endif
 
     case default

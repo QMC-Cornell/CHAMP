@@ -34,6 +34,7 @@ module objects_mod
    real(dp), pointer                 :: pointer_double_3 (:,:,:)
    real(dp), pointer                 :: pointer_double_4 (:,:,:,:)
    real(dp), pointer                 :: pointer_double_5 (:,:,:,:,:)
+   complex(dpc), pointer             :: pointer_complex_1 (:)
    logical, pointer                  :: pointer_logical_0
    logical, pointer                  :: pointer_logical_1 (:)
    logical, pointer                  :: pointer_logical_2 (:,:)
@@ -65,6 +66,10 @@ module objects_mod
    real(dp), allocatable             :: previous_av1_double_2 (:,:)
    real(dp), allocatable             :: previous_av2_double_2 (:,:)
    real(dp)                          :: variance_double_0
+   complex(dpc), allocatable         :: sum_complex_1 (:)
+   complex(dpc), allocatable         :: sum_blk_complex_1 (:)
+   complex(dpc), allocatable         :: sum_blk_square_complex_1 (:)
+   complex(dpc), allocatable         :: previous_av1_complex_1 (:)
 
   end type type_object
 
@@ -109,6 +114,7 @@ module objects_mod
                     object_alloc_double_4,   &
                     object_alloc_double_5,   &
                     object_alloc_double_row_1,   &
+                    object_alloc_complex_1,   &
                     object_alloc_logical_1,  &
                     object_alloc_logical_2,  &
                     object_alloc_logical_3,  &
@@ -132,6 +138,7 @@ module objects_mod
                     object_associate_double_4,  &
                     object_associate_double_5,  &
                     object_associate_double_row_1, &
+                    object_associate_complex_1,  &
                     object_associate_logical_0, & !fp
                     object_associate_logical_1, &
                     object_associate_logical_2, &
@@ -154,6 +161,7 @@ module objects_mod
                     object_release_double_4,   &
                     object_release_double_5,   &
                     object_release_double_row_1,   &
+                    object_release_complex_1,  &
                     object_release_logical_1,  &
                     object_release_logical_2,  &
                     object_release_logical_3, &
@@ -1559,6 +1567,43 @@ module objects_mod
   end subroutine object_associate_double_row_1
 
 !===========================================================================
+  subroutine object_associate_complex_1 (object_name, object, dim1)
+!---------------------------------------------------------------------------
+! Description : associate pointer to object
+!
+! Created     : J. Toulouse, 28 Sep 2013
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)        :: object_name
+  complex(dpc), target, intent(in)    :: object (:)
+  integer, intent(in)                 :: dim1
+
+! local
+  integer object_ind
+
+! begin
+
+! index of object, catalog if necessary
+  call object_add_once_and_index (object_name, object_ind)
+
+! if object already associated, return
+  if (objects(object_ind)%associated) return
+
+! store type
+  objects(object_ind)%type = 'complex_1'
+
+! store dimensions
+  call append(objects(object_ind)%dimensions, dim1)
+
+! associate pointer
+  objects(object_ind)%pointer_complex_1 => object
+  objects(object_ind)%associated = .true.
+
+  end subroutine object_associate_complex_1
+
+!===========================================================================
   subroutine object_associate_logical_0 (object_name, object) !fp
 !---------------------------------------------------------------------------
 ! Description : associate pointer to object
@@ -1947,6 +1992,68 @@ module objects_mod
   endif
 
   end subroutine object_associate_by_index_double_2
+
+!===========================================================================
+  subroutine object_associate_by_index_complex_1 (object_ind, dim1)
+!---------------------------------------------------------------------------
+! Description : associate pointer of object by its index
+!
+! Created     : J. Toulouse, 28 Sep 2013
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, intent(in)  :: object_ind, dim1
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_associate_by_index_complex_1'
+  integer all_err, object_dim, dim_min
+  complex(dpc), allocatable                :: object_temp (:)
+
+! begin
+
+! associate object if not already associated
+  if (.not. objects(object_ind)%associated) then
+!   store type
+    objects(object_ind)%type = 'complex_1'
+!   store dimensions
+    call append(objects(object_ind)%dimensions, dim1)
+!   associate (allocate) pointer
+    allocate (objects(object_ind)%pointer_complex_1(dim1), stat = all_err)
+    if (all_err /= 0) then
+     call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+    endif
+    objects(object_ind)%pointer_complex_1 = 0.d0
+    objects(object_ind)%associated = .true.
+
+! resize object if already associated with different dimension
+  else
+    object_dim = size(objects(object_ind)%pointer_complex_1)
+    if (object_dim /= dim1) then
+     dim_min =  min(object_dim, dim1)
+     call alloc ('object_temp', object_temp, dim_min)
+     object_temp(:) = objects(object_ind)%pointer_complex_1(1:dim_min)
+     call object_deassociate (objects(object_ind)%name)
+
+     objects(object_ind)%type = 'complex_1'
+     call append(objects(object_ind)%dimensions, dim1)
+     allocate (objects(object_ind)%pointer_complex_1(dim1), stat = all_err)
+     if (all_err /= 0) then
+      call die (lhere,'allocation of object >'+trim(objects(object_ind)%name)+'< failed.')
+     endif
+     objects(object_ind)%pointer_complex_1 = 0.d0
+     objects(object_ind)%associated = .true.
+
+     objects(object_ind)%pointer_complex_1(1:dim_min) = object_temp(:)
+     call release ('object_temp', object_temp)
+!    resize also the corresponding objects for averages and errors
+!     call alloc ('objects(object_ind)%sum_complex_1',objects(object_ind)%sum_complex_1, dim1)
+!     call alloc ('objects(object_ind)%sum_blk_complex_1',objects(object_ind)%sum_blk_complex_1, dim1)
+!!     call alloc ('objects(object_ind)%previous_complex_1',objects(object_ind)%previous_complex_1, dim1)
+    endif
+  endif
+
+  end subroutine object_associate_by_index_complex_1
 
 !===========================================================================
   subroutine object_deassociate (object_name)
@@ -2580,6 +2687,64 @@ module objects_mod
   end subroutine object_alloc_double_row_1
 
 !===========================================================================
+  subroutine object_alloc_complex_1 (object_name, object, dim1)
+!---------------------------------------------------------------------------
+! Description : allocate an object and associate its name with its address
+! Description : or resize it if already allocated
+!
+! Created     : J. Toulouse, 28 Sep 2013
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)         :: object_name
+  integer, intent(in)                  :: dim1
+
+! input/output
+  complex(dpc), allocatable, intent(inout) :: object (:)
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'object_alloc_complex_1'
+  integer all_err, object_dim, dim_min, object_ind
+  complex(dpc), allocatable                :: object_temp (:)
+
+! begin
+
+! allocate object if not already allocated
+  if(.not. allocated(object)) then
+   allocate (object(dim1), stat = all_err)
+   if (all_err /= 0) then
+    write(6,'(2a,i8)') trim(lhere),': dimension is ', dim1
+    call die (lhere,'allocation of object >'+trim(object_name)+'< failed.')
+   endif
+   object(:) = 0.d0
+   call object_associate (object_name, object, dim1)
+
+   else
+!  resize object if already allocated with different dimension
+   object_dim = size(object)
+   if (object_dim /= dim1) then
+    dim_min =  min(object_dim, dim1)
+    call alloc ('object_temp', object_temp, dim_min)
+    object_temp(:) = object(1:dim_min)
+    call object_release (object_name, object)
+    allocate (object(dim1))
+    object(:) = 0.d0
+    call object_associate (object_name, object, dim1)
+    object(1:dim_min) = object_temp(:)
+    call release ('object_temp', object_temp)
+!   resize also the corresponding objects for averages and errors
+    object_ind = object_index (object_name)
+    call alloc ('objects(object_ind)%sum_complex_1',objects(object_ind)%sum_complex_1, dim1)
+    call alloc ('objects(object_ind)%sum_blk_complex_1',objects(object_ind)%sum_blk_complex_1, dim1)
+!    call alloc ('objects(object_ind)%previous_complex_1',objects(object_ind)%previous_complex_1, dim1)
+   endif
+
+  endif
+
+  end subroutine object_alloc_complex_1
+
+!===========================================================================
   subroutine object_alloc_logical_1 (object_name, object, dim1)
 !---------------------------------------------------------------------------
 ! Description : allocate an object and associate its name with its address
@@ -3061,6 +3226,27 @@ module objects_mod
   call object_deassociate (object_name)
 
   end subroutine object_release_double_row_1
+
+!===========================================================================
+  subroutine object_release_complex_1 (object_name, object)
+!---------------------------------------------------------------------------
+! Description : deallocate and deassociate an object
+!
+! Created     : J. Toulouse, 28 Sep 2013
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  character(len=*), intent(in)            :: object_name
+
+! input/output
+  complex(dpc), allocatable, intent(inout)    :: object(:)
+
+! begin
+  call release (object_name, object)
+  call object_deassociate (object_name)
+
+  end subroutine object_release_complex_1
 
 !===========================================================================
   subroutine object_release_logical_1 (object_name, object)

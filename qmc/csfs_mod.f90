@@ -52,6 +52,7 @@ module csfs_mod
   character(len=max_string_len_rout), save :: lhere = 'csfs_menu'
   integer elec_i, elec_j, det_i, csf_i, det_in_csf_i
   real(dp), allocatable :: csf_coef_read (:)
+  real(dp) sum_csf_coef_sq
 
 ! begin
   write(6,*)
@@ -140,6 +141,13 @@ module csfs_mod
   call object_provide ('ncsf')
   write(6,'(a,i5)') ' number of CSFs = ',ncsf
   write(6,'(a,200f10.6)') ' CSF coefficients = ',(csf_coef(csf_i,1),csf_i=1,ncsf)
+
+! sum of square of CSF coefficients
+  sum_csf_coef_sq = 0
+  do csf_i = 1, ncsf
+   sum_csf_coef_sq = sum_csf_coef_sq + csf_coef(csf_i,1)**2
+  enddo
+  write(6,'(a,f10.6)') ' sum of square of CSF coefficients = ',sum_csf_coef_sq
 
   call object_provide ('ndet_in_csf')
   call object_provide ('iwdet_in_csf')

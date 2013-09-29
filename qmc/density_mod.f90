@@ -72,6 +72,12 @@ module density_mod
   real(dp), allocatable             :: dens_3d (:)
   real(dp), allocatable             :: dens_3d_err (:)
 
+! For periodic densities in fourier space
+  character(len=max_string_len_file):: dens_fourier_file_out  = ''
+  complex(dpc), allocatable         :: dens_fourier (:)
+  complex(dpc), allocatable         :: dens_fourier_av (:)
+  complex(dpc), allocatable         :: dens_fourier_av_err (:)
+
   contains
 
 
@@ -99,7 +105,7 @@ module density_mod
    write(6,'(a)') 'HELP for menu density'
    write(6,'(a)') 'density'
    write(6,'(a)') ' estimator = [string] : choice of estimator {histogram|zv1|zv5|zvzb1|zvzb5} (default=zv1)'
-   write(6,'(a)') ' exponent  = [real] : exponent for zv5 or zvzb5 estimator (should be 2*sqrt(2*I)) (default = 1.0)'
+   write(6,'(a)') ' exponent  = [real]   : exponent for zv5 or zvzb5 estimator (should be 2*sqrt(2*I)) (default = 1.0)'
    write(6,'(a)') ' file      = [string] : file in which density will be written'
    write(6,'(a)') 'end'
 
@@ -173,12 +179,13 @@ module density_mod
   write(6,'(a)') 'End of density menu --------------------------------------------------------------------------------------'
 
   end subroutine dens_menu
+
 !===========================================================================
   subroutine dens_xy_z_menu
 !---------------------------------------------------------------------------
 ! Description : menu for axially averaged density calculation
 !
-! Created       : C. Umrigar, 07 Jul 2012, by imitating dens_menu of J. Toulouse
+! Created     : C. Umrigar, 07 Jul 2012, by imitating dens_menu of J. Toulouse
 !---------------------------------------------------------------------------
   implicit none
 
@@ -340,6 +347,60 @@ module density_mod
   write(6,'(a)') 'End of density_3d menu -----------------------------------------------------------------------------------'
 
   end subroutine dens_3d_menu
+
+!===========================================================================
+  subroutine dens_fourier_menu
+!---------------------------------------------------------------------------
+! Description : menu for density calculation for periodic calculations (in Fourier space)
+!
+! Created     : J. Toulouse, 28 Sep 2013
+!---------------------------------------------------------------------------
+  implicit none
+
+  character(len=max_string_len_rout), save :: lhere = 'dens_fourier_menu'
+
+! begin
+  write(6,*)
+  write(6,'(a)') 'Beginning of density_fourier menu -----------------------------------------------------------------------------'
+
+! loop over menu lines
+  do
+  call get_next_word (word)
+
+  select case(trim(word))
+  case ('help')
+   write(6,'(a)') 'HELP for density_fourier menu'
+   write(6,'(a)') 'density_fourier'
+   write(6,'(a)') '  file    = [string]   : file in which density will be written'
+   write(6,'(a)') 'end'
+
+  case ('file')
+   call get_next_value (dens_fourier_file_out)
+
+  case ('end')
+   exit
+
+  case default
+   call die (lhere, 'unknown keyword >'+trim(word)+'<.')
+  end select
+
+  enddo ! end loop over menu lines
+
+
+! File
+  if (trim(dens_fourier_file_out) /= '') then
+   write (6,'(3a)') ' density will be written on file >',trim(dens_fourier_file_out),'<.'
+  else
+   call die (lhere, 'file for writing periodic density not specified.')
+  endif
+
+  call object_average_request ('dens_fourier_av')
+  call object_error_request ('dens_fourier_av_err')
+  call routine_write_block_request ('dens_fourier_wrt')
+
+  write(6,'(a)') 'End of density_fourier menu -----------------------------------------------------------------------------------'
+
+  end subroutine dens_fourier_menu
 
 ! ==============================================================================
   subroutine dens_histo_bld
@@ -1630,6 +1691,51 @@ module density_mod
 
   end subroutine dens_3d_bld
 
+! ==============================================================================
+  subroutine dens_fourier_bld
+! ------------------------------------------------------------------------------
+! Description   : estimator of periodic density (Fourier transform)
+!
+! Created       : J. Toulouse, 28 Sep 2013
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer gvec_i, elec_i
+
+! begin
+
+! header
+  if (header_exe) then
+
+   call object_create ('dens_fourier')
+   call object_average_define ('dens_fourier', 'dens_fourier_av')
+   call object_error_define ('dens_fourier_av', 'dens_fourier_av_err')
+
+   call object_needed ('gvec')
+   call object_needed ('ngvec_big')
+   call object_needed ('nelec')
+   call object_needed ('coord_elec')
+
+   return
+
+  endif
+
+! allocations
+  call object_alloc ('dens_fourier', dens_fourier, ngvec_big)
+  call object_alloc ('dens_fourier_av', dens_fourier_av, ngvec_big)
+  call object_alloc ('dens_fourier_av_err', dens_fourier_av_err, ngvec_big)
+
+  do gvec_i = 1, ngvec_big
+    dens_fourier(gvec_i) = 0.d0
+    do elec_i = 1, nelec
+     dens_fourier(gvec_i) = dens_fourier(gvec_i) + cexp((0.0,1.0)*(coord_elec(1,elec_i)*gvec(1,gvec_i) + coord_elec(2,elec_i)*gvec(2,gvec_i) + coord_elec(3,elec_i)*gvec(3,gvec_i)))
+    enddo
+  enddo 
+
+  end subroutine dens_fourier_bld
+
 ! ========================================================================
   subroutine dens_wrt
 ! ------------------------------------------------------------------------
@@ -1745,7 +1851,7 @@ module density_mod
 ! ========================================================================
   subroutine dens_3d_wrt
 ! ------------------------------------------------------------------------
-! Description    : write 3D density density on file
+! Description    : write 3D density on file
 !
 ! Created        : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------
@@ -1809,5 +1915,53 @@ module density_mod
   close(unit)
 
   end subroutine dens_3d_wrt
+
+! ========================================================================
+  subroutine dens_fourier_wrt
+! ------------------------------------------------------------------------
+! Description    : write density in fourier space on file
+!
+! Created        : J. Toulouse, 28 Sep 2013
+! ------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer                                    :: unit
+  integer                                    :: gvec_i
+
+! begin
+
+! return if not main node
+# if defined (MPI)
+   if (idtask /= 0) return
+# endif
+
+! provide necessary objects
+  call object_provide ('ngvec_big')
+  call object_provide ('dens_fourier_av')
+  call object_provide ('dens_fourier_av_err')
+
+! open file
+  unit = 0
+  call open_file_or_die (dens_fourier_file_out, unit)
+
+  write(unit,'(9a)')        '#D fourier density generated by CHAMP using mode ',trim(mode)
+  write(unit,'(a,i5)')      'number of electrons       =',nelec
+  write(unit,'(a,i20)')     'number of walkers         =',nwalk
+  write(unit,'(a,i20)')     'number of steps per block =',nstep_total
+  write(unit,'(a,i20)')     'number of blocks          =',block_iterations_nb
+  write(unit,'(a,i12)')     'ngvec_big                 =',ngvec_big
+
+  write(unit,*) ''
+  write(unit,'(a)') '  gvec_i                    n(g)                        error n(g)'
+
+  do gvec_i = 1, ngvec_big
+    write(unit,'(i8,es18.8,a,es18.8,es10.2,a,es10.2)') gvec_i, real(dens_fourier_av (gvec_i)), ' + i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' + i*',aimag(dens_fourier_av_err(gvec_i))
+  enddo
+
+  close(unit)
+
+  end subroutine dens_fourier_wrt
 
 end module density_mod

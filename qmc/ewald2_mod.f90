@@ -11,6 +11,7 @@ module ewald2_mod
 !         1  simulation cell
 
       use basic_tools_mod, only: alloc
+      use objects_mod, only: object_modified
       use dim_mod
       implicit real*8(a-h,o-z)
 
@@ -121,6 +122,9 @@ module ewald2_mod
    11 continue
 
       call sort(igvec,gvec,gnorm_tmp,gnorm,igmult,ngvec_big,ngnorm_big,icell)
+  
+      call object_modified ('ngvec_big')
+      call object_modified ('gvec')
 
       return
       end subroutine
