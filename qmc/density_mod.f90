@@ -1730,7 +1730,7 @@ module density_mod
   do gvec_i = 1, ngvec_big
     dens_fourier(gvec_i) = 0.d0
     do elec_i = 1, nelec
-     dens_fourier(gvec_i) = dens_fourier(gvec_i) + cexp((0.0,1.0)*(coord_elec(1,elec_i)*gvec(1,gvec_i) + coord_elec(2,elec_i)*gvec(2,gvec_i) + coord_elec(3,elec_i)*gvec(3,gvec_i)))
+     dens_fourier(gvec_i) = dens_fourier(gvec_i) + cexp(-(0.0d0,1.0d0)*(coord_elec(1,elec_i)*gvec(1,gvec_i) + coord_elec(2,elec_i)*gvec(2,gvec_i) + coord_elec(3,elec_i)*gvec(3,gvec_i)))
     enddo
   enddo 
 
