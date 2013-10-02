@@ -118,6 +118,7 @@
      & ((glatt(k,j),k=1,ndim),j=1,ndim)
 
       vcell=dabs(det)
+      call object_modified ('vcell')
       write(6,'(/,''Cell volume'',f15.8)') det
 
 ! Simulation cell volume and reciprocal lattice

@@ -1719,7 +1719,7 @@ module density_mod
    call object_needed ('ngvec_big')
    call object_needed ('nelec')
    call object_needed ('coord_elec')
-   call object_needed ('vcell_sim')
+   call object_needed ('vcell')
 
    return
 
@@ -1745,7 +1745,7 @@ module density_mod
 
     enddo ! elec_i
 
-    dens_fourier(gvec_i) = dens_fourier(gvec_i) / vcell_sim
+    dens_fourier(gvec_i) = dens_fourier(gvec_i) / vcell
 
   enddo ! gvec_i
 
@@ -1954,6 +1954,7 @@ module density_mod
 
 ! provide necessary objects
   call object_provide ('ngvec_big')
+  call object_provide ('gvec')
   call object_provide ('dens_fourier_av')
   call object_provide ('dens_fourier_av_err')
 
@@ -1969,10 +1970,10 @@ module density_mod
   write(unit,'(a,i12)')     'ngvec_big                 =',ngvec_big
 
   write(unit,*) ''
-  write(unit,'(a)') '    gvec          density Fourier components          statistical error'
+  write(unit,'(a)') '                          gvec                       density Fourier components          statistical error'
 
   do gvec_i = 1, ngvec_big
-    write(unit,'(i8,es18.8,a,es18.8,es10.2,a,es10.2)') gvec_i, real(dens_fourier_av (gvec_i)), ' + i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' + i*',aimag(dens_fourier_av_err(gvec_i))
+    write(unit,'(i8,3f12.6,es18.8,a,es18.8,es10.2,a,es10.2)') gvec_i, gvec(1,gvec_i), gvec(2,gvec_i), gvec(3,gvec_i), real(dens_fourier_av (gvec_i)), ' + i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' + i*',aimag(dens_fourier_av_err(gvec_i))
   enddo
 
   close(unit)
