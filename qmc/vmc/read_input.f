@@ -1662,13 +1662,15 @@
       call systemflush(6)
 
 ! circular coordinates
-      if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2'
-      if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) stop 'we must have 0<rmin<rmax'
-      if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1) stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
-      delti=(2*nmesht+1)/(2*pi)
-      delradi=(2*nmeshr+1)/(rmax-rmin)
-      rmean=(rmin+rmax)*0.5d0
-      write(6,*) 'Value of r used in densities is relative to rmean = ', rmean
+      if(ibasis.ge.3 .and. ibasis.le.7) then ! not quite the right conditions for circular coordinates, but good enough for now
+        if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2'
+        if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) stop 'we must have 0<rmin<rmax'
+        if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1) stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
+        delti=(2*nmesht+1)/(2*pi)
+        delradi=(2*nmeshr+1)/(rmax-rmin)
+        rmean=(rmin+rmax)*0.5d0
+        write(6,'(''Value of r used in densities is relative to rmean ='',f10.6)') rmean
+      endif
 
 ! get normalization for basis functions
 ! (used to be up)

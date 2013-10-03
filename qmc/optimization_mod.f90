@@ -274,7 +274,7 @@ module optimization_mod
   case ('increase_blocks_limit')
    call get_next_value (increase_blocks_limit)
    call require (lhere, 'increase_blocks_limit > 0', increase_blocks_limit > 0) !fp
-   nblk_max = increase_blocks_limit
+   nblk_max = nint(increase_blocks_limit)
 
   case ('check_convergence')
    call get_next_value (l_check_convergence)
@@ -1069,7 +1069,7 @@ module optimization_mod
          endif
        endif
        if (l_increase_blocks) then
-         nblk = min(nblk*increase_blocks_factor,increase_blocks_limit)
+         nblk = nint(min(nblk*increase_blocks_factor,increase_blocks_limit))
        endif
      endif
    endif
@@ -3005,7 +3005,7 @@ module optimization_mod
   if (info /= 0) then
    call die (here, 'problem in dgeev')
   endif
-  lwork = work(1)
+  lwork = nint(work(1))
   call alloc ('work', work, lwork)
   mat_a (:,:) = kappa (:,:)
   call dgeev('V','V', orb_tot_nb, mat_a, orb_tot_nb, mat_wr, mat_wi, mat_vl, orb_tot_nb, mat_vr, orb_tot_nb, work, lwork, info)

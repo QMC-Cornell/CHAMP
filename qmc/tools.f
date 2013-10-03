@@ -22,7 +22,7 @@
       if(lenstr.gt.0) then
          Stemp = '                               '
          Stemp(31-lenstr:30) = String(1:lenstr)
-         read(Stemp,'(D30.0)',err=999) value
+         read(Stemp,'(D30.6)',err=999) value
 
       else if(lenstr.lt.0) then
          write(6,'(a,i10)')

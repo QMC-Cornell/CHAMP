@@ -1741,7 +1741,7 @@ module density_mod
        dotproduct = dotproduct + gvec(dim_i,gvec_i)*coord_elec(dim_i,elec_i)
       enddo ! dim_i
 
-    dens_fourier(gvec_i) = dens_fourier(gvec_i) + cexp(-(0.0d0,1.0d0)*dotproduct)
+    dens_fourier(gvec_i) = dens_fourier(gvec_i) + cdexp(-(0.0d0,1.0d0)*dotproduct)
 
     enddo ! elec_i
 
@@ -1848,13 +1848,13 @@ module density_mod
   write(unit,'(a,i12)')     'grid_xy_z_nb              =',grid_xy_z_nb
 
   write(unit,*) ''
-  write(unit,'(a)') '   xy          z           n(r)        error n(r)'
+  write(unit,'(a)') '   xy          z           n(r)        error_n(r)'
 
   do grid_xy_i = 1, grid_xy_nb
     do grid_z_i = 1, grid_z_nb
       grid_i = grid_xy_z_index (grid_xy_i, grid_z_i)
 !     write(unit,'(5e25.15)') grid_xy_z(1,grid_i), grid_xy_z(2,grid_i), grid_xy_z(3,grid_i), dens_xy_z (grid_i), dens_xy_z_err(grid_i)
-      write(unit,'(2es12.4,es18.8,es10.2)') grid_xy_z(1,grid_i), grid_xy_z(2,grid_i), dens_xy_z (grid_i), dens_xy_z_err(grid_i)
+      write(unit,'(2f10.6,es17.8,es10.2)') grid_xy_z(1,grid_i), grid_xy_z(2,grid_i), dens_xy_z (grid_i), dens_xy_z_err(grid_i)
     enddo ! grid_z_i
     write(unit,'(a)') ''
   enddo ! grid_xy_i
@@ -1911,8 +1911,7 @@ module density_mod
   write(unit,'(a,i12)')     'grid_xyz_nb               =',grid_xyz_nb
 
   write(unit,*) ''
-! write(unit,'(a)') '             x                        y                        z                       n(r)                   error n(r)'
-  write(unit,'(a)') '  x   y   z          n(r)      error n(r)'
+  write(unit,'(a)') '   x         y         z           n(r)         error_n(r)'
 
   do grid_x_i = 1, grid_x_nb
    do grid_y_i = 1, grid_y_nb
@@ -1920,7 +1919,7 @@ module density_mod
 
        grid_i = grid_xyz_index (grid_x_i, grid_y_i, grid_z_i)
 !      write(unit,'(5e25.15)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
-       write(unit,'(3es12.4,es18.8,es10.2)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
+       write(unit,'(3es10.6,es18.8,es10.2)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
     enddo ! grid_z_i
     write(unit,'(a)') ''
    enddo  ! grid_y_i
@@ -1970,10 +1969,10 @@ module density_mod
   write(unit,'(a,i12)')     'ngvec_big                 =',ngvec_big
 
   write(unit,*) ''
-  write(unit,'(a)') '                          gvec                       density Fourier components          statistical error'
+  write(unit,'(a)') '                        gvec                     density Fourier components       statistical error'
 
   do gvec_i = 1, ngvec_big
-    write(unit,'(i8,3f12.6,es18.8,a,es18.8,es10.2,a,es10.2)') gvec_i, gvec(1,gvec_i), gvec(2,gvec_i), gvec(3,gvec_i), real(dens_fourier_av (gvec_i)), ' + i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' + i*',aimag(dens_fourier_av_err(gvec_i))
+    write(unit,'(i6,3f12.6,es17.8,a,es16.8,es10.2,a,es9.2)') gvec_i, gvec(1,gvec_i), gvec(2,gvec_i), gvec(3,gvec_i), real(dens_fourier_av (gvec_i)), ' +i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' +i*',aimag(dens_fourier_av_err(gvec_i))
   enddo
 
   close(unit)
