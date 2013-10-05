@@ -462,6 +462,7 @@ module catalog_routines_mod
   call catalog_one_node ('dens_3d_zv2_deloc_bld', dens_3d_zv2_deloc_bld)
   call catalog_one_node ('dens_3d_zv2_linear_av_var_bld', dens_3d_zv2_linear_av_var_bld)
   call catalog_one_node ('dens_fourier_bld', dens_fourier_bld)
+  call catalog_one_node ('dens_fourier_real_bld', dens_fourier_real_bld)
 
 ! intracule
   call catalog_one_node ('intra_bld', intra_bld)

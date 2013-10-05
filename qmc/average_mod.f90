@@ -2094,23 +2094,23 @@ module average_mod
 !   intermediate objects
     call alloc ('objects(object_var_ind)%sum_blk_square_complex_1', objects(object_var_ind)%sum_blk_square_complex_1, dim_var1)
     call alloc('objects(object_var_ind)%previous_av1_complex_1', objects(object_var_ind)%previous_av1_complex_1, dim_av1)
-    objects(object_var_ind)%sum_blk_square_complex_1 = 0.d0
-    objects(object_var_ind)%previous_av1_complex_1 = 0.d0
+    objects(object_var_ind)%sum_blk_square_complex_1 = (0.d0,0.d0)
+    objects(object_var_ind)%previous_av1_complex_1 = (0.d0,0.d0)
 
    endif ! first block
 
 
 !  calculate sum of square of averages over blocks (treat real and imaginary parts separately)
    objects(object_var_ind)%sum_blk_square_complex_1 = objects(object_var_ind)%sum_blk_square_complex_1   &
-       + cmplx((real(objects(object_av_ind)%pointer_complex_1 * block_iterations_nb - objects(object_var_ind)%previous_av1_complex_1 * (block_iterations_nb - 1)))**2, &
-               (aimag(objects(object_av_ind)%pointer_complex_1 * block_iterations_nb - objects(object_var_ind)%previous_av1_complex_1 * (block_iterations_nb - 1)))**2)
+       + cmplx((real(objects(object_av_ind)%pointer_complex_1) * block_iterations_nb - real(objects(object_var_ind)%previous_av1_complex_1) * (block_iterations_nb - 1))**2, &
+               (aimag(objects(object_av_ind)%pointer_complex_1) * block_iterations_nb - aimag(objects(object_var_ind)%previous_av1_complex_1) * (block_iterations_nb - 1))**2)
 
 !  calculate variance
    if (block_iterations_nb == 1) then
-    objects(object_var_ind)%pointer_complex_1 = 0.d0
+    objects(object_var_ind)%pointer_complex_1 = (0.d0,0.d0)
    else
-    objects(object_var_ind)%pointer_complex_1 = cmplx((real(objects(object_var_ind)%sum_blk_square_complex_1/block_iterations_nb - objects(object_av_ind)%pointer_complex_1)**2), & 
-   (aimag(objects(object_var_ind)%sum_blk_square_complex_1/block_iterations_nb - objects(object_av_ind)%pointer_complex_1)**2))/(block_iterations_nb-1)
+    objects(object_var_ind)%pointer_complex_1 = cmplx(real(objects(object_var_ind)%sum_blk_square_complex_1)/block_iterations_nb - real(objects(object_av_ind)%pointer_complex_1)**2, & 
+   aimag(objects(object_var_ind)%sum_blk_square_complex_1)/block_iterations_nb - aimag(objects(object_av_ind)%pointer_complex_1)**2)/(block_iterations_nb-1)
    endif
    call object_modified_by_index (object_var_ind)
 
@@ -3671,7 +3671,7 @@ module average_mod
       case ('complex_1')
         call require (lhere, 'objects(object_ind)%dimensions(1) > 0', objects(object_ind)%dimensions(1) > 0)
         call alloc ('objects(object_bav_ind)%sum_complex_1', objects(object_bav_ind)%sum_complex_1, objects(object_ind)%dimensions(1))
-        objects(object_bav_ind)%sum_complex_1 (:) = 0.d0
+        objects(object_bav_ind)%sum_complex_1 (:) = (0.d0,0.d0)
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
@@ -3882,7 +3882,7 @@ module average_mod
      objects(object_bav_ind)%pointer_complex_1 = objects(object_bav_ind)%sum_complex_1 / walker_weights_sum_block
     endif
 !   reinitialization of sum for each block
-    objects(object_bav_ind)%sum_complex_1 = 0.d0
+    objects(object_bav_ind)%sum_complex_1 = (0.d0,0.d0)
 
     case default
       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
@@ -3935,7 +3935,7 @@ module average_mod
       case ('complex_1') 
         call require (lhere, 'dim # 1 of '+trim(objects(object_bav_ind)%name)+' = dim # 1 of '+trim(objects(object_av_ind)%name), objects(object_bav_ind)%dimensions(1) == objects(object_av_ind)%dimensions(1))
         call alloc ('objects(object_av_ind)%sum_complex_1', objects(object_av_ind)%sum_complex_1, objects(object_bav_ind)%dimensions(1))
-        objects(object_av_ind)%sum_complex_1 = 0.d0
+        objects(object_av_ind)%sum_complex_1 = (0.d0,0.d0)
       case default
         call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
       end select
