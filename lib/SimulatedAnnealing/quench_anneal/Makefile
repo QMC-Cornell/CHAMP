@@ -22,7 +22,7 @@ FFLAGS = -finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -f
 # F95_MPI = gfortran
 endif
 
-ifndef F77
+#ifndef F77
 
 ##########
 # README #
@@ -452,6 +452,13 @@ ifeq ($(hostname),clastos)
   FLINKER_MPI = /usr/local/bin/mpif90_64
 endif
 
+#ifeq ($(hostname),hydrogene.lct.jussieu.fr)
+#FC = ifort
+#F77 = ifort
+#F95 = ifort
+#FFLAGS=-zero -r8 -pad -align all -O3 -ip -diag-disable vec -fpp -shared-intel
+#endif
+
 # AMD Opteron cluster with Pathscale compiler at Lyngby, Denmark
 ifeq ($(findstring slid.fysik.dtu.dk,$(hostname)), slid.fysik.dtu.dk)
 
@@ -484,7 +491,7 @@ ifndef FFLAGS_NOOPT
   FFLAGS_NOOPT = $(FFLAGS)
 endif
 
-endif # End of ifndef at top of Makefile
+#endif # End of ifndef at top of Makefile
 
 #######################
 # Using this Makefile #

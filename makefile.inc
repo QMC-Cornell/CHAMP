@@ -333,11 +333,18 @@ endif
 
 
 # hydrogene in Paris
-ifeq ($(hostname),hydrogene)
- F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
- CC=gcc
- EINSPLINE=
- LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+ifeq ($(hostname),hydrogene.lct.jussieu.fr)
+# F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ip -fpp -DNOEINSPLINE
+# CC=gcc
+# EINSPLINE=
+# LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+  CC=icc
+  CXX=icc
+  F95=ifort
+  F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+  F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
+  EINSPLINE=
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
 # NASA Ames Columbia Itanium cluster

@@ -388,7 +388,7 @@
       write(6,'(''eguess='',f12.6)') eguess
 
       read(5,*) pmarquardt,tau,noutput,nstep,ibold
-      write(6,'(''pmarquardt,tau,ibold '',2g8.2,i3)') pmarquardt,tau,ibold
+      write(6,'(''pmarquardt,tau,ibold '',2g9.2,i3)') pmarquardt,tau,ibold
       read(5,'(2l2)') analytic,cholesky
       write(6,'(''analytic,cholesky'',2l2)') analytic,cholesky
 
@@ -634,9 +634,9 @@
 #endif
 
         if(converg) then
-          write(6,'(''chisq='',es12.6,i5,'' func evals, convergence: '',a10)') err2,icalls,mesg
+          write(6,'(''chisq='',es13.6,i5,'' func evals, convergence: '',a10)') err2,icalls,mesg
          else
-          write(6,'(''chisq='',es12.6,i5,'' func evals, no convergence'')') err2,icalls
+          write(6,'(''chisq='',es13.6,i5,'' func evals, no convergence'')') err2,icalls
         endif
 
       endif

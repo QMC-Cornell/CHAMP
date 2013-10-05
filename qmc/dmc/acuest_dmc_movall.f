@@ -207,7 +207,7 @@
 
         if(ifr.eq.1) then
           if(ndim.eq.2) then
-            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+            write(6,'(f14.7,5(f14.7,''('',i7,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &      emave,iemerr,npass,nint(wgsum(ifr)),ioldest
            else
             write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
@@ -215,7 +215,7 @@
           endif
          else
           if(ndim.eq.2) then
-            write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
+            write(6,'(f14.7,5(f14.7,''('',i7,'')''),17x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
      &      emave,iemerr,nint(wgsum(ifr))
            else
             write(6,'(f10.5,5(f10.5,''('',i5,'')''),10x,3i10)') egnow,egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
@@ -514,7 +514,7 @@
        else
         taueff(1)=tau*dfus2ac/dfus2unf(1)
         write(6,'(''various possibilities for mult tau are:'',3f9.5)') acc/try_int,dfus2ac/dfus2unf(1),dr2ac/dr2un
-        write(6,'(''taueff set equal to tau*'',f7.5,'' ='',f9.5)') dfus2ac/dfus2unf(1),taueff(1)
+        write(6,'(''taueff set equal to tau*'',f12.5,'' ='',f9.5)') dfus2ac/dfus2unf(1),taueff(1)
         if(itausec.eq.1) then
           do 87 ifr=2,nforce
             if(itau_eff.ge.1) then

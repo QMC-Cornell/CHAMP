@@ -1152,7 +1152,7 @@ module optimization_mod
       energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
      endif
      if (l_opt_ovlp_fn) then
-       write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
+       write(6,'(a,i3,a,f13.6,a,f13.6,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
      endif
      cycle
     endif
@@ -1239,7 +1239,7 @@ module optimization_mod
     endif
    endif
    if (l_opt_ovlp_fn) then
-      write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn_sav, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial_sav, ' gradient_ovlp_norm= ', gradient_ovlp_norm
+      write(6,'(a,i3,a,f13.6,a,f13.6,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn_sav, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial_sav, ' gradient_ovlp_norm= ', gradient_ovlp_norm
    endif
 
 !  decrease p_var
@@ -1269,7 +1269,7 @@ module optimization_mod
     write(6,*)
     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, '      converged'
     if (l_opt_ovlp_fn) then
-      write(6,'(a,i3,a,f10.8,a,f10.8,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
+      write(6,'(a,i3,a,f13.6,a,f13.6,a,f12.5)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial, ' gradient_ovlp_norm= ', gradient_ovlp_norm
     endif
    endif
    iter = iter + 1
@@ -1317,7 +1317,7 @@ module optimization_mod
   write(6,*)
   write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,a)') 'OPT:',iter,energy(1),' +-',energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma,'                                    last run'
   if (l_opt_ovlp_fn) then
-   write(6,'(a,i3,a,f10.8,a,f10.8)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial
+   write(6,'(a,i3,a,f13.6,a,f13.6)') 'OPTd:',iter,' ovlp1=',ovlp_trial_fn, ' ovlp2=',ovlp_trial_fn_over_ovlp_trial
   endif
 
 ! If this is the best yet, save it.  Since we are primarily interested in the energy we use

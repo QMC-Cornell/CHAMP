@@ -1796,7 +1796,7 @@ module density_mod
   write(unit,'(a)') '    r                 n(r)            error of n(r)'
 
   do grid_i = 1, grid_r_nb
-       write(unit,'(es12.6,2es21.14)') grid_r (grid_i), dens (grid_i), dens_err (grid_i)
+       write(unit,'(es13.6,2es21.14)') grid_r (grid_i), dens (grid_i), dens_err (grid_i)
   enddo ! grid_i
 
   close(unit)
@@ -1918,8 +1918,7 @@ module density_mod
     do grid_z_i = 1, grid_z_nb
 
        grid_i = grid_xyz_index (grid_x_i, grid_y_i, grid_z_i)
-!      write(unit,'(5e25.15)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
-       write(unit,'(3es10.6,es18.8,es10.2)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
+       write(unit,'(3es13.6,es18.8,es10.2)') grid_xyz(1,grid_i), grid_xyz(2,grid_i), grid_xyz(3,grid_i), dens_3d (grid_i), dens_3d_err(grid_i)
     enddo ! grid_z_i
     write(unit,'(a)') ''
    enddo  ! grid_y_i

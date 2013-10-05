@@ -2284,7 +2284,7 @@
    10      CONTINUE
    20   CONTINUE
 
-      write(6,'(''sort_af_gauss_orbs: orbs have order:'', 100g12.6)') (oparm(it,ib,iadd_diag),ib=1,(nup+ndn))  ! ACM debug
+      write(6,'(''sort_af_gauss_orbs: orbs have order:'', 100g13.6)') (oparm(it,ib,iadd_diag),ib=1,(nup+ndn))  ! ACM debug
 
 !     Now make sure that orbitals alternate between up and down - only needed if swapping indices
 !        do iorb=1,nup
