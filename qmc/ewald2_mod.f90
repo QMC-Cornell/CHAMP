@@ -144,9 +144,10 @@ module ewald2_mod
       double precision, allocatable :: gnorm(:)
       dimension igvec(3,*),gvec(3,*),gnorm_tmp(*)
 
-!     cost(igv1,igv2,igv3,gn)=igv3+10.d0**4*igv2+10.d0**8*igv1+10.d0**12*gn
-!     cost(igv1,igv2,igv3,gn)=((igv3+10.d0**4*igv2)+10.d0**8*igv1)+10.d0**14*gn
-      cost(igv1,igv2,igv3,gn)=((igv3+10.d0**2*igv2)+10.d0**4*igv1)+10.d0**14*gn
+! Change the cost function so that gvectors are sorted not just by norm but by stars also, and that the vectors come in a particular order within the stars.
+! Note that it is possible to have 2 stars that have the same abs(g1)+abs(g2)+abs(g3) and g1^2+g2^2+g3^2.  So, we need the 4th powers too.
+!     cost(igv1,igv2,igv3,gn)=((igv3+1.d2*igv2)+1.d4*igv1)+1.d14*gn
+      cost(g1,g2,g3,gn)=(((g3+g2*2+g1*3) + ((abs(g3)+1.d2*abs(g2))+1.d4*abs(g1))*10) + (abs(g1)+abs(g2)+abs(g3))*1.d8 + (g1**4+g2**4+g3**4)*1.d8) + 1.d14*gn
 
       lognb2=int(dlog(dfloat(ngvec_big))/dlog(2.d0)+1.d-14)
       m=ngvec_big
@@ -157,7 +158,8 @@ module ewald2_mod
           do 10 i=j,1,-m
             l=i+m
 !           if(gnorm_tmp(l).gt.gnorm_tmp(i)-eps) goto 20
-            if(cost(igvec(1,l),igvec(2,l),igvec(3,l),gnorm_tmp(l)).gt.cost(igvec(1,i),igvec(2,i),igvec(3,i),gnorm_tmp(i))) goto 20
+!           if(cost(igvec(1,l),igvec(2,l),igvec(3,l),gnorm_tmp(l)).gt.cost(igvec(1,i),igvec(2,i),igvec(3,i),gnorm_tmp(i))) goto 20
+            if(cost(gvec(1,l),gvec(2,l),gvec(3,l),gnorm_tmp(l)).gt.cost(gvec(1,i),gvec(2,i),gvec(3,i),gnorm_tmp(i))) goto 20
             t=gnorm_tmp(i)
             gnorm_tmp(i)=gnorm_tmp(l)
             gnorm_tmp(l)=t

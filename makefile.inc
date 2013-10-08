@@ -230,9 +230,10 @@ ifeq ($(hostname),qmc4)
   CC_MPI=mpicc
   F95=gfortran
   F95_MPI=mpif90
-  F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
+# F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
+  F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -fbounds-check
 # F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
-  F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE -fbounds-check -g
+  F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE -fbounds-check
   F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check
   F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check
   F95_PROF_FLAGS=$(F95_FAST_FLAGS) -pg

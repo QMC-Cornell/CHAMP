@@ -9,20 +9,21 @@ F77 = gfortran
 F77_MPI = gfortran
 F95 = gfortran
 F95_MPI = gfortran
-FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+#FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
 # FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall
 export FC F77 FFLAGS LDFLAGS F77_MPI FFLAGS_MPI FLINKER_MPI
-
-ifdef F77
-F77 = gfortran
-FFLAGS = -finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOMPI
-# FC = gfortran
-# F77_MPI = gfortran
-# F95 = gfortran
-# F95_MPI = gfortran
-endif
-
-#ifndef F77
+ 
+# ifdef F77
+# F77 = gfortran
+# FFLAGS = -finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOMPI
+# # FC = gfortran
+# # F77_MPI = gfortran
+# # F95 = gfortran
+# # F95_MPI = gfortran
+# endif
+# 
+# ifndef F77
 
 ##########
 # README #
@@ -89,16 +90,6 @@ export FC F77 FFLAGS LDFLAGS F77_MPI FFLAGS_MPI FLINKER_MPI
 # INCLUDE_MPI variable.  Typically the system mpif.h is in a directory such
 # as /usr/local/mpi/include.
 
-ifeq ($(findstring IRIX,$(system)),IRIX)
-  $(shell cp -p parameters/parameters.IRIX_Solaris include/parameters.h)
-  F77 = f77
-  FFLAGS = -O3 -n32 -mips4 -DIRIX
-# FFLAGS = -g -C -n32 -mips4 -DIRIX
-  F77_MPI = mpif77
-  FLINKER_MPI = mpif77
-  FFLAGS_MPI = -O3 -n32 -mips4 -DIRIX -DMPI -DNON_STANDARD
-# FFLAGS_MPI = -g -C -n32 -mips4 -DIRIX -DMPI -DNON_STANDARD
-endif
 
 ifeq ($(system),AIX)
   $(shell cp -p parameters/parameters.AIX include/parameters.h)
