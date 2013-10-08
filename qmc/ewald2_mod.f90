@@ -125,6 +125,7 @@ module ewald2_mod
   
       call object_modified ('ngvec_big')
       call object_modified ('gvec')
+      call object_modified ('igvec')
 
       return
       end subroutine
