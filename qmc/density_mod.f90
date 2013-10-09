@@ -2018,7 +2018,7 @@ module density_mod
 
 ! local
   integer                                    :: unit
-  integer                                    :: gvec_i
+  integer                                    :: gvec_i, k
 
 ! begin
 
@@ -2030,6 +2030,7 @@ module density_mod
 ! provide necessary objects
   call object_provide ('ngvec_big')
   call object_provide ('gvec')
+  call object_provide ('igvec')
   if (l_dens_fourier_real) then
     call object_provide ('dens_fourier_real_av')
     call object_provide ('dens_fourier_real_av_err')
@@ -2051,14 +2052,14 @@ module density_mod
 
   write(unit,*) ''
   if(l_dens_fourier_real) then
-    write(unit,'(a)') '                        gvec                      rho_G      stat err'
+    write(unit,'(a)') '    #     igvec                     gvec                     rho_G       stat err'
     do gvec_i = 1, ngvec_big
-      write(unit,'(i6,3f12.6,es17.8,es10.2)') gvec_i, gvec(1,gvec_i), gvec(2,gvec_i), gvec(3,gvec_i), dens_fourier_real_av (gvec_i), dens_fourier_real_av_err(gvec_i)
+      write(unit,'(i6,3i4,3f12.6,es17.8,es10.2)') gvec_i, (igvec(k,gvec_i),k=1,3), (gvec(k,gvec_i),k=1,3), dens_fourier_real_av (gvec_i), dens_fourier_real_av_err(gvec_i)
     enddo
   else
-    write(unit,'(a)') '                        gvec                     density Fourier components       statistical error'
+    write(unit,'(a)') '    #     igvec                     gvec                          rho_G                   stat err'
     do gvec_i = 1, ngvec_big
-      write(unit,'(i6,3f12.6,es17.8,a,es16.8,es10.2,a,es9.2)') gvec_i, gvec(1,gvec_i), gvec(2,gvec_i), gvec(3,gvec_i), real(dens_fourier_av (gvec_i)), ' +i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' +i*',aimag(dens_fourier_av_err(gvec_i))
+      write(unit,'(i6,3i4,3f12.6,es17.8,a,es16.8,es10.2,a,es9.2)') gvec_i, (igvec(k,gvec_i),k=1,3), (gvec(k,gvec_i),k=1,3), real(dens_fourier_av (gvec_i)), ' +i*',aimag(dens_fourier_av (gvec_i)), real(dens_fourier_av_err(gvec_i)), ' +i*',aimag(dens_fourier_av_err(gvec_i))
     enddo
   endif
 
