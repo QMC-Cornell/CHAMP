@@ -1736,7 +1736,7 @@ module density_mod
    call object_needed ('ngvec_big')
    call object_needed ('nelec')
    call object_needed ('coord_elec')
-   call object_needed ('vcell')
+   call object_needed ('vcell_sim')
 
    return
 
@@ -1762,7 +1762,7 @@ module density_mod
 
     enddo ! elec_i
 
-    dens_fourier(gvec_i) = dens_fourier(gvec_i) / vcell
+    dens_fourier(gvec_i) = dens_fourier(gvec_i) / vcell_sim
 
   enddo ! gvec_i
 
@@ -1796,7 +1796,7 @@ module density_mod
    call object_needed ('ngvec_big')
    call object_needed ('nelec')
    call object_needed ('coord_elec')
-   call object_needed ('vcell')
+   call object_needed ('vcell_sim')
 
    return
 
@@ -1822,7 +1822,7 @@ module density_mod
 
     enddo ! elec_i
 
-    dens_fourier_real(gvec_i) = dens_fourier_real(gvec_i) / vcell
+    dens_fourier_real(gvec_i) = dens_fourier_real(gvec_i) / vcell_sim
 
   enddo ! gvec_i
 
