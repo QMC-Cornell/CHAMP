@@ -3742,6 +3742,7 @@ module average_mod
   real(dp) collect_double_0
   real(dp), allocatable :: collect_double_1 (:)
   real(dp), allocatable :: collect_double_2 (:,:)
+  complex(dpc), allocatable :: collect_complex_1 (:)
 # endif
 
 ! number of interations and sum of weights of walkers over the current block
