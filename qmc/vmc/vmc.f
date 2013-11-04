@@ -55,7 +55,7 @@
       use distance_mod
       implicit real*8(a-h,o-z)
       integer fflag
-      character*25 fmt
+      character*80 fmt
 
       common /fflags/ fflag
 
@@ -281,13 +281,10 @@
 !       write out configuration for optimization/dmc/gfmc here
         if (nconf_new /= 0) then
          if(mod(l,ngfmc).eq.1 .or. ngfmc.eq.1) then
-          if(ndim*nelec.lt.100) then
-           write(fmt,'(a1,i2,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
-          else
-           write(fmt,'(a1,i3,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
-          endif
+!         write(fmt,'(a1,i6,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+          write(fmt,'(''('',i6,''f13.8,i3,es12.4,f12.5,2es12.4)'')') ndim*nelec
           write(7,fmt) ((xold(k,jj),k=1,ndim),jj=1,nelec),
-     &    int(sign(1.d0,psido)),log(dabs(psido))+psijo,eold(1)
+     &    int(sign(1.d0,psido)),log(dabs(psido))+psijo,eold(1),psido,psijo
          endif
         endif
 

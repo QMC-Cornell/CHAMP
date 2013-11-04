@@ -1137,6 +1137,7 @@ module optimization_mod
 !    write new wave function
      write(6,'(a)') ''
      write(6,'(a,i3)') 'Wave function for next iteration # ',iter+1
+     write(6,'(''For next iteration #'',i4,'' new wave function:'')') iter+1
      call write_wf_new
 
 !    just in case mc config is in crazy place, reset mc_configs by calling sites, only in VMC for now. Need to do it for DMC as well?
@@ -1251,7 +1252,7 @@ module optimization_mod
 
 !  write new wave function
    write(6,'(a)') ''
-   write(6,'(a,i3)') 'Wave function for next iteration # ',iter+1
+   write(6,'(''For next iteration #'',i4,'' new wave function:'')') iter+1
    call write_wf_new
 
    if (l_convergence_reached) exit
@@ -1984,18 +1985,27 @@ module optimization_mod
 ! Since the correlated sampling runs are 10 times shorter than the others, include an extra factor of 3.3
 ! Since the 2nd criterion does not seem decisively better than the 1st, I am still using the
 ! 1st criterion, but leave the 2nd in the code, commented out.
-! I used to penalize both the central calculation (1) and the one with larger add_diag (3) but now we penalize only (1).
+! I used to reject if the central calculation (1) or the one with larger add_diag (3) were bad.
+! Then we started to reject only if (1) is bad.
+! Now we reject only if all 3 are bad.
 
 ! 1st criterion
 !  if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
 !     energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.     &
-!     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2)) .or.                &
+!     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2)) .or. &
 !     energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2))) then
 
 ! 1st criterion
 !  check only central calculation
-   if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
-     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
+!  if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+!    energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
+!  check all 3 and reject only if all are bad
+   if((energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) .and. &
+     (energy_sigma(2) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+     energy(2)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(2)**2+energy_err_sav**2))) .and. &
+     (energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+     energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2)))) then
 ! 2nd criterion
 !  if((2-p_var)*(energy(1) +3*energy_err(1))     +p_var*(energy_sigma(1) +3*error_sigma)**2 > &
 !     (2-p_var)*(energy_sav+6*3.3*energy_err_sav)+p_var*(energy_sigma_sav+10*3.3*error_sigma_sav)**2) then
@@ -2165,16 +2175,14 @@ module optimization_mod
 ! print pjas parameters
   if (l_opt_pjas) then
      if ( l_opt_pjasen) then
-        write(6,'(a)') 'periodic Jastrow parameters  (pjas_en_read(i),i=1,):'
-        write(6,'(1000f10.6)') pjas_parms (1:param_pjasen_nb, iwf)
+        write(6,'(''periodic Jastrow parameters (pjas_en)'',1000f10.6)') pjas_parms (1:param_pjasen_nb, iwf)
         if (.not. inversion) then
            write(6,'(a,1000f10.6)') "cosine", (pjas_parms (i, iwf), i=1,param_pjasen_nb-1,2)
            write(6,'(a,1000f10.6)') "sine", (pjas_parms (i+1, iwf), i=1,param_pjasen_nb-1,2)
         endif
      endif
      if (l_opt_pjasee) then
-        write(6,'(a)') 'periodic Jastrow parameters  (pjas_ee_read(i),i=1,):'
-        write(6,'(1000f10.6)') pjas_parms (param_pjasen_nb+1:param_pjas_nb, iwf)
+        write(6,'(''periodic Jastrow parameters (pjas_ee)'',1000f10.6)') pjas_parms (param_pjasen_nb+1:param_pjas_nb, iwf)
      endif
   endif
 
@@ -2312,7 +2320,7 @@ module optimization_mod
       write(6,'(a)') 'jastrow'
       write(6,'(a)') ' parameters'
       if (nparma_read > 0) then
-        write(fmt,'(''('',i2,''g20.12,a)'')') nparma_read
+        write(fmt,'(''(1p,'',i2,''g20.12,a)'')') nparma_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -2321,7 +2329,7 @@ module optimization_mod
       enddo
 
       if(nparmb_read > 0) then
-        write(fmt,'(''('',i2,''g20.12,a)'')') nparmb_read
+        write(fmt,'(''(1p,'',i2,''g20.12,a)'')') nparmb_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -2330,7 +2338,7 @@ module optimization_mod
       enddo
 
       if(nparmc_read > 0) then
-        write(fmt,'(''('',i2,''g20.12,a)'')') nparmc_read
+        write(fmt,'(''(1p,'',i2,''g20.12,a)'')') nparmc_read
        else
         write(fmt,'(''(a)'')')
       endif
@@ -2477,7 +2485,7 @@ module optimization_mod
     write(6,'(a)') 'jastrow'
     write(6,'(a)') ' parameters'
     if (nparma_read > 0) then
-      write(fmt,'(''('',i2,''g20.12,a)'')') nparma_read
+      write(fmt,'(''(1p,'',i2,''g20.12,a)'')') nparma_read
     else
       write(fmt,'(''(a)'')')
     endif
@@ -2486,7 +2494,7 @@ module optimization_mod
     enddo
 
     if(nparmb_read > 0) then
-      write(fmt,'(''('',i2,''g20.12,a)'')') nparmb_read
+      write(fmt,'(''(1p,'',i2,''g20.12,a)'')') nparmb_read
     else
       write(fmt,'(''(a)'')')
     endif
@@ -2495,7 +2503,7 @@ module optimization_mod
     enddo
 
     if(nparmc_read > 0) then
-      write(fmt,'(''('',i2,''g20.12,a)'')') nparmc_read
+      write(fmt,'(''(1p,'',i2,''g20.12,a)'')') nparmc_read
     else
       write(fmt,'(''(a)'')')
     endif

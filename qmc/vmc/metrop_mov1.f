@@ -186,7 +186,7 @@
           ekin2(itryn)=ekin2(itryn)+p*ekinen(i)**2
 
 ! calculate 2d-density related functions
-          if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+          if(iperiodic.eq.1 .or. iperiodic.eq.3) then  ! In 1D and 3D reduce position to simulation cell
             call reduce_sim_cell(xold(:,i))
             call reduce_sim_cell(xnew(:,i))
           endif

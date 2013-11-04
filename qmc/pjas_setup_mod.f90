@@ -115,6 +115,9 @@ contains
     twopi= 2*4*atan(1.0_dp)
 
     nbasis_pw=wsvol*ecut**1.5/(6*pi*pi)
+! Warning: tmp
+    write(6,'(''wsvol,ecut,pi,nbasis_pw='',3es12.4,i6)') wsvol,ecut,pi,nbasis_pw
+    call systemflush(6)
 
     nbasis_pw= 8 * nbasis_pw
     ntstrd=9*Nbasis_pw
@@ -320,8 +323,8 @@ contains
     nstar=nstar + 1
 
     if (nstar.gt.n3d_wis)then
-       write(6,'('' n3d_wis too small'')')
-       write(6,*) 'n3d_wis too small'
+       write(6,'('' n3d_wis too small: nstar, n3d_wis='',3i6)') nstar, n3d_wis
+       call systemflush(6)
        stop
     endif
     mstar_t(nstar)=mnbr

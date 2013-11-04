@@ -829,6 +829,7 @@
         ncoef=npoly+1
 
         read(5,*) alattice
+        write(6,'(''Length of 3d periodic system, alattice='',t31,f10.5)') alattice
         call alloc ('rlatt', rlatt, 3, 3)
         do 10 i=1,ndim
           read(5,*) (rlatt(k,i),k=1,ndim)
@@ -1435,11 +1436,11 @@
         endif
         read(5,*) cutjas_en_tmp,cutjas_ee_tmp
         if(iperiodic.ne.0 .and. cutjas_en_tmp.gt.cutjas_en+eps) then
-!         write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
-!    &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
-          write(6,'(''Warning: input cutjas_en > half shortest primitive cell lattice vector; cutjas_en='',d12.5)') cutjas_en_tmp
-          write(6,'(''cutjas_en will NOT be reset.  I hope you know what you are doing!'')')
-          cutjas_en = cutjas_en_tmp
+          write(6,'(''Warning: input cutjas > half shortest primitive cell lattice vector;
+     &    cutjas_en reset from'',f9.5,'' to'',f9.5)') cutjas_en_tmp,cutjas_en
+!         write(6,'(''Warning: input cutjas_en > half shortest primitive cell lattice vector; cutjas_en='',d12.5)') cutjas_en_tmp
+!         write(6,'(''Warning: cutjas_en will NOT be reset.  I hope you know what you are doing!'')')
+!         cutjas_en = cutjas_en_tmp
         else
           if(cutjas_en_tmp.lt.cutjas_en-eps) then
              write(6,'(''Warning: Could use larger cutjas_en='',f9.5,

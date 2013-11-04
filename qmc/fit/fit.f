@@ -975,12 +975,10 @@
         if(ipr_opt.ge.2) write(6,'(i5,2f15.5,es12.4,2f9.3,2f12.6,f9.3)')
      &  i,eguess,yfit, uwdiff(i),yfit-eold(i),wght(i),rmin,rmax,r12min
          if(ipr_opt.ge.2) then
-           if(ndim*nelec.lt.100) then
-             write(fmt,'(a1,i2,a19)') '(',ndim*nelec,'f8.4,3es14.6,f12.5)'
-            elseif(ndim*nelec.lt.1000) then
-             write(fmt,'(a1,i3,a19)') '(',ndim*nelec,'f8.4,3es14.6,f12.5)'
-           endif
-           write(2,fmt)((x(k,j,i),k=1,ndim),j=1,nelec),psid(i),psij(i),psid(i)*exp(psij(i)),yfit
+!          write(fmt,'(a1,i6,a20)') '(',ndim*nelec,'f10.4,3es14.6,f12.5)'
+           write(fmt,'(''('',i6,''f13.8,i3,es12.4,f12.5,2es12.4)'')')ndim*nelec
+!          write(2,fmt)((x(k,j,i),k=1,ndim),j=1,nelec),psid(i),psij(i),psid(i)*exp(psij(i)),yfit
+           write(2,fmt)((x(k,j,i),k=1,ndim),j=1,nelec),int(sign(1.d0,psid(i))),log(dabs(psid(i)))+psij(i),yfit,psid(i),psij(i)
          endif
   320 continue
 

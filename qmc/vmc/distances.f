@@ -249,9 +249,9 @@
           do 50 k=1,ndim
    50       r_ee(ij)=r_ee(ij)+rvec_ee(k,ij)**2
           r_ee(ij)=dsqrt(r_ee(ij))
-         elseif(iperiodic.eq.1) then
-            call find_image_1d(rvec_ee(:,ij), r_ee(ij))
-         else
+        elseif(iperiodic.eq.1) then
+          call find_image_1d(rvec_ee(:,ij), r_ee(ij))
+        else
           call find_image3(rvec_ee(1,ij),r_ee(ij),rlatt_sim,rlatt_sim_inv)
         endif
    60 continue

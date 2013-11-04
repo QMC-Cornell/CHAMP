@@ -437,7 +437,7 @@
               risum=risum+wtg*(q/dsqrt(r2o)+p/dsqrt(r2n))
 
 ! calculate 2d density related functions:
-              if(iperiodic.eq.1) then  ! 1D periodic bc's, so make sure x-posn between -a/2 and a/2
+              if(iperiodic.eq.1 .or. iperiodic.eq.3) then  ! In 1D and 3D reduce position to simulation cell
                 call reduce_sim_cell(xoldw(:,i,iw,ifr))
                 call reduce_sim_cell(xnew(:,i,ifr))
               endif
