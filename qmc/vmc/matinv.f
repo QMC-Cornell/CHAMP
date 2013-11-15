@@ -53,11 +53,10 @@
 ! update determinant
         determ=adiag*determ
         a(ipivot(i)+iclm)=one
-!Warning tmp:
-!         write(6,*)
-!         do irow=0,(n-1)
-!             write(6,'(100es9.1)') (a(irow*n+k),k=1,n)
-!         enddo
+!       write(6,*)
+!       do irow=0,(n-1)
+!           write(6,'(100es9.1)') (a(irow*n+k),k=1,n)
+!       enddo
         if(adiag.eq.0.d0) then
           write(6,'(''in matinv, n='',i5)') n
           call systemflush(6)

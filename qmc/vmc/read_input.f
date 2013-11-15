@@ -624,10 +624,10 @@
 !     if(index(mode,'vmc').ne.0 .and. iperiodic.gt.0) stop 'In order to do VMC calculation for periodic
 !    & system run dmc or dmc.mov1 with idmc < 0'
 
-      if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
+!     if(index(mode,'vmc').ne.0 .or. index(mode,'dmc').ne.0) then
         write(6,'(/,''random number seeds'',t25,4i4)') irand_seed
         call setrn(irand_seed)
-      endif
+!     endif
 
       read(5,*) hb,etrial,eunit
       write(6,'(''hbar**2/(2.*m) ='',t31,f10.5)') hb

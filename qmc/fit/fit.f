@@ -333,6 +333,9 @@
 !       endif
 !     endif
 
+! set quadrature points
+      if(nloc.gt.0) call rotqua
+
 ! nparm is read in in read_input.f but is not in common.  So recompute it.  No need.  Now it is in common.
 !     nparm=nparml+nparmj+nparmd+nparms+nparmg+nparme
 !     write(6,'(''nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme='',9i5)') nparm,nparml,nparmj,nparmd,nparms,nparmg,nparme

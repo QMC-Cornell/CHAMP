@@ -64,75 +64,48 @@
      &,irand_seed_loc,nscounts,mpi_integer,0,MPI_COMM_WORLD,ierr)
 
       if(idtask.ne.0) then
-        call mpi_isend(nwalk,1,mpi_integer,0
-     &  ,1,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(nwalk,1,mpi_integer,0,1,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(xoldw,3*nelec*nwalk,mpi_double_precision,0
-     &  ,2,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(xoldw,3*nelec*nwalk,mpi_double_precision,0,2,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(wt,nwalk,mpi_double_precision,0
-     &  ,3,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(wt,nwalk,mpi_double_precision,0,3,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(fratio,MWALK*nforce,mpi_double_precision,0
-     &  ,4,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(fratio,MWALK*nforce,mpi_double_precision,0,4,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(iage,nwalk,mpi_integer,0
-     &  ,5,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(iage,nwalk,mpi_integer,0,5,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(xq,nquad,mpi_double_precision,0
-     &  ,6,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(xq,nquad,mpi_double_precision,0,6,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(yq,nquad,mpi_double_precision,0
-     &  ,7,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(yq,nquad,mpi_double_precision,0,7,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(zq,nquad,mpi_double_precision,0
-     &  ,8,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(zq,nquad,mpi_double_precision,0,8,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
        else
         open(10,status='unknown',form='unformatted',file='restart_dmc')
         write(10) nproc
-        write(10) nfprod,(ff(i),i=0,nfprod),fprod,eigv,eest,wdsumo
-     &  ,ioldest,ioldestmx
+        write(10) nfprod,(ff(i),i=0,nfprod),fprod,eigv,eest,wdsumo,ioldest,ioldestmx
         write(10) nwalk
         write(10) (wt(i),i=1,nwalk),(iage(i),i=1,nwalk)
         write(10) (((xoldw(k,i,iw,1),k=1,ndim),i=1,nelec),iw=1,nwalk)
         write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
-        if(nloc.gt.0)
-     &  write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+        if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
 !       if(nforce.gt.1) write(10) nwprod
-!    &  ,((pwt(i,j),i=1,nwalk),j=1,nforce)
-!    &  ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
+!    & ,((pwt(i,j),i=1,nwalk),j=1,nforce)
+!    & ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)
         do 450 id=1,nproc-1
-          call mpi_recv(nwalk,1,mpi_integer,id
-     &    ,1,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xoldw,3*nelec*nwalk,mpi_double_precision,id
-     &    ,2,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(wt,nwalk,mpi_double_precision,id
-     &    ,3,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(fratio,MWALK*nforce,mpi_double_precision,id
-     &    ,4,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(iage,nwalk,mpi_integer,id
-     &    ,5,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(xq,nquad,mpi_double_precision,id
-     &    ,6,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(yq,nquad,mpi_double_precision,id
-     &    ,7,MPI_COMM_WORLD,istatus,ierr)
-          call mpi_recv(zq,nquad,mpi_double_precision,id
-     &    ,8,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(nwalk,1,mpi_integer,id,1,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xoldw,3*nelec*nwalk,mpi_double_precision,id,2,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(wt,nwalk,mpi_double_precision,id,3,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(fratio,MWALK*nforce,mpi_double_precision,id,4,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(iage,nwalk,mpi_integer,id,5,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(xq,nquad,mpi_double_precision,id,6,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(yq,nquad,mpi_double_precision,id,7,MPI_COMM_WORLD,istatus,ierr)
+          call mpi_recv(zq,nquad,mpi_double_precision,id,8,MPI_COMM_WORLD,istatus,ierr)
           write(10) nwalk
           write(10) (wt(i),i=1,nwalk),(iage(i),i=1,nwalk)
           write(10) (((xoldw(k,i,iw,1),k=1,ndim),i=1,nelec),iw=1,nwalk)
           write(10) nforce,((fratio(iw,ifr),iw=1,nwalk),ifr=1,nforce)
-          if(nloc.gt.0)
-     &    write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
+          if(nloc.gt.0) write(10) nquad,(xq(i),yq(i),zq(i),wq(i),i=1,nquad)
 !         if(nforce.gt.1) write(10) nwprod
 !    &    ,((pwt(i,j),i=1,nwalk),j=1,nforce)
 !    &    ,(((wthist(i,l,j),i=1,nwalk),l=0,nwprod-1),j=1,nforce)

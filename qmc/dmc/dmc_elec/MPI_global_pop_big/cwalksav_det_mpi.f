@@ -48,58 +48,37 @@
       entry csend_det(irecv)
 
       itag=0
-      call mpi_isend(cdetuw(1,nwalk),ndet,mpi_double_complex,irecv
-     &,itag+1,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+      call mpi_isend(cdetuw(1,nwalk),ndet,mpi_double_complex,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
       call MPI_Wait(irequest,istatus,ierr)
-      call mpi_isend(cdetdw(1,nwalk),ndet,mpi_double_complex,irecv
-     &,itag+2,MPI_COMM_WORLD,irequest,ierr)
+      call mpi_isend(cdetdw(1,nwalk),ndet,mpi_double_complex,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
       itag=itag+2
-!     RGH
       call MPI_Wait(irequest,istatus,ierr)
       do 150 k=1,ndet
-        call mpi_isend(cslmuiw(1,k,nwalk),nup*nup,mpi_double_complex
-     &  ,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(cslmuiw(1,k,nwalk),nup*nup,mpi_double_complex,irecv,itag+1,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(cfpuw(1,1,k,nwalk),3*nup*nup,mpi_double_complex
-     &  ,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(cfpuw(1,1,k,nwalk),3*nup*nup,mpi_double_complex,irecv,itag+2,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(cslmdiw(1,k,nwalk),ndn*ndn,mpi_double_complex
-     &  ,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(cslmdiw(1,k,nwalk),ndn*ndn,mpi_double_complex,irecv,itag+3,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(cfpdw(1,1,k,nwalk),3*ndn*ndn,mpi_double_complex
-     &  ,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
-!     RGH
+        call mpi_isend(cfpdw(1,1,k,nwalk),3*ndn*ndn,mpi_double_complex,irecv,itag+4,MPI_COMM_WORLD,irequest,ierr)
         call MPI_Wait(irequest,istatus,ierr)
-        call mpi_isend(cddeti_detiw(1,1,k,nwalk),3*nelec,mpi_double_complex
-     &  ,irecv,itag+5,MPI_COMM_WORLD,irequest,ierr)
+        call mpi_isend(cddeti_detiw(1,1,k,nwalk),3*nelec,mpi_double_complex,irecv,itag+5,MPI_COMM_WORLD,irequest,ierr)
   150   itag=itag+5
-!     RGH
         call MPI_Wait(irequest,istatus,ierr)
       return
 
       entry crecv_det(isend)
 
       itag=0
-      call mpi_recv(cdetuw(1,nwalk),ndet,mpi_double_complex,isend
-     &,itag+1,MPI_COMM_WORLD,istatus,ierr)
-      call mpi_recv(cdetdw(1,nwalk),ndet,mpi_double_complex,isend
-     &,itag+2,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(cdetuw(1,nwalk),ndet,mpi_double_complex,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
+      call mpi_recv(cdetdw(1,nwalk),ndet,mpi_double_complex,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
       itag=itag+2
       do 160 k=1,ndet
-        call mpi_recv(cslmuiw(1,k,nwalk),nup*nup,mpi_double_complex
-     &  ,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(cfpuw(1,1,k,nwalk),3*nup*nup,mpi_double_complex
-     &  ,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(cslmdiw(1,k,nwalk),ndn*ndn,mpi_double_complex
-     &  ,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(cfpdw(1,1,k,nwalk),3*ndn*ndn,mpi_double_complex
-     &  ,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
-        call mpi_recv(cddeti_detiw(1,1,k,nwalk),3*nelec,mpi_double_complex
-     &  ,isend,itag+5,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(cslmuiw(1,k,nwalk),nup*nup,mpi_double_complex,isend,itag+1,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(cfpuw(1,1,k,nwalk),3*nup*nup,mpi_double_complex,isend,itag+2,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(cslmdiw(1,k,nwalk),ndn*ndn,mpi_double_complex,isend,itag+3,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(cfpdw(1,1,k,nwalk),3*ndn*ndn,mpi_double_complex,isend,itag+4,MPI_COMM_WORLD,istatus,ierr)
+        call mpi_recv(cddeti_detiw(1,1,k,nwalk),3*nelec,mpi_double_complex,isend,itag+5,MPI_COMM_WORLD,istatus,ierr)
   160   itag=itag+5
 
 # endif

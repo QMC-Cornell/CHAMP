@@ -453,6 +453,7 @@
       use periodic_mod
       use pworbital_mod
       implicit real*8(a-h,o-z)
+      character*160 title2 ! name it title2 because title is being passed here from control_mod.f90
       parameter(eps=1.d-6)
 
 
@@ -471,7 +472,17 @@
 
       call file_exist_or_die (file_orbitals_pw_tm_in)
       open(30,file=file_orbitals_pw_tm_in,err=999)
-      read(30,*) icmplx,ngvec_dft
+
+! position file to skip comments
+      write(6,'(/,''Reading orbitals from '',a)') trim(file_orbitals_pw_tm_in)
+      title2(1:1)='#'
+      do while(title2(1:1).eq.'#')
+        read(30,'(a)') title2
+        write(6,'(a)') trim(title2)
+      enddo
+
+!     read(30,*) icmplx,ngvec_dft
+      read(title2,*) icmplx,ngvec_dft
 !JT      if(ngvec_dft.gt.NGVEC_BIGX) then
 !JT        write(6,'(''ngvec_dft,NGVEC_BIGX,NGVECX,NGNORMX'',9i10)') ngvec_dft,NGVEC_BIGX,NGVECX,NGNORMX
 !JT        stop 'ngvec_dft > NGVEC_BIGX in read_orb_pw_tm'

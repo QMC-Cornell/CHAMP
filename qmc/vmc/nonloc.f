@@ -160,7 +160,8 @@
                     call systemflush(6)
                   endif
                   vpot(l)=vpot(l)+wq(iq)*yl0(l,costh)*deter*exp(value)
-                  if(ipr.ge.1) write(6,'(''l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)'',i3,9f20.15)')
+                  if(ipr.ge.1) write(6,'(''nonloc: l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)'',
+     &            i3,9f20.15)')
      &            l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value),vpot(l)
 
 ! JT              For singly-excited wave functions
@@ -189,7 +190,7 @@
             do 80 l=1,npotd(ict)
               if(l.ne.lpotp1(ict)) then
                 vpsp=vpsp+vps(i,ic,l)*vpot(l)
-                if(ipr.ge.4) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l),vpsp
+                if(ipr.ge.-3) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l),vpsp
 
 ! JT            For singly-excited wave functions
                 if (l_opt_orb_energy) then

@@ -69,7 +69,8 @@
       call object_modified_by_index (psid_pjas_index)
 !WAS
 
-      if(ipr.ge.4) write(6,'(''pe,vpsp/psid,vpsp,psid,detu(1),detd(1)2='',2f9.4,9d12.4)')
+      if(ipr.ge.3) write(6,'(''deriv_nonloc_pot: vpsp, psid, pe after nonlocal psp'',9f12.5)') vpsp, psid, pe
+      if(ipr.ge.3) write(6,'(''deriv_nonloc_pot: pe,vpsp/psid,vpsp,psid,detu(1),detd(1)2='',2f9.4,9d12.4)')
      &pe,vpsp/psid,vpsp,psid,detu(1),detd(1),r_en(1,1)
 
       return

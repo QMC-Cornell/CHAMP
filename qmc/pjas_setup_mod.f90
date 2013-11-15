@@ -5,7 +5,6 @@ Module pjas_setup_mod
   complex (dp)                           :: Z_0= (0._dp,0._dp)
   complex (dp)                           :: Z_i= (0._dp,1._dp)
 
-
   integer                                :: nstar_en=0
   integer                                :: nstar_ee =0
 
@@ -37,7 +36,6 @@ Module pjas_setup_mod
 
 contains
 
-
 !!! prim_sim =1 for primitive cell and 2 for simulation cell
 !!! input
 !!            nsym_crys number of symmetries
@@ -55,7 +53,6 @@ contains
   subroutine create_pw_lattice(prim_sim,nstar,nbasis_pw,nsym_crys,ecut,avec,bvec,wsvol,symrel,tnons)
 !---------------------------------------------------------------------------
 ! Description : generate the stars.
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
@@ -97,9 +94,7 @@ contains
     complex(dp), allocatable             :: phase_tt (:)
     integer                              :: j1, phase_zero, ist, r
 
-    !
-    !     calculate the metric in reciprocal space:
-    !
+    ! calculate the metric in reciprocal space:
     bij= 0
 
     do j=1,3
@@ -109,7 +104,6 @@ contains
           enddo
        enddo
     enddo
-
 
     pi =4*atan(1.0_dp)
     twopi= 2*4*atan(1.0_dp)
@@ -122,7 +116,6 @@ contains
     nbasis_pw= 8 * nbasis_pw
     ntstrd=9*Nbasis_pw
     n3d_wis= ntstrd
-
 
     allocate(sk3_t(n3d_wis))
     allocate(phase_t(ntstrd))
@@ -155,7 +148,7 @@ contains
           if (i.ne.j) gij(i,j)=zero
        enddo
     enddo
-    !
+
     !     set up all g-vectors corresponding to a sphere of energy=ecut (in ry)
     !     this would be gmax=sqrt(ecut), but we also need q=g-g', so the
     !     the radius is twice this value:
@@ -177,8 +170,7 @@ contains
     gki=int ( gkmod / bbi + 1. )
     gkj=int ( gkmod / bbj + 1. )
     gkk=int ( gkmod / bbk + 1. )
-    !
-    !
+
     ipas=gki * 2. + 1.
     jpas=gkj * 2. + 1.
     kpas=gkk * 2. + 1.
@@ -193,7 +185,7 @@ contains
              if (not_include_zero .and. gkmod == 0) cycle
              if (gkmod.gt.g ) cycle
              mnm=mnm + 1
-             !
+
              if (mnm.gt.ntstrd) then
                 write ( 6,*) 'create_pw_lattice: increase star dim.: mn,ntstrd=',mnm,ntstrd
                 stop 'create_pw_lattice:  increase  star dimensions'
@@ -207,10 +199,8 @@ contains
            enddo
         enddo
      enddo
-    !
-    !
-    !     construction of stars
-    !
+
+    !  construction of stars
     call hsort(mnm,ekin_t(1:mnm),indexx(1:mnm))
     do  mn=1,mnm
        ekin_t(mn)=ekin_t(mn)-mn*deltlg
@@ -223,17 +213,13 @@ contains
        enddo
     enddo
 
-    !
     hi=0
     nstar=0
     mntot=0
-    !
 1001 continue
 
     low=hi+1
-    !
     !     define star or superstar
-    !
     gkmod=res2(low)
     hi=low
 17  if(hi.eq.mnm)  goto 18
@@ -256,10 +242,9 @@ contains
        used(mn)=.false.
     enddo
     iprot=low
-    !
-    !     operate on prototype with group operations
+
+    !  operate on prototype with group operations
 203 continue
-    !
     do j=1,3
        protyp(j) = resultt(j,iprot)
     enddo
@@ -281,15 +266,13 @@ contains
 
        do mn= 1, mlign
           mn2=mn+low-1
-          !
+
           temp =abs(gkt(1)-resultt(1,mn2))+abs(gkt(2)-resultt(2,mn2))+&
                abs(gkt(3)-resultt(3,mn2))
 
           if(temp .gt. xli ) then
              impt(mn,ii)=.true.
           else
-
-
              impt(mn,ii)=.false.
              impr(mn)=.false.
              lg1=.false.
@@ -311,9 +294,9 @@ contains
           write(6,*) 'create_pw_lattice'
           stop
        endif
-       !
-    enddo !! symmetry opers
-    !
+
+    enddo ! symmetry opers
+
     mnbr=mlign
     do mn=1,mlign
        if ( impr(mn) )   mnbr=mnbr - 1
@@ -331,7 +314,6 @@ contains
     istar_t(nstar)=mntot+1
     ntt=nop/mnbr
 
-
     do mn=mlign,1,-1
        mn2 = mn + low - 1
        if (impr(mn).and. .not.used(mn)) iprot=mn2
@@ -341,7 +323,7 @@ contains
        if (impr(mn)) then
           cycle
        endif
-       !
+ 
        if(used(mn)) then
           write(6,*)resultt(1,mn2),resultt(2,mn2),resultt(3,mn2)
           write(6,*)'create_pw_lattice: attempt to reuse rec. lat. vector'
@@ -370,7 +352,6 @@ contains
           rkv_t(j,mntot)=kv_t(1,mntot)*bvec(j,1)&
                +kv_t(2,mntot)*bvec(j,2)&
                +kv_t(3,mntot)*bvec(j,3)
-
        enddo
 
     enddo
@@ -400,9 +381,7 @@ contains
 
 
 !!! remove those stars which give zero contribution due to symmetry
-
     write(6,*) "nstar ",  nstar
-
     allocate(mstar_tt(ntstar), istar_tt(ntstar),sk3_tt(ntstar))
     allocate(ekin_tt (ntstar), kv_tt(3,ntstar), phase_tt(ntstar),rkv_tt(3,ntstar))
 
@@ -427,7 +406,6 @@ contains
 !!$               rkv_t(1,j),rkv_t(2,j),rkv_t(3,j)
 !!$       enddo
 !!$       !! debug
-
 
        if (phase_zero == 1 ) then
           k=k+1
@@ -470,9 +448,8 @@ contains
        endif
     enddo
 
-    !! note checking is done on the orignal vectors before
-    !! reducing them by symmetry.
-    !! check that the phases
+    ! note checking is done on the orignal vectors before reducing them by symmetry.
+    ! check that the phases
     do i=1,nstar
        i1=istar_tt (i)
        i2=i1+ (mstar_tt (i))/2 - 1
@@ -498,30 +475,26 @@ contains
        enddo
     enddo
 
-
     if (prim_sim==1 .and. nstar_en > 0) then
        if (nstar_en > nstar) nstar_en = nstar
        nstar= nstar_en
     endif
-
 
     if (prim_sim==2 .and. nstar_ee > 0) then
        if (nstar_ee > nstar) nstar_ee = nstar
        nstar= nstar_ee
     endif
 
-
     i= nstar
     nbasis_pw_t =istar_tt (i) + mstar_tt (i)-1
 
-
-    !! redimension
+    ! redimension
     nbasis_pw = nbasis_pw_t
 
-    !!include only one half
+    !include only one half
     nbasis_pw = nbasis_pw/2
 
-    !!global variables for primitive cell
+    !global variables for primitive cell
     if (prim_sim==1) then
 
        allocate(rkv(3,nbasis_pw), stat=istat)
@@ -530,7 +503,7 @@ contains
        allocate (fstar(nstar))
        allocate (kv(3,nbasis_pw), stat=istat)
 
-!!! remove the planewaves related by inversion symmetry
+! remove the planewaves related by inversion symmetry
        r=1
        do i=1,nstar
           i1=istar_tt (i)
@@ -596,7 +569,7 @@ contains
        allocate (fstar_sim (nstar))
        allocate (kv_sim(3,1:nbasis_pw))
 
-!!! remove the planewaves related by inversion symmetry
+! remove the planewaves related by inversion symmetry
        r=1
        do i=1,nstar
           i1=istar_tt (i)
@@ -622,8 +595,6 @@ contains
        enddo
        write(6,*) " kvec_pjasee = ",  kvec_pjasee
 
-
-
        sk3_sim = sk3_tt (1:nstar)
        do ist=1, nstar_sim
           i1=istar_sim (ist)
@@ -645,7 +616,6 @@ contains
 
     endif
 
-
 !!$    do i=1,nstar
 !!$       write(6,6) i,mstar_tt(i),istar_tt(i),sk3_tt(i)
 !!$       i1=istar_tt (i)
@@ -655,8 +625,6 @@ contains
 !!$               rkv_tt(1,j),rkv_tt(2,j),rkv_tt(3,j)
 !!$       enddo
 !!$    enddo
-
-
 
 !!$
 !!$    write(101+prim_sim,*) nstar
@@ -686,10 +654,7 @@ contains
     function  gdot(a,b,gij)
 !---------------------------------------------------------------------------
 ! Description : do
-!     *****
-!     *****   dot product of two vectors with metric gij
-!     *****
-!     ***********************************************************
+!    dot product of two vectors with metric gij
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
       implicit none
@@ -702,12 +667,11 @@ contains
          enddo
       enddo
     end function gdot
-
+!-------------------------------------------------------------------------
 
     subroutine hsort(n,a,ind)
 !---------------------------------------------------------------------------
 ! Description : sort an array
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
       implicit none
@@ -757,7 +721,5 @@ contains
     end subroutine hsort
 
   end subroutine create_pw_lattice
-
-
 
 end Module pjas_setup_mod

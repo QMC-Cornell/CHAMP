@@ -1,6 +1,11 @@
       function func(ndata2,nparm,parm,diff,iflag)
 ! Written by Cyrus Umrigar, modified by Claudia Filippi
-! If iflag=0 then it computes diffs otherwise it just does sum of squares
+! Note that in the parallel version of CHAMP we are doing the parallelism in CHAMP
+! and so we are using just the serial version of quench_anneal.
+! In the parallel version of quench_anneal func is called with iflag>=0 to compute diffs offset by iflag=ioffset,
+! and with -1 to do the sum of squares.
+! In the serial version of quench_anneal func is called with iflag=0 to compute diffs,
+! and with -1 to do the sum of squares.
       use constants_mod
       use mpi_mod
       use basic_tools_mod

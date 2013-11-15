@@ -22,7 +22,6 @@ module pjasen_mod
   real(dp), allocatable                  :: pjas_parms_sav (:)
   real(dp), allocatable                  :: pjas_parms (:,:)
 
-
   real(dp), allocatable                  :: lap_dpsi_pjasen(:,:)
   real(dp), allocatable                  :: grad_dpsi_pjasen (:,:,:)
   real(dp), allocatable                  :: cos_star_en (:,:)
@@ -50,11 +49,9 @@ module pjasen_mod
 
 contains
 
-
   subroutine deloc_pjasen_bld
 !---------------------------------------------------------------------------
 ! Description : derivative of local energy wrt periodic jastrow parameters
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     include 'modules.h'
@@ -82,25 +79,20 @@ contains
        sum = 0
        do ie = 1 , nelec
           sum  = sum + lap_dpsi_pjasen (ie, ist)
-
           do k= 1, ndim_pj
              sum  = sum + 2* grad_dpsi_pjasen (k, ie, ist) * (vd (k,ie)+vj (k,ie))
           enddo
-
        enddo
-
        deloc_pjasen (ist) =-hb * sum
 
-    end do
+    enddo
 
   end subroutine deloc_pjasen_bld
-
 
 
   subroutine  star_en_bld  (xvec)
 !---------------------------------------------------------------------------
 ! Description : building the arrays related to the en stars
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     include 'modules.h'
@@ -185,7 +177,7 @@ contains
 
     do ist = 1 , param_pjasen_nb
        gn_pjasen (ist) = dpsi_pjasen (ist)
-    end do
+    enddo
 
     !! add only updated electron. The old falue is already subtracted
     !! through fso
@@ -632,7 +624,7 @@ contains
 
        pjasd2 = pjasd2 + pjasd2ijo(i,i)
 
-    end do
+    enddo
 
     do i=1,nelec
        pjasv (:, i) = pjasv (:, i) + pjasfjo (:,i)
@@ -695,7 +687,7 @@ contains
 
        pjasd2 = pjasd2 + pjasd2ijo(i,i)
 
-    end do
+    enddo
 
 
     do i=1,nelec

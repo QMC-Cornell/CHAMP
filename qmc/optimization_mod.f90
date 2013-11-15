@@ -1136,7 +1136,6 @@ module optimization_mod
      call wf_update_and_check_and_stab
 !    write new wave function
      write(6,'(a)') ''
-     write(6,'(a,i3)') 'Wave function for next iteration # ',iter+1
      write(6,'(''For next iteration #'',i4,'' new wave function:'')') iter+1
      call write_wf_new
 

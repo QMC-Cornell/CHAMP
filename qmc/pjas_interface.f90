@@ -12,13 +12,10 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
   real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
   real (dp)                              :: x, v, div_vj, value, d2
   dimension x(3,nelec),v(3,nelec),div_vj(nelec)
-
   integer                                :: i, j, k
-
 
 !!! all values will be added up (v, d2, div_vj, value)
   call pjas_jas (x,rvec,v,d2,div_vj,value)
-!!!
 
   do i=1, nelec
      do k=1, ndim
@@ -48,9 +45,7 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
   enddo
 
 end subroutine pjas_jas_interface
-
-
-
+!-------------------------------------------------------------------------
 
 subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
   use periodic_jastrow_mod
@@ -67,7 +62,6 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
 
 !!! all values will be added up (v, d2, div_vj, value)
   call pjas_deriv_jas (x,rvec,v,d2,div_vj, value)
-!!!
 
   do i=1, nelec
      do k=1, ndim
@@ -98,9 +92,7 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
   enddo
 
 end subroutine pjas_deriv_jas_interface
-
-
-
+!-------------------------------------------------------------------------
 
 subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
   use periodic_jastrow_mod
@@ -115,6 +107,5 @@ subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
 !JT  real (dp)                              :: fsn, fijn, d2ijn, d2n , fsumn, fjn
 
   call pjas_jas_e (iel, x, rvec, v, value)
-
 
 end subroutine pjas_jas_e_interface
