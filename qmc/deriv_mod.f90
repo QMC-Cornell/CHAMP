@@ -455,7 +455,7 @@ module deriv_mod
 ! begin
   call object_alloc ('deloc', deloc, param_nb)
   call object_alloc ('deloc_av', deloc_av, param_nb)
-  call object_alloc ('deloc_av_err', deloc_av_err, param_nb) !!! temporary
+  call object_alloc ('deloc_av_err', deloc_av_err, param_nb) !!! temporary for testing DMC gradients
   call object_alloc ('deloc_bav', deloc_bav, param_nb)
   call object_alloc ('deloc_av_eloc_av_covar', deloc_av_eloc_av_covar, param_nb)
   call object_alloc ('deloc_av_dpsi_eloc_av_covar', deloc_av_dpsi_eloc_av_covar, param_nb, param_nb)
@@ -540,7 +540,7 @@ module deriv_mod
   subroutine deloc_av_abs_max_bld
 ! ------------------------------------------------------------------------------
 ! Description   : absolute maximal value of deloc_av
-! Description   : must be zero with statistical noise because of Hermiticity of Hamiltonian
+! Description   : must be zero in VMC with statistical noise because of Hermiticity of Hamiltonian
 !
 ! Created       : J. Toulouse, 23 Jan 2007
 ! ------------------------------------------------------------------------------
@@ -1477,7 +1477,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi_eloc_covar')
-   call object_error_define ('dpsi_eloc_covar', 'dpsi_eloc_covar_err')
+   call object_error_define ('dpsi_eloc_covar', 'dpsi_eloc_covar_err') ! temporary for testing DMC gradient
 
    call object_needed ('param_nb')
    call object_needed ('dpsi_eloc_av')
