@@ -292,6 +292,7 @@ module catalog_routines_mod
   call catalog_one_node ('dpsi_dpsi_c_eloc_av_bld', dpsi_dpsi_c_eloc_av_bld)
   call catalog_one_node ('dpsi_eloc_bld', dpsi_eloc_bld)
   call catalog_one_node ('dpsi_eloc_covar_bld', dpsi_eloc_covar_bld)
+  call catalog_one_node ('dpsi_eloc_covar_deloc_av_bld', dpsi_eloc_covar_deloc_av_bld)
   call catalog_one_node ('dpsi_eloc_blk_covar_bld', dpsi_eloc_blk_covar_bld)
   call catalog_one_node ('d2psi_bld', d2psi_bld, d2psi_bld_index)
   call catalog_one_node ('d2psi_eloc_bld', d2psi_eloc_bld)

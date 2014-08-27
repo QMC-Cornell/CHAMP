@@ -266,7 +266,7 @@
 ! get pseudo-potential contribution
 ! nonloc_pot must be called after determinant because psid is needed in nonloc_pot
 ! This call computes the entire pot_en if iperiodic=0 but only the nonlocal contrib. otherwise.
-        if(ipr.ge.-3) write(6,'(''hpsi: pe before nonloc_pot'',9f12.5)') pe
+        if(ipr.ge.2) write(6,'(''hpsi: pe before nonloc_pot'',9f12.5)') pe
         if(nloc.gt.0) then
 !         if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
           if((igradhess.eq.0 .or. ifr.gt.1) .and. .not. l_opt) then

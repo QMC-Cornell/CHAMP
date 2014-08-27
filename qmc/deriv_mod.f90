@@ -46,6 +46,9 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_eloc_bav (:)
   real(dp), allocatable          :: dpsi_eloc_av (:)
   real(dp), allocatable          :: dpsi_eloc_covar (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_err (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_deloc_av (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_deloc_av_err (:)
   real(dp), allocatable          :: dpsi_eloc_blk_covar (:)
   real(dp), allocatable          :: dpsi_eloc_sq (:)
   real(dp), allocatable          :: dpsi_eloc_sq_av (:)
@@ -64,6 +67,7 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_av_eloc_av_covar (:)
   real(dp), allocatable          :: deloc (:)
   real(dp), allocatable          :: deloc_av (:)
+  real(dp), allocatable          :: deloc_av_err (:)
   real(dp), allocatable          :: deloc_bav (:)
   real(dp), allocatable          :: deloc_sq (:)
   real(dp), allocatable          :: deloc_sq_av (:)
@@ -434,6 +438,7 @@ module deriv_mod
    call object_create ('deloc')
    call object_block_average_define ('deloc', 'deloc_bav')
    call object_average_define ('deloc', 'deloc_av')
+   call object_error_define ('deloc_av', 'deloc_av_err')
    call object_covariance_define ('deloc_av', 'eloc_av', 'deloc_av_eloc_av_covar')
    call object_covariance_define ('deloc_av', 'dpsi_eloc_av', 'deloc_av_dpsi_eloc_av_covar')
    call object_covariance_define ('deloc_av', 'dpsi_av', 'deloc_av_dpsi_av_covar')
@@ -450,6 +455,7 @@ module deriv_mod
 ! begin
   call object_alloc ('deloc', deloc, param_nb)
   call object_alloc ('deloc_av', deloc_av, param_nb)
+  call object_alloc ('deloc_av_err', deloc_av_err, param_nb) !!! temporary
   call object_alloc ('deloc_bav', deloc_bav, param_nb)
   call object_alloc ('deloc_av_eloc_av_covar', deloc_av_eloc_av_covar, param_nb)
   call object_alloc ('deloc_av_dpsi_eloc_av_covar', deloc_av_dpsi_eloc_av_covar, param_nb, param_nb)
@@ -1471,6 +1477,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi_eloc_covar')
+   call object_error_define ('dpsi_eloc_covar', 'dpsi_eloc_covar_err')
 
    call object_needed ('param_nb')
    call object_needed ('dpsi_eloc_av')
@@ -1483,6 +1490,7 @@ module deriv_mod
 
 ! begin
   call object_alloc ('dpsi_eloc_covar', dpsi_eloc_covar, param_nb)
+  call object_alloc ('dpsi_eloc_covar_err', dpsi_eloc_covar_err, param_nb)
 
   dpsi_eloc_covar =  dpsi_eloc_av - dpsi_av * eloc_av
 
@@ -1519,6 +1527,38 @@ module deriv_mod
   dpsi_eloc_blk_covar =  dpsi_eloc_bav - dpsi_bav * eloc_bav
 
   end subroutine dpsi_eloc_blk_covar_bld
+
+! ==============================================================================
+  subroutine dpsi_eloc_covar_deloc_av_bld
+! ------------------------------------------------------------------------------
+! Description   : 
+!
+! Created       : J. Toulouse, 27 Aug 2014
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_eloc_covar_deloc_av')
+   call object_error_define ('dpsi_eloc_covar_deloc_av', 'dpsi_eloc_covar_deloc_av_err')
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_eloc_covar')
+   call object_needed ('deloc_av')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_eloc_covar_deloc_av', dpsi_eloc_covar_deloc_av, param_nb)
+  call object_alloc ('dpsi_eloc_covar_deloc_av_err', dpsi_eloc_covar_deloc_av_err, param_nb)
+
+  dpsi_eloc_covar_deloc_av =  dpsi_eloc_covar + deloc_av
+
+  end subroutine dpsi_eloc_covar_deloc_av_bld
 
 ! ==============================================================================
   subroutine dpsi_dpsi_c_eloc_av_bld

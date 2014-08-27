@@ -867,6 +867,9 @@ module optimization_mod
     call object_average_request ('deloc_av')
     call object_average_request ('dpsi_deloc_av')
     call object_average_request ('dpsi_dpsi_eloc_av')
+    call object_error_request ('deloc_av_err') !!!!! temporary
+    call object_error_request ('dpsi_eloc_covar_err') !!!!! temporary
+    call object_error_request ('dpsi_eloc_covar_deloc_av_err') !!!!! temporary
    endif
 
 ! perturbative method
@@ -1002,6 +1005,14 @@ module optimization_mod
 
 !  calculate and print deloc_av_norm
    if (l_opt_lin .or. l_opt_nwt) then
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!   temporary printing 
+    do  parm_i=1,param_nb
+     write(6,'(3(a,f10.6,a,i6,a))') 'dpsi_eloc_covar=',dpsi_eloc_covar(parm_i), '(',nint(dpsi_eloc_covar_err(parm_i)*10**6),') ', &
+      'deloc_av=',deloc_av(parm_i), '(',nint(deloc_av_err(parm_i)*10**6),') ',  &
+      'dpsi_eloc_covar_deloc_av=',dpsi_eloc_covar_deloc_av(parm_i), '(',nint(dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
+    enddo
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     call object_provide ('deloc_av_abs_max')
     write(6,*)
     write(6,'(a,es15.8,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero within statistical noise except for geometry optimization)'
