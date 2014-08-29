@@ -194,11 +194,11 @@
          write(38,'(''r(j)  (vpseudo(j,ict,i),i=1,npotd(ict))  -znuc(ict)/r(j)'')')
           do 104 j=2,nr
             if(r(j).gt.0.d0) then
-!             write(38,'(1pd12.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict)),-znuc(ict)/r(j)
-             write(38,'(1pd12.6,0p,9g22.14)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict)),-znuc(ict)/r(j)
+!             write(38,'(1pd13.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict)),-znuc(ict)/r(j)
+             write(38,'(1pd13.6,0p,9g22.14)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict)),-znuc(ict)/r(j)
              else
-!             write(38,'(1pd12.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict))
-             write(38,'(1pd12.6,0p,9g22.14)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict))
+!             write(38,'(1pd13.6,9d14.6)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict))
+             write(38,'(1pd13.6,0p,9g22.14)') r(j),(vpseudo(j,ict,i),i=1,npotd(ict))
             endif
   104     continue
         endif

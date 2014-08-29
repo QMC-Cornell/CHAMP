@@ -859,6 +859,10 @@ module optimization_mod
     call object_average_request ('dpsi_dpsi_eloc_av')
     call object_average_request ('d2psi_av')
     call object_average_request ('d2psi_eloc_av')
+
+    call object_error_request ('deloc_av_err') !!!!! temporary for testing DMC gradient
+    call object_error_request ('dpsi_eloc_covar_err') !!!!! temporary for testing DMC gradient
+    call object_error_request ('dpsi_eloc_covar_deloc_av_err') !!!!! temporary for testing DMC gradient
    endif
 
 !  linear method

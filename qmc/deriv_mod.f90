@@ -1740,6 +1740,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! Modified      : J. Toulouse, 06 Aug 2008, add geometry parameters case
+! Modified      : J. Toulouse, 29 Aug 2014, add DMC case
 ! ------------------------------------------------------------------------------
   implicit none
 
@@ -1772,6 +1773,11 @@ module deriv_mod
 !  add derivative of local energy for geometry parameters
    if (l_opt_geo .and. is_param_type_geo (param_i)) then
      gradient_energy (param_i) = gradient_energy (param_i) + deloc_av (param_i) 
+   endif
+
+!  add twice derivative of local energy for approximate DMC gradient
+   if (l_mode_dmc) then
+     gradient_energy (param_i) = gradient_energy (param_i) + 2*deloc_av (param_i) 
    endif
 
   enddo ! param_i

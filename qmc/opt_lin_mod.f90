@@ -15,6 +15,7 @@ module opt_lin_mod
   logical                         :: l_sym_ham_first_row_column_geo = .false.
   logical                         :: l_renormalize = .false.
   logical                         :: l_print_eigenvector_norm = .false.
+  logical                         :: l_opt_lin_left_eigvec = .false.
 
   integer                         :: param_aug_nb
 
@@ -70,6 +71,7 @@ module opt_lin_mod
   target_state_above_groundstate_or_target_smallest_norm = 0
   l_eigval_lower_bound_fixed = .false.
   l_eigval_upper_bound_fixed = .false.
+  l_opt_lin_left_eigvec = .false.
 
 ! loop over menu lines
   do
@@ -101,6 +103,7 @@ module opt_lin_mod
    write(6,'(a)') '    target_state_above_groundstate = [integer] : index of target state above the ground state to optimize (default=0 for ground-state)'
    write(6,'(a)') '    target_state_above_groundstate_or_target_smallest_norm = [integer] : target that state above ground state or target smallest norm (default=0)'
    write(6,'(a)') '    print_eigenvector_norm = [bool] : print norm of all eigenvectors? (default=false)'
+   write(6,'(a)') '    left_eigvec = [bool]: use left eigenvector instead of right one? (default=false)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
@@ -176,6 +179,9 @@ module opt_lin_mod
 
   case ('print_eigenvector_norm')
    call get_next_value (l_print_eigenvector_norm)
+
+  case ('left_eigvec')
+   call get_next_value (l_opt_lin_left_eigvec)
 
   case ('end')
    exit
@@ -788,8 +794,17 @@ module opt_lin_mod
   write(6,*)
   write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation of linear method with a_diag =', diag_stab
 ! note: large jobs can die in this routine because of lack of memory
-  call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
-             eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
+  
+  if(.not.l_opt_lin_left_eigvec) then
+!  compute right eigenvectors (standard)
+   call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
+              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
+  else
+!  compute left eigenvectors (this is much more noisy since the strong zero-variance principle is lost) 
+   write(6,'(a)') 'Warning: use left eigenvectors instead of right eigenvectors'
+   call dggev('V','N',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
+              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
+  endif
 !  call dggev('V','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
 !             eigval_denom, eigvec_left, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
 !  write(6,*) 'after dggev'
