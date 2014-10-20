@@ -16,6 +16,7 @@ module opt_lin_mod
   logical                         :: l_renormalize = .false.
   logical                         :: l_print_eigenvector_norm = .false.
   logical                         :: l_opt_lin_left_eigvec = .false.
+  logical                         :: l_ham_1st_col_eq_1st_row = .false.
 
   integer                         :: param_aug_nb
 
@@ -72,6 +73,7 @@ module opt_lin_mod
   l_eigval_lower_bound_fixed = .false.
   l_eigval_upper_bound_fixed = .false.
   l_opt_lin_left_eigvec = .false.
+  l_ham_1st_col_eq_1st_row = .false.
 
 ! loop over menu lines
   do
@@ -104,6 +106,7 @@ module opt_lin_mod
    write(6,'(a)') '    target_state_above_groundstate_or_target_smallest_norm = [integer] : target that state above ground state or target smallest norm (default=0)'
    write(6,'(a)') '    print_eigenvector_norm = [bool] : print norm of all eigenvectors? (default=false)'
    write(6,'(a)') '    left_eigvec = [bool]: use left eigenvector instead of right one? (default=false)'
+   write(6,'(a)') '    ham_1st_col_eq_1st_row = [bool]: set 1st column equal to 1st row in Hamiltonian(default=false)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
@@ -182,6 +185,9 @@ module opt_lin_mod
 
   case ('left_eigvec')
    call get_next_value (l_opt_lin_left_eigvec)
+
+  case ('ham_1st_col_eq_1st_row')
+   call get_next_value (l_ham_1st_col_eq_1st_row)
 
   case ('end')
    exit
@@ -432,6 +438,11 @@ module opt_lin_mod
     elseif(l_opt_geo .and. (l_sym_ham_geo .or. l_sym_ham_first_row_column_geo) .and. is_param_type_geo(i)) then
      ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) + deloc_av(i)/2.d0
      ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)
+
+!   1st column equal 1st row (mainly for DMC optimization)
+    elseif(l_ham_1st_col_eq_1st_row) then
+     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) + deloc_av(i)
+     ham_lin_energy(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
 
 !   normal Hamiltoniam
     else
