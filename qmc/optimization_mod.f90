@@ -1355,9 +1355,9 @@ module optimization_mod
 
 ! Print best wave function
   write(6,*)
-  write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
+! write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
+  write(6,'(a,i3,f13.7,a,f11.7)') 'OPT: the best wave function was found at iteration # ',iter_best,energy_best,' +-',(energy_plus_err_best-energy_best)/3
   write(6,'(a)') 'Best wave function:'
-!  write(6,'(a,i3)') 'The best wave function was found at iteration # ',iter_best !, ' (energy_plus_err_best = ',energy_plus_err_best,')'
   call write_wf_best
 
 ! restore best wave function and set new etrial for subsequent calculations

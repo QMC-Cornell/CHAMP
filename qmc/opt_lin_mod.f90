@@ -855,6 +855,7 @@ module opt_lin_mod
   do i = 1, param_aug_nb
     eigval_srt_ind_to_eigval_ind(i) = i
   enddo
+  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:param_aug_nb)
   do i = 1, param_aug_nb
     do j = i+1, param_aug_nb
       if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
@@ -864,11 +865,13 @@ module opt_lin_mod
       endif
     enddo
   enddo
+  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:param_aug_nb)
 ! eigval_ind_to_eigval_srt_ind is the map from original eigenvalues to sorted eigenvalues
   call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, param_aug_nb)
   do i = 1, param_aug_nb
    eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
   enddo
+  write(6,'(''eigval_ind_to_eigval_srt_ind='',10000i6)') eigval_ind_to_eigval_srt_ind(1:param_aug_nb)
 
 ! print eigenvalues
   write(6,'(a)') 'Sorted (complex) eigenvalues:'
