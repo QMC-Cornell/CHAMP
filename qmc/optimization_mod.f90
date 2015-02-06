@@ -2141,8 +2141,12 @@ module optimization_mod
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
-    write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
-    write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)'
+    if (use_parser) then
+     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf)
+    else
+     write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+     write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)'
+    endif
 # endif
     write(6,'(a)') ' end'
     write(6,'(a)') 'end'
@@ -2318,8 +2322,12 @@ module optimization_mod
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
-    write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
-    write(6,fmt) csf_coef(1:ncsf,iwf), ' (csf_coef_new(icsf),icsf=1,ncsf)'
+    if (use_parser) then
+     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf)
+    else
+     write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
+     write(6,fmt) csf_coef(1:ncsf,iwf), ' (csf_coef_new(icsf),icsf=1,ncsf)'
+    endif
 # endif
     write(6,'(a)') ' end'
     write(6,'(a)') 'end'

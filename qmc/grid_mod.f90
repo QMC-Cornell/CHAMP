@@ -135,6 +135,7 @@ module grid_mod
 
   case ('grid_r_max')
    call get_next_value (grid_r_max)
+!   write(6,*) 'grid_r_max=',grid_r_max
 
   case ('end')
    exit
