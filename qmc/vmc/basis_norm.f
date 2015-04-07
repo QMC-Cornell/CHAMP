@@ -1,6 +1,7 @@
       subroutine basis_norm(iwf,iflag)
 ! Written by Cyrus Umrigar
 ! Set normalization of basis fns.
+!
 ! In 3d:
 ! Norm of radial part: ((2*zeta)^{2n+1}/(2n)!)^{1/2} for Slaters (n>0).
 !                      (2*(2*zeta)^(n+1/2)/Gamma(n+1/2))^{1/2} for gaussians
@@ -9,6 +10,7 @@
 ! obtained by Integrate[r^2 (r^{n-1} Exp[-zeta r])^2,{r,0,Infinity}] for Slaters
 ! obtained by Integrate[r^2 (r^{n-1} Exp[-zeta r^2])^2,{r,0,Infinity}] for Gaussians
 ! Norm of angular part: ((2*l+1)/(4*pi))^{1/2}.
+!
 ! In 2d:
 ! Norm of radial part: ((2*zeta)^{2n}/(2n-1)!)^{1/2}.
 ! Norm of angular part: (min(m+1,2)/(2*pi))^{1/2}.
