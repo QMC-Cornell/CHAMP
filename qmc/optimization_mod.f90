@@ -132,6 +132,7 @@ module optimization_mod
    write(6,'(a)') '        = newton           : Newton energy optimization method'
    write(6,'(a)') '        = perturbative     : Perturbative energy optimization method'
    write(6,'(a)') '        = overlap_fn       : Maximize overlap with fixed-nodes wavefunction method'
+   write(6,'(a)') '        = gradient         : compute only the energy gradient'
    write(6,'(a)') ' newton ... end : menu for Newton optimization method'
    write(6,'(a)') ' linear ... end : menu for linear optimization method'
    write(6,'(a)') ' perturbative ... end : menu for perturbative optimization method'
@@ -399,6 +400,9 @@ module optimization_mod
    case ('overlap_fn')
     l_opt_ovlp_fn = .true.
     call require (lhere, 'l_mode_dmc = true', l_mode_dmc)
+   case ('gradient')
+    l_opt_grad = .true.
+    l_last_run = .false.
    case default
     call die (lhere, 'unknown optimization method >'+trim(opt_method)+'<.')
   end select
@@ -837,6 +841,12 @@ module optimization_mod
    call object_average_request ('dpsi_av')
    call object_average_request ('dpsi_eloc_av')
    call object_error_request ('gradient_norm_err')
+   if (l_mode_dmc) then
+     call object_average_request ('deloc_av') 
+     call object_error_request ('deloc_av_err') !!!!! temporary for testing DMC gradient
+     call object_error_request ('dpsi_eloc_covar_err') !!!!! temporary for testing DMC gradient
+     call object_error_request ('dpsi_eloc_covar_deloc_av_err') !!!!! temporary for testing DMC gradient
+   endif
 
 !  For variance gradient and hessian
    if (p_var /= 0.d0) then
@@ -859,10 +869,6 @@ module optimization_mod
     call object_average_request ('dpsi_dpsi_eloc_av')
     call object_average_request ('d2psi_av')
     call object_average_request ('d2psi_eloc_av')
-
-    call object_error_request ('deloc_av_err') !!!!! temporary for testing DMC gradient
-    call object_error_request ('dpsi_eloc_covar_err') !!!!! temporary for testing DMC gradient
-    call object_error_request ('dpsi_eloc_covar_deloc_av_err') !!!!! temporary for testing DMC gradient
    endif
 
 !  linear method
@@ -871,10 +877,6 @@ module optimization_mod
     call object_average_request ('deloc_av')
     call object_average_request ('dpsi_deloc_av')
     call object_average_request ('dpsi_dpsi_eloc_av')
-
-    call object_error_request ('deloc_av_err') !!!!! temporary for testing DMC gradient
-    call object_error_request ('dpsi_eloc_covar_err') !!!!! temporary for testing DMC gradient
-    call object_error_request ('dpsi_eloc_covar_deloc_av_err') !!!!! temporary for testing DMC gradient
    endif
 
 ! perturbative method
@@ -991,6 +993,18 @@ module optimization_mod
       write(6,*)
    endif
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  temporary printing for testing DMC gradient
+   if (l_mode_dmc) then
+    write(6,'(a)') 'Approximate DMC energy gradient :'
+    do  parm_i=1,param_nb
+     write(6,'(i5,3(a,f10.6,a,i6,a))') parm_i, ' 2*dpsi_eloc_covar=',2*dpsi_eloc_covar(parm_i), '(',nint(2*dpsi_eloc_covar_err(parm_i)*10**6),') ', &
+      '2*deloc_av=',2*deloc_av(parm_i), '(',nint(2*deloc_av_err(parm_i)*10**6),') ',  &
+      '2*dpsi_eloc_covar_deloc_av=',2*dpsi_eloc_covar_deloc_av(parm_i), '(',nint(2*dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
+    enddo
+   endif
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 !  check vanishing components or linear dependencies in gradient
    do parm_i = 1, param_nb
       if (abs(gradient (parm_i)) < 1.d-10) then
@@ -1008,17 +1022,13 @@ module optimization_mod
      enddo
    enddo
 
+   if (l_opt_grad) then
+    exit
+   endif
+
+
 !  calculate and print deloc_av_norm
    if (l_opt_lin .or. l_opt_nwt) then
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!   temporary printing for testing DMC gradient
-    do  parm_i=1,param_nb
-     write(6,'(3(a,f10.6,a,i6,a))') 'dpsi_eloc_covar=',dpsi_eloc_covar(parm_i), '(',nint(dpsi_eloc_covar_err(parm_i)*10**6),') ', &
-      'deloc_av=',deloc_av(parm_i), '(',nint(deloc_av_err(parm_i)*10**6),') ',  &
-      'dpsi_eloc_covar_deloc_av=',dpsi_eloc_covar_deloc_av(parm_i), '(',nint(dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
-    enddo
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     call object_provide ('deloc_av_abs_max')
     write(6,*)
@@ -1275,6 +1285,12 @@ module optimization_mod
    if (l_convergence_reached) exit
 
   enddo ! end optimization loop
+
+  if (l_opt_grad) then
+   write(6,*)
+   write(6,'(a)') 'End of gradient calculation'
+   return
+  endif
 
 ! final printing
   write(6,*) ''
