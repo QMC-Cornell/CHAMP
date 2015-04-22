@@ -344,7 +344,6 @@ module catalog_routines_mod
 
   call catalog_one_node ('slater_mat_ex_trans_inv_bld', slater_mat_ex_trans_inv_bld)
   call catalog_one_node ('slater_mat_ex_trans_inv_2_bld', slater_mat_ex_trans_inv_2_bld)
-  call catalog_one_node ('slater_mat_ex_trans_inv_3_bld', slater_mat_ex_trans_inv_3_bld)
   call catalog_one_node ('grd_det_ex_unq_bld', grd_det_ex_unq_bld)
   call catalog_one_node ('grd_det_ex_bld', grd_det_ex_bld)
   call catalog_one_node ('lap_det_ex_unq_bld', lap_det_ex_unq_bld)

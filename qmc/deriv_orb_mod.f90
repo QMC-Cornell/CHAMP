@@ -84,16 +84,12 @@ module deriv_orb_mod
   real(dp), allocatable                  :: det_ex_dn (:,:)
   real(dp), allocatable                  :: det_ex (:,:)
   real(dp), allocatable                  :: psid_ex (:)
-  real(dp), allocatable                  :: slater_mat_ex_trans_up (:,:,:)
-  real(dp), allocatable                  :: slater_mat_ex_trans_dn (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up (:, :, :)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn (:, :, :)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up_2 (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_2 (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up_3 (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_3 (:,:,:)
-  real(dp), allocatable                  :: mat_flat_up (:,:)
-  real(dp), allocatable                  :: mat_flat_dn (:,:)
   real(dp), allocatable                  :: grd_det_ex_unq_dn (:,:,:)
   real(dp), allocatable                  :: grd_det_ex_unq_up (:,:,:)
   real(dp), allocatable                  :: lap_det_ex_unq_dn (:,:)
@@ -124,6 +120,8 @@ module deriv_orb_mod
   real(dp), allocatable                  :: deloc_orb (:)
 
   real(dp), allocatable                  :: delta_eps (:)
+
+  logical                                :: l_slater_mat_ex_trans_inv_sm = .true.
 
   contains
 
@@ -1718,119 +1716,160 @@ module deriv_orb_mod
 ! ==============================================================================
   subroutine slater_mat_ex_trans_inv_bld
 ! ------------------------------------------------------------------------------
-! Description   : inverse of transpose of Slater matrix corresponding to
-! Description   : to excited determinants by inversion
-! Description   : suprisingly, this is faster than using the Sherman-Morison formula!
+! Description   :  inverse of transpose of Slater matrix corresponding to
+! Description   :  to excited determinants using the Sherman-Morison formula with O(nup^2 + ndn^2) scaling
+! Description   :  or with inversion from scratch (seems faster for small electron numbers)
+! Description   :  memory could be saved by using either removing slater_mat_ex_trans_up and slater_mat_ex_trans_dn
 !
-! Created       : J. Toulouse, 09 Dec 2005
+! Created       : J. Toulouse, 27 Oct 2005
+! Modified      : J. Toulouse, 22 Apr 2015: merge Sherman-Morison and inversion from scratch in a single subroutine
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
 
 ! local
+  integer det_up_i, det_dn_i 
+  integer det_ref_up, det_ref_dn
+  integer i, j, k, l
+  integer col_up, orb_up
+  integer col_dn, orb_dn
+  real(dp) factor_up_inv, factor_dn_inv
+  real(dp), allocatable :: ratio_up (:), ratio_dn (:)
   integer det_i, orb_i, elec_i
+  real(dp), allocatable                  :: slater_mat_ex_trans_up (:,:)
+  real(dp), allocatable                  :: slater_mat_ex_trans_dn (:,:)
+  real(dp), allocatable                  :: mat_flat_up (:)
+  real(dp), allocatable                  :: mat_flat_dn (:)
 
 ! header
   if (header_exe) then
 
    call object_create ('slater_mat_ex_trans_inv_up')
    call object_create ('slater_mat_ex_trans_inv_dn')
-!   call object_create ('det_ex_unq_up')
-!   call object_create ('det_ex_unq_dn')
 
    call object_needed ('nup')
    call object_needed ('ndn')
    call object_needed ('det_ex_unq_up_nb')
    call object_needed ('det_ex_unq_dn_nb')
+   call object_needed ('iwdet_ex_ref_up')
+   call object_needed ('iwdet_ex_ref_dn')
+   call object_needed ('det_ex_unq_up_orb_1st_pos')
+   call object_needed ('det_ex_unq_dn_orb_1st_pos')
+   call object_needed ('det_ex_unq_up_orb_2nd_lab')
+   call object_needed ('det_ex_unq_dn_orb_2nd_lab')
+   call object_needed ('slater_mat_trans_inv_up')
+   call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('orb')
 
    return
 
   endif
 
-! begin
-
 ! allocations
-  call object_alloc ('slater_mat_ex_trans_up', slater_mat_ex_trans_up, nup, nup, det_ex_unq_up_nb)
-  call object_alloc ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn, ndn, ndn, det_ex_unq_dn_nb)
   call object_alloc ('slater_mat_ex_trans_inv_up', slater_mat_ex_trans_inv_up, nup, nup, det_ex_unq_up_nb)
   call object_alloc ('slater_mat_ex_trans_inv_dn', slater_mat_ex_trans_inv_dn, ndn, ndn, det_ex_unq_dn_nb)
-  call object_alloc ('det_ex_unq_up', det_ex_unq_up, det_ex_unq_up_nb)
-  call object_alloc ('det_ex_unq_dn', det_ex_unq_dn, det_ex_unq_dn_nb)
 
-! spin-up
-  do det_i = 1, det_ex_unq_up_nb
-    do orb_i = 1, nup
-      do elec_i = 1, nup
-        slater_mat_ex_trans_up (orb_i, elec_i, det_i) = orb (elec_i, det_ex_unq_orb_lab_up (orb_i, det_i))
-      enddo
-    enddo
-  enddo
+! calculate inverses with Sherman-Morison
+  if (l_slater_mat_ex_trans_inv_sm) then
 
-! spin-dn
-  do det_i = 1, det_ex_unq_dn_nb
-    do orb_i = 1, ndn
-      do elec_i = 1, ndn
-        slater_mat_ex_trans_dn (orb_i, elec_i, det_i) = orb (nup + elec_i, det_ex_unq_orb_lab_dn (orb_i, det_i))
-      enddo
-    enddo
-  enddo
+!  spin up
+   call alloc ('ratio_up', ratio_up, nup)
+   do det_up_i = 1, det_ex_unq_up_nb
+   
+       col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
+       orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
+       det_ref_up = iwdet_ex_ref_up (det_up_i)
+   
+       do l = 1, nup
+        ratio_up (l) = 0.d0
+        do i = 1, nup
+          ratio_up (l) = ratio_up (l) + slater_mat_trans_inv_up (i, l, det_ref_up) * orb (i, orb_up)
+        enddo  ! i
+       enddo ! l
+   
+       factor_up_inv = 1.d0/ratio_up (col_up)
+       ratio_up (col_up) = ratio_up (col_up) - 1.d0
+   
+       do k = 1, nup
+         do j = 1 , nup
+          slater_mat_ex_trans_inv_up (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, det_ref_up) &
+                                  - slater_mat_trans_inv_up (k, col_up, det_ref_up) * ratio_up(j)* factor_up_inv
+         enddo ! j
+       enddo ! k
+   
+    enddo ! det_up_i
+    call release ('ratio_up', ratio_up)
+   
+!  spin dn
+   call alloc ('ratio_dn', ratio_dn, ndn)
+   do det_dn_i = 1, det_ex_unq_dn_nb
+   
+       col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
+       orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
+       det_ref_dn = iwdet_ex_ref_dn (det_dn_i)
+   
+       do l = 1, ndn
+        ratio_dn (l) = 0.d0
+        do i = 1, ndn
+          ratio_dn (l) = ratio_dn (l) + slater_mat_trans_inv_dn (i, l, det_ref_dn) * orb (nup + i, orb_dn)
+        enddo  ! i
+       enddo ! l
+   
+       factor_dn_inv = 1.d0/ratio_dn (col_dn)
+       ratio_dn (col_dn) = ratio_dn (col_dn) - 1.d0
+   
+       do k = 1, ndn
+         do j = 1 , ndn
+          slater_mat_ex_trans_inv_dn (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, det_ref_dn) &
+                                  - slater_mat_trans_inv_dn (k, col_dn, det_ref_dn) * ratio_dn(j)* factor_dn_inv
+         enddo ! j
+       enddo ! k
+   
+    enddo ! det_dn_i
+    call release ('ratio_dn', ratio_dn)
 
+! calculate inverses from scratch
+  else
 
-!!! WAS
-!!$  call object_provide ('slater_mat_ex_trans_inv_up_2')
-!!$  call object_provide ('slater_mat_ex_trans_inv_dn_2')
-!!$  slater_mat_ex_trans_up= slater_mat_ex_trans_inv_up_2
-!!$  slater_mat_ex_trans_dn= slater_mat_ex_trans_inv_dn_2
-!!$  return
-!!!!
-
-
-
-  call object_alloc ('mat_flat_up', mat_flat_up, nup*nup, det_ex_unq_up_nb)
-  call object_alloc ('mat_flat_dn', mat_flat_dn, ndn*ndn, det_ex_unq_dn_nb)
-
-
-
-  do det_i = 1, det_ex_unq_up_nb
-   call flatten (mat_flat_up (:,det_i), slater_mat_ex_trans_up (:,:,det_i), nup, nup)
-!debug WAS
-!!$   write(6,*) "slater_mat_ex_trans_up (:,:,det_i)", slater_mat_ex_trans_up (:,:,det_i)
-!!$   write(6,*) "doing deti ", det_i, det_ex_unq_up_nb
-!!$   write(6,*) "mat_falt_up",  mat_flat_up (:, det_i)
-!!$   write(6,*)  "det_ex_unq_up_nb",  det_ex_unq_up_nb
-!
-   call matinv (mat_flat_up (:,det_i), nup, det_ex_unq_up (det_i))
-   call unflatten (mat_flat_up (:,det_i), slater_mat_ex_trans_inv_up (:,:,det_i), nup, nup)
-  enddo
-
-  do det_i = 1, det_ex_unq_dn_nb
-   call flatten (mat_flat_dn (:,det_i), slater_mat_ex_trans_dn (:,:,det_i), ndn, ndn)
-   call matinv (mat_flat_dn (:,det_i), ndn, det_ex_unq_dn (det_i))
-   call unflatten (mat_flat_dn (:,det_i), slater_mat_ex_trans_inv_dn (:,:,det_i), ndn, ndn)
-  enddo
-
+!  allocations
+   call object_alloc ('det_ex_unq_up', det_ex_unq_up, det_ex_unq_up_nb)
+   call object_alloc ('det_ex_unq_dn', det_ex_unq_dn, det_ex_unq_dn_nb)
+   
+!  spin-up
+   call alloc ('slater_mat_ex_trans_up', slater_mat_ex_trans_up, nup, nup)
+   call alloc ('mat_flat_up', mat_flat_up, nup*nup)
+   do det_i = 1, det_ex_unq_up_nb
+     do orb_i = 1, nup
+       do elec_i = 1, nup
+         slater_mat_ex_trans_up (orb_i, elec_i) = orb (elec_i, det_ex_unq_orb_lab_up (orb_i, det_i))
+       enddo
+     enddo
+    call flatten (mat_flat_up (:), slater_mat_ex_trans_up (:,:), nup, nup)
+    call matinv (mat_flat_up (:), nup, det_ex_unq_up (det_i))
+    call unflatten (mat_flat_up (:), slater_mat_ex_trans_inv_up (:,:, det_i), nup, nup)
+   enddo
+   call release ('slater_mat_ex_trans_up', slater_mat_ex_trans_up)
+   call release ('mat_flat_up', mat_flat_up)
    call object_modified_by_index (det_ex_unq_up_index)
+   
+!  spin-dn
+   call alloc ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn, ndn, ndn)
+   call alloc ('mat_flat_dn', mat_flat_dn, ndn*ndn)
+   do det_i = 1, det_ex_unq_dn_nb
+     do orb_i = 1, ndn
+       do elec_i = 1, ndn
+         slater_mat_ex_trans_dn (orb_i, elec_i) = orb (nup + elec_i, det_ex_unq_orb_lab_dn (orb_i, det_i))
+       enddo
+     enddo
+    call flatten (mat_flat_dn (:), slater_mat_ex_trans_dn (:,:), ndn, ndn)
+    call matinv (mat_flat_dn (:), ndn, det_ex_unq_dn (det_i))
+    call unflatten (mat_flat_dn (:), slater_mat_ex_trans_inv_dn (:,:, det_i), ndn, ndn)
+   enddo
+   call release ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn)
+   call release ('mat_flat_dn', mat_flat_dn)
    call object_modified_by_index (det_ex_unq_dn_index)
 
-! tests!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!   call object_provide ('slater_mat_ex_trans_inv_up_2')
-!   call object_provide ('slater_mat_ex_trans_inv_dn_2')
-!
-!   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_2')
-!   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_2')
-!   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_2, 1.d-5)
-!   call is_equal_or_die (slater_mat_ex_trans_inv_dn, slater_mat_ex_trans_inv_dn_2, 1.d-5)
-!
-!   call object_provide ('slater_mat_ex_trans_inv_up_3')
-!   call object_provide ('slater_mat_ex_trans_inv_dn_3')
-!
-!   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_3')
-!   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_3')
-!   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_3, 1.d-5)
-!   call is_equal_or_die (slater_mat_ex_trans_inv_dn, slater_mat_ex_trans_inv_dn_3, 1.d-5)
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  endif
 
   end subroutine slater_mat_ex_trans_inv_bld
 
@@ -1839,6 +1878,7 @@ module deriv_orb_mod
 ! ------------------------------------------------------------------------------
 ! Description   :  Inverse of transpose of Slater matrix corresponding to
 ! Description   :  to excited determinants using the Sherman-Morison formula
+! Description   :  Bad implementation with O(nup^3 + ndn^3) scaling
 !
 ! Created       : J. Toulouse, 27 Oct 2005
 ! ------------------------------------------------------------------------------
@@ -1963,121 +2003,6 @@ module deriv_orb_mod
 !!!   call is_equal_or_die (slater_mat_ex_trans_inv_dn, slater_mat_ex_trans_inv_dn_2, 1.d-8)
 
   end subroutine slater_mat_ex_trans_inv_2_bld
-
-! ==============================================================================
-  subroutine slater_mat_ex_trans_inv_3_bld
-! ------------------------------------------------------------------------------
-! Description   :  inverse of transpose of Slater matrix corresponding to
-! Description   :  to excited determinants using the Sherman-Morison formula
-!
-! Created       : J. Toulouse, 27 Oct 2005
-! ------------------------------------------------------------------------------
-  include 'modules.h'
-  implicit none
-
-! local
-  integer det_up_i, det_dn_i
-  integer det_ref_up, det_ref_dn
-  integer i, j, k, l
-  integer col_up, orb_up
-  integer col_dn, orb_dn
-  real(dp) factor_up_inv, factor_dn_inv
-  real(dp), allocatable :: ratio_up (:), ratio_dn (:)
-
-! header
-  if (header_exe) then
-
-!   call object_create ('slater_mat_ex_trans_inv_up')
-!   call object_create ('slater_mat_ex_trans_inv_dn')
-
-   call object_needed ('nup')
-   call object_needed ('ndn')
-   call object_needed ('det_ex_unq_up_nb')
-   call object_needed ('det_ex_unq_dn_nb')
-   call object_needed ('iwdet_ex_ref_up')
-   call object_needed ('iwdet_ex_ref_dn')
-   call object_needed ('det_ex_unq_up_orb_1st_pos')
-   call object_needed ('det_ex_unq_dn_orb_1st_pos')
-   call object_needed ('det_ex_unq_up_orb_2nd_lab')
-   call object_needed ('det_ex_unq_dn_orb_2nd_lab')
-   call object_needed ('slater_mat_trans_inv_up')
-   call object_needed ('slater_mat_trans_inv_dn')
-   call object_needed ('orb')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_alloc ('slater_mat_ex_trans_inv_up', slater_mat_ex_trans_inv_up, nup, nup, det_ex_unq_up_nb)
-  call object_alloc ('slater_mat_ex_trans_inv_dn', slater_mat_ex_trans_inv_dn, ndn, ndn, det_ex_unq_dn_nb)
-  call alloc ('ratio_up', ratio_up, nup)
-  call alloc ('ratio_dn', ratio_dn, ndn)
-
-! spin up
-  do det_up_i = 1, det_ex_unq_up_nb
-
-      col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
-      orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
-      det_ref_up = iwdet_ex_ref_up (det_up_i)
-
-      do l = 1, nup
-       ratio_up (l) = 0.d0
-       do i = 1, nup
-         ratio_up (l) = ratio_up (l) + slater_mat_trans_inv_up (i, l, det_ref_up) * orb (i, orb_up)
-       enddo  ! i
-      enddo ! l
-
-      factor_up_inv = 1.d0/ratio_up (col_up)
-      ratio_up (col_up) = ratio_up (col_up) - 1.d0
-
-      do k = 1, nup
-        do j = 1 , nup
-         slater_mat_ex_trans_inv_up (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, det_ref_up) &
-                                 - slater_mat_trans_inv_up (k, col_up, det_ref_up) * ratio_up(j)* factor_up_inv
-        enddo ! j
-      enddo ! k
-
-   enddo ! det_up_i
-
-! spin dn
-  do det_dn_i = 1, det_ex_unq_dn_nb
-
-      col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
-      orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
-      det_ref_dn = iwdet_ex_ref_dn (det_dn_i)
-
-      do l = 1, ndn
-       ratio_dn (l) = 0.d0
-       do i = 1, ndn
-         ratio_dn (l) = ratio_dn (l) + slater_mat_trans_inv_dn (i, l, det_ref_dn) * orb (nup + i, orb_dn)
-       enddo  ! i
-      enddo ! l
-
-      factor_dn_inv = 1.d0/ratio_dn (col_dn)
-      ratio_dn (col_dn) = ratio_dn (col_dn) - 1.d0
-
-      do k = 1, ndn
-        do j = 1 , ndn
-         slater_mat_ex_trans_inv_dn (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, det_ref_dn) &
-                                 - slater_mat_trans_inv_dn (k, col_dn, det_ref_dn) * ratio_dn(j)* factor_dn_inv
-        enddo ! j
-      enddo ! k
-
-   enddo ! det_dn_i
-
-!  Post-conditions
-!   call object_provide ('slater_mat_ex_trans_inv_up')
-!   call object_provide ('slater_mat_ex_trans_inv_dn')
-
-!   call object_write_2 ('slater_mat_ex_trans_inv_up', 'slater_mat_ex_trans_inv_up_2')
-!   call object_write_2 ('slater_mat_ex_trans_inv_dn', 'slater_mat_ex_trans_inv_dn_2')
-!!!   call is_equal_or_die (slater_mat_ex_trans_inv_up, slater_mat_ex_trans_inv_up_2, 1.d-8)
-!!!   call is_equal_or_die (slater_mat_ex_trans_inv_dn, slater_mat_ex_trans_inv_dn_2, 1.d-8)
-
-  end subroutine slater_mat_ex_trans_inv_3_bld
 
 ! ==============================================================================
   subroutine grd_det_ex_unq_bld

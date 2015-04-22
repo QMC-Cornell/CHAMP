@@ -180,6 +180,7 @@ module optimization_mod
    write(6,'(a)') ' reweight_power = [integer] : value of power in reweighting expression (default=1)'
    write(6,'(a)') ' reweight_scale = [real] : value of scaling factor in reweighting expression (default=10.d0)'
    write(6,'(a)') ' csfs ... end: list of csfs to optimize (default=all csfs)'
+   write(6,'(a)') ' slater_mat_ex_trans_inv_sm = [bool] Sherman-Morison for inverses of single-excited determinants? (default=true)'
    write(6,'(a)') 'end'
 
   case ('optimize')
@@ -351,6 +352,9 @@ module optimization_mod
   case ('csfs')
    call get_next_value_list_object ('iwcsf', iwcsf, nparmcsf)
    call object_modified ('nparmcsf')
+
+  case ('slater_mat_ex_trans_inv_sm')
+   call get_next_value (l_slater_mat_ex_trans_inv_sm)
 
   case ('end')
    exit
