@@ -180,7 +180,7 @@ module optimization_mod
    write(6,'(a)') ' reweight_power = [integer] : value of power in reweighting expression (default=1)'
    write(6,'(a)') ' reweight_scale = [real] : value of scaling factor in reweighting expression (default=10.d0)'
    write(6,'(a)') ' csfs ... end: list of csfs to optimize (default=all csfs)'
-   write(6,'(a)') ' slater_mat_ex_trans_inv_sm = [bool] Sherman-Morison for inverses of single-excited determinants? (default=true)'
+   write(6,'(a)') ' slater_mat_ex_trans_inv_sm = [bool] Sherman-Morison for inverses of single-excited determinants? It shoud be set to true for large electron numbers (default=true)'
    write(6,'(a)') 'end'
 
   case ('optimize')
