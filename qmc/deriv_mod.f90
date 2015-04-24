@@ -23,6 +23,7 @@ module deriv_mod
   real(dp), allocatable          :: dpsi (:)
   real(dp), allocatable          :: dpsi_bav (:)
   real(dp), allocatable          :: dpsi_av (:)
+  real(dp), allocatable          :: dpsi_av_var (:)
   real(dp), allocatable          :: dpsi_uwav (:)
   real(dp), allocatable          :: dpsi_sq (:)
   real(dp), allocatable          :: dpsi_sq_av (:)
@@ -45,9 +46,12 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_eloc (:)
   real(dp), allocatable          :: dpsi_eloc_bav (:)
   real(dp), allocatable          :: dpsi_eloc_av (:)
+  real(dp), allocatable          :: dpsi_eloc_av_var (:)
   real(dp), allocatable          :: dpsi_eloc_covar (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_var (:)
   real(dp), allocatable          :: dpsi_eloc_covar_err (:)
   real(dp), allocatable          :: dpsi_eloc_covar_deloc_av (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_deloc_av_var (:)
   real(dp), allocatable          :: dpsi_eloc_covar_deloc_av_err (:)
   real(dp), allocatable          :: dpsi_eloc_blk_covar (:)
   real(dp), allocatable          :: dpsi_eloc_sq (:)
@@ -67,6 +71,7 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_av_eloc_av_covar (:)
   real(dp), allocatable          :: deloc (:)
   real(dp), allocatable          :: deloc_av (:)
+  real(dp), allocatable          :: deloc_av_var (:)
   real(dp), allocatable          :: deloc_av_err (:)
   real(dp), allocatable          :: deloc_bav (:)
   real(dp), allocatable          :: deloc_sq (:)
@@ -251,6 +256,7 @@ module deriv_mod
    call object_create ('dpsi')
    call object_block_average_define ('dpsi', 'dpsi_bav')
    call object_average_define ('dpsi', 'dpsi_av')
+   call object_variance_define ('dpsi_av', 'dpsi_av_var')
    call object_average_unweighted_define ('dpsi', 'dpsi_uwav')
    call object_covariance_define ('dpsi_av', 'dpsi_av', 'dpsi_av_dpsi_av_covar')
    call object_covariance_define ('dpsi_av', 'eloc_av', 'dpsi_av_eloc_av_covar')
@@ -267,6 +273,7 @@ module deriv_mod
   call object_alloc ('dpsi', dpsi, param_nb)
   call object_alloc ('dpsi_bav', dpsi_bav, param_nb)
   call object_alloc ('dpsi_av', dpsi_av, param_nb)
+  call object_alloc ('dpsi_av_var', dpsi_av_var, param_nb)
   call object_alloc ('dpsi_uwav', dpsi_uwav, param_nb)
   call object_alloc ('dpsi_av_dpsi_av_covar', dpsi_av_dpsi_av_covar, param_nb, param_nb)
   call object_alloc ('dpsi_av_eloc_av_covar', dpsi_av_eloc_av_covar, param_nb)
@@ -438,6 +445,7 @@ module deriv_mod
    call object_create ('deloc')
    call object_block_average_define ('deloc', 'deloc_bav')
    call object_average_define ('deloc', 'deloc_av')
+   call object_variance_define ('deloc_av', 'deloc_av_var')
    call object_error_define ('deloc_av', 'deloc_av_err')
    call object_covariance_define ('deloc_av', 'eloc_av', 'deloc_av_eloc_av_covar')
    call object_covariance_define ('deloc_av', 'dpsi_eloc_av', 'deloc_av_dpsi_eloc_av_covar')
@@ -455,6 +463,7 @@ module deriv_mod
 ! begin
   call object_alloc ('deloc', deloc, param_nb)
   call object_alloc ('deloc_av', deloc_av, param_nb)
+  call object_alloc ('deloc_av_var', deloc_av_var, param_nb) !!! temporary for testing DMC gradients
   call object_alloc ('deloc_av_err', deloc_av_err, param_nb) !!! temporary for testing DMC gradients
   call object_alloc ('deloc_bav', deloc_bav, param_nb)
   call object_alloc ('deloc_av_eloc_av_covar', deloc_av_eloc_av_covar, param_nb)
@@ -958,6 +967,7 @@ module deriv_mod
    call object_needed ('eloc')
    call object_block_average_define ('dpsi_eloc', 'dpsi_eloc_bav')
    call object_average_define ('dpsi_eloc', 'dpsi_eloc_av')
+   call object_variance_define ('dpsi_eloc_av', 'dpsi_eloc_av_var')
    call object_covariance_define ('dpsi_eloc_av', 'dpsi_eloc_av', 'dpsi_eloc_av_dpsi_eloc_av_covar')
    call object_covariance_define ('dpsi_eloc_av', 'dpsi_av', 'dpsi_eloc_av_dpsi_av_covar')
    call object_covariance_define ('dpsi_eloc_av', 'eloc_av', 'dpsi_eloc_av_eloc_av_covar')
@@ -971,6 +981,7 @@ module deriv_mod
   call object_alloc ('dpsi_eloc', dpsi_eloc, param_nb)
   call object_alloc ('dpsi_eloc_bav', dpsi_eloc_bav, param_nb)
   call object_alloc ('dpsi_eloc_av', dpsi_eloc_av, param_nb)
+  call object_alloc ('dpsi_eloc_av_var', dpsi_eloc_av_var, param_nb)
   call object_alloc ('dpsi_eloc_av_dpsi_eloc_av_covar', dpsi_eloc_av_dpsi_eloc_av_covar, param_nb, param_nb)
   call object_alloc ('dpsi_eloc_av_dpsi_av_covar', dpsi_eloc_av_dpsi_av_covar, param_nb, param_nb)
   call object_alloc ('dpsi_eloc_av_eloc_av_covar', dpsi_eloc_av_eloc_av_covar, param_nb)
@@ -1497,6 +1508,55 @@ module deriv_mod
   end subroutine dpsi_eloc_covar_bld
 
 ! ==============================================================================
+  subroutine dpsi_eloc_covar_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of dpsi_eloc_covar
+! Description   : this is to calculate the error more rigourously than from block averages
+! Description   : but it almost do not change the error anyway
+!
+! Created       : J. Toulouse, 24 Apr 2015
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer param_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_eloc_covar_var')
+!   call object_error_define_from_variance ('dpsi_eloc_covar_var', 'dpsi_eloc_covar_err')
+
+   call object_needed ('param_nb')
+   call object_needed ('dpsi_av')
+   call object_needed ('eloc_av')
+   call object_needed ('eloc_av_var')
+   call object_needed ('dpsi_eloc_av_var')
+   call object_needed ('dpsi_av_var')
+   call object_needed ('dpsi_eloc_av_dpsi_av_covar')
+   call object_needed ('dpsi_eloc_av_eloc_av_covar')
+   call object_needed ('dpsi_av_eloc_av_covar')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_eloc_covar_var', dpsi_eloc_covar_var, param_nb)
+  call object_alloc ('dpsi_eloc_covar_err', dpsi_eloc_covar_err, param_nb)
+
+  do param_i = 1, param_nb
+   dpsi_eloc_covar_var (param_i) = dpsi_eloc_av_var (param_i) + eloc_av**2 * dpsi_av_var (param_i) + dpsi_av (param_i)**2 * eloc_av_var  &
+                                 - 2 * eloc_av * dpsi_eloc_av_dpsi_av_covar (param_i, param_i)    &
+                                 - 2 * dpsi_av (param_i) * dpsi_eloc_av_eloc_av_covar (param_i)   &
+                                 + 2 * dpsi_av (param_i) * eloc_av * dpsi_av_eloc_av_covar (param_i)
+  enddo
+
+  end subroutine dpsi_eloc_covar_var_bld
+
+
+! ==============================================================================
   subroutine dpsi_eloc_blk_covar_bld
 ! ------------------------------------------------------------------------------
 ! Description   : covariance <dpsi_eloc> - <dpsi> <eloc> for current block
@@ -1542,7 +1602,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi_eloc_covar_deloc_av')
-   call object_error_define ('dpsi_eloc_covar_deloc_av', 'dpsi_eloc_covar_deloc_av_err')
+   call object_error_define ('dpsi_eloc_covar_deloc_av', 'dpsi_eloc_covar_deloc_av_err') ! temporary for testing DMC gradient
 
    call object_needed ('param_nb')
    call object_needed ('dpsi_eloc_covar')
@@ -1559,6 +1619,63 @@ module deriv_mod
   dpsi_eloc_covar_deloc_av =  dpsi_eloc_covar + deloc_av
 
   end subroutine dpsi_eloc_covar_deloc_av_bld
+
+
+! ==============================================================================
+  subroutine dpsi_eloc_covar_deloc_av_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of dpsi_eloc_covar_deloc_av
+! Description   : this is to calculate the error more rigourously than from block averages
+! Description   : but it almost do not change the error anyway
+!
+! Created       : J. Toulouse, 24 Apr 2015
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  integer param_i
+
+! header
+  if (header_exe) then
+
+   call object_create ('dpsi_eloc_covar_deloc_av_var')
+!   call object_error_define_from_variance ('dpsi_eloc_covar_deloc_av_var', 'dpsi_eloc_covar_deloc_av_err')
+
+   call object_needed ('param_nb')
+   call object_needed ('deloc_av_var')
+   call object_needed ('dpsi_av')
+   call object_needed ('eloc_av')
+   call object_needed ('eloc_av_var')
+   call object_needed ('dpsi_eloc_av_var')
+   call object_needed ('dpsi_av_var')
+   call object_needed ('dpsi_eloc_av_dpsi_av_covar')
+   call object_needed ('dpsi_eloc_av_eloc_av_covar')
+   call object_needed ('dpsi_av_eloc_av_covar')
+   call object_needed ('deloc_av_dpsi_eloc_av_covar')
+   call object_needed ('deloc_av_dpsi_av_covar')
+   call object_needed ('deloc_av_eloc_av_covar')
+
+   return
+
+  endif
+
+! begin
+  call object_alloc ('dpsi_eloc_covar_deloc_av_var', dpsi_eloc_covar_deloc_av_var, param_nb)
+  call object_alloc ('dpsi_eloc_covar_deloc_av_err', dpsi_eloc_covar_deloc_av_err, param_nb)
+
+  do param_i = 1, param_nb
+   dpsi_eloc_covar_deloc_av_var (param_i) = dpsi_eloc_av_var (param_i) + eloc_av**2 * dpsi_av_var (param_i)  &
+                                 + dpsi_av (param_i)**2 * eloc_av_var  + deloc_av_var (param_i)      &
+                                 - 2 * eloc_av * dpsi_eloc_av_dpsi_av_covar (param_i, param_i)       &
+                                 - 2 * dpsi_av (param_i) * dpsi_eloc_av_eloc_av_covar (param_i)      &
+                                 + 2 * dpsi_av (param_i) * eloc_av * dpsi_av_eloc_av_covar (param_i) &
+                                 + 2 * deloc_av_dpsi_eloc_av_covar (param_i, param_i)                &
+                                 - 2 * eloc_av * deloc_av_dpsi_av_covar (param_i, param_i)           &
+                                 - 2 * dpsi_av (param_i) * deloc_av_eloc_av_covar (param_i) 
+  enddo
+
+  end subroutine dpsi_eloc_covar_deloc_av_var_bld
 
 ! ==============================================================================
   subroutine dpsi_dpsi_c_eloc_av_bld
@@ -1763,7 +1880,7 @@ module deriv_mod
 ! begin
   call object_alloc ('gradient_energy', gradient_energy, param_nb)
 
-  if (l_opt_geo) then
+  if (l_opt_geo .or. l_mode_dmc) then
     call object_provide_by_index (gradient_energy_bld_index, deloc_av_index)
   endif
   

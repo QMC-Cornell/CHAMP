@@ -1835,6 +1835,9 @@ module average_mod
   subroutine object_variance_by_index_double_0 (object_av_ind, object_var_ind)
 ! -----------------------------------------------------------------------------------
 ! Description   : calculate variance of an average object over MC iterations
+! Description   : The block averages are extracted from the running average assuming a linear function
+! Description   : If the running average is a nonlinear function of averages, then it is a linear approximation
+! Description   : which seems to be equivalent to the general variance formula involving covariances (24 Apr 2015)
 !
 ! Created       : J. Toulouse, 05 Sep 2007
 ! -----------------------------------------------------------------------------------

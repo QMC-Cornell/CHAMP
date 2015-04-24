@@ -847,9 +847,21 @@ module optimization_mod
    call object_error_request ('gradient_norm_err')
    if (l_mode_dmc) then
      call object_average_request ('deloc_av') 
-     call object_error_request ('deloc_av_err') !!!!! temporary for testing DMC gradient
-     call object_error_request ('dpsi_eloc_covar_err') !!!!! temporary for testing DMC gradient
-     call object_error_request ('dpsi_eloc_covar_deloc_av_err') !!!!! temporary for testing DMC gradient
+
+!!!!! temporary for testing DMC gradient
+     call object_error_request ('deloc_av_err') 
+     call object_error_request ('dpsi_eloc_covar_err') 
+     call object_error_request ('dpsi_eloc_covar_deloc_av_err')
+
+!     call object_variance_request ('dpsi_eloc_av_var')
+!     call object_variance_request ('dpsi_av_var')
+!     call object_covariance_request ('dpsi_eloc_av_dpsi_av_covar')
+!     call object_covariance_request ('dpsi_eloc_av_eloc_av_covar')
+!     call object_covariance_request ('dpsi_av_eloc_av_covar')
+!     call object_variance_request ('deloc_av_var')
+!     call object_covariance_request ('deloc_av_dpsi_eloc_av_covar')
+!     call object_covariance_request ('deloc_av_dpsi_av_covar')
+!     call object_covariance_request ('deloc_av_eloc_av_covar')
    endif
 
 !  For variance gradient and hessian
@@ -1001,6 +1013,12 @@ module optimization_mod
 !  temporary printing for testing DMC gradient
    if (l_mode_dmc) then
     write(6,'(a)') 'Approximate DMC energy gradient :'
+    call object_provide ('dpsi_eloc_covar')
+    call object_provide ('dpsi_eloc_covar_err')
+    call object_provide ('deloc_av')
+    call object_provide ('deloc_av_err')
+    call object_provide ('dpsi_eloc_covar_deloc_av')
+    call object_provide ('dpsi_eloc_covar_deloc_av_err')
     do  parm_i=1,param_nb
      write(6,'(i5,3(a,f10.6,a,i6,a))') parm_i, ' 2*dpsi_eloc_covar=',2*dpsi_eloc_covar(parm_i), '(',nint(2*dpsi_eloc_covar_err(parm_i)*10**6),') ', &
       '2*deloc_av=',2*deloc_av(parm_i), '(',nint(2*deloc_av_err(parm_i)*10**6),') ',  &
