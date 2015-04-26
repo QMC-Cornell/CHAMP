@@ -1011,8 +1011,8 @@ module optimization_mod
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  temporary printing for testing DMC gradient
-   if (l_mode_dmc) then
-    write(6,'(a)') 'Approximate DMC energy gradient :'
+!   if (l_mode_dmc) then
+!    write(6,'(a)') 'Approximate DMC energy gradient :'
     call object_provide ('dpsi_eloc_covar')
     call object_provide ('dpsi_eloc_covar_err')
     call object_provide ('deloc_av')
@@ -1024,7 +1024,7 @@ module optimization_mod
       '2*deloc_av=',2*deloc_av(parm_i), '(',nint(2*deloc_av_err(parm_i)*10**6),') ',  &
       '2*dpsi_eloc_covar_deloc_av=',2*dpsi_eloc_covar_deloc_av(parm_i), '(',nint(2*dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
     enddo
-   endif
+!   endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !  check vanishing components or linear dependencies in gradient
