@@ -845,10 +845,11 @@ module optimization_mod
    call object_average_request ('dpsi_av')
    call object_average_request ('dpsi_eloc_av')
    call object_error_request ('gradient_norm_err')
-   if (l_mode_dmc) then
+
+!!!!! temporary for testing gradient
+   if (l_opt_grad) then
      call object_average_request ('deloc_av') 
 
-!!!!! temporary for testing DMC gradient
      call object_error_request ('deloc_av_err') 
      call object_error_request ('dpsi_eloc_covar_err') 
      call object_error_request ('dpsi_eloc_covar_deloc_av_err')
@@ -1011,7 +1012,7 @@ module optimization_mod
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  temporary printing for testing DMC gradient
-!   if (l_mode_dmc) then
+   if (l_opt_grad) then
 !    write(6,'(a)') 'Approximate DMC energy gradient :'
     call object_provide ('dpsi_eloc_covar')
     call object_provide ('dpsi_eloc_covar_err')
@@ -1024,7 +1025,7 @@ module optimization_mod
       '2*deloc_av=',2*deloc_av(parm_i), '(',nint(2*deloc_av_err(parm_i)*10**6),') ',  &
       '2*dpsi_eloc_covar_deloc_av=',2*dpsi_eloc_covar_deloc_av(parm_i), '(',nint(2*dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
     enddo
-!   endif
+   endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !  check vanishing components or linear dependencies in gradient
