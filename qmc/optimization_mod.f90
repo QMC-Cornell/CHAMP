@@ -853,16 +853,19 @@ module optimization_mod
      call object_error_request ('deloc_av_err') 
      call object_error_request ('dpsi_eloc_covar_err') 
      call object_error_request ('dpsi_eloc_covar_deloc_av_err')
+     call object_error_request ('dpsi_eloc_covar_err_2') 
+     call object_error_request ('dpsi_eloc_covar_deloc_av_err_2')
 
-!     call object_variance_request ('dpsi_eloc_av_var')
-!     call object_variance_request ('dpsi_av_var')
-!     call object_covariance_request ('dpsi_eloc_av_dpsi_av_covar')
-!     call object_covariance_request ('dpsi_eloc_av_eloc_av_covar')
-!     call object_covariance_request ('dpsi_av_eloc_av_covar')
-!     call object_variance_request ('deloc_av_var')
-!     call object_covariance_request ('deloc_av_dpsi_eloc_av_covar')
-!     call object_covariance_request ('deloc_av_dpsi_av_covar')
-!     call object_covariance_request ('deloc_av_eloc_av_covar')
+!    more rigorous estimators of the errors
+     call object_variance_request ('dpsi_eloc_av_var')
+     call object_variance_request ('dpsi_av_var')
+     call object_covariance_request ('dpsi_eloc_av_dpsi_av_covar')
+     call object_covariance_request ('dpsi_eloc_av_eloc_av_covar')
+     call object_covariance_request ('dpsi_av_eloc_av_covar')
+     call object_variance_request ('deloc_av_var')
+     call object_covariance_request ('deloc_av_dpsi_eloc_av_covar')
+     call object_covariance_request ('deloc_av_dpsi_av_covar')
+     call object_covariance_request ('deloc_av_eloc_av_covar')
    endif
 
 !  For variance gradient and hessian
@@ -1013,17 +1016,20 @@ module optimization_mod
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  temporary printing for testing DMC gradient
    if (l_opt_grad) then
-!    write(6,'(a)') 'Approximate DMC energy gradient :'
+    write(6,'(a)') 'Gradient components (second error more rigorously calculated from covariances):'
     call object_provide ('dpsi_eloc_covar')
     call object_provide ('dpsi_eloc_covar_err')
+    call object_provide ('dpsi_eloc_covar_err_2')
     call object_provide ('deloc_av')
     call object_provide ('deloc_av_err')
     call object_provide ('dpsi_eloc_covar_deloc_av')
     call object_provide ('dpsi_eloc_covar_deloc_av_err')
+    call object_provide ('dpsi_eloc_covar_deloc_av_err_2')
     do  parm_i=1,param_nb
-     write(6,'(i5,3(a,f10.6,a,i6,a))') parm_i, ' 2*dpsi_eloc_covar=',2*dpsi_eloc_covar(parm_i), '(',nint(2*dpsi_eloc_covar_err(parm_i)*10**6),') ', &
+     write(6,'(i5,a,f10.6,a,i6,a,i6,a, a,f10.6,a,i6,a, a,f10.6,a,i6,a,i6,a)') &
+       parm_i, ' 2*dpsi_eloc_covar=',2*dpsi_eloc_covar(parm_i), '(',nint(2*dpsi_eloc_covar_err(parm_i)*10**6),'|',nint(2*dpsi_eloc_covar_err_2(parm_i)*10**6),') ', &
       '2*deloc_av=',2*deloc_av(parm_i), '(',nint(2*deloc_av_err(parm_i)*10**6),') ',  &
-      '2*dpsi_eloc_covar_deloc_av=',2*dpsi_eloc_covar_deloc_av(parm_i), '(',nint(2*dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
+      '2*dpsi_eloc_covar_deloc_av=',2*dpsi_eloc_covar_deloc_av(parm_i), '(',nint(2*dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),'|',nint(2*dpsi_eloc_covar_deloc_av_err_2(parm_i)*10**6),')'
     enddo
    endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

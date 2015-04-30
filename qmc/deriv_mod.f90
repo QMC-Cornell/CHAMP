@@ -50,9 +50,11 @@ module deriv_mod
   real(dp), allocatable          :: dpsi_eloc_covar (:)
   real(dp), allocatable          :: dpsi_eloc_covar_var (:)
   real(dp), allocatable          :: dpsi_eloc_covar_err (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_err_2 (:)
   real(dp), allocatable          :: dpsi_eloc_covar_deloc_av (:)
   real(dp), allocatable          :: dpsi_eloc_covar_deloc_av_var (:)
   real(dp), allocatable          :: dpsi_eloc_covar_deloc_av_err (:)
+  real(dp), allocatable          :: dpsi_eloc_covar_deloc_av_err_2 (:)
   real(dp), allocatable          :: dpsi_eloc_blk_covar (:)
   real(dp), allocatable          :: dpsi_eloc_sq (:)
   real(dp), allocatable          :: dpsi_eloc_sq_av (:)
@@ -1512,7 +1514,7 @@ module deriv_mod
 ! ------------------------------------------------------------------------------
 ! Description   : variance of dpsi_eloc_covar
 ! Description   : this is to calculate the error more rigourously than from block averages
-! Description   : but it almost do not change the error anyway
+! Description   : but it almost do not change the error anyway (really?)
 !
 ! Created       : J. Toulouse, 24 Apr 2015
 ! ------------------------------------------------------------------------------
@@ -1526,7 +1528,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi_eloc_covar_var')
-!   call object_error_define_from_variance ('dpsi_eloc_covar_var', 'dpsi_eloc_covar_err')
+   call object_error_define_from_variance ('dpsi_eloc_covar_var', 'dpsi_eloc_covar_err_2')
 
    call object_needed ('param_nb')
    call object_needed ('dpsi_av')
@@ -1544,7 +1546,7 @@ module deriv_mod
 
 ! begin
   call object_alloc ('dpsi_eloc_covar_var', dpsi_eloc_covar_var, param_nb)
-  call object_alloc ('dpsi_eloc_covar_err', dpsi_eloc_covar_err, param_nb)
+  call object_alloc ('dpsi_eloc_covar_err_2', dpsi_eloc_covar_err_2, param_nb)
 
   do param_i = 1, param_nb
    dpsi_eloc_covar_var (param_i) = dpsi_eloc_av_var (param_i) + eloc_av**2 * dpsi_av_var (param_i) + dpsi_av (param_i)**2 * eloc_av_var  &
@@ -1640,7 +1642,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('dpsi_eloc_covar_deloc_av_var')
-!   call object_error_define_from_variance ('dpsi_eloc_covar_deloc_av_var', 'dpsi_eloc_covar_deloc_av_err')
+   call object_error_define_from_variance ('dpsi_eloc_covar_deloc_av_var', 'dpsi_eloc_covar_deloc_av_err_2')
 
    call object_needed ('param_nb')
    call object_needed ('deloc_av_var')
@@ -1662,7 +1664,7 @@ module deriv_mod
 
 ! begin
   call object_alloc ('dpsi_eloc_covar_deloc_av_var', dpsi_eloc_covar_deloc_av_var, param_nb)
-  call object_alloc ('dpsi_eloc_covar_deloc_av_err', dpsi_eloc_covar_deloc_av_err, param_nb)
+  call object_alloc ('dpsi_eloc_covar_deloc_av_err_2', dpsi_eloc_covar_deloc_av_err_2, param_nb)
 
   do param_i = 1, param_nb
    dpsi_eloc_covar_deloc_av_var (param_i) = dpsi_eloc_av_var (param_i) + eloc_av**2 * dpsi_av_var (param_i)  &
