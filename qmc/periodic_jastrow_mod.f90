@@ -3,6 +3,7 @@ Module periodic_jastrow_mod
   use all_tools_mod
   use crystal_symmetries_mod
   use eloc_mod
+  use pjas_mod, only: param_pjas_nb, pjas_parms
   use pjasen_mod
   use pjasee_mod
 

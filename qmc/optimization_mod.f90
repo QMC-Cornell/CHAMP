@@ -8,6 +8,7 @@ module optimization_mod
   use opt_common_mod
   use nuclei_mod
   use orbitals_mod
+  use pjas_mod, only: param_pjas_nb, pjas_parms, pjas_parms_best
   use periodic_jastrow_mod
   use deriv_mod
   use montecarlo_mod
@@ -366,7 +367,7 @@ module optimization_mod
   enddo ! end loop over menu lines
 
   write(6,'(a,i4)') ' maximum number of iterations = ', iter_opt_max_nb
-  write(6,'(a,1pd9.1)') ' stabilization constant: add_diag=',add_diag(1)
+  write(6,'(a,es9.1)') ' stabilization constant: add_diag=',add_diag(1)
   write(6,'(a,f12.4)') ' fraction of variance: p_var=',p_var
   write(6,'(a,es12.4)') ' energy threshold for convergence =',energy_threshold
 
@@ -766,7 +767,7 @@ module optimization_mod
   logical  l_convergence_reached
   integer convergence_reached_nb
   integer :: move_rejected = 0
-  real(dp) energy_plus_err, energy_plus_err_best, energy_best
+  real(dp) energy_plus_err, energy_plus_err_best, energy_best, energy_err_best
 
 ! begin
   write(6,*)
@@ -1059,6 +1060,13 @@ module optimization_mod
 !  calculate and print deloc_av_norm
    if (l_opt_lin .or. l_opt_nwt) then
 
+!   temporary printing for testing DMC gradient
+!   do  parm_i=1,param_nb
+!    write(6,'(i3,3(a,f10.6,a,i6,a))') parm_i, ' dpsi_eloc_covar=',dpsi_eloc_covar(parm_i), '(',nint(dpsi_eloc_covar_err(parm_i)*10**6),') ', &
+!     'deloc_av=',deloc_av(parm_i), '(',nint(deloc_av_err(parm_i)*10**6),') ',  &
+!     'dpsi_eloc_covar_deloc_av=',dpsi_eloc_covar_deloc_av(parm_i), '(',nint(dpsi_eloc_covar_deloc_av_err(parm_i)*10**6),')'
+!   enddo
+
     call object_provide ('deloc_av_abs_max')
     write(6,*)
     write(6,'(a,es15.8,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero in VMC within statistical noise except for geometry optimization)'
@@ -1091,6 +1099,7 @@ module optimization_mod
     iter_best = iter
     energy_plus_err_best=energy_plus_err
     energy_best = energy(1)
+    energy_err_best = energy_err(1)
     call wf_best_save
    endif
 
@@ -1189,7 +1198,7 @@ module optimization_mod
      diag_stab = min(100.d0 * diag_stab, add_diag_max)
      if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
      call object_modified ('diag_stab')
-     write(6,'(a,1pd9.1)') 'Wave function got worse, increase add_diag up to ',diag_stab
+     write(6,'(a,es9.1)') 'Wave function got worse, increasing add_diag to ',diag_stab
      call wf_update_and_check_and_stab
 !    write new wave function
      write(6,'(a)') ''
@@ -1202,10 +1211,10 @@ module optimization_mod
      endif
 
      if (l_decrease_error) then
-      write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy(1),' +-', &
+      write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,es9.1)') 'OPT:',iter, energy(1),' +-', &
       energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
      else
-      write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy(1),' +-', &
+      write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,es9.1)') 'OPT:',iter, energy(1),' +-', &
       energy_err(1), d_eloc_av, energy_sigma(1), ' +-', error_sigma, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
      endif
      if (l_opt_ovlp_fn) then
@@ -1280,18 +1289,18 @@ module optimization_mod
    endif
    if (l_decrease_error) then
     if (.not. l_convergence_reached) then
-     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,es9.1)') 'OPT:',iter, energy_sav,' +-', &
      energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab
     else
-     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,f9.5,es9.1,a)') 'OPT:',iter, energy_sav,' +-', &
      energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, error_threshold, diag_stab,' converged'
     endif
    else
     if(.not. l_convergence_reached) then
-     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1)') 'OPT:',iter, energy_sav,' +-', &
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,es9.1)') 'OPT:',iter, energy_sav,' +-', &
      energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab
     else
-     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,1pd9.1,a)') 'OPT:',iter, energy_sav,' +-', &
+     write(6,'(a,i3,t10,f12.7,a,f11.7,f10.5,f9.5,a,f9.5,f12.5,a,f9.5,f6.3,i9,es9.1,a)') 'OPT:',iter, energy_sav,' +-', &
      energy_err_sav, d_eloc_av, energy_sigma_sav, ' +-', error_sigma_sav, gradient_norm, ' +-', gradient_norm_err, p_var, nblk, diag_stab,' converged'
     endif
    endif
@@ -1392,6 +1401,7 @@ module optimization_mod
     iter_best = iter
     energy_plus_err_best=energy_plus_err
     energy_best = energy(1)
+    energy_err_best = energy_err(1)
     call wf_best_save
   endif
   endif !l_last_run
@@ -1399,9 +1409,8 @@ module optimization_mod
 !
 
 ! Print best wave function
-  write(6,*)
-! write(6,'(a,i3)') 'OPT: the best wave function was found at iteration # ',iter_best
-  write(6,'(a,i3,f13.7,a,f11.7)') 'OPT: the best wave function was found at iteration # ',iter_best,energy_best,' +-',(energy_plus_err_best-energy_best)/3
+! The energy and energy_err printed out are not necessarily for the best energy found, but for the best linear combination of energy and variance.
+  write(6,'(/,a,i3,f13.7,a,f11.7)') 'OPT: the best wave function was found at iteration # ',iter_best, energy_best, ' +-', energy_err_best
   write(6,'(a)') 'Best wave function:'
   call write_wf_best
 
@@ -1822,7 +1831,7 @@ module optimization_mod
      diag_stab = min(diag_stab * 10.d0, add_diag_max)
      if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
      call object_modified ('diag_stab')
-     write(6,'(a,1pd9.1)') 'increasing add_diag up to', diag_stab
+     write(6,'(a,es9.1)') 'increasing add_diag to', diag_stab
      cycle
    endif
 
@@ -1834,10 +1843,10 @@ module optimization_mod
        write(6,'(a,f10.1)') "add_diag_mult_exp is increased to ", add_diag_mult_exp
        call object_modified ('add_diag_mult_exp')
      cycle
-    endif
+   endif
 
-!   if the move was good, exit loop
-    exit
+!  if the move was good, exit loop
+   exit
 
   enddo ! end loop
 
@@ -1879,7 +1888,7 @@ module optimization_mod
   if (l_reset_add_diag) then
     diag_stab = add_diag_reset_value
     call object_modified ('diag_stab')
-    write(6,'(a,1pd9.1)') 'Resetting add_diag to add_diag_reset_value = ',diag_stab
+    write(6,'(a,es9.1)') 'Resetting add_diag to add_diag_reset_value = ',diag_stab
   endif
 
 ! smaller value of number of blocks
@@ -1920,7 +1929,7 @@ module optimization_mod
    diag_stab = add_diag (2)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,i1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   write(6,'(a,i1,a,es9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
    call wf_update_and_check (is_bad_move_2, is_bad_move_exp2, exp_move_big2)
 
    iwf = 3
@@ -1928,14 +1937,14 @@ module optimization_mod
    diag_stab = add_diag (3)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,i1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   write(6,'(a,i1,a,es9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
    call wf_update_and_check (is_bad_move_3, is_bad_move_exp3, exp_move_big3)
 
    iwf = 1
    diag_stab =  add_diag (1)
    call object_modified ('diag_stab')
    write(6,*)
-   write(6,'(a,i1,a,1pd9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
+   write(6,'(a,i1,a,es9.1)') 'Trying add_diag (', iwf , ')=', diag_stab
    call wf_update_and_check (is_bad_move_1, is_bad_move_exp1, exp_move_big1)
 
 !  update nuclear coordinates
@@ -1957,8 +1966,9 @@ module optimization_mod
    if (is_bad_move_1 /= 0 .or. is_bad_move_2 /= 0 .or. is_bad_move_3 /= 0) then
     call wf_restore
     if (l_opt_pjas) call restore_pjas
-    add_diag (1) = add_diag (1) * 10**(is_bad_move_1 + is_bad_move_2 + is_bad_move_3)
-    write(6,'(a,1pd9.1)') 'Increasing add_diag to ',add_diag (1)
+    !add_diag (1) = add_diag (1) * 10**(is_bad_move_1 + is_bad_move_2 + is_bad_move_3)
+    add_diag (1) = add_diag (1) * 10**(min(is_bad_move_1 + is_bad_move_2 + is_bad_move_3,3))
+    write(6,'(a,es9.1)') 'Parameter changes too big, increasing add_diag to ',add_diag (1)
     cycle
    endif
 
@@ -2000,7 +2010,8 @@ module optimization_mod
    nblk=nblk_sav
    error_threshold = error_threshold_save
 
-!  check whether correlated calculations are reliable by looking at their autocorrelation times
+!  check whether correlated calculations are reliable by checking that their autocorrelation times are < 50
+!  Warning: This works for the systems we have been dealing with (they have small eloc_tc), but is not guaranteed to always work.
    write (6,*)
    calculation_reliable_nb = 3
    calculation_reliable (1:3) = .true.
@@ -2016,8 +2027,34 @@ module optimization_mod
 
 !  if the central calculation is not reliable, increase add_diag and cycle
    if (.not. calculation_reliable (1)) then
+    call wf_restore
+    if (l_opt_pjas) call restore_pjas
+    call object_restore ('gradient')
+    if(l_opt_nwt) then
+     call object_restore ('hess_nwt')
+    endif
+    if(l_opt_lin) then
+     call object_restore ('ham_lin')
+     call object_restore ('ovlp_lin')
+     call object_restore ('renorm_vector')
+    endif
+    if(l_opt_ptb) then
+     if (l_diagonal_overlap) then
+      call object_restore ('dpsi_sq_covar')
+     else
+      call object_restore ('dpsi_dpsi_covar_inv')
+     endif
+!       call object_restore ('delta_e_ptb')  !
+    endif
+    if(l_opt_ovlp_fn) then
+      call object_restore ('dpsi_av')
+      call object_restore ('dpsi_uwav')
+      call object_restore ('dpsi_dpsi_uwcovar')
+    endif
+
     add_diag (1) =add_diag (1) * 10.d0
-    write(6,'(a,1pd9.1)') 'Correlated calculation # 1 is not reliable, increase add_diag to ',add_diag (1)
+    write(6,'(a,es9.1)') 'Correlated calculation # 1 is not reliable, increase add_diag to ',add_diag (1)
+
 !   just in case mc config is in crazy place, reset mc_configs by calling sites
     if (l_mode_vmc) then
       isite=1; call mc_configs_read
@@ -2048,32 +2085,36 @@ module optimization_mod
 ! Since the 2nd criterion does not seem decisively better than the 1st, I am still using the
 ! 1st criterion, but leave the 2nd in the code, commented out.
 ! I used to reject if the central calculation (1) or the one with larger add_diag (3) were bad.
-! Then we started to reject only if (1) is bad.
-! Now we reject only if all 3 are bad.
+! Then we started to reject only if (1) is bad, then if (1) and (3) are bad, and,
+! now we reject only if all 3 are bad.
 
-! 1st criterion
+! 1st criterion: reject if (1) or (3) is bad
 !  if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
 !     energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.     &
 !     energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2)) .or. &
 !     energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2))) then
 
-! 1st criterion
+! 1st criterion: reject if (1) is bad
 !  check only central calculation
 !  if(energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
 !    energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) then
-!  check all 3 and reject only if all are bad
-   if((energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
+
+! 1st criterion: reject if (1) and (3) is bad or are NaN or Inf.
+   if(((energy_sigma(1) > (2.5d0-p_var)*energy_sigma_sav .or.     &
      energy(1)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(1)**2+energy_err_sav**2))) .and. &
      (energy_sigma(2) > (2.5d0-p_var)*energy_sigma_sav .or.     &
      energy(2)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(2)**2+energy_err_sav**2))) .and. &
      (energy_sigma(3) > (2.5d0-p_var)*energy_sigma_sav .or.     &
-     energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2)))) then
+     energy(3)-energy_sav > 3*(1+p_var)*(sqrt(energy_err(3)**2+energy_err_sav**2)))) .or. &
+     (isnan(energy(1)+energy_err(1)+energy(3)+energy_err(3)) .or. &
+     (energy(1)+energy_err(1)+energy(3)+energy_err(3)) .gt. huge(energy(1)))) then
 ! 2nd criterion
 !  if((2-p_var)*(energy(1) +3*energy_err(1))     +p_var*(energy_sigma(1) +3*error_sigma)**2 > &
 !     (2-p_var)*(energy_sav+6*3.3*energy_err_sav)+p_var*(energy_sigma_sav+10*3.3*error_sigma_sav)**2) then
 
-    add_diag (1) = add_diag (1) * 100.d0
-    write(6,'(a,1pd9.1)') 'Energy or sigma of correlation calculation # 1 went up too much, increase add_diag to ',add_diag (1)
+!   add_diag (1) = add_diag (1) * 100.d0
+    add_diag (1) = add_diag (1) * 1000.d0  ! Since now we do this when (1) and (3) are bad, increase add_diag by 1000
+    write(6,'(a,es9.1)') 'Energy or sigma of correlation calculations 1 went up too much, increasing add_diag to ',add_diag (1)
 
     call wf_restore
     if (l_opt_pjas) call restore_pjas
@@ -2112,18 +2153,19 @@ module optimization_mod
   enddo
 
 ! if correlated calculations # 2 or 3 not reliable, but correlated calculation # 1 is reliable, then accept the current value of add_diag
-! this may be dangerous, maybe need to be modified
+! if it was an improvement, otherwise increase add_diag by 10
 
 ! if the 3 correlated calculations are reliable, find optimal add_diag by parabolic interpolation
   if (calculation_reliable_nb == 3) then
-!  This is the objective function being optimized
-   do iadd_diag=1,3
-     ene_var(iadd_diag)=(1.d0-p_var)*energy(iadd_diag)+p_var*energy_sigma(iadd_diag)**2
-   enddo
-
-!  Find optimal add_diag
-!  call quad_min(energy_sav,energy_err_sav,energy,energy_err,force,force_err,ene_var,add_diag,3,0.d0,0.d0,p_var)
-   call quad_min(ene_var,3)
+!   This is the objective function being optimized
+    do iadd_diag=1,3
+      ene_var(iadd_diag)=(1.d0-p_var)*energy(iadd_diag)+p_var*energy_sigma(iadd_diag)**2
+    enddo
+    call quad_min(ene_var,3) ! Find optimal add_diag
+  else ! If it got here then possibly only central one was reliable, so if it is not an improvement, increase add_diag
+    if((1-p_var)*energy(1)+p_var*energy_sigma(1)**2 .gt. ene_var_sav) then
+      add_diag(1)=add_diag(1) * 10
+    endif
   endif
 
 ! final value of diag_stab
@@ -2209,7 +2251,7 @@ module optimization_mod
       write(6,'(a)') 'jastrow'
       write(6,'(a)') ' parameters'
       if (nparma_read > 0) then
-        write(fmt,'(''('',i2,''g20.12,a)'')') nparma_read
+        write(fmt,'(''(1p'',i2,''g20.12,a)'')') nparma_read
       else
         write(fmt,'(''(a)'')')
       endif
@@ -2218,7 +2260,7 @@ module optimization_mod
       enddo
 
       if(nparmb_read > 0) then
-        write(fmt,'(''('',i2,''g20.12,a)'')') nparmb_read
+        write(fmt,'(''(1p'',i2,''g20.12,a)'')') nparmb_read
       else
         write(fmt,'(''(a)'')')
       endif
@@ -2227,7 +2269,7 @@ module optimization_mod
       enddo
 
       if(nparmc_read > 0) then
-        write(fmt,'(''('',i2,''g20.12,a)'')') nparmc_read
+        write(fmt,'(''(1p'',i2,''g20.12,a)'')') nparmc_read
         do ict=1,nctype
           write(6,fmt) (c(i,ict,iwf),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
         enddo
@@ -2420,6 +2462,30 @@ module optimization_mod
       write(6,'(a)') 'end'
   endif ! l_opt_jas
 
+! print pjas parameters
+  if (l_opt_pjas) then
+      write(6,*)
+      !if(l_opt_pjasen) then
+      if(param_pjasen_nb > 0) then
+        write(fmt,'(''(a,1p,'',i2,''g20.12,a)'')') param_pjasen_nb
+      else
+        write(fmt,'(''(2a)'')')
+      endif
+      write(6,fmt) 'pjas_en_read_new = ', pjas_parms(1:param_pjasen_nb,1), ' end'
+      if (.not. inversion) then
+         write(6,'(a,1000f10.6)') "cosine_new", (pjas_parms (i,1), i=1,param_pjasen_nb-1,2)
+         write(6,'(a,1000f10.6)') "sine_new", (pjas_parms (i+1,1), i=1,param_pjasen_nb-1,2)
+      endif
+
+      !if(l_opt_pjasee) then
+      if(param_pjasee_nb > 0) then
+        write(fmt,'(''(a,1p,'',i2,''g20.12,a)'')') param_pjasee_nb
+      else
+        write(fmt,'(''(a)'')')
+      endif
+      write(6,fmt) 'pjas_ee_read_new = ', pjas_parms(param_pjasen_nb+1:param_pjas_nb,1), ' end'
+  endif ! l_opt_pjas
+
 ! print orbitals coefficients
   if (l_opt_orb .or. (l_opt_exp .and. trim(basis_functions_varied) /= 'normalized')) then
 
@@ -2584,6 +2650,32 @@ module optimization_mod
     write(6,'(a)') ' end'
     write(6,'(a)') 'end'
   endif ! l_opt_jas
+
+! print pjas parameters
+! Warning: We are presently writing out the last set of pjas parameters rather than the best set.
+  if (l_opt_pjas) then
+      write(6,*)
+      write(6,'(''Warning: We are presently writing out the last set of pjas parameters rather than the best set.'')')
+      !if(l_opt_pjasen) then
+      if(param_pjasen_nb > 0) then
+        write(fmt,'(''(a,1p,'',i2,''g20.12,a)'')') param_pjasen_nb
+      else
+        write(fmt,'(''(2a)'')')
+      endif
+      write(6,fmt) 'pjas_en_read_best = ', pjas_parms_best(1:param_pjasen_nb), ' end'
+      if (.not. inversion) then
+         write(6,'(a,1000f10.6)') "cosine_best", (pjas_parms_best (i), i=1,param_pjasen_nb-1,2)
+         write(6,'(a,1000f10.6)') "sine_best", (pjas_parms_best (i+1), i=1,param_pjasen_nb-1,2)
+      endif
+
+      !if(l_opt_pjasee) then
+      if(param_pjasee_nb > 0) then
+        write(fmt,'(''(a,1p,'',i2,''g20.12,a)'')') param_pjasee_nb
+      else
+        write(fmt,'(''(a)'')')
+      endif
+      write(6,fmt) 'pjas_ee_read_best = ', pjas_parms_best(param_pjasen_nb+1:param_pjas_nb), ' end'
+  endif ! l_opt_pjas
 
 ! print orbitals coefficients
   if (l_opt_orb .or. (l_opt_exp .and. trim(basis_functions_varied) /= 'normalized')) then

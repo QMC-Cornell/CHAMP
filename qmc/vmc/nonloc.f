@@ -190,7 +190,7 @@
             do 80 l=1,npotd(ict)
               if(l.ne.lpotp1(ict)) then
                 vpsp=vpsp+vps(i,ic,l)*vpot(l)
-                if(ipr.ge.-3) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l),vpsp
+                if(ipr.ge.-1) write(6,'(''nonloc: i,ic,l,vps(i,ic,l),vpot(l),vpsp'',3i5,9d12.4)') i,ic,l,vps(i,ic,l),vpot(l),vpsp
 
 ! JT            For singly-excited wave functions
                 if (l_opt_orb_energy) then

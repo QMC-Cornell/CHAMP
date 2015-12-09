@@ -5,6 +5,7 @@
       use control_mod
       use deriv_orb_mod
       use deriv_exp_mod !fp
+      use pjas_mod, only: param_pjas_nb
       use periodic_jastrow_mod  !WAS
       use atom_mod
       use dets_mod

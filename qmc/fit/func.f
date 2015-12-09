@@ -1,5 +1,6 @@
       function func(ndata2,nparm,parm,diff,iflag)
 ! Written by Cyrus Umrigar, modified by Claudia Filippi
+! iflag=ioffset was introduced by Peter to allow quench_anneal to work in parallel.
 ! Note that in the parallel version of CHAMP we are doing the parallelism in CHAMP
 ! and so we are using just the serial version of quench_anneal.
 ! In the parallel version of quench_anneal func is called with iflag>=0 to compute diffs offset by iflag=ioffset,
@@ -36,9 +37,15 @@
 
       common /fcn_calls/icalls
 
+      logical called_by_qa
+      common /quenchsim_pr/ ipr_com,called_by_qa
+
       dimension velocity(3,nelec),div_v(nelec)
 
       dimension parm(*),diff(*)
+
+      data func_sav/1.d99/
+      save func_sav
 
       if(iflag.eq.0) then
 
@@ -267,6 +274,15 @@
       do 130 i=1,ndata2
   130   err=err+diff(i)**2
       func=err
+
+      if(called_by_qa .and. (func.lt.func_sav)) then
+        func_sav=func
+        eav=0
+        do 140 i=1,ndata
+  140     eav=eav+diff(i)
+        write(6,'(''eguess being reset from'',f10.6,'' to'',f10.6,'' change='',es12.4)') eguess, eguess+eav/ndata, eav/ndata
+        eguess=eguess+eav/ndata
+      endif
 
       endif
 

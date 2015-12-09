@@ -484,7 +484,7 @@
         if(ifr.eq.1) then
           esum1s(ifr)=eold(ifr)
          else
-          wstro=exp(psi2o(ifr)-psi2o(1))
+          wstro=max(min(exp(psi2o(ifr)-psi2o(1)),1.d99),1.d-99)
           wsum1s(ifr)=wstro
           esum1s(ifr)=eold(ifr)*wstro
         endif

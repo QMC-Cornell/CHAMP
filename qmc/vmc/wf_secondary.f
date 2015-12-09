@@ -547,6 +547,7 @@
       use jaspar3_mod
       use jaspar4_mod
       use bparm_mod
+      use pjas_mod, only: param_pjas_nb, pjas_parms, pjas_parms_best
       use optimo_mod
       use orbpar_mod
       use contrl_per_mod
@@ -609,7 +610,15 @@
       call object_modified ('b_best')
       call object_modified ('c_best')
 
-!     save orbital coefficients
+! Periodic Jastrow
+      if(param_pjas_nb.gt.0) then
+        call alloc ('pjas_parms_best', pjas_parms_best, param_pjas_nb)
+        pjas_parms_best(1:param_pjas_nb)=pjas_parms(1:param_pjas_nb,1)
+      endif
+
+      call object_modified ('pjas_parms_best')
+
+! Orbital coefficients
       if (inum_orb == 0) then
         call object_provide ('nbasis')
         call object_provide ('orb_tot_nb')
@@ -680,6 +689,11 @@
       do 156 ict=1,nctype
         do 156 i=1,nparmc_read
   156     c(i,ict,1)=c_best(i,ict)
+
+! Periodic Jastrow
+      if(param_pjas_nb.gt.0) then
+        pjas_parms(1:param_pjas_nb,1)=pjas_parms_best(1:param_pjas_nb)
+      endif
 
 !     restore orbital coefficients (must restore only for iwf=1 to avoid problems)
       if (inum_orb == 0) then

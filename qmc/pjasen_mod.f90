@@ -3,6 +3,7 @@ module pjasen_mod
   use all_tools_mod
   use crystal_symmetries_mod
   use eloc_mod
+  use pjas_mod, only: param_pjas_nb, pjas_parms
 
   implicit none
 
@@ -15,12 +16,12 @@ module pjasen_mod
   real(dp), allocatable                  :: deloc_pot_nloc_pjas(:)
   real(dp), allocatable                  :: dvpot_pjas (:,:)
 
-  integer                                :: param_pjas_nb
-  integer                                :: param_pjasen_1_nb
+! integer                                :: param_pjas_nb
+! integer                                :: param_pjasen_1_nb
   real(dp), allocatable                  :: dpsi_pjas (:)
   real(dp), allocatable                  :: deloc_pjas (:)
   real(dp), allocatable                  :: pjas_parms_sav (:)
-  real(dp), allocatable                  :: pjas_parms (:,:)
+! real(dp), allocatable                  :: pjas_parms (:,:)
 
   real(dp), allocatable                  :: lap_dpsi_pjasen(:,:)
   real(dp), allocatable                  :: grad_dpsi_pjasen (:,:,:)
@@ -33,7 +34,7 @@ module pjasen_mod
   real(dp), allocatable                  :: dpsi_pjasen (:)
   real(dp), allocatable                  :: deloc_pjasen (:)
 
-  real(dp), allocatable                  :: pjasen_parms (:,:)
+! real(dp), allocatable                  :: pjasen_parms (:,:)
 
   real(dp), allocatable                  :: gn_pjasen  (:)
 !!! new

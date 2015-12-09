@@ -5,6 +5,7 @@ module deriv_mod
   use deriv_csf_mod
   use deriv_orb_mod
   use deriv_exp_mod
+  use pjas_mod, only: param_pjas_nb
   use periodic_jastrow_mod
   use deriv_geo_mod
   use eloc_mod

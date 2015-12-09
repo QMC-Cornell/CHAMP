@@ -3,6 +3,7 @@ module pjasee_mod
   use all_tools_mod
   use crystal_symmetries_mod
   use eloc_mod
+  use pjas_mod, only: param_pjas_nb, pjas_parms
   use pjasen_mod
 
   implicit none
@@ -16,7 +17,7 @@ module pjasee_mod
   real(dp), allocatable                  :: dpsi_pjasee (:)
   real(dp), allocatable                  :: deloc_pjasee (:)
 
-  real(dp), allocatable                  :: pjasee_parms (:,:)
+! real(dp), allocatable                  :: pjasee_parms (:,:)
   real(dp), allocatable                  :: gn_pjasee  (:)
 
   real (dp), allocatable                 :: cos_pjasee(:,:), sin_pjasee(:,:)

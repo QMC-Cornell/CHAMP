@@ -137,10 +137,10 @@
       return
       end
 !-----------------------------------------------------------------------
-      subroutine scal(n,scalor,x,nskip)
+      subroutine scal(n,scalar,x,nskip)
       implicit real*8(a-h,o-z)
 
-! simplified blas routine to scale x by scalor
+! simplified blas routine to scale x by scalar
 ! n     = number of elements in x to be scaled
 ! nskip = stride
 
@@ -149,6 +149,6 @@
       ix=1-nskip
       do 10 i=1,n
         ix=ix+nskip
-   10   x(ix)=scalor*x(ix)
+   10   x(ix)=scalar*x(ix)
       return
       end

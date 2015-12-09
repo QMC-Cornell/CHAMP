@@ -47,7 +47,7 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
 	commons/pairden_mod.f90 commons/pars_mod.f90 \
 	commons/periodic2_mod.f90 commons/periodic_1d_mod.f90 \
-	commons/periodic_mod.f90 commons/phifun_mod.f90 commons/pjase_mod.f90 \
+	commons/periodic_mod.f90 commons/phifun_mod.f90 commons/pjas_mod.f90 commons/pjase_mod.f90 \
 	commons/pointer_mod.f90 commons/pop_control_mod.f90 \
 	commons/pseudo_fahy_mod.f90 commons/pseudo_mod.f90 \
 	commons/pseudo_tm_mod.f90 commons/pworbital_mod.f90 \
@@ -177,7 +177,7 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/orb_mod.o commons/orbe_mod.o commons/orbital_grid_mod.o \
 	commons/orbital_num_mod.o commons/orbpar_mod.o commons/pairden_mod.o \
 	commons/pars_mod.o commons/periodic2_mod.o commons/periodic_1d_mod.o \
-	commons/periodic_mod.o commons/phifun_mod.o commons/pjase_mod.o \
+	commons/periodic_mod.o commons/phifun_mod.o commons/pjas_mod.o commons/pjase_mod.o \
 	commons/pointer_mod.o commons/pop_control_mod.o \
 	commons/pseudo_fahy_mod.o commons/pseudo_mod.o \
 	commons/pseudo_tm_mod.o commons/pworbital_mod.o commons/qua_mod.o \

@@ -4,31 +4,24 @@ Module crystal_symmetries_mod
   use pjas_setup_mod
   implicit none
 
-
-  !! symmetry file to be read
-  !! format as in output of pw code
+  ! symmetry file to be read
+  ! format as in output of pw code
   integer                                :: iread_sym_file
   integer                                :: read_sym_file= 0
   character(len=max_string_len), allocatable  :: symmetry_file (:)
 
   real(dp)                               :: ecut_ee, ecut_en
 
-
   logical                                :: do_pjasee= .false.
   logical                                :: do_pjasen= .false.
   logical                                :: do_pjas= .false.
   integer                                :: maxkv, maxkv_sim
 
-
 contains
-
-
-
 
   subroutine planewaves_interface
 !---------------------------------------------------------------------------
 ! Description : interface for reading symmetry operations and defining the stars
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     include 'modules.h'
@@ -52,7 +45,6 @@ contains
 !!$    write(6,*) "rkvec shift", rkvec_shift(:)
 !!$    write(6,*) "========================= champ gvecs ============  "
 !!$
-
 
     if (do_pjasen) then
        write(6,*)
@@ -92,11 +84,9 @@ contains
   end subroutine planewaves_interface
 
 
-
   subroutine check_rot_symmetries (nsym,sym)
 !---------------------------------------------------------------------------
 ! Description : A minimal check that the symmetry opertions are viable
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
@@ -114,10 +104,8 @@ contains
 
   subroutine symdet(determinant,nsym,sym)
 !---------------------------------------------------------------------------
-! Description : checks that the determinant of the symmetry operation is +-1                                                            !
+! Description : checks that the determinant of the symmetry operation is +-1
 !               adpated from abinit
-!
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
@@ -140,13 +128,11 @@ contains
             &     sym(2,1,isym)*sym(1,2,isym)*sym(3,3,isym)+&
             &     sym(3,2,isym)*sym(2,3,isym)*sym(1,1,isym))
        if (abs(det)/=1) then
-          write(* , * )  ' symdet: ERROR -',&
-               & '  Abs(determinant) for symmetry number',isym,&
-               &                                ' is',det
+          write(* , * )  ' symdet: ERROR -  Abs(determinant) for symmetry number',isym,' is',det
           stop "error in symdet"
-       end if
+       endif
        determinant(isym)=det
-    end do
+    enddo
   end subroutine symdet
 
 
@@ -181,9 +167,9 @@ contains
                 do kk=1,3
                    chk(ii,jj)=chk(ii,jj)+&
                         &                 symrel(ii,kk,jsym)*symrel(kk,jj,isym)
-                end do
-             end do
-          end do
+                enddo
+             enddo
+          enddo
           !   symafmchk=symafm(jsym)*symafm(isym)
           symafmchk =1
 
@@ -193,12 +179,12 @@ contains
              do ii=1,3
                 do jj=1,3
                    if(chk(ii,jj)/=symrel(ii,jj,ksym))testeq=0
-                end do
-             end do
+                enddo
+             enddo
              !    if(symafmchk/=symafm(ksym))testeq=0
              !   The test is positive
              if (testeq==1) exit
-          end do
+          enddo
 
           !  The test is positive
           if(testeq==1)exit
@@ -206,20 +192,17 @@ contains
           write(* , * )  '  Error: product of symmetries',isym,jsym,' is not in group.'
 
           ! End loop on jsym. Note that an "exit" instruction is present inside the loop
-       end do
+       enddo
 
        !End loop on isym
-    end do
+    enddo
 
   end subroutine chkgrp
-  !!***
-
 
 
   subroutine generate_read_symmetry (prim_sim,nsym_crys)
 !---------------------------------------------------------------------------
 ! Description : read the symmetry operations now (generation not implemented)
-!
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
     implicit none
@@ -229,13 +212,12 @@ contains
     logical                              :: exist_file
     character*9                          :: file1,file2,file3
 
-!! always read the files
+! always read the files
 
-    !! use fixed names for these files for now because of a problem on Jaguar
+    ! use fixed names for these files for now because of a problem on Jaguar
     read_sym_file = 1
     file1 = "pri_sym"  !!for primitive lattice
     file2 = "sim_sym"  !!for simulation lattice
-	
 
     if (read_sym_file==1) then
 
@@ -260,9 +242,6 @@ contains
           call die ("generate_read_symmetry")
        endif
        open(18, file=file3)
-
-
-
        read(18,*) nsym_crys
 
        if (prim_sim==1) then
@@ -273,12 +252,9 @@ contains
           call object_alloc ("tnons", tnons_sim, 3,  nsym_crys)
        endif
 
-
        write(6,*) "Number of symmetry operataions= ", nsym_crys
 
        do isym = 1, nsym_crys
-
-          !          write(6,*) "reading ", isym
 
           if (prim_sim==1) then
              read(18,*) ii, tmp(1:9), tnons (:,isym)
@@ -313,16 +289,15 @@ contains
        close (18)
     endif
 
-
 !!$    write(6,'(a)')' symrel :'
 !!$    do ii=1,nsym_crys
 !!$       write(6,'(9i4)') int(symrel(:,:,ii))
-!!$    end do
+!!$    enddo
 !!$
 !!$    write(6,'(a)')' tnons :'
 !!$    do ii=1,nsym_crys
 !!$       write(6,'(9F10.6)') tnons(:,ii)
-!!$    end do
+!!$    enddo
 
     if (prim_sim==1) then
        call check_rot_symmetries (nsym_crys,int(symrel(:,:,:)))
@@ -331,6 +306,5 @@ contains
     endif
 
   end subroutine generate_read_symmetry
-
 
 end Module crystal_symmetries_mod

@@ -526,8 +526,8 @@
       call acues1
 
       do 211 ifr=2,nforce
-        wstro=exp(psi2o(ifr)-psi2o(1))
-        wstrn=exp(psi2n(ifr)-psi2n(1))
+        wstro=max(min(exp(psi2o(ifr)-psi2o(1)),1.d99),1.d-99)
+        wstrn=max(min(exp(psi2n(ifr)-psi2n(1)),1.d99),1.d-99)
         esum(ifr)=esum(ifr)+p*enew(ifr)*wstrn+q*eold(ifr)*wstro
   211   wsum(ifr)=wsum(ifr)+p*wstrn+q*wstro
 
