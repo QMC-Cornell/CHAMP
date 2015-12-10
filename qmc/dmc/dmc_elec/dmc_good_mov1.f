@@ -264,8 +264,8 @@
 ! Tau primary -> tratio=one
           vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
 
-          driftr=vavvt*voldr
-          rtry=rmino+driftr
+          driftr=vavvt*voldr ! driftr can be < 0 because voldr can be < 0
+          rtry=rmino+driftr  ! if rtry<0 then electron has drifted past nucleus
 
 ! Prob. of sampling exponential rather than gaussian is
 ! half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
@@ -298,8 +298,7 @@
           endif
           pgaus=one-qgaus
 
-          if(ipr.ge.1)
-     &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
+          if(ipr.ge.1) write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
 
 ! Do the diffusion.  Actually, this diffusion contains part of the drift too
 ! if idiv_v.ge.1
@@ -338,8 +337,11 @@
    90         xnew(k)=cent(k,iwnuc)+dfus
           endif
           dfus2o=dfus2a
-          fnormo=(pgaus+qgaus*term*(zeta**3)*
-     &           dexp(-two*zeta*dfusb+half*dfus2a/tau))
+! Radial probability density from atom centered part is 4*zeta^3*dfusb**2*exp(-two*zeta*dfusb), so
+! Volume probability density from atom centered part is (zeta^3/pi)*exp(-two*zeta*dfusb).
+! Pull out the gaussian since it is the same for the forward and backward moves.
+! So, fnormo is what multiplies the gaussian.
+          fnormo = pgaus + qgaus*term*(zeta**3)*dexp(-two*zeta*dfusb+half*dfus2a/tau)
 
 ! calculate psi and velocity at new configuration
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
@@ -436,8 +438,7 @@
           pgaus=one-qgaus
           dfusb=sqrt(dfus2b)
 
-          fnormn=pgaus+qgaus*term*(zeta**3)*
-     &    dexp(-two*zeta*dfusb+half*dfus2a/tau)
+          fnormn = pgaus + qgaus*term*(zeta**3)*dexp(-two*zeta*dfusb+half*dfus2a/tau)
 
           if(ipr.ge.1) then
             write(6,'(''xoldw'',9f10.6)')(xoldw(k,i,iw,1),k=1,ndim),

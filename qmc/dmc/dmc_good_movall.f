@@ -44,6 +44,7 @@
       use atom_mod
       use dets_mod
       use contrl_mod
+      use average_mod
       use const_mod
       use dim_mod
       use forcepar_mod
@@ -106,6 +107,9 @@
 
       ioldest=0
       do 300 iw=1,nwalk
+        current_walker = iw !JT CU
+        call object_modified_by_index (current_walker_index) !JT CU
+
 ! Loop over primary+secondary paths to compute forces
         do 300 ifr=1,nforce
 
@@ -311,6 +315,13 @@
 
 ! calculate psi etc. at new configuration
           call hpsi(xnew(1,1,ifr),psidn(ifr),psijn(ifr),vnew(1,1,ifr),div_vn,d2n(ifr),pen(ifr),pein(ifr),enew(ifr),denergy,ifr)
+
+          psi_det = psidn(1)                          !JT CU
+          psi_jas = exp(psijn(1))                     !JT CU
+          call object_modified_by_index (voldw_index) !JT CU
+          call object_modified_by_index (psi_det_index) !JT CU
+          call object_modified_by_index (psi_jas_index) !JT CU
+          call object_modified_by_index (div_vow_index) !JT CU
 
 ! Check for node crossings
           if(psidn(ifr)*psidow(iw,ifr).le.zero.and.ifr.eq.1) then
@@ -557,6 +568,9 @@
 
           wtg=wtnow*fprod
 
+          current_walker_weight = wt(iw) * fprod !JT CU
+          call object_modified_by_index (current_walker_weight_index) !JT CU
+
           enowo=eoldw(iw,ifr)
           enown=enew(ifr)
 
@@ -572,6 +586,11 @@
      &                                   p*(enown-pen(ifr)))
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*(q*d2ow(iw,ifr)+
      &                                           p*d2n(ifr))
+
+!           local energy for current walker
+!           Warning: why is this here?
+            eloc = eoldw(iw,1) ! JT CU
+            call object_modified_by_index (eloc_index) ! JT CU
 
            else
 
@@ -650,6 +669,7 @@
 
           endif
 
+        call compute_averages_step !JT CU
   300 continue
 
       if(wsum1(1).gt.1.1*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
@@ -711,6 +731,11 @@
       wdsumo=wdsumn
       wgdsumo=wgdsumn
       wtgen(ipmod)=wdsumn
+
+!     Warning: why are these here?
+      call object_modified_by_index (eoldw_index) !JT CU
+      call object_modified_by_index (wt_index) !JT CU
+      call object_modified_by_index (fprod_index) !JT CU
 
       return
       end
