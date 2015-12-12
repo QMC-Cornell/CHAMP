@@ -118,11 +118,13 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	vmc/MPI/acuest_mpi.f vmc/MPI/dumper.f vmc/MPI/finwrt_mpi.f \
 	vmc/MPI/grad_hess_jas_mpi.f vmc/MPI/mc_configs.f \
 	dmc/acuest_dmc_movall.f dmc/dmc_brock_movall.f \
-	dmc/dmc_good_inhom_movall.f dmc/dmc_good_movall.f \
+	dmc/dmc_good_inhom_movall.f dmc/dmc_good_movall.f dmc/dmc_good_ap.f90 \
 	dmc/dmc_good_ps_movall.f dmc/dumper_dmc_movall.f \
 	dmc/finwrt_dmc_movall.f dmc/gauss.f dmc/maindmc.f dmc/open_files.f \
 	dmc/opt_wf_dmc.f dmc/sites_dmc.f dmc/sites_per.f dmc/splitj_movall.f \
 	dmc/zeta_cusp.f dmc/dmc_elec/acuest_dmc_mov1.f \
+        bspline_sub_module.f90 bspline_oo_module.f90 bspline_module.f90 \
+        dmc/projector.f90 \
 	dmc/dmc_elec/cwalksav_det.f dmc/dmc_elec/dmc_brock_mov1.f \
 	dmc/dmc_elec/dmc_good_inhom_mov1.f dmc/dmc_elec/dmc_good_mov1.f \
 	dmc/dmc_elec/dmc_good_ps_mov1.f dmc/dmc_elec/dumper_dmc_mov1.f \
@@ -245,11 +247,13 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	vmc/MPI/acuest_mpi.o vmc/MPI/dumper.o vmc/MPI/finwrt_mpi.o \
 	vmc/MPI/grad_hess_jas_mpi.o vmc/MPI/mc_configs.o \
 	dmc/acuest_dmc_movall.o dmc/dmc_brock_movall.o \
-	dmc/dmc_good_inhom_movall.o dmc/dmc_good_movall.o \
+	dmc/dmc_good_inhom_movall.o dmc/dmc_good_movall.o dmc/dmc_good_ap.o \
 	dmc/dmc_good_ps_movall.o dmc/dumper_dmc_movall.o \
 	dmc/finwrt_dmc_movall.o dmc/gauss.o dmc/maindmc.o dmc/open_files.o \
 	dmc/opt_wf_dmc.o dmc/sites_dmc.o dmc/sites_per.o dmc/splitj_movall.o \
 	dmc/zeta_cusp.o dmc/dmc_elec/acuest_dmc_mov1.o \
+        bspline_sub_module.o bspline_oo_module.o bspline_module.o \
+        dmc/projector.o \
 	dmc/dmc_elec/cwalksav_det.o dmc/dmc_elec/dmc_brock_mov1.o \
 	dmc/dmc_elec/dmc_good_inhom_mov1.o dmc/dmc_elec/dmc_good_mov1.o \
 	dmc/dmc_elec/dmc_good_ps_mov1.o dmc/dmc_elec/dumper_dmc_mov1.o \
@@ -269,6 +273,8 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.o \
 	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.o
 
+# BSPLINE = $(LIBHOME)/lib2/bspline/bspline_sub_module.mod $(LIBHOME)/lib2/bspline/bspline_oo_module.mod $(LIBHOME)/lib2/bspline/bspline_module.mod
+
 # PHONY is a Make keyword that tells it to execute the rule regardless of
 # the dependencies.  We use it here for 2 reasons:
 # 1) prevents it from getting confused if there happens to be a file named
@@ -278,8 +284,12 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 .PHONY: clean_local clean clean_all clean_all_lib make
 
 # Default target and the one that gets called by all the other targets:
+#$(EXE): $(LIBS_MAKE) $(BSPLINE) $(OBJS) revision_and_date.inc
+#	$(LD) $(LD_FLAGS) $(OBJS) $(LIBS) $(BSPLINE) $(LD_END) -o $@
 $(EXE): $(LIBS_MAKE) $(OBJS) revision_and_date.inc
-	$(LD) $(LD_FLAGS) -o $@ $(OBJS) $(LIBS) $(LD_END)
+	$(LD) $(LD_FLAGS) $(OBJS) $(LIBS) $(LD_END) -o $@
+
+#	$(LD) $(LD_FLAGS) -o $@ $(OBJS) $(LIBS) $(BSPLINE) $(LD_END)
 
 revision_and_date.inc: $(SRCS)
 	bash revision_and_date.sh
@@ -336,6 +346,7 @@ make:
 .SUFFIXES: 
 
 .SUFFIXES: .f90 .f95 .o .f .c
+# .SUFFIXES: .f90 .f95 .o .f .c .mod
 
 .c.o:
 	$(CC) $(CC_FLAGS) -o $@ -c $<
@@ -348,6 +359,9 @@ make:
 
 .f.o:
 	$(F77) $(F77_FLAGS) -o $@ -c $<
+
+#%.mod: %.f90
+#	$(F95) $(CFLAGS) -c $< -o $@
 
 accumulation_mod.o: all_tools_mod.o average_mod.o control_mod.o \
 	montecarlo_mod.o print_mod.o modules.h
@@ -472,6 +486,12 @@ variables_mod.o: constants_mod.o
 vmc_mod.o: all_tools_mod.o allocations_mod.o modules.h
 walkers_mod.o: all_tools_mod.o control_mod.o initialization_mod.o mpi_mod.o \
 	print_mod.o restart_mod.o vmc_mod.o modules.h
+dmc_mod.o: dmc/projector.o
+dmc/dmc_good_ap.o: dmc/projector.o
+dmc/projector.o: bspline_oo_module.o
+bspline_module.o: bspline_oo_module.o
+bspline_oo_module.o: bspline_sub_module.o
+bspline_module.o: bspline_sub_module.o
 write_mod.o: basic_tools_mod.o constants_mod.o objects_mod.o variables_mod.o
 commons/age_mod.o: constants_mod.o
 commons/atom_mod.o: constants_mod.o

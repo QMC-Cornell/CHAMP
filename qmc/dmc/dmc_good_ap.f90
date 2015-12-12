@@ -1,8 +1,8 @@
-      subroutine dmc_good_movall
+      subroutine dmc_good_ap
 ! Written by Cyrus Umrigar
-! Uses the diffusion Monte Carlo algorithm described in:
-! 1) A Diffusion Monte Carlo Algorithm with Very Small Time-Step Errors,
-!    C.J. Umrigar, M.P. Nightingale and K.J. Runge, J. Chem. Phys., 99, 2865 (1993).
+! Uses an improvement upon the antisymmetrized projector described in:
+! 1) Observations on variational and projector Monte Carlo methods,
+!    C.J. Umrigar, J. Chem. Phys. (2015).
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ! Control variables are:
 ! idmc         < 0     VMC
@@ -63,6 +63,7 @@
       use stats_mod
       use age_mod
       use pop_control_mod, only : ffn
+      use projector, only : do_projector
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -70,7 +71,7 @@
       common /tmp/ eacc,enacc,macc,mnacc
 
       dimension rmino(nelec),rminn(nelec),rvmin(3)
-      dimension xnew(3,nelec,nforce),vnew(3,nelec,nforce),psidn(nforce),
+      dimension xnew(3,nelec,nforce),vnew(3,nelec,nforce),psidn(nforce), &
      &psijn(nforce),enew(nforce),pen(nforce),pein(nforce),d2n(nforce),div_vn(nelec)
       dimension xaxis(3),zaxis(3),xbac(3),ajacnew(nforce)
 
@@ -91,7 +92,7 @@
         fprod=fprod*ffn/ff(ipmod)
         ff(ipmod)=ffn
         fprodd=fprod/ff(ipmod2)
-       else
+      else
         ginv=1
         ffn=1
         ffi=1
@@ -119,12 +120,14 @@
 ! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
               call strech(xnew(1,1,1),xnew(1,1,ifr),ajacob,ifr,0)
               ajacnew(ifr)=one
-             else
+            else
               call strech(xnew(1,1,1),xnew(1,1,ifr),ajacob,ifr,1)
               ajacnew(ifr)=ajacob
             endif
           endif
 
+! Sample by rejection
+          do
 ! Sample Green function for forward move
           dr2=zero
           dfus2o=zero
@@ -136,8 +139,8 @@
 ! & component of velocity in that direction
             ren2mn=huge
             do 10 icent=1,ncent
-              ren2=(xoldw(1,i,iw,ifr)-cent(1,icent))**2
-     &            +(xoldw(2,i,iw,ifr)-cent(2,icent))**2
+              ren2=(xoldw(1,i,iw,ifr)-cent(1,icent))**2 &
+     &            +(xoldw(2,i,iw,ifr)-cent(2,icent))**2 &
      &            +(xoldw(3,i,iw,ifr)-cent(3,icent))**2
               if(ren2.lt.ren2mn) then
                 ren2mn=ren2
@@ -182,10 +185,10 @@
             if(ifr.gt.1.and.itausec.eq.1) then
               if(itau_eff.ge.1) then
                 tauu=tau*taueff(ifr)/taueff(1)
-               else
+              else
                 tauu=taueff(ifr)
               endif
-             else
+            else
               tauu=tau
             endif
 
@@ -239,12 +242,12 @@
             if(ifr.eq.1) then
               if(idiv_v.ge.1) then
                 if(div_v_hom.lt.0.d0) then
-                  tau_hom=3*tau - 1/div_v_hom - ((tau-1/div_v_hom)*sqrt(-div_v_hom) * (1-derfc(1/sqrt(-2*div_v_hom*tau)))
+                  tau_hom=3*tau - 1/div_v_hom - ((tau-1/div_v_hom)*sqrt(-div_v_hom) * (1-derfc(1/sqrt(-2*div_v_hom*tau))) &
      &            + sqrt(2*tau/pi)*exp(1/(2*div_v_hom*tau)))**2
-                 else
+                else
                   tau_hom=tau*(1+2*div_v_hom*tau)/(1+div_v_hom*tau)
                 endif
-               else
+              else
                 tau_hom=tau
               endif
               rttau_hom=dsqrt(tau_hom)
@@ -280,7 +283,7 @@
                   dfus2o=dfus2o+dfus**2
    80             dfus2b=dfus2b+(xnew(k,i,ifr)-cent(k,iwnuc))**2
                 dfusb=sqrt(dfus2b)
-               else
+              else
                 dfusb=(-half/zeta)*dlog(rannyu(0)*rannyu(0)*rannyu(0))
                 costht=two*(rannyu(0)-half)
                 sintht=sqrt(one-costht*costht)
@@ -308,6 +311,16 @@
 ! calculate psi etc. at new configuration
           call hpsi(xnew(1,1,ifr),psidn(ifr),psijn(ifr),vnew(1,1,ifr),div_vn,d2n(ifr),pen(ifr),pein(ifr),enew(ifr),denergy,ifr)
 
+          !call projector(nup,ndn,xoldw(1,1,iw,1),xnew(1,1,1),antisym_pair_prod)
+          antisym_pair_prod = do_projector(xoldw(1,1,iw,1),xnew(1,1,1))
+          antisym_pair_prod_imp_samp=antisym_pair_prod*(psidn(1)/psidow(iw,1))*exp(psijn(1) - psijow(iw,1))
+
+!         write(6,'(''fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod/fnormo'',9es12.4)') &
+!    &     fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod_imp_samp/fnormo
+          if(0.5d0*abs(antisym_pair_prod_imp_samp).gt.rannyu(0)*fnormo) exit
+
+          enddo ! end sample by rejection
+
           psi_det = psidn(1)                          !JT CU
           psi_jas = exp(psijn(1))                     !JT CU
           call object_modified_by_index (voldw_index) !JT CU
@@ -316,151 +329,158 @@
           call object_modified_by_index (div_vow_index) !JT CU
 
 ! Check for node crossings
-          if(psidn(ifr)*psidow(iw,ifr).le.zero.and.ifr.eq.1) then
+          if(antisym_pair_prod_imp_samp.lt.zero.and.ifr.eq.1) then
             nodecr=nodecr+1
-            if(icross.le.0) then
-              p=zero
-              goto 210
-            endif
           endif
 
-! Calculate Green function for the reverse move
-          dfus2n=zero
-          vav2sumn=zero
-          v2sumn=zero
-          fnormn=one
-          do 200 i=1,nelec
-! Find the nearest nucleus & vector from that nucleus to electron
-! & component of velocity in that direction
-            ren2mn=huge
-            do 110 icent=1,ncent
-              ren2=(xnew(1,i,ifr)-cent(1,icent))**2
-     &            +(xnew(2,i,ifr)-cent(2,icent))**2
-     &            +(xnew(3,i,ifr)-cent(3,icent))**2
-              if(ren2.lt.ren2mn) then
-                ren2mn=ren2
-                iwnuc=icent
-              endif
-  110       continue
-            rminn(i)=zero
-            vnewr=zero
-            v2new=zero
-            do 120 k=1,ndim
-              rvmin(k)=xnew(k,i,ifr)-cent(k,iwnuc)
-              rminn(i)=rminn(i)+rvmin(k)**2
-              vnewr=vnewr+vnew(k,i,ifr)*rvmin(k)
-  120         v2new=v2new+vnew(k,i,ifr)**2
-            rminn(i)=sqrt(rminn(i))
-            vnewr=vnewr/rminn(i)
-            vnewa=sqrt(v2new)
+!!Check for node crossings
+!         if(psidn(ifr)*psidow(iw,ifr).le.zero.and.ifr.eq.1) then
+!           nodecr=nodecr+1
+!           if(icross.le.0) then
+!             p=zero
+!             goto 210
+!           endif
+!         endif
 
-! Place zaxis along direction from nearest nucleus to electron and
-! x-axis along direction of angular component of velocity.
-! Calculate the velocity in the phi direction
-            vnewp=zero
-            do 140 k=1,ndim
-              zaxis(k)=rvmin(k)/rminn(i)
-              xaxis(k)=vnew(k,i,ifr)-vnewr*zaxis(k)
-  140         vnewp=vnewp+xaxis(k)**2
-            vnewp=sqrt(vnewp)
-            if(vnewp.lt.eps) then
-              xaxis(1)=eps*(one-zaxis(1)**2)
-              xaxis(2)=eps*(-zaxis(1)*zaxis(2))
-              xaxis(3)=eps*(-zaxis(1)*zaxis(3))
-              vnewp=eps*dsqrt(one+eps-zaxis(1)**2)
-            endif
-            do 150 k=1,ndim
-  150         xaxis(k)=xaxis(k)/vnewp
+!!Calculate Green function for the reverse move
+!         dfus2n=zero
+!         vav2sumn=zero
+!         v2sumn=zero
+!         fnormn=one
+!         do 200 i=1,nelec
+!!Find the nearest nucleus & vector from that nucleus to electron
+!!& component of velocity in that direction
+!           ren2mn=huge
+!           do 110 icent=1,ncent
+!             ren2=(xnew(1,i,ifr)-cent(1,icent))**2 &
+!    &            +(xnew(2,i,ifr)-cent(2,icent))**2 &
+!    &            +(xnew(3,i,ifr)-cent(3,icent))**2
+!             if(ren2.lt.ren2mn) then
+!               ren2mn=ren2
+!               iwnuc=icent
+!             endif
+! 110       continue
+!           rminn(i)=zero
+!           vnewr=zero
+!           v2new=zero
+!           do 120 k=1,ndim
+!             rvmin(k)=xnew(k,i,ifr)-cent(k,iwnuc)
+!             rminn(i)=rminn(i)+rvmin(k)**2
+!             vnewr=vnewr+vnew(k,i,ifr)*rvmin(k)
+! 120         v2new=v2new+vnew(k,i,ifr)**2
+!           rminn(i)=sqrt(rminn(i))
+!           vnewr=vnewr/rminn(i)
+!           vnewa=sqrt(v2new)
 
-! Use more accurate formula for the drift
-            hafzr2=(half*znuc(iwctype(iwnuc))*rminn(i))**2
-            adrift=(half*(1+eps+vnewr/vnewa))+adrift0*hafzr2/(1+hafzr2)
+!!Place zaxis along direction from nearest nucleus to electron and
+!!x-axis along direction of angular component of velocity.
+!!Calculate the velocity in the phi direction
+!           vnewp=zero
+!           do 140 k=1,ndim
+!             zaxis(k)=rvmin(k)/rminn(i)
+!             xaxis(k)=vnew(k,i,ifr)-vnewr*zaxis(k)
+! 140         vnewp=vnewp+xaxis(k)**2
+!           vnewp=sqrt(vnewp)
+!           if(vnewp.lt.eps) then
+!             xaxis(1)=eps*(one-zaxis(1)**2)
+!             xaxis(2)=eps*(-zaxis(1)*zaxis(2))
+!             xaxis(3)=eps*(-zaxis(1)*zaxis(3))
+!             vnewp=eps*dsqrt(one+eps-zaxis(1)**2)
+!           endif
+!           do 150 k=1,ndim
+! 150         xaxis(k)=xaxis(k)/vnewp
 
-            vav=(dsqrt(1+2*adrift*v2new*tauu)-1)/(adrift*vnewa*tauu)
-            vav2sumn=vav2sumn+vav**2
-            v2sumn=v2sumn+v2new
+!!Use more accurate formula for the drift
+!           hafzr2=(half*znuc(iwctype(iwnuc))*rminn(i))**2
+!           adrift=(half*(1+eps+vnewr/vnewa))+adrift0*hafzr2/(1+hafzr2)
 
-            driftr=vnewr*tauu*vav/vnewa
-            rtry=rminn(i)+driftr
-            rtrya=max(0.d0,rtry)
-            rtrya2=rtrya**2
+!           vav=(dsqrt(1+2*adrift*v2new*tauu)-1)/(adrift*vnewa*tauu)
+!           vav2sumn=vav2sumn+vav**2
+!           v2sumn=v2sumn+v2new
 
-! Prob. of sampling exponential rather than gaussian is
-! half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
-            qgaus=half*derfc(rtry/dsqrt(two*tau))
-            pgaus=1-qgaus
+!           driftr=vnewr*tauu*vav/vnewa
+!           rtry=rminn(i)+driftr
+!           rtrya=max(0.d0,rtry)
+!           rtrya2=rtrya**2
 
-! Calculate drifted x and y coordinates in local coordinate system centered
-! on nearest nucleus
-            xprime=(vav/vnewa)*vnewp*tauu*rtrya/(half*(rminn(i)+rtry))
-            zprime=rtrya
+!!Prob. of sampling exponential rather than gaussian is
+!!half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
+!           qgaus=half*derfc(rtry/dsqrt(two*tau))
+!           pgaus=1-qgaus
 
-! Convert back to original coordinate system
-            dfus2a=0
-            dfus2b=0
-            do 160 k=1,ndim
-              xbac(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
-              dfus2a=dfus2a+(xoldw(k,i,iw,ifr)-xbac(k))**2
-  160         dfus2b=dfus2b+(xoldw(k,i,iw,ifr)-cent(k,iwnuc))**2
-            dfusb=sqrt(dfus2b)
+!!Calculate drifted x and y coordinates in local coordinate system centered
+!!on nearest nucleus
+!           xprime=(vav/vnewa)*vnewp*tauu*rtrya/(half*(rminn(i)+rtry))
+!           zprime=rtrya
 
-! Use div_v_hom to set tau_hom
-            div_v_hom=div_vn(i)/3
+!!Convert back to original coordinate system
+!           dfus2a=0
+!           dfus2b=0
+!           do 160 k=1,ndim
+!             xbac(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
+!             dfus2a=dfus2a+(xoldw(k,i,iw,ifr)-xbac(k))**2
+! 160         dfus2b=dfus2b+(xoldw(k,i,iw,ifr)-cent(k,iwnuc))**2
+!           dfusb=sqrt(dfus2b)
 
-            if(idiv_v.ge.1) then
-              if(div_v_hom.lt.0.d0) then
-                tau_hom=3*tau - 1/div_v_hom - ((tau-1/div_v_hom)*sqrt(-div_v_hom) * (1-derfc(1/sqrt(-2*div_v_hom*tau)))
-     &          + sqrt(2*tau/pi)*exp(1/(2*div_v_hom*tau)))**2
-               else
-                tau_hom=tau*(1+2*div_v_hom*tau)/(1+div_v_hom*tau)
-              endif
-             else
-              tau_hom=tau
-            endif
+!!Use div_v_hom to set tau_hom
+!           div_v_hom=div_vn(i)/3
 
-! First set zeta to approx. value and then call zeta_cusp to set it to
-! value that imposes the cusp condition on G.
-            zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
-            if(icuspg.ge.1) then
-              zeta=znuc(iwctype(iwnuc)) * (1+derfc(-rtry/dsqrt(2*tau_hom))/(200*tau_hom))
-!             zeta=sqrt(znuc(iwctype(iwnuc))**2 + 0.2*derfc(-rtry/dsqrt(2*tau_hom))/tau_hom)
-              term2=pgaus*pi*znuc(iwctype(iwnuc))*exp(-rtrya2/tau_hom) / (qgaus*sqrt(2*pi*tau_hom)**3)
-              if(qgaus.gt.1.d-10) zeta=zeta_cusp(zeta,znuc(iwctype(iwnuc)),term2)
-            endif
+!           if(idiv_v.ge.1) then
+!             if(div_v_hom.lt.0.d0) then
+!               tau_hom=3*tau - 1/div_v_hom - ((tau-1/div_v_hom)*sqrt(-div_v_hom) * (1-derfc(1/sqrt(-2*div_v_hom*tau))) &
+!    &          + sqrt(2*tau/pi)*exp(1/(2*div_v_hom*tau)))**2
+!             else
+!               tau_hom=tau*(1+2*div_v_hom*tau)/(1+div_v_hom*tau)
+!             endif
+!           else
+!             tau_hom=tau
+!           endif
 
-! Check cusp
-!           qgaus2=2*znuc(iwctype(iwnuc))*exp(-(rtrya2**2/(2*tau_hom)))/
-!    &      (2*pi*tau_hom)**1.5/
-!    &      (2*zeta**4/pi+2*znuc(iwctype(iwnuc))*
-!    &      (exp(-(rtrya2**2/(2*tau_hom)))/(2*pi*tau_hom)**1.5
-!    &      -zeta**3/pi))
-!           write(6,'(''n pgaus,qgaus='',4d9.2)') pgaus,qgaus,qgaus2
+!!First set zeta to approx. value and then call zeta_cusp to set it to
+!!value that imposes the cusp condition on G.
+!           zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
+!           if(icuspg.ge.1) then
+!             zeta=znuc(iwctype(iwnuc)) * (1+derfc(-rtry/dsqrt(2*tau_hom))/(200*tau_hom))
+!!            zeta=sqrt(znuc(iwctype(iwnuc))**2 + 0.2*derfc(-rtry/dsqrt(2*tau_hom))/tau_hom)
+!             term2=pgaus*pi*znuc(iwctype(iwnuc))*exp(-rtrya2/tau_hom) / (qgaus*sqrt(2*pi*tau_hom)**3)
+!             if(qgaus.gt.1.d-10) zeta=zeta_cusp(zeta,znuc(iwctype(iwnuc)),term2)
+!           endif
 
-            gaus_norm=1/sqrt(two*pi*tau_hom)**3
-            fnormn=fnormn*(pgaus*gaus_norm*exp(-half*dfus2a/tau_hom) + qgaus*(zeta**3/pi)*dexp(-two*zeta*dfusb))
+!!Check cusp
+!!          qgaus2=2*znuc(iwctype(iwnuc))*exp(-(rtrya2**2/(2*tau_hom)))/
+!!   &      (2*pi*tau_hom)**1.5/
+!!   &      (2*zeta**4/pi+2*znuc(iwctype(iwnuc))*
+!!   &      (exp(-(rtrya2**2/(2*tau_hom)))/(2*pi*tau_hom)**1.5
+!!   &      -zeta**3/pi))
+!!          write(6,'(''n pgaus,qgaus='',4d9.2)') pgaus,qgaus,qgaus2
 
-            if(ipr.ge.1) then
-              write(6,'(''xoldw'',9f10.6)')(xoldw(k,i,iw,ifr),k=1,ndim), (xnew(k,i,ifr),k=1,ndim), (xbac(k),k=1,ndim)
-              write(6,'(''dfus2o'',9f10.6)')dfus2o,dfus2n,psidow(iw,ifr), psidn(ifr),psijow(iw,ifr),psijn(ifr),fnormo,fnormn
-            endif
+!           gaus_norm=1/sqrt(two*pi*tau_hom)**3
+!           fnormn=fnormn*(pgaus*gaus_norm*exp(-half*dfus2a/tau_hom) + qgaus*(zeta**3/pi)*dexp(-two*zeta*dfusb))
 
-  200     continue
-          vavvn=sqrt(vav2sumn/v2sumn)
+!           if(ipr.ge.1) then
+!             write(6,'(''xoldw'',9f10.6)')(xoldw(k,i,iw,ifr),k=1,ndim), (xnew(k,i,ifr),k=1,ndim), (xbac(k),k=1,ndim)
+!             write(6,'(''dfus2o'',9f10.6)')dfus2o,dfus2n,psidow(iw,ifr), psidn(ifr),psijow(iw,ifr),psijn(ifr),fnormo,fnormn
+!           endif
 
-          p=(psidn(ifr)/psidow(iw,ifr))**2*exp(2*(psijn(ifr) - psijow(iw,ifr)))*fnormn/fnormo
+! 200     continue
+!         vavvn=sqrt(vav2sumn/v2sumn)
 
-          if(ipr.ge.1) write(6,'(''p'',9f10.6)')
-     &    p, (psidn(ifr)/psidow(iw,ifr))**2*exp(2*(psijn(ifr)-psijow(iw,ifr))), exp((dfus2o-dfus2n)/(two*tau)),psidn(ifr),
-     &    psidow(iw,ifr), psijn(ifr), psijow(iw,ifr), dfus2o, dfus2n
+!         p=(psidn(ifr)/psidow(iw,ifr))**2*exp(2*(psijn(ifr) - psijow(iw,ifr)))*fnormn/fnormo
 
-! The following is one reasonable way to cure persistent configurations
-! Not needed if itau_eff <=0 and in practice we have never needed it even
-! otherwise
-          if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
+!         if(ipr.ge.1) write(6,'(''p'',9f10.6)') &
+!    &    p, (psidn(ifr)/psidow(iw,ifr))**2*exp(2*(psijn(ifr)-psijow(iw,ifr))), exp((dfus2o-dfus2n)/(two*tau)),psidn(ifr), &
+!    &    psidow(iw,ifr), psijn(ifr), psijow(iw,ifr), dfus2o, dfus2n
 
-          pp=p
-          p=dmin1(one,p)
-  210     q=one-p
+!!The following is one reasonable way to cure persistent configurations
+!!Not needed if itau_eff <=0 and in practice we have never needed it even
+!!otherwise
+!         if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
+
+!         pp=p
+!         p=dmin1(one,p)
+! 210     q=one-p
+
+          p=1 ; q=0
 
           dfus2unf(ifr)=dfus2unf(ifr)+dfus2o
 
@@ -474,7 +494,8 @@
             dfus2ac=dfus2ac+p*dfus2o
             dr2ac=dr2ac+p*dr2
             dr2un=dr2un+dr2
-            tautot=tautot+tau*dfus2ac/dfus2unf(1)
+            !tautot=tautot+tau*dfus2ac/dfus2unf(1)
+            tautot=tautot+tau
 
 ! If we are using weights rather than accept/reject
             if(iacc_rej.le.0) then
@@ -490,7 +511,7 @@
               if(ipq.le.0) p=one
               eacc=eacc+enew(ifr)
               macc=macc+1
-             else
+            else
               iaccept=0
               if(itau_eff.le.0) taunow=zero
               if(ipq.le.0) p=zero
@@ -502,7 +523,7 @@
             psav=p
             qsav=q
 
-           elseif(itausec.eq.1) then
+          elseif(itausec.eq.1) then
 
             taunow=taueff(ifr)
             if(itau_eff.le.0.and.iaccept.eq.0) taunow=zero
@@ -518,8 +539,9 @@
             expon=(etrial-half*((one+qsav)*ewto+psav*ewtn))*taunow
             if(icut_br.le.0) then
               dwt=dexp(expon)
-             else
-              dwt=0.5d0+1/(1+exp(-4*expon))
+            else
+!             dwt=0.5d0+1/(1+exp(-4*expon))
+              dwt=2*dexp(expon)/(1+dexp(expon))
 !             if(expon.gt.0) then
 !               dwt=(1+2*expon)/(1+expon)
 !              else
@@ -540,7 +562,7 @@
           if(ifr.eq.1) then
             wt(iw)=wt(iw)*dwt
             wtnow=wt(iw)
-           else
+          else
             wtnow=wt(iw)*pwt(iw,ifr)/pwt(iw,1)
           endif
 
@@ -570,7 +592,7 @@
             eloc = eoldw(iw,1) ! JT CU
             call object_modified_by_index (eloc_index) ! JT CU
 
-           else
+          else
 
             ro=ajacold(iw,ifr)*psidow(iw,ifr)**2*exp(2*psijow(iw,ifr)-psi2savo)
             rn=ajacnew(ifr)*psidn(ifr)**2*exp(2*psijn(ifr)-psi2savn)
@@ -596,7 +618,7 @@
               if(i.le.nup) then
                 rprobup(itryo)=rprobup(itryo)+wtg*q
                 rprobup(itryn)=rprobup(itryn)+wtg*p
-               else
+              else
                 rprobdn(itryo)=rprobdn(itryo)+wtg*q
                 rprobdn(itryn)=rprobdn(itryn)+wtg*p
               endif
@@ -610,11 +632,11 @@
 
 !           if(dabs((enew(ifr)-etrial)/etrial).gt.0.2d+0) then
             if(dabs((enew(ifr)-etrial)/etrial).gt.5.0d+0) then
-               write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass, enew(ifr)-etrial,psidn(ifr),psijn(ifr),
+               write(18,'(i6,f8.2,2d10.2,(8f8.4))') ipass, enew(ifr)-etrial,psidn(ifr),psijn(ifr), &
      &         ((xnew(k,jj,ifr),k=1,ndim),jj=1,nelec)
             endif
 
-            if(wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw, wt(iw), enew(ifr)-etrial, eoldw(iw,ifr)-etrial,
+            if(wt(iw).gt.3) write(18,'(i6,i4,3f8.2,30f8.4)') ipass,iw, wt(iw), enew(ifr)-etrial, eoldw(iw,ifr)-etrial, &
      &      ((xnew(k,jj,ifr),k=1,ndim),jj=1,nelec)
 
             psidow(iw,ifr)=psidn(ifr)
@@ -630,7 +652,7 @@
   260           voldw(k,i,iw,ifr)=vnew(k,i,ifr)
             iage(iw)=0
             ajacold(iw,ifr)=ajacnew(ifr)
-           else
+          else
             if(ifr.eq.1) then
               iage(iw)=iage(iw)+1
               ioldest=max(ioldest,iage(iw))
@@ -651,7 +673,7 @@
         wfsum1=wsum1(1)*ffn
         wgdsumn=wsum1(1)*fprodd
         efsum1=esum1(1)*ffn
-       else
+      else
         wfsum1=wsum1(1)
         wgdsumn=wsum1(1)
         efsum1=esum1(1)
@@ -669,7 +691,7 @@
         if(idmc.gt.0.or.iacc_rej.eq.0) then
           wgsum1(ifr)=wsum1(ifr)*fprod
           egsum1(ifr)=esum1(ifr)*fprod
-         else
+        else
           wgsum1(ifr)=wsum1(ifr)
           egsum1(ifr)=esum1(ifr)
         endif
@@ -685,12 +707,13 @@
       if(itau_eff.ge.1) then
         eigv=dexp((etrial-eest)*taueff(1))
         if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv, eest, egcum(1), egsum(1), wgcum(1), wgsum(1), fprod
-       else
+      else
         accavn=acc_int/try_int
         if(icut_br.le.0) then
           eigv=accavn*exp((etrial-eest)*tau)+(one-accavn)
-         else
-          eigv=one-accavn+accavn*(0.5d0+1/(1+exp(-4*(etrial-eest)*tau)))
+        else
+          !eigv=one-accavn+accavn*(0.5d0+1/(1+exp(-4*(etrial-eest)*tau)))
+          eigv=2*exp((etrial-eest)*tau)/(1+exp((etrial-eest)*tau))
         endif
         if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,accavn, egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
       endif
@@ -705,4 +728,4 @@
       call object_modified_by_index (fprod_index) !JT CU
 
       return
-      end
+      end subroutine dmc_good_ap

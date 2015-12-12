@@ -502,7 +502,13 @@
       call alloc ('taueff', taueff, nforce)
 ! **Warning** taueff temporarily set low.  Not any more
       if(try_int.eq.0) then
-        taueff(1)=tau/(one+(znuc(iwctype(1))**2*tau)/10)
+        if(idmc.eq.1 .or. idmc.eq.2) then
+          taueff(1)=tau/(one+(znuc(iwctype(1))**2*tau)/10)
+        elseif(idmc.eq.3) then
+          taueff(1)=tau
+        else
+          taueff(1)=0
+        endif
         write(6,'(''taueff set equal to'',f9.5)') taueff(1)
         do 86 ifr=2,nforce
           if(itau_eff.ge.1) then

@@ -8,6 +8,7 @@ module dmc_mod
   use restart_mod
   use allocations_mod
   use walkers_mod
+  use projector, only : interface_projector
 
 ! Declaration of global variables and default values
 
@@ -115,6 +116,8 @@ module dmc_mod
   else
    call open_files
   endif
+
+  call interface_projector(nctype, ncent, iwctype, cent, znuc, nelec, nup, tau, etrial)
 
   end subroutine dmc_init
 
@@ -492,8 +495,10 @@ module dmc_mod
      else
         call dmc_good_inhom
      endif
+  elseif(iabs(idmc) == 3) then
+     call dmc_good_ap
   else
-     call die (lhere, 'iabs(idmc) must be 1 or 2.')
+     call die (lhere, 'iabs(idmc) must be 1 or 2 or 3.')
   endif
 
   end subroutine dmc_algorithm

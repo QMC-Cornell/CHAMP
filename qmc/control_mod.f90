@@ -273,7 +273,7 @@ module control_mod
     write(6,'(a)')   ' DMC algorithm parameters:'
     write(6,'(a,9i4)') ' idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e =', idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
     if(idmc.lt.0) write(6,'(a)') ' running DMC program in VMC mode'
-    if(iabs(idmc).ne.1 .and. iabs(idmc).ne.2) stop 'iabs(idmc) must be 1 or 2'
+    if(iabs(idmc).lt.1 .or. iabs(idmc).gt.3) stop 'iabs(idmc) must be 1 or 2 or 2'
     rttau=dsqrt(tau)
     write(6,'(a,i5)')    ' nfprod = ', nfprod
     write(6,'(a,f10.5)') ' time-step tau = ', tau
