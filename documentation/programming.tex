@@ -1,0 +1,355 @@
+\documentclass[a4paper,11pt]{article}
+
+% Francais
+%\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc} %for accentuated letters
+\usepackage[T1]{fontenc}  %important for correct cesure of accentuated letter
+\usepackage{ae,aecompl,aeguill}   %important for fonts in pdf
+
+%For comments
+\usepackage{verbatim} 
+
+%Graphics
+\usepackage{graphicx}% Include figure files
+\usepackage{dcolumn}% Align table columns on decimal point
+\usepackage{rotating}
+\usepackage{epstopdf}%automatic ps -> pdf conversion
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+
+%Maths
+\usepackage{amstext,amsmath,amssymb,amsfonts}
+\usepackage{bm}% bold math
+
+% Fonts
+%\usepackage{txfonts}
+%\usepackage{bbm}
+%\usepackage[cspex,bbgreekl]{mathbbol}
+
+% Different font in captions
+\newcommand{\captionfonts}{\small}
+\makeatletter  % Allow the use of @ in command names
+\long\def\@makecaption#1#2{%
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{{\captionfonts #1: #2}}%
+  \ifdim \wd\@tempboxa >\hsize
+    {\captionfonts #1: #2\par}
+  \else
+    \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+\makeatother   % Cancel the effect of \makeatletter
+
+% References
+\usepackage{cite} %to group multipled references
+\usepackage[hidelinks]{hyperref}
+
+%--------------------------------------
+
+% Colors
+\usepackage{color}
+\definecolor{lightblue}{rgb}{0.2,0.2,0.7}
+\definecolor{darkblue}{rgb}{0,0.25,0.5}
+\definecolor{redbrown}{rgb}{0.875,0.25,0.125}
+\definecolor{darkgreen}{rgb}{0,0.5,0}
+
+%Newcommands
+\renewcommand{\b}[1]{\textbf{#1}}
+\renewcommand{\l}[1]{\hyperlink{#1}{\textbf{#1}}}
+\renewcommand{\t}[1]{\hypertarget{#1}{\textbf{#1}}}
+
+%Headers
+\usepackage{fancyhdr}
+
+%Margins
+\setlength{\topmargin}{-1cm}     %top margin
+\setlength{\textheight}{24cm}    %bottom margin
+\setlength{\textwidth}{16cm}     %right margin
+\setlength{\oddsidemargin}{0cm}  %left margin (for odd pages or single sided)
+\setlength{\evensidemargin}{0cm} %left margin (for even pages if using twoside)
+
+% paragraph with newline
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+  {-3.25ex\@plus -1ex \@minus -.2ex}%
+  {1.5ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries}}
+\makeatother
+
+\begin{document}
+
+\title{Notes on the programming style in CHAMP}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\author{Julien Toulouse\\
+Laboratoire de Chimie Th\'eorique\\Universit\'e Pierre et Marie Curie et CNRS, 75005 Paris, France\\
+julien.toulouse@upmc.fr}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\date{\today}
+
+\maketitle
+
+These notes describe the programming paradigm used in the Fortran 90 files of the program CHAMP. This programming paradigm was invented by the theoretical chemist and legendary programmer François Colonna and was given different names over the years: Open Structured Interfaceable Programming Environment (OSIPE)~\cite{ColJolPoiAngJan-CPC-94}, Deductive Object Programming~\cite{Col-ARX-06}, and Implicit Reference to Parameters (IRP)~\cite{Sce-ARX-09}. Even though we describe a Fortran implementation of it, this programming paradigm is not restricted to any particular programming language, and in fact has been implemented in many languages. The particular Fortran implementation that I made in CHAMP was very much inspired by the implementation in the program QMCMOL~\cite{Qmc-PROG-XX} mainly made by Roland Assaraf.
+
+\section{Introduction}
+A Fortran computer program produces {\it objects}, which are Fortran variables, of any type or dimension (scalar/array), containing quantities that we are after. For example, {\tt psi} may be an object containing the value of a wave function evaluated at some electron coordinates. This object {\tt psi} is constructed from other objects. For example, for the case of a Jastrow $\times$ single determinant wave function, we have {\tt psi = jastrow * determinant} where {\tt jastrow} and {\tt determinant} are the values of the Jastrow factor and of the Slater determinant at the same electron coordinates. The later objects are themselves constructed from yet other objects. For example, {\tt determinant} may be constructed from {\tt orbitals} which is an array containing the values of the orbitals at the considered electron coordinates. And so on.
+
+Clearly, there are {\it dependencies} between these objects, in the sense that the construction of a given object requires that other objects have already been constructed. In other words, the order in which the objects are constructed is important. Usually, in Fortran programs, these dependencies are {\it not} made explicit, and making sure that the order of the construction of the objects is correct is left to the programmer. In large codes, this may make difficult the implementation of a new object.
+
+In the programming paradigm used here, the dependencies between the objects are made explicit. The programmer then does not need to take care of the order of construction of the objects. This facilitates the implementation of new objects.
+
+\section{A simple example}
+
+The programming paradigm is best explained on a simple example. 
+
+\subsection{Dependency tree}
+Consider again the object {\tt psi}, constructed from two objects {\tt jastrow} and {\tt determinant}, themselves constructed from other objects according to the following {\it dependency tree}:
+
+
+\begin{center}
+\begin{tikzpicture}
+\Tree [.{\tt psi} 
+                 [.{\tt jastrow}     
+                                [.{\tt jastrow\_parameters} ]
+                                [ [ [ .\node(coord){\tt electron\_coordinates}; ] ] ] ]
+                 [.{\tt determinant} 
+                                [.{\tt orbitals}
+                                  [.\node(basis){\tt basis\_functions}; [ {\tt basis\_parameters} ] ] [.{\tt coefficients}
+                                                ] ] ] ]
+\draw (coord)--(basis);
+\end{tikzpicture}
+\end{center}
+
+Note that, strictly speaking, this is not a tree but a graph since the branches are not necessarily disjoint. For example, in the example above, the object {\tt electron\_coordinates} connects the two branches. We will nevertheless use the vocabulary of computer trees.
+
+This tree encodes the dependencies between the objects. For example, {\tt psi} depends on both {\tt jastrow} and {\tt determinant}. In turn, {\tt jastrow} depends on {\tt jastrow\_parameters} and {\tt electron\_coordinates}. And so on. We will say that {\tt psi} is a {\it child} of {\tt jastrow} and {\tt determinant}, and {\tt jastrow} and {\tt determinant} are the {\it parents} of  {\tt psi}. The objects without any parents ({\tt jastrow\_parameters}, {\tt electron\_coordinates}, {\tt basis\_parameters}, {\tt coefficients}) are the {\it leaves} of the tree. These generally correspond to input parameters which must be given by the user when running a calculation.
+
+The practical implementation of the dependency tree in the program will be explained later. For the moment, let us describe how calculations are done, assuming that the information about the dependency tree is available in the program.
+
+\subsection{Building subroutines}
+
+Each object which is not a leaf of the tree has a {\it building subroutine} which constructs it. So, written schematically, we have the five following building subroutines in the program:
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine psi\_bld\\
+psi = jastrow * determinant\\
+end subroutine psi\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine jastrow\_bld\\
+jastrow  = $f(${\tt jastrow\_parameters}$,${\tt electron\_coordinates}$)$\\
+end subroutine jastrow\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine determinant\_bld\\
+determinant  = $f(${\tt orbitals}$)$\\
+end subroutine determinant\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine orbitals\_bld\\
+orbitals  = $f(${\tt basis\_functions}$,${\tt coefficients}$)$\\
+end subroutine orbitals\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine basis\_functions\_bld\\
+basis\_functions  = $f(${\tt electron\_coordinates}$,${\tt basis\_parameters}$)$\\
+end subroutine basis\_functions\_bld}
+
+\vspace{0.5cm}
+\noindent
+where, to simplify, we have shown the explicit expression of {\tt psi} only, the expressions of the other objects are just written as (complicated) functions $f$.
+
+\vspace{0.5cm}
+The most part of the program is made of building subroutines, but they do {\it not} make {\it all} the program. Here are examples of subroutines which are {\it not} building subroutines:
+\begin{itemize}
+\item The subroutines reading the input. This is usually where the leaf objects are created.
+\item The subroutines writing the output.
+\item The subroutines containing the main iterative algorithms, such as the Monte Carlo algorithm or the wave-function optimization algorithm.
+\end{itemize}
+These subroutines manipulates the objects of the dependency tree with the two main commands which are explained in the next sections: {\tt call object\_provide} and {\tt call object\_modified}.
+
+\subsection{call object\_provide}
+
+Suppose that the programmer wants to print out the value of {\tt psi} at some place in the code (outside the building subroutines). He just needs to write the following lines:
+
+\vspace{0.5cm}
+\noindent
+{\tt call object\_provide(`psi')\\
+write(6,*) `psi=',psi}
+
+\vspace{0.5cm}
+The instruction {\tt call object\_provide(`psi')} does the following:\\
+It checks if the object {\tt psi} is {\it valid}, i.e. if it has already been calculated and can be used.
+\begin{itemize}
+\item If yes, then nothing is done. 
+\item If no, then the program checks if its parents {\tt jastrow} and {\tt determinant} are valid. 
+\begin{itemize}
+\item If both are valid, then the program calls the building subroutine {\tt psi\_bld} and marks {\tt psi} as valid.
+\item If, for instance, only {\tt determinant} is not valid, then the program checks if its parent {\tt orbitals} is valid. If {\tt orbitals} is valid, then the program calls the building subroutine {\tt determinant\_bld}, marks {\tt determinant} as valid, then calls the building subroutine {\tt psi\_bld} and marks {\tt psi} as valid. If {\tt orbitals} is not valid, the programs checks its parents, and so on.
+\end{itemize}
+\end{itemize}
+In other words, {\tt object\_provide(`psi')} goes down recursively the dependency tree under {\tt psi} until it finds valid objects. It then climbs up the dependency tree, constructing the objects one after the other, in the correct order, until it finally constructs {\tt psi}.
+
+In the case where {\tt object\_provide(`psi')} goes down to a leaf object of the dependency tree (for example, {\tt basis\_parameters}) which is {\it not} valid, then it gives an error message indicating that this leaf object is necessary to construct {\tt psi} but does not know how to construct this leaf object. Indeed, since a leaf object does not have a building subroutine, the program does not know how to construct it. Leaf objects are instead usually read in from the input file at the beginning of execution and marked as valid then.
+
+\vspace{0.5cm}
+In summary, {\tt call object\_provide(`psi')} has several advantages:
+\begin{itemize}
+\item It is {\it simple}. The programmer just needs to know the name of the object that he wants, here `psi'. He does not need to know how this object is calculated by the program. He does not need to know about intermediate objects such as {\tt orbitals}.
+\item It is {\it safe}. If a necessary leaf object is not available, the program will properly stops and explains what is missing.
+\item It is {\it efficient}, in the sense that this mechanism ensures that only what is needed is calculated, nothing more.
+\end{itemize}
+
+\subsection{call object\_modified}
+Another important ingredient remains to be explained. What if the value of an object, say {\tt electron\_coordinates}, is modified? Then, we need to make sure that if we need any child or grandchild object of {\tt electron\_coordinates}, this object must be recalculated with the new value of {\tt electron\_coordinates}. This is done by inserting, just after modifying {\tt electron\_coordinates}, the instruction {\tt call object\_modified(`electron\_coordinates')}:
+
+\vspace{0.5cm}
+\noindent
+{\tt electron\_coordinates = (-2.1, 0.7, 1.5)\\
+call object\_modified(`electron\_coordinates')
+}
+
+\vspace{0.5cm}
+The instruction {\tt call object\_modified(`electron\_coordinates')} marks {\tt electron\_coordinates} as valid, and recursively climbs up the dependency tree to mark as {\it invalid} all the objects depending on {\tt electron\_coordinates}, namely {\tt jastrow},  {\tt basis\_functions}, {\tt orbitals}, {\tt determinant}, {\tt psi}. 
+
+Thus, if any one of these objects is asked for afterwards, it will be recalculated with the new value of {\tt electron\_coordinates}. This is a {\it safe} mechanism since it prevents the programmer from forgetting to update objects in an iterative algorithm, a frequent bug otherwise.
+
+Note that a typical use of {\tt call object\_modified} is after reading in leaf objects from the input to mark them as valid.
+
+\subsection{Implementation of the dependency tree}
+
+It was chosen to give the dependencies between the objects directly in the building subroutines. The advantage of this is that all the information about a given object is localized in its building subroutine, and not delocalized in different places in the code. Each building subroutine contains a {\it header} part where the object created by this building subroutine is indicated by {\tt call object\_create(`...')} and all the parent objects are listed by {\tt call object\_needed(`...')}. Thus, the building subroutines of our simple example actually look like:
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine psi\_bld\\
+if(header) then\\
+\phantom{xx} call object\_create(`psi')\\
+\phantom{xx} call object\_needed(`jastrow')\\
+\phantom{xx} call object\_needed(`determinant')\\
+\phantom{xx} return\\
+endif\\
+psi = jastrow * determinant\\
+end subroutine psi\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine jastrow\_bld\\
+if(header) then\\
+\phantom{xx} call object\_create(`jastrow')\\
+\phantom{xx} call object\_needed(`jastrow\_parameters')\\
+\phantom{xx} call object\_needed(`electron\_coordinates')\\
+\phantom{xx} return\\
+endif\\
+jastrow  = $f(${\tt jastrow\_parameters}$,${\tt electron\_coordinates}$)$\\
+end subroutine jastrow\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine determinant\_bld\\
+if(header) then\\
+\phantom{xx} call object\_create(`determinant')\\
+\phantom{xx} call object\_needed(`orbitals')\\
+\phantom{xx} return\\
+endif\\
+determinant  = $f(${\tt orbitals}$)$\\
+end subroutine determinant\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine orbitals\_bld\\
+if(header) then\\
+\phantom{xx} call object\_create(`orbitals')\\
+\phantom{xx} call object\_needed(`basis\_functions')\\
+\phantom{xx} call object\_needed(`coefficients')\\
+\phantom{xx} return\\
+endif\\
+orbitals  = $f(${\tt basis\_functions}$,${\tt coefficients}$)$\\
+end subroutine orbitals\_bld}
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine basis\_functions\_bld\\
+if(header) then\\
+\phantom{xx} call object\_create(`basis\_functions')\\
+\phantom{xx} call object\_needed(`electron\_coordinates')\\
+\phantom{xx} call object\_needed(`basis\_parameters')\\
+\phantom{xx} return\\
+endif\\
+basis\_functions  = $f(${\tt electron\_coordinates}$,${\tt basis\_parameters}$)$\\
+end subroutine basis\_functions\_bld}
+
+\vspace{0.5cm}
+For all the building subroutines, the header part is executed only once at the beginning of the execution of the program in order to construct the dependency tree. Then, in the actual calculations we always have {\tt header=.false.} so the header part is bypassed.
+
+\section{More details}
+
+\subsection{A building subroutine can create more than one object}
+
+Often, it is convenient to construct in the same building subroutine several objects. A given building subroutine thus generally creates several objects. For example, if the building subroutine {\tt jastrow\_bld} creates the two object {\tt jastrow} and {\tt jastrow\_gradient}, it will look like:
+
+\vspace{0.5cm}
+\noindent
+{\tt subroutine jastrow\_bld\\
+if(header) then\\
+\phantom{xx} call object\_create(`jastrow')\\
+\phantom{xx} call object\_create(`jastrow\_gradient')\\
+\phantom{xx} call object\_needed(`jastrow\_parameters')\\
+\phantom{xx} call object\_needed(`electron\_coordinates')\\
+\phantom{xx} return\\
+endif\\
+jastrow  = $f(${\tt jastrow\_parameters}$,${\tt electron\_coordinates}$)$\\
+jastrow\_gradient  = $g(${\tt jastrow\_parameters}$,${\tt electron\_coordinates}$)$\\
+end subroutine jastrow\_bld}
+
+\vspace{0.5cm}
+With this extension, the nodes of the dependency tree are no longer the objects but instead the building subroutines, each one creating a list of objects. This extension does not cause any problem.
+
+\subsection{Dynamic allocations inside the building subroutines}
+
+If an object is an array, it is dynamically allocated inside its building subroutine, using {\tt call object\_alloc}. For example:
+
+\vspace{0.5cm}
+\noindent
+{\tt call object\_alloc ('orbitals', orbitals, norb)\\
+do i=1,norb\\
+\phantom{xx} orbitals(i) = ...\\
+enddo}
+
+Note that the dimension {\tt norb} itself is usually an object handled by the dependency tree. If it changes during the calculation, the array will be reallocated with the new size.
+
+\subsection{Indexes of objects}
+The functions {\tt object\_modified(`...')} and {\tt object\_provide(`...')} take as argument the name of an object given as a string. The name of the object is then looked up in an array which can take some time. If these functions are called in a part of the code that is very often executed, this is not efficient. In this case, we use directly the index of the object in the array, instead of its name. For example:
+
+\vspace{0.5cm}
+\noindent
+{\tt call object\_modified\_by\_index (electron\_coordinates\_index)}
+
+\vspace{0.5cm}
+\noindent
+{\tt call object\_provide\_by\_index (psi\_index)}
+
+
+\subsection{Interface with the old Fortran 77 part}
+
+The objects created in the old Fortran 77 files do not have building subroutines. If they are not available, the program does not know how to construct them. Nevertheless, to facilitate their use in the Fortran 90 part, they can be added as leaf objects of the dependency tree. For this, we just need to add {\tt call object\_modified(`...')}, for example in the line just after a Fortran 77 object has been constructed. This provides a safe mechanism for using them, making sure that we use them only when they have been already calculated. In fact, I found this extremely useful when I started to program in CHAMP. 
+
+When this is judged useful, a Fortran 77 object can be converted to a Fortran 90 object, i.e. we write a proper building subroutine for it and it is then a normal object of the dependency tree. The Fortran 77 part of the code can then be progressively evolved in the style of the Fortran 90 part.
+
+
+
+% BIBLIOGRAPHY---------------------------------------------
+%\newpage
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{jchemphys}
+\bibliography{biblio}
+
+\end{document}
+
+
