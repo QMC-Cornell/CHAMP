@@ -124,7 +124,7 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	dmc/opt_wf_dmc.f dmc/sites_dmc.f dmc/sites_per.f dmc/splitj_movall.f \
 	dmc/zeta_cusp.f dmc/dmc_elec/acuest_dmc_mov1.f \
         bspline_sub_module.f90 bspline_oo_module.f90 bspline_module.f90 \
-        dmc/projector.f90 \
+        dmc/projector.f90 dmc/stochastic_reconfiguration2.f90 \
 	dmc/dmc_elec/cwalksav_det.f dmc/dmc_elec/dmc_brock_mov1.f \
 	dmc/dmc_elec/dmc_good_inhom_mov1.f dmc/dmc_elec/dmc_good_mov1.f \
 	dmc/dmc_elec/dmc_good_ps_mov1.f dmc/dmc_elec/dumper_dmc_mov1.f \
@@ -253,7 +253,7 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	dmc/opt_wf_dmc.o dmc/sites_dmc.o dmc/sites_per.o dmc/splitj_movall.o \
 	dmc/zeta_cusp.o dmc/dmc_elec/acuest_dmc_mov1.o \
         bspline_sub_module.o bspline_oo_module.o bspline_module.o \
-        dmc/projector.o \
+        dmc/projector.o dmc/stochastic_reconfiguration2.o \
 	dmc/dmc_elec/cwalksav_det.o dmc/dmc_elec/dmc_brock_mov1.o \
 	dmc/dmc_elec/dmc_good_inhom_mov1.o dmc/dmc_elec/dmc_good_mov1.o \
 	dmc/dmc_elec/dmc_good_ps_mov1.o dmc/dmc_elec/dumper_dmc_mov1.o \
@@ -486,7 +486,7 @@ variables_mod.o: constants_mod.o
 vmc_mod.o: all_tools_mod.o allocations_mod.o modules.h
 walkers_mod.o: all_tools_mod.o control_mod.o initialization_mod.o mpi_mod.o \
 	print_mod.o restart_mod.o vmc_mod.o modules.h
-dmc_mod.o: dmc/projector.o
+dmc_mod.o: dmc/projector.o dmc/stochastic_reconfiguration2.o
 dmc/dmc_good_ap.o: dmc/projector.o
 dmc/projector.o: bspline_oo_module.o
 bspline_module.o: bspline_oo_module.o

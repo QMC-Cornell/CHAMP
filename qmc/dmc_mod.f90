@@ -117,7 +117,7 @@ module dmc_mod
    call open_files
   endif
 
-  call interface_projector(nctype, ncent, iwctype, cent, znuc, nelec, nup, tau, etrial)
+  if(idmc.eq.3) call interface_projector(nctype, ncent, iwctype, cent, znuc, nelec, nup, tau, etrial)
 
   end subroutine dmc_init
 
@@ -309,6 +309,8 @@ module dmc_mod
         ipass=ipass+1
         call dmc_algorithm
 
+        call stochastic_reconfiguration2
+
 !       averages at each step
         call acues1_dmc
 
@@ -343,6 +345,8 @@ module dmc_mod
       call dmc_algorithm
 
       call object_modified_by_index (xoldw_index)
+
+      call stochastic_reconfiguration2
 
 !     compute averages
       call acues1_dmc
@@ -496,7 +500,13 @@ module dmc_mod
         call dmc_good_inhom
      endif
   elseif(iabs(idmc) == 3) then
-     call dmc_good_ap
+     if (abs(nloc) > 0) then
+        stop 'pseudopotential version of antisym. pair-proj. not implemented'
+     elseif(idiv_v <= 0) then
+        call dmc_good_ap
+     else
+        stop 'inhom version of antisym. pair-proj. not implemented'
+     endif
   else
      call die (lhere, 'iabs(idmc) must be 1 or 2 or 3.')
   endif
@@ -559,9 +569,9 @@ module dmc_mod
 
 ! begin
   if (l_mode_dmc_mov1) then
-   call dmc_good_mov1
+    call dmc_good_mov1
   else
-   call dmc_good_movall
+    call dmc_good_movall
   endif
 
   end subroutine dmc_good

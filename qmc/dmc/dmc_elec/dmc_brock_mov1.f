@@ -172,6 +172,8 @@
             acc_int=acc_int+1
 
             iage(iw)=0
+
+!           Since move is accepted, copy from new to old
             do 158 k=1,ndim
               drifdif=drifdif+(xoldw(k,i,iw,1)-xnew(k))**2
               xoldw(k,i,iw,1)=xnew(k)
@@ -201,8 +203,7 @@
             if(ifr.eq.1) then
 ! Primary configuration
               drifdifr=one
-              if(nforce.gt.1)
-     &        call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+              if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
               if(ibasis.eq.3) then                        ! complex calculations
                 call cwalksav_det(iw)

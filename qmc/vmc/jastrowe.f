@@ -7,11 +7,6 @@
       use pjase_mod
       implicit real*8(a-h,o-z)
 
-
-
-!! WAS
-!!!
-
       dimension x(3,*),v(3,*)
 
       do 10 i=1,nelec
@@ -26,10 +21,11 @@
        else
         stop 'single-electron move only for jastrow3 and jastrow4'
       endif
+
 !! WAS
       if (ido_pjas .eq. 1) then
          call pjas_jas_e_interface (iel, x, rvec_ee, v, value)
       endif
-!!!
+
       return
       end

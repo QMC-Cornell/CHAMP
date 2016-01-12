@@ -591,8 +591,10 @@
               do 240 k=1,ndim
                 r2n=r2n+xnew(k,i,ifr)**2
   240           r2o=r2o+xoldw(k,i,iw,ifr)**2
-              itryo=min(int(delri*rmino(i))+1,NRAD)
-              itryn=min(int(delri*rminn(i))+1,NRAD)
+!             itryo=min(int(delri*rmino(i))+1,NRAD)
+!             itryn=min(int(delri*rminn(i))+1,NRAD)
+              itryo=int(min(delri*rmino(i)+1,dfloat(NRAD))+eps)
+              itryn=int(min(delri*rminn(i)+1,dfloat(NRAD))+eps)
               if(i.le.nup) then
                 rprobup(itryo)=rprobup(itryo)+wtg*q
                 rprobup(itryn)=rprobup(itryn)+wtg*p

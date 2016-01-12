@@ -134,8 +134,7 @@
         do 7 iw=1,nwalk
           do 7 ifr=1,nforce
 ! Set nuclear coordinates (0 flag = no strech e-coord)
-            if(nforce.gt.1)
-     &      call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,ifr),ajacob,ifr,0)
+            if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,ifr),ajacob,ifr,0)
             vav2sumo=zero
             v2sumo=zero
             do 6 i=1,nelec
@@ -194,8 +193,7 @@
         call object_modified_by_index (current_walker_index) !JT
 
 ! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
-        if(nforce.gt.1)
-     &  call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+        if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
 
         if(ibasis.eq.3) then             !complex basis set
           call cwalkstrdet(iw)
@@ -484,8 +482,10 @@
   165       rminn=rminn+(xnew(k)-cent(k,1))**2
           rmino=sqrt(rmino)
           rminn=sqrt(rminn)
-          itryo(i)=min(int(delri*rmino)+1,NRAD)
-          itryn(i)=min(int(delri*rminn)+1,NRAD)
+!         itryo(i)=min(int(delri*rmino)+1,NRAD)
+!         itryn(i)=min(int(delri*rminn)+1,NRAD)
+          itryo(i)=int(min(delri*rmino+1,dfloat(NRAD))+eps)
+          itryn(i)=int(min(delri*rmino+1,dfloat(NRAD))+eps)
 
 ! If we are using weights rather than accept/reject
           if(iacc_rej.le.0) then
@@ -500,6 +500,8 @@
             if(ipq.le.0) p=one
 
             iage(iw)=0
+
+!           Since move is accepted, copy from new to old
             do 170 k=1,ndim
               drifdif=drifdif+(xoldw(k,i,iw,1)-xnew(k))**2
               xoldw(k,i,iw,1)=xnew(k)

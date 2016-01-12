@@ -638,7 +638,9 @@
         write(6,'(''no. of steps/block ='',t31,i10)') nstep
         write(6,'(''no. of blocks after eq.='',t31,i10)') nblk
         write(6,'(''no. of blocks before eq. ='',t31,i10)') nblkeq
+! Warning: tmp +50 is ususally enough but increase to say +2000 for antisymmetric projector
         MWALK = nconf+50 ! default value of MWALK
+!       MWALK = nconf+2000 ! default value of MWALK
         if(index(mode,'dmc').ne.0) then
           write(6,'(''target walker population/processor='',t36,i5)') nconf
           if(nconf.le.0) stop 'target population <= 0'

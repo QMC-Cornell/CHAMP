@@ -71,7 +71,7 @@
       use zigzag_mod, only: izigzag
       implicit real*8(a-h,o-z)
 
-      parameter (adrift=0.5d0)
+      parameter (eps=1.d-10, adrift=0.5d0)
 
       common /tmp/ eacc,enacc,macc,mnacc
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
@@ -419,8 +419,10 @@
   245           rminn=rminn+(xnew(k,i,ifr)-cent(k,1))**2
               rmino=sqrt(rmino)
               rminn=sqrt(rminn)
-              itryo=min(int(delri*rmino)+1,NRAD)
-              itryn=min(int(delri*rminn)+1,NRAD)
+!             itryo=min(int(delri*rmino)+1,NRAD)
+!             itryn=min(int(delri*rminn)+1,NRAD)
+              itryo=int(min(delri*rmino+1,dfloat(NRAD))+eps)
+              itryn=int(min(delri*rminn+1,dfloat(NRAD))+eps)
               if(i.le.nup) then
                 rprobup(itryo)=rprobup(itryo)+wtgq
                 rprobup(itryn)=rprobup(itryn)+wtgp

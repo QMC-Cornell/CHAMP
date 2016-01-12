@@ -128,79 +128,80 @@
 
 ! Sample by rejection
           do
+
 ! Sample Green function for forward move
-          dr2=zero
-          dfus2o=zero
-          vav2sumo=zero
-          v2sumo=zero
-          fnormo=one
-          do 100 i=1,nelec
+            dr2=zero
+            dfus2o=zero
+            vav2sumo=zero
+            v2sumo=zero
+            fnormo=one
+            do 100 i=1,nelec
 ! Find the nearest nucleus & vector from that nucleus to electron
 ! & component of velocity in that direction
-            ren2mn=huge
-            do 10 icent=1,ncent
-              ren2=(xoldw(1,i,iw,ifr)-cent(1,icent))**2 &
-     &            +(xoldw(2,i,iw,ifr)-cent(2,icent))**2 &
-     &            +(xoldw(3,i,iw,ifr)-cent(3,icent))**2
-              if(ren2.lt.ren2mn) then
-                ren2mn=ren2
-                iwnuc=icent
-              endif
-   10       continue
-            rmino(i)=zero
-            voldr=zero
-            v2old=zero
-            do 20 k=1,ndim
-              rvmin(k)=xoldw(k,i,iw,ifr)-cent(k,iwnuc)
-              rmino(i)=rmino(i)+rvmin(k)**2
-              voldr=voldr+voldw(k,i,iw,ifr)*rvmin(k)
-   20         v2old=v2old+voldw(k,i,iw,ifr)**2
-            rmino(i)=sqrt(rmino(i))
-            voldr=voldr/rmino(i)
-            volda=sqrt(v2old)
+              ren2mn=huge
+              do 10 icent=1,ncent
+                ren2=(xoldw(1,i,iw,ifr)-cent(1,icent))**2 &
+       &            +(xoldw(2,i,iw,ifr)-cent(2,icent))**2 &
+       &            +(xoldw(3,i,iw,ifr)-cent(3,icent))**2
+                if(ren2.lt.ren2mn) then
+                  ren2mn=ren2
+                  iwnuc=icent
+                endif
+   10         continue
+              rmino(i)=zero
+              voldr=zero
+              v2old=zero
+              do 20 k=1,ndim
+                rvmin(k)=xoldw(k,i,iw,ifr)-cent(k,iwnuc)
+                rmino(i)=rmino(i)+rvmin(k)**2
+                voldr=voldr+voldw(k,i,iw,ifr)*rvmin(k)
+   20           v2old=v2old+voldw(k,i,iw,ifr)**2
+              rmino(i)=sqrt(rmino(i))
+              voldr=voldr/rmino(i)
+              volda=sqrt(v2old)
 
 ! Place zaxis along direction from nearest nucleus to electron and
 ! x-axis along direction of angular component of velocity.
 ! Calculate the velocity in the phi direction
-            voldp=zero
-            do 40 k=1,ndim
-              zaxis(k)=rvmin(k)/rmino(i)
-              xaxis(k)=voldw(k,i,iw,ifr)-voldr*zaxis(k)
-   40         voldp=voldp+xaxis(k)**2
-            voldp=sqrt(voldp)
-            if(voldp.lt.eps) then
-              xaxis(1)=eps*(one-zaxis(1)**2)
-              xaxis(2)=eps*(-zaxis(1)*zaxis(2))
-              xaxis(3)=eps*(-zaxis(1)*zaxis(3))
-              voldp=eps*dsqrt(one+eps-zaxis(1)**2)
-            endif
-            do 50 k=1,ndim
-   50         xaxis(k)=xaxis(k)/voldp
+              voldp=zero
+              do 40 k=1,ndim
+                zaxis(k)=rvmin(k)/rmino(i)
+                xaxis(k)=voldw(k,i,iw,ifr)-voldr*zaxis(k)
+   40           voldp=voldp+xaxis(k)**2
+              voldp=sqrt(voldp)
+              if(voldp.lt.eps) then
+                xaxis(1)=eps*(one-zaxis(1)**2)
+                xaxis(2)=eps*(-zaxis(1)*zaxis(2))
+                xaxis(3)=eps*(-zaxis(1)*zaxis(3))
+                voldp=eps*dsqrt(one+eps-zaxis(1)**2)
+              endif
+              do 50 k=1,ndim
+   50           xaxis(k)=xaxis(k)/voldp
 
 ! Use more accurate formula for the drift
-            hafzr2=(half*znuc(iwctype(iwnuc))*rmino(i))**2
-            adrift=(half*(1+eps+voldr/volda))+adrift0*hafzr2/(1+hafzr2)
+              hafzr2=(half*znuc(iwctype(iwnuc))*rmino(i))**2
+              adrift=(half*(1+eps+voldr/volda))+adrift0*hafzr2/(1+hafzr2)
 
 ! Tau secondary in drift in order to compute tau_s in second equil. block
-            if(ifr.gt.1.and.itausec.eq.1) then
-              if(itau_eff.ge.1) then
-                tauu=tau*taueff(ifr)/taueff(1)
+              if(ifr.gt.1.and.itausec.eq.1) then
+                if(itau_eff.ge.1) then
+                  tauu=tau*taueff(ifr)/taueff(1)
+                else
+                  tauu=taueff(ifr)
+                endif
               else
-                tauu=taueff(ifr)
+                tauu=tau
               endif
-            else
-              tauu=tau
-            endif
 
 ! Note: vavvo=vav2sumo/v2sumo appears in the branching
-            vav=(dsqrt(1+2*adrift*v2old*tauu)-1)/(adrift*volda*tauu)
-            vav2sumo=vav2sumo+vav**2
-            v2sumo=v2sumo+v2old
+              vav=(dsqrt(1+2*adrift*v2old*tauu)-1)/(adrift*volda*tauu)
+              vav2sumo=vav2sumo+vav**2
+              v2sumo=v2sumo+v2old
 
-            driftr=voldr*tauu*vav/volda
-            rtry=rmino(i)+driftr
-            rtrya=max(0.d0,rtry)
-            rtrya2=rtrya**2
+              driftr=voldr*tauu*vav/volda
+              rtry=rmino(i)+driftr
+              rtrya=max(0.d0,rtry)
+              rtrya2=rtrya**2
 
 ! Prob. of sampling exponential rather than gaussian is
 ! half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
@@ -210,116 +211,136 @@
 ! if tau is used in derfc, and so qgaus does not tend to 1 for large tau.
 ! However, we are using a variable adrift that can be very small and then
 ! using tau is the better choice.
-            qgaus=half*derfc(rtry/dsqrt(two*tau))
-            pgaus=1-qgaus
+              qgaus=half*derfc(rtry/dsqrt(two*tau))
+              pgaus=1-qgaus
 
 ! Calculate drifted x and y coordinates in local coordinate system centered
 ! on nearest nucleus
-            xprime=(vav/volda)*voldp*tauu*rtrya/(half*(rmino(i)+rtry))
-            zprime=rtrya
+              xprime=(vav/volda)*voldp*tauu*rtrya/(half*(rmino(i)+rtry))
+              zprime=rtrya
 
 ! Convert back to original coordinate system
-            do 60 k=1,ndim
-              xbac(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
-              if(ifr.gt.1) then
-                dfus=xnew(k,i,ifr)-xbac(k)
-                dfus2o=dfus2o+dfus**2
-              endif
-   60       continue
+              do 60 k=1,ndim
+                xbac(k)=cent(k,iwnuc)+xaxis(k)*xprime+zaxis(k)*zprime
+                if(ifr.gt.1) then
+                  dfus=xnew(k,i,ifr)-xbac(k)
+                  dfus2o=dfus2o+dfus**2
+                endif
+   60         continue
 
-            if(ipr.ge.1) then
-              write(6,'(''vav,volda,driftr,rtry'',9f9.5)') vav,volda,driftr,rtry,xprime,zprime
-              write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xbac(k),k=1,ndim)
-              write(6,'(''xaxis'',9f9.6)') (xaxis(k),k=1,ndim)
-              write(6,'(''zaxis'',9f9.6)') (zaxis(k),k=1,ndim)
-            endif
+              if(ipr.ge.1) then
+                write(6,'(''vav,volda,driftr,rtry'',9f9.5)') vav,volda,driftr,rtry,xprime,zprime
+                write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xbac(k),k=1,ndim)
+                write(6,'(''xaxis'',9f9.6)') (xaxis(k),k=1,ndim)
+                write(6,'(''zaxis'',9f9.6)') (zaxis(k),k=1,ndim)
+              endif
 
 ! Do the diffusion.  Actually, this diffusion contains part of the drift too
 ! if idiv_v.ge.1
 ! Use div_v_hom to set tau_hom
-            div_v_hom=div_vow(i,iw)/3
+              div_v_hom=div_vow(i,iw)/3
 
-            if(ifr.eq.1) then
-              if(idiv_v.ge.1) then
-                if(div_v_hom.lt.0.d0) then
-                  tau_hom=3*tau - 1/div_v_hom - ((tau-1/div_v_hom)*sqrt(-div_v_hom) * (1-derfc(1/sqrt(-2*div_v_hom*tau))) &
-     &            + sqrt(2*tau/pi)*exp(1/(2*div_v_hom*tau)))**2
+              if(ifr.eq.1) then
+                if(idiv_v.ge.1) then
+                  if(div_v_hom.lt.0.d0) then
+                    tau_hom=3*tau - 1/div_v_hom - ((tau-1/div_v_hom)*sqrt(-div_v_hom) * (1-derfc(1/sqrt(-2*div_v_hom*tau))) &
+       &            + sqrt(2*tau/pi)*exp(1/(2*div_v_hom*tau)))**2
+                  else
+                    tau_hom=tau*(1+2*div_v_hom*tau)/(1+div_v_hom*tau)
+                  endif
                 else
-                  tau_hom=tau*(1+2*div_v_hom*tau)/(1+div_v_hom*tau)
+                  tau_hom=tau
                 endif
-              else
-                tau_hom=tau
-              endif
-              rttau_hom=dsqrt(tau_hom)
+
+! Increase tau_dfus by some factor relative to tau_hom to sample from a broader gaussian so that the sampling by rejection has a better acceptance
+! Does not seem to help.
+                tau_dfus=1.0*tau_hom
+
+                rttau_dfus=dsqrt(tau_dfus)
 
 ! First set zeta to approx. value and then call zeta_cusp to set it to
 ! value that imposes the cusp condition on G.
 ! Warning I probably need to put zeta in the ifr.ne.1 part too
-              zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
-              if(icuspg.ge.1) then
-                zeta=znuc(iwctype(iwnuc)) * (1+derfc(-rtry/dsqrt(2*tau_hom))/(200*tau_hom))
-!               zeta=sqrt(znuc(iwctype(iwnuc))**2 + 0.2*derfc(-rtry/dsqrt(2*tau_hom))/tau_hom)
-                term2=pgaus*pi*znuc(iwctype(iwnuc))*exp(-rtrya2/tau_hom)/(qgaus*sqrt(2*pi*tau_hom)**3)
-                if(qgaus.gt.eps) zeta=zeta_cusp(zeta,znuc(iwctype(iwnuc)),term2)
-              endif
+                zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
+                if(icuspg.ge.1) then
+                  zeta=znuc(iwctype(iwnuc)) * (1+derfc(-rtry/dsqrt(2*tau_dfus))/(200*tau_dfus))
+!                 zeta=sqrt(znuc(iwctype(iwnuc))**2 + 0.2*derfc(-rtry/dsqrt(2*tau_dfus))/tau_dfus)
+                  term2=pgaus*pi*znuc(iwctype(iwnuc))*exp(-rtrya2/tau_dfus)/(qgaus*sqrt(2*pi*tau_dfus)**3)
+                  if(qgaus.gt.eps) zeta=zeta_cusp(zeta,znuc(iwctype(iwnuc)),term2)
+                endif
 
 ! Check cusp
-!             qgaus2=2*znuc(iwctype(iwnuc))*exp(-(rtrya2/(2*tau_hom)))
-!    &        /(2*pi*tau_hom)**1.5/
-!    &        (2*zeta**4/pi+2*znuc(iwctype(iwnuc))*
-!    &        (exp(-(rtrya2/(2*tau_hom)))/(2*pi*tau_hom)**1.5
-!    &        -zeta**3/pi))
-!             write(6,'(''o pgaus,qgaus='',4d9.2)') pgaus,qgaus,qgaus2
+!               qgaus2=2*znuc(iwctype(iwnuc))*exp(-(rtrya2/(2*tau_hom)))
+!      &        /(2*pi*tau_hom)**1.5/
+!      &        (2*zeta**4/pi+2*znuc(iwctype(iwnuc))*
+!      &        (exp(-(rtrya2/(2*tau_hom)))/(2*pi*tau_hom)**1.5
+!      &        -zeta**3/pi))
+!               write(6,'(''o pgaus,qgaus='',4d9.2)') pgaus,qgaus,qgaus2
 
 ! Sample gaussian with prob pgaus, exponential with prob. qgaus
-              dfus2a=0
-              dfus2b=0
-              if(rannyu(0).lt.pgaus) then
-                do 80 k=1,ndim
-                  dfus=gauss()*rttau_hom
-                  xnew(k,i,ifr)=xbac(k)+dfus
-                  dr2=dr2+(xnew(k,i,ifr)-xoldw(k,i,iw,ifr))**2
-                  dfus2a=dfus2a+dfus**2
-                  dfus2o=dfus2o+dfus**2
-   80             dfus2b=dfus2b+(xnew(k,i,ifr)-cent(k,iwnuc))**2
-                dfusb=sqrt(dfus2b)
-              else
-                dfusb=(-half/zeta)*dlog(rannyu(0)*rannyu(0)*rannyu(0))
-                costht=two*(rannyu(0)-half)
-                sintht=sqrt(one-costht*costht)
-                phi=two*pi*rannyu(0)
-                do 90 k=1,ndim
-                  drift=xbac(k)-xoldw(k,i,iw,ifr)
-                  if(k.eq.1) then
-                    dfus=dfusb*sintht*cos(phi)
-                   elseif(k.eq.2) then
-                    dfus=dfusb*sintht*sin(phi)
-                   else
-                    dfus=dfusb*costht
-                  endif
-                  dx=drift+dfus
-                  dr2=dr2+dx**2
-                  xnew(k,i,ifr)=cent(k,iwnuc)+dfus
-                  dfus2a=dfus2a+(xnew(k,i,ifr)-xbac(k))**2
-   90             dfus2o=dfus2o+(xnew(k,i,ifr)-xbac(k))**2
+                dfus2a=0
+                dfus2b=0
+                if(rannyu(0).lt.pgaus) then
+                  do 80 k=1,ndim
+                    dfus=gauss()*rttau_dfus
+                    xnew(k,i,ifr)=xbac(k)+dfus
+                    dr2=dr2+(xnew(k,i,ifr)-xoldw(k,i,iw,ifr))**2
+                    dfus2a=dfus2a+dfus**2
+                    dfus2o=dfus2o+dfus**2
+   80               dfus2b=dfus2b+(xnew(k,i,ifr)-cent(k,iwnuc))**2
+                  dfusb=sqrt(dfus2b)
+                else
+                  dfusb=(-half/zeta)*dlog(rannyu(0)*rannyu(0)*rannyu(0))
+                  costht=two*(rannyu(0)-half)
+                  sintht=sqrt(one-costht*costht)
+                  phi=two*pi*rannyu(0)
+                  do 90 k=1,ndim
+                    drift=xbac(k)-xoldw(k,i,iw,ifr)
+                    if(k.eq.1) then
+                      dfus=dfusb*sintht*cos(phi)
+                     elseif(k.eq.2) then
+                      dfus=dfusb*sintht*sin(phi)
+                     else
+                      dfus=dfusb*costht
+                    endif
+                    dx=drift+dfus
+                    dr2=dr2+dx**2
+                    xnew(k,i,ifr)=cent(k,iwnuc)+dfus
+                    dfus2a=dfus2a+(xnew(k,i,ifr)-xbac(k))**2
+   90               dfus2o=dfus2o+(xnew(k,i,ifr)-xbac(k))**2
+                endif
               endif
-            endif
-            gaus_norm=1/sqrt(two*pi*tau_hom)**3
-  100       fnormo=fnormo * (pgaus*gaus_norm*exp(-half*dfus2a/tau_hom) + qgaus*(zeta**3/pi)*dexp(-two*zeta*dfusb))
-          vavvo=sqrt(vav2sumo/v2sumo)
+              gaus_norm=1/sqrt(two*pi*tau_dfus)**3
+  100         fnormo=fnormo * (pgaus*gaus_norm*exp(-half*dfus2a/tau_dfus) + qgaus*(zeta**3/pi)*dexp(-two*zeta*dfusb))
+            vavvo=sqrt(vav2sumo/v2sumo)
 
 ! calculate psi etc. at new configuration
-          call hpsi(xnew(1,1,ifr),psidn(ifr),psijn(ifr),vnew(1,1,ifr),div_vn,d2n(ifr),pen(ifr),pein(ifr),enew(ifr),denergy,ifr)
+            call hpsi(xnew(1,1,ifr),psidn(ifr),psijn(ifr),vnew(1,1,ifr),div_vn,d2n(ifr),pen(ifr),pein(ifr),enew(ifr),denergy,ifr)
 
-          !call projector(nup,ndn,xoldw(1,1,iw,1),xnew(1,1,1),antisym_pair_prod)
-          antisym_pair_prod = do_projector(xoldw(1,1,iw,1),xnew(1,1,1))
-          antisym_pair_prod_imp_samp=antisym_pair_prod*(psidn(1)/psidow(iw,1))*exp(psijn(1) - psijow(iw,1))
+            !call projector(nup,ndn,xoldw(1,1,iw,1),xnew(1,1,1),antisym_pair_prod)
+            antisym_pair_prod = do_projector(xoldw(1,1,iw,1),xnew(1,1,1))
+            antisym_pair_prod_imp_samp=antisym_pair_prod*(psidn(1)/psidow(iw,1))*exp(psijn(1) - psijow(iw,1))
 
-!         write(6,'(''fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod/fnormo'',9es12.4)') &
-!    &     fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod_imp_samp/fnormo
-          if(0.5d0*abs(antisym_pair_prod_imp_samp).gt.rannyu(0)*fnormo) exit
+!           write(6,'(''fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod/fnormo'',9es12.4)') &
+!      &     fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod_imp_samp/fnormo
+
+            ratio_est=2 ! Estimate of the max value of antisym_pair_prod_imp_samp/fnormo
+            try_proj_rejection=try_proj_rejection+1
+            if(abs(antisym_pair_prod_imp_samp).gt.fnormo*ratio_est) then
+              if(ipr.ge.1) write(6,'(''Warning: abs(antisym_pair_prod_imp_samp) > ratio_est*fnormo, antisym_pair_prod_imp_samp, fnormo, antisym_pair_prod_imp_samp/fnormo'',9es12.4)') antisym_pair_prod_imp_samp, fnormo, antisym_pair_prod_imp_samp/fnormo
+              big_proj_rejection=big_proj_rejection+1
+            endif
+! Warning: tmp
+            if(abs(antisym_pair_prod_imp_samp).gt.rannyu(0)*fnormo*ratio_est) then
+              acc_proj_rejection=acc_proj_rejection+1
+              exit
+            endif
 
           enddo ! end sample by rejection
+
+! Warning: tmp
+          wt(iw)=wt(iw)*sign(1.d0,antisym_pair_prod_imp_samp)
+!         wt(iw)=wt(iw)*max(-8.d0,min(10.d0,antisym_pair_prod_imp_samp/fnormo))
 
           psi_det = psidn(1)                          !JT CU
           psi_jas = exp(psijn(1))                     !JT CU
@@ -560,6 +581,7 @@
           pwt(iw,ifr)=pwt(iw,ifr)*dwt/wthist(iw,iwmod,ifr)
           wthist(iw,iwmod,ifr)=dwt
           if(ifr.eq.1) then
+! Warning: tmp
             wt(iw)=wt(iw)*dwt
             wtnow=wt(iw)
           else
@@ -704,8 +726,16 @@
 
 ! Estimate eigenvalue of G from the energy
       eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
+      if(abs(taueff(1)-tau).gt.1.d-9) then
+        write(6,'(''taueff(1), tau, taueff(1)-tau'',9es14.6)') taueff(1), tau, taueff(1)-tau
+        stop 'taueff(1).ne.tau'
+      endif
       if(itau_eff.ge.1) then
-        eigv=dexp((etrial-eest)*taueff(1))
+        if(icut_br.le.0) then
+          eigv=exp((etrial-eest)*taueff(1))
+        else
+          eigv=2*exp((etrial-eest)*taueff(1))/(1+exp((etrial-eest)*taueff(1)))
+        endif
         if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv, eest, egcum(1), egsum(1), wgcum(1), wgsum(1), fprod
       else
         accavn=acc_int/try_int

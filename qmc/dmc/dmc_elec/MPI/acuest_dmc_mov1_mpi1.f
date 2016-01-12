@@ -464,7 +464,7 @@
 
       do 70 i=0,nfprod
         wtgen(i)=nconf_global
-  70    ff(i)=one
+   70   ff(i)=one
 
 ! JT: it seems that the code remains stuck around here runs when compiled with ifort 10.1 with optimization option -O3.
 ! It works with optimization option -O2. It also works when a write statement is added in the loop as done below!

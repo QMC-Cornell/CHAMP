@@ -83,6 +83,7 @@ module control_mod
    write(6,'(a)') ' icut_e = [integer]'
    write(6,'(a)') ' nfprod = [integer] number of products undone for population-control bias correction'
    write(6,'(a)') ' tau = [real] time step for DMC (default: 0.01)'
+   write(6,'(a)') ' tmoves = [logical] do version 1 of size consistent tmoves of Casula, Moroni, Sorella, Fillipi, JCP10'
    write(6,'(a)') ' vmc ... end : control menu for vmc'
    write(6,'(a)') ' error_threshold = [real] : montecarlo run until statistical error on energy reaches error_threshold'
    write(6,'(a)') ' nstep_total = [real]: For MPI, total number of steps per block for all CPUs'

@@ -88,7 +88,7 @@
 
       implicit real*8(a-h,o-z)
 
-      parameter (adrift=0.5d0)
+      parameter (eps=1.d-10, adrift=0.5d0)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
 
@@ -175,8 +175,7 @@
         call object_modified_by_index (current_walker_index) !JT
 
 ! Set nuclear coordinates and n-n potential (0 flag = no strech e-coord)
-        if(nforce.gt.1)
-     &  call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+        if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
 
         if(ibasis.eq.3) then          ! complex basis set
           call cwalkstrdet(iw)
@@ -299,8 +298,10 @@
   165       rminn=rminn+(xnew(k)-cent(k,1))**2
           rmino=sqrt(rmino)
           rminn=sqrt(rminn)
-          itryo(i)=min(int(delri*rmino)+1,NRAD)
-          itryn(i)=min(int(delri*rminn)+1,NRAD)
+!         itryo(i)=min(int(delri*rmino)+1,NRAD)
+!         itryn(i)=min(int(delri*rminn)+1,NRAD)
+          itryo(i)=int(min(delri*rmino+1,dfloat(NRAD))+eps)
+          itryn(i)=int(min(delri*rminn+1,dfloat(NRAD))+eps)
 
 ! for pair-density calculation we will need full old/new positions:
           if(ifixe.lt.0 .or. ifourier.ne.0 .or. izigzag.gt.0) then
@@ -327,15 +328,14 @@
             if(ipq.le.0) p=one
 
             iage(iw)=0
+
+!           Since move is accepted, copy from new to old
             do 170 k=1,ndim
               drifdif=drifdif+(xoldw(k,i,iw,1)-xnew(k))**2
               xoldw(k,i,iw,1)=xnew(k)
               do 170 l=1,nelec
                 voldw(k,l,iw,1)=vnew(k,l)
-!ACM            write (6,*) 'voldw:'
-!ACM            write (6,*) i, voldw(1,i,iw,1)
   170           continue
-
             psidow(iw,1)=psidn
             psijow(iw,1)=psijn
             call jassav(i)

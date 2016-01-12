@@ -112,10 +112,10 @@
       call mpi_allreduce(wfcum1,wf1collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(wfcm21,wf21collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-       efcum1=ef1collect
-       wfcum1=wf1collect
-       efcm21=ef21collect
-       wfcm21=wf21collect
+      efcum1=ef1collect
+      wfcum1=wf1collect
+      efcm21=ef21collect
+      wfcm21=wf21collect
 
       call mpi_allreduce(egcum1,eg1collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(egcm21,eg21collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -127,6 +127,28 @@
         wgcum1(ifr)=wg1collect(ifr)
         egcm21(ifr)=eg21collect(ifr)
     1   wgcm21(ifr)=wg21collect(ifr)
+
+! Collect moments of the density
+      call mpi_allreduce(r1cum,rcumcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r1cm2,rcm2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      r1cum=rcumcollect
+      r1cm2=rcm2collect
+      call mpi_allreduce(r2cum,rcumcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r2cm2,rcm2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      r2cum=rcumcollect
+      r2cm2=rcm2collect
+      call mpi_allreduce(r3cum,rcumcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r3cm2,rcm2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      r3cum=rcumcollect
+      r3cm2=rcm2collect
+      call mpi_allreduce(r4cum,rcumcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(r4cm2,rcm2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      r4cum=rcumcollect
+      r4cm2=rcm2collect
+      call mpi_allreduce(ricum,rcumcollect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(ricm2,rcm2collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      ricum=rcumcollect
+      ricm2=rcm2collect
 
 ! Collect radial charge density for atoms
       if(iperiodic.eq.0) then
@@ -532,8 +554,8 @@
       if(iperiodic.eq.0 .and. ncent.eq.1) then
         write(6,'(''<r>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r1ave,r1err,r1err*rtevalg_proc_eff1
         write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
-        write(6,'(''<r3>_av ='',t22,f14.4,'' +-'',f11.5,f9.2)') r3ave,r3err,r3err*rtevalg_proc_eff1
-        write(6,'(''<r4>_av ='',t22,f14.2,'' +-'',f11.3,f9.1)') r4ave,r4err,r4err*rtevalg_proc_eff1
+        write(6,'(''<r3>_av ='',t22,f14.4,'' +-'',f11.4,f9.2)') r3ave,r3err,r3err*rtevalg_proc_eff1
+        write(6,'(''<r4>_av ='',t22,f14.3,'' +-'',f11.3,f9.1)') r4ave,r4err,r4err*rtevalg_proc_eff1
         write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
       endif
 

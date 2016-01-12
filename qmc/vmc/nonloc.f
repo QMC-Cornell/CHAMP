@@ -270,11 +270,11 @@
 !         call hpsi(xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1),
 !    &    div_vow(1,current_walker),d2n,pen,pein,enew,denergy,1)
 
-          psi_det = psidow(current_walker,1)
-          psi_jas = exp(psijow(current_walker,1))
-          call object_modified_by_index (voldw_index)
-          call object_modified_by_index (psi_det_index)
-          call object_modified_by_index (psi_jas_index)
+!         psi_det = psidow(current_walker,1)
+!         psi_jas = exp(psijow(current_walker,1))
+!         call object_modified_by_index (voldw_index)
+!         call object_modified_by_index (psi_det_index)
+!         call object_modified_by_index (psi_jas_index)
 
           if(ibasis.eq.3) then                     !complex basis set
             call cwalksav_det(current_walker)
