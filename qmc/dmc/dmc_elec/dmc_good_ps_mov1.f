@@ -201,6 +201,10 @@
         iaccept=0
         l_do_tmoves=.false.
         do 200 i=1,nelec
+
+! Save distances (not really needed for locality approx. but is needed for tmoves)
+          call distancese(i,xoldw(1,2,iw,1))
+
 ! Use more accurate formula for the drift
           v2old=0
           do 75 k=1,ndim
@@ -481,8 +485,8 @@
           endif
 
 ! Warning: These lines were added to reduce the probability of population explosions.
-! These occur mostly for nonlocal psps.
-! A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
+! These occur mostly for nonlocal psps., and these are cured by our slightly modified version of Casula et al'
+! size-consistent tmoves version 1.  So, these lines are no longer needed.
 ! We truncate wts that come from energies that are too low by more than 10*energy_sigma.
 ! This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
 ! For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
@@ -689,7 +693,7 @@
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)*ro
           endif
 
-  280   continue
+  280   continue ! ifr=1,nforce
 ! Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
 
@@ -705,7 +709,7 @@
 !       write(6,'(''iw,xoldw(k,i,iw,1)'',i3,99d12.4)') iw,((xoldw(k,i,iw,1),k=1,3),i=1,nelec)
 !       write(6,'(''iw,voldw(k,i,iw,1)'',i3,99d12.4)') iw,((voldw(k,i,iw,1),k=1,3),i=1,nelec)
 
-  300 continue ! nwalk
+  300 continue ! iw=1,nwalk
 
 !JT      if(wsum1(1).gt.1.1d0*nconf_global) write(18,'(i6,9d12.4)') ipass,ffn,fprod,
 

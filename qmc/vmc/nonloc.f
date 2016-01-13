@@ -65,6 +65,7 @@
             rshift_sav(k,jc)=rshift(k,i,jc)
    12           rvec_en_sav(k,jc)=rvec_en(k,i,jc)
 
+! Note if nonlocal parts of psp. are overlapping, ntmove_pts can be multiple of nquad
         ntmove_pts=0
         do 100 ic=1,ncent
           ict=iwctype(ic)
@@ -139,7 +140,6 @@
                 write(6,'(''ic,i,iq,deter,value'',3i3,2d14.6)') ic,i,iq,deter,value
               endif
 
-              if(current_walker.eq.0) current_walker=1
               if(ipr.ge.1)
      &          write(6,'(''outside tmoves: vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow'',
      &          9d12.4)') vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),taunow
@@ -177,6 +177,7 @@
 
    60       continue ! nquad
 
+! Restore electron i and its distances to value it had before doing angular integration
             do 68 k=1,ndim
    68         x(k,i)=xsav(k)
             do 70 jc=1,ncent
@@ -235,15 +236,10 @@
                 exit
               endif
             enddo
-!           x(1:3,i)=x_tmove_sav(1:3,iwhich_tmove)
+
             xnew(1:3)=x_tmove_sav(1:3,iwhich_tmove)
             xoldw(1:3,i,current_walker,1)=x_tmove_sav(1:3,iwhich_tmove)
-!           write(6,'(''1 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-!           call systemflush(6)
-!           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
             call hpsiedmc(i,current_walker,xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1))
-!           write(6,'(''2 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-!           write(6,'(''2 xnew='',99d12.4)') (xnew(k),k=1,3)
             call systemflush(6)
             call jassav(i)
             if(ibasis.eq.3) then                        ! complex calculations
@@ -252,30 +248,17 @@
               call detsav(i)
             endif
 
-!           write(6,'(''3 xoldw='',99d12.4)') ((xoldw(k,ii,current_walker,1),k=1,3),ii=1,nelec)
-!           if(l_do_tmoves) write(6,'(''3 xnew='',99d12.4)') (xnew(k),k=1,3)
-          endif
+          endif ! do tmove or not for this electron
 
         endif ! l_do_tmoves
         call systemflush(6)
 
   150 continue ! nelec
 
+! Note that above we called hpsiedmc but not hpsi.  So, the velocity is updated after the tmove but not the energy.
+! So, in the reweighting we are using the energies from before and after the drift-dfus-acc/rej step and not after tmove.
+! This is slightly different from what is presented on pg. 5 of the Casula et al. paper, if I take it literally.
       if (l_do_tmoves) then !FP
-!       if(ifr.eq.1) then
-! Primary configuration
-!         drifdifr=one
-!         if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
-
-!         call hpsi(xnew,psidow(current_walker,1),psijow(current_walker,1),voldw(1,1,current_walker,1),
-!    &    div_vow(1,current_walker),d2n,pen,pein,enew,denergy,1)
-
-!         psi_det = psidow(current_walker,1)
-!         psi_jas = exp(psijow(current_walker,1))
-!         call object_modified_by_index (voldw_index)
-!         call object_modified_by_index (psi_det_index)
-!         call object_modified_by_index (psi_jas_index)
-
           if(ibasis.eq.3) then                     !complex basis set
             call cwalksav_det(current_walker)
           else
@@ -288,10 +271,6 @@
       endif
 
       call object_modified_by_index (vpsp_ex_index) ! JT
-
-!     write(6,'(''x='',30f9.4)') ((x(k,i),k=1,ndim),i=1,nelec)
-!     write(6,'(''r_en='',30f9.4)') ((r_en(i,ic),i=1,nelec),ic=1,ncent)
-!     write(6,'(''rvec_en='',60f9.4)') (((rvec_en(k,i,ic),k=1,ndim),i=1,nelec),ic=1,ncent)
 
       return
       end

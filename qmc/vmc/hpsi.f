@@ -9,18 +9,23 @@
 ! Note that for a nonlocal psp. the potential energy at a given MC config depends on the wavefn. params. So:
 ! For a non-optimization run
 ! --------------------------
-!       jastrow
-! hpsi /                    nonlocd
-!      \nonloc_pot - nonloc/
-!                          \nonlocj
-!
+!      distances
+!      |
+!      jastrow
+!      |             getvps_xxx
+! hpsi /            /        nonlocd
+!      \nonloc_pot---nonloc-/
+!                           \nonlocj
+
 ! For an optimization run
 ! -----------------------
-!       deriv_jastrow
-! hpsi /                                 nonlocd
-!      \deriv_nonloc_pot - deriv_nonloc/
-!                                      \_deriv_nonlocj
-!
+!      distances
+!      |
+!      deriv_jastrow
+!      |                  getvps_xxx
+! hpsi /                 /               nonlocd
+!      \deriv_nonloc_pot---deriv_nonloc-/
+!                                       \deriv_nonlocj
 ! Note there is no deriv_nonlocd because the additional object needed for CSF optimization is calculated in nonlocd.
 
       use all_tools_mod

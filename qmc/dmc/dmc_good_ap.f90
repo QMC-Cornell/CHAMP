@@ -321,6 +321,9 @@
             antisym_pair_prod = do_projector(xoldw(1,1,iw,1),xnew(1,1,1))
             antisym_pair_prod_imp_samp=antisym_pair_prod*(psidn(1)/psidow(iw,1))*exp(psijn(1) - psijow(iw,1))
 
+!           if(abs(antisym_pair_prod_imp_samp).gt.fnormo) write(6,'(''Warning: abs(antisym_pair_prod_imp_samp).gt.fnormo, antisym_pair_prod_imp_samp, fnormo, antisym_pair_prod_imp_samp/fnormo'',9es12.4)') antisym_pair_prod_imp_samp, fnormo, antisym_pair_prod_imp_samp/fnormo
+!           if(0.5d0*abs(antisym_pair_prod_imp_samp).gt.rannyu(0)*fnormo) exit
+
 !           write(6,'(''fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod/fnormo'',9es12.4)') &
 !      &     fnormo, antisym_pair_prod_imp_samp, antisym_pair_prod_imp_samp/fnormo
 

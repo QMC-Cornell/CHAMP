@@ -670,8 +670,8 @@
           endif
 
 ! Warning: These lines were added to reduce the probability of population explosions.
-! These occur mostly for nonlocal psps.
-! A better solution would be to employ a better way of treating nonlocal psps. in DMC similar to Casula.
+! These occur mostly for nonlocal psps., and these are cured by our slightly modified version of Casula et al'
+! size-consistent tmoves version 1.  So, these lines are no longer needed.
 ! We truncate wts that come from energies that are too low by more than 10*energy_sigma.
 ! This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
 ! For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.

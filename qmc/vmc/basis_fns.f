@@ -98,6 +98,7 @@
           ict=iwctype(ic)
 
           if(r_en(ie,ic).eq.0.d0) then
+            write(6,'(''Warning: basis_fns: r_en(ie,ic) = 0.d0'')')
             r_en(ie,ic)=1.d-99
             rvec_en(1,ie,ic)=1.d-99
           endif

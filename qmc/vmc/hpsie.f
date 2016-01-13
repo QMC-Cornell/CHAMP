@@ -49,13 +49,17 @@
       else
         call determinante(iel,coord,rvec_en,r_en,vd,psid)
       endif
+
 ! combine to get derivatives of full wavefunction
 ! Gradient of ln(JD) is the sum of the gradient of ln(J) and ln(D).
       do 10 i=1,nelec
         do 10 k=1,ndim
           velocity(k,i)=vj(k,i)+vd(k,i)
-!         write (6,*) 'in hpsie'
-!         write (6,*) i, velocity(k,i), vj(k,i), vd(k,i)
+! Warning: tmp Not needed anymore.  Put this in while debugging tmoves
+!         if(isnan(vj(k,i)).or.isnan(vd(k,i))) then
+!           write (6,'(''hpsie: Warning: i,k,vj(k,i), vd(k,i)'',2i5,9es12.4)') i,k, vj(k,i), vd(k,i)
+!           write(6,'(''r_en1='',9d12.5)') ((r_en(ii,j),ii=1,nelec),j=1,1,ncent)
+!         endif
    10     continue
       return
       end

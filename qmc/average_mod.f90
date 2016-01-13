@@ -13,7 +13,7 @@ module average_mod
   integer                      :: block_iterations_nb = 0
   real(dp)                     :: total_iterations_nb = 0.d0
   real(dp)                     :: total_iterations_block_nb = 0.d0
-  integer                      :: current_walker 
+  integer                      :: current_walker = 1
   real(dp)                     :: current_walker_weight
   real(dp)                     :: walker_weights_sum_block = 0.d0
   real(dp)                     :: walker_weights_sq_sum_block = 0.d0
