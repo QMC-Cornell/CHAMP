@@ -198,6 +198,13 @@ ifeq ($(findstring node,$(hostname)), node)
   FFLAGS_MPI = -finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
 endif
 
+#another new node at cornell
+ifeq ($(hostname),qmc8)
+  F77 = gfortran
+  FFLAGS = -finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
+  F77_MPI = gfortran
+  FFLAGS_MPI = -finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
+endif
 
 ifeq ($(hostname),nanolab.cnf.cornell.edu)
   F77 = ifort

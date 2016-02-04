@@ -245,6 +245,28 @@ ifeq ($(hostname),qmc4)
   LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
+#qmc8 at cornell
+ifeq ($(hostname),qmc8)
+  CC=gcc
+  CXX=g++
+  CC_MPI=mpicc
+  F95=gfortran
+  F95_MPI=mpif90
+# F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE
+  F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -fbounds-check
+# F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE
+  F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE -fbounds-check
+  F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check
+  F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check
+  F95_PROF_FLAGS=$(F95_FAST_FLAGS) -pg
+  F77_PROF_FLAGS=$(F77_FAST_FLAGS) -pg
+  LD_FLAGS=-O3
+  LD_DEBUG_FLAGS=-Wall -g -fbounds-check
+  LD_PROF_FLAGS=-pg
+  EINSPLINE=
+  LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+endif
+
 #jasmine at cornell
 ifeq ($(hostname),jasmine)
   CC=gcc
