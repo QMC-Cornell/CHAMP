@@ -110,11 +110,11 @@
         endif
 
         if (ifr.eq.1) then                                 !JT
-!         eloc_bav = enow                                   !JT
-!         eloc_av = eave                                    !JT
+         eloc_bav = enow                                   !JT
+         eloc_av = eave                                    !JT
          eloc_av_err = eerr                                !JT
-!         call object_modified_by_index (eloc_bav_index)    !JT
-!         call object_modified_by_index (eloc_av_index)     !JT
+         call object_modified_by_index (eloc_bav_index)    !JT
+         call object_modified_by_index (eloc_av_index)     !JT
          call object_modified_by_index (eloc_av_err_index) !JT
         endif                                              !JT
 

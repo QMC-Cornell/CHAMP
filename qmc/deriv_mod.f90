@@ -11,6 +11,7 @@ module deriv_mod
   use eloc_mod
 
 ! Declaration of global variables and default values
+  integer                        :: param_aug_nb
   integer                        :: param_pairs_nb
   integer, allocatable           :: param_pairs (:,:)
   character(max_string_len), allocatable :: param_type (:)
@@ -133,6 +134,7 @@ module deriv_mod
   if (header_exe) then
 
    call object_create ('param_nb')
+   call object_create ('param_aug_nb')
    call object_create ('param_pairs_nb')
    call object_create ('param_pairs')
    call object_create ('param_type')
@@ -235,6 +237,8 @@ module deriv_mod
   param_type (shift+1:shift+param_geo_nb) = 'geometry'
   is_param_type_geo (shift+1:shift+param_geo_nb) = .true.
   shift = shift + param_geo_nb
+
+  param_aug_nb = param_nb + 1
 
   end subroutine param_nb_bld
 

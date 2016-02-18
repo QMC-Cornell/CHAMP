@@ -82,6 +82,7 @@ module vmc_mod
   current_walker_weight = 1
   call object_modified ('current_walker_weight')
 
+
   end subroutine vmc_init
 
 ! ==============================================================================

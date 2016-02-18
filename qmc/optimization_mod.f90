@@ -898,6 +898,14 @@ module optimization_mod
     call object_average_request ('deloc_av')
     call object_average_request ('dpsi_deloc_av')
     call object_average_request ('dpsi_dpsi_eloc_av')
+
+    if (l_print_eigval_errors) then
+     call object_average_request ('elocf90_av')
+     call object_error_request ('elocf90_av_err')
+     call object_error_request ('ham_lin_energy_av_err')
+     call object_error_request ('ham_eigval_av_err')
+    endif
+
    endif
 
 ! perturbative method
@@ -1017,7 +1025,7 @@ module optimization_mod
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !  temporary printing for testing DMC gradient
    if (l_opt_grad) then
-    write(6,'(a)') 'Gradient components (second error more rigorously calculated from covariances):'
+    write(6,'(a)') 'Gradient contributions (second error more rigorously calculated from covariances):'
     call object_provide ('dpsi_eloc_covar')
     call object_provide ('dpsi_eloc_covar_err')
     call object_provide ('dpsi_eloc_covar_err_2')

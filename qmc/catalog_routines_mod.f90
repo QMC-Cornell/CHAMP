@@ -77,6 +77,7 @@ module catalog_routines_mod
   call catalog_one_node ('eloc_wlk_test_bld', eloc_wlk_test_bld, eloc_wlk_test_bld_index)
   call catalog_one_node ('eloc_wlk_test2_bld', eloc_wlk_test2_bld, eloc_wlk_test2_bld_index)
   call catalog_one_node ('sigma_bld', sigma_bld)
+  call catalog_one_node ('elocf90_bld', elocf90_bld)
   call catalog_one_node ('eloc_var_bld', eloc_var_bld)
   call catalog_one_node ('eloc_sq_bld', eloc_sq_bld)
   call catalog_one_node ('dist_e_wlk_bld', dist_e_wlk_bld)
@@ -206,12 +207,14 @@ module catalog_routines_mod
   call catalog_one_node ('ovlp_lin_bld', ovlp_lin_bld)
   call catalog_one_node ('ovlp_lin_renorm_bld', ovlp_lin_renorm_bld)
   call catalog_one_node ('ham_lin_energy_bld', ham_lin_energy_bld)
+!  call catalog_one_node ('ham_lin_energy_av_bld', ham_lin_energy_av_bld)
   call catalog_one_node ('ham_lin_variance_bld', ham_lin_variance_bld)
   call catalog_one_node ('ham_lin_bld', ham_lin_bld)
   call catalog_one_node ('ham_lin_renorm_bld', ham_lin_renorm_bld)
   call catalog_one_node ('ham_lin_renorm_stab_bld', ham_lin_renorm_stab_bld)
   call catalog_one_node ('delta_lin_bld', delta_lin_bld)
   call catalog_one_node ('psi_lin_norm_sq_bld', psi_lin_norm_sq_bld)
+  call catalog_one_node ('ham_eigval_av_bld', ham_eigval_av_bld)
 
 ! perturbative optimization method
   call catalog_one_node ('delta_ptb_bld', delta_ptb_bld)

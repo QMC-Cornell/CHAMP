@@ -131,4 +131,6 @@ module variables_mod
 
   logical                          :: l_equilibration = .false.
 
+!  real(dp)                       :: eloc_av_err ! temporary
+
 end module variables_mod

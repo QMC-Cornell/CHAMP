@@ -24,6 +24,7 @@ module catalog_averages_mod
   call object_average_define ('eloc_sq','eloc_sq_av')
   call object_error_define ('sigma', 'error_sigma')
   call object_variance_define ('eloc_av', 'eloc_av_var')
+  call object_error_define ('eloc_av', 'eloc_av_err')
   call object_average_define ('eloc_kin','eloc_kin_av')
   call object_error_define ('eloc_kin_av','eloc_kin_av_err')
 

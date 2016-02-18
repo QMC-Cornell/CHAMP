@@ -18,7 +18,6 @@ module opt_lin_mod
   logical                         :: l_opt_lin_left_eigvec = .false.
   logical                         :: l_ham_1st_col_eq_1st_row = .false.
 
-  integer                         :: param_aug_nb
 
   real(dp), allocatable           :: ovlp_lin(:,:)
   real(dp), allocatable           :: ovlp_lin_renorm(:,:)
@@ -38,6 +37,12 @@ module opt_lin_mod
   real(dp), allocatable           :: delta_lin(:)
   real(dp)                        :: psi_lin_norm_sq
 
+  real(dp), allocatable           :: ham_eigval_av(:)
+  real(dp), allocatable           :: ham_eigval_av_err(:)
+  real(dp), allocatable           :: ovlp_lin_av(:,:)
+  real(dp), allocatable           :: ham_lin_energy_av(:,:)
+  real(dp), allocatable           :: ham_lin_energy_av_err(:,:)
+
   logical                         :: l_select_eigvec_lowest = .false.
   logical                         :: l_select_eigvec_largest_1st_coef = .false.
   logical                         :: l_select_eigvec_smallest_norm = .false.
@@ -50,6 +55,7 @@ module opt_lin_mod
   real(dp)                        :: eigval_upper_bound
   logical                         :: l_eigval_lower_bound_fixed = .false.
   logical                         :: l_eigval_upper_bound_fixed = .false.
+  logical                         :: l_print_eigval_errors
 
   contains
 
@@ -74,6 +80,7 @@ module opt_lin_mod
   l_eigval_upper_bound_fixed = .false.
   l_opt_lin_left_eigvec = .false.
   l_ham_1st_col_eq_1st_row = .false.
+  l_print_eigval_errors = .false.
 
 ! loop over menu lines
   do
@@ -107,6 +114,7 @@ module opt_lin_mod
    write(6,'(a)') '    print_eigenvector_norm = [bool] : print norm of all eigenvectors? (default=false)'
    write(6,'(a)') '    left_eigvec = [bool]: use left eigenvector instead of right one? (default=false)'
    write(6,'(a)') '    ham_1st_col_eq_1st_row = [bool]: set 1st column equal to 1st row in Hamiltonian(default=false)'
+   write(6,'(a)') '    print_eigval_errors = [bool]: calculate and print statistical errors on energy eigenvalues (default=false)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
@@ -189,6 +197,9 @@ module opt_lin_mod
   case ('ham_1st_col_eq_1st_row')
    call get_next_value (l_ham_1st_col_eq_1st_row)
 
+  case ('print_eigval_errors')
+   call get_next_value (l_print_eigval_errors)
+
   case ('end')
    exit
 
@@ -247,12 +258,12 @@ module opt_lin_mod
 ! header
   if(header_exe) then
 
-   call object_create('param_aug_nb')
    call object_create('ovlp_lin')
    call object_create('ovlp_lin_eigvec')
    call object_create('ovlp_lin_eigval')
 
    call object_needed('param_nb')
+   call object_needed('param_aug_nb')
    call object_needed('dpsi_av')
    call object_needed('dpsi_dpsi_covar')
    call object_needed ('is_param_type_orb')
@@ -265,7 +276,6 @@ module opt_lin_mod
 ! begin
 
 ! allocations
-  param_aug_nb = param_nb + 1
   call object_alloc('ovlp_lin', ovlp_lin, param_aug_nb, param_aug_nb)
 
 ! first element
@@ -318,6 +328,9 @@ module opt_lin_mod
   do i = 1, param_aug_nb
     write(6,'(a,i4,a,es15.8)') 'overlap eigenvalue # ',i,': ',ovlp_lin_eigval(i)
   enddo
+
+  call object_modified ('ovlp_lin')
+  call object_write ('ovlp_lin')
 
   end subroutine ovlp_lin_bld
 
@@ -518,6 +531,8 @@ module opt_lin_mod
 
 !  write(6,*)
 !  write(6,'(a)') 'Hamiltonian matrix:'
+  call object_modified ('ham_lin_energy')
+  call object_write ('ham_lin_energy')
 !  do i = 1, param_aug_nb
 !    write(6,'(100e16.8)')(ham_lin_energy(i,j),j=1,param_aug_nb)
 !  enddo
@@ -526,6 +541,70 @@ module opt_lin_mod
 !  write(6,'(2a,100f12.4)') trim(here),': ham_lin_energy diagonal=',(ham_lin_energy(i,i)/ovlp_lin(i,i),i=1,param_aug_nb)
 
   end subroutine ham_lin_energy_bld
+
+!! ==============================================================================
+!  subroutine ham_lin_energy_av_bld
+!! ------------------------------------------------------------------------------
+!! Description   : same as ham_lin_energy but running average over the block
+!! Description   : for calculating statistical error
+!!
+!! Created       : J. Toulouse, 22 Jan 2016
+!! ------------------------------------------------------------------------------
+!  include 'modules.h'
+!  implicit none
+!
+!! local
+!  character(len=max_string_len_rout), save :: lhere = 'ham_lin_energy_av_bld'
+!  integer i, j, pair
+!
+!! header
+!  if(header_exe) then
+!
+!   call object_create('ham_lin_energy_av')
+!   call object_error_define ('ham_lin_energy_av', 'ham_lin_energy_av_err')
+!
+!   call object_needed('param_nb')
+!   call object_needed('param_aug_nb')
+!   call object_needed('param_pairs')
+!   call object_needed('eloc_av')
+!   call object_needed('deloc_av')
+!   call object_needed('dpsi_eloc_av')
+!   call object_needed('dpsi_eloc_covar')
+!   call object_needed('dpsi_deloc_covar')
+!   call object_needed('dpsi_dpsi_eloc_av')
+!   call object_needed('dpsi_av')
+!
+!   return
+!
+!  endif
+!
+!! begin
+!
+!! allocations
+!  call object_alloc('ham_lin_energy_av', ham_lin_energy_av, param_aug_nb, param_aug_nb)
+!  call object_alloc('ham_lin_energy_av_err', ham_lin_energy_av_err, param_aug_nb, param_aug_nb)
+!
+!! first element
+!  ham_lin_energy_av(1,1) = eloc_av
+!
+!! first row and first column
+!  do i = 1, param_nb
+!     ham_lin_energy_av(1+i,1) = dpsi_eloc_covar(i)
+!     ham_lin_energy_av(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
+!  enddo ! i
+!
+!! derivative-derivative part
+!  do j = 1, param_nb
+!   do i = 1, param_nb
+!     pair = param_pairs(i,j)
+!     ham_lin_energy_av(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
+!                              - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
+!                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
+!                              + dpsi_deloc_covar(i, j)
+!   enddo
+!  enddo
+!
+!  end subroutine ham_lin_energy_av_bld
 
 ! ==============================================================================
   subroutine ham_lin_variance_bld
@@ -1183,5 +1262,196 @@ module opt_lin_mod
   enddo ! param_i
 
   end subroutine psi_lin_norm_sq_bld
+
+! ==============================================================================
+  subroutine ham_eigval_av_bld
+! ------------------------------------------------------------------------------
+! Description   : running average of eigenvalues of Hamiltonian
+! Description   : for calculating statistical errors
+!
+! Created       : J. Toulouse, 18 Feb 2016
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'ham_eigval_av_bld'
+  integer i, j, pair
+  integer lwork, info
+  real(dp), allocatable :: mat_a(:,:), mat_b(:,:)
+  real(dp), allocatable :: eigvec(:,:)
+  real(dp), allocatable :: eigval_r(:), eigval_i(:), eigval_denom(:)
+  real(dp), allocatable :: work(:)
+  integer, allocatable :: eigval_srt_ind_to_eigval_ind(:), eigval_ind_to_eigval_srt_ind(:)
+  integer temp
+
+
+! header
+  if(header_exe) then
+
+   call object_create ('ham_eigval_av')
+   call object_create ('ham_lin_energy_av')
+   call object_create ('ovlp_lin_av')
+   call object_error_define ('ham_lin_energy_av', 'ham_lin_energy_av_err')
+   call object_error_define ('ham_eigval_av', 'ham_eigval_av_err')
+
+   call object_needed('param_nb')
+   call object_needed('param_aug_nb')
+   call object_needed('param_pairs')
+   call object_needed('eloc_av')
+   call object_needed('deloc_av')
+   call object_needed('dpsi_eloc_av')
+   call object_needed('dpsi_eloc_covar')
+   call object_needed('dpsi_deloc_covar')
+   call object_needed('dpsi_dpsi_eloc_av')
+   call object_needed('dpsi_av')
+   call object_needed('dpsi_dpsi_covar')
+
+   return
+
+  endif
+
+! begin
+
+! allocation
+  call object_alloc('ham_eigval_av', ham_eigval_av, param_aug_nb)
+  call object_alloc('ham_eigval_av_err', ham_eigval_av_err, param_aug_nb)
+  call object_alloc('ham_lin_energy_av', ham_lin_energy_av, param_aug_nb, param_aug_nb)
+  call object_alloc('ham_lin_energy_av_err', ham_lin_energy_av_err, param_aug_nb, param_aug_nb)
+  call object_alloc('ovlp_lin_av', ovlp_lin_av, param_aug_nb, param_aug_nb)
+
+! Calculate Hamiltonian matrix:
+! first element
+  ham_lin_energy_av(1,1) = eloc_av
+
+! first row and first column
+  do i = 1, param_nb
+     ham_lin_energy_av(1+i,1) = dpsi_eloc_covar(i)
+     ham_lin_energy_av(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
+  enddo ! i
+
+! derivative-derivative part
+  do j = 1, param_nb
+   do i = 1, param_nb
+     pair = param_pairs(i,j)
+     ham_lin_energy_av(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
+                              - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
+                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
+                              + dpsi_deloc_covar(i, j)
+   enddo
+  enddo
+
+! Calculate overlap matrix:
+! first element
+  ovlp_lin_av(1,1) = 1.d0
+
+! first row and first column
+  do i = 1, param_nb
+   ovlp_lin_av(1,i+1) = 0.d0
+   ovlp_lin_av(i+1,1) = 0.d0
+  enddo
+
+! derivative-derivative part
+  do i = 1, param_nb
+   do j = i, param_nb
+     ovlp_lin_av(i+1,j+1) = dpsi_dpsi_covar(i,j)
+   enddo
+!   force symmetrization of overlap matrix (important for numerics?)
+    if (i /= j) then
+     ovlp_lin_av(j+1,i+1) = ovlp_lin_av(i+1,j+1)
+    endif
+  enddo
+
+
+! Solve generalized eigenvalue equation
+
+! temprorary arrays
+  call alloc('mat_a', mat_a, param_aug_nb, param_aug_nb)
+  call alloc('mat_b', mat_b, param_aug_nb, param_aug_nb)
+  call alloc('eigvec', eigvec, param_aug_nb, param_aug_nb)
+  call alloc('eigval_r', eigval_r, param_aug_nb)
+  call alloc('eigval_i', eigval_i, param_aug_nb)
+  call alloc('eigval_denom', eigval_denom, param_aug_nb)
+
+  mat_a(:,:) = ham_lin_energy_av(:,:)
+  mat_b(:,:) = ovlp_lin_av(:,:)
+
+! calculate optimal value of lwork
+  lwork = 1
+  call alloc('work', work, lwork)
+  call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
+             eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, -1, info)
+  if(info /= 0) then
+   call die(lhere, 'problem in dggev(while calculating optimal value of lwork): info='+info+' /= 0')
+  endif
+  lwork =  work(1)
+  call alloc('work', work, lwork)
+
+  call dggev('N','V',param_aug_nb, mat_a, param_aug_nb, mat_b, param_aug_nb, eigval_r, eigval_i,  &
+              eigval_denom, eigvec, param_aug_nb, eigvec, param_aug_nb, work, lwork, info)
+  call release ('work', work)
+  call release ('mat_a', mat_a)
+  call release ('mat_b', mat_b)
+  if(info /= 0) then
+   call die(lhere, 'problem in dggev: info='+info+' /= 0')
+  endif
+
+! calculate eigenvalue
+  do i = 1, param_aug_nb
+    eigval_r(i) = eigval_r(i) / eigval_denom(i)
+    eigval_i(i) = eigval_i(i) / eigval_denom(i)
+  enddo
+
+  call release ('eigval_denom', eigval_denom)
+
+! print eigenvalues
+!  write(6,'(a)') 'Unsorted (complex) eigenvalues:'
+!  do i = 1, param_aug_nb
+!    write(6,'(a,i5,a,2(f10.6,a))') 'eigenvalue #',i,': ',eigval_r(i), ' +', eigval_i(i),' i'
+!  enddo
+
+! print eigenvectors
+!  write(6,'(a)') 'Unsorted eigenvectors:'
+!  do j = 1, param_aug_nb
+!    write(6,'(a,i3,a,100f12.6)') 'right eigenvector # ', j,' :',(eigvec(i, j), i = 1, param_aug_nb)
+!  enddo
+
+! Sorting out eigenvalues
+! eigval_srt_ind_to_eigval_ind is the map from sorted eigenvalues to original eigenvalues
+  call alloc('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind, param_aug_nb)
+  do i = 1, param_aug_nb
+    eigval_srt_ind_to_eigval_ind(i) = i
+  enddo
+  do i = 1, param_aug_nb
+    do j = i+1, param_aug_nb
+      if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
+        temp = eigval_srt_ind_to_eigval_ind(i)
+        eigval_srt_ind_to_eigval_ind(i) = eigval_srt_ind_to_eigval_ind(j)
+        eigval_srt_ind_to_eigval_ind(j) = temp
+      endif
+    enddo
+  enddo
+! eigval_ind_to_eigval_srt_ind is the map from original eigenvalues to sorted eigenvalues
+  call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, param_aug_nb)
+  do i = 1, param_aug_nb
+   eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
+  enddo
+
+! print eigenvalues
+  write(6,'(a)') 'Sorted (complex) eigenvalues:'
+  do i = 1, param_aug_nb
+    write(6,'(a,i5,a,2(f12.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
+  enddo
+
+! save sorted eigenvalues in ham_eigval_av
+  do i = 1, param_aug_nb
+   ham_eigval_av (i) = eigval_r(eigval_srt_ind_to_eigval_ind(i))
+  enddo
+
+  call release ('eigval_r', eigval_r)
+  call release ('eigval_i', eigval_i)
+  call release ('eigvec', eigvec)
+
+  end subroutine ham_eigval_av_bld
 
 end module opt_lin_mod

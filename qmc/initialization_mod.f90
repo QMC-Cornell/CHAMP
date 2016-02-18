@@ -245,6 +245,7 @@ module initialization_mod
   call alloc ('iwftype', iwftype, nforce)
   iwftype(1)=1
 
+
   write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
 
  end subroutine initialization

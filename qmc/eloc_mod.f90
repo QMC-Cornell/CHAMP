@@ -5,6 +5,9 @@ module eloc_mod
   use psi_mod
 
 ! Declaration of global variables and default values
+  real(dp)                       :: elocf90
+  real(dp)                       :: elocf90_av
+  real(dp)                       :: elocf90_av_err
   real(dp)                       :: eloc
   real(dp)                       :: eloc_bav
   real(dp)                       :: eloc_av
@@ -81,40 +84,42 @@ module eloc_mod
 
  end subroutine eloc_kin_bld
 
-!! ==============================================================================
-!  subroutine eloc_bld
-!! ------------------------------------------------------------------------------
-!! Description   : total local energy
-!! Description   : eloc is directly set to eold in f77 code 
-!!
-!! Created       : J. Toulouse, 05 Dec 2005
-!! ------------------------------------------------------------------------------
-!  include 'modules.h'
-!  implicit none
+! ==============================================================================
+  subroutine elocf90_bld
+! ------------------------------------------------------------------------------
+! Description   : total local energy
+! Description   : alternative to eloc which is directly set to eold in f77 code
 !
-!! header
-!  if (header_exe) then
-!
-!!   call object_create ('eloc')
-!
-!   call object_needed ('eloc_kin')
-!   call object_needed ('eloc_pot')
-!
-!   return
-!
-!  endif
-!
-!! begin
-!!  write(6,*) trim(here),': entering'
-!
-!! allocations
-!  call object_associate ('eloc', eloc)
-!!  call object_associate ('eloc_av', eloc_av)
-!!  call object_associate ('eloc_av_err', eloc_av_err)
-!
-!  eloc = eloc_kin + eloc_pot
-!
-! end subroutine eloc_bld
+! Created       : J. Toulouse, 18 Feb 2016
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('elocf90')
+   call object_average_define ('elocf90', 'elocf90_av')
+   call object_error_define ('elocf90_av', 'elocf90_av_err')
+
+   call object_needed ('eloc_kin')
+   call object_needed ('eloc_pot')
+
+   return
+
+  endif
+
+! begin
+!  write(6,*) trim(here),': entering'
+
+! allocations
+  call object_associate ('elocf90', elocf90)
+  call object_associate ('elocf90_av', elocf90_av)
+  call object_associate ('elocf90_av_err', elocf90_av_err)
+
+  elocf90 = eloc_kin + eloc_pot
+
+ end subroutine elocf90_bld
 
 ! ==============================================================================
   subroutine eloc_pot_en_bld
