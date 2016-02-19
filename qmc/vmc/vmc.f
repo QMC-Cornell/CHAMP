@@ -307,8 +307,6 @@
 
   430   continue
 
-!     compute averages and statitical errors
-      call acuest
 
 !      call compute_global_averages   !JT old
       call compute_averages_block   !JT new
@@ -321,6 +319,10 @@
 !     write at each block
       call objects_print_at_each_block
       call routines_write_block !JT
+
+!     compute averages and statitical errors
+      call acuest
+
 
 !     save walkers for DMC run
       if (l_generate_walkers_from_vmc) then
