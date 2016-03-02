@@ -998,9 +998,9 @@
       relerr=dsqrt(max(0.d0,relerr/ndata-reldif*reldif))
       wtone=dsqrt(wtone/ndata)
       if(ovlbot.ne.zero) ovlap=ovltop/dsqrt(ndata*ovlbot)
-      write(6,'(''ndata,rms fit error,eguess,eav,relerr,wtone,ovlap,rminav,rmaxav,r12minav'',
-     &i5,f10.6,2f11.6,f10.6,2x,f6.3,f7.4,2x,9f6.3)')
-     &ndata,err,eguess,eav,relerr, wtone,ovlap, rminav,rmaxav,r12minav
+      write(6, '(''ndata, eguess, eav, rms fit error, relerr, wtone, ovlap, rminav, rmaxav, r12minav'',
+     &i5,2f12.6,2f10.6,2x,f6.3,f7.4,2x,9f6.3)')
+     &ndata,eguess,eav,err,relerr, wtone,ovlap, rminav,rmaxav,r12minav
       if(analytic.and.irewgt.ne.0)
      &write(6,'(''*** Warning: analytic derivs not correctly implemented when points are reweighted'')')
       if(eguess.gt.eav+0.1*err)

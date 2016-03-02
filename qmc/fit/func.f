@@ -45,7 +45,7 @@
       dimension parm(*),diff(*)
 
       data func_sav/1.d99/
-      save func_sav
+      save func_sav, eavri
 
       if(iflag.eq.0) then
 
@@ -275,13 +275,17 @@
   130   err=err+diff(i)**2
       func=err
 
+! We are optimizing fluctuations from eguess rather than from the average.
+! However, if the foll. lines are not commented out, we reset eguess to the average when the fluctuations improve.
+      write(6,'(''func1='',f14.6)') func
       if(called_by_qa .and. (func.lt.func_sav)) then
+        uwdiff_av=sum(uwdiff(1:ndata))/ndata
+        write(6,'(''eguess being reset from'',f14.6,'' to'',f14.6,'' change='',es12.4)') eguess, eguess+uwdiff_av, uwdiff_av
+        eguess=eguess+uwdiff_av
+        uwdiff(1:ndata)=uwdiff(1:ndata)-uwdiff_av
+        diff(1:ndata)=diff(1:ndata)-uwdiff_av*eavri
+        func=sum(diff(1:ndata2)**2)
         func_sav=func
-        eav=0
-        do 140 i=1,ndata
-  140     eav=eav+diff(i)
-        write(6,'(''eguess being reset from'',f10.6,'' to'',f10.6,'' change='',es12.4)') eguess, eguess+eav/ndata, eav/ndata
-        eguess=eguess+eav/ndata
       endif
 
       endif

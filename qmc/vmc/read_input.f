@@ -648,12 +648,7 @@
         write(6,'(''no. configurations saved ='',t31,i10)') nconf_new
         call object_modified ('nstep') !JT
         call object_modified ('nconf') !JT
-! Make sure that the printout is not huge
-        if(nstep*(nblk+2*nblkeq).gt.104000 .and. ipr.gt.-1) then
-          ipr=min(ipr,-1)
-          write(6,'(''Warning: ipr set to'',i3,'' to avoid large output'')') ipr
-        endif
-       else
+      else
         read(5,*)
       endif
       if(mode.eq.'dmc' .or. mode.eq.'dmc_mov1' .or. mode.eq.'dmc_mov1_mpi1') then
@@ -668,6 +663,11 @@
         write(6,'(''no. of blocks before eq. ='',t31,i10)') nblkeq
         if(irstar.eq.1) write(6,'(''Job is starting from restart file'')')
         if(idump.eq.1) write(6,'(''Job will write restart file at end of run'')')
+! Make sure that the printout is not huge
+        if(nstep*(nblk+2*nblkeq).gt.104000 .and. ipr.gt.-1) then
+          ipr=min(ipr,-1)
+          write(6,'(''Warning: ipr set to'',i3,'' to avoid large output'')') ipr
+        endif
       endif
 
 !JT: Metropolis parameters need to be set also for DMC
