@@ -456,24 +456,22 @@
      &  rn_eff(wgcum1(1),wgcm21(1))/pass_proc,rn_eff(wgcum(1),wgcm2(1))/iblk_proc
       endif
 
-      write(6,'(''nconf*nproc*passes'',t20,''nconf nproc     passes nstep  nblk nblkeq
-     &     tau   taueff'',/,f18.0,2i6,f11.0,3i6,2f9.5)')
-     &eval*nproc,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
+      write(6,'(''nconf*nproc*passes'',t20,''nconf nproc     passes nstep  nblk nblkeq    tau   taueff''
+     &,/,f18.0,2i6,f11.0,3i6,2f9.5)') eval*nproc,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
 !     write(6,'(''nconf_global*passes'',t19,''passes  nconf_global nstep  nblk nblkeq
 !    & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
 !    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)
-      write(6,'(''physical variable         average     rms error   sig
-     &ma*T_cor  sigma   T_cor'')')
+      write(6,'(''physical variable         average     rms error   sigma*T_cor  sigma   T_cor'')')
       if(idmc.ge.0) then
-        write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(6,'(''weights ='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &  wave,werr,werr*rtpass_proc1,werr1*rtpass_proc1,(werr/werr1)**2
-        write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(6,'(''wts with f ='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &  wfave,wferr,wferr*rtpass_proc1,wferr1*rtpass_proc1,(wferr/wferr1)**2
         do 20 ifr=1,nforce
           wgave=wgcum(ifr)/pass_proc
           wgerr=errw(wgcum(ifr),wgcm2(ifr))
           wgerr1=errw1(wgcum1(ifr),wgcm21(ifr))
-          write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+          write(6,'(''wts with fs ='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &    wgave,wgerr,wgerr*rtpass_proc1,wgerr1*rtpass_proc1,(wgerr/wgerr1)**2
   20    continue
         call object_provide('ovlp_trial_fn')
@@ -482,9 +480,9 @@
         write(6,'(a,f10.8)') 'unnormalized overlap of FN and trial wave functions= ', ovlp_trial_fn_over_ovlp_trial
 
 ! Mixed energy estimators
-        write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &  eave,eerr,eerr*rteval_proc_eff1,eerr1*rteval_proc_eff1,(eerr/eerr1)**2
-        write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+        write(6,'(''total energy (   1) ='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &  efave,eferr,eferr*rtevalf_proc_eff1,eferr1*rtevalf_proc_eff1,(eferr/eferr1)**2
       endif
       call alloc ('eloc_tc', eloc_tc, nforce) !JT
@@ -498,17 +496,17 @@
         energy_sigma(ifr)=egerr1*rtevalg_proc_eff1
         energy_err(ifr)=egerr
         if(nforce.eq.1) then
-          write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+          write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &    nfprod,egave,egerr,egerr*rtevalg_proc_eff1,egerr1*rtevalg_proc_eff1,(egerr/egerr1)**2
          else
-          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',f11.7,2f9.5,f8.2)')
+          write(6,'(''total energy ('',i4,'')'',i1,''='',t22,f14.7,'' +-'',f11.7,2f10.5,f8.2)')
      &    nfprod,ifr,egave,egerr,egerr*rtevalg_proc_eff1,egerr1*rtevalg_proc_eff1,(egerr/egerr1)**2
         endif
   30  continue
       call object_modified ('eloc_tc') !JT
-!     write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f9.5)') e1ave,e1err,e1err*rteval
-!     write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f9.5)') nfprod-1,e2ave,e2err,e2err*rteval
-!     write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') e3ave,e3err,e3err*rteval
+!     write(6,'(''total energy (   0) ='',t22,f14.7,'' +-'',f11.7,f10.5)') e1ave,e1err,e1err*rteval
+!     write(6,'(''total energy ('',i4,'') ='',t22,f14.7,'' +-'',f11.7,f10.5)') nfprod-1,e2ave,e2err,e2err*rteval
+!     write(6,'(''total energy ='',t22,f14.7,'' +-'',f11.7,f10.5)') e3ave,e3err,e3err*rteval
       do 40 ifr=1,nforce
         peave=pecum(ifr)/wgcum(ifr)
         peiave=peicum(ifr)/wgcum(ifr)
@@ -529,13 +527,13 @@
           peerr=peerr*(1-temp)+peierr*temp
         endif
 
-        write(6,'(''potential energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') peave,peerr,peerr*rtevalg_proc_eff1
-        write(6,'(''interaction energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') peiave,peierr,peierr*rtevalg_proc_eff1
-        write(6,'(''jf kinetic energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') tjfave,tjferr,tjferr*rtevalg_proc_eff1
-        write(6,'(''pb kinetic energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') tpbave,tpberr,tpberr*rtevalg_proc_eff1
+        write(6,'(''potential energy ='',t22,f14.7,'' +-'',f11.7,f10.5)') peave,peerr,peerr*rtevalg_proc_eff1
+        write(6,'(''interaction energy ='',t22,f14.7,'' +-'',f11.7,f10.5)') peiave,peierr,peierr*rtevalg_proc_eff1
+        write(6,'(''jf kinetic energy ='',t22,f14.7,'' +-'',f11.7,f10.5)') tjfave,tjferr,tjferr*rtevalg_proc_eff1
+        write(6,'(''pb kinetic energy ='',t22,f14.7,'' +-'',f11.7,f10.5)') tpbave,tpberr,tpberr*rtevalg_proc_eff1
 
         if(ndim.eq.2) then
-          write(6,'(''radial mag. energy ='',t22,f14.7,'' +-'',f11.7,f9.5)') tmave,tmerr,tmerr*rtevalg_proc_eff1
+          write(6,'(''radial mag. energy ='',t22,f14.7,'' +-'',f11.7,f10.5)') tmave,tmerr,tmerr*rtevalg_proc_eff1
           write(6,'(''orbital mag. energy ='',t22,f14.7)') emaglz+emagv
           write(6,'(''Zeeman energy ='',t22,f14.7)') emagsz
         endif
@@ -548,28 +546,28 @@
 ! save energy difference and error in energy difference for optimization
         force(ifr)=fgave
         force_err(ifr)=fgerr
-        write(6,'(''total energy diff'',i2,t22,f14.7,'' +-'',f11.7,f9.5)') ifr,fgave,fgerr,fgerr*rtevalg_proc_eff1
+        write(6,'(''total energy diff'',i2,t22,f14.7,'' +-'',f11.7,f10.5)') ifr,fgave,fgerr,fgerr*rtevalg_proc_eff1
   50  continue
 
       if(iperiodic.eq.0 .and. ncent.eq.1) then
-        write(6,'(''<r>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r1ave,r1err,r1err*rtevalg_proc_eff1
-        write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
-        write(6,'(''<r3>_av ='',t22,f14.4,'' +-'',f11.4,f9.2)') r3ave,r3err,r3err*rtevalg_proc_eff1
-        write(6,'(''<r4>_av ='',t22,f14.3,'' +-'',f11.3,f9.1)') r4ave,r4err,r4err*rtevalg_proc_eff1
-        write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f9.5)') riave,rierr,rierr*rtevalg_eff1
+        write(6,'(''<r>_av ='',t22,f14.7,'' +-'',f11.7,f10.5)') r1ave,r1err,r1err*rtevalg_proc_eff1
+        write(6,'(''<r2>_av ='',t22,f14.7,'' +-'',f11.7,f10.5)') r2ave,r2err,r2err*rtevalg_proc_eff1
+        write(6,'(''<r3>_av ='',t22,f14.6,'' +-'',f11.6,f10.4)') r3ave,r3err,r3err*rtevalg_proc_eff1
+        write(6,'(''<r4>_av ='',t22,f14.5,'' +-'',f11.5,f10.3)') r4ave,r4err,r4err*rtevalg_proc_eff1
+        write(6,'(''<ri>_av ='',t22,f14.7,'' +-'',f11.7,f10.5)') riave,rierr,rierr*rtevalg_eff1
       endif
 
       if(izigzag.ge.1) then
         call print_zigzag_vars(zzave,zzerr,rtevalg_eff1)
-!       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
-!       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
-!       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f9.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
-!       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
-!       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
-!       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
-!       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_eff1
-!       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_eff1
-!       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f9.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp> ='',t17,f12.7,'' +-'',f11.7,f10.5)') zzave(3),zzerr(3),zzerr(3)*rtevalg_eff1
+!       write(6,'(''<|ZigZag Amp|> ='',t17,f12.7,'' +-'',f11.7,f10.5)') zzave(1),zzerr(1),zzerr(1)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp^2> ='',t17,f12.7,'' +-'',f11.7,f10.5)') zzave(2),zzerr(2),zzerr(2)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp (red)>='',t22,f12.7,'' +-'',f11.7,f10.5)') zzave(6),zzerr(6),zzerr(6)*rtevalg_eff1
+!       write(6,'(''<|ZigZag Amp| (red)>='',t22,f12.7,'' +-'',f11.7,f10.5)') zzave(4),zzerr(4),zzerr(4)*rtevalg_eff1
+!       write(6,'(''<ZigZag Amp^2 (red)>='',t22,f12.7,'' +-'',f11.7,f10.5)') zzave(5),zzerr(5),zzerr(5)*rtevalg_eff1
+!       write(6,'(''<ZigZag rand Amp>='',t22,f12.7,'' +-'',f11.7,f10.5)') zzave(9),zzerr(9),zzerr(9)*rtevalg_eff1
+!       write(6,'(''<|ZigZag rand Amp|>='',t22,f12.7,'' +-'',f11.7,f10.5)') zzave(7),zzerr(7),zzerr(7)*rtevalg_eff1
+!       write(6,'(''<ZigZag rand Amp^2>='',t22,f12.7,'' +-'',f11.7,f10.5)') zzave(8),zzerr(8),zzerr(8)*rtevalg_eff1
       endif
 
       if(ifixe.ne.0 .or. ifourier.ne.0 .or. izigzag.ne.0) call den2dwrt(wgcum(1),r1ave)

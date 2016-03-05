@@ -279,14 +279,15 @@ module control_mod
     write(6,'(a,i5)')    ' nfprod = ', nfprod
     write(6,'(a,f10.5)') ' time-step tau = ', tau
     if (.not. l_branching) then
-     write(6,'(a)') ' Warning: branching turned off in DMC'
+      write(6,'(a)') ' Warning: branching turned off in DMC'
     endif
     if (wt_lambda /= 1.d0) then
-     write(6,'(a,f10.5)') ' Warning: the weights of each previous generation will be raised to the power wt_lambda=',wt_lambda
+      write(6,'(a,f10.5)') ' Warning: the weights of each previous generation will be raised to the power wt_lambda=',wt_lambda
     endif
     if (.not. l_population_control) then
-     write(6,'(a)') ' Warning: population control turned off in DMC'
+      write(6,'(a)') ' Warning: population control turned off in DMC'
     endif
+    write(6,'(''tmoves='',l)') tmoves
   endif
 
   endif ! if use_parser

@@ -108,12 +108,16 @@
       endif
 
 ! Make conservative choice based on energy_err because it can happen that (2) won only because we limited ratio of wts in metrop
+! Remember add_diag increases from (2) to (1) to (3), so (3) is most conservative choice.
+! If the error of (2) is considerably worse than error of (3), choose (1)
       if(add_diag_log_min.lt.add_diag_log(1) .and. energy_err(2) .gt. 1.1d0*energy_err(1)) then
         iwadd_diag=1
         add_diag_log_min=add_diag_log(1)
         ene_var_min=ene_var(1)+(1-p_var)*3*energy_err(1)
       endif
-      if(add_diag_log_min.lt.add_diag_log(3) .and. energy_err(1) .gt. 1.1d0*energy_err(3)) then
+! If the errors of (1) and (2) are considerably worse than those of (3), choose (3)
+      if(add_diag_log_min.lt.add_diag_log(3) .and. energy_err(1) .gt. 1.1d0*energy_err(3) .and.
+     &  energy_err(2) .gt. 1.1d0*energy_err(3)) then
         iwadd_diag=3
         add_diag_log_min=add_diag_log(3)
         ene_var_min=ene_var(3)+(1-p_var)*3*energy_err(3)

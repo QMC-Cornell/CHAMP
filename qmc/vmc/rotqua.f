@@ -10,6 +10,7 @@
      &iocta(ntype),icosa(ntype),ww(ncase,ntypm),iq(ncase),
      &itetr(ntype),i20(ntype),i24(ntype),i86(ntypm)
 
+! Of the foll. grids, only those with 4, 20, and 24 pts do not place a pt. at (0,0,1).
       data iq/4,6,12,18,26,32,50,24,20,86/
       data itetr/4,0,0,0/
       data iocta/6,12,8,24/
