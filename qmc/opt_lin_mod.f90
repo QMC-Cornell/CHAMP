@@ -1021,7 +1021,7 @@ module opt_lin_mod
   endif
   write(6,'(/,a,2f12.5)') 'Reasonable eigenvalue window is:', eigval_lower_bound, eigval_upper_bound
 
-  write(6,'(a,t77,i4,a,2(f10.4,a),f10.6)') '(sorted) eigenvector with smallest norm of wavefunction variation is #',eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i, norm change=', smallest_norm
+  write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') '(sorted) eigenvector with smallest norm of wavefn variation is #',eigval_ind_to_eigval_srt_ind(eigvec_smallest_norm_ind), ': ',eigval_r(eigvec_smallest_norm_ind), ' +', eigval_i(eigvec_smallest_norm_ind),' i, norm change=', smallest_norm
 ! write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', smallest_norm
 
 ! Find eigenvector with largest first coefficient
@@ -1040,7 +1040,14 @@ module opt_lin_mod
       endif
     endif
   enddo
-  write(6,'(a,t77,i4,a,2(f10.4,a))') '(sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i'
+  psi_lin_var_norm = 0
+  do iparm = nparmcsf+1, param_nb
+    do jparm = nparmcsf+1, param_nb
+      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eigvec_max_1st_compon_ind)*eigvec(1+jparm,eigvec_max_1st_compon_ind)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
+    enddo
+  enddo
+  psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eigvec_max_1st_compon_ind)**2 ! Normalize so first component is 1
+  write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') '(sorted) eigenvector with largest first coefficient is #',eigval_ind_to_eigval_srt_ind(eigvec_max_1st_compon_ind), ': ',eigval_r(eigvec_max_1st_compon_ind), ' +', eigval_i(eigvec_max_1st_compon_ind),' i, norm change=', psi_lin_var_norm
 
 ! Find eigenvector with lowest eigenvalue that is in a reasonable window
 ! If eigenvec with lowest eigenvalue is degenerate, choose the one with largest first coef
@@ -1072,7 +1079,7 @@ module opt_lin_mod
     enddo
     psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eigvec_lowest_eigval_ind)**2 ! Normalize so first component is 1
     if(psi_lin_var_norm < 0.d0) psi_lin_var_norm= 1.d99
-    write(6,'(a,t77,i4,a,2(f10.4,a),f10.6)') '(sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i, norm change=', psi_lin_var_norm
+    write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') '(sorted) eigenvector with lowest reasonable eigenvalue is #',eigval_ind_to_eigval_srt_ind(eigvec_lowest_eigval_ind), ': ',eigval_r(eigvec_lowest_eigval_ind), ' +', eigval_i(eigvec_lowest_eigval_ind),' i, norm change=', psi_lin_var_norm
 !   write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   else
     write(6,'(a)') 'Warning: all the eigenvalues are outside the reasonable eigenvalue windows so select eigenvector with smallest norm!'
@@ -1138,7 +1145,7 @@ module opt_lin_mod
     if (eigvec_lowest_eigval_ind ==0) then
       call die (lhere, 'target_state_above_groundstate /= 0 and no ground state found in the energy window')
     endif
-    write(6,'(a,t77,i4,a,2(f10.4,a))') 'selected (sorted) ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+    write(6,'(a,t64,i4,a,2(f10.4,a))') 'selected (sorted) ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
     eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate)
     write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate,' above this ground state will be selected'
   endif
@@ -1151,6 +1158,7 @@ module opt_lin_mod
       psi_lin_var_norm = 0.d0
       do iparm = nparmcsf+1, param_nb
         do jparm = nparmcsf+1, param_nb
+! Warning: Shouldn't the next line have /(renorm_vector(1+iparm)*renorm_vector(1+jparm))
           psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_excited_ind_test)*eigvec(1+jparm,eig_excited_ind_test)*ovlp_lin(1+iparm,1+jparm)
         enddo
       enddo
@@ -1158,7 +1166,7 @@ module opt_lin_mod
       write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this excited trial eigenvector =', psi_lin_var_norm
     endif
     if(eigvec_lowest_eigval_ind /=0 .and. psi_lin_var_norm < 10*smallest_norm) then
-      write(6,'(a,t77,i4,a,2(f10.4,a))') 'selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
+      write(6,'(a,t64,i4,a,2(f10.4,a))') 'selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
 !     eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate_or_target_smallest_norm)
       eig_ind = eig_excited_ind_test
       write(6,'(a,i4,a)') 'The excited state # ',target_state_above_groundstate_or_target_smallest_norm,' above this ground state will be selected'
@@ -1172,12 +1180,6 @@ module opt_lin_mod
       endif
     endif
   endif
-
-  write(6,'(a,t77,i4,a,2(f10.4,a))') 'selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
-!  write(6,'(2a,100f12.7)') trim(lhere),': parameters variations =', eigvec_lin(:)
-
-  call release ('eigval_r', eigval_r)
-  call release ('eigval_i', eigval_i)
 
 ! undo renormalization
 ! warning: only for selected eigenvector
@@ -1196,8 +1198,12 @@ module opt_lin_mod
    enddo
   enddo
   psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eig_ind)**2 ! Normalize so first component is 1
-  write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this eigenvector =', psi_lin_var_norm
+  write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') 'selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i, norm change=', psi_lin_var_norm
+! write(6,'(a,f10.6)') 'Norm of linear wavefunction variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   if(psi_lin_var_norm > 10*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 10*smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
+
+  call release ('eigval_r', eigval_r)
+  call release ('eigval_i', eigval_i)
 
 ! Warning: tmp  This is truly bizarre that when the original value of eigvec(1,eig_ind) is not 1, eigvec(1,eig_ind) and eigvec_first_coef are different!
   write(6,'(/,''eigvec(1, eig_ind)'',9es12.4)') eigvec(1,eig_ind)
