@@ -3676,7 +3676,7 @@ module average_mod
         call alloc ('objects(object_bav_ind)%sum_complex_1', objects(object_bav_ind)%sum_complex_1, objects(object_ind)%dimensions(1))
         objects(object_bav_ind)%sum_complex_1 (:) = (0.d0,0.d0)
       case default
-        call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
+        call die (lhere, 'object >'+trim(objects(object_ind)%name)+'< of type >'+trim(object_type)+'< not handled.')
       end select
     endif ! initialization
 
@@ -3707,7 +3707,7 @@ module average_mod
        objects(object_bav_ind)%sum_complex_1 = objects(object_bav_ind)%sum_complex_1 + objects(object_ind)%pointer_complex_1 * current_walker_weight
       endif
      case default
-       call die (lhere, 'object type >'+trim(object_type)+'< not handled.')
+       call die (lhere, 'object >'+trim(objects(object_ind)%name)+'< of type >'+trim(object_type)+'< not handled.')
      end select
 
   enddo ! ind

@@ -77,7 +77,7 @@ module catalog_routines_mod
   call catalog_one_node ('eloc_wlk_test_bld', eloc_wlk_test_bld, eloc_wlk_test_bld_index)
   call catalog_one_node ('eloc_wlk_test2_bld', eloc_wlk_test2_bld, eloc_wlk_test2_bld_index)
   call catalog_one_node ('sigma_bld', sigma_bld)
-  call catalog_one_node ('elocf90_bld', elocf90_bld)
+  call catalog_one_node ('eloc_bld', eloc_bld)
   call catalog_one_node ('eloc_var_bld', eloc_var_bld)
   call catalog_one_node ('eloc_sq_bld', eloc_sq_bld)
   call catalog_one_node ('dist_e_wlk_bld', dist_e_wlk_bld)

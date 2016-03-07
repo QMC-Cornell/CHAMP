@@ -900,8 +900,6 @@ module optimization_mod
     call object_average_request ('dpsi_dpsi_eloc_av')
 
     if (l_print_eigval_errors) then
-     call object_average_request ('elocf90_av')
-     call object_error_request ('elocf90_av_err')
      call object_error_request ('ham_lin_energy_av_err')
      call object_error_request ('ham_eigval_av_err')
     endif

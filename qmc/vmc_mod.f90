@@ -82,7 +82,6 @@ module vmc_mod
   current_walker_weight = 1
   call object_modified ('current_walker_weight')
 
-  call object_average_request ('elocf90_av')
 
   end subroutine vmc_init
 
