@@ -488,6 +488,7 @@ module montecarlo_mod
   if (header_exe) then
 
    call object_create ('sigma')
+   call object_error_define ('sigma', 'error_sigma')
 
    call object_needed ('eloc_var')
 
@@ -499,6 +500,7 @@ module montecarlo_mod
 
 ! allocations
   call object_associate ('sigma', sigma)
+  call object_associate ('error_sigma', error_sigma)
 
   sigma = dsqrt(eloc_var)
 

@@ -199,16 +199,12 @@ module dmc_mod
   write(6,'(a)') '*********** START DMC CALCULATION  ***********'
 
 ! request average of local energy
-  call object_associate ('eloc', eloc)
-  call object_associate ('eloc_av', eloc_av)
   call object_average_request ('eloc_av')
 
 ! request variance on averaged local energy
-  call object_associate ('eloc_av_var', eloc_av_var)
   call object_variance_request ('eloc_av_var')
 
 ! sigma
-  call object_associate ('error_sigma', error_sigma)
   call object_average_request ('eloc_sq_av')
   call object_error_request ('error_sigma')
 

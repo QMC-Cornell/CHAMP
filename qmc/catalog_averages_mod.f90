@@ -20,7 +20,6 @@ module catalog_averages_mod
 ! begin
   call object_error_define ('e_loc_av','e_loc_av_err')
   call object_average_define ('eloc_sq','eloc_sq_av')
-  call object_error_define ('sigma', 'error_sigma')
   call object_average_define ('eloc_kin','eloc_kin_av')
   call object_error_define ('eloc_kin_av','eloc_kin_av_err')
 
