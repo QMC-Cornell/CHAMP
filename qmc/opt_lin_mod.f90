@@ -417,7 +417,7 @@ module opt_lin_mod
    call object_needed('param_nb')
    call object_needed('param_aug_nb')
    call object_needed('param_pairs')
-   call object_needed('eloc_av')
+   call object_needed('elocf90_av')
    call object_needed('deloc_av')
    call object_needed('dpsi_eloc_av')
    call object_needed('dpsi_eloc_covar')
@@ -443,7 +443,7 @@ module opt_lin_mod
   call object_alloc('ham_lin_energy', ham_lin_energy, param_aug_nb, param_aug_nb)
 
 ! first element
-  ham_lin_energy(1,1) = eloc_av
+  ham_lin_energy(1,1) = elocf90_av
 
 ! first row and first column
   do i = 1, param_nb
@@ -451,7 +451,7 @@ module opt_lin_mod
 !   approximate Hamiltonian for orbitals
     if(l_opt_orb_eig .and. is_param_type_orb(i)) then
      ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) 
-!     ham_lin_energy(1,i+1) = ovlp_lin(1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
+!     ham_lin_energy(1,i+1) = ovlp_lin(1,i+1) *(elocf90_av + delta_eps(i-nparmcsf-nparmj))
      ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)  ! symmetric for orbitals
 
 !   symmetric Hamiltonian for geometry parameters?
@@ -487,8 +487,8 @@ module opt_lin_mod
 
 !   approximate Hamiltonian for orbital-orbital terms
     elseif((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. is_param_type_orb(i) .and. is_param_type_orb(j)) then
-!     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(eloc_av + delta_eps(j-nparmcsf-nparmj))
-     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *((eloc_av + delta_eps(j-nparmcsf-nparmj)) +(eloc_av + delta_eps(i-nparmcsf-nparmj)))/2.d0
+!     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(elocf90_av + delta_eps(j-nparmcsf-nparmj))
+     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *((elocf90_av + delta_eps(j-nparmcsf-nparmj)) +(elocf90_av + delta_eps(i-nparmcsf-nparmj)))/2.d0
 
 !   no mixed wave function-geometry terms?
     elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
@@ -499,7 +499,7 @@ module opt_lin_mod
     elseif (l_opt_geo .and. l_sym_ham_geo .and. (is_param_type_geo (i) .and. is_param_type_geo (j))) then
      ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
                                - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
-                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
+                               + dpsi_av (i) * dpsi_av (j) * elocf90_av                             &
                                + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
 !JT                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/1.d0
 
@@ -507,7 +507,7 @@ module opt_lin_mod
     else
      ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
-                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
+                              + dpsi_av(i) * dpsi_av(j) * elocf90_av                           &
                               + dpsi_deloc_covar(i, j)
     endif
 
@@ -515,14 +515,14 @@ module opt_lin_mod
 !
 !!   approximate Hamiltonian for Jastrow-orbital, CSF-orbital and orbital-orbital terms
 !    if(l_opt_orb_eig .and. i > nparmcsf+nparmj) then
-!     ham_lin_energy(j+1,i+1) = ovlp_lin(j+1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
+!     ham_lin_energy(j+1,i+1) = ovlp_lin(j+1,i+1) *(elocf90_av + delta_eps(i-nparmcsf-nparmj))
 !
 !!   normal Hamiltoniam
 !    else
 !     ham_lin_energy(j+1,i+1) = dpsi_deloc_covar(j, i) + dpsi_dpsi_eloc_av(pair)     &
 !                       - dpsi_av(i) * dpsi_eloc_av(j)                     &
 !                       - dpsi_av(j) *( dpsi_eloc_av(i)) &
-!                       + dpsi_av(i) * dpsi_av(j) * eloc_av
+!                       + dpsi_av(i) * dpsi_av(j) * elocf90_av
 !    endif
 !
 !   endif !i /= j
@@ -573,7 +573,7 @@ module opt_lin_mod
 !   call object_needed('param_nb')
 !   call object_needed('param_aug_nb')
 !   call object_needed('param_pairs')
-!   call object_needed('eloc_av')
+!   call object_needed('elocf90_av')
 !   call object_needed('deloc_av')
 !   call object_needed('dpsi_eloc_av')
 !   call object_needed('dpsi_eloc_covar')
@@ -592,7 +592,7 @@ module opt_lin_mod
 !  call object_alloc('ham_lin_energy_av_err', ham_lin_energy_av_err, param_aug_nb, param_aug_nb)
 !
 !! first element
-!  ham_lin_energy_av(1,1) = eloc_av
+!  ham_lin_energy_av(1,1) = elocf90_av
 !
 !! first row and first column
 !  do i = 1, param_nb
@@ -606,7 +606,7 @@ module opt_lin_mod
 !     pair = param_pairs(i,j)
 !     ham_lin_energy_av(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
 !                              - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
-!                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
+!                              + dpsi_av(i) * dpsi_av(j) * elocf90_av                           &
 !                              + dpsi_deloc_covar(i, j)
 !   enddo
 !  enddo
@@ -1325,7 +1325,7 @@ module opt_lin_mod
    call object_needed('param_nb')
    call object_needed('param_aug_nb')
    call object_needed('param_pairs')
-   call object_needed('eloc_av')
+   call object_needed('elocf90_av')
    call object_needed('deloc_av')
    call object_needed('dpsi_eloc_av')
    call object_needed('dpsi_eloc_covar')
@@ -1349,7 +1349,7 @@ module opt_lin_mod
 
 ! Calculate Hamiltonian matrix:
 ! first element
-  ham_lin_energy_av(1,1) = eloc_av
+  ham_lin_energy_av(1,1) = elocf90_av
 
 ! first row and first column
   do i = 1, param_nb
@@ -1363,7 +1363,7 @@ module opt_lin_mod
      pair = param_pairs(i,j)
      ham_lin_energy_av(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
-                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
+                              + dpsi_av(i) * dpsi_av(j) * elocf90_av                           &
                               + dpsi_deloc_covar(i, j)
    enddo
   enddo
