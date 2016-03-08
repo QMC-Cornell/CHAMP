@@ -13,6 +13,8 @@ module eloc_mod
   real(dp)                       :: eloc_sq
   real(dp)                       :: eloc_sq_av
   real(dp)                       :: eloc_var
+  real(dp)                       :: sigma
+  real(dp)                       :: error_sigma
   real(dp)                       :: eloc_kin
   real(dp)                       :: eloc_kin_av
   real(dp)                       :: eloc_kin_av_err
@@ -124,9 +126,10 @@ module eloc_mod
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    if(l_deriv_bound .and. eloc_var.ne.0.d0) then
-    write(6,'(''eloc,eloc_av,sqrt(eloc_var)='',9es12.4)') eloc,eloc_av,sqrt(eloc_var)
-    if(abs(eloc-eloc_av).gt.10*sqrt(eloc_var)) then
+    if(abs(eloc-eloc_av).gt.2*sqrt(eloc_var)) then
       current_walker_weight=0
+      write(6,'(''eloc,eloc_av,sqrt(eloc_var)='',9es12.4)') eloc,eloc_av,sqrt(eloc_var)
+      write(6,*) "setting current_walker_weight=0"
     endif
   endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -194,6 +197,38 @@ module eloc_mod
   eloc_var = eloc_sq_av - eloc_av**2
 
   end subroutine eloc_var_bld
+
+! ==============================================================================
+  subroutine sigma_bld
+! ------------------------------------------------------------------------------
+! Description   : standard deviation of local energy
+!
+! Created       : J. Toulouse, 02 Nov 2005
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('sigma')
+   call object_error_define ('sigma', 'error_sigma')
+
+   call object_needed ('eloc_var')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_associate ('sigma', sigma)
+  call object_associate ('error_sigma', error_sigma)
+
+  sigma = dsqrt(eloc_var)
+
+  end subroutine sigma_bld
 
 ! ==============================================================================
   subroutine eloc_pot_en_bld

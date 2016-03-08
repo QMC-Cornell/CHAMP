@@ -3631,11 +3631,6 @@ module average_mod
    walker_weights_sq_sum = 0.d0
   endif
 
-  total_iterations_block_nb = total_iterations_block_nb + 1
-  call object_provide_by_index (current_walker_index)
-  call object_provide_by_index (current_walker_weight_index)
-  walker_weights_sum_block = walker_weights_sum_block + current_walker_weight
-  walker_weights_sq_sum_block = walker_weights_sq_sum_block + current_walker_weight**2
 
 ! loop over block averages
   do ind = 1, block_averages_nb
@@ -3711,6 +3706,12 @@ module average_mod
      end select
 
   enddo ! ind
+
+  total_iterations_block_nb = total_iterations_block_nb + 1
+  call object_provide_by_index (current_walker_index)
+  call object_provide_by_index (current_walker_weight_index)
+  walker_weights_sum_block = walker_weights_sum_block + current_walker_weight
+  walker_weights_sq_sum_block = walker_weights_sq_sum_block + current_walker_weight**2
 
  end subroutine compute_averages_step
 

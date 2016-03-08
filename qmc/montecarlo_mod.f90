@@ -37,11 +37,6 @@ module montecarlo_mod
 
 ! for sigma
 
-! standard deviation of local energy
-  real(dp)    :: sigma
-
-! error on sigma
-  real(dp)    :: error_sigma
 
 ! autocorrelation time on energy
   real(dp), allocatable    :: eloc_tc (:)
@@ -410,38 +405,6 @@ module montecarlo_mod
 !
 !  end subroutine eloc_av_bld
 
-
-! ==============================================================================
-  subroutine sigma_bld
-! ------------------------------------------------------------------------------
-! Description   : standard deviation of local energy
-!
-! Created       : J. Toulouse, 02 Nov 2005
-! ------------------------------------------------------------------------------
-  include 'modules.h'
-  implicit none
-
-! header
-  if (header_exe) then
-
-   call object_create ('sigma')
-   call object_error_define ('sigma', 'error_sigma')
-
-   call object_needed ('eloc_var')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_associate ('sigma', sigma)
-  call object_associate ('error_sigma', error_sigma)
-
-  sigma = dsqrt(eloc_var)
-
-  end subroutine sigma_bld
 
 ! ==============================================================================
   subroutine walker_weights_bld
