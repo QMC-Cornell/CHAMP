@@ -36,9 +36,6 @@ module montecarlo_mod
   real(dp)    :: egerr
 
 ! for sigma
-  real(dp)    :: eloc_sq
-  real(dp)    :: eloc_sq_av
-  real(dp)    :: eloc_var
 
 ! standard deviation of local energy
   real(dp)    :: sigma
@@ -385,36 +382,6 @@ module montecarlo_mod
 
   end subroutine eloc_wlk_test2_bld
 
-! ==============================================================================
-  subroutine eloc_sq_bld
-! ------------------------------------------------------------------------------
-! Description   : energy^2
-!
-! Created       : J. Toulouse, 02 Nov 2005
-! ------------------------------------------------------------------------------
-  include 'modules.h'
-  implicit none
-
-! header
-  if (header_exe) then
-
-   call object_create ('eloc_sq')
-
-   call object_needed ('eloc')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_associate ('eloc_sq', eloc_sq)
-  call object_associate ('eloc_sq_av', eloc_sq_av)
-
-  eloc_sq = eloc**2
-
-  end subroutine eloc_sq_bld
 
 ! ==============================================================================
 !  subroutine eloc_av_bld
@@ -443,36 +410,6 @@ module montecarlo_mod
 !
 !  end subroutine eloc_av_bld
 
-! ==============================================================================
-  subroutine eloc_var_bld
-! ------------------------------------------------------------------------------
-! Description   : variance of local energy
-!
-! Created       : J. Toulouse, 02 Nov 2005
-! ------------------------------------------------------------------------------
-  include 'modules.h'
-  implicit none
-
-! header
-  if (header_exe) then
-
-   call object_create ('eloc_var')
-
-   call object_needed ('eloc_sq_av')
-   call object_needed ('eloc_av')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_associate ('eloc_var', eloc_var)
-
-  eloc_var = eloc_sq_av - eloc_av**2
-
-  end subroutine eloc_var_bld
 
 ! ==============================================================================
   subroutine sigma_bld

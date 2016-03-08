@@ -10,6 +10,9 @@ module eloc_mod
   real(dp)                       :: eloc_av_err
   real(dp)                       :: eloc_bav
   real(dp)                       :: eloc_av_var
+  real(dp)                       :: eloc_sq
+  real(dp)                       :: eloc_sq_av
+  real(dp)                       :: eloc_var
   real(dp)                       :: eloc_kin
   real(dp)                       :: eloc_kin_av
   real(dp)                       :: eloc_kin_av_err
@@ -119,7 +122,78 @@ module eloc_mod
 
   eloc = eloc_kin + eloc_pot
 
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   if(l_deriv_bound .and. eloc_var.ne.0.d0) then
+    write(6,'(''eloc,eloc_av,sqrt(eloc_var)='',9es12.4)') eloc,eloc_av,sqrt(eloc_var)
+    if(abs(eloc-eloc_av).gt.10*sqrt(eloc_var)) then
+      current_walker_weight=0
+    endif
+  endif
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
  end subroutine eloc_bld
+
+! ==============================================================================
+  subroutine eloc_sq_bld
+! ------------------------------------------------------------------------------
+! Description   : energy^2
+!
+! Created       : J. Toulouse, 02 Nov 2005
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_sq')
+
+   call object_needed ('eloc')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_associate ('eloc_sq', eloc_sq)
+  call object_associate ('eloc_sq_av', eloc_sq_av)
+
+  eloc_sq = eloc**2
+
+  end subroutine eloc_sq_bld
+
+! ==============================================================================
+  subroutine eloc_var_bld
+! ------------------------------------------------------------------------------
+! Description   : variance of local energy
+!
+! Created       : J. Toulouse, 02 Nov 2005
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_var')
+
+   call object_needed ('eloc_sq_av')
+   call object_needed ('eloc_av')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_associate ('eloc_var', eloc_var)
+
+  eloc_var = eloc_sq_av - eloc_av**2
+
+  end subroutine eloc_var_bld
 
 ! ==============================================================================
   subroutine eloc_pot_en_bld

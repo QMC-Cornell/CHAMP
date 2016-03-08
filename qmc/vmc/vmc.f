@@ -225,6 +225,8 @@
         l_equilibration = .true.
         do 420 i=1,nblkeq
           do 410 j=1,nstep
+            current_walker_weight = 1
+            call object_modified ('current_walker_weight')
             l=l+1
             if(nloc.gt.0) call rotqua
             if(imetro.eq.1) then
@@ -249,6 +251,8 @@
         block_iterations_nb = block_iterations_nb + 1  !JT
         do 430 j=1,nstep
          step_iterations_nb = step_iterations_nb + 1   !JT
+        current_walker_weight = 1
+        call object_modified ('current_walker_weight')
         l=l+1
         if(nloc.gt.0) call rotqua
         if(imetro.eq.1) then
