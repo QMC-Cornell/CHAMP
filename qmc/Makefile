@@ -360,8 +360,8 @@ make:
 .f.o:
 	$(F77) $(F77_FLAGS) -o $@ -c $<
 
-opt_lin_mod.o: opt_lin_mod.f90
-	$(F95) -finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace -DMPI -o $@ -c $<
+#opt_lin_mod.o: opt_lin_mod.f90
+#	$(F95) -finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace -DMPI -o $@ -c $<
 
 #%.mod: %.f90
 #	$(F95) $(CFLAGS) -c $< -o $@

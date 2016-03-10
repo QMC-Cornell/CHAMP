@@ -852,6 +852,7 @@ module optimization_mod
 !  Define averages and statistical errors to compute:
 
 !  For energy gradient
+   call object_average_request ('eloc_av')
    call object_average_request ('dpsi_av')
    call object_average_request ('dpsi_eloc_av')
    call object_error_request ('gradient_norm_err')
