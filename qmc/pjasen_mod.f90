@@ -313,7 +313,7 @@ contains
 
     do i = i1, i2
 
-       phas = phase (i) !! is real for now
+       phas = real(phase(i),dp) !! is real for now
 
        cosdot = cos_pjasen_e (i)
 
@@ -345,7 +345,7 @@ contains
     sum  = 0
 
     do i = i1, i2
-       phas = phase (i) !! is real for now
+       phas = real(phase(i),dp) !! is real for now
 
        cosdot = cos_pjasen_e (i)
        sindot = sin_pjasen_e (i)
@@ -379,7 +379,7 @@ contains
 
     do i = i1, i2
 
-       phas = phase (i) !! is real for now
+       phas = real(phase(i),dp) !! is real for now
 
        sindot = sin_pjasen_e (i)
 
@@ -413,7 +413,7 @@ contains
 
     do i = i1, i2
 
-       phas = phase (i) !! is real for now
+       phas = real(phase(i),dp) !! is real for now
 
        cosdot = cos_pjasen_e (i)
        sindot = sin_pjasen_e (i)
@@ -456,7 +456,7 @@ contains
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now
+          phas = real(phase(i),dp) !! is real for now
 
 
           cost = (/ cos_pjasen (i,ie),  sin_pjasen (i,ie) /)
@@ -472,7 +472,7 @@ contains
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now
+          phas = real(phase(i)) !! is real for now
 
           cost = (/ cos_pjasen (i,ie),  sin_pjasen (i,ie) /)
 
@@ -522,7 +522,7 @@ contains
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now
+          phas = real(phase(i),dp) !! is real for now
 
 
           cost = (/ cos_pjasen_e (i),  sin_pjasen_e (i) /)
@@ -540,7 +540,7 @@ contains
 
        do i = i1, i2
 
-          phas = phase (i) !! is real for now
+          phas = real(phase(i),dp) !! is real for now
 
           cost = (/ cos_pjasen_e (i),  sin_pjasen_e (i) /)
 

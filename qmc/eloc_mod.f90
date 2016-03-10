@@ -124,15 +124,13 @@ module eloc_mod
 
   eloc = eloc_kin + eloc_pot
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   if(l_deriv_bound .and. eloc_var.ne.0.d0) then
-    if(abs(eloc-eloc_av).gt.2*sqrt(eloc_var)) then
+! If eloc differs a lot from its average, set current_walker_weight=0, so averages calculated with Julien's tools do not include these points
+  if(l_eloc_bound .and. eloc_var.ne.0.d0) then
+    if(abs(eloc-eloc_av).gt.eloc_bound_value*sqrt(eloc_var)) then
       current_walker_weight=0
-      write(6,'(''eloc,eloc_av,sqrt(eloc_var)='',9es12.4)') eloc,eloc_av,sqrt(eloc_var)
-      write(6,*) "setting current_walker_weight=0"
+      write(6,'(''eloc, eloc_av, sqrt(eloc_var), ratio='',3es12.4,f8.1,'' setting current_walker_weight=0'')') eloc,eloc_av,sqrt(eloc_var),(eloc-eloc_av)/sqrt(eloc_var)
     endif
   endif
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
  end subroutine eloc_bld
 

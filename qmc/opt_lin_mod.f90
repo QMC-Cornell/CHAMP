@@ -56,6 +56,7 @@ module opt_lin_mod
   logical                         :: l_eigval_lower_bound_fixed = .false.
   logical                         :: l_eigval_upper_bound_fixed = .false.
   logical                         :: l_print_eigval_errors
+  real(dp)                        :: add_diag_ovlp  = 1.d-8
 
   contains
 
@@ -115,6 +116,7 @@ module opt_lin_mod
    write(6,'(a)') '    left_eigvec = [bool]: use left eigenvector instead of right one? (default=false)'
    write(6,'(a)') '    ham_1st_col_eq_1st_row = [bool]: set 1st column equal to 1st row in Hamiltonian(default=false)'
    write(6,'(a)') '    print_eigval_errors = [bool]: calculate and print statistical errors on energy eigenvalues (default=false)'
+   write(6,'(a)') '    add_diag_ovlp = [real] : value added to diagonal of overlap matrix in linear method (default=1.d-8)'
    write(6,'(a)') ' end'
 
   case ('update_nonlinear')
@@ -199,6 +201,9 @@ module opt_lin_mod
 
   case ('print_eigval_errors')
    call get_next_value (l_print_eigval_errors)
+
+  case ('add_diag_ovlp')
+   call get_next_value (add_diag_ovlp)
 
   case ('end')
    exit
@@ -315,10 +320,10 @@ module opt_lin_mod
   enddo
 
 ! Warning: tmp: add to diagonal of overlap
-  write(6,'(''Adding to ovlp_lin'',es12.4)') 1.e-8
+  write(6,'(''Adding to ovlp_lin'',es12.4)') add_diag_ovlp
   do i = 1, param_aug_nb
 !   ovlp_lin(i,i) = ovlp_lin(i,i)+diag_stab
-    ovlp_lin(i,i) = ovlp_lin(i,i)+1.e-8
+    ovlp_lin(i,i) = ovlp_lin(i,i)+add_diag_ovlp
   enddo
 
 !  do i = 1, param_nb
@@ -1102,7 +1107,7 @@ module opt_lin_mod
 
 !   default selection criterion:
     else
-      if(eigvec_lowest_eigval_ind /= 0 .and. psi_lin_var_norm < 10*smallest_norm) then
+      if(eigvec_lowest_eigval_ind /= 0 .and. psi_lin_var_norm < 100*smallest_norm) then
         eig_ind = eigvec_lowest_eigval_ind
       else
         eig_ind = eigvec_smallest_norm_ind
@@ -1165,7 +1170,7 @@ module opt_lin_mod
       psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eig_excited_ind_test)**2 ! Normalize so first component is 1
       write(6,'(a,f10.6)') 'Norm of linear wave function variation for nonlin. params for this excited trial eigenvector =', psi_lin_var_norm
     endif
-    if(eigvec_lowest_eigval_ind /=0 .and. psi_lin_var_norm < 10*smallest_norm) then
+    if(eigvec_lowest_eigval_ind /=0 .and. psi_lin_var_norm < 100*smallest_norm) then
       write(6,'(a,t64,i4,a,2(f10.4,a))') 'selected ground state eigenvector is  #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i'
 !     eig_ind = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate_or_target_smallest_norm)
       eig_ind = eig_excited_ind_test
@@ -1200,7 +1205,7 @@ module opt_lin_mod
   psi_lin_var_norm = psi_lin_var_norm/eigvec(1,eig_ind)**2 ! Normalize so first component is 1
   write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') 'selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i, norm change=', psi_lin_var_norm
 ! write(6,'(a,f10.6)') 'Norm of linear wavefunction variation for nonlin. params for this eigenvector =', psi_lin_var_norm
-  if(psi_lin_var_norm > 10*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 10*smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
+  if(psi_lin_var_norm > 100*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 100*smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
 
   call release ('eigval_r', eigval_r)
   call release ('eigval_i', eigval_i)
@@ -1212,6 +1217,7 @@ module opt_lin_mod
   eigvec_first_coef = eigvec(1,eig_ind)
 
   write(6,'(/,''Warning eigvec_first_coef='',9es12.4)') eigvec_first_coef
+  if(eigvec_first_coef.ne.eigvec(1,eig_ind)) call die(lhere,'compiler bug in old version of gfortran')
 
   select case (trim(update_nonlinear))
 

@@ -44,7 +44,7 @@ module optimization_mod
   logical                 :: l_ortho_orb_vir_to_orb_occ = .false.
   logical                 :: l_approx_orb_rot = .false.
   logical                 :: l_reweight = .false.
-!  logical                 :: l_reset_walker_weights_sum_block = .false.
+! logical                 :: l_reset_walker_weights_sum_block = .false.
   integer                 :: reweight_power = 1
   real(dp)                :: reweight_scale = 10.d0
 
@@ -175,8 +175,10 @@ module optimization_mod
    write(6,'(a)') ' ortho_orb_vir_to_orb_occ = [bool] : orthogonalize virtual orbitals to occupied orbitals (default=false)'
    write(6,'(a)') ' do_add_diag_mult_exp = [bool] : allow the basis exponents to change only by 20% by increasing add_diag_mult_exp if change > 5% (default=false)'
    write(6,'(a)') ' exp_opt_restrict = [bool] : restriction on exponent parameters to optimize according to basis function types? (default=true)'
-   write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function wrt parameters? (default=false)'
+   write(6,'(a)') ' deriv_bound = [bool] : applying a bound on the log derivatives of the wave function and deriv of the local energy wrt parameters? (default=false)'
    write(6,'(a)') ' deriv_bound_value = [real] : value of the bound mentioned above (default=10.d0)'
+   write(6,'(a)') ' eloc_bound = [bool] : applying a bound on the local energy? (default=false)'
+   write(6,'(a)') ' eloc_bound_value = [real] : value of the bound mentioned above (default=10.d0)'
    write(6,'(a)') ' reweight = [bool] : reweight expectation values in optimization with weights depending on distance to node (default=false)'
    write(6,'(a)') ' reweight_power = [integer] : value of power in reweighting expression (default=1)'
    write(6,'(a)') ' reweight_scale = [real] : value of scaling factor in reweighting expression (default=10.d0)'
@@ -340,6 +342,13 @@ module optimization_mod
   case ('deriv_bound_value')
    call get_next_value (deriv_bound_value)
    call require (lhere, 'deriv_bound_value > 1', deriv_bound_value > 1) !fp
+
+  case ('eloc_bound')
+   call get_next_value (l_eloc_bound)
+
+  case ('eloc_bound_value')
+   call get_next_value (eloc_bound_value)
+   call require (lhere, 'eloc_bound_value > 1', eloc_bound_value > 3)
 
   case ('reweight')
    call get_next_value (l_reweight)
@@ -2203,6 +2212,7 @@ module optimization_mod
   diag_stab = min(add_diag (1), add_diag_max)
   if(diag_stab == add_diag_max) call die (lhere, 'diag_stab too large')
   call object_modified ('diag_stab')
+  write(6,'(''Final add_diag='',es12.4)') diag_stab
 
   end subroutine adjust_diag_stab
 

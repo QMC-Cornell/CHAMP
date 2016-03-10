@@ -226,7 +226,7 @@
         do 420 i=1,nblkeq
           do 410 j=1,nstep
             current_walker_weight = 1
-!            call object_modified ('current_walker_weight')
+!           call object_modified ('current_walker_weight')
             l=l+1
             if(nloc.gt.0) call rotqua
             if(imetro.eq.1) then
@@ -250,53 +250,53 @@
       do 440 i=1,1000000  !JT
         block_iterations_nb = block_iterations_nb + 1  !JT
         do 430 j=1,nstep
-         step_iterations_nb = step_iterations_nb + 1   !JT
-        current_walker_weight = 1
-!        call object_modified ('current_walker_weight')
-        l=l+1
-        if(nloc.gt.0) call rotqua
-        if(imetro.eq.1) then
-          call metrop(l)
-         elseif(imetro.eq.5) then
-          call metrop_polar(l)
-         elseif(imetro.eq.6) then
-           call metrop_slat(l)
-        endif
+          step_iterations_nb = step_iterations_nb + 1   !JT
+          current_walker_weight = 1
+!         call object_modified ('current_walker_weight')
+          l=l+1
+          if(nloc.gt.0) call rotqua
+          if(imetro.eq.1) then
+            call metrop(l)
+           elseif(imetro.eq.5) then
+            call metrop_polar(l)
+           elseif(imetro.eq.6) then
+             call metrop_slat(l)
+          endif
 
-!JT        call object_modified_by_index (xold_index)  !JT
+!JT       call object_modified_by_index (xold_index)  !JT
 
-!       accumulate data for averages and statistical errors
-!        call compute_block_averages        !JT old
-        call compute_averages_step        !JT new
+!         accumulate data for averages and statistical errors
+!         call compute_block_averages       !JT old
+          call compute_averages_step        !JT new
 
-        call compute_averages_walk_step   !JT
+          call compute_averages_walk_step   !JT
 
-!       write out configuration for optimization/dmc/gfmc here
-        if (nconf_new /= 0) then
-         if(mod(l,ngfmc).eq.1 .or. ngfmc.eq.1) then
-!         write(fmt,'(a1,i6,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
-          write(fmt,'(''('',i6,''f13.8,i3,es12.4,f12.5,2es12.4)'')') ndim*nelec
-          write(7,fmt) ((xold(k,jj),k=1,ndim),jj=1,nelec),
-     &    int(sign(1.d0,psido)),log(dabs(psido))+psijo,eold(1),psido,psijo
-         endif
-        endif
-
-!       write out configurations in Scemama's format
-        if (l_write_walkers) then
-         if(mod(l,write_walkers_step) == 0) then
-          do jj = 1, nelec
-            if (l_write_walkers_modified_format) then
-             write(file_walkers_out_unit,'(3(F11.7,X))') (xold(k,jj),k=1,ndim)
-            else
-             write(file_walkers_out_unit,'(3(F7.3,X))') (xold(k,jj),k=1,ndim)
-            endif
-          enddo
-           write(file_walkers_out_unit,*) dexp(psijo)*psido
-           if (l_write_walkers_modified_format) then
-            write(file_walkers_out_unit,*) eold(1)
+!         write out configuration for optimization/dmc/gfmc here
+          if (nconf_new /= 0) then
+           if(mod(l,ngfmc).eq.1 .or. ngfmc.eq.1) then
+!           write(fmt,'(a1,i6,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+            write(fmt,'(''('',i6,''f13.8,i3,es12.4,f12.5,2es12.4)'')') ndim*nelec
+            write(7,fmt) ((xold(k,jj),k=1,ndim),jj=1,nelec),
+       &    int(sign(1.d0,psido)),log(dabs(psido))+psijo,eold(1),psido,psijo
            endif
-         endif
-        endif
+          endif
+
+!         write out configurations in Scemama's format
+          if (l_write_walkers) then
+           if(mod(l,write_walkers_step) == 0) then
+            do jj = 1, nelec
+              if (l_write_walkers_modified_format) then
+               write(file_walkers_out_unit,'(3(F11.7,X))') (xold(k,jj),k=1,ndim)
+              else
+               write(file_walkers_out_unit,'(3(F7.3,X))') (xold(k,jj),k=1,ndim)
+              endif
+            enddo
+             write(file_walkers_out_unit,*) dexp(psijo)*psido
+             if (l_write_walkers_modified_format) then
+              write(file_walkers_out_unit,*) eold(1)
+             endif
+           endif
+          endif
 
   430   continue
 

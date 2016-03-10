@@ -108,7 +108,7 @@ contains
     pi =4*atan(1.0_dp)
     twopi= 2*4*atan(1.0_dp)
 
-    nbasis_pw=wsvol*ecut**1.5/(6*pi*pi)
+    nbasis_pw=nint(wsvol*ecut**1.5/(6*pi*pi))
 ! Warning: tmp
     write(6,'(''wsvol,ecut,pi,nbasis_pw='',3es12.4,i6)') wsvol,ecut,pi,nbasis_pw
     call systemflush(6)
@@ -171,9 +171,9 @@ contains
     gkj=int ( gkmod / bbj + 1. )
     gkk=int ( gkmod / bbk + 1. )
 
-    ipas=gki * 2. + 1.
-    jpas=gkj * 2. + 1.
-    kpas=gkk * 2. + 1.
+    ipas=nint(gki*2 + 1)
+    jpas=nint(gkj*2 + 1)
+    kpas=nint(gkk*2 + 1)
     mnm=0
     do i=1,ipas
        gv(1)=-gki+i-1
@@ -281,7 +281,7 @@ contains
                 cx=cx-gkt(j)*tnons (j, ii)
              enddo
              cx=cx*twopi
-             etagv(ii)=cmplx(cos(cx), sin(cx))
+             etagv(ii)=dcmplx(cos(cx), sin(cx))
              !             if ((sin(cx)) > 0.00001) then
              !                stop "complex phase with"
              !             endif

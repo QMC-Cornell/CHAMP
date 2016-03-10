@@ -93,6 +93,8 @@ module variables_mod
   logical                         :: l_deriv2nd = .true.
   logical                         :: l_deriv_bound = .false.
   real(dp)                        :: deriv_bound_value = 10.d0
+  logical                         :: l_eloc_bound = .false.
+  real(dp)                        :: eloc_bound_value = 10.d0
 
   real(dp)                        :: lambda = 0.3d0
 

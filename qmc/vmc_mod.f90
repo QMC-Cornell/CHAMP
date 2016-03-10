@@ -79,7 +79,8 @@ module vmc_mod
 ! set current walker and current walker weight to 1 for VMC
   current_walker = 1
   call object_modified ('current_walker')
-  current_walker_weight = 1
+! Warning: tmp moved to vmc/vmc.f
+! current_walker_weight = 1
   call object_modified ('current_walker_weight')
 
   end subroutine vmc_init
