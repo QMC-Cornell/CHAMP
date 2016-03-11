@@ -88,6 +88,7 @@
 
       implicit real*8(a-h,o-z)
 
+! Warning: tmp
       parameter (eps=1.d-10, adrift=0.5d0)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
@@ -104,7 +105,7 @@
       save ipr_sav
 
 !     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
-      sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
+      e_sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
 !     rn_eff(w,w2)=w**2/w2
 !     error(x,x2,w,w2)=dsqrt(max((x2/w-(x/w)**2)/(rn_eff(w,w2)-1),0.d0))
@@ -456,15 +457,30 @@
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
-          ewtn=eest-(eest-enew)*fration
+! Warning: tmp
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
+!         ewtn=eest-(eest-enew)*fration
+!         ewto=eoldw(iw,ifr)                                                    ! no_ene_int
+!         ewtn=enew                                                             ! no_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*0.5d0*(1-cos(pi*fratio(iw,ifr)))       ! new_ene_int
+!         ewtn=eest-(eest-enew)*0.5d0*(1-cos(pi*fration))                       ! new_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr)) ! new_ene_int
+!         ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                        ! new_ene_int
+          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int
+          ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)         ! new_ene_int
+
+! Warning: tmp
+!         write(6,'(''pi,fratio(iw,ifr),fration,0.5d0*(1-cos(pi*fratio(iw,ifr))),0.5d0*(1-cos(pi*fration))'',9es12.4)')
+!    &    pi,fratio(iw,ifr),fration,0.5d0*(1-cos(pi*fratio(iw,ifr))),0.5d0*(1-cos(pi*fration))
 
           do 262 iparm=1,nparm
             dewto(iparm)=denergy_old_dmc(iparm,iw)*fratio(iw,ifr)
   262       dewtn(iparm)=denergy(iparm)*fration
 
           if(idmc.gt.0) then
+! Warning: tmp
             expon=(etrial-half*(ewto+ewtn))*taunow
+!           expon=taunow*min(max((etrial-half*(eoldw(iw,ifr)+enew)),-.2*sqrt(nelec/tau)),.2*sqrt(nelec/tau)) ! Alfe
 ! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
 ! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm
@@ -494,19 +510,20 @@
 ! So, multiply energy_sigma by sqrt(float(nproc)).
 ! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
 !         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
+! Warning: tmp  Change 10*energy_sigma to 20*energy_sigma
           if(ipass-nstep*2*nblkeq .gt. 5) then
-            energy_sigma=sigma(ecum1,ecm21,wcum1)
+            energy_sigma=e_sigma(ecum1,ecm21,wcum1)
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
-            if(dwt.gt.1+10*energy_sigma*tau) then
+            if(dwt.gt.1+20*energy_sigma*tau) then
               ipr_sav=ipr_sav+1
               if(ipr_sav.le.3) then
-                write(6,'(''Warning: dwt>1+10*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
+                write(6,'(''Warning: dwt>1+20*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4
      &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
                 if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
                elseif(ipr_sav.eq.4) then
-                write(6,'(''Warning: Additional warning msgs. of dwt>1+10*energy_sigma*tau suppressed'')')
+                write(6,'(''Warning: Additional warning msgs. of dwt>1+20*energy_sigma*tau suppressed'')')
               endif
-              dwt=1+10*energy_sigma*tau
+              dwt=1+20*energy_sigma*tau
             endif
           endif
 

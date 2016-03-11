@@ -13,7 +13,7 @@ module eloc_mod
   real(dp)                       :: eloc_sq
   real(dp)                       :: eloc_sq_av
   real(dp)                       :: eloc_var
-  real(dp)                       :: eloc_sigma
+  real(dp)                       :: sigma
   real(dp)                       :: error_sigma
   real(dp)                       :: eloc_kin
   real(dp)                       :: eloc_kin_av
@@ -209,8 +209,8 @@ module eloc_mod
 ! header
   if (header_exe) then
 
-   call object_create ('eloc_sigma')
-   call object_error_define ('eloc_sigma', 'error_sigma')
+   call object_create ('sigma')
+   call object_error_define ('sigma', 'error_sigma')
 
    call object_needed ('eloc_var')
 
@@ -221,10 +221,10 @@ module eloc_mod
 ! begin
 
 ! allocations
-  call object_associate ('eloc_sigma', eloc_sigma)
+  call object_associate ('sigma', sigma)
   call object_associate ('error_sigma', error_sigma)
 
-  eloc_sigma = dsqrt(eloc_var)
+  sigma = dsqrt(eloc_var)
 
   end subroutine sigma_bld
 

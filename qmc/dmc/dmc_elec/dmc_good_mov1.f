@@ -92,7 +92,7 @@
       save ipr_sav
 
 !     gauss()=dcos(two*pi*rannyu(0))*sqrt(-two*dlog(rannyu(0)))
-      sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
+      e_sigma(x,x2,w)=sqrt(max((x2/w-(x/w)**2)*nconf,0.d0))
 
       if(icuspg.ge.1) stop 'exact cusp in G not implemented yet in 1-electron move algorithm'
       if(idiv_v.ge.1) stop 'div_v not implemented yet in 1-electron move algorithm'
@@ -639,9 +639,13 @@
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
-          ewtn=eest-(eest-enew)*fration
-
+! Warning: tmp
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
+!         ewtn=eest-(eest-enew)*fration
+!         ewto=eest-(eest-eoldw(iw,ifr))*0.5d0*(1-cos(pi*fratio(iw,ifr)))
+!         ewtn=eest-(eest-enew)*0.5d0*(1-cos(pi*fration))
+          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))
+          ewtn=eest-(eest-enew)*fration**2*(3-2*fration)
 
           do 262 iparm=1,nparm
             dewto(iparm)=denergy_old_dmc(iparm,iw)*fratio(iw,ifr)
@@ -680,7 +684,7 @@
 ! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
 !         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
           if(ipass-nstep*2*nblkeq .gt. 5) then
-            energy_sigma=sigma(ecum1,ecm21,wcum1)
+            energy_sigma=e_sigma(ecum1,ecm21,wcum1)
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
             if(dwt.gt.1+10*energy_sigma*tau) then
               ipr_sav=ipr_sav+1

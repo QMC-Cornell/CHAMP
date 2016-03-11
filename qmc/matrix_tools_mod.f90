@@ -52,7 +52,7 @@ module matrix_tools_mod
   if(info /= 0) then
    call die (lhere, 'problem in dgesvd (while calculating optimal value of lwork): info='+info+' /= 0')
   endif
-  lwork =  work(1)
+  lwork = nint(work(1))
   call alloc ('work', work, lwork)
 
 ! SVD decomposition: A = U . W . V^T
@@ -126,7 +126,7 @@ module matrix_tools_mod
   if(info /= 0) then
    call die (lhere, 'problem in zgesvd (while calculating optimal value of lwork): info='+info+' /= 0')
   endif
-  lwork =  work(1)
+  lwork = nint(real(work(1),dp))
   call alloc ('work', work, lwork)
 
 ! SVD decomposition: A = U . W . V^H

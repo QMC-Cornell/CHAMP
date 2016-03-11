@@ -229,11 +229,11 @@
            elseif(nloc.eq.-3) then !MS Jellium
             write(6,'(f12.5,4(f12.5,''('',i5,'')''),17x,f10.5,i10,f10.5,''('',i5,'')'')')
      &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      accave,it,eloc_sigma,ierror_sigma
+     &      accave,it,sigma,ierror_sigma
            else
             write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,f10.5,i10,f10.5,''('',i5,'')'')')
      &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,
-     &      accave,it,eloc_sigma,ierror_sigma
+     &      accave,it,sigma,ierror_sigma
           endif
 
 !         if(it.ge.1000 .and. accave.lt.0.3d0)

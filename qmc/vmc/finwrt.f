@@ -132,7 +132,7 @@
 
 ! save energy, energy_sigma and energy_err for optimization
       energy(1)=efin
-      energy_sigma(1)=eloc_sigma
+      energy_sigma(1)=sigma
       energy_err(1)=eerr
 
 !     write(6,*) 'before grad_hess_jas_fin'
