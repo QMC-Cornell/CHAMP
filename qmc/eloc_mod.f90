@@ -128,7 +128,9 @@ module eloc_mod
   if(l_eloc_bound .and. eloc_var.ne.0.d0) then
     if(abs(eloc-eloc_av).gt.eloc_bound_value*sqrt(eloc_var)) then
       current_walker_weight=0
-      write(6,'(''eloc, eloc_av, sqrt(eloc_var), ratio='',3es12.4,f8.1,'' setting current_walker_weight=0'')') eloc,eloc_av,sqrt(eloc_var),(eloc-eloc_av)/sqrt(eloc_var)
+!     write(6,'(''step, eloc, eloc_av, sqrt(eloc_var), ratio='',i6,3es12.4,f8.1,'' setting current_walker_weight=0'')') step_iterations_nb, eloc, eloc_av, sqrt(eloc_var), (eloc-eloc_av)/sqrt(eloc_var)
+      write (6,'(a,i8,4(a,f12.6),'' setting current_walker_weight=0'')') 'step=', step_iterations_nb, 'eloc =', eloc,' eloc_av =', eloc_av, ' eloc_var =', eloc_var, ' ratio=', dabs(eloc - eloc_av) / dsqrt(eloc_var)
+
     endif
   endif
 

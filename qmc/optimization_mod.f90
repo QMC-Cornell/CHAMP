@@ -146,7 +146,7 @@ module optimization_mod
    write(6,'(a)') ' add_diag     = [real] : stabilization constant (default=1.d-8)'
    write(6,'(a)') ' add_diag_max = [real] : maximum allowed value of add_diag (default=1.d10)'
    write(6,'(a)') ' reset_add_diag = [bool] : reset add_diag to add_diag_reset_value at each step before adjustment (default=true)'
-   write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-12)'
+   write(6,'(a)') ' add_diag_reset_value = [real] : value to which add_diag will be reset to at each step (default=1.d-8)'
    write(6,'(a)') ' iter_opt_min_nb = [integer] : minimum number of optimization iterations (default=0)'
    write(6,'(a)') ' iter_opt_max_nb = [integer] : maximum number of optimization iterations (default=100)'
    write(6,'(a)') ' last_run = [logical] : perform a last run with the last predicted parameters? (default=true)'

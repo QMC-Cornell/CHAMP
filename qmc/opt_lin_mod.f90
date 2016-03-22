@@ -1211,13 +1211,17 @@ module opt_lin_mod
   call release ('eigval_i', eigval_i)
 
 ! Warning: tmp  This is truly bizarre that when the original value of eigvec(1,eig_ind) is not 1, eigvec(1,eig_ind) and eigvec_first_coef are different!
-  write(6,'(/,''eigvec(1, eig_ind)'',9es12.4)') eigvec(1,eig_ind)
+! write(6,'(/,''eigvec(1, eig_ind)'',9es12.4)') eigvec(1,eig_ind)
 
 ! calculate the actual parameter variations
   eigvec_first_coef = eigvec(1,eig_ind)
 
-  write(6,'(/,''Warning eigvec_first_coef='',9es12.4)') eigvec_first_coef
-  if(eigvec_first_coef.ne.eigvec(1,eig_ind)) call die(lhere,'compiler bug in old version of gfortran')
+! write(6,'(/,''Warning eigvec_first_coef='',9es12.4)') eigvec_first_coef
+  if(eigvec_first_coef.ne.eigvec(1,eig_ind)) then
+    write(6,'(/,''This happens because of compiler bug in gfortran 4.6.3-1ubuntu5.  It is fixed in 4.8.4-2ubuntu1~14.04.1'')')
+    write(6,'(''eigvec(1, eig_ind), eigvec_first_coef'',9es12.4)') eigvec(1,eig_ind), eigvec_first_coef
+    call die(lhere,'compiler bug in gfortran version 4.6.3-1ubuntu5, fixed in 4.8.4-2ubuntu1~14.04.1')
+  endif
 
   select case (trim(update_nonlinear))
 
