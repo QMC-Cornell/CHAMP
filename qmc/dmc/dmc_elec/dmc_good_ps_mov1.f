@@ -692,8 +692,8 @@
             tjfsum(ifr)=tjfsum(ifr)-wtg*half*hb*d2ow(iw,ifr)
 
 !           local energy for current walker
-            eloc = eoldw(iw,1)
-            call object_modified_by_index (eloc_index)
+            eloc_dmc = eoldw(iw,1)
+            call object_modified_by_index (eloc_dmc_index)
 
             call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1))
            else

@@ -305,8 +305,8 @@
   180         risum=risum+wtg/r
 
 !             local energy for current walker
-              eloc = eoldw(iw,1)
-              call object_modified_by_index (eloc_index)
+              eloc_dmc = eoldw(iw,1)
+              call object_modified_by_index (eloc_dmc_index)
           endif
           tausum(ifr)=tausum(ifr)+wtg*taunow
 

@@ -6,6 +6,8 @@ module eloc_mod
 
 ! Declaration of global variables and default values
   real(dp)                       :: eloc
+  real(dp)                       :: eloc_vmc
+  real(dp)                       :: eloc_dmc
   real(dp)                       :: eloc_av
   real(dp)                       :: eloc_av_err
   real(dp)                       :: eloc_bav
@@ -89,9 +91,9 @@ module eloc_mod
 ! ==============================================================================
   subroutine eloc_bld
 ! ------------------------------------------------------------------------------
-! Description   : total local energy
+! Description   : local energy for both VMC and DMC
 !
-! Created       : J. Toulouse, 18 Feb 2016
+! Created       : J. Toulouse, 29 Mar 2016
 ! ------------------------------------------------------------------------------
   include 'modules.h'
   implicit none
@@ -105,6 +107,57 @@ module eloc_mod
    call object_variance_define ('eloc_av', 'eloc_av_var')
    call object_error_define ('eloc_av', 'eloc_av_err')
 
+   return
+
+  endif
+
+! begin
+  call object_associate ('eloc', eloc)
+  call object_associate ('eloc_bav', eloc_bav)
+  call object_associate ('eloc_av', eloc_av)
+  call object_associate ('eloc_av_var', eloc_av_var)
+  call object_associate ('eloc_av_err', eloc_av_err)
+
+! allocations
+  if (index(mode, 'vmc') /= 0) then
+   call object_provide_by_index (eloc_bld_index, eloc_vmc_index)
+   eloc  = eloc_vmc
+  elseif (index(mode, 'dmc') /= 0) then
+   call object_provide_by_index (eloc_bld_index, eloc_dmc_index)
+   eloc = eloc_dmc
+  else
+   call die (here, 'mode='+trim(mode)+' should contain either vmc or dmc.')
+  endif
+
+! If eloc differs a lot from its average, set current_walker_weight=0, so averages calculated with Julien's tools do not include these points
+  if(l_eloc_bound) then
+   if(eloc_var.ne.0.d0) then
+    if(abs(eloc-eloc_av).gt.eloc_bound_value*sqrt(eloc_var)) then
+      current_walker_weight=0
+!     write(6,'(''step, eloc, eloc_av, sqrt(eloc_var), ratio='',i6,3es12.4,f8.1,'' setting current_walker_weight=0'')') step_iterations_nb, eloc, eloc_av, sqrt(eloc_var), (eloc-eloc_av)/sqrt(eloc_var)
+      write (6,'(a,i8,4(a,f12.6),'' setting current_walker_weight=0'')') 'step=', step_iterations_nb, 'eloc =', eloc,' eloc_av =', eloc_av, ' eloc_var =', eloc_var, ' ratio=', dabs(eloc - eloc_av) / dsqrt(eloc_var)
+
+    endif
+   endif
+  endif
+
+  end subroutine eloc_bld
+
+! ==============================================================================
+  subroutine eloc_vmc_bld
+! ------------------------------------------------------------------------------
+! Description   : total local energy for VMC
+!
+! Created       : J. Toulouse, 18 Feb 2016
+! ------------------------------------------------------------------------------
+  include 'modules.h'
+  implicit none
+
+! header
+  if (header_exe) then
+
+   call object_create ('eloc_vmc')
+
    call object_needed ('eloc_kin')
    call object_needed ('eloc_pot')
 
@@ -116,25 +169,11 @@ module eloc_mod
 !  write(6,*) trim(here),': entering'
 
 ! allocations
-  call object_associate ('eloc', eloc)
-  call object_associate ('eloc_bav', eloc_bav)
-  call object_associate ('eloc_av', eloc_av)
-  call object_associate ('eloc_av_var', eloc_av_var)
-  call object_associate ('eloc_av_err', eloc_av_err)
+  call object_associate ('eloc_vmc', eloc_vmc)
 
-  eloc = eloc_kin + eloc_pot
+  eloc_vmc = eloc_kin + eloc_pot
 
-! If eloc differs a lot from its average, set current_walker_weight=0, so averages calculated with Julien's tools do not include these points
-  if(l_eloc_bound .and. eloc_var.ne.0.d0) then
-    if(abs(eloc-eloc_av).gt.eloc_bound_value*sqrt(eloc_var)) then
-      current_walker_weight=0
-!     write(6,'(''step, eloc, eloc_av, sqrt(eloc_var), ratio='',i6,3es12.4,f8.1,'' setting current_walker_weight=0'')') step_iterations_nb, eloc, eloc_av, sqrt(eloc_var), (eloc-eloc_av)/sqrt(eloc_var)
-      write (6,'(a,i8,4(a,f12.6),'' setting current_walker_weight=0'')') 'step=', step_iterations_nb, 'eloc =', eloc,' eloc_av =', eloc_av, ' eloc_var =', eloc_var, ' ratio=', dabs(eloc - eloc_av) / dsqrt(eloc_var)
-
-    endif
-  endif
-
- end subroutine eloc_bld
+ end subroutine eloc_vmc_bld
 
 ! ==============================================================================
   subroutine eloc_sq_bld

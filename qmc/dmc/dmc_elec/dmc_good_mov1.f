@@ -789,8 +789,8 @@
 !JT         ovlp_ovlp_fn_sum = ovlp_ovlp_fn_sum + ovlp_ovlp_fn
 
 !           local energy for current walker
-            eloc = eoldw(iw,1)
-            call object_modified_by_index (eloc_index)
+            eloc_dmc = eoldw(iw,1)
+            call object_modified_by_index (eloc_dmc_index)
 
            else
             ro=ajacold(iw,ifr)*psidow(iw,ifr)**2*

@@ -567,8 +567,8 @@
 
 !           local energy for current walker
 !           Warning: why is this here?
-            eloc = eoldw(iw,1) ! JT CU
-            call object_modified_by_index (eloc_index) ! JT CU
+            eloc_dmc = eoldw(iw,1) ! JT CU
+            call object_modified_by_index (eloc_dmc_index) ! JT CU
 
            else
 

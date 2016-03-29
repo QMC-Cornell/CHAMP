@@ -49,6 +49,7 @@ module catalog_objects_mod
   call catalog_one_object ('orbe', orbe_index)
   call catalog_one_object ('detn', detn_index)
   call catalog_one_object ('slmin', slmin_index) !fp
+  call catalog_one_object ('eloc_dmc', eloc_dmc_index)
   call catalog_one_object ('eloc_bav', eloc_bav_index)
   call catalog_one_object ('eloc_av', eloc_av_index)
   call catalog_one_object ('eloc_av_err', eloc_av_err_index)

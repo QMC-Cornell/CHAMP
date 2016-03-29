@@ -22,6 +22,8 @@ module indexes_mod
   integer     :: psi_jas_index
   integer     :: psijo_index
   integer     :: eloc_index
+  integer     :: eloc_vmc_index
+  integer     :: eloc_dmc_index
   integer     :: slmui_index
   integer     :: slmdi_index
   integer     :: detu_index
@@ -152,6 +154,7 @@ module indexes_mod
   integer     :: deloc_var_index
 
 ! indexes of nodes
+  integer     :: eloc_bld_index
   integer     :: dpsi_bld_index
   integer     :: dpsi_nwt_bld_index
   integer     :: dpsi_lin_bld_index
