@@ -5,7 +5,7 @@
       use constants_mod
       use control_mod
 !      use contrl_opt_mod, only : nparm
-      use optimization_mod, only: param_nb
+!      use optimization_mod, only: param_nb
       use montecarlo_mod
       use variables_mod
       use atom_mod
@@ -526,7 +526,7 @@
       call alloc ('tausum', tausum, nforce)
       call alloc ('esum1', esum1, nforce)
 
-      call object_provide('param_nb')
+!      call object_provide('param_nb')
 !      call alloc ('ovlp_ovlp_fn_sum', ovlp_ovlp_fn_sum, nparm+1, nparm+1)
 !      call alloc ('ovlp_ovlp_fn_cum', ovlp_ovlp_fn_cum, nparm+1, nparm+1)
 !      write(6,*) "nparm :", nparm

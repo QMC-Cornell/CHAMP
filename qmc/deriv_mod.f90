@@ -186,6 +186,8 @@ module deriv_mod
    param_nb = param_nb + param_geo_nb
   endif
 
+  call require (here, 'param_nb > 0', param_nb > 0)
+
   param_pairs_nb = param_nb * (param_nb + 1 ) / 2
 
   call object_alloc ('param_pairs', param_pairs, param_nb, param_nb)
