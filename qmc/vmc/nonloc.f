@@ -26,7 +26,8 @@
      &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
       dimension rr_en(nelec,ncent),rr_en2(nelec,ncent),rr_en_sav(ncent),rr_en2_sav(ncent)
      &,xsav(3),rshift_sav(3,ncent),rvec_en_sav(3,ncent),r_en_sav(ncent),vpot(MPS_L)
-      dimension xnew(3),vnew(3,nelec) ! local variables for tmoves
+!     dimension xnew(3),vnew(3,nelec) ! local variables for tmoves
+      dimension xnew(3)               ! local variables for tmoves
       dimension x_tmove_sav(3,nquad*ncent), vpsp_tmove(nquad*ncent), vpsp_tmove_heatbath(nquad*ncent)
 
       do 10 i=1,nelec

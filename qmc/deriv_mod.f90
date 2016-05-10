@@ -351,7 +351,7 @@ module deriv_mod
    do param_i = 1, param_nb
     if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i))  &
          .and. dabs(dpsi (param_i) - dpsi_av (param_i)) > deriv_bound_value * dsqrt(dpsi_var (param_i))) then
-      if(dabs(dpsi (param_i) - dpsi_av (param_i)) > 10*dsqrt(dpsi_var (param_i))) write (6,'(a,i8,a,i3,4(a,f12.6))') 'step=', step_iterations_nb, ' param_i =', param_i, ' dpsi =',dpsi (param_i),' dpsi_av =',dpsi_av (param_i), ' dpsi_var =',dpsi_var (param_i), ' ratio=', dabs(dpsi (param_i) - dpsi_av (param_i)) / dsqrt(dpsi_var (param_i))
+      if(dabs(dpsi (param_i) - dpsi_av (param_i)) > 10*dsqrt(dpsi_var (param_i))) write (6,'(a,i8,a,i4,4(a,f12.6))') 'step=', step_iterations_nb, ' param_i =', param_i, ' dpsi =',dpsi (param_i),' dpsi_av =',dpsi_av (param_i), ' dpsi_var =',dpsi_var (param_i), ' ratio=', dabs(dpsi (param_i) - dpsi_av (param_i)) / dsqrt(dpsi_var (param_i))
       dpsi (param_i) = dpsi_av (param_i) + sign (deriv_bound_value * dsqrt(dpsi_var (param_i)), dpsi (param_i) - dpsi_av (param_i))
 !     write (6,'(a,i3,a,f12.6,a)') 'param_i =', param_i, 'dpsi =',dpsi (param_i),' after bound applied'
     endif

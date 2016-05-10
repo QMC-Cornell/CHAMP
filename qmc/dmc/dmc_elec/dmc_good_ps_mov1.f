@@ -457,17 +457,41 @@
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-! Warning: tmp
+!For many years I have been placing an upper limit on the reweighting factor of 1+10*sigma*tau
+!(but no lower limit).  This is not in our 1993 paper because I started doing that only after
+!we put in the capability to do pseudopotentials, which was after 1993.
+!
+!Alternatively, one could use for S_bar
+!S_bar = min(E_cut,max(-E_cut,E_est-E_L))
+!where E_cut = 10*sigma
+!which limits both the maximum and the minimum reweighting.
+!
+!Both of these create a bias in the tau \to 0 limit, but the bias is negigibly small.
+!If you object to having any bias, then you could use something like
+!E_cut = 3*sigma/sqrt(tau)
+!I am assuming that the largest tau one would want to use is about 0.1, so this would
+!give a bound of about 10*sigma at tau=.1 and a larger bound at smaller tau values.
+!
+!Finally, all of these have the problem that at the very beginning of the run, one does
+!not have a good estimate of sigma.  If that bothers you, you could use
+!E_cut = 0.2 sqrt(N_elec/tau)
+!which is what Alfe does.  The downside of this is that it assumes that the adhoc value
+!of 0.2 is reasonable for all systems.
+
+! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
 !         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
 !         ewtn=eest-(eest-enew)*fration
-!         ewto=eoldw(iw,ifr)                                                    ! no_ene_int
-!         ewtn=enew                                                             ! no_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*0.5d0*(1-cos(pi*fratio(iw,ifr)))       ! new_ene_int
-!         ewtn=eest-(eest-enew)*0.5d0*(1-cos(pi*fration))                       ! new_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr)) ! new_ene_int
-!         ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                        ! new_ene_int
-          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int
-          ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)         ! new_ene_int
+!         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
+!         ewtn=enew                                                                                   ! no_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
+!         ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
+!         ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
+          ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+          ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
+          ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
+! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
+! so that we keep track of the fluctuating factor and undo the population control
 
 ! Warning: tmp
 !         write(6,'(''pi,fratio(iw,ifr),fration,0.5d0*(1-cos(pi*fratio(iw,ifr))),0.5d0*(1-cos(pi*fration))'',9es12.4)')

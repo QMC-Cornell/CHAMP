@@ -639,13 +639,20 @@
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-! Warning: tmp
+! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
 !         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
 !         ewtn=eest-(eest-enew)*fration
-!         ewto=eest-(eest-eoldw(iw,ifr))*0.5d0*(1-cos(pi*fratio(iw,ifr)))
-!         ewtn=eest-(eest-enew)*0.5d0*(1-cos(pi*fration))
-          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))
-          ewtn=eest-(eest-enew)*fration**2*(3-2*fration)
+!         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
+!         ewtn=enew                                                                                   ! no_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
+!         ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
+!         ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
+          ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+          ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
+          ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
+! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
+! so that we keep track of the fluctuating factor and undo the population control
 
           do 262 iparm=1,nparm
             dewto(iparm)=denergy_old_dmc(iparm,iw)*fratio(iw,ifr)
@@ -654,6 +661,7 @@
 
           if(idmc.gt.0) then
             expon=(etrial-half*(ewto+ewtn))*taunow
+!           expon=taunow*min(max((etrial-half*(eoldw(iw,ifr)+enew)),-.2*sqrt(nelec/tau)),.2*sqrt(nelec/tau)) ! Alfe
 ! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
 ! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm
