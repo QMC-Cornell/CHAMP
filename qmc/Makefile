@@ -78,71 +78,71 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	pjas_setup_mod.f90 pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 \
 	psi_mod.f90 restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
 	testing_mod.f90 types_mod.f90 variables_mod.f90 vmc_mod.f90 \
-	walkers_mod.f90 write_mod.f90 amoeba.f amotry.f choldc.f cholsl.f \
-	ei.f ei2.f erf.f expint.f hash_funcs.f pythag.f svbksb.f svdcmp.f \
-	tools.f address_tools.c fit/checkjas2.f fit/cusorb.f \
-	fit/cusorb_equiv.f fit/cuspcheck2.f fit/cuspcheck3.f fit/cuspco.f \
-	fit/cuspexact2.f fit/cuspexact3.f fit/cuspexact4.f fit/cuspinit3.f \
-	fit/cuspinit4.f fit/deriv_jastrow.f fit/deriv_jastrow3.f \
-	fit/deriv_nonloc.f fit/deriv_nonloc_pot.f fit/deriv_nonlpsi.f \
-	fit/deriv_scale.f fit/dummy_newton.f fit/equiv_bas.f fit/fit.f \
-	fit/fockcheck3.f fit/fockexact3.f fit/func.f fit/jacobian.f \
-	fit/piksrt.f fit/plot_jas.f fit/rewght.f fit/strech.f \
-	fit/MPI/func_mpi.f fit/MPI/jacobian_mpi.f vmc/acuest.f \
-	vmc/basis_fns.f vmc/basis_fnse2.f vmc/basis_norm.f \
-	vmc/basis_norm_dot.f vmc/cbasis_fns.f vmc/cdeterminant.f \
-	vmc/cdeterminante.f vmc/cdetsav.f vmc/cjastrow.f vmc/cmatinv.f \
-	vmc/corbitals_loc_ana.f vmc/corbitals_loc_ana_grade.f vmc/den2dwrt.f \
-	vmc/deriv_jastrow4.f vmc/determinant.f vmc/determinant_up_dn.f \
-	vmc/determinante.f vmc/detsav.f vmc/dgelg.f vmc/distances.f \
-	vmc/dumper.f vmc/emagnetic.f vmc/ewald.f vmc/find_image.f \
-	vmc/finwrt.f vmc/fock.f vmc/fourier2d.f vmc/gammai.f \
-	vmc/grad_hess_jastrow.f vmc/hpsi.f vmc/hpsie.f vmc/ie.f \
-	vmc/interpol_orb.f vmc/jassav.f vmc/jastrow.f vmc/jastrow1.f \
-	vmc/jastrow2.f vmc/jastrow3.f vmc/jastrow3e.f vmc/jastrow4.f \
-	vmc/jastrow4e.f vmc/jastrow_num.f vmc/jastrowe.f vmc/matinv.f \
-	vmc/mc_configs.f vmc/metrop_mov1.f vmc/metrop_movall.f \
-	vmc/metrop_polar_mov1.f vmc/metrop_polar_movall.f \
-	vmc/metrop_slat_mov1.f vmc/metrop_slat_movall.f vmc/newton_chol.f \
-	vmc/nonloc.f vmc/nonloc_pot.f vmc/nonlpsi.f vmc/opt_wf.f \
-	vmc/orbitals_loc_ana.f vmc/orbitals_loc_ana_grade.f \
-	vmc/orbitals_loc_num.f vmc/orbitals_loc_num_grade.f \
-	vmc/orbitals_period_num.f vmc/orbitals_period_num_grade.f \
-	vmc/orbitals_pw.f vmc/orbitals_pw_grade.f vmc/pairden2d.f vmc/pot.f \
-	vmc/psi.f vmc/quad_min.f vmc/rannyu.f vmc/read_bas_num.f \
-	vmc/read_input.f vmc/read_orb_dot.f vmc/read_orb_loc.f \
-	vmc/read_orb_pw.f vmc/readps.f vmc/readps_champ.f vmc/readps_gauss.f \
-	vmc/readps_tm.f vmc/rotqua.f vmc/scale_dist.f vmc/sites.f \
-	vmc/splfit.f vmc/spline.f vmc/spline2.f vmc/strech.f \
-	vmc/systemflush.f vmc/vmc.f vmc/wf_secondary.f vmc/zigzag2d.f \
-	vmc/MPI/acuest_mpi.f vmc/MPI/dumper.f vmc/MPI/finwrt_mpi.f \
-	vmc/MPI/grad_hess_jas_mpi.f vmc/MPI/mc_configs.f \
-	dmc/acuest_dmc_movall.f dmc/dmc_brock_movall.f \
-	dmc/dmc_good_inhom_movall.f dmc/dmc_good_movall.f dmc/dmc_good_ap.f90 \
-	dmc/dmc_good_ps_movall.f dmc/dumper_dmc_movall.f \
-	dmc/finwrt_dmc_movall.f dmc/gauss.f dmc/maindmc.f dmc/open_files.f \
-	dmc/opt_wf_dmc.f dmc/sites_dmc.f dmc/sites_per.f dmc/splitj_movall.f \
-	dmc/zeta_cusp.f dmc/dmc_elec/acuest_dmc_mov1.f \
+	walkers_mod.f90 write_mod.f90 amoeba.f90 amotry.f90 choldc.f90 cholsl.f90 \
+	ei.f90 ei2.f90 erf.f90 expint.f90 hash_funcs.f90 pythag.f90 svbksb.f90 svdcmp.f90 \
+	tools.f90 address_tools.c fit/checkjas2.f90 fit/cusorb.f90 \
+	fit/cusorb_equiv.f90 fit/cuspcheck2.f90 fit/cuspcheck3.f90 fit/cuspco.f90 \
+	fit/cuspexact2.f90 fit/cuspexact3.f90 fit/cuspexact4.f90 fit/cuspinit3.f90 \
+	fit/cuspinit4.f90 fit/deriv_jastrow.f90 fit/deriv_jastrow3.f90 \
+	fit/deriv_nonloc.f90 fit/deriv_nonloc_pot.f90 fit/deriv_nonlpsi.f90 \
+	fit/deriv_scale.f90 fit/dummy_newton.f90 fit/equiv_bas.f90 fit/fit.f90 \
+	fit/fockcheck3.f90 fit/fockexact3.f90 fit/func.f90 fit/jacobian.f90 \
+	fit/piksrt.f90 fit/plot_jas.f90 fit/rewght.f90 fit/strech.f90 \
+	fit/MPI/func_mpi.f90 fit/MPI/jacobian_mpi.f90 vmc/acuest.f90 \
+	vmc/basis_fns.f90 vmc/basis_fnse2.f90 vmc/basis_norm.f90 \
+	vmc/basis_norm_dot.f90 vmc/cbasis_fns.f90 vmc/cdeterminant.f90 \
+	vmc/cdeterminante.f90 vmc/cdetsav.f90 vmc/cjastrow.f90 vmc/cmatinv.f90 \
+	vmc/corbitals_loc_ana.f90 vmc/corbitals_loc_ana_grade.f90 vmc/den2dwrt.f90 \
+	vmc/deriv_jastrow4.f90 vmc/determinant.f90 vmc/determinant_up_dn.f90 \
+	vmc/determinante.f90 vmc/detsav.f90 vmc/dgelg.f90 vmc/distances.f90 \
+	vmc/dumper.f90 vmc/emagnetic.f90 vmc/ewald.f90 vmc/find_image.f90 \
+	vmc/finwrt.f90 vmc/fock.f90 vmc/fourier2d.f90 vmc/gammai.f90 \
+	vmc/grad_hess_jastrow.f90 vmc/hpsi.f90 vmc/hpsie.f90 vmc/ie.f90 \
+	vmc/interpol_orb.f90 vmc/jassav.f90 vmc/jastrow.f90 vmc/jastrow1.f90 \
+	vmc/jastrow2.f90 vmc/jastrow3.f90 vmc/jastrow3e.f90 vmc/jastrow4.f90 \
+	vmc/jastrow4e.f90 vmc/jastrow_num.f90 vmc/jastrowe.f90 vmc/matinv.f90 \
+	vmc/mc_configs.f90 vmc/metrop_mov1.f90 vmc/metrop_movall.f90 \
+	vmc/metrop_polar_mov1.f90 vmc/metrop_polar_movall.f90 \
+	vmc/metrop_slat_mov1.f90 vmc/metrop_slat_movall.f90 vmc/newton_chol.f90 \
+	vmc/nonloc.f90 vmc/nonloc_pot.f90 vmc/nonlpsi.f90 vmc/opt_wf.f90 \
+	vmc/orbitals_loc_ana.f90 vmc/orbitals_loc_ana_grade.f90 \
+	vmc/orbitals_loc_num.f90 vmc/orbitals_loc_num_grade.f90 \
+	vmc/orbitals_period_num.f90 vmc/orbitals_period_num_grade.f90 \
+	vmc/orbitals_pw.f90 vmc/orbitals_pw_grade.f90 vmc/pairden2d.f90 vmc/pot.f90 \
+	vmc/psi.f90 vmc/quad_min.f90 vmc/rannyu.f90 vmc/read_bas_num.f90 \
+	vmc/read_input.f90 vmc/read_orb_dot.f90 vmc/read_orb_loc.f90 \
+	vmc/read_orb_pw.f90 vmc/readps.f90 vmc/readps_champ.f90 vmc/readps_gauss.f90 \
+	vmc/readps_tm.f90 vmc/rotqua.f90 vmc/scale_dist.f90 vmc/sites.f90 \
+	vmc/splfit.f90 vmc/spline.f90 vmc/spline2.f90 vmc/strech.f90 \
+	vmc/systemflush.f90 vmc/vmc.f90 vmc/wf_secondary.f90 vmc/zigzag2d.f90 \
+	vmc/MPI/acuest_mpi.f90 vmc/MPI/dumper.f90 vmc/MPI/finwrt_mpi.f90 \
+	vmc/MPI/grad_hess_jas_mpi.f90 vmc/MPI/mc_configs.f90 \
+	dmc/acuest_dmc_movall.f90 dmc/dmc_brock_movall.f90 \
+	dmc/dmc_good_inhom_movall.f90 dmc/dmc_good_movall.f90 dmc/dmc_good_ap.f90 \
+	dmc/dmc_good_ps_movall.f90 dmc/dumper_dmc_movall.f90 \
+	dmc/finwrt_dmc_movall.f90 dmc/gauss.f90 dmc/maindmc.f90 dmc/open_files.f90 \
+	dmc/opt_wf_dmc.f90 dmc/sites_dmc.f90 dmc/sites_per.f90 dmc/splitj_movall.f90 \
+	dmc/zeta_cusp.f90 dmc/dmc_elec/acuest_dmc_mov1.f90 \
         bspline_sub_module.f90 bspline_oo_module.f90 bspline_module.f90 \
         dmc/projector.f90 dmc/stochastic_reconfiguration2.f90 \
-	dmc/dmc_elec/cwalksav_det.f dmc/dmc_elec/dmc_brock_mov1.f \
-	dmc/dmc_elec/dmc_good_inhom_mov1.f dmc/dmc_elec/dmc_good_mov1.f \
-	dmc/dmc_elec/dmc_good_ps_mov1.f dmc/dmc_elec/dumper_dmc_mov1.f \
-	dmc/dmc_elec/finwrt_dmc_mov1.f dmc/dmc_elec/hpsiedmc.f \
-	dmc/dmc_elec/splitj_mov1.f dmc/dmc_elec/walksav_det.f \
-	dmc/dmc_elec/walksav_jas.f dmc/dmc_elec/MPI/acuest_dmc_mov1_mpi1.f \
-	dmc/dmc_elec/MPI/dumper_dmc_mov1_mpi1.f \
-	dmc/dmc_elec/MPI/finwrt_dmc_mov1_mpi1.f \
-	dmc/dmc_elec/MPI/maindmc_mov1_mpi.f dmc/dmc_elec/MPI/open_files_mpi.f \
-	dmc/dmc_elec/MPI_global_pop/walksav_jas_mpi3.f \
-	dmc/dmc_elec/MPI_global_pop_big/acuest_dmc_mov1_mpi2.f \
-	dmc/dmc_elec/MPI_global_pop_big/cwalksav_det_mpi.f \
-	dmc/dmc_elec/MPI_global_pop_big/dumper_dmc_mov1_mpi2.f \
-	dmc/dmc_elec/MPI_global_pop_big/finwrt_dmc_mov1_mpi2.f \
-	dmc/dmc_elec/MPI_global_pop_big/move_walker.f \
-	dmc/dmc_elec/MPI_global_pop_big/redistribute.f \
-	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.f \
-	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f
+	dmc/dmc_elec/cwalksav_det.f90 dmc/dmc_elec/dmc_brock_mov1.f90 \
+	dmc/dmc_elec/dmc_good_inhom_mov1.f90 dmc/dmc_elec/dmc_good_mov1.f90 \
+	dmc/dmc_elec/dmc_good_ps_mov1.f90 dmc/dmc_elec/dumper_dmc_mov1.f90 \
+	dmc/dmc_elec/finwrt_dmc_mov1.f90 dmc/dmc_elec/hpsiedmc.f90 \
+	dmc/dmc_elec/splitj_mov1.f90 dmc/dmc_elec/walksav_det.f90 \
+	dmc/dmc_elec/walksav_jas.f90 dmc/dmc_elec/MPI/acuest_dmc_mov1_mpi1.f90 \
+	dmc/dmc_elec/MPI/dumper_dmc_mov1_mpi1.f90 \
+	dmc/dmc_elec/MPI/finwrt_dmc_mov1_mpi1.f90 \
+	dmc/dmc_elec/MPI/maindmc_mov1_mpi.f90 dmc/dmc_elec/MPI/open_files_mpi.f90 \
+	dmc/dmc_elec/MPI_global_pop/walksav_jas_mpi3.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/acuest_dmc_mov1_mpi2.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/cwalksav_det_mpi.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/dumper_dmc_mov1_mpi2.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/finwrt_dmc_mov1_mpi2.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/move_walker.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/redistribute.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.f90 \
+	dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.f90
 
 OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	commons/basis2_mod.o commons/basis3_mod.o commons/basisnorm_mod.o \
