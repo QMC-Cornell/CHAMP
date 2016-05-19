@@ -194,7 +194,10 @@
               endif
 
 ! Note: vavvo=vav2sumo/v2sumo appears in the branching
-              vav=(dsqrt(1+2*adrift*v2old*tauu)-1)/(adrift*volda*tauu)
+! Warning: tmp
+!             vav=(dsqrt(1+2*adrift*v2old*tauu)-1)/(adrift*volda*tauu)
+              vav=volda/(1+.01*v2old)
+
               vav2sumo=vav2sumo+vav**2
               v2sumo=v2sumo+v2old
 
@@ -556,8 +559,18 @@
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-          ewto=eest-(eest-eoldw(iw,ifr))*vavvo
-          ewtn=eest-(eest   -enew(ifr))*vavvn
+! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems
+!         ewto=eest-(eest-eoldw(iw,ifr))*vavvo                                                        ! UNR93
+!         ewtn=eest-(eest   -enew(ifr))*vavvn                                                         ! UNR93
+!         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
+!         ewtn=enew(ifr)                                                                              ! no_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*vavvo**2*(3-2*vavvo)                                         ! new_ene_int
+!         ewtn=eest-(eest-enew(ifr))*vavvn**2*(3-2*vavvn)                                             ! new_ene_int
+!         ewto=eest-(eest-eoldw(iw,ifr))*vavvo**3*(10-15*vavvo+6*vavvo**2)                            ! new_ene_int2
+!         ewtn=eest-(eest-enew(ifr))*vavvn**3*(10-15*vavvn+6*vavvn**2)                                ! new_ene_int2
+          ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+          ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
+          ewtn=etrial+min(ecut,max(-ecut,enew(ifr)-eest))                                             ! Alfe
 
           if(idmc.gt.0) then
             expon=(etrial-half*((one+qsav)*ewto+psav*ewtn))*taunow
