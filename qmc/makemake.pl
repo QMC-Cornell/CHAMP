@@ -24,7 +24,7 @@ print MAKEFILE "include ../makefile.inc\n\n";
 #
 print MAKEFILE "SRCS =\t";
 # @srcs = <commons/*.f90 *.f90 *.f95 *.f *.F *.c fit/*.f fit/MPI/*f vmc/*.f vmc/*.f90 vmc/MPI/*.f dmc/*.f dmc/dmc_elec/*.f dmc/dmc_elec/MPI/*.f dmc/dmc_elec/MPI_global_pop/*.f dmc/dmc_elec/MPI_global_pop_big/*.f>;
-@srcs = <commons/*.f90 *.f90 *.f90 *.f90 *.F *.c fit/*.f90 fit/MPI/*f vmc/*.f90 vmc/*.f90 vmc/MPI/*.f90 dmc/*.f90 dmc/dmc_elec/*.f90 dmc/dmc_elec/MPI/*.f90 dmc/dmc_elec/MPI_global_pop/*.f90 dmc/dmc_elec/MPI_global_pop_big/*.f90>;
+@srcs = <commons/*.f90 *.f90 *.f *.F *.c fit/*.f90  fit/MPI/*.f fit/MPI/*.f90 vmc/*.f90 vmc/MPI/*.f90 dmc/*.f90 dmc/dmc_elec/*.f90 dmc/dmc_elec/MPI/*.f90 dmc/dmc_elec/MPI_global_pop/*.f90 dmc/dmc_elec/MPI_global_pop_big/*.f90>;
 &PrintWords(8, 0, @srcs);
 print MAKEFILE "\n\n";
 #
@@ -283,7 +283,7 @@ sub MakeDependsf95 {
    #
    # Associate each module with the name of the file that contains it
    #
-   foreach $file (<*.f90 *.f95 commons/*.f90>) {
+   foreach $file (<*.f90 *.f95 commons/*.f90 dmc/*.f90 >) {
       open(FILE, $file) || warn "Cannot open $file: $!\n";
       while (<FILE>) {
          /^\s*module\s+([^\s!]+)/i &&
@@ -294,7 +294,7 @@ sub MakeDependsf95 {
    # Print the dependencies of each file that has one or more include's or
    # references one or more modules
    #
-   foreach $file (<*.f90 *.f95 commons/*.f90>) {
+   foreach $file (<*.f90 *.f95 commons/*.f90 dmc/*.f90>) {
       open(FILE, $file);
       while (<FILE>) {
          /^\s*include\s+["\']([^"\']+)["\']/i && push(@incs, $1);
