@@ -77,7 +77,7 @@
     5         v2old=v2old+voldw(k,i,iw,ifr)**2
 ! Note that it is better to limit the drift term for VMC also,
 ! so idmc=-1,-4,-5 are preferable
-            if(idmcabs.eq.1 .or. idmcabs.eq.4. or. idmcabs.eq.5 ) then
+            if(idmcabs.eq.1 .or. idmcabs.eq.4 .or. idmcabs.eq.5 ) then
               term=min(one/(dsqrt(v2old)*tau),one)
              else
               term=one

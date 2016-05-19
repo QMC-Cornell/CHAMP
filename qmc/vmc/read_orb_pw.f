@@ -202,7 +202,7 @@
         endif
 
 !wparker Read in B-spline coefficients from file
-        if(inum_orb.eq.6 .or .inum_orb.eq.-6) then
+        if(inum_orb.eq.6 .or. inum_orb.eq.-6) then
           num_orb_exist=1
           write(6,*)
           write(6,*)'Reading blip wave function and associated data'

@@ -526,7 +526,6 @@
 ! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
 ! so that we keep track of the fluctuating factor and undo the population control
 
-
           if(idmc.gt.0) then
             expon=(etrial-half*((one+qsav)*ewto+psav*ewtn))*taunow
 !           expon=taunow*min(max((etrial-half*(eoldw(iw,ifr)+enew)),-.2*sqrt(nelec/tau)),.2*sqrt(nelec/tau)) ! Alfe

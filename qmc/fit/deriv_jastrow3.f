@@ -79,25 +79,25 @@
           u(1)=(one-dexp(-scalek(iwf)*rij))/scalek(iwf)
           dd1=one-scalek(iwf)*u(1)
           dd2=-scalek(iwf)*dd1
-	 elseif(isc.eq.3) then
-	  rijs=scalek(iwf)*rij
+         elseif(isc.eq.3) then
+          rijs=scalek(iwf)*rij
           rijs2=rijs*rijs
           rijs3=rijs*rijs2
-	  exprij=dexp(-rijs-half*rijs2-third*rijs3)
-	  u(1)=(one-exprij)/scalek(iwf)
-	  dd1=(one+rijs+rijs2)*exprij
-	  dd2=-scalek(iwf)*rijs2*(three+two*rijs+rijs2)*exprij
-	 elseif(isc.eq.4) then
-	  denij=one/(one+scalek(iwf)*rij)
-	  u(1)=rij*denij
-	  dd1=denij*denij
-	  dd2=-two*scalek(iwf)*denij*dd1
- 	 elseif(isc.eq.5) then
-	  denij=one/(one+(scalek(iwf)*rij)**3)**third
-	  u(1)=rij*denij
-	  dd1=denij**4
-	  dd2=-four*(scalek(iwf)*rij)**2*scalek(iwf)*dd1*dd1/denij
-	endif
+          exprij=dexp(-rijs-half*rijs2-third*rijs3)
+          u(1)=(one-exprij)/scalek(iwf)
+          dd1=(one+rijs+rijs2)*exprij
+          dd2=-scalek(iwf)*rijs2*(three+two*rijs+rijs2)*exprij
+         elseif(isc.eq.4) then
+          denij=one/(one+scalek(iwf)*rij)
+          u(1)=rij*denij
+          dd1=denij*denij
+          dd2=-two*scalek(iwf)*denij*dd1
+         elseif(isc.eq.5) then
+          denij=one/(one+(scalek(iwf)*rij)**3)**third
+          u(1)=rij*denij
+          dd1=denij**4
+          dd2=-four*(scalek(iwf)*rij)**2*scalek(iwf)*dd1*dd1/denij
+        endif
        else
         u(1)=rij
         dd1=one
@@ -191,14 +191,14 @@
 
         if(scalek(iwf).ne.zero) then
           scale2=half*scalek(iwf)
-	  if(isc.eq.2) then
+          if(isc.eq.2) then
             rri=(one-dexp(-scalek(iwf)*ri))/scalek(iwf)
             rrj=(one-dexp(-scalek(iwf)*rj))/scalek(iwf)
             dd3=one-scale2*(rri+rrj)
             dd4=-scale2*(rri-rrj)
             dd5=-scale2*dd3
             dd6=-scale2*dd4
-	   elseif(isc.eq.3) then
+           elseif(isc.eq.3) then
             ris=scalek(iwf)*ri
             ris2=ris*ris
             ris3=ris*ris2
@@ -262,25 +262,25 @@
           s(jp)=s(jp-1)*s(1)
    32     t(jp)=t(jp-1)*t(1)
 
-    	fc=zero
-  	fu=zero
-  	fs=zero
-  	ft=zero
-  	fuu=zero
-  	fss=zero
-  	ftt=zero
-  	fus=zero
-	fut=zero
-      	fst=zero
+        fc=zero
+        fu=zero
+        fs=zero
+        ft=zero
+        fuu=zero
+        fss=zero
+        ftt=zero
+        fus=zero
+        fut=zero
+        fst=zero
 
         jparm=1
-	ll=0
-	jj=1
+        ll=0
+        jj=1
         do 36 jp=1,nord
-	  do 36 ju=jp,0,-1
-	    pc=u(ju)
-	    pcu=ju*u(ju-1)
-	    pcuu=ju*(ju-1)*u(ju-2)
+          do 36 ju=jp,0,-1
+            pc=u(ju)
+            pcu=ju*u(ju-1)
+            pcuu=ju*(ju-1)*u(ju-2)
 
             fp=zero
             fps=zero
@@ -289,10 +289,10 @@
             fptt=zero
             fpst=zero
 
-	    jsx=jp-ju
-	    do 35 js=jsx,0,-1
-	      ll=ll+1
-	      jt=jsx-js
+            jsx=jp-ju
+            do 35 js=jsx,0,-1
+              ll=ll+1
+              jt=jsx-js
 
               if(mod(jt,2).ne.0.and.nup.eq.ndn) then
                 c(ll,it,iwf)=zero
@@ -304,12 +304,12 @@
                 ptt=s(js)*jt*(jt-1)*t(jt-2)
                 pst=js*s(js-1)*jt*t(jt-1)
 
-    	        fp=fp+c(ll,it,iwf)*p
-      	        fps=fps+c(ll,it,iwf)*ps
-    	        fpss=fpss+c(ll,it,iwf)*pss
-  	        fpt=fpt+c(ll,it,iwf)*pt
-    	        fptt=fptt+c(ll,it,iwf)*ptt
-     	        fpst=fpst+c(ll,it,iwf)*pst
+                fp=fp+c(ll,it,iwf)*p
+                fps=fps+c(ll,it,iwf)*ps
+                fpss=fpss+c(ll,it,iwf)*pss
+                fpt=fpt+c(ll,it,iwf)*pt
+                fptt=fptt+c(ll,it,iwf)*ptt
+                fpst=fpst+c(ll,it,iwf)*pst
 
 ! derivatives of wave function wrt c-parameters
                 ideriv=0
@@ -325,14 +325,14 @@
 
                 if(ideriv.gt.0) then
 
-      	          gu=p*pcu
+                  gu=p*pcu
                   gs=ps*pc
                   gt=pt*pc
-    	          guu=p*pcuu
+                  guu=p*pcuu
                   gsstt=(pss+ptt)*pc
                   gst=pst*pc
-        	  gus=ps*pcu
-            	  gut=pt*pcu
+                  gus=ps*pcu
+                  gut=pt*pcu
 
                   guu=guu*dd1*dd1+gu*dd2
                   gsstt=gsstt*(dd3**2+dd4**2)+4*gst*dd3*dd4
@@ -399,15 +399,15 @@
    35       continue
 
             fc=fc+pc*fp
-    	    fu=fu+pcu*fp
-    	    fuu=fuu+pcuu*fp
-    	    fs=fs+pc*fps
-    	    fss=fss+pc*fpss
-    	    ft=ft+pc*fpt
-    	    ftt=ftt+pc*fptt
-    	    fus=fus+pcu*fps
-	    fut=fut+pcu*fpt
-   36	    fst=fst+pc*fpst
+            fu=fu+pcu*fp
+            fuu=fuu+pcuu*fp
+            fs=fs+pc*fps
+            fss=fss+pc*fpss
+            ft=ft+pc*fpt
+            ftt=ftt+pc*fptt
+            fus=fus+pcu*fps
+            fut=fut+pcu*fpt
+   36       fst=fst+pc*fpst
 
         if(ifock.gt.0) call fock(u(1),s(1),t(1),rri,rrj,it)
 

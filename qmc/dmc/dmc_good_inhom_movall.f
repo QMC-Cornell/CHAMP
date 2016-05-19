@@ -634,7 +634,6 @@
           ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
           ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
           ewtn=etrial+min(ecut,max(-ecut,enew(ifr)-eest))                                             ! Alfe
-
 ! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
 ! so that we keep track of the fluctuating factor and undo the population control
 

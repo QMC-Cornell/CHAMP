@@ -170,7 +170,7 @@
       if(ijas.eq.2 .and. iabs(icusp2).ge.2) then
           do 46 isp=nspin1,nspin2
             ishft=ncuspc*(isp-nspin1)
-            if(nspin2.eq.2. and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
+            if(nspin2.eq.2 .and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
             if(nspin2.eq.3 .and. isp.eq.nspin2) a1(2,3,1)=((ndn-nup)*a1(2,1,1)+(nup-1)*a1(2,2,1))/(ndn-1)
             call cuspcheck2(scalek(1),a1(1,isp,1),a2(1,isp,1),diff(ndata+ishft+1),isp,nspin1,ncuspc,0)
             do 46 i=1,ncuspc

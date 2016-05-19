@@ -715,7 +715,7 @@
       GO TO 27
 
    26 C=P/E(I)
-      R=DSQRT(C**2+1. D0)
+      R=DSQRT(C**2+1.D0)
       E(I1 )=S*E(I)*R
       S=1.0D0/R
       C=C/R

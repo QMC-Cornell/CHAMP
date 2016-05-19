@@ -82,22 +82,22 @@
         if(isc.eq.2) then
           u(1)=(one-dexp(-scalek(iwf)*rij))/scalek(iwf)
           dd1=one-scalek(iwf)*u(1)
-	 elseif(isc.eq.3) then
-	  rijs=scalek(iwf)*rij
+         elseif(isc.eq.3) then
+          rijs=scalek(iwf)*rij
           rijs2=rijs*rijs
           rijs3=rijs*rijs2
-	  exprij=dexp(-rijs-half*rijs2-third*rijs3)
-	  u(1)=(one-exprij)/scalek(iwf)
-	  dd1=(one+rijs+rijs2)*exprij
-	 elseif(isc.eq.4) then
-	  denij=one/(one+scalek(iwf)*rij)
-	  u(1)=rij*denij
-	  dd1=denij*denij
- 	 elseif(isc.eq.5) then
-	  denij=one/(one+(scalek(iwf)*rij)**3)**third
-	  u(1)=rij*denij
-	  dd1=denij**4
-	endif
+          exprij=dexp(-rijs-half*rijs2-third*rijs3)
+          u(1)=(one-exprij)/scalek(iwf)
+          dd1=(one+rijs+rijs2)*exprij
+         elseif(isc.eq.4) then
+          denij=one/(one+scalek(iwf)*rij)
+          u(1)=rij*denij
+          dd1=denij*denij
+         elseif(isc.eq.5) then
+          denij=one/(one+(scalek(iwf)*rij)**3)**third
+          u(1)=rij*denij
+          dd1=denij**4
+        endif
        else
         u(1)=rij
         dd1=one
@@ -136,12 +136,12 @@
 
         if(scalek(iwf).ne.0) then
           scale2=half*scalek(iwf)
-	  if(isc.eq.2) then
+          if(isc.eq.2) then
             rri=(one-dexp(-scalek(iwf)*ri))/scalek(iwf)
             rrj=(one-dexp(-scalek(iwf)*rj))/scalek(iwf)
             dd3=one-scale2*(rri+rrj)
             dd4=-scale2*(rri-rrj)
-	   elseif(isc.eq.3) then
+           elseif(isc.eq.3) then
             ris=scalek(iwf)*ri
             ris2=ris*ris
             ris3=ris*ris2
@@ -191,37 +191,37 @@
           s(jp)=s(jp-1)*s(1)
    31     t(jp)=t(jp-1)*t(1)
 
-    	fc=0
-  	fcu=0
-  	fcs=0
-  	fct=0
+        fc=0
+        fcu=0
+        fcs=0
+        fct=0
 
-	ll=0
+        ll=0
         do 36 jp=1,nord
-	  do 36 ju=jp,0,-1
-	    pc=u(ju)
-	    pcu=ju*u(ju-1)
+          do 36 ju=jp,0,-1
+            pc=u(ju)
+            pcu=ju*u(ju-1)
 
             fp=0
             fps=0
             fpt=0
 
-	    jsx=jp-ju
-	    do 34 js=jsx,0,-1
-	      ll=ll+1
-	      jt=jsx-js
+            jsx=jp-ju
+            do 34 js=jsx,0,-1
+              ll=ll+1
+              jt=jsx-js
 
               p=s(js)*t(jt)
               ps=js*s(js-1)*t(jt)
               pt=s(js)*jt*t(jt-1)
 
-    	      fp=fp+c(ll,it,iwf)*p
-  	      fps=fps+c(ll,it,iwf)*ps
+              fp=fp+c(ll,it,iwf)*p
+              fps=fps+c(ll,it,iwf)*ps
    34         fpt=fpt+c(ll,it,iwf)*pt
 
               fc=fc+pc*fp
-    	      fcu=fcu+pcu*fp
-    	      fcs=fcs+pc*fps
+              fcu=fcu+pcu*fp
+              fcs=fcs+pc*fps
    36         fct=fct+pc*fpt
 
         if(ifock.gt.0) call fock(u(1),s(1),t(1),rri,rrj,it)

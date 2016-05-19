@@ -179,7 +179,7 @@
 !     the definition of rg (greater) and rl (lesser)
 
       if(r1.ge.r2) then
-	rg = r1
+        rg = r1
         rl = r2
         sign_t=one
        else
@@ -998,8 +998,8 @@
       if(xpii.le.xpow)call splint(rlobx,rloby,rloby2,nsplin,xpii,yeval)
 
       if(xpi.le.xsp) then
-	 xlob = yeval
-	 goto 500
+         xlob = yeval
+         goto 500
       endif
 
       if(xpi.gt.pi-xsp) then
@@ -1018,7 +1018,7 @@
 
       if(xpi.gt.xpow.and.xpi.le.pib2) then
          xlob = ysing7
-	 goto 500
+         goto 500
       endif
 
       if(xpi.gt.pib2.and.xpi.le.pi-xpow) then

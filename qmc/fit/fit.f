@@ -478,7 +478,7 @@
    36     imnbas(i+1)=imnbas(i)+nbasis_ctype(it)
       endif
 
-      if(ijas.eq.2. and. iabs(icusp2).ge.2) then
+      if(ijas.eq.2 .and. iabs(icusp2).ge.2) then
         do 37 isp=nspin1,nspin2
           ishft=ncuspc*(isp-nspin1)
           if(nspin2.eq.2 .and. (nup-ndn).ne.0) a1(2,2,1)=a1(2,1,1)
