@@ -360,6 +360,9 @@ make:
 .f.o:
 	$(F77) $(F77_FLAGS) -o $@ -c $<
 
+opt_lin_mod.o: opt_lin_mod.f90
+	$(F95) -finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace -DMPI -o $@ -c $<
+
 accumulation_mod.o: all_tools_mod.o average_mod.o control_mod.o \
 	montecarlo_mod.o print_mod.o modules.h
 all_tools_mod.o: average_mod.o basic_tools_mod.o catalog_averages_mod.o \
