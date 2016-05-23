@@ -257,8 +257,8 @@ module deriv_mod
   implicit none
 
 ! local
-  integer shift, param_i
-
+  integer shift, param_i,i,j
+  real*8 mag_vel2,d
 ! header
   if (header_exe) then
 
@@ -348,10 +348,21 @@ module deriv_mod
   if (l_deriv_bound .and. block_iterations_nb > 1) then
    call object_provide_by_index (dpsi_av_index)
    call object_provide_by_index (dpsi_var_index)
+   call object_provide_by_index(vold_index)
+   !calculate distance
+   mag_vel2 = 0
+   do j=1,nelec
+      do i=1,ndim
+         mag_vel2 = mag_vel2 + vold(i,j)**2
+      enddo
+   enddo
+
+   d = 1/sqrt(mag_vel2)
+
    do param_i = 1, param_nb
     if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i))  &
          .and. dabs(dpsi (param_i) - dpsi_av (param_i)) > deriv_bound_value * dsqrt(dpsi_var (param_i))) then
-      if(dabs(dpsi (param_i) - dpsi_av (param_i)) > 10*dsqrt(dpsi_var (param_i))) write (6,'(a,i8,a,i4,4(a,f12.6))') 'step=', step_iterations_nb, ' param_i =', param_i, ' dpsi =',dpsi (param_i),' dpsi_av =',dpsi_av (param_i), ' dpsi_var =',dpsi_var (param_i), ' ratio=', dabs(dpsi (param_i) - dpsi_av (param_i)) / dsqrt(dpsi_var (param_i))
+      if(dabs(dpsi (param_i) - dpsi_av (param_i)) > 10*dsqrt(dpsi_var (param_i))) write (6,'(a,i8,a,i3,4(a,f12.6))') 'step=', step_iterations_nb, ' param_i =', param_i, ' dpsi =',dpsi (param_i),' dpsi_av =',dpsi_av (param_i), ' dpsi_var =',dpsi_var (param_i), ' ratio=', dabs(dpsi (param_i) - dpsi_av (param_i)) / dsqrt(dpsi_var (param_i)), ' distance=',d
       dpsi (param_i) = dpsi_av (param_i) + sign (deriv_bound_value * dsqrt(dpsi_var (param_i)), dpsi (param_i) - dpsi_av (param_i))
 !     write (6,'(a,i3,a,f12.6,a)') 'param_i =', param_i, 'dpsi =',dpsi (param_i),' after bound applied'
     endif
@@ -446,7 +457,8 @@ module deriv_mod
   implicit none
 
 ! local
-  integer shift, param_i
+  integer shift, param_i,i,j
+  real*8 mag_vel2,d
 
 ! header
   if (header_exe) then
@@ -542,10 +554,21 @@ module deriv_mod
   if (l_deriv_bound .and. block_iterations_nb > 1) then
    call object_provide_by_index (deloc_av_index)
    call object_provide_by_index (deloc_var_index)
+   call object_provide_by_index(vold_index)
+   !calculate distance
+   mag_vel2 = 0
+   do j=1,nelec
+      do i=1,ndim
+         mag_vel2 = mag_vel2 + vold(i,j)**2
+      enddo
+   enddo
+
+   d = 1/sqrt(mag_vel2)
+
    do param_i = 1, param_nb
     if ((.not. is_param_type_jas (param_i) .and. .not. is_param_type_pjas (param_i))  &
          .and. dabs(deloc (param_i) - deloc_av (param_i)) > deriv_bound_value * dsqrt(deloc_var (param_i))) then
-      if(dabs(deloc (param_i) - deloc_av (param_i)) > 10*dsqrt(deloc_var (param_i))) write (6,'(a,i8,a,i3,4(a,f12.6))') 'step=', step_iterations_nb, ' param_i =', param_i, ' deloc =',deloc (param_i),' deloc_av =',deloc_av (param_i), ' deloc_var =',deloc_var (param_i), ' ratio=', dabs(deloc (param_i) - deloc_av (param_i)) / dsqrt(deloc_var (param_i))
+      if(dabs(deloc (param_i) - deloc_av (param_i)) > 10*dsqrt(deloc_var (param_i))) write (6,'(a,i8,a,i3,4(a,f12.6))') 'step=', step_iterations_nb, ' param_i =', param_i, ' deloc =',deloc (param_i),' deloc_av =',deloc_av (param_i), ' deloc_var =',deloc_var (param_i), ' ratio=', dabs(deloc (param_i) - deloc_av (param_i)) / dsqrt(deloc_var (param_i)), ' distance=',d
       deloc (param_i) = deloc_av (param_i) + sign (deriv_bound_value * dsqrt(deloc_var (param_i)), deloc (param_i) - deloc_av (param_i))
 !     write (6,'(a,i3,a,f12.6,a)') 'param_i =', param_i, 'deloc =',deloc (param_i),' after bound applied'
     endif

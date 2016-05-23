@@ -77,6 +77,8 @@ module initialization_mod
   iorb_used=0
   iorb_format='unused'
 
+  psig_epsilon=0.0
+
 ! csfs
   ncsf=1
   call alloc ('csf_coef',csf_coef, ncsf, nwf)

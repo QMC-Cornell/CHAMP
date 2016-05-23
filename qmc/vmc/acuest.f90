@@ -84,7 +84,7 @@
 
 ! write out current values of averages
 
-      wsum(1)=dfloat(nstep)*dfloat(nproc)
+!      wsum(1)=dfloat(nstep)*dfloat(nproc) Should this be commented out? I'm not sure MJO98
 !      if (l_reweight .and. l_opt .and. nforce .eq. 1) then
 !         walker_weights_sum = walker_weights_sum + walker_weights_sum_block
 !         l_reset_walker_weights_sum_block = .true.
@@ -222,6 +222,8 @@
             ipeerr=nint(10000000*(peerr*(1-temp)+temp*peierr))
           endif
 
+
+          sigma = sqrt(eloc_var)
           if(ndim.eq.2) then
             write(6,'(f12.7,5(f12.7,''('',i7,'')''),17x,f10.5,i10)') &
      &      enow,eave,ieerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,emave,iemerr, &
@@ -534,6 +536,8 @@
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
+! set initial psigo
+      call psig (psi2o(1),vold,psig2o,distance)
       tjfo=d2
       tjfo=-tjfo*half*hb
 

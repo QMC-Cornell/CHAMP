@@ -91,7 +91,7 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	fit/fockexact3.f90 fit/func.f90 fit/jacobian.f90 fit/piksrt.f90 \
 	fit/plot_jas.f90 fit/rewght.f90 fit/strech.f90 fit/MPI/func_mpi.f90 \
 	fit/MPI/jacobian_mpi.f90 vmc/acuest.f90 vmc/basis_fns.f90 \
-	vmc/basis_fnse2.f90 vmc/basis_norm.f90 vmc/basis_norm_dot.f90 \
+	vmc/basis_fnse2.f90 vmc/basis_norm.f90 vmc/psig.f90 vmc/basis_norm_dot.f90 \
 	vmc/cbasis_fns.f90 vmc/cdeterminant.f90 vmc/cdeterminante.f90 \
 	vmc/cdetsav.f90 vmc/cjastrow.f90 vmc/cmatinv.f90 \
 	vmc/corbitals_loc_ana.f90 vmc/corbitals_loc_ana_grade.f90 \
@@ -226,7 +226,7 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	fit/fockcheck3.o fit/fockexact3.o fit/func.o fit/jacobian.o \
 	fit/piksrt.o fit/plot_jas.o fit/rewght.o fit/strech.o \
 	fit/MPI/func_mpi.o fit/MPI/jacobian_mpi.o vmc/acuest.o \
-	vmc/basis_fns.o vmc/basis_fnse2.o vmc/basis_norm.o \
+	vmc/basis_fns.o vmc/basis_fnse2.o vmc/basis_norm.o vmc/psig.o\
 	vmc/basis_norm_dot.o vmc/cbasis_fns.o vmc/cdeterminant.o \
 	vmc/cdeterminante.o vmc/cdetsav.o vmc/cjastrow.o vmc/cmatinv.o \
 	vmc/corbitals_loc_ana.o vmc/corbitals_loc_ana_grade.o vmc/den2dwrt.o \

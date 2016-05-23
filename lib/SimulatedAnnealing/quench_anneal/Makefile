@@ -103,7 +103,7 @@ endif
 ifeq ($(system),Linux)
   $(shell cp -p parameters/parameters.Linux include/parameters.h)
 # Linux default is now ifort
-  F77 = ifort
+  F77 = gfortran
 # FFLAGS = -g -CB -d4 -zero -save -extend_source -w -r8 -fpp2 -O0 -ax
 # FFLAGS = -zero -save -extend_source -w -r8 -fpp2 -O2 -ax
 # FFLAGS = -zero -save -extend_source -w -r8 -O3 -axN -ipo -pad
@@ -117,6 +117,14 @@ ifeq ($(system),Linux)
   FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3 -ax -pad
 # LDFLAGS_MPI = -Vaxlib -static
   LDFLAGS_MPI = -static -nothread -lmpi
+
+  F77 = gfortran
+  FFLAGS = -finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check -DNOMPI
+  FC = gfortran
+  F77_MPI = gfortran
+  F95 = gfortran
+  F95_MPI = gfortran
+
 
 # Old AMD Athlon cluster of Arias group
 ifeq ($(hostname),dft.physics.cornell.edu)
@@ -286,7 +294,7 @@ ifeq ($(hostname),mck-login1)
 endif
 
 # Argonne Blue-Gene
-ifeq ($(hostname),login1)
+ifeq ($(hostname),login11) #MJO Hack to make work on login1 at dft
 
 # for debug front-end
   F77 = xlf

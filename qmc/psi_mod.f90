@@ -69,6 +69,10 @@ module psi_mod
   case ('maximization')
    call psi2_maximization_menu
 
+  case ('psig_epsilon')
+   call get_next_value (psig_epsilon)
+   call object_modified ('psig_epsilon')
+
   case ('end')
    exit
 
@@ -85,7 +89,7 @@ module psi_mod
   write(6,'(a,i5)') ' numbers of total     electrons = ', nelec
   write(6,'(a,i5)') ' numbers of spin-up   electrons = ', nup
   write(6,'(a,i5)') ' numbers of spin-down electrons = ', ndn
-
+  write(6,'(a,es12.5)') ' psig epsilon =',psig_epsilon
 ! checkings
   if (nelec <= 0) then
     call die (lhere, 'number of electrons = '+nelec+' <= 0.')

@@ -324,6 +324,7 @@
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
+      call psig(psi2o(1),vold,psig2o,distance)
       tjfo=d2
       tjfo=-tjfo*half*hb
 

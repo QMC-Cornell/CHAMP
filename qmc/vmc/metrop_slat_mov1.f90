@@ -13,12 +13,13 @@
       use constants_mod
       use contrl_per_mod, only: iperiodic
       use montecarlo_mod
+      use contrl_mod, only: nstep
       use eloc_mod
       use opt_lin_mod
       use opt_ptb_mod
       use deriv_exp_mod
       use atom_mod
-      use config_mod
+      use config_mod !psign,psigo are in here
       use dets_mod
       use const_mod
       use const2_mod
@@ -32,7 +33,7 @@
       use stepv_mod
       use jel_sph2_mod
       use kinet_mod
-      use forcewt_mod
+      use forcewt_mod !guiding_w_sum is here
       use estsig_mod
       use estsum_mod
       use determinants_mod
@@ -332,6 +333,7 @@
       iel=i
       call hpsie(iel,xnew,psidn,psijn,vnew)
       psi2n(1)=2*(dlog(dabs(psidn))+psijn)
+      call psig (psi2n(1),vnew,psig2n,d)!,vnew_g)
 
 ! calculate probability for reverse transition
       fxnp=one
@@ -463,7 +465,8 @@
 !lim    endif
 
 ! p is the probability of accepting new move
-      p=rratio**2*exp(psi2n(1)-psi2o(1))*dabs((fxnp*areao)/(fxop*arean))
+      !p=rratio**2*exp(psi2n(1)-psi2o(1))*dabs((fxnp*areao)/(fxop*arean))
+      p=rratio**2*exp(psig2n-psig2o)*dabs((fxnp*areao)/(fxop*arean))
 
         if(ipr.ge.1) then
           write(6,'(''rminn,rvminn,vnew,vnewr'',9f10.4)') &
@@ -523,6 +526,7 @@
         rmino(i)=rminn(i)
         nearesto(i)=nearestn(i)
         psi2o(1)=psi2n(1)
+        psig2o   = psig2n
         do 240 k=1,ndim
           xold(k,i)=xnew(k,i)
           rvmino(k,i)=rvminn(k,i)
@@ -555,6 +559,7 @@
       if(nforce.gt.1) call strech(xold,xstrech,ajacob,1,0)
       call hpsi(xold,psido,psijo,vold,div_vo,d2o,peo,peio,eold(1),denergy,1)
       psi2o(1)=2*(dlog(dabs(psido))+psijo)
+      call psig (psi2o(1),vold,psig2o,d)!,voldg)
 
       eloc = eold(1)                               !JT
       psi_det = psido                              !JT
@@ -601,12 +606,20 @@
 
       tjfo=-d2o*half*hb
 ! form expected values of e, pe, etc.
-      esum1=eold(1)
-      esum(1)=esum(1)+eold(1)
-      pesum=pesum+peo
-      peisum=peisum+peio
-      tpbsum=tpbsum+(eold(1)-peo)
-      tjfsum=tjfsum+tjfo
+      !Multiply new values by guiding_w = psit^2/psig^2 when psit.ne.psig
+      guiding_w = exp(psi2o(1)-psig2o)
+!     guiding_w = exp(psi2o(1))/(psigo**2)
+!      write(11,*) 'psit psig',psi2o(1),psig2o,guiding_w
+      current_walker_weight = guiding_w
+      call object_modified_by_index(current_walker_weight_index)
+
+
+      esum1=eold(1)*guiding_w
+      esum(1)=esum(1)+eold(1)*guiding_w
+      pesum=pesum+peo*guiding_w
+      peisum=peisum+peio*guiding_w
+      tpbsum=tpbsum+(eold(1)-peo)*guiding_w
+      tjfsum=tjfsum+tjfo*guiding_w
 !      if(nefp.gt.0) then
 !        call sample_efp(1,xold,eold(1),1.d0)
 !        call efpsav
@@ -618,7 +631,9 @@
 
       do 380 ifr=1,nforce
         if(ifr.eq.1) then
-          esum1s(ifr)=eold(ifr)
+          esum1s(ifr)=eold(ifr)*guiding_w
+          wsum(ifr)  = wsum(ifr) + guiding_w
+          wsum1s(ifr) = guiding_w!Does wsum1s need the same treatment?
          else
           wstro=max(min(exp(psi2o(ifr)-psi2o(1)),1.d99),1.d-99)
           wsum1s(ifr)=wstro

@@ -42,10 +42,10 @@
 
       dimension zzfin(nzzvars), zzerr(nzzvars)
 
-      err(x,x2,i)=dsqrt(abs(x2/wcum(i)-(x/wcum(i))**2)/iblk)
-      err1(x,x2)=dsqrt(dabs(x2/passes-(x/passes)**2)/passes)
+      err(x,x2,weight)=dsqrt(abs(x2/weight-(x/weight)**2)/iblk)
+      err1(x,x2,weight)=dsqrt(dabs(x2/weight-(x/weight)**2)/weight)
 !     err1s(x,x2,i)=dsqrt(dabs(x2/wcum1(i)-(x/wcum1(i))**2)/passes)
-      err1s(x,x2,i)=dsqrt(dabs(x2/wcum(i)-(x/wcum(i))**2)/passes)
+      err1s(x,x2,weight)=dsqrt(dabs(x2/weight-(x/weight)**2)/passes)
 
       if(index(mode,'mpi').ne.0) then
         call finwrt_mpi
@@ -70,18 +70,18 @@
 !       accfin=acccum/(passes*nelec)
 !     endif
 
-      efin=ecum(1)/passes
+      efin=ecum(1)/wcum(1)
       energy(1)=efin
-      pefin=pecum/passes
-      peifin=peicum/passes
-      tpbfin=tpbcum/passes
-      tjffin=tjfcum/passes
-      r1fin=r1cum/passes
-      r2fin=r2cum/passes
-      r3fin=r3cum/passes
-      r4fin=r4cum/passes
+      pefin=pecum/wcum(1)
+      peifin=peicum/wcum(1)
+      tpbfin=tpbcum/wcum(1)
+      tjffin=tjfcum/wcum(1)
+      r1fin=r1cum/wcum(1)
+      r2fin=r2cum/wcum(1)
+      r3fin=r3cum/wcum(1)
+      r4fin=r4cum/wcum(1)
       if(izigzag.gt.0) then
-        zzfin(:)=zzcum(:)/passes
+        zzfin(:)=zzcum(:)/wcum(1)
       endif
       accfin=acccum/passes
 
@@ -94,20 +94,24 @@
 ! However, it makes sense to use the latter definition because
 ! p*new+q*old does reduce Tcorr and that is precisely what is being
 ! reflected when we get Tcorr < 1.
-      eerr1=err1(ecum1,ecm21)
-      eer1s=err1(ecum1s(1),ecm21s(1))
-      eerr=err(ecum(1),ecm2(1),1)
-      peerr=err(pecum,pecm2,1)
-      peierr=err(peicum,peicm2,1)
-      tpberr=err(tpbcum,tpbcm2,1)
-      tjferr=err(tjfcum,tjfcm2,1)
-      r1err=err(r1cum,r1cm2,1)
-      r2err=err(r2cum,r2cm2,1)
-      r3err=err(r3cum,r3cm2,1)
-      r4err=err(r4cum,r4cm2,1)
+      ! eerr1=err1(ecum1,ecm21)
+      ! eer1s=err1(ecum1s(1),ecm21s(1))
+
+      eerr1=err1(ecum1,ecm21,wcum(1))
+      eer1s=err1(ecum1s(1),ecm21s(1),wcum(1))
+
+      eerr=err(ecum(1),ecm2(1),wcum(1))
+      peerr=err(pecum,pecm2,wcum(1))
+      peierr=err(peicum,peicm2,wcum(1))
+      tpberr=err(tpbcum,tpbcm2,wcum(1))
+      tjferr=err(tjfcum,tjfcm2,wcum(1))
+      r1err=err(r1cum,r1cm2,wcum(1))
+      r2err=err(r2cum,r2cm2,wcum(1))
+      r3err=err(r3cum,r3cm2,wcum(1))
+      r4err=err(r4cum,r4cm2,wcum(1))
       if(izigzag.gt.0) then
        do iz=1,nzzvars
-        zzerr(iz)=err(zzcum(iz),zzcm2(iz),1)
+        zzerr(iz)=err(zzcum(iz),zzcm2(iz),wcum(1))
        enddo
       endif
 !     tcsq=eerr/eerr1
@@ -195,8 +199,8 @@
       call alloc ('eloc_tc', eloc_tc, nforce)
       do 110 ifr=2,nforce
         efin=ecum(ifr)/wcum(ifr)
-        eerr=err(ecum(ifr),ecm2(ifr),ifr)
-        eer1s=err1s(ecum1s(ifr),ecm21s(ifr),ifr)
+        eerr=err(ecum(ifr),ecm2(ifr),wcum(ifr))
+        eer1s=err1s(ecum1s(ifr),ecm21s(ifr),wcum(ifr))
         tcsq=eerr/eer1s
         eloc_tc (ifr) = tcsq**2 !JT
         sigma=eer1s*rtpass
@@ -204,9 +208,9 @@
         if(deltot(ifr).ne.0.d0) then
 !         ffin=ffin/deltot(ifr)
 !         ferr=err(fcum(ifr),fcm2(ifr),1)/abs(deltot(ifr))
-          ferr=err(fcum(ifr),fcm2(ifr),1)
+          ferr=err(fcum(ifr),fcm2(ifr),wcum(1))
          else
-          ferr=err(fcum(ifr),fcm2(ifr),1)
+          ferr=err(fcum(ifr),fcm2(ifr),wcum(1))
         endif
 ! save energy, force, energy_sigma, energy_err and force_err for optimization
 ! force and force_err are really the energy difference and the error in the energy difference.
