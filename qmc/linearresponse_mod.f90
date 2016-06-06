@@ -113,7 +113,13 @@ module linearresponse_mod
   endif 
   call vmc_init
 
-  !call object_average_request('amat_av')
+  call object_average_request('dpsi_av')
+  call object_average_request('dpsi_eloc_av')
+  call object_average_request('dpsi_dpsi_eloc_av')
+  call object_average_request('dpsi_dpsi_av')
+  call object_average_request('deloc_av')
+  call object_average_request('dpsi_deloc_av')
+
   call object_error_request('amat_av_err')
   call vmc
   run_done=.true.
@@ -139,21 +145,18 @@ module linearresponse_mod
 
     call object_needed('eloc_av')
     call object_needed('dpsi_av')
-    !call object_needed('dpsi_eloc_av')
-    !call object_needed('dpsi_dpsi_eloc_av')
-    !call object_needed('dpsi_eloc_covar')
-    !call object_needed('dpsi_deloc_covar')
-    !call object_needed('ovlp_lin')
-    !call object_needed('delta_eps')
-    !call object_needed('deloc')
+    call object_needed('dpsi_eloc_av')
+    call object_needed('dpsi_dpsi_eloc_av')
+    call object_needed('dpsi_dpsi_covar')
+    call object_needed('dpsi_deloc_covar')
 
     return
   endif
 
-  !call object_alloc ('amat_av',amat_av,param_nb,param_nb)
-  !call object_alloc ('amat_av_err',amat_av_err,param_nb,param_nb)
-  !call object_associate ('amat_av',amat_av,param_nb,param_nb)
-  !call object_associate ('amat_av_err',amat_av_err,param_nb,param_nb)
+  call object_alloc ('amat_av',amat_av,param_nb,param_nb)
+  call object_alloc ('amat_av_err',amat_av_err,param_nb,param_nb)
+  call object_associate ('amat_av',amat_av,param_nb,param_nb)
+  call object_associate ('amat_av_err',amat_av_err,param_nb,param_nb)
 
   write(6,*) 'THIS IS HOW I WOULD DO A'
 
