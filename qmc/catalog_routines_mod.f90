@@ -14,6 +14,8 @@ module catalog_routines_mod
   use montecarlo_mod
   use determinants_mod
   use eloc_mod
+  use derivatives_fast_mod
+  use linearresponse_mod
   use grid_mod
   use deriv_mod
   use deriv_jas_mod
@@ -203,6 +205,13 @@ module catalog_routines_mod
   call catalog_one_node ('hess_uf_bld', hess_uf_bld)
   call catalog_one_node ('hess_tu_bld', hess_tu_bld)
   call catalog_one_node ('hess_lin_bld', hess_lin_bld)
+
+! det fast
+  call catalog_one_node ('grd_det_over_det_fast_bld', grd_det_over_det_fast_bld)
+  call catalog_one_node ('lap_det_over_det_fast_bld', lap_det_over_det_fast_bld)
+
+! linear response
+  call catalog_one_node ('amat_av_bld', amat_av_bld)
 
 ! linear optimization method
   call catalog_one_node ('ovlp_lin_bld', ovlp_lin_bld)

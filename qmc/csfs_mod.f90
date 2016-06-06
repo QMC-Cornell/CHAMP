@@ -19,6 +19,7 @@ module csfs_mod
   real(dp), allocatable     :: csfs_wfdet_ovlp (:)
 
   logical                   :: l_vb_weights = .false.
+  logical                   :: l_fast_determinants = .false.
   real(dp), allocatable     :: vb_weights_hiberty (:)
   real(dp)                  :: first_csf_over_psid
   real(dp), allocatable     :: csf_over_psid (:)
@@ -74,6 +75,7 @@ module csfs_mod
    write(6,'(a)') '  csf_coef 1.0 0.3 ... end : CSF coefficients'
    write(6,'(a)') '  vb_weights = [logical] : calculate VB weights (default=false)'
    write(6,'(a)') '  dets_in_csfs ... end : determinants in CSFs'
+   write(6,'(a)') '  fast_determinants = [logical] : use new way to calculate determinants (default=false)'
    write(6,'(a)') ' end'
    write(6,*)
 
@@ -93,6 +95,9 @@ module csfs_mod
 
   case ('vb_weights')
    call get_next_value (l_vb_weights)
+
+  case ('fast_determinants')
+   call get_next_value (l_fast_determinants)
 
   case ('end')
    exit

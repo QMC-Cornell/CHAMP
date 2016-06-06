@@ -66,18 +66,19 @@ SRCS =	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
 	cslater_cf_mod.f90 cslater_mod.f90 cslaterw_mod.f90 cusp_mod.f90 \
 	debug_mod.f90 density_mod.f90 deriv_csf_mod.f90 deriv_exp_mod.f90 \
 	deriv_geo_mod.f90 deriv_jas_mod.f90 deriv_mod.f90 deriv_orb_mod.f90 \
-	determinants_mod.f90 dipole_moment_mod.f90 dmc_mod.f90 \
-	electrons_mod.f90 eloc_mod.f90 ewald2_mod.f90 extracule_mod.f90 \
-	f2kcli.f90 files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 \
-	forces_pulay_mod.f90 grid_mod.f90 indexes_mod.f90 \
+	derivatives_fast_mod.f90 determinants_mod.f90 dipole_moment_mod.f90 \
+	dmc_mod.f90 electrons_mod.f90 eloc_mod.f90 ewald2_mod.f90 \
+	extracule_mod.f90 f2kcli.f90 files_tools_mod.f90 fitdet_mod.f90 \
+	forces_mod.f90 forces_pulay_mod.f90 grid_mod.f90 indexes_mod.f90 \
 	initialization_mod.f90 intracule_mod.f90 jastrow_mod.f90 \
-	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
-	nodes_mod.f90 nuclei_mod.f90 objects_mod.f90 opt_common_mod.f90 \
-	opt_lin_mod.f90 opt_nwt_mod.f90 opt_ovlp_fn_mod.f90 opt_ptb_mod.f90 \
-	optimization_mod.f90 orbitals_mod.f90 parser_tools_mod.f90 \
-	periodic_jastrow_een.f90 periodic_jastrow_mod.f90 pjas_interface.f90 \
-	pjas_setup_mod.f90 pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 \
-	psi_mod.f90 restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
+	linearresponse_mod.f90 main_menu_mod.f90 matrix_tools_mod.f90 \
+	montecarlo_mod.f90 mpi_mod.f90 nodes_mod.f90 nuclei_mod.f90 \
+	objects_mod.f90 opt_common_mod.f90 opt_lin_mod.f90 opt_nwt_mod.f90 \
+	opt_ovlp_fn_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 \
+	orbitals_mod.f90 parser_tools_mod.f90 periodic_jastrow_een.f90 \
+	periodic_jastrow_mod.f90 pjas_interface.f90 pjas_setup_mod.f90 \
+	pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 psi_mod.f90 \
+	restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 \
 	testing_mod.f90 types_mod.f90 variables_mod.f90 vmc_mod.f90 \
 	walkers_mod.f90 write_mod.f90 amoeba.f amotry.f choldc.f cholsl.f \
 	ei.f ei2.f erf.f expint.f hash_funcs.f pythag.f svbksb.f svdcmp.f \
@@ -204,10 +205,11 @@ OBJS =	commons/age_mod.o commons/atom_mod.o commons/basis1_mod.o \
 	csfs_mod.o cslater_cf_mod.o cslater_mod.o cslaterw_mod.o cusp_mod.o \
 	debug_mod.o density_mod.o deriv_csf_mod.o deriv_exp_mod.o \
 	deriv_geo_mod.o deriv_jas_mod.o deriv_mod.o deriv_orb_mod.o \
-	determinants_mod.o dipole_moment_mod.o dmc_mod.o electrons_mod.o \
-	eloc_mod.o ewald2_mod.o extracule_mod.o f2kcli.o files_tools_mod.o \
-	fitdet_mod.o forces_mod.o forces_pulay_mod.o grid_mod.o indexes_mod.o \
-	initialization_mod.o intracule_mod.o jastrow_mod.o main_menu_mod.o \
+	derivatives_fast_mod.o determinants_mod.o dipole_moment_mod.o \
+	dmc_mod.o electrons_mod.o eloc_mod.o ewald2_mod.o extracule_mod.o \
+	f2kcli.o files_tools_mod.o fitdet_mod.o forces_mod.o \
+	forces_pulay_mod.o grid_mod.o indexes_mod.o initialization_mod.o \
+	intracule_mod.o jastrow_mod.o linearresponse_mod.o main_menu_mod.o \
 	matrix_tools_mod.o montecarlo_mod.o mpi_mod.o nodes_mod.o \
 	nuclei_mod.o objects_mod.o opt_common_mod.o opt_lin_mod.o \
 	opt_nwt_mod.o opt_ovlp_fn_mod.o opt_ptb_mod.o optimization_mod.o \
@@ -360,9 +362,6 @@ make:
 .f.o:
 	$(F77) $(F77_FLAGS) -o $@ -c $<
 
-opt_lin_mod.o: opt_lin_mod.f90
-	$(F95) -finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace -DMPI -o $@ -c $<
-
 accumulation_mod.o: all_tools_mod.o average_mod.o control_mod.o \
 	montecarlo_mod.o print_mod.o modules.h
 all_tools_mod.o: average_mod.o basic_tools_mod.o catalog_averages_mod.o \
@@ -391,10 +390,11 @@ catalog_objects_mod.o: basic_tools_mod.o constants_mod.o indexes_mod.o \
 	objects_mod.o variables_mod.o
 catalog_routines_mod.o: all_tools_mod.o backflow_auxiliary_mod.o \
 	backflow_mod.o basis_mod.o density_mod.o deriv_jas_mod.o deriv_mod.o \
-	determinants_mod.o dipole_moment_mod.o eloc_mod.o extracule_mod.o \
-	forces_mod.o grid_mod.o intracule_mod.o jastrow_mod.o \
-	montecarlo_mod.o nodes_mod.o nuclei_mod.o opt_lin_mod.o opt_nwt_mod.o \
-	opt_ovlp_fn_mod.o opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
+	derivatives_fast_mod.o determinants_mod.o dipole_moment_mod.o \
+	eloc_mod.o extracule_mod.o forces_mod.o grid_mod.o intracule_mod.o \
+	jastrow_mod.o linearresponse_mod.o montecarlo_mod.o nodes_mod.o \
+	nuclei_mod.o opt_lin_mod.o opt_nwt_mod.o opt_ovlp_fn_mod.o \
+	opt_ptb_mod.o optimization_mod.o orbitals_mod.o \
 	periodic_jastrow_mod.o routines_mod.o
 champ.o: all_tools_mod.o catalog_routines_mod.o commons/contr3_mod.o \
 	dmc_mod.o f2kcli.o initialization_mod.o main_menu_mod.o mpi_mod.o \
@@ -420,6 +420,7 @@ deriv_mod.o: all_tools_mod.o commons/pjas_mod.o deriv_csf_mod.o \
 	eloc_mod.o periodic_jastrow_mod.o modules.h
 deriv_orb_mod.o: all_tools_mod.o csfs_mod.o determinants_mod.o eloc_mod.o \
 	montecarlo_mod.o orbitals_mod.o modules.h
+derivatives_fast_mod.o: all_tools_mod.o electrons_mod.o psi_mod.o modules.h
 determinants_mod.o: all_tools_mod.o basis_mod.o orbitals_mod.o modules.h
 dipole_moment_mod.o: all_tools_mod.o deriv_mod.o electrons_mod.o nuclei_mod.o \
 	opt_lin_mod.o modules.h
@@ -444,12 +445,15 @@ intracule_mod.o: all_tools_mod.o electrons_mod.o eloc_mod.o grid_mod.o \
 	montecarlo_mod.o psi_mod.o modules.h
 jastrow_mod.o: all_tools_mod.o basis_mod.o determinants_mod.o electrons_mod.o \
 	montecarlo_mod.o orbitals_mod.o modules.h
+linearresponse_mod.o: all_tools_mod.o commons/dets_mod.o deriv_mod.o \
+	opt_common_mod.o opt_lin_mod.o vmc_mod.o modules.h
 main_menu_mod.o: all_tools_mod.o backflow_mod.o basis_mod.o \
 	commons/contr3_mod.o commons/stepv_mod.o control_mod.o \
 	correlated_sampling_mod.o cusp_mod.o debug_mod.o density_mod.o \
 	dipole_moment_mod.o dmc_mod.o extracule_mod.o forces_mod.o grid_mod.o \
-	intracule_mod.o jastrow_mod.o optimization_mod.o orbitals_mod.o \
-	periodic_jastrow_mod.o print_mod.o psi_mod.o testing_mod.o
+	intracule_mod.o jastrow_mod.o linearresponse_mod.o optimization_mod.o \
+	orbitals_mod.o periodic_jastrow_mod.o print_mod.o psi_mod.o \
+	testing_mod.o
 matrix_tools_mod.o: basic_tools_mod.o strings_tools_mod.o variables_mod.o
 montecarlo_mod.o: all_tools_mod.o eloc_mod.o modules.h
 mpi_mod.o: constants_mod.o
