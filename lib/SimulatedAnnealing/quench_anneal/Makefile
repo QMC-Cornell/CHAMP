@@ -480,6 +480,18 @@ ifeq ($(hostname),jugene1)
 
 endif
 
+#BM, personnal computer 1
+ifeq ($(hostname),antares)
+  F77=gfortran
+  FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+endif
+
+#BM, personnal computer 2
+ifeq ($(hostname),antaresICS)
+  F77=gfortran
+  FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+endif
+
 # The Intel compiler ifc causes trouble in dlamch unless the latter is
 # compiled with -O0
 # ifneq ($(F77),ifc)
