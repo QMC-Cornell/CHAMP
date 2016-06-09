@@ -211,7 +211,7 @@ module catalog_routines_mod
   call catalog_one_node ('lap_det_over_det_fast_bld', lap_det_over_det_fast_bld)
 
 ! linear response
-  call catalog_one_node ('amat_av_bld', amat_av_bld)
+  call catalog_one_node ('linresp_av_eigenval_bld', linresp_av_eigenval_bld)
 
 ! linear optimization method
   call catalog_one_node ('ovlp_lin_bld', ovlp_lin_bld)

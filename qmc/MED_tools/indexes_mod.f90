@@ -16,7 +16,7 @@ module indexes_mod
   integer     :: sum_lap_lnj_index
   integer     :: grd_det_over_det_legacy_index
   integer     :: lap_det_over_det_legacy_index
-  integer     :: amat_av_index
+  integer     :: linresp_av_eigenval_index
   integer     :: orb_index
   integer     :: dorb_index
   integer     :: ddorb_index

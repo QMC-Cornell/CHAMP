@@ -13,7 +13,7 @@ module allocations_mod
 ! Created       : J. Toulouse, 09 May 2009
 ! -----------------------------------------------------------------------------------
   use orbitals_mod, only: orb_tot_nb
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   call object_provide ('nelec')

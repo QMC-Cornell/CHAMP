@@ -73,7 +73,7 @@ CONTAINS
 ! Richard Hennig  4.2008 Read bwfn.data on master & bcast.                !
 !-------------------------------------------------------------------------!
  USE mpi_mod
- include 'modules.h'
+ use all_modules_mod
  IMPLICIT NONE
  INTEGER i,j,k,io,band,ig,ialloc,idum,ispin,num_spins,num_electrons,n1,n2,n3,ierr,nbasisbwf
  INTEGER,DIMENSION(:),ALLOCATABLE :: atno
@@ -750,7 +750,7 @@ CONTAINS
 ! NB: This routine will shortly be replaced when the standard PWFDET_SETUP   !
 ! will be used for both PWs and blips. MDT 3.2002                            !
 !----------------------------------------------------------------------------!
- include 'modules.h'
+ use all_modules_mod
  IMPLICIT NONE
  REAL(dp),INTENT(in) :: orb_norm
  INTEGER, PARAMETER :: mdet_max_mods=15,lsize=500,num_g=lsize+lsize-1, &

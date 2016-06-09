@@ -1026,7 +1026,7 @@ module average_mod
 !! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
 !! Modified      : J. Toulouse, 03 Oct 2006: MPI version
 !! -----------------------------------------------------------------------------------
-!  include 'modules.h'
+!  use all_modules_mod
 !  implicit none
 !
 !! input
@@ -1120,7 +1120,7 @@ module average_mod
 !! Created       : J. Toulouse, 18 Oct 2005
 !! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
 !! -----------------------------------------------------------------------------------
-!  include 'modules.h'
+!  use all_modules_mod
 !  implicit none
 !
 !! input
@@ -1236,7 +1236,7 @@ module average_mod
 !! Created       : J. Toulouse, 18 Oct 2005
 !! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
 !! -----------------------------------------------------------------------------------
-!  include 'modules.h'
+!  use all_modules_mod
 !  implicit none
 !
 !! input
@@ -1354,7 +1354,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1440,7 +1440,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1549,7 +1549,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1657,7 +1657,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1708,7 +1708,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1772,7 +1772,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1841,7 +1841,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 05 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1901,7 +1901,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 07 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -1976,7 +1976,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 07 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2052,7 +2052,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 28 Sep 2013
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2129,7 +2129,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 17 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2189,7 +2189,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2264,7 +2264,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2339,7 +2339,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2417,7 +2417,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 15 Feb 2008
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2507,7 +2507,7 @@ module average_mod
 ! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
 ! Modified      : J. Toulouse, 06 Sep 2007: statistical error calculated from variance
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2554,7 +2554,7 @@ module average_mod
 ! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
 ! Modified      : J. Toulouse, 07 Sep 2007: statistical error calculated from variance
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2613,7 +2613,7 @@ module average_mod
 ! Modified      : J. Toulouse, 05 Feb 2006: use fortran pointers, warning association not checked!
 ! Modified      : J. Toulouse, 07 Sep 2007: statistical error calculated from variance
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2672,7 +2672,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 28 Sep 2013
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2729,7 +2729,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 12 Nov 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2762,7 +2762,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2798,7 +2798,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2835,7 +2835,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 12 Nov 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2900,7 +2900,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -2968,7 +2968,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -3283,7 +3283,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 06 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -3341,7 +3341,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2007
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -3414,7 +3414,7 @@ module average_mod
 !
 ! Created       : J. Toulouse, 20 Oct 2005
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

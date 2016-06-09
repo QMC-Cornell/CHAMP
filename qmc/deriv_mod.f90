@@ -123,7 +123,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -253,7 +253,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -371,7 +371,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 19 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -442,7 +442,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -562,7 +562,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 23 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -595,7 +595,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -625,7 +625,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 11 Aug 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -656,7 +656,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -686,7 +686,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -963,7 +963,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1006,7 +1006,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1039,7 +1039,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1128,7 +1128,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1161,7 +1161,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1191,7 +1191,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer param_i, param_j
@@ -1235,7 +1235,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer param_i, param_j
@@ -1273,7 +1273,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer param_i, param_j
@@ -1311,7 +1311,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1345,7 +1345,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 21 Apr 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1378,7 +1378,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1419,7 +1419,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1457,7 +1457,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 19 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 
@@ -1490,7 +1490,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1525,7 +1525,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2015
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1573,7 +1573,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1604,7 +1604,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Aug 2014
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1639,7 +1639,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2015
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1694,7 +1694,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1735,7 +1735,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1776,7 +1776,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1820,7 +1820,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1917,7 +1917,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1945,7 +1945,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1976,7 +1976,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -2047,7 +2047,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2088,7 +2088,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2127,7 +2127,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2171,7 +2171,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header

@@ -21,7 +21,7 @@ module derivatives_fast_mod
 !
 ! Created       : B. Mussard, Jan 2016
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -82,7 +82,7 @@ module derivatives_fast_mod
 !
 ! Created       : B. Mussard, Jan 2016
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

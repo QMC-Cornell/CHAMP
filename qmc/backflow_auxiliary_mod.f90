@@ -66,7 +66,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -120,7 +120,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -175,7 +175,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -227,7 +227,7 @@ contains
     !
     ! Created       : F. Petruzielo 10 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -271,7 +271,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -315,7 +315,7 @@ contains
     !
     ! Created       : F. Petruzielo 10 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -375,7 +375,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -435,7 +435,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -494,7 +494,7 @@ contains
     !
     ! Created     : F. Petruzielo, 15 Apr 2009
     !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !need nwalk, ncent, nelec, ndim
@@ -572,7 +572,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -619,7 +619,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -663,7 +663,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -714,7 +714,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -766,7 +766,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     ! header
@@ -806,7 +806,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -856,7 +856,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -910,7 +910,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -966,7 +966,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1017,7 +1017,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1066,7 +1066,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1175,7 +1175,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1315,7 +1315,7 @@ contains
     !
     ! Created       : F. Petruzielo 15 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1502,7 +1502,7 @@ contains
     !
     ! Created       : F. Petruzielo 13 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1577,7 +1577,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local
@@ -1663,7 +1663,7 @@ contains
     !
     ! Created       : F. Petruzielo 14 Apr, 2009
     ! ------------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     !local

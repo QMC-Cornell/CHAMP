@@ -11,7 +11,7 @@ module initialization_mod
 !
 ! Created       : J. Toulouse, 11 Mar 2009
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   character(len=max_string_len_rout), save :: lhere = 'initialization_before_parser'
 
@@ -185,7 +185,7 @@ module initialization_mod
 !
 ! Created       : J. Toulouse, 03 Oct 2006
 ! -----------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   use orbitals_mod
   implicit none
 

@@ -29,7 +29,7 @@ module jastrow_mod
 !
 ! Created     : J. Toulouse, 08 Apr 2009
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -309,7 +309,7 @@ module jastrow_mod
 !
 ! Created     : J. Toulouse, 09 Apr 2009
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -405,7 +405,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 29 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -445,7 +445,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 29 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -481,7 +481,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -517,7 +517,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -553,7 +553,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 29 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -596,7 +596,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 29 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -639,7 +639,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -682,7 +682,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -725,7 +725,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -768,7 +768,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 31 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -811,7 +811,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -865,7 +865,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 27 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -925,7 +925,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 30 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1007,7 +1007,7 @@ module jastrow_mod
 !
 ! Created       : J. Toulouse, 31 Jul 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

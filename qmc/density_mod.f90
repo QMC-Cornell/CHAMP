@@ -426,7 +426,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 02 Oct 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -492,7 +492,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 07 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -564,7 +564,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 02 Oct 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -657,7 +657,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 04 Jan 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -717,7 +717,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 04 Jan 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -822,7 +822,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 07 Jan 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -893,7 +893,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 07 Jan 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1065,7 +1065,7 @@ module density_mod
 !
 ! Created       : C. Umrigar, 07 Jul 2012, by imitating dens_histo_blk of J. Toulouse
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1231,7 +1231,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 05 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1306,7 +1306,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 07 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1375,7 +1375,7 @@ module density_mod
 ! Created       : J. Toulouse, 07 Mar 2006
 ! Modified      : J. Toulouse, 13 Aug 2008: walkers
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1715,7 +1715,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 28 Sep 2013
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1775,7 +1775,7 @@ module density_mod
 !
 ! Created       : J. Toulouse, 05 Oct 2013
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1835,7 +1835,7 @@ module density_mod
 !
 ! Created        : J. Toulouse, 07 Nov 2006
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1887,7 +1887,7 @@ module density_mod
 !
 ! Created       : C. Umrigar, 07 Jul 2012, by imitating dens_wrt of J. Toulouse
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1947,7 +1947,7 @@ module density_mod
 !
 ! Created        : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2013,7 +2013,7 @@ module density_mod
 !
 ! Created        : J. Toulouse, 28 Sep 2013
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

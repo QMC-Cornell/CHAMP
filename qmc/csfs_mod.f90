@@ -46,7 +46,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 07 Apr 2009
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -191,7 +191,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 07 Apr 2009
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -308,7 +308,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 14 Dec 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -393,7 +393,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 29 Nov 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -463,7 +463,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 31 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -531,7 +531,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 31 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -574,7 +574,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 31 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -614,7 +614,7 @@ module csfs_mod
 !
 ! Created       : J. Toulouse, 29 Nov 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -762,7 +762,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 01 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -817,7 +817,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 21 Jul 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -864,7 +864,7 @@ module csfs_mod
 !
 ! Created     : B. Mussard, 03 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -910,7 +910,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 16 Feb 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -950,7 +950,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 08 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -991,7 +991,7 @@ module csfs_mod
 !
 ! Created     : B. Mussard, 08 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1056,7 +1056,7 @@ module csfs_mod
 ! AIM : DMC
 ! Created     : B. Mussard, 21 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1107,7 +1107,7 @@ module csfs_mod
 !
 ! Created     : J. Toulouse, 16 Feb 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

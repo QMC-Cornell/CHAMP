@@ -33,7 +33,7 @@ module catalog_objects_mod
   call catalog_one_object ('sum_lap_lnj', sum_lap_lnj_index)
   call catalog_one_object ('grd_det_over_det_legacy', grd_det_over_det_legacy_index)
   call catalog_one_object ('lap_det_over_det_legacy', lap_det_over_det_legacy_index)
-  call catalog_one_object ('amat_av', amat_av_index)
+  call catalog_one_object ('linresp_av_eigenval', linresp_av_eigenval_index)
   call catalog_one_object ('orb', orb_index)
   call catalog_one_object ('dorb', dorb_index)
   call catalog_one_object ('ddorb', ddorb_index)

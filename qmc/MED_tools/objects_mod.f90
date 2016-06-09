@@ -234,7 +234,7 @@ module objects_mod
   endif
 
 ! loop over object indexes
-    do
+  do
     obj_i = int((obj_1 + obj_2)/2.d0)
 
     if (obj_i == obj_1 .or.  obj_i == obj_2 ) then
@@ -255,7 +255,7 @@ module objects_mod
      obj_1 = obj_i
     endif
 
-    enddo ! end loop
+  enddo ! end loop
 
   return
   end function object_index

@@ -52,7 +52,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -92,7 +92,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 16 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -135,7 +135,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 07 Nov 2006
 ! Modified      : J. Toulouse, 02 Oct 2008: add walkers for DMC
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -198,7 +198,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 16 Nov 2006, walkers
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -244,7 +244,7 @@ module electrons_mod
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Modified      : J. Toulouse, 16 Mar 2006, walkers
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -313,7 +313,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -359,7 +359,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -407,7 +407,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -450,7 +450,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -496,7 +496,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 29 Mar 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -580,7 +580,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 09 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -647,7 +647,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 02 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -691,7 +691,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 06 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -757,7 +757,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 09 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -824,7 +824,7 @@ module electrons_mod
 !
 ! Created       : J. Toulouse, 04 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

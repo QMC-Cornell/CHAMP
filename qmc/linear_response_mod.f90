@@ -9,8 +9,8 @@ module linearresponse_mod
 
   ! Declaration of global variables and default values
 
-  real(dp), allocatable           :: amat_av(:,:)
-  real(dp), allocatable           :: amat_av_err(:,:)
+  real(dp), allocatable           :: linresp_av_eigenval(:)
+  real(dp), allocatable           :: linresp_av_eigenval_err(:)
 
   contains
 
@@ -21,7 +21,7 @@ module linearresponse_mod
 !
 ! Created     : J. Toulouse, 18 May 2016
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   ! local
@@ -97,7 +97,7 @@ module linearresponse_mod
 !
 ! Created     : J. Toulouse, 18 May 2016
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   ! local
@@ -113,14 +113,13 @@ module linearresponse_mod
   endif 
   call vmc_init
 
+  call object_average_request('dpsi_dpsi_eloc_av')
   call object_average_request('dpsi_av')
   call object_average_request('dpsi_eloc_av')
-  call object_average_request('dpsi_dpsi_eloc_av')
-  call object_average_request('dpsi_dpsi_av')
   call object_average_request('deloc_av')
   call object_average_request('dpsi_deloc_av')
 
-  call object_error_request('amat_av_err')
+  call object_error_request('linresp_av_eigenval_err')
   call vmc
   run_done=.true.
 
@@ -128,38 +127,53 @@ module linearresponse_mod
 
 
 !===========================================================================
-  subroutine  amat_av_bld
+  subroutine  linresp_av_eigenval_bld
 !---------------------------------------------------------------------------
 ! Description : 
 !
 ! Created     : B. Mussard, Mon 06 Jun 2016 11:37:02 AM EDT
 ! Modified    :
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   
+  ! local
+  integer :: i,j,ij
+  real(dp), allocatable           :: amat(:,:)
+
   if (header_exe) then
-    call object_create('amat_av')
+    call object_create('linresp_av_eigenval')
 
     call object_needed('param_nb')
+    call object_needed('param_pairs')
 
-    call object_needed('eloc_av')
+    call object_needed('dpsi_dpsi_eloc_av')
     call object_needed('dpsi_av')
     call object_needed('dpsi_eloc_av')
-    call object_needed('dpsi_dpsi_eloc_av')
-    call object_needed('dpsi_dpsi_covar')
+    call object_needed('eloc_av')
     call object_needed('dpsi_deloc_covar')
 
     return
   endif
 
-  call object_alloc ('amat_av',amat_av,param_nb,param_nb)
-  call object_alloc ('amat_av_err',amat_av_err,param_nb,param_nb)
-  call object_associate ('amat_av',amat_av,param_nb,param_nb)
-  call object_associate ('amat_av_err',amat_av_err,param_nb,param_nb)
+  call object_alloc ('linresp_av_eigenval',linresp_av_eigenval,param_nb)
+  call object_alloc ('linresp_av_eigenval_err',linresp_av_eigenval_err,param_nb)
 
-  write(6,*) 'THIS IS HOW I WOULD DO A'
+  call object_alloc ('amat',amat,param_nb,param_nb)
 
-  end subroutine  amat_av_bld
+  write(6,*) 'THIS IS HOW I DO A'
+  do j=1,param_nb
+    do i=1,param_nb
+      ij = param_pairs(i,j)
+      amat(i,j)=dpsi_dpsi_eloc_av(ij)         &
+              - dpsi_av(j)*dpsi_eloc_av(i)    &
+              - dpsi_av(i)*dpsi_eloc_av(j)    &
+              + dpsi_av(i)*dpsi_av(j)*eloc_av &
+              + dpsi_deloc_covar(i,j)
+    enddo
+  enddo
+
+
+  end subroutine  linresp_av_eigenval_bld
 
 end module linearresponse_mod

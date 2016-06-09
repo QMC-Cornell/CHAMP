@@ -33,7 +33,7 @@ module walkers_mod
 !
 ! Created     : J. Toulouse, 01 Apr 2007
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -142,7 +142,7 @@ module walkers_mod
 !
 ! Created       : J. Toulouse, 22 Mar 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -247,7 +247,7 @@ module walkers_mod
 !                 and removed unecessary operations
 ! ------------------------------------------------------------------------------
   USE mpi_mod
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 
@@ -578,7 +578,7 @@ module walkers_mod
 !
 ! Created       : J. Toulouse, 16 Oct 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -647,7 +647,7 @@ module walkers_mod
 !
 ! Created       : J. Toulouse, 16 Oct 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

@@ -67,7 +67,7 @@ module opt_lin_mod
 !
 ! Created     : J. Toulouse, 24 Apr 2006
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -253,7 +253,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -357,7 +357,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 13 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -407,7 +407,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -562,7 +562,7 @@ module opt_lin_mod
 !!
 !! Created       : J. Toulouse, 22 Jan 2016
 !! ------------------------------------------------------------------------------
-!  include 'modules.h'
+!  use all_modules_mod
 !  implicit none
 !
 !! local
@@ -626,7 +626,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -678,7 +678,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -719,7 +719,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 13 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -760,7 +760,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 24 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -823,7 +823,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse and Cyrus Umrigar, 10 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1268,7 +1268,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 18 May 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1314,7 +1314,7 @@ module opt_lin_mod
 !
 ! Created       : J. Toulouse, 18 Feb 2016
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1364,16 +1364,17 @@ module opt_lin_mod
   call object_alloc('ovlp_lin_av', ovlp_lin_av, param_aug_nb, param_aug_nb)
 
 ! Calculate Hamiltonian matrix:
-! first element
+! first element: Eq(54a) of JCP 126 084102 (2007)
   ham_lin_energy_av(1,1) = eloc_av
 
-! first row and first column
+! first row and first column: Eq(54b-c) of JCP 126 084102 (2007)
   do i = 1, param_nb
      ham_lin_energy_av(1+i,1) = dpsi_eloc_covar(i)
      ham_lin_energy_av(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
   enddo ! i
 
-! derivative-derivative part
+  write(6,*) 'THIS IS HOW H IS DONE'
+! derivative-derivative part: Eq(54d) of JCP 126 084102 (2007)
   do j = 1, param_nb
    do i = 1, param_nb
      pair = param_pairs(i,j)
@@ -1385,16 +1386,16 @@ module opt_lin_mod
   enddo
 
 ! Calculate overlap matrix:
-! first element
+! first element: Eq(53a) of JCP 126 084102 (2007)
   ovlp_lin_av(1,1) = 1.d0
 
-! first row and first column
+! first row and first column: Eq(53b-c) of JCP 126 084102 (2007)
   do i = 1, param_nb
    ovlp_lin_av(1,i+1) = 0.d0
    ovlp_lin_av(i+1,1) = 0.d0
   enddo
 
-! derivative-derivative part
+! derivative-derivative part: Eq(53d) of JCP 126 084102 (2007)
   do i = 1, param_nb
    do j = i, param_nb
      ovlp_lin_av(i+1,j+1) = dpsi_dpsi_covar(i,j)

@@ -42,7 +42,7 @@ module opt_nwt_mod
 !
 ! Created     : J. Toulouse, 24 Apr 2006
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   character(len=max_string_len_rout), save :: lhere = 'opt_nwt_menu'
@@ -99,7 +99,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -139,7 +139,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -185,7 +185,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 19 Sep 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -225,7 +225,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -278,7 +278,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -340,7 +340,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -417,7 +417,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer i, j
@@ -459,7 +459,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -503,7 +503,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -658,7 +658,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 20 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -687,7 +687,7 @@ module opt_nwt_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header

@@ -52,7 +52,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -96,7 +96,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -143,7 +143,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 30 Mar 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -193,7 +193,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -233,7 +233,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -273,7 +273,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -326,7 +326,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 15 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -385,7 +385,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 24 Sep 2007
 ! ------------------------------------------------------------------------------
-!  include 'modules.h'
+!  use all_modules_mod
 !  implicit none
 !
 !! header
@@ -413,7 +413,7 @@ module montecarlo_mod
 !
 ! Created       : J. Toulouse, 14 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

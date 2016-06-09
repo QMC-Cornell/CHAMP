@@ -15,7 +15,7 @@ module correlated_sampling_mod
 !
 ! Created     : J. Toulouse, 09 Mar 2010
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -160,7 +160,7 @@ module correlated_sampling_mod
 !
 ! Created       : J. Toulouse, 07 Apr 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

@@ -32,7 +32,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include 'common_pjase.h'
 !JT    include 'commons_jaspar6.h'
@@ -196,7 +196,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: i
 
@@ -307,7 +307,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     ! local
@@ -339,7 +339,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     if (header_exe) then
@@ -373,7 +373,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ieta
     ! header
@@ -418,7 +418,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: i, ifr
     do ifr =2 , nforce
@@ -436,7 +436,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer i
     call object_alloc ('pjas_parms_sav', pjas_parms_sav, param_pjas_nb)
@@ -452,7 +452,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer i
 
@@ -468,7 +468,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include "common_jasn.h"
 
@@ -503,7 +503,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include "common_jasn.h"
     real(dp)                             :: rvec (3,nelec)
@@ -536,7 +536,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
     real (dp)                            :: xvec (3, nelec)
@@ -583,7 +583,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
     real (dp)                            :: xvec (3, nelec)
@@ -632,7 +632,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: iel
     real (dp)                            :: rvec (3, nelec*(nelec-1)/2)

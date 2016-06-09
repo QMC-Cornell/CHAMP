@@ -25,7 +25,7 @@ module nuclei_mod
 !
 ! Created     : J. Toulouse, 30 Apr 2008
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -258,7 +258,7 @@ module nuclei_mod
 !
 ! Created       : J. Toulouse, 07 Apr 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -317,7 +317,7 @@ module nuclei_mod
 !
 ! Created       : J. Toulouse, 02 Feb 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -362,7 +362,7 @@ module nuclei_mod
 !
 ! Created       : J. Toulouse, 03 Feb 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -398,7 +398,7 @@ module nuclei_mod
 !
 ! Created       : J. Toulouse, 03 Feb 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -442,7 +442,7 @@ module nuclei_mod
 !
 ! Created       : J. Toulouse, 26 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

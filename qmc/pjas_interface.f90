@@ -6,7 +6,7 @@ subroutine pjas_jas_interface (x,rvec, v,d2,div_vj,value)
   use periodic_jastrow_mod
   use pjasen_mod
   use pjasee_mod
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
@@ -51,7 +51,7 @@ subroutine  pjas_deriv_jas_interface (x, rvec, v,d2,div_vj,value)
   use periodic_jastrow_mod
   use pjasen_mod
   use pjasee_mod
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
   real (dp)                              :: x, v, value, d2 ,div_vj(nelec)
@@ -98,7 +98,7 @@ subroutine  pjas_jas_e_interface (iel, x, rvec, v, value)
   use periodic_jastrow_mod
   use pjasen_mod
   use pjasee_mod
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   real(dp)                               :: rvec(3,nelec*(nelec-1)/2)
   integer                                :: iel

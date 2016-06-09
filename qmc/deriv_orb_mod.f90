@@ -136,7 +136,7 @@ module deriv_orb_mod
 ! Revised       : J. Toulouse, 24 Oct 2005: open shells
 ! Revised       : J. Toulouse, 23 Mar 2006: active-active excitations for non-CASSCF wave functions
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -424,7 +424,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 25 Oct 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1201,7 +1201,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 25 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1408,7 +1408,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 27 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1496,7 +1496,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1611,7 +1611,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 12 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1724,7 +1724,7 @@ module deriv_orb_mod
 ! Created       : J. Toulouse, 27 Oct 2005
 ! Modified      : J. Toulouse, 22 Apr 2015: merge Sherman-Morison and inversion from scratch in a single subroutine
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1882,7 +1882,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 27 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2011,7 +2011,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 08 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2101,7 +2101,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 08 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2170,7 +2170,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2273,7 +2273,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2373,7 +2373,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 08 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2493,7 +2493,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 08 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2608,7 +2608,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2654,7 +2654,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2695,7 +2695,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2734,7 +2734,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -2766,7 +2766,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2818,7 +2818,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 16 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -3042,7 +3042,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 16 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -3075,7 +3075,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 15 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 
@@ -3122,7 +3122,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 09 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -3155,7 +3155,7 @@ module deriv_orb_mod
 !
 ! Created       : J. Toulouse, 14 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -3188,7 +3188,7 @@ module deriv_orb_mod
 !
 ! Created      : J. Toulouse, 04 Nov 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
