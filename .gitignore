@@ -26,3 +26,6 @@
 *.exe
 *.out
 *.app
+
+# revision
+revision_and_date.inc
