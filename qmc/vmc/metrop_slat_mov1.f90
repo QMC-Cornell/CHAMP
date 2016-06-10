@@ -42,7 +42,7 @@
       parameter (eps=1.d-10)
 !     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
-! g3b2, g5b2 are gamma3/2), gamma(5/2)
+! g3b2, g5b2 are gamma(3/2), gamma(5/2)
 
 ! The moves are now being made in local r,theta phi coordinates.
 

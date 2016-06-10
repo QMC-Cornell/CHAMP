@@ -1459,7 +1459,7 @@ module optimization_mod
   integer dexp_i, dexp_to_all_bas_i
   real(dp), parameter :: AMAX_NONLIN = 100.d0
   integer exponent_negative_nb
-  real(dp) parm2min
+  real(dp) parm2min,csf_rot_arg,csf_norm
   integer iparmpjase
   integer force_i, cent_i, dim_i
 
@@ -1472,10 +1472,54 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('iwcsf')
    call object_provide ('delta_csf')
+   !Convert from rotation parameters to csf_coef using:
+   !
+   ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
+   !
+   write(6,'(''1Normalized CSF coefs='',20f10.6)') (csf_coef(iparmcsf,1),iparmcsf=1,ncsf)
+   csf_rot_arg = 0
+   do iparmcsf=1,nparmcsf
+      csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,1)**2
+   enddo
+   csf_rot_arg = sqrt(csf_rot_arg)
+   csf_coef(1,1) = cos(csf_rot_arg)
+
+   do iparmcsf = 1, nparmcsf
+      csf_coef(iparmcsf+1,1) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,1)
+   enddo
+   write(6,'(''1Normalized CSF coefs='',20f10.6)') (csf_coef(iparmcsf,1),iparmcsf=1,ncsf)
    do iparmcsf = 1, nparmcsf
      csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
    enddo
+   !Normalize csf_coef
+   csf_norm = 0
+   do iparmcsf=1,ncsf
+      csf_norm = csf_norm + csf_coef(iparmcsf,iwf)**2
+   enddo
+
+   csf_norm = sqrt(csf_norm)
+
+   do iparmcsf=1,ncsf
+      csf_coef(iparmcsf,iwf) = csf_coef(iparmcsf,iwf)/csf_norm
+   enddo
+   
+
+   ! Calculate csf_rot_arg (or d, above)
+   csf_rot_arg     = acos(csf_coef(1,iwf))
+
+   ! Now calculate rotation parameters - only m-1 parameters
+   ! because the normalization fixes the first parameter
+   ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
+   ! by the normalization, so we only have ncsf-1 rotation parameters
+   print*,'iwf',iwf
+
+   do i=1,ncsf-1
+      csf_rot_coef(i,iwf) = -csf_coef(i+1,iwf)*csf_rot_arg/sin(csf_rot_arg)
+   enddo
+   
+
    call object_modified ('csf_coef')
+   call object_modified ('csf_rot_coef')
   endif ! l_opt_csf
 
 ! Jastrow parameters

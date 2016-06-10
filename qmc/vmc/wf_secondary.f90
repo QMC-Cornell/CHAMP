@@ -392,8 +392,13 @@
 !  40 cdet(i,iadd_diag)=cdet(i,1)
 
       call alloc ('csf_coef_sav', csf_coef_sav, ncsf)
+      call alloc ('csf_rot_coef_sav', csf_rot_coef_sav, ncsf-1)
       do 50 i=1,ncsf
    50   csf_coef_sav(i)=csf_coef(i,1)
+
+      do i=1,ncsf-1
+         csf_rot_coef_sav(i)=csf_rot_coef(i,1)
+      enddo
 
       call alloc ('oparm_sav', oparm_sav, notype, nbasis)
       do 51 it=1,notype
@@ -470,6 +475,10 @@
 
       do 150 i=1,ncsf
   150   csf_coef(i,1)=csf_coef_sav(i)
+
+      do i=1,ncsf-1
+         csf_rot_coef(i,1)=csf_rot_coef_sav(i)
+      enddo
 
       do 151 it=1,notype
         do 151 ip=1,nbasis
