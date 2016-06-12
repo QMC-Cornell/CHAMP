@@ -11,7 +11,7 @@ module linearresponse_mod
 
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
-  real(dp), allocatable           :: ovlp_alone_av(:,:)
+  real(dp), allocatable           :: ovlp_psii_psij_av(:,:)
   real(dp), allocatable           :: linresp_av_eigenval(:)
   real(dp), allocatable           :: linresp_av_eigenval_err(:)
 
@@ -169,7 +169,7 @@ module linearresponse_mod
   
   ! local
   character(len=max_string_len_rout), save :: lhere = 'linresp_av_eigenval_bld'
-  integer                         :: i,info,lwork
+  integer                         :: i,j,info,lwork,temp
   real(dp), allocatable           :: linresp_matrix(:,:)
   real(dp), allocatable           :: ovlp_matrix(:,:)
   real(dp), allocatable           :: work(:)
@@ -177,6 +177,7 @@ module linearresponse_mod
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
   real(dp), allocatable           :: eigval_denom(:)
+  integer,  allocatable           :: eigval_srt_ind_to_eigval_ind(:), eigval_ind_to_eigval_srt_ind(:)
 
   ! begin
   if (header_exe) then
@@ -187,13 +188,13 @@ module linearresponse_mod
 
     call object_needed('amat_av')
     call object_needed('bmat_av')
-    call object_needed('ovlp_alone_av')
+    call object_needed('ovlp_psii_psij_av')
 
     return
   endif
 
-  call object_alloc ('linresp_av_eigenval',linresp_av_eigenval,param_nb)
-  call object_alloc ('linresp_av_eigenval_err',linresp_av_eigenval_err,param_nb)
+  call object_alloc ('linresp_av_eigenval',linresp_av_eigenval,2*param_nb)
+  call object_alloc ('linresp_av_eigenval_err',linresp_av_eigenval_err,2*param_nb)
 
 ! construct the ABBA super-matrix from A and B matrices
   call alloc('linresp_matrix',linresp_matrix,2*param_nb,2*param_nb)
@@ -204,10 +205,9 @@ module linearresponse_mod
 
 ! construct the OVERLAP super-matrix from the overlap matrix
   call alloc('ovlp_matrix',ovlp_matrix,2*param_nb,2*param_nb)
-  ovlp_matrix(1:param_nb,1:param_nb)=ovlp_alone_av
-  ovlp_matrix(param_nb+1:2*param_nb,1:param_nb)=ovlp_alone_av
-  ovlp_matrix(1:param_nb,param_nb+1:2*param_nb)=ovlp_alone_av
-  ovlp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=ovlp_alone_av
+  ovlp_matrix=0.d0
+  ovlp_matrix(1:param_nb,1:param_nb)=ovlp_psii_psij_av
+  ovlp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=ovlp_psii_psij_av
 
 ! prepare arrays
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
@@ -245,10 +245,48 @@ module linearresponse_mod
   enddo
   call release ('eigval_denom', eigval_denom)
 
+! Sorting out eigenvalues
+! eigval_srt_ind_to_eigval_ind is the map from sorted eigenvalues to original eigenvalues
+  call alloc('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind, 2*param_nb)
+  do i = 1, 2*param_nb
+    eigval_srt_ind_to_eigval_ind(i) = i
+  enddo
+  !do i = 1, 2*param_nb
+  !  do j = i+1, 2*param_nb
+  !    if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
+  !      temp = eigval_srt_ind_to_eigval_ind(i)
+  !      eigval_srt_ind_to_eigval_ind(i) = eigval_srt_ind_to_eigval_ind(j)
+  !      eigval_srt_ind_to_eigval_ind(j) = temp
+  !    endif
+  !  enddo
+  !enddo
+! eigval_ind_to_eigval_srt_ind is the map from original eigenvalues to sorted eigenvalues
+  call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, 2*param_nb)
+  do i = 1, 2*param_nb
+   eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
+  enddo
+
+! print eigenvalues
+  write(6,'(a)') 'Sorted (complex) eigenvalues:'
+  do i = 1, 2*param_nb
+    write(6,'(a,i5,a,2(f20.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
+  enddo
+
+! save sorted eigenvalues in ham_eigval_av
+  do i = 1, 2*param_nb
+   linresp_av_eigenval (i) = eigval_r(eigval_srt_ind_to_eigval_ind(i))
+  enddo
+
+  call release ('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind)
+  call release ('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind)
+  call release ('eigval_r', eigval_r)
+  call release ('eigval_i', eigval_i)
+  call release ('eigvec', eigvec)
+
   end subroutine  linresp_av_eigenval_bld
 
 !===========================================================================
-  subroutine ovlp_alone_av_bld
+  subroutine ovlp_psii_psij_av_bld
 !---------------------------------------------------------------------------
 ! Description : 
 !
@@ -262,7 +300,7 @@ module linearresponse_mod
 
 ! begin
   if (header_exe) then
-    call object_create('ovlp_alone_av')
+    call object_create('ovlp_psii_psij_av')
 
     call object_needed('param_nb')
     call object_needed('dpsi_dpsi_covar')
@@ -270,18 +308,18 @@ module linearresponse_mod
     return
   endif
 
-  call object_alloc('ovlp_alone_av',ovlp_alone_av,param_nb,param_nb)
+  call object_alloc('ovlp_psii_psij_av',ovlp_psii_psij_av,param_nb,param_nb)
 
   do i = 1, param_nb
     do j = i, param_nb
-      ovlp_alone_av(i,j) = dpsi_dpsi_covar(i,j)
+      ovlp_psii_psij_av(i,j) = dpsi_dpsi_covar(i,j)
     enddo
     if (i /=  j) then
-      ovlp_alone_av(j,i) = ovlp_alone_av(i,j)
+      ovlp_psii_psij_av(j,i) = ovlp_psii_psij_av(i,j)
     endif
   enddo
 
-  end subroutine ovlp_alone_av_bld
+  end subroutine ovlp_psii_psij_av_bld
 
 !===========================================================================
   subroutine  amat_av_bld

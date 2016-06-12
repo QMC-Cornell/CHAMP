@@ -214,7 +214,7 @@ module catalog_routines_mod
   call catalog_one_node ('linresp_av_eigenval_bld', linresp_av_eigenval_bld)
   call catalog_one_node ('amat_av_bld', amat_av_bld)
   call catalog_one_node ('bmat_av_bld', bmat_av_bld)
-  call catalog_one_node ('ovlp_alone_av_bld', ovlp_alone_av_bld)
+  call catalog_one_node ('ovlp_psii_psij_av_bld', ovlp_psii_psij_av_bld)
 
 ! linear optimization method
   call catalog_one_node ('ovlp_lin_bld', ovlp_lin_bld)
