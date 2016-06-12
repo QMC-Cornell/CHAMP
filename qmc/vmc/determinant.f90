@@ -21,6 +21,7 @@
       use optimo_mod
       use kinet_mod
       use derivatives_fast_mod
+      use csfs_mod
       implicit real*8(a-h,o-z)
 
 ! Routine to calculate the value, gradient and Laplacian of the
@@ -275,8 +276,10 @@
   120     d2lndet=d2lndet-ddet_det(k,i)**2
       call object_modified_by_index (grd_det_over_det_legacy_index) !BM
       call object_modified_by_index (lap_det_over_det_legacy_index) !BM
-      call object_provide ('grd_det_over_det_fast')
-      call object_provide ('lap_det_over_det_fast')
+      if (l_fast_determinants) then
+        call object_provide ('grd_det_over_det_fast')
+        call object_provide ('lap_det_over_det_fast')
+      endif
 
 ! Derivatives wrt to csf_coefs for optimizing them
 ! Note that the arrays that are needed for vmc and dmc are over ndet but

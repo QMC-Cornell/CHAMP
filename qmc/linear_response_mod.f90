@@ -126,6 +126,8 @@ module linearresponse_mod
 
 ! CSF parameters
   if (l_opt_csf) then
+    call object_provide ('ncsf')
+    call object_provide ('nparmcsf')
   else
     nparmcsf=0
     call object_modified ('nparmcsf')
