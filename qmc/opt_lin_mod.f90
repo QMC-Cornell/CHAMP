@@ -1373,7 +1373,6 @@ module opt_lin_mod
      ham_lin_energy_av(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
   enddo ! i
 
-  write(6,*) 'THIS IS HOW H IS DONE'
 ! derivative-derivative part: Eq(54d) of JCP 126 084102 (2007)
   do j = 1, param_nb
    do i = 1, param_nb

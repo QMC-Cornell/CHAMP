@@ -23,12 +23,20 @@ module linearresponse_mod
 ! Description : menu for linear-response calculations
 !
 ! Created     : J. Toulouse, 18 May 2016
+! Modified    : B. Mussard, June 2016
 !---------------------------------------------------------------------------
   use all_modules_mod
   implicit none
 
   ! local
   character(len=max_string_len_rout), save :: lhere = 'linearresponse_menu'
+  integer                 :: i
+  integer                 :: parameter_type_nb = 0
+# if defined (PATHSCALE)
+   character(len=max_string_len) :: parameter_type (max_string_array_len) ! for pathscale compiler
+# else
+   character(len=max_string_len), allocatable :: parameter_type (:)
+# endif
 
   ! begin
   write(6,*)
@@ -43,8 +51,16 @@ module linearresponse_mod
     select case(trim(word))
     case ('help')
       write(6,'(a)') 'HELP for linearresponse menu:'
+      write(6,'(a)') ' parameters jastrow csfs orbitals exponents geometry end : list of parameter types to take into account'
       write(6,'(a)') 'linearresponse'
       write(6,'(a)') 'end'
+
+    case ('parameters')
+# if defined (PATHSCALE)
+      call get_next_value_list_string ('parameter_type', parameter_type, parameter_type_nb) ! for pathscale compiler
+# else
+      call get_next_value_list ('parameter_type', parameter_type, parameter_type_nb)
+# endif
 
     case ('end')
       exit
@@ -55,12 +71,27 @@ module linearresponse_mod
 
   enddo ! end loop over menu lines
 
-  call get_nparmj
+! parameters type
+  write(6,'(a,10a10)') ' Requested parameter types: ',parameter_type(:)
+  do i = 1, parameter_type_nb
+   select case(trim(parameter_type(i)))
+   case ('jastrow')
+    l_opt_jas = .true.
+   case ('csfs')
+    l_opt_csf = .true.
+   case ('orbitals')
+    l_opt_orb = .true.
+   case ('exponents')
+    l_opt_exp = .true.
+   case default
+    call die (lhere, 'unknown parameter type >'+trim(parameter_type(i))+'<.')
+   end select
+  enddo
 
-  l_opt_orb=.false.
+! ORB parameters
   if (l_opt_orb) then
     write(6,*)
-    write(6,'(3a)') ' Orbital optimization information:'
+    write(6,'(3a)') ' Orbital parameter information:'
     call object_provide ('param_orb_nb')
     call object_provide ('det_ex_unq_up_nb')
     call object_provide ('orb_opt_last_lab')
@@ -70,20 +101,21 @@ module linearresponse_mod
     call object_modified ('param_orb_nb')
   endif
 
-  l_opt_exp=.false.
+! EXP parameters
   if (l_opt_exp) then
     write(6,*)
-    write(6,'(3a)') ' Exponent optimization information:'
+    write(6,'(3a)') ' Exponent parameter information:'
     call object_provide ('param_exp_nb')
   else
     param_exp_nb  =  0
     call object_modified ('param_exp_nb')
   endif
 
-  l_opt_jas=.true.
+! JAS parameters
   if (l_opt_jas) then
     l_opt_jas_2nd_deriv=.true.
-    call object_provide('nparmj')
+!   routine that wraps the calculation of the number of Jastrow parameters
+    call get_nparmj
     write(6,*)
     write(6,'(a,i5)') ' Number of Jastrow parameters:   ', nparmj
   else
@@ -92,17 +124,18 @@ module linearresponse_mod
   endif
   write(6,'(a,i5)') ' Number of periodic Jastrow parameters: ', param_pjas_nb
 
-  l_opt_csf=.false.
+! CSF parameters
   if (l_opt_csf) then
   else
     nparmcsf=0
     call object_modified ('nparmcsf')
   endif
 
+! Final messages 
   call object_provide ('nparm')
   call object_provide ('nparmcsf')
   call object_provide ('param_orb_nb')
-  !call object_provide ('param_exp_nb')
+  call object_provide ('param_exp_nb')
   call object_provide ('param_nb')
   write(6,'(a,i5)') ' Number of CSF parameters:       ', nparmcsf
   write(6,'(a,i5)') ' Number of orbital parameters:   ', param_orb_nb
@@ -123,6 +156,7 @@ module linearresponse_mod
 ! Description : routine for linear-response calculations
 !
 ! Created     : J. Toulouse, 18 May 2016
+! Modified    : B. Mussard, June 2016
 !---------------------------------------------------------------------------
   use all_modules_mod
   implicit none
@@ -159,9 +193,11 @@ module linearresponse_mod
 !===========================================================================
   subroutine  linresp_av_eigenval_bld
 !---------------------------------------------------------------------------
-! Description : 
+! Description : Construct and solve the generalized eigenvalue equation
+! Description :   ABBA . evec =  eval S . evec
+! Description : The eigenvalues are sorted and printed.
 !
-! Created     : B. Mussard, Mon 06 Jun 2016 11:37:02 AM EDT
+! Created     : B. Mussard, June 2016 (from "ham_lin_av_bld")
 ! Modified    :
 !---------------------------------------------------------------------------
   use all_modules_mod
@@ -177,7 +213,8 @@ module linearresponse_mod
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
   real(dp), allocatable           :: eigval_denom(:)
-  integer,  allocatable           :: eigval_srt_ind_to_eigval_ind(:), eigval_ind_to_eigval_srt_ind(:)
+  integer,  allocatable           :: eigval_srt_ind_to_eigval_ind(:)
+  integer,  allocatable           :: eigval_ind_to_eigval_srt_ind(:)
 
   ! begin
   if (header_exe) then
@@ -196,26 +233,27 @@ module linearresponse_mod
   call object_alloc ('linresp_av_eigenval',linresp_av_eigenval,2*param_nb)
   call object_alloc ('linresp_av_eigenval_err',linresp_av_eigenval_err,2*param_nb)
 
-! construct the ABBA super-matrix from A and B matrices
+! Construct the ABBA super-matrix from A and B matrices
   call alloc('linresp_matrix',linresp_matrix,2*param_nb,2*param_nb)
   linresp_matrix(1:param_nb,1:param_nb)=amat_av
   linresp_matrix(param_nb+1:2*param_nb,1:param_nb)=bmat_av
   linresp_matrix(1:param_nb,param_nb+1:2*param_nb)=bmat_av
   linresp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=amat_av
 
-! construct the OVERLAP super-matrix from the overlap matrix
+! Construct the OVERLAP super-matrix from the overlap matrix
   call alloc('ovlp_matrix',ovlp_matrix,2*param_nb,2*param_nb)
   ovlp_matrix=0.d0
   ovlp_matrix(1:param_nb,1:param_nb)=ovlp_psii_psij_av
   ovlp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=ovlp_psii_psij_av
 
-! prepare arrays
+! Solve the generalized eigenvalue equation
+! a\ prepare arrays
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
   call alloc('eigval_r',     eigval_r,     2*param_nb)
   call alloc('eigval_i',     eigval_i,     2*param_nb)
   call alloc('eigval_denom', eigval_denom, 2*param_nb)
 
-! calculate optimal value of lwork
+! b\ calculate optimal value of lwork
   lwork = 1
   call alloc('work', work, lwork)
   call dggev('N','V', &
@@ -228,7 +266,7 @@ module linearresponse_mod
   lwork =  nint(work(1))
   call alloc('work', work, lwork)
 
-! generalized eigenvalue problem
+! c\ generalized eigenvalue problem
   call dggev('N','V', &
              2*param_nb, linresp_matrix,  &
              2*param_nb, ovlp_matrix,     &
@@ -238,7 +276,7 @@ module linearresponse_mod
   call release ('work', work)
   if(info /= 0) call die(lhere, 'problem in dggev: info='+info+' /= 0 (compare to 2*param_nb='+2*param_nb+')')
 
-! calculate eigenvalue
+! d\ calculate eigenvalue
   do i = 1, 2*param_nb
     eigval_r(i) = eigval_r(i) / eigval_denom(i)
     eigval_i(i) = eigval_i(i) / eigval_denom(i)
@@ -246,33 +284,35 @@ module linearresponse_mod
   call release ('eigval_denom', eigval_denom)
 
 ! Sorting out eigenvalues
-! eigval_srt_ind_to_eigval_ind is the map from sorted eigenvalues to original eigenvalues
+! ("eigval_srt_ind_to_eigval_ind"
+!   is the map from sorted eigenvalues to original eigenvalues)
   call alloc('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind, 2*param_nb)
   do i = 1, 2*param_nb
     eigval_srt_ind_to_eigval_ind(i) = i
   enddo
-  !do i = 1, 2*param_nb
-  !  do j = i+1, 2*param_nb
-  !    if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
-  !      temp = eigval_srt_ind_to_eigval_ind(i)
-  !      eigval_srt_ind_to_eigval_ind(i) = eigval_srt_ind_to_eigval_ind(j)
-  !      eigval_srt_ind_to_eigval_ind(j) = temp
-  !    endif
-  !  enddo
-  !enddo
-! eigval_ind_to_eigval_srt_ind is the map from original eigenvalues to sorted eigenvalues
+  do i = 1, 2*param_nb
+    do j = i+1, 2*param_nb
+      if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
+        temp = eigval_srt_ind_to_eigval_ind(i)
+        eigval_srt_ind_to_eigval_ind(i) = eigval_srt_ind_to_eigval_ind(j)
+        eigval_srt_ind_to_eigval_ind(j) = temp
+      endif
+    enddo
+  enddo
+! ("eigval_ind_to_eigval_srt_ind"
+!   is the map from original eigenvalues to sorted eigenvalues)
   call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, 2*param_nb)
   do i = 1, 2*param_nb
    eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
   enddo
 
-! print eigenvalues
+! Print eigenvalues
   write(6,'(a)') 'Sorted (complex) eigenvalues:'
   do i = 1, 2*param_nb
     write(6,'(a,i5,a,2(f20.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
   enddo
 
-! save sorted eigenvalues in ham_eigval_av
+! The sorted eigenvalues are "linresp_av_eigenval"
   do i = 1, 2*param_nb
    linresp_av_eigenval (i) = eigval_r(eigval_srt_ind_to_eigval_ind(i))
   enddo
@@ -283,14 +323,20 @@ module linearresponse_mod
   call release ('eigval_i', eigval_i)
   call release ('eigvec', eigvec)
 
+  call release('linresp_av_eigenval',linresp_av_eigenval)
+  call release('linresp_matrix',linresp_matrix)
+  call release('ovlp_matrix',ovlp_matrix)
+
   end subroutine  linresp_av_eigenval_bld
 
 !===========================================================================
   subroutine ovlp_psii_psij_av_bld
 !---------------------------------------------------------------------------
-! Description : 
+! Description : <Psi_i|Psi_j> overlap 
+! Description : (this is inspired by "ham_eigval_av_bld",
+! Description :  which does many other things useless in this context)
 !
-! Created     : B. Mussard, Fri 10 Jun 2016 02:11:18 PM EDT
+! Created     : B. Mussard, June 2016
 ! Modified    :
 !---------------------------------------------------------------------------
   implicit none
@@ -310,6 +356,7 @@ module linearresponse_mod
 
   call object_alloc('ovlp_psii_psij_av',ovlp_psii_psij_av,param_nb,param_nb)
 
+! Eq(53d) of JCP 126 084102 (2007)
   do i = 1, param_nb
     do j = i, param_nb
       ovlp_psii_psij_av(i,j) = dpsi_dpsi_covar(i,j)
@@ -324,9 +371,11 @@ module linearresponse_mod
 !===========================================================================
   subroutine  amat_av_bld
 !---------------------------------------------------------------------------
-! Description : 
+! Description : <Psi_i|H|Psi_j>
+! Description : (this is inspired by "ham_eigval_av_bld",
+! Description :  which does many other things useless in this context)
 !
-! Created     : B. Mussard, Fri 10 Jun 2016 01:41:54 PM EDT
+! Created     : B. Mussard, June 2016
 ! Modified    :
 !---------------------------------------------------------------------------
   implicit none
@@ -352,6 +401,7 @@ module linearresponse_mod
 
   call object_alloc('amat_av',amat_av,param_nb,param_nb)
 
+! Eq(54d) of JCP 126 084102 (2007)
   do j=1,param_nb
     do i=1,param_nb
       ij = param_pairs(i,j)
@@ -368,9 +418,10 @@ module linearresponse_mod
 !===========================================================================
   subroutine  bmat_av_bld
 !---------------------------------------------------------------------------
+! Description : <Psi_ij|H|Psi_0>
 ! Description : 
 !
-! Created     : B. Mussard, Fri 10 Jun 2016 01:41:54 PM EDT
+! Created     : B. Mussard, June 2016
 ! Modified    :
 !---------------------------------------------------------------------------
   implicit none
@@ -411,9 +462,10 @@ module linearresponse_mod
 !===========================================================================
   subroutine  get_nparmj
 !---------------------------------------------------------------------------
-! Description : 
+! Description : Calculate "nparmj", the number of Jastrow parameters 
+! Description : (Copy-Paste of a part of "optimization_menu") 
 !
-! Created     : B. Mussard, Fri 10 Jun 2016 05:02:13 PM EDT
+! Created     : B. Mussard, June 2016
 ! Modified    :
 !---------------------------------------------------------------------------
   use all_modules_mod
@@ -426,9 +478,6 @@ module linearresponse_mod
 ! begin
 
   if (use_parser) then
-! default jastrow parameters to optimize
-! For the e-n parameters we are assuming that a(1) and a(2) are not optimized,
-! which is often not true for all-electron calculations.
   if(ijas.le.3) then
    na1=nspin1
    na2=nspin2
