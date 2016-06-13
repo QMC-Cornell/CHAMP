@@ -116,6 +116,7 @@ module deriv_orb_mod
 
   real(dp), allocatable                  :: dpsi_orb(:)
   real(dp), allocatable                  :: dpsi_orb_test(:)
+  real(dp), allocatable                  :: dcsf_orb(:,:)
 
   real(dp), allocatable                  :: deloc_orb (:)
 
@@ -1624,6 +1625,7 @@ module deriv_orb_mod
   if (header_exe) then
 
    call object_create ('dpsi_orb')
+   call object_create ('dcsf_orb')
    call object_create ('psid_ex')
 
    call object_needed ('param_orb_nb')
@@ -1646,36 +1648,34 @@ module deriv_orb_mod
 ! allocations
   call object_alloc ('psid_ex', psid_ex, param_orb_nb)
   call object_alloc ('dpsi_orb', dpsi_orb, param_orb_nb)
+  call object_alloc ('dcsf_orb', dcsf_orb, ncsf, param_orb_nb)
 
   psid_ex = 0.d0
+  dcsf_orb =  0.d0
 
   do dorb_i = 1, param_orb_nb
+    ex_i = ex_orb_ind (dorb_i)
+    ex_rev_i = ex_orb_ind_rev (dorb_i)
 
-   ex_i = ex_orb_ind (dorb_i)
-   ex_rev_i = ex_orb_ind_rev (dorb_i)
-
-   do csf_i = 1, ncsf
-
-     do det_in_csf_i = 1, ndet_in_csf (csf_i)
-
+    do csf_i = 1, ncsf
+      do det_in_csf_i = 1, ndet_in_csf (csf_i)
         det_i = iwdet_in_csf (det_in_csf_i, csf_i)
 
         det = det_ex (ex_i, det_i)
-
-!       reverse excitation for non casscf wave function
+!       reverse excitation for non casscf wave function: (Eij-Eji) Det
         if (.not. l_casscf .and. ex_rev_i /= 0) then
-!          (Eij-Eji) Det
-           det = det - det_ex (ex_rev_i, det_i)
+          det = det - det_ex (ex_rev_i, det_i)
         endif
 
-        psid_ex (dorb_i) = psid_ex (dorb_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) * det
+        dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) + cdet_in_csf (det_in_csf_i, csf_i) * det
+      enddo ! det_in_csf_i
 
-     enddo ! det_in_csf_i
-   enddo ! csf_i
+      psid_ex (dorb_i) = psid_ex (dorb_i) + csf_coef (csf_i, 1) * dcsf_orb(csf_i,dorb_i)
+      dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) /  psi_det
 
+    enddo ! csf_i
     dpsi_orb (dorb_i) = psid_ex (dorb_i) / psi_det
-
- enddo ! ex_i
+  enddo ! ex_i
 
 
 !    do ex_i = 1, single_ex_nb

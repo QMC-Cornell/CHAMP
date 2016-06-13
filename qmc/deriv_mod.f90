@@ -396,12 +396,10 @@ module deriv_mod
   call object_alloc ('d2psi', d2psi, param_pairs_nb)
   call object_alloc ('d2psi_av', d2psi_av, param_pairs_nb)
 
+! initializations
   d2psi = 0.d0
-
-! zero second-order derivatives
-  if (.not. l_deriv2nd) return
-
   ij = 0
+  if (.not. l_deriv2nd) return
 
 ! CSF/CSF contribution
   if (l_opt_csf) then
@@ -410,6 +408,8 @@ module deriv_mod
 
 ! CSF/JAS contribution
   if ((l_opt_csf).and.(l_opt_jas)) then
+    call object_provide_by_index (d2psi_bld_index, dpsi_jas_index)
+    call object_provide_by_index (d2psi_bld_index, dpsi_csf_index)
     do i=1,nparmcsf
       do j=1,nparmj
         ij=ij+1
@@ -420,23 +420,23 @@ module deriv_mod
 
 ! CSF/EXP contribution
   if ((l_opt_csf).and.(l_opt_exp)) then
-    !do i=1,nparmcsf
-    !  do j=1,param_exp_nb
-    !    ij=ij+1
-    !  enddo
-    !enddo
     call die('d2psi not yet implemented for csfs/exponent parameters')
+    do i=1,nparmcsf
+      do j=1,param_exp_nb
+        ij=ij+1
+      enddo
+    enddo
   endif
 
 ! CSF/ORB contribution
   if ((l_opt_csf).and.(l_opt_orb)) then
+    call object_provide_by_index (d2psi_bld_index, dcsf_orb_index)
     do i=1,nparmcsf
       do j=1,param_orb_nb
         ij=ij+1
-        d2psi(ij) = 0.d0
+        d2psi(ij) = dcsf_orb(i,j)
       enddo
     enddo
-    write(6,*) 'warning: d2psi not yet implemented for csfs/orbitals parameters'
   endif
 
 ! JAS/JAS contribution
@@ -451,16 +451,18 @@ module deriv_mod
 
 ! JAS/EXP contribution
   if ((l_opt_jas).and.(l_opt_exp)) then
-    !do i=1,nparmj
-    !  do j=1,param_exp_nb
-    !    ij=ij+1
-    !  enddo
-    !enddo
     call die('d2psi not yet implemented for jastrow/exponents parameters')
+    do i=1,nparmj
+      do j=1,param_exp_nb
+        ij=ij+1
+      enddo
+    enddo
   endif
 
 ! JAS/ORB contribution
   if ((l_opt_jas).and.(l_opt_orb)) then
+    call object_provide_by_index (d2psi_bld_index, dpsi_jas_index)
+    call object_provide_by_index (d2psi_bld_index, dpsi_orb_index)
     do i=1,nparmj
       do j=1,param_orb_nb
         ij=ij+1
@@ -471,22 +473,22 @@ module deriv_mod
 
 ! EXP/EXP contribution
   if (l_opt_exp) then
-    !do i=1,param_exp_nb
-    !  do j=1,param_exp_nb
-    !    ij=ij+1
-    !  enddo
-    !enddo
     call die('d2psi not yet implemented for exponents/exponents parameters')
+    do i=1,param_exp_nb
+      do j=1,param_exp_nb
+        ij=ij+1
+      enddo
+    enddo
   endif
 
 ! EXP/ORB contribution
   if ((l_opt_exp).and.(l_opt_orb)) then
-    !do i=1,param_exp_nb
-    !  do j=1,param_orb_nb
-    !    ij=ij+1
-    !  enddo
-    !enddo
     call die('d2psi not yet implemented for exponents/orbitals parameters')
+    do i=1,param_exp_nb
+      do j=1,param_orb_nb
+        ij=ij+1
+      enddo
+    enddo
   endif
 
 ! ORB/ORB contribution

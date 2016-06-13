@@ -45,6 +45,7 @@ module indexes_mod
   integer     :: dpsi_csf_index
   integer     :: dpsi_jas_index
   integer     :: dpsi_orb_index
+  integer     :: dcsf_orb_index
   integer     :: dpsi_geo_index
   integer     :: dpsi_csf_av_index
   integer     :: dpsi_jas_av_index
