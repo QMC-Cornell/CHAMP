@@ -455,7 +455,7 @@ module linearresponse_mod
       bmat_av(i,j)=(2*dpsi_av(i)*dpsi_av(j)-d2psi_av(ij))*eloc_av &
                   - dpsi_av(j)*dpsi_eloc_av(i)                    &
                   - dpsi_av(i)*dpsi_eloc_av(j)                    &
-                  - d2psi_eloc_av(ij)
+                  + d2psi_eloc_av(ij)
     enddo
   enddo
 
