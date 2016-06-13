@@ -14,8 +14,6 @@ module indexes_mod
   integer     :: d2d2b_index
   integer     :: vj_index
   integer     :: sum_lap_lnj_index
-  integer     :: grd_det_over_det_legacy_index
-  integer     :: lap_det_over_det_legacy_index
   integer     :: orb_index
   integer     :: dorb_index
   integer     :: ddorb_index

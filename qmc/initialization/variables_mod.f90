@@ -32,6 +32,7 @@ module variables_mod
   integer                         :: spin_nb = 2
   logical                         :: debug = .false.
   logical                         :: l_warning = .false.
+  logical                         :: l_fast_determinants = .false.
 
 ! label of last occupied orbital
   integer                         :: orb_occ_last_in_wf_lab

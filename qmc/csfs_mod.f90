@@ -19,7 +19,6 @@ module csfs_mod
   real(dp), allocatable     :: csfs_wfdet_ovlp (:)
 
   logical                   :: l_vb_weights = .false.
-  logical                   :: l_fast_determinants = .false.
   real(dp), allocatable     :: vb_weights_hiberty (:)
   real(dp)                  :: first_csf_over_psid
   real(dp), allocatable     :: csf_over_psid (:)
