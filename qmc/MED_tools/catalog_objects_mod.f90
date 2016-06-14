@@ -63,6 +63,7 @@ module catalog_objects_mod
   call catalog_one_object ('dpsi_jas', dpsi_jas_index)
   call catalog_one_object ('dpsi_orb', dpsi_orb_index)
   call catalog_one_object ('dcsf_orb', dcsf_orb_index)
+  call catalog_one_object ('d2psi_orb', d2psi_orb_index)
   call catalog_one_object ('dpsi_csf_av', dpsi_csf_av_index)
   call catalog_one_object ('dpsi_jas_av', dpsi_jas_av_index)
   call catalog_one_object ('dpsi_orb_av', dpsi_orb_av_index)

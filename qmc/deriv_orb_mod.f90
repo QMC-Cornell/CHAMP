@@ -83,6 +83,7 @@ module deriv_orb_mod
   real(dp), allocatable                  :: det_ex_up (:,:)
   real(dp), allocatable                  :: det_ex_dn (:,:)
   real(dp), allocatable                  :: det_ex (:,:)
+  real(dp), allocatable                  :: det_ex2(:,:)
   real(dp), allocatable                  :: psid_ex (:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up (:, :, :)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn (:, :, :)
@@ -115,6 +116,7 @@ module deriv_orb_mod
   integer                                :: electron
 
   real(dp), allocatable                  :: dpsi_orb(:)
+  real(dp), allocatable                  :: d2psi_orb(:)
   real(dp), allocatable                  :: dpsi_orb_test(:)
   real(dp), allocatable                  :: dcsf_orb(:,:)
 
@@ -1602,6 +1604,67 @@ module deriv_orb_mod
   end subroutine det_ex_bld
 
 ! ==============================================================================
+  subroutine det_ex2_bld
+! ------------------------------------------------------------------------------
+! Description   :
+!
+! Created       : J. Toulouse, 09 Dec 2005
+! ------------------------------------------------------------------------------
+  use all_modules_mod
+  implicit none
+
+! local
+  integer ex_i,ex_j,ex_ij
+  integer csf_i, det_in_csf_i, det_i, det_unq_up_i, det_unq_dn_i
+  integer iwdet, sgn
+
+! header
+  if (header_exe) then
+
+   call object_create ('det_ex2')
+
+   call object_needed ('single_ex_nb')
+   call object_needed ('ncsf')
+   call object_needed ('ndet')
+   call object_needed ('ndet_in_csf')
+   call object_needed ('iwdet_in_csf')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('det_to_det_unq_up')
+   call object_needed ('det_to_det_unq_dn')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('det_ex2', det_ex2, (single_ex_nb+1)*single_ex_nb/2, ndet)
+
+! loop over single orbital excitations
+  do csf_i = 1, ncsf
+    do det_in_csf_i = 1, ndet_in_csf (csf_i)
+
+      det_i = iwdet_in_csf (det_in_csf_i, csf_i)
+
+      ex_ij=0
+      do ex_i = 1, single_ex_nb
+        do ex_j = 1, ex_i
+          ex_ij=ex_ij+1
+          write(6,*) '/BM/ ',ex_i,ex_j,ex_ij,(single_ex_nb+1)*single_ex_nb/2,'|',det_i,ndet
+          flush(6)
+          det_ex2(ex_ij, det_i) = 0 &! det_ex2_up (ex_ij, det_i) * det_to_det_unq_dn (det_i) &
+                                + det_ex_up (ex_i, det_i) * det_ex_dn (ex_j, det_i)     &
+                                + det_ex_up (ex_j, det_i) * det_ex_dn (ex_i, det_i)     &
+                                + 0  !det_to_det_unq_up (det_i) * det_ex2_dn (ex_ij, det_i)
+        enddo
+      enddo ! det_in_csf_i
+    enddo ! csf_i
+  enddo ! ex_i
+
+  end subroutine det_ex2_bld
+
+! ==============================================================================
   subroutine dpsi_orb_bld
 ! ------------------------------------------------------------------------------
 ! Description   : Logarithm derivatives of Psi with respect to orbital rotations kij
@@ -1619,7 +1682,7 @@ module deriv_orb_mod
   integer ex_i, ex_rev_i
   integer csf_i, det_in_csf_i, det_i, dorb_i
 !  real(dp) factor_up, factor_dn
-  real(dp) det
+  real(dp) detex
 
 ! header
   if (header_exe) then
@@ -1661,13 +1724,13 @@ module deriv_orb_mod
       do det_in_csf_i = 1, ndet_in_csf (csf_i)
         det_i = iwdet_in_csf (det_in_csf_i, csf_i)
 
-        det = det_ex (ex_i, det_i)
+        detex = det_ex (ex_i, det_i)
 !       reverse excitation for non casscf wave function: (Eij-Eji) Det
         if (.not. l_casscf .and. ex_rev_i /= 0) then
-          det = det - det_ex (ex_rev_i, det_i)
+          detex = detex - det_ex (ex_rev_i, det_i)
         endif
 
-        dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) + cdet_in_csf (det_in_csf_i, csf_i) * det
+        dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) + cdet_in_csf (det_in_csf_i, csf_i) * detex
       enddo ! det_in_csf_i
 
       psid_ex (dorb_i) = psid_ex (dorb_i) + csf_coef (csf_i, 1) * dcsf_orb(csf_i,dorb_i)
@@ -1712,6 +1775,63 @@ module deriv_orb_mod
 !  call is_equal_or_die (dpsi_orb, dpsi_orb_test, 1.d-8)
 
   end subroutine dpsi_orb_bld
+
+!===========================================================================
+  subroutine  d2psi_orb_bld
+!---------------------------------------------------------------------------
+! Description : 
+!
+! Created     : B. Mussard, June 2016
+! Modified    :
+!---------------------------------------------------------------------------
+  use all_modules_mod
+  implicit none
+
+! local
+  integer csf_i, det_in_csf_i, det_i, dorb_i,dorb_j,dorb_ij
+  real(dp) detex
+
+! header
+  if (header_exe) then
+
+   call object_create ('d2psi_orb')
+
+   call object_needed ('param_orb_nb')
+   call object_needed ('ncsf')
+   call object_needed ('ndet')
+   call object_needed ('ndet_in_csf')
+   call object_needed ('iwdet_in_csf')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('det_ex2')
+   call object_needed ('psi_det')
+
+   return
+
+  endif
+
+! begin
+
+! allocations
+  call object_alloc ('d2psi_orb', d2psi_orb, (single_ex_nb+1)*single_ex_nb/2)
+
+  dorb_ij=0
+  do dorb_i = 1, param_orb_nb
+    do dorb_j = 1, dorb_i
+      dorb_ij=dorb_ij+1
+
+      do csf_i = 1, ncsf
+        do det_in_csf_i = 1, ndet_in_csf (csf_i)
+          det_i = iwdet_in_csf (det_in_csf_i, csf_i)
+          detex = det_ex2 (dorb_ij, det_i)
+          d2psi_orb(dorb_ij)=d2psi_orb(dorb_ij) + csf_coef(csf_i,1) * cdet_in_csf (det_in_csf_i, csf_i) *  detex
+        enddo ! det_in_csf_i
+      enddo ! csf_i
+      d2psi_orb(dorb_ij) = d2psi_orb(dorb_ij) / psi_det
+
+    enddo ! dorb_j
+  enddo ! dorb_i
+
+  end subroutine  d2psi_orb_bld
 
 ! ==============================================================================
   subroutine slater_mat_ex_trans_inv_bld

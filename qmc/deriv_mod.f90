@@ -493,10 +493,11 @@ module deriv_mod
 
 ! ORB/ORB contribution
   if (l_opt_orb) then
+    call object_provide_by_index (d2psi_bld_index, d2psi_orb_index)
     do i=1,param_orb_nb
       do j=1,i
         ij=ij+1
-        d2psi(ij) = 0.d0
+        d2psi(ij) = d2psi_orb((i-1)*i/2+j)
       enddo
     enddo
     write(6,*) 'warning: d2psi not yet implemented for orbitals/orbitals parameters'
