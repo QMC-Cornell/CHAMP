@@ -51,7 +51,7 @@ module linearresponse_mod
     select case(trim(word))
     case ('help')
       write(6,'(a)') 'HELP for linearresponse menu:'
-      write(6,'(a)') ' parameters jastrow csfs orbitals exponents geometry end : list of parameter types to take into account'
+      write(6,'(a)') ' parameters jastrow csfs orbitals exponents end : list of parameter types to take into account'
       write(6,'(a)') 'linearresponse'
       write(6,'(a)') 'end'
 
@@ -70,6 +70,20 @@ module linearresponse_mod
     end select
 
   enddo ! end loop over menu lines
+
+! re-initialize
+  l_opt_jas=.false.
+  l_opt_csf=.false.
+  l_opt_orb=.false.
+  l_opt_exp=.false.
+  param_orb_nb=0
+  param_exp_nb=0
+  nparmj=0
+  nparmcsf=0
+  call object_modified('param_orb_nb')
+  call object_modified('param_exp_nb')
+  call object_modified('nparmj')
+  call object_modified('nparmcsf')
 
 ! parameters type
   write(6,'(a,10a10)') ' Requested parameter types: ',parameter_type(:)
@@ -189,8 +203,14 @@ module linearresponse_mod
   call vmc
   run_done=.true.
 
-  end subroutine linearresponse
+! release
+  call object_release ('linresp_av_eigenval',linresp_av_eigenval)
+  call object_release ('linresp_av_eigenval_err',linresp_av_eigenval_err)
+  call object_release ('amat_av',amat_av)
+  call object_release ('bmat_av',bmat_av)
+  call object_release ('ovlp_psii_psij_av',ovlp_psii_psij_av)
 
+  end subroutine linearresponse
 
 !===========================================================================
   subroutine  linresp_av_eigenval_bld
@@ -319,13 +339,12 @@ module linearresponse_mod
    linresp_av_eigenval (i) = eigval_r(eigval_srt_ind_to_eigval_ind(i))
   enddo
 
-  call release ('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind)
-  call release ('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind)
+  call release ('eigvec', eigvec)
   call release ('eigval_r', eigval_r)
   call release ('eigval_i', eigval_i)
-  call release ('eigvec', eigvec)
+  call release ('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind)
+  call release ('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind)
 
-  call release('linresp_av_eigenval',linresp_av_eigenval)
   call release('linresp_matrix',linresp_matrix)
   call release('ovlp_matrix',ovlp_matrix)
 
