@@ -18,7 +18,7 @@ use List::MoreUtils;
 # HARDCODE FOLDERS TO SCAN FOR SRCS FILES
 # (the orders sometimes matters)
 #
-@scan = ('commons','MED_tools','tools','initialization','fit','vmc','dmc','dmc/dmc_elec','fit/MPI','vmc/MPI','dmc/dmc_elec/MPI','dmc/dmc_elec/MPI_global_pop','dmc/dmc_elec/MPI_global_pop_big');
+@scan = ('commons','MED_tools','fit','vmc','dmc','dmc/dmc_elec','fit/MPI','vmc/MPI','dmc/dmc_elec/MPI','dmc/dmc_elec/MPI_global_pop','dmc/dmc_elec/MPI_global_pop_big');
 #
 # Header
 #
@@ -31,8 +31,8 @@ print MAKEFILE "# Warning: However, you may need to modify the file 'makefile.in
 # Global variable
 #
 print MAKEFILE "include makefile.inc\n\n";
-print MAKEFILE "OBJDIR=fortran_objects\n";
-print MAKEFILE "MODDIR=fortran_modules\n";
+print MAKEFILE "OBJDIR=compiler_files\n";
+print MAKEFILE "MODDIR=compiler_files\n";
 print MAKEFILE "INCDIR=.\n\n";
 #
 # Source folder listing
@@ -56,12 +56,11 @@ foreach $file (@srcdir1,@srcdir2,@srcdir3){ $file =~ s/$/\//g unless $file eq ''
 #
 # Source listing
 #
-@srcs=<*.f90>;
+@srcs=<*.f90 *.c *.f>;
 foreach $dir (@scan) {
   push(@srcs,<$dir/*.f>);
   push(@srcs,<$dir/*.f90>);
   push(@srcs,<$dir/*.c>);
-  #find(\&extentions,$dir);
 }
 print MAKEFILE "SRCS =\t";
 &PrintWords(8, 0, @srcs);
@@ -91,7 +90,7 @@ print MAKEFILE ".PHONY: clean_local clean clean_all clean_all_lib make\n\n";
 print MAKEFILE "\$(EXE): dir \$(LIBS_MAKE) \$(OBJS) revision_and_date.inc\n";
 print MAKEFILE "\t\$(LD) \$(LD_FLAGS) -o \$@ \$(OBJS) \$(LIBS) \$(LD_END)\n\n";
 #
-# Make the "fortran_modules" and "fortran_objects" directories
+# Make the "compiler_files" directories
 #
 print MAKEFILE "dir:\n";
 print MAKEFILE "\t@\$(call mk_fortran_dir)\n\n";
@@ -119,7 +118,7 @@ print MAKEFILE "\n";
 # Cleans
 #
 print MAKEFILE "clean:\n";
-print MAKEFILE "\trm -fr *exe *.dif *.lst *.sav fortran_modules fortran_objects\n";
+print MAKEFILE "\trm -fr *exe *.dif *.lst *.sav compiler_files\n";
 print MAKEFILE "\n";
 print MAKEFILE "clean_all_lib:\n";
 print MAKEFILE "\tmake clean_all\n";
