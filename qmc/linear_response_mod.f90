@@ -82,6 +82,13 @@ module linearresponse_mod
   l_opt_csf=.false.
   l_opt_orb=.false.
   l_opt_exp=.false.
+  igradhess=0
+  add_diag_mult_exp = 1.d0
+  call object_modified ('add_diag_mult_exp')
+
+  !call object_provide ('ncsf')
+  !call object_provide ('nparmcsf')
+  !call object_provide ('iwcsf')
   call get_nparmj
 
 ! parameters type
@@ -144,6 +151,11 @@ module linearresponse_mod
     nparmcsf=0
     call object_modified ('nparmcsf')
   endif
+  if (ibasis.le.3) nparmd=nparmcsf
+  call object_modified ('nparmd')
+
+  nparm = nparmj+nparmcsf
+  call object_modified ('nparm')
 
 ! Final messages 
   call object_provide ('nparm')
@@ -200,6 +212,8 @@ module linearresponse_mod
   ! either request for the whole run...
   !call object_error_request('linresp_av_eigenval_err')
 
+  nforce=1
+  nwftype=1
   call vmc
   run_done=.true.
   do_print=.true.
