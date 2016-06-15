@@ -9,6 +9,8 @@ module linearresponse_mod
 
   ! Declaration of global variables and default values
 
+  logical                         :: l_tda=.false.
+  logical                         :: do_print=.true.
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
   real(dp), allocatable           :: ovlp_psii_psij_av(:,:)
@@ -62,6 +64,9 @@ module linearresponse_mod
       call get_next_value_list ('parameter_type', parameter_type, parameter_type_nb)
 # endif
 
+    case ('tda')
+      call get_next_value (l_tda)
+
     case ('end')
       exit
 
@@ -71,19 +76,13 @@ module linearresponse_mod
 
   enddo ! end loop over menu lines
 
-! re-initialize
+! initialize
+  l_opt=.true.
   l_opt_jas=.false.
   l_opt_csf=.false.
   l_opt_orb=.false.
   l_opt_exp=.false.
-  param_orb_nb=0
-  param_exp_nb=0
-  nparmj=0
-  nparmcsf=0
-  call object_modified('param_orb_nb')
-  call object_modified('param_exp_nb')
-  call object_modified('nparmj')
-  call object_modified('nparmcsf')
+  call get_nparmj
 
 ! parameters type
   write(6,'(a,10a10)') ' Requested parameter types: ',parameter_type(:)
@@ -129,7 +128,6 @@ module linearresponse_mod
   if (l_opt_jas) then
     l_opt_jas_2nd_deriv=.true.
 !   routine that wraps the calculation of the number of Jastrow parameters
-    call get_nparmj
     write(6,*)
     write(6,'(a,i5)') ' Number of Jastrow parameters:   ', nparmj
   else
@@ -182,7 +180,7 @@ module linearresponse_mod
 
   ! begin
   write(6,*)
-  write(6,'(a)') '*********************** LINEAR-RESPONSE CALCULATION **************************'
+  write(6,'(a)') '************************************** LINEAR-RESPONSE CALCULATION ***************************************'
 
   ! initializations
   if (.not. l_mode_vmc) then 
@@ -199,9 +197,17 @@ module linearresponse_mod
   call object_average_request('d2psi_av')
   call object_average_request('d2psi_eloc_av')
 
-  call object_error_request('linresp_av_eigenval_err')
+  ! either request for the whole run...
+  !call object_error_request('linresp_av_eigenval_err')
+
   call vmc
   run_done=.true.
+  do_print=.true.
+
+  ! ...or ask for it at the end
+  !call object_invalidate('amat_av')
+  !call object_invalidate('ovlp_psii_psij_av')
+  call object_provide('linresp_av_eigenval')
 
 ! release
   call object_release ('linresp_av_eigenval',linresp_av_eigenval)
@@ -244,9 +250,9 @@ module linearresponse_mod
 
     call object_needed('param_nb')
     call object_needed('param_pairs')
+    call object_needed('diag_stab')
 
     call object_needed('amat_av')
-    call object_needed('bmat_av')
     call object_needed('ovlp_psii_psij_av')
 
     return
@@ -257,10 +263,29 @@ module linearresponse_mod
 
 ! Construct the ABBA super-matrix from A and B matrices
   call alloc('linresp_matrix',linresp_matrix,2*param_nb,2*param_nb)
+  linresp_matrix=0.d0
+  if (l_tda) then
+    call object_alloc('bmat_av',bmat_av,param_nb,param_nb)
+    bmat_av=0.d0
+  else
+    call object_provide('bmat_av')
+  endif
   linresp_matrix(1:param_nb,1:param_nb)=amat_av
   linresp_matrix(param_nb+1:2*param_nb,1:param_nb)=bmat_av
   linresp_matrix(1:param_nb,param_nb+1:2*param_nb)=bmat_av
   linresp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=amat_av
+  if(l_sym_ham) then
+    ham_lin_energy =(ham_lin_energy + transpose(ham_lin_energy))/2.d0
+  endif
+  do i = 1, param_nb
+    if(i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
+      linresp_matrix(i,i) = linresp_matrix(i,i) + diag_stab * 1.d0
+      linresp_matrix(param_nb+i,param_nb+i) = linresp_matrix(param_nb+i,param_nb+i) + diag_stab * 1.d0
+    else
+      linresp_matrix(i,i) = linresp_matrix(i,i) + diag_stab
+      linresp_matrix(i+param_nb,i+param_nb) = linresp_matrix(i+param_nb,i+param_nb) + diag_stab
+    endif
+  enddo
 
 ! Construct the OVERLAP super-matrix from the overlap matrix
   call alloc('ovlp_matrix',ovlp_matrix,2*param_nb,2*param_nb)
@@ -269,6 +294,10 @@ module linearresponse_mod
   ovlp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=ovlp_psii_psij_av
 
 ! Solve the generalized eigenvalue equation
+  if (do_print) then
+  write(6,*)
+  write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation with a_diag =', diag_stab
+  endif
 ! a\ prepare arrays
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
   call alloc('eigval_r',     eigval_r,     2*param_nb)
@@ -312,6 +341,7 @@ module linearresponse_mod
   do i = 1, 2*param_nb
     eigval_srt_ind_to_eigval_ind(i) = i
   enddo
+  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:param_aug_nb)
   do i = 1, 2*param_nb
     do j = i+1, 2*param_nb
       if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
@@ -321,18 +351,22 @@ module linearresponse_mod
       endif
     enddo
   enddo
+  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:param_aug_nb)
 ! ("eigval_ind_to_eigval_srt_ind"
 !   is the map from original eigenvalues to sorted eigenvalues)
   call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, 2*param_nb)
   do i = 1, 2*param_nb
    eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
   enddo
+  write(6,'(''eigval_ind_to_eigval_srt_ind='',10000i6)') eigval_ind_to_eigval_srt_ind(1:param_aug_nb)
 
 ! Print eigenvalues
+  if (do_print) then
   write(6,'(a)') 'Sorted (complex) eigenvalues:'
   do i = 1, 2*param_nb
     write(6,'(a,i5,a,2(f20.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
   enddo
+  endif
 
 ! The sorted eigenvalues are "linresp_av_eigenval"
   do i = 1, 2*param_nb
@@ -364,6 +398,8 @@ module linearresponse_mod
 
 ! local
   integer :: i,j
+  real(dp), allocatable           :: ovlp_eigval(:)
+  real(dp), allocatable           :: ovlp_eigvec(:,:)
 
 ! begin
   if (header_exe) then
@@ -381,11 +417,29 @@ module linearresponse_mod
   do i = 1, param_nb
     do j = i, param_nb
       ovlp_psii_psij_av(i,j) = dpsi_dpsi_covar(i,j)
+      if (i.ne.j) then
+       ovlp_psii_psij_av(j,i) = ovlp_psii_psij_av(i,j)
+      endif
     enddo
-    if (i /=  j) then
-      ovlp_psii_psij_av(j,i) = ovlp_psii_psij_av(i,j)
-    endif
   enddo
+
+  if (do_print) then
+  write(6,*)
+  write(6,'(''Adding to ovlp_lin'',es12.4)') add_diag_ovlp
+  do i = 1, param_nb
+    ovlp_psii_psij_av(i,i) = ovlp_psii_psij_av(i,i)+add_diag_ovlp
+  enddo
+  call alloc('ovlp_eigvec', ovlp_eigvec, param_nb, param_nb)
+  call alloc('ovlp_eigval', ovlp_eigval, param_nb)
+  call eigensystem(ovlp_psii_psij_av, ovlp_eigvec, ovlp_eigval, param_nb)
+  write(6,*)
+  write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
+  do i = 1, param_nb
+    write(6,'(a,i4,a,es15.8)') 'overlap eigenvalue # ',i,': ',ovlp_eigval(i)
+  enddo
+  call release('ovlp_eigvec',ovlp_eigvec)
+  call release('ovlp_eigval',ovlp_eigval)
+  endif
 
   end subroutine ovlp_psii_psij_av_bld
 

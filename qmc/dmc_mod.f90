@@ -196,7 +196,7 @@ module dmc_mod
 
 ! initial printing
   write(6,*)
-  write(6,'(a)') '*********** START DMC CALCULATION  ***********'
+  write(6,'(a)') '***************************************** START DMC CALCULATION ******************************************'
 
 ! request average of local energy
   call object_average_request ('eloc_av')

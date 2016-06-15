@@ -144,7 +144,7 @@
 
 !      initial printing
        write(6,*)
-       write(6,'(a)') '*********** START VMC CALCULATION  ***********'
+       write(6,'(a)') '***************************************** START VMC CALCULATION ******************************************'
        write(6,*)
 
        call object_average_request ('eloc_av')

@@ -69,7 +69,12 @@ program champ
   endif
 # endif
 
-  write(6,'(a)') 'PROGRAM CHAMP version 3.08.0'
+  write(6,*)
+  write(6,'(a)') '----------------------------------------------------------------------------------------------------------'
+  write(6,'(a)') '                                                  PROGRAM CHAMP' 
+  write(6,'(a)') '                                                 version 3.08.00'
+  write(6,'(a)') '----------------------------------------------------------------------------------------------------------'
+  write(6,*)
   include 'revision_and_date.inc'
   call get_date (date)
   call get_environment_variable ("HOSTNAME", hostname)
@@ -134,6 +139,7 @@ program champ
 
 ! check mode
   write(6,'(3a)') 'Run in mode >',trim(mode),'<'
+  write(6,*)
   if (.not. elt_in_array (modes, mode)) then
    write(6,'(3a)') 'This mode is unknown.'
    write(6,'(20a)') 'The available modes are:'

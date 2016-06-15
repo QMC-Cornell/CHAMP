@@ -780,7 +780,7 @@ module optimization_mod
 
 ! begin
   write(6,*)
-  write(6,'(a)') '************************* WAVE FUNCTION OPTIMIZATION *************************'
+  write(6,'(a)') '*************************************** WAVE FUNCTION OPTIMIZATION ***************************************'
 
 ! Initializations
   if (l_mode_vmc) then 
@@ -1086,6 +1086,7 @@ module optimization_mod
     call object_provide ('deloc_av_abs_max')
     write(6,*)
     write(6,'(a,es15.8,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero in VMC within statistical noise except for geometry optimization)'
+    write(6,*)
    endif
 
 !  calculate and print hessian
