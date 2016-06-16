@@ -27,7 +27,7 @@ MODULE bwfdet_mod
  INTEGER,DIMENSION(:,:),ALLOCATABLE :: gmap,nband_bwfdet,boccband
  INTEGER,DIMENSION(:,:,:),ALLOCATABLE :: iprom_repl_idx,iadd_idx
  INTEGER,DIMENSION(:,:,:,:),ALLOCATABLE :: isub_idx
- REAL(dp) norm,painv(3,3)
+ REAL(dp) :: norm,painv(3,3)
  REAL(dp),PARAMETER :: one_over_twopi=1.d0/(3.14159265358979324d0*2.d0)
 !numbers less than tolerance considered zero
  REAL(dp),PARAMETER :: tolerance=1.d-5
@@ -48,7 +48,7 @@ MODULE bwfdet_mod
  COMPLEX(dp),ALLOCATABLE :: cavcgrad3(:,:,:,:,:), cavcgrad32(:,:,:,:,:)
  COMPLEX(dp),DIMENSION(:),ALLOCATABLE :: zdum,lzdum,ztemp
  COMPLEX(dp),DIMENSION(:,:),ALLOCATABLE :: gzdum
- LOGICAL spin_polarized,pwreal,open_unit(99)
+ LOGICAL :: spin_polarized,pwreal,open_unit(99)
  LOGICAL,DIMENSION(:),ALLOCATABLE :: lkcalc,lkpair,lkedge
  LOGICAL,DIMENSION(:,:,:),ALLOCATABLE :: use_real_part
  PRIVATE

@@ -115,7 +115,8 @@ module linearresponse_mod
     call object_provide ('param_orb_nb')
     call object_provide ('det_ex_unq_up_nb')
     call object_provide ('orb_opt_last_lab')
-    write(6,'(a,i8)') ' Number of computed orbitals will be ', orb_opt_last_lab
+    norb = orb_opt_last_lab
+    write(6,'(a,i8)') ' Number of computed orbitals will be ', norb
   else
     param_orb_nb  =  0
     call object_modified ('param_orb_nb')
@@ -206,8 +207,10 @@ module linearresponse_mod
   call object_average_request('dpsi_dpsi_eloc_av')
   call object_average_request('deloc_av')
   call object_average_request('dpsi_deloc_av')
-  call object_average_request('d2psi_av')
-  call object_average_request('d2psi_eloc_av')
+  if (.not. l_tda) then
+    call object_average_request('d2psi_av')
+    call object_average_request('d2psi_eloc_av')
+  endif
 
   ! either request for the whole run...
   !call object_error_request('linresp_av_eigenval_err')

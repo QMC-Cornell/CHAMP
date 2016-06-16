@@ -1651,12 +1651,10 @@ module deriv_orb_mod
       do ex_i = 1, single_ex_nb
         do ex_j = 1, ex_i
           ex_ij=ex_ij+1
-          write(6,*) '/BM/ ',ex_i,ex_j,ex_ij,(single_ex_nb+1)*single_ex_nb/2,'|',det_i,ndet
-          flush(6)
-          det_ex2(ex_ij, det_i) = 0 &! det_ex2_up (ex_ij, det_i) * det_to_det_unq_dn (det_i) &
+          det_ex2(ex_ij, det_i) = 0 &! det_ex2_up (ex_ij, det_i) * det_to_det_unq_dn (det_i) & !BM
                                 + det_ex_up (ex_i, det_i) * det_ex_dn (ex_j, det_i)     &
                                 + det_ex_up (ex_j, det_i) * det_ex_dn (ex_i, det_i)     &
-                                + 0  !det_to_det_unq_up (det_i) * det_ex2_dn (ex_ij, det_i)
+                                + 0  !det_to_det_unq_up (det_i) * det_ex2_dn (ex_ij, det_i)    !BM
         enddo
       enddo ! det_in_csf_i
     enddo ! csf_i

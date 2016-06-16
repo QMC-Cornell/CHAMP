@@ -6,4 +6,4 @@ module rlobxy_mod
  integer :: nsplin
  double precision, allocatable :: rlobx(:), rloby(:), rloby2(:)
 
-endmodule rlobxy_mod
+end module rlobxy_mod
