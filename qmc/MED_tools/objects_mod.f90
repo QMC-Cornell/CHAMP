@@ -9,7 +9,7 @@ module objects_mod
   use types_mod
   use strings_tools_mod
 
- type type_object
+ type :: type_object
    character(len=max_string_len_obj) :: name
    logical                           :: associated
    character(len=max_string_len_type):: type

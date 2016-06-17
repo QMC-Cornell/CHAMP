@@ -2292,8 +2292,7 @@
 
       implicit none
       integer,allocatable :: q(:,:,:)
-      integer,allocatable :: qtemp1(:,:),qtemp2(:,:),qtemp3(:,:), &
-     &qtemp4(:,:)
+      integer,allocatable :: qtemp1(:,:),qtemp2(:,:),qtemp3(:,:),qtemp4(:,:)
       integer :: ialloc,icount1,icount2
       integer :: l,smax
       integer :: l_alreadyset,s_alreadyset,n_alreadyset

@@ -4,7 +4,7 @@ module routines_mod
   use constants_mod
   use nodes_mod
 
-  type routine
+  type :: routine
    character(len=max_string_len) :: name
    logical                       :: debug = .false.
    logical                       :: inside = .false.

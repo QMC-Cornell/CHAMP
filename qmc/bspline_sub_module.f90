@@ -604,8 +604,7 @@
     real(wp),dimension(kz)                 :: temp2
     real(wp),dimension(3*max(kx,ky,kz))    :: work
 
-    integer :: lefty, leftz, mflag,&
-                kcoly, kcolz, j, k
+    integer :: lefty, leftz, mflag,kcoly, kcolz, j, k
     
     f = 0.0_wp
 
@@ -829,8 +828,7 @@
     real(wp),dimension(kz,kq)                :: temp2
     real(wp),dimension(kq)                   :: temp3
     real(wp),dimension(3*max(kx,ky,kz,kq))   :: work
-    integer :: lefty, leftz, leftq, mflag,&
-                kcoly, kcolz, kcolq, j, k, q
+    integer :: lefty, leftz, leftq, mflag,kcoly, kcolz, kcolq, j, k, q
     
     f = 0.0_wp
 
@@ -1103,8 +1101,8 @@
     real(wp),dimension(kq,kr)                 :: temp3
     real(wp),dimension(kr)                    :: temp4
     real(wp),dimension(3*max(kx,ky,kz,kq,kr)) :: work
-    integer :: lefty, leftz, leftq, leftr, mflag,&
-               kcoly, kcolz, kcolq, kcolr, j, k, q, r
+    integer :: lefty, leftz, leftq, leftr, mflag
+    integer :: kcoly, kcolz, kcolq, kcolr, j, k, q, r
     
     f = 0.0_wp
         
@@ -1417,10 +1415,8 @@
     real(wp),dimension(ks)                        :: temp5
     real(wp),dimension(3*max(kx,ky,kz,kq,kr,ks))  :: work
     
-    integer :: lefty,leftz,leftq,leftr,lefts,&
-               mflag,&
-               kcoly,kcolz,kcolq,kcolr,kcols,&
-               j,k,q,r,s
+    integer :: lefty,leftz,leftq,leftr,lefts,mflag
+    integer :: kcoly,kcolz,kcolq,kcolr,kcols,j,k,q,r,s
     
     f = 0.0_wp
 
@@ -2419,8 +2415,8 @@
                                                 !! 405: x is not less than or equal to t(n+1)
                                                 !! 406: a left limiting value cannot be obtained at t(k)
 
-    integer :: i,iderp1,ihi,ihmkmj,ilo,imk,imkpj,ipj,&
-               ip1,ip1mj,j,jj,j1,j2,kmider,kmj,km1,kpk,mflag
+    integer :: i,iderp1,ihi,ihmkmj,ilo,imk,imkpj,ipj
+    integer :: ip1,ip1mj,j,jj,j1,j2,kmider,kmj,km1,kpk,mflag
     real(wp) :: fkmj
 
     dbvalu = 0.0_wp
