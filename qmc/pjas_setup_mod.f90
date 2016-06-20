@@ -74,7 +74,7 @@ contains
     real(dp)                             :: g,gkmod,xli
     real(dp)                             :: bijk,bpi,bpj,bpk,bbi,bbj,gki,gkj,bbk,gkk
     integer                              :: ntstar,nop, istat, kk, nbasis_pw_t
-    real(dp)                             :: temp , pi, twopi
+    real(dp)                             :: temp , twopi
     complex(dp), allocatable             :: etagv(:)
     real(dp), allocatable                :: ekin_t(:),rkv_t(:,:)
     integer, allocatable                 :: kv_t(:,:)
@@ -105,12 +105,11 @@ contains
        enddo
     enddo
 
-    pi =4*atan(1.0_dp)
-    twopi= 2*4*atan(1.0_dp)
+    twopi= two*pi1
 
-    nbasis_pw=nint(wsvol*ecut**1.5/(6*pi*pi))
+    nbasis_pw=nint(wsvol*ecut**1.5/(6*pi1*pi1))
 ! Warning: tmp
-    write(6,'(''wsvol,ecut,pi,nbasis_pw='',3es12.4,i6)') wsvol,ecut,pi,nbasis_pw
+    write(6,'(''wsvol,ecut,pi,nbasis_pw='',3es12.4,i6)') wsvol,ecut,pi1,nbasis_pw
     call systemflush(6)
 
     nbasis_pw= 8 * nbasis_pw

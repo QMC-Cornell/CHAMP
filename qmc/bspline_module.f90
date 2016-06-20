@@ -72,15 +72,18 @@
 !       405: x is not less than or equal to t(n+1)
 !       406: a left limiting value cannot be obtained at t(k)
 !```
-
-    module bspline_module
-
-    use bspline_oo_module
-    use bspline_sub_module
-    
-    implicit none
-    
-    public
-
-    end module bspline_module
+!
+! [BM: I replaced this module everywhere by the two use statements that we see below:
+!      I believe this is equivalent to the call of this module.]
+!    module bspline_module
+!
+!    use bspline_oo_module
+!    use bspline_sub_module
+!    
+!    implicit none
+!    
+!    public
+!
+!    end module bspline_module
+! [BM: end]
 !*****************************************************************************************

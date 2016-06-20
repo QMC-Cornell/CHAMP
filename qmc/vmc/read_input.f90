@@ -534,8 +534,6 @@
       lhere = 'read_input'
 ! JT  13 Sep 2005 end
 
-      pi=four*datan(one)
-
 !     correlated sampling index
       iwf = 1
       call object_modified ('iwf')
@@ -1656,7 +1654,7 @@
           endif
         else ! Quantum Ring
           if (rring.eq.0.d0) stop 'Perturbation only possible for quantum rings'
-          if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi) stop 'ang_perturb must be between 0 and 4pi'
+          if (ang_perturb.lt.0 .or. ang_perturb.gt.4*pi1) stop 'ang_perturb must be between 0 and 4pi'
         endif
       endif
       call systemflush(6)
@@ -1666,7 +1664,7 @@
         if(icoosys.lt.1 .or. icoosys.gt.2) stop 'icoosys must be 1 or 2'
         if(rmax.lt.0.d0 .or. rmin.lt.0.d0 .or. rmax.lt.rmin) stop 'we must have 0<rmin<rmax'
         if(nmeshr.gt.NAX .or. nmesht.gt.NAX .or. nmeshr.lt.1 .or. nmesht.lt.1) stop 'we must have 1<nmeshr<=NAX  and 1<nmesht<=NAX'
-        delti=(2*nmesht+1)/(2*pi)
+        delti=(2*nmesht+1)/(2*pi1)
         delradi=(2*nmeshr+1)/(rmax-rmin)
         rmean=(rmin+rmax)*0.5d0
         write(6,'(''Value of r used in densities is relative to rmean ='',f10.6)') rmean
@@ -2255,7 +2253,7 @@
         LOGNB2=INT(DLOG(DFLOAT(M))/DLOG(2.D0)+1.D-14)
         if(ibasis.eq.5) then
           do ib=1,M
-             oparm(it,ib,iadd_diag) = modulo(oparm(it,ib,iadd_diag), 2*pi)
+             oparm(it,ib,iadd_diag) = modulo(oparm(it,ib,iadd_diag), 2*pi1)
           enddo
         endif
         DO 20 NN=1,LOGNB2

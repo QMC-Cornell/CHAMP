@@ -10,8 +10,8 @@
 
       parameter(d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0 &
      &,d1b24=1.d0/24.d0,rt2i=0.707106781186547d0 &
-     &,dln2=0.6931471805599453d0, pi=3.141592653589793d0 &
-     &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
+     &,dln2=0.6931471805599453d0 &
+     &,const1=(1.d0-dln2)/12.d0,const2=-(pi1-2.d0)/(6.d0*pi1))
 
 ! if(nparmb(1)+nparmb(2)+nparmb(3).ne.0) stop 'cuspab implemented so
 ! &far only ijas=2 and denominator terms=0'

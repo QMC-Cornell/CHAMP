@@ -32,8 +32,7 @@
 
       integer, allocatable :: testob (:)
 
-      pi=4.d0*datan(1.d0)
-      twopi=2*pi
+      twopi=2*pi1
 
       ncoef=npoly+1
 
@@ -148,7 +147,7 @@
       write(6,'(/,''Simulation cell volume'',f15.8)') det_sim
       write(6,'(/,''Simulation cell volume is'',i3,'' times primitive cell volume'')') &
      &nint(vcell_sim/vcell)
-      ws_radius=(vcell_sim*3.d0/(4.d0*pi))**(1.d0/3.d0)
+      ws_radius=(vcell_sim*3.d0/(4.d0*pi1))**(1.d0/3.d0)
       write(6,'(/,''Simulation cell Wigner-Seitz radius, ratio of WS radius to 1/2 shortest sim. cell. vector='',2f9.5)') &
      &ws_radius,ws_radius/cutr_sim
       write(6,'(''Above ratio is not much larger than 1 for a nearly spherical WS cell (1.10534 fcc, 1.13709 bcc, 1.24070 sc)'')')
@@ -1450,6 +1449,7 @@
       function ewald_pot(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell)
 ! Written by Cyrus Umrigar
 
+      use constants_mod
       use const_mod
       implicit real*8(a-h,o-z)
 
@@ -1459,7 +1459,7 @@
       ivec=1
 ! The factor of 2 in the next line is just to compensate for the 2 in the
 ! last line, which is there because we keep only half the vectors in the star.
-      ewald_pot=-pi/(2*vcell*gaus_exp**2)
+      ewald_pot=-pi1/(2*vcell*gaus_exp**2)
       do 10 k=2,ngnorm
         expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
         do 10 im=1,igmult(k)
@@ -1477,6 +1477,7 @@
       function ewald_pot_psp(rvec,rr,gvec,gnorm,ngnorm,igmult,y,cutr,vcell,ict,l,z)
 ! Written by Cyrus Umrigar
 
+      use constants_mod
       use const_mod
       implicit real*8(a-h,o-z)
 
@@ -1487,7 +1488,7 @@
       ivec=1
 ! The factor of 2 in the next line is just to compensate for the 2 in the
 ! last line, which is there because we keep only half the vectors in the star.
-      ewald_pot_psp=-pi/(2*vcell*gaus_exp**2)
+      ewald_pot_psp=-pi1/(2*vcell*gaus_exp**2)
       do 10 k=2,ngnorm
         expon=exp(-(gnorm(k)/(2*gaus_exp))**2)
         do 10 im=1,igmult(k)
@@ -2225,6 +2226,7 @@
 !       - calculates g-vectors (reciprocal lattice vectors)
 !       - calculates Gamma(0,g^2/4 G^2) for these lattice vector
 
+      use constants_mod
       use const_mod
       use periodic_1d_mod
       use atom_mod
@@ -2242,7 +2244,7 @@
       series_eps = eps*gammai_u0(gamma_coeff)
 !     Calculate reciprocal lattice vectors and gamma functions
       do i = 1,itmax
-         gvec_1d(i) = 2.d0*pi/alattice
+         gvec_1d(i) = 2.d0*pi1/alattice
          gamma_gvec(i) = gammai_u0(gamma_coeff*i*i)
          if (gamma_gvec(i).lt.series_eps)then
             ngvecs_1d = i

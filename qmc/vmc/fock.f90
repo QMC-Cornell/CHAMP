@@ -289,12 +289,12 @@
       rp1=r+one
       dlnrr2 = two*dlog(r/rp1)
 
-      psi21 = term*(one/pi-half) * dlnrr2
+      psi21 = term*(one/pi1-half) * dlnrr2
 
       phi21=psi21
 
       if(ifock.ge.3) then
-        psi31 = (otwe*Zfock*(pi-two)/pi) &
+        psi31 = (otwe*Zfock*(pi1-two)/pi1) &
      &  *(Zfock*s*Y21-r12*(rr2-five*r12*r12/six))*dlnrr2
 
         p1p21 = psi1*psi21
@@ -369,7 +369,7 @@
 
       d2utlogr = 0
 
-      term=-(pi-two)*Zfock/(three*pi)
+      term=-(pi1-two)*Zfock/(three*pi1)
 
 ! Analytic derivatives of phi21
       dsphi21 = term*(rlog*dsy21+dslogr*y21)
@@ -471,12 +471,12 @@
         beta = dasin(y*omega)
         arg1 = half*(alph-beta)
         arg2 = half*(alph+beta)
-        arg3 = half*(pi-alph+beta)
-        arg4 = half*(pi-alph-beta)
-        if(arg1.lt.zero .or. arg1.gt.half*pi) stop 'arg1'
-        if(arg2.lt.zero .or. arg2.gt.half*pi) stop 'arg2'
-        if(arg3.lt.zero .or. arg3.gt.half*pi) stop 'arg3'
-        if(arg4.lt.zero .or. arg4.gt.half*pi) stop 'arg4'
+        arg3 = half*(pi1-alph+beta)
+        arg4 = half*(pi1-alph-beta)
+        if(arg1.lt.zero .or. arg1.gt.half*pi1) stop 'arg1'
+        if(arg2.lt.zero .or. arg2.gt.half*pi1) stop 'arg2'
+        if(arg3.lt.zero .or. arg3.gt.half*pi1) stop 'arg3'
+        if(arg4.lt.zero .or. arg4.gt.half*pi1) stop 'arg4'
 
         a = dlog((s + u)/rr)
 
@@ -490,7 +490,7 @@
 
         b4 = two*(xlob(arg1)-xlob(arg2)+xlob(arg3)-xlob(arg4))
 
-        b = b1+(alph*b22-beta*b32+b4)/Pi
+        b = b1+(alph*b22-beta*b32+b4)/pi1
 
         ss2 = b4
 
@@ -512,9 +512,9 @@
         psi2a =-term*dlog((s+r12)/r)
 
         psi2b =  otwe*xm12*(two*xma*Y21-xms*Y20) &
-     &     * (two*dlog(t+r12) - (ss1 - ss2/pi))
+     &     * (two*dlog(t+r12) - (ss1 - ss2/pi1))
 
-        psi2c = -osix*xm12*xms*r12*root*(one+(two/pi)*beta)
+        psi2c = -osix*xm12*xms*r12*root*(one+(two/pi1)*beta)
 
         psi2d = otwe * ( -two*etrial*rr2 &
      &     + r12*r12 * (two*(xm1*xm1+xm2*xm2) + xm12*xm12) &
@@ -553,7 +553,7 @@
         dsb4 = (dlob(arg1)-dlob(arg3))*dsarg1 + &
      &      (dlob(arg4)-dlob(arg2))*dsarg2
 
-        dsb = dsb1+(1/Pi)*(dsb2+dsb3+dsb4)
+        dsb = dsb1+(1/pi1)*(dsb2+dsb3+dsb4)
 
         dsc1 = s*u/Root
 
@@ -562,7 +562,7 @@
         dspe = Zfock*(-(Zfock*s) + u/2)
 
         dsphi20 = otwe*(-4*Zfock*(y21*dsa+dsy21*a) +Zfock*(y20*dsb+dsy20*b) &
-     &   +(4*Zfock/Pi)*(c1*dsbeta+dsc1*(beta+half*Pi)) +dspd) +dspe
+     &   +(4*Zfock/pi1)*(c1*dsbeta+dsc1*(beta+half*pi1)) +dspd) +dspe
 
         dty20 = 2*s
 
@@ -591,7 +591,7 @@
         dtb4 = (dlob(arg1)-dlob(arg3))*dtarg1 + &
      &      (dlob(arg4)-dlob(arg2))*dtarg2
 
-        dtb = dtb1+(1/Pi)*(dtb2+dtb3+dtb4)
+        dtb = dtb1+(1/pi1)*(dtb2+dtb3+dtb4)
 
         dtc1 = t*u/Root
 
@@ -600,7 +600,7 @@
         dtpe = 0
 
         dtphi20 = otwe*(-4*Zfock*(y21*dta+dty21*a) +Zfock*(y20*dtb+dty20*b) &
-     &   +(4*Zfock/Pi)*(c1*dtbeta+dtc1*(beta+half*Pi)) +dtpd) +dtpe
+     &   +(4*Zfock/pi1)*(c1*dtbeta+dtc1*(beta+half*pi1)) +dtpd) +dtpe
 
         duy20 = 0
 
@@ -631,7 +631,7 @@
         dub4 = (dlob(arg1)-dlob(arg3))*duarg1 + &
      &      (dlob(arg4)-dlob(arg2))*duarg2
 
-        dub = dub1+(1/Pi)*(dub2+dub3+dub4)
+        dub = dub1+(1/pi1)*(dub2+dub3+dub4)
 
         duc1 = 2*(RR - u)*(RR + u)/Root
 
@@ -640,7 +640,7 @@
         dupe = -(-(Zfock*s) + u/2)/2
 
         duphi20 = otwe*(-4*Zfock*(y21*dua+duy21*a) +Zfock*(y20*dub+duy20*b) &
-     &   +(4*Zfock/Pi)*(c1*dubeta+duc1*(beta+half*Pi)) +dupd) +dupe
+     &   +(4*Zfock/pi1)*(c1*dubeta+duc1*(beta+half*pi1)) +dupd) +dupe
 
         d2sy20 = 0
 
@@ -678,7 +678,7 @@
      &   half*((d2lob(arg1)+d2lob(arg3))*dsarg1**2 + &
      &        (-d2lob(arg4)-d2lob(arg2))*dsarg2**2)
 
-        d2sb = d2sb1+(1/Pi)*(d2sb2+d2sb3+d2sb4)
+        d2sb = d2sb1+(1/pi1)*(d2sb2+d2sb3+d2sb4)
 
         d2sc1 = -(u*(-t + u)*(t + u)/Root3)
 
@@ -688,7 +688,7 @@
 
         d2sphi20 = otwe*(-4*Zfock*(y21*d2sa+d2sy21*a+2*dsy21*dsa) + &
      &   Zfock*(y20*d2sb+d2sy20*b+2*dsy20*dsb) + &
-     &   (4*Zfock/Pi)*(c1*d2sbeta+d2sc1*(beta+half*Pi)+2*dsc1*dsbeta) &
+     &   (4*Zfock/pi1)*(c1*d2sbeta+d2sc1*(beta+half*pi1)+2*dsc1*dsbeta) &
      &   +d2spd)+d2spe
 
         d2ty20 = 0
@@ -733,7 +733,7 @@
      &   half*((d2lob(arg1)+d2lob(arg3))*dtarg1**2 + &
      &        (-d2lob(arg4)-d2lob(arg2))*dtarg2**2)
 
-        d2tb = d2tb1+(1/Pi)*(d2tb2+d2tb3+d2tb4)
+        d2tb = d2tb1+(1/pi1)*(d2tb2+d2tb3+d2tb4)
 
         d2tc1 = -(u*(-s + u)*(s + u)/Root3)
 
@@ -743,7 +743,7 @@
 
         d2tphi20 = otwe*(-4*Zfock*(y21*d2ta+d2ty21*a+2*dty21*dta) + &
      &   Zfock*(y20*d2tb+d2ty20*b+2*dty20*dtb) + &
-     &   (4*Zfock/Pi)*(c1*d2tbeta+d2tc1*(beta+half*Pi)+2*dtc1*dtbeta) &
+     &   (4*Zfock/pi1)*(c1*d2tbeta+d2tc1*(beta+half*pi1)+2*dtc1*dtbeta) &
      &   +d2tpd)+d2tpe
 
         d2uy20 = 0
@@ -792,7 +792,7 @@
      &   half*((d2lob(arg1)+d2lob(arg3))*duarg1**2 + &
      &        (-d2lob(arg4)-d2lob(arg2))*duarg2**2)
 
-        d2ub = d2ub1+(1/Pi)*(d2ub2+d2ub3+d2ub4)
+        d2ub = d2ub1+(1/pi1)*(d2ub2+d2ub3+d2ub4)
 
         d2uc1 = u*(-3*s2 - 3*t2 + 2*u2)/Root3
 
@@ -802,7 +802,7 @@
 
         d2uphi20 = otwe*(-4*Zfock*(y21*d2ua+d2uy21*a+2*duy21*dua) + &
      &   Zfock*(y20*d2ub+d2uy20*b+2*duy20*dub) + &
-     &   (4*Zfock/Pi)*(c1*d2ubeta+d2uc1*(beta+half*Pi)+2*duc1*dubeta) &
+     &   (4*Zfock/pi1)*(c1*d2ubeta+d2uc1*(beta+half*pi1)+2*duc1*dubeta) &
      &   +d2upd)+d2upe
 
         d2sty20 = 2
@@ -841,7 +841,7 @@
      &   half*((d2lob(arg1)+d2lob(arg3))*dsarg1*dtarg1 + &
      &        (-d2lob(arg4)-d2lob(arg2))*dsarg2*dtarg2)
 
-        d2stb = d2stb1+(1/Pi)*(d2stb2+d2stb3+d2stb4)
+        d2stb = d2stb1+(1/pi1)*(d2stb2+d2stb3+d2stb4)
 
         d2stc1 = -(s*t*u/Root3)
 
@@ -851,8 +851,8 @@
 
         d2stphi20 = otwe*(-4*Zfock*(y21*d2sta+d2sty21*a+dsy21*dta+dty21*dsa) &
      &   +Zfock*(y20*d2stb+d2sty20*b+dsy20*dtb+dty20*dsb) + &
-     &   (4*Zfock/Pi)* &
-     &   (c1*d2stbeta+d2stc1*(beta+half*Pi)+dsc1*dtbeta+dtc1*dsbeta) &
+     &   (4*Zfock/pi1)* &
+     &   (c1*d2stbeta+d2stc1*(beta+half*pi1)+dsc1*dtbeta+dtc1*dsbeta) &
      &   +d2stpd) +d2stpe
 
         d2suy20 = 0
@@ -891,7 +891,7 @@
      &   half*((d2lob(arg1)+d2lob(arg3))*dsarg1*duarg1 + &
      &        (-d2lob(arg4)-d2lob(arg2))*dsarg2*duarg2)
 
-        d2sub = d2sub1+(1/Pi)*(d2sub2+d2sub3+d2sub4)
+        d2sub = d2sub1+(1/pi1)*(d2sub2+d2sub3+d2sub4)
 
         d2suc1 = s*(s2 + t2)/Root3
 
@@ -901,8 +901,8 @@
 
         d2suphi20 = otwe*(-4*Zfock*(y21*d2sua+d2suy21*a+dsy21*dua+duy21*dsa) &
      &   +Zfock*(y20*d2sub+d2suy20*b+dsy20*dub+duy20*dsb) + &
-     &   (4*Zfock/Pi)* &
-     &   (c1*d2subeta+d2suc1*(beta+half*Pi)+dsc1*dubeta+duc1*dsbeta) &
+     &   (4*Zfock/pi1)* &
+     &   (c1*d2subeta+d2suc1*(beta+half*pi1)+dsc1*dubeta+duc1*dsbeta) &
      &   +d2supd) +d2supe
 
         d2uty20 = 0
@@ -945,7 +945,7 @@
      &   half*((d2lob(arg1)+d2lob(arg3))*duarg1*dtarg1 + &
      &        (-d2lob(arg4)-d2lob(arg2))*duarg2*dtarg2)
 
-        d2utb = d2utb1+(1/Pi)*(d2utb2+d2utb3+d2utb4)
+        d2utb = d2utb1+(1/pi1)*(d2utb2+d2utb3+d2utb4)
 
         d2utc1 = t*(s2 + t2)/Root3
 
@@ -955,8 +955,8 @@
 
         d2utphi20 = otwe*(-4*Zfock*(y21*d2uta+d2uty21*a+duy21*dta+dty21*dua) &
      &   +Zfock*(y20*d2utb+d2uty20*b+duy20*dtb+dty20*dub) + &
-     &   (4*Zfock/Pi)* &
-     &   (c1*d2utbeta+d2utc1*(beta+half*Pi)+duc1*dtbeta+dtc1*dubeta) &
+     &   (4*Zfock/pi1)* &
+     &   (c1*d2utbeta+d2utc1*(beta+half*pi1)+duc1*dtbeta+dtc1*dubeta) &
      &   +d2utpd) +d2utpe
 
       endif
@@ -971,15 +971,15 @@
 ! Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 ! C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
+      use constants_mod
       use rlobxy_mod
 !     implicit none
       implicit real*8(a-h,o-z)
       real*8 xeval,yeval,xpi,xlobpi,eps2,eps22,ysing7,xlob
       real*8 xsp,xpow,xpii,xdum,A,x
-      real*8 one,two,half,pi,pib2,ln2,o18,o900,o19845
+      real*8 pib2,ln2,o18,o900,o19845
       integer nlob
-      parameter (one = 1.d0, two = 2.d0, half = .5d0)
-      parameter (pi = 3.14159265358979323846d0, pib2 = half*pi)
+      parameter (pib2 = half*pi1)
       parameter (ln2 = 0.69314718055994530941d0)
       parameter (xsp = 1.29d0, xpow = 1.32d0)
       parameter (o18 = .05555555555555555d0, o900 = .1111111111111111d-2 &
@@ -989,11 +989,11 @@
 
       xlobpi = pib2*ln2
 
-      if(xeval.lt.0.d0) nlob = int((xeval-one)/pi)
-      if(xeval.ge.0.d0) nlob = int(xeval/pi)
-      xpi = xeval - pi*nlob
+      if(xeval.lt.0.d0) nlob = int((xeval-one)/pi1)
+      if(xeval.ge.0.d0) nlob = int(xeval/pi1)
+      xpi = xeval - pi1*nlob
       xpii = xpi
-      if(xpi.gt.pib2) xpii = pi - xpi
+      if(xpi.gt.pib2) xpii = pi1 - xpi
 
       if(xpii.le.xpow)call splint(rlobx,rloby,rloby2,nsplin,xpii,yeval)
 
@@ -1002,7 +1002,7 @@
          goto 500
       endif
 
-      if(xpi.gt.pi-xsp) then
+      if(xpi.gt.pi1-xsp) then
          xlob = two*xlobpi - yeval
          goto 500
       endif
@@ -1021,7 +1021,7 @@
          goto 500
       endif
 
-      if(xpi.gt.pib2.and.xpi.le.pi-xpow) then
+      if(xpi.gt.pib2.and.xpi.le.pi1-xpow) then
          xlob = two*xlobpi - ysing7
          goto 500
       endif
@@ -1047,6 +1047,7 @@
 ! Fock's Expansion, Kato's Cusp Conditions and the Exponential Ansatz,
 ! C.R. Myers, C.J. Umrigar, J.P. Sethna and J.D. Morgan, PRA, 44, 5537 (1991).
 
+      use constants_mod
       use atom_mod
       use contr2_mod
       use jaspar3_mod
@@ -1056,7 +1057,7 @@
       common /focsav/ c4sav,c5sav,c7sav,c9sav
 
 !JT      parameter(half=0.5d0,zero=0.d0,two=2.d0,four=4.d0)
-      parameter(pi=3.141592653589793d0,const2=-(pi-2.d0)/(6.d0*pi))
+      parameter(const2=-(pi1-2.d0)/(6.d0*pi1))
 
 ! Focks's terms are evaluated using scaled variables. Scaled variables in
 ! phi21 originate terms in the real variables that contribute to phi31.

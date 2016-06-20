@@ -1,6 +1,7 @@
 module projector
 
   use bspline_oo_module
+  use constants_mod
   use, intrinsic :: iso_fortran_env, only: rk => real64
 
   implicit none
@@ -12,7 +13,6 @@ module projector
 ! real(rk), parameter :: E_T = -2.175_rk
   real(rk), parameter :: MU = 1.0_rk
 ! real(rk), parameter :: grid_z = 0.0_rk
-  real(rk), parameter :: PI = 4.0_rk*atan(1._rk)
 
   ! Global variables
   character(TITLE_MAX_LENGTH) :: title
@@ -478,11 +478,12 @@ module projector
     !endif
 
 !   ifi(abs(g_eZ_det).gt.g_sav) then
-!     write(6,'(''g_eZ_det, exp(E_T * tau - u_ee), 1/ (2*PI*tau)**(3._rk*num_elec/2._rk)'',9es12.4)') g_eZ_det, exp(E_T * tau - u_ee), 1/ (2*PI*tau)**(3._rk*num_elec/2._rk)
+!     write(6,'(''g_eZ_det, exp(E_T * tau - u_ee), 1/ (2*pi1*tau)**(3._rk*num_elec/2._rk)'',9es12.4)') g_eZ_det, exp(E_T * tau -
+!     u_ee), 1/ (2*pi1*tau)**(3._rk*num_elec/2._rk)
 !     g_sav=abs(g_eZ_det)
 !   endif
 
-    evaluate_proj = evaluate_proj * (MU / (2 * PI * tau))**(1.5_rk * num_elec)
+    evaluate_proj = evaluate_proj * (MU / (2 * pi1 * tau))**(1.5_rk * num_elec)
 
   end function evaluate_proj
 !--------------------------------------------------------------------------------------------------

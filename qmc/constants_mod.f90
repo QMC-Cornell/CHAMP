@@ -40,7 +40,7 @@ module constants_mod
   real(dp), parameter   :: sixth   = 1.d0/6.d0
 
 ! mathematical constants
-  real(dp), parameter   :: pi1        = 3.141592653589793d0
+  real(dp), parameter   :: pi1        = four*datan(one)
   real(dp), parameter   :: sqrt_pi    = 1.772453850905516d0
   real(dp), parameter   :: oneover2pi = 0.15915494309189535d0
   real(dp), parameter   :: oneover4pi = 0.07957747154594767d0

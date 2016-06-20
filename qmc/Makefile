@@ -546,8 +546,6 @@ $(OBJDIR)/basic_tools_mod.o: $(OBJDIR)/constants_mod.o $(OBJDIR)/mpi_mod.o \
 	$(OBJDIR)/types_mod.o $(OBJDIR)/variables_mod.o
 $(OBJDIR)/basis_mod.o: $(OBJDIR)/all_modules_mod.o $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/control_mod.o
-$(OBJDIR)/bspline_module.o: $(OBJDIR)/bspline_oo_module.o \
-	$(OBJDIR)/bspline_sub_module.o
 $(OBJDIR)/bspline_oo_module.o: $(OBJDIR)/bspline_sub_module.o
 $(OBJDIR)/bsplines_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/basic_tools_mod.o $(OBJDIR)/commons/orbital_grid_mod.o \
@@ -1693,7 +1691,8 @@ $(OBJDIR)/dmc/opt_wf_dmc.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/force_dmc_mod.o $(OBJDIR)/commons/forcepar_mod.o \
 	$(OBJDIR)/commons/gradhess_mod.o $(OBJDIR)/commons/wfsec_mod.o \
 	$(OBJDIR)/dmc_mod.o
-$(OBJDIR)/dmc/projector.o: $(OBJDIR)/bspline_oo_module.o
+$(OBJDIR)/dmc/projector.o: $(OBJDIR)/bspline_oo_module.o \
+	$(OBJDIR)/constants_mod.o
 $(OBJDIR)/dmc/sites_dmc.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/config_dmc_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contrl_mod.o $(OBJDIR)/commons/dim_mod.o

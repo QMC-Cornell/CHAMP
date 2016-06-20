@@ -28,7 +28,6 @@
 ! So assumption is that system is not strongly polarized.
 
 !     gauss()=dcos(two*pi*rannyu(0))*dsqrt(-two*dlog(rannyu(0)))
-      pi=4*datan(1.d0)
 
       if(iperiodic.eq.3) then ! periodic solids
 ! Generate points uniformly in lattice coordinates and convert back to cartesian coordinates
@@ -102,7 +101,7 @@
 !               This code samples from a smaller, uniform region:
 !                site = 2.0d0*(0.5d0 - rannyu(0))
                 site = (0.5d0 - rannyu(0))/dsqrt(we)
-                angle=2.0d0*pi*(dble(ielec) - rannyu(0))/dble(nelec)
+                angle=2.0d0*pi1*(dble(ielec) - rannyu(0))/dble(nelec)
                 x(1,ielec)=(site+rring)*dcos(angle)
                 x(2,ielec)=(site+rring)*dsin(angle)
 !               x(1,ielec)=(sitsca*site+rring)*dcos(angle)
