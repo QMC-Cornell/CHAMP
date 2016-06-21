@@ -289,11 +289,9 @@ module deriv_mod
 
   shift = 0
 
-  write(6,*) '/BM/logicals: ',l_opt_csf,l_opt_jas,l_opt_pjas,l_opt_exp,l_opt_orb,l_opt_geo,l_deriv_bound
 ! CSFs contribution
   if (l_opt_csf) then
    call object_provide_by_index (dpsi_bld_index, dpsi_csf_index)
-   write(6,*) '/BM/dpsi_csf: ',dpsi_csf
    dpsi (shift+1:shift+nparmcsf) = dpsi_csf (:)
    shift = shift + nparmcsf
   endif
@@ -301,7 +299,6 @@ module deriv_mod
 ! Jastrow contribution
   if (l_opt_jas) then
    call object_provide_by_index (dpsi_bld_index, dpsi_jas_index)
-   write(6,*) '/BM/dpsi_jas ',dpsi_jas
    dpsi (shift+1:shift+nparmj) = dpsi_jas (:)
    shift = shift + nparmj
   endif
@@ -309,7 +306,6 @@ module deriv_mod
 ! Periodic Jastrow contribution
   if (l_opt_pjas) then
      call object_provide_by_index (dpsi_bld_index, dpsi_pjas_index)
-   write(6,*) '/BM/dpsi_pjas ',dpsi_pjas
      dpsi (shift+1:shift+param_pjas_nb) = dpsi_pjas (:)
      shift = shift + param_pjas_nb
   endif
@@ -318,11 +314,9 @@ module deriv_mod
   if (l_opt_exp) then
    if (l_optimize_log_exp) then
     call object_provide_by_index (dpsi_bld_index, dpsi_lnexp_index)
-   write(6,*) '/BM/dpsi_lnexp ',dpsi_lnexp
     dpsi (shift+1:shift+param_exp_nb) = dpsi_lnexp (:)
    else
     call object_provide_by_index (dpsi_bld_index, dpsi_exp_index)
-   write(6,*) '/BM/dpsi_exp ',dpsi_exp
     dpsi (shift+1:shift+param_exp_nb) = dpsi_exp (:)
    endif
    shift = shift + param_exp_nb
@@ -331,7 +325,6 @@ module deriv_mod
 ! orbitals contribution
   if (l_opt_orb) then
    call object_provide_by_index (dpsi_bld_index, dpsi_orb_index)
-   write(6,*) '/BM/dpsi_orb:',dpsi_orb
    dpsi (shift+1:shift+param_orb_nb) = dpsi_orb (:)
    shift = shift + param_orb_nb
   endif
@@ -339,7 +332,6 @@ module deriv_mod
 ! geometry contribution
   if (l_opt_geo) then
    call object_provide_by_index (dpsi_bld_index, dpsi_geo_index)
-   write(6,*) '/BM/dpsi_geo:',dpsi_geo
    dpsi (shift+1:shift+param_geo_nb) = dpsi_geo (:)
    shift = shift + param_geo_nb
   endif
@@ -566,11 +558,9 @@ module deriv_mod
 
   shift = 0
 
-  write(6,*) '/ BM/logicals: ',l_opt_csf,l_opt_jas,l_opt_pjas,l_opt_exp,l_opt_orb,l_opt_geo,l_deriv_bound
 ! CSFs contribution
   if (l_opt_csf) then
    call object_provide_by_index (deloc_bld_index, deloc_csf_index)
-   write(6,*) '/BM/deloc_csf: ',deloc_csf
    deloc (shift+1:shift+nparmcsf) = deloc_csf (:)
    shift = shift + nparmcsf
   endif
@@ -578,7 +568,6 @@ module deriv_mod
 ! Jastrow contribution
   if (l_opt_jas) then
    call object_provide_by_index (deloc_bld_index, deloc_jas_index)
-   write(6,*) '/BM/deloc_jas: ',deloc_jas
    deloc (shift+1:shift+nparmj) = deloc_jas (:)
    shift = shift + nparmj
   endif
@@ -586,7 +575,6 @@ module deriv_mod
 ! Periodic Jastrow contribution
   if (l_opt_pjas) then
    call object_provide_by_index (deloc_bld_index, deloc_pjas_index)
-   write(6,*) '/BM/deloc_pjas: ',deloc_pjas
    deloc (shift+1:shift+param_pjas_nb) = deloc_pjas (:)
    shift = shift + param_pjas_nb
   endif
@@ -595,11 +583,9 @@ module deriv_mod
   if (l_opt_exp) then
    if (l_optimize_log_exp) then
     call object_provide_by_index (deloc_bld_index, deloc_lnexp_index)
-    write(6,*) '/BM/deloc_lnexp ',deloc_lnexp
     deloc (shift+1:shift+param_exp_nb) = deloc_lnexp (:)
    else
     call object_provide_by_index (deloc_bld_index, deloc_exp_index)
-    write(6,*) '/BM/deloc_exp ',deloc_exp
     deloc (shift+1:shift+param_exp_nb) = deloc_exp (:)
    endif
    shift = shift + param_exp_nb
@@ -608,7 +594,6 @@ module deriv_mod
 ! Orbitals contribution
   if (l_opt_orb .and. .not. l_opt_orb_eig) then
    call object_provide_by_index (deloc_bld_index, deloc_orb_index)
-   write(6,*) '/BM/deloc_orb: ',deloc_orb
    deloc (shift+1:shift+param_orb_nb) = deloc_orb (:)
    shift = shift + param_orb_nb
   endif
@@ -616,7 +601,6 @@ module deriv_mod
 ! geometry contribution
   if (l_opt_geo) then
    call object_provide_by_index (deloc_bld_index, deloc_geo_index)
-   write(6,*) '/BM/deloc_geo: ',deloc_geo
    deloc (shift+1:shift+param_geo_nb) = deloc_geo (:)
    shift = shift + param_geo_nb
   endif
