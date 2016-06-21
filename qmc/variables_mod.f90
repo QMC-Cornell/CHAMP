@@ -70,6 +70,7 @@ module variables_mod
 
   logical                         :: l_opt_orb  = .false.
   logical                         :: l_opt_csf  = .false.
+  logical                         :: l_opt_csf_rot  = .false.
   logical                         :: l_opt_jas  = .false.
   logical                         :: l_opt_exp  = .false.
   logical                         :: l_opt_geo  = .false.

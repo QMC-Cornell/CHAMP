@@ -325,14 +325,16 @@
         endif
 
 ! JT beg : deti_det for first csf (needed for unitary parametrization)
-!          icsf=1
-!          det1_det=0
-!          do idet_in_csf=1,ndet_in_csf(icsf)
-!            idet=iwdet_in_csf(idet_in_csf,icsf)
-!            term=detu(idet)*detd(idet)*cdet_in_csf(idet_in_csf,icsf)*detinv
-!            det1_det=det1_det+term
-!          enddo
-!          call object_modified_by_index (det1_det_index)
+! MJO also needed for CSF rotations.
+! WARNING! FIXME! icsf=1 assumes that the first csf is the static one
+         icsf=1
+         det1_det=0
+         do idet_in_csf=1,ndet_in_csf(icsf)
+           idet=iwdet_in_csf(idet_in_csf,icsf)
+           term=detu(idet)*detd(idet)*cdet_in_csf(idet_in_csf,icsf)*detinv
+           det1_det=det1_det+term
+         enddo
+         call object_modified_by_index (det1_det_index)
 ! JT end
 
 

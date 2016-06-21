@@ -50,7 +50,7 @@ module csfs_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'csfs_menu'
-  integer elec_i, elec_j, det_i, csf_i, det_in_csf_i
+  integer elec_i, elec_j, det_i, csf_i, det_in_csf_i,i
   real(dp), allocatable :: csf_coef_read (:)
   real(dp) sum_csf_coef_sq
 
@@ -85,7 +85,9 @@ module csfs_mod
    call get_next_value_list ('csf_coef_read', csf_coef_read, ncsf)
    call object_modified ('nwf')
    call alloc ('csf_coef', csf_coef, ncsf, nwf)
+   call alloc ('csf_rot_coef', csf_rot_coef, ncsf,nwf)
    csf_coef (:,1) = csf_coef_read (:)
+   !FIXME: Put csf_rotation and csf_normalization here - MJO 6/8/2016
    call object_modified ('ncsf')
    call object_modified ('csf_coef')
 

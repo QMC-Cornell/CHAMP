@@ -88,7 +88,7 @@
 
       dimension cent_tmp(3)
       integer, allocatable :: iflag(:)
-
+      real(dp) :: csf_rot_arg
       character*25 lhere
 
 ! Inputs not described in mainvmc:
@@ -1190,8 +1190,41 @@
       call systemflush(6)
 
       call alloc ('csf_coef', csf_coef, ncsf, nwf)
+      call alloc ('csf_rot_coef', csf_rot_coef, ncsf-1, nwf)
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
+      !Normalize CSF parameters and then
+      !calculate initial rotation parameters from csf parameters using
+      !
+      ! exp(-R)|0> = cos(d) - sin(d)/d sum R_k |k>
+      ! d = sqrt(sum(abs(R_k)^2))
+      ! R_0 = cos(d)
+      ! and for k.ne.0
+      ! R_k = -C_k d/sin(d) 
+      ! 
+      csf_norm = 0
+      do icsf=1,ncsf
+         csf_norm = csf_norm + csf_coef(icsf,1)**2
+      enddo
+      csf_norm = sqrt(csf_norm)
+      do icsf=1,ncsf
+         csf_coef(icsf,1) = csf_coef(icsf,1)/csf_norm
+      enddo
+
+      ! Calculate csf_rot_arg (or d, above)
+      csf_rot_arg     = acos(csf_coef(1,1))
+
+      ! Now calculate rotation parameters - only m-1 parameters
+      ! because the normalization fixes the first parameter
+      ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
+      ! by the normalization, so we only have ncsf-1 rotation parameters
+      do i=1,ncsf-1
+         csf_rot_coef(i,1) = -csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
+      enddo
+
+      write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
+      write(6,'(''Initial CSF rotation coefs='',20f10.6)') (csf_rot_coef(icsf,1),icsf=1,ncsf-1)
+
       call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
       read(5,*) (ndet_in_csf(icsf),icsf=1,ncsf)
       write(6,'(''ndet_in_csf='',20i4)') (ndet_in_csf(icsf),icsf=1,ncsf)
@@ -1210,7 +1243,7 @@
         read(5,*) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         write(6,'(''CSF'',i4,'' iwdet_in_csf='',100i4)') icsf,(iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         read(5,'(a)') input_line
-        if(index(input_line,'.').ne.0) normalize_csf=0
+        if(index(input_line,'.').ne.0) normalize_csf=1
         read(input_line,*) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         write(6,'(''CSF'',i4,'' cdet_in_csf='',900f8.5)') icsf,(cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         do 85 idet_in_csf=1,ndet_in_csf(icsf)
@@ -1241,6 +1274,7 @@
 
       call object_modified ('ncsf')         !JT
       call object_modified ('csf_coef')     !JT
+      call object_modified ('csf_rot_coef') !MJO
       call object_modified ('ndet_in_csf')  !JT
       call object_modified ('iwdet_in_csf') !JT
       call object_modified ('cdet_in_csf')  !JT
@@ -1872,6 +1906,16 @@
           endif
         enddo
       endif
+
+!     MJO98: if we are using rotation parameters, then we have no linear parameters
+!            otherwise, all the csf parameters are linear
+      if (l_opt_csf_rot) then
+         nparmlin = 0
+      else 
+         nparmlin = nparmcsf
+      endif
+      print*,"nparmlin = ",nparmlin
+
 
 !     JT: nparmd to replace MPARMD
       nparmd = nparmot+nparmcsf

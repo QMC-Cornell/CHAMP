@@ -1460,7 +1460,7 @@ module optimization_mod
   integer dexp_i, dexp_to_all_bas_i
   real(dp), parameter :: AMAX_NONLIN = 100.d0
   integer exponent_negative_nb
-  real(dp) parm2min
+  real(dp) parm2min,csf_rot_arg,csf_norm
   integer iparmpjase
   integer force_i, cent_i, dim_i
 
@@ -1473,10 +1473,76 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('iwcsf')
    call object_provide ('delta_csf')
-   do iparmcsf = 1, nparmcsf
-     csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
-   enddo
+
+   if (l_opt_csf_rot) then
+      do iparmcsf = 1, nparmcsf
+         csf_rot_coef(iparmcsf,1) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
+      enddo
+      !Convert from rotation parameters to csf_coef using:
+      !
+      ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
+      !
+      
+      csf_rot_arg = 0
+      do iparmcsf=1,nparmcsf
+         csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,1)**2
+      enddo
+      csf_rot_arg = sqrt(csf_rot_arg)
+      csf_coef(1,1) = cos(csf_rot_arg)
+      
+      do iparmcsf = 1, nparmcsf
+         csf_coef(iparmcsf+1,1) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,1)
+      enddo
+      
+   else
+      !Convert from rotation parameters to csf_coef using:
+      !
+      ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
+      !
+      
+      csf_rot_arg = 0
+      do iparmcsf=1,nparmcsf
+         csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,1)**2
+      enddo
+      csf_rot_arg = sqrt(csf_rot_arg)
+      csf_coef(1,1) = cos(csf_rot_arg)
+      
+      do iparmcsf = 1, nparmcsf
+         csf_coef(iparmcsf+1,1) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,1)
+      enddo
+
+      do iparmcsf = 1, nparmcsf
+         csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
+      enddo
+      
+      !Normalize new csf_coef
+      csf_norm = 0
+      do iparmcsf=1,ncsf
+         csf_norm = csf_norm + csf_coef(iparmcsf,iwf)**2
+      enddo
+
+      csf_norm = sqrt(csf_norm)
+
+      do iparmcsf=1,ncsf
+         csf_coef(iparmcsf,iwf) = csf_coef(iparmcsf,iwf)/csf_norm
+      enddo
+
+!      Shouldn't be necessary, because we are always using linear csfs in this mode
+      ! Calculate csf_rot_arg (or d, above)
+      csf_rot_arg     = acos(csf_coef(1,iwf))
+
+      ! Now calculate rotation parameters - only m-1 parameters
+      ! because the normalization fixes the first parameter
+      ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
+      ! by the normalization, so we only have ncsf-1 rotation parameters
+
+      do i=1,ncsf-1
+         csf_rot_coef(i,iwf) = -csf_coef(i+1,iwf)*csf_rot_arg/sin(csf_rot_arg)
+      enddo
+   endif
+
    call object_modified ('csf_coef')
+   call object_modified ('csf_rot_coef')
   endif ! l_opt_csf
 
 ! Jastrow parameters
@@ -2233,7 +2299,7 @@ module optimization_mod
   integer orb_i, cent_i, dim_i, bas_i, bas_cent_i
   integer i, ict, isp
   character(len=80) fmt
-
+  real norm
 ! begin
 
 ! print CSFs coefficients
@@ -2243,6 +2309,12 @@ module optimization_mod
     write(6,'(a)') 'CSFs coefficients:'
     write(6,'(a)') 'csfs'
     write(6,'(a)') ' csf_coef'
+    norm = 0
+    do i=1,ncsf
+       norm = norm + csf_coef(i,iwf)**2
+    enddo
+    norm = sqrt(norm)
+    print*,"CSF norm: ",norm
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
@@ -3591,7 +3663,7 @@ module optimization_mod
 
    call object_create ('nparmcsf')
    call object_create ('iwcsf')
-
+   call object_create ('nparmlin')
    call object_needed ('ncsf')
 
    return
@@ -3605,12 +3677,25 @@ module optimization_mod
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i
    enddo
+   ! MJO98 I'm not sure about whether this is correct for rotations
+   if (l_opt_csf_rot) then
+      nparmlin = 0
+   else 
+      nparmlin = nparmcsf
+   endif
+   nparmlin = nparmcsf
   else
    nparmcsf=ncsf-1
    call object_alloc ('iwcsf', iwcsf, nparmcsf)
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i + 1
    enddo
+   if (l_opt_csf_rot) then
+      nparmlin = 0
+   else 
+      nparmlin = nparmcsf
+   endif
+   nparmlin = nparmcsf
   endif
 
   end subroutine iwcsf_bld
