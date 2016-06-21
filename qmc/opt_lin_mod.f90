@@ -985,8 +985,8 @@ module opt_lin_mod
   eigvec_smallest_norm_ind=1
   do i = 1, param_aug_nb
     psi_lin_var_norm = 0
-    do iparm = nparmcsf+1, param_nb
-      do jparm = nparmcsf+1, param_nb
+    do iparm = nparmlin+1, param_nb
+      do jparm = nparmlin+1, param_nb
         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,i)*eigvec(1+jparm,i)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
       enddo
     enddo
@@ -1046,8 +1046,8 @@ module opt_lin_mod
     endif
   enddo
   psi_lin_var_norm = 0
-  do iparm = nparmcsf+1, param_nb
-    do jparm = nparmcsf+1, param_nb
+  do iparm = nparmlin+1, param_nb
+    do jparm = nparmlin+1, param_nb
       psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eigvec_max_1st_compon_ind)*eigvec(1+jparm,eigvec_max_1st_compon_ind)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
     enddo
   enddo
@@ -1077,8 +1077,8 @@ module opt_lin_mod
 ! Find the norm of the change for the eigenvector with the lowest reasonable eigenvalue
   if(eigvec_lowest_eigval_ind /= 0) then
     psi_lin_var_norm = 0
-    do iparm = nparmcsf+1, param_nb
-      do jparm = nparmcsf+1, param_nb
+    do iparm = nparmlin+1, param_nb
+      do jparm = nparmlin+1, param_nb
         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eigvec_lowest_eigval_ind)*eigvec(1+jparm,eigvec_lowest_eigval_ind)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
       enddo
     enddo
@@ -1161,8 +1161,8 @@ module opt_lin_mod
       write(6,'(''psi_lin_var_norm, smallest_norm'',9es12.4)') psi_lin_var_norm, smallest_norm
       eig_excited_ind_test = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate_or_target_smallest_norm)
       psi_lin_var_norm = 0.d0
-      do iparm = nparmcsf+1, param_nb
-        do jparm = nparmcsf+1, param_nb
+      do iparm = nparmlin+1, param_nb
+        do jparm = nparmlin+1, param_nb
 ! Warning: Shouldn't the next line have /(renorm_vector(1+iparm)*renorm_vector(1+jparm))
           psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_excited_ind_test)*eigvec(1+jparm,eig_excited_ind_test)*ovlp_lin(1+iparm,1+jparm)
         enddo
@@ -1197,8 +1197,8 @@ module opt_lin_mod
 
 ! norm of linear wave function variation for nonlinear parameter
   psi_lin_var_norm = 0.d0
-  do iparm = nparmcsf+1, param_nb
-   do jparm = nparmcsf+1, param_nb
+  do iparm = nparmlin+1, param_nb
+   do jparm = nparmlin+1, param_nb
      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_ind)*eigvec(1+jparm,eig_ind)*ovlp_lin(1+iparm,1+jparm)
    enddo
   enddo
@@ -1235,7 +1235,7 @@ module opt_lin_mod
    case ('semiorthogonal')
 
 !   come back to original derivatives for the CSFs only
-    do iparmcsf = 1, nparmcsf
+    do iparmcsf = 1, nparmlin
       eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
     enddo
 

@@ -1907,6 +1907,16 @@
         enddo
       endif
 
+!     MJO98: if we are using rotation parameters, then we have no linear parameters
+!            otherwise, all the csf parameters are linear
+      if (l_opt_csf_rot) then
+         nparmlin = 0
+      else 
+         nparmlin = nparmcsf
+      endif
+      print*,"nparmlin = ",nparmlin
+
+
 !     JT: nparmd to replace MPARMD
       nparmd = nparmot+nparmcsf
       call object_modified ('nparmd')
