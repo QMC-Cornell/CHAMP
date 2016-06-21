@@ -19,7 +19,7 @@ module cusp_mod
 !
 ! Created     : J. Toulouse, 13 Jan 2006
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -100,7 +100,7 @@ module cusp_mod
 !
 ! Created       : J. Toulouse, 06 Jan 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

@@ -24,7 +24,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   use branch_dmc_opt_mod
   implicit none
 
@@ -183,7 +183,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   use branch_dmc_opt_mod
   implicit none
 
@@ -196,7 +196,7 @@ module dmc_mod
 
 ! initial printing
   write(6,*)
-  write(6,'(a)') '*********** START DMC CALCULATION  ***********'
+  write(6,'(a)') '***************************************** START DMC CALCULATION ******************************************'
 
 ! request average of local energy
   call object_average_request ('eloc_av')
@@ -476,7 +476,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 27 Mar 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -516,7 +516,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -537,7 +537,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -558,7 +558,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -579,7 +579,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -600,7 +600,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -621,7 +621,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -650,7 +650,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -679,7 +679,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -708,7 +708,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -737,7 +737,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -766,7 +766,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 09 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -797,7 +797,7 @@ module dmc_mod
 !
 ! Created       : J. Toulouse, 09 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input

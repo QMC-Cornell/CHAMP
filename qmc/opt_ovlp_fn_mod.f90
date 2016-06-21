@@ -51,7 +51,7 @@ module opt_ovlp_fn_mod
 !
 ! Created     : Cyrus Umrigar and Frank Petruzielo 7 Jun 2010
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -149,7 +149,7 @@ module opt_ovlp_fn_mod
 !
 ! Created       : Cyrus Umrigar and Frank Petruzielo  1 Jul 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -456,7 +456,7 @@ module opt_ovlp_fn_mod
  !
  ! Created       : F. Petruzielo, 10 Aug 2010
  ! ------------------------------------------------------------------------------
-   include 'modules.h'
+   use all_modules_mod
    implicit none
 
  ! local
@@ -578,7 +578,7 @@ module opt_ovlp_fn_mod
 !
 ! Created       : J. Toulouse, 7 Jun 2010
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

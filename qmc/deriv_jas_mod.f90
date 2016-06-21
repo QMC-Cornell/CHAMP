@@ -39,7 +39,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -81,7 +81,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -117,7 +117,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 19 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -219,7 +219,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -266,7 +266,7 @@ module deriv_jas_mod
 
 ! Created       : J. Toulouse, 16 May 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 !
 ! local
@@ -313,7 +313,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -344,7 +344,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 18 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -377,7 +377,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -410,7 +410,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -445,7 +445,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -487,7 +487,7 @@ module deriv_jas_mod
 !
 ! Created       : J. Toulouse, 17 Feb 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header

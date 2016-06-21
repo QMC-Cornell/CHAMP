@@ -30,7 +30,7 @@ contains
 ! Description : derivative of local energy wrt periodic jastrow parameters
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: k,ieta, ie
     real(dp)                             :: sum
@@ -70,7 +70,7 @@ contains
 ! Description :   building the arrays related to the ee stars
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     real(dp)                             :: xvec (3, nelec*(nelec-1)/2)
@@ -102,7 +102,7 @@ contains
 !       also creates gn_pjas = d value1/dc_star= rho (s)  for electron iel
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
@@ -152,7 +152,7 @@ contains
 ! Description :evaluates value1 = sum_{star} c_star rho(star) for electron iel
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include "common_jasn.h"
     integer                              :: iel, ist, ist_s, i, j, jj, ij
@@ -216,7 +216,7 @@ contains
 ! Description : compute the vector difference  between electrons x1 and x2
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit  none
     real(dp)                             :: x1(3), x2(3)
     real(dp)                             :: rvecee(3), norm
@@ -236,7 +236,7 @@ contains
 ! Description : building the arrays related to the ee stars
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ije
     real(dp)                             :: c_s_fac, grad_c_s_fac (ndim_pj)
@@ -269,7 +269,7 @@ contains
 ! Description : evaluates sum_{star_i,k_star} cos(k_star\dot r)
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     integer                              :: ist
@@ -294,7 +294,7 @@ contains
 ! Description : evaluates the gradient and the value fo the cosine terms
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ist
     real(dp)                             :: sum (ndim_pj)
@@ -324,7 +324,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
     real (dp)                            :: pjasv (3, nelec)
@@ -390,7 +390,7 @@ contains
 !              \nabla J with respect periodic Jastrow parameters.
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     real (dp)                            :: rvec (3, nelec*(nelec-1)/2)
     real (dp)                            :: pjasv (3, nelec)
@@ -446,7 +446,7 @@ contains
 ! Description :Same as  pjasee_jas  but when only one electron is modified
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include 'common_jasn.h'
     integer                              :: iel
@@ -496,7 +496,7 @@ contains
 ! Description : calculate the cosine and sine of the star terms when one electron is displaced.
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: iel
     integer                              :: i, k, n , jj, u, v, ij
@@ -586,7 +586,7 @@ contains
 !               so to gain some efficiency I introduced a new sub to handle this case.
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: iel
     integer                              :: i, k, n , jj, u, v, ij
@@ -680,7 +680,7 @@ contains
 ! Description : cosine and sine terms
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ie, i, k, n, je, ije
     real(dp)                             :: xvec (3,  nelec * (nelec-1)/2 )

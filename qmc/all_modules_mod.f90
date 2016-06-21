@@ -1,4 +1,4 @@
-!         modules
+module all_modules_mod
           use contrl_mod
           use contr2_mod
           use const_mod
@@ -83,3 +83,4 @@
           use velratio_mod
           use pop_control_mod
           use zigzag_mod
+end module all_modules_mod

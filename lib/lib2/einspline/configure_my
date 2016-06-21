@@ -4,7 +4,7 @@ current_dir=`pwd`
 # gcc compilation
 # The fno-second-underscore and CXX=cpp do not work.  You can avoid the 2nd underscore by telling it to use ifort or gfortran, so it does not try g77.
 # ./configure "CC=gcc -std=c99 -fno-second-underscore" "CXX=cpp -fno-second-underscore" FC=ifort F77=ifort --prefix=$current_dir --exec-prefix=$current_dir
-./configure "CC=gcc" FC=ifort F77=ifort --prefix=$current_dir --exec-prefix=$current_dir
+./configure "CC=gcc" FC=gfortran F77=gfortran --prefix=$current_dir --exec-prefix=$current_dir
 #./configure FC=ifort F77=ifort --prefix=$current_dir
 
 # --enable-sse" works on the dft cluster, but does not seem to change execution speed appreciably.

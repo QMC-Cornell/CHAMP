@@ -15,7 +15,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   call object_provide ('nelec')
@@ -92,7 +92,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 16 Oct 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   call release ('xnew', xnew)
@@ -142,7 +142,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -166,7 +166,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input
@@ -190,7 +190,7 @@ module vmc_mod
 !
 ! Created       : J. Toulouse, 08 Jul 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! input

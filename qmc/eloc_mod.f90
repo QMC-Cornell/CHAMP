@@ -48,7 +48,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 05 Dec 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -95,7 +95,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 29 Mar 2016
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -150,7 +150,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 18 Feb 2016
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -182,7 +182,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -213,7 +213,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -244,7 +244,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 02 Nov 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -276,7 +276,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 18 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -308,7 +308,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 18 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -343,7 +343,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 03 Jul 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer elec_i, elec_j, dim_i
@@ -404,7 +404,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 22 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   integer dim_i, elec_i
 
@@ -449,7 +449,7 @@ module eloc_mod
 !
 ! Created       : J. Toulouse, 22 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header

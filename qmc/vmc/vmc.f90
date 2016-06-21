@@ -53,6 +53,7 @@
       use jaspar1_mod
       use jaspar2_mod
       use distance_mod
+      use linearresponse_mod
       implicit real*8(a-h,o-z)
       integer fflag
       character*80 fmt
@@ -143,7 +144,7 @@
 
 !      initial printing
        write(6,*)
-       write(6,'(a)') '*********** START VMC CALCULATION  ***********'
+       write(6,'(a)') '***************************************** START VMC CALCULATION ******************************************'
        write(6,*)
 
        call object_average_request ('eloc_av')

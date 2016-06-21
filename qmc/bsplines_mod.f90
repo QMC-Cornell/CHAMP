@@ -38,7 +38,7 @@ module bsplines_mod
 !
 ! Created     : W. Parker, 21 Oct 2008
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 ! need ndim, norb, nband
 
@@ -1637,7 +1637,7 @@ module bsplines_mod
 !
 ! Created       : W. Parker, 21 Oct 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   !need rlatt_inv,nkvec,rkvec,rkvec_shift,nband
 
@@ -1706,7 +1706,7 @@ module bsplines_mod
 !
 ! Created     : W. Parker, 21 Oct 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   !need ndim,rlatt_inv,rkvec,nkvec,glatt_sim,rknorm,rkvec,kvec,ng1d_sim,rkvec_shift,ireal_imag
 
@@ -1967,7 +1967,7 @@ module bsplines_mod
 !
 ! Created     : W. Parker, 21 Oct 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
   !need ndim,ngvec,glatt,gnorm,igmult,ngnorm_orb,gvec,igvec,ngvec_orb,ng1d,
   !     rkvec_shift,k_inv,ireal_imag,nband

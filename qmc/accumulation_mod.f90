@@ -19,7 +19,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -87,7 +87,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -240,7 +240,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -329,7 +329,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -658,7 +658,7 @@ module accumulation_mod
 !
 ! Created       :
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

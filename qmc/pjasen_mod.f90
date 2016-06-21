@@ -55,7 +55,7 @@ contains
 ! Description : derivative of local energy wrt periodic jastrow parameters
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ist, ie , k
     real(dp)                             :: sum
@@ -96,7 +96,7 @@ contains
 ! Description : building the arrays related to the en stars
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ie, ist,  istt
     real(dp)                             :: xvec (3,  nelec )
@@ -167,7 +167,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     !    include "common_jasn.h"
     integer                              :: iel, ist , istt
@@ -244,7 +244,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: iel, ist , istt
     real(dp)                             :: xvec (3), value1, temp, temp1 (2)
@@ -297,7 +297,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ist
     real(dp)                             :: sum, phas, cosdot
@@ -330,7 +330,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ist
     real(dp)                             :: sum (2), phas , cosdot, sindot
@@ -363,7 +363,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ist
     real(dp)                             :: sum (ndim_pj), phas, sindot
@@ -397,7 +397,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ist
     real(dp)                             :: sum (2,ndim_pj), phas, sindot, cosdot
@@ -435,7 +435,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
@@ -501,7 +501,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 
     real(dp)                             :: c_s_fac (n_inv), grad_c_s_fac (n_inv,ndim_pj)
@@ -570,7 +570,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     real (dp)                            :: xvec (3, nelec)
     real (dp)                            :: pjasv (3,nelec)
@@ -646,7 +646,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     real (dp)                            :: xvec (3, nelec)
     real (dp)                            :: pjasv (3,nelec)
@@ -708,7 +708,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
 !JT    include 'common_jasn.h'
     integer                              :: iel
@@ -775,7 +775,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: i, k, n
     real(dp)                             :: xvec (3)
@@ -845,7 +845,7 @@ contains
 !
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit none
     integer                              :: ie, i, k, n
     real(dp)                             :: xvec (3,  nelec )

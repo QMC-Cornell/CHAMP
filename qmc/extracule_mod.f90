@@ -175,7 +175,7 @@ module extracule_mod
 !
 ! Created       : J. Toulouse, 05 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -325,7 +325,7 @@ module extracule_mod
 !
 ! Created        : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

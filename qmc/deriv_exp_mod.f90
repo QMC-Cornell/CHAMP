@@ -98,7 +98,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -219,7 +219,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 30 Aug 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -295,7 +295,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 18 Apr 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -384,7 +384,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 19 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -436,7 +436,7 @@ module deriv_exp_mod
 ! Created       : J. Toulouse, 17 Jan 2007
 ! Implemented for Gauss-Slater functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -495,7 +495,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Mai 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -576,7 +576,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 30 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -624,7 +624,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -675,7 +675,7 @@ module deriv_exp_mod
 ! Created       : J. Toulouse, 25 Jan 2007
 ! Implemented derivatives for Gauss-Slater functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -750,7 +750,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -796,7 +796,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -847,7 +847,7 @@ module deriv_exp_mod
 ! Created       : J. Toulouse, 27 Jan 2007
 ! Implemented Gauss-Slater basis functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -944,7 +944,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -995,7 +995,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1051,7 +1051,7 @@ module deriv_exp_mod
 ! Created       : J. Toulouse, 27 Jan 2007
 ! Implemented for Gauss-Slater functions F. Petruzielo, 31 May 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1165,7 +1165,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 17 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1213,7 +1213,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1265,7 +1265,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! -------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1346,7 +1346,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! -------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1429,7 +1429,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! -------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1513,7 +1513,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1616,7 +1616,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 25 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1694,7 +1694,7 @@ module deriv_exp_mod
 !
 ! Created       : F. Petruzielo, 24 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1788,7 +1788,7 @@ module deriv_exp_mod
 !
 ! Created       : F. Petruzielo, 24 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1942,7 +1942,7 @@ module deriv_exp_mod
 !
 ! Created       : F. Petruzielo, 22 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2040,7 +2040,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 23 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2080,7 +2080,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 26 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2195,7 +2195,7 @@ module deriv_exp_mod
 !!
 !! Created       : J. Toulouse, 18 May 2007
 !! ------------------------------------------------------------------------------
-!  include 'modules.h'
+!  use all_modules_mod
 !  implicit none
 !
 !! local
@@ -2310,7 +2310,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2446,7 +2446,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2572,7 +2572,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2684,7 +2684,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2785,7 +2785,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2831,7 +2831,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2872,7 +2872,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2911,7 +2911,7 @@ module deriv_exp_mod
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -2945,7 +2945,7 @@ module deriv_exp_mod
 !
 ! Created       : F. Petruzielo,   22 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -2978,7 +2978,7 @@ module deriv_exp_mod
 !
 ! Created       : F. Petruzielo, 22 Jun 2009
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -3022,7 +3022,7 @@ end subroutine eloc_pot_exp_bld
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -3072,7 +3072,7 @@ end subroutine eloc_pot_exp_bld
 !
 ! Created       : J. Toulouse, 29 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -3104,7 +3104,7 @@ end subroutine eloc_pot_exp_bld
 !
 ! Created       : J. Toulouse, 29 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -3138,7 +3138,7 @@ end subroutine eloc_pot_exp_bld
 !
 ! Created       : J. Toulouse, 25 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -3179,7 +3179,7 @@ end subroutine eloc_pot_exp_bld
 !
 ! Created       : J. Toulouse, 23 May 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

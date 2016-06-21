@@ -123,7 +123,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -253,7 +253,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -371,11 +371,11 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 19 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
-  integer i, iparmj_pair
+  integer i,j,ij,ij_jas
 
 ! header
   if (header_exe) then
@@ -383,6 +383,10 @@ module deriv_mod
    call object_create ('d2psi')
 
    call object_needed ('param_pairs_nb')
+   call object_needed ('nparmj')
+   call object_needed ('nparmcsf')
+   call object_needed ('param_orb_nb')
+   call object_needed ('param_exp_nb')
 
    return
 
@@ -392,39 +396,112 @@ module deriv_mod
   call object_alloc ('d2psi', d2psi, param_pairs_nb)
   call object_alloc ('d2psi_av', d2psi_av, param_pairs_nb)
 
+! initializations
   d2psi = 0.d0
+  ij = 0
+  if (.not. l_deriv2nd) return
 
-! zero second-order derivatives
-  if (.not. l_deriv2nd) then
-   return
-  endif
-
-  i = 0
-
-! CSFs contribution
+! CSF/CSF contribution
   if (l_opt_csf) then
-    i = i + nparmcsf * (nparmcsf + 1) / 2
+    ij = ij + nparmcsf * (nparmcsf + 1) / 2
   endif
 
-! Jastrow contribution
+! CSF/JAS contribution
+  if ((l_opt_csf).and.(l_opt_jas)) then
+    call object_provide_by_index (d2psi_bld_index, dpsi_jas_index)
+    call object_provide_by_index (d2psi_bld_index, dpsi_csf_index)
+    do i=1,nparmcsf
+      do j=1,nparmj
+        ij=ij+1
+        d2psi(ij) = dpsi_jas(j)*dpsi_csf(i)
+      enddo
+    enddo
+  endif
+
+! CSF/EXP contribution
+  if ((l_opt_csf).and.(l_opt_exp)) then
+    call die('d2psi not yet implemented for csfs/exponent parameters')
+    do i=1,nparmcsf
+      do j=1,param_exp_nb
+        ij=ij+1
+      enddo
+    enddo
+  endif
+
+! CSF/ORB contribution
+  if ((l_opt_csf).and.(l_opt_orb)) then
+    call object_provide_by_index (d2psi_bld_index, dcsf_orb_index)
+    do i=1,nparmcsf
+      do j=1,param_orb_nb
+        ij=ij+1
+        d2psi(ij) = dcsf_orb(i,j)
+      enddo
+    enddo
+  endif
+
+! JAS/JAS contribution
   if (l_opt_jas) then
-   call object_provide_by_index (d2psi_bld_index, jas_pairs_nb_index)
-   call object_provide_by_index (d2psi_bld_index, d2psi_jas_index)
-   do iparmj_pair = 1, jas_pairs_nb
-    i = i + 1
-    d2psi (i) = d2psi_jas (iparmj_pair)
-   enddo
+    call object_provide_by_index (d2psi_bld_index, jas_pairs_nb_index)
+    call object_provide_by_index (d2psi_bld_index, d2psi_jas_index)
+    do ij_jas = 1, jas_pairs_nb
+      ij=ij+1
+      d2psi (ij) = d2psi_jas (ij_jas)
+    enddo
   endif
 
-! orbitals contribution
-!  if (l_opt_exp) then
-!    call die ('d2psi not yet implemented for exponents')
-!  endif
+! JAS/EXP contribution
+  if ((l_opt_jas).and.(l_opt_exp)) then
+    call die('d2psi not yet implemented for jastrow/exponents parameters')
+    do i=1,nparmj
+      do j=1,param_exp_nb
+        ij=ij+1
+      enddo
+    enddo
+  endif
 
-! orbitals contribution
-!  if (l_opt_orb) then
-!    call die ('d2psi not yet implemented for orbitals')
-!  endif
+! JAS/ORB contribution
+  if ((l_opt_jas).and.(l_opt_orb)) then
+    call object_provide_by_index (d2psi_bld_index, dpsi_jas_index)
+    call object_provide_by_index (d2psi_bld_index, dpsi_orb_index)
+    do i=1,nparmj
+      do j=1,param_orb_nb
+        ij=ij+1
+        d2psi(ij)=dpsi_jas(i)*dpsi_orb(j)
+      enddo
+    enddo
+  endif
+
+! EXP/EXP contribution
+  if (l_opt_exp) then
+    call die('d2psi not yet implemented for exponents/exponents parameters')
+    do i=1,param_exp_nb
+      do j=1,param_exp_nb
+        ij=ij+1
+      enddo
+    enddo
+  endif
+
+! EXP/ORB contribution
+  if ((l_opt_exp).and.(l_opt_orb)) then
+    call die('d2psi not yet implemented for exponents/orbitals parameters')
+    do i=1,param_exp_nb
+      do j=1,param_orb_nb
+        ij=ij+1
+      enddo
+    enddo
+  endif
+
+! ORB/ORB contribution
+  if (l_opt_orb) then
+    call object_provide_by_index (d2psi_bld_index, d2psi_orb_index)
+    do i=1,param_orb_nb
+      do j=1,i
+        ij=ij+1
+        d2psi(ij) = d2psi_orb((i-1)*i/2+j)
+      enddo
+    enddo
+    write(6,*) 'warning: d2psi not yet implemented for orbitals/orbitals parameters'
+  endif
 
 ! geometry contribution
 !  if (l_opt_geo) then
@@ -442,7 +519,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -562,7 +639,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 23 Jan 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -595,7 +672,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -625,7 +702,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 11 Aug 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -656,7 +733,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 17 Oct 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -686,7 +763,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -963,7 +1040,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1006,7 +1083,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1039,7 +1116,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1128,7 +1205,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1161,7 +1238,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1191,7 +1268,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer param_i, param_j
@@ -1235,7 +1312,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer param_i, param_j
@@ -1273,7 +1350,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 20 Apr 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   integer param_i, param_j
@@ -1311,7 +1388,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 12 Feb 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1345,7 +1422,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 21 Apr 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1378,7 +1455,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 15 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1419,7 +1496,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1457,7 +1534,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 19 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 
@@ -1490,7 +1567,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1525,7 +1602,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2015
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1573,7 +1650,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1604,7 +1681,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Aug 2014
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1639,7 +1716,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 24 Apr 2015
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1694,7 +1771,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1735,7 +1812,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1776,7 +1853,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1820,7 +1897,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Jan 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1917,7 +1994,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 08 May 2008
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1945,7 +2022,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -1976,7 +2053,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header
@@ -2047,7 +2124,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2088,7 +2165,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 25 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2127,7 +2204,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2171,7 +2248,7 @@ module deriv_mod
 !
 ! Created       : J. Toulouse, 27 Apr 2007
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! header

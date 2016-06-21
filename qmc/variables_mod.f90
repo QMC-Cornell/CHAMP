@@ -8,9 +8,7 @@ module variables_mod
 ! character(len=max_string_len)   :: modes (modes_nb) = (/'fit', 'fit_mpi',         &
 !                                    'vmc', 'vmc_mov1', 'vmc_mpi', 'vmc_mov1_mpi',  &
 !                                    'dmc', 'dmc_mov1', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
-  character(len=max_string_len)   :: modes (modes_nb) = (/'fit          ', 'fit_mpi      ',              &
-                                     'vmc          ', 'vmc_mov1     ', 'vmc_mpi      ', 'vmc_mov1_mpi ', &
-                                     'dmc          ', 'dmc_mov1     ', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
+  character(len=max_string_len)   :: modes (modes_nb) = (/'fit          ','fit_mpi      ','vmc          ','vmc_mov1     ','vmc_mpi      ','vmc_mov1_mpi ','dmc          ','dmc_mov1     ','dmc_mov1_mpi1','dmc_mov1_mpi2','dmc_mov1_mpi3'/)
   logical                         :: l_mode_mpi            = .false.
   logical                         :: l_mode_fit            = .false.
   logical                         :: l_mode_fit_mpi        = .false.
@@ -32,6 +30,7 @@ module variables_mod
   integer                         :: spin_nb = 2
   logical                         :: debug = .false.
   logical                         :: l_warning = .false.
+  logical                         :: l_fast_determinants = .false.
 
 ! label of last occupied orbital
   integer                         :: orb_occ_last_in_wf_lab

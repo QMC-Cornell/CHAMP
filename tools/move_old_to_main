@@ -1,0 +1,12 @@
+#!/bin/bash
+echo '
+# To be used after "../tools/move_new_to_main"
+# Copies the "old" files saved in "buffer/" into the main directory
+'
+
+for file in `find buffer -name \*.old.f90`;
+do
+  base=${file%.old.f90}
+  dir=`dirname $file`
+  cp $file ${base#buffer/}.f90
+done

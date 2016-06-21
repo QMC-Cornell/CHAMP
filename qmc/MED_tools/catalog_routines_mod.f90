@@ -14,6 +14,8 @@ module catalog_routines_mod
   use montecarlo_mod
   use determinants_mod
   use eloc_mod
+  use derivatives_fast_mod
+  use linearresponse_mod
   use grid_mod
   use deriv_mod
   use deriv_jas_mod
@@ -204,6 +206,16 @@ module catalog_routines_mod
   call catalog_one_node ('hess_tu_bld', hess_tu_bld)
   call catalog_one_node ('hess_lin_bld', hess_lin_bld)
 
+! det fast
+  call catalog_one_node ('grd_det_over_det_fast_bld', grd_det_over_det_fast_bld)
+  call catalog_one_node ('lap_det_over_det_fast_bld', lap_det_over_det_fast_bld)
+
+! linear response
+  call catalog_one_node ('linresp_av_eigenval_bld', linresp_av_eigenval_bld)
+  call catalog_one_node ('amat_av_bld', amat_av_bld)
+  call catalog_one_node ('bmat_av_bld', bmat_av_bld)
+  call catalog_one_node ('ovlp_psii_psij_av_bld', ovlp_psii_psij_av_bld)
+
 ! linear optimization method
   call catalog_one_node ('ovlp_lin_bld', ovlp_lin_bld)
   call catalog_one_node ('ovlp_lin_renorm_bld', ovlp_lin_renorm_bld)
@@ -318,7 +330,9 @@ module catalog_routines_mod
 
   call catalog_one_node ('det_ex_unq_bld', det_ex_unq_bld)
   call catalog_one_node ('det_ex_bld', det_ex_bld)
+  call catalog_one_node ('det_ex2_bld', det_ex2_bld)
   call catalog_one_node ('dpsi_orb_bld', dpsi_orb_bld)
+  call catalog_one_node ('d2psi_orb_bld', d2psi_orb_bld)
 
 !  call catalog_one_node ('pot_efp_bld', pot_efp_bld)
 

@@ -623,7 +623,7 @@ module grid_mod
 !
 ! Created       : J. Toulouse, 05 Jan 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -700,7 +700,7 @@ module grid_mod
 !
 ! Created       : J. Toulouse, 05 Jan 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

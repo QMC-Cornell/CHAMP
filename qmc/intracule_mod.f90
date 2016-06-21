@@ -119,7 +119,7 @@
 !
 ! Created     : J. Toulouse, 5 Oct 2005
 !---------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
   character(len=max_string_len_rout), save :: lhere = 'intra_menu'
@@ -324,7 +324,7 @@
 !
 ! Created       : J. Toulouse, 16 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -377,7 +377,7 @@
 ! Created       : J. Toulouse, 05 Mar 2006
 ! Revised       : J. Toulouse, 20 Mar 2006, spin-resolved
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -441,7 +441,7 @@
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Revised       : J. Toulouse, 20 Mar 2006, spin-resolved
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -518,7 +518,7 @@
 ! Created       : J. Toulouse, 06 Mar 2006
 ! Revised       : J. Toulouse, 20 Mar 2006, spin-resolved
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -590,7 +590,7 @@
 !
 ! Created       : J. Toulouse, 03 Aug 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -691,7 +691,7 @@
 !
 ! Created       : J. Toulouse, 17 Aug 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -775,7 +775,7 @@
 ! Created       : J. Toulouse, 08 Nov 2006
 ! Modified      : J. Toulouse, 16 Nov 2006, loop over walkers
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -878,7 +878,7 @@
 !
 ! Created       : J. Toulouse, 20 Jul 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1043,7 +1043,7 @@
 !
 ! Created       : J. Toulouse, 21 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1125,7 +1125,7 @@
 !
 ! Created       : J. Toulouse, 21 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1231,7 +1231,7 @@
 !
 ! Created       : J. Toulouse, 20 Jul 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1316,7 +1316,7 @@
 !
 ! Created       : J. Toulouse, 03 Aug 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1422,7 +1422,7 @@
 !
 ! Created       : J. Toulouse, 17 Aug 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1509,7 +1509,7 @@
 !
 ! Created       : J. Toulouse, 08 Oct 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1606,7 +1606,7 @@
 !
 ! Created       : J. Toulouse, 10 Nov 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -1952,7 +1952,7 @@
 !
 ! Created       : J. Toulouse, 05 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2028,7 +2028,7 @@
 !
 ! Created       : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2099,7 +2099,7 @@
 !
 ! Created       : J. Toulouse, 07 Mar 2006
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2222,7 +2222,7 @@
 !
 ! Created       : J. Toulouse, 05 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2295,7 +2295,7 @@
 !
 ! Created       : J. Toulouse, 06 Oct 2005
 ! ------------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2459,7 +2459,7 @@
 !
 ! Created        : J. Toulouse, 06 Oct 2005
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2543,7 +2543,7 @@
 !
 ! Created        : J. Toulouse, 06 Oct 2005
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2598,7 +2598,7 @@
 !
 ! Created        : J. Toulouse, 06 Oct 2005
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local
@@ -2662,7 +2662,7 @@
 !
 ! Created        : J. Toulouse, 04 Mar 2006
 ! ------------------------------------------------------------------------
-  include 'modules.h'
+  use all_modules_mod
   implicit none
 
 ! local

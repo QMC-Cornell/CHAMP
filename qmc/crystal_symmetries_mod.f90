@@ -24,7 +24,7 @@ contains
 ! Description : interface for reading symmetry operations and defining the stars
 ! Created     : W. A. Al-Saidi, June 2007
 !---------------------------------------------------------------------------
-    include 'modules.h'
+    use all_modules_mod
     implicit  none
 
     integer                              :: prim_sim
