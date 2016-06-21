@@ -15,8 +15,8 @@
 
       parameter(d1b4=0.25d0,d1b6=1.d0/6.d0,d1b12=1.d0/12.d0 &
      &,d1b24=1.d0/24.d0, rt22=2.82842712474619d0,rt2i=rt22/4.d0 &
-     &,dln2=0.6931471805599453d0 &
-     &,const1=(1.d0-dln2)/12.d0,const2=-(pi1-2.d0)/(6.d0*pi1))
+     &,dln2=0.6931471805599453d0, pi=3.141592653589793d0 &
+     &,const1=(1.d0-dln2)/12.d0,const2=-(pi-2.d0)/(6.d0*pi))
 
       common /focsav/ a4sav,a5sav,a6sav,a7sav
 

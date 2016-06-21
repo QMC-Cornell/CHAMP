@@ -2,11 +2,12 @@
 !     parameter(MGRID=200)
 !     dimension f(0:MGRID-1,0:MGRID-1,0:MGRID-1)
 
+!     pi=4*datan(1.d0)
 !     read(5,*) ngrid,rmax
 !     do 10 i=0,ngrid-1
 !     do 10 j=0,ngrid-1
 !     do 10 k=0,ngrid-1
-!  10   f(i,j,k)=sin(2*pi1*i/ngrid)*sin(2*pi1*j/ngrid)*sin(2*pi1*k/ngrid)
+!  10   f(i,j,k)=sin(2*pi*i/ngrid)*sin(2*pi*j/ngrid)*sin(2*pi*k/ngrid)
 
 !cFirst check on the grid pts themselves
 !     do 15 i=0,ngrid-1
@@ -20,7 +21,7 @@
 !       zi=ngrid*z
 !       fi=interpol_orb(MGRID,MGRID,MGRID,ngrid,ngrid,ngrid,f,xi,yi,zi)
 !  15   write(6,'(''xi,yi,zi,fi,f'',3f8.4,9f12.8)') xi,yi,zi,fi,
-!    &  sin(2*pi1*x)*sin(2*pi1*y)*sin(2*pi1*z)
+!    &  sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)
 
 !cNow check on other pts.
 !     do 20 i=1,2
@@ -46,7 +47,7 @@
 !     endif
 !     fi=interpol_orb(MGRID,MGRID,MGRID,ngrid,ngrid,ngrid,f,xi,yi,zi)
 !  20 write(6,'(''xi,yi,zi,fi,f'',3f8.4,9f12.8)') xi,yi,zi,fi,
-!    &  sin(2*pi1*x)*sin(2*pi1*y)*sin(2*pi1*z)
+!    &  sin(2*pi*x)*sin(2*pi*y)*sin(2*pi*z)
 !     stop
 !     end
 !-----------------------------------------------------------------------

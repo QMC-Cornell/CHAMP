@@ -30,6 +30,8 @@
 
       dimension ene_var(3)
 
+      pi=four*datan(one)
+
       call vmc_init
 
 ! If add_diag(1) <= 0 turn OFF add_diag optimization and use fixed, add_diag

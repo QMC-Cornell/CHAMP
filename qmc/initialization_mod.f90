@@ -18,6 +18,9 @@ module initialization_mod
 !  write(6,*)
 !  write(6,'(a)') 'Beginning of global initialization -----------------------------------------------------------------------'
 
+! constant
+  pi=four*datan(one)
+
 ! default values for input variables
   iperiodic=0
   ibasis=1
