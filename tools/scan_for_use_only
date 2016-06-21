@@ -1,0 +1,712 @@
+#!/usr/bin/python
+#
+# This script scans all "f90" files and modify them to show
+# a list of all "module" used, with "only" the variables actually used.
+#
+# In a given file, we call "elements" all the (possibly entangled)
+# subdivision of the code, such as "program", "module", "subroutine", "function".
+#
+# For each "element", the "use" statements specify needed "modules".
+# These "modules" we call "primary modules for the element".
+# In turn, each "module" can itself show "use" statements specifying their own needed "modules".
+# These we call "secondary modules for the element".
+#
+# A\ In a first part: the scripts scans all files to list:
+#     > the "primary modules" of each "elements"
+#       (--> see "uses_in_element")
+#
+#     > the "variables" possibly offered by each "module" 
+#       (--> see "variables_in_module")
+#       These can be "interfaces" and any variables
+#       declared before a "contains" statement,
+#       as well as "subroutines" and "functions" defined after.
+#
+# B\ In a second part: the scripts scans all files to:
+#     > bring back to the file itself all "use" statements
+#       for the "secondary modules" needed by each "primary module"
+#       of each "elements" encountered.
+#       With this process, the "secondary modules" become "primary modules",
+#       and they each possibly have "secondary modules" of their own.
+#       Hence this is done recursively.
+#       (We already have all those informations via "uses_in_element".)
+#       Duplicates are prevented via "module_imported_uses" and "local_imported_uses"
+#
+#     > for the current "primary modules" only,
+#       from all the "variables" in "variables_in_module",
+#       compare in the "element" to find actually used ones,
+#       and add a "only: ..." statement to the corresponding "use" statement. 
+#       Duplicates are prevented via "module_only_is_done" and "local_only_is_done".
+#
+# Note: another scenario would have been to:
+#       - scan for "variables" declared in all "modules" (as is done now)
+#       - scan for all "variables" used in a file (regardless of present "use" statement)
+#         and match them to their corresponding "module".
+#       This is good, but weak when "implicit" declaration are present (they are for a lot of files).
+#       It is also not that easy to efficiently scan for all "variables" in a file
+#       (for now we scan for all "words", which is fine is our context,
+#        but would not be in the other scenario).
+#
+# For any question, contact me at:
+#   bastien.mussard AT gmail.com
+# or google for a more recent address.
+#
+# B. Mussard
+# ------------------------------------------ 
+
+# If you ADD or REMOVE from "skip_modules" and "skip_files", please document why below.
+# Some "modules" we do not want to scan for variables:
+skip_modules=['strings_tools_mod'\
+              ,'bsplines_mod'\
+              ,'bspline_oo_module'\
+              ,'bspline_sub_module'\
+              ,'bwfdet_mod'\
+             ]
+#  - strings_tools_mod:  has an "operator +" that is hard to include in a "use" statement
+#  - bsplines_mod:       has a "#ifndef NOEINSPLINE" that I don't want to get into
+#  - bspline_oo_module:  something I don't get with "dbvalu" function
+#  - bspline_sub_module: something I don't get with "dbvalu" function
+#  - bwfdet_mod:         same sort of "something I don't get"
+# Some "files" we do not want to scan:
+skip_files=['all_modules_mod',\
+            'all_tools_mod']
+#  - all_modules_mod: this is a "use-only" file: we do not want to scan it for variables!!
+#  - all_tools_mod:   idem 
+
+# ------------------------------------------------------
+# [should not have to edit below this line]
+# ------------------------------------------------------
+
+from re       import search,sub,I,compile,findall
+from datetime import datetime
+from fnmatch  import filter
+from sys      import stdout
+from os       import getcwd, makedirs, path, walk
+
+# ------------------------------------------------------
+# STRING MANIPULATION ROUTINES
+# ------------------------------------------------------
+
+# trim, uncomment
+def clean(line):
+  out=sub('!.*$','',line)
+  out=sub('  *',' ',out)
+  out=sub('^ ','',out)
+  out=sub(' $','',out).lower()
+  return out
+
+# name of "elements"
+def name_program(line):
+  name=sub('^ *program *','',line,flags=I)
+  name=clean(name)
+  return name
+def name_module(line):
+  name=sub('^ *module *','',line,flags=I)
+  name=clean(name)
+  return name
+def name_use(line):
+  name=sub('^ *use *','',line,flags=I)
+  name=clean(name)
+  return name
+def name_interface(line):
+  name=sub('^ *interface *operator *\(','',line,flags=I)
+  name=sub('^ *abstract *interface *','',name,flags=I)
+  name=sub('^ *interface *','',name,flags=I)
+  name=sub(' *\) *$','',name,flags=I)
+  name=clean(name)
+  return name
+def name_subroutine(line):
+  name=sub('^ *recursive *subroutine *','',line,flags=I).split('(')[0]
+  name=sub('^ *subroutine *','',name,flags=I)
+  name=clean(name)
+  return name
+def name_function(line):
+  name=sub('^.*function *','',line,flags=I).split('(')[0]
+  name=clean(name)
+  return name
+  
+# transforms a declaration line into
+# a list of declared "variables"
+def separate(string):
+  out=clean(string).split('::')[1]
+  out=sub('\([^)]*\)','',out,flags=I)
+  out=out.split(',')
+  for i in range(len(out)):
+    out[i]=sub('=.*','',out[i],flags=I)
+    out[i]=clean(out[i])
+  return out
+
+# flatten list
+# (get rid of empty element in sublist)
+def flatten(list):
+  out=[]
+  for x in list:
+    if hasattr(x,'__iter__'):
+      out=out+[y for y in x if y!='']
+    else:
+      out.append(x)
+  return out
+
+# ------------------------------------------------------
+# ROUTINES
+# ------------------------------------------------------
+
+# scan for actually used "variables" of the "primary module"
+# and bring back the "secondary modules" to the line
+# (--> see "pretty_line")
+def replace_use_statement(line,this_imported_uses,this_only_is_done):
+  global base_pos
+  # if the line is a "use" statement
+  # (else: unchanged):
+  if search('^ *use ',line,I)\
+  and not 'intrinsic' in line:
+    # if it does not already contains an "only"
+    # (else: unchanged):
+    if not 'only' in line:
+
+      base_pos=line.lower().index('u')
+      module=name_use(line)
+      declared=variables_in_module[module] 
+      depends=[]
+
+      # we do not want to take care of all "modules"...
+      if not module_is_use_only[module]\
+      and module not in skip_modules:
+
+        # for those who qualify: 
+        # scan for the actually used "variables"
+        # (only if this "module" is gonna need it in "pretty_line")
+        if module not in this_imported_uses\
+        and module not in module_imported_uses\
+        and module not in this_only_is_done\
+        and module not in module_only_is_done:
+          for var in declared:
+            if var in variables_in_file:
+              depends.append(var)
+          filres.write('  Through the module "'+module+'"\n')
+          filres.write('    the file is supposed to depend on: ('\
+                            +str(len(declared))+') "'\
+                            +'", "'.join(declared)+'"\n')
+          filres.write('    it actually depends on ('\
+                            +str(len(depends))+') "'\
+                            +'", "'.join(depends)+'"\n')
+
+        # change the line accordingly
+        # (--> see "pretty_line")
+        new_line=pretty_line(module,depends,this_imported_uses,this_only_is_done)
+        filres.write('  The line            "'+line+'"\n')
+        if hasattr(new_line,'__iter__'):
+          filres.write('  will be replaced by "'\
+                       +'\\n'.join(new_line)+'"\n')
+        else:
+          filres.write('  will be replaced by "'\
+                       +new_line+'"\n')
+        filres.write('  (note that the modules used by this module are brought back here)\n\n')
+
+      # ...the "modules" we did not take care of have:
+      #    - to be deleted if they already are in a already-done-list
+      #    - to be stored in the "imported" list too if they are not yet
+      else:
+        if module in this_imported_uses\
+        or module in this_only_is_done:
+          new_line='DO NOT WRITEOUT'
+          filres.write('  bumping out module "'+module+'"\n')
+          filres.write('  (it is already in the "use_list")\n\n')
+        else:
+          this_imported_uses.append(module)
+          new_line=line
+    # unchanged
+    else:
+      this_imported_uses.append(clean(line.split(',')[0]))
+      new_line=line
+  # unchanged
+  else:
+    new_line=line
+  return new_line
+
+# offer a printable line with columns not exceeding 70
+def pretty_line(module,depends,this_imported_uses,this_only_is_done):
+  out=''
+  # PART 2A: import the "use" statements of the "secondary modules"
+  # (for each of them we want to LOOSE the possible pre-existing "only")
+  if uses_in_element[module]!=[]:
+    for item in uses_in_element[module]:
+      elt=clean(item.split(',')[0])
+      if elt not in this_imported_uses\
+      and elt not in module_imported_uses\
+      and elt not in this_only_is_done\
+      and elt not in module_only_is_done\
+      and elt!='projector':
+        this_imported_uses.append(elt)
+        out=out+' '*base_pos+'use '+elt+'\n'
+      # but 'projector' is special: 
+      # for it we want to KEEP the "only" 
+      elif elt=='projector':
+        this_imported_uses.append(elt)
+        this_only_is_done.append(elt)
+        out=out+' '*base_pos+'use '+item+'\n'
+
+  # PART 2B: the "use" statement of this "primary module"
+  # is modify to include an "only" statement
+  if module in skip_modules:
+    out=out+' '*base_pos+'use '+module
+  elif depends!=[]:
+    if module not in this_imported_uses\
+    and module not in module_imported_uses\
+    and module not in this_only_is_done\
+    and module not in module_only_is_done:
+      this_imported_uses.append(module)
+      out=out+' '*base_pos+'use '+module+', only: '
+      initial=len(out)-out.rfind('\n')
+      for i in range(len(depends)-1):
+        out=out+depends[i]+','
+        if len(out)-out.rfind('\n')>70:
+          out=out+' &\n'+' '*(initial-3)+'& '
+      out=out+depends[-1]
+      this_only_is_done.append(module)
+
+  # if the "out" line comes out empty
+  # give it the delete message
+  if out=='':
+    out='DO NOT WRITEOUT'  
+
+  # final formatting
+  out=out.split('\n')
+  if len(out)==1:
+    out=out[0]
+  return out
+  
+
+# ------------------------------------------------------
+# PROGRAM ITSELF
+# ------------------------------------------------------
+
+# RES and LOG file
+filres=open('scan_for_use_only.res','w')
+filog=open('scan_for_use_only.log','w')
+i=datetime.now()
+filres.write('# "scan_for_use_only" to scan for use of "only" statements\n')
+filres.write('# %02i-%02i-%04i %02i:%02i\n'\
+             %(i.day,i.month,i.year,i.hour,i.minute))
+filog.write('# "scan_for_use_only" to scan for use of "only" statements\n')
+filog.write('# %02i-%02i-%04i %02i:%02i\n'\
+             %(i.day,i.month,i.year,i.hour,i.minute))
+filog.write('# The script is unprepared for:\n')
+filog.write('# (this is no big deal, but is mentionned for complete information)\n')
+
+# list of "f90" files
+here=getcwd()
+f90files=[]
+maxlength=0
+for root,dirnames,filenames in walk(here):
+  for filename in filter(filenames,'*.f90'):
+    f90files.append(path.join(root,filename))
+    if len(filename)>maxlength:
+      maxlength=len(filename)
+
+# ------------------------------------------------------
+print '\n# PART 1\n\
+# In a first sweep:\n\
+#   - get a list of "modules" used by\n\
+#     all "programs", "modules", "subroutines" and "functions".\n\
+#   - get a list of variables possibly offered by each "module"\n\
+#     (these variables can be "interfaces" and any variables\n\
+#      declared before a "contains" statement,\n\
+#      as well as "subroutines" and "functions" defined after).\n\
+# ...'
+# ------------------------------------------------------
+
+# - uses_in_element    : list of "primary modules" of an element
+# - variables_in_module: list of declared variables of a "module"
+# - module_is_use_only : flags the modules that only have "use" statements
+uses_in_element={}     
+variables_in_module={} 
+module_is_use_only={}  
+
+# for each file...
+file_nbr=0
+for filename in f90files:
+  # about the file:
+  file_nbr=file_nbr+1
+  stdout.write('(%3s/%3s)             %-*s\r'\
+               %(file_nbr,len(f90files),maxlength,\
+                 path.basename(filename)))
+  stdout.flush()
+  filin=open(filename)
+  data=filin.read().split('\n')
+  filin.close()
+
+  # initializations
+  subroutine=''
+  function=''
+  module=''
+  program=''
+  sub_save=''
+  fun_save=''
+
+  # ... and each line
+  for i in range(len(data)):
+    line=data[i]
+
+    # 
+    # These parts will set the environment 
+    # such as "program", "module", "function", "subroutine"
+    # (for example a subroutine can be
+    #  encompassed in a module etc...)
+    # This helps to clearly the "elements" of the file.  
+    #
+    # PROGRAM
+    if search('^ *program',line,I):
+      program=name_program(line)
+      uses_in_element[program]=[]
+    if search('^ *end program',line,I):
+      program=''
+
+    # SUBROUTINE
+    # (with possibility to have nested routines via "sub_save")
+    if search('^ *subroutine ',line,I)\
+    or search('^ *recursive subroutine ',line,I):
+      if subroutine!='':
+        sub_save=subroutine
+      subroutine=name_subroutine(line)
+      uses_in_element[subroutine]=[]
+    if search('^ *end subroutine',line,I)\
+    or (subroutine!='' and search('^ *end *$',line,I)):
+      subroutine=''
+      if sub_save!='':
+        subroutine=sub_save
+        sub_save=''
+
+    # FUNCTION
+    # (with possibility to have nested routines via "fun_save")
+    if search('^[^!]* function ',line,I) and not "'" in line:
+      if function!='':
+        fun_save=function
+      function=name_function(line)
+      uses_in_element[function]=[]
+    if search('^ *end function',line,I)\
+    or (function!='' and search('^ *end *$',line,I)):
+      function=''
+      if fun_save!='':
+        function=fun_save
+        fun_save=''
+
+    # MODULE
+    if search('^ *end module',line,I):
+      module=''
+    if search('^ *module',line,I)\
+    and not 'module procedure ' in line:
+      module=name_module(line)
+      uses_in_element[module]=[]
+
+      #
+      # For a "module", we need to:
+      #  - gather variables of the module itself
+      #    (they are declared before "contains")
+      #  ... 
+      #
+      variables_in_module[module]=[]
+      module_is_use_only[module]=True
+      contains=-1
+      j_end=0
+      for j in range(i+1,len(data)):
+        # for certain reason, chuck of lines are to be skipped: this is how
+        if j<j_end:
+          continue
+        # stop at "contains" or at the "end module" statement
+        if search('^ *contains *$',data[j],I):
+          module_is_use_only[module]=False
+          contains=j
+          break
+        if search('^ *end module',data[j],I):
+          break
+        # skip "use" and other statements that are uninteresting here
+        # (some of them will serve to mark the module as "not_use_only")
+        if search('^ *use ',data[j],I)\
+        or search('^ *[!#]',data[j],I)\
+        or search('^ *implicit *none *$',data[j],I)\
+        or search('^ *$',data[j],I):
+          continue
+        if search('^ *private *$',data[j],I)\
+        or search('^ *public *$',data[j],I)\
+        or search('^ *save *$',data[j],I):
+          module_is_use_only[module]=False
+          continue
+        # "interface" defines a variable,
+        # but the rest is an environment to be skipped
+        if search('^ *interface ',data[j],I)\
+        or search('^ *abstract *interface',data[j],I):
+          module_is_use_only[module]=False
+          variables_in_module[module].append(name_interface(data[j]))
+          for k in range(j,len(data)):
+            if search('^ *end *interface',data[k],I):
+              j_end=k+1
+              break
+          continue
+        # "type" defines a variable,
+        # but the rest is an environment to be skipped
+        if search('^ *type.*::',data[j],I)\
+        or search('^ *type,extends',data[j],I):
+          module_is_use_only[module]=False
+          variables_in_module[module]=variables_in_module[module]+separate(data[j])
+          for k in range(j,len(data)):
+            if search('^ *end *type',data[k],I):
+              j_end=k+1
+              break
+          continue
+        # what is left are variables that we want to know of...
+        if search('::',data[j],I)\
+        and not 'intrinsic' in data[j]:
+          module_is_use_only[module]=False
+          variables_in_module[module]=variables_in_module[module]+separate(data[j])
+        # ... or unprepared-for stuff (see LOG file)!
+        else:
+          filog.write(filename+' (line '+str(j)+'): "'+data[j]+'"\n')
+
+      #
+      # ... and :
+      #   gather "subroutines" and "function"
+      #   that are declared after the "contain" statement
+      #
+      if contains!=-1:
+        for j in range(contains,len(data)):
+          # stop at the "end module" statement
+          if search('^ *end module',data[j],I):
+            break
+          # subroutines
+          if search('^ *subroutine ',data[j],I)\
+          or search('^ *recursive subroutine ',data[j],I):
+            variables_in_module[module].append(name_subroutine(data[j]))
+          # functions
+          if search('^[^!]* function ',data[j],I)\
+          and not "'" in data[j]:
+            variables_in_module[module].append(name_function(data[j]))
+
+    #
+    # "USE" statements
+    # (we want to KEEP the "only")
+    #
+    if search('^ *use ',line,I)\
+    and not 'intrinsic' in line:
+      name=name_use(line)
+      # the "use" statements belong either (the order is important)
+      # to a program/subroutine/function OR to a module itself
+      if program!='':
+        uses_in_element[program].append(name)
+      elif subroutine!='':
+        uses_in_element[subroutine].append(name)
+      elif function!='':
+        uses_in_element[function].append(name)
+      elif module!='':
+        uses_in_element[module].append(name)
+
+# do not need FILOG anymore
+filog.close()
+
+# getting rid of duplicates
+for module in variables_in_module.keys():
+  variables_in_module[module]=list(set(variables_in_module[module]))
+
+# check for anomalies in variables stored
+for mod in variables_in_module.keys():
+  for var in variables_in_module[mod]:
+    if search('[:,)(]',var):
+      print '/debug/',mod,var
+
+# ----------------------------------------
+print '\
+# ...[this is done!]   %-*s\n\
+#\n\
+# Note: lines that the script is\n\
+#       unprepared to parse are to be seen\
+in "scan_for_use_only.log"\n'%(maxlength,' ')
+# ----------------------------------------
+            
+# ------------------------------------------------------
+print '\n# PART 2\n\
+# Recursively bring "secondary modules"\n\
+# used by a file back to this file.\n\
+# And compare the declared needed variables\n\
+# to the actually needed variables.\n\
+#\n\
+# The new files are written in "buffer/"\n\
+# ...'
+# ------------------------------------------------------
+
+# for all files...
+file_nbr=0
+for filename in f90files:
+  file_nbr=file_nbr+1
+
+  # skip those that we want to skip
+  l_skip=False
+  for elt in skip_files:
+    if elt in filename:
+      l_skip=True
+  if l_skip:
+    continue
+
+  filin=open(filename)
+  predata=filin.read()
+  filin.close()
+  data=predata.split('\n')
+  # get once for all loops the data of
+  # all the "variables" showing in the file
+  # (meaning: of all the words, which is fine)
+  variables_in_file=findall(r"[\w0-9_'\"]+",predata)
+  variables_in_file=list(set(variables_in_file))
+  variables_in_file=[x.lower() for x in variables_in_file]
+  variables_in_file=list(set(variables_in_file))
+  filres.write('In file "'+filename+'"\n')
+
+  # - module_imported_uses: this ensures no duplicates in PART2A
+  # - module_only_is_done : this ensures no duplicates in PART2B
+  # These lists that concern "modules" need to be re-initialized at different moments
+  # than lists that concern other more local "elements", so we have also "local" such lists:
+  # - local_imported_uses : this ensures no duplicates in PART2A
+  # - local_only_is_done  : this ensures no duplicates in PART2B
+  module_imported_uses=[]
+  module_only_is_done=[]
+  local_imported_uses=[]
+  local_only_is_done=[]
+
+  # will recursively bring "secondary modules" back to this file
+  # and add "only" statements to the "use" statements
+  # until the file is unchanged (data==check)
+  modified=False
+  stop=False
+  check=data
+  base_pos=0
+  iteration=1
+  while not stop:
+    stdout.write('(%3s/%3s) (loop: %2s) (%4s lines) %-*s\r'\
+                 %(file_nbr,len(f90files),iteration,\
+                   len(data),maxlength+3,path.basename(filename)))
+    stdout.flush()
+    i_end=0
+    subroutine=''
+    function=''
+    for i in range(len(data)):
+      # for certain reason, chuck of lines are to be skipped: this is how
+      if i<i_end:
+        continue
+
+      #
+      # For each possible "elements" of the file
+      # ("module", "program", "subroutine" or "function")
+      # we have first to find the boundaries 
+      # of the subsequent scan for actual "variables".
+      #
+      # The actual actions are made in "replace_use_statement"
+      #
+      # PROGRAM
+      elif search('^ *program',data[i],I):
+          for j in range(i,len(data)):
+            if search('^ *end program',data[j],I):
+              end=j
+              break
+          for j in range(i,end):
+            data[j]=replace_use_statement(data[j],\
+                    local_imported_uses,local_only_is_done)
+          i_end=end
+          local_imported_uses=[]
+          local_only_is_done=[]
+
+      # SUBROUTINE
+      elif search('^ *subroutine ',data[i],I)\
+      or search('^ *recursive subroutine ',data[i],I):
+          subroutine=name_subroutine(data[i])
+          for j in range(i,len(data)):
+            if search('^ *end subroutine',data[j],I)\
+            or (subroutine!='' and search('^ *end *$',data[j],I)):
+              subroutine=''
+              end=j
+              break
+          for j in range(i,end):
+            data[j]=replace_use_statement(data[j],\
+                    local_imported_uses,local_only_is_done)
+          i_end=end
+          local_imported_uses=[]
+          local_only_is_done=[]
+
+      # FUNCTION
+      elif search('^[^!]* function ',data[i],I)\
+      and not "'" in data[i]:
+          function=name_function(data[i])
+          for j in range(i,len(data)):
+            if search('^ *end function',data[j],I)\
+            or (function!='' and search('^ *end *$',data[j],I)):
+              function=''
+              end=j
+              break
+          for j in range(i,end):
+            data[j]=replace_use_statement(data[j],\
+                    local_imported_uses,local_only_is_done)
+          i_end=end
+          local_imported_uses=[]
+          local_only_is_done=[]
+
+      # MODULE
+      if search('^ *module',data[i],I)\
+      and not 'module procedure ' in data[i]:
+          module_imported_uses=[]
+          # (for "module", the real "end" is "end module",
+          # but the "use"-statements to replace stop at "contains")
+          for j in range(i,len(data)):
+            if search('^ *end module',data[j],I):
+              end=j
+              i_end=end
+              break
+          for j in range(i,end):
+            if search('^ *contains *$',data[j],I):
+              i_end=j
+              break
+            data[j]=replace_use_statement(data[j],\
+                    module_imported_uses,module_only_is_done)
+
+    # check that the file has changed and loop or exit
+    data=flatten(data)
+    if data==check:
+      stop=True
+    else:
+      iteration=iteration+1
+      check=data
+      modified=True
+      filres.write('--looping back\n\n')
+
+  # it's over:
+  filres.write('--Loop is over: it took '+str(iteration)+' iteration(s)\n')
+
+  # if the file was changed at all, create a new one: "*.new.f90"
+  if modified:
+    filnew=sub(here,path.join(here,'buffer'),filename)
+    filnew=sub('f90','new.f90',filnew)
+    filres.write('  Now replacing all those line in "'+filnew+'" ...\n')
+    # if needed, create directories
+    if not path.exists(path.dirname(filnew)):
+      try:
+        makedirs(path.dirname(filnew))
+      except:
+        print '/debug/ OUCH!'
+    if path.isfile(filnew):
+       print '/cleanup/ "'+filnew+'" already exists'
+       exit()
+    # write "data" to "filnew"
+    filout=open(filnew,'w')
+    for i in range(len(data)-1):
+      if search('^DO NOT WRITEOUT$',data[i]):
+        continue
+      else:
+        filout.write(data[i]+'\n')
+    filout.write(data[-1])
+    filout.close()
+    filres.write('  ...[done]\n')
+  else:
+    filres.write('  The file needs no replacing\n')
+  filres.write('\n')
+
+print '\
+# ...[this is done!]     %-*s\n\n\
+# You should use "../tools/move_new_to_main" to put files into main directory\n\
+# (and "../tools/move_old_to_main" to reset the situation, if needed)\n'%(maxlength,' ')
+filres.close()
+

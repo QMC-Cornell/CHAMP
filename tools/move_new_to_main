@@ -1,0 +1,15 @@
+#!/bin/bash
+echo '
+# To be used after "../tools/scan_for_use_only"
+# Copies the newly produced files that are in "buffer/" into the main directory
+# and saves "old" files in the "buffer/".
+# One can reset to original situation using "../tools/move_old_to_main"
+'
+
+for file in `find buffer -name \*.new.f90`;
+do
+  base=${file%.new.f90}
+  dir=`dirname $file`
+  cp ${base#buffer/}.f90 $base.old.f90
+  cp $file ${base#buffer/}.f90
+done
