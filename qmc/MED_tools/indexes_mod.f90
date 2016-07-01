@@ -70,6 +70,7 @@ module indexes_mod
   integer     :: grad_index
   integer     :: grad_ptb_index
   integer     :: det1_det_index
+  integer     :: denergy0_index !MJO
   integer     :: intra_sp_histo_av_index
   integer     :: intra_sp_histo_av_err_index
   integer     :: intra_sp_zv1_av_index

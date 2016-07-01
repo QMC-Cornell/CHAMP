@@ -2043,9 +2043,13 @@
 !     read(5,*) (iwdet(iparm),iparm=1,nparmd)
 !     write(6,'(''determinantal coefs varied='',20i3)')
 !    &(iwdet(iparm),iparm=1,nparmd)
+   ! 6/16 MJO98 - Even though we are only varying nparmcsf parameters, we need
+   ! to calculate quantities for all ncsf coefficients to do rotations
+   ! correctly
 
-      call alloc ('iwcsf', iwcsf, nparmcsf)
+      call alloc ('iwcsf', iwcsf, nparmcsf+1)
       read(5,*) (iwcsf(iparm),iparm=1,nparmcsf)
+      iwcsf(nparmcsf+1) = 1
       write(6,'(''CSF coefs varied='',20i3)') &
      &(iwcsf(iparm),iparm=1,nparmcsf)
       do 412 iparm=1,nparmcsf

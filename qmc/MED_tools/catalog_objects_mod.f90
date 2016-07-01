@@ -87,6 +87,7 @@ module catalog_objects_mod
   call catalog_one_object ('grad', grad_index)
   call catalog_one_object ('grad_ptb', grad_ptb_index)
   call catalog_one_object ('det1_det', det1_det_index)
+  call catalog_one_object ('denergy0', denergy0_index) !MJO
   call catalog_one_object ('intra_sp_histo_av', intra_sp_histo_av_index)
   call catalog_one_object ('intra_sp_histo_av_err', intra_sp_histo_av_err_index)
   call catalog_one_object ('intra_sp_zv1_av', intra_sp_zv1_av_index)

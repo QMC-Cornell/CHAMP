@@ -55,10 +55,10 @@ module allocations_mod
   call alloc ('d2edeti_detin', d2edeti_detin, nelec, ndetupdn)
 
   call object_provide ('nparmd')
-  call alloc ('deti_det', deti_det, nparmd)
-  call alloc ('ddeti_det', ddeti_det, 3, nelec, nparmd)
-  call alloc ('d2deti_det', d2deti_det, nparmd)
-  call alloc ('detij_det', detij_det, nparmd, nparmd)
+  call alloc ('deti_det', deti_det, nparmd+1)
+  call alloc ('ddeti_det', ddeti_det, 3, nelec, nparmd+1)
+  call alloc ('d2deti_det', d2deti_det, nparmd+1)
+  call alloc ('detij_det', detij_det, nparmd+1, nparmd+1)
 ! only for pseudo?
   call alloc ('deti_new', deti_new, nparmd)
 

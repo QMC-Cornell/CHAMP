@@ -169,6 +169,8 @@ ifeq ($(findstring login,$(hostname)), login)
 # F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
   F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
   F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+  F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check
+  F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check
   LD=gfortran
   LD_FLAGS=-O3
   LD_MPI=mpif90
