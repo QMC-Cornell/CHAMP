@@ -1516,22 +1516,6 @@ module optimization_mod
       enddo
       
    else
-      !Convert from rotation parameters to csf_coef using:
-      !
-      ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
-      !
-      
-      csf_rot_arg = 0
-      do iparmcsf=1,nparmcsf
-         csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,1)**2
-      enddo
-      csf_rot_arg = sqrt(csf_rot_arg)
-      csf_coef(1,1) = cos(csf_rot_arg)
-      
-      do iparmcsf = 1, nparmcsf
-         csf_coef(iparmcsf+1,1) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,1)
-      enddo
-
       do iparmcsf = 1, nparmcsf
          csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
       enddo
@@ -3698,6 +3682,11 @@ module optimization_mod
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i
    enddo
+   ! 6/16 MJO98 - Even though we are only varying nparmcsf parameters, we need
+   ! to calculate quantities for all ncsf coefficients to do rotations
+   ! correctly - FIXME - I'm not sure about this option, since
+   ! we already have iwcsf for all csf?
+   ! iwcsf(nparmcsf+1) = nparmcsf+1
    ! MJO98 I'm not sure about whether this is correct for rotations
    if (l_opt_csf_rot) then
       nparmlin = 0
@@ -3707,10 +3696,14 @@ module optimization_mod
    nparmlin = nparmcsf
   else
    nparmcsf=ncsf-1
-   call object_alloc ('iwcsf', iwcsf, nparmcsf)
+   call object_alloc ('iwcsf', iwcsf, nparmcsf+1)
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i + 1
    enddo
+   ! 6/16 MJO98 - Even though we are only varying nparmcsf parameters, we need
+   ! to calculate quantities for all ncsf coefficients to do rotations
+   ! correctly
+   iwcsf(nparmcsf+1) = 1
    if (l_opt_csf_rot) then
       nparmlin = 0
    else 

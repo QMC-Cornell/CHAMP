@@ -43,6 +43,7 @@
       use vj_mod
       use pseudo_mod
       use contrl_per_mod
+      use deriv_csf_mod
       use derivjas_mod
       use contr3_mod
       use distance_mod
@@ -301,9 +302,12 @@
      &  ifr,psid,exp(psij),d2psi,energy-pe,pe,energy
 
         if(igradhess.ne.0 .or. l_opt) then
-
-! calculate parameter-derivatives of csf_coefs for optimization
-          do 50 iparm=1,nparmcsf+nparmot
+           ! calculate parameter-derivatives of csf_coefs for optimization
+           ! MJO98 6/16 - denergy below is calculated without E_local * deti_det
+           ! because expanding H psi_j/psi and psi_j/psi *H psi/psi
+           ! allows the potential terms (V) to cancel
+          do 50 iparm=1,nparmcsf+1+nparmot
+!             print*,'iparm',iparm
             if(nloc.le.0) then
               denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)
 !             write(6,*) 'd2deti_det,deti_det,denergy,iparm=' ,d2deti_det(iparm),deti_det(iparm),denergy(iparm),iparm
@@ -318,7 +322,10 @@
    50           denergy(iparm)=denergy(iparm)-hb*(2*(ddeti_det(k,i,iparm)-deti_det(iparm)*vd(k,i))*vj(k,i))
 
           if(ipr.ge.4) write(6,'(''denergy='',9f10.6)') (denergy(iparm),iparm=1,nparmcsf+nparmot)
+!          write(6,'(''denergy='',20f10.6)') (denergy(iparm),iparm=1,nparmcsf+1)
+          denergy0 = denergy(nparmcsf+1)
 
+          call object_modified_by_index (denergy0_index)
 ! calculate parameter-derivatives of Jastrow factor for optimization
 ! if Psi=J*D, J=exp(f), V=grad(Psi)/Psi, E_L = H*Psi/Psi and _i denotes deriv wrt. parameter c_i, then
 ! E_L,i = -0.5*(\nabla^2*f_i + 2 grad(f_i).V) + (\hat{V}\psi/psi)_i

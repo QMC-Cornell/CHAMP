@@ -283,11 +283,12 @@
 ! Derivatives wrt to csf_coefs for optimizing them
 ! Note that the arrays that are needed for vmc and dmc are over ndet but
 ! those that are needed for optimization only are over nparmcsf.
+
       if(index(mode,'fit').ne.0 .or. igradhess.gt.0 .or. l_opt_csf) then
         d2det_det=0
         do 125 i=1,nelec
   125     d2det_det=d2det_det-2*ekinen(i)
-        do 150 iparm=1,nparmcsf
+        do 150 iparm=1,nparmcsf+1
           icsf=iwcsf(iparm)
           d2deti_det(iparm)=0
           deti_det(iparm)=0
@@ -313,6 +314,7 @@
               do 150 k=1,ndim
   150           ddeti_det(k,i,iparm)=ddeti_det(k,i,iparm)+ddeti_deti(k,i,iwdet)*term
         if(ipr.ge.4) write(6,'(''deti_det(iparm) in determinant'',40d12.4)') (deti_det(iparm),iparm=1,nparmcsf)
+        
 
 
 ! Derivatives with respect to orbital parameters (not orbital coefficients!).

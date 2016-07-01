@@ -308,7 +308,6 @@ module opt_lin_mod
 !   normal overlap
     else
      ovlp_lin(i+1,j+1) = dpsi_dpsi_covar(i,j)
-
     endif
    
 !   force symmetrization of overlap matrix (important for numerics?)
@@ -1003,6 +1002,7 @@ module opt_lin_mod
   eigvec_smallest_norm_ind=1
   do i = 1, param_aug_nb
     psi_lin_var_norm = 0
+    ! MJO Should this be nparmlin or nparmlin+1?
     do iparm = nparmlin+1, param_nb
       do jparm = nparmlin+1, param_nb
         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,i)*eigvec(1+jparm,i)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))

@@ -9,7 +9,8 @@ module deriv_csf_mod
   integer                                :: csf_pairs_nb
   integer,  allocatable                  :: csf_pairs (:,:)
 
-!  real(dp)                       :: det1_det
+  real(dp)                       :: det1_det
+  real(dp)                       :: denergy0
   real(dp), allocatable          :: dpsi_csf (:)
   real(dp), allocatable          :: dpsi_csf_av (:)
 
@@ -96,7 +97,7 @@ module deriv_csf_mod
    call object_needed ('deti_det')
 !temp   call object_needed ('csf_coef') !!   commented because causes circular dependencies in ovlp_ovlp_fn
 !   call object_needed ('iwcsf')  !!
-!   call object_needed ('det1_det')  !!
+   call object_needed ('det1_det')  !!MJO
 
    return
 
@@ -108,61 +109,94 @@ module deriv_csf_mod
 
   do i = 1, nparmcsf
 
+     if (l_opt_csf_rot) then
+        ! ! CSF rotation parameters derivative
+        ! ! dpsi/dRk = (|k><0| - |0><k|) |psi>
+        ! !          = |psi> - a_0 |0> - a_k |k> - a_k |0> + a_0 |k>
+        ! dpsi_csf (i) = psi_det
+        
+        ! !Subtract off a_0 |0>
+        ! do idet_in_csf=1,ndet_in_csf(1)
+        !    idet = iwdet_in_csf(idet_in_csf,1)
+        !    if(ndn.ge.1) then
+        !       term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,1)
+        !    else
+        !       term=detu(iwdetup(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,1)
+        !    endif
+        !    dpsi_csf (i) = dpsi_csf (i) - term
+        ! enddo
 
-    ! CSF rotation parameters derivative
-    ! dpsi/dRk = (|k><0| - |0><k|) |psi>
-    !          = |psi> - a_0 |0> - a_k |k> - a_k |0> + a_0 |k>
-    dpsi_csf (i) = psi_det
-    
-    !Subtract off a_0 |0>
-    do idet_in_csf=1,ndet_in_csf(1)
-       idet = iwdet_in_csf(idet_in_csf,1)
-       if(ndn.ge.1) then
-          term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,1)
-       else
-          term=detu(iwdetup(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,1)
-       endif
-       dpsi_csf (i) = dpsi_csf (i) - term
-    enddo
+        ! !Subtract off a_k |k>
+        ! !We use i+1 because we assume a_0 (csf_coef(1)) is the one fixed by normalization
+        ! do idet_in_csf=1,ndet_in_csf(i+1)
+        !    idet = iwdet_in_csf(idet_in_csf,i+1)
+        !    if(ndn.ge.1) then
+        !       term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,i+1)
+        !    else
+        !       term=detu(iwdetup(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,i+1)
+        !    endif
+        !    dpsi_csf (i) = dpsi_csf (i) - term
+        ! enddo
 
-    !Subtract off a_k |k>
-    !We use i+1 because we assume a_0 (csf_coef(1)) is the one fixed by normalization
-    do idet_in_csf=1,ndet_in_csf(i+1)
-       idet = iwdet_in_csf(idet_in_csf,i+1)
-       if(ndn.ge.1) then
-          term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,i+1)
-       else
-          term=detu(iwdetup(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,i+1)
-       endif
-       dpsi_csf (i) = dpsi_csf (i) - term
-    enddo
+        ! !Subtract off a_k |0>
+        ! do idet_in_csf=1,ndet_in_csf(1)
+        !    idet = iwdet_in_csf(idet_in_csf,1)
+        !    if(ndn.ge.1) then
+        !       term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,1)
+        !    else
+        !       term=detu(iwdetup(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,1)
+        !    endif
+        !    dpsi_csf (i) = dpsi_csf (i) - term
+        ! enddo
 
-    !Subtract off a_k |0>
-    do idet_in_csf=1,ndet_in_csf(1)
-       idet = iwdet_in_csf(idet_in_csf,1)
-       if(ndn.ge.1) then
-          term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,1)
-       else
-          term=detu(iwdetup(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,1)
-       endif
-       dpsi_csf (i) = dpsi_csf (i) - term
-    enddo
+        ! !Add a_0 |k>
+        ! do idet_in_csf=1,ndet_in_csf(i+1)
+        !    idet = iwdet_in_csf(idet_in_csf,i+1)
+        !    if(ndn.ge.1) then
+        !       term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,i+1)
+        !    else
+        !       term=detu(iwdetup(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,i+1)
+        !    endif
+        !    dpsi_csf (i) = dpsi_csf (i) + term
+        ! enddo
+        ! dpsi_csf (i) = dpsi_csf (i)/psi_det
 
-    !Add a_0 |k>
-    do idet_in_csf=1,ndet_in_csf(i+1)
-       idet = iwdet_in_csf(idet_in_csf,i+1)
-       if(ndn.ge.1) then
-          term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,i+1)
-       else
-          term=detu(iwdetup(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,i+1)
-       endif
-       dpsi_csf (i) = dpsi_csf (i) + term
-    enddo
-    dpsi_csf (i) = dpsi_csf (i)/psi_det
-! rotation
-!    dpsi_csf (i) = deti_det (i+1) -  csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (1.d0 + deti_det(1))
+        ! CSF rotation parameters derivative
+        ! dpsi/dRk = (|k><0| - |0><k|) |psi>
+        !          = a_0|k> - a_k |0>
+        
+        dpsi_csf(i) = 0
+        !Add a_0 |k>
+        do idet_in_csf=1,ndet_in_csf(i+1)
+           idet = iwdet_in_csf(idet_in_csf,i+1)
+           if(ndn.ge.1) then
+              term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,i+1)
+           else
+              term=detu(iwdetup(idet))*csf_coef(1,iwf)*cdet_in_csf(idet_in_csf,i+1)
+           endif
+           dpsi_csf (i) = dpsi_csf (i) + term
+        enddo
+        
+        !Subtract off a_k |0>
+        do idet_in_csf=1,ndet_in_csf(1)
+           idet = iwdet_in_csf(idet_in_csf,1)
+           if(ndn.ge.1) then
+              term=detu(iwdetup(idet))*detd(iwdetdn(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,1)
+           else
+              term=detu(iwdetup(idet))*csf_coef(i+1,iwf)*cdet_in_csf(idet_in_csf,1)
+           endif
+           dpsi_csf (i) = dpsi_csf (i) - term
+        enddo
+        dpsi_csf (i) = dpsi_csf (i)/psi_det
+        print*,'det 1st',dpsi_csf(i)
 
-    dpsi_csf (i) = deti_det (i)
+        dpsi_csf(i) = csf_coef(1,1)*deti_det (i) - csf_coef(i+1,1)*det1_det
+
+        ! rotation
+        !    dpsi_csf (i) = deti_det (i+1) -  csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (1.d0 + deti_det(1))
+     else
+        dpsi_csf (i) = deti_det(i)
+     endif
   enddo
 
   end subroutine dpsi_csf_bld
@@ -190,7 +224,7 @@ module deriv_csf_mod
    call object_needed ('nparmcsf')
    call object_needed ('denergy')
    call object_needed ('csf_coef') 
-
+   call object_needed ('denergy0')  !MJO
    return
 
   endif
@@ -202,12 +236,26 @@ module deriv_csf_mod
 ! warning: this is terribly fragile!
   do i = 1, nparmcsf
      
+     
+     if (l_opt_csf_rot) then
+! 6/16 MJO98
 ! For CSF Rotations, we have
 ! deloc_csf (i) = -c_0 (dE_l/dc_0 - dE_l/dc_j) - c_j (dE_l/dc_j + dE_l/dc_0)
-     
-!   deloc_csf (i) = -csf_coef(1,1) * (denergy (0) - denergy (j)) - &
-     !              &csf_coef(i+1,1) * (denergy(j) + denergy (0))
-   deloc_csf (i) = denergy (i)
+! We use denergy(nparmcsf+1) to represent dE_l/dc_0 because we appended that
+! to the end of the array, rather than the beginning, to try a
+        deloc_csf (i) = -csf_coef(1,1) * (denergy0 - denergy (i)) - &
+             &csf_coef(i+1,1) * (denergy(i) + denergy0)
+
+! For CSF Rotations, we have
+! deloc_csf (i) = c_0 dE_l/dc_i - c_j dE_l/dc_0
+! We use denergy(nparmcsf+1) to represent dE_l/dc_0 because we appended that
+! to the end of the array, rather than the beginning, to try a
+        deloc_csf (i) = csf_coef(1,1) * denergy (i) - &
+             &csf_coef(i+1,1) * denergy0
+
+     else
+        deloc_csf (i) = denergy (i)
+     endif
 
 ! rotation
 !   deloc_csf (i) = denergy (i+1) - csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * denergy (1)
