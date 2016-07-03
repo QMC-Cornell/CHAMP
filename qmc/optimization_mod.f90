@@ -366,6 +366,9 @@ module optimization_mod
   case ('slater_mat_ex_trans_inv_sm')
    call get_next_value (l_slater_mat_ex_trans_inv_sm)
 
+  case ('compare_to_linresp')
+    call get_next_value (l_tda)
+
   case ('end')
    exit
 

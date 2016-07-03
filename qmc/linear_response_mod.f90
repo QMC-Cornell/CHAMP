@@ -9,7 +9,6 @@ module linearresponse_mod
 
   ! Declaration of global variables and default values
 
-  logical                         :: l_tda=.false.
   logical                         :: do_print=.true.
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
@@ -136,13 +135,10 @@ module linearresponse_mod
   if (l_opt_jas) then
     l_opt_jas_2nd_deriv=.true.
 !   routine that wraps the calculation of the number of Jastrow parameters
-    write(6,*)
-    write(6,'(a,i5)') ' Number of Jastrow parameters:   ', nparmj
   else
     nparmj=0
     call object_modified ('nparmj')
   endif
-  write(6,'(a,i5)') ' Number of periodic Jastrow parameters: ', param_pjas_nb
 
 ! CSF parameters
   if (l_opt_csf) then
@@ -164,6 +160,9 @@ module linearresponse_mod
   call object_provide ('param_orb_nb')
   call object_provide ('param_exp_nb')
   call object_provide ('param_nb')
+  write(6,*)
+  write(6,'(a,i5)') ' Number of Jastrow parameters:   ', nparmj
+  write(6,'(a,i5)') ' Number of periodic Jastrow parameters: ', param_pjas_nb
   write(6,'(a,i5)') ' Number of CSF parameters:       ', nparmcsf
   write(6,'(a,i5)') ' Number of orbital parameters:   ', param_orb_nb
   write(6,'(a,i5)') ' Number of exponent parameters:  ', param_exp_nb
@@ -260,6 +259,10 @@ module linearresponse_mod
   real(dp), allocatable           :: eigval_denom(:)
   integer,  allocatable           :: eigval_srt_ind_to_eigval_ind(:)
   integer,  allocatable           :: eigval_ind_to_eigval_srt_ind(:)
+  integer                         :: nunique,i_eigval,j_unq,i_pos
+  integer,  allocatable           :: position_and_degenerate(:,:)
+  real(dp), allocatable           :: unique_r(:), unique_i(:), zero_array(:)
+  logical                         :: new_one
 
   ! begin
   if (header_exe) then
@@ -267,10 +270,9 @@ module linearresponse_mod
 
     call object_needed('param_nb')
     call object_needed('param_pairs')
-    call object_needed('diag_stab')
 
-    call object_needed('amat_av')
     call object_needed('ovlp_psii_psij_av')
+    call object_needed('amat_av')
 
     return
   endif
@@ -291,18 +293,6 @@ module linearresponse_mod
   linresp_matrix(param_nb+1:2*param_nb,1:param_nb)=bmat_av
   linresp_matrix(1:param_nb,param_nb+1:2*param_nb)=bmat_av
   linresp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=amat_av
-  if(l_sym_ham) then
-    ham_lin_energy =(ham_lin_energy + transpose(ham_lin_energy))/2.d0
-  endif
-  do i = 1, param_nb
-    if(i > nparmcsf+nparmj .and. i <= nparmcsf+nparmj+param_exp_nb) then
-      linresp_matrix(i,i) = linresp_matrix(i,i) + diag_stab * 1.d0
-      linresp_matrix(param_nb+i,param_nb+i) = linresp_matrix(param_nb+i,param_nb+i) + diag_stab * 1.d0
-    else
-      linresp_matrix(i,i) = linresp_matrix(i,i) + diag_stab
-      linresp_matrix(i+param_nb,i+param_nb) = linresp_matrix(i+param_nb,i+param_nb) + diag_stab
-    endif
-  enddo
 
 ! Construct the OVERLAP super-matrix from the overlap matrix
   call alloc('ovlp_matrix',ovlp_matrix,2*param_nb,2*param_nb)
@@ -315,6 +305,7 @@ module linearresponse_mod
   write(6,*)
   write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation with a_diag =', diag_stab
   endif
+
 ! a\ prepare arrays
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
   call alloc('eigval_r',     eigval_r,     2*param_nb)
@@ -342,6 +333,8 @@ module linearresponse_mod
              eigvec, 2*param_nb, eigvec, 2*param_nb, &
              work, lwork, info)
   call release ('work', work)
+  call release('linresp_matrix',linresp_matrix)
+  call release('ovlp_matrix',ovlp_matrix)
   if(info /= 0) call die(lhere, 'problem in dggev: info='+info+' /= 0 (compare to 2*param_nb='+2*param_nb+')')
 
 ! d\ calculate eigenvalue
@@ -358,7 +351,7 @@ module linearresponse_mod
   do i = 1, 2*param_nb
     eigval_srt_ind_to_eigval_ind(i) = i
   enddo
-  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:param_aug_nb)
+  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:2*param_nb)
   do i = 1, 2*param_nb
     do j = i+1, 2*param_nb
       if(eigval_r(eigval_srt_ind_to_eigval_ind(j)) < eigval_r(eigval_srt_ind_to_eigval_ind(i))) then
@@ -368,20 +361,78 @@ module linearresponse_mod
       endif
     enddo
   enddo
-  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:param_aug_nb)
+  write(6,'(''eigval_srt_ind_to_eigval_ind='',10000i6)') eigval_srt_ind_to_eigval_ind(1:2*param_nb)
 ! ("eigval_ind_to_eigval_srt_ind"
 !   is the map from original eigenvalues to sorted eigenvalues)
   call alloc('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind, 2*param_nb)
   do i = 1, 2*param_nb
    eigval_ind_to_eigval_srt_ind(eigval_srt_ind_to_eigval_ind(i)) = i
   enddo
-  write(6,'(''eigval_ind_to_eigval_srt_ind='',10000i6)') eigval_ind_to_eigval_srt_ind(1:param_aug_nb)
+  write(6,'(''eigval_ind_to_eigval_srt_ind='',10000i6)') eigval_ind_to_eigval_srt_ind(1:2*param_nb)
 
-! Print eigenvalues
+! Analysis of eval/evec
+  call alloc('unique_r', unique_r, 2*param_nb)
+  call alloc('unique_i', unique_i, 2*param_nb)
+  call alloc('position_and_degenerate', position_and_degenerate, 2*param_nb,2)
+  unique_i=0
+  unique_r=0
+  position_and_degenerate=0
+  nunique=0
+  do i_eigval=1,2*param_nb
+    new_one=.true.
+    do j_unq=1,nunique
+      if((abs(eigval_r(eigval_srt_ind_to_eigval_ind(i_eigval))-unique_r(j_unq)).le.0.00001).and. &
+        &(abs(eigval_i(eigval_srt_ind_to_eigval_ind(i_eigval))-unique_i(j_unq)).le.0.00001)) then
+        new_one=.false.
+        position_and_degenerate(j_unq,2)=position_and_degenerate(j_unq,2)+1
+        exit
+      endif
+    enddo
+    if (new_one) then
+      nunique=nunique+1
+      unique_r(nunique)=eigval_r(eigval_srt_ind_to_eigval_ind(i_eigval))
+      unique_i(nunique)=eigval_i(eigval_srt_ind_to_eigval_ind(i_eigval))
+      position_and_degenerate(nunique,1)=eigval_srt_ind_to_eigval_ind(i_eigval)
+      position_and_degenerate(nunique,2)=1
+    endif
+  enddo
+      
+! Print unique eigenvalues
   if (do_print) then
-  write(6,'(a)') 'Sorted (complex) eigenvalues:'
-  do i = 1, 2*param_nb
-    write(6,'(a,i5,a,2(f20.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
+  call alloc('zero_array',zero_array,param_nb)
+  write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
+  do i = 1, nunique
+    write(6,'(a,i5,a,2(f12.6,a),i5,a)') 'eigenvalue #',i,': ',unique_r(i), ' +', unique_i(i),' i (',position_and_degenerate(i,2),')'
+    if (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),&
+               & eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),1.0d-4).eq.0) then
+      do j=1,param_nb
+      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecEQU ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                         &  eigvec(j,position_and_degenerate(i,1)) &
+                                                         & -eigvec(j+param_nb,position_and_degenerate(i,1))
+      enddo
+    elseif (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),&
+                  & -eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),1.0d-4).eq.0) then
+      do j=1,param_nb
+      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecOPP ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                         &  eigvec(j,position_and_degenerate(i,1)) &
+                                                         & +eigvec(j+param_nb,position_and_degenerate(i,1))
+      enddo
+    elseif (is_equal(eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
+      do j=1,param_nb
+      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAX',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                         &  eigvec(j+param_nb,position_and_degenerate(i,1))
+      enddo
+    elseif (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
+      do j=1,param_nb
+      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAY',i,': ',eigvec(j+param_nb,position_and_degenerate(i,1)),&
+                                                         &  eigvec(j,position_and_degenerate(i,1))
+      enddo
+    else
+      do j=1,param_nb
+      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecUNK ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                         &  eigvec(j+param_nb,position_and_degenerate(i,1))
+      enddo
+    endif
   enddo
   endif
 
@@ -395,9 +446,9 @@ module linearresponse_mod
   call release ('eigval_i', eigval_i)
   call release ('eigval_ind_to_eigval_srt_ind', eigval_ind_to_eigval_srt_ind)
   call release ('eigval_srt_ind_to_eigval_ind', eigval_srt_ind_to_eigval_ind)
-
-  call release('linresp_matrix',linresp_matrix)
-  call release('ovlp_matrix',ovlp_matrix)
+  call release ('unique_r', unique_r)
+  call release ('unique_i', unique_i)
+  call release ('position_and_degenerate', position_and_degenerate)
 
   end subroutine  linresp_av_eigenval_bld
 
@@ -449,6 +500,11 @@ module linearresponse_mod
   call alloc('ovlp_eigvec', ovlp_eigvec, param_nb, param_nb)
   call alloc('ovlp_eigval', ovlp_eigval, param_nb)
   call eigensystem(ovlp_psii_psij_av, ovlp_eigvec, ovlp_eigval, param_nb)
+  if (l_tda) then
+  do i= 1,param_nb
+  write(6,*) '/BM/ovlp',i,ovlp_psii_psij_av(i,:)
+  enddo
+  endif
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
   do i = 1, param_nb
@@ -470,6 +526,7 @@ module linearresponse_mod
 ! Created     : B. Mussard, June 2016
 ! Modified    :
 !---------------------------------------------------------------------------
+  use all_modules_mod
   implicit none
 
 ! local
@@ -481,7 +538,9 @@ module linearresponse_mod
 
     call object_needed('param_nb')
     call object_needed('param_pairs')
+    call object_needed('diag_stab')
 
+    call object_needed('ovlp_psii_psij_av')
     call object_needed('dpsi_dpsi_eloc_av')
     call object_needed('dpsi_av')
     call object_needed('dpsi_eloc_av')
@@ -492,6 +551,10 @@ module linearresponse_mod
   endif
 
   call object_alloc('amat_av',amat_av,param_nb,param_nb)
+  if (l_opt_orb) then
+   !call object_provide('delta_eps')
+    call object_provide('is_param_type_orb')
+  endif
 
 ! Eq(54d) of JCP 126 084102 (2007)
   do j=1,param_nb
@@ -502,8 +565,34 @@ module linearresponse_mod
                  - dpsi_av(i)*dpsi_eloc_av(j)    &
                  + dpsi_av(i)*dpsi_av(j)*eloc_av &
                  + dpsi_deloc_covar(i,j)
+      if (l_opt_orb.and.is_param_type_orb(i).and.is_param_type_orb(j)) then
+        !amat_av(i,j)=amat_av(i,j)+delta_eps(j-nparmcsf-nparmj)+delta_eps(i-nparmcsf-nparmj)
+        amat_av(i,j)=amat_av(i,j)-eloc_av*ovlp_psii_psij_av(i,j)
+      endif
+      !write(6,*) '/BM/index',i,j,ij,dpsi_dpsi_eloc_av(ij)
+      !write(6,*) '/BM/index',i,j,ij,dpsi_av(j)*dpsi_eloc_av(i)
+      !write(6,*) '/BM/index',i,j,ij,dpsi_av(i)*dpsi_eloc_av(j)
+      !write(6,*) '/BM/index',i,j,ij,dpsi_av(i)*dpsi_av(j)*eloc_av
+      !write(6,*) '/BM/index',i,j,ij,dpsi_deloc_covar(i,j)
+      !write(6,*) '/BM/index',i,j,ij,amat_av(i,j)
     enddo
   enddo
+
+  if (l_tda) then
+  do i=1,param_nb
+    if(i>nparmcsf+nparmj .and. i<=nparmcsf+nparmj+param_exp_nb) then
+      amat_av(i,i) = amat_av(i,i) + diag_stab * 1.d0
+    else
+      amat_av(i,i) = amat_av(i,i) + diag_stab
+    endif
+  enddo
+  endif
+
+  if (l_tda) then
+  do i=1,param_nb
+    write(6,*) '/BM/amat',i,amat_av(i,:)
+  enddo
+  endif
 
   end subroutine amat_av_bld
 
@@ -548,6 +637,10 @@ module linearresponse_mod
                   + d2psi_eloc_av(ij)
     enddo
   enddo
+
+  !do i=1,param_nb
+  !  write(6,*) '/BM/bmat',i,bmat_av(i,:)
+  !enddo
 
   end subroutine bmat_av_bld
 
