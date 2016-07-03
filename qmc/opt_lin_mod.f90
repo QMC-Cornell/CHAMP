@@ -335,6 +335,11 @@ module opt_lin_mod
   call object_alloc('ovlp_lin_eigval', ovlp_lin_eigval, param_aug_nb)
   call eigensystem(ovlp_lin, ovlp_lin_eigvec, ovlp_lin_eigval, param_aug_nb)
 
+  if (l_tda) then
+  do i= 1,param_nb
+  write(6,*) '/BM/ovlp',i,(ovlp_lin(i+1,j+1),j=1,param_nb)
+  enddo
+  endif
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
   do i = 1, param_aug_nb
@@ -450,6 +455,7 @@ module opt_lin_mod
 ! first element
   ham_lin_energy(1,1) = eloc_av
 
+  if (.not. l_tda) then
 ! first row and first column
   do i = 1, param_nb
 
@@ -476,6 +482,7 @@ module opt_lin_mod
     endif
 
   enddo ! i
+  endif
 
 ! derivative-derivative part
   do j = 1, param_nb
@@ -514,6 +521,12 @@ module opt_lin_mod
                               - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
                               + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
                               + dpsi_deloc_covar(i, j)
+     !write(6,*) '/BM/index',i,j,pair,dpsi_dpsi_eloc_av(pair)
+     !write(6,*) '/BM/index',i,j,pair,dpsi_av(j)*dpsi_eloc_av(i)
+     !write(6,*) '/BM/index',i,j,pair,dpsi_av(i)*dpsi_eloc_av(j)
+     !write(6,*) '/BM/index',i,j,pair,dpsi_av(i)*dpsi_av(j)*eloc_av
+     !write(6,*) '/BM/index',i,j,pair,dpsi_deloc_covar(i,j)
+     !write(6,*) '/BM/index',i,j,pair,ham_lin_energy(i+1,j+1)
     endif
 
 !   if(i /= j) then
@@ -764,7 +777,7 @@ module opt_lin_mod
   implicit none
 
 ! local
-  integer i
+  integer i,j
 
 ! header
   if(header_exe) then
@@ -813,6 +826,11 @@ module opt_lin_mod
   case default
    call die (here, 'unknown stabilization choice >'+trim(stabilization)+'<.')
   end select
+  if (l_tda) then
+  do i=1,param_nb
+  write(6,*) '/BM/amat',i,(ham_lin_renorm_stab(i+1,j+1),j=1,param_nb)
+  enddo
+  endif
 
   end subroutine ham_lin_renorm_stab_bld
 

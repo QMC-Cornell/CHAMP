@@ -176,6 +176,12 @@ module basic_tools_mod
   end interface is_equal_or_die
 
 !===============================================================
+  interface is_equal
+!---------------------------------------------------------------
+   module procedure is_equal_double_1
+  end interface is_equal
+
+!===============================================================
   interface array_is_zero
 !---------------------------------------------------------------
    module procedure array_is_zero_double
@@ -3974,6 +3980,45 @@ module basic_tools_mod
   enddo
 
   end subroutine is_equal_or_die_double_3
+
+!===========================================================================
+  function is_equal_double_1 (array1, array2, tol) result(result)
+!---------------------------------------------------------------------------
+! Description : test if two arrays are equal within a tolerance
+! Description : and print out without dying
+!
+! Created     : B.Mussard, June 2016 (from "is_equal_or_die")
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  real(dp), intent(in)  :: array1(:), array2(:)
+  real(dp), intent(in)  :: tol
+  integer  :: result
+
+! local
+  character(len=max_string_len_rout), save :: lhere = 'is_equal_double_1'
+  integer i, array1_nb, array2_nb
+
+! begin
+  array1_nb = size(array1)
+  array2_nb = size(array2)
+  if (array1_nb /= array2_nb) then
+    result=-1
+    return
+  endif
+
+  result=0
+  do i = 1, array1_nb
+    if (dabs(array1(i)-array2(i)) > tol) then
+      result=i
+      exit
+    endif
+  enddo
+
+  return
+
+  end function is_equal_double_1
 
 !===========================================================================
   subroutine write_array_double_1 (array_name, array)
