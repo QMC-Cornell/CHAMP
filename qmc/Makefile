@@ -2,7 +2,7 @@
 # Warning: DO NOT MODIFY THIS 'Makefile' BY HAND!
 # Warning: However, you may need to modify the file 'makefile.inc' for machine-specific options.
 
-include makefile.inc
+include ../makefile.inc
 
 OBJDIR=compiler_files
 MODDIR=compiler_files
