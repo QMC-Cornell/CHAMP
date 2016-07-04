@@ -29,3 +29,8 @@
 
 # revision
 revision_and_date.inc
+
+# aux and log
+documentation/*log
+documentation/*aux
+documentation/*pdf
