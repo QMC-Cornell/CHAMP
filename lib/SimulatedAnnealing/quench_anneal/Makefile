@@ -101,22 +101,22 @@ ifeq ($(system),AIX)
 endif
 
 ifeq ($(system),Linux)
-  $(shell cp -p parameters/parameters.Linux include/parameters.h)
-# Linux default is now ifort
-  F77 = ifort
-# FFLAGS = -g -CB -d4 -zero -save -extend_source -w -r8 -fpp2 -O0 -ax
-# FFLAGS = -zero -save -extend_source -w -r8 -fpp2 -O2 -ax
-# FFLAGS = -zero -save -extend_source -w -r8 -O3 -axN -ipo -pad
-  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad
-# LDFLAGS = -Vaxlib -static
-  LDFLAGS = -static -nothread
-  F77_MPI = mpif77 -fc=ifort
-# FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O0 -ax
-# FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O2 -ax
-# FFLAGS_MPI = -zero -save -extend_source -w -r8 -O2 -ax
-  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3 -ax -pad
-# LDFLAGS_MPI = -Vaxlib -static
-  LDFLAGS_MPI = -static -nothread -lmpi
+#  $(shell cp -p parameters/parameters.Linux include/parameters.h)
+## Linux default is now ifort
+#  F77 = ifort
+## FFLAGS = -g -CB -d4 -zero -save -extend_source -w -r8 -fpp2 -O0 -ax
+## FFLAGS = -zero -save -extend_source -w -r8 -fpp2 -O2 -ax
+## FFLAGS = -zero -save -extend_source -w -r8 -O3 -axN -ipo -pad
+#  FFLAGS = -zero -save -extend_source -w -r8 -O3 -pad
+## LDFLAGS = -Vaxlib -static
+#  LDFLAGS = -static -nothread
+#  F77_MPI = mpif77 -fc=ifort
+## FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O0 -ax
+## FFLAGS_MPI = -g -CB -zero -save -extend_source -w -r8 -O2 -ax
+## FFLAGS_MPI = -zero -save -extend_source -w -r8 -O2 -ax
+#  FFLAGS_MPI = -zero -save -extend_source -w -r8 -O3 -ax -pad
+## LDFLAGS_MPI = -Vaxlib -static
+#  LDFLAGS_MPI = -static -nothread -lmpi
 
 # Old AMD Athlon cluster of Arias group
 ifeq ($(hostname),dft.physics.cornell.edu)
