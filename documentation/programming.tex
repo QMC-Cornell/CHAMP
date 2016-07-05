@@ -134,8 +134,14 @@ Consider again the object {\tt psi}, constructed from two objects {\tt jastrow} 
 
 Note that, strictly speaking, this is not a tree but a graph since the branches are not necessarily disjoint. For example, in the example above, the object {\tt electron_coordinates} connects the two branches. We will nevertheless use the vocabulary of computer trees.
 
-This tree encodes the dependencies between the objects. For example, {\tt psi} depends on both {\tt jastrow} and {\tt determinant}. In turn, {\tt jastrow} depends on {\tt jastrow_parameters} and {\tt electron_coordinates}. And so on. We will say that {\tt psi} is a \Def{child} of {\tt jastrow} and {\tt determinant}, and {\tt jastrow} and {\tt determinant} are the \Def{parents} of  {\tt psi}. The objects without any parents (those that are not boxed: {\tt jastrow_parameters}, {\tt
-electron_coordinates}, {\tt basis_parameters}, {\tt coefficients}) are the \Def{leaves} of the tree. These generally correspond to input parameters which must be given by the user when running a calculation.
+This tree encodes the dependencies between the objects.
+For example, {\tt psi} depends on both {\tt jastrow} and {\tt determinant}.
+In turn, {\tt jastrow} depends on {\tt jastrow_parameters} and {\tt electron_coordinates}. And so on.
+In general, the elements of a tree are called \Def{nodes}.
+We will say that {\tt psi} is a \Def{child} of {\tt jastrow} and {\tt determinant},
+and {\tt jastrow} and {\tt determinant} are the \Def{parents} of {\tt psi}.
+The objects without any parents (those that are not boxed: {\tt jastrow_parameters}, {\tt electron_coordinates}, {\tt basis_parameters}, {\tt coefficients}) are the \Def{leaves} of the tree.
+These generally correspond to input parameters which must be given by the user when running a calculation.
 
 \vspace{1em}
 The practical implementation of the dependency tree in the program is explained in the next section. For the moment, let us describe how calculations are done, assuming that the information about the dependency tree is available in the program.
@@ -251,71 +257,7 @@ endif\\
 basis_functions  = $f(${\tt electron_coordinates}$,${\tt basis_parameters}$)$\\
 end subroutine basis_functions_bld}
 
-\subsection{Manipulating objects (object_provide and object_modified)}
-
-All subroutines can manipulate the objects of the dependency tree with calls to the two main commands explained here: {\tt object_provide} and {\tt object_modified}.
-
-%\subsection{call object\_provide}
 \vspace{1em}
-
-For example, suppose that the programmer wants to print out the value of {\tt psi} at some place in the code (outside the building subroutines). He just needs to write the following lines:
-
-\vspace{0.5cm}
-\noindent
-{\tt call object_provide(`psi')\\
-write(6,*) `psi=',psi}
-
-\vspace{0.5cm}
-The subroutine {\tt object_provide(`psi')} does the following:\\
-It checks if the object {\tt psi} is \Def{valid}, i.e. if it has already been calculated and can be used.
-\begin{itemize}
-\item If yes, then nothing is done. 
-\item If no, then the program checks if its parents {\tt jastrow} and {\tt determinant} are valid. 
-\begin{itemize}
-\item If both are valid, then the program calls the building subroutine {\tt psi_bld} and marks {\tt psi} as valid.
-\item If, for instance, only {\tt determinant} is not valid, then the program checks if its parent {\tt orbitals} is valid. If {\tt orbitals} is valid, then the program calls the building subroutine {\tt determinant_bld}, marks {\tt determinant} as valid, then calls the building subroutine {\tt psi_bld} and marks {\tt psi} as valid. If {\tt orbitals} is not valid, the programs checks its parents, and so on.
-\end{itemize}
-\end{itemize}
-In other words, {\tt object_provide(`psi')} goes down recursively the dependency tree under {\tt psi} until it finds valid objects. It then climbs up the dependency tree, constructing the objects one after the other, in the correct order, until it finally constructs {\tt psi}.
-
-In the case where {\tt object_provide(`psi')} goes down to a leaf object of the dependency tree (for example, {\tt basis_parameters}) which is {\it not} valid, then it gives an error message indicating that this leaf object is necessary to construct {\tt psi} but does not know how to construct this leaf object. Indeed, since a leaf object does not have a building subroutine, the program does not know how to construct it. Leaf objects are instead usually read in from the input file at the beginning of execution and marked as valid then.
-
-\vspace{0.5cm}
-In summary, {\tt object_provide(`psi')} has several advantages:
-\begin{itemize}
-\item It is {\it simple}. The programmer just needs to know the name of the object that he wants, here `psi'. He does not need to know how this object is calculated by the program. He does not need to know about intermediate objects such as {\tt orbitals}.
-\item It is {\it safe}. If a necessary leaf object is not available, the program will properly stops and explains what is missing.
-\item It is {\it efficient}, in the sense that this mechanism ensures that only what is needed is calculated, nothing more.
-\end{itemize}
-
-%\subsection{call object\_modified}
-
-Another important ingredient remains to be explained. What if the value of an object, say {\tt electron_coordinates}, is modified? Then, we need to make sure that if we need any child or grandchild object of {\tt electron_coordinates}, this object must be recalculated with the new value of {\tt electron_coordinates}. This is done by inserting, just after modifying {\tt electron_coordinates}, a call to the routine {\tt object_modified(`electron_coordinates')}:
-
-\vspace{0.5cm}
-\noindent
-{\tt electron_coordinates = (-2.1, 0.7, 1.5)\\
-call object_modified(`electron_coordinates')
-}
-
-\vspace{0.5cm}
-The subroutine {\tt object_modified(`electron_coordinates')} marks {\tt electron_coordinates} as valid, and recursively climbs up the dependency tree to mark as {\it invalid} all the objects depending on {\tt electron_coordinates}, namely {\tt jastrow},  {\tt basis_functions}, {\tt orbitals}, {\tt determinant}, {\tt psi}. 
-
-Thus, if any one of these objects is asked for afterwards, it will be recalculated with the new value of {\tt electron_coordinates}. This is a {\it safe} mechanism since it prevents the programmer from forgetting to update objects in an iterative algorithm, a frequent bug otherwise.
-
-Note that a typical use of {\tt object_modified} is after reading in leaf objects from the input to mark them as valid.
-
-\section{Interface with the non-MED part}
-
-The objects created in the non-MED files do not have building subroutines. If they are not available, the program does not know how to construct them. Nevertheless, to facilitate their use in the MED part, they can be added as leaf objects of the dependency tree. For this, we just need to add a call to {\tt object_modified}, for example in the line just after a non-MED object has been constructed. This provides a safe mechanism for using them, making sure that we use them only when they have been already calculated. In fact, I found this extremely useful when I started to program in CHAMP. 
-
-When this is judged useful, a non-MED object can be converted to a MED object, i.e. we write a proper building subroutine for it and it is then a normal object of the dependency tree. The non-MED part of the code can then be progressively evolved in the style of the MED part.
-
-
-\section{More detail}
-
-\subsection{A building subroutine can create more than one object}
-
 Often, it is convenient to construct in the same building subroutine several objects. A given building subroutine thus generally creates several objects. For example, if the building subroutine {\tt jastrow_bld} creates the two object {\tt jastrow} and {\tt jastrow_gradient}, it will look like:
 
 \vspace{0.5cm}
@@ -333,7 +275,83 @@ jastrow_gradient  = $g(${\tt jastrow_parameters}$,${\tt electron_coordinates}$)$
 end subroutine jastrow_bld}
 
 \vspace{0.5cm}
-With this extension, the \Def{nodes} of the dependency tree are no longer the objects but instead the building subroutines, each one creating a list of objects. This extension does not cause any problem.
+With this extension, the nodes of the dependency tree are no longer the objects themselves but instead the building subroutines, each one creating a list of objects. This extension does not cause any problem.
+
+\subsection{Manipulating objects (object_provide and object_modified)}
+
+All subroutines can manipulate the objects of the dependency tree with calls to the two main commands explained here: {\tt object_provide} and {\tt object_modified}.
+
+%\subsection{call object\_provide}
+\vspace{1em}
+
+For example, suppose that the programmer wants to print out the value of {\tt psi} at some place in the code (outside the building subroutines). He just needs to write the following lines:
+
+\vspace{0.5cm}
+\noindent
+{\tt call object_provide(`psi')\\
+write(6,*) `psi=',psi}
+
+\vspace{0.5cm}
+The subroutine {\tt object_provide} checks if an object is \Def{valid}.
+A valid object is an object that has already been calculated and can be used,
+that is to say that it was calculated from objects that themselves are still valid
+(see below {\tt object_modified} to invalidate an object).
+
+Hence, {\tt object_provide(`psi')} behaves has follow:
+\begin{itemize}
+\item if {\tt psi} is valid, nothing is done. 
+\item otherwise, the program checks if its parents {\tt jastrow} and {\tt determinant} are valid. 
+\begin{itemize}
+\item if both are valid, the program calls the building subroutine {\tt psi_bld} and marks {\tt psi} as valid too.
+\item if, for instance, {\tt determinant} is not valid, the program checks if its parent {\tt orbitals} is valid.
+      If {\tt orbitals} is valid, the program calls the building subroutine {\tt determinant_bld},
+      marks {\tt determinant} as valid,
+      then calls the building subroutine {\tt psi_bld} and marks {\tt psi} as valid.
+      If {\tt orbitals} is not valid, the programs checks its parents, and so on.
+\end{itemize}
+\end{itemize}
+
+In other words, {\tt object_provide(`psi')} goes down recursively the dependency tree under {\tt psi} until it finds valid objects. It then climbs up the dependency tree, constructing the objects one after the other, in the correct order, until it finally constructs {\tt psi}.
+
+In the case where {\tt object_provide(`psi')} goes down to a leaf object of the dependency tree (for example, {\tt basis_parameters}) which is {\it not} valid, then it gives an error message indicating that this leaf object is necessary to construct {\tt psi} but does not know how to construct this leaf object. Indeed, since a leaf object does not have a building subroutine, the program does not know how to construct it. Leaf objects are instead usually read in from the input file at the beginning of execution and marked as valid then.
+
+In summary, {\tt object_provide(`psi')} has several advantages:
+\begin{itemize}
+\item It is {\it simple}. The programmer just needs to know the name of the object that he wants, here `psi'. He does not need to know how this object is calculated by the program. He does not need to know about intermediate objects such as {\tt orbitals}.
+\item It is {\it safe}. If a necessary leaf object is not available, the program will properly stops and explains what is missing.
+\item It is {\it efficient}, in the sense that this mechanism ensures that only what is needed is calculated, nothing more.
+\end{itemize}
+
+%\subsection{call object\_modified}
+\vspace{0.5cm}
+
+Another important ingredient remains to be explained, and that is how to invalidate an object, i.e.
+what if the value of an object, say {\tt electron_coordinates}, is modified?
+We need to make sure that if we need any child or grandchild object of {\tt electron_coordinates},
+this object must be recalculated with the new value of {\tt electron_coordinates}.
+This is done by inserting, just after modifying {\tt electron_coordinates},
+a call to the routine {\tt object_modified}:
+
+\vspace{0.5cm}
+\noindent
+{\tt electron_coordinates = (-2.1, 0.7, 1.5)\\
+call object_modified(`electron_coordinates')
+}
+
+\vspace{0.5cm}
+The subroutine {\tt object_modified(`electron_coordinates')} marks {\tt electron_coordinates} as valid, and recursively climbs {\it up} the dependency tree to mark as \Def{invalid} all the objects depending on {\tt electron_coordinates}, namely {\tt jastrow},  {\tt basis_functions}, {\tt orbitals}, {\tt determinant}, {\tt psi}. 
+Thus, if any one of these objects is asked for afterwards, it will be recalculated with the new value of {\tt electron_coordinates}. This is a {\it safe} mechanism since it prevents the programmer from forgetting to update objects in an iterative algorithm, a frequent bug otherwise.
+
+Note that a typical use of {\tt object_modified} is to mark leaf objects as valid after obtaining them.
+As stated before, leaf objects can be objects read from the input, but they can be objects coming from the non-MED part of the code (see below).
+
+\section{Interface with the non-MED part}
+
+The objects created in the non-MED files do not have building subroutines. If they are not available, the program does not know how to construct them. Nevertheless, to facilitate their use in the MED part, they can be added as leaf objects of the dependency tree. For this, we just need to add a call to {\tt object_modified}, for example in the line just after a non-MED object has been constructed. This provides a safe mechanism for using them, making sure that we use them only when they have been already calculated. In fact, I found this extremely useful when I started to program in CHAMP. 
+When this is judged useful, a non-MED object can be converted to a MED object, i.e. we write a proper building subroutine for it and it is then a normal object of the dependency tree. The non-MED part of the code can then be progressively evolved in the style of the MED part.
+
+
+\section{More detail}
 
 \subsection{Dynamic allocations inside the building subroutines}
 
