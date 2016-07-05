@@ -1496,9 +1496,17 @@ module optimization_mod
    call object_provide ('delta_csf')
 
    if (l_opt_csf_rot) then
+      print*,'csf_rot_coef before: '
+      write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,iwf) ! for pathscale compiler
+
       do iparmcsf = 1, nparmcsf
-         csf_rot_coef(iparmcsf,1) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
+         csf_rot_coef(iparmcsf,iwf) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
       enddo
+      print*,'csf_rot_coef after: '
+      write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,iwf) ! for pathscale compiler
+
+      print*,'csf_coef before: '
+      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
       !Convert from rotation parameters to csf_coef using:
       !
       ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
@@ -1506,19 +1514,24 @@ module optimization_mod
       
       csf_rot_arg = 0
       do iparmcsf=1,nparmcsf
-         csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,1)**2
+         csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,iwf)**2
       enddo
       csf_rot_arg = sqrt(csf_rot_arg)
-      csf_coef(1,1) = cos(csf_rot_arg)
+      csf_coef(1,iwf) = cos(csf_rot_arg)
       
       do iparmcsf = 1, nparmcsf
-         csf_coef(iparmcsf+1,1) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,1)
+         csf_coef(iparmcsf+1,iwf) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf)
       enddo
-      
+      print*,'csf_coef after: '
+      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
    else
+      print*,'csf_coef before: '
+      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+
       do iparmcsf = 1, nparmcsf
          csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
       enddo
+
       
       !Normalize new csf_coef
       csf_norm = 0
@@ -1532,18 +1545,21 @@ module optimization_mod
          csf_coef(iparmcsf,iwf) = csf_coef(iparmcsf,iwf)/csf_norm
       enddo
 
+      print*,'csf_coef after: '
+      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+
 !      Shouldn't be necessary, because we are always using linear csfs in this mode
       ! Calculate csf_rot_arg (or d, above)
-      csf_rot_arg     = acos(csf_coef(1,iwf))
+      ! csf_rot_arg     = acos(csf_coef(1,iwf))
 
-      ! Now calculate rotation parameters - only m-1 parameters
-      ! because the normalization fixes the first parameter
-      ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
-      ! by the normalization, so we only have ncsf-1 rotation parameters
+      ! ! Now calculate rotation parameters - only m-1 parameters
+      ! ! because the normalization fixes the first parameter
+      ! ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
+      ! ! by the normalization, so we only have ncsf-1 rotation parameters
 
-      do i=1,ncsf-1
-         csf_rot_coef(i,iwf) = -csf_coef(i+1,iwf)*csf_rot_arg/sin(csf_rot_arg)
-      enddo
+      ! do i=1,ncsf-1
+      !    csf_rot_coef(i,iwf) = -csf_coef(i+1,iwf)*csf_rot_arg/sin(csf_rot_arg)
+      ! enddo
    endif
 
    call object_modified ('csf_coef')
@@ -2319,7 +2335,7 @@ module optimization_mod
        norm = norm + csf_coef(i,iwf)**2
     enddo
     norm = sqrt(norm)
-    print*,"CSF norm: ",norm
+    print*,"CSF norm: ",norm,iwf
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
