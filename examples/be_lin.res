@@ -4,9 +4,9 @@
                                                  version 3.08.00
 ----------------------------------------------------------------------------------------------------------
 
-GIT commit 0fe703577f13497b4775ed40e68b29f1426c6df9, Date:   Tue Jun 21 17:34:40 2016 -0400
-Compiled by mussard on Thu Jun 23 14:12:17 EDT 2016 on host antares
-Executed by mussard on 2016-06-23 14:12:25 (-0400) on master host 
+GIT commit 54040b0797ba5c74d120eeeff62ccd12b5d8f74a, Date:   Mon Jul 4 11:39:02 2016 -0400
+Compiled by mussard on Mon Jul  4 22:39:36 EDT 2016 on host antares
+Executed by mussard on 2016-07-05 10:46:63 (-0400) on master host 
 Executable: /home/mussard/softwares/champ/qmc/champ.exe
 Command line arguments: -p -m vmc_mov1
 Run in mode >vmc_mov1<
@@ -85,6 +85,7 @@ End of orbitals menu -----------------------------------------------------------
 Beginning of csfs menu -----------------------------------------------------------------------------------
 Normalized CSF coefs=  0.949537 -0.181089 -0.181089 -0.181089
 Initial CSF rotation coefs=  0.184198  0.184198  0.184198
+ normalizing cdet_in_csf
  number of determinants =     4
  determinants have orbitals (spin-up | spin-down):
  det #     1:    1   2  |   1   2
@@ -109,16 +110,16 @@ Initial CSF rotation coefs=  0.184198  0.184198  0.184198
  sum of square of CSF coefficients =   1.000000
  CSF #     1
  determinants in CSF:   1
- coefficients: 1.00000
+ coefficients:-1.00000
  CSF #     2
  determinants in CSF:   4
- coefficients: 1.00000
+ coefficients:-1.00000
  CSF #     3
  determinants in CSF:   3
- coefficients: 1.00000
+ coefficients:-1.00000
  CSF #     4
  determinants in CSF:   2
- coefficients: 1.00000
+ coefficients:-1.00000
 
  Orbital occupation information:
  There are   8 total    orbitals
@@ -150,29 +151,15 @@ Beginning of jastrow menu ------------------------------------------------------
 End of jastrow menu --------------------------------------------------------------------------------------
 
 Beginning of linearresponse menu -------------------------------------------------------------------------
- Requested parameter types: orbitals  
+ Requested parameter types: jastrow   
 
- Orbital parameter information:
- There are   8 orbitals in the optimization space of indexes:   1   2   3   4   5   6   7   8
- Constructing list of single orbital excitations based on orbital occupancies alone...
- Number of single orbital excitations =          7
- Number of orbital derivatives        =          7
- Number of orbitals involved          =          5
- Constructing list of single orbital excitations checking for additional redundancies...
- Number of single orbital excitations =          7
- Number of orbital derivatives        =          7
- Number of orbitals involved          =          5
- Number of unique spin-up   excited determinants =         18
- Number of unique spin-down excited determinants =         18
- Number of computed orbitals will be        8
-
- Number of Jastrow parameters:       0
+ Number of Jastrow parameters:      24
  Number of periodic Jastrow parameters:     0
  Number of CSF parameters:           0
- Number of orbital parameters:       7
+ Number of orbital parameters:       0
  Number of exponent parameters:      0
  Number of geometry parameters:      0
- Total number of parameters:         7
+ Total number of parameters:        24
 
 End of linearresponse menu -------------------------------------------------------------------------------
 
@@ -189,8 +176,6 @@ The following averages will be calculated:
 - dpsi_dpsi_eloc_av                                  = average of dpsi_dpsi_eloc
 - deloc_av                                           = average of deloc
 - dpsi_deloc_av                                      = average of dpsi_deloc
-- d2psi_av                                           = average of d2psi
-- d2psi_eloc_av                                      = average of d2psi_eloc
 - eloc_av                                            = average of eloc
 - eloc_sq_av                                         = average of eloc_sq
 
@@ -201,522 +186,22 @@ The following variances will be calculated:
 The following statistical errors will be calculated:
 - error_sigma                                        = statistical error of average sigma
 
-Beginning of equilibration (total CPU time is       0.06 s, CPU time since last check is       0.06 s)
+Beginning of equilibration (total CPU time is       0.04 s, CPU time since last check is       0.04 s)
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave  (ferr)     accave     iter     sigma
  -15.10477 -15.10477(    0) -45.26187(    0)  30.15710(    0)  21.97741(    0)                    0.87500        10   0.00000(    0)
-End       of equilibration (total CPU time is       0.06 s, CPU time since last check is       0.00 s)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -5.8890089401339843E-002 -0.42456732033242556       -1.2298504012193168      -0.82146560470276309      -0.87353647292629277      -0.20454596794362798       -2.9037645445181390E-003
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.38339161350641143      -0.71211375278351630       -15.108507887040176        23.643427581338152      -0.21059592652824244      -0.61732808107092585       0.29983179052467507     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.58842627633642763       0.55289420888811969        3.1629727757966313       0.62903228694009228       0.72997418669064085        1.4790601592084371       -1.9449177270559537     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    2.7963714374949102        1.2101929775821680        23.853852739205873       -7.6409148216079652        1.1339867367662897      -0.63531150467720199       -9.8692269715564258     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.26189135812890624      -0.10467077032168362        1.5587652420253624        1.3750033351569946       -1.8241380457589016        6.1143594561143759      -0.61858156710991574     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.97621062303881057       -2.1112690177886937        14.176281217062796        11.313127503024999       -2.8284763838136389        27.903697197453127       -66.333275449228722     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   5.1137466671781921E-002   1.8433773914650082E-002   9.7264911993985209E-002   1.6256902632709835        1.2878058167993309       0.83670483335315249       -1.1779486314080854     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    7.2030613771144961E-003 -0.24813883676579898        2.4145350938638357        29.665459768245093       0.85261246774622834       -1.4807059669592912       -5.2833691088507093     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -5.1757217261607986E-002 -0.15963555797651330       0.67382950694165411        1.8150787481743351        5.9458603497492858E-002 -0.30472533351339071      -0.12371923099699154     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.27390714852284287       -1.4528584604281853        7.7523532005990434        21.579101376710074       0.11352820539683284       -1.1671993536281706       0.21174270461074393     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   9.3534885752314820E-002 -0.41409101528536896      -0.32334939121790857        1.1142874671503438       -1.7595407538954415      -0.48639645557278199       0.30437174130327665     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.32013488632852966       -1.9803836731399551       -2.7775607494680519        31.302516747904797      -0.84873537185691861        7.8429945489855102E-002  0.46779389419769712     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.16248738723373962        7.5959032356893788E-002 -0.56040825793596727       0.81287033081922966        2.1329866695757262       0.59350788234542717      -0.97328874849618086     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.73776867258435885       0.84450751698263238       -5.8083684888327660        34.582525293722448        1.6181069013457932      -0.58300667421928742       -9.6815240579678914     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -4.3178010047982031E-002 -0.36537857917769162      -0.60483420608035965       0.96958215403612413      -0.11811979337849166       0.44586072629785084      -0.70239911751512507     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.10967186457152980       -1.0484579124501539       -5.6159037829663356        36.469793451200715       0.22817387208921994      -0.75660694277853802       -3.5257460270490499     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.8386896453366004E-002 -0.39052930870101554      -0.54299679252653055      -0.77207186702371100      -0.66642788127327945        3.5228894851689301        3.2484644955531032     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.45468496979883605       -1.1572330087675884       -7.3608693420765050        5.1511342578539718       -1.6138074610081259        18.853731096639468        20.225150912874298     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.7536267321573704E-002 -0.41443632260517982       -1.1266989954609492      -0.95421600358237990       -1.0071411910475181      -0.59750708918166007       0.35375662132166741     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.30792130398871792       -1.2705299855426693       -11.336816143081299       0.16353523742559631      -0.54879516222158342        5.6435468599049896E-002   3.2159562031342744E-002
- warning: d2psi not yet implemented for orbitals/orbitals parameters
+End       of equilibration (total CPU time is       0.05 s, CPU time since last check is       0.00 s)
     enow      eave  (eerr )    peave (peerr)    tpbave(tpberr    tjfave(tjferr    fave  (ferr)     accave     iter     sigma
  -14.46468 -14.46468(    0) -23.09322(    0)   8.62853(    0)  11.98111(    0)                    0.85000        10   0.57041(    0)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.1881060929892419E-002 -0.25967056140061662      -0.86079185075744946       0.31109177271020994        2.2966105895098524E-002 -0.26228285181169247       -9.3367894946785449E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.38687443074649358      -0.56785783557007585       -9.4386959513610087        30.806104266729204        6.7838115205496388E-002 -0.92010514295875123      -0.44859605890290660     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.12921256042447560       0.97050475377541490        2.2158293178373802       0.23210123850687348        3.0879619106792485E-002 -0.24367200282293444       -8.4401354648039967E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.44941055443529399        3.5611401114412606        13.386647841344313        8.0648235095697558       0.10024595975712665      -0.74279448606079745      -0.60416120473941959     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.30921150094837063       0.82089127932016936        1.7763021194501756       0.62691976869212895       -1.1930407301095969      -0.83831440359983256       0.52265586647671636     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   -1.1095220905168617        2.7188228709960649        11.398747629101905        12.222823530295187      -0.71362152223192821       0.23868692606186784       0.24050865863693585     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.28590090034072957      -0.36956080174189515       -1.1056978447789991       0.35876168089115373      -0.50785806879500439       -2.4553951772329099        1.2102295032304520     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    1.3212049294234289       -1.0700315389800763       -10.496056965634111        28.436522925722436      -0.88226545132174938       -2.3237473627821772        2.0802065378162125     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   8.0642346245825572E-002 -0.24275688561628214      -0.84312961289900334        1.2926497889073263      -0.11055146492067652       -1.2804555540328875       0.63582123584344330     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.15787915858805088      -0.92308453967795945       -6.5994049643119901        39.396799517461702      -0.31853913169221099      -0.83265507785272008        1.0154526958016867     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -1.6379500075541864E-003  -1.9206672137144436E-002 -0.92497881903006796        1.8498890461674092E-002   1.4693039278463769       0.30564128989372108      -0.74055433348264033     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.12480791046156725       0.68606847505526247       -11.223884387319478        32.809701274814692       0.88931360028522743       -1.5741897345898308       -4.1313022144455038     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -9.7620039063314873E-002 -0.40507349816149435      -0.95978530349146607       0.16616575206895057       -1.0353608962353296       -4.1324792998518267E-002  -8.6576146431985718E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.39635010113453006       -1.1006463689794963       -11.077410413244889        34.256348114249569      -0.19128427766634865      -0.54804433449227141       0.36972119858926705     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.8096862434716280E-002  0.12774406363430679        1.8754515444332904       -1.2082735112087515       -1.3459787547018474       -7.1217823053887255E-002   3.3788319317764798E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.40236645521453585       0.73663472159100896        7.5701407747790936       -4.9959100492076312      -0.38005868417909827        7.4404727974519705E-002   7.1855744939108263E-002
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.13253309518674927      -0.15995706778912919      -0.76848981540642469      -0.71294471688387173        1.0148811510873332      -0.34093830643612999      -0.18441524132178563     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.47430199883278856      -0.37379893057431374       -6.4292884260763197       -12.909949205535060       0.44219476475660763       -1.8458702265946429       0.81768079245704284     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -5.3893395098569392E-002  0.16473276206648227        1.8664541386576916E-002  0.42463041925485301      -0.77282159171563314       0.18707128014427174      -0.28767066210905501     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.25813823197891012       0.15685018478348273       -1.3890568384701487        19.332897085757313       -5.3204316721664952E-002 -0.65446940490802297      -0.67711913726272810     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.70932 -14.58700( 8649) -23.73700(45522)   9.15000(36873)  11.76154(15526)                    0.87500        20   0.47179( 9862)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -6.9324567226803760E-002 -0.14673799415976424       -1.2703329661592784       -1.3262778839808425       0.90459929294695218      -0.82412050039957141       0.15263736998555802     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.26314006043012411       0.15722157790875382       -13.016410623541462       -6.5854947041861740       0.31058260422961409       -1.7275294943557036       0.63633951762584939     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   1.9072746813994915E-002 -0.41549391534739927       -1.3248782085189954       -2.3071512340537943      -0.68803587304025060      -0.38117580039627652        2.7594217417108158E-004
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.16545566013642668      -0.70465044699682078       -15.171445431089159       -17.433417857913373      -0.20718287811531819       -1.1707530276459741       0.43977044448407593     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -6.7341511425200007E-002 -0.57617750535137524       -1.2516963900941684       -1.5391661190041728       -1.7190908999782415      -0.16398500856397097       0.12326708981202916     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.30906577235290533       -1.4117924402427047       -14.787260057061836        3.0022184480646992      -0.68230764286934664       0.24802752416012785      -0.13331545079797008     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -2.2364628180173720E-003  0.14308234303829973        1.0983748852843767      -0.33918376579669285        1.0789454325774028      -0.53283236164484482       -2.4668828065921133E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    3.8033285121813497E-002  0.64860398181126266        4.0210938619854444        7.5131179898547371       0.48446976122563939       -1.4589940153487970      -0.79715525480865390     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   1.8740690594789985E-002   4.4872857151650167E-002  0.36471667112467987        1.2590161833324403      -0.71610545349868138       0.34544357751447963      -0.54743815812684582     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.18110257454233153      -0.49132429607845096        3.1753592656121619        25.055259538564421        1.7463329744777396E-002 -0.89900082742053167       -2.2872052415622290     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.7105459558523062E-002  0.34611242122451785       0.20228011252340097       0.42660875323713510       -1.1755838397218787       0.74685147292175624      -0.57868201215187320     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.29667470443995159       0.78628389960359413       0.27485848108590188        17.217584065845081        5.8837985367432101E-002 -0.38115979499119096       -1.2634747898808782     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -9.0939021886091015E-002  -8.2019446024277395E-002  -1.0144136961133987       -2.0744149553632711        1.4209730801566580        1.5488965690315133      -0.70757217284429108     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.26572393344144429       0.72699069646067327       -12.628171162865033       -16.418745501729894       0.48525917861189555        2.1632796197850603       -6.7850910948918166     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -2.8198602160851228E-002 -0.35259790061289997       -1.4265068549196109       -1.4879424044983371      -0.38518286077691888       -1.1223670458516091       0.58961062907688078     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.11364358375366954      -0.45168012468131158       -16.117198944483839        6.0241372724951905      -0.43769685896953753      -0.46982270667363990       0.45812156184517216     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.3562529036897112E-002 -0.37047260719535552       -1.4108151202874892       -2.9938753908356763      -0.34512868187434936      -0.99771604009479964       0.51107354959480900     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.16504492518402517       -1.0439397659969156       -12.340266543700887       -60.791167344304498      -0.38602848120358596      -0.37218405922811476      -0.11325312953357668     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -4.8067545953935878E-002 -0.21286637816463466       -1.1818564261205005        3.5444831895225980E-002  0.36337198025743661       -1.0362015316974715       0.40607856252658997     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.25315363990924566      -0.13323712788022726       -12.823327650070315        32.505700810074586       -1.9707774937925460E-002  -1.1381773094553471       0.75713614131516449     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.61213 -14.59538( 5806) -27.39881(*****)  12.80343(*****)  13.48930(*****)                    0.85833        30   0.44047( 6498)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.87341336162116201        1.9576732452594252        4.6753270329338754       -3.9761509644684612        1.0073626903337327        1.4338804800990916       -2.4537061167747658E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    3.8903470113224738        10.386310770047265        15.672515427117725       -16.542114772447732        8.2013662627430685E-003   5.6459953117737580       -12.300582620373241     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.7201367330552190E-002 -0.22529001322773598       0.12551899960799134       0.38782844937219246      -0.85508475321119137      -0.62173038456389740       0.36226443181366291     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.34869382902636914       -1.0192289175640150      -0.99510481866839762        20.100410725657795      -0.47127166730210757        1.1313454190290079E-002  0.29500081887252699     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.10118546997093433       0.30193541360034037       0.44239579956175989        1.9048214992601211       -1.8036497481450597       0.32026070830403797      -0.32523531818481044     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.35212764189917933      -0.42281804496738912        6.8483636986619505        22.690239342768152      -0.28669729004066496      -0.63632555200372853       0.45911593748122681     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   6.6854225591786637E-002  -2.6648586134695923E-002  -8.8754368719643845E-002   1.8134748503809681        2.2054893676111833       -1.7616331718596172       0.10790992071121733     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.58203864778872538      -0.21363938024400375        1.1378971630482466        30.582611130569266        1.7437415771093780       -5.1279148683616862        1.8166727726177641     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.1031244178444530E-002 -0.17771264925718172      -0.41506711624300902        1.5025631839886495        1.0648484032965526       0.52583470472236593      -0.86965877578111872     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.20306808513184893      -0.62422217202747154       -2.0742795736814861        35.211663837981732       0.56197033419064790      -0.41022156656007330       -6.9315982892219257     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -3.0266205279999955E-002 -0.18472522607736758        1.0218476944225783        1.7546708795995820       0.21031530725572734       -1.0416720096771870       0.35304523628545470     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   -3.0500314237861259E-002  -1.4903172908648594        10.434340271982155        18.133093116328229       -9.8990899200401671E-003  -1.2823118795835304        1.0531174928654092     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.10366957245380555      -0.25661388735687141      -0.55261393154048355        1.4394395944063778      -0.61042738622501647      -0.81693027748177460       0.46139956515138597     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.33810445310061704       -1.2527034446898087       -4.1024963043644229        37.555499460687273      -0.44048644810375381      -0.16093283503540096       0.54776994562251047     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.11261018929190472      -0.13721501340941408       0.34847253836597308        1.6879106306264382      -0.46478694235343981      -0.65450443189530727       0.36509629723811737     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.45450531351933660       -1.2631481772947293        4.4075973400078849        26.284951061093231      -0.31865493184819493       -9.7217273881819860E-002  0.40095531781886629     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.11357143822616299      -0.12825138061978050       0.34647014314156810        1.6875289783800438      -0.58190704220079315      -0.64325901724081003       0.37564156614472738     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.44798691444019156       -1.2517341627242879        4.4063593380538233        26.292156877946947      -0.37172957095965586       -2.9291989394401507E-003  0.34912252849960040     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.11303335281726860        8.6904538567917716E-002   1.8577603107759897       0.57827831966263543        1.1343782591905196       0.77552474866479715      -0.77198338028673641     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.52292043419427303        2.4130247808164845E-002   11.795124234098054        12.328019381092007       0.49088054174193879       0.71053887531640847       -9.4477672541458055     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.22246 -14.50215( 9173) -24.88218(*****)  10.38003(*****)  12.18645(*****)                    0.85625        40   0.57721(14425)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   8.2682103317820346E-002 -0.18704928018705053       -3.2892659357205194E-002  0.34398877746521478      -0.57349343103044581      -0.94028675015855590       0.53201902134863810     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.26250252102707283      -0.88502496831021449       -1.5181046594597505        15.685999435092887      -0.47800968463436871      -0.13805787359544927       0.39667006589119930     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -5.9804275310885328E-002 -0.29920618820799455       -1.2844772612872315      -0.35950929147439681      -0.16721865679105566       -1.0983080973640988       0.55745975038449891     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.18706048942271933      -0.37932718287207673       -14.500322042355531        28.870357597558371      -0.31881734442773019      -0.58982057045471215       0.68850660882556558     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -9.5905591094174361E-002 -0.29263547550148716      -0.81775614660640106       0.92794348430157580      -0.54424840903095073      -0.67045703536728130       0.38837685784931314     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.44490389956699322       -1.0101663917594146       -7.8138836243119059        38.058812455038520      -0.37195141816713601       -5.4142283135323745E-002  0.39032936458840861     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.13906345407808601      -0.50614146709966512      -0.65972304908084312        7.8312157742772368E-003  -1.4821474103317624        2.1001011793756947       -1.3261099577646849     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.56858441867707454       -1.4079390207730411       -9.5114716910321313        34.076656739689952      -0.19019520403813653        1.8400384077834502       -9.3539311023086427     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.16328657124161788      -0.19509054149120275       0.94147686051016022       0.26695723665553994      -0.11103976560578471       0.35024643282574042      -0.82414724967165831     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.54987705619659344      -0.80069156997718627        5.1758630418313771        12.971601941385327       0.37011594997792990       -1.8461282838436079      -0.74695900942659021     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.20696650600751104       0.47692302945953968        2.8180458175179313       0.83681252660122019       0.65122113608115495        9.6437183823624900E-002 -0.63664243262762021     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.83824631859442500       0.86207227259711372        21.301570713526573       -1.9854889724251639       0.52906365046656889       -1.5864812941342401       -2.1777576432907471     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -4.0822482700329640E-003 -0.14281733472598465      -0.69431088356306070       0.95696244734969638       0.64253081247201749       0.30035827058736581      -0.52879248818305391     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   -5.5498214723662488E-002 -0.25695532205250515       -6.8219348186575450        38.700402153448877       0.35506397552595631      -0.19167496575375914       -5.5796601551662617     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -3.5443395806609122E-002 -0.32554960339961242      -0.92011312816808311      -0.21669702806756291      -0.50257459057177112      -0.86378339160684514       0.47742657689788570     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.23221290066188088       -1.0015603652180745       -9.1459144245689306        13.453867661489681      -0.41744681111900578      -0.18558337562171812       0.33037019840395199     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -6.8121733523721820E-002 -0.30013833423187569      -0.87042538853757878       0.68878183554023920      -0.50227964713092776      -0.86322420200393835       0.48470810615673676     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.31113665819200070      -0.93465137126684972       -8.7730383828248613        37.295113562958356      -0.41829228703651522      -0.18013533725587935       0.52642079148597076     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -5.5915108437363081E-002  -8.3522699439812984E-002  0.63028409720804202        1.9026707713352786      -0.89497641881707057      -0.50626277076144399       0.32746005257976429     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.25856639450246005       -1.4118698191644867        7.7433851979649475        21.952952437131060      -0.46632064300496667       0.20165513751398906       0.19291049386205514     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.20866 -14.44345( 9023) -24.28594(*****)   9.84249(*****)  11.89270(*****)                    0.83500        50   0.63646(12648)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   5.0112143679467890E-002 -0.23079364569401320       -1.2693353602708386       -1.1794592480524684       0.44822126177579746      -0.20127023604541919      -0.12930366214986458     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.24375237186034351       0.29492456242948323       -15.702258500813983        17.131928331785254       0.26828525161761430      -0.90415108137906719       -1.4020157834505509     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.27420216530556613       0.54204765781073638        1.4384138566276268      -0.29552912255337760       0.77705041879023196      -0.59266086798802731       -4.8416453926315335E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.88559040384080889        2.2522800436236832        5.7680723399239691        9.9896263334505520       0.47721758711553885       -1.4910592292326608       -2.1852408664127245     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   7.0183621714438787E-002 -0.28053138051034543      -0.72632230988651647       -1.9702251938339237       0.37430072521400248        1.1276688257690493       -1.1243514381394599     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.40627291300654178       -2.7528819389182901        7.3828599277041587       -140.74820163843214       0.34537493139099934        1.3360142931709222       -13.777817442311196     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -2.6107222929630150E-002 -0.68278677836682189      -0.76602505730651238       -1.9522338446387317       -3.0885479695038338       0.68738140282522442      -0.38186614815770159     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.10994518399067527       -5.1245102997908187        9.1231083008241285       -155.67328465655308      -0.79171087774515814       0.39046162291674824       -1.4851145471326876     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   8.1975586523063235E-002 -0.52424387864331712      -0.83769623436596830       -1.5132403038359434       -2.8198880234566261      -0.49752437171677250       0.31487341126647117     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.53798533220045186       -4.0365642273474656        3.8085419413437211       -108.81416456445137       -1.5590152958112300       0.42765601995881086       -1.6551906059731802     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.33551686607588344       -4.4414730991737782E-002  -1.2691753389812817       -2.7157124174447631        1.6858470259796037      -0.27638230416421788      -0.33610228071961568     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    1.7262241460435601       0.30552133115928853       -9.3639349207457663       -67.896930757538826        1.4792119901147203       -1.5293431909496671       -5.7880411624254648     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   5.8544784647261434E-002 -0.41033207392881327       -1.3139054985971879      -0.78203821577380195       -1.0134563059405148       -1.3289027802103359       0.73284997753102366     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.39518699153486536       -1.0929497349422912       -13.925842442627451        12.739943791597533      -0.85607625277136579      -0.47823831546877177       0.61838017374848309     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.4848917748404709E-002  -7.0877961674390172E-002   1.3217280220822389        1.6860502750566684        1.3760973549242250      -0.61134051103440712      -0.31455264533675126     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.23253089218640560       -1.0026583074056716        12.547093870575019        14.061730907761040       0.80875883385573411       -2.7614688921173358      -0.11808210686490044     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -6.1741731387295176E-002 -0.27435880511405558      -0.34708363372339590        1.4957221451664573       0.23256845972680956      -0.28942755535027564      -0.23965262617968466     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.20891473438627842       -1.1973196543828164       -1.9122973026442551        34.289700710414692       0.21396510311184394       -1.4288729763390158      -0.81909725757453555     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.5158378681549615E-002 -0.10850265058368200      -0.28165546561165372        1.4168907132450070        1.4066340899951144        1.0933836522520481       -1.3046765693842570     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.31829780188061774      -0.36916468986049605       -1.5712650349044881        33.508871577320839       0.81953636483351811      -0.68649163638800281       -8.4170716987246497     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.82661 -14.50731( 9514) -26.91444(*****)  12.40713(*****)  13.16759(*****)                    0.84167        60   0.61442(10559)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.15898584722692694       0.15911793903926416        1.7150130212791601        1.4903358713051427      -0.30864385443578701       0.71388216429366291      -0.83419863714780662     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.44426704102550035      -0.53104251835949334        15.425448288405947        8.3426139843989464       0.25879990540453263      -0.84164906230938585       -1.9498330720274362     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   7.7513360464955966E-002  0.60593384880929513        2.0325346157605897        1.4359870837587705      -0.38572429843301531        1.4061381876339580       -1.1028917811154433     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    8.7875858215510444E-002   1.0145064915451358        18.099680853510073        3.2021372046379346       0.14949726357018250        1.1249682749243430       -8.0466018298440130     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -2.7631721315405228E-002 -0.36250543176795236      -0.65557071643887455        1.0018460888977441      -0.90653054314937653       -4.2913466967466035E-002 -0.20876932926910488     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.12796459370432609       -1.3780334035434849       -6.4037938817281308        37.402023267919503      -0.13281434786730584      -0.99995281500546485       0.17995391485939527     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   7.9848752924032550E-003   3.0448107594041600E-003  0.75121341823436039        1.8317875004322364        1.1696078718264287      -0.53158488719211838      -0.43298913012389983     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.20779276375921085      -0.67187363143370860        8.3573481529382718        20.371179406222598       0.87137895468967075       -2.7218314911968822       -1.6827710495721433     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.12370599426663831       -4.9887323611534168E-002  0.40641789183805443       0.61668450362608929      -0.75801444692578301       0.64427528720378180      -0.55200654841029340     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.36224552011526889      -0.66566371663073920        1.9059680641236849        22.262707689038717        6.2822180796435964E-002 -0.13046837846422110       -2.7917028662230066     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.23437671775944630       -1.2540742818079948E-002 -0.71348112684492027       0.77378837104328868        1.4049244626821875       -2.0493899662437429       0.65321424111880411     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.90445337164825279       0.20399591460618355       -6.3116821201815805        29.414932479541772       0.75554619897339825       -3.5793666800886568        2.1643510076670238     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -6.8383890130066710E-002  -9.5658585661670584E-002   1.2991356905893305        1.1552478775823007        1.8105288053545108        6.0324081945898937        6.9935121790216703     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.12289995685416720      -0.92647941037875936        12.034647752121412        8.5697769100169605       -2.6316986035374432        46.968660949040384       -2.7030154292045547     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   3.0325758184297853E-002  -3.3026093151813075E-002  0.13384320897455551        1.7056568048733578        1.8369187434677476      -0.76809329745525612      -0.40064878744044291     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.23288181230568303      -0.34792248598913339        2.7486762864506047        27.935844803605296        1.2843192358117872       -3.8516530210016655       0.38041791709485773     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -4.1657657626140383E-002 -0.36173811616151719        1.5698189167813357        1.2385640018008777      -0.53447503408206432      -0.63649211743214962        1.6617612115566099E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.10414049788978341       -2.1500965675961501        12.603146206303173        14.174250458949338      -0.11357487510776489       -1.5994145577165693        1.2308645569491206     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   1.2282926740246181        2.3909811952489570        4.3673593418350176       -4.6158285497433180       0.67682329891367166       -1.7172256509876462       0.70668679320259908     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    5.6261610198207563        12.980351172512650        12.296587820499495       -25.772180479001502       0.26738988111886508       -1.7355754485501964        1.3306691245830711     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.55099 -14.51355( 8176) -25.82345(*****)  11.30990(*****)  12.63426(*****)                    0.84643        70   0.62165( 8954)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.17969665066374957       -1.7697708338936902E-002  0.34707731338286540      -0.54947736705491279       0.69704727957674639       -1.6913223688622230       0.67312353360326171     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.66349030459665503      -0.16483444102805936        1.5835045429574783       -12.420449494216102       0.12391750549239297       -1.9856812848090633        1.4379189189022130     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -1.5910056484398239E-002  -5.9878435579394346E-002 -0.13116293820902980        1.3333016866756195        1.1079341536185561        2.1710166894334786      -0.70456448415528117     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.21188237984831085      -0.33072647097657953      -0.68551013704578434        32.074927475371062      -0.14600908015332353        7.8808055945163851       -26.055406984246790     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.19309515509883196       0.14271625635143240        1.8948536836115621        1.5256141544197448       0.30553172852960281       -1.0323423330235386       0.46824460356041597     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.58618484215289524      -0.54786417267203147        16.917985958365829        5.9658355262626710       -6.9607626302249981E-002 -0.73163660426534516       0.79889852640040970     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -1.3793567771165114E-002 -0.21581532384427812      -0.65712055894772148       0.83869425955682586       -5.9485303942451294E-002 -0.85219731620238492       0.42799491009429758     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.24879661756211147      -0.76231448365617860       -6.0227329919639798        31.963262248301906      -0.20571975275199611      -0.43637987014025043       0.57038653705474351     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.46265451050436879       0.74437603528165230        3.2995210777996928       -1.2435829324350349        1.3817933850444017       -7.7754317156077529E-002 -0.52966279958204898     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    1.8986398929415860        3.7413032286050547        15.382643177253176        1.8383356521292360       0.86518310877482985       -1.8904628417270604       -2.3143106247452288     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.4906919001113986E-002 -0.15687210890042924      -0.35999596766953612       0.75831655070063830       0.66474768012263985      -0.76747825222258503       0.15498648361445261     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.37252879387188065      -0.50401491995348779       -3.9336892193395370        27.606296973174643       0.18727769432993804       -1.4304803656229341       0.72700891929939360     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.10545235927870798       -4.9122207643402553E-003 -0.13547017245062232       -1.0940871175871405      -0.79640731085584626      -0.57026438005156310       0.28137404632527685     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.34070118583863540       -1.2314735651075008        4.1397501408291202       -67.235338748135078      -0.37802125387893609      -0.28767905056954973       0.29548613125010265     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.11363825563338609      -0.40976107970600884       -1.1131050592427103      -0.90585927341229644      -0.74207105841934962      -0.14115596502074701       -5.4306256366185940E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.43016239379702220      -0.94441072296671003       -12.690178135216591        9.5177052798229926      -0.13457661463933429      -0.61385983787218390        4.4027408574892429E-002
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -3.6335666422471297E-002 -0.13579623948250000      -0.28924144795705087       0.21197773510179621       0.83003572605301623        4.8643968331861362        5.6327213198504511     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.21917753111284916      -0.69209840754992558       -6.6823411369419577E-002   1.4972957732692844       -4.5744868819134803        52.303397491269791       -74.358105018961538     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   1.8827670115813985E-002  -4.2840820276933153E-003 -0.44754977206640079       -1.4326752188889165        1.9128605976175561        4.7141914019557056        3.4842515708476820     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.23899008544632144       0.78265685670661211       -6.6156943693363877       -11.658937021833053      -0.47549552827225761        19.821214745095897        45.347612198495398     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.85203 -14.55586( 8176) -26.30283(*****)  11.74697(*****)  13.06038(*****)                    0.84688        80   0.63261( 7831)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -7.2022375026738639E-002 -0.19893301538713443       -1.2658048014526737       -1.4817326499293988       0.57353829195061234       -8.8246752538842524E-002  -7.4759905422048398E-002
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.37903238375465592       0.31691003896402281       -15.663892509464841        9.0097049142928025       0.21116163045386172      -0.43425827335100453      -0.76532965594336166     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   2.5959896780178588E-002   1.5358529034601061       0.78718880295183158        1.4035606375421379       -2.9501758718284443        1.0079315634433428      -0.55971191058441028     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   -2.7014563524330161E-002   3.5861085031041289        9.3637830571604663        15.498802546174664      -0.35690536386575589       0.13699435177412142       0.15259182571618446     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.12398080550637007      -0.54973456995427383      -0.84113030132033484      -0.48746213168991953       -1.5310622839451480       0.35153758876528313      -0.33085726279998995     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.44093546283890150       -1.6072101742786946       -10.100635238577505        14.924793310026525      -0.14766487719439442      -0.59447348466754990       0.18451787700707759     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.13461427240660784      -0.11785604835233239        9.1592162129316854E-002   1.5744118091428410       0.43787589319512255      -0.89397783841488909       0.32904965370822598     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.50100170265794719      -0.83817110369442926        1.7633075358641981        29.372875184118040        2.6425667685121442E-002  -1.0148272172882757       0.69191170897658283     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.20431293558293934       0.16704158102830263        1.0114625504136161        1.1338741197251969       0.15242567934108381      -0.87362108979133957       0.31626745489686375     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.72014735615968861       0.11442257737252627        7.9673205349621359        17.880030735990992       -3.0821626006236801E-002 -0.94250784886317041       0.44465630582351040     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.11137604829689229      -0.54627444930394164      -0.96439756946680810      -0.13136827160043746       -2.2940552224783590       0.42605747854248388      -0.20344643952147509     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.40887252586069928       -1.8454108544046117       -11.463545130167709        28.854523716579234      -0.61380348135456730       0.30172492182454880        4.7681955178055679E-002
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.11911332315892952       0.40786483040148813        1.4172589374075282       0.22843528913578892      -0.27454197446815604      -0.81795901768155588       0.43724014105024667     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.36613108825047558        1.3719726771635918        7.5236586055690911        13.770468410547572      -0.27925408456749046      -0.19604314585322585       0.37735405687358364     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.7717812789312108E-002 -0.16106136535850069      -0.82424550213576020       0.69047340187566941       0.75022848115247942       0.54769187877508807      -0.52527266451007792     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.37383056969469808      -0.11512186772727623       -8.7399270705006362        38.683111675373226       0.24352442633841365       0.76637359978756003       -7.4753312057504839     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.1683273703666667E-002 -0.14056404434483549      -0.53299715495196387        1.1655671225031246       0.75033363905737649       0.54888915113218484      -0.52340417274760176     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.35982560749282888      -0.39482145672017011       -4.8389351469573443        36.967907892165528       0.24410575746583160       0.75858119046200467       -7.5039121326438680     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -8.5680286215120804E-002   1.3390597692262834E-002  0.45704153982836188        1.2394862945208933       -1.6265563375691272      -0.44468989703545986       0.32085168051594776     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.26254123898215781      -0.76439048084588768        3.7384458802065290        24.324307107678045      -0.78904695648531187       0.38749155179455452       0.16192186103163100     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.53880 -14.55396( 7269) -25.89373(*****)  11.33976(*****)  12.80172(*****)                    0.84167        90   0.61069( 7246)
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.18267465939855984      -0.63945807134022137      -0.65549293109649420      -0.87143484749697742       -3.2293022967029841      -0.68047433000684387       0.46456534423929696     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.90965763084664408       -3.4029920369351037       -2.6447262233170532       -37.303989010573204       -2.0211204059359322       0.55146751908455605      -0.92677139635888839     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -2.6642461586305521E-002 -0.30920238876301553      -0.41707404266243192       -1.8478159062820911       -3.7482885508718582E-002   5.2657926387351204E-003 -0.37844795197703512     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.22805111061388542       -4.5769143596233119        21.006733803400451       -221.22348943947031       0.12534318258902150      -0.85770139958746616       -3.3099295675756242     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:   8.6752694596217168E-003  -3.6447811902396328E-002  -1.1219630018187532       -1.4702730428129740        1.5363848836995100      -0.13345110149764339      -0.44984465764730103     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:    3.2164744412649604E-002  0.47789998119610760       -10.928093266432045       -18.467530806013070       0.92580383482475348       -2.1700614935283911       -1.0889008385539420     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -5.5446597535623594E-002  -9.2157639587902088E-002 -0.47341761081469497      -0.85668663063652739        1.1322276314854487        1.5754000975133806       -1.1200059245305338     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.32933836998395438      -0.34667773449176614       -3.3501080182228380       -22.814253199607855       0.43958886115077866        2.6301934706919972       -14.154267981989276     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.13166385772621972       -9.6918783150165902E-002  0.68480377605181519        1.2328455598229055E-002  -1.0851347070216211      -0.32231660907870602       0.21037427565738503     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.33838152618166156      -0.51641294560324347        2.6445266897039712        10.230416605397732      -0.46045962672216173       0.19897132774647353        5.9907187595752281E-002
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -3.7795251049248607E-002 -0.19957677167217011      -0.20386259540050033        4.0381698982556551E-002  0.35616420514481856       -6.5996823331246054E-002 -0.35151096636702500     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.24447600441692838      -0.68249954878490982       -2.9813792424204046        10.757379191777430       0.25729691328461202       -1.1603850386049890       -1.1571395283109847     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.15713850920510325      -0.13548034223206923       0.40860982505338606        1.5470535819116453       0.58747122415888864        2.6690865995750706        1.3659273260093752     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.64690002399516011       -1.0400112020744168        4.3503596920174745        25.692428532210197       -1.7943586223285894        19.585699802828231       -43.769280803846577     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb: -0.11268715947206885      -0.12744870915697173      -0.53463487553473510      -0.84706375361285047        1.0196857102235843        3.6480263755273072        1.2601242674406521     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.40525310748428306      -0.11191003403410681       -5.3177725951575301       -7.2430566266301293       -1.7512282311337035        24.095304393392546       -46.227132226914357     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  0.19483173747915103       0.14069791295054351        1.8869495925884414        1.5357599253292482       0.53850265345321735       -5.0419327660344584E-002 -0.56115468279235181     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:   0.70897995653978130      -0.55533159659457176        17.040704995485875        5.7779504887949917       0.49280408665266640       -1.7343529291262407       -1.4923722395584869     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
- /BM/logicals:  F F F F T F F
- /BM/dpsi_orb:  -3.3573526257620750E-002 -0.24745974240919447      -0.90665356555551224      -0.14366305881796501       -6.8133530005979687E-002 -0.93626651473824041       0.45630441343956368     
- / BM/logicals:  F F F F T F F
- /BM/deloc_orb:  -0.22398424335149539      -0.68477278518303109       -8.8441434139665329        13.607971223997003      -0.21845129642451200      -0.58396716319699893       0.63832918843799524     
- warning: d2psi not yet implemented for orbitals/orbitals parameters
  -14.98397 -14.59696( 7710) -26.98448(*****)  12.38751(*****)  13.33591(*****)                    0.84250       100   0.61951( 6541)
-End       of accumulation (total CPU time is       0.08 s, CPU time since last check is       0.02 s)
+End       of accumulation (total CPU time is       0.05 s, CPU time since last check is       0.01 s)
 
 vmc_mov1      no title
 Final results after         100. passes (nstep =     10, nblk =     10)
@@ -733,161 +218,689 @@ pb kinetic E =    12.3875132 +-  2.2939148 22.93915
 acceptance         0.8425000
 
 Adding to ovlp_lin  1.0000E-08
- /BM/ovlp           1   4.0548124021958211E-002   5.7375631990177443E-002  0.14398474045002665       -9.6658496121299550E-002   3.3468950109978211E-002  -1.2844341225481634E-002  -2.3281304890665357E-002
- /BM/ovlp           2   5.7375631990177443E-002  0.21730772727820560       0.46025048236048899       -9.0751751020772750E-002  0.11387906964953087        1.5946325152817534E-002  -4.5960122403513382E-002
- /BM/ovlp           3  0.14398474045002665       0.46025048236048899        1.6178243391148612       0.17690101356909144       0.19731064829580100       0.22155919147040606      -0.10099926465259287     
- /BM/ovlp           4  -9.6658496121299550E-002  -9.0751751020772750E-002  0.17690101356909144        1.8469219028130790        4.6734521115659802E-002   3.4554944922683767E-002 -0.10738753166503297     
- /BM/ovlp           5   3.3468950109978211E-002  0.11387906964953087       0.19731064829580100        4.6734521115659802E-002   1.3761360359720254       0.19421272073921206        8.8840659667667771E-002
- /BM/ovlp           6  -1.2844341225481634E-002   1.5946325152817534E-002  0.22155919147040606        3.4554944922683767E-002  0.19421272073921206        2.2497497783329163       0.62245062883372881     
- /BM/ovlp           7  -2.3281304890665357E-002  -4.5960122403513382E-002 -0.10099926465259287      -0.10738753166503297        8.8840659667667771E-002  0.62245062883372881        1.3765110768213698     
+ /BM/ovlp           1   8.4495211448245178E-002   9.2130434877699230E-002   9.5304083835422659E-002   9.6074792700555633E-002  -1.3430149692577276E-002  0.18632337402632260       0.22461628197564920       0.24857090031571971       0.26414786054996853       -2.3533244342708315E-003 -0.26166335418345099       -1.5588360975538507E-002 -0.27239996320580673      -0.52718297863022912      -0.51624567912143959      -0.26146491484353973       -3.5226012301867726E-002 -0.55472451561846015      -0.79197161396390925      -0.53418325216784268       -1.0355344666593425      -0.76318209235168410       -1.0272827373896547      -0.52592579712745646     
+ /BM/ovlp           2   9.2130434877699230E-002  0.10613913242672540       0.11310025311480132       0.11604839295053182       -1.4786913559436066E-002  0.21608314099007231       0.26596136485244415       0.29828448402865604       0.31995868940785499       -9.4448404985936207E-004 -0.28599593687056313       -1.2967542954818612E-002 -0.30029193949448540      -0.57059152427636661      -0.55826200640802881      -0.28796748847791065       -3.1133087141940408E-002 -0.60533165223181129      -0.85072206528734284      -0.58271136381719657       -1.1110693570037142      -0.81877487042311259       -1.1017411382328817      -0.57338259514490630     
+ /BM/ovlp           3   9.5304083835422659E-002  0.11310025311480132       0.12261794966409584       0.12727693749958746       -1.5311966306409630E-002  0.23078903386186767       0.28795334633133507       0.32602393825517595       0.35223311496315546       -5.9831511355845635E-004 -0.29582089985113669       -1.2517778934189039E-002 -0.31261696328938626      -0.58735455214024057      -0.57414074582558783      -0.29940644460944554       -3.0469900264872507E-002 -0.62659510507367600      -0.87254352687403980      -0.60257693977969495       -1.1377517418875982      -0.83861413969856358       -1.1278392097813139      -0.59266218773821322     
+ /BM/ovlp           4   9.6074792700555633E-002  0.11604839295053182       0.12727693749958746       0.13326282181122112       -1.5387315680638114E-002  0.23682829042823528       0.29850650052090089       0.34052952184447349       0.37012796982395457       -8.4968694713705162E-004 -0.29785846373214042       -1.3266866486079110E-002 -0.31642256287571513      -0.58999066504850362      -0.57620046987904061      -0.30263315143251646       -3.1681928377246038E-002 -0.63201971394602197      -0.87496623984546318      -0.60703184639586993       -1.1389466525261298      -0.83976214395372040       -1.1287285825352740      -0.59680833999257743     
+ /BM/ovlp           5  -1.3430149692577276E-002  -1.4786913559436066E-002  -1.5311966306409630E-002  -1.5387315680638114E-002   2.4936474353976137E-003  -3.2894908654412358E-002  -3.8956764857710269E-002  -4.2598221801636083E-002  -4.4870387612230722E-002  -1.7328447067243014E-003   4.1789342035696286E-002  -2.3526020103709078E-003   4.2306932298574296E-002   8.2877555217450993E-002   8.2282830782683725E-002   4.1722922848132615E-002  -2.1527156983270901E-003   8.5717338280622890E-002  0.12330621606169867        8.4447012560908252E-002  0.16415962077183632       0.12141350221644931       0.16354077065717920        8.3839573198295714E-002
+ /BM/ovlp           6  0.18632337402632260       0.21608314099007231       0.23078903386186767       0.23682829042823528       -3.2894908654412358E-002  0.47130314246514532       0.57642343159992038       0.64363973781966877       0.68814759882697274        1.7678339028977419E-002 -0.57988507418954782        1.6657114707578913E-002 -0.59909057332300364       -1.1457303125995253       -1.1306447145536396      -0.58418373328274953        3.5766580774527768E-003  -1.2043998121652919       -1.6990904007654564       -1.1751562697943712       -2.2428867713502854       -1.6566034902465816       -2.2297015990685338       -1.1621600631865476     
+ /BM/ovlp           7  0.22461628197564920       0.26596136485244415       0.28795334633133507       0.29850650052090089       -3.8956764857710269E-002  0.57642343159992038       0.71548546933166002       0.80728026376257844       0.87002771111571064        1.7696037980885038E-002 -0.69808822509205726        1.0868974946861343E-002 -0.72788293311430152       -1.3775487462826703       -1.3558669405772008      -0.70641334984203752       -1.0940987880090347E-002  -1.4583961889312320       -2.0408388230903540       -1.4171088651854404       -2.6832879548694279       -1.9813702777990727       -2.6651731595969466       -1.3992126663625015     
+ /BM/ovlp           8  0.24857090031571971       0.29828448402865604       0.32602393825517595       0.34052952184447349       -4.2598221801636083E-002  0.64363973781966877       0.80728026376257844       0.91793502531108750       0.99544648230042299        1.6475325365069793E-002 -0.77120883533855533        4.2281058639179747E-003 -0.80937070913242337       -1.5208949518323607       -1.4942783099071448      -0.78297874843396187       -2.4919390379139372E-002  -1.6179343535027897       -2.2521586166778889       -1.5676830331374845       -2.9526344669129116       -2.1802319604097136       -2.9310264541377933       -1.5462995801352974     
+ /BM/ovlp           9  0.26414786054996853       0.31995868940785499       0.35223311496315546       0.37012796982395457       -4.4870387612230722E-002  0.68814759882697274       0.87002771111571064       0.99544648230042299        1.0850834238190634        1.4832165158873423E-002 -0.81801844008384705       -2.1689829839885988E-003 -0.86274597880515103       -1.6127132143581946       -1.5824081194868995      -0.83266912606210042       -3.7379518037617743E-002  -1.7216975154319414       -2.3876508266975520       -1.6647485530682502       -3.1233589491478710       -2.3065404567940959       -3.0992627709838416       -1.6408732385177700     
+ /BM/ovlp          10  -2.3533244342708315E-003  -9.4448404985936207E-004  -5.9831511355845635E-004  -8.4968694713705162E-004  -1.7328447067243014E-003   1.7678339028977419E-002   1.7696037980885038E-002   1.6475325365069793E-002   1.4832165158873423E-002   1.4393609507105170E-002   6.6034366172935677E-003   3.2921817005692633E-002   1.4411127153530323E-002   2.2745199888857925E-002   1.4835734410082679E-002   6.3886241918531539E-003   5.2686797600824731E-002   3.2739119788986137E-002   4.2718856092500701E-002   1.9092780616965399E-002   3.6768372205649769E-002   2.4321929041855483E-002   3.1973271865387787E-002   1.4163910645992317E-002
+ /BM/ovlp          11 -0.26166335418345099      -0.28599593687056313      -0.29582089985113669      -0.29785846373214042        4.1789342035696286E-002 -0.57988507418954782      -0.69808822509205726      -0.77120883533855533      -0.81801844008384705        6.6034366172935677E-003  0.81349381378967600        4.6530405354276994E-002  0.84636642691306463        1.6380742305442624        1.6039593346887955       0.81224759126959611       0.10605990932046261        1.7233733555089970        2.4595387345012085        1.6596017937963978        3.2167101060728669        2.3698496996356369        3.1907768979216371        1.6336383931221548     
+ /BM/ovlp          12  -1.5588360975538507E-002  -1.2967542954818612E-002  -1.2517778934189039E-002  -1.3266866486079110E-002  -2.3526020103709078E-003   1.6657114707578913E-002   1.0868974946861343E-002   4.2281058639179747E-003  -2.1689829839885988E-003   3.2921817005692633E-002   4.6530405354276994E-002   7.7317951943676466E-002   6.5811995102723841E-002  0.11588843656249459        9.6420233010352518E-002   4.6110586805845344E-002  0.12587731931291479       0.14247387443424131       0.19469444340829511       0.10840759926374233       0.21023603957180370       0.14862128049702861       0.19813408494301044        9.6024088754518289E-002
+ /BM/ovlp          13 -0.27239996320580673      -0.30029193949448540      -0.31261696328938626      -0.31642256287571513        4.2306932298574296E-002 -0.59909057332300364      -0.72788293311430152      -0.80937070913242337      -0.86274597880515103        1.4411127153530323E-002  0.84636642691306463        6.5811995102723841E-002  0.88709497022978134        1.7066879821033609        1.6662484214852782       0.84659654452157440       0.13807730448544042        1.8046039546829604        2.5642342813052181        1.7298734507513558        3.3405525420965319        2.4594937465128197        3.3105042452420150        1.6997281310447363     
+ /BM/ovlp          14 -0.52718297863022912      -0.57059152427636661      -0.58735455214024057      -0.58999066504850362        8.2877555217450993E-002  -1.1457303125995253       -1.3775487462826703       -1.5208949518323607       -1.6127132143581946        2.2745199888857925E-002   1.6380742305442624       0.11588843656249459        1.7066879821033609        3.3087617344098055        3.2358545926793454        1.6337164516518641       0.25012346761392479        3.4824718518080431        4.9787782590172469        3.3463019245355383        6.5009768289502290        4.7878944756819806        6.4462060376993975        3.2913984601575805     
+ /BM/ovlp          15 -0.51624567912143959      -0.55826200640802881      -0.57414074582558783      -0.57620046987904061        8.2282830782683725E-002  -1.1306447145536396       -1.3558669405772008       -1.4942783099071448       -1.5824081194868995        1.4835734410082679E-002   1.6039593346887955        9.6420233010352518E-002   1.6662484214852782        3.2358545926793454        3.1689992150719695        1.5993882314262748       0.21768758553663403        3.3993419708362183        4.8657285477956691        3.2736998822276746        6.3646835426579287        4.6893674288338616        6.3139328236995595        3.2228893200399966     
+ /BM/ovlp          16 -0.26146491484353973      -0.28796748847791065      -0.29940644460944554      -0.30263315143251646        4.1722922848132615E-002 -0.58418373328274953      -0.70641334984203752      -0.78297874843396187      -0.83266912606210042        6.3886241918531539E-003  0.81224759126959611        4.6110586805845344E-002  0.84659654452157440        1.6337164516518641        1.5993882314262748       0.81227319225634809       0.10529723391062618        1.7213513285935704        2.4510508797502837        1.6572388389988788        3.2042156009721054        2.3609570258913521        3.1782226223599821        1.6312263088958758     
+ /BM/ovlp          17  -3.5226012301867726E-002  -3.1133087141940408E-002  -3.0469900264872507E-002  -3.1681928377246038E-002  -2.1527156983270901E-003   3.5766580774527768E-003  -1.0940987880090347E-002  -2.4919390379139372E-002  -3.7379518037617743E-002   5.2686797600824731E-002  0.10605990932046261       0.12587731931291479       0.13807730448544042       0.25012346761392479       0.21768758553663403       0.10529723391062618       0.20722345543996484       0.29599353478123192       0.41038249167108631       0.23869645045301269       0.46516441726421931       0.33278921954148899       0.44472428152584342       0.21783431556657717     
+ /BM/ovlp          18 -0.55472451561846015      -0.60533165223181129      -0.62659510507367600      -0.63201971394602197        8.5717338280622890E-002  -1.2043998121652919       -1.4583961889312320       -1.6179343535027897       -1.7216975154319414        3.2739119788986137E-002   1.7233733555089970       0.14247387443424131        1.8046039546829604        3.4824718518080431        3.3993419708362183        1.7213513285935704       0.29599353478123192        3.6784670914476498        5.2404957496284510        3.5243705261135858        6.8255959206932175        5.0247605327376164        6.7638746032719723        3.4624428208364861     
+ /BM/ovlp          19 -0.79197161396390925      -0.85072206528734284      -0.87254352687403980      -0.87496623984546318       0.12330621606169867       -1.6990904007654564       -2.0408388230903540       -2.2521586166778889       -2.3876508266975520        4.2718856092500701E-002   2.4595387345012085       0.19469444340829511        2.5642342813052181        4.9787782590172469        4.8657285477956691        2.4510508797502837       0.41038249167108631        5.2404957496284510        7.5034002955641688        5.0290941056719021        9.7881118212530964        7.2077102867756935        9.7037192871115394        4.9444510029678952     
+ /BM/ovlp          20 -0.53418325216784268      -0.58271136381719657      -0.60257693977969495      -0.60703184639586993        8.4447012560908252E-002  -1.1751562697943712       -1.4171088651854404       -1.5676830331374845       -1.6647485530682502        1.9092780616965399E-002   1.6596017937963978       0.10840759926374233        1.7298734507513558        3.3463019245355383        3.2736998822276746        1.6572388389988788       0.23869645045301269        3.5243705261135858        5.0290941056719021        3.3887888766801870        6.5690402653811475        4.8388354813162948        6.5143198823017201        3.3339742276093318     
+ /BM/ovlp          21  -1.0355344666593425       -1.1110693570037142       -1.1377517418875982       -1.1389466525261298       0.16415962077183632       -2.2428867713502854       -2.6832879548694279       -2.9526344669129116       -3.1233589491478710        3.6768372205649769E-002   3.2167101060728669       0.21023603957180370        3.3405525420965319        6.5009768289502290        6.3646835426579287        3.2042156009721054       0.46516441726421931        6.8255959206932175        9.7881118212530964        6.5690402653811475        12.798340856487748        9.4285102832534449        12.695213845912122        6.4657461654576309     
+ /BM/ovlp          22 -0.76318209235168410      -0.81877487042311259      -0.83861413969856358      -0.83976214395372040       0.12141350221644931       -1.6566034902465816       -1.9813702777990727       -2.1802319604097136       -2.3065404567940959        2.4321929041855483E-002   2.3698496996356369       0.14862128049702861        2.4594937465128197        4.7878944756819806        4.6893674288338616        2.3609570258913521       0.33278921954148899        5.0247605327376164        7.2077102867756935        4.8388354813162948        9.4285102832534449        6.9471916408174286        9.3538670263893096        4.7640963381463166     
+ /BM/ovlp          23  -1.0272827373896547       -1.1017411382328817       -1.1278392097813139       -1.1287285825352740       0.16354077065717920       -2.2297015990685338       -2.6651731595969466       -2.9310264541377933       -3.0992627709838416        3.1973271865387787E-002   3.1907768979216371       0.19813408494301044        3.3105042452420150        6.4462060376993975        6.3139328236995595        3.1782226223599821       0.44472428152584342        6.7638746032719723        9.7037192871115394        6.5143198823017201        12.695213845912122        9.3538670263893096        12.594851010733002        6.4138341214396064     
+ /BM/ovlp          24 -0.52592579712745646      -0.57338259514490630      -0.59266218773821322      -0.59680833999257743        8.3839573198295714E-002  -1.1621600631865476       -1.3992126663625015       -1.5462995801352974       -1.6408732385177700        1.4163910645992317E-002   1.6336383931221548        9.6024088754518289E-002   1.6997281310447363        3.2913984601575805        3.2228893200399966        1.6312263088958758       0.21783431556657717        3.4624428208364861        4.9444510029678952        3.3339742276093318        6.4657461654576309        4.7640963381463166        6.4138341214396064        3.2820174418517842     
 
 Eigenvalues of overlap matrix of current wave function and its first-order derivatives:
-overlap eigenvalue #    1:  1.91217022E-02
-overlap eigenvalue #    2:  6.53386454E-02
-overlap eigenvalue #    3:  9.88819081E-01
-overlap eigenvalue #    4:  1.27578486E+00
-overlap eigenvalue #    5:  1.70436860E+00
-overlap eigenvalue #    6:  2.02214300E+00
-overlap eigenvalue #    7:  2.64942308E+00
- dens_mat_wfdet_bld: dens_mat_wfdet=   2.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        1.8032406822777609        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        6.5586439240746267E-002   0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        6.5586439240746267E-002   0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        6.5586439240746267E-002   0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000        0.0000000000000000     
- dens_mat_wfdet_bld: dens_mat_wfdet_up_trace=   1.9999999999999998     
- dens_mat_wfdet_bld: dens_mat_wfdet_dn_trace=   1.9999999999999998     
- dens_mat_wfdet_bld: dens_mat_wfdet_trace=   3.9999999999999996     
- /BM/amat           1  0.16645270922901539       0.25848257782671591       0.68652224357789704       -1.1001282962718597        3.1840052903980121E-002  -6.2019239535582443E-002 -0.11916691890494666     
- /BM/amat           2  0.23082347328563924       0.89308580920190384        2.4586444888104451       0.57872875077055630       -1.6382547880669396E-002  -8.6963046230628338E-002 -0.16152933282377679     
- /BM/amat           3  0.60221923055768034        1.6134454239326823        11.023120434364445        1.2228738740950016        4.6824626639950573E-002  0.50234026736392945       -1.7526847531036684     
- /BM/amat           4 -0.40385964045781408      -0.81499908712709757        4.1328610959912009        32.519888194250399        2.1532040996616875E-002  -7.6808137178456248E-002  -1.7883974537970195     
- /BM/amat           5  0.16687865786638639       0.72739977454891225       0.40387804931562910        6.5509996925184346       0.37905463361692071       0.75187668403058128       -1.2649764401583574     
- /BM/amat           6  -2.6115121822251702E-002  -6.9957976059004889E-002   2.3730111325394647       -3.9311789938343336      -0.96724801124187865        9.8827405775700115       -10.814675266457133     
- /BM/amat           7  -9.0313621913302139E-002  -8.9112100629948121E-002  -1.2662504631985390       0.60943823077972570      -0.95660846210460382        6.6444885346690601       -1.7940621597526167     
- /BM/bmat           1  -1.6057050485233840E+253  -1.8883480343298559E+253  -1.0242101328837837E+254  -8.8479228183629966E+253  -6.7394674523250949E+254  -1.8517886422631951E+255  -5.1083243111364564E+253
- /BM/bmat           2  -1.8883480343298559E+253  -2.3730428142479352E+254  -1.2864342221788863E+255  -4.9613784257235972E+254   1.0233320446856355E-003   2.6199820991876379E+254  -1.5164160847938008E+255
- /BM/bmat           3  -1.0242101328837837E+254  -1.2864342221788863E+255   2.1654156090729448E+254   3.4895760555665111E+255   1.1474005484302364E-002  -4.2707262782437682E+254  -2.3279796464890380E+254
- /BM/bmat           4  -8.8479228183629966E+253  -4.9613784257235972E+254   3.4895760555665111E+255  -6.4638378887935509E+254  -2.1963556771236840E+255   6.8785975475868169E+254  -5.2221969109911281E-003
- /BM/bmat           5  -6.7394674523250949E+254   1.0233320446856355E-003   1.1474005484302358E-002  -2.1963556771236840E+255   1.0086198231588820E+254  -3.0075054944264199E+253   1.4342978991614510E+254
- /BM/bmat           6  -1.8517886422631951E+255   2.6199820991876379E+254  -4.2707262782437682E+254   6.8785975475868169E+254  -3.0075054944264199E+253   6.2852576249349066E+254  -2.5340955314344414E+254
- /BM/bmat           7  -5.1083243111364564E+253  -1.5164160847938008E+255  -2.3279796464890380E+254  -5.2221969109911559E-003   1.4342978991614510E+254  -2.5340955314344414E+254   8.4098027035561773E+253
+overlap eigenvalue #    1:  1.00511137E-08
+overlap eigenvalue #    2:  1.05683970E-08
+overlap eigenvalue #    3:  1.13392891E-08
+overlap eigenvalue #    4:  1.49509941E-08
+overlap eigenvalue #    5:  3.66249701E-08
+overlap eigenvalue #    6:  5.17502219E-08
+overlap eigenvalue #    7:  7.12619558E-08
+overlap eigenvalue #    8:  1.08798526E-07
+overlap eigenvalue #    9:  6.45894500E-07
+overlap eigenvalue #   10:  1.85497105E-06
+overlap eigenvalue #   11:  2.05145352E-06
+overlap eigenvalue #   12:  4.96723172E-06
+overlap eigenvalue #   13:  8.30058942E-06
+overlap eigenvalue #   14:  1.06919296E-05
+overlap eigenvalue #   15:  2.08621263E-05
+overlap eigenvalue #   16:  7.98346451E-05
+overlap eigenvalue #   17:  2.08425917E-04
+overlap eigenvalue #   18:  2.87126026E-04
+overlap eigenvalue #   19:  5.82002150E-04
+overlap eigenvalue #   20:  4.28968282E-03
+overlap eigenvalue #   21:  2.11785210E-02
+overlap eigenvalue #   22:  2.79312477E-01
+overlap eigenvalue #   23:  8.49755519E-01
+overlap eigenvalue #   24:  6.19656877E+01
+ /BM/amat           1  -1.1036064869437139       -1.2604742528164159       -1.3360841744669059       -1.3630630390125971       0.17996364566950840       -2.5670864167907852       -3.1269055460578570       -3.4811842372698689       -3.7137126930936497       -9.7498865919498634E-004   3.4100713460528800       0.11638804899215227        3.5683232543411183        6.7969024210875943        6.6630212738275585        3.4349518669064629       0.30165705796512299        7.1898103835229534        10.126223060990529        6.9451239920029435        13.260317920420897        9.7810555875675220        13.160315711372490        6.8463033535548945     
+ /BM/amat           2  -1.2689771411191362       -1.4839331089241798       -1.5989596165074660       -1.6509649371023045       0.20798351838689388       -3.0294638170727426       -3.7329983605002850       -4.1954369107655047       -4.5088603181044391       -5.1077359210593976E-003   3.9161585278047171       0.12187595860453948        4.1202164539225956        7.7756171296975696        7.6188365879331954        3.9627774375259541       0.32067037620131789        8.2596863245541190        11.551234880756384        7.9768511553922581        15.110543732449491        11.152732687194923        14.994880360696172        7.8606962538556120     
+ /BM/amat           3  -1.3445425433356293       -1.5973900418699727       -1.7409839475089610       -1.8136003933335270       0.22138589317839019       -3.2694257944599281       -4.0630554984241476       -4.5990805076954553       -4.9720956256635986       -9.0814216217725008E-003   4.1430419735465414       0.11939254388639320        4.3751193246110569        8.2037971469088067        8.0376233317418926        4.2077500424067482       0.32009921691793153        8.7391133040615347        12.163949953904112        8.4405964000789488        15.901829758042103        11.744901106498773        15.781081393491412        8.3185640624943513     
+ /BM/amat           4  -1.3711817598846949       -1.6475017183150831       -1.8115128725071201       -1.9008180859725203       0.22655633796034336       -3.3790203289624974       -4.2279024610359457       -4.8139620231853657       -5.2311703886436627       -1.1095811480416051E-002   4.2181820381747324       0.11699396992731970        4.4674070529105503        8.3367790118688401        8.1680031518576595        4.2971864930685948       0.31654061318974591        8.8994824335666038        12.345672901904098        8.5963820402327418        16.130553815671107        11.922251994264208        16.009912242726770        8.4740669088342440     
+ /BM/amat           5  0.17859261228249579       0.20389954348056888       0.21530371755851474       0.21850661497934759       -2.9445170637466524E-002  0.43077304556442647       0.52781906704055725       0.58715985730872688       0.62447066171969468        5.8693261398607838E-003 -0.55270960723280471       -1.0809599361335770E-002 -0.57795158558811588       -1.1016858228028736       -1.0796989738215559      -0.55605112097690268       -4.2001904085704367E-002  -1.1682404415667491       -1.6438898070679206       -1.1270875122210064       -2.1510201829754294       -1.5841370136382917       -2.1324992147520776       -1.1087553337091858     
+ /BM/amat           6  -2.5810086648497355       -3.0324700682861110       -3.2685067196532622       -3.3711810169581335       0.44025787615961720       -6.4412367213167903       -7.9545338325297950       -8.9437196996899146       -9.6081254884544602      -0.13015059973624543        7.9814705136022734        1.2792416497620529E-002   8.3605379280197756        15.794811663515794        15.511246051333181        8.0761790617587543       0.31523660713802748        16.757283571162809        23.429685502611161        16.239025078356335        30.734136749330769        22.682250501716101        30.505176257340558        16.009721320953371     
+ /BM/amat           7  -3.1528097544614124       -3.7543873932363270       -4.0881686176382432       -4.2525113886176742       0.54521665595773672       -8.0107160085592533       -9.9542152318167183       -11.264686277533023       -12.174065310462176      -0.18268508112806781        9.7352103111148072       -4.9086399040314088E-002   10.216266597663765        19.206699786490091        18.876483805983270        9.8846368872528494       0.26157261064601478        20.400265580232620        28.426362754455344        19.799245085205506        37.309439600143591        27.564783382572649        37.048914968191056        19.537527076835449     
+ /BM/amat           8  -3.5131388864171682       -4.2244802766366165       -4.6355752211983718       -4.8536656367178850       0.61145020517236637       -9.0376955827095138       -11.293450253998083       -12.848378988991861       -13.953579916573126      -0.21490444140478004        10.830188411986223       -8.4158572147655875E-002   11.388595781604812        21.326054460272523        20.966270541735405        11.027110384963352       0.23500251195587474        22.682727225517826        31.520957168792314        22.027834014029253        41.368758180146990        30.587736183923418        41.090380573211661        21.747814191784553     
+ /BM/amat           9  -3.7473319753692995       -4.5402977887939127       -5.0129765280862948       -5.2772831106474003       0.65460766975746998       -9.7311818047808032       -12.219890539083073       -13.965706017356625       -15.230912279061505      -0.23500861240515825        11.532979843798238      -0.10373672967674175        12.150658191777467        22.678973412053406        22.300435777440349        11.770326147610897       0.22346310908207556        24.152958915722468        33.490556280097401        23.462651562792551        43.943543592714761        32.512385622084764        43.655607950345171        23.172870592021980     
+ /BM/amat          10   2.2321320508119739E-003   2.0141735805449118E-005   4.2840656850361668E-003   1.1901720024084822E-002   4.3400987888989537E-003 -0.10594084747997670      -0.13770308960224131      -0.14685415310684186      -0.14235161671960808       -4.9923904759810782E-002  -4.0081700624960137E-003  -8.9449863946528652E-002  -1.6317692130417283E-002  -2.1141373972987543E-002  -1.3353900522535989E-002  -8.8190989449011686E-003 -0.11547761494489928       -2.0088151959930745E-002  -3.2706662590658464E-002  -9.3795717783748678E-003  -2.4732866247790863E-002  -2.9366701340247714E-002  -3.2237710505302442E-002  -1.7341682122023666E-002
+ /BM/amat          11   3.4355168307531181        3.9233866352038285        4.1538654426761328        4.2311362034358133      -0.56168208830478594        8.0010791395282990        9.7295624112434940        10.813650074267992        11.515060379164234        7.9631268367220676E-003  -10.642515722689362      -0.34868528273477040       -11.128933662987096       -21.208754301986808       -20.790997831053772       -10.712427323902016      -0.91386967341532266       -22.426752744366826       -31.589550259900896       -21.665938855069903       -41.377831173611838       -30.513852897419984       -41.064325282130440       -21.355642232089231     
+ /BM/amat          12  0.12913544800773180       0.14495408824851058       0.16526697428415815       0.18759371140569112       -1.5969651639488186E-002   9.7990549542196659E-002   9.6188425580087278E-002  0.12501165648588833       0.17138501161487302       -8.6827736496973729E-002 -0.39410967448579010      -0.15441892018101394      -0.42604369485711635      -0.79728121277932895      -0.78005321652567194      -0.40990901024814669      -0.19331558133478088      -0.81856251674817382       -1.1718060437150242      -0.79443411502331385       -1.5325713501312919       -1.1641941666188522       -1.5496091425112488      -0.81316374990991391     
+ /BM/amat          13   3.5945551251951970        4.1295795544277105        4.3946360828260165        4.4967166572068153      -0.58899361645264792        8.3922294016309937        10.231181700940478        11.407507725021960        12.185603097848235       -2.3982062666261239E-003  -11.128207083214562      -0.37295980051993283       -11.652207922894128       -22.153039775836241       -21.719026638925254       -11.219156181660734      -0.94680599480433347       -23.437669154171161       -32.963703017649465       -22.650884276150396       -43.177892122711164       -31.858760250785149       -42.861014222222934       -22.336828298564249     
+ /BM/amat          14   6.8479205194924848        7.7938494242374965        8.2347354783082185        8.3777176467598569       -1.1194961869327880        15.856423702055789        19.241180729549445        21.359057974595508        22.729197269279211        1.2001552477283184E-003  -21.217199710192933      -0.71625154323984486       -22.167540066357883       -42.301996590718055       -41.476899660072498       -21.346328819185473       -1.8435414473613445       -44.691024493136617       -63.022181707237117       -43.186845660150595       -82.576549878255918       -60.901489668375589       -81.963401844921691       -42.582154956006811     
+ /BM/amat          15   6.7055787519769217        7.6244825097311821        8.0485479658575496        8.1811312846664812       -1.0957426309720963        15.545808761278375        18.865274784225086        20.933077669183895        22.263738592143593        1.3415690721908513E-002  -20.774762764182977      -0.68850047285261784       -21.702054098613264       -41.428668961056367       -40.618270588080080       -20.895509610493402       -1.8036311993056042       -43.772853123264397       -61.738366905592230       -42.292447654486359       -80.886604237769433       -59.645572375379039       -80.277532509084125       -41.691731770531959     
+ /BM/amat          16   3.4523761236832473        3.9602805507081107        4.2084587802222497        4.3001053765634101      -0.56545173214082556        8.0829944846585509        9.8565058918655577        10.982811019751420        11.721505472874759        1.0514416738758747E-002  -10.686358223714047      -0.34353714065527985       -11.186840675533874       -21.280615226361302       -20.861666951636259       -10.768798346659361      -0.90403264675714112       -22.519647822389445       -31.680930766736207       -21.757381158924229       -41.490449186522213       -30.604841703460252       -41.177849634538070       -21.447470379069394     
+ /BM/amat          17  0.32496459301775793       0.36823056348947070       0.40899197776770740       0.44798462713975784       -5.1470728507656299E-002  0.48373152643760065       0.54273208413583285       0.63203933119665823       0.73723658745822318      -0.10749364945777540      -0.99884523154937654      -0.18573266045442272       -1.0481326016350780       -1.9898785361096591       -1.9669499979750851       -1.0275191692287817      -0.21846347147121076       -2.0380780589060103       -2.9182315368281371       -2.0071716484491056       -3.8677320198903753       -2.9164254529814007       -3.8979381297558175       -2.0409321937874805     
+ /BM/amat          18   7.2481989683721961        8.2908574141125886        8.7949517259835002        8.9778757953230279       -1.1899583707045458        16.852460104115153        20.487176146100207        22.795723611219703        24.312829892723638        2.8935612076264050E-003  -22.450426436041369      -0.73048913594519060       -23.472412193691660       -44.712813775885344       -43.850748746802466       -22.613690449264631       -1.8725925898247855       -47.249827284989216       -66.552272880855739       -45.684593662629311       -87.221634144994539       -64.354456382665830       -86.592261155040561       -45.062998047442569     
+ /BM/amat          19   10.198461845557626        11.580582239255648        12.218516859697612        12.420746610755756       -1.6703254386889275        23.551078918558272        28.535005576271150        31.650447270654915        33.667709354292057        4.2204077588960942E-003  -31.601439274858677       -1.0498562015094652       -32.987969964568421       -63.016180949405040       -61.804967974001357       -31.784401313153605       -2.7068954294842289       -66.521994324922019       -93.889616664486695       -64.310938578521359       -123.07169422979558       -90.778117030655437       -122.17708515864597       -63.431646126566370     
+ /BM/amat          20   6.9887588069416360        7.9834531273981666        8.4576631609933752        8.6219617738496730       -1.1451366035927601        16.274978720296577        19.790502953540148        22.006803834134619        23.450661441637177        1.7171291511100195E-002  -21.644729679652222      -0.69737555198600898       -22.629702342647199       -43.125318977387479       -42.285452742379405       -21.792934682863489       -1.8272965071955909       -45.587759903723693       -64.220634824135459       -44.058121201902978       -84.141301169912609       -62.063136040380584       -83.516480782067362       -43.440621662313788     
+ /BM/amat          21   13.344538471028617        15.124975868001421        15.930141979816039        16.166101679196668       -2.1814325287028300        30.823079806568067        37.333192613872498        41.367209218819596        43.951569400702226        2.4038482084955071E-002  -41.354462504689295       -1.3703902054898744       -43.160653376484966       -82.501786773101273       -80.901770904170419       -41.570426856591155       -3.5872298561656599       -87.104021379346335       -122.97940194562776       -84.176815077536148       -161.16902816530191       -118.84388545966712       -159.96826694336173       -82.995822222244612     
+ /BM/amat          22   9.8296601328377644        11.144380627476503        11.741646797808496        11.919494525362897       -1.6058548944069173        22.721635355875673        27.537746716979441        30.525488469374437        32.442931472074804        1.8332018533780747E-002  -30.454285206892013       -1.0157166564486921       -31.791822729668969       -60.757940063594830       -59.576258011014566       -30.617501550186798       -2.6619143733176855       -64.161320908548987       -90.574615803002743       -61.997269459510299       -118.68539124230263       -87.516514608767352       -117.79696422874922       -61.123610868950287     
+ /BM/amat          23   13.235214541864170        14.996168487708712        15.790532991758271        16.020727015429273       -2.1618351616406071        30.571418134245285        37.032853118147187        41.031425207354857        43.589226440130844        2.4019268403839167E-002  -41.013144994237919       -1.3690181615549211       -42.807252864017059       -81.831305993452276       -80.238685541921384       -41.224372206891346       -3.5869549562721375       -86.405506141236970       -121.99642646703445       -83.489854240267931       -159.86378060718368       -117.87415910566790       -158.66466753497232       -82.310403223033518     
+ /BM/amat          24   6.8795901102660046        7.8546579045879099        8.3179913084815738        8.4764758327590055       -1.1257489841925619        16.024545038123883        19.491154302434083        21.672006360340184        23.089322812815631        1.7776421024459976E-002  -21.303996877278465      -0.69448949069331078       -22.276440597271804       -42.455834153854958       -41.623670473877425       -21.447289983832128       -1.8244005865842148       -44.889498247362468       -63.238944088061743       -43.372082042780988       -82.838756394264706       -61.095518634210208       -82.215726051899054       -42.756218151810216     
 
 Solving generalized eigenvalue equation with a_diag =  1.0D-08
-eigval_srt_ind_to_eigval_ind=     1     2     3     4     5     6     7     8     9    10    11    12    13    14
-eigval_srt_ind_to_eigval_ind=     1     2     5     7     9    14    11    12    13    10     8     6     4     3
-eigval_ind_to_eigval_srt_ind=     1     2    14    13     3    12     4    11     5    10     7     8     9     6
-Sorted (complex) (unique) eigenvalues:   14
-eigenvalue #    1: ************ +    0.000000 i (    1)
-eigenvecEQU     1:    -1.000000      0.000000
-eigenvecEQU     1:     0.163031     -0.000000
-eigenvecEQU     1:     0.081298      0.000000
-eigenvecEQU     1:    -0.062242      0.000000
-eigenvecEQU     1:    -0.035941     -0.000000
-eigenvecEQU     1:    -0.083072     -0.000000
-eigenvecEQU     1:     0.040643      0.000000
-eigenvalue #    2: ************ +    0.000000 i (    1)
-eigenvecOPP     2:     1.000000     -0.000000
-eigenvecOPP     2:    -0.890619      0.000000
-eigenvecOPP     2:     0.255610      0.000000
-eigenvecOPP     2:     0.048158     -0.000000
-eigenvecOPP     2:    -0.024441     -0.000000
-eigenvecOPP     2:    -0.136540     -0.000000
-eigenvecOPP     2:     0.149585      0.000000
-eigenvalue #    3: ************ +    0.000000 i (    1)
-eigenvecOPP     3:     1.000000      0.000000
-eigenvecOPP     3:     0.399912      0.000000
-eigenvecOPP     3:    -0.233430     -0.000000
-eigenvecOPP     3:     0.024250      0.000000
-eigenvecOPP     3:    -0.089148      0.000000
-eigenvecOPP     3:    -0.067601      0.000000
-eigenvecOPP     3:    -0.009387      0.000000
-eigenvalue #    4: ************ +    0.000000 i (    1)
-eigenvecEQU     4:     0.376539      0.000000
-eigenvecEQU     4:     1.000000     -0.000000
-eigenvecEQU     4:    -0.288653      0.000000
-eigenvecEQU     4:     0.291973      0.000000
-eigenvecEQU     4:     0.041971     -0.000000
-eigenvecEQU     4:    -0.036324     -0.000000
-eigenvecEQU     4:     0.244568      0.000000
-eigenvalue #    5: ************ +    0.000000 i (    1)
-eigenvecEQU     5:    -1.000000     -0.000000
-eigenvecEQU     5:    -0.707449      0.000000
-eigenvecEQU     5:    -0.430034     -0.000000
-eigenvecEQU     5:     0.409786     -0.000000
-eigenvecEQU     5:     0.263671      0.000000
-eigenvecEQU     5:    -0.275828      0.000000
-eigenvecEQU     5:    -0.330276     -0.000000
-eigenvalue #    6: ************ +    0.000000 i (    1)
-eigenvecOPP     6:    -0.375119      0.000000
-eigenvecOPP     6:    -0.846914     -0.000000
-eigenvecOPP     6:    -0.204297      0.000000
-eigenvecOPP     6:    -0.720359     -0.000000
-eigenvecOPP     6:     1.000000     -0.000000
-eigenvecOPP     6:    -0.323350      0.000000
-eigenvecOPP     6:     0.667027     -0.000000
-eigenvalue #    7: ************ +    0.000000 i (    1)
-eigenvecOPP     7:     0.138985      0.000000
-eigenvecOPP     7:    -0.128589      0.000000
-eigenvecOPP     7:    -0.720549     -0.000000
-eigenvecOPP     7:     0.042568      0.000000
-eigenvecOPP     7:    -1.000000     -0.000000
-eigenvecOPP     7:     0.394299      0.000000
-eigenvecOPP     7:     0.730014     -0.000000
-eigenvalue #    8: ************ +    0.000000 i (    1)
-eigenvecEQU     8:     0.138985      0.000000
-eigenvecEQU     8:    -0.128589      0.000000
-eigenvecEQU     8:    -0.720549     -0.000000
-eigenvecEQU     8:     0.042568      0.000000
-eigenvecEQU     8:    -1.000000     -0.000000
-eigenvecEQU     8:     0.394299      0.000000
-eigenvecEQU     8:     0.730014      0.000000
-eigenvalue #    9: ************ +    0.000000 i (    1)
-eigenvecEQU     9:     0.375119     -0.000000
-eigenvecEQU     9:     0.846914      0.000000
-eigenvecEQU     9:     0.204297     -0.000000
-eigenvecEQU     9:     0.720359      0.000000
-eigenvecEQU     9:    -1.000000     -0.000000
-eigenvecEQU     9:     0.323350     -0.000000
-eigenvecEQU     9:    -0.667027      0.000000
-eigenvalue #   10: ************ +    0.000000 i (    1)
-eigenvecOPP    10:    -1.000000      0.000000
-eigenvecOPP    10:    -0.707449      0.000000
-eigenvecOPP    10:    -0.430034     -0.000000
-eigenvecOPP    10:     0.409786     -0.000000
-eigenvecOPP    10:     0.263671     -0.000000
-eigenvecOPP    10:    -0.275828     -0.000000
-eigenvecOPP    10:    -0.330276      0.000000
-eigenvalue #   11: ************ +    0.000000 i (    1)
-eigenvecOPP    11:    -0.376539      0.000000
-eigenvecOPP    11:    -1.000000      0.000000
-eigenvecOPP    11:     0.288653     -0.000000
-eigenvecOPP    11:    -0.291973      0.000000
-eigenvecOPP    11:    -0.041971     -0.000000
-eigenvecOPP    11:     0.036324     -0.000000
-eigenvecOPP    11:    -0.244568     -0.000000
-eigenvalue #   12: ************ +    0.000000 i (    1)
-eigenvecEQU    12:     1.000000     -0.000000
-eigenvecEQU    12:     0.399912      0.000000
-eigenvecEQU    12:    -0.233430      0.000000
-eigenvecEQU    12:     0.024250     -0.000000
-eigenvecEQU    12:    -0.089148     -0.000000
-eigenvecEQU    12:    -0.067601     -0.000000
-eigenvecEQU    12:    -0.009387      0.000000
-eigenvalue #   13: ************ +    0.000000 i (    1)
-eigenvecEQU    13:    -1.000000      0.000000
-eigenvecEQU    13:     0.890619     -0.000000
-eigenvecEQU    13:    -0.255610     -0.000000
-eigenvecEQU    13:    -0.048158      0.000000
-eigenvecEQU    13:     0.024441      0.000000
-eigenvecEQU    13:     0.136540      0.000000
-eigenvecEQU    13:    -0.149585     -0.000000
-eigenvalue #   14: ************ +    0.000000 i (    1)
-eigenvecOPP    14:     1.000000     -0.000000
-eigenvecOPP    14:    -0.163031      0.000000
-eigenvecOPP    14:    -0.081298     -0.000000
-eigenvecOPP    14:     0.062242     -0.000000
-eigenvecOPP    14:     0.035941      0.000000
-eigenvecOPP    14:     0.083072      0.000000
-eigenvecOPP    14:    -0.040643     -0.000000
+eigval_srt_ind_to_eigval_ind=     1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18    19    20    21    22    23    24    25    26    27    28    29    30    31    32    33    34    35    36    37    38    39    40    41    42    43    44    45    46    47    48
+eigval_srt_ind_to_eigval_ind=     6     5    29    30     7    31     9     8    33    32    13    12    37    36    17    16    41    40    39    38    15    14    44    20    22    23    47    46    48    24    21    45    11    10    35    34    43    19    18    42     4    28     2     3    27    26    25     1
+eigval_ind_to_eigval_srt_ind=    48    43    44    41     2     1     5     8     7    34    33    12    11    22    21    16    15    39    38    24    31    25    26    30    47    46    45    42     3     4     6    10     9    36    35    14    13    20    19    18    17    40    37    23    32    28    27    29
+Sorted (complex) (unique) eigenvalues:   24
+eigenvalue #    1:   -14.284883 +   -0.051726 i (    2)
+eigenvecTDAX    1:    -0.029807     -0.000000
+eigenvecTDAX    1:     0.039263     -0.000000
+eigenvecTDAX    1:    -0.103757     -0.000000
+eigenvecTDAX    1:     0.059132     -0.000000
+eigenvecTDAX    1:     0.011509     -0.000000
+eigenvecTDAX    1:    -0.075194     -0.000000
+eigenvecTDAX    1:     0.062151     -0.000000
+eigenvecTDAX    1:    -0.049610     -0.000000
+eigenvecTDAX    1:     0.020941     -0.000000
+eigenvecTDAX    1:     0.059795     -0.000000
+eigenvecTDAX    1:     0.060647     -0.000000
+eigenvecTDAX    1:     0.037481     -0.000000
+eigenvecTDAX    1:    -0.157013     -0.000000
+eigenvecTDAX    1:    -0.044135     -0.000000
+eigenvecTDAX    1:     0.009527     -0.000000
+eigenvecTDAX    1:     0.001818     -0.000000
+eigenvecTDAX    1:    -0.001506     -0.000000
+eigenvecTDAX    1:     0.045492     -0.000000
+eigenvecTDAX    1:    -0.032948     -0.000000
+eigenvecTDAX    1:     0.033991     -0.000000
+eigenvecTDAX    1:     0.026853     -0.000000
+eigenvecTDAX    1:    -0.013068     -0.000000
+eigenvecTDAX    1:     0.005977     -0.000000
+eigenvecTDAX    1:    -0.015589     -0.000000
+eigenvalue #    2:   -14.284883 +    0.051726 i (    2)
+eigenvecTDAX    2:     0.021230      0.000000
+eigenvecTDAX    2:     0.222184      0.000000
+eigenvecTDAX    2:    -0.637703      0.000000
+eigenvecTDAX    2:     0.459058      0.000000
+eigenvecTDAX    2:     0.030924      0.000000
+eigenvecTDAX    2:    -0.655495      0.000000
+eigenvecTDAX    2:     0.225267      0.000000
+eigenvecTDAX    2:    -0.074051      0.000000
+eigenvecTDAX    2:     0.032150      0.000000
+eigenvecTDAX    2:     0.940205      0.000000
+eigenvecTDAX    2:     0.671111      0.000000
+eigenvecTDAX    2:     0.162338      0.000000
+eigenvecTDAX    2:    -0.812468      0.000000
+eigenvecTDAX    2:    -0.865876      0.000000
+eigenvecTDAX    2:     0.248049      0.000000
+eigenvecTDAX    2:     0.283894      0.000000
+eigenvecTDAX    2:     0.097648      0.000000
+eigenvecTDAX    2:    -0.235310      0.000000
+eigenvecTDAX    2:    -0.060203      0.000000
+eigenvecTDAX    2:     0.351348      0.000000
+eigenvecTDAX    2:     0.739300      0.000000
+eigenvecTDAX    2:    -0.274151      0.000000
+eigenvecTDAX    2:    -0.353357      0.000000
+eigenvecTDAX    2:     0.022913      0.000000
+eigenvalue #    3:   -13.657918 +    0.000000 i (    2)
+eigenvecTDAX    3:    -0.027746      0.000000
+eigenvecTDAX    3:    -0.403053      0.000000
+eigenvecTDAX    3:     0.712084      0.000000
+eigenvecTDAX    3:    -0.007510      0.000000
+eigenvecTDAX    3:    -0.003185      0.000000
+eigenvecTDAX    3:     0.475760      0.000000
+eigenvecTDAX    3:    -0.042151      0.000000
+eigenvecTDAX    3:    -0.058270      0.000000
+eigenvecTDAX    3:    -0.050665      0.000000
+eigenvecTDAX    3:     0.450189      0.000000
+eigenvecTDAX    3:     0.773008      0.000000
+eigenvecTDAX    3:    -0.810931      0.000000
+eigenvecTDAX    3:     1.000000      0.000000
+eigenvecTDAX    3:    -0.620057      0.000000
+eigenvecTDAX    3:    -0.591150      0.000000
+eigenvecTDAX    3:     0.777237      0.000000
+eigenvecTDAX    3:    -0.003352      0.000000
+eigenvecTDAX    3:     0.442424      0.000000
+eigenvecTDAX    3:     0.411325      0.000000
+eigenvecTDAX    3:    -0.698328      0.000000
+eigenvecTDAX    3:    -0.602459      0.000000
+eigenvecTDAX    3:     0.254764      0.000000
+eigenvecTDAX    3:     0.550976      0.000000
+eigenvecTDAX    3:    -0.548889      0.000000
+eigenvalue #    4:   -12.912878 +   -0.148335 i (    2)
+eigenvecTDAX    4:    -0.087174      0.000000
+eigenvecTDAX    4:     0.132221      0.000000
+eigenvecTDAX    4:     0.156700      0.000000
+eigenvecTDAX    4:    -0.077075      0.000000
+eigenvecTDAX    4:    -0.015329      0.000000
+eigenvecTDAX    4:     0.141189      0.000000
+eigenvecTDAX    4:    -0.076025      0.000000
+eigenvecTDAX    4:     0.070236      0.000000
+eigenvecTDAX    4:    -0.042841      0.000000
+eigenvecTDAX    4:    -0.045495      0.000000
+eigenvecTDAX    4:    -0.066976      0.000000
+eigenvecTDAX    4:    -0.148241      0.000000
+eigenvecTDAX    4:     0.343067      0.000000
+eigenvecTDAX    4:    -0.023362      0.000000
+eigenvecTDAX    4:    -0.002705      0.000000
+eigenvecTDAX    4:     0.363086      0.000000
+eigenvecTDAX    4:     0.008409      0.000000
+eigenvecTDAX    4:     0.067420      0.000000
+eigenvecTDAX    4:     0.019971      0.000000
+eigenvecTDAX    4:    -0.177132      0.000000
+eigenvecTDAX    4:    -0.072818      0.000000
+eigenvecTDAX    4:    -0.035510      0.000000
+eigenvecTDAX    4:     0.124808      0.000000
+eigenvecTDAX    4:    -0.211587      0.000000
+eigenvalue #    5:   -12.912878 +    0.148335 i (    2)
+eigenvecTDAX    5:    -0.056592      0.000000
+eigenvecTDAX    5:     0.187590      0.000000
+eigenvecTDAX    5:    -0.025634      0.000000
+eigenvecTDAX    5:     0.012264      0.000000
+eigenvecTDAX    5:     0.000764      0.000000
+eigenvecTDAX    5:    -0.091517      0.000000
+eigenvecTDAX    5:     0.018334      0.000000
+eigenvecTDAX    5:    -0.010685      0.000000
+eigenvecTDAX    5:     0.020116      0.000000
+eigenvecTDAX    5:     0.005928      0.000000
+eigenvecTDAX    5:     0.069695      0.000000
+eigenvecTDAX    5:     0.164715      0.000000
+eigenvecTDAX    5:    -0.255141      0.000000
+eigenvecTDAX    5:    -0.046152      0.000000
+eigenvecTDAX    5:    -0.028431      0.000000
+eigenvecTDAX    5:     0.636914      0.000000
+eigenvecTDAX    5:    -0.051265      0.000000
+eigenvecTDAX    5:     0.108425      0.000000
+eigenvecTDAX    5:    -0.065157      0.000000
+eigenvecTDAX    5:    -0.020848      0.000000
+eigenvecTDAX    5:     0.069496      0.000000
+eigenvecTDAX    5:     0.004068      0.000000
+eigenvecTDAX    5:     0.008105      0.000000
+eigenvecTDAX    5:    -0.298047      0.000000
+eigenvalue #    6:    -8.898905 +   -0.761737 i (    2)
+eigenvecTDAX    6:    -0.062494      0.000000
+eigenvecTDAX    6:     0.180491      0.000000
+eigenvecTDAX    6:    -0.169437      0.000000
+eigenvecTDAX    6:     0.067574      0.000000
+eigenvecTDAX    6:     0.000497      0.000000
+eigenvecTDAX    6:    -0.009460      0.000000
+eigenvecTDAX    6:    -0.031416      0.000000
+eigenvecTDAX    6:     0.047605      0.000000
+eigenvecTDAX    6:    -0.022761      0.000000
+eigenvecTDAX    6:     0.070342      0.000000
+eigenvecTDAX    6:     0.008913      0.000000
+eigenvecTDAX    6:    -0.039723      0.000000
+eigenvecTDAX    6:     0.020519      0.000000
+eigenvecTDAX    6:    -0.030098      0.000000
+eigenvecTDAX    6:    -0.001866      0.000000
+eigenvecTDAX    6:     0.086056      0.000000
+eigenvecTDAX    6:     0.033733      0.000000
+eigenvecTDAX    6:    -0.087019      0.000000
+eigenvecTDAX    6:    -0.004180      0.000000
+eigenvecTDAX    6:     0.062877      0.000000
+eigenvecTDAX    6:     0.081928      0.000000
+eigenvecTDAX    6:    -0.130999      0.000000
+eigenvecTDAX    6:     0.030935      0.000000
+eigenvecTDAX    6:    -0.027030      0.000000
+eigenvalue #    7:    -8.898905 +    0.761737 i (    2)
+eigenvecTDAX    7:     0.058782      0.000000
+eigenvecTDAX    7:    -0.454063      0.000000
+eigenvecTDAX    7:     0.474013      0.000000
+eigenvecTDAX    7:    -0.094315      0.000000
+eigenvecTDAX    7:     0.097859      0.000000
+eigenvecTDAX    7:     0.165050      0.000000
+eigenvecTDAX    7:    -0.077125      0.000000
+eigenvecTDAX    7:    -0.075986      0.000000
+eigenvecTDAX    7:     0.049606      0.000000
+eigenvecTDAX    7:     0.403337      0.000000
+eigenvecTDAX    7:     0.274764      0.000000
+eigenvecTDAX    7:    -0.099298      0.000000
+eigenvecTDAX    7:    -0.458038      0.000000
+eigenvecTDAX    7:    -0.167307      0.000000
+eigenvecTDAX    7:    -0.334246      0.000000
+eigenvecTDAX    7:     0.913944      0.000000
+eigenvecTDAX    7:    -0.131441      0.000000
+eigenvecTDAX    7:     0.562647      0.000000
+eigenvecTDAX    7:    -0.017954      0.000000
+eigenvecTDAX    7:    -0.253766      0.000000
+eigenvecTDAX    7:    -0.169160      0.000000
+eigenvecTDAX    7:     0.381792      0.000000
+eigenvecTDAX    7:     0.106730      0.000000
+eigenvecTDAX    7:    -0.575738      0.000000
+eigenvalue #    8:    -6.620789 +   -0.322994 i (    2)
+eigenvecTDAX    8:    -0.023706      0.000000
+eigenvecTDAX    8:    -0.011460      0.000000
+eigenvecTDAX    8:     0.075864      0.000000
+eigenvecTDAX    8:    -0.036254      0.000000
+eigenvecTDAX    8:     0.052624      0.000000
+eigenvecTDAX    8:     0.032970      0.000000
+eigenvecTDAX    8:    -0.021963      0.000000
+eigenvecTDAX    8:     0.028977      0.000000
+eigenvecTDAX    8:    -0.013289      0.000000
+eigenvecTDAX    8:    -0.078145      0.000000
+eigenvecTDAX    8:    -0.079001      0.000000
+eigenvecTDAX    8:    -0.001578      0.000000
+eigenvecTDAX    8:     0.078515      0.000000
+eigenvecTDAX    8:     0.003940      0.000000
+eigenvecTDAX    8:     0.053672      0.000000
+eigenvecTDAX    8:     0.141408      0.000000
+eigenvecTDAX    8:    -0.008998      0.000000
+eigenvecTDAX    8:     0.106643      0.000000
+eigenvecTDAX    8:    -0.040069      0.000000
+eigenvecTDAX    8:    -0.110815      0.000000
+eigenvecTDAX    8:    -0.040571      0.000000
+eigenvecTDAX    8:     0.045953      0.000000
+eigenvecTDAX    8:     0.036039      0.000000
+eigenvecTDAX    8:    -0.114778      0.000000
+eigenvalue #    9:    -6.620789 +    0.322994 i (    2)
+eigenvecTDAX    9:     0.216736      0.000000
+eigenvecTDAX    9:     0.000121      0.000000
+eigenvecTDAX    9:    -0.471096      0.000000
+eigenvecTDAX    9:     0.248697      0.000000
+eigenvecTDAX    9:    -0.070357      0.000000
+eigenvecTDAX    9:     0.005576      0.000000
+eigenvecTDAX    9:     0.027179      0.000000
+eigenvecTDAX    9:    -0.243556      0.000000
+eigenvecTDAX    9:     0.127291      0.000000
+eigenvecTDAX    9:     0.921855      0.000000
+eigenvecTDAX    9:     0.191384      0.000000
+eigenvecTDAX    9:    -0.323593      0.000000
+eigenvecTDAX    9:    -0.641643      0.000000
+eigenvecTDAX    9:    -0.042467      0.000000
+eigenvecTDAX    9:    -0.037320      0.000000
+eigenvecTDAX    9:    -0.759556      0.000000
+eigenvecTDAX    9:     0.088847      0.000000
+eigenvecTDAX    9:    -0.441168      0.000000
+eigenvecTDAX    9:     0.230989      0.000000
+eigenvecTDAX    9:     0.581091      0.000000
+eigenvecTDAX    9:     0.211520      0.000000
+eigenvecTDAX    9:    -0.214636      0.000000
+eigenvecTDAX    9:    -0.283962      0.000000
+eigenvecTDAX    9:     0.629454      0.000000
+eigenvalue #   10:    -4.780266 +   -2.522317 i (    2)
+eigenvecTDAY   10:     0.069525      0.000000
+eigenvecTDAY   10:    -0.155378      0.000000
+eigenvecTDAY   10:     0.040319      0.000000
+eigenvecTDAY   10:     0.068452      0.000000
+eigenvecTDAY   10:    -0.009244      0.000000
+eigenvecTDAY   10:     0.047413      0.000000
+eigenvecTDAY   10:     0.017290      0.000000
+eigenvecTDAY   10:    -0.130731      0.000000
+eigenvecTDAY   10:     0.063124      0.000000
+eigenvecTDAY   10:     0.477048      0.000000
+eigenvecTDAY   10:     0.143275      0.000000
+eigenvecTDAY   10:    -0.142401      0.000000
+eigenvecTDAY   10:    -0.341547      0.000000
+eigenvecTDAY   10:    -0.250976      0.000000
+eigenvecTDAY   10:    -0.026858      0.000000
+eigenvecTDAY   10:     0.485992      0.000000
+eigenvecTDAY   10:    -0.033305      0.000000
+eigenvecTDAY   10:     0.156967      0.000000
+eigenvecTDAY   10:     0.055681      0.000000
+eigenvecTDAY   10:     0.002031      0.000000
+eigenvecTDAY   10:     0.063527      0.000000
+eigenvecTDAY   10:     0.077297      0.000000
+eigenvecTDAY   10:    -0.047995      0.000000
+eigenvecTDAY   10:    -0.250594      0.000000
+eigenvalue #   11:    -4.780266 +    2.522317 i (    2)
+eigenvecTDAY   11:     0.135727      0.000000
+eigenvecTDAY   11:    -0.069477      0.000000
+eigenvecTDAY   11:    -0.137087      0.000000
+eigenvecTDAY   11:     0.097271      0.000000
+eigenvecTDAY   11:    -0.051454      0.000000
+eigenvecTDAY   11:    -0.277553      0.000000
+eigenvecTDAY   11:     0.274271      0.000000
+eigenvecTDAY   11:    -0.079994      0.000000
+eigenvecTDAY   11:    -0.000088      0.000000
+eigenvecTDAY   11:    -0.384574      0.000000
+eigenvecTDAY   11:     0.196582      0.000000
+eigenvecTDAY   11:     0.186315      0.000000
+eigenvecTDAY   11:     0.411314      0.000000
+eigenvecTDAY   11:    -0.290162      0.000000
+eigenvecTDAY   11:     0.142631      0.000000
+eigenvecTDAY   11:    -0.514008      0.000000
+eigenvecTDAY   11:     0.079587      0.000000
+eigenvecTDAY   11:    -0.376091      0.000000
+eigenvecTDAY   11:     0.095537      0.000000
+eigenvecTDAY   11:     0.096759      0.000000
+eigenvecTDAY   11:     0.167342      0.000000
+eigenvecTDAY   11:    -0.106874      0.000000
+eigenvecTDAY   11:    -0.140981      0.000000
+eigenvecTDAY   11:     0.326703      0.000000
+eigenvalue #   12:    -2.206838 +    0.000000 i (    2)
+eigenvecTDAY   12:     0.053219      0.000000
+eigenvecTDAY   12:    -0.065823      0.000000
+eigenvecTDAY   12:    -0.021416      0.000000
+eigenvecTDAY   12:     0.038210      0.000000
+eigenvecTDAY   12:     0.014749      0.000000
+eigenvecTDAY   12:    -0.444764      0.000000
+eigenvecTDAY   12:     0.307358      0.000000
+eigenvecTDAY   12:     0.047784      0.000000
+eigenvecTDAY   12:    -0.060660      0.000000
+eigenvecTDAY   12:    -1.000000      0.000000
+eigenvecTDAY   12:     0.925389      0.000000
+eigenvecTDAY   12:     0.706976      0.000000
+eigenvecTDAY   12:     0.388201      0.000000
+eigenvecTDAY   12:    -0.425054      0.000000
+eigenvecTDAY   12:    -0.605831      0.000000
+eigenvecTDAY   12:     0.001494      0.000000
+eigenvecTDAY   12:     0.010885      0.000000
+eigenvecTDAY   12:    -0.462548      0.000000
+eigenvecTDAY   12:     0.030393      0.000000
+eigenvecTDAY   12:     0.240499      0.000000
+eigenvecTDAY   12:     0.262788      0.000000
+eigenvecTDAY   12:    -0.159436      0.000000
+eigenvecTDAY   12:     0.114211      0.000000
+eigenvecTDAY   12:    -0.004464      0.000000
+eigenvalue #   13:     0.778666 +    1.371164 i (    2)
+eigenvecTDAX   13:    -0.102166      0.000000
+eigenvecTDAX   13:     0.033658      0.000000
+eigenvecTDAX   13:     0.128896      0.000000
+eigenvecTDAX   13:    -0.099898      0.000000
+eigenvecTDAX   13:    -0.003733      0.000000
+eigenvecTDAX   13:     0.037050      0.000000
+eigenvecTDAX   13:    -0.041532      0.000000
+eigenvecTDAX   13:     0.023926      0.000000
+eigenvecTDAX   13:    -0.005312      0.000000
+eigenvecTDAX   13:    -0.053536      0.000000
+eigenvecTDAX   13:     0.125398      0.000000
+eigenvecTDAX   13:     0.124970      0.000000
+eigenvecTDAX   13:     0.535808      0.000000
+eigenvecTDAX   13:    -0.709878      0.000000
+eigenvecTDAX   13:     0.502358      0.000000
+eigenvecTDAX   13:    -0.484429      0.000000
+eigenvecTDAX   13:    -0.090533      0.000000
+eigenvecTDAX   13:     0.564340      0.000000
+eigenvecTDAX   13:    -0.392449      0.000000
+eigenvecTDAX   13:    -0.990060      0.000000
+eigenvecTDAX   13:     0.836929      0.000000
+eigenvecTDAX   13:     0.336481      0.000000
+eigenvecTDAX   13:    -0.737097      0.000000
+eigenvecTDAX   13:     0.425644      0.000000
+eigenvalue #   14:     0.778666 +   -1.371164 i (    2)
+eigenvecTDAX   14:    -0.067105      0.000000
+eigenvecTDAX   14:     0.171283      0.000000
+eigenvecTDAX   14:    -0.172948      0.000000
+eigenvecTDAX   14:     0.068315      0.000000
+eigenvecTDAX   14:     0.002807      0.000000
+eigenvecTDAX   14:    -0.064133      0.000000
+eigenvecTDAX   14:     0.079956      0.000000
+eigenvecTDAX   14:    -0.072784      0.000000
+eigenvecTDAX   14:     0.027141      0.000000
+eigenvecTDAX   14:     0.043834      0.000000
+eigenvecTDAX   14:     0.014287      0.000000
+eigenvecTDAX   14:    -0.004873      0.000000
+eigenvecTDAX   14:    -0.232957      0.000000
+eigenvecTDAX   14:     0.144397      0.000000
+eigenvecTDAX   14:    -0.183191      0.000000
+eigenvecTDAX   14:     0.363614      0.000000
+eigenvecTDAX   14:     0.033559      0.000000
+eigenvecTDAX   14:     0.085927      0.000000
+eigenvecTDAX   14:    -0.175047      0.000000
+eigenvecTDAX   14:     0.009688      0.000000
+eigenvecTDAX   14:     0.163071      0.000000
+eigenvecTDAX   14:     0.030817      0.000000
+eigenvecTDAX   14:    -0.038753      0.000000
+eigenvecTDAX   14:    -0.170452      0.000000
+eigenvalue #   15:     0.921402 +    0.000000 i (    2)
+eigenvecTDAY   15:     0.042525      0.000000
+eigenvecTDAY   15:     0.019274      0.000000
+eigenvecTDAY   15:    -0.107851      0.000000
+eigenvecTDAY   15:     0.070947      0.000000
+eigenvecTDAY   15:     0.002920      0.000000
+eigenvecTDAY   15:     0.303670      0.000000
+eigenvecTDAY   15:    -0.530347      0.000000
+eigenvecTDAY   15:     0.333635      0.000000
+eigenvecTDAY   15:    -0.072784      0.000000
+eigenvecTDAY   15:    -0.045321      0.000000
+eigenvecTDAY   15:    -0.066692      0.000000
+eigenvecTDAY   15:     0.527443      0.000000
+eigenvecTDAY   15:    -0.619337      0.000000
+eigenvecTDAY   15:    -0.054946      0.000000
+eigenvecTDAY   15:     0.131196      0.000000
+eigenvecTDAY   15:     0.315853      0.000000
+eigenvecTDAY   15:    -0.355140      0.000000
+eigenvecTDAY   15:    -0.356238      0.000000
+eigenvecTDAY   15:     0.744002      0.000000
+eigenvecTDAY   15:     0.869684      0.000000
+eigenvecTDAY   15:    -1.000000      0.000000
+eigenvecTDAY   15:    -0.437480      0.000000
+eigenvecTDAY   15:     0.760448      0.000000
+eigenvecTDAY   15:    -0.372168      0.000000
+eigenvalue #   16:     2.224098 +    0.000000 i (    2)
+eigenvecTDAX   16:     0.179051      0.000000
+eigenvecTDAX   16:    -0.313087      0.000000
+eigenvecTDAX   16:     0.181394      0.000000
+eigenvecTDAX   16:    -0.009859      0.000000
+eigenvecTDAX   16:    -0.026913      0.000000
+eigenvecTDAX   16:    -0.043105      0.000000
+eigenvecTDAX   16:     0.352735      0.000000
+eigenvecTDAX   16:    -0.273339      0.000000
+eigenvecTDAX   16:     0.049269      0.000000
+eigenvecTDAX   16:     0.675380      0.000000
+eigenvecTDAX   16:    -0.761570      0.000000
+eigenvecTDAX   16:    -0.925538      0.000000
+eigenvecTDAX   16:    -0.121651      0.000000
+eigenvecTDAX   16:     0.448572      0.000000
+eigenvecTDAX   16:     0.545958      0.000000
+eigenvecTDAX   16:    -0.024390      0.000000
+eigenvecTDAX   16:     0.225909      0.000000
+eigenvecTDAX   16:     0.175535      0.000000
+eigenvecTDAX   16:     0.275729      0.000000
+eigenvecTDAX   16:     0.098042      0.000000
+eigenvecTDAX   16:    -1.000000      0.000000
+eigenvecTDAX   16:     0.013858      0.000000
+eigenvecTDAX   16:     0.502094      0.000000
+eigenvecTDAX   16:    -0.217490      0.000000
+eigenvalue #   17:     4.218147 +   -5.205130 i (    2)
+eigenvecTDAX   17:     0.158288      0.000000
+eigenvecTDAX   17:    -0.704072      0.000000
+eigenvecTDAX   17:     0.843151      0.000000
+eigenvecTDAX   17:    -0.353556      0.000000
+eigenvecTDAX   17:    -0.018412      0.000000
+eigenvecTDAX   17:    -0.076718      0.000000
+eigenvecTDAX   17:     0.156913      0.000000
+eigenvecTDAX   17:    -0.054932      0.000000
+eigenvecTDAX   17:    -0.002145      0.000000
+eigenvecTDAX   17:    -0.274508      0.000000
+eigenvecTDAX   17:     0.511106      0.000000
+eigenvecTDAX   17:     0.094269      0.000000
+eigenvecTDAX   17:     0.163305      0.000000
+eigenvecTDAX   17:    -0.093148      0.000000
+eigenvecTDAX   17:    -0.528579      0.000000
+eigenvecTDAX   17:    -0.284141      0.000000
+eigenvecTDAX   17:    -0.045595      0.000000
+eigenvecTDAX   17:    -0.005966      0.000000
+eigenvecTDAX   17:     0.216531      0.000000
+eigenvecTDAX   17:     0.146785      0.000000
+eigenvecTDAX   17:    -0.533183      0.000000
+eigenvecTDAX   17:     0.030597      0.000000
+eigenvecTDAX   17:     0.506370      0.000000
+eigenvecTDAX   17:    -0.032823      0.000000
+eigenvalue #   18:     4.218147 +    5.205130 i (    2)
+eigenvecTDAX   18:    -0.001638      0.000000
+eigenvecTDAX   18:     0.116010      0.000000
+eigenvecTDAX   18:    -0.156849      0.000000
+eigenvecTDAX   18:     0.051151      0.000000
+eigenvecTDAX   18:    -0.006740      0.000000
+eigenvecTDAX   18:    -0.064324      0.000000
+eigenvecTDAX   18:     0.094413      0.000000
+eigenvecTDAX   18:    -0.023570      0.000000
+eigenvecTDAX   18:    -0.007031      0.000000
+eigenvecTDAX   18:    -0.064355      0.000000
+eigenvecTDAX   18:    -0.184839      0.000000
+eigenvecTDAX   18:    -0.176588      0.000000
+eigenvecTDAX   18:     0.215651      0.000000
+eigenvecTDAX   18:     0.242596      0.000000
+eigenvecTDAX   18:     0.117909      0.000000
+eigenvecTDAX   18:    -0.316787      0.000000
+eigenvecTDAX   18:     0.125630      0.000000
+eigenvecTDAX   18:    -0.546027      0.000000
+eigenvecTDAX   18:     0.360569      0.000000
+eigenvecTDAX   18:     0.389273      0.000000
+eigenvecTDAX   18:    -0.402605      0.000000
+eigenvecTDAX   18:    -0.365447      0.000000
+eigenvecTDAX   18:     0.286451      0.000000
+eigenvecTDAX   18:     0.181023      0.000000
+eigenvalue #   19:     5.037695 +    0.000000 i (    2)
+eigenvecTDAY   19:    -0.191831      0.000000
+eigenvecTDAY   19:     0.306997      0.000000
+eigenvecTDAY   19:    -0.155230      0.000000
+eigenvecTDAY   19:     0.011689      0.000000
+eigenvecTDAY   19:     0.014050      0.000000
+eigenvecTDAY   19:    -0.120809      0.000000
+eigenvecTDAY   19:     0.078159      0.000000
+eigenvecTDAY   19:    -0.023064      0.000000
+eigenvecTDAY   19:     0.008296      0.000000
+eigenvecTDAY   19:    -0.274199      0.000000
+eigenvecTDAY   19:     0.309101      0.000000
+eigenvecTDAY   19:     0.125960      0.000000
+eigenvecTDAY   19:     0.687908      0.000000
+eigenvecTDAY   19:    -0.369923      0.000000
+eigenvecTDAY   19:    -0.238777      0.000000
+eigenvecTDAY   19:    -0.045308      0.000000
+eigenvecTDAY   19:     0.102487      0.000000
+eigenvecTDAY   19:    -1.000000      0.000000
+eigenvecTDAY   19:     0.484383      0.000000
+eigenvecTDAY   19:     0.753307      0.000000
+eigenvecTDAY   19:    -0.145752      0.000000
+eigenvecTDAY   19:    -0.975662      0.000000
+eigenvecTDAY   19:     0.719878      0.000000
+eigenvecTDAY   19:    -0.054429      0.000000
+eigenvalue #   20:     6.402731 +    0.000000 i (    2)
+eigenvecTDAX   20:    -0.461381      0.000000
+eigenvecTDAX   20:     0.839376      0.000000
+eigenvecTDAX   20:    -0.561906      0.000000
+eigenvecTDAX   20:     0.122738      0.000000
+eigenvecTDAX   20:     0.017287      0.000000
+eigenvecTDAX   20:    -0.186631      0.000000
+eigenvecTDAX   20:     0.393295      0.000000
+eigenvecTDAX   20:    -0.347108      0.000000
+eigenvecTDAX   20:     0.101991      0.000000
+eigenvecTDAX   20:     0.549821      0.000000
+eigenvecTDAX   20:    -0.211808      0.000000
+eigenvecTDAX   20:    -0.448164      0.000000
+eigenvecTDAX   20:     0.445527      0.000000
+eigenvecTDAX   20:    -0.803301      0.000000
+eigenvecTDAX   20:     1.000000      0.000000
+eigenvecTDAX   20:    -0.230302      0.000000
+eigenvecTDAX   20:     0.162381      0.000000
+eigenvecTDAX   20:    -0.115019      0.000000
+eigenvecTDAX   20:     0.216604      0.000000
+eigenvecTDAX   20:     0.017397      0.000000
+eigenvecTDAX   20:     0.004235      0.000000
+eigenvecTDAX   20:    -0.851396      0.000000
+eigenvecTDAX   20:     0.379827      0.000000
+eigenvecTDAX   20:     0.057443      0.000000
+eigenvalue #   21:    17.745179 +    0.000000 i (    2)
+eigenvecTDAX   21:    -0.360006      0.000000
+eigenvecTDAX   21:     1.000000      0.000000
+eigenvecTDAX   21:    -0.961058      0.000000
+eigenvecTDAX   21:     0.330449      0.000000
+eigenvecTDAX   21:     0.001338      0.000000
+eigenvecTDAX   21:     0.359146      0.000000
+eigenvecTDAX   21:    -0.716760      0.000000
+eigenvecTDAX   21:     0.547864      0.000000
+eigenvecTDAX   21:    -0.153629      0.000000
+eigenvecTDAX   21:    -0.146263      0.000000
+eigenvecTDAX   21:    -0.651329      0.000000
+eigenvecTDAX   21:     0.255273      0.000000
+eigenvecTDAX   21:     0.361163      0.000000
+eigenvecTDAX   21:     0.126062      0.000000
+eigenvecTDAX   21:     0.050926      0.000000
+eigenvecTDAX   21:     0.749725      0.000000
+eigenvecTDAX   21:    -0.132654      0.000000
+eigenvecTDAX   21:     0.220490      0.000000
+eigenvecTDAX   21:    -0.464912      0.000000
+eigenvecTDAX   21:    -0.332098      0.000000
+eigenvecTDAX   21:     0.470335      0.000000
+eigenvecTDAX   21:    -0.095865      0.000000
+eigenvecTDAX   21:     0.051922      0.000000
+eigenvecTDAX   21:    -0.487236      0.000000
+eigenvalue #   22:    25.607341 +    2.105965 i (    2)
+eigenvecTDAX   22:    -0.366318      0.000000
+eigenvecTDAX   22:     0.977972      0.000000
+eigenvecTDAX   22:    -0.888458      0.000000
+eigenvecTDAX   22:     0.277472      0.000000
+eigenvecTDAX   22:    -0.012051      0.000000
+eigenvecTDAX   22:     0.260776      0.000000
+eigenvecTDAX   22:    -0.559085      0.000000
+eigenvecTDAX   22:     0.448829      0.000000
+eigenvecTDAX   22:    -0.125052      0.000000
+eigenvecTDAX   22:    -0.406546      0.000000
+eigenvecTDAX   22:    -0.774390      0.000000
+eigenvecTDAX   22:     0.348712      0.000000
+eigenvecTDAX   22:     0.317169      0.000000
+eigenvecTDAX   22:     0.346835      0.000000
+eigenvecTDAX   22:     0.063114      0.000000
+eigenvecTDAX   22:     0.847177      0.000000
+eigenvecTDAX   22:    -0.115789      0.000000
+eigenvecTDAX   22:     0.266003      0.000000
+eigenvecTDAX   22:    -0.557090      0.000000
+eigenvecTDAX   22:    -0.115875      0.000000
+eigenvecTDAX   22:     0.141138      0.000000
+eigenvecTDAX   22:    -0.060866      0.000000
+eigenvecTDAX   22:     0.353355      0.000000
+eigenvecTDAX   22:    -0.808851      0.000000
+eigenvalue #   23:    25.607341 +   -2.105965 i (    2)
+eigenvecTDAX   23:    -0.019046      0.000000
+eigenvecTDAX   23:     0.022028      0.000000
+eigenvecTDAX   23:     0.002266      0.000000
+eigenvecTDAX   23:    -0.012052      0.000000
+eigenvecTDAX   23:    -0.004207      0.000000
+eigenvecTDAX   23:    -0.023561      0.000000
+eigenvecTDAX   23:     0.041274      0.000000
+eigenvecTDAX   23:    -0.034143      0.000000
+eigenvecTDAX   23:     0.012153      0.000000
+eigenvecTDAX   23:    -0.065522      0.000000
+eigenvecTDAX   23:    -0.006766      0.000000
+eigenvecTDAX   23:     0.048462      0.000000
+eigenvecTDAX   23:     0.020772      0.000000
+eigenvecTDAX   23:    -0.004859      0.000000
+eigenvecTDAX   23:     0.001804      0.000000
+eigenvecTDAX   23:     0.018674      0.000000
+eigenvecTDAX   23:    -0.008132      0.000000
+eigenvecTDAX   23:     0.005308      0.000000
+eigenvecTDAX   23:    -0.021718      0.000000
+eigenvecTDAX   23:     0.039856      0.000000
+eigenvecTDAX   23:    -0.032199      0.000000
+eigenvecTDAX   23:    -0.021452      0.000000
+eigenvecTDAX   23:     0.067126      0.000000
+eigenvecTDAX   23:    -0.065770      0.000000
+eigenvalue #   24:    42.472299 +    0.000000 i (    2)
+eigenvecTDAY   24:    -0.019393      0.000000
+eigenvecTDAY   24:    -0.242642      0.000000
+eigenvecTDAY   24:     0.574741      0.000000
+eigenvecTDAY   24:    -0.368455      0.000000
+eigenvecTDAY   24:    -0.042290      0.000000
+eigenvecTDAY   24:     0.246454      0.000000
+eigenvecTDAY   24:    -0.362726      0.000000
+eigenvecTDAY   24:     0.295190      0.000000
+eigenvecTDAY   24:    -0.075829      0.000000
+eigenvecTDAY   24:    -1.000000      0.000000
+eigenvecTDAY   24:    -0.829705      0.000000
+eigenvecTDAY   24:     0.329339      0.000000
+eigenvecTDAY   24:     0.922640      0.000000
+eigenvecTDAY   24:     0.922465      0.000000
+eigenvecTDAY   24:     0.001893      0.000000
+eigenvecTDAY   24:    -0.438060      0.000000
+eigenvecTDAY   24:    -0.062922      0.000000
+eigenvecTDAY   24:    -0.278709      0.000000
+eigenvecTDAY   24:    -0.104126      0.000000
+eigenvecTDAY   24:    -0.057997      0.000000
+eigenvecTDAY   24:    -0.578547      0.000000
+eigenvecTDAY   24:    -0.050719      0.000000
+eigenvecTDAY   24:     0.512926      0.000000
+eigenvecTDAY   24:    -0.028187      0.000000
 
 Exit of menu.
 
 
-Total CPU time is 0000h00m00s08c
+Total CPU time is 0000h00m00s05c
 The program ended normally.
