@@ -1253,7 +1253,7 @@ module opt_lin_mod
 
 !   nonlinear parameter
     eigvec_first_coef = eigvec_first_coef +(1.d0-xi)*psi_lin_var_norm/((1.d0-xi) + xi*(1.d0+psi_lin_var_norm))
-
+  print*,'eigvec_first_coef',eigvec_first_coef,psi_lin_var_norm
   case default
     call die(lhere, 'unknown update choice >'+trim(update_nonlinear)+'<')
   end select

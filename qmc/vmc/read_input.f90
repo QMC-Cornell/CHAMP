@@ -1909,6 +1909,7 @@
 
 !     MJO98: if we are using rotation parameters, then we have no linear parameters
 !            otherwise, all the csf parameters are linear
+      l_opt_csf_rot = .true.
       if (l_opt_csf_rot) then
          nparmlin = 0
       else 
