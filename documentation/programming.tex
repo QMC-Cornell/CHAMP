@@ -44,7 +44,7 @@
 
 % References
 \usepackage{cite} %to group multipled references
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
 
 %--------------------------------------
 
@@ -84,9 +84,8 @@
   \StrSubstitute{#1}{\_}{_}[\temp]%
   \restoreexpandmode
 }
-\newcommand\see[1]{
-  \makesub{#1}
-  [see: \hyperref[entry:\temp]{#1}]
+\newcommand\link[1]{
+  \hyperref[entry:#1]{{\tt #1}}
 }
 \newcommand\entry[2]{
   \saveexpandmode\noexpandarg
@@ -105,7 +104,9 @@
     }
   }
   \noindent\underline{\textbf{\temp}} (usage: {\tt #1})
-  \label{entry:\temp}\addcontentsline{toc}{paragraph}{\temp}
+  \label{entry:\temp}
+  \phantomsection
+  \addcontentsline{toc}{paragraph}{\temp}
   \restoreexpandmode
 
   \vspace*{.5em}
@@ -356,7 +357,7 @@ The objects created in the non-MED files do not have building subroutines. If th
 When this is judged useful, a non-MED object can be converted to a MED object, i.e. we write a proper building subroutine for it and it is then a normal object of the dependency tree. The non-MED part of the code can then be progressively evolved in the style of the MED part.
 
 
-\section{More details}
+\section{More detail}
 
 \subsection{A building subroutine can create more than one object}
 
@@ -409,15 +410,16 @@ The functions {\tt object_modified(`...')} and {\tt object_provide(`...')} take 
 
 \subsection{What happens at the beginning of a run?}
 
-In this section, we describe how the MED implementation gathers the MED-related informations (tree, address of the routines, etc\dots)
+In this section, we describe how the MED implementation gathers the MED-related information (tree, address of the routines, etc\dots)
 
 At the very beginning of a run, in the file {\tt champ.f90}, the program successively calls the routines {\tt build_tree}, {\tt catalog_objects} and {\tt define_averages_and_errors}.
 
-The routine {\tt build_tree} calls for {\tt catalog_all_nodes_and_routines}, which is a manually made list of calls to {\tt catalog_one_node}. This last routine maps a routine string name with the routine address in the {\tt nodes} array. Then, {\tt build_tree} calls for {\tt execute_node_headers}, which calls for the execution of the headers of all the nodes now known in the {\tt nodes} array.
+The routine {\tt build_tree} calls for {\tt catalog_all_nodes_and_routines}, which is a manually made list of calls to {\tt catalog_one_node}. This last routine maps a routine string name with the routine address in the {\tt nodes} array (see section~\ref{subsub:types}). Then, {\tt build_tree} calls for {\tt execute_node_headers}, which calls for the execution of the headers of all the nodes now known in the {\tt nodes} array.
 
-The routine {\tt catalog_objects} is a manually made list of calls to {\tt catalog_one_object}. This last routine maps an object string name to an object index in the {\tt objects} array. This needs only to be done on objects that are often used and for which the explicit knowledge of the index is useful (this explicit knowledge allows to bypass the search through objects for the index everytime a MED command is called).
+The routine {\tt catalog_objects} is a manually made list of calls to {\tt catalog_one_object}. This last routine maps an object string name to an object index in the {\tt objects} array (see section~\ref{subsub:types}). This actually needs only to be done on objects that are often used and for which the explicit knowledge of the index as a Fortran variable is useful (this explicit knowledge allows to bypass the search through objects for the index everytime a MED command is called).
 
 The routine {\tt define_averages_and_errors} is a manually made list of calls to routines {\tt object_average_define} and {\tt object_error_define}.
+HERE
 
 \subsection{Glossary of the MED commands}
 
@@ -432,11 +434,12 @@ Since the search can be costly, as stated before, for repetively used Fortran ob
 In the following sections, we give a glossary of basic and more advanced MED commands implemented in CHAMP.
 
 \subsubsection{Types}
+\label{subsub:types}
 
-To well understand the commands described in the next sections, one might first want to understand how informations about the objects and nodes are stored.
+To well understand the commands described in the next sections, one might first want to understand how information about the objects and nodes are stored.
 
 \entry{`object'}{
-  The informations on an object are stored into a type {\tt object}.
+  The information on an object are stored into a type {\tt object}.
   All the objects are accumulated in an array {\tt objects} of type {\tt object},
   and the object index is the position of an object in that array.
   The type {\tt object} contains:
@@ -462,7 +465,7 @@ To well understand the commands described in the next sections, one might first 
 }
 
 \entry{`node'}{
-  The informations on a node (a building routine) are stored into a type {\tt node}.
+  The information on a node (a building routine) are stored into a type {\tt node}.
   All the nodes are accumulated in an array {\tt nodes} of type {\tt node}.
   The type {\tt node} contains:
 
@@ -506,10 +509,10 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   with the current building node index, 
   and possibly returns its (newly produced) {\tt `index'}.
 
-  This uses {\tt object_add_once_and_index}.
+  This uses \link{object_add_once_and_index}.
   \vspace{1em}
 
-  In details:
+  In detail:
   \vspace{.5em}
 
   \begin{minipage}{\linewidth}\begin{itemize}
@@ -523,10 +526,10 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
 \entry{[sub] object_needed(`name')}{
   Catalogs a dependency of the current building node.
 
-  This uses {\tt object_add_once_and_index} (in case the object itself is not already catalogued).
+  This uses \link{object_add_once_and_index} (in case the object itself is not already catalogued).
   \vspace{1em}
 
-  In details:
+  In detail:
   \vspace{.5em}
 
   \begin{minipage}{\linewidth}\begin{itemize}
@@ -539,9 +542,9 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
     
 \entry{[sub] object_provide(`name')}{
   Provides an object known by its {\tt `name'}
-  (actually, see {\tt object_provide_by_index}). 
+  (actually, see \link{object_provide_by_index}). 
 
-  This uses {\tt object_index_or_die}.
+  This uses \link{object_index_or_die}.
 }
 
 \entry{[sub] object_provide_by_index(`index')}{
@@ -549,7 +552,7 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   The objects needs either to be valid or to have a catalogued building node to be called.
   \vspace{1em}
 
-  In details:
+  In detail:
   \vspace{.5em}
 
   \begin{minipage}{\linewidth}\begin{itemize}
@@ -566,9 +569,9 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
 \entry{[sub] object_modified(`name')}{
   Validate an object known by its {\tt `name'}
   and invalidate all children (known by their {\tt `index'}),
-  actually, see : {\tt object_modified_by_index}.
+  actually, see \link{object_modified_by_index}.
 
-  This uses {\tt object_add_once_and_index}.
+  This uses \link{object_add_once_and_index}.
 }
 
 \entry{[sub] object_modified_by_index(`index')}{
@@ -576,14 +579,14 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   and invalidate all children (known by their {\tt `index'}).
   \vspace{1em}
 
-  In details:
+  In detail:
   \vspace{.5em}
 
   \begin{minipage}{\linewidth}\begin{itemize}
   \item validate the object
   \\    ({\tt objects(index)\%valid = .true.})
   \item invalidate all children created by nodes depending on the object
-  \\    (This uses {\tt object_invalidate_by_index} 
+  \\    (This uses \link{object_invalidate_by_index} 
         on all {\tt nodes(objects(index)\%nodes_depend_index(node_i))\%objects_create_index}
         for all the {\tt node_i} in {\tt objects(index)\%nodes_depend_index}.)
   \end{itemize}\end{minipage}
@@ -592,7 +595,7 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
 \entry{[sub] object_alloc(`name',`object'[,dimensions])}{
   Allocate (or: reallocate) and associate (or: reassociate) an object.
 
-  This uses {\tt alloc} and {\tt object_associate}.
+  This uses \link{alloc} and \link{object_associate}.
 }
 
 \entry{object_write(`name')}{}
@@ -629,21 +632,21 @@ In this section are described in a glossary manner the more core commands of the
 }
 
 \entry{[sub] object_add_and_index(`index')}{
-  Catalogs a new object that has no name and returns its (newly produced) index (actually, see: {\tt object_add_once_and_index}) .
+  Catalogs a new object that has no name and returns its (newly produced) index (actually, see \link{object_add_once_and_index}) .
 }
 
 \entry{[sub] object_add_once_and_index(`name',`index')}{
   Returns the {\tt `index'} corresponding to a {\tt `name'}.
   Assigns a new one if needed,
-  i.e. catalogs the new object (actually, see: {\tt object_add}).
+  i.e. catalogs the new object (actually, see \link{object_add}).
   This is used by all MED front-end routines.
 }
 
 \entry{[fun] object_valid(`name')}{
   Returns whether the object is valid or not
-  (actually, see {\tt object_valid_by_index}).
+  (actually, see \link{object_valid_by_index}).
 
-  This uses {\tt object_add_once_and_index}.
+  This uses \link{object_add_once_and_index}.
 }
 
 \entry{[fun] object_valid_by_index(`index')}{
@@ -651,16 +654,16 @@ In this section are described in a glossary manner the more core commands of the
 }
 
 \entry{[sub] object_valid_or_die(`name')}{
-  Dies if object not valid (uses {\tt object_valid})
+  Dies if object not valid (uses \link{object_valid})
 }
 
 \entry{object_depend_valid_by_index}{}
 
 \entry{[sub] object_invalidate(`name')}{
   Invalidates an object known by its {\tt `name'},
-  actually: see {\tt object_invalidate_by_index}.
+  actually: see \link{object_invalidate_by_index}.
 
-  This uses {\tt object_add_once_and_index}.
+  This uses \link{object_add_once_and_index}.
 }
 
 \entry{[sub] object_invalidate_by_index(`name')}{
@@ -668,7 +671,7 @@ In this section are described in a glossary manner the more core commands of the
   and all its children (known by their {\tt `index'}).
   \vspace{1em}
 
-  In details:
+  In detail:
   \vspace{.5em}
 
   \begin{minipage}{\linewidth}\begin{itemize}
@@ -678,7 +681,7 @@ In this section are described in a glossary manner the more core commands of the
   \\    (i.e. {\tt objects(object_index)\%valid = .false.}
          and {\tt nodes(objects(object_index)\%node_create_index)\%valid = .false.}
   \item invalidate all objects created by nodes depending on the object
-  \\    (This uses {\tt object_invalidate_by_index} itself on all
+  \\    (This uses \link{object_invalidate_by_index} itself on all
          the object indexes in {\tt nodes(objects(object_index)\%nodes_depend_index(node_i))\%objects_create_index}
          for all {\tt node_i} in {\tt objects(object_index)\%nodes_depend_index}.)
   \end{itemize}\end{minipage}
@@ -687,9 +690,9 @@ In this section are described in a glossary manner the more core commands of the
 \entry{[sub] object_associate(`name',`object'[,dimensions])}{
   Associate a pointer to an object
   
-  This uses {\tt object_add_once_and_index}.
+  This uses \link{object_add_once_and_index}.
 
-  In details:
+  In detail:
 
   HERE
 }
@@ -697,9 +700,9 @@ In this section are described in a glossary manner the more core commands of the
 \entry{[sub] object_deassociate(`name')}{
   Deassociate a pointer and an object.
 
-  This uses {\tt object_add_once_and_index}.
+  This uses \link{object_add_once_and_index}.
 
-  In details:
+  In detail:
 
   HERE
 }
@@ -716,30 +719,30 @@ In this section are described in a glossary manner the more core commands of the
 \entry{[sub] object_release(`name',`object')}{
   Deallocate and deassociate an object
 
-  This uses {\tt release} and {\tt object_deassociate}.
+  This uses \link{release} and \link{object_deassociate}.
 }
 
 \entry{[sub] node_exe(`name')}{
   Executes a node known by its {\tt `name'}
-  (actually: see {\tt node_exe_by_index}).
+  (actually: see \link{node_exe_by_index}).
 
-  This uses {\tt node_index}.
+  This uses \link{node_index}.
 }
 
 \entry{[sub] node_exe_by_index(`index')}{
   Executes a node known by its {\tt `index'}.
   \vspace{1em}
 
-  In details:
+  In detail:
   \vspace{.5em}
 
   \begin{minipage}{\linewidth}\begin{itemize}
   \item if node is valid, return
   \item provide all the needed objects of the node
-  \\    (This uses {\tt object_provide_from_node_by_index}
+  \\    (This uses \link{object_provide_from_node_by_index}
         on all {\tt nodes(node_index)\%objects_needed_index}.)
   \item execute the current node.
-  \\    (This uses {\tt exe_by_address_0}, a C routine.)
+  \\    (This uses \link{exe_by_address_0}, a C routine.)
   \item validate the current node
         and all its created objects
   \\    (i.e. all objects in {\tt nodes(node_index)\%objects_create_index}
