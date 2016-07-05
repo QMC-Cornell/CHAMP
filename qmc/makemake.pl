@@ -30,7 +30,7 @@ print MAKEFILE "# Warning: However, you may need to modify the file 'makefile.in
 #
 # Global variable
 #
-print MAKEFILE "include makefile.inc\n\n";
+print MAKEFILE "include ../makefile.inc\n\n";
 print MAKEFILE "OBJDIR=compiler_files\n";
 print MAKEFILE "MODDIR=compiler_files\n";
 print MAKEFILE "INCDIR=.\n\n";
