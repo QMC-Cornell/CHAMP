@@ -9,6 +9,7 @@ module linearresponse_mod
 
   ! Declaration of global variables and default values
 
+  logical                         :: l_print=.false.
   logical                         :: do_print=.true.
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
@@ -65,6 +66,9 @@ module linearresponse_mod
 
     case ('tda')
       call get_next_value (l_tda)
+
+    case ('print')
+      call get_next_value (l_print)
 
     case ('end')
       exit
@@ -500,7 +504,7 @@ module linearresponse_mod
   call alloc('ovlp_eigvec', ovlp_eigvec, param_nb, param_nb)
   call alloc('ovlp_eigval', ovlp_eigval, param_nb)
   call eigensystem(ovlp_psii_psij_av, ovlp_eigvec, ovlp_eigval, param_nb)
-  if (l_tda) then
+  if (l_tda.or.l_print) then
   do i= 1,param_nb
   write(6,*) '/BM/ovlp',i,ovlp_psii_psij_av(i,:)
   enddo
@@ -565,10 +569,12 @@ module linearresponse_mod
                  - dpsi_av(i)*dpsi_eloc_av(j)    &
                  + dpsi_av(i)*dpsi_av(j)*eloc_av &
                  + dpsi_deloc_covar(i,j)
-      if (l_opt_orb.and.is_param_type_orb(i).and.is_param_type_orb(j)) then
-        !amat_av(i,j)=amat_av(i,j)+delta_eps(j-nparmcsf-nparmj)+delta_eps(i-nparmcsf-nparmj)
-        amat_av(i,j)=amat_av(i,j)-eloc_av*ovlp_psii_psij_av(i,j)
-      endif
+      ! BM: check out the equations !
+      !if (l_opt_orb.and.is_param_type_orb(i).and.is_param_type_orb(j)) then
+      !  !amat_av(i,j)=amat_av(i,j)+delta_eps(j-nparmcsf-nparmj)+delta_eps(i-nparmcsf-nparmj)
+      !  amat_av(i,j)=amat_av(i,j)-eloc_av*ovlp_psii_psij_av(i,j)
+      !endif
+      ! BM: end !
       !write(6,*) '/BM/index',i,j,ij,dpsi_dpsi_eloc_av(ij)
       !write(6,*) '/BM/index',i,j,ij,dpsi_av(j)*dpsi_eloc_av(i)
       !write(6,*) '/BM/index',i,j,ij,dpsi_av(i)*dpsi_eloc_av(j)
@@ -588,7 +594,7 @@ module linearresponse_mod
   enddo
   endif
 
-  if (l_tda) then
+  if (l_tda.or.l_print) then
   do i=1,param_nb
     write(6,*) '/BM/amat',i,amat_av(i,:)
   enddo
@@ -638,9 +644,11 @@ module linearresponse_mod
     enddo
   enddo
 
-  !do i=1,param_nb
-  !  write(6,*) '/BM/bmat',i,bmat_av(i,:)
-  !enddo
+  if (l_tda.or.l_print) then
+  do i=1,param_nb
+    write(6,*) '/BM/bmat',i,bmat_av(i,:)
+  enddo
+  endif
 
   end subroutine bmat_av_bld
 
