@@ -1243,7 +1243,7 @@
         read(5,*) (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         write(6,'(''CSF'',i4,'' iwdet_in_csf='',100i4)') icsf,(iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         read(5,'(a)') input_line
-        if(index(input_line,'.').ne.0) normalize_csf=1
+        if(index(input_line,'.').ne.0) normalize_csf=0
         read(input_line,*) (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         write(6,'(''CSF'',i4,'' cdet_in_csf='',900f8.5)') icsf,(cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
         do 85 idet_in_csf=1,ndet_in_csf(icsf)
