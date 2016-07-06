@@ -10,6 +10,8 @@ module linearresponse_mod
   ! Declaration of global variables and default values
 
   logical                         :: l_print=.false.
+  logical                         :: l_analysis_eigenvec=.true.
+  logical                         :: l_hessian=.false.
   logical                         :: do_print=.true.
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
@@ -67,6 +69,12 @@ module linearresponse_mod
     case ('tda')
       call get_next_value (l_tda)
 
+    case ('hessian')
+      call get_next_value (l_hessian)
+
+    case ('analysis_eigenvec')
+      call get_next_value (l_analysis_eigenvec)
+
     case ('print')
       call get_next_value (l_print)
 
@@ -78,6 +86,10 @@ module linearresponse_mod
     end select
 
   enddo ! end loop over menu lines
+
+  if (l_tda.and.l_hessian) then
+    call die(lhere, 'cannot TDA and HESSIAN together')
+  endif
 
 ! initialize
   l_opt=.true.
@@ -305,16 +317,37 @@ module linearresponse_mod
   ovlp_matrix(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=ovlp_psii_psij_av
 
 ! Solve the generalized eigenvalue equation
-  if (do_print) then
-  write(6,*)
-  write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation with a_diag =', diag_stab
-  endif
-
 ! a\ prepare arrays
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
   call alloc('eigval_r',     eigval_r,     2*param_nb)
   call alloc('eigval_i',     eigval_i,     2*param_nb)
   call alloc('eigval_denom', eigval_denom, 2*param_nb)
+
+! if hessian
+  if (l_hessian) then
+    ! calculate optimal value of lwork
+    lwork = -1
+    call alloc('work', work, 1)
+    call dsyev('N','U',2*param_nb,linresp_matrix,2*param_nb,eigval_r,work,lwork,info)
+    if(info /=  0) call die(lhere, 'problem in dsyev_alloc: info='+info+' /=  0')
+    lwork=nint(work(1))
+    call alloc('work', work, lwork)
+
+    ! calculate eigenvalues
+    write(6,*)
+    write(6,'(a)') 'Eigenvalues of the Hessian'
+    call dsyev('N','U',2*param_nb,linresp_matrix,2*param_nb,eigval_r,work,lwork,info)
+    if(info /=  0) call die(lhere, 'problem in dsyev: info='+info+' /=  0 (compare to 2* param_nb='+2*param_nb+')')
+    do i=1,2*param_nb
+      write(6,'(a,i5,a,f12.6)') 'eigenvalue #',i,': ',eigval_r(i)
+    enddo
+    write(6,*)
+  endif
+
+  if (do_print) then
+  write(6,*)
+  write(6,'(a,1pd9.1)') 'Solving generalized eigenvalue equation with a_diag =', diag_stab
+  endif
 
 ! b\ calculate optimal value of lwork
   lwork = 1
@@ -407,35 +440,37 @@ module linearresponse_mod
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
   do i = 1, nunique
     write(6,'(a,i5,a,2(f12.6,a),i5,a)') 'eigenvalue #',i,': ',unique_r(i), ' +', unique_i(i),' i (',position_and_degenerate(i,2),')'
-    if (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),&
-               & eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),1.0d-4).eq.0) then
-      do j=1,param_nb
-      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecEQU ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-                                                         &  eigvec(j,position_and_degenerate(i,1)) &
-                                                         & -eigvec(j+param_nb,position_and_degenerate(i,1))
-      enddo
-    elseif (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),&
-                  & -eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),1.0d-4).eq.0) then
-      do j=1,param_nb
-      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecOPP ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-                                                         &  eigvec(j,position_and_degenerate(i,1)) &
-                                                         & +eigvec(j+param_nb,position_and_degenerate(i,1))
-      enddo
-    elseif (is_equal(eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
-      do j=1,param_nb
-      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAX',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-                                                         &  eigvec(j+param_nb,position_and_degenerate(i,1))
-      enddo
-    elseif (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
-      do j=1,param_nb
-      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAY',i,': ',eigvec(j+param_nb,position_and_degenerate(i,1)),&
-                                                         &  eigvec(j,position_and_degenerate(i,1))
-      enddo
-    else
-      do j=1,param_nb
-      write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecUNK ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-                                                         &  eigvec(j+param_nb,position_and_degenerate(i,1))
-      enddo
+    if (l_analysis_eigenvec) then
+      if (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),&
+                 & eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),1.0d-4).eq.0) then
+        do j=1,param_nb
+        write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecEQU ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                           &  eigvec(j,position_and_degenerate(i,1)) &
+                                                           & -eigvec(j+param_nb,position_and_degenerate(i,1))
+        enddo
+      elseif (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),&
+                    & -eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),1.0d-4).eq.0) then
+        do j=1,param_nb
+        write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecOPP ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                           &  eigvec(j,position_and_degenerate(i,1)) &
+                                                           & +eigvec(j+param_nb,position_and_degenerate(i,1))
+        enddo
+      elseif (is_equal(eigvec(param_nb+1:2*param_nb,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
+        do j=1,param_nb
+        write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAX',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                           &  eigvec(j+param_nb,position_and_degenerate(i,1))
+        enddo
+      elseif (is_equal(eigvec(:param_nb,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
+        do j=1,param_nb
+        write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAY',i,': ',eigvec(j+param_nb,position_and_degenerate(i,1)),&
+                                                           &  eigvec(j,position_and_degenerate(i,1))
+        enddo
+      else
+        do j=1,param_nb
+        write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecUNK ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
+                                                           &  eigvec(j+param_nb,position_and_degenerate(i,1))
+        enddo
+      endif
     endif
   enddo
   endif

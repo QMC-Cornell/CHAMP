@@ -368,6 +368,11 @@ module optimization_mod
 
   case ('compare_to_linresp')
     call get_next_value (l_tda)
+    opt_method='linear'
+    iter_opt_max_nb=1
+    nopt_iter = iter_opt_max_nb
+    l_last_run=.false.
+    l_stab=.false.
 
   case ('end')
    exit

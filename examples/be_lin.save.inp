@@ -55,12 +55,16 @@ csfs
   1   5       1   5 
   1   3       1   3 (iworbd(j,idet),j=1,nelec)
  end
- csf_coef 0.949537 -0.181089 end ! -0.181089 -0.181089  end
+ csf_coef 0.949537 -0.181089 -0.181089 -0.181089  end
  dets_in_csfs
  1 
- 1 
- 2 3 4
- 1. 1. 1.
+-1 
+ 4 
+-1 
+ 3 
+-1 
+ 2 
+-1 
  end
 end
 
@@ -76,18 +80,19 @@ end
 
 !optimization
 ! parameters
-!  jastrow csfs !orbitals !exponents
+!  jastrow !csfs !orbitals !exponents
 ! end
 ! method = linear
+! iter_opt_max_nb=1
+! last_run=false
+! stabilize=false
 ! casscf=true
 !end
 
 linearresponse
  parameters
-  jastrow csfs orbitals exponents
+  jastrow !csfs !orbitals !exponents
  end
  tda=.true.
- analysis_eigenvec=.false.
-!hessian=.true.
 end
 
