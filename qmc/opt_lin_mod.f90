@@ -988,11 +988,11 @@ module opt_lin_mod
     write(6,'(a,i5,a,2(f12.6,a))') 'eigenvalue #',i,': ',eigval_r(eigval_srt_ind_to_eigval_ind(i)), ' +', eigval_i(eigval_srt_ind_to_eigval_ind(i)),' i'
   enddo
 
-! print eigenvectors
-! write(6,'(a)') 'Sorted right eigenvectors:'
-! do j = 1, param_aug_nb
-!   write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :',(eigvec(i, eigval_srt_ind_to_eigval_ind(j)), i = 1, param_aug_nb)
-! enddo
+!print eigenvectors
+write(6,'(a)') 'Sorted right eigenvectors:'
+do j = 1, param_aug_nb
+  write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :',(eigvec(i, eigval_srt_ind_to_eigval_ind(j)), i = 1, param_aug_nb)
+enddo
 
 ! Find eigenvector with smallest norm(Psi_lin-Psi_0) for nonlinear parameters
   if (l_print_eigenvector_norm) then
@@ -1000,7 +1000,11 @@ module opt_lin_mod
   endif
   smallest_norm=9.d99
   eigvec_smallest_norm_ind=1
+
   do i = 1, param_aug_nb
+     do iparm=1,param_nb+1
+        print*,'eigvec,eigvec,ovlp,renorm',iparm,i,eigvec(iparm,i),eigvec(iparm,i),ovlp_lin(iparm,i),renorm_vector(iparm)
+     enddo
     psi_lin_var_norm = 0
     ! MJO Should this be nparmlin or nparmlin+1?
     do iparm = nparmlin+1, param_nb
@@ -1206,13 +1210,18 @@ module opt_lin_mod
 
 ! undo renormalization
 ! warning: only for selected eigenvector
+  print*,'eigvec1',eigvec(1,eig_ind)
+  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
+  print*,'renorm_vector',renorm_vector(1),renorm_vector(2)
   eigvec(:, eig_ind) = eigvec(:, eig_ind) / renorm_vector(:)
-
+  print*,'eigvec1',eigvec(1,eig_ind)
+  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
 ! normalize eigenvector so that first component is 1
   tmp=eigvec(1,eig_ind)
 ! eigvec(:,eig_ind) = eigvec(:,eig_ind)/eigvec(1,eig_ind)
   eigvec(1:param_aug_nb, eig_ind) = eigvec(1:param_aug_nb, eig_ind)/tmp
-
+  print*,'eigvec1 2',eigvec(1,eig_ind)
+  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
 ! norm of linear wave function variation for nonlinear parameter
   psi_lin_var_norm = 0.d0
   do iparm = nparmlin+1, param_nb
@@ -1224,6 +1233,7 @@ module opt_lin_mod
   write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') 'selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i, norm change=', psi_lin_var_norm
 ! write(6,'(a,f10.6)') 'Norm of linear wavefunction variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   if(psi_lin_var_norm > 100*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 100*smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
+  write(6,'(''psi_lin_var_norm smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
 
   call release ('eigval_r', eigval_r)
   call release ('eigval_i', eigval_i)
@@ -1233,6 +1243,8 @@ module opt_lin_mod
 
 ! calculate the actual parameter variations
   eigvec_first_coef = eigvec(1,eig_ind)
+  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
+  print*,'eigvec1 3',eigvec_first_coef
 
 ! write(6,'(/,''Warning eigvec_first_coef='',9es12.4)') eigvec_first_coef
   if(eigvec_first_coef.ne.eigvec(1,eig_ind)) then
@@ -1251,11 +1263,14 @@ module opt_lin_mod
 
 ! semiorthogonal: use semiorthognal derivatives for nonlinear parameters
    case ('semiorthogonal')
-
+  print*,'eigvec1 3.5',eigvec_first_coef
 !   come back to original derivatives for the CSFs only
-    do iparmcsf = 1, nparmlin
-      eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
+    do iparmcsf = 1, nparmcsf
+       print*,'eigvec,dpsi_av',eigvec(1+iparmcsf,eig_ind),dpsi_av(iparmcsf)
+     eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
     enddo
+
+  print*,'eigvec1 4',eigvec_first_coef
 
 !   nonlinear parameter
     eigvec_first_coef = eigvec_first_coef +(1.d0-xi)*psi_lin_var_norm/((1.d0-xi) + xi*(1.d0+psi_lin_var_norm))
@@ -1270,6 +1285,7 @@ module opt_lin_mod
 ! final parameter variations
   do iparm = 1, param_nb
     delta_lin(iparm) = eigvec(1+iparm, eig_ind) / eigvec_first_coef
+    print*,'delta_lin(',iparm,') = ',delta_lin(iparm)
   enddo
 
 ! Warning: tmp

@@ -1497,7 +1497,7 @@ module optimization_mod
 
    if (l_opt_csf_rot) then
       print*,'csf_rot_coef before: '
-      write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,iwf) ! for pathscale compiler
+      write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,1) ! for pathscale compiler
 
       do iparmcsf = 1, nparmcsf
          csf_rot_coef(iparmcsf,iwf) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
@@ -1506,7 +1506,7 @@ module optimization_mod
       write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,iwf) ! for pathscale compiler
 
       print*,'csf_coef before: '
-      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+      write(6,'(1000f15.8)') csf_coef(1:ncsf,1) ! for pathscale compiler
       !Convert from rotation parameters to csf_coef using:
       !
       ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
@@ -1520,13 +1520,13 @@ module optimization_mod
       csf_coef(1,iwf) = cos(csf_rot_arg)
       
       do iparmcsf = 1, nparmcsf
-         csf_coef(iparmcsf+1,iwf) = -sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf)
+         csf_coef(iparmcsf+1,iwf) = sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf)
       enddo
       print*,'csf_coef after: '
       write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
    else
       print*,'csf_coef before: '
-      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+      write(6,'(1000f15.8)') csf_coef(1:ncsf,1) ! for pathscale compiler
 
       do iparmcsf = 1, nparmcsf
          csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
@@ -1548,18 +1548,6 @@ module optimization_mod
       print*,'csf_coef after: '
       write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 
-!      Shouldn't be necessary, because we are always using linear csfs in this mode
-      ! Calculate csf_rot_arg (or d, above)
-      ! csf_rot_arg     = acos(csf_coef(1,iwf))
-
-      ! ! Now calculate rotation parameters - only m-1 parameters
-      ! ! because the normalization fixes the first parameter
-      ! ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
-      ! ! by the normalization, so we only have ncsf-1 rotation parameters
-
-      ! do i=1,ncsf-1
-      !    csf_rot_coef(i,iwf) = -csf_coef(i+1,iwf)*csf_rot_arg/sin(csf_rot_arg)
-      ! enddo
    endif
 
    call object_modified ('csf_coef')
@@ -1786,7 +1774,7 @@ module optimization_mod
   if (l_opt_csf) then
     call object_provide ('delta_csf_norm')
     if (delta_csf_norm > 1.d0) then
-      is_bad_move = 1
+      is_bad_move = 1 
       write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the csf coefficient variations is too large: delta_csf_norm=',delta_csf_norm,' > 1.'
     endif
   endif
@@ -1796,12 +1784,12 @@ module optimization_mod
     call object_provide ('delta_jas_norm')
     if (ndim == 3) then
       if(delta_jas_norm > max(10.d0,5.d0/scalek(iwf))) then
-        is_bad_move = 1
+        is_bad_move = 1 
         write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 10 or 5/scalek'
       endif
     else
       if(delta_jas_norm > max(500.d0,50.d0/scalek(iwf))) then
-        is_bad_move = 1
+        is_bad_move = 1 
         write (6,'(a,es15.8,a)') 'This is a bad move because the norm of the jastrow parameter variations is too large: delta_jas_norm=',delta_jas_norm,' > 500 or 50/scalek'
       endif
     endif
@@ -1881,7 +1869,7 @@ module optimization_mod
 ! test norm of linear wave function variation
   if (l_opt_lin) then
    if (psi_lin_var_norm > psi_lin_var_norm_max) then
-    is_bad_move = max(is_bad_move,1)
+    is_bad_move = 0!max(is_bad_move,1) 
     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the linear wave function variation is too large: psi_lin_var_norm=',psi_lin_var_norm,' > ',psi_lin_var_norm_max
    endif
   endif
