@@ -95,7 +95,7 @@ module csfs_mod
       ! d = sqrt(sum(abs(R_k)^2))
       ! R_0 = cos(d)
       ! and for k.ne.0
-      ! R_k = -C_k d/sin(d) 
+      ! R_k = C_k d/sin(d) 
       ! 
       csf_norm = 0
       do i=1,ncsf
@@ -114,7 +114,7 @@ module csfs_mod
       ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
       ! by the normalization, so we only have ncsf-1 rotation parameters
       do i=1,ncsf-1
-         csf_rot_coef(i,1) = -csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
+         csf_rot_coef(i,1) = csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
       enddo
 
       write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(i,1),i=1,ncsf)
