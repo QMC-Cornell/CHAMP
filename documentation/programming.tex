@@ -359,7 +359,7 @@ If an object is an array, it is dynamically allocated inside its building subrou
 
 \vspace{0.5cm}
 \noindent
-{\tt call object_alloc('orbitals', orbitals, norb)\\
+{\tt call object_alloc(`orbitals', orbitals, norb)\\
 do i=1,norb\\
 \phantom{xx} orbitals(i) = ...\\
 enddo}
@@ -368,15 +368,8 @@ enddo}
 Note that the dimension {\tt norb} itself is usually an object handled by the dependency tree. If it changes during the calculation, the array will be reallocated with the new size.
 
 \subsection{Indexes of objects}
-The functions {\tt object_modified(`...')} and {\tt object_provide(`...')} take as argument the name of an object given as a string. The name of the object is then looked up in an array which can take some time. If these functions are called in a part of the code that is very often executed, this is not efficient. In this case, we use directly the index of the object in the array, instead of its name. For example:
-
-\vspace{0.5cm}
-\noindent
-{\tt call object_modified_by_index(electron_coordinates_index)}
-
-\vspace{0.5cm}
-\noindent
-{\tt call object_provide_by_index(psi_index)}
+The routines {\tt object_modified} and {\tt object_provide} take as argument the name of an object given as a string. The name of the object is then looked up in an array which can take some time. If these functions are called in a part of the code that is very often executed, this is not efficient. In this case, we use directly the index of the object in the array, instead of its name.
+Hence, a call to {\tt object_modified(`index')} can be substituted for a call to {\tt call object_modified_by_index(`index')}, and a call to {\tt object_provide(`name')} for a call to {\tt object_provide_by_index(`index')}
 
 
 \section{Programming Manual}
@@ -434,7 +427,7 @@ To well understand the commands described in the next sections, one might first 
     {\tt pointer              }&::& {\tt pointer_[type]                 }& \\
     {\tt logical              }&::& {\tt saved    = .false.             }& \\
     {\tt real                 }&::& {\tt save_[type]                    }& \\
-    (and statistical stuff)    &::&
+    (and statistical stuff)
 \end{tabular}
 }
 
@@ -483,11 +476,10 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   with the current building node index, 
   and possibly returns its (newly produced) {\tt `index'}.
 
-  This uses \link{object_add_once_and_index}.
+  This uses \link{object_add_once_and_index} to obtain the `index' of the object.
   \vspace{1em}
 
-  In detail:
-  \vspace{.5em}
+  In the code:
 
   \begin{itemize}
   \item register that the current node creates the object
@@ -503,8 +495,7 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   This uses \link{object_add_once_and_index} (in case the object itself is not already catalogued).
   \vspace{1em}
 
-  In detail:
-  \vspace{.5em}
+  In the code:
 
   \begin{itemize}
   \item register that the object is needed by the current node
@@ -526,8 +517,7 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   The objects needs either to be valid or to have a catalogued building node to be called.
   \vspace{1em}
 
-  In detail:
-  \vspace{.5em}
+  In the code:
 
   \begin{itemize}
   \item if valid, return
@@ -553,8 +543,7 @@ that are (almost) only called in the ``{\tt MED_tools/*f90}'' files themselves.
   and invalidate all children (known by their {\tt `index'}).
   \vspace{1em}
 
-  In detail:
-  \vspace{.5em}
+  In the code:
 
   \begin{itemize}
   \item validate the object
@@ -599,10 +588,14 @@ In this section are described in a glossary manner the more core commands of the
 }
 
 \entry{[sub] object_add(`name')}{
-  Catalog a new object.
+  Catalog a new object.\\
 
-  This means adding an entry to the {\tt `objects'} array,
-  with {\tt `name'} as name and default values for other data
+  In the code:
+
+  \begin{itemize}
+  \item add an entry to the {\tt `objects'} array,
+        with {\tt `name'} as name and default values for other data.
+  \end{itemize}
 }
 
 \entry{[sub] object_add_and_index(`index')}{
@@ -645,8 +638,7 @@ In this section are described in a glossary manner the more core commands of the
   and all its children (known by their {\tt `index'}).
   \vspace{1em}
 
-  In detail:
-  \vspace{.5em}
+  In the code:
 
   \begin{itemize}
   \item if all are already invalid, return
@@ -666,7 +658,7 @@ In this section are described in a glossary manner the more core commands of the
   
   This uses \link{object_add_once_and_index}.
 
-  In detail:
+  In the code:
 
   HERE
 }
@@ -676,7 +668,7 @@ In this section are described in a glossary manner the more core commands of the
 
   This uses \link{object_add_once_and_index}.
 
-  In detail:
+  In the code:
 
   HERE
 }
@@ -707,8 +699,7 @@ In this section are described in a glossary manner the more core commands of the
   Executes a node known by its {\tt `index'}.
   \vspace{1em}
 
-  In detail:
-  \vspace{.5em}
+  In the code:
 
   \begin{itemize}
   \item if node is valid, return
@@ -752,7 +743,27 @@ In this section are described in a glossary manner the more core commands of the
 
 \entry{object_average_request(`name')}{}
 
-\entry{object_average_define(`name',`name_av')}{}
+\entry{object_block_average_request(`name')}{}
+
+\entry{object_variance_request(`name')}{}
+
+\entry{object_covariance_request(`name')}{}
+
+\entry{object_error_request(`name')}{}
+
+\entry{object_average_define(`name',`name_average')}{}
+
+\entry{object_average_unweighted_define(`name',`name_average')}{}
+
+\entry{object_block_average_define(`name',`name_average')}{}
+
+\entry{object_average_walk_define(`name',`name_average')}{}
+
+\entry{object_variance_define(`name',`name_variance')}{}
+
+\entry{object_covariance_define(`name1',`name2',`name_covariance')}{}
+
+\entry{object_error_define(`name',`name_error')}{}
 
 \subsection{About wavefunction and derivatives}
 
