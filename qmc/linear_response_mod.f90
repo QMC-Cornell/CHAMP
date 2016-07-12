@@ -22,14 +22,22 @@ module linearresponse_mod
   real(dp), allocatable           :: ovlp_psii_psij_av(:,:)
   real(dp), allocatable           :: linresp_matrix(:,:)
   real(dp), allocatable           :: ovlp_matrix(:,:)
-  real(dp), allocatable           :: linresp_av_eigenval(:)
-  real(dp), allocatable           :: linresp_av_eigenval_err(:)
-  real(dp), allocatable           :: tda_av_eigenval(:)
-  real(dp), allocatable           :: tda_av_eigenval_err(:)
-  real(dp), allocatable           :: hessian_av_eigenval(:)
-  real(dp), allocatable           :: hessian_av_eigenval_err(:)
-  real(dp), allocatable           :: real_hessian_av_eigenval(:)
-  real(dp), allocatable           :: real_hessian_av_eigenval_err(:)
+  real(dp), allocatable           :: linresp_av_eigenval_r(:)
+  real(dp), allocatable           :: linresp_av_eigenval_i(:)
+  real(dp), allocatable           :: linresp_av_eigenval_r_err(:)
+  real(dp), allocatable           :: linresp_av_eigenval_i_err(:)
+  real(dp), allocatable           :: tda_av_eigenval_r(:)
+  real(dp), allocatable           :: tda_av_eigenval_i(:)
+  real(dp), allocatable           :: tda_av_eigenval_r_err(:)
+  real(dp), allocatable           :: tda_av_eigenval_i_err(:)
+  real(dp), allocatable           :: hessian_av_eigenval_r(:)
+  real(dp), allocatable           :: hessian_av_eigenval_i(:)
+  real(dp), allocatable           :: hessian_av_eigenval_r_err(:)
+  real(dp), allocatable           :: hessian_av_eigenval_i_err(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_r(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_i(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_r_err(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_i_err(:)
 
   contains
 
@@ -233,20 +241,24 @@ module linearresponse_mod
   call object_average_request('deloc_av')
   call object_average_request('dpsi_deloc_av')
   if (l_hessian) then
-    call object_error_request('hessian_av_eigenval_err')
+    call object_error_request('hessian_av_eigenval_r_err')
+    call object_error_request('hessian_av_eigenval_i_err')
   endif
   if (l_real_hessian) then
-    call object_error_request('real_hessian_av_eigenval_err')
+    call object_error_request('real_hessian_av_eigenval_r_err')
+    call object_error_request('real_hessian_av_eigenval_i_err')
   endif
   if (l_tda) then
-    call object_error_request('tda_av_eigenval_err')
+    call object_error_request('tda_av_eigenval_r_err')
+    call object_error_request('tda_av_eigenval_i_err')
   endif
   if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda)) then
     call object_average_request('d2psi_av')
     call object_average_request('d2psi_eloc_av')
   endif
   if (.not.l_tda) then
-    call object_error_request('linresp_av_eigenval_err')
+    call object_error_request('linresp_av_eigenval_r_err')
+    call object_error_request('linresp_av_eigenval_i_err')
   endif
 
 ! VMC run
@@ -257,19 +269,27 @@ module linearresponse_mod
 
 ! final calculation
   if (l_hessian) then
-    call object_invalidate('hessian_av_eigenval')
-    call object_provide('hessian_av_eigenval')
+    call object_invalidate('hessian_av_eigenval_r')
+    call object_invalidate('hessian_av_eigenval_i')
+    call object_provide('hessian_av_eigenval_r')
+    call object_provide('hessian_av_eigenval_i')
   endif
   if (l_real_hessian) then
-    call object_invalidate('real_hessian_av_eigenval')
-    call object_provide('real_hessian_av_eigenval')
+    call object_invalidate('real_hessian_av_eigenval_r')
+    call object_invalidate('real_hessian_av_eigenval_i')
+    call object_provide('real_hessian_av_eigenval_r')
+    call object_provide('real_hessian_av_eigenval_i')
   endif
   if (l_tda) then
-    call object_invalidate('tda_av_eigenval')
-    call object_provide('tda_av_eigenval')
+    call object_invalidate('tda_av_eigenval_r')
+    call object_invalidate('tda_av_eigenval_i')
+    call object_provide('tda_av_eigenval_r')
+    call object_provide('tda_av_eigenval_i')
   else
-    call object_invalidate('linresp_av_eigenval')
-    call object_provide('linresp_av_eigenval')
+    call object_invalidate('linresp_av_eigenval_r')
+    call object_invalidate('linresp_av_eigenval_i')
+    call object_provide('linresp_av_eigenval_r')
+    call object_provide('linresp_av_eigenval_i')
   endif
 
   end subroutine linearresponse
@@ -300,8 +320,10 @@ module linearresponse_mod
 
 ! begin
   if (header_exe) then
-    call object_create('linresp_av_eigenval')
-    call object_error_define ('linresp_av_eigenval','linresp_av_eigenval_err')
+    call object_create('linresp_av_eigenval_r')
+    call object_create('linresp_av_eigenval_i')
+    call object_error_define ('linresp_av_eigenval_r','linresp_av_eigenval_r_err')
+    call object_error_define ('linresp_av_eigenval_i','linresp_av_eigenval_i_err')
 
     call object_needed('param_nb')
 
@@ -311,8 +333,10 @@ module linearresponse_mod
     return
   endif
 
-  call object_alloc ('linresp_av_eigenval',linresp_av_eigenval,2*param_nb)
-  call object_alloc ('linresp_av_eigenval_err',linresp_av_eigenval_err,2*param_nb)
+  call object_alloc ('linresp_av_eigenval_r',linresp_av_eigenval_r,2*param_nb)
+  call object_alloc ('linresp_av_eigenval_i',linresp_av_eigenval_i,2*param_nb)
+  call object_alloc ('linresp_av_eigenval_r_err',linresp_av_eigenval_r_err,2*param_nb)
+  call object_alloc ('linresp_av_eigenval_i_err',linresp_av_eigenval_i_err,2*param_nb)
 
 ! prepare arrays and output message
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
@@ -357,13 +381,16 @@ module linearresponse_mod
 ! sort eigenvalues
   call sorting_real_im(eigval_r,eigval_i,forward_sort,backward_sort,2*param_nb) 
 
-! output analysis
-  call analysis_eigval_eigvec(eigvec,eigval_r,eigval_i,backward_sort,2*param_nb)
-
 ! the sorted eigenvalues are "linresp_av_eigenval"
   do i = 1, 2*param_nb
-   linresp_av_eigenval (i) = eigval_r(backward_sort(i))
+   linresp_av_eigenval_r (i) = eigval_r(backward_sort(i))
+   linresp_av_eigenval_i (i) = eigval_i(backward_sort(i))
   enddo
+
+! output analysis
+  call analysis_eigval_eigvec(eigvec,backward_sort, &
+    linresp_av_eigenval_r,linresp_av_eigenval_r_err,&
+    linresp_av_eigenval_i,linresp_av_eigenval_i_err,2*param_nb)
 
 ! release statements
   call release ('work', work)
@@ -402,8 +429,10 @@ module linearresponse_mod
 
 ! begin
   if (header_exe) then
-    call object_create('tda_av_eigenval')
-    call object_error_define ('tda_av_eigenval','tda_av_eigenval_err')
+    call object_create('tda_av_eigenval_r')
+    call object_create('tda_av_eigenval_i')
+    call object_error_define ('tda_av_eigenval_r','tda_av_eigenval_r_err')
+    call object_error_define ('tda_av_eigenval_i','tda_av_eigenval_i_err')
 
     call object_needed('param_nb')
 
@@ -413,8 +442,12 @@ module linearresponse_mod
     return
   endif
 
-  call object_alloc ('tda_av_eigenval',tda_av_eigenval,param_nb)
-  call object_alloc ('tda_av_eigenval_err',tda_av_eigenval_err,param_nb)
+  write(6,*) '/BM/here'
+
+  call object_alloc ('tda_av_eigenval_r',tda_av_eigenval_r,param_nb)
+  call object_alloc ('tda_av_eigenval_i',tda_av_eigenval_i,param_nb)
+  call object_alloc ('tda_av_eigenval_r_err',tda_av_eigenval_r_err,param_nb)
+  call object_alloc ('tda_av_eigenval_i_err',tda_av_eigenval_i_err,param_nb)
 
 ! prepare arrays and output message
   call alloc('eigvec',       eigvec,       param_nb, param_nb)
@@ -459,8 +492,16 @@ module linearresponse_mod
 ! sort eigenvalues
   call sorting_real_im(eigval_r,eigval_i,forward_sort,backward_sort,param_nb) 
 
+! the sorted eigenvalues are "linresp_av_eigenval"
+  do i = 1, param_nb
+   tda_av_eigenval_r (i) = eigval_r(backward_sort(i))
+   tda_av_eigenval_i (i) = eigval_i(backward_sort(i))
+  enddo
+
 ! output analysis
-  call analysis_eigval_eigvec(eigvec,eigval_r,eigval_i,backward_sort,param_nb)
+  call analysis_eigval_eigvec(eigvec,backward_sort, &
+    tda_av_eigenval_r,tda_av_eigenval_r_err, &
+    tda_av_eigenval_i,tda_av_eigenval_i_err,param_nb)
 
 ! release statements
   call release ('work', work)
@@ -497,8 +538,10 @@ module linearresponse_mod
 
 ! begin
   if (header_exe) then
-    call object_create('hessian_av_eigenval')
-    call object_error_define ('hessian_av_eigenval','hessian_av_eigenval_err')
+    call object_create('hessian_av_eigenval_r')
+    call object_create('hessian_av_eigenval_i')
+    call object_error_define ('hessian_av_eigenval_r','hessian_av_eigenval_r_err')
+    call object_error_define ('hessian_av_eigenval_i','hessian_av_eigenval_i_err')
 
     call object_needed('param_nb')
 
@@ -507,8 +550,10 @@ module linearresponse_mod
     return
   endif
 
-  call object_alloc ('hessian_av_eigenval',hessian_av_eigenval,2*param_nb)
-  call object_alloc ('hessian_av_eigenval_err',hessian_av_eigenval_err,2*param_nb)
+  call object_alloc ('hessian_av_eigenval_r',hessian_av_eigenval_r,2*param_nb)
+  call object_alloc ('hessian_av_eigenval_i',hessian_av_eigenval_i,2*param_nb)
+  call object_alloc ('hessian_av_eigenval_r_err',hessian_av_eigenval_r_err,2*param_nb)
+  call object_alloc ('hessian_av_eigenval_i_err',hessian_av_eigenval_i_err,2*param_nb)
 
 ! prepare arrays and output message
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
@@ -543,8 +588,16 @@ module linearresponse_mod
 ! sort eigenvalues
   call sorting_real_im(eigval_r,eigval_i,forward_sort,backward_sort,2*param_nb) 
 
+! the sorted eigenvalues are "linresp_av_eigenval"
+  do i = 1, 2*param_nb
+   hessian_av_eigenval_r (i) = eigval_r(backward_sort(i))
+   hessian_av_eigenval_i (i) = eigval_i(backward_sort(i))
+  enddo
+
 ! output analysis
-  call analysis_eigval_eigvec(eigvec,eigval_r,eigval_i,backward_sort,2*param_nb)
+  call analysis_eigval_eigvec(eigvec,backward_sort, &
+    hessian_av_eigenval_r,hessian_av_eigenval_r_err, &
+    hessian_av_eigenval_i,hessian_av_eigenval_i_err,2*param_nb)
 
 ! release statements
   call release ('work', work)
@@ -580,8 +633,10 @@ module linearresponse_mod
 
 ! begin
   if (header_exe) then
-    call object_create('real_hessian_av_eigenval')
-    call object_error_define ('real_hessian_av_eigenval','real_hessian_av_eigenval_err')
+    call object_create('real_hessian_av_eigenval_r')
+    call object_create('real_hessian_av_eigenval_i')
+    call object_error_define ('real_hessian_av_eigenval_r','real_hessian_av_eigenval_r_err')
+    call object_error_define ('real_hessian_av_eigenval_i','real_hessian_av_eigenval_i_err')
 
     call object_needed('param_nb')
 
@@ -591,8 +646,10 @@ module linearresponse_mod
     return
   endif
 
-  call object_alloc ('real_hessian_av_eigenval',real_hessian_av_eigenval,param_nb)
-  call object_alloc ('real_hessian_av_eigenval_err',real_hessian_av_eigenval_err,param_nb)
+  call object_alloc ('real_hessian_av_eigenval_r',real_hessian_av_eigenval_r,param_nb)
+  call object_alloc ('real_hessian_av_eigenval_i',real_hessian_av_eigenval_i,param_nb)
+  call object_alloc ('real_hessian_av_eigenval_r_err',real_hessian_av_eigenval_r_err,param_nb)
+  call object_alloc ('real_hessian_av_eigenval_i_err',real_hessian_av_eigenval_i_err,param_nb)
 
 ! prepare arrays and output message
   call alloc('eigvec',       eigvec,       param_nb, param_nb)
@@ -628,8 +685,16 @@ module linearresponse_mod
 ! sort eigenvalues
   call sorting_real_im(eigval_r,eigval_i,forward_sort,backward_sort,param_nb) 
 
+! the sorted eigenvalues are "linresp_av_eigenval"
+  do i = 1, param_nb
+   real_hessian_av_eigenval_r (i) = eigval_r(backward_sort(i))
+   real_hessian_av_eigenval_i (i) = eigval_i(backward_sort(i))
+  enddo
+
 ! output analysis
-  call analysis_eigval_eigvec(eigvec,eigval_r,eigval_i,backward_sort,param_nb)
+  call analysis_eigval_eigvec(eigvec,backward_sort, &
+    real_hessian_av_eigenval_r,real_hessian_av_eigenval_r_err,&
+    real_hessian_av_eigenval_i,real_hessian_av_eigenval_i_err,param_nb)
 
 ! release statements
   call release ('work', work)
@@ -798,6 +863,7 @@ module linearresponse_mod
     call object_needed('dpsi_eloc_av')
     call object_needed('eloc_av')
     call object_needed('dpsi_deloc_covar')
+    call object_needed('dpsi_deloc_covar')
 
     return
   endif
@@ -909,7 +975,9 @@ module linearresponse_mod
   enddo
   do i = 1, n
     do j = i+1, n
-      if(eigval_r(backward_sort(j)) < eigval_r(backward_sort(i))) then
+      if ((eigval_r(backward_sort(j))-eigval_r(backward_sort(i))<-0.0001)   &
+       .or. ((eigval_r(backward_sort(j))-eigval_r(backward_sort(i))<0.0001) &
+       .and. (eigval_i(backward_sort(j))<eigval_i(backward_sort(i))))) then
         temp = backward_sort(i)
         backward_sort(i) = backward_sort(j)
         backward_sort(j) = temp
@@ -931,7 +999,7 @@ module linearresponse_mod
   end subroutine sorting_real_im
          
 !===========================================================================
-  subroutine analysis_eigval_eigvec(eigvec,eigval_r,eigval_i,sorting,n)
+  subroutine analysis_eigval_eigvec(eigvec,sorting,eigval_r,err_r,eigval_i,err_i,n)
 !---------------------------------------------------------------------------
 ! Description : Analysis of eigval/eigvec
 ! Description : 
@@ -945,7 +1013,9 @@ module linearresponse_mod
 ! input/output
   real(dp), allocatable           :: eigvec(:,:)
   real(dp), allocatable           :: eigval_r(:)
+  real(dp), allocatable           :: err_r(:)
   real(dp), allocatable           :: eigval_i(:)
+  real(dp), allocatable           :: err_i(:)
   integer,  allocatable           :: sorting(:)
   integer                         :: n
 
@@ -956,7 +1026,6 @@ module linearresponse_mod
   logical                         :: new_one
 
 ! begin
-! Analysis of eval/evec
   call alloc('unique_r', unique_r, n)
   call alloc('unique_i', unique_i, n)
   call alloc('position_and_degenerate', position_and_degenerate, n,2)
@@ -967,8 +1036,8 @@ module linearresponse_mod
   do i_eigval=1,n
     new_one=.true.
     do j_unq=1,nunique
-      if((abs(eigval_r(sorting(i_eigval))-unique_r(j_unq)).le.0.0001).and. &
-        &(abs(eigval_i(sorting(i_eigval))-unique_i(j_unq)).le.0.001)) then
+      if((abs(eigval_r(i_eigval)-unique_r(j_unq)).le.0.0001).and. &
+        &(abs(eigval_i(i_eigval)-unique_i(j_unq)).le.0.001)) then
         new_one=.false.
         position_and_degenerate(j_unq,2)=position_and_degenerate(j_unq,2)+1
         exit
@@ -976,9 +1045,9 @@ module linearresponse_mod
     enddo
     if (new_one) then
       nunique=nunique+1
-      unique_r(nunique)=eigval_r(sorting(i_eigval))
-      unique_i(nunique)=eigval_i(sorting(i_eigval))
-      position_and_degenerate(nunique,1)=sorting(i_eigval)
+      unique_r(nunique)=eigval_r(i_eigval)
+      unique_i(nunique)=eigval_i(i_eigval)
+      position_and_degenerate(nunique,1)=i_eigval
       position_and_degenerate(nunique,2)=1
     endif
   enddo
@@ -987,7 +1056,10 @@ module linearresponse_mod
   if (run_done.or.l_print_every_block) then
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
   do i = 1, nunique
-    write(6,'(a,i5,a,2(f12.6,a),i5,a)') 'eigenvalue #',i,': ',unique_r(i), ' +', unique_i(i),' i (',position_and_degenerate(i,2),')'
+    write(6,'(a,i5,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
+      & unique_r(i),' +/-',err_r(position_and_degenerate(i,1)),' +',&
+      & unique_i(i),' +/-',err_i(position_and_degenerate(i,1)),' i (',&
+      & position_and_degenerate(i,2),')'
   enddo
   endif
 
