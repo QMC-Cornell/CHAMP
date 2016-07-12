@@ -4,9 +4,9 @@
                                                  version 3.08.00
 ----------------------------------------------------------------------------------------------------------
 
-GIT commit 9ccbb95274540317da9aa7506fcef513ded592d7, Date:   Wed Jul 6 11:16:36 2016 -0400
-Compiled by mussard on Tue Jul 12 12:27:10 CEST 2016 on host antares
-Executed by mussard on 2016-07-12 12:36:65 (+0200) on master host 
+GIT commit 54040b0797ba5c74d120eeeff62ccd12b5d8f74a, Date:   Mon Jul 4 11:39:02 2016 -0400
+Compiled by mussard on Tue Jul 12 12:39:21 CEST 2016 on host antares
+Executed by mussard on 2016-07-12 12:40:03 (+0200) on master host 
 Executable: /home/mussard/softwares/champ/qmc/champ.exe
 Command line arguments: -p -m vmc_mov1
 Run in mode >vmc_mov1<
@@ -238,7 +238,7 @@ End       of equilibration (total CPU time is       0.02 s, CPU time since last 
  -14.85203 -14.55586( 8176) -26.30283(*****)  11.74697(*****)  13.06038(*****)                    0.84688        80   0.63261( 7831)
  -14.53880 -14.55396( 7269) -25.89373(*****)  11.33976(*****)  12.80172(*****)                    0.84167        90   0.61069( 7246)
  -14.98397 -14.59696( 7710) -26.98448(*****)  12.38751(*****)  13.33591(*****)                    0.84250       100   0.61951( 6541)
-End       of accumulation (total CPU time is       0.04 s, CPU time since last check is       0.01 s)
+End       of accumulation (total CPU time is       0.04 s, CPU time since last check is       0.02 s)
 
 vmc_mov1      no title
 Final results after         100. passes (nstep =     10, nblk =     10)
