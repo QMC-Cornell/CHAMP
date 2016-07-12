@@ -80,13 +80,10 @@ end
 
 optimization
  parameters
-  orbitals !jastrow csfs !orbitals !exponents
+  jastrow csfs orbitals exponents
  end
- compare_to_linresp=.true.
- method = linear
- iter_opt_max_nb=1
- last_run=false
- stabilize=false
  casscf=true
+ compare_to_linresp=.true.
+ linear add_diag_ovlp=0.d0 end
 end
 

@@ -83,9 +83,6 @@ module catalog_averages_mod
 ! linear method
   call object_error_define ('ham_lin', 'ham_lin_err')
 
-! linear response
-  call object_error_define ('linresp_av_eigenval','linresp_av_eigenval_err')
-
 ! perturbative method
 
 ! intracule

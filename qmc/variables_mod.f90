@@ -99,7 +99,7 @@ module variables_mod
   real(dp)                        :: lambda = 0.3d0
 
 ! linear response
-  logical                         :: l_tda
+  logical                         :: l_compare_linresp_and_optlin=.false.
 
 ! total number of configurations (walkers)
   integer   :: nconf_total = 1

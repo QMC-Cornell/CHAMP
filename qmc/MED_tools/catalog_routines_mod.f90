@@ -212,6 +212,11 @@ module catalog_routines_mod
 
 ! linear response
   call catalog_one_node ('linresp_av_eigenval_bld', linresp_av_eigenval_bld)
+  call catalog_one_node ('tda_av_eigenval_bld', tda_av_eigenval_bld)
+  call catalog_one_node ('hessian_av_eigenval_bld', hessian_av_eigenval_bld)
+  call catalog_one_node ('real_hessian_av_eigenval_bld', real_hessian_av_eigenval_bld)
+  call catalog_one_node ('linresp_matrix_bld', linresp_matrix_bld)
+  call catalog_one_node ('ovlp_matrix_bld', ovlp_matrix_bld)
   call catalog_one_node ('amat_av_bld', amat_av_bld)
   call catalog_one_node ('bmat_av_bld', bmat_av_bld)
   call catalog_one_node ('ovlp_psii_psij_av_bld', ovlp_psii_psij_av_bld)

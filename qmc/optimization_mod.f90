@@ -367,7 +367,15 @@ module optimization_mod
    call get_next_value (l_slater_mat_ex_trans_inv_sm)
 
   case ('compare_to_linresp')
-    call get_next_value (l_tda)
+    call get_next_value (l_compare_linresp_and_optlin)
+    if (l_compare_linresp_and_optlin) then
+    opt_method='linear'
+    iter_opt_max_nb=1
+    nopt_iter = iter_opt_max_nb
+    l_last_run=.false.
+    l_stab=.false.
+    diag_stab=0.d0
+    endif
 
   case ('end')
    exit
