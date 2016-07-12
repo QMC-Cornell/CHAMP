@@ -488,7 +488,12 @@ module optimization_mod
    if(norda==0) then
     nparma(ia)=0
    elseif(norda>=1) then
-    nparma(ia)=norda-1
+    !/BM/here prov
+    if (a4(1,ia,1).eq.0.d0) then
+      nparma(ia)=norda-1
+    else
+      nparma(ia)=norda
+    endif
    else
     call die (lhere, 'norda must be >= 0 norda='+norda)
    endif
@@ -577,10 +582,18 @@ module optimization_mod
 !       call alloc ('iwjasa', iwjasa, nparmj, nctype)
         call alloc ('iwjasa', iwjasa, max(maxval(nparma),1), nctype)
         do it=1,nctype 
-!         iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
-          do param_i = 1, nparma(it)
-            iwjasa(param_i,it) = param_i + 2
-          enddo
+        !/BM/here prov
+          if (a4(1,it,1).eq.0.d0) then
+!           iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
+            do param_i = 1, nparma(it)
+              iwjasa(param_i,it) = param_i + 2
+            enddo
+          else
+!           iwjasa (1:nparma(it),it) = (/ 2, 3, 4, 5, 6/)
+            do param_i = 1, nparma(it)
+              iwjasa(param_i,it) = param_i + 1
+            enddo
+          endif
         enddo
 !       call alloc ('iwjasb', iwjasb, nparmj, nspin2b-nspin1+1)
         call alloc ('iwjasb', iwjasb, max(maxval(nparmb),1), nspin2b-nspin1+1)
