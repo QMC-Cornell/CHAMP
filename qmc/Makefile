@@ -471,6 +471,8 @@ $(OBJDIR)/%.o:%.f
 	$(F77) $(F77_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:%.c
 	$(CC) $(CC_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/opt_lin_mod.o:opt_lin_mod.f90
+	$(F95) -finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace -DMPI -o $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 
 
 $(OBJDIR)/accumulation_mod.o: $(OBJDIR)/MED_tools/average_mod.o \
