@@ -67,7 +67,7 @@ You can sign up for one at \url{github.com} if you do not have.
 
 You can pull the repo from the github server onto your local machine and get the latest version of CHAMP
 \begin{verbatim}
-git clone https://github.com/....
+git clone https://github.com/QMC-Cornell/CHAMP.git 
 \end{verbatim}
 At present there are only core developers.
 Core developers can clone from and commit to our repo directly.
@@ -87,10 +87,10 @@ When working on a new feature, you should create a new branch based on master br
 You can create new branches by
 \begin{verbatim}
 git checkout master  # Switch to master branch
-git branch dev-newfeature # Create a new branch based on master
-git checkout dev-newfeature  # Switch to that branch
+git branch lastname-dev-newfeature # Create a new branch based on master
+git checkout lastname-dev-newfeature  # Switch to that branch
 \end{verbatim}
-{\it As a convention, we prefix feature branches with ``dev-'' and bug fixing branches with ``fix-''.}
+{\it As a convention, we prefix feature branches with ``lastname-dev-'' and bug fixing branches with ``lastname-fix-''.}
 
 Then you can make changes to the files and commit your changes to the new branch.
 \begin{verbatim}
@@ -102,7 +102,7 @@ git status  # If you want to check which files are changed
 git commit -am 'Add xxx'  # Commit your changes
 vim oldfile2  # Suppose you fix something wrong in oldfile2
 git commit -am 'Fix xxx'  # Commit your changes
-...
+git push -u origin lastname-fix-somebug
 \end{verbatim}
 {\it As a convention,
 write the commit messages in the imperative mood, such as ``Fix xxx'' or ``Set xxx in xxx'',
@@ -110,39 +110,64 @@ commit each small change you make (sometimes even one line, and usually smaller 
 capitalize the first character,
 and always start with ``Fix'' if you are fixing something.}
 
+Note that the first time you push a branch, you need to use {\tt git push -u origin branchname} so
+that the tracking info is sent to github.
 Suppose while you are working on this new feature, you find a bug in the original code and you want to deal with it first. You can use the following commands
 \begin{verbatim}
 git checkout master  # Switch back to master
 git pull  # Obtain newest master from remote
-git branch fix-somebug # Create a new branch based on master
-git checkout fix-somebug  # Switch to that branch
+git branch lastname-fix-somebug # Create a new branch based on master
+git checkout lastname-fix-somebug  # Switch to that branch
 vim oldfile3  # Dealing with the bug
 git commit -am 'Fix xxx' # Commit your changes
-...
 # Now you finished and are ready to merge the fix
 git checkout master  # Switch back to master again
 git pull
-git merge fix-somebug  # Merge fix to master
+git merge lastname-fix-somebug  # Merge fix to master
+git push origin master
 \end{verbatim}
 
 Then you can switch back and continue your work on the new feature and merge it to the master branch when finished.
 Here are some commands you can use
 \begin{verbatim}
-git checkout dev-newfeature  # Switch back to the dev- branch
+git checkout lastname-dev-newfeature  # Switch back to the dev- branch
 git pull  # If someone else are also working on that branch
 vim oldfile4  # Make some new changes
 git commit -am 'Change xxx'  # Commit your changes
-...
 # Now you finished the new feature
 git checkout master  # Switch back to master again
 git pull
-git merge dev-newfeature  # Merge dev-newfeature to master
-git branch -d dev-newfeature  # Delete branch
+git merge lastname-dev-newfeature  # Merge dev-newfeature to master
+git branch -d lastname-dev-newfeature  # Delete branch
 \end{verbatim}
 
-Note that the fix is not available to the dev-feature branch.
-If you need the fix to continue the development of the new feature, you can either merge the master branch to the dev-feature or rebase the dev-feature branch on the new master.
-Rebase will change the commitment history, so if you are not sure about rebase, use merge.
+Note that the fix is not available on the lastname-dev-feature branch.
+If you need the fix to continue the development of the new feature, you can either merge the master branch to the lastname-dev-feature or rebase the lastname-dev-feature branch on the new master.
+Rebase will change the commit history, so if you are not sure about rebase, use merge.
+
+To rebase, use
+\begin{verbatim}
+git checkout master
+git pull #Always make sure you have the latest master branch
+git checkout lastname-dev-newfeature
+git rebase master
+\end{verbatim}
+There may be merge conflicts which need to be resolved.
+
+To merge master, use
+\begin{verbatim}
+git checkout master
+git pull #Always make sure you have the latest master branch
+git checkout lastname-dev-newfeature
+git merge master
+\end{verbatim}
+Again, there may be merge conflicts which will need to be resolved. Merging and rebasing
+solve the same problem (updating a feature branch with the latest from the master branch),
+but have some subtle differences. In short, merge takes the commits from master 
+and applies them to feature branch, whereas rebase takes the commits from master and puts 
+them behind the feature branch, changing its commit history. See 
+https://www.atlassian.com/git/tutorials/merging-vs-rebasing for more information on the
+subtleties.
 
 All the commits and merges are local until you push them to the remote server explicitly.
 To push to the remote, do
@@ -155,22 +180,49 @@ You can save your credential information so that you do not have to enter it eve
 git config credential.helper 'store'
 \end{verbatim}
 
-\section{General Workflow}
 
-For general developers, please fork our repo on github, and work on your forked repo (which you have full control) following the guidelines and conventions in Section \ref{sec:basic}.
-You can also add collaborators (give them push permission) to your repo and work together.
+\section{Stashing and Committing Directly to Master}
+Sometimes, for especially small commits (such as a correction to a typo in documentation),
+it may make sense to commit directly to master. Direct commits to master should be used sparingly.
+If it is necessary, one should take care to have the latest master checked out to 
+reduce the number of superflous merges from diverging master branches. To do this,
+you can use the {\tt git stash} command. If, while working on a small commit, you realized
+that you had not update the master branch (via {\tt git pull}), you can use {\tt git stash} to
+temporarily stash your changes, update the master branche, then immediately reapply your changes:
+\begin{verbatim}
+git stash
+git pull
+git stash apply
+#finish changes
+git commit -am "Fixed minor thing"
+git push origin master
+\end{verbatim}
 
-Once finished and merged to the master branch in your forked repo, send us a pull request via github, and we will look into merging your changes into our main repo.
+This will stash your work, apply the latest commits from the remote master branch, apply your stashed
+work, which is then committed and pushed to the remote master branch. {\tt git stash} can also
+be used to allow you to change between branches, if you have work you are not ready to commit
+but want to do a quick test on a different branch. For example, let's say you find a bug
+in your lastname-dev-newfeature branch, but you are not sure if it is from your latest changes
+or if it was there before you started making edits for the day. A quick way to check is
+\begin{verbatim}
+git status #See what uncommitted work you have
+git stash #Store that work
+#Run the program without your latest, uncommitted changes - still on lastname-dev-newfeature!
+git stash apply #Apply your stored changes
+\end{verbatim}
 
 \section{Core Developers Workflow}
 
-Core developers will have the permission to push directly into our main git repo.
-Therefore, you can merge your contribution into our repo directly, instead of using pull requests.
+Core developers will have the permission to push directly into our main git repo. These 
+developers will generally create new branches from master in the main repository, make their
+changes, and eventually merge their branch into master.
 
-Note that even if you have the permission to make changes directly on the master branch, you should never do that.
-Instead, create a new branch, commit and push your changes to that new branch and merge with master when finished.
+Note that even if you have the permission to make changes directly on the master branch, you 
+should only make changes to master sparingly.
+Usually, you should create a new branch, commit and push your changes to that new branch 
+and merge with master when finished.
 
-You will also deal with pull requests from other developers.
+You will also deal with pull requests from external developers.
 In the case that there is no conflict, github can merge them directly once you or any other core developers approves.
 When there are conflicts, you have to do it manually by creating a new branch, pulling from their repo, and then merging with the master branch as you would normally do when merging your own changes.
 Here are some commands you can use
@@ -182,13 +234,21 @@ git pull
 # Obtain their changes
 git branch merge-otherdeveloper
 git checkout merge-otherdeveloper
-git pull https://github.com/otherdeveloper/... master
+git pull https://github.com/otherdeveloper/CHAMP master
 
 # Merge the changes to our master branch
 git checkout master
 git merge merge-otherdeveloper
 git push origin master
 \end{verbatim}
+
+\section{General Workflow}
+
+For general developers, please fork our repo on github, and work on your forked repo (which you have full control) following the guidelines and conventions in Section \ref{sec:basic}.
+You can also add collaborators (give them push permission) to your repo and work together.
+
+Once finished and merged to the master branch in your forked repo, send us a pull request via github, and we will look into merging your changes into our main repo.
+
 
 \section{Further Readings}
 
