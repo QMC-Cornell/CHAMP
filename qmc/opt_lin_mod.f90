@@ -983,10 +983,10 @@ module opt_lin_mod
   enddo
 
 !print eigenvectors
-write(6,'(a)') 'Sorted right eigenvectors:'
-do j = 1, param_aug_nb
-  write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :',(eigvec(i, eigval_srt_ind_to_eigval_ind(j)), i = 1, param_aug_nb)
-enddo
+! write(6,'(a)') 'Sorted right eigenvectors:'
+! do j = 1, param_aug_nb
+!   write(6,'(a,i3,a,100f12.6)') 'eigenvector # ', j,' :',(eigvec(i, eigval_srt_ind_to_eigval_ind(j)), i = 1, param_aug_nb)
+! enddo
 
 ! Find eigenvector with smallest norm(Psi_lin-Psi_0) for nonlinear parameters
   if (l_print_eigenvector_norm) then
@@ -996,11 +996,8 @@ enddo
   eigvec_smallest_norm_ind=1
 
   do i = 1, param_aug_nb
-     do iparm=1,param_nb+1
-        print*,'eigvec,eigvec,ovlp,renorm',iparm,i,eigvec(iparm,i),eigvec(iparm,i),ovlp_lin(iparm,i),renorm_vector(iparm)
-     enddo
     psi_lin_var_norm = 0
-    ! MJO Should this be nparmlin or nparmlin+1?
+
     do iparm = nparmlin+1, param_nb
       do jparm = nparmlin+1, param_nb
         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,i)*eigvec(1+jparm,i)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
@@ -1204,18 +1201,14 @@ enddo
 
 ! undo renormalization
 ! warning: only for selected eigenvector
-  print*,'eigvec1',eigvec(1,eig_ind)
-  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
-  print*,'renorm_vector',renorm_vector(1),renorm_vector(2)
+
   eigvec(:, eig_ind) = eigvec(:, eig_ind) / renorm_vector(:)
-  print*,'eigvec1',eigvec(1,eig_ind)
-  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
+
 ! normalize eigenvector so that first component is 1
   tmp=eigvec(1,eig_ind)
 ! eigvec(:,eig_ind) = eigvec(:,eig_ind)/eigvec(1,eig_ind)
   eigvec(1:param_aug_nb, eig_ind) = eigvec(1:param_aug_nb, eig_ind)/tmp
-  print*,'eigvec1 2',eigvec(1,eig_ind)
-  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
+
 ! norm of linear wave function variation for nonlinear parameter
   psi_lin_var_norm = 0.d0
   do iparm = nparmlin+1, param_nb
@@ -1237,8 +1230,6 @@ enddo
 
 ! calculate the actual parameter variations
   eigvec_first_coef = eigvec(1,eig_ind)
-  print*,'eigvec,dpsi_av',eigvec(2,eig_ind),dpsi_av(1)
-  print*,'eigvec1 3',eigvec_first_coef
 
 ! write(6,'(/,''Warning eigvec_first_coef='',9es12.4)') eigvec_first_coef
   if(eigvec_first_coef.ne.eigvec(1,eig_ind)) then
@@ -1257,18 +1248,14 @@ enddo
 
 ! semiorthogonal: use semiorthognal derivatives for nonlinear parameters
    case ('semiorthogonal')
-  print*,'eigvec1 3.5',eigvec_first_coef
 !   come back to original derivatives for the CSFs only
     do iparmcsf = 1, nparmcsf
-       print*,'eigvec,dpsi_av',eigvec(1+iparmcsf,eig_ind),dpsi_av(iparmcsf)
      eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
     enddo
 
-  print*,'eigvec1 4',eigvec_first_coef
-
 !   nonlinear parameter
     eigvec_first_coef = eigvec_first_coef +(1.d0-xi)*psi_lin_var_norm/((1.d0-xi) + xi*(1.d0+psi_lin_var_norm))
-  print*,'eigvec_first_coef',eigvec_first_coef,psi_lin_var_norm
+
   case default
     call die(lhere, 'unknown update choice >'+trim(update_nonlinear)+'<')
   end select
@@ -1279,7 +1266,6 @@ enddo
 ! final parameter variations
   do iparm = 1, param_nb
     delta_lin(iparm) = eigvec(1+iparm, eig_ind) / eigvec_first_coef
-    print*,'delta_lin(',iparm,') = ',delta_lin(iparm)
   enddo
 
 ! Warning: tmp

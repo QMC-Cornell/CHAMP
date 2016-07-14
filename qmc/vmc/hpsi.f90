@@ -303,11 +303,10 @@
 
         if(igradhess.ne.0 .or. l_opt) then
            ! calculate parameter-derivatives of csf_coefs for optimization
-           ! MJO98 6/16 - denergy below is calculated without E_local * deti_det
+           ! MJO 6/16 - denergy below is calculated without E_local * deti_det
            ! because expanding H psi_j/psi and psi_j/psi *H psi/psi
            ! allows the potential terms (V) to cancel
           do 50 iparm=1,nparmcsf+1+nparmot
-!             print*,'iparm',iparm
             if(nloc.le.0) then
               denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)
 !             write(6,*) 'd2deti_det,deti_det,denergy,iparm=' ,d2deti_det(iparm),deti_det(iparm),denergy(iparm),iparm
@@ -323,6 +322,9 @@
 
           if(ipr.ge.4) write(6,'(''denergy='',9f10.6)') (denergy(iparm),iparm=1,nparmcsf+nparmot)
 !          write(6,'(''denergy='',20f10.6)') (denergy(iparm),iparm=1,nparmcsf+1)
+          !MJO we store the nparmcsf+1 element, which represents the linear CSF which 
+          !was not opimized in denergy0; this element is later overwritten with other 
+          !derivatives
           denergy0 = denergy(nparmcsf+1)
 
           call object_modified_by_index (denergy0_index)

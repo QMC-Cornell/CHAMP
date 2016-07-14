@@ -1499,20 +1499,13 @@ module optimization_mod
    call object_provide ('delta_csf')
 
    if (l_opt_csf_rot) then
-      print*,'csf_rot_coef before: '
-      write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,1) ! for pathscale compiler
-
       do iparmcsf = 1, nparmcsf
          csf_rot_coef(iparmcsf,iwf) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
       enddo
-      print*,'csf_rot_coef after: '
-      write(6,'(1000f15.8)') csf_rot_coef(1:ncsf,iwf) ! for pathscale compiler
 
-      print*,'csf_coef before: '
-      write(6,'(1000f15.8)') csf_coef(1:ncsf,1) ! for pathscale compiler
       !Convert from rotation parameters to csf_coef using:
       !
-      ! exp(-R)|0> = cos(d) |0> - sin(d)/d sum_k.ne.0 R_k |k>
+      ! exp(R)|0> = cos(d) |0> + sin(d)/d sum_k.ne.0 R_k |k>
       !
       
       csf_rot_arg = 0
@@ -1525,36 +1518,17 @@ module optimization_mod
       do iparmcsf = 1, nparmcsf
          csf_coef(iparmcsf+1,iwf) = sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf)
       enddo
-      print*,'csf_coef after: '
-      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
+      call object_modified ('csf_rot_coef')
    else
-      print*,'csf_coef before: '
-      write(6,'(1000f15.8)') csf_coef(1:ncsf,1) ! for pathscale compiler
 
       do iparmcsf = 1, nparmcsf
          csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
       enddo
 
-      
-      !Normalize new csf_coef
-      csf_norm = 0
-      do iparmcsf=1,ncsf
-         csf_norm = csf_norm + csf_coef(iparmcsf,iwf)**2
-      enddo
-
-      csf_norm = sqrt(csf_norm)
-
-      do iparmcsf=1,ncsf
-         csf_coef(iparmcsf,iwf) = csf_coef(iparmcsf,iwf)/csf_norm
-      enddo
-
-      print*,'csf_coef after: '
-      write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
-
-   endif
+   endif ! l_opt_csf_rot
 
    call object_modified ('csf_coef')
-   call object_modified ('csf_rot_coef')
+
   endif ! l_opt_csf
 
 ! Jastrow parameters
@@ -2326,7 +2300,7 @@ module optimization_mod
        norm = norm + csf_coef(i,iwf)**2
     enddo
     norm = sqrt(norm)
-    print*,"CSF norm: ",norm,iwf
+
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
@@ -3689,34 +3663,36 @@ module optimization_mod
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i
    enddo
-   ! 6/16 MJO98 - Even though we are only varying nparmcsf parameters, we need
+   ! 6/16 MJO - Even though we are only varying nparmcsf parameters, we need
    ! to calculate quantities for all ncsf coefficients to do rotations
    ! correctly - FIXME - I'm not sure about this option, since
    ! we already have iwcsf for all csf?
    ! iwcsf(nparmcsf+1) = nparmcsf+1
-   ! MJO98 I'm not sure about whether this is correct for rotations
+   ! MJO I'm not sure about whether this is correct for rotations
    if (l_opt_csf_rot) then
       nparmlin = 0
    else 
       nparmlin = nparmcsf
    endif
-   nparmlin = nparmcsf
+
   else
    nparmcsf=ncsf-1
    call object_alloc ('iwcsf', iwcsf, nparmcsf+1)
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i + 1
    enddo
-   ! 6/16 MJO98 - Even though we are only varying nparmcsf parameters, we need
+   ! 6/16 MJO - Even though we are only varying nparmcsf parameters, we need
    ! to calculate quantities for all ncsf coefficients to do rotations
    ! correctly
    iwcsf(nparmcsf+1) = 1
+   !     MJO: if we are using rotation parameters, then we have no linear parameters
+   !            otherwise, all the csf parameters are linear
    if (l_opt_csf_rot) then
       nparmlin = 0
    else 
       nparmlin = nparmcsf
    endif
-   nparmlin = nparmcsf
+
   endif
 
   end subroutine iwcsf_bld

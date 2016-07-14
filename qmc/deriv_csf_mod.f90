@@ -162,11 +162,10 @@ module deriv_csf_mod
       if (l_opt_csf_rot) then
 ! For CSF Rotations, we have
 ! deloc_csf (i) = c_0 dE_l/dc_i - c_j dE_l/dc_0
-! We use denergy(nparmcsf+1) to represent dE_l/dc_0 because we appended that
-! to the end of the array, rather than the beginning, to try a
+! We use denergy0 to represent dE_l/dc_0 because we 
+! did not want to change the denergy array dimensions
         deloc_csf (i) = csf_coef(1,1) * denergy (i) - &
              &csf_coef(i+1,1) * denergy0
-!        print*,denergy0,denergy(i)
      else
         deloc_csf (i) = denergy (i)
      endif
