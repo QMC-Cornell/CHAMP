@@ -1220,7 +1220,6 @@ module opt_lin_mod
   write(6,'(a,t64,i4,a,2(f10.4,a),f10.6)') 'selected (sorted) eigenvector is #',eigval_ind_to_eigval_srt_ind(eig_ind), ': ',eigval_r(eig_ind), ' +', eigval_i(eig_ind),' i, norm change=', psi_lin_var_norm
 ! write(6,'(a,f10.6)') 'Norm of linear wavefunction variation for nonlin. params for this eigenvector =', psi_lin_var_norm
   if(psi_lin_var_norm > 100*smallest_norm) write(6,'(''Warning: psi_lin_var_norm > 100*smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
-  write(6,'(''psi_lin_var_norm smallest_norm'',2es12.4)')  psi_lin_var_norm,smallest_norm
 
   call release ('eigval_r', eigval_r)
   call release ('eigval_i', eigval_i)
