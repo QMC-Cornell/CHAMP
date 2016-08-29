@@ -9,147 +9,217 @@ module deriv_orb_mod
 
 ! Declaration of global variables and default values
 
+! single_ex_wf_bld_check 
   integer                                :: param_orb_nb = 0
   integer                                :: single_ex_nb = 0
-  integer                                :: param_orb_nb_old = 0  ! temp
-  integer                                :: single_ex_nb_old = 0  ! temp
   integer                                :: deriv_orb_pairs_nb = 0
-
-  integer                                :: orb_mix_lab_nb
-  logical, allocatable                   :: orb_mix_lab (:)
-
-! new
-  integer                                :: csf_ex_unq_nb = 0
-  integer, allocatable                   :: csf_ex_unq_ref (:)
-
-  integer, allocatable                   :: det_ex_unq_ref_up (:)
-  integer, allocatable                   :: det_ex_unq_ref_dn (:)
-  integer, allocatable                   :: det_unq_in_csf_ex_unq_nb (:)
-  type (type_integer_row), allocatable   :: det_unq_up_in_csf_ex_unq (:)
-  type (type_integer_row), allocatable   :: det_unq_dn_in_csf_ex_unq (:)
-  type (type_real_row), allocatable      :: cdet_unq_in_csf_ex_unq (:)
-
-  integer, allocatable                   :: csf_unq_in_wf_ex_nb (:)
-  type (type_integer_row), allocatable   :: csf_unq_in_wf_ex (:)
-  type (type_integer_row), allocatable   :: csf_unq_ref_in_wf_ex (:)
-  type (type_real_row), allocatable      :: csf_unq_prefac_in_wf_ex (:)
-
-  integer, allocatable                   :: csf_unq_in_dpsi_orb_nb (:)
-  type (type_integer_row), allocatable   :: csf_unq_in_dpsi_orb (:)
-  type (type_integer_row), allocatable   :: csf_unq_ref_in_dpsi_orb (:)
-  type (type_real_row), allocatable      :: csf_unq_prefac_in_dpsi_orb (:)
-
   integer, allocatable                   :: ex_orb_ind (:)
   integer, allocatable                   :: ex_orb_ind_rev (:)
   integer, allocatable                   :: ex_orb_1st_lab (:)
   integer, allocatable                   :: ex_orb_2nd_lab (:)
-  integer, allocatable                   :: ex_orb_ind_old (:) ! temp
-  integer, allocatable                   :: ex_orb_ind_rev_old (:) ! temp
-  integer, allocatable                   :: ex_orb_1st_lab_old (:) ! temp
-  integer, allocatable                   :: ex_orb_2nd_lab_old (:) ! temp
+  integer                                :: orb_mix_lab_nb
+  logical, allocatable                   :: orb_mix_lab (:)
 
-  logical, allocatable                   :: is_ex_act_act (:)
-  integer, allocatable                   :: ex_act_act (:)
-  logical, allocatable                   :: ex_up_is_zero (:,:)
-  logical, allocatable                   :: ex_dn_is_zero (:,:)
-  integer, allocatable                   :: det_ex_orb_lab_up (:,:,:)
-  integer, allocatable                   :: det_ex_orb_lab_dn (:,:,:)
-  integer, allocatable                   :: det_ex_orb_lab_srt_up (:,:,:)
-  integer, allocatable                   :: det_ex_orb_lab_srt_dn (:,:,:)
-  integer, allocatable                   :: det_ex_orb_lab_srt_sgn_up (:,:)
-  integer, allocatable                   :: det_ex_orb_lab_srt_sgn_dn (:,:)
-  logical, allocatable                   :: is_det_ex_up (:,:)
-  logical, allocatable                   :: is_det_ex_dn (:,:)
-  integer, allocatable                   :: iwdet_ex_up (:,:)
-  integer, allocatable                   :: iwdet_ex_dn (:,:)
   integer                                :: det_ex_unq_up_nb
   integer                                :: det_ex_unq_dn_nb
   integer, allocatable                   :: det_ex_unq_up_orb_1st_pos (:)
   integer, allocatable                   :: det_ex_unq_dn_orb_1st_pos (:)
   integer, allocatable                   :: det_ex_unq_up_orb_2nd_lab (:)
   integer, allocatable                   :: det_ex_unq_dn_orb_2nd_lab (:)
-  integer, allocatable                   :: iwdet_ex_ref_up (:)
-  integer, allocatable                   :: iwdet_ex_ref_dn (:)
   integer, allocatable                   :: det_ex_unq_orb_lab_up (:,:)
   integer, allocatable                   :: det_ex_unq_orb_lab_dn (:,:)
-  integer, allocatable                   :: det_ex_unq_orb_lab_srt_up (:,:)
-  integer, allocatable                   :: det_ex_unq_orb_lab_srt_dn (:,:)
-  integer, allocatable                   :: det_ex_unq_orb_lab_srt_sgn_up (:)
-  integer, allocatable                   :: det_ex_unq_orb_lab_srt_sgn_dn (:)
-  real(dp), allocatable                  :: det_ex_unq_up (:)
-  real(dp), allocatable                  :: det_ex_unq_dn (:)
-  real(dp), allocatable                  :: det_ex_unq_up_2 (:)
-  real(dp), allocatable                  :: det_ex_unq_dn_2 (:)
+  integer, allocatable                   :: det_ex_unq_sgn_up (:,:)
+  integer, allocatable                   :: det_ex_unq_sgn_dn (:,:)
+  integer, allocatable                   :: iwdet_ex_up (:,:)
+  integer, allocatable                   :: iwdet_ex_dn (:,:)
+  integer, allocatable                   :: iwdet_ex_ref_up (:)
+  integer, allocatable                   :: iwdet_ex_ref_dn (:)
+
+! det_ex_unq_bld
+  logical                                :: det_ex_unq_bld_done =  .false.
+
+! det_ex_bld
   real(dp), allocatable                  :: det_ex_up (:,:)
   real(dp), allocatable                  :: det_ex_dn (:,:)
   real(dp), allocatable                  :: det_ex (:,:)
-  real(dp), allocatable                  :: det_ex2(:,:)
+
+! dpsi_orb_bld
   real(dp), allocatable                  :: psid_ex (:)
+  real(dp), allocatable                  :: dpsi_orb(:)
+  real(dp), allocatable                  :: dcsf_orb(:,:)
+
+! slater_mat_ex_trans_inv_bld
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up (:, :, :)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn (:, :, :)
+  logical                                :: l_slater_mat_ex_trans_inv_sm = .true.
+
+! slater_mat_ex_trans_inv_bld_2
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_up_2 (:,:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_2 (:,:,:)
-  real(dp), allocatable                  :: slater_mat_ex_trans_inv_up_3 (:,:,:)
-  real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_3 (:,:,:)
-  real(dp), allocatable                  :: grd_det_ex_unq_dn (:,:,:)
-  real(dp), allocatable                  :: grd_det_ex_unq_up (:,:,:)
-  real(dp), allocatable                  :: lap_det_ex_unq_dn (:,:)
-  real(dp), allocatable                  :: lap_det_ex_unq_up (:,:)
+
+! grd
+  logical                                :: grd_det_ex_unq_bld_done =  .false.
   real(dp), allocatable                  :: grd_det_ex_dn (:,:,:,:)
   real(dp), allocatable                  :: grd_det_ex_up (:,:,:,:)
+  real(dp), allocatable                  :: grd_psid_ex_over_psid (:,:,:)
+  real(dp), allocatable                  :: grd_psi_ex_over_psi (:,:,:)
+
+! lap
+  logical                                :: lap_det_ex_unq_bld_done =  .false.
   real(dp), allocatable                  :: lap_det_ex_dn (:,:,:)
   real(dp), allocatable                  :: lap_det_ex_up (:,:,:)
-  real(dp), allocatable                  :: grd_psid_ex_over_psid (:,:,:)
   real(dp), allocatable                  :: lap_psid_ex_over_psid (:,:)
   real(dp), allocatable                  :: lap_lnpsid_ex (:,:)
   real(dp), allocatable                  :: sum_lap_lnpsid_ex (:)
-  real(dp), allocatable                  :: sum_lap_lnj_ex (:)
   real(dp), allocatable                  :: sum_lap_lnpsi_ex (:)
-  real(dp), allocatable                  :: grd_psi_ex_over_psi (:,:,:)
+
+! eloc
   real(dp), allocatable                  :: eloc_kin_ex (:)
   real(dp), allocatable                  :: eloc_pot_nloc_ex (:)
   real(dp), allocatable                  :: eloc_pot_ex (:)
   real(dp), allocatable                  :: eloc_ex (:)
   real(dp), allocatable                  :: vpot_ex (:,:)
   real(dp), allocatable                  :: vpsp_ex (:)
+
+! psid_ex_in_x_bld
   real(dp), allocatable                  :: psid_ex_in_x (:)
+  !needed
   integer                                :: electron
 
-  real(dp), allocatable                  :: dpsi_orb(:)
-  real(dp), allocatable                  :: d2psi_orb(:)
-  real(dp), allocatable                  :: dpsi_orb_test(:)
-  real(dp), allocatable                  :: dcsf_orb(:,:)
-
+! deloc_orb_bld
   real(dp), allocatable                  :: deloc_orb (:)
 
+! delta_eps_bld
   real(dp), allocatable                  :: delta_eps (:)
 
-  logical                                :: l_slater_mat_ex_trans_inv_sm = .true.
+! double_ex_det_bld
+  integer                                :: double_ex_nb
+  integer                                :: det_ex2_unq_up_nb
+  integer                                :: det_ex2_unq_dn_nb
+  integer, allocatable                   :: det_ex2_unq_up_orb_info (:,:)
+  integer, allocatable                   :: det_ex2_unq_dn_orb_info (:,:)
+
+! det_ex2_unq_bld
+  logical                                :: det_ex2_unq_bld_done =  .true.
+
+! det_ex2_bld
+  real(dp), allocatable                  :: det_ex2_up (:,:)
+  real(dp), allocatable                  :: det_ex2_dn (:,:)
+  real(dp), allocatable                  :: det_ex2 (:,:)
+
+! d2psi_orb_bld
+  real(dp), allocatable                  :: psid_ex2 (:)
+  real(dp), allocatable                  :: d2psi_orb(:)
+  real(dp), allocatable                  :: d2csf_orb(:,:)
 
   contains
 
 ! ==============================================================================
   subroutine single_ex_wf_bld
 ! ------------------------------------------------------------------------------
-! Description   : build single orbital excitation list for general wave function
-! Description   : ex_orb_ind : index of direct excitation Eij
-! Description   : ex_orb_ind_rev : index of reverse excitation Eji (for active-active excitations)
+! Description   : This routines finds single orbital excitations
+! Description   : and unique orbital derivatives.
+! Description   :
+! Description   : For each pair of orbitals, if the excitation is trivially allowed
+! Description   : (in terms of the classes of both orbitals, symmetry, etc...)
+! Description   : -  the unique determinants spawned by the excitation are constructed (not calculated)
+! Description   : -  the unique CSFs are constructed
+! Description   :    (an excitation can spawn excited determinant that do not form a new excited CSF)
+! Description   : -  the unique WF is constructed
+! Description   :    (similarly, an excitation that spawns excited CSF can form an excited WF that is not new)
+! Description   :
+! Description   : A unique orbital derivative is a derivative that, 
+! Description   : when applied to a CI expansion, yields a unique excited wavefunction.
+! Description   :
+! Description   : Information on all unique excited determinants is gathered for use outside of the routine.
 !
-! Created       : J. Toulouse, 12 Oct 2005
-! Revised       : J. Toulouse, 24 Oct 2005: open shells
-! Revised       : J. Toulouse, 23 Mar 2006: active-active excitations for non-CASSCF wave functions
+! Created       : B. Mussard, July 2016
 ! ------------------------------------------------------------------------------
   use all_modules_mod
   implicit none
 
 ! local
-  integer  ex_i, orb_i, dorb_i
-  integer orb_opt_cls_i, orb_opt_opn_i, orb_opt_act_i, orb_opt_act_j, orb_opt_vir_i
-  integer orb_opt_cls, orb_opt_opn, orb_opt_act, orb_opt_vir, orb_opt_act_lab_i, orb_opt_act_lab_j
+  character(len=max_string_len_rout), save :: lhere = 'single_ex_wf_bld_check'
+  integer :: i, j
+  integer :: orb_opt_lab_i, orb_opt_lab_j
+  integer :: ex_i, ex_j
+  integer :: csf_i, det_in_csf_i, det_i, orb_i, dpsi_i
+  integer :: csf_k, dpsi_k
+  integer :: this_csf, this_ex
+  integer :: det_unq_up_i, det_unq_dn_i
+  integer :: det_unq_up_k, det_unq_dn_k
+  integer :: iwdet_up, iwdet_dn
+  integer :: ex_dir_rev_nonortho, ex_dir_rev_nonortho_nb
+  integer :: ex_dir_rev, ex_dir_rev_nb
+  integer :: ex_orb_ind_tmp,ex_orb_ind_rev_tmp
+  logical :: dpsi_is_redundant
+  integer :: single_ex_added_nb
+  real(dp) :: tA, tB, tAintermed, tBintermed, tSort, tDet, tCSFa,tCSFb,tCSFc, tWF, tDPSI, tBegin, tEnd
+  integer :: single_ex_max,det_ex_max,csf_ex_unq_max,det_in_csf_max,csf_in_wf_max,csf_in_dpsi_max,wf_unq_max,dpsi_unq_max
 
-! header
+! Unique DET (most object are global, only the following are local)
+  integer, allocatable :: det_orb_lab_up (:)
+  integer, allocatable :: det_orb_lab_dn (:)
+  integer, allocatable :: det_orb_lab_srt_up (:)
+  integer, allocatable :: det_orb_lab_srt_dn (:)
+
+! Unique CSF
+!   an "CSF=\sum_k^n c_k Dkup Dkdn" is the data of
+!    - the number of determinant "n",
+!    - the "Dkup" UP determinant,
+!    - the "Dkdn" DOWN determinants
+!    - the coefficients "c_k"
+! We need an unsorted and a sorted version, as well as the unique data:
+  integer              :: det_in_csf_nb_tmp
+  integer, allocatable :: det_in_csf_up_tmp(:)
+  integer, allocatable :: det_in_csf_dn_tmp(:)
+  real(8), allocatable :: det_in_csf_coef_tmp(:)
+  integer              :: det_in_csf_nb
+  integer, allocatable :: det_in_csf_up(:)
+  integer, allocatable :: det_in_csf_dn(:)
+  real(8), allocatable :: det_in_csf_coef(:)
+
+  integer              :: csf_ex_unq_nb
+  integer, allocatable :: csf_ex_unq_ref(:)
+  integer, allocatable :: csf_ex_unq_size(:)
+
+! Unique WF
+!   a "WF=\sum_I^n c_I CSF_I" is the data of
+!    - the number of CSF "n",
+!    - the "CSF_I"
+!    - the reference of these CSFs,
+!    - the coefficients "c_I"
+! We need the whole data, as well as the unique data:
+  integer              :: csf_in_wf_nb
+  integer, allocatable :: csf_in_wf(:)
+  integer, allocatable :: csf_in_wf_ref(:)
+  real(8), allocatable :: csf_in_wf_coef(:)
+  integer,                allocatable :: wf_unq_nb(:)
+  type(type_integer_row), allocatable :: wf_unq_csf(:)
+  type(type_integer_row), allocatable :: wf_unq_ref(:)
+  type(type_real_row)   , allocatable :: wf_unq_coef(:)
+
+! Unique DPSI
+!   a derivative DPSI
+!   contains the excited WF and the reverse excited WF
+!   so : it is determined by the same data as the WF
+! We need an unsorted and a sorted version, as well as the unique data:
+  integer              :: csf_in_dpsi_nb_tmp
+  integer, allocatable :: csf_in_dpsi_tmp(:)
+  integer, allocatable :: csf_in_dpsi_ref_tmp(:)
+  real(8), allocatable :: csf_in_dpsi_coef_tmp(:)
+  integer              :: csf_in_dpsi_nb
+  integer, allocatable :: csf_in_dpsi(:)
+  integer, allocatable :: csf_in_dpsi_ref(:)
+  real(8), allocatable :: csf_in_dpsi_coef(:)
+
+  integer, allocatable                   :: dpsi_unq_nb (:)
+  type (type_integer_row), allocatable   :: dpsi_unq_csf (:)
+  type (type_integer_row), allocatable   :: dpsi_unq_ref (:)
+  type (type_real_row),    allocatable   :: dpsi_unq_coef (:)
+
+
   if (header_exe) then
-
    call object_create ('param_orb_nb')
    call object_create ('single_ex_nb')
    call object_create ('deriv_orb_pairs_nb')
@@ -160,1248 +230,673 @@ module deriv_orb_mod
    call object_create ('orb_mix_lab')
    call object_create ('orb_mix_lab_nb')
 
-   call object_needed ('orb_tot_nb')
-   call object_needed ('orb_opt_nb')
-   call object_needed ('orb_opt_lab')
-   call object_needed ('orb_opt_occ_nb')
-   call object_needed ('orb_opt_occ_lab')
-   call object_needed ('orb_opt_cls_nb')
-   call object_needed ('orb_opt_cls_lab')
-   call object_needed ('orb_opt_opn_nb')
-   call object_needed ('orb_opt_opn_lab')
-   call object_needed ('orb_opt_act_nb')
-   call object_needed ('orb_opt_act_lab')
-   call object_needed ('orb_opt_vir_nb')
-   call object_needed ('orb_opt_vir_lab')
-   call object_needed ('orb_sym_lab')
-   call object_needed ('orb_ex_forbidden')
-
-   return
-
-  endif
-
-! begin
-  write(6,'(a)') ' Constructing list of single orbital excitations based on orbital occupancies alone...'
-
-  single_ex_nb = 0
-  param_orb_nb = 0
-
-! single-determinant wave function
-  if (ndet == 1) then
-
-! closed -> open
-  do orb_opt_cls_i = 1, orb_opt_cls_nb
-     orb_opt_cls = orb_opt_cls_lab (orb_opt_cls_i)
-    do orb_opt_opn_i = 1, orb_opt_opn_nb
-       orb_opt_opn = orb_opt_opn_lab (orb_opt_opn_i)
-       if (orb_sym_lab (orb_opt_cls) == orb_sym_lab (orb_opt_opn) .and. .not. orb_ex_forbidden (orb_opt_cls, orb_opt_opn)) then
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_ind_rev (param_orb_nb) = 0
-       ex_orb_1st_lab (single_ex_nb) = orb_opt_cls
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_opn
-       endif
-     enddo ! orb_opt_opn_i
-  enddo ! orb_opt_cls_i
-
-! closed -> virtual
-  do orb_opt_cls_i = 1, orb_opt_cls_nb
-       orb_opt_cls = orb_opt_cls_lab (orb_opt_cls_i)
-    do orb_opt_vir_i = 1, orb_opt_vir_nb
-       orb_opt_vir = orb_opt_vir_lab (orb_opt_vir_i)
-       if (orb_sym_lab (orb_opt_cls) == orb_sym_lab (orb_opt_vir) .and. .not. orb_ex_forbidden (orb_opt_cls, orb_opt_vir)) then
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_ind_rev (param_orb_nb) = 0
-       ex_orb_1st_lab (single_ex_nb)  = orb_opt_cls
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_vir
-       endif
-     enddo ! orb_opt_vir_i
-  enddo ! orb_opt_cls_i
-
-! open -> virtual
-  do orb_opt_opn_i = 1, orb_opt_opn_nb
-       orb_opt_opn = orb_opt_opn_lab (orb_opt_opn_i)
-    do orb_opt_vir_i = 1, orb_opt_vir_nb
-       orb_opt_vir = orb_opt_vir_lab (orb_opt_vir_i)
-       if (orb_sym_lab (orb_opt_opn) == orb_sym_lab (orb_opt_vir) .and. .not. orb_ex_forbidden (orb_opt_opn, orb_opt_vir)) then
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_ind_rev (param_orb_nb) = 0
-       ex_orb_1st_lab (single_ex_nb)  = orb_opt_opn
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_vir
-       endif
-     enddo ! orb_opt_vir_i
-  enddo ! orb_opt_opn_i
-
-  else
-
-! multi-determinantal wave function
-
-! closed -> active
-  do orb_opt_cls_i = 1, orb_opt_cls_nb
-    orb_opt_cls = orb_opt_cls_lab (orb_opt_cls_i)
-    do orb_opt_act_i = 1, orb_opt_act_nb
-       orb_opt_act = orb_opt_act_lab (orb_opt_act_i)
-       if (orb_sym_lab (orb_opt_cls) == orb_sym_lab (orb_opt_act) .and. .not. orb_ex_forbidden (orb_opt_cls, orb_opt_act)) then
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_ind_rev (param_orb_nb) = 0
-       ex_orb_1st_lab (single_ex_nb) = orb_opt_cls
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_act
-       endif
-     enddo ! orb_opt_act_i
-  enddo ! orb_opt_cls_i
-
-! closed -> virtual
-  do orb_opt_cls_i = 1, orb_opt_cls_nb
-    orb_opt_cls = orb_opt_cls_lab (orb_opt_cls_i)
-    do orb_opt_vir_i = 1, orb_opt_vir_nb
-       orb_opt_vir = orb_opt_vir_lab (orb_opt_vir_i)
-       if (orb_sym_lab (orb_opt_cls) == orb_sym_lab (orb_opt_vir) .and. .not. orb_ex_forbidden (orb_opt_cls, orb_opt_vir)) then
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_ind_rev (param_orb_nb) = 0
-       ex_orb_1st_lab (single_ex_nb) = orb_opt_cls
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_vir
-       endif
-     enddo ! orb_opt_vir_i
-  enddo ! orb_opt_cls_i
-
-! active -> active (these excitations are redundant for CASSCF wave function)
-  if (.not. l_casscf) then
-   do orb_opt_act_i = 1, orb_opt_act_nb
-    orb_opt_act_lab_i = orb_opt_act_lab (orb_opt_act_i)
-    do orb_opt_act_j = orb_opt_act_i+1, orb_opt_act_nb
-       orb_opt_act_lab_j = orb_opt_act_lab (orb_opt_act_j)
-       if (orb_sym_lab (orb_opt_act_lab_i) == orb_sym_lab (orb_opt_act_lab_j) .and. .not. orb_ex_forbidden (orb_opt_act_lab_i, orb_opt_act_lab_j)) then
-
-!      direct excitation i->j
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_1st_lab (single_ex_nb) = orb_opt_act_lab_i
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_act_lab_j
-
-!      reverse excitation j->i
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_1st_lab (single_ex_nb) = orb_opt_act_lab_j
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_act_lab_i
-
-!      if orthogonality constraint is imposed, then the reverse excitation is combined with the direct excitation in one orbital derivative
-       if (l_active_orb_ortho_constraint) then
-        ex_orb_ind_rev (param_orb_nb) = single_ex_nb
-!       ex_orb_ind_rev (param_orb_nb) = 0 ! desactivate reverse excitation
-
-!      if orthogonality constraint is not imposed, then the reverse excitation is a new independent orbtital derivative
-       else
-        param_orb_nb = param_orb_nb + 1
-        call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-        call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-        ex_orb_ind (param_orb_nb) = single_ex_nb
-        ex_orb_ind_rev (param_orb_nb) = 0
-       endif
-
-       endif
-     enddo ! orb_opt_act_j
-   enddo ! orb_opt_act_i
-  endif
-
-! active -> virtual
-  do orb_opt_act_i = 1, orb_opt_act_nb
-    orb_opt_act = orb_opt_act_lab (orb_opt_act_i)
-    do orb_opt_vir_i = 1, orb_opt_vir_nb
-       orb_opt_vir = orb_opt_vir_lab (orb_opt_vir_i)
-       if (orb_sym_lab (orb_opt_act) == orb_sym_lab (orb_opt_vir) .and. .not. orb_ex_forbidden (orb_opt_act, orb_opt_vir)) then
-       param_orb_nb = param_orb_nb + 1
-       single_ex_nb = single_ex_nb + 1
-       call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-       call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-       call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-       call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-       ex_orb_ind (param_orb_nb) = single_ex_nb
-       ex_orb_ind_rev (param_orb_nb) = 0
-       ex_orb_1st_lab (single_ex_nb) = orb_opt_act
-       ex_orb_2nd_lab (single_ex_nb) = orb_opt_vir
-       endif
-     enddo ! orb_opt_act_i
-  enddo ! orb_opt_act_i
-
-  endif
-
-! determine (occupied or vitual) orbitals mixed in orbital optimization 
-  call object_alloc ('orb_mix_lab', orb_mix_lab, orb_tot_nb)
-  orb_mix_lab (:) = .false.
-  do ex_i = 1, single_ex_nb
-   orb_mix_lab (ex_orb_1st_lab (ex_i)) = .true.
-   orb_mix_lab (ex_orb_2nd_lab (ex_i)) = .true.
-  enddo ! ex_i
-  orb_mix_lab_nb = 0
-  do orb_i = 1, orb_tot_nb
-    if (orb_mix_lab (orb_i)) then
-      orb_mix_lab_nb = orb_mix_lab_nb + 1
-    endif
-  enddo
-
-  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
-  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
-  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb
-
-
-! excitation pairs number
-  deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
-
-! temporary: new routine
-  if (l_check_redundant_orbital_derivative) then
-
-!  temporary: save created objects for comparison with new routine
-   param_orb_nb_old = param_orb_nb
-   single_ex_nb_old = single_ex_nb
-   call copy (ex_orb_ind, ex_orb_ind_old)
-   call copy (ex_orb_ind_rev, ex_orb_ind_rev_old)
-   call copy (ex_orb_1st_lab, ex_orb_1st_lab_old)
-   call copy (ex_orb_2nd_lab, ex_orb_2nd_lab_old)
-
-!  temporary: call new routine checking for redundancies
-   call node_exe ('single_ex_wf_bld_2')
-
-  else
-  endif
-
-  if (l_print_orbital_excitations .and. .not. l_check_redundant_orbital_derivative) then
-  write(6,*)
-  write(6,'(a)') ' Orbital excitations:'
-   do dorb_i = 1, param_orb_nb
-    write(6,'(a,i4,a,i4,a,i4,a,i4)') ' orbital parameter # ',dorb_i,' corresponds to single excitation # ',ex_orb_ind (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind (dorb_i))
-    if (ex_orb_ind_rev (dorb_i) /= 0) then
-     write(6,'(a,i4,a,i4,a,i4)') '                             and reverse single excitation # ',ex_orb_ind_rev (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind_rev (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind_rev (dorb_i))
-    endif
-   enddo ! dorb_i
-  write(6,*)
-  endif
-
- end subroutine single_ex_wf_bld
-
-! ==============================================================================
-  subroutine single_ex_wf_bld_2
-! ------------------------------------------------------------------------------
-! Description   : Build single orbital excitation list for general wave function
-! Description   : taking into account some (but not all) redundancies
-! Description   : For large CASCF wave functions, this routine does not seem to recognize
-! Description   : recognize some redundant active-> active excitations -> has to be improved
-! Description   : This routine is to replace single_ex_wf_bld
-! Description   : For now, the routine is only used as replacement for single_ex_wf_bld
-! Description   : information gathered on excitations in this routine should be used in the program
-! Description   : in lieu of single_ex_det_bld
-!
-! Created       : J. Toulouse, 25 Oct 2006
-! ------------------------------------------------------------------------------
-  use all_modules_mod
-  implicit none
-
-! local
-  integer orb_opt_i, orb_opt_j, orb_opt_lab_i, orb_opt_lab_j, dorb_i, orb_i
-  integer ex_dir_rev, ex_dir_rev_nonortho, ex_dir_rev_nb, ex_dir_rev_nonortho_nb
-  logical dpsi_orb_is_zero, ex_is_zero, csf_ex_unq_is_zero, dpsi_orb_is_redundant
-
-  integer det_ex_unq_up_k, det_ex_unq_dn_k
-  integer det_unq_cur_up, det_ex_unq_sgn_cur_up
-  integer det_unq_cur_dn, det_ex_unq_sgn_cur_dn
-  real(dp) cdet_unq_cur
-  integer, allocatable :: det_ex_cur_orb_lab_up (:)
-  integer, allocatable :: det_ex_cur_orb_lab_srt_up (:)
-  integer, allocatable :: det_ex_cur_orb_lab_dn (:)
-  integer, allocatable :: det_ex_cur_orb_lab_srt_dn (:)
-  integer det_ex_cur_orb_lab_srt_sgn_up, det_ex_cur_orb_lab_srt_sgn_dn
-
-  integer det_in_csf_i, det_unq_up_i, det_unq_dn_i
-  integer det_unq_up_k, det_unq_dn_k
-
-  integer det_unq_in_csf_ex_cur_nb
-  integer, allocatable :: det_unq_up_in_csf_ex_cur (:)
-  integer, allocatable :: det_unq_dn_in_csf_ex_cur (:)
-  real(dp), allocatable :: cdet_unq_in_csf_ex_cur (:)
-  integer det_unq_in_csf_ex_cur_temp_nb, det_unq_in_csf_ex_cur_i
-  integer, allocatable :: det_unq_up_in_csf_ex_cur_temp (:)
-  integer, allocatable :: det_unq_dn_in_csf_ex_cur_temp (:)
-  real(dp), allocatable :: cdet_unq_in_csf_ex_cur_temp (:)
-
-  integer csf_i, csf_k, csf_ex_unq_i, csf_cur
-  integer csf_unq_in_wf_ex_cur_nb
-  integer, allocatable :: csf_unq_in_wf_ex_cur (:)
-  integer, allocatable :: csf_unq_ref_in_wf_ex_cur (:)
-  real(dp), allocatable :: csf_unq_prefac_in_wf_ex_cur (:)
-  real(dp) :: csf_ex_cur_prefac
-
-  integer single_ex_added_nb
-  integer ex_i, ex_cur
-  integer ex_orb_ind_cur, ex_orb_ind_rev_cur
-  integer dpsi_orb_i
-  integer csf_unq_in_dpsi_orb_cur_nb, csf_unq_in_dpsi_orb_cur_i
-  integer, allocatable :: csf_unq_in_dpsi_orb_cur (:)
-  integer, allocatable :: csf_unq_ref_in_dpsi_orb_cur (:)
-  real(dp), allocatable :: csf_unq_prefac_in_dpsi_orb_cur (:)
-  integer csf_unq_in_dpsi_orb_cur_temp_nb
-  integer, allocatable :: csf_unq_in_dpsi_orb_cur_temp (:)
-  integer, allocatable :: csf_unq_ref_in_dpsi_orb_cur_temp (:)
-  real(dp), allocatable :: csf_unq_prefac_in_dpsi_orb_cur_temp (:)
-
-! tenp
- !  integer ex_j, orb_1st, orb_2nd
-!   logical ex_found
-
-! header
-  if (header_exe) then
-
-!   call object_create ('det_ex_unq_up_nb')
-!   call object_create ('det_ex_unq_ref_up')
-!   call object_create ('det_ex_unq_orb_lab_srt_up')
-!   call object_create ('det_ex_unq_orb_lab_srt_sgn_up')
-!   call object_create ('det_ex_unq_dn_nb')
-!   call object_create ('det_ex_unq_ref_dn')
-!   call object_create ('det_ex_unq_orb_lab_srt_dn')
-!   call object_create ('det_ex_unq_orb_lab_srt_sgn_dn')
-!   call object_create ('csf_ex_unq_nb')
-!   call object_create ('csf_ex_unq_ref')
-!   call object_create ('det_unq_in_csf_ex_unq_nb')
-!   call object_create ('det_unq_up_in_csf_ex_unq')
-!   call object_create ('det_unq_dn_in_csf_ex_unq')
-!   call object_create ('cdet_unq_in_csf_ex_unq')
-
-!   call object_create ('single_ex_nb')
-!   call object_create ('csf_unq_in_wf_ex_nb')
-!   call object_create ('csf_unq_in_wf_ex')
-!   call object_create ('csf_unq_ref_in_wf_ex')
-!   call object_create ('csf_unq_prefac_in_wf_ex')
-!   call object_create ('ex_orb_ind')
-!   call object_create ('ex_orb_ind_rev')
-!   call object_create ('ex_orb_1st_lab')
-!   call object_create ('ex_orb_2nd_lab')
-
-!   call object_create ('param_orb_nb')
-!   call object_create ('deriv_orb_pairs_nb')
-!   call object_create ('csf_unq_in_dpsi_orb_nb')
-!   call object_create ('csf_unq_in_dpsi_orb')
-!   call object_create ('csf_unq_ref_in_dpsi_orb')
-!   call object_create ('csf_unq_prefac_in_dpsi_orb')
-
-   call object_needed ('nup')
-   call object_needed ('ndn')
-   call object_needed ('ncsf')
-   call object_needed ('ndet')
-   call object_needed ('ndet_in_csf')
-   call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
-   call object_needed ('nparmcsf')
-   call object_needed ('iwcsf')
-   call object_needed ('orb_opt_nb')
-   call object_needed ('orb_opt_lab')
-   call object_needed ('orb_sym_lab')
-   call object_needed ('orb_occ_in_wf')
-   call object_needed ('orb_cls_in_wf')
-   call object_needed ('orb_act_in_wf')
-   call object_needed ('orb_opn_in_wf')
-   call object_needed ('orb_vir_in_wf')
-   call object_needed ('orb_ex_forbidden')
-
-   call object_needed ('det_unq_orb_lab_srt_up')
-   call object_needed ('det_unq_orb_lab_srt_dn')
-   call object_needed ('orb_occ_in_wf')
-   call object_needed ('ndetup')
-   call object_needed ('ndetdn')
-
-   call object_needed ('det_unq_up_in_csf')
-   call object_needed ('det_unq_dn_in_csf')
-   call object_needed ('cdet_unq_in_csf')
-
-   return
-
-  endif
-
-! begin
-  write(6,'(a)') ' Constructing list of single orbital excitations checking for additional redundancies...'
-
-! allocations
-  call alloc ('det_ex_cur_orb_lab_up', det_ex_cur_orb_lab_up, nup)
-  call alloc ('det_ex_cur_orb_lab_srt_up', det_ex_cur_orb_lab_srt_up, nup)
-  call alloc ('det_ex_cur_orb_lab_dn', det_ex_cur_orb_lab_dn, ndn)
-  call alloc ('det_ex_cur_orb_lab_srt_dn', det_ex_cur_orb_lab_srt_dn, ndn)
-
-  if (l_active_orb_ortho_constraint) then
-   ex_dir_rev_nb = 2
-   ex_dir_rev_nonortho_nb = 1
-  else
-   ex_dir_rev_nb = 1
-   ex_dir_rev_nonortho_nb = 2
-  endif
-
-! initializations
-  single_ex_nb = 0
-  param_orb_nb = 0
-  ex_orb_ind_rev_cur = 0
-  single_ex_added_nb = 0
-
-! loops over orbitals
-  do orb_opt_i = 1, orb_opt_nb
-   orb_opt_lab_i = orb_opt_lab (orb_opt_i)
-
-   do orb_opt_j = orb_opt_i+1, orb_opt_nb
-    orb_opt_lab_j = orb_opt_lab (orb_opt_j)
-
-!    write(6,'(2a,i4,a,i4)') trim(here),': considering orbital excitation ', orb_opt_lab_i, ' -> ', orb_opt_lab_j
-
-!   skip user-specified forbidden excitations
-    if (orb_ex_forbidden (orb_opt_lab_i, orb_opt_lab_j)) then
-      cycle
-    endif
-
-!   skip excitations between orbitals of different symmetry
-    if (orb_sym_lab (orb_opt_lab_i) /= orb_sym_lab (orb_opt_lab_j)) then
-      cycle
-    endif
-
-!   skip obvious redundancies:
-!   skip closed -> closed excitations
-    if (orb_cls_in_wf (orb_opt_lab_i) .and. orb_cls_in_wf (orb_opt_lab_j)) then
-      cycle
-    endif
-
-!   skip virtual -> virtual excitations
-    if (orb_vir_in_wf (orb_opt_lab_i) .and. orb_vir_in_wf (orb_opt_lab_j)) then
-      cycle
-    endif
-
-!   skip open -> open excitations for single-determinant wave functions
-    if (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) then
-      cycle
-    endif
-
-!   skip active -> active excitations for CASSCF wave functions
-    if (l_casscf .and. (orb_act_in_wf (orb_opt_lab_i) .and. orb_act_in_wf (orb_opt_lab_j))) then
-      cycle
-    endif
-
-!   loop over the direct excitation i->j and the reverse excitation j->i
-!   one loop or the other is used depending whether the orthogonality constraint is imposed or not
-    do ex_dir_rev_nonortho = 1, ex_dir_rev_nonortho_nb
-
-    dpsi_orb_is_zero = .true.
-
-    do ex_dir_rev = 1, ex_dir_rev_nb
-
-    ex_is_zero = .true.
-
-!   swap orbitals for reverse excitation j->i
-    if (ex_dir_rev == 2 .or. ex_dir_rev_nonortho == 2) then
-     call swap (orb_opt_lab_i, orb_opt_lab_j)
-    endif
-
-!   skip if orbital orb_opt_lab_i is not occupied in the wave function
-    if (.not. orb_occ_in_wf (orb_opt_lab_i)) then
-      cycle
-    endif
-
-!   skip if orbital orb_opt_lab_j is closed in the wave function
-    if (orb_cls_in_wf (orb_opt_lab_j)) then
-      cycle
-    endif
-
-!   temporary: only active -> active excitations
-!    if ( .not. (orb_act_in_wf (orb_opt_lab_i) .and.  orb_act_in_wf (orb_opt_lab_j))) then
-!      cycle
-!    endif
-
-!    write(6,'(2a)') trim(here),': --------------------------------------------------------------------------------------'
-!    write(6,'(2a,i4,a,i4)') trim(here),': considering orbital excitation ', orb_opt_lab_i, ' -> ', orb_opt_lab_j
-
-
-!   construct excitations from ground-state wave-function
-    do csf_i = 1, ncsf
-
-!     write(6,'(2a,i4)') trim(here),': consider CSF # ',csf_i
-
-     csf_ex_unq_is_zero = .true.
-
-     do det_in_csf_i = 1, ndet_in_csf (csf_i)
-
-!      indexes unique spin-up and spin-dn determinants
-       det_unq_up_i = det_unq_up_in_csf (csf_i)%row (det_in_csf_i)
-       det_unq_dn_i = det_unq_dn_in_csf (csf_i)%row (det_in_csf_i)
-
-!      spin-up excited determinants:
-!      if orb_opt_lab_i is occupied in this deterninant and orb_opt_lab_j is not occupied
-       if (elt_in_array (det_unq_orb_lab_srt_up (:, det_unq_up_i), orb_opt_lab_i) .and.  &
-           .not. elt_in_array (det_unq_orb_lab_srt_up (:, det_unq_up_i), orb_opt_lab_j)) then
-
-        csf_ex_unq_is_zero = .false.
-
-!       build current excited determinant
-        det_ex_cur_orb_lab_up (:) = det_unq_orb_lab_srt_up (:, det_unq_up_i)
-        call replace_elt_in_array (det_ex_cur_orb_lab_up (:), orb_opt_lab_i, orb_opt_lab_j)
-!        write(6,'(2a,100i4)') trim(here),': construct excited spin-up determinant:',det_ex_cur_orb_lab_up
-
-!       sort current excited determinant
-        det_ex_cur_orb_lab_srt_up (:) = det_ex_cur_orb_lab_up (:)
-        call sort_and_sign (det_ex_cur_orb_lab_srt_up (:), det_ex_cur_orb_lab_srt_sgn_up)
-
-!       check if current excited determinant is a determinant in the ground-state wave function
-        det_unq_cur_up = 0
-        do det_unq_up_k = 1, ndetup
-         if (arrays_equal (det_ex_cur_orb_lab_srt_up (:), det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
-           det_unq_cur_up = det_unq_up_k
-           det_ex_unq_sgn_cur_up = det_ex_cur_orb_lab_srt_sgn_up
-!           write(6,'(2a)') trim(here), ': spin-up determinant is a ground-state spin-up determinant'
-          exit
-         endif
-        enddo
-
-!       check if current excited determinant is a excited determinant already encountered
-        if (det_unq_cur_up == 0) then
-         do det_ex_unq_up_k = 1, det_ex_unq_up_nb
-          if (arrays_equal (det_ex_cur_orb_lab_srt_up (:), det_ex_unq_orb_lab_srt_up (:, det_ex_unq_up_k))) then
-           det_unq_cur_up =  ndetup + det_ex_unq_up_k
-           det_ex_unq_sgn_cur_up = det_ex_cur_orb_lab_srt_sgn_up * det_ex_unq_orb_lab_srt_sgn_up (det_ex_unq_up_k)
-!           write(6,'(2a)') trim(here), ': spin-up determinant is a excited spin-up determinant already encountered'
-           exit
-          endif
-         enddo
-        endif
-
-!       if current excited determinant is a new determinant, add it to the list of unique excited determinants
-        if (det_unq_cur_up == 0) then
-         det_ex_unq_up_nb = det_ex_unq_up_nb + 1
-         det_unq_cur_up = ndetup + det_ex_unq_up_nb
-         det_ex_unq_sgn_cur_up = 1
-         call object_alloc ('det_ex_unq_ref_up', det_ex_unq_ref_up, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_up', det_ex_unq_orb_lab_srt_up, nup, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_sgn_up', det_ex_unq_orb_lab_srt_sgn_up, det_ex_unq_up_nb)
-         det_ex_unq_ref_up (det_ex_unq_up_nb) = det_unq_up_i
-         det_ex_unq_orb_lab_srt_up (:, det_ex_unq_up_nb) = det_ex_cur_orb_lab_srt_up (:)
-         det_ex_unq_orb_lab_srt_sgn_up (det_ex_unq_up_nb) = det_ex_cur_orb_lab_srt_sgn_up
-!         write(6,'(2a,100i4)') trim(here), ': add new excited spin-up determinant:', det_ex_cur_orb_lab_srt_up (:)
-        endif
-
-!       compute coefficient of current excited determinant with sign
-        cdet_unq_cur = cdet_unq_in_csf (csf_i)%row (det_in_csf_i) * det_ex_unq_sgn_cur_up
-
-!       add this excited determinant to the current excited csf
-        call append (det_unq_up_in_csf_ex_cur, det_unq_cur_up)
-        call append (det_unq_dn_in_csf_ex_cur, det_unq_dn_i)
-        call append (cdet_unq_in_csf_ex_cur, cdet_unq_cur)
-
-       endif ! spin-up determinants
-
-!      spin-dn excited determinants:
-!      if orb_opt_lab_i is occupied in this deterninant and orb_opt_lab_j is not occupied
-       if (elt_in_array (det_unq_orb_lab_srt_dn (:, det_unq_dn_i), orb_opt_lab_i) .and.  &
-           .not. elt_in_array (det_unq_orb_lab_srt_dn (:, det_unq_dn_i), orb_opt_lab_j)) then
-
-        csf_ex_unq_is_zero = .false.
-
-!       build current excited determinant
-        det_ex_cur_orb_lab_dn (:) = det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
-        call replace_elt_in_array (det_ex_cur_orb_lab_dn (:), orb_opt_lab_i, orb_opt_lab_j)
-!        write(6,'(2a,100i4)') trim(here),': construct excited spin-up determinant:',det_ex_cur_orb_lab_dn
-
-!       sort current excited determinant
-        det_ex_cur_orb_lab_srt_dn (:) = det_ex_cur_orb_lab_dn (:)
-        call sort_and_sign (det_ex_cur_orb_lab_srt_dn (:), det_ex_cur_orb_lab_srt_sgn_dn)
-
-!       check if current excited determinant is a determinant in the ground-state wave function
-        det_unq_cur_dn = 0
-        do det_unq_dn_k = 1, ndetdn
-         if (arrays_equal (det_ex_cur_orb_lab_srt_dn (:), det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
-           det_unq_cur_dn = det_unq_dn_k
-           det_ex_unq_sgn_cur_dn = det_ex_cur_orb_lab_srt_sgn_dn
-!           write(6,'(2a)') trim(here), ': spin-dn determinant is a ground-state spin-dn determinant'
-          exit
-         endif
-        enddo
-
-!       check if current excited determinant is a excited determinant already encountered
-        if (det_unq_cur_dn == 0) then
-         do det_ex_unq_dn_k = 1, det_ex_unq_dn_nb
-          if (arrays_equal (det_ex_cur_orb_lab_srt_dn (:), det_ex_unq_orb_lab_srt_dn (:, det_ex_unq_dn_k))) then
-           det_unq_cur_dn =  ndetdn + det_ex_unq_dn_k
-           det_ex_unq_sgn_cur_dn = det_ex_cur_orb_lab_srt_sgn_dn * det_ex_unq_orb_lab_srt_sgn_dn (det_ex_unq_dn_k)
-!           write(6,'(2a)') trim(here), ': spin-dn determinant is a excited spin-dn determinant already encountered'
-           exit
-          endif
-         enddo
-        endif
-
-!       if current excited determinant is a new determinant, add it to the list of unique excited determinants
-        if (det_unq_cur_dn == 0) then
-         det_ex_unq_dn_nb = det_ex_unq_dn_nb + 1
-         det_unq_cur_dn = ndetdn + det_ex_unq_dn_nb
-         det_ex_unq_sgn_cur_dn = 1
-         call object_alloc ('det_ex_unq_ref_dn', det_ex_unq_ref_dn, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_dn', det_ex_unq_orb_lab_srt_dn, ndn, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_sgn_dn', det_ex_unq_orb_lab_srt_sgn_dn, det_ex_unq_dn_nb)
-         det_ex_unq_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
-         det_ex_unq_orb_lab_srt_dn (:, det_ex_unq_dn_nb) = det_ex_cur_orb_lab_srt_dn (:)
-         det_ex_unq_orb_lab_srt_sgn_dn (det_ex_unq_dn_nb) = det_ex_cur_orb_lab_srt_sgn_dn
-!         write(6,'(2a,100i4)') trim(here), ': add new excited spin-dn determinant:', det_ex_cur_orb_lab_srt_dn (:)
-        endif
-
-!       compute coefficient of current excited determinant with sign
-        cdet_unq_cur = cdet_unq_in_csf (csf_i)%row (det_in_csf_i) * det_ex_unq_sgn_cur_dn
-
-!       add this excited determinant to the current excited csf
-        call append (det_unq_up_in_csf_ex_cur, det_unq_up_i)
-        call append (det_unq_dn_in_csf_ex_cur, det_unq_cur_dn)
-        call append (cdet_unq_in_csf_ex_cur, cdet_unq_cur)
-
-       endif ! spin-dn determinants
-
-     enddo ! det_in_csf_i
-
-!    current excited csf
-     if (.not. csf_ex_unq_is_zero) then
-
-      ex_is_zero = .false.
-
-!     sort only unique determinants in current excited csf
-      call sort (det_unq_up_in_csf_ex_cur (:), det_unq_dn_in_csf_ex_cur (:), cdet_unq_in_csf_ex_cur (:))
-      det_unq_in_csf_ex_cur_nb = mysize (det_unq_up_in_csf_ex_cur)
-
-!     combine unique determinants in current excited csf
-      det_unq_in_csf_ex_cur_temp_nb = det_unq_in_csf_ex_cur_nb
-      call copy (det_unq_up_in_csf_ex_cur, det_unq_up_in_csf_ex_cur_temp)
-      call copy (det_unq_dn_in_csf_ex_cur, det_unq_dn_in_csf_ex_cur_temp)
-      call copy (cdet_unq_in_csf_ex_cur, cdet_unq_in_csf_ex_cur_temp)
-      call release ('det_unq_up_in_csf_ex_cur', det_unq_up_in_csf_ex_cur)
-      call release ('det_unq_dn_in_csf_ex_cur', det_unq_dn_in_csf_ex_cur)
-      call release ('cdet_unq_in_csf_ex_cur', cdet_unq_in_csf_ex_cur)
-
-      det_unq_in_csf_ex_cur_nb = 1
-      call append (det_unq_up_in_csf_ex_cur, det_unq_up_in_csf_ex_cur_temp (1))
-      call append (det_unq_dn_in_csf_ex_cur, det_unq_dn_in_csf_ex_cur_temp (1))
-      call append (cdet_unq_in_csf_ex_cur, cdet_unq_in_csf_ex_cur_temp (1))
-
-      do det_unq_in_csf_ex_cur_i = 2, det_unq_in_csf_ex_cur_temp_nb
-        if (det_unq_up_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i) == det_unq_up_in_csf_ex_cur (det_unq_in_csf_ex_cur_nb) .and.  &
-            det_unq_up_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i) == det_unq_dn_in_csf_ex_cur (det_unq_in_csf_ex_cur_nb)) then
-          cdet_unq_in_csf_ex_cur (det_unq_in_csf_ex_cur_nb) = cdet_unq_in_csf_ex_cur (det_unq_in_csf_ex_cur_nb)  &
-                                                              + cdet_unq_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i)
-        else
-         det_unq_in_csf_ex_cur_nb = det_unq_in_csf_ex_cur_nb + 1
-         call append (det_unq_up_in_csf_ex_cur, det_unq_up_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i))
-         call append (det_unq_dn_in_csf_ex_cur, det_unq_dn_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i))
-         call append (cdet_unq_in_csf_ex_cur, cdet_unq_in_csf_ex_cur_temp (det_unq_in_csf_ex_cur_i))
-        endif
-      enddo
-
-
-!     prefactor of csf = coefficient of first determinant
-      csf_ex_cur_prefac = cdet_unq_in_csf_ex_cur (1)
-
-!     normalize csf so that the coefficient of first determinant is 1
-      cdet_unq_in_csf_ex_cur (:) = cdet_unq_in_csf_ex_cur (:) / csf_ex_cur_prefac
-
-!      write(6,'(2a)') trim(here), ': construct excited csf:'
-!      write(6,'(2a,100i4)') trim(here),': det_unq_up_in_csf_ex_cur=',det_unq_up_in_csf_ex_cur (:)
-!      write(6,'(2a,100i4)') trim(here),': det_unq_dn_in_csf_ex_cur=',det_unq_dn_in_csf_ex_cur (:)
-!      write(6,'(2a,100f7.3)')  trim(here),': cdet_unq_in_csf_ex_cur=', cdet_unq_in_csf_ex_cur (:)
-
-!     check if current excited csf is a csf in the ground-state wave function
-      csf_cur = 0
-      do csf_k = 1, ncsf
-       if (arrays_equal (det_unq_up_in_csf_ex_cur (:), det_unq_up_in_csf (csf_k)%row (:)) .and. &
-           arrays_equal (det_unq_dn_in_csf_ex_cur (:), det_unq_dn_in_csf (csf_k)%row (:)) .and. &
-           arrays_equal (cdet_unq_in_csf_ex_cur (:), cdet_unq_in_csf (csf_k)%row (:))) then
-           csf_cur = csf_k
-!           write(6,'(2a)') trim(here),': excited csf is ground-state csf'
-       endif
-      enddo ! csf_k
-
-!     check if current excited csf is a linear combinaison of ground-state csfs
-!     if (csf_cur == 0) then
-!     endif
-
-!     check if current excited csf is a excited csf already encountered
-      if (csf_cur == 0) then
-       do csf_ex_unq_i = 1, csf_ex_unq_nb
-        if (arrays_equal (det_unq_up_in_csf_ex_cur (:), det_unq_up_in_csf_ex_unq (csf_ex_unq_i)%row (:)) .and. &
-            arrays_equal (det_unq_dn_in_csf_ex_cur (:), det_unq_dn_in_csf_ex_unq (csf_ex_unq_i)%row (:)) .and. &
-            arrays_equal (cdet_unq_in_csf_ex_cur (:), cdet_unq_in_csf_ex_unq (csf_ex_unq_i)%row (:))) then
-            csf_cur = ncsf + csf_ex_unq_i
-!            write(6,'(2a)') trim(here),': excited csf is excited csf already encountered'
-         endif
-       enddo ! csf_ex_unq_i
-      endif
-
-
-!    if current excited csf is a new excited csf, add it to the list of unique excited csf
-     if (csf_cur == 0) then
-      csf_ex_unq_nb = csf_ex_unq_nb + 1
-      csf_cur = ncsf + csf_ex_unq_nb
-
-!     reference csf
-      call object_alloc ('csf_ex_unq_ref', csf_ex_unq_ref, csf_ex_unq_nb)
-      csf_ex_unq_ref (csf_ex_unq_nb) = csf_i
-
-!     list of excited determinants in excited csf
-      call object_alloc ('det_unq_in_csf_ex_unq_nb', det_unq_in_csf_ex_unq_nb, csf_ex_unq_nb)
-      call object_alloc ('det_unq_up_in_csf_ex_unq', det_unq_up_in_csf_ex_unq, csf_ex_unq_nb)
-      call object_alloc ('det_unq_dn_in_csf_ex_unq', det_unq_dn_in_csf_ex_unq, csf_ex_unq_nb)
-      call object_alloc ('cdet_unq_in_csf_ex_unq', cdet_unq_in_csf_ex_unq, csf_ex_unq_nb)
-      det_unq_in_csf_ex_unq_nb (csf_ex_unq_nb) = det_unq_in_csf_ex_cur_nb
-      call copy (det_unq_up_in_csf_ex_cur, det_unq_up_in_csf_ex_unq (csf_ex_unq_nb)%row)
-      call copy (det_unq_dn_in_csf_ex_cur, det_unq_dn_in_csf_ex_unq (csf_ex_unq_nb)%row)
-      call copy (cdet_unq_in_csf_ex_cur, cdet_unq_in_csf_ex_unq (csf_ex_unq_nb)%row)
-!      write(6,'(2a)') trim(here),': add new excited csf'
-     endif ! csf_cur == 0
-
-!    release temporary arrays
-     call release ('det_unq_up_in_csf_ex_cur', det_unq_up_in_csf_ex_cur)
-     call release ('det_unq_dn_in_csf_ex_cur', det_unq_dn_in_csf_ex_cur)
-     call release ('cdet_unq_in_csf_ex_cur', cdet_unq_in_csf_ex_cur)
-
-!    add this csf to the current singly-excited wave function
-     call append (csf_unq_in_wf_ex_cur, csf_cur)
-     call append (csf_unq_ref_in_wf_ex_cur, csf_i)
-     call append (csf_unq_prefac_in_wf_ex_cur, csf_ex_cur_prefac)
-     csf_unq_in_wf_ex_cur_nb = mysize (csf_unq_in_wf_ex_cur)
-
-     endif ! if (.not. csf_ex_unq_is_zero)
-
-    enddo ! ncsf
-
-!   current singly-excited wave function
-    if (.not. ex_is_zero) then
-
-!    sort excited csf in current singly-excited wave function
-     call sort (csf_unq_in_wf_ex_cur (:), csf_unq_ref_in_wf_ex_cur (:), csf_unq_prefac_in_wf_ex_cur (:))
-!     write(6,'(2a)') trim(here), ': construct singly-excited wave function:'
-!     write(6,'(2a,100i4)') trim(here),': csf_unq_in_wf_ex_cur=',csf_unq_in_wf_ex_cur (:)
-!     write(6,'(2a,100i4)') trim(here),': csf_unq_ref_in_wf_ex_cur=',csf_unq_ref_in_wf_ex_cur (:)
-!     write(6,'(2a,100f7.3)') trim(here),': csf_unq_prefac_in_wf_ex_cur=',csf_unq_prefac_in_wf_ex_cur (:)
-
-!    check if current singly-excited wave function is a singly-excited wave function already encountered
-!    (do not check for equalities between csf coefficients)
-     ex_cur = 0
-     do ex_i = 1, single_ex_nb
-      if (arrays_equal (csf_unq_in_wf_ex_cur (:), csf_unq_in_wf_ex (ex_i)%row (:)) .and.            &
-          arrays_equal (csf_unq_ref_in_wf_ex_cur (:), csf_unq_ref_in_wf_ex (ex_i)%row (:)) .and.    &
-          arrays_equal (csf_unq_prefac_in_wf_ex_cur (:), csf_unq_prefac_in_wf_ex (ex_i)%row (:))) then
-         ex_cur = ex_i
- !        write(6,'(2a)') trim(here), ': singly-excited wave function is a singly-excited wave function already encountered'
-      endif
-     enddo ! csf_ex_unq_i
-
-!    if current singly-excited wave function is a new singly-excited wave function, add it to the list of unique singly-excited wave functions
-     if (ex_cur == 0) then
-      single_ex_nb = single_ex_nb + 1
-      single_ex_added_nb = single_ex_added_nb + 1
-      ex_cur = single_ex_nb
-      call object_alloc ('csf_unq_in_wf_ex_nb', csf_unq_in_wf_ex_nb, single_ex_nb)
-      call object_alloc ('csf_unq_in_wf_ex', csf_unq_in_wf_ex, single_ex_nb)
-      call object_alloc ('csf_unq_ref_in_wf_ex', csf_unq_ref_in_wf_ex, single_ex_nb)
-      call object_alloc ('csf_unq_prefac_in_wf_ex', csf_unq_prefac_in_wf_ex, single_ex_nb)
-      csf_unq_in_wf_ex_nb (single_ex_nb) = csf_unq_in_wf_ex_cur_nb
-      call copy (csf_unq_in_wf_ex_cur, csf_unq_in_wf_ex (single_ex_nb)%row)
-      call copy (csf_unq_ref_in_wf_ex_cur, csf_unq_ref_in_wf_ex (single_ex_nb)%row)
-      call copy (csf_unq_prefac_in_wf_ex_cur, csf_unq_prefac_in_wf_ex (single_ex_nb)%row)
-
-      call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-      call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-      ex_orb_1st_lab (single_ex_nb) = orb_opt_lab_i
-      ex_orb_2nd_lab (single_ex_nb) = orb_opt_lab_j
-
- !     write(6,'(2a)') trim(here), ': add new singly-excited wave function'
-     endif ! ex_cur == 0
-
-!     build current orbital derivative: E(i->j) - E(j->i)
-      dpsi_orb_is_zero = .false.
-
-!     direct excitation i->j
-      if (ex_dir_rev == 1) then
-
-        call append (csf_unq_in_dpsi_orb_cur, csf_unq_in_wf_ex_cur)
-        call append (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_wf_ex_cur)
-        call append (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_wf_ex_cur)
-        csf_unq_in_dpsi_orb_cur_nb = mysize (csf_unq_in_dpsi_orb_cur)
-
-        ex_orb_ind_cur = ex_cur
-
- !    reverse excitation j->i
-      else
-
-!       opposite sign
-        csf_unq_prefac_in_wf_ex_cur (:) = - csf_unq_prefac_in_wf_ex_cur (:)
-
-        call append (csf_unq_in_dpsi_orb_cur, csf_unq_in_wf_ex_cur)
-        call append (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_wf_ex_cur)
-        call append (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_wf_ex_cur)
-        csf_unq_in_dpsi_orb_cur_nb = mysize (csf_unq_in_dpsi_orb_cur)
-
-        ex_orb_ind_rev_cur = ex_cur
-
-      endif ! if (ex_dir_rev == 1)
-
-!    release temporary arrays
-     call release ('csf_unq_in_wf_ex_cur', csf_unq_in_wf_ex_cur)
-     call release ('csf_unq_ref_in_wf_ex_cur', csf_unq_ref_in_wf_ex_cur)
-     call release ('csf_unq_prefac_in_wf_ex_cur', csf_unq_prefac_in_wf_ex_cur)
-
-    endif ! if (.not. ex_is_zero) then
-
-    enddo ! ex_dir_rev
-
-
-    if (.not. dpsi_orb_is_zero) then
-
-    dpsi_orb_is_redundant = .false.
-
-!   sort csf in current orbital derivative
-    call sort (csf_unq_in_dpsi_orb_cur (:), csf_unq_ref_in_dpsi_orb_cur (:), csf_unq_prefac_in_dpsi_orb_cur (:))
-
-!   combine unique csfs in current orbital derivative
-    csf_unq_in_dpsi_orb_cur_temp_nb = csf_unq_in_dpsi_orb_cur_nb
-    call copy (csf_unq_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_temp)
-    call copy (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_dpsi_orb_cur_temp)
-    call copy (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_dpsi_orb_cur_temp)
-    call release ('csf_unq_in_dpsi_orb_cur', csf_unq_in_dpsi_orb_cur)
-    call release ('csf_unq_ref_in_dpsi_orb_cur', csf_unq_ref_in_dpsi_orb_cur)
-    call release ('csf_unq_prefac_in_dpsi_orb_cur', csf_unq_prefac_in_dpsi_orb_cur)
-
-    csf_unq_in_dpsi_orb_cur_nb = 1
-    call append (csf_unq_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_temp (1))
-    call append (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_dpsi_orb_cur_temp (1))
-    call append (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_dpsi_orb_cur_temp (1))
-
-    do csf_unq_in_dpsi_orb_cur_i = 2, csf_unq_in_dpsi_orb_cur_temp_nb
-      if (csf_unq_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i) == csf_unq_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_nb) .and.  &
-          csf_unq_ref_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i) == csf_unq_ref_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_nb)) then
-        csf_unq_prefac_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_nb) = csf_unq_prefac_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_nb)  &
-                                                            + csf_unq_prefac_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i)
-      else
-       csf_unq_in_dpsi_orb_cur_nb = csf_unq_in_dpsi_orb_cur_nb + 1
-       call append (csf_unq_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i))
-       call append (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i))
-       call append (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_dpsi_orb_cur_temp (csf_unq_in_dpsi_orb_cur_i))
-      endif
-    enddo
-
-!    write(6,'(2a)') trim(here), ': construct orbital derivative:'
-!    write(6,'(2a,100i4)') trim(here),': csf_unq_in_dpsi_orb_cur=',csf_unq_in_dpsi_orb_cur (:)
-!    write(6,'(2a,100i4)') trim(here),': csf_unq_ref_in_dpsi_orb_cur=',csf_unq_ref_in_dpsi_orb_cur (:)
-!    write(6,'(2a,100f7.3)') trim(here),': csf_unq_prefac_in_dpsi_orb_cur=',csf_unq_prefac_in_dpsi_orb_cur (:)
-
-!   remove csfs with zero prefactors
-    csf_unq_in_dpsi_orb_cur_i = 1
-    do while (csf_unq_in_dpsi_orb_cur_i <= csf_unq_in_dpsi_orb_cur_nb)
-      if (csf_unq_prefac_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_i) == 0.d0) then
-        call remove_elt_in_array (csf_unq_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_i)
-        call remove_elt_in_array (csf_unq_ref_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_i)
-        call remove_elt_in_array (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_in_dpsi_orb_cur_i)
-        csf_unq_in_dpsi_orb_cur_nb = mysize (csf_unq_in_dpsi_orb_cur)
-      else
-        csf_unq_in_dpsi_orb_cur_i = csf_unq_in_dpsi_orb_cur_i + 1
-      endif
-    enddo
-
-!   if all csf prefactors of current orbital derivative are zero, this orbital derivative is redundant
-    if (csf_unq_in_dpsi_orb_cur_nb == 0.d0) then
-        dpsi_orb_is_redundant = .true.
-!        write(6, '(2a)') trim(here),': orbital derivative is redundant (zero)'
-    endif
-
-!   if current orbital derivative is a linear combinaison of optimized ground-state csfs, then
-!   this orbital derivative is redundant.
-!   (Even if not optimized, the first csf is also considered as part of the optimization space.
-!   This is necessary so that for a CASSCF wave function all active->active excitations are redundant.
-!   I am not sure if one should not include also the first csf is the optimization for this to be really correct,
-!   as for instance Danish MCSCF people do).
-    if (.not. dpsi_orb_is_redundant .and. l_opt_csf) then
-      dpsi_orb_is_redundant = .true.
-      do csf_unq_in_dpsi_orb_cur_i = 1, csf_unq_in_dpsi_orb_cur_nb
-        if (.not. (elt_in_array (iwcsf (1:nparmcsf), csf_unq_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_i)) .or. &
-                  csf_unq_in_dpsi_orb_cur (csf_unq_in_dpsi_orb_cur_i) == 1)) then
-            dpsi_orb_is_redundant = .false.
-            exit
-        endif
-      enddo
-      if (dpsi_orb_is_redundant) then
-!        write(6, '(2a)') trim(here),': orbital derivative is redundant with linear combinaison of optimized ground-state csfs'
-      endif
-    endif
-
-!   check if current orbital derivative is an orbital derivative already encountered
-    if (.not. dpsi_orb_is_redundant) then
-     do dpsi_orb_i = 1, param_orb_nb
-      if (arrays_equal (csf_unq_in_dpsi_orb_cur (:), csf_unq_in_dpsi_orb (dpsi_orb_i)%row (:)) .and.            &
-          (csf_unq_in_dpsi_orb_cur_nb == 1 .or.                                                           &
-          (arrays_equal (csf_unq_ref_in_dpsi_orb_cur (:), csf_unq_ref_in_dpsi_orb (dpsi_orb_i)%row (:)) .and.   &
-          arrays_equal (csf_unq_prefac_in_dpsi_orb_cur (:), csf_unq_prefac_in_dpsi_orb (dpsi_orb_i)%row (:))))) then
-         dpsi_orb_is_redundant = .true.
-!         write(6, '(2a)') trim(here),': orbital derivative is redundant with another orbital derivative'
-      endif
-     enddo ! dpsi_orb_i
-    endif
-
-!   if current orbital derivative is redundant, remove added unique singly-excited wave functions
-    if (dpsi_orb_is_redundant) then
-      single_ex_nb = single_ex_nb - single_ex_added_nb
-      call object_alloc ('csf_unq_in_wf_ex_nb', csf_unq_in_wf_ex_nb, single_ex_nb)
-      call object_alloc ('csf_unq_in_wf_ex', csf_unq_in_wf_ex, single_ex_nb)
-      call object_alloc ('csf_unq_ref_in_wf_ex', csf_unq_ref_in_wf_ex, single_ex_nb)
-      call object_alloc ('csf_unq_prefac_in_wf_ex', csf_unq_prefac_in_wf_ex, single_ex_nb)
-      call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-      call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-!      write(6,'(2a)') trim(here), ': remove singly-excited wave function'
-    endif
-
-!   if current orbital derivative is a not redundant, add it to the list of orbital derivatives
-    if (.not. dpsi_orb_is_redundant) then
-      param_orb_nb = param_orb_nb + 1
-      call object_alloc ('csf_unq_in_dpsi_orb_nb', csf_unq_in_dpsi_orb_nb, param_orb_nb)
-      call object_alloc ('csf_unq_in_dpsi_orb', csf_unq_in_dpsi_orb, param_orb_nb)
-      call object_alloc ('csf_unq_ref_in_dpsi_orb', csf_unq_ref_in_dpsi_orb, param_orb_nb)
-      call object_alloc ('csf_unq_prefac_in_dpsi_orb', csf_unq_prefac_in_dpsi_orb, param_orb_nb)
-      csf_unq_in_dpsi_orb_nb (param_orb_nb) = csf_unq_in_dpsi_orb_cur_nb
-      call copy (csf_unq_in_dpsi_orb_cur, csf_unq_in_dpsi_orb(param_orb_nb)%row)
-      call copy (csf_unq_ref_in_dpsi_orb_cur, csf_unq_ref_in_dpsi_orb(param_orb_nb)%row)
-      call copy (csf_unq_prefac_in_dpsi_orb_cur, csf_unq_prefac_in_dpsi_orb(param_orb_nb)%row)
-
-      call object_alloc ('ex_orb_ind', ex_orb_ind, param_orb_nb)
-      call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
-
-      if (ex_orb_ind_cur /= 0) then
-       ex_orb_ind (param_orb_nb) = ex_orb_ind_cur
-       ex_orb_ind_rev (param_orb_nb) = ex_orb_ind_rev_cur
-      else
-
-!       write(6,'(2a,i4,a,i4)') trim(here),': orbital excitation ', orb_opt_lab_j, ' -> ', orb_opt_lab_i
-!       write(6,'(2a)') trim(here),': orbital derivative with vanishing direct excitation but not vanishing reverse excitation'
-!       write(6,'(2a)') trim(here),': this case is not yet implemented'
-!       write(6,'(2a,i4)') trim(here),': the index of reverse excitation is ',ex_orb_ind_rev_cur
-!       call die (here)
-
-!      if direct excitation i->j is zero, swap direct and reverse excitations
-!      this simply corresponds to changing the sign of the derivative (so the optimized parameter will get the opposite sign)
-!      in particular, this can happen if the orbitals are in an unexpected order, e.g.  i<j with i virtual and j occupied
-!      Warning: I did not check this very carefully
-       ex_orb_ind (param_orb_nb) = ex_orb_ind_rev_cur
-       ex_orb_ind_rev (param_orb_nb) = ex_orb_ind_cur
-      endif
-
-!      write(6,'(2a)') trim(here),': add new orbital derivative'
-    endif ! if (.not. dpsi_orb_is_redundant)
-
-!   release temporary arrays
-    call release ('csf_unq_in_dpsi_orb_cur', csf_unq_in_dpsi_orb_cur)
-    call release ('csf_unq_ref_in_dpsi_orb_cur', csf_unq_ref_in_dpsi_orb_cur)
-    call release ('csf_unq_prefac_in_dpsi_orb_cur', csf_unq_prefac_in_dpsi_orb_cur)
-
-    endif ! if (.not. dpsi_orb_is_zero)
-
-!   reinitializations
-    single_ex_added_nb = 0
-    ex_orb_ind_cur = 0
-    ex_orb_ind_rev_cur = 0
-
-    enddo ! ex_dir_rev_nonortho
-
-!   reset label of first orbital
-    orb_opt_lab_i = orb_opt_lab_j
-
-   enddo ! orb_opt_j
-
-  enddo ! orb_opt_i
-
-! determine (occupied or vitual) orbitals mixed in orbital optimization 
-  call object_alloc ('orb_mix_lab', orb_mix_lab, orb_tot_nb)
-  orb_mix_lab (:) = .false.
-  do ex_i = 1, single_ex_nb
-   orb_mix_lab (ex_orb_1st_lab (ex_i)) = .true.
-   orb_mix_lab (ex_orb_2nd_lab (ex_i)) = .true.
-  enddo ! ex_i
-  orb_mix_lab_nb = 0
-  do orb_i = 1, orb_tot_nb
-    if (orb_mix_lab (orb_i)) then
-      orb_mix_lab_nb = orb_mix_lab_nb + 1
-    endif
-  enddo
-
-  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
-  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
-  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb
-
-! excitation pairs number
-  deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
-
-! check with object from old routine
-!  write(6,'(2a,i10)') trim(here),': old number of single excitations for orbital optimization: ', single_ex_nb_old
-!  write(6,'(2a,i10)') trim(here),': old number of orbital derivatives: ', param_orb_nb_old
-!
-!  do ex_i = 1, single_ex_nb_old
-!   orb_1st = ex_orb_1st_lab_old (ex_i)
-!   orb_2nd = ex_orb_2nd_lab_old (ex_i)
-!   ex_found = .false.
-!   do ex_j = 1, single_ex_nb
-!    if (orb_1st == ex_orb_1st_lab (ex_j) .and. orb_2nd == ex_orb_2nd_lab (ex_j)) then
-!      ex_found = .true.
-!     exit
-!    endif
-!   enddo
-!   if (.not. ex_found) then
-!    write(6,'(2a,i4,a,i4,a)') trim(here),': excitation ',orb_1st, ' ->', orb_2nd, ' is no longer present'
-!   endif
-!  enddo
-
-  if (l_print_orbital_excitations) then
-  write(6,*)
-  write(6,'(a)') ' Orbital excitations:'
-   do dorb_i = 1, param_orb_nb
-    write(6,'(a,i4,a,i4,a,i4,a,i4)') ' orbital parameter # ',dorb_i,' corresponds to single excitation # ',ex_orb_ind (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind (dorb_i))
-    if (ex_orb_ind_rev (dorb_i) /= 0) then
-     write(6,'(a,i4,a,i4,a,i4)') '                             and reverse single excitation # ',ex_orb_ind_rev (dorb_i),' : ',ex_orb_1st_lab (ex_orb_ind_rev (dorb_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind_rev (dorb_i))
-    endif
-   enddo ! dorb_i
-  write(6,*)
-  endif
-
- end subroutine single_ex_wf_bld_2
-
-! ==============================================================================
-  subroutine single_ex_det_bld
-! ------------------------------------------------------------------------------
-! Description   : build single orbital excitation information for determinants
-! Description   : to be replaced by single_ex_wf_bld_2
-!
-! Created       : J. Toulouse, 25 Oct 2005
-! ------------------------------------------------------------------------------
-  use all_modules_mod
-  implicit none
-
-! local
-  integer ex_i, orb_1st, orb_2nd
-  integer det_unq_up_i, det_unq_up_k, det_unq_dn_i, det_unq_dn_k
-
-! header
-  if (header_exe) then
-
    call object_create ('det_ex_unq_up_nb')
    call object_create ('det_ex_unq_dn_nb')
    call object_create ('det_ex_unq_up_orb_1st_pos')
    call object_create ('det_ex_unq_dn_orb_1st_pos')
    call object_create ('det_ex_unq_up_orb_2nd_lab')
    call object_create ('det_ex_unq_dn_orb_2nd_lab')
-   call object_create ('det_ex_orb_lab_srt_up')
-   call object_create ('det_ex_orb_lab_srt_dn')
-   call object_create ('det_ex_orb_lab_srt_sgn_up')
-   call object_create ('det_ex_orb_lab_srt_sgn_dn')
    call object_create ('det_ex_unq_orb_lab_up')
    call object_create ('det_ex_unq_orb_lab_dn')
-   call object_create ('det_ex_unq_orb_lab_srt_up')
-   call object_create ('det_ex_unq_orb_lab_srt_dn')
-   call object_create ('det_ex_unq_orb_lab_srt_sgn_up')
-   call object_create ('det_ex_unq_orb_lab_srt_sgn_dn')
-   call object_create ('ex_up_is_zero')
-   call object_create ('ex_dn_is_zero')
-   call object_create ('is_det_ex_up')
-   call object_create ('is_det_ex_dn')
+
+   call object_create ('det_ex_unq_sgn_up')
+   call object_create ('det_ex_unq_sgn_dn')
    call object_create ('iwdet_ex_up')
    call object_create ('iwdet_ex_dn')
    call object_create ('iwdet_ex_ref_up')
    call object_create ('iwdet_ex_ref_dn')
 
-   call object_needed ('single_ex_nb')
    call object_needed ('ndetup')
    call object_needed ('ndetdn')
-   call object_needed ('ex_orb_1st_lab')
-   call object_needed ('ex_orb_2nd_lab')
    call object_needed ('det_unq_orb_lab_srt_up')
    call object_needed ('det_unq_orb_lab_srt_dn')
+   call object_needed ('nup')
+   call object_needed ('ndn')
+   call object_needed ('det_unq_up_in_csf')
+   call object_needed ('det_unq_dn_in_csf')
+   call object_needed ('cdet_unq_in_csf')
+
+   call object_needed ('orb_tot_nb')
+   call object_needed ('orb_opt_lab')
+   call object_needed ('orb_ex_forbidden')
+   call object_needed ('orb_sym_lab')
+   call object_needed ('orb_cls_in_wf')
+   call object_needed ('orb_vir_in_wf')
+   call object_needed ('orb_opn_in_wf')
+   call object_needed ('orb_act_in_wf')
+   call object_needed ('orb_occ_in_wf')
    call object_needed ('orb_occ_in_det_unq_up')
    call object_needed ('orb_occ_in_det_unq_dn')
-   call object_needed ('orb_pos_in_det_unq_up')
-   call object_needed ('orb_pos_in_det_unq_dn')
+
+   call object_needed ('ncsf')
+   call object_needed ('ndet_in_csf')
+   call object_needed ('iwdet_in_csf')
+   call object_needed ('det_to_det_unq_up')
+   call object_needed ('det_to_det_unq_dn')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('iwcsf')
 
    return
-
   endif
 
-! begin
+  write(6,'(a)') ' Constructing list of single orbital excitations checking for redundancies...'
 
 ! allocations
-  call object_alloc ('ex_up_is_zero', ex_up_is_zero, single_ex_nb, ndetup)
-  call object_alloc ('ex_dn_is_zero', ex_dn_is_zero, single_ex_nb, ndetdn)
-  call object_alloc ('det_ex_orb_lab_up', det_ex_orb_lab_up, nup, single_ex_nb, ndetup)
-  call object_alloc ('det_ex_orb_lab_dn', det_ex_orb_lab_dn, ndn, single_ex_nb, ndetdn)
-  call object_alloc ('det_ex_orb_lab_srt_up', det_ex_orb_lab_srt_up, nup, single_ex_nb, ndetup)
-  call object_alloc ('det_ex_orb_lab_srt_dn', det_ex_orb_lab_srt_dn, ndn, single_ex_nb, ndetdn)
-  call object_alloc ('det_ex_orb_lab_srt_sgn_up', det_ex_orb_lab_srt_sgn_up, single_ex_nb, ndetup)
-  call object_alloc ('det_ex_orb_lab_srt_sgn_dn', det_ex_orb_lab_srt_sgn_dn, single_ex_nb, ndetdn)
-  call object_alloc ('is_det_ex_up', is_det_ex_up, single_ex_nb, ndetup)
-  call object_alloc ('is_det_ex_dn', is_det_ex_dn, single_ex_nb, ndetdn)
-  call object_alloc ('iwdet_ex_up', iwdet_ex_up, single_ex_nb, ndetup)
-  call object_alloc ('iwdet_ex_dn', iwdet_ex_dn, single_ex_nb, ndetdn)
+! Most arrays will be adjusted at the end of the routine and have the following max sizes:
+  single_ex_max  =orb_tot_nb*orb_tot_nb
+  det_ex_max     =(ndetup+ndetdn)*single_ex_max/25
+  csf_ex_unq_max =2*det_ex_max*ndetup
+  det_in_csf_max =10
+  csf_in_wf_max  =ncsf
+  csf_in_dpsi_max=2*ncsf
+  wf_unq_max     =single_ex_max
+  dpsi_unq_max   =single_ex_max
+! This suppress the need to resize an array to often.
 
-
-  ex_up_is_zero = .true.
-  ex_dn_is_zero = .true.
-
-  det_ex_orb_lab_up = 0
-  det_ex_orb_lab_dn = 0
-  det_ex_orb_lab_srt_up = 0
-  det_ex_orb_lab_srt_dn = 0
-
+! FOR PART 1: UNIQUE DETS
   det_ex_unq_up_nb = 0
   det_ex_unq_dn_nb = 0
-  is_det_ex_up = .true.
-  is_det_ex_dn = .true.
-  iwdet_ex_dn = 0
-  iwdet_ex_up = 0
+  call object_alloc ('iwdet_ex_up',               iwdet_ex_up,                 single_ex_max, ndetup)
+  call object_alloc ('iwdet_ex_dn',               iwdet_ex_dn,                 single_ex_max, ndetdn)
+  call object_alloc ('det_ex_unq_sgn_up',         det_ex_unq_sgn_up,           single_ex_max, ndetup)
+  call object_alloc ('det_ex_unq_sgn_dn',         det_ex_unq_sgn_dn,           single_ex_max, ndetdn)
+  call object_alloc ('iwdet_ex_ref_up',           iwdet_ex_ref_up,             det_ex_max)
+  call object_alloc ('iwdet_ex_ref_dn',           iwdet_ex_ref_dn,             det_ex_max)
+  call object_alloc ('det_ex_unq_orb_lab_up',     det_ex_unq_orb_lab_up, nup,  det_ex_max)
+  call object_alloc ('det_ex_unq_orb_lab_dn',     det_ex_unq_orb_lab_dn, ndn,  det_ex_max)
+  call object_alloc ('det_unq_orb_lab_srt_up',    det_unq_orb_lab_srt_up, nup, ndetup+det_ex_max)
+  call object_alloc ('det_unq_orb_lab_srt_dn',    det_unq_orb_lab_srt_dn, ndn, ndetdn+det_ex_max)
+  call object_alloc ('det_ex_unq_up_orb_1st_pos', det_ex_unq_up_orb_1st_pos,   det_ex_max)
+  call object_alloc ('det_ex_unq_dn_orb_1st_pos', det_ex_unq_dn_orb_1st_pos,   det_ex_max)
+  call object_alloc ('det_ex_unq_up_orb_2nd_lab', det_ex_unq_up_orb_2nd_lab,   det_ex_max)
+  call object_alloc ('det_ex_unq_dn_orb_2nd_lab', det_ex_unq_dn_orb_2nd_lab,   det_ex_max)
+! local arrays (not objects)
+  call alloc ('det_orb_lab_up',     det_orb_lab_up,     nup)
+  call alloc ('det_orb_lab_dn',     det_orb_lab_dn,     ndn)
+  call alloc ('det_orb_lab_srt_up', det_orb_lab_srt_up, nup)
+  call alloc ('det_orb_lab_srt_dn', det_orb_lab_srt_dn, ndn)
 
-! loop over single orbital excitations
+! FOR PART 2: UNIQUE CSFS
+  det_in_csf_nb_tmp=0
+  call alloc('det_in_csf_up_tmp',   det_in_csf_up_tmp,   det_in_csf_max)
+  call alloc('det_in_csf_dn_tmp',   det_in_csf_dn_tmp,   det_in_csf_max)
+  call alloc('det_in_csf_coef_tmp', det_in_csf_coef_tmp, det_in_csf_max)
+  det_in_csf_nb=0
+  call alloc('det_in_csf_up',       det_in_csf_up,       det_in_csf_max)
+  call alloc('det_in_csf_dn',       det_in_csf_dn,       det_in_csf_max)
+  call alloc('det_in_csf_coef',     det_in_csf_coef,     det_in_csf_max)
+
+  csf_ex_unq_nb=0
+  call alloc('csf_ex_unq_ref',           csf_ex_unq_ref,    csf_ex_unq_max)
+  call alloc('csf_ex_unq_size',          csf_ex_unq_size,   csf_ex_unq_max)
+  call object_alloc('det_unq_up_in_csf', det_unq_up_in_csf, ncsf+csf_ex_unq_max)
+  call object_alloc('det_unq_dn_in_csf', det_unq_dn_in_csf, ncsf+csf_ex_unq_max)
+  call object_alloc('cdet_unq_in_csf'  , cdet_unq_in_csf,   ncsf+csf_ex_unq_max)
+
+! FOR PART 3: UNIQUE WFS
+  csf_in_wf_nb=0
+  call alloc('csf_in_wf',      csf_in_wf,      csf_in_wf_max)
+  call alloc('csf_in_wf_ref',  csf_in_wf_ref,  csf_in_wf_max)
+  call alloc('csf_in_wf_coef', csf_in_wf_coef, csf_in_wf_max)
+
+  call alloc('wf_unq_nb',      wf_unq_nb,      wf_unq_max)
+  call alloc('wf_unq_csf',     wf_unq_csf,     wf_unq_max)
+  call alloc('wf_unq_ref',     wf_unq_ref,     wf_unq_max)
+  call alloc('wf_unq_coef',    wf_unq_coef,    wf_unq_max)
+
+! FOR PART 4: UNIQUE DPSI
+  csf_in_dpsi_nb_tmp=0
+  call alloc('csf_in_dpsi_tmp',      csf_in_dpsi_tmp,      csf_in_dpsi_max)
+  call alloc('csf_in_dpsi_ref_tmp',  csf_in_dpsi_ref_tmp,  csf_in_dpsi_max)
+  call alloc('csf_in_dpsi_coef_tmp', csf_in_dpsi_coef_tmp, csf_in_dpsi_max)
+  csf_in_dpsi_nb=0
+  call alloc('csf_in_dpsi',          csf_in_dpsi,          csf_in_dpsi_max)
+  call alloc('csf_in_dpsi_ref',      csf_in_dpsi_ref,      csf_in_dpsi_max)
+  call alloc('csf_in_dpsi_coef',     csf_in_dpsi_coef,     csf_in_dpsi_max)
+
+  call alloc('dpsi_unq_nb',          dpsi_unq_nb,          dpsi_unq_max)
+  call alloc('dpsi_unq_csf',         dpsi_unq_csf,         dpsi_unq_max)
+  call alloc('dpsi_unq_ref',         dpsi_unq_ref,         dpsi_unq_max)
+  call alloc('dpsi_unq_coef',        dpsi_unq_coef,        dpsi_unq_max)
+
+! RELEVANT INFORMATION
+  single_ex_nb     = 0
+  param_orb_nb     = 0
+  call object_alloc ('ex_orb_ind'    , ex_orb_ind    , single_ex_max)
+  call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, single_ex_max)
+  call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_max)
+  call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_max)
+
+! two scenarii
+  if (l_active_orb_ortho_constraint) then
+    ex_dir_rev_nb          = 2
+    ex_dir_rev_nonortho_nb = 1
+  else
+    ex_dir_rev_nb          = 1
+    ex_dir_rev_nonortho_nb = 2
+  endif
+
+  tSort=0.d0
+  tDet=0.d0
+  tCSFa=0.d0
+  tCSFb=0.d0
+  tCSFc=0.d0
+  tWF=0.d0
+  tDPSI=0.d0
+  call cpu_time(tA)
+  tBegin=tA
+
+! loop over all pairs of orbitals
+  ex_i=0
+  do i=1, orb_tot_nb
+  orb_opt_lab_i=orb_opt_lab(i)
+  do j=i+1, orb_tot_nb
+  orb_opt_lab_j=orb_opt_lab(j)
+
+! loop over the direct  excitation i->j
+!       and the reverse excitation j->i
+! (one loop or the other is used depending
+!  whether the orthogonality constraint is imposed or not)
+  do ex_dir_rev_nonortho = 1, ex_dir_rev_nonortho_nb
+  single_ex_added_nb = 0
+  ex_orb_ind_tmp     = 0
+  ex_orb_ind_rev_tmp = 0
+  !DPSI_tmp initialization
+  csf_in_dpsi_nb_tmp     = 0
+  csf_in_dpsi_tmp        = csf_in_dpsi_max+1
+  csf_in_dpsi_ref_tmp    = csf_in_dpsi_max+1
+  csf_in_dpsi_coef_tmp   = csf_in_dpsi_max+1
+  do ex_dir_rev = 1, ex_dir_rev_nb
+
+!   swap orbitals for reverse excitation j- >i
+    if (ex_dir_rev ==  2 .or. ex_dir_rev_nonortho ==  2) call swap (orb_opt_lab_i, orb_opt_lab_j)
+
+!   skip for numerous reasons
+    if ((orb_ex_forbidden (orb_opt_lab_i, orb_opt_lab_j)) &
+    .or. (orb_sym_lab (orb_opt_lab_i) /= orb_sym_lab (orb_opt_lab_j)) &
+    .or. (orb_cls_in_wf (orb_opt_lab_i) .and. orb_cls_in_wf (orb_opt_lab_j)) &
+    .or. (orb_vir_in_wf (orb_opt_lab_i) .and. orb_vir_in_wf (orb_opt_lab_j)) &
+    .or. (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) &
+    .or. (l_casscf .and. (orb_act_in_wf (orb_opt_lab_i) .and. orb_act_in_wf (orb_opt_lab_j))) &
+    .or. (.not. orb_occ_in_wf (orb_opt_lab_i)) &
+    .or. (orb_cls_in_wf (orb_opt_lab_j))) then
+      cycle
+    endif
+
+    ex_i=ex_i+1
+    if (ex_i>single_ex_max) call die(lhere,"Recompile with a superior value of 'single_ex_max' in deriv_orb_mod.f90 (A)")
+
+!1\ ================================================================================= 
+!   Gather information on unique excited determinants
+!   ================================================================================= 
+!1a\loop over unique spin-up determinants
+    do det_unq_up_i = 1, ndetup
+    if (orb_occ_in_det_unq_up (orb_opt_lab_i, det_unq_up_i) &
+      .and. .not. orb_occ_in_det_unq_up (orb_opt_lab_j, det_unq_up_i)) then
+
+!     build current excited determinant
+      det_orb_lab_up = det_unq_orb_lab_srt_up (:, det_unq_up_i)
+      call replace_elt_in_array (det_orb_lab_up, orb_opt_lab_i, orb_opt_lab_j)
+      det_orb_lab_srt_up = det_orb_lab_up
+      call sort_and_sign (det_orb_lab_srt_up, det_ex_unq_sgn_up (ex_i, det_unq_up_i))
+
+!     check if current excited determinant is an already known determinant
+      do det_unq_up_k = 1, ndetup+det_ex_unq_up_nb
+       if (arrays_equal (det_orb_lab_srt_up, det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
+         iwdet_ex_up (ex_i, det_unq_up_i) = det_unq_up_k
+         exit
+       endif
+      enddo
+
+!     if current excited determinant is a new determinant, add it to the list of unique determinants
+      if (iwdet_ex_up (ex_i, det_unq_up_i) == 0) then
+        det_ex_unq_up_nb = det_ex_unq_up_nb + 1
+        if (det_ex_unq_up_nb>det_ex_max) call die(lhere,"Recompile with a superior value of 'det_ex_max' in deriv_orb_mod.f90 (B)")
+        iwdet_ex_up (ex_i, det_unq_up_i) = ndetup+det_ex_unq_up_nb
+        iwdet_ex_ref_up (det_ex_unq_up_nb) = det_unq_up_i
+        det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_orb_lab_up
+        det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb ) = det_orb_lab_srt_up
+        det_ex_unq_sgn_up (ex_i, det_unq_up_i ) = 1
+        det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_opt_lab_i, det_unq_up_i)
+        det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_opt_lab_j
+      endif
+    endif
+    enddo ! det_unq_up_i
+
+!1b\loop over unique spin-down determinants
+    do det_unq_dn_i = 1, ndetdn
+    if (orb_occ_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i) &
+      .and. .not. orb_occ_in_det_unq_dn (orb_opt_lab_j, det_unq_dn_i)) then
+
+!     build current excited determinant
+      det_orb_lab_dn = det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
+      call replace_elt_in_array (det_orb_lab_dn, orb_opt_lab_i, orb_opt_lab_j)
+      det_orb_lab_srt_dn = det_orb_lab_dn
+      call sort_and_sign (det_orb_lab_srt_dn, det_ex_unq_sgn_dn (ex_i, det_unq_dn_i))
+
+!     check if current excited determinant is an already known determinant
+      do det_unq_dn_k = 1, ndetdn+det_ex_unq_dn_nb
+       if (arrays_equal (det_orb_lab_srt_dn, det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
+         iwdet_ex_dn (ex_i, det_unq_dn_i) = det_unq_dn_k
+         exit
+       endif
+      enddo
+
+!     if current excited determinant is a new determinant, add it to the list of unique determinants
+      if (iwdet_ex_dn (ex_i, det_unq_dn_i) == 0) then
+        det_ex_unq_dn_nb = det_ex_unq_dn_nb + 1
+        if (det_ex_unq_dn_nb>det_ex_max) call die(lhere,"Recompile with a superior value of 'det_ex_max' in deriv_orb_mod.f90 (C)")
+        iwdet_ex_dn (ex_i, det_unq_dn_i) = ndetdn+det_ex_unq_dn_nb
+        iwdet_ex_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
+        det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_orb_lab_dn
+        det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb) = det_orb_lab_srt_dn
+        det_ex_unq_sgn_dn (ex_i, det_unq_dn_i ) = 1
+        det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i)
+        det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_opt_lab_j
+      endif
+
+    endif
+    enddo ! det_unq_dn_i
+  call cpu_time(tB)
+  tDet=tDet+tB-tA
+  tA=tB
+
+
+!2\ ================================================================================= 
+!   Gather and sort information on the excited CSF
+!   (in the process: gather information on unique CSF)
+!   ================================================================================= 
+    !CSF_in_WF initialization
+    csf_in_wf_nb  =0
+    csf_in_wf     =csf_in_wf_max+1
+    csf_in_wf_ref =csf_in_wf_max+1
+    csf_in_wf_coef=csf_in_wf_max+1
+
+    do csf_i = 1, ncsf
+
+!2a\  Gather the unsorted information on CSFs
+!     (loop through determinants in the reference CSF)
+      !DET_in_CSF_tmp initialization
+      det_in_csf_nb_tmp  =0
+      det_in_csf_up_tmp  =det_in_csf_max+1
+      det_in_csf_dn_tmp  =det_in_csf_max+1
+      det_in_csf_coef_tmp=det_in_csf_max+1
+      do det_in_csf_i = 1, ndet_in_csf (csf_i)
+        det_i=iwdet_in_csf(det_in_csf_i, csf_i)
+        det_unq_up_i = det_to_det_unq_up (det_i)
+        det_unq_dn_i = det_to_det_unq_dn (det_i)
+        iwdet_up=iwdet_ex_up(ex_i, det_unq_up_i)
+        iwdet_dn=iwdet_ex_dn(ex_i, det_unq_dn_i)
+
+        if (iwdet_up.ne.0) then
+          det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
+          if (det_in_csf_nb_tmp>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
+          det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet_up
+          det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=det_unq_dn_i
+          det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_up(ex_i, det_unq_up_i)
+        endif
+        if (iwdet_dn.ne.0) then
+          det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
+          if (det_in_csf_nb_tmp>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
+          det_in_csf_up_tmp  (det_in_csf_nb_tmp)=det_unq_up_i
+          det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet_dn
+          det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_dn(ex_i, det_unq_dn_i)
+        endif
+      enddo ! det_in_csf_i
+
+
+!2b\  Sort the CSF information
+!     and fold repetitions (non unique couple of UP and DOWN determinants) together
+      if (det_in_csf_nb_tmp.ne.0) then
+!       Here we do resize the arrays to make the sort quicker
+        call alloc('det_in_csf_up_tmp',det_in_csf_up_tmp,det_in_csf_nb_tmp)
+        call alloc('det_in_csf_dn_tmp',det_in_csf_dn_tmp,det_in_csf_nb_tmp)
+        call alloc('det_in_csf_coef_tmp',det_in_csf_coef_tmp,det_in_csf_nb_tmp)
+  call cpu_time(tAintermed)
+        call sort(det_in_csf_up_tmp, det_in_csf_dn_tmp, det_in_csf_coef_tmp)
+  call cpu_time(tBintermed)
+  tSort=tSort+tBintermed-tAintermed
+        call alloc('det_in_csf_up_tmp',det_in_csf_up_tmp,det_in_csf_max)
+        call alloc('det_in_csf_dn_tmp',det_in_csf_dn_tmp,det_in_csf_max)
+        call alloc('det_in_csf_coef_tmp',det_in_csf_coef_tmp,det_in_csf_max)
+
+        det_in_csf_nb  =1
+        det_in_csf_up  =0
+        det_in_csf_dn  =0
+        det_in_csf_coef=0 
+        det_in_csf_up(1)  =det_in_csf_up_tmp(1)
+        det_in_csf_dn(1)  =det_in_csf_dn_tmp(1)
+        det_in_csf_coef(1)=det_in_csf_coef_tmp(1)
+        do csf_k=2, det_in_csf_nb_tmp
+          if ((det_in_csf_up_tmp(csf_k)==det_in_csf_up(det_in_csf_nb)).and.&
+              (det_in_csf_dn_tmp(csf_k)==det_in_csf_dn(det_in_csf_nb))) then
+            det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef(det_in_csf_nb)+det_in_csf_coef_tmp(csf_k)
+          elseif (det_in_csf_up_tmp(csf_k).ne.det_in_csf_max+1) then
+            det_in_csf_nb=det_in_csf_nb+1
+            if (det_in_csf_nb>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
+            det_in_csf_up  (det_in_csf_nb)=det_in_csf_up_tmp(csf_k)
+            det_in_csf_dn  (det_in_csf_nb)=det_in_csf_dn_tmp(csf_k)
+            det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef_tmp(csf_k)
+          endif
+        enddo
+  call cpu_time(tB)
+  tCSFa=tCSFa+tB-tA
+  tA=tB
+
+!2c\    Check if this properly sorted data on CSF is an already known CSF...
+        this_csf=0
+        do csf_k=1, ncsf+csf_ex_unq_nb  
+          if (arrays_equal(det_in_csf_up(:det_in_csf_nb) , det_unq_up_in_csf (csf_k)%row (:)).and.&
+              arrays_equal(det_in_csf_dn(:det_in_csf_nb) , det_unq_dn_in_csf (csf_k)%row (:)).and.&
+              arrays_equal(det_in_csf_coef(:det_in_csf_nb),cdet_unq_in_csf   (csf_k)%row (:))) then
+            this_csf=csf_k
+          endif
+        enddo
+  call cpu_time(tB)
+  tCSFb=tCSFb+tB-tA
+  tA=tB
+!       ... and if this CSF is unknown, add it
+        if (this_csf==0) then
+          csf_ex_unq_nb=csf_ex_unq_nb+1
+          if (csf_ex_unq_nb>csf_ex_unq_max) call die(lhere,"Recompile with a superior value of 'csf_ex_unq_max' in deriv_orb_mod.f90 (G)")
+          this_csf=ncsf+csf_ex_unq_nb
+          csf_ex_unq_ref(csf_ex_unq_nb) =csf_i
+          csf_ex_unq_size(csf_ex_unq_nb)=det_in_csf_nb
+          det_unq_up_in_csf(ncsf+csf_ex_unq_nb)%row=det_in_csf_up(:det_in_csf_nb)
+          det_unq_dn_in_csf(ncsf+csf_ex_unq_nb)%row=det_in_csf_dn(:det_in_csf_nb)
+          cdet_unq_in_csf  (ncsf+csf_ex_unq_nb)%row=det_in_csf_coef(:det_in_csf_nb)
+        endif
+
+!3a\    Gather this CSF into the information on the excited WF
+        csf_in_wf_nb=csf_in_wf_nb+1
+        if (csf_in_wf_nb>csf_in_wf_max) call die(lhere,"Recompile with a superior value of 'csf_in_wf_max' in deriv_orb_mod.f90 (H)")
+        csf_in_wf(csf_in_wf_nb)     =this_csf
+        csf_in_wf_ref(csf_in_wf_nb) =csf_i
+        csf_in_wf_coef(csf_in_wf_nb)=det_in_csf_coef(1)
+  call cpu_time(tB)
+  tCSFc=tCSFc+tB-tA
+  tA=tB
+
+      endif ! csf_ex != 0
+    enddo ! csf_i
+
+!3\ ================================================================================= 
+!   Sort information on the excited WF
+!   (in the process: gather information on unique WF)
+!   ================================================================================= 
+    if (csf_in_wf_nb.ne.0) then
+!3b\  Sort the WF information
+!     Here we do resize the arrays to make the sort quicker
+      call alloc('csf_in_wf',csf_in_wf,csf_in_wf_nb)
+      call alloc('csf_in_wf_ref',csf_in_wf_ref,csf_in_wf_nb)
+      call alloc('csf_in_wf_coef',csf_in_wf_coef,csf_in_wf_nb)
+  call cpu_time(tAintermed)
+      call sort(csf_in_wf, csf_in_wf_ref, csf_in_wf_coef)
+  call cpu_time(tBintermed)
+  tSort=tSort+tBintermed-tAintermed
+      call alloc('csf_in_wf',csf_in_wf,csf_in_wf_max)
+      call alloc('csf_in_wf_ref',csf_in_wf_ref,csf_in_wf_max)
+      call alloc('csf_in_wf_coef',csf_in_wf_coef,csf_in_wf_max)
+
+!3c\  Check if this properly sorted data on WF is an already known WF...
+      this_ex=0
+      do ex_j = 1, single_ex_nb
+        if (arrays_equal (csf_in_wf      (:csf_in_wf_nb) , wf_unq_csf (ex_j)%row (:)) .and. &
+            arrays_equal (csf_in_wf_ref  (:csf_in_wf_nb) , wf_unq_ref (ex_j)%row (:)) .and. &
+            arrays_equal (csf_in_wf_coef (:csf_in_wf_nb) , wf_unq_coef(ex_j)%row (:))) then
+          this_ex = ex_j
+        endif
+      enddo
+!     ...if this WF is unknown, add it
+      if (this_ex == 0) then
+        single_ex_nb = single_ex_nb + 1
+        if (single_ex_nb>single_ex_max) call die(lhere,"Recompile with a superior value of 'single_ex_max' in deriv_orb_mod.f90 (I)")
+        single_ex_added_nb = single_ex_added_nb + 1
+        this_ex = single_ex_nb
+        wf_unq_nb  (single_ex_nb)   = csf_in_wf_nb
+        wf_unq_csf (single_ex_nb)%row=csf_in_wf(:csf_in_wf_nb)
+        wf_unq_ref (single_ex_nb)%row=csf_in_wf_ref(:csf_in_wf_nb)
+        wf_unq_coef(single_ex_nb)%row=csf_in_wf_coef(:csf_in_wf_nb)
+        ex_orb_ind     (single_ex_nb) = single_ex_nb
+        ex_orb_1st_lab (single_ex_nb) = orb_opt_lab_i
+        ex_orb_2nd_lab (single_ex_nb) = orb_opt_lab_j
+      endif
+  call cpu_time(tB)
+  tWF=tWF+tB-tA
+  tA=tB
+
+!4\ ================================================================================= 
+!   Gather and sort information on the derivative DPSI
+!   (in the process: gather information on unique versus redundant DPSI)
+!   ================================================================================= 
+!4a\  Gather information
+      if (ex_dir_rev==1) then
+        ex_orb_ind_tmp = this_ex
+        ex_orb_ind_rev_tmp = 0
+      else
+        ex_orb_ind_rev_tmp =  this_ex
+        ex_orb_ind_tmp = 0
+        csf_in_wf_coef(:csf_in_wf_nb)=-csf_in_wf_coef(:csf_in_wf_nb)
+      endif
+      if (csf_in_dpsi_nb_tmp+csf_in_wf_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a superior value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (J)")
+      csf_in_dpsi_tmp     (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf     (:csf_in_wf_nb)
+      csf_in_dpsi_ref_tmp (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_ref (:csf_in_wf_nb)
+      csf_in_dpsi_coef_tmp(csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_coef(:csf_in_wf_nb)
+      csf_in_dpsi_nb_tmp=csf_in_dpsi_nb_tmp+csf_in_wf_nb
+
+    endif ! wf_ex != 0
+  enddo ! ex_dir_rev
+
+!4b\Sort the information
+!   and fold repetitions (non unique couple of CSF and REF) together
+  if (csf_in_dpsi_nb_tmp.ne.0) then
+    dpsi_is_redundant=.false.
+
+!   Here we do resize the arrays to make the sort quicker
+    call alloc('csf_in_dpsi_tmp',csf_in_dpsi_tmp,csf_in_dpsi_nb_tmp)
+    call alloc('csf_in_dpsi_ref_tmp',csf_in_dpsi_ref_tmp,csf_in_dpsi_nb_tmp)
+    call alloc('csf_in_dpsi_coef_tmp',csf_in_dpsi_coef_tmp,csf_in_dpsi_nb_tmp)
+ call cpu_time(tAintermed)
+    call sort(csf_in_dpsi_tmp,csf_in_dpsi_ref_tmp,csf_in_dpsi_coef_tmp)
+ call cpu_time(tBintermed)
+ tSort=tSort+tBintermed-tAintermed
+    call alloc('csf_in_dpsi_tmp',csf_in_dpsi_tmp,csf_in_dpsi_max)
+    call alloc('csf_in_dpsi_ref_tmp',csf_in_dpsi_ref_tmp,csf_in_dpsi_max)
+    call alloc('csf_in_dpsi_coef_tmp',csf_in_dpsi_coef_tmp,csf_in_dpsi_max)
+
+    csf_in_dpsi_nb=1
+    csf_in_dpsi(1)     =csf_in_dpsi_tmp(1)
+    csf_in_dpsi_ref(1) =csf_in_dpsi_ref_tmp(1)
+    csf_in_dpsi_coef(1)=csf_in_dpsi_coef_tmp(1)
+    do dpsi_k=2,csf_in_dpsi_nb_tmp
+      if ((csf_in_dpsi_tmp(dpsi_k)    ==csf_in_dpsi(csf_in_dpsi_nb)) .and.  &
+          (csf_in_dpsi_ref_tmp(dpsi_k)==csf_in_dpsi_ref(csf_in_dpsi_nb))) then
+        csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef(csf_in_dpsi_nb)+csf_in_dpsi_coef_tmp(dpsi_k)
+      elseif (csf_in_dpsi_tmp(dpsi_k).ne.csf_in_dpsi_max+1) then
+        csf_in_dpsi_nb=csf_in_dpsi_nb + 1
+        if (csf_in_dpsi_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a superior value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (K)")
+        csf_in_dpsi(csf_in_dpsi_nb)     =csf_in_dpsi_tmp(dpsi_k)
+        csf_in_dpsi_ref(csf_in_dpsi_nb) =csf_in_dpsi_ref_tmp(dpsi_k)
+        csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef_tmp(dpsi_k)
+      endif
+    enddo
+
+!4c\Check if this DPSI is redundant...
+    !if all first coefficients are zero
+    dpsi_is_redundant=.true.
+    do dpsi_k=1,csf_in_dpsi_nb
+      if (csf_in_dpsi_coef(dpsi_k).ne.0.d0) then
+        dpsi_is_redundant=.false.
+        exit
+      endif
+    enddo
+
+    !if all CSF are from the ground-state
+    if ((.not. dpsi_is_redundant).and.(l_opt_csf)) then
+      dpsi_is_redundant=.true.
+      do dpsi_k=1,csf_in_dpsi_nb
+        if (((.not.(elt_in_array(iwcsf, csf_in_dpsi(dpsi_k)))) &
+             .and. (csf_in_dpsi_coef(dpsi_k).ne.0.d0))             &
+           .or. (csf_in_dpsi_nb==1)) then
+          dpsi_is_redundant=.false.
+        endif
+      enddo
+    endif
+
+    !if is it a DPSI already known
+    if (.not. dpsi_is_redundant) then
+     do dpsi_i = 1, param_orb_nb
+      if ((arrays_equal (csf_in_dpsi (:csf_in_dpsi_nb),     dpsi_unq_csf (dpsi_i)%row (:))) &
+       .and.( &
+          (arrays_equal (csf_in_dpsi_ref (:csf_in_dpsi_nb), dpsi_unq_ref (dpsi_i)%row (:)) .and. & 
+           arrays_equal (csf_in_dpsi_coef(:csf_in_dpsi_nb), dpsi_unq_coef(dpsi_i)%row (:))) &
+          .or.(csf_in_dpsi_nb == 1))  ) then
+         dpsi_is_redundant = .true.
+      endif
+     enddo
+    endif
+
+    !if redundant: remove added unique singly-excited wave functions
+    if (dpsi_is_redundant) then
+      single_ex_nb = single_ex_nb - single_ex_added_nb
+      call object_alloc ('wf_unq_nb',   wf_unq_nb,   single_ex_nb)
+      call object_alloc ('wf_unq_csf',  wf_unq_csf,  single_ex_nb)
+      call object_alloc ('wf_unq_ref',  wf_unq_ref,  single_ex_nb)
+      call object_alloc ('wf_unq_coef', wf_unq_coef, single_ex_nb)
+      call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
+      call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
+    endif
+
+!4d\...or unique
+    if (.not. dpsi_is_redundant) then
+      param_orb_nb = param_orb_nb + 1
+      if (param_orb_nb>single_ex_max) call die(lhere,"Recompile with a superior value of 'mamax' in deriv_orb_mod.f90 (L)")
+      dpsi_unq_nb  (param_orb_nb)    =csf_in_dpsi_nb
+      dpsi_unq_csf (param_orb_nb)%row=csf_in_dpsi(:csf_in_dpsi_nb)
+      dpsi_unq_ref (param_orb_nb)%row=csf_in_dpsi_ref(:csf_in_dpsi_nb)
+      dpsi_unq_coef(param_orb_nb)%row=csf_in_dpsi_coef(:csf_in_dpsi_nb)
+
+      if (ex_orb_ind_tmp /= 0) then
+       ex_orb_ind    (param_orb_nb) = ex_orb_ind_tmp
+       ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_rev_tmp
+      else
+!      Warning: I did not check this very carefully
+       ex_orb_ind    (param_orb_nb) = ex_orb_ind_rev_tmp
+       ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_tmp
+      endif
+    endif
+  call cpu_time(tB)
+  tDPSI=tDPSI+tB-tA
+  tA=tB
+
+  endif ! dpsi_ex != 0
+  enddo ! ex_dir_rev_nonortho
+
+  orb_opt_lab_i = orb_opt_lab_j
+  enddo !orb_opt_lab_i
+  enddo !orb_opt_lab_j
+  call cpu_time(tEnd)
+  write(6,'(a)') '   Timing of the different steps:'
+  write(6,'(a,f8.3)')  '     Det:   ',tDet
+  write(6,'(a,f8.3)')  '     CSFa:  ',tCSFa
+  write(6,'(a,f8.3,a)')'     CSFb:  ',tCSFb,'  <- usually the most demanding'
+  write(6,'(a,f8.3)')  '     CSFc:  ',tCSFc
+  write(6,'(a,f8.3)')  '     WF:    ',tWF
+  write(6,'(a,f8.3)')  '     DPSI:  ',tDPSI
+  write(6,'(a,f8.3)')  '     Total: ',tEnd-tBegin
+  write(6,'(a,f8.3)')  '     Sort:  ',tSort
+  write(6,'(a)') '   Max of the array dimensions versus actual dimensions (and ratio):'
+  write(6,'(a,i8,i8,i8)') '     single_ex:  ',single_ex_max  ,single_ex_nb    ,single_ex_max  /single_ex_nb
+  write(6,'(a,i8,i8,i8)') '     det_ex:     ',det_ex_max     ,det_ex_unq_up_nb,det_ex_max     /det_ex_unq_up_nb
+  write(6,'(a,i8,i8,i8)') '     csf_ex_unq: ',csf_ex_unq_max ,csf_ex_unq_nb   ,csf_ex_unq_max /csf_ex_unq_nb
+  write(6,'(a,i8,i8,i8)') '     det_in_csf: ',det_in_csf_max ,det_in_csf_nb   ,det_in_csf_max /det_in_csf_nb
+  write(6,'(a,i8,i8,i8)') '     csf_in_wf:  ',csf_in_wf_max  ,csf_in_wf_nb    ,csf_in_wf_max  /csf_in_wf_nb
+  write(6,'(a,i8,i8,i8)') '     csf_in_dpsi:',csf_in_dpsi_max,csf_in_dpsi_nb  ,csf_in_dpsi_max/csf_in_dpsi_nb
+  write(6,'(a,i8,i8,i8)') '     wf_unq:     ',wf_unq_max     ,wf_unq_nb(1)    ,wf_unq_max     /wf_unq_nb(1)
+  write(6,'(a,i8,i8,i8)') '     dpsi_unq:   ',dpsi_unq_max   ,dpsi_unq_nb(1)  ,dpsi_unq_max   /dpsi_unq_nb(1)
+
+! determine orbitals mixed in orbital optimization 
+  call object_alloc ('orb_mix_lab', orb_mix_lab, orb_tot_nb)
+  orb_mix_lab (:) = .false.
   do ex_i = 1, single_ex_nb
-
-     orb_1st = ex_orb_1st_lab (ex_i)
-     orb_2nd = ex_orb_2nd_lab (ex_i)
-
-!    loop over unique spin-up determinants
-     do det_unq_up_i = 1, ndetup
-
-     if (orb_occ_in_det_unq_up (orb_1st, det_unq_up_i) .and. .not. orb_occ_in_det_unq_up (orb_2nd, det_unq_up_i)) then
-       ex_up_is_zero (ex_i, det_unq_up_i) = .false.
-
-!      build current excited determinant
-       det_ex_orb_lab_up (:, ex_i, det_unq_up_i) = det_unq_orb_lab_srt_up (:, det_unq_up_i)
-       call replace_elt_in_array (det_ex_orb_lab_up (:, ex_i, det_unq_up_i), orb_1st, orb_2nd)
-       det_ex_orb_lab_srt_up (:, ex_i, det_unq_up_i) = det_ex_orb_lab_up (:, ex_i, det_unq_up_i)
-       call sort_and_sign (det_ex_orb_lab_srt_up (:, ex_i, det_unq_up_i), det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i))
-
-!      check if current excited determinant is a determinant in the ground-state wave function
-       do det_unq_up_k = 1, ndetup
-        if (arrays_equal (det_ex_orb_lab_srt_up (:, ex_i, det_unq_up_i), det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
-          is_det_ex_up (ex_i, det_unq_up_i) = .false.
-          iwdet_ex_up (ex_i, det_unq_up_i) = det_unq_up_k
-          exit
-        endif
-       enddo
-
-!      check if current excited determinant is a excited determinant already encountered
-       do det_unq_up_k = 1, det_ex_unq_up_nb
-        if (arrays_equal (det_ex_orb_lab_srt_up (:, ex_i, det_unq_up_i), det_ex_unq_orb_lab_srt_up (:, det_unq_up_k))) then
-          iwdet_ex_up (ex_i, det_unq_up_i) =  det_unq_up_k
-          exit
-        endif
-       enddo
-
-!      if current excited determinant is a new determinant, add it to the list of unique excited determinants
-       if (iwdet_ex_up (ex_i, det_unq_up_i) == 0) then
-         det_ex_unq_up_nb = det_ex_unq_up_nb + 1
-         iwdet_ex_up (ex_i, det_unq_up_i) = det_ex_unq_up_nb
-         call object_alloc ('iwdet_ex_ref_up', iwdet_ex_ref_up, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_orb_lab_up', det_ex_unq_orb_lab_up, nup, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_up', det_ex_unq_orb_lab_srt_up, nup, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_sgn_up', det_ex_unq_orb_lab_srt_sgn_up, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_up_orb_1st_pos', det_ex_unq_up_orb_1st_pos, det_ex_unq_up_nb)
-         call object_alloc ('det_ex_unq_up_orb_2nd_lab', det_ex_unq_up_orb_2nd_lab, det_ex_unq_up_nb)
-         iwdet_ex_ref_up (det_ex_unq_up_nb) = det_unq_up_i
-         det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_ex_orb_lab_up (:, ex_i, det_unq_up_i)
-         det_ex_unq_orb_lab_srt_up (:, det_ex_unq_up_nb ) = det_ex_orb_lab_srt_up (:, ex_i, det_unq_up_i)
-         det_ex_unq_orb_lab_srt_sgn_up (det_ex_unq_up_nb) = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
-         det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_1st, det_unq_up_i)
-         det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_2nd
-       endif
-
-     endif
-
-     enddo ! det_unq_up_i
-
-!    loop over unique spin-down determinants
-     do det_unq_dn_i = 1, ndetdn
-
-     if (orb_occ_in_det_unq_dn (orb_1st, det_unq_dn_i) .and. .not. orb_occ_in_det_unq_dn (orb_2nd, det_unq_dn_i)) then
-       ex_dn_is_zero (ex_i, det_unq_dn_i) = .false.
-
-!      build current excited determinant
-       det_ex_orb_lab_dn (:, ex_i, det_unq_dn_i) = det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
-       call replace_elt_in_array (det_ex_orb_lab_dn (:, ex_i, det_unq_dn_i), orb_1st, orb_2nd)
-       det_ex_orb_lab_srt_dn (:, ex_i, det_unq_dn_i) = det_ex_orb_lab_dn (:, ex_i, det_unq_dn_i)
-       call sort_and_sign (det_ex_orb_lab_srt_dn (:, ex_i, det_unq_dn_i), det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i))
-
-!      check if current excited determinant is a determinant in the ground-state wave function
-       do det_unq_dn_k = 1, ndetdn
-        if (arrays_equal (det_ex_orb_lab_srt_dn (:, ex_i, det_unq_dn_i), det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
-          is_det_ex_dn (ex_i, det_unq_dn_i) = .false.
-          iwdet_ex_dn (ex_i, det_unq_dn_i) = det_unq_dn_k
-          exit
-        endif
-       enddo
-
-!      check if current excited determinant is a excited determinant already encountered
-       do det_unq_dn_k = 1, det_ex_unq_dn_nb
-        if (arrays_equal (det_ex_orb_lab_srt_dn (:, ex_i, det_unq_dn_i), det_ex_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
-          iwdet_ex_dn (ex_i, det_unq_dn_i) =  det_unq_dn_k
-          exit
-        endif
-       enddo
-
-
-!      if current excited determinant is a new determinant, add it to the list of unique excited determinants
-       if (iwdet_ex_dn (ex_i, det_unq_dn_i) == 0) then
-         det_ex_unq_dn_nb = det_ex_unq_dn_nb + 1
-         iwdet_ex_dn (ex_i, det_unq_dn_i) = det_ex_unq_dn_nb
-         call object_alloc ('iwdet_ex_ref_dn', iwdet_ex_ref_dn, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_orb_lab_dn', det_ex_unq_orb_lab_dn, ndn, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_dn', det_ex_unq_orb_lab_srt_dn, ndn, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_orb_lab_srt_sgn_dn', det_ex_unq_orb_lab_srt_sgn_dn, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_dn_orb_1st_pos', det_ex_unq_dn_orb_1st_pos, det_ex_unq_dn_nb)
-         call object_alloc ('det_ex_unq_dn_orb_2nd_lab', det_ex_unq_dn_orb_2nd_lab, det_ex_unq_dn_nb)
-         iwdet_ex_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
-         det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_ex_orb_lab_dn (:, ex_i, det_unq_dn_i)
-         det_ex_unq_orb_lab_srt_dn (:, det_ex_unq_dn_nb) = det_ex_orb_lab_srt_dn (:, ex_i, det_unq_dn_i)
-         det_ex_unq_orb_lab_srt_sgn_dn (det_ex_unq_dn_nb) = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
-         det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_1st, det_unq_dn_i)
-         det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_2nd
-       endif
-
-     endif
-
-     enddo ! det_unq_dn_i
-
+   orb_mix_lab (ex_orb_1st_lab (ex_i)) = .true.
+   orb_mix_lab (ex_orb_2nd_lab (ex_i)) = .true.
   enddo ! ex_i
+  orb_mix_lab_nb = 0
+  do orb_i = 1, orb_tot_nb
+    if (orb_mix_lab (orb_i)) then
+      orb_mix_lab_nb = orb_mix_lab_nb + 1
+    endif
+  enddo
 
-  write(6,'(a,i10)') ' Number of unique spin-up   excited determinants = ',det_ex_unq_up_nb
-  write(6,'(a,i10)') ' Number of unique spin-down excited determinants = ',det_ex_unq_dn_nb
+! excitation pairs number
+  deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
 
- end subroutine single_ex_det_bld
+  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
+  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
+  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb
+  write(6,'(a,i10)') ' Number of unique spin-up   excited determinants = ', det_ex_unq_up_nb
+  write(6,'(a,i10)') ' Number of unique spin-down excited determinants = ', det_ex_unq_dn_nb
+
+! adjust the arrays to their real size
+  call object_alloc ('iwdet_ex_up',               iwdet_ex_up,                 single_ex_nb, ndetup)
+  call object_alloc ('iwdet_ex_dn',               iwdet_ex_dn,                 single_ex_nb, ndetdn)
+  call object_alloc ('det_ex_unq_sgn_up',         det_ex_unq_sgn_up,           single_ex_nb, ndetup)
+  call object_alloc ('det_ex_unq_sgn_dn',         det_ex_unq_sgn_dn,           single_ex_nb, ndetdn)
+  call object_alloc ('iwdet_ex_ref_up',           iwdet_ex_ref_up,             det_ex_unq_up_nb)
+  call object_alloc ('iwdet_ex_ref_dn',           iwdet_ex_ref_dn,             det_ex_unq_dn_nb)
+  call object_alloc ('det_ex_unq_orb_lab_up',     det_ex_unq_orb_lab_up, nup,  det_ex_unq_up_nb)
+  call object_alloc ('det_ex_unq_orb_lab_dn',     det_ex_unq_orb_lab_dn, ndn,  det_ex_unq_up_nb)
+  call object_alloc ('det_unq_orb_lab_srt_up',    det_unq_orb_lab_srt_up, nup, ndetup+det_ex_unq_up_nb)
+  call object_alloc ('det_unq_orb_lab_srt_dn',    det_unq_orb_lab_srt_dn, ndn, ndetdn+det_ex_unq_dn_nb)
+  call object_alloc ('det_ex_unq_up_orb_1st_pos', det_ex_unq_up_orb_1st_pos,   det_ex_unq_up_nb)
+  call object_alloc ('det_ex_unq_up_orb_2nd_lab', det_ex_unq_up_orb_2nd_lab,   det_ex_unq_up_nb)
+  call object_alloc ('det_ex_unq_dn_orb_1st_pos', det_ex_unq_dn_orb_1st_pos,   det_ex_unq_dn_nb)
+  call object_alloc ('det_ex_unq_dn_orb_2nd_lab', det_ex_unq_dn_orb_2nd_lab,   det_ex_unq_dn_nb)
+
+  call object_alloc('det_unq_up_in_csf', det_unq_up_in_csf, ncsf+csf_ex_unq_nb)
+  call object_alloc('det_unq_dn_in_csf', det_unq_dn_in_csf, ncsf+csf_ex_unq_nb)
+  call object_alloc('cdet_unq_in_csf'  , cdet_unq_in_csf,   ncsf+csf_ex_unq_nb)
+
+  call object_alloc ('ex_orb_ind',     ex_orb_ind,     param_orb_nb)
+  call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
+  call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
+  call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
+
+  call release('det_in_csf_up_tmp',   det_in_csf_up_tmp)
+  call release('det_in_csf_dn_tmp',   det_in_csf_dn_tmp)
+  call release('det_in_csf_coef_tmp', det_in_csf_coef_tmp)
+  call release('det_in_csf_up',       det_in_csf_up)
+  call release('det_in_csf_dn',       det_in_csf_dn)
+  call release('det_in_csf_coef',     det_in_csf_coef)
+
+  call release('csf_ex_unq_ref',           csf_ex_unq_ref)
+  call release('csf_ex_unq_size',          csf_ex_unq_size)
+  
+  call release('csf_in_wf',      csf_in_wf)
+  call release('csf_in_wf_ref',  csf_in_wf_ref)
+  call release('csf_in_wf_coef', csf_in_wf_coef)
+
+  call release('wf_unq_nb',      wf_unq_nb)
+  call release('wf_unq_csf',     wf_unq_csf)
+  call release('wf_unq_ref',     wf_unq_ref)
+  call release('wf_unq_coef',    wf_unq_coef)
+
+  call release('csf_in_dpsi_tmp',      csf_in_dpsi_tmp)
+  call release('csf_in_dpsi_ref_tmp',  csf_in_dpsi_ref_tmp)
+  call release('csf_in_dpsi_coef_tmp', csf_in_dpsi_coef_tmp)
+  call release('csf_in_dpsi',          csf_in_dpsi)
+  call release('csf_in_dpsi_ref',      csf_in_dpsi_ref)
+  call release('csf_in_dpsi_coef',     csf_in_dpsi_coef)
+
+  call release('dpsi_unq_nb',          dpsi_unq_nb)
+  call release('dpsi_unq_csf',         dpsi_unq_csf)
+  call release('dpsi_unq_ref',         dpsi_unq_ref)
+  call release('dpsi_unq_coef',        dpsi_unq_coef)
+
+  !stop
+
+  end subroutine single_ex_wf_bld
 
 ! ==============================================================================
   subroutine det_ex_unq_bld
@@ -1425,28 +920,25 @@ module deriv_orb_mod
 ! header
   if (header_exe) then
 
-   call object_create ('det_ex_unq_up', det_ex_unq_up_index)
-   call object_create ('det_ex_unq_dn', det_ex_unq_dn_index)
+   call object_create ('det_ex_unq_bld_done')
 
-   call object_needed ('nup')
-   call object_needed ('ndn')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
    call object_needed ('det_ex_unq_up_nb')
    call object_needed ('det_ex_unq_dn_nb')
-   call object_needed ('ex_up_is_zero')
-   call object_needed ('ex_dn_is_zero')
-   call object_needed ('iwdet_ex_ref_up')
-   call object_needed ('iwdet_ex_ref_dn')
-   call object_needed ('det_to_det_unq_up')
-   call object_needed ('det_to_det_unq_dn')
    call object_needed ('det_ex_unq_up_orb_1st_pos')
    call object_needed ('det_ex_unq_dn_orb_1st_pos')
    call object_needed ('det_ex_unq_up_orb_2nd_lab')
    call object_needed ('det_ex_unq_dn_orb_2nd_lab')
+   call object_needed ('iwdet_ex_ref_up')
+   call object_needed ('iwdet_ex_ref_dn')
+   call object_needed ('nup')
+   call object_needed ('ndn')
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('orb')
-   call object_needed ('detu')
-   call object_needed ('detd')
 
    return
 
@@ -1455,8 +947,8 @@ module deriv_orb_mod
 ! begin
 
 ! allocations
-  call object_alloc ('det_ex_unq_up', det_ex_unq_up, det_ex_unq_up_nb)
-  call object_alloc ('det_ex_unq_dn', det_ex_unq_dn, det_ex_unq_dn_nb)
+  call alloc ('detu', detu, ndetup+det_ex_unq_up_nb)
+  call alloc ('detd', detd, ndetdn+det_ex_unq_dn_nb)
 
 ! spin up determinants
   do det_ex_unq_up_i = 1, det_ex_unq_up_nb
@@ -1470,8 +962,9 @@ module deriv_orb_mod
        factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_unq_ref_up) * orb (i, orb_up)
       enddo
 
-      det_ex_unq_up (det_ex_unq_up_i) = factor_up * detu (det_unq_ref_up)
+      detu(ndetup+det_ex_unq_up_i) = factor_up * detu (det_unq_ref_up)
 
+      !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_i)
    enddo ! det_ex_unq_up_i
 
 ! spin down determinants
@@ -1486,9 +979,12 @@ module deriv_orb_mod
        factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_unq_ref_dn) * orb (nup + i, orb_dn)
       enddo
 
-      det_ex_unq_dn (det_ex_unq_dn_i) = factor_dn * detd (det_unq_ref_dn)
+      detd(ndetdn+det_ex_unq_dn_i) = factor_dn * detd (det_unq_ref_dn)
 
+      !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_i)
    enddo ! det_ex_unq_dn_i
+
+   det_ex_unq_bld_done=.true.
 
   end subroutine det_ex_unq_bld
 
@@ -1515,23 +1011,19 @@ module deriv_orb_mod
    call object_create ('det_ex')
 
    call object_needed ('single_ex_nb')
-   call object_needed ('ncsf')
    call object_needed ('ndet')
+   call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
-   call object_needed ('is_det_ex_up')
-   call object_needed ('is_det_ex_dn')
-   call object_needed ('iwdet_ex_up')
-   call object_needed ('iwdet_ex_dn')
-   call object_needed ('det_ex_unq_up')
-   call object_needed ('det_ex_unq_dn')
-   call object_needed ('detu')
-   call object_needed ('detd')
-   call object_needed ('det_ex_orb_lab_srt_sgn_up')
-   call object_needed ('det_ex_orb_lab_srt_sgn_dn')
    call object_needed ('det_to_det_unq_up')
    call object_needed ('det_to_det_unq_dn')
+   call object_needed ('iwdet_ex_up')
+   call object_needed ('iwdet_ex_dn')
+   call object_needed ('det_ex_unq_sgn_up')
+   call object_needed ('det_ex_unq_sgn_dn')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('det_ex_unq_bld_done')
 
    return
 
@@ -1556,43 +1048,14 @@ module deriv_orb_mod
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
 !       spin-up excited determinants:
-
-!       current excited determinant is zero
-        if (ex_up_is_zero (ex_i, det_unq_up_i)) then
-         det_ex_up (ex_i, det_i) = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif (.not. is_det_ex_up (ex_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
-         det_ex_up (ex_i, det_i) = sgn * detu (iwdet)
-
-!       current excited determinant is a true excited determinant
-        else
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i) * det_ex_unq_orb_lab_srt_sgn_up (iwdet)
-         det_ex_up (ex_i, det_i) = sgn * det_ex_unq_up (iwdet)
-        endif
+        iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
+        sgn = det_ex_unq_sgn_up(ex_i,det_unq_up_i)
+        if (iwdet.ne.0) det_ex_up (ex_i, det_i) = sgn * detu (iwdet)
 
 !       spin-down excited determinants:
-
-!       current excited determinant is zero
-
-        if (ex_dn_is_zero (ex_i, det_unq_dn_i)) then
-         det_ex_dn (ex_i, det_i) = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif ( .not. is_det_ex_dn (ex_i, det_unq_dn_i) ) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
-         det_ex_dn (ex_i, det_i) = sgn * detu (iwdet)
-
-!       current excited determinant is a true excited determinant
-        else
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i) * det_ex_unq_orb_lab_srt_sgn_dn (iwdet)
-         det_ex_dn (ex_i, det_i) = sgn * det_ex_unq_dn (iwdet)
-        endif
+        iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
+        sgn = det_ex_unq_sgn_dn(ex_i,det_unq_dn_i)
+        if (iwdet.ne.0) det_ex_dn (ex_i, det_i) = sgn * detd (iwdet)
 
         det_ex (ex_i, det_i) = det_ex_up (ex_i, det_i) * detd (det_unq_dn_i) + detu (det_unq_up_i) * det_ex_dn (ex_i, det_i)
 
@@ -1601,66 +1064,9 @@ module deriv_orb_mod
 
   enddo ! ex_i
 
+  !write(6,*) '>det_ex',det_ex
+
   end subroutine det_ex_bld
-
-! ==============================================================================
-  subroutine det_ex2_bld
-! ------------------------------------------------------------------------------
-! Description   :
-!
-! Created       : J. Toulouse, 09 Dec 2005
-! ------------------------------------------------------------------------------
-  use all_modules_mod
-  implicit none
-
-! local
-  integer ex_i,ex_j,ex_ij
-  integer csf_i, det_in_csf_i, det_i, det_unq_up_i, det_unq_dn_i
-  integer iwdet, sgn
-
-! header
-  if (header_exe) then
-
-   call object_create ('det_ex2')
-
-   call object_needed ('single_ex_nb')
-   call object_needed ('ncsf')
-   call object_needed ('ndet')
-   call object_needed ('ndet_in_csf')
-   call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
-   call object_needed ('det_to_det_unq_up')
-   call object_needed ('det_to_det_unq_dn')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_alloc ('det_ex2', det_ex2, (single_ex_nb+1)*single_ex_nb/2, ndet)
-
-! loop over single orbital excitations
-  do csf_i = 1, ncsf
-    do det_in_csf_i = 1, ndet_in_csf (csf_i)
-
-      det_i = iwdet_in_csf (det_in_csf_i, csf_i)
-
-      ex_ij=0
-      do ex_i = 1, single_ex_nb
-        do ex_j = 1, ex_i
-          ex_ij=ex_ij+1
-          det_ex2(ex_ij, det_i) = 0 &! det_ex2_up (ex_ij, det_i) * det_to_det_unq_dn (det_i) & !BM
-                                + det_ex_up (ex_i, det_i) * det_ex_dn (ex_j, det_i)     &
-                                + det_ex_up (ex_j, det_i) * det_ex_dn (ex_i, det_i)     &
-                                + 0  !det_to_det_unq_up (det_i) * det_ex2_dn (ex_ij, det_i)    !BM
-        enddo
-      enddo ! det_in_csf_i
-    enddo ! csf_i
-  enddo ! ex_i
-
-  end subroutine det_ex2_bld
 
 ! ==============================================================================
   subroutine dpsi_orb_bld
@@ -1681,6 +1087,7 @@ module deriv_orb_mod
   integer csf_i, det_in_csf_i, det_i, dorb_i
 !  real(dp) factor_up, factor_dn
   real(dp) detex
+  real(dp), allocatable                  :: dpsi_orb_test(:)
 
 ! header
   if (header_exe) then
@@ -1693,11 +1100,11 @@ module deriv_orb_mod
    call object_needed ('ex_orb_ind')
    call object_needed ('ex_orb_ind_rev')
    call object_needed ('ncsf')
-   call object_needed ('ndet')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
    call object_needed ('det_ex')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('csf_coef')
    call object_needed ('psi_det')
 
    return
@@ -1736,6 +1143,7 @@ module deriv_orb_mod
 
     enddo ! csf_i
     dpsi_orb (dorb_i) = psid_ex (dorb_i) / psi_det
+    !write(6,*) '>dpsi_orb',dpsi_orb(dorb_i)
   enddo ! ex_i
 
 
@@ -1774,63 +1182,6 @@ module deriv_orb_mod
 
   end subroutine dpsi_orb_bld
 
-!===========================================================================
-  subroutine  d2psi_orb_bld
-!---------------------------------------------------------------------------
-! Description : 
-!
-! Created     : B. Mussard, June 2016
-! Modified    :
-!---------------------------------------------------------------------------
-  use all_modules_mod
-  implicit none
-
-! local
-  integer csf_i, det_in_csf_i, det_i, dorb_i,dorb_j,dorb_ij
-  real(dp) detex
-
-! header
-  if (header_exe) then
-
-   call object_create ('d2psi_orb')
-
-   call object_needed ('param_orb_nb')
-   call object_needed ('ncsf')
-   call object_needed ('ndet')
-   call object_needed ('ndet_in_csf')
-   call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
-   call object_needed ('det_ex2')
-   call object_needed ('psi_det')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_alloc ('d2psi_orb', d2psi_orb, (single_ex_nb+1)*single_ex_nb/2)
-
-  dorb_ij=0
-  do dorb_i = 1, param_orb_nb
-    do dorb_j = 1, dorb_i
-      dorb_ij=dorb_ij+1
-
-      do csf_i = 1, ncsf
-        do det_in_csf_i = 1, ndet_in_csf (csf_i)
-          det_i = iwdet_in_csf (det_in_csf_i, csf_i)
-          detex = det_ex2 (dorb_ij, det_i)
-          d2psi_orb(dorb_ij)=d2psi_orb(dorb_ij) + csf_coef(csf_i,1) * cdet_in_csf (det_in_csf_i, csf_i) *  detex
-        enddo ! det_in_csf_i
-      enddo ! csf_i
-      d2psi_orb(dorb_ij) = d2psi_orb(dorb_ij) / psi_det
-
-    enddo ! dorb_j
-  enddo ! dorb_i
-
-  end subroutine  d2psi_orb_bld
-
 ! ==============================================================================
   subroutine slater_mat_ex_trans_inv_bld
 ! ------------------------------------------------------------------------------
@@ -1853,6 +1204,7 @@ module deriv_orb_mod
   integer col_dn, orb_dn
   real(dp) factor_up_inv, factor_dn_inv
   real(dp), allocatable :: ratio_up (:), ratio_dn (:)
+
   integer det_i, orb_i, elec_i
   real(dp), allocatable                  :: slater_mat_ex_trans_up (:,:)
   real(dp), allocatable                  :: slater_mat_ex_trans_dn (:,:)
@@ -1878,6 +1230,14 @@ module deriv_orb_mod
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('orb')
+   call object_needed ('det_ex_unq_bld_done')
+
+   call object_needed ('det_ex_unq_orb_lab_up')
+   call object_needed ('det_ex_unq_orb_lab_dn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
+   call object_needed ('detu')
+   call object_needed ('detd')
 
    return
 
@@ -1949,10 +1309,6 @@ module deriv_orb_mod
 ! calculate inverses from scratch
   else
 
-!  allocations
-   call object_alloc ('det_ex_unq_up', det_ex_unq_up, det_ex_unq_up_nb)
-   call object_alloc ('det_ex_unq_dn', det_ex_unq_dn, det_ex_unq_dn_nb)
-   
 !  spin-up
    call alloc ('slater_mat_ex_trans_up', slater_mat_ex_trans_up, nup, nup)
    call alloc ('mat_flat_up', mat_flat_up, nup*nup)
@@ -1963,12 +1319,12 @@ module deriv_orb_mod
        enddo
      enddo
     call flatten (mat_flat_up (:), slater_mat_ex_trans_up (:,:), nup, nup)
-    call matinv (mat_flat_up (:), nup, det_ex_unq_up (det_i))
+    call matinv (mat_flat_up (:), nup, detu(ndetup+det_i))
     call unflatten (mat_flat_up (:), slater_mat_ex_trans_inv_up (:,:, det_i), nup, nup)
    enddo
    call release ('slater_mat_ex_trans_up', slater_mat_ex_trans_up)
    call release ('mat_flat_up', mat_flat_up)
-   call object_modified_by_index (det_ex_unq_up_index)
+   call object_modified_by_index (detu_index)
    
 !  spin-dn
    call alloc ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn, ndn, ndn)
@@ -1980,14 +1336,21 @@ module deriv_orb_mod
        enddo
      enddo
     call flatten (mat_flat_dn (:), slater_mat_ex_trans_dn (:,:), ndn, ndn)
-    call matinv (mat_flat_dn (:), ndn, det_ex_unq_dn (det_i))
+    call matinv (mat_flat_dn (:), ndn, detd(ndetdn+det_i))
     call unflatten (mat_flat_dn (:), slater_mat_ex_trans_inv_dn (:,:, det_i), ndn, ndn)
    enddo
    call release ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn)
    call release ('mat_flat_dn', mat_flat_dn)
-   call object_modified_by_index (det_ex_unq_dn_index)
+   call object_modified_by_index (detd_index)
 
   endif
+
+  do det_i = 1, det_ex_unq_up_nb
+  !write(6,*) '>slater_mat_ex_trans_inv_up',slater_mat_ex_trans_inv_up(:,:,det_i)
+  enddo
+  do det_i = 1, det_ex_unq_dn_nb
+  !write(6,*) '>slater_mat_ex_trans_inv_dn',slater_mat_ex_trans_inv_dn(:,:,det_i)
+  enddo
 
   end subroutine slater_mat_ex_trans_inv_bld
 
@@ -2138,8 +1501,7 @@ module deriv_orb_mod
 ! header
   if (header_exe) then
 
-   call object_create ('grd_det_ex_unq_up')
-   call object_create ('grd_det_ex_unq_dn')
+   call object_create ('grd_det_ex_unq_bld_done')
 
    call object_needed ('ndim')
    call object_needed ('nup')
@@ -2151,8 +1513,13 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_orb_lab_up')
    call object_needed ('det_ex_unq_orb_lab_dn')
    call object_needed ('dorb')
-   call object_needed ('det_ex_unq_up')
-   call object_needed ('det_ex_unq_dn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
+   call object_needed ('det_ex_unq_bld_done')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('grd_det_unq_up')
+   call object_needed ('grd_det_unq_dn')
 
    return
 
@@ -2161,54 +1528,39 @@ module deriv_orb_mod
 ! begin
 
 ! allocations
-  call object_alloc ('grd_det_ex_unq_up', grd_det_ex_unq_up, ndim, nup, det_ex_unq_up_nb)
-  call object_alloc ('grd_det_ex_unq_dn', grd_det_ex_unq_dn, ndim, ndn, det_ex_unq_dn_nb)
-
-  grd_det_ex_unq_up = 0.d0
-  grd_det_ex_unq_dn = 0.d0
+  call object_alloc ('grd_det_unq_up', grd_det_unq_up, ndim, nup, ndetup+det_ex_unq_up_nb)
+  call object_alloc ('grd_det_unq_dn', grd_det_unq_dn, ndim, ndn, ndetdn+det_ex_unq_dn_nb)
 
 ! spin up determinants
   do det_i = 1, det_ex_unq_up_nb
-   do dim_i = 1, ndim
-    do i = 1, nup
-     do j = 1, nup
-      grd_det_ex_unq_up (dim_i, i, det_i) = grd_det_ex_unq_up (dim_i, i, det_i)  +  &
-        slater_mat_ex_trans_inv_up (i, j, det_i) * dorb (dim_i, i, det_ex_unq_orb_lab_up (j, det_i))
-     enddo
-        grd_det_ex_unq_up (dim_i, i, det_i) = grd_det_ex_unq_up (dim_i, i, det_i) * det_ex_unq_up (det_i)
-    enddo
+    do dim_i = 1, ndim
+      do i = 1, nup
+        do j = 1, nup
+          grd_det_unq_up (dim_i, i, ndetup+det_i) = grd_det_unq_up (dim_i, i, ndetup+det_i)  +  &
+           slater_mat_ex_trans_inv_up (i, j, det_i) * dorb (dim_i, i, det_ex_unq_orb_lab_up (j, det_i))
+        enddo
+        grd_det_unq_up (dim_i, i, ndetup+det_i) = grd_det_unq_up (dim_i, i, ndetup+det_i) * detu(ndetup+det_i)
+        !write(6,*) '>grd_det_unq_ex_up',grd_det_unq_up(dim_i, i, ndetup+det_i)
 
-   enddo ! dim_i
+      enddo
+    enddo ! dim_i
   enddo ! det_i
 
 ! spin down determinants
   do det_i = 1, det_ex_unq_dn_nb
-   do dim_i = 1, ndim
-    do i = 1, ndn
-     do j = 1, ndn
-      grd_det_ex_unq_dn (dim_i, i, det_i) = grd_det_ex_unq_dn (dim_i, i, det_i)  +  &
-        slater_mat_ex_trans_inv_dn (i, j, det_i) * dorb (dim_i, nup + i, det_ex_unq_orb_lab_dn (j, det_i))
-     enddo
-        grd_det_ex_unq_dn (dim_i, i, det_i) = grd_det_ex_unq_dn (dim_i, i, det_i) * det_ex_unq_dn (det_i)
-    enddo
-   enddo ! dim_i
+    do dim_i = 1, ndim
+      do i = 1, ndn
+        do j = 1, ndn
+          grd_det_unq_dn (dim_i, i, ndetdn+det_i) = grd_det_unq_dn (dim_i, i, ndetdn+det_i)  +  &
+           slater_mat_ex_trans_inv_dn (i, j, det_i) * dorb (dim_i, nup + i, det_ex_unq_orb_lab_dn (j, det_i))
+        enddo
+        grd_det_unq_dn (dim_i, i, ndetdn+det_i) = grd_det_unq_dn (dim_i, i, ndetdn+det_i) * detd(ndetdn+det_i)
+        !write(6,*) '>grd_det_unq_ex_dn',grd_det_unq_dn(dim_i, i, ndetdn+det_i)
+      enddo
+    enddo ! dim_i
   enddo ! det_i
 
-! write(6,*) trim(here), ': grd_det_unq_ex_up=',grd_det_ex_unq_up
-! write(6,*) trim(here), ': grd_det_unq_ex_dn=',grd_det_ex_unq_dn
-!
-! write(6,*) trim(here), ': slater_mat_ex_trans_inv_up(1,1,1)=',slater_mat_ex_trans_inv_up(1,1,1)
-! write(6,*) trim(here), ': det_ex_unq_up(1)=',det_ex_unq_up(1)
-
-!  write(6,*) trim(here), ': grd_det_unq_ex_up(1,1,1)=',grd_det_ex_unq_up(1,1,1)
-!  write(6,*) trim(here), ': dorb(1,1,2)=',dorb(1,1,2)
-!  write(6,*) trim(here), ': grd_det_unq_ex_up(2,1,1)=',grd_det_ex_unq_up(2,1,1)
-!  write(6,*) trim(here), ': dorb(2,1,2)=',dorb(2,1,2)
-!  write(6,*) trim(here), ': grd_det_unq_ex_up(3,1,1)=',grd_det_ex_unq_up(3,1,1)
-!  write(6,*) trim(here), ': dorb(3,1,2)=',dorb(3,1,2)
-!
-!  write(6,*) trim(here), ': grd_det_unq_ex_up(1,1,2)=',grd_det_ex_unq_up(1,1,2)
-!  write(6,*) trim(here), ': dorb(1,1,3)=',dorb(1,1,3)
+  grd_det_ex_unq_bld_done=.true.
 
   end subroutine grd_det_ex_unq_bld
 
@@ -2228,8 +1580,7 @@ module deriv_orb_mod
 ! header
   if (header_exe) then
 
-   call object_create ('lap_det_ex_unq_up')
-   call object_create ('lap_det_ex_unq_dn')
+   call object_create ('lap_det_ex_unq_bld_done')
 
    call object_needed ('nup')
    call object_needed ('ndn')
@@ -2240,9 +1591,13 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_orb_lab_up')
    call object_needed ('det_ex_unq_orb_lab_dn')
    call object_needed ('ddorb')
-   call object_needed ('det_ex_unq_up')
-   call object_needed ('det_ex_unq_dn')
-
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
+   call object_needed ('det_ex_unq_bld_done')
+   call object_needed ('detu')
+   call object_needed ('detd')
+   call object_needed ('lap_det_unq_up')
+   call object_needed ('lap_det_unq_dn')
 
    return
 
@@ -2251,33 +1606,34 @@ module deriv_orb_mod
 ! begin
 
 ! allocations
-  call object_alloc ('lap_det_ex_unq_up', lap_det_ex_unq_up, nup, det_ex_unq_up_nb)
-  call object_alloc ('lap_det_ex_unq_dn', lap_det_ex_unq_dn, ndn, det_ex_unq_dn_nb)
-
-  lap_det_ex_unq_up = 0.d0
-  lap_det_ex_unq_dn = 0.d0
+  call object_alloc ('lap_det_unq_up', lap_det_unq_up, nup, ndetup+det_ex_unq_up_nb)
+  call object_alloc ('lap_det_unq_dn', lap_det_unq_dn, ndn, ndetdn+det_ex_unq_dn_nb)
 
 ! spin up determinants
-   do det_i = 1, det_ex_unq_up_nb
-      do i = 1, nup
-       do j = 1, nup
-        lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i)  +  &
-          slater_mat_ex_trans_inv_up (i, j, det_i) * ddorb (i, det_ex_unq_orb_lab_up (j, det_i))
-       enddo
-        lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i)  * det_ex_unq_up (det_i)
+  do det_i = 1, det_ex_unq_up_nb
+    do i = 1, nup
+      do j = 1, nup
+        lap_det_unq_up (i, ndetup+det_i) = lap_det_unq_up (i, ndetup+det_i)  +  &
+         slater_mat_ex_trans_inv_up (i, j, det_i) * ddorb (i, det_ex_unq_orb_lab_up (j, det_i))
       enddo
-    enddo  ! det_i
+      lap_det_unq_up (i, ndetup+det_i) = lap_det_unq_up (i, ndetup+det_i) * detu(ndetup+det_i)
+      !write(6,*) '>lap_det_ex_unq_up',lap_det_unq_up(i,ndetup+det_i)
+    enddo
+  enddo  ! det_i
 
 ! spin down determinants
-   do det_i = 1, det_ex_unq_dn_nb
-      do i = 1, ndn
-       do j = 1, ndn
-        lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  +  &
-          slater_mat_ex_trans_inv_dn (i, j, det_i) * ddorb (nup + i, det_ex_unq_orb_lab_dn (j, det_i))
-       enddo
-        lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  * det_ex_unq_dn (det_i)
+  do det_i = 1, det_ex_unq_dn_nb
+    do i = 1, ndn
+      do j = 1, ndn
+        lap_det_unq_dn (i, ndetdn+det_i) = lap_det_unq_dn (i, ndetdn+det_i)  +  &
+         slater_mat_ex_trans_inv_dn (i, j, det_i) * ddorb (nup + i, det_ex_unq_orb_lab_dn (j, det_i))
       enddo
-    enddo ! det_i
+      lap_det_unq_dn (i, ndetdn+det_i) = lap_det_unq_dn (i, ndetdn+det_i)  * detd(ndetdn+det_i)
+      !write(6,*) '>lap_det_ex_unq_dn',lap_det_unq_dn(i,ndetdn+det_i)
+    enddo
+  enddo ! det_i
+
+  lap_det_ex_unq_bld_done=.true.
 
   end subroutine lap_det_ex_unq_bld
 
@@ -2305,19 +1661,23 @@ module deriv_orb_mod
    call object_create ('grd_det_ex_up')
    call object_create ('grd_det_ex_dn')
 
-   call object_needed ('nelec')
    call object_needed ('ndim')
+   call object_needed ('nup')
+   call object_needed ('ndn')
+   call object_needed ('single_ex_nb')
+   call object_needed ('ndet')
    call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
-   call object_needed ('grd_det_unq_up')
-   call object_needed ('grd_det_unq_dn')
-   call object_needed ('grd_det_ex_unq_up')
-   call object_needed ('grd_det_ex_unq_dn')
-   call object_needed ('det_ex_orb_lab_srt_sgn_up')
-   call object_needed ('det_ex_orb_lab_srt_sgn_dn')
    call object_needed ('det_to_det_unq_up')
    call object_needed ('det_to_det_unq_dn')
+   call object_needed ('iwdet_ex_up')
+   call object_needed ('iwdet_ex_dn')
+   call object_needed ('det_ex_unq_sgn_up')
+   call object_needed ('det_ex_unq_sgn_dn')
+   call object_needed ('grd_det_unq_up')
+   call object_needed ('grd_det_unq_dn')
+   call object_needed ('grd_det_ex_unq_bld_done')
 
    return
 
@@ -2340,45 +1700,20 @@ module deriv_orb_mod
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
 !       spin-up excited determinants:
-
-!       current excited determinant is zero
-        if (ex_up_is_zero (ex_i, det_unq_up_i)) then
-         grd_det_ex_up (:,:,ex_i, det_i) = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif (.not. is_det_ex_up (ex_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
-         grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_unq_up (:,:,iwdet)
-
-!       current excited determinant is a true excited determinant
-        else
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i) * det_ex_unq_orb_lab_srt_sgn_up (iwdet)
-         grd_det_ex_up (:,:, ex_i, det_i) = sgn * grd_det_ex_unq_up (:,:,iwdet)
-        endif
+        iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
+        sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
+        if (iwdet.ne.0) grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_unq_up (:,:,iwdet)
 
 !       spin-down excited determinants:
-
-!       current excited determinant is zero
-        if (ex_dn_is_zero (ex_i, det_unq_dn_i)) then
-         grd_det_ex_dn (:,:,ex_i, det_i) = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif (.not. is_det_ex_dn (ex_i, det_unq_dn_i)) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
-         grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_unq_dn (:,:,iwdet)
-
-!       current excited determinant is a true excited determinant
-        else
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i) * det_ex_unq_orb_lab_srt_sgn_dn (iwdet)
-         grd_det_ex_dn (:,:, ex_i, det_i) = sgn * grd_det_ex_unq_dn (:,:,iwdet)
-        endif
+        iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
+        sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
+        if (iwdet.ne.0) grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_unq_dn (:,:,iwdet)
 
      enddo ! det_in_csf_i
    enddo ! csf_i
+
+   !write(6,*) '>grd_det_ex_up',grd_det_ex_up(:,:,ex_i,:)
+   !write(6,*) '>grd_det_ex_dn',grd_det_ex_dn(:,:,ex_i,:)
 
  enddo ! ex_i
 
@@ -2406,18 +1741,22 @@ module deriv_orb_mod
    call object_create ('lap_det_ex_up')
    call object_create ('lap_det_ex_dn')
 
-   call object_needed ('nelec')
+   call object_needed ('nup')
+   call object_needed ('ndn')
+   call object_needed ('single_ex_nb')
+   call object_needed ('ndet')
    call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
-   call object_needed ('lap_det_unq_up')
-   call object_needed ('lap_det_unq_dn')
-   call object_needed ('lap_det_ex_unq_up')
-   call object_needed ('lap_det_ex_unq_dn')
-   call object_needed ('det_ex_orb_lab_srt_sgn_up')
-   call object_needed ('det_ex_orb_lab_srt_sgn_dn')
    call object_needed ('det_to_det_unq_up')
    call object_needed ('det_to_det_unq_dn')
+   call object_needed ('iwdet_ex_up')
+   call object_needed ('iwdet_ex_dn')
+   call object_needed ('det_ex_unq_sgn_up')
+   call object_needed ('det_ex_unq_sgn_dn')
+   call object_needed ('lap_det_unq_up')
+   call object_needed ('lap_det_unq_dn')
+   call object_needed ('lap_det_ex_unq_bld_done')
 
    return
 
@@ -2440,45 +1779,20 @@ module deriv_orb_mod
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
 !       spin-up excited determinants:
-
-!       current excited determinant is zero
-        if (ex_up_is_zero (ex_i, det_unq_up_i)) then
-         lap_det_ex_up (:,ex_i, det_i) = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif (.not. is_det_ex_up (ex_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
-         lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_unq_up (:,iwdet)
-
-!       current excited determinant is a true excited determinant
-        else
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i) * det_ex_unq_orb_lab_srt_sgn_up (iwdet)
-         lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_ex_unq_up (:,iwdet)
-        endif
+        iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
+        sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
+        if (iwdet.ne.0) lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_unq_up (:,iwdet)
 
 !       spin-down excited determinants:
-
-!       current excited determinant is zero
-        if (ex_dn_is_zero (ex_i, det_unq_dn_i)) then
-         lap_det_ex_dn (:,ex_i, det_i) = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif (.not. is_det_ex_dn (ex_i, det_unq_dn_i)) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
-         lap_det_ex_dn ( :, ex_i, det_i) = sgn * lap_det_unq_dn (:,iwdet)
-
-!       current excited determinant is a true excited determinant
-        else
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i) * det_ex_unq_orb_lab_srt_sgn_dn (iwdet)
-         lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_ex_unq_dn (:,iwdet)
-        endif
+        iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
+        sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
+        if (iwdet.ne.0) lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_unq_dn (:,iwdet)
 
      enddo ! det_in_csf_i
    enddo ! csf_i
+
+   !write(6,*) '>lap_det_ex_up',lap_det_ex_up(:,ex_i,:)
+   !write(6,*) '>lap_det_ex_dn',lap_det_ex_dn(:,ex_i,:)
 
  enddo ! ex_i
 
@@ -2506,13 +1820,11 @@ module deriv_orb_mod
 
    call object_create ('grd_psid_ex_over_psid')
 
+   call object_needed ('ndim')
+   call object_needed ('nelec')
    call object_needed ('param_orb_nb')
    call object_needed ('ex_orb_ind')
    call object_needed ('ex_orb_ind_rev')
-   call object_needed ('nelec')
-   call object_needed ('ndim')
-   call object_needed ('nup')
-   call object_needed ('ndn')
    call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
@@ -2520,6 +1832,8 @@ module deriv_orb_mod
    call object_needed ('det_to_det_unq_dn')
    call object_needed ('csf_coef')
    call object_needed ('cdet_in_csf')
+   call object_needed ('nup')
+   call object_needed ('ndn')
    call object_needed ('detu')
    call object_needed ('detd')
    call object_needed ('det_ex_up')
@@ -2574,7 +1888,7 @@ module deriv_orb_mod
 
          grd_psid_ex_over_psid (dim_i, elec_i, dorb_i) = grd_psid_ex_over_psid (dim_i, elec_i, dorb_i) + coefficient * grd_det
 
-        enddo
+        enddo ! elec_up
 
         do elec_dn_i = 1, ndn
           elec_i = elec_i + 1
@@ -2591,15 +1905,16 @@ module deriv_orb_mod
           endif
 
           grd_psid_ex_over_psid (dim_i, elec_i, dorb_i) = grd_psid_ex_over_psid (dim_i, elec_i, dorb_i) + coefficient * grd_det
-        enddo
+        enddo ! elec_dn
 
        enddo ! dim_i
 
+       grd_psid_ex_over_psid (dim_i,:,:) = grd_psid_ex_over_psid (:,:,dorb_i)/psid_ex (dorb_i)
      enddo ! det_in_csf_i
    enddo ! csf_i
 
-  grd_psid_ex_over_psid (:,:,dorb_i) = grd_psid_ex_over_psid (:,:,dorb_i)/psid_ex (dorb_i)
 
+   !write(6,*) '>grd_psid_ex_over_psid',grd_psid_ex_over_psid(:,:,dorb_i)
  enddo ! dorb_i
 
  end subroutine grd_psid_ex_over_psid_bld
@@ -2626,13 +1941,10 @@ module deriv_orb_mod
 
    call object_create ('lap_psid_ex_over_psid')
 
+   call object_needed ('nelec')
    call object_needed ('param_orb_nb')
    call object_needed ('ex_orb_ind')
    call object_needed ('ex_orb_ind_rev')
-   call object_needed ('nelec')
-   call object_needed ('ndim')
-   call object_needed ('nup')
-   call object_needed ('ndn')
    call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
@@ -2640,6 +1952,8 @@ module deriv_orb_mod
    call object_needed ('det_to_det_unq_dn')
    call object_needed ('csf_coef')
    call object_needed ('cdet_in_csf')
+   call object_needed ('nup')
+   call object_needed ('ndn')
    call object_needed ('detu')
    call object_needed ('detd')
    call object_needed ('det_ex_up')
@@ -2715,7 +2029,9 @@ module deriv_orb_mod
 
   lap_psid_ex_over_psid (:,dorb_i) = lap_psid_ex_over_psid (:,dorb_i)/psid_ex (dorb_i)
 
+   !write(6,*) '>lap_psid_ex_over_psid',lap_psid_ex_over_psid(:,dorb_i)
  enddo ! dorb_i
+
 
  end subroutine lap_psid_ex_over_psid_bld
 
@@ -2760,6 +2076,7 @@ module deriv_orb_mod
      sum = sum + grd_psid_ex_over_psid (dim_i, elec_i, ex_i)**2
     enddo
     lap_lnpsid_ex (elec_i, ex_i) = lap_psid_ex_over_psid (elec_i, ex_i) - sum
+    !write(6,*) '>lap_lnpsid_ex',lap_lnpsid_ex(:,ex_i)
    enddo
   enddo
 
@@ -2802,6 +2119,7 @@ module deriv_orb_mod
    do elec_i = 1, nelec
      sum_lap_lnpsid_ex (ex_i) = sum_lap_lnpsid_ex (ex_i) + lap_lnpsid_ex (elec_i, ex_i)
    enddo
+   !write(6,*) '>sum_lap_lnpsid_ex',sum_lap_lnpsid_ex(ex_i)
   enddo
 
  end subroutine sum_lap_lnpsid_ex_bld
@@ -2841,6 +2159,7 @@ module deriv_orb_mod
 
   do ex_i = 1, param_orb_nb
      grd_psi_ex_over_psi (1:ndim, 1:nelec, ex_i) = grd_psid_ex_over_psid (1:ndim, 1:nelec, ex_i) + vj (1:ndim, 1:nelec)
+     !write(6,*) '>grd_psi_ex_over_psi',grd_psi_ex_over_psi (1:ndim, 1:nelec, ex_i)
   enddo
 
  end subroutine grd_psi_ex_over_psi_bld
@@ -2874,6 +2193,7 @@ module deriv_orb_mod
   call object_alloc ('sum_lap_lnpsi_ex', sum_lap_lnpsi_ex, param_orb_nb)
 
   sum_lap_lnpsi_ex (:) = sum_lap_lnpsid_ex (:) + sum_lap_lnj
+  !write(6,*) '>sum_lap_lnpsi_ex',sum_lap_lnpsi_ex
 
  end subroutine sum_lap_lnpsi_ex_bld
 
@@ -2922,6 +2242,7 @@ module deriv_orb_mod
   enddo
 
   eloc_kin_ex (ex_i) =  -0.5d0 * (sum_lap_lnpsi_ex (ex_i) + sum_grd_psi_over_psi_square)
+  !write(6,*) '>eloc_kin_ex',eloc_kin_ex (ex_i)
 
   enddo ! ex_i
 
@@ -2960,9 +2281,6 @@ module deriv_orb_mod
    call object_needed ('param_orb_nb')
    call object_needed ('ex_orb_ind')
    call object_needed ('ex_orb_ind_rev')
-   call object_needed ('electron')
-   call object_needed ('nup')
-   call object_needed ('ndn')
    call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
@@ -2970,22 +2288,22 @@ module deriv_orb_mod
    call object_needed ('det_to_det_unq_dn')
    call object_needed ('csf_coef')
    call object_needed ('cdet_in_csf')
-   call object_needed ('ex_up_is_zero')
-   call object_needed ('ex_dn_is_zero')
+   call object_needed ('electron')
+   call object_needed ('nup')
+   call object_needed ('ndn')
    call object_needed ('iwdet_ex_up')
    call object_needed ('iwdet_ex_dn')
-   call object_needed ('det_ex_orb_lab_srt_sgn_up')
-   call object_needed ('det_ex_orb_lab_srt_sgn_dn')
+   call object_needed ('det_ex_unq_sgn_up')
+   call object_needed ('det_ex_unq_sgn_dn')
+   call object_needed ('detn')
+   call object_needed ('orbe')
    call object_needed ('slater_mat_ex_trans_inv_up')
    call object_needed ('slater_mat_ex_trans_inv_dn')
-   call object_needed ('orbe')
    call object_needed ('detu')
    call object_needed ('detd')
-   call object_needed ('detn')
    call object_needed ('det_ex_up')
    call object_needed ('det_ex_dn')
-   call object_needed ('det_ex_unq_up')
-   call object_needed ('det_ex_unq_dn')
+   call object_needed ('det_ex_unq_bld_done')
 
    return
 
@@ -3017,28 +2335,23 @@ module deriv_orb_mod
         if (electron <= nup) then
 
         iel_up = electron
+        det_ex_up_in_x = 0.d0
+        det_ex_rev_up_in_x = 0.d0
+        det_ex_dn_in_x = 0.d0
+        det_ex_rev_dn_in_x = 0.d0
 
-!       current excited determinant is zero
-        if (ex_up_is_zero (ex_i, det_unq_up_i)) then
-         det_ex_up_in_x = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif ( .not. is_det_ex_up (ex_i, det_unq_up_i) ) then
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i)
+        iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
+        sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
+        if ((iwdet.eq.0).and.(iwdet.le.ndetup)) then
          det_ex_up_in_x = sgn * detn (iwdet)
-
-!       current excited determinant is a true excited determinant
         else
-         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_i, det_unq_up_i) * det_ex_unq_orb_lab_srt_sgn_up (iwdet)
 
          factor_up = 0.d0
          do j = 1, nup
-         factor_up = factor_up + slater_mat_ex_trans_inv_up (iel_up, j, iwdet) * orbe (det_ex_unq_orb_lab_up (j, iwdet))
+         factor_up = factor_up + slater_mat_ex_trans_inv_up (iel_up, j, iwdet-ndetup) * orbe (det_ex_unq_orb_lab_up (j, iwdet))
          enddo
 
-         det_ex_up_in_x  = sgn * factor_up * det_ex_unq_up (iwdet)
+         det_ex_up_in_x  = sgn * factor_up * detu(iwdet)
 
         endif
 
@@ -3048,35 +2361,26 @@ module deriv_orb_mod
 !       reverse excitation for active-active non-CASSCF excitations
         if (.not. l_casscf .and. ex_rev_i /=0 ) then
 
-!       current excited determinant is zero
-        if (ex_up_is_zero (ex_rev_i, det_unq_up_i)) then
-         det_ex_rev_up_in_x = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif (.not. is_det_ex_up (ex_rev_i, det_unq_up_i)) then
-         iwdet = iwdet_ex_up (ex_rev_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_rev_i, det_unq_up_i)
+        iwdet = iwdet_ex_up (ex_rev_i, det_unq_up_i)
+        sgn = det_ex_unq_sgn_up (ex_rev_i, det_unq_up_i)
+        if ((iwdet.eq.0).and.(iwdet.le.ndetup)) then
          det_ex_rev_up_in_x = sgn * detn (iwdet)
-
-!       current excited determinant is a true excited determinant
         else
-         iwdet = iwdet_ex_up (ex_rev_i, det_unq_up_i)
-         sgn = det_ex_orb_lab_srt_sgn_up (ex_rev_i, det_unq_up_i) * det_ex_unq_orb_lab_srt_sgn_up (iwdet)
 
          factor_up = 0.d0
          do j = 1, nup
          factor_up = factor_up +  &
-          slater_mat_ex_trans_inv_up (iel_up, j, iwdet) * orbe (det_ex_unq_orb_lab_up (j, iwdet))
+          slater_mat_ex_trans_inv_up (iel_up, j, iwdet-ndetup) * orbe (det_ex_unq_orb_lab_up (j, iwdet))
          enddo
 
-         det_ex_rev_up_in_x  = sgn * factor_up * det_ex_unq_up (iwdet)
+         det_ex_rev_up_in_x  = sgn * factor_up * detu(iwdet)
 
         endif
 
          psid_ex_in_x (dorb_i) = psid_ex_in_x (dorb_i) - coefficient *   &
                    (det_ex_rev_up_in_x * detd (det_unq_dn_i) + detn(det_unq_up_i) * det_ex_dn (ex_rev_i, det_i))
 
-        endif ! if .not. l_cascsf
+        endif ! if .not. l_casscf
 
 
 !       electron is spin down
@@ -3084,28 +2388,19 @@ module deriv_orb_mod
         iel_dn = electron - nup
 
 
-!       current excited determinant is zero
-        if (ex_dn_is_zero (ex_i, det_unq_dn_i)) then
-         det_ex_dn_in_x = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif ( .not. is_det_ex_dn (ex_i, det_unq_dn_i) ) then
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i)
+        iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
+        sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
+        if ((iwdet.eq.0).and.(iwdet.le.ndetdn)) then
          det_ex_dn_in_x = sgn * detn (iwdet)
-
-!       current excited determinant is a true excited determinant
         else
-         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_i, det_unq_dn_i) * det_ex_unq_orb_lab_srt_sgn_dn (iwdet)
 
          factor_dn = 0.d0
          do j = 1, ndn
          factor_dn = factor_dn +  &
-          slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet) * orbe (det_ex_unq_orb_lab_dn (j, iwdet))
+          slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet-ndetdn) * orbe (det_ex_unq_orb_lab_dn (j, iwdet))
          enddo
 
-         det_ex_dn_in_x  = sgn * factor_dn * det_ex_unq_dn (iwdet)
+         det_ex_dn_in_x  = sgn * factor_dn * detd(iwdet)
 
         endif
 
@@ -3114,33 +2409,24 @@ module deriv_orb_mod
 !       reverse excitation for active-active non-CASSCF excitations
         if (.not. l_casscf .and. ex_rev_i /=0 ) then
 
-!       current excited determinant is zero
-        if (ex_dn_is_zero (ex_rev_i, det_unq_dn_i)) then
-         det_ex_rev_dn_in_x = 0.d0
-
-!       current excited determinant is a determinant in the ground-state wave function
-        elseif ( .not. is_det_ex_dn (ex_rev_i, det_unq_dn_i) ) then
-         iwdet = iwdet_ex_dn (ex_rev_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_rev_i, det_unq_dn_i)
+        iwdet = iwdet_ex_dn (ex_rev_i, det_unq_dn_i)
+        sgn = det_ex_unq_sgn_dn (ex_rev_i, det_unq_dn_i)
+        if ((iwdet.eq.0).and.(iwdet.le.ndetdn)) then
          det_ex_rev_dn_in_x = sgn * detn (iwdet)
-
-!       current excited determinant is a true excited determinant
         else
-         iwdet = iwdet_ex_dn (ex_rev_i, det_unq_dn_i)
-         sgn = det_ex_orb_lab_srt_sgn_dn (ex_rev_i, det_unq_dn_i) * det_ex_unq_orb_lab_srt_sgn_dn (iwdet)
 
          factor_dn = 0.d0
          do j = 1, ndn
-         factor_dn = factor_dn + slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet) * orbe (det_ex_unq_orb_lab_dn (j, iwdet))
+         factor_dn = factor_dn + slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet-ndetdn) * orbe (det_ex_unq_orb_lab_dn (j, iwdet))
          enddo
 
-         det_ex_rev_dn_in_x  = sgn * factor_dn * det_ex_unq_dn (iwdet)
+         det_ex_rev_dn_in_x  = sgn * factor_dn * detd(iwdet)
 
         endif
 
         psid_ex_in_x (dorb_i) = psid_ex_in_x (dorb_i) - coefficient * (det_ex_up (ex_rev_i, det_i) * detn (det_unq_dn_i) + detu(det_unq_up_i) * det_ex_rev_dn_in_x)
 
-        endif ! if .not. l_cascsf
+        endif ! if .not. l_casscf
 
         endif ! electron
 
@@ -3148,6 +2434,8 @@ module deriv_orb_mod
    enddo ! csf_i
 
  enddo ! dorb_i
+
+ !write(6,*) '>psid_ex_in_x',psid_ex_in_x
 
  end subroutine psid_ex_in_x_bld
 
@@ -3262,6 +2550,7 @@ module deriv_orb_mod
   call object_alloc ('eloc_ex', eloc_ex, param_orb_nb)
 
   eloc_ex (:) = eloc_kin_ex (:) + eloc_pot_ex
+  !write(6,*) '>eloc_ex',eloc_ex
 
  end subroutine eloc_ex_bld
 
