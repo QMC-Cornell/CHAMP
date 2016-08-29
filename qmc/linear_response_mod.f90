@@ -50,6 +50,7 @@ module linearresponse_mod
 ! Modified    : B. Mussard, June 2016
 !---------------------------------------------------------------------------
   use all_modules_mod
+  use derivatives_fast_mod
   implicit none
 
 ! local
@@ -203,6 +204,8 @@ module linearresponse_mod
   write(6,'(a,i5)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
+
+  call object_provide('ex_from_up')
 
   write(6,'(a)') 'End of linearresponse menu -------------------------------------------------------------------------------'
 

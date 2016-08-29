@@ -207,6 +207,12 @@ module catalog_routines_mod
   call catalog_one_node ('hess_lin_bld', hess_lin_bld)
 
 ! det fast
+  call catalog_one_node ('ex_info_bld', ex_info_bld)
+  call catalog_one_node ('ainv_atilde_bld', ainv_atilde_bld)
+  call catalog_one_node ('ymat_ainv_and_yKmat_bld', ymat_ainv_and_yKmat_bld)
+  call catalog_one_node ('myphi_from_yKmat_bld', myphi_from_yKmat_bld)
+  call catalog_one_node ('alphaI_det_inv_bld', alphaI_det_inv_bld)
+  call catalog_one_node ('gamma_bld', gamma_bld)
   call catalog_one_node ('grd_det_over_det_fast_bld', grd_det_over_det_fast_bld)
   call catalog_one_node ('lap_det_over_det_fast_bld', lap_det_over_det_fast_bld)
 

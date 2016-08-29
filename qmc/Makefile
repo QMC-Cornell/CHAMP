@@ -649,8 +649,9 @@ $(OBJDIR)/jastrow_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/montecarlo_mod.o $(OBJDIR)/orbitals_mod.o
 $(OBJDIR)/linear_response_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/commons/dets_mod.o \
-	$(OBJDIR)/deriv_mod.o $(OBJDIR)/opt_common_mod.o \
-	$(OBJDIR)/opt_lin_mod.o $(OBJDIR)/vmc_mod.o
+	$(OBJDIR)/deriv_mod.o $(OBJDIR)/derivatives_fast_mod.o \
+	$(OBJDIR)/opt_common_mod.o $(OBJDIR)/opt_lin_mod.o \
+	$(OBJDIR)/vmc_mod.o
 $(OBJDIR)/main_menu_mod.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/backflow_mod.o \
 	$(OBJDIR)/basis_mod.o $(OBJDIR)/commons/contr3_mod.o \
 	$(OBJDIR)/commons/stepv_mod.o $(OBJDIR)/control_mod.o \
