@@ -326,6 +326,9 @@ module catalog_routines_mod
 ! orbital derivatives
   call catalog_one_node ('single_ex_wf_bld', single_ex_wf_bld)
   call catalog_one_node ('slater_mat_trans_inv_bld', slater_mat_trans_inv_bld)
+  call catalog_one_node ('double_ex_det_bld', double_ex_det_bld)
+  call catalog_one_node ('det_ex2_unq_bld', det_ex2_unq_bld)
+  call catalog_one_node ('det_ex2_bld', det_ex2_bld)
 
 !  call catalog_one_node ('single_ex_det_test_bld', single_ex_det_test_bld)
 !  call catalog_one_node ('det_ij_test_bld', det_ij_test_bld)
@@ -334,6 +337,7 @@ module catalog_routines_mod
   call catalog_one_node ('det_ex_unq_bld', det_ex_unq_bld)
   call catalog_one_node ('det_ex_bld', det_ex_bld)
   call catalog_one_node ('dpsi_orb_bld', dpsi_orb_bld)
+  call catalog_one_node ('d2psi_orb_bld', d2psi_orb_bld)
 
 !  call catalog_one_node ('pot_efp_bld', pot_efp_bld)
 

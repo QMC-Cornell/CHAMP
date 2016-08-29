@@ -152,6 +152,7 @@ module linearresponse_mod
     call object_provide ('orb_opt_last_lab')
     norb = orb_opt_last_lab
     write(6,'(a,i8)') ' Number of computed orbitals will be ', norb
+    call object_provide ('double_ex_nb')
   else
     param_orb_nb  =  0
     call object_modified ('param_orb_nb')
@@ -887,7 +888,9 @@ module linearresponse_mod
 
   if (l_print) then
   do i=1,param_nb
-    write(6,*) '/print_too_much/amat',i,amat_av(i,:)
+  do j=1,param_nb
+    write(6,*) '/print_too_much/amat',i,j,amat_av(i,j)
+  enddo
   enddo
   endif
 
@@ -938,7 +941,9 @@ module linearresponse_mod
 
   if (l_print) then
   do i=1,param_nb
-    write(6,*) '/print_too_much/bmat',i,bmat_av(i,:)
+  do j=1,param_nb
+    write(6,*) '/print_too_much/bmat',i,j,bmat_av(i,j)
+  enddo
   enddo
   endif
 
