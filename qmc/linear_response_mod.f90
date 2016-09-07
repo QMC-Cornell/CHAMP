@@ -7,16 +7,39 @@ module linearresponse_mod
   use deriv_mod
   use opt_lin_mod
 
+! "tda_only"          : will not calculate the full linresp equations, but only the A matrix
+! "hessian"           : will calculate the Hessian of the SCF (A B \\ B A)
+! "real_hessian"      : will calculate the real Hessian of the SCF (A+B)
+! "compare_to_tda"    : will calculate the linresp equations (A 0 \\ 0 A)
+! "compare_to_optlin" : will give an output comparable to that obtained with
+!                       an "optimization" command together with "compare_to_linresp"
+
 ! Declaration of global variables and default values
 
-  logical                         :: l_tda              =.false.
-  logical                         :: l_compare_to_tda   =.false.
+! TDA
+  logical                         :: l_tda_only         =.false.
+  real(dp), allocatable           :: tda_av_eigenval_r(:)
+  real(dp), allocatable           :: tda_av_eigenval_i(:)
+  real(dp), allocatable           :: tda_av_eigenval_r_err(:)
+  real(dp), allocatable           :: tda_av_eigenval_i_err(:)
+! prints and debug
   logical                         :: l_print            =.false.
   logical                         :: l_print_eigenvec   =.false.
   logical                         :: l_print_every_block=.false.
+  logical                         :: l_compare_to_tda   =.false.
+! hessian
   logical                         :: l_hessian          =.false.
+  real(dp), allocatable           :: hessian_av_eigenval_r(:)
+  real(dp), allocatable           :: hessian_av_eigenval_i(:)
+  real(dp), allocatable           :: hessian_av_eigenval_r_err(:)
+  real(dp), allocatable           :: hessian_av_eigenval_i_err(:)
+! real hessian
   logical                         :: l_real_hessian     =.false.
-
+  real(dp), allocatable           :: real_hessian_av_eigenval_r(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_i(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_r_err(:)
+  real(dp), allocatable           :: real_hessian_av_eigenval_i_err(:)
+! "normal" linresp
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
   real(dp), allocatable           :: ovlp_psii_psij_av(:,:)
@@ -26,18 +49,6 @@ module linearresponse_mod
   real(dp), allocatable           :: linresp_av_eigenval_i(:)
   real(dp), allocatable           :: linresp_av_eigenval_r_err(:)
   real(dp), allocatable           :: linresp_av_eigenval_i_err(:)
-  real(dp), allocatable           :: tda_av_eigenval_r(:)
-  real(dp), allocatable           :: tda_av_eigenval_i(:)
-  real(dp), allocatable           :: tda_av_eigenval_r_err(:)
-  real(dp), allocatable           :: tda_av_eigenval_i_err(:)
-  real(dp), allocatable           :: hessian_av_eigenval_r(:)
-  real(dp), allocatable           :: hessian_av_eigenval_i(:)
-  real(dp), allocatable           :: hessian_av_eigenval_r_err(:)
-  real(dp), allocatable           :: hessian_av_eigenval_i_err(:)
-  real(dp), allocatable           :: real_hessian_av_eigenval_r(:)
-  real(dp), allocatable           :: real_hessian_av_eigenval_i(:)
-  real(dp), allocatable           :: real_hessian_av_eigenval_r_err(:)
-  real(dp), allocatable           :: real_hessian_av_eigenval_i_err(:)
 
   contains
 
@@ -87,25 +98,31 @@ module linearresponse_mod
       call get_next_value_list ('parameter_type', parameter_type, parameter_type_nb)
 # endif
 
-    case ('compare_to_tda')
-      call get_next_value (l_compare_to_tda)
-    case ('compare_to_optlin')
-      call get_next_value (l_compare_linresp_and_optlin)
-      if (l_compare_linresp_and_optlin) then
-        l_print=.true.
-      endif
-    case ('tda')
-      call get_next_value (l_tda)
+!   TDA
+    case ('tda_only')
+      call get_next_value (l_tda_only)
+
+!   Hessians
     case ('hessian')
       call get_next_value (l_hessian)
     case ('real_hessian')
       call get_next_value (l_real_hessian)
+
+!   prints and debug
     case ('print_eigenvec')
       call get_next_value (l_print_eigenvec)
     case ('print_every_block')
       call get_next_value (l_print_every_block)
     case ('print')
       call get_next_value (l_print)
+    case ('compare_to_tda')
+      call get_next_value (l_compare_to_tda)
+    case ('compare_to_optlin')
+      call get_next_value (l_compare_linresp_and_optlin)
+      if (l_compare_linresp_and_optlin) then
+        l_tda_only=.true.
+        l_print=.true.
+      endif
 
     case ('end')
       exit
@@ -153,7 +170,9 @@ module linearresponse_mod
     call object_provide ('orb_opt_last_lab')
     norb = orb_opt_last_lab
     write(6,'(a,i8)') ' Number of computed orbitals will be ', norb
-    call object_provide ('double_ex_nb')
+    if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda_only)) then
+      call object_provide ('double_ex_nb')
+    endif
   else
     param_orb_nb  =  0
     call object_modified ('param_orb_nb')
@@ -205,6 +224,7 @@ module linearresponse_mod
   write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
 
+! test-phase of FastDet
   call object_provide('ex_from_up')
 
   write(6,'(a)') 'End of linearresponse menu -------------------------------------------------------------------------------'
@@ -252,15 +272,13 @@ module linearresponse_mod
     call object_error_request('real_hessian_av_eigenval_r_err')
     call object_error_request('real_hessian_av_eigenval_i_err')
   endif
-  if (l_tda) then
-    call object_error_request('tda_av_eigenval_r_err')
-    call object_error_request('tda_av_eigenval_i_err')
-  endif
-  if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda)) then
+  call object_error_request('tda_av_eigenval_r_err')
+  call object_error_request('tda_av_eigenval_i_err')
+  if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda_only)) then
     call object_average_request('d2psi_av')
     call object_average_request('d2psi_eloc_av')
   endif
-  if (.not.l_tda) then
+  if (.not.l_tda_only) then
     call object_error_request('linresp_av_eigenval_r_err')
     call object_error_request('linresp_av_eigenval_i_err')
   endif
@@ -284,12 +302,11 @@ module linearresponse_mod
     call object_provide('real_hessian_av_eigenval_r')
     call object_provide('real_hessian_av_eigenval_i')
   endif
-  if (l_tda) then
-    call object_invalidate('tda_av_eigenval_r')
-    call object_invalidate('tda_av_eigenval_i')
-    call object_provide('tda_av_eigenval_r')
-    call object_provide('tda_av_eigenval_i')
-  else
+  call object_invalidate('tda_av_eigenval_r')
+  call object_invalidate('tda_av_eigenval_i')
+  call object_provide('tda_av_eigenval_r')
+  call object_provide('tda_av_eigenval_i')
+  if (.not.l_tda_only) then
     call object_invalidate('linresp_av_eigenval_r')
     call object_invalidate('linresp_av_eigenval_i')
     call object_provide('linresp_av_eigenval_r')
@@ -889,12 +906,14 @@ module linearresponse_mod
     enddo
   enddo
 
+  if (run_done.or.l_print_every_block) then
   if (l_print) then
   do i=1,param_nb
   do j=1,param_nb
     write(6,*) '/print_too_much/amat',i,j,amat_av(i,j)
   enddo
   enddo
+  endif
   endif
 
   end subroutine amat_av_bld
@@ -942,12 +961,14 @@ module linearresponse_mod
     enddo
   enddo
 
+  if (run_done.or.l_print_every_block) then
   if (l_print) then
   do i=1,param_nb
   do j=1,param_nb
     write(6,*) '/print_too_much/bmat',i,j,bmat_av(i,j)
   enddo
   enddo
+  endif
   endif
 
   end subroutine bmat_av_bld
@@ -1028,15 +1049,23 @@ module linearresponse_mod
   integer                         :: n
 
 ! local
-  integer                         :: i,j,nunique,i_eigval,j_unq,i_pos
+  integer                         :: i,j,nunique,i_eigval,j_unq,i_pos,jorb
+  integer                         :: maj1pos,maj2pos,maj3pos
   integer,  allocatable           :: position_and_degenerate(:,:)
   real(dp), allocatable           :: unique_r(:), unique_i(:), zero_array(:)
+  real(dp)                        :: maj1,maj2,maj3
   logical                         :: new_one
+  character(len=4)                :: formt1
+  character(len=9)                :: formt2
+  character(len=20)               :: formt3
 
 ! begin
+
+! Gather unique eigenvalues (real and im part)
+! and information on their original position and degeneracy
   call alloc('unique_r', unique_r, n)
   call alloc('unique_i', unique_i, n)
-  call alloc('position_and_degenerate', position_and_degenerate, n,2)
+  call alloc('position_and_degenerate', position_and_degenerate, n, 2)
   unique_i=0
   unique_r=0
   position_and_degenerate=0
@@ -1060,50 +1089,129 @@ module linearresponse_mod
     endif
   enddo
       
-! Print unique eigenvalues
+! Print unique eigenvalues...
   if (run_done.or.l_print_every_block) then
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
   do i = 1, nunique
-    write(6,'(a,i5,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
+    write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
       & unique_r(i),' +/-',err_r(position_and_degenerate(i,1)),' +',&
       & unique_i(i),' +/-',err_i(position_and_degenerate(i,1)),' i (',&
       & position_and_degenerate(i,2),')'
+
+    ! ...and eigenvectors
+    ! - in the case where matrices are of dimension "param_nb"
+    !   just print the eigenvector with information on the type of parameter for each component 
+    !   (in the case of an orbital parameter: additional info on p->q excitation)
+    ! - in the case where matrices are of dimension "2*param_nb",
+    !   add information on X=Y, X=-Y, X=0, Y=0, or UNKNOWN situation
+    if (l_print_eigenvec) then
+      if (n.eq.param_nb) then
+        maj1=0
+        do j=1,n
+          if (abs(eigvec(j, position_and_degenerate(i,1))).ge.maj1) then
+            maj1=abs(eigvec(j, position_and_degenerate(i,1)))
+            maj1pos=j
+          endif
+        enddo
+        maj2=0
+        do j=1,n
+          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj2).and.&
+            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj1)) then
+            maj2=abs(eigvec(j, position_and_degenerate(i,1)))
+            maj2pos=j
+          endif
+        enddo
+        maj3=0
+        do j=1,n
+          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj3).and.&
+            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj2)) then
+            maj3=abs(eigvec(j, position_and_degenerate(i,1)))
+            maj3pos=j
+          endif
+        enddo
+        jorb=0
+        do j=1,n
+          if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos)) then
+            formt2=' [major] '
+          else
+            formt2='         '
+          endif
+          if (is_param_type_orb(j)) then
+            jorb=jorb+1
+            write(formt3,'(a,i2,a,i2,a)') ' (orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+          else
+            formt3=' ('//trim(param_type(j))//')'
+          endif
+          write(6,'(a,i5,a,f9.3,a,a)') 'eigenvec       ',i,': ',&
+                                      & eigvec(j, position_and_degenerate(i,1)),&
+                                      & formt2, trim(formt3)
+        enddo
+      elseif (n.eq.2*param_nb) then
+        call alloc('zero_array',zero_array,n/2)
+        if (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
+                   & eigvec(n/2+1:n,position_and_degenerate(i,1)),1.0d-2).eq.0) then
+         formt1='EQU '
+        elseif (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
+                      & -eigvec(n/2+1:n,position_and_degenerate(i,1)),1.0d-2).eq.0) then
+         formt1='OPP '
+        elseif (is_equal(eigvec(n/2+1:n,position_and_degenerate(i,1)),&
+                      &  zero_array,1.0d-2).eq.0) then
+         formt1='TDAX'
+        elseif (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
+                      &  zero_array,1.0d-2).eq.0) then
+         formt1='TDAY'
+        else
+         formt1='UNK '
+        endif
+        maj1=0
+        do j=1,n/2
+          if (abs(eigvec(j, position_and_degenerate(i,1))).ge.maj1) then
+            maj1=abs(eigvec(j, position_and_degenerate(i,1)))
+            maj1pos=j
+          endif
+        enddo
+        maj2=0
+        do j=1,n/2
+          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj2).and.&
+            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj1)) then
+            maj2=abs(eigvec(j, position_and_degenerate(i,1)))
+            maj2pos=j
+          endif
+        enddo
+        maj3=0
+        do j=1,n/2
+          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj3).and.&
+            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj2)) then
+            maj3=abs(eigvec(j, position_and_degenerate(i,1)))
+            maj3pos=j
+          endif
+        enddo
+        jorb=0
+        do j=1,n/2
+          if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos)) then
+            formt2=' [major] '
+          else
+            formt2='         '
+          endif
+          if (is_param_type_orb(j)) then
+            jorb=jorb+1
+            write(formt3,'(a,i2,a,i2,a)') ' (orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+          else
+            formt3=' ('//trim(param_type(j))//')'
+          endif
+          write(6,'(a,a,a,i5,a,f9.3,f11.3,a,a)') 'eigenvec(',formt1,') ',i,': ',&
+                                                & eigvec(j,    position_and_degenerate(i,1)),&
+                                                & eigvec(j+n/2,position_and_degenerate(i,1)),&
+                                                & formt2, trim(formt3)
+        enddo
+      else
+        call die('','')
+      endif
+    endif
   enddo
   endif
-
-    !if (l_print_eigenvec) then
-    !  call alloc('zero_array',zero_array,n/2)
-    !  if (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
-    !             & eigvec(n/2+1:n,position_and_degenerate(i,1)),1.0d-4).eq.0) then
-    !    do j=1,n/2
-    !    write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecEQU ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-    !                                                       &  eigvec(j,position_and_degenerate(i,1)) &
-    !                                                       & -eigvec(j+n/2,position_and_degenerate(i,1))
-    !    enddo
-    !  elseif (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
-    !                & -eigvec(n/2+1:n,position_and_degenerate(i,1)),1.0d-4).eq.0) then
-    !    do j=1,n/2
-    !    write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecOPP ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-    !                                                       &  eigvec(j,position_and_degenerate(i,1)) &
-    !                                                       & +eigvec(j+n/2,position_and_degenerate(i,1))
-    !    enddo
-    !  elseif (is_equal(eigvec(n/2+1:n,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
-    !    do j=1,n/2
-    !    write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAX',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-    !                                                       &  eigvec(j+n/2,position_and_degenerate(i,1))
-    !    enddo
-    !  elseif (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),zero_array,1.0d-4).eq.0) then
-    !    do j=1,n/2
-    !    write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecTDAY',i,': ',eigvec(j+n/2,position_and_degenerate(i,1)),&
-    !                                                       &  eigvec(j,position_and_degenerate(i,1))
-    !    enddo
-    !  else
-    !    do j=1,n/2
-    !    write(6,'(a,i5,a,f12.6,f14.6)') 'eigenvecUNK ',i,': ',eigvec(j,position_and_degenerate(i,1)),&
-    !                                                       &  eigvec(j+n/2,position_and_degenerate(i,1))
-    !    enddo
-    !  endif
-    !endif
 
   call release ('unique_r', unique_r)
   call release ('unique_i', unique_i)
