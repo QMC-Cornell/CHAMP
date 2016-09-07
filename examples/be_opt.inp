@@ -76,7 +76,7 @@ end
 
 optimization
  parameters
-  jastrow csfs orbitals exponents
+  jastrow csfs orbitals !exponents
  end
  casscf=true
  compare_to_linresp=.true.
