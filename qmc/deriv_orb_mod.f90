@@ -284,7 +284,7 @@ module deriv_orb_mod
 ! allocations
 ! Most arrays will be adjusted at the end of the routine and have the following max sizes:
   single_ex_max  =orb_tot_nb*orb_tot_nb
-  det_ex_max     =(ndetup+ndetdn)*single_ex_max/25
+  det_ex_max     =(ndetup+ndetdn)*single_ex_max
   csf_ex_unq_max =2*det_ex_max*ndetup
   det_in_csf_max =10
   csf_in_wf_max  =ncsf
@@ -954,38 +954,40 @@ module deriv_orb_mod
 ! spin up determinants
   do det_ex_unq_up_i = 1, det_ex_unq_up_nb
 
-      col_up  = det_ex_unq_up_orb_1st_pos (det_ex_unq_up_i)
-      orb_up  = det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_i)
-      det_unq_ref_up = iwdet_ex_ref_up (det_ex_unq_up_i)
+    col_up  = det_ex_unq_up_orb_1st_pos (det_ex_unq_up_i)
+    orb_up  = det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_i)
+    det_unq_ref_up = iwdet_ex_ref_up (det_ex_unq_up_i)
 
-      factor_up = 0.d0
-      do i = 1, nup
-       factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_unq_ref_up) * orb (i, orb_up)
-      enddo
+    factor_up = 0.d0
+    do i = 1, nup
+     factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_unq_ref_up) * orb (i, orb_up)
+    enddo
 
-      detu(ndetup+det_ex_unq_up_i) = factor_up * detu (det_unq_ref_up)
+    detu(ndetup+det_ex_unq_up_i) = factor_up * detu (det_unq_ref_up)
 
-      !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_i)
-   enddo ! det_ex_unq_up_i
+    !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_i)
+  enddo ! det_ex_unq_up_i
+  call object_modified('detu')
 
 ! spin down determinants
   do det_ex_unq_dn_i = 1, det_ex_unq_dn_nb
 
-      col_dn  = det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_i)
-      orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_i)
-      det_unq_ref_dn = iwdet_ex_ref_dn (det_ex_unq_dn_i)
+    col_dn  = det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_i)
+    orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_i)
+    det_unq_ref_dn = iwdet_ex_ref_dn (det_ex_unq_dn_i)
 
-      factor_dn = 0.d0
-      do i = 1, ndn
-       factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_unq_ref_dn) * orb (nup + i, orb_dn)
-      enddo
+    factor_dn = 0.d0
+    do i = 1, ndn
+     factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_unq_ref_dn) * orb (nup + i, orb_dn)
+    enddo
 
-      detd(ndetdn+det_ex_unq_dn_i) = factor_dn * detd (det_unq_ref_dn)
+    detd(ndetdn+det_ex_unq_dn_i) = factor_dn * detd (det_unq_ref_dn)
 
-      !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_i)
-   enddo ! det_ex_unq_dn_i
+    !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_i)
+  enddo ! det_ex_unq_dn_i
+  call object_modified('detd')
 
-   det_ex_unq_bld_done=.true.
+  det_ex_unq_bld_done=.true.
 
   end subroutine det_ex_unq_bld
 
@@ -1546,6 +1548,7 @@ module deriv_orb_mod
       enddo
     enddo ! dim_i
   enddo ! det_i
+  call object_modified('grd_det_unq_up')
 
 ! spin down determinants
   do det_i = 1, det_ex_unq_dn_nb
@@ -1560,6 +1563,7 @@ module deriv_orb_mod
       enddo
     enddo ! dim_i
   enddo ! det_i
+  call object_modified('grd_det_unq_dn')
 
   grd_det_ex_unq_bld_done=.true.
 
@@ -1621,6 +1625,7 @@ module deriv_orb_mod
       !write(6,*) '>lap_det_ex_unq_up',lap_det_unq_up(i,ndetup+det_i)
     enddo
   enddo  ! det_i
+  call object_modified('lap_det_unq_up')
 
 ! spin down determinants
   do det_i = 1, det_ex_unq_dn_nb
@@ -1633,6 +1638,7 @@ module deriv_orb_mod
       !write(6,*) '>lap_det_ex_unq_dn',lap_det_unq_dn(i,ndetdn+det_i)
     enddo
   enddo ! det_i
+  call object_modified('lap_det_unq_dn')
 
   lap_det_ex_unq_bld_done=.true.
 
@@ -2928,6 +2934,7 @@ module deriv_orb_mod
     detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)=det_pq*det_rs-det_ps*det_rq
     !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
   enddo ! det_ex_unq_up_i
+  call object_modified('detu')
 
 ! spin down determinants
   do det_ex2_unq_dn_i = 1, det_ex2_unq_dn_nb
@@ -2954,6 +2961,7 @@ module deriv_orb_mod
     detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)=det_pq*det_rs-det_ps*det_rq
     !write(6,*) '>det_ex_unq_dn',detu(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
   enddo ! det_ex_unq_dn_i
+  call object_modified('detd')
 
   det_ex2_unq_bld_done=.true.
 
