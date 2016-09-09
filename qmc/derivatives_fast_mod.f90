@@ -138,6 +138,10 @@ module derivatives_fast_mod
 
   endif
 
+  write(6,*) ''
+  write(6,*) 'TEST-PHASE FOR FAST-DET =============================================== '
+  write(6,*) ''
+
 ! find main determinant as the largest C_I x c_kI
 ! (or it could have been imposed by user)
   if (det_ref_up.eq.0) then
@@ -772,6 +776,10 @@ module derivatives_fast_mod
   do i=1, orb_tot_nb
   write(6,*) (gamma_dn(i,j),j=1,orb_occ_dn_nb)
   enddo
+
+  write(6,*) ''
+  write(6,*) 'TEST-PHASE FOR FAST-DET =============================================== '
+  write(6,*) ''
 
   end subroutine gamma_bld
 

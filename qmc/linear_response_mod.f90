@@ -228,9 +228,6 @@ module linearresponse_mod
   write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
 
-! test-phase of FastDet
-  call object_provide('ex_from_up')
-
   write(6,'(a)') 'End of linearresponse menu -------------------------------------------------------------------------------'
 
   call linearresponse
@@ -294,6 +291,9 @@ module linearresponse_mod
   nwftype=1
   call vmc
   run_done=.true.
+
+! test-phase of FastDet
+!   call object_provide('gamma_up')
 
 ! final calculation
   if (l_hessian) then
