@@ -264,6 +264,12 @@ module linearresponse_mod
   call object_average_request('dpsi_dpsi_eloc_av')
   call object_average_request('deloc_av')
   call object_average_request('dpsi_deloc_av')
+  if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda_only)) then
+    call object_average_request('d2psi_av')
+    call object_average_request('d2psi_eloc_av')
+  endif
+
+! error needed by the linresp calculations
   if (l_hessian) then
     call object_error_request('hessian_av_eigenval_r_err')
     call object_error_request('hessian_av_eigenval_i_err')
@@ -274,10 +280,6 @@ module linearresponse_mod
   endif
   call object_error_request('tda_av_eigenval_r_err')
   call object_error_request('tda_av_eigenval_i_err')
-  if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda_only)) then
-    call object_average_request('d2psi_av')
-    call object_average_request('d2psi_eloc_av')
-  endif
   if (.not.l_tda_only) then
     call object_error_request('linresp_av_eigenval_r_err')
     call object_error_request('linresp_av_eigenval_i_err')
@@ -331,6 +333,8 @@ module linearresponse_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'linresp_av_eigenval_bld'
   integer                         :: i,info,lwork
+  real(dp), allocatable           :: linresp_local(:,:)
+  real(dp), allocatable           :: ovlp_local(:,:)
   real(dp), allocatable           :: eigvec(:,:)
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
@@ -372,9 +376,13 @@ module linearresponse_mod
 ! calculate optimal value of lwork
   lwork = 1
   call alloc('work', work, lwork)
+  call alloc('linresp_local',linresp_local, 2*param_nb, 2*param_nb)
+  call alloc('ovlp_local',   ovlp_local   , 2*param_nb, 2*param_nb)
+  linresp_local=linresp_matrix
+  ovlp_local=ovlp_matrix
   call dggev('N','V', &
-             2*param_nb, linresp_matrix,  &
-             2*param_nb, ovlp_matrix,     &
+             2*param_nb, linresp_local,  &
+             2*param_nb, ovlp_local,     &
              2*param_nb, eigval_r, eigval_i, eigval_denom, &
              eigvec, 2*param_nb, eigvec, 2*param_nb, &
              work, -1, info)
@@ -384,13 +392,11 @@ module linearresponse_mod
 
 ! generalized eigenvalue problem
   call dggev('N','V', &
-             2*param_nb, linresp_matrix,  &
-             2*param_nb, ovlp_matrix,     &
+             2*param_nb, linresp_local,  &
+             2*param_nb, ovlp_local,     &
              2*param_nb, eigval_r, eigval_i, eigval_denom, &
              eigvec, 2*param_nb, eigvec, 2*param_nb, &
              work, lwork, info)
-  call object_invalidate('linresp_matrix')
-  call object_invalidate('ovlp_matrix')
   if(info /= 0) call die(lhere, 'problem in dggev: info='+info+' /= 0 (compare to 2*param_nb='+2*param_nb+')')
 
 ! scale eigenvalue
@@ -414,6 +420,8 @@ module linearresponse_mod
     linresp_av_eigenval_i,linresp_av_eigenval_i_err,2*param_nb)
 
 ! release statements
+  call release ('linresp_local', linresp_local)
+  call release ('ovlp_local', ovlp_local)
   call release ('work', work)
   call release ('eigvec', eigvec)
   call release ('eigval_r', eigval_r)
@@ -440,6 +448,8 @@ module linearresponse_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'tda_av_eigenval_bld'
   integer                         :: i,info,lwork
+  real(dp), allocatable           :: amat_local(:,:)
+  real(dp), allocatable           :: ovlp_local(:,:)
   real(dp), allocatable           :: eigvec(:,:)
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
@@ -463,7 +473,7 @@ module linearresponse_mod
     return
   endif
 
-  write(6,*) '/BM/here'
+  write(6,*) '/test/calculate TDA ev'
 
   call object_alloc ('tda_av_eigenval_r',tda_av_eigenval_r,param_nb)
   call object_alloc ('tda_av_eigenval_i',tda_av_eigenval_i,param_nb)
@@ -483,9 +493,13 @@ module linearresponse_mod
 ! calculate optimal value of lwork
   lwork = 1
   call alloc('work', work, lwork)
+  call alloc('amat_local', amat_local, param_nb, param_nb)
+  call alloc('ovlp_local', ovlp_local, param_nb, param_nb)
+  amat_local=amat_av
+  ovlp_local=ovlp_psii_psij_av
   call dggev('N','V', &
-             param_nb, amat_av,            &
-             param_nb, ovlp_psii_psij_av,  &
+             param_nb, amat_local,         &
+             param_nb, ovlp_local,         &
              param_nb, eigval_r, eigval_i, eigval_denom, &
              eigvec, param_nb, eigvec, param_nb, &
              work, -1, info)
@@ -495,13 +509,11 @@ module linearresponse_mod
 
 ! generalized eigenvalue problem
   call dggev('N','V', &
-             param_nb, amat_av,            &
-             param_nb, ovlp_psii_psij_av,  &
+             param_nb, amat_local,         &
+             param_nb, ovlp_local,         &
              param_nb, eigval_r, eigval_i, eigval_denom, &
              eigvec, param_nb, eigvec, param_nb, &
              work, lwork, info)
-  call object_invalidate('amat_av')
-  call object_invalidate('ovlp_psii_psij_av')
   if(info /=  0) call die(lhere, 'problem in dggev: info='+info+' /=  0 (compare to  param_nb='+param_nb+')')
 
 ! scale eigenvalue
@@ -525,6 +537,8 @@ module linearresponse_mod
     tda_av_eigenval_i,tda_av_eigenval_i_err,param_nb)
 
 ! release statements
+  call release ('amat_local', amat_local)
+  call release ('ovlp_local', ovlp_local)
   call release ('work', work)
   call release ('eigvec', eigvec)
   call release ('eigval_r', eigval_r)
@@ -550,6 +564,7 @@ module linearresponse_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'hessian_av_eigenval_bld'
   integer                         :: i,info,lwork
+  real(dp), allocatable           :: linresp_local(:,:)
   real(dp), allocatable           :: eigvec(:,:)
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
@@ -588,8 +603,10 @@ module linearresponse_mod
 ! calculate optimal value of lwork
   lwork = 1
   call alloc('work', work, lwork)
+  call alloc('linresp_local', linresp_local, 2*param_nb, 2*param_nb)
+  linresp_local=linresp_matrix
   call dgeev('N','V', &
-             2*param_nb, linresp_matrix,     &
+             2*param_nb, linresp_local,      &
              2*param_nb, eigval_r, eigval_i, &
              eigvec, 2*param_nb, eigvec, 2*param_nb, &
              work, -1, info)
@@ -599,11 +616,10 @@ module linearresponse_mod
 
 ! generalized eigenvalue problem
   call dgeev('N','V', &
-             2*param_nb, linresp_matrix,     &
+             2*param_nb, linresp_local,      &
              2*param_nb, eigval_r, eigval_i, &
              eigvec, 2*param_nb, eigvec, 2*param_nb, &
              work, lwork, info)
-  call object_invalidate('linresp_matrix')
   if(info /=  0) call die(lhere, 'problem in dgeev: info='+info+' /=  0 (compare to  2*param_nb='+2*param_nb+')')
 
 ! sort eigenvalues
@@ -621,6 +637,7 @@ module linearresponse_mod
     hessian_av_eigenval_i,hessian_av_eigenval_i_err,2*param_nb)
 
 ! release statements
+  call release ('linresp_local', linresp_local)
   call release ('work', work)
   call release ('eigvec', eigvec)
   call release ('eigval_r', eigval_r)
@@ -645,6 +662,7 @@ module linearresponse_mod
 ! local
   character(len=max_string_len_rout), save :: lhere = 'real_hessian_av_eigenval_bld'
   integer                         :: i,info,lwork
+  real(dp), allocatable           :: abmat_local(:,:)
   real(dp), allocatable           :: eigvec(:,:)
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
@@ -684,8 +702,10 @@ module linearresponse_mod
 ! calculate optimal value of lwork
   lwork = 1
   call alloc('work', work, lwork)
+  call alloc('abmat_local', abmat_local, param_nb, param_nb)
+  abmat_local=amat_av+bmat_av
   call dgeev('N','V', &
-             param_nb, amat_av+bmat_av,    &
+             param_nb, abmat_local,    &
              param_nb, eigval_r, eigval_i, &
              eigvec, param_nb, eigvec, param_nb, &
              work, -1, info)
@@ -695,12 +715,10 @@ module linearresponse_mod
 
 ! generalized eigenvalue problem
   call dgeev('N','V', &
-             param_nb, amat_av+bmat_av,    &
+             param_nb, abmat_local,    &
              param_nb, eigval_r, eigval_i, &
              eigvec, param_nb, eigvec, param_nb, &
              work, lwork, info)
-  call object_invalidate('amat_av')
-  call object_invalidate('bmat_av')
   if(info /=  0) call die(lhere, 'problem in dgeev: info='+info+' /=  0 (compare to  param_nb='+param_nb+')')
 
 ! sort eigenvalues
@@ -718,6 +736,7 @@ module linearresponse_mod
     real_hessian_av_eigenval_i,real_hessian_av_eigenval_i_err,param_nb)
 
 ! release statements
+  call release ('abmat_local', abmat_local)
   call release ('work', work)
   call release ('eigvec', eigvec)
   call release ('eigval_r', eigval_r)
@@ -823,6 +842,8 @@ module linearresponse_mod
     return
   endif
 
+  write(6,*) '/test/calculate OVLP'
+
   call object_alloc('ovlp_psii_psij_av',ovlp_psii_psij_av,param_nb,param_nb)
 
 ! Eq(53d) of JCP 126 084102 (2007)
@@ -888,6 +909,8 @@ module linearresponse_mod
 
     return
   endif
+
+  write(6,*) '/test/calculate AMAT'
 
   call object_alloc('amat_av',amat_av,param_nb,param_nb)
 
