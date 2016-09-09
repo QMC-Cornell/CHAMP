@@ -100,6 +100,7 @@ module variables_mod
 
 ! linear response
   logical                         :: l_compare_linresp_and_optlin=.false.
+  logical                         :: l_triplet          =.false.
 
 ! total number of configurations (walkers)
   integer   :: nconf_total = 1

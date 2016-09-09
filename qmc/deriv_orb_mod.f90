@@ -494,6 +494,7 @@ module deriv_orb_mod
         det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i)
         det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_opt_lab_j
       endif
+      if (l_triplet) det_ex_unq_sgn_dn (ex_i, det_unq_dn_i ) = -det_ex_unq_sgn_dn (ex_i, det_unq_dn_i )
 
     endif
     enddo ! det_unq_dn_i

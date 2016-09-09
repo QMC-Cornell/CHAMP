@@ -98,6 +98,10 @@ module linearresponse_mod
       call get_next_value_list ('parameter_type', parameter_type, parameter_type_nb)
 # endif
 
+!   triplet
+    case ('triplet')
+      call get_next_value (l_triplet)
+
 !   TDA
     case ('tda_only')
       call get_next_value (l_tda_only)
