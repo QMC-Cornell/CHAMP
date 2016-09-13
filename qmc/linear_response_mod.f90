@@ -297,26 +297,14 @@ module linearresponse_mod
 
 ! final calculation
   if (l_hessian) then
-    call object_invalidate('hessian_av_eigenval_r')
-    call object_invalidate('hessian_av_eigenval_i')
-    call object_provide('hessian_av_eigenval_r')
-    call object_provide('hessian_av_eigenval_i')
+    call hessian_av_eigenval_bld
   endif
   if (l_real_hessian) then
-    call object_invalidate('real_hessian_av_eigenval_r')
-    call object_invalidate('real_hessian_av_eigenval_i')
-    call object_provide('real_hessian_av_eigenval_r')
-    call object_provide('real_hessian_av_eigenval_i')
+    call real_hessian_av_eigenval_bld
   endif
-  call object_invalidate('tda_av_eigenval_r')
-  call object_invalidate('tda_av_eigenval_i')
-  call object_provide('tda_av_eigenval_r')
-  call object_provide('tda_av_eigenval_i')
+  call tda_av_eigenval_bld
   if (.not.l_tda_only) then
-    call object_invalidate('linresp_av_eigenval_r')
-    call object_invalidate('linresp_av_eigenval_i')
-    call object_provide('linresp_av_eigenval_r')
-    call object_provide('linresp_av_eigenval_i')
+    call linresp_av_eigenval_bld
   endif
 
   end subroutine linearresponse
@@ -476,8 +464,6 @@ module linearresponse_mod
 
     return
   endif
-
-  write(6,*) '/test/calculate TDA ev'
 
   call object_alloc ('tda_av_eigenval_r',tda_av_eigenval_r,param_nb)
   call object_alloc ('tda_av_eigenval_i',tda_av_eigenval_i,param_nb)
@@ -846,8 +832,6 @@ module linearresponse_mod
     return
   endif
 
-  write(6,*) '/test/calculate OVLP'
-
   call object_alloc('ovlp_psii_psij_av',ovlp_psii_psij_av,param_nb,param_nb)
 
 ! Eq(53d) of JCP 126 084102 (2007)
@@ -913,8 +897,6 @@ module linearresponse_mod
 
     return
   endif
-
-  write(6,*) '/test/calculate AMAT'
 
   call object_alloc('amat_av',amat_av,param_nb,param_nb)
 
@@ -1033,7 +1015,7 @@ module linearresponse_mod
     do j = i+1, n
       if ((eigval_r(backward_sort(j))-eigval_r(backward_sort(i))<-0.0001)   &
        .or. ((eigval_r(backward_sort(j))-eigval_r(backward_sort(i))<0.0001) &
-       .and. (eigval_i(backward_sort(j))<eigval_i(backward_sort(i))))) then
+       .and. (eigval_i(backward_sort(j))>eigval_i(backward_sort(i))))) then
         temp = backward_sort(i)
         backward_sort(i) = backward_sort(j)
         backward_sort(j) = temp
@@ -1077,14 +1059,14 @@ module linearresponse_mod
 
 ! local
   integer                         :: i,j,nunique,i_eigval,j_unq,i_pos,jorb
-  integer                         :: maj1pos,maj2pos,maj3pos
+  integer                         :: maj1pos,maj2pos,maj3pos,maj4pos
   integer,  allocatable           :: position_and_degenerate(:,:)
   real(dp), allocatable           :: unique_r(:), unique_i(:), zero_array(:)
-  real(dp)                        :: maj1,maj2,maj3
+  real(dp)                        :: maj1,maj2,maj3,maj4
   logical                         :: new_one
-  character(len=4)                :: formt1
-  character(len=9)                :: formt2
-  character(len=20)               :: formt3
+  character(len=7)                :: formt1
+  character(len=9), allocatable   :: formt2(:)
+  character(len=15), allocatable  :: formt3(:)
 
 ! begin
 
@@ -1119,6 +1101,43 @@ module linearresponse_mod
 ! Print unique eigenvalues...
   if (run_done.or.l_print_every_block) then
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
+  if (l_print_eigenvec) then
+    ! parameter type
+    call alloc('formt3',formt3,n)
+    if (n.eq.param_nb) then
+      jorb=0
+      do j=1,n
+        if (is_param_type_orb(j)) then
+          jorb=jorb+1
+          write(formt3(j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+    elseif (n.eq.2*param_nb) then
+      jorb=0
+      do j=1,n/2
+        if (is_param_type_orb(j)) then
+          jorb=jorb+1
+          write(formt3(j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+      jorb=0
+      do j=1,n/2
+        if (is_param_type_orb(j)) then
+          jorb=jorb+1
+          write(formt3(n/2+j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                                   & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(n/2+j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+    endif
+  endif
   do i = 1, nunique
     write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
       & unique_r(i),' +/-',err_r(position_and_degenerate(i,1)),' +',&
@@ -1126,115 +1145,90 @@ module linearresponse_mod
       & position_and_degenerate(i,2),')'
 
     ! ...and eigenvectors
-    ! - in the case where matrices are of dimension "param_nb"
-    !   just print the eigenvector with information on the type of parameter for each component 
-    !   (in the case of an orbital parameter: additional info on p->q excitation)
-    ! - in the case where matrices are of dimension "2*param_nb",
-    !   add information on X=Y, X=-Y, X=0, Y=0, or UNKNOWN situation
+    ! - in the case where matrices are of dimension "param_nb":
+    !   print the eigenvector where:
+    !     - the type of parameter for each component is written 
+    !      (in the case of an orbital parameter: additional info on p->q excitation)
+    !     - the three major component are highlighted
+    ! - in the case where matrices are of dimension "2*param_nb":
+    !     add information on X=Y, X=-Y, X=0, Y=0, or UNKNOWN situation
     if (l_print_eigenvec) then
+      ! information on X=Y, etc...
       if (n.eq.param_nb) then
-        maj1=0
-        do j=1,n
-          if (abs(eigvec(j, position_and_degenerate(i,1))).ge.maj1) then
-            maj1=abs(eigvec(j, position_and_degenerate(i,1)))
-            maj1pos=j
-          endif
-        enddo
-        maj2=0
-        do j=1,n
-          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj2).and.&
-            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj1)) then
-            maj2=abs(eigvec(j, position_and_degenerate(i,1)))
-            maj2pos=j
-          endif
-        enddo
-        maj3=0
-        do j=1,n
-          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj3).and.&
-            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj2)) then
-            maj3=abs(eigvec(j, position_and_degenerate(i,1)))
-            maj3pos=j
-          endif
-        enddo
-        jorb=0
-        do j=1,n
-          if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos)) then
-            formt2=' [major] '
-          else
-            formt2='         '
-          endif
-          if (is_param_type_orb(j)) then
-            jorb=jorb+1
-            write(formt3,'(a,i2,a,i2,a)') ' (orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
-          else
-            formt3=' ('//trim(param_type(j))//')'
-          endif
-          write(6,'(a,i5,a,f9.3,a,a)') 'eigenvec       ',i,': ',&
-                                      & eigvec(j, position_and_degenerate(i,1)),&
-                                      & formt2, trim(formt3)
-        enddo
+        formt1='       '
       elseif (n.eq.2*param_nb) then
         call alloc('zero_array',zero_array,n/2)
-        if (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
-                   & eigvec(n/2+1:n,position_and_degenerate(i,1)),1.0d-2).eq.0) then
-         formt1='EQU '
-        elseif (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
-                      & -eigvec(n/2+1:n,position_and_degenerate(i,1)),1.0d-2).eq.0) then
-         formt1='OPP '
-        elseif (is_equal(eigvec(n/2+1:n,position_and_degenerate(i,1)),&
+        if (is_equal(eigvec(:n/2,sorting(position_and_degenerate(i,1))),&
+                   & eigvec(n/2+1:n,sorting(position_and_degenerate(i,1))),1.0d-2).eq.0) then
+         formt1='(EQU)  '
+        elseif (is_equal(eigvec(:n/2,sorting(position_and_degenerate(i,1))),&
+                      & -eigvec(n/2+1:n,sorting(position_and_degenerate(i,1))),1.0d-2).eq.0) then
+         formt1='(OPP)  '
+        elseif (is_equal(eigvec(n/2+1:n,sorting(position_and_degenerate(i,1))),&
                       &  zero_array,1.0d-2).eq.0) then
-         formt1='TDAX'
-        elseif (is_equal(eigvec(:n/2,position_and_degenerate(i,1)),&
+         formt1='(TDAX) '
+        elseif (is_equal(eigvec(:n/2,sorting(position_and_degenerate(i,1))),&
                       &  zero_array,1.0d-2).eq.0) then
-         formt1='TDAY'
+         formt1='(TDAY) '
         else
-         formt1='UNK '
+         formt1='(UNK)  '
         endif
-        maj1=0
-        do j=1,n/2
-          if (abs(eigvec(j, position_and_degenerate(i,1))).ge.maj1) then
-            maj1=abs(eigvec(j, position_and_degenerate(i,1)))
-            maj1pos=j
-          endif
+      endif
+      ! 3 major components
+      call alloc('formt2',formt2,n)
+      maj1=0
+      do j=1,n
+        if (abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj1) then
+          maj1=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+          maj1pos=j
+        endif
+      enddo
+      maj2=0
+      do j=1,n
+        if((abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj2).and.&
+          &(abs(eigvec(j, sorting(position_and_degenerate(i,1)))).lt.maj1)) then
+          maj2=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+          maj2pos=j
+        endif
+      enddo
+      maj3=0
+      do j=1,n
+        if((abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj3).and.&
+          &(abs(eigvec(j, sorting(position_and_degenerate(i,1)))).lt.maj2)) then
+          maj3=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+          maj3pos=j
+        endif
+      enddo
+      maj4=0
+      do j=1,n
+        if((abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj4).and.&
+          &(abs(eigvec(j, sorting(position_and_degenerate(i,1)))).lt.maj3)) then
+          maj4=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+          maj4pos=j
+        endif
+      enddo
+      do j=1,n
+        if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos).or.(j.eq.maj4pos)) then
+          formt2(j)=' [major] '
+        else
+          formt2(j)='         '
+        endif
+      enddo
+      ! write all out
+      if (n.eq.param_nb) then
+        do j=1,n
+          write(6,'(a,a,i5,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j, sorting(position_and_degenerate(i,1))),&
+                                         & formt2(j), formt3(j)
         enddo
-        maj2=0
+      elseif (n.eq.2*param_nb) then
         do j=1,n/2
-          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj2).and.&
-            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj1)) then
-            maj2=abs(eigvec(j, position_and_degenerate(i,1)))
-            maj2pos=j
-          endif
+          write(6,'(a,a,i5,a,2(f11.3,a,a))') 'eigenvec',formt1,i,': ',&
+                                            & eigvec(j,     sorting(position_and_degenerate(i,1))),&
+                                            & formt2(j),    formt3(j), &
+                                            & eigvec(j+n/2, sorting(position_and_degenerate(i,1))),&
+                                            & formt2(j+n/2),formt3(j+n/2)
         enddo
-        maj3=0
-        do j=1,n/2
-          if((abs(eigvec(j, position_and_degenerate(i,1))).ge.maj3).and.&
-            &(abs(eigvec(j, position_and_degenerate(i,1))).lt.maj2)) then
-            maj3=abs(eigvec(j, position_and_degenerate(i,1)))
-            maj3pos=j
-          endif
-        enddo
-        jorb=0
-        do j=1,n/2
-          if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos)) then
-            formt2=' [major] '
-          else
-            formt2='         '
-          endif
-          if (is_param_type_orb(j)) then
-            jorb=jorb+1
-            write(formt3,'(a,i2,a,i2,a)') ' (orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
-          else
-            formt3=' ('//trim(param_type(j))//')'
-          endif
-          write(6,'(a,a,a,i5,a,f9.3,f11.3,a,a)') 'eigenvec(',formt1,') ',i,': ',&
-                                                & eigvec(j,    position_and_degenerate(i,1)),&
-                                                & eigvec(j+n/2,position_and_degenerate(i,1)),&
-                                                & formt2, trim(formt3)
-        enddo
-      else
-        call die('','')
       endif
     endif
   enddo
