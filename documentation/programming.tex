@@ -19,6 +19,7 @@
 \usepackage{amstext,amsmath,amssymb,amsfonts}
 \usepackage{bm}
 \usepackage{physics}
+\usepackage{enumitem}
 
 %References
 \usepackage{cite}     %to group multipled references
@@ -78,9 +79,18 @@
   \hyperref[entry:#1]{{\tt #1}}
 }
 \usepackage{underscore}
-
 % Definition style
 \newcommand\Def[1]{\underline{#1}}
+% Object description
+\renewcommand\line[2]{
+  \noindent>\underline{\textbf{#1}}
+
+  \noindent\begin{tabular}{p{.001\linewidth}p{.999\linewidth}}
+    & \begin{minipage}{\linewidth}#2\end{minipage}
+  \end{tabular}
+  \vspace*{.2em}
+}
+
 
 
 
@@ -99,7 +109,7 @@ julien.toulouse@upmc.fr}
 
 \setcounter{secnumdepth}{5}
 \setcounter{tocdepth}{5}
-\tableofcontents
+%\tableofcontents
 \vspace*{5em}
 
 These notes describe the programming paradigm used in the Fortran 90 files of the program CHAMP. This programming paradigm was invented by the theoretical chemist and legendary programmer François Colonna and was given different names over the years:
@@ -776,33 +786,102 @@ In this section are described in a glossary manner the more core commands of the
 
 Consider
 
-$\Phi=\sum c_I \ket{C_I}=\sum c_I \sum c_{k_I} \ket{k_I} = \sum c_I \sum c_{k_I} \ket{\uparrow(k_I)}\ket{\downarrow(k_I)}$,
+\begin{equation}
+  \Phi=\sum c_I \ket{C_I}=\sum c_I \sum c_{k_I} \ket{k_I} = \sum c_I \sum c_{k_I} \ket{\uparrow_{k_I}}\ket{\downarrow_{k_I}}
+\end{equation}
 
 \noindent
 and the excitation of a determinant:
 
-$\hat{E}_{kl}\left(\ket{\uparrow(k_I)}\ket{\downarrow(k_I)}\right)
-=\hat{E}_{kl}\left(\ket{\uparrow(k_I)}\right)\ket{\downarrow(k_I)}
-+\ket{\uparrow(k_I)}\hat{E}_{kl}\left(\ket{\downarrow(k_I)}\right)$
+\begin{equation}
+  \hat{E}_{kl}\left(\ket{\uparrow_{k_I}}\ket{\downarrow_{k_I}}\right)
+=\hat{E}_{kl}\left(\ket{\uparrow_{k_I}}\right)\ket{\downarrow_{k_I}}
++\ket{\uparrow_{k_I}}\hat{E}_{kl}\left(\ket{\downarrow_{k_I}}\right)
+\end{equation}
 .
 
-\vspace*{1em}
-We have the following things:
+We have the following things (all the following information can be found in {\tt orbitals_mod.f90} and {\tt deriv_orb_mod.f90}):
+\\
 
-\begin{tabular}{m{.4\linewidth}m{.2\linewidth}m{.4\linewidth}}
-  $c_I$ &::& {\tt csf_coef(:)}\\
-  $c_{k_I}$ &::& {\tt cdet_in_csf(:,$c_I$)}\\
-  $\ket{k_I}$ &::& {\tt iwdet_in_csf(:,$c_I$)}\\
-  from $\ket{k_I}$ 
-    to $\ket{\uparrow(k_I)}$&::& {\tt det_to_det_unq_up(\#)}\\
-  from $\ket{k_I}$ 
-    to $\ket{\downarrow(k_I)}$&::& {\tt det_to_det_unq_dn(\#)}\\
-\end{tabular}
+\textbf{On the wavefunction:}
 
-\vspace*{1em}
+\line{{\tt csf_coef(:)}}{The CI coefficients, $c_I$}
+\line{{\tt cdet_in_csf(:,$c_I$)}}{The coefficients of the determinants in the CSFs, $c_{k_I}$}
+\line{{\tt iwdet_in_csf(:,$c_I$)}}{The determinants, $\ket{k_I}$}
+\line{{\tt det_to_det_unq_up(ndet)}}{Map between each determinant $\ket{k_I}$ and its unique up determinant $\ket{\uparrow_{k_I}}$
+\\(this has a ``down'' counterpart {\tt det_to_det_unq_dn} not mentionned here, as most of the following objects do).}
+\\
+
+\line{{\tt det_unq_orb_lab_srt_up(nup,ndetup)}}{Label (in the total orbital spectrum) of the orbitals in each unique determinant.}
+\line{{\tt orb_pos_in_det_unq_up(norb,ndetup)}}{Position of the orbital in each unique determinant (0 if not in it).}
+\line{{\tt orb_occ_in_det_unq_up(norb,ndetup)}}{(t/f) is the orbital occupied in each unique determinant?}
+\line{{\tt orb_*_in_wf(norb)}}{(t/f) is the orbital *=occ,cls,opn,vir in the wavefunction?}
+\line{{\tt orb_*_in_wf_nb}}{Number of *=occ,cls,opn,vir in the wavefunction.}
+\line{{\tt orb_*_in_wf_lab(orb_*_in_wf_nb)}}{Label (in the total orbital spectrum) of each *=occ,cls,opn,vir orbital.}
+\\
+
+\textbf{On the optimization:}
+
+Firstly, some orbitals can be excluded from the optimization space (via the input):
+
+\line{{\tt orb_opt_nb}}{Size of the actual optimization space.}
+\line{{\tt orb_opt_lab(orb_opt_nb)}}{Label (in the total orbital spectrum) of the orbitals to be optimized.}
+
+By default, all orbitals are in the optimization space, so that by default {\tt orb_opt_nb = orb_tot_nb} and {\tt orb_opt_lab=Id}.
+\\
+
+Secondly, some excitations can be forbidden (via the input):
+
+\line{{\tt orb_ex_forbidden(norb,norb)}}{(t/f) is the exciation involving the two orbitals forbidden?}
+
+By default, none are.
+\\
+
+Consequently, there is the need for the following objects:
+
+\line{{\tt orb_opt_*_nb}}{Number of *=occ,cls,opn,vir to be actually optimized.}
+\line{{\tt orb_opt_*_lab(orb_opt_*_nb)}}{Label (in the total orbital spectrum) of each *=occ,cls,opn,vir orbital to be optimized (via {\tt orb_opt_lab(orb_opt_nb)}).}
+\\
+
+\textbf{On the excitation:}
+
+From this, we can gather information on the excitation:
+
+\line{{\tt param_orb_nb}}{Number of unique parameters (i.e. of unique devrivatives).}
+\line{{\tt single_ex_nb}}{Total number of excitations (some may be redundant)}
+\line{{\tt ex_orb_ind(param_orb_nb)}}{Index (in the total number of excitations spectrum) of the unique parameter.}
+\line{{\tt ex_orb_ind_rev(param_orb_nb)}}{When an excitation is redundant, it is the reverse of a unique one. This is the corresponding index (in the total number of excitations spectrum) of the excitation reverse of a parameter.}
+\line{{\tt ex_orb_1st_lab(single_ex_nb)}}{Label (in the total orbital spectrum) of the origin orbital involved in an excitation (via {\tt orb_opt_*_lab}).}
+\line{{\tt ex_orb_2nd_lab(single_ex_nb)}}{Label (in the total orbital spectrum) of the destination orbital involved in an excitation (via {\tt orb_opt_*_lab}).}
+\line{{\tt orb_mix_lab(norb)}}{(t/f) is the orbital involved in an excitation?}
+\line{{\tt orb_mix_lab_nb}}{Number of orbitals involved in an excitation.}
+
 Note that {\tt ex_orb_ind} maps the orbital parameters to the single excitations.
 Indeed, for act-act with orthonormality imposed, there are subtleties: some single excitation are not free orbital parameters but reverse excitations stored in {\tt ex_orb_ind_rev}.
 Otherwise, we have {\tt ex_orb_ind=Id} and {\tt ex_orb_ind_inv=0}.
+\\
+
+\textbf{On the excited determinants:}
+
+%OLD: \line{{\tt det_ex_orb_lab_up(nup,single_ex_nb,ndetup)}}{List of orbitals in this unique determinant, once excited.}
+%OLD: \line{{\tt det_ex_orb_lab_srt_up(nup,single_ex_nb,ndetup)}}{Sorted list of orbitals in this unique determinant, once excited.}
+%OLD: \line{{\tt det_ex_orb_lab_srt_sgn_up(single_ex_nb,ndetup)}}{Sign of the permutation to sort this unique determinant, once excited.}
+%OLD: \line{{\tt ex_up_is_zero(single_ex_nb,ndetup)}}{(t/f) does this excitation concern this unique determinant?}
+%OLD: \line{{\tt is_det_ex_up(single_ex_nb,ndetup)}}{(t/f) is this unique determinant, once excited, actually an excited determinant?}
+%OLD: \\
+
+\line{{\tt iwdet_ex_up(single_ex_nb,ndetup)}}{Label of this excited determinant (either label of the ground-state unique determinant or of the excited unique determinant, depending on {\tt is_det_ex_up}).}
+\line{{\tt det_ex_unq_up_nb}}{Number of unique excited determinants.}
+\line{{\tt iwdet_ex_ref_up(det_ex_unq_up_nb)}}{Reference unique ground-state determinant that spwans this unique excited determinant.}
+\line{{\tt det_ex_unq_orb_lab_up(nup,det_ex_unq_up_nb)}}{List of orbitals in this unique excited determinant (see {\tt det_ex_orb_lab_up}).}
+\line{{\tt det_ex_unq_sgn_up(det_ex_unq_up_nb)}}{Sign of the permutation to sort this unique excited determinant (see {\tt det_ex_orb_lab_srt_sgn_up}).}
+\line{{\tt det_ex_unq_up_orb_1st_pos(det_ex_unq_up_nb)}}{Position of the modified orbital in the unique determinant.}
+\line{{\tt det_ex_unq_up_orb_2nd_lab(det_ex_unq_up_nb)}}{Label of the destination orbital in the unique excited determinant.}
+\line{{\tt det_ex_unq_up(det_ex_unq_up_nb)}}{Value of the unique excited determinants (via SM from reference determinants).}
+  \\
+\line{{\tt det_ex_up(single_ex_nb, ndet)}}{Value of the excited determinants (via sign and either the value of the ground-state unique determinant or the value of the unique excited determinant, depending on {\tt is_det_ex_up}).}
+  \\
+\line{{\tt det_ex(single_ex_nb, ndet)}}{Value of the total excited determinants {\tt det_ex_up*detd + detu*det_ex_dn}.} 
 
 
 % BIBLIOGRAPHY---------------------------------------------

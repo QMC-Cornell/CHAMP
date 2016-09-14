@@ -500,7 +500,6 @@ module deriv_mod
         d2psi(ij) = d2psi_orb((i-1)*i/2+j)
       enddo
     enddo
-    write(6,*) 'warning: d2psi not yet implemented for orbitals/orbitals parameters'
   endif
 
 ! geometry contribution

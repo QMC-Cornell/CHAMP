@@ -377,6 +377,9 @@ module optimization_mod
     diag_stab=0.d0
     endif
 
+  case ('triplet')
+    call get_next_value (l_triplet)
+
   case ('end')
    exit
 

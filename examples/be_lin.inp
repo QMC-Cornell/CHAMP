@@ -76,11 +76,11 @@ end
 
 linearresponse
  parameters
-  jastrow csfs orbitals exponents
+  jastrow csfs orbitals !exponents
  end
-!tda=.true.
+!tda_only=.true.
+!compare_to_tda=.true.
  compare_to_optlin=.true.
-!compare_to_lda=.true.
 !print=.true.
 !print_eigenvec=.true.
 !print_every_block=.true.
