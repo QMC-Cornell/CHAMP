@@ -87,7 +87,7 @@ module csfs_mod
    call object_modified ('nwf')
    call alloc ('csf_coef', csf_coef, ncsf, nwf)
    call alloc ('csf_rot_coef', csf_rot_coef, ncsf,nwf)
-   csf_coef (:,1) = csf_coef_read (:)
+   csf_coef (:,1) = csf_coef_read (:) !MJO PROMOTE
 
    call object_modified ('ncsf')
    call object_modified ('csf_coef')
@@ -106,6 +106,7 @@ module csfs_mod
    call get_next_value(l_opt_csf_rot)
 
    if(l_opt_csf_rot) then
+     !MJO ADD LOOP
       !Normalize CSF parameters and then
       !calculate initial rotation parameters from csf parameters using
       !
@@ -117,26 +118,26 @@ module csfs_mod
       ! 
       csf_norm = 0
       do i=1,ncsf
-         csf_norm = csf_norm + csf_coef(i,1)**2
+         csf_norm = csf_norm + csf_coef(i,1)**2 !MJO PROMOTE
       enddo
       csf_norm = sqrt(csf_norm)
       do i=1,ncsf
-         csf_coef(i,1) = csf_coef(i,1)/csf_norm
+         csf_coef(i,1) = csf_coef(i,1)/csf_norm !MJO PROMOTE
       enddo
       
       ! Calculate csf_rot_arg (or d, above)
-      csf_rot_arg     = acos(csf_coef(1,1))
+      csf_rot_arg     = acos(csf_coef(1,1)) !MJO PROMOTE
       
       ! Now calculate rotation parameters - only m-1 parameters
       ! because the normalization fixes the first parameter
       ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
       ! by the normalization, so we only have ncsf-1 rotation parameters
       do i=1,ncsf-1
-         csf_rot_coef(i,1) = csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
+         csf_rot_coef(i,1) = csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg) !MJO PROMOTE
       enddo
      
-      write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(i,1),i=1,ncsf)
-      write(6,'(''Initial CSF rotation coefs='',20f10.6)') (csf_rot_coef(i,1),i=1,ncsf-1)
+      write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(i,1),i=1,ncsf) !MJO PROMOTE
+      write(6,'(''Initial CSF rotation coefs='',20f10.6)') (csf_rot_coef(i,1),i=1,ncsf-1) !MJO PROMOTE
    endif
 
   case ('end')
@@ -185,18 +186,20 @@ module csfs_mod
   write(6,*)
   call object_provide ('ncsf')
   write(6,'(a,i5)') ' number of CSFs = ',ncsf
-  write(6,'(a,200f10.6)') ' CSF coefficients = ',(csf_coef(csf_i,1),csf_i=1,ncsf)
+  write(6,'(a,200f10.6)') ' CSF coefficients = ',(csf_coef(csf_i,1),csf_i=1,ncsf) !MJO PROMOTE
 
 ! sum of square of CSF coefficients
+  !MJO ADD LOOP
   sum_csf_coef_sq = 0
   do csf_i = 1, ncsf
-   sum_csf_coef_sq = sum_csf_coef_sq + csf_coef(csf_i,1)**2
+   sum_csf_coef_sq = sum_csf_coef_sq + csf_coef(csf_i,1)**2 !MJO PROMOTE
   enddo
   write(6,'(a,f10.6)') ' sum of square of CSF coefficients = ',sum_csf_coef_sq
 
   call object_provide ('ndet_in_csf')
   call object_provide ('iwdet_in_csf')
   call object_provide ('cdet_in_csf')
+  !MJO ADD LOOP
   do csf_i = 1, ncsf
     write(6,'(a,i5)') ' CSF # ',csf_i
     write(6,'(a,200i4)') ' determinants in CSF:',(iwdet_in_csf(det_in_csf_i,csf_i),det_in_csf_i=1,ndet_in_csf(csf_i))
@@ -466,7 +469,7 @@ module csfs_mod
   call object_associate ('wfdet_ovlp', wfdet_ovlp)
 
   wfdet_ovlp = 0.d0
-
+  !MJO ADD LOOP
   do csf_i = 1, ncsf
    do det_in_csf_i = 1, ndet_in_csf (csf_i)
     det_i = iwdet_in_csf (det_in_csf_i, csf_i)
@@ -482,7 +485,7 @@ module csfs_mod
         if (arrays_equal (orb_occ_in_det_unq_up (:, det_unq_up_i), orb_occ_in_det_unq_up (:, det_unq_up_j)) .and. &
             arrays_equal (orb_occ_in_det_unq_dn (:, det_unq_dn_i), orb_occ_in_det_unq_dn (:, det_unq_dn_j))) then
 
-          wfdet_ovlp = wfdet_ovlp + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) * csf_coef (csf_j, 1) * cdet_in_csf (det_in_csf_j, csf_j)
+          wfdet_ovlp = wfdet_ovlp + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) * csf_coef (csf_j, 1) * cdet_in_csf (det_in_csf_j, csf_j) !MJO PROMOTE
 
         endif
 
@@ -596,10 +599,10 @@ module csfs_mod
   call object_alloc ('csfs_wfdet_ovlp', csfs_wfdet_ovlp, ncsf)
 
   csfs_wfdet_ovlp (:) = 0.d0
-
+!MJO ADD LOOP
   do csf_i = 1, ncsf
      do csf_j = 1, ncsf
-       csfs_wfdet_ovlp (csf_i) = csfs_wfdet_ovlp (csf_i) + csf_coef (csf_j, 1) * csfs_ovlp (csf_i, csf_j)
+       csfs_wfdet_ovlp (csf_i) = csfs_wfdet_ovlp (csf_i) + csf_coef (csf_j, 1) * csfs_ovlp (csf_i, csf_j) !MJO PROMOTE
      enddo ! csf_j
   enddo ! csf_i
 
@@ -639,9 +642,9 @@ module csfs_mod
   call object_associate ('wfdet_ovlp', wfdet_ovlp)
 
   wfdet_ovlp = 0.d0
-
+  !MJO ADD LOOP
   do csf_i = 1, ncsf
-      wfdet_ovlp = wfdet_ovlp + csf_coef (csf_i, 1) * csfs_wfdet_ovlp (csf_i)
+      wfdet_ovlp = wfdet_ovlp + csf_coef (csf_i, 1) * csfs_wfdet_ovlp (csf_i) !MJO PROMOTE
   enddo ! csf_i
 
   end subroutine wfdet_ovlp_bld
@@ -974,10 +977,11 @@ module csfs_mod
 ! allocations
   call object_alloc ('vb_weights_hiberty', vb_weights_hiberty, ncsf)
 
-  sum_csf_coef_sq = sum(csf_coef(1:ncsf,1)**2)
+  sum_csf_coef_sq = sum(csf_coef(1:ncsf,1)**2) !MJO PROMOTE
 
+  !MJO ADD LOOP?
   do csf_i = 1, ncsf
-    vb_weights_hiberty (csf_i) = csf_coef (csf_i, 1)**2 / sum_csf_coef_sq
+    vb_weights_hiberty (csf_i) = csf_coef (csf_i, 1)**2 / sum_csf_coef_sq !MJO PROMOTE
   enddo ! csf_i
 
   end subroutine vb_weights_hiberty_bld
@@ -1017,8 +1021,9 @@ module csfs_mod
   call object_alloc ('vb_weights_chirgwin_coulson_av', vb_weights_chirgwin_coulson_av, ncsf)
   call object_alloc ('vb_weights_chirgwin_coulson_av_err', vb_weights_chirgwin_coulson_av_err, ncsf)
 
+  !MJO ADD LOOP
   do csf_i = 1, ncsf
-    vb_weights_chirgwin_coulson_bav (csf_i) = csf_coef (csf_i, 1) * csf_over_psid_bav (csf_i) 
+    vb_weights_chirgwin_coulson_bav (csf_i) = csf_coef (csf_i, 1) * csf_over_psid_bav (csf_i) !MJO PROMOTE
   enddo ! csf_i
 
   end subroutine vb_weights_chirgwin_coulson_bld
@@ -1064,11 +1069,12 @@ module csfs_mod
 
   call to_the_power (product_csf_over_psid_bav, ncsf, 0.5d0, sqrt_product)
 
+  !MJO ADD LOOP
   norm_wf_bav = 0.d0
   do csf_i = 1, ncsf
     intermed = 0.d0
     do csf_j = 1, ncsf
-       intermed = intermed + csf_coef (csf_j, 1) * sqrt_product (csf_j, csf_i)
+       intermed = intermed + csf_coef (csf_j, 1) * sqrt_product (csf_j, csf_i) !MJO PROMOTE
     enddo ! csf_j
     intermed = intermed**2
     norm_wf_bav = norm_wf_bav + intermed

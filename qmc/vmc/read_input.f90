@@ -1194,7 +1194,7 @@
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
 
-      
+      l_opt_csf_rot=.true. 
       if(l_opt_csf_rot) then
          !Normalize CSF parameters and then
          !calculate initial rotation parameters from csf parameters using

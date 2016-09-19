@@ -282,42 +282,43 @@ module opt_lin_mod
 
 ! allocations
   call object_alloc('ovlp_lin', ovlp_lin, param_aug_nb, param_aug_nb)
+  
+  do istate = 1, num_state
+    ! first element
+    ovlp_lin(1,1) = ovlp_lin(1,1) + 1.d0
+    
+    ! first row and first column
+    do i = 1, param_nb
+      ovlp_lin(1,i+1) = 0.d0
+      ovlp_lin(i+1,1) = 0.d0
+    enddo
+    
+    ! derivative-derivative part
+    do i = 1, param_nb
+      do j = i, param_nb
 
-! first element
-  ovlp_lin(1,1) = 1.d0
-
-! first row and first column
-  do i = 1, param_nb
-   ovlp_lin(1,i+1) = 0.d0
-   ovlp_lin(i+1,1) = 0.d0
-  enddo
-
-! derivative-derivative part
-  do i = 1, param_nb
-   do j = i, param_nb
-
-!   diagonal-only approximation for orbital-orbital part
-    if (l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j) then
-     ovlp_lin (i+1,j+1) = 0.d0
-
-!   no mixed wave function-geometry terms
-    elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
-    ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
-     ovlp_lin (i+1,j+1) = 0.d0
-
-!   normal overlap
-    else
-     ovlp_lin(i+1,j+1) = dpsi_dpsi_covar(i,j)
-    endif
-   
-!   force symmetrization of overlap matrix (important for numerics?)
-    if (i /= j) then
-     ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
-    endif
-
-   enddo
-  enddo
-
+        !   diagonal-only approximation for orbital-orbital part
+        if (l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j) then
+          ovlp_lin (i+1,j+1) = 0.d0
+          
+          !   no mixed wave function-geometry terms
+        elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
+             ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
+          ovlp_lin (i+1,j+1) = 0.d0
+          
+          !   normal overlap
+        else
+          ovlp_lin(i+1,j+1) = ovlp_lin(i+1,j+1) + dpsi_dpsi_covar(i,j,istate)
+        endif
+        
+        !   force symmetrization of overlap matrix (important for numerics?)
+        if (i /= j) then
+          ovlp_lin(j+1,i+1) = ovlp_lin(i+1,j+1)
+        endif
+        
+      enddo
+    enddo
+  enddo ! istate
 ! Warning: tmp: add to diagonal of overlap
   write(6,'(''Adding to ovlp_lin'',es12.4)') add_diag_ovlp
   do i = 1, param_aug_nb
@@ -450,77 +451,82 @@ module opt_lin_mod
 
 ! allocations
   call object_alloc('ham_lin_energy', ham_lin_energy, param_aug_nb, param_aug_nb)
-
+  
+  ham_lin_energy(:,:) = 0.0
 ! first element
-  ham_lin_energy(1,1) = eloc_av
-
-  if (.not. l_compare_linresp_and_optlin) then
+  do istate = 1, num_state
+    ham_lin_energy(1,1) = ham_lin_energy(1,1) + eloc_av(istate)
+    
+    if (.not. l_compare_linresp_and_optlin) then
 ! first row and first column
-  do i = 1, param_nb
+      do i = 1, param_nb
 
 !   approximate Hamiltonian for orbitals
-    if(l_opt_orb_eig .and. is_param_type_orb(i)) then
-     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) 
-!     ham_lin_energy(1,i+1) = ovlp_lin(1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
-     ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)  ! symmetric for orbitals
-
+        if(l_opt_orb_eig .and. is_param_type_orb(i)) then
+          ham_lin_energy(1+i,1) = ham_lin_energy(1+i,1) + dpsi_eloc_covar(i,istate) 
+!         ham_lin_energy(1,i+1) = ovlp_lin(1,i+1) *(eloc_av + delta_eps(i-nparmcsf-nparmj))
+          ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)  ! symmetric for orbitals
+          
 !   symmetric Hamiltonian for geometry parameters?
-    elseif(l_opt_geo .and. (l_sym_ham_geo .or. l_sym_ham_first_row_column_geo) .and. is_param_type_geo(i)) then
-     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) + deloc_av(i)/2.d0
-     ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)
+        elseif(l_opt_geo .and. (l_sym_ham_geo .or. l_sym_ham_first_row_column_geo) .and. is_param_type_geo(i)) then
+          ham_lin_energy(1+i,1) = ham_lin_energy(1+i,1) + dpsi_eloc_covar(i,istate) + deloc_av(i,istate)/2.d0
+          ham_lin_energy(1,1+i) = ham_lin_energy(1+i,1)
 
 !   1st column equal 1st row (mainly for DMC optimization)
-    elseif(l_ham_1st_col_eq_1st_row) then
-     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i) + deloc_av(i)
-     ham_lin_energy(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
+        elseif(l_ham_1st_col_eq_1st_row) then
+          ham_lin_energy(1+i,1) = ham_lin_energy(1+i,1) + dpsi_eloc_covar(i,istate) + deloc_av(i,istate)
+          ham_lin_energy(1,1+i) = ham_lin_energy(1,1+i) + dpsi_eloc_covar(i,istate) + deloc_av(i,istate)
+          
+          !   normal Hamiltoniam
+        else
+          ham_lin_energy(1+i,1) = ham_lin_energy(1+i,1) + dpsi_eloc_covar(i,istate)
+          ham_lin_energy(1,1+i) = ham_lin_energy(1,1+i) + dpsi_eloc_covar(i,istate) + deloc_av(i,istate)
+        endif
 
-!   normal Hamiltoniam
-    else
-     ham_lin_energy(1+i,1) = dpsi_eloc_covar(i)
-     ham_lin_energy(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
+      enddo ! i
     endif
-
-  enddo ! i
-  endif
 
 ! derivative-derivative part
-  do j = 1, param_nb
-   do i = 1, param_nb
-     pair = param_pairs(i,j)
+    do j = 1, param_nb
+      do i = 1, param_nb
+        pair = param_pairs(i,j)
 
 !   approximate Hamiltonian for Jastrow-orbital, CSF-orbital mixed terms(swap i and j)
-    if(l_opt_orb_eig .and. .not. is_param_type_orb(i) .and. is_param_type_orb(j)) then
-     ham_lin_energy(i+1,j+1) =  ham_lin_energy(j+1,i+1)
+        if(l_opt_orb_eig .and. .not. is_param_type_orb(i) .and. is_param_type_orb(j)) then
+          ham_lin_energy(i+1,j+1) = ham_lin_energy(j+1,i+1)
 
-!   diagonal-only approximation for orbital-orbital block
-    elseif(l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j ) then
-     ham_lin_energy(i+1,j+1) = 0.d0
+          !   diagonal-only approximation for orbital-orbital block
+        elseif(l_opt_orb_orb_diag .and. is_param_type_orb(i) .and. is_param_type_orb(j) .and. i /= j ) then
+          ham_lin_energy(i+1,j+1) = 0.d0
+          
+          !   approximate Hamiltonian for orbital-orbital terms
+        elseif((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. is_param_type_orb(i) .and. is_param_type_orb(j)) then
+          !MJO - FIXME - What is delta_eps? Is it affected by multiple states?
+          !     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(eloc_av + delta_eps(j-nparmcsf-nparmj))
+          ham_lin_energy(i+1,j+1) = ham_lin_energy(i+1,j+1) + ovlp_lin(i+1,j+1) *((eloc_av(istate) + delta_eps(j-nparmcsf-nparmj)) +(eloc_av(istate) + delta_eps(i-nparmcsf-nparmj)))/2.d0
 
-!   approximate Hamiltonian for orbital-orbital terms
-    elseif((l_opt_orb_eig .or. l_opt_orb_orb_eig) .and. is_param_type_orb(i) .and. is_param_type_orb(j)) then
-!     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *(eloc_av + delta_eps(j-nparmcsf-nparmj))
-     ham_lin_energy(i+1,j+1) = ovlp_lin(i+1,j+1) *((eloc_av + delta_eps(j-nparmcsf-nparmj)) +(eloc_av + delta_eps(i-nparmcsf-nparmj)))/2.d0
+          !   no mixed wave function-geometry terms?
+        elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
+             ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
+          ham_lin_energy (i+1,j+1) =  0.d0
 
-!   no mixed wave function-geometry terms?
-    elseif (l_opt_geo .and. (.not. l_mixed_wf_geo) .and.  &
-    ((is_param_type_geo (i) .and. .not. is_param_type_geo (j)).or.(is_param_type_geo (j) .and. .not. is_param_type_geo (i)) ) ) then
-     ham_lin_energy (i+1,j+1) =  0.d0
-
-!   symmetric Hamiltonian for geometry-geometry block?
-    elseif (l_opt_geo .and. l_sym_ham_geo .and. (is_param_type_geo (i) .and. is_param_type_geo (j))) then
-     ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair)                                        &
-                               - dpsi_av (j) * dpsi_eloc_av (i) - dpsi_av (i) * dpsi_eloc_av (j) &
-                               + dpsi_av (i) * dpsi_av (j) * eloc_av                             &
-                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/2.d0
+          !   symmetric Hamiltonian for geometry-geometry block?
+        elseif (l_opt_geo .and. l_sym_ham_geo .and. (is_param_type_geo (i) .and. is_param_type_geo (j))) then
+          ham_lin_energy (i+1,j+1) =  dpsi_dpsi_eloc_av (pair,istate)                              &
+                               - dpsi_av (j,istate) * dpsi_eloc_av (i,istate) - dpsi_av (i,istate) &
+                               * dpsi_eloc_av (j,istate) + dpsi_av (i,istate) * dpsi_av (j,istate) &
+                               * eloc_av(istate) + (dpsi_deloc_covar (i, j, istate)               &
+                               + dpsi_deloc_covar (j, i, istate))/2.d0
 !JT                               + (dpsi_deloc_covar (i, j) + dpsi_deloc_covar (j, i))/1.d0
 
-!   normal Hamiltonian (Eq. 54d of 2007 JCP)
-    else
-     ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair)                                     &
-                              - dpsi_av(j) * dpsi_eloc_av(i) - dpsi_av(i) * dpsi_eloc_av(j) &
-                              + dpsi_av(i) * dpsi_av(j) * eloc_av                           &
-                              + dpsi_deloc_covar(i, j)
-    endif
+          !   normal Hamiltonian (Eq. 54d of 2007 JCP)
+        else
+          ham_lin_energy(i+1,j+1) =  dpsi_dpsi_eloc_av(pair, istate)        &
+               - dpsi_av(j, istate) * dpsi_eloc_av(i, istate) &
+               - dpsi_av(i, istate) * dpsi_eloc_av(j, istate) &
+               + dpsi_av(i, istate) * dpsi_av(j, istate) * eloc_av(istate) &
+               + dpsi_deloc_covar(i, j, istate)
+        endif
 
 !   if(i /= j) then
 !
@@ -538,9 +544,9 @@ module opt_lin_mod
 !
 !   endif !i /= j
 
-   enddo
+      enddo
+    enddo
   enddo
-
 ! symmetrize Hamiltonian
   if(l_sym_ham) then
    ham_lin_energy =(ham_lin_energy + transpose(ham_lin_energy))/2.d0
@@ -658,23 +664,24 @@ module opt_lin_mod
 
 ! allocations
   call object_alloc('ham_lin_variance', ham_lin_variance, param_aug_nb, param_aug_nb)
-
-! first element
-  ham_lin_variance(1,1) = eloc_var
-
-! first row and first column
-  do i = 1, param_nb
-    ham_lin_variance(i+1,1) = gradient_variance(i)/2.d0
-    ham_lin_variance(1,i+1) = ham_lin_variance(i+1,1)
-  enddo
+  
+  do istate = 1, num_state
+    ! first element
+    ham_lin_variance(1,1) = ham_lin_variance(1,1)+ eloc_var(istate)
+    
+    ! first row and first column
+    do i = 1, param_nb
+      ham_lin_variance(i+1,1) = ham_lin_variance(i+1,1) + gradient_variance(i,istate)/2.d0
+      ham_lin_variance(1,i+1) = ham_lin_variance(i+1,1)
+    enddo
 
 ! derivative-derivative part
-  do j = 1, param_nb
-   do i = 1, param_nb
-     ham_lin_variance(i+1,j+1) = hessian_variance(i,j)/2.d0 + eloc_var * dpsi_dpsi_covar(i, j)
-   enddo
-  enddo
-
+    do j = 1, param_nb
+      do i = 1, param_nb
+        ham_lin_variance(i+1,j+1) = hessian_variance(i,j,istate)/2.d0 + eloc_var(istate) * dpsi_dpsi_covar(i, j, istate)
+      enddo
+    enddo
+  enddo !istate
   end subroutine ham_lin_variance_bld
 
 ! ==============================================================================
@@ -1250,7 +1257,8 @@ module opt_lin_mod
 ! semiorthogonal: use semiorthognal derivatives for nonlinear parameters
    case ('semiorthogonal')
 !   come back to original derivatives for the CSFs only
-    do iparmcsf = 1, nparmcsf
+    print*,'nparmlin',nparmlin
+    do iparmcsf = 1, nparmlin
      eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
     enddo
 

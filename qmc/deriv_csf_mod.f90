@@ -86,7 +86,7 @@ module deriv_csf_mod
 
 ! local
   integer i,idet_in_csf,idet
-  real(dp) term
+  real(dp) term,temp_csf_sum
 
 ! header
   if (header_exe) then
@@ -107,17 +107,26 @@ module deriv_csf_mod
   call object_alloc ('dpsi_csf', dpsi_csf, nparmcsf)
   call object_alloc ('dpsi_csf_av', dpsi_csf_av, nparmcsf)
 
+
+  temp_csf_sum = 0.0
+  do i = 1,nparmcsf
+     temp_csf_sum = temp_csf_sum + csf_coef(i+1,1)*deti_det(i)
+  enddo
+
+  temp_csf_sum = temp_csf_sum + csf_coef(1,1)*det1_det
+  !MJO ADD LOOP
   do i = 1, nparmcsf
 
      if (l_opt_csf_rot) then
         ! CSF rotation parameters derivative
-        ! dpsi/dRk = (|k><0| - |0><k|) |psi>
-        !          = a_0|k> - a_k |0>
+        ! rotation about current state
+       ! deti_det, csf_ceof, det1_det will need to be promoted
+       ! dpsi_csf should be fine, but I will need to add a complicated loop here
 
-        dpsi_csf(i) = csf_coef(1,1)*deti_det (i) - csf_coef(i+1,1)*det1_det
+        dpsi_csf(i) = deti_det(i) - csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (temp_csf_sum + det1_det) !MJO PROMOTE
 
-        ! rotation
-        !    dpsi_csf (i) = deti_det (i+1) -  csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (1.d0 + deti_det(1))
+        ! rotation - JT formula
+        ! dpsi_csf (i) = deti_det (i) -  csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (1.d0 + det1_det)
      else
         dpsi_csf (i) = deti_det(i)
      endif
@@ -139,7 +148,7 @@ module deriv_csf_mod
 
 ! local
   integer i
-
+  real(dp) tmp_csf_sum
 ! header
   if (header_exe) then
 
@@ -157,15 +166,22 @@ module deriv_csf_mod
   call object_alloc ('deloc_csf', deloc_csf, nparmcsf)
   call object_alloc ('deloc_csf_av', deloc_csf_av, nparmcsf)
 
+  tmp_csf_sum = 0
+  do i = 1, nparmcsf
+     tmp_csf_sum = tmp_csf_sum + csf_coef(i+1,1)*denergy(i)
+  enddo
+  tmp_csf_sum = tmp_csf_sum + csf_coef(1,1)*denergy0
+
+  !MJO ADD LOOP
 ! warning: this is terribly fragile!
   do i = 1, nparmcsf
       if (l_opt_csf_rot) then
+        ! denergy, denergy0, csf_coef will need to be promoted,
+        ! but deloc_csf should be fine - I'll need to add a complicated loop here
 ! For CSF Rotations, we have
-! deloc_csf (i) = c_0 dE_l/dc_i - c_j dE_l/dc_0
-! We use denergy0 to represent dE_l/dc_0 because we 
-! did not want to change the denergy array dimensions
-        deloc_csf (i) = csf_coef(1,1) * denergy (i) - &
-             &csf_coef(i+1,1) * denergy0
+! rotation
+!        deloc_csf (i) = denergy (i) - csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * denergy0 !JT formula
+        deloc_csf (i) = denergy (i) - csf_coef(i+1,1)/(1.d0 + csf_coef(1,1)) * (tmp_csf_sum + denergy0) !MJO PROMOTE
      else
         deloc_csf (i) = denergy (i)
      endif

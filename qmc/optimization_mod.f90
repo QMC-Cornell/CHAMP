@@ -1502,8 +1502,9 @@ module optimization_mod
    call object_provide ('delta_csf')
 
    if (l_opt_csf_rot) then
+     !MJO ADD LOOP
       do iparmcsf = 1, nparmcsf
-         csf_rot_coef(iparmcsf,iwf) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
+         csf_rot_coef(iparmcsf,iwf) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf) !MJO PROMOTE
       enddo
 
       !Convert from rotation parameters to csf_coef using:
@@ -1519,13 +1520,13 @@ module optimization_mod
       csf_coef(1,iwf) = cos(csf_rot_arg)
       
       do iparmcsf = 1, nparmcsf
-         csf_coef(iparmcsf+1,iwf) = sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf)
+         csf_coef(iparmcsf+1,iwf) = sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf) !MJO PROMOTE
       enddo
       call object_modified ('csf_rot_coef')
    else
 
       do iparmcsf = 1, nparmcsf
-         csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
+         csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf) !MJO PROMOTE
       enddo
 
    endif ! l_opt_csf_rot
@@ -1849,7 +1850,7 @@ module optimization_mod
 ! test norm of linear wave function variation
   if (l_opt_lin) then
    if (psi_lin_var_norm > psi_lin_var_norm_max) then
-    is_bad_move = 0!max(is_bad_move,1) 
+    is_bad_move = max(is_bad_move,1) 
     write (6,'(a,es15.8,a,es15.8)') 'This is a bad move because the norm of the linear wave function variation is too large: psi_lin_var_norm=',psi_lin_var_norm,' > ',psi_lin_var_norm_max
    endif
   endif
@@ -2300,7 +2301,7 @@ module optimization_mod
     write(6,'(a)') ' csf_coef'
     norm = 0
     do i=1,ncsf
-       norm = norm + csf_coef(i,iwf)**2
+       norm = norm + csf_coef(i,iwf)**2 !MJO PROMOTE
     enddo
     norm = sqrt(norm)
 
@@ -2308,10 +2309,10 @@ module optimization_mod
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
     if (use_parser) then
-     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf)
+     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) !MJO PROMOTE
     else
      write(fmt,"( '(', i8, 'f15.8,a)' )") ncsf
-     write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)'
+     write(6,fmt) csf_coef(1:ncsf,iwf),' (csf_coef(icsf),icsf=1,ncsf)' !MJO PROMTE
     endif
 # endif
     write(6,'(a)') ' end'
@@ -3001,10 +3002,11 @@ module optimization_mod
   cosd = dcos(d)
   sindoverd = dsin(d)/d
 
-  delta_csf_rot(1) = (cosd - 1.d0) * csf_coef(1,1)
+  !MJO ADD LOOP?
+  delta_csf_rot(1) = (cosd - 1.d0) * csf_coef(1,1) !MJO PROMOTE
 
   do i = 1, nparmcsf
-     delta_csf_rot(i+1)= (cosd - 1.d0) * csf_coef(i+1,1) + sindoverd * delta_csf (i)
+     delta_csf_rot(i+1)= (cosd - 1.d0) * csf_coef(i+1,1) + sindoverd * delta_csf (i) !MJO PROMOTE
   enddo
 
  end subroutine delta_csf_rot_bld
@@ -3059,9 +3061,9 @@ module optimization_mod
   enddo
 
   sindoverd = dsin(d)/d
-
+  !MJO ADD LOOP
   do iparmcsf=1,nparmcsf
-     delta_csf_rot(iparmcsf)= (dcos(d) - sindoverd * sum_temp - 1.d0) * csf_coef(iwcsf(iparmcsf),1)  &
+     delta_csf_rot(iparmcsf)= (dcos(d) - sindoverd * sum_temp - 1.d0) * csf_coef(iwcsf(iparmcsf),1)  & !MJO PROMOTE
                                  + sindoverd * delta_csf (iparmcsf)
   enddo
 
@@ -3117,9 +3119,9 @@ module optimization_mod
   enddo
 
   sindoverd = dsin(d)/d
-
+  !MJO ADD LOOP
   do iparmcsf=1,nparmcsf
-     delta_csf_rot(iparmcsf)= (dcos(d) - sindoverd * sum_temp - 1.d0) * csf_coef(iwcsf(iparmcsf),1)  &
+     delta_csf_rot(iparmcsf)= (dcos(d) - sindoverd * sum_temp - 1.d0) * csf_coef(iwcsf(iparmcsf),1)  & !MJO PROMOTE
                                  + sindoverd * delta_csf (iparmcsf)
   enddo
 

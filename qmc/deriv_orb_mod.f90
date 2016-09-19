@@ -1127,7 +1127,9 @@ module deriv_orb_mod
   do dorb_i = 1, param_orb_nb
     ex_i = ex_orb_ind (dorb_i)
     ex_rev_i = ex_orb_ind_rev (dorb_i)
-
+    
+    !MJO ADD LOOP
+    ! I'm not sure how to do this well
     do csf_i = 1, ncsf
       do det_in_csf_i = 1, ndet_in_csf (csf_i)
         det_i = iwdet_in_csf (det_in_csf_i, csf_i)
@@ -1141,7 +1143,7 @@ module deriv_orb_mod
         dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) + cdet_in_csf (det_in_csf_i, csf_i) * detex
       enddo ! det_in_csf_i
 
-      psid_ex (dorb_i) = psid_ex (dorb_i) + csf_coef (csf_i, 1) * dcsf_orb(csf_i,dorb_i)
+      psid_ex (dorb_i) = psid_ex (dorb_i) + csf_coef (csf_i, 1) * dcsf_orb(csf_i,dorb_i) !MJO PROMOTE
       dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) /  psi_det
 
     enddo ! csf_i
@@ -1866,7 +1868,7 @@ module deriv_orb_mod
 
     ex_i = ex_orb_ind (dorb_i)
     ex_rev_i = ex_orb_ind_rev (dorb_i)
-
+    !MJO ADD LOOP
    do csf_i = 1, ncsf
 
      do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -1875,7 +1877,7 @@ module deriv_orb_mod
       det_unq_up_i = det_to_det_unq_up (det_i)
       det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-      coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
+      coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) !MJO PROMOTE
 
        do dim_i = 1, ndim
 
@@ -1986,7 +1988,7 @@ module deriv_orb_mod
 
    ex_i = ex_orb_ind (dorb_i)
    ex_rev_i = ex_orb_ind_rev (dorb_i)
-
+   !MJO ADD LOOP
    do csf_i = 1, ncsf
 
      do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -1995,7 +1997,7 @@ module deriv_orb_mod
       det_unq_up_i = det_to_det_unq_up (det_i)
       det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-      coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
+      coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) !MJO PROMOTE
 
         elec_i = 0
         do elec_up_i = 1, nup
@@ -2328,6 +2330,7 @@ module deriv_orb_mod
    ex_i = ex_orb_ind (dorb_i)
    ex_rev_i = ex_orb_ind_rev (dorb_i)
 
+   !MJO ADD LOOP
    do csf_i = 1, ncsf
 
      do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -2336,7 +2339,7 @@ module deriv_orb_mod
         det_unq_up_i = det_to_det_unq_up (det_i)
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-        coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
+        coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) !MJO PROMOTE
 
 !       electron is spin up
         if (electron <= nup) then
@@ -3107,7 +3110,7 @@ module deriv_orb_mod
       ex_rev_i_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_j
       ex_i_rev_j=(ex_i-2)*(ex_i-1)/2+ex_rev_j
       ex_rev_i_rev_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_rev_j
-
+      !MJO ADD LOOP
       do csf_i = 1, ncsf
         do det_in_csf_i = 1, ndet_in_csf (csf_i)
           det_i = iwdet_in_csf (det_in_csf_i, csf_i)
@@ -3123,7 +3126,7 @@ module deriv_orb_mod
           endif
           d2csf_orb(csf_i,dorb_ij)=d2csf_orb(csf_i,dorb_ij) + cdet_in_csf (det_in_csf_i, csf_i) *  detex2
         enddo ! det_in_csf_i
-        psid_ex2 (dorb_ij) = psid_ex2 (dorb_ij) + csf_coef (csf_i, 1) * d2csf_orb(csf_i,dorb_ij)
+        psid_ex2 (dorb_ij) = psid_ex2 (dorb_ij) + csf_coef (csf_i, 1) * d2csf_orb(csf_i,dorb_ij) !MJO PROMOTE
         d2csf_orb(csf_i,dorb_ij)=d2csf_orb(csf_i,dorb_ij) /  psi_det
       enddo ! csf_i
       d2psi_orb(dorb_ij) = psid_ex2(dorb_ij) / psi_det

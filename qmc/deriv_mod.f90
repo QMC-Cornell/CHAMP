@@ -1968,22 +1968,23 @@ module deriv_mod
   if (l_opt_geo .or. l_mode_dmc) then
     call object_provide_by_index (gradient_energy_bld_index, deloc_av_index)
   endif
-  
-  do param_i = 1, param_nb
-   gradient_energy (param_i) = 2.d0 * dpsi_eloc_covar (param_i)
 
-!  add derivative of local energy for geometry parameters
-   if (l_opt_geo .and. is_param_type_geo (param_i)) then
-     gradient_energy (param_i) = gradient_energy (param_i) + deloc_av (param_i) 
-   endif
+  do istate = 1, num_state
+    do param_i = 1, param_nb
+      gradient_energy (param_i,istate) = 2.d0 * dpsi_eloc_covar (param_i,istate)
 
-!  add twice derivative of local energy for approximate DMC gradient
-   if (l_mode_dmc) then
-     gradient_energy (param_i) = gradient_energy (param_i) + 2*deloc_av (param_i) 
-   endif
-
-  enddo ! param_i
-
+      !  add derivative of local energy for geometry parameters
+      if (l_opt_geo .and. is_param_type_geo (param_i)) then
+        gradient_energy (param_i,istate) = gradient_energy (param_i,istate) + deloc_av (param_i,istate) 
+      endif
+      
+      !  add twice derivative of local energy for approximate DMC gradient
+      if (l_mode_dmc) then
+        gradient_energy (param_i,istate) = gradient_energy (param_i,istate) + 2*deloc_av (param_i,istate) 
+      endif
+      
+    enddo ! param_i
+  enddo !istate
   end subroutine gradient_energy_bld
 
 ! ==============================================================================
@@ -2041,7 +2042,9 @@ module deriv_mod
 
 ! begin
   call object_alloc ('gradient_variance', gradient_variance, param_nb)
-  gradient_variance =  2.d0 * (deloc_eloc_covar + dpsi_eloc_sq_covar - eloc_av * gradient_energy)
+  do istate = 1, numstate
+    gradient_variance(:,istate) =  2.d0 * (deloc_eloc_covar(:,istate) + dpsi_eloc_sq_covar(:,istate) - eloc_av(istate) * gradient_energy(:,istate))
+  enddo
 
   end subroutine gradient_variance_bld
 
@@ -2146,14 +2149,14 @@ module deriv_mod
 
 ! begin
   call object_alloc ('hessian_variance_lm', hessian_variance_lm, param_nb, param_nb)
-
-  do param_i = 1, param_nb
-   do param_j = 1, param_nb
-    hessian_variance_lm (param_i, param_j) =  2.d0 * (deloc_deloc_av (param_pairs (param_i, param_j)) - deloc_av (param_i) * gradient_energy (param_j) &
-         - deloc_av (param_j) * gradient_energy (param_i) + gradient_energy (param_i) * gradient_energy (param_j) )
-   enddo ! param_j
-  enddo ! param_i
-
+  do istate = 1, num_state
+    do param_i = 1, param_nb
+      do param_j = 1, param_nb
+        hessian_variance_lm (param_i, param_j, istate) =  2.d0 * (deloc_deloc_av (param_pairs (param_i, param_j), istate) - deloc_av (param_i, istate) * gradient_energy (param_j, istate) &
+             - deloc_av (param_j, istate) * gradient_energy (param_i, istate) + gradient_energy (param_i, istate) * gradient_energy (param_j, istate) )
+      enddo ! param_j
+    enddo ! param_i
+  enddo ! istate
   end subroutine hessian_variance_lm_bld
 
 ! ==============================================================================

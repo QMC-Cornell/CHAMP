@@ -332,7 +332,7 @@ module forces_pulay_mod
 
 ! loop over force components
   do force_i = 1, forces_nb
-
+    !MJO ADD LOOP
    do csf_i = 1, ncsf
 
      do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -341,7 +341,7 @@ module forces_pulay_mod
         det_unq_up_i = det_to_det_unq_up (det_i)
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-        dpsid_drn (force_i) = dpsid_drn (force_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
+        dpsid_drn (force_i) = dpsid_drn (force_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  & !MJO PROMOTE
         (ddet_drn_unq_up (det_unq_up_i, force_i) * detd (det_unq_dn_i) + detu (det_unq_up_i) * ddet_drn_unq_dn (det_unq_dn_i, force_i))
 
      enddo ! det_in_csf_i

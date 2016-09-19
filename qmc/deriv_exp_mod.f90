@@ -1657,6 +1657,7 @@ module deriv_exp_mod
 
   dpsid_exp (:) = 0.d0
 
+  !MJO ADD LOOP
 ! loop over optimized exponents
   do dexp_i = 1, param_exp_nb
 
@@ -1668,7 +1669,7 @@ module deriv_exp_mod
         det_unq_up_i = det_to_det_unq_up (det_i)
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-        dpsid_exp (dexp_i) = dpsid_exp (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
+        dpsid_exp (dexp_i) = dpsid_exp (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  & !MJO PROMOTE
         (ddet_dexp_unq_up (det_unq_up_i, dexp_i) * detd (det_unq_dn_i) + detu (det_unq_up_i) * ddet_dexp_unq_dn (det_unq_dn_i, dexp_i))
 
      enddo ! det_in_csf_i
@@ -1986,6 +1987,7 @@ module deriv_exp_mod
   if(electron .le. nup) then
      !up spin electron
      ! loop over optimized exponents
+    !MJO ADD LOOP
      do dexp_i = 1, param_exp_nb
 
         do csf_i = 1, ncsf
@@ -1996,7 +1998,7 @@ module deriv_exp_mod
               det_unq_up_i = det_to_det_unq_up (det_i)
               det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-              dpsid_exp_in_x (dexp_i) = dpsid_exp_in_x (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
+              dpsid_exp_in_x (dexp_i) = dpsid_exp_in_x (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  & !MJO PROMOTE
                    (ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) * detd (det_unq_dn_i) + detn (det_unq_up_i) * ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i))
 
            enddo ! det_in_csf_i
@@ -2007,6 +2009,7 @@ module deriv_exp_mod
   else
         !down spin electron
         ! loop over optimized exponents
+    !MJO ADD LOOP
         do dexp_i = 1, param_exp_nb
 
            do csf_i = 1, ncsf
@@ -2017,7 +2020,7 @@ module deriv_exp_mod
                  det_unq_up_i = det_to_det_unq_up (det_i)
                  det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-                 dpsid_exp_in_x (dexp_i) = dpsid_exp_in_x (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
+                 dpsid_exp_in_x (dexp_i) = dpsid_exp_in_x (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  & !MJO PROMOTE
                       (ddet_dexp_unq_up_in_x (det_unq_up_i, dexp_i) * detn (det_unq_dn_i) + detu (det_unq_up_i) * ddet_dexp_unq_dn_in_x (det_unq_dn_i, dexp_i))
 
               enddo ! det_in_csf_i
@@ -2623,6 +2626,7 @@ module deriv_exp_mod
   grd_dpsid_exp_over_dpsid_exp (:,:,:) = 0.d0
 
 ! loop over optimized exponents
+  !MJO ADD LOOP
   do dexp_i = 1, param_exp_nb
 
    do csf_i = 1, ncsf
@@ -2633,7 +2637,7 @@ module deriv_exp_mod
         det_unq_up_i = det_to_det_unq_up (det_i)
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-        coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
+        coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) !MJO PROMOTE
 
 !       loop over dimensions
         do dim_i = 1, ndim
@@ -2734,7 +2738,7 @@ module deriv_exp_mod
 
 ! loop over optimized exponents
   do dexp_i = 1, param_exp_nb
-
+    !MJO ADD LOOP
    do csf_i = 1, ncsf
 
      do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -2743,7 +2747,7 @@ module deriv_exp_mod
         det_unq_up_i = det_to_det_unq_up (det_i)
         det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-        coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i)
+        coefficient = csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) !MJO PROMOTE
 
          elec_i = 0
 

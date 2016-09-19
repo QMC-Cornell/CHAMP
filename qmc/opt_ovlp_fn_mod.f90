@@ -492,16 +492,16 @@ module opt_ovlp_fn_mod
    call object_provide ('csf_coef')
    call object_provide ('nparmcsf')
    call object_provide ('iwcsf')
-   write(6,*) "S=1", one_over_jas2_uwav / sum(csf_coef(:,1)**2)
+   write(6,*) "S=1", one_over_jas2_uwav / sum(csf_coef(:,1)**2) !MJO PROMTE / add loop?
    write(6,*) "S=S_{ii}=", dpsi2_over_jas2_uwav(:)
    do param_i = 1, param_nb !temp
       write(6,*) "S=S_{ij}=", dpsi_dpsi_over_jas2_uwav (param_i,:)  !temp
    end do !temp
 
    if (l_ovlp_identity) then
-      delta_ovlp_fn_linear (:) = (dpsi_over_jas2_av (:) * ovlp_trial_fn  - weight_trial * dpsi_over_jas2_uwav (:)) * sum(csf_coef(:,1)**2) / one_over_jas2_uwav
+      delta_ovlp_fn_linear (:) = (dpsi_over_jas2_av (:) * ovlp_trial_fn  - weight_trial * dpsi_over_jas2_uwav (:)) * sum(csf_coef(:,1)**2) / one_over_jas2_uwav !MJO PROMOTE
       do param_i = 1, nparmcsf
-         delta_ovlp_fn_linear (param_i) = (weight_trial * csf_coef (iwcsf(param_i), 1) + delta_ovlp_fn_linear (param_i)) * csf_coef(1,1) / (weight_trial * csf_coef(1,1) + (first_csf_over_jas2_av * ovlp_trial_fn - weight_trial * first_csf_over_jas2_uwav) * sum(csf_coef(:,1)**2) / one_over_jas2_uwav) - csf_coef (iwcsf(param_i), 1)
+         delta_ovlp_fn_linear (param_i) = (weight_trial * csf_coef (iwcsf(param_i), 1) + delta_ovlp_fn_linear (param_i)) * csf_coef(1,1) / (weight_trial * csf_coef(1,1) + (first_csf_over_jas2_av * ovlp_trial_fn - weight_trial * first_csf_over_jas2_uwav) * sum(csf_coef(:,1)**2) / one_over_jas2_uwav) - csf_coef (iwcsf(param_i), 1) !MJO PROMOTE
       enddo
 
    elseif (l_ovlp_diagonal) then
@@ -521,7 +521,7 @@ module opt_ovlp_fn_mod
       call object_provide ('is_param_type_geo')
       do param_i = 1, param_nb
        if (is_param_type_csf(param_i)) then
-        delta_ovlp_fn_linear (param_i) = (csf_coef(1,1)/(csf_coef(1,1)+delta_ovlp_fn_linear(1)))*(csf_coef (iwcsf(param_i), 1) + delta_ovlp_fn_linear(param_i)) - csf_coef (iwcsf(param_i), 1)
+        delta_ovlp_fn_linear (param_i) = (csf_coef(1,1)/(csf_coef(1,1)+delta_ovlp_fn_linear(1)))*(csf_coef (iwcsf(param_i), 1) + delta_ovlp_fn_linear(param_i)) - csf_coef (iwcsf(param_i), 1) !MJO PROMOTE
        elseif (is_param_type_jas(param_i)) then
         call die (lhere, 'not implemented for Jastrow parameters')
        elseif (is_param_type_pjas(param_i)) then
@@ -529,7 +529,7 @@ module opt_ovlp_fn_mod
        elseif (is_param_type_exp(param_i)) then
         call die (lhere, 'not implemented for exponent parameters')
        elseif (is_param_type_orb(param_i)) then
-        delta_ovlp_fn_linear (param_i) = (csf_coef(1,1)/(csf_coef(1,1)+delta_ovlp_fn_linear(1)))*(delta_ovlp_fn_linear(param_i))
+        delta_ovlp_fn_linear (param_i) = (csf_coef(1,1)/(csf_coef(1,1)+delta_ovlp_fn_linear(1)))*(delta_ovlp_fn_linear(param_i)) !MJO PROMOTE
        elseif (is_param_type_geo(param_i)) then
         call die (lhere, 'not implemented for geometry parameters')
        else
