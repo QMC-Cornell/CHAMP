@@ -1089,6 +1089,7 @@ module linearresponse_mod
   went_through=.false.
   do i_eigval=1,n
     if (went_through(i_eigval)) cycle
+    if ((n.eq.2*param_nb).and.(eigval_r(i_eigval).lt.0.d0)) cycle
     went_through(i_eigval)=.true.
     nunique=nunique+1
     position_in_array(nunique)=i_eigval
@@ -1126,7 +1127,7 @@ module linearresponse_mod
                        &-eigvec(:n/2  ,sorting(j_eigval)),1.0d-2).eq.0)))) then
         went_through(j_eigval)=.true.
         degeneracy(nunique)=degeneracy(nunique)+1
-        if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
+       !if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
       ! real1=-real2, im1=im2!=0, X1=Y2 Y1=X2
       elseif((abs(eigval_r(i_eigval)+eigval_r(j_eigval)).le.0.001).and.     &
             &(abs(eigval_i(i_eigval)-eigval_i(j_eigval)).le.0.001).and.     &
@@ -1141,14 +1142,14 @@ module linearresponse_mod
                        &-eigvec(:n/2  ,sorting(j_eigval)),1.0d-2).eq.0)))) then
         went_through(j_eigval)=.true.
         degeneracy(nunique)=degeneracy(nunique)+1
-        if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
+       !if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
       ! real1=-real2, im1=-im2!=0, this is only an imaginary pair
       elseif((abs(eigval_r(i_eigval)+eigval_r(j_eigval)).le.0.001).and.     &
             &(abs(eigval_i(i_eigval)+eigval_i(j_eigval)).le.0.001).and.     &
             &(abs(eigval_i(i_eigval)).ge.0.001)) then
         went_through(j_eigval)=.true.
         degeneracy(nunique)=degeneracy(nunique)+1
-        if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
+       !if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
       endif
       endif
     enddo
