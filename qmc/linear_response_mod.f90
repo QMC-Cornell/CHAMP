@@ -1058,49 +1058,117 @@ module linearresponse_mod
   integer                         :: n
 
 ! local
-  integer                         :: i,j,nunique,i_eigval,j_unq,i_pos,jorb
+  integer                         :: i,j,k,nunique,i_eigval,j_eigval,i_pos,jorb
   integer                         :: maj1pos,maj2pos,maj3pos,maj4pos
-  integer,  allocatable           :: position_and_degenerate(:,:)
-  real(dp), allocatable           :: unique_r(:), unique_i(:), zero_array(:)
-  real(dp)                        :: maj1,maj2,maj3,maj4
-  logical                         :: new_one
+  integer,  allocatable           :: position_in_array(:)
+  integer,  allocatable           :: degeneracy(:)
+  real(dp), allocatable           :: zero_array(:)
+  real(dp)                        :: maj1,maj2,maj3,maj4,contrib_max
+  real(dp), allocatable           :: contrib(:,:)
+  logical, allocatable            :: went_through(:)
   character(len=7)                :: formt1
   character(len=9), allocatable   :: formt2(:)
   character(len=15), allocatable  :: formt3(:)
 
 ! begin
+  if (header_exe) then
+    call object_needed ('param_pairs')
+    call object_needed('dpsi_dpsi_av')
+    
+    return
+  endif
 
-! Gather unique eigenvalues (real and im part)
-! and information on their original position and degeneracy
-  call alloc('unique_r', unique_r, n)
-  call alloc('unique_i', unique_i, n)
-  call alloc('position_and_degenerate', position_and_degenerate, n, 2)
-  unique_i=0
-  unique_r=0
-  position_and_degenerate=0
+  if (run_done.or.l_print_every_block) then
+
+! Gather information on unique eigenvalues (real and im part)
+! and their original position and degeneracy
+  call alloc('went_through',  went_through,  n)
+  call alloc('position_in_array', position_in_array, n)
+  call alloc('degeneracy', degeneracy, n)
   nunique=0
+  went_through=.false.
   do i_eigval=1,n
-    new_one=.true.
-    do j_unq=1,nunique
-      if((abs(eigval_r(i_eigval)-unique_r(j_unq)).le.0.0001).and. &
-        &(abs(eigval_i(i_eigval)-unique_i(j_unq)).le.0.001)) then
-        new_one=.false.
-        position_and_degenerate(j_unq,2)=position_and_degenerate(j_unq,2)+1
-        exit
+    if (went_through(i_eigval)) cycle
+    went_through(i_eigval)=.true.
+    nunique=nunique+1
+    position_in_array(nunique)=i_eigval
+    degeneracy(nunique)=1
+
+    ! search for all repetitions of this newly found unique eigenvalue
+    do j_eigval=i_eigval+1,n
+      if (went_through(j_eigval)) cycle
+      ! real1=real2, im1=im2, X1=X2 Y1=Y2
+      if((abs(eigval_r(i_eigval)-eigval_r(j_eigval)).le.0.001).and. &
+        &(abs(eigval_i(i_eigval)-eigval_i(j_eigval)).le.0.001).and. &
+        &(is_equal(eigvec(:,sorting(i_eigval)),&
+                 & eigvec(:,sorting(j_eigval)),1.0d-2).eq.0)) then
+        went_through(j_eigval)=.true.
+        degeneracy(nunique)=degeneracy(nunique)+1
+      ! real1=real2, im1=-im2!=0, this is only an imaginary pair
+      elseif((abs(eigval_r(i_eigval)-eigval_r(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)+eigval_i(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)).ge.0.001)) then
+        went_through(j_eigval)=.true.
+        degeneracy(nunique)=degeneracy(nunique)+1
+      endif
+      if (n.eq.2*param_nb) then
+      ! real1=-real2, im1=im2=0, (X1=Y2 Y1=X2 or X1=-Y2 Y1=-X2)
+      if    ((abs(eigval_r(i_eigval)+eigval_r(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)).le.0.001).and.                        &
+            &(abs(eigval_i(j_eigval)).le.0.001).and.                        &
+            &(((is_equal(eigvec(:n/2  ,sorting(i_eigval)),                  &
+                       & eigvec(n/2+1:,sorting(j_eigval)),1.0d-2).eq.0).and.&
+            &  (is_equal(eigvec(n/2+1:,sorting(i_eigval)),                  &
+                       & eigvec(:n/2  ,sorting(j_eigval)),1.0d-2).eq.0)).or.&
+            & ((is_equal(eigvec(:n/2  ,sorting(i_eigval)),                  &
+                       &-eigvec(n/2+1:,sorting(j_eigval)),1.0d-2).eq.0).and.&
+            &  (is_equal(eigvec(n/2+1:,sorting(i_eigval)),                  &
+                       &-eigvec(:n/2  ,sorting(j_eigval)),1.0d-2).eq.0)))) then
+        went_through(j_eigval)=.true.
+        degeneracy(nunique)=degeneracy(nunique)+1
+        if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
+      ! real1=-real2, im1=im2!=0, X1=Y2 Y1=X2
+      elseif((abs(eigval_r(i_eigval)+eigval_r(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)-eigval_i(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)).ge.0.001).and.                        &
+            &(((is_equal(eigvec(:n/2  ,sorting(i_eigval)),                  &
+                       & eigvec(n/2+1:,sorting(j_eigval)),1.0d-2).eq.0).and.&
+            &  (is_equal(eigvec(n/2+1:,sorting(i_eigval)),                  &
+                       & eigvec(:n/2  ,sorting(j_eigval)),1.0d-2).eq.0)).or.&
+            & ((is_equal(eigvec(:n/2  ,sorting(i_eigval)),                  &
+                       &-eigvec(n/2+1:,sorting(j_eigval)),1.0d-2).eq.0).and.&
+            &  (is_equal(eigvec(n/2+1:,sorting(i_eigval)),                  &
+                       &-eigvec(:n/2  ,sorting(j_eigval)),1.0d-2).eq.0)))) then
+        went_through(j_eigval)=.true.
+        degeneracy(nunique)=degeneracy(nunique)+1
+        if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
+      ! real1=-real2, im1=-im2!=0, this is only an imaginary pair
+      elseif((abs(eigval_r(i_eigval)+eigval_r(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)+eigval_i(j_eigval)).le.0.001).and.     &
+            &(abs(eigval_i(i_eigval)).ge.0.001)) then
+        went_through(j_eigval)=.true.
+        degeneracy(nunique)=degeneracy(nunique)+1
+        if (eigval_r(i_eigval).lt.0.000) position_in_array(nunique)=j_eigval
+      endif
       endif
     enddo
-    if (new_one) then
-      nunique=nunique+1
-      unique_r(nunique)=eigval_r(i_eigval)
-      unique_i(nunique)=eigval_i(i_eigval)
-      position_and_degenerate(nunique,1)=i_eigval
-      position_and_degenerate(nunique,2)=1
-    endif
   enddo
+  call release('went_through', went_through)
       
-! Print unique eigenvalues...
-  if (run_done.or.l_print_every_block) then
+! Print the unique eigenvalues...
+! ...and (if asked for) the eigenvectors
+! - in the case where matrices are of dimension "param_nb":
+!   print the eigenvector where:
+!     - the type of parameter for each component is written 
+!      (in the case of an orbital parameter: additional info on p->q excitation)
+!       This is "formt3"
+!     - the three major component are highlighted
+!       This is "formt2"
+! - in the case where matrices are of dimension "2*param_nb":
+!       add information on X=Y, X=-Y, X=0, Y=0, or UNKNOWN situation
+!       This is "formt1"
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
+
   if (l_print_eigenvec) then
     ! parameter type
     call alloc('formt3',formt3,n)
@@ -1138,36 +1206,29 @@ module linearresponse_mod
       enddo
     endif
   endif
+
   do i = 1, nunique
     write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
-      & unique_r(i),' +/-',err_r(position_and_degenerate(i,1)),' +',&
-      & unique_i(i),' +/-',err_i(position_and_degenerate(i,1)),' i (',&
-      & position_and_degenerate(i,2),')'
+      & eigval_r(position_in_array(i)),'(+/-',err_r(position_in_array(i)),') +',&
+      & eigval_i(position_in_array(i)),'(+/-',err_i(position_in_array(i)),') i (',&
+      & degeneracy(i),')'
 
-    ! ...and eigenvectors
-    ! - in the case where matrices are of dimension "param_nb":
-    !   print the eigenvector where:
-    !     - the type of parameter for each component is written 
-    !      (in the case of an orbital parameter: additional info on p->q excitation)
-    !     - the three major component are highlighted
-    ! - in the case where matrices are of dimension "2*param_nb":
-    !     add information on X=Y, X=-Y, X=0, Y=0, or UNKNOWN situation
     if (l_print_eigenvec) then
       ! information on X=Y, etc...
       if (n.eq.param_nb) then
         formt1='       '
       elseif (n.eq.2*param_nb) then
         call alloc('zero_array',zero_array,n/2)
-        if (is_equal(eigvec(:n/2,sorting(position_and_degenerate(i,1))),&
-                   & eigvec(n/2+1:n,sorting(position_and_degenerate(i,1))),1.0d-2).eq.0) then
+        if     (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
+                       & eigvec(n/2+1:n,sorting(position_in_array(i))),1.0d-2).eq.0) then
          formt1='(EQU)  '
-        elseif (is_equal(eigvec(:n/2,sorting(position_and_degenerate(i,1))),&
-                      & -eigvec(n/2+1:n,sorting(position_and_degenerate(i,1))),1.0d-2).eq.0) then
+        elseif (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
+                      & -eigvec(n/2+1:n,sorting(position_in_array(i))),1.0d-2).eq.0) then
          formt1='(OPP)  '
-        elseif (is_equal(eigvec(n/2+1:n,sorting(position_and_degenerate(i,1))),&
+        elseif (is_equal(eigvec(n/2+1:n,sorting(position_in_array(i))),&
                       &  zero_array,1.0d-2).eq.0) then
          formt1='(TDAX) '
-        elseif (is_equal(eigvec(:n/2,sorting(position_and_degenerate(i,1))),&
+        elseif (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
                       &  zero_array,1.0d-2).eq.0) then
          formt1='(TDAY) '
         else
@@ -1178,32 +1239,32 @@ module linearresponse_mod
       call alloc('formt2',formt2,n)
       maj1=0
       do j=1,n
-        if (abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj1) then
-          maj1=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+        if    (abs(eigvec(j, sorting(position_in_array(i)))).ge.maj1) then
+          maj1=abs(eigvec(j, sorting(position_in_array(i))))
           maj1pos=j
         endif
       enddo
       maj2=0
       do j=1,n
-        if((abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj2).and.&
-          &(abs(eigvec(j, sorting(position_and_degenerate(i,1)))).lt.maj1)) then
-          maj2=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+        if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj2).and.&
+             &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj1)) then
+          maj2=abs(eigvec(j, sorting(position_in_array(i))))
           maj2pos=j
         endif
       enddo
       maj3=0
       do j=1,n
-        if((abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj3).and.&
-          &(abs(eigvec(j, sorting(position_and_degenerate(i,1)))).lt.maj2)) then
-          maj3=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+        if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj3).and.&
+             &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj2)) then
+          maj3=abs(eigvec(j, sorting(position_in_array(i))))
           maj3pos=j
         endif
       enddo
       maj4=0
       do j=1,n
-        if((abs(eigvec(j, sorting(position_and_degenerate(i,1)))).ge.maj4).and.&
-          &(abs(eigvec(j, sorting(position_and_degenerate(i,1)))).lt.maj3)) then
-          maj4=abs(eigvec(j, sorting(position_and_degenerate(i,1))))
+        if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj4).and.&
+             &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj3)) then
+          maj4=abs(eigvec(j, sorting(position_in_array(i))))
           maj4pos=j
         endif
       enddo
@@ -1217,26 +1278,103 @@ module linearresponse_mod
       ! write all out
       if (n.eq.param_nb) then
         do j=1,n
-          write(6,'(a,a,i5,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j, sorting(position_and_degenerate(i,1))),&
-                                         & formt2(j), formt3(j)
+          if (abs(eigval_i(position_in_array(i))).le.0.001) then
+             write(6,'(a,a,i5,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j, sorting(position_in_array(i))),&
+                                         & formt2(j),formt3(j)
+          else
+            write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j ,sorting(position_in_array(i))),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
+                                         & formt2(j),formt3(j)
+          endif
         enddo
       elseif (n.eq.2*param_nb) then
+        flush(6)
         do j=1,n/2
-          write(6,'(a,a,i5,a,2(f11.3,a,a))') 'eigenvec',formt1,i,': ',&
-                                            & eigvec(j,     sorting(position_and_degenerate(i,1))),&
-                                            & formt2(j),    formt3(j), &
-                                            & eigvec(j+n/2, sorting(position_and_degenerate(i,1))),&
-                                            & formt2(j+n/2),formt3(j+n/2)
+          if (abs(eigval_i(position_in_array(i))).le.0.001) then
+            write(6,'(a,a,i5,a,2(f11.3,a,a))') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j     ,sorting(position_in_array(i))),&
+                                         & formt2(j)    ,formt3(j), &
+                                         & eigvec(j+n/2 ,sorting(position_in_array(i))),&
+                                         & formt2(j+n/2),formt3(j+n/2)
+          else
+            write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j     ,sorting(position_in_array(i))),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
+                                         & formt2(j)    ,formt3(j), &
+                                         & eigvec(j+n/2 ,sorting(position_in_array(i))),' + ',eigvec(j+n/2,sorting(position_in_array(i))+1),&
+                                         & formt2(j+n/2),formt3(j+n/2)
+          endif
         enddo
       endif
     endif
   enddo
-  endif
 
-  call release ('unique_r', unique_r)
-  call release ('unique_i', unique_i)
-  call release ('position_and_degenerate', position_and_degenerate)
+  write(6,*) ""
+  write(6,*) "Here are shown the contributions,"
+  write(6,*) "for each orb'th orbital excitation of"
+  write(6,*) "  <\Psi_orb|\Psi^n>=  \sum_i \Delta p^n_i <\Psi_orb|\Psi_i>"
+  write(6,*) " where \Psi^n is the wavefunction constructed by the n'th eigenvector \Delta p^n_i"
+  write(6,*) "Here are only shown the dominant contributions, scaled to the largest component"
+  write(6,*) ""
+
+  call alloc('contrib',contrib,n,param_orb_nb)
+  contrib_max=0.d0
+  jorb=0
+  do j=1,param_nb
+    if (is_param_type_orb(j)) then
+      jorb=jorb+1
+      do i=1,n
+        contrib(i,jorb)=0
+        if (n.eq.param_nb) then
+          do k=1,n
+            contrib(i,jorb)=contrib(i,jorb)+eigvec(k,i)  *dpsi_dpsi_av(param_pairs(j,k))
+          enddo
+        else
+          do k=1,n/2
+            contrib(i,jorb)=contrib(i,jorb)+eigvec(k,i)  *dpsi_dpsi_av(param_pairs(j,k))
+            contrib(i,jorb)=contrib(i,jorb)+eigvec(k+n,i)*dpsi_dpsi_av(param_pairs(j,k))
+          enddo
+        endif
+        if (abs(contrib(i,jorb)).ge.contrib_max) contrib_max=abs(contrib(i,jorb))
+      enddo
+    endif
+  enddo
+  contrib=contrib/contrib_max
+
+  call alloc('zero_array',zero_array,param_orb_nb)
+  do j=1,nunique
+  if ((eigval_i(position_in_array(j))).le.0.001) then
+    if (is_equal(contrib(sorting(position_in_array(j)),:),zero_array,0.2d0).ne.0) then
+      write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
+        & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
+        & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
+        & degeneracy(j),')'
+      do jorb=1,param_orb_nb
+        write(*,'(a,i2,a,i2,a,f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                           & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
+                                       contrib(sorting(position_in_array(j)),jorb)
+      enddo
+    endif
+  else
+    if((is_equal(contrib(sorting(position_in_array(j))  ,:),zero_array,0.2d0).ne.0).or.&
+      &(is_equal(contrib(sorting(position_in_array(j)+1),:),zero_array,0.2d0).ne.0)) then
+      write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
+        & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
+        & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
+        & degeneracy(j),')'
+      do jorb=1,param_orb_nb
+        write(*,'(a,i2,a,i2,a,2f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                            & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
+                                         contrib(sorting(position_in_array(j)),jorb),contrib(sorting(position_in_array(j)+1),jorb)
+      enddo
+    endif
+  endif
+  enddo
+
+  call release ('position_in_array', position_in_array)
+  call release ('degeneracy', degeneracy)
+
+  endif
 
   end subroutine analysis_eigval_eigvec
 
