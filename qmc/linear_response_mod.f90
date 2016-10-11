@@ -13,6 +13,8 @@ module linearresponse_mod
 ! "compare_to_tda"    : will calculate the linresp equations (A 0 \\ 0 A)
 ! "compare_to_optlin" : will give an output comparable to that obtained with
 !                       an "optimization" command together with "compare_to_linresp"
+! "symmetric"         : will symmetrize the A matrix (no longer zero-variance
+!                       principle)
 
 ! Declaration of global variables and default values
 
@@ -22,6 +24,8 @@ module linearresponse_mod
   real(dp), allocatable           :: tda_av_eigenval_i(:)
   real(dp), allocatable           :: tda_av_eigenval_r_err(:)
   real(dp), allocatable           :: tda_av_eigenval_i_err(:)
+! symmetric A matrix
+  logical                         :: l_symmetric        =.false.
 ! prints and debug
   logical                         :: l_print            =.false.
   logical                         :: l_print_eigenvec   =.false.
@@ -101,6 +105,10 @@ module linearresponse_mod
 !   triplet
     case ('triplet')
       call get_next_value (l_triplet)
+
+!   Symmetric A
+    case ('symmetric')
+      call get_next_value (l_symmetric)
 
 !   TDA
     case ('tda_only')
@@ -914,6 +922,15 @@ module linearresponse_mod
       endif
     enddo
   enddo
+
+  if (l_symmetric) then
+     do i=1,param_nb
+        do j=i+1,param_nb
+             amat_av(i,j) = 0.5d0*(amat_av(i,j)+amat_av(j,i))
+             amat_av(j,i) = amat_av(i,j)
+        enddo
+      enddo
+  endif
 
   if (run_done.or.l_print_every_block) then
   if (l_print) then
