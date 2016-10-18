@@ -13,8 +13,6 @@ module linearresponse_mod
 ! "compare_to_tda"    : will calculate the linresp equations (A 0 \\ 0 A)
 ! "compare_to_optlin" : will give an output comparable to that obtained with
 !                       an "optimization" command together with "compare_to_linresp"
-! "symmetric"         : will symmetrize the A matrix (no longer zero-variance
-!                       principle)
 
 ! Declaration of global variables and default values
 
@@ -24,13 +22,12 @@ module linearresponse_mod
   real(dp), allocatable           :: tda_av_eigenval_i(:)
   real(dp), allocatable           :: tda_av_eigenval_r_err(:)
   real(dp), allocatable           :: tda_av_eigenval_i_err(:)
-! symmetric A matrix
-  logical                         :: l_symmetric        =.false.
 ! prints and debug
   logical                         :: l_print            =.false.
   logical                         :: l_print_eigenvec   =.false.
   logical                         :: l_print_every_block=.false.
   logical                         :: l_compare_to_tda   =.false.
+  logical                         :: l_symm_amat        =.false.
 ! hessian
   logical                         :: l_hessian          =.false.
   real(dp), allocatable           :: hessian_av_eigenval_r(:)
@@ -106,10 +103,6 @@ module linearresponse_mod
     case ('triplet')
       call get_next_value (l_triplet)
 
-!   Symmetric A
-    case ('symmetric')
-      call get_next_value (l_symmetric)
-
 !   TDA
     case ('tda_only')
       call get_next_value (l_tda_only)
@@ -127,6 +120,8 @@ module linearresponse_mod
       call get_next_value (l_print_every_block)
     case ('print')
       call get_next_value (l_print)
+    case ('symm_amat')
+      call get_next_value (l_symm_amat)
     case ('compare_to_tda')
       call get_next_value (l_compare_to_tda)
     case ('compare_to_optlin')
@@ -895,12 +890,11 @@ module linearresponse_mod
     call object_needed('param_nb')
     call object_needed('param_pairs')
 
-    call object_needed('ovlp_psii_psij_av')
+    call object_needed('dpsi_dpsi_av')
     call object_needed('dpsi_dpsi_eloc_av')
     call object_needed('dpsi_av')
     call object_needed('dpsi_eloc_av')
     call object_needed('eloc_av')
-    call object_needed('dpsi_deloc_covar')
     call object_needed('dpsi_deloc_covar')
 
     return
@@ -912,24 +906,25 @@ module linearresponse_mod
   do j=1,param_nb
     do i=1,param_nb
       ij = param_pairs(i,j)
-      amat_av(i,j)=dpsi_dpsi_eloc_av(ij)         &
-                 - dpsi_av(j)*dpsi_eloc_av(i)    &
-                 - dpsi_av(i)*dpsi_eloc_av(j)    &
-                 + dpsi_av(i)*dpsi_av(j)*eloc_av &
-                 + dpsi_deloc_covar(i,j)
-      if ((.not.l_compare_linresp_and_optlin)) then
-        amat_av(i,j)=amat_av(i,j)-eloc_av*ovlp_psii_psij_av(i,j)
+      if (l_compare_linresp_and_optlin) then
+        amat_av(i,j)=dpsi_dpsi_eloc_av(ij)         &
+                   - dpsi_av(j)*dpsi_eloc_av(i)    &
+                   - dpsi_av(i)*dpsi_eloc_av(j)    &
+                   + dpsi_av(i)*dpsi_av(j)*eloc_av &
+                   + dpsi_deloc_covar(i,j)
+      else
+        amat_av(i,j)=dpsi_dpsi_eloc_av(ij)         &
+               -     dpsi_av(j)*dpsi_eloc_av(i)    &
+               -     dpsi_av(i)*dpsi_eloc_av(j)    &
+               +2.d0*dpsi_av(i)*dpsi_av(j)*eloc_av &
+               +     dpsi_deloc_covar(i,j)         &
+               -     eloc_av*dpsi_dpsi_av(param_pairs(i,j))
       endif
     enddo
   enddo
 
-  if (l_symmetric) then
-     do i=1,param_nb
-        do j=i+1,param_nb
-             amat_av(i,j) = 0.5d0*(amat_av(i,j)+amat_av(j,i))
-             amat_av(j,i) = amat_av(i,j)
-        enddo
-      enddo
+  if (l_symm_amat) then
+    amat_av=0.5d0*(amat_av+transpose(amat_av))
   endif
 
   if (run_done.or.l_print_every_block) then
