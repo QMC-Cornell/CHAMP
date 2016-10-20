@@ -475,7 +475,7 @@ module deriv_mod
   if (l_opt_exp) then
     call die('d2psi not yet implemented for exponents/exponents parameters')
     do i=1,param_exp_nb
-      do j=1,param_exp_nb
+      do j=1,i
         ij=ij+1
       enddo
     enddo

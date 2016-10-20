@@ -2712,7 +2712,8 @@ module deriv_orb_mod
 
 ! begin
 
-  double_ex_nb=(single_ex_nb-1)*single_ex_nb/2
+  !TRI double_ex_nb=(single_ex_nb-1)*single_ex_nb/2
+  double_ex_nb=single_ex_nb*single_ex_nb !RECT 
   det_ex2_max =(ndetup+ndetdn)*double_ex_nb
 
 ! allocations
@@ -2744,7 +2745,8 @@ module deriv_orb_mod
   do ex_i = 1, single_ex_nb
     orbi_1st = ex_orb_1st_lab (ex_i)
     orbi_2nd = ex_orb_2nd_lab (ex_i)
-    do ex_j = 1, ex_i-1
+    !TRI do ex_j = 1, ex_i-1
+    do ex_j = 1, single_ex_nb !RECT 
       orbj_1st = ex_orb_1st_lab (ex_j)
       orbj_2nd = ex_orb_2nd_lab (ex_j)
       ex_ij=ex_ij+1
@@ -3018,7 +3020,8 @@ module deriv_orb_mod
 ! loop over single orbital excitations
   ex_ij=0
   do ex_i = 1, single_ex_nb
-    do ex_j = 1, ex_i-1
+    !TRI do ex_j = 1, ex_i-1
+    do ex_j = 1, single_ex_nb !RECT 
       ex_ij=ex_ij+1
       do csf_i = 1, ncsf
         do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -3103,10 +3106,34 @@ module deriv_orb_mod
       ex_rev_j = ex_orb_ind_rev (dorb_j)
 
       dorb_ij=dorb_ij+1
-      ex_ij=(ex_i-2)*(ex_i-1)/2+ex_j
-      ex_rev_i_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_j
-      ex_i_rev_j=(ex_i-2)*(ex_i-1)/2+ex_rev_j
-      ex_rev_i_rev_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_rev_j
+      !TRI ex_ij=(ex_i-2)*(ex_i-1)/2+ex_j
+      !TRI ex_rev_i_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_j
+      !TRI ex_i_rev_j=(ex_i-2)*(ex_i-1)/2+ex_rev_j
+      !TRI ex_rev_i_rev_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_rev_j
+      ex_ij         =(ex_i-1)    *single_ex_nb+ex_j     !RECT 
+      ex_rev_i_j    =(ex_rev_i-1)*single_ex_nb+ex_j     !RECT 
+      ex_i_rev_j    =(ex_i-1)    *single_ex_nb+ex_rev_j !RECT 
+      ex_rev_i_rev_j=(ex_rev_i-1)*single_ex_nb+ex_rev_j !RECT 
+      !if (ex_i.le.ex_j) then
+      !  ex_ij=(ex_i-1)*(ex_i)/2+ex_j
+      !else
+      !  ex_ij=(ex_j-1)*(ex_j)/2+ex_i
+      !endif
+      !if (ex_rev_i.le.ex_j) then
+      !  ex_rev_i_j=(ex_rev_i-1)*(ex_rev_i)/2+ex_j
+      !else
+      !  ex_rev_i_j=(ex_j-1)*(ex_j)/2+ex_rev_i
+      !endif
+      !if (ex_i.le.ex_rev_j) then
+      !  ex_i_rev_j=(ex_i-1)*(ex_i)/2+ex_rev_j
+      !else
+      !  ex_i_rev_j=(ex_rev_j-1)*(ex_rev_j)/2+ex_i
+      !endif
+      !if (ex_rev_i.le.ex_rev_j) then
+      !  ex_rev_i_rev_j=(ex_rev_i-1)*(ex_rev_i)/2+ex_rev_j
+      !else
+      !  ex_rev_i_rev_j=(ex_rev_j-1)*(ex_rev_j)/2+ex_rev_i
+      !endif
 
       do csf_i = 1, ncsf
         do det_in_csf_i = 1, ndet_in_csf (csf_i)
