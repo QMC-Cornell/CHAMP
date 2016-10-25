@@ -988,6 +988,7 @@ module deriv_orb_mod
   call object_modified('detd')
 
   det_ex_unq_bld_done=.true.
+  call object_modified('det_ex_unq_bld_done')
 
   end subroutine det_ex_unq_bld
 
@@ -1566,6 +1567,7 @@ module deriv_orb_mod
   call object_modified('grd_det_unq_dn')
 
   grd_det_ex_unq_bld_done=.true.
+  call object_modified('grd_det_ex_unq_bld_done')
 
   end subroutine grd_det_ex_unq_bld
 
@@ -1641,6 +1643,7 @@ module deriv_orb_mod
   call object_modified('lap_det_unq_dn')
 
   lap_det_ex_unq_bld_done=.true.
+  call object_modified('lap_det_ex_unq_bld_done')
 
   end subroutine lap_det_ex_unq_bld
 
@@ -2712,8 +2715,7 @@ module deriv_orb_mod
 
 ! begin
 
-  !TRI double_ex_nb=(single_ex_nb-1)*single_ex_nb/2
-  double_ex_nb=single_ex_nb*single_ex_nb !RECT 
+  double_ex_nb=single_ex_nb*single_ex_nb
   det_ex2_max =(ndetup+ndetdn)*double_ex_nb
 
 ! allocations
@@ -2745,8 +2747,7 @@ module deriv_orb_mod
   do ex_i = 1, single_ex_nb
     orbi_1st = ex_orb_1st_lab (ex_i)
     orbi_2nd = ex_orb_2nd_lab (ex_i)
-    !TRI do ex_j = 1, ex_i-1
-    do ex_j = 1, single_ex_nb !RECT 
+    do ex_j = 1, single_ex_nb
       orbj_1st = ex_orb_1st_lab (ex_j)
       orbj_2nd = ex_orb_2nd_lab (ex_j)
       ex_ij=ex_ij+1
@@ -2882,7 +2883,11 @@ module deriv_orb_mod
 ! local
   integer det_ex2_unq_up_i, det_ex2_unq_dn_i
   integer p,q,r,s,pq,rs,ps,rq
-  integer ref,ex_i,det_pq,det_rs,det_ps,det_rq
+  integer ref,ex_i,done
+  real(8) :: det_pq,det_rs,det_ps,det_rq
+
+  integer :: i
+  real(8),allocatable :: p_mat(:,:),q_mat(:,:),work(:,:)
 
 ! header
   if (header_exe) then
@@ -2900,6 +2905,13 @@ module deriv_orb_mod
    call object_needed ('ex_orb_2nd_lab')
    call object_needed ('det_ex_up')
    call object_needed ('det_ex_dn')
+   call object_needed ('detu')
+   call object_needed ('detd')
+
+   call object_needed ('slater_mat_trans_inv_up')
+   call object_needed ('slater_mat_trans_inv_dn')
+   call object_needed ('slater_mat_ex_trans_inv_up')
+   call object_needed ('slater_mat_ex_trans_inv_dn')
 
    return
 
@@ -2918,23 +2930,57 @@ module deriv_orb_mod
     q=det_ex2_unq_up_orb_info(det_ex2_unq_up_i,3)
     s=det_ex2_unq_up_orb_info(det_ex2_unq_up_i,4)
     ref=iwdet_ex_ref_up(det_ex_unq_up_nb+det_ex2_unq_up_i)
-    do ex_i=1,single_ex_nb
-      if      (ex_orb_1st_lab(ex_i).eq.p &
-          .and.ex_orb_2nd_lab(ex_i).eq.q) then
-        det_pq=det_ex_up(ex_i,ref)
-      elseif  (ex_orb_1st_lab(ex_i).eq.r &
-          .and.ex_orb_2nd_lab(ex_i).eq.s) then
-        det_rs=det_ex_up(ex_i,ref)
-      elseif  (ex_orb_1st_lab(ex_i).eq.p &
-          .and.ex_orb_2nd_lab(ex_i).eq.s) then
-        det_ps=det_ex_up(ex_i,ref)
-      elseif  (ex_orb_1st_lab(ex_i).eq.r &
-          .and.ex_orb_2nd_lab(ex_i).eq.q) then
-        det_rq=det_ex_up(ex_i,ref)
+
+    if (itest.eq.0) then
+      done=0
+      do ex_i=1,single_ex_nb
+        if      (ex_orb_1st_lab(ex_i).eq.p &
+            .and.ex_orb_2nd_lab(ex_i).eq.q) then
+          det_pq=det_ex_up(ex_i,ref)
+          done=done+1
+        elseif  (ex_orb_1st_lab(ex_i).eq.r &
+            .and.ex_orb_2nd_lab(ex_i).eq.s) then
+          det_rs=det_ex_up(ex_i,ref)
+          done=done+1
+        elseif  (ex_orb_1st_lab(ex_i).eq.p &
+            .and.ex_orb_2nd_lab(ex_i).eq.s) then
+          det_ps=det_ex_up(ex_i,ref)
+          done=done+1
+        elseif  (ex_orb_1st_lab(ex_i).eq.r &
+            .and.ex_orb_2nd_lab(ex_i).eq.q) then
+          det_rq=det_ex_up(ex_i,ref)
+          done=done+1
+        endif
+      enddo
+      if (done.ne.4) call die('done.ne.4','')
+      detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)=(det_pq*det_rs-det_ps*det_rq)/detu(ref)
+      !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
+
+    elseif(itest.eq.1) then
+      call alloc('p_mat',p_mat,2,nup)
+      p_mat=0
+      p_mat(1,p)=1
+      p_mat(2,r)=1
+      call alloc('q_mat',q_mat,nup,2)
+      q_mat=0
+      do i=1,nup
+        q_mat(i,1)=orb(i,q)
+        q_mat(i,2)=orb(i,s)
+      enddo
+      call alloc('work' ,work ,2,2)
+      work=0
+      if (ref.le.ndetup) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_trans_inv_up(:,:,ref))),q_mat)
+      elseif (ref.le.ndetup+det_ex_unq_up_nb) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_ex_trans_inv_up(:,:,ref-ndetup))),q_mat)
+      elseif (ref.le.ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb) then
+        call die('','')
       endif
-    enddo
-    detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)=det_pq*det_rs-det_ps*det_rq
-    !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
+      detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)=detu(ref)*(work(1,1)*work(2,2)-work(1,2)*work(2,1))
+      !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
+
+    endif
+
   enddo ! det_ex_unq_up_i
   call object_modified('detu')
 
@@ -2945,27 +2991,62 @@ module deriv_orb_mod
     q=det_ex2_unq_dn_orb_info(det_ex2_unq_dn_i,3)
     s=det_ex2_unq_dn_orb_info(det_ex2_unq_dn_i,4)
     ref=iwdet_ex_ref_dn(det_ex_unq_dn_nb+det_ex2_unq_dn_i)
-    do ex_i=1,single_ex_nb
-      if      (ex_orb_1st_lab(ex_i).eq.p &
-          .and.ex_orb_2nd_lab(ex_i).eq.q) then
-        det_pq=det_ex_dn(ex_i,ref)
-      elseif  (ex_orb_1st_lab(ex_i).eq.r &
-          .and.ex_orb_2nd_lab(ex_i).eq.s) then
-        det_rs=det_ex_dn(ex_i,ref)
-      elseif  (ex_orb_1st_lab(ex_i).eq.p &
-          .and.ex_orb_2nd_lab(ex_i).eq.s) then
-        det_ps=det_ex_dn(ex_i,ref)
-      elseif  (ex_orb_1st_lab(ex_i).eq.r &
-          .and.ex_orb_2nd_lab(ex_i).eq.q) then
-        det_rq=det_ex_dn(ex_i,ref)
+
+    if (itest.eq.0) then
+      done=0
+      do ex_i=1,single_ex_nb
+        if      (ex_orb_1st_lab(ex_i).eq.p &
+            .and.ex_orb_2nd_lab(ex_i).eq.q) then
+          det_pq=det_ex_dn(ex_i,ref)
+          done=done+1
+        elseif  (ex_orb_1st_lab(ex_i).eq.r &
+            .and.ex_orb_2nd_lab(ex_i).eq.s) then
+          det_rs=det_ex_dn(ex_i,ref)
+          done=done+1
+        elseif  (ex_orb_1st_lab(ex_i).eq.p &
+            .and.ex_orb_2nd_lab(ex_i).eq.s) then
+          det_ps=det_ex_dn(ex_i,ref)
+          done=done+1
+        elseif  (ex_orb_1st_lab(ex_i).eq.r &
+            .and.ex_orb_2nd_lab(ex_i).eq.q) then
+          det_rq=det_ex_dn(ex_i,ref)
+          done=done+1
+        endif
+      enddo
+      if (done.ne.4) call die('done.ne.4','')
+      detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)=(det_pq*det_rs-det_ps*det_rq)/detd(ref)
+      !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
+
+    elseif(itest.eq.1) then
+      call alloc('p_mat',p_mat,2,ndn)
+      p_mat=0
+      p_mat(1,p)=1
+      p_mat(2,r)=1
+      call alloc('q_mat',q_mat,ndn,2)
+      q_mat=0
+      do i=1,ndn
+        q_mat(i,1)=orb(i,q)
+        q_mat(i,2)=orb(i,s)
+      enddo
+      call alloc('work' ,work ,2,2)
+      work=0
+      if (ref.le.ndetdn) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_trans_inv_dn(:,:,ref))),q_mat)
+      elseif (ref.le.ndetdn+det_ex_unq_dn_nb) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_ex_trans_inv_dn(:,:,ref-ndetdn))),q_mat)
+      elseif (ref.le.ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) then
+        call die('','')
       endif
-    enddo
-    detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)=det_pq*det_rs-det_ps*det_rq
-    !write(6,*) '>det_ex_unq_dn',detu(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
+      detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)=detd(ref)*(work(1,1)*work(2,2)-work(1,2)*work(2,1))
+      !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
+
+    endif
+
   enddo ! det_ex_unq_dn_i
   call object_modified('detd')
 
   det_ex2_unq_bld_done=.true.
+  call object_modified('det_ex2_unq_bld_done')
 
   end subroutine det_ex2_unq_bld
 
@@ -3020,8 +3101,7 @@ module deriv_orb_mod
 ! loop over single orbital excitations
   ex_ij=0
   do ex_i = 1, single_ex_nb
-    !TRI do ex_j = 1, ex_i-1
-    do ex_j = 1, single_ex_nb !RECT 
+    do ex_j = 1, single_ex_nb
       ex_ij=ex_ij+1
       do csf_i = 1, ncsf
         do det_in_csf_i = 1, ndet_in_csf (csf_i)
@@ -3064,7 +3144,9 @@ module deriv_orb_mod
   implicit none
 
 ! local
-  integer ex_i,ex_j,ex_ij,ex_rev_i,ex_rev_j,ex_rev_i_j,ex_i_rev_j,ex_rev_i_rev_j
+  integer ex_i,ex_j,ex_rev_i,ex_rev_j
+  integer ex_ij,ex_rev_i_j,ex_i_rev_j,ex_rev_i_rev_j
+  integer ex_ji,ex_rev_j_i,ex_j_rev_i,ex_rev_j_rev_i
   integer csf_i, det_in_csf_i, det_i, dorb_i,dorb_j,dorb_ij
   real(dp) detex2
 
@@ -3099,57 +3181,39 @@ module deriv_orb_mod
   psid_ex2 =  0.d0
   dorb_ij=0
   do dorb_i = 1, param_orb_nb
-    ex_i = ex_orb_ind (dorb_i)
-    ex_rev_i = ex_orb_ind_rev (dorb_i)
     do dorb_j = 1, dorb_i
+      dorb_ij=dorb_ij+1
+
+      ex_i = ex_orb_ind (dorb_i)
+      ex_rev_i = ex_orb_ind_rev (dorb_i)
       ex_j = ex_orb_ind (dorb_j)
       ex_rev_j = ex_orb_ind_rev (dorb_j)
 
-      dorb_ij=dorb_ij+1
-      !TRI ex_ij=(ex_i-2)*(ex_i-1)/2+ex_j
-      !TRI ex_rev_i_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_j
-      !TRI ex_i_rev_j=(ex_i-2)*(ex_i-1)/2+ex_rev_j
-      !TRI ex_rev_i_rev_j=(ex_rev_i-2)*(ex_rev_i-1)/2+ex_rev_j
-      ex_ij         =(ex_i-1)    *single_ex_nb+ex_j     !RECT 
-      ex_rev_i_j    =(ex_rev_i-1)*single_ex_nb+ex_j     !RECT 
-      ex_i_rev_j    =(ex_i-1)    *single_ex_nb+ex_rev_j !RECT 
-      ex_rev_i_rev_j=(ex_rev_i-1)*single_ex_nb+ex_rev_j !RECT 
-      !if (ex_i.le.ex_j) then
-      !  ex_ij=(ex_i-1)*(ex_i)/2+ex_j
-      !else
-      !  ex_ij=(ex_j-1)*(ex_j)/2+ex_i
-      !endif
-      !if (ex_rev_i.le.ex_j) then
-      !  ex_rev_i_j=(ex_rev_i-1)*(ex_rev_i)/2+ex_j
-      !else
-      !  ex_rev_i_j=(ex_j-1)*(ex_j)/2+ex_rev_i
-      !endif
-      !if (ex_i.le.ex_rev_j) then
-      !  ex_i_rev_j=(ex_i-1)*(ex_i)/2+ex_rev_j
-      !else
-      !  ex_i_rev_j=(ex_rev_j-1)*(ex_rev_j)/2+ex_i
-      !endif
-      !if (ex_rev_i.le.ex_rev_j) then
-      !  ex_rev_i_rev_j=(ex_rev_i-1)*(ex_rev_i)/2+ex_rev_j
-      !else
-      !  ex_rev_i_rev_j=(ex_rev_j-1)*(ex_rev_j)/2+ex_rev_i
-      !endif
+      ex_ij         =(ex_i-1)    *single_ex_nb+ex_j
+      ex_rev_i_j    =(ex_rev_i-1)*single_ex_nb+ex_j
+      ex_i_rev_j    =(ex_i-1)    *single_ex_nb+ex_rev_j
+      ex_rev_i_rev_j=(ex_rev_i-1)*single_ex_nb+ex_rev_j
+      ex_ji         =(ex_j-1)    *single_ex_nb+ex_i
+      ex_rev_j_i    =(ex_rev_j-1)*single_ex_nb+ex_i
+      ex_j_rev_i    =(ex_j-1)    *single_ex_nb+ex_rev_i
+      ex_rev_j_rev_i=(ex_rev_j-1)*single_ex_nb+ex_rev_i
 
       do csf_i = 1, ncsf
         do det_in_csf_i = 1, ndet_in_csf (csf_i)
           det_i = iwdet_in_csf (det_in_csf_i, csf_i)
-          detex2 = det_ex2 (ex_ij, det_i)
+          detex2 = det_ex2 (ex_ij, det_i)+det_ex2 (ex_ji, det_i)
           if (.not. l_casscf .and. ex_rev_i /= 0) then
-            detex2 =  detex2-det_ex2 (ex_rev_i_j, det_i)
+            detex2 =  detex2-det_ex2 (ex_rev_i_j, det_i)-det_ex2 (ex_j_rev_i, det_i)
           endif
           if (.not. l_casscf .and. ex_rev_j /= 0) then
-            detex2 =  detex2-det_ex2 (ex_i_rev_j, det_i)
+            detex2 =  detex2-det_ex2 (ex_i_rev_j, det_i)-det_ex2 (ex_rev_j_i, det_i)
           endif
           if (.not. l_casscf .and. ex_rev_i /= 0 .and. ex_rev_j /= 0) then
-            detex2 =  detex2+det_ex2 (ex_rev_i_rev_j, det_i)
+            detex2 =  detex2+det_ex2 (ex_rev_i_rev_j, det_i)+det_ex2 (ex_rev_j_rev_i, det_i)
           endif
-          d2csf_orb(csf_i,dorb_ij)=d2csf_orb(csf_i,dorb_ij) + cdet_in_csf (det_in_csf_i, csf_i) *  detex2
+          d2csf_orb(csf_i,dorb_ij)=d2csf_orb(csf_i,dorb_ij) + cdet_in_csf (det_in_csf_i, csf_i) *  0.5d0*detex2
         enddo ! det_in_csf_i
+
         psid_ex2 (dorb_ij) = psid_ex2 (dorb_ij) + csf_coef (csf_i, 1) * d2csf_orb(csf_i,dorb_ij)
         d2csf_orb(csf_i,dorb_ij)=d2csf_orb(csf_i,dorb_ij) /  psi_det
       enddo ! csf_i

@@ -87,6 +87,7 @@ module linearresponse_mod
 
 ! initialization
 
+  itest=0
 ! loop over menu lines
   do
     call get_next_word (word)
@@ -130,6 +131,8 @@ module linearresponse_mod
       call get_next_value (l_symm_amat)
     case ('compare_to_tda')
       call get_next_value (l_compare_to_tda)
+    case ('itest')
+      call get_next_value (itest)
     case ('compare_to_optlin')
       call get_next_value (l_compare_linresp_and_optlin)
       if (l_compare_linresp_and_optlin) then

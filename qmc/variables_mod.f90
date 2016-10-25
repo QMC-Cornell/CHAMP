@@ -139,4 +139,6 @@ module variables_mod
 
 !  real(dp)                       :: eloc_av_err ! temporary
 
+  integer :: itest
+
 end module variables_mod
