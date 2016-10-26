@@ -100,6 +100,7 @@ module variables_mod
 
 ! linear response
   logical                         :: l_compare_linresp_and_optlin=.false.
+  logical                         :: l_triplet          =.false.
 
 ! total number of configurations (walkers)
   integer   :: nconf_total = 1
@@ -137,5 +138,7 @@ module variables_mod
   logical                          :: l_equilibration = .false.
 
 !  real(dp)                       :: eloc_av_err ! temporary
+
+  integer :: itest
 
 end module variables_mod

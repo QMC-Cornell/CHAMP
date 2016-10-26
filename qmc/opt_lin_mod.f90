@@ -822,7 +822,9 @@ module opt_lin_mod
   end select
   if (l_compare_linresp_and_optlin) then
   do i=1,param_nb
-  write(6,*) '/print_too_much/amat',i,(ham_lin_renorm_stab(i+1,j+1),j=1,param_nb)
+  do j=1,param_nb
+    write(6,*) '/print_too_much/amat',i,j,ham_lin_renorm_stab(i+1,j+1)
+  enddo
   enddo
   endif
 

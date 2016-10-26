@@ -471,6 +471,8 @@ $(OBJDIR)/%.o:%.f
 	$(F77) $(F77_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:%.c
 	$(CC) $(CC_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/opt_lin_mod.o:opt_lin_mod.f90
+	$(F95) -finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace -DMPI -o $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 
 
 $(OBJDIR)/accumulation_mod.o: $(OBJDIR)/MED_tools/average_mod.o \
@@ -649,8 +651,9 @@ $(OBJDIR)/jastrow_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/montecarlo_mod.o $(OBJDIR)/orbitals_mod.o
 $(OBJDIR)/linear_response_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/commons/dets_mod.o \
-	$(OBJDIR)/deriv_mod.o $(OBJDIR)/opt_common_mod.o \
-	$(OBJDIR)/opt_lin_mod.o $(OBJDIR)/vmc_mod.o
+	$(OBJDIR)/deriv_mod.o $(OBJDIR)/derivatives_fast_mod.o \
+	$(OBJDIR)/opt_common_mod.o $(OBJDIR)/opt_lin_mod.o \
+	$(OBJDIR)/vmc_mod.o
 $(OBJDIR)/main_menu_mod.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/backflow_mod.o \
 	$(OBJDIR)/basis_mod.o $(OBJDIR)/commons/contr3_mod.o \
 	$(OBJDIR)/commons/stepv_mod.o $(OBJDIR)/control_mod.o \
