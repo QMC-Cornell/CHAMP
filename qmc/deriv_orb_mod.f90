@@ -466,6 +466,7 @@ module deriv_orb_mod
         det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_orb_lab_up
         det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb ) = det_orb_lab_srt_up
         det_ex_to_calc_sgn_up (det_ex_unq_up_nb) = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
+        det_ex_unq_sgn_up (ex_i, det_unq_up_i)=det_ex_unq_sgn_up (ex_i, det_unq_up_i)*det_ex_to_calc_sgn_up(det_ex_unq_up_nb)
         det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_opt_lab_i, det_unq_up_i)
         det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_opt_lab_j
       endif
@@ -503,6 +504,7 @@ module deriv_orb_mod
         det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_orb_lab_dn
         det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb) = det_orb_lab_srt_dn
         det_ex_to_calc_sgn_dn (det_ex_unq_dn_nb) = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
+        det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)=det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_ex_unq_dn_nb)
         det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i)
         det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_opt_lab_j
       endif
@@ -2822,6 +2824,7 @@ module deriv_orb_mod
           det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb+det_ex2_unq_up_nb ) = det_orb_lab_up
           det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb ) = det_orb_lab_srt_up
           det_ex_to_calc_sgn_up (det_ex2_unq_up_nb) = det_ex_unq_sgn_up (single_ex_nb+ex_ij,det_unq_up_i)
+          det_ex_unq_sgn_up (single_ex_nb+ex_ij, det_unq_up_i)=det_ex_unq_sgn_up (single_ex_nb+ex_ij,det_unq_up_i)*det_ex_to_calc_sgn_up(det_ex2_unq_up_nb)
           det_ex2_unq_up_orb_info(det_ex2_unq_up_nb,1) = orbi_1st!orb_pos_in_det_unq_up (orbi_1st, det_unq_up_i)
           det_ex2_unq_up_orb_info(det_ex2_unq_up_nb,2) = orbj_1st!orb_pos_in_det_unq_up (orbj_1st, det_unq_up_i)
           det_ex2_unq_up_orb_info(det_ex2_unq_up_nb,3) = orbi_2nd
@@ -2866,6 +2869,7 @@ module deriv_orb_mod
           det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb+det_ex2_unq_dn_nb) = det_orb_lab_dn
           det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) = det_orb_lab_srt_dn
           det_ex_to_calc_sgn_dn (det_ex2_unq_dn_nb) = det_ex_unq_sgn_dn (single_ex_nb+ex_ij,det_unq_dn_i)
+          det_ex_unq_sgn_dn (single_ex_nb+ex_ij, det_unq_dn_i)=det_ex_unq_sgn_dn (single_ex_nb+ex_ij,det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_ex2_unq_dn_nb)
           det_ex2_unq_dn_orb_info (det_ex2_unq_dn_nb,1) = orbi_1st!orb_pos_in_det_unq_dn (orbi_1st, det_unq_dn_i)
           det_ex2_unq_dn_orb_info (det_ex2_unq_dn_nb,2) = orbj_1st!orb_pos_in_det_unq_dn (orbj_1st, det_unq_dn_i)
           det_ex2_unq_dn_orb_info (det_ex2_unq_dn_nb,3) = orbi_2nd
