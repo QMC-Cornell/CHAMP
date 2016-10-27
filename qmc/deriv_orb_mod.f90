@@ -162,6 +162,8 @@ module deriv_orb_mod
   integer, allocatable :: det_orb_lab_dn (:)
   integer, allocatable :: det_orb_lab_srt_up (:)
   integer, allocatable :: det_orb_lab_srt_dn (:)
+  integer, allocatable :: det_ex_to_calc_sgn_up (:)
+  integer, allocatable :: det_ex_to_calc_sgn_dn (:)
 
 ! Unique CSF
 !   an "CSF=\sum_k^n c_k Dkup Dkdn" is the data of
@@ -315,6 +317,8 @@ module deriv_orb_mod
   call alloc ('det_orb_lab_dn',     det_orb_lab_dn,     ndn)
   call alloc ('det_orb_lab_srt_up', det_orb_lab_srt_up, nup)
   call alloc ('det_orb_lab_srt_dn', det_orb_lab_srt_dn, ndn)
+  call alloc ('det_ex_to_calc_sgn_up',  det_ex_to_calc_sgn_up,  det_ex_max)
+  call alloc ('det_ex_to_calc_sgn_dn',  det_ex_to_calc_sgn_dn,  det_ex_max)
 
 ! FOR PART 2: UNIQUE CSFS
   det_in_csf_nb_tmp=0
@@ -444,6 +448,9 @@ module deriv_orb_mod
       do det_unq_up_k = 1, ndetup+det_ex_unq_up_nb
        if (arrays_equal (det_orb_lab_srt_up, det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
          iwdet_ex_up (ex_i, det_unq_up_i) = det_unq_up_k
+         if (det_unq_up_k.gt.ndetup) then
+           det_ex_unq_sgn_up (ex_i, det_unq_up_i)=det_ex_unq_sgn_up (ex_i, det_unq_up_i)*det_ex_to_calc_sgn_up(det_unq_up_k-ndetup)
+         endif
          exit
        endif
       enddo
@@ -456,7 +463,7 @@ module deriv_orb_mod
         iwdet_ex_ref_up (det_ex_unq_up_nb) = det_unq_up_i
         det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_orb_lab_up
         det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb ) = det_orb_lab_srt_up
-        det_ex_unq_sgn_up (ex_i, det_unq_up_i ) = 1
+        det_ex_to_calc_sgn_up (det_ex_unq_up_nb) = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
         det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_opt_lab_i, det_unq_up_i)
         det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_opt_lab_j
       endif
@@ -478,6 +485,9 @@ module deriv_orb_mod
       do det_unq_dn_k = 1, ndetdn+det_ex_unq_dn_nb
        if (arrays_equal (det_orb_lab_srt_dn, det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
          iwdet_ex_dn (ex_i, det_unq_dn_i) = det_unq_dn_k
+         if (det_unq_dn_k.gt.ndetdn) then
+           det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)=det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_unq_dn_k-ndetdn)
+         endif
          exit
        endif
       enddo
@@ -490,7 +500,7 @@ module deriv_orb_mod
         iwdet_ex_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
         det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_orb_lab_dn
         det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb) = det_orb_lab_srt_dn
-        det_ex_unq_sgn_dn (ex_i, det_unq_dn_i ) = 1
+        det_ex_to_calc_sgn_dn (det_ex_unq_dn_nb) = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
         det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i)
         det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_opt_lab_j
       endif
@@ -863,6 +873,13 @@ module deriv_orb_mod
   call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
   call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
   call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
+
+  call release ('det_orb_lab_up',     det_orb_lab_up)
+  call release ('det_orb_lab_dn',     det_orb_lab_dn)
+  call release ('det_orb_lab_srt_up', det_orb_lab_srt_up)
+  call release ('det_orb_lab_srt_dn', det_orb_lab_srt_dn)
+  call release ('det_ex_to_calc_sgn_up',  det_ex_to_calc_sgn_up)
+  call release ('det_ex_to_calc_sgn_dn',  det_ex_to_calc_sgn_dn)
 
   call release('det_in_csf_up_tmp',   det_in_csf_up_tmp)
   call release('det_in_csf_dn_tmp',   det_in_csf_dn_tmp)
@@ -2352,7 +2369,7 @@ module deriv_orb_mod
 
         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
         sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
-        if ((iwdet.eq.0).and.(iwdet.le.ndetup)) then
+        if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
          det_ex_up_in_x = sgn * detn (iwdet)
         else
 
@@ -2373,7 +2390,7 @@ module deriv_orb_mod
 
         iwdet = iwdet_ex_up (ex_rev_i, det_unq_up_i)
         sgn = det_ex_unq_sgn_up (ex_rev_i, det_unq_up_i)
-        if ((iwdet.eq.0).and.(iwdet.le.ndetup)) then
+        if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
          det_ex_rev_up_in_x = sgn * detn (iwdet)
         else
 
@@ -2400,7 +2417,7 @@ module deriv_orb_mod
 
         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
         sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
-        if ((iwdet.eq.0).and.(iwdet.le.ndetdn)) then
+        if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
          det_ex_dn_in_x = sgn * detn (iwdet)
         else
 
@@ -2421,7 +2438,7 @@ module deriv_orb_mod
 
         iwdet = iwdet_ex_dn (ex_rev_i, det_unq_dn_i)
         sgn = det_ex_unq_sgn_dn (ex_rev_i, det_unq_dn_i)
-        if ((iwdet.eq.0).and.(iwdet.le.ndetdn)) then
+        if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
          det_ex_rev_dn_in_x = sgn * detn (iwdet)
         else
 
@@ -2682,6 +2699,8 @@ module deriv_orb_mod
   integer, allocatable :: det_orb_lab_dn (:)
   integer, allocatable :: det_orb_lab_srt_up (:)
   integer, allocatable :: det_orb_lab_srt_dn (:)
+  integer, allocatable :: det_ex_to_calc_sgn_up (:)
+  integer, allocatable :: det_ex_to_calc_sgn_dn (:)
   integer :: det_ex2_max
 
 ! header
@@ -2741,6 +2760,8 @@ module deriv_orb_mod
   call alloc ('det_orb_lab_dn', det_orb_lab_dn, ndn)
   call alloc ('det_orb_lab_srt_up', det_orb_lab_srt_up, nup)
   call alloc ('det_orb_lab_srt_dn', det_orb_lab_srt_dn, ndn)
+  call alloc ('det_ex_to_calc_sgn_up',  det_ex_to_calc_sgn_up,  det_ex2_max)
+  call alloc ('det_ex_to_calc_sgn_dn',  det_ex_to_calc_sgn_dn,  det_ex2_max)
 
   ! double loop over single orbital excitations
   ex_ij=0
@@ -2774,6 +2795,9 @@ module deriv_orb_mod
         do det_unq_up_k = 1, ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb
          if (arrays_equal (det_orb_lab_srt_up, det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
            iwdet_ex_up (single_ex_nb+ex_ij, det_unq_up_i) = det_unq_up_k
+           if (det_unq_up_k.gt.ndetup+det_ex_unq_up_nb) then
+             det_ex_unq_sgn_up (single_ex_nb+ex_ij, det_unq_up_i)=det_ex_unq_sgn_up (single_ex_nb+ex_ij,det_unq_up_i)*det_ex_to_calc_sgn_up(det_unq_up_k-ndetup-det_ex_unq_up_nb)
+           endif
            exit
          endif
         enddo
@@ -2785,7 +2809,7 @@ module deriv_orb_mod
           iwdet_ex_ref_up (det_ex_unq_up_nb+det_ex2_unq_up_nb) = det_unq_up_i
           det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb+det_ex2_unq_up_nb ) = det_orb_lab_up
           det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb ) = det_orb_lab_srt_up
-          det_ex_unq_sgn_up (single_ex_nb+ex_ij, det_unq_up_i) = 1
+          det_ex_to_calc_sgn_up (det_ex2_unq_up_nb) = det_ex_unq_sgn_up (single_ex_nb+ex_ij,det_unq_up_i)
           det_ex2_unq_up_orb_info(det_ex2_unq_up_nb,1) = orbi_1st!orb_pos_in_det_unq_up (orbi_1st, det_unq_up_i)
           det_ex2_unq_up_orb_info(det_ex2_unq_up_nb,2) = orbj_1st!orb_pos_in_det_unq_up (orbj_1st, det_unq_up_i)
           det_ex2_unq_up_orb_info(det_ex2_unq_up_nb,3) = orbi_2nd
@@ -2815,6 +2839,9 @@ module deriv_orb_mod
         do det_unq_dn_k = 1, ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb
          if (arrays_equal (det_orb_lab_srt_dn, det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
            iwdet_ex_dn (single_ex_nb+ex_ij, det_unq_dn_i) = det_unq_dn_k
+           if (det_unq_dn_k.gt.ndetdn+det_ex_unq_dn_nb) then
+             det_ex_unq_sgn_dn (single_ex_nb+ex_ij, det_unq_dn_i)=det_ex_unq_sgn_dn (single_ex_nb+ex_ij,det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_unq_dn_k-ndetdn-det_ex_unq_dn_nb)
+           endif
            exit
          endif
         enddo
@@ -2826,7 +2853,7 @@ module deriv_orb_mod
           iwdet_ex_ref_dn (det_ex_unq_dn_nb+det_ex2_unq_dn_nb) = det_unq_dn_i
           det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb+det_ex2_unq_dn_nb) = det_orb_lab_dn
           det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) = det_orb_lab_srt_dn
-          det_ex_unq_sgn_dn (single_ex_nb+ex_ij, det_unq_dn_i) = 1
+          det_ex_to_calc_sgn_dn (det_ex2_unq_dn_nb) = det_ex_unq_sgn_dn (single_ex_nb+ex_ij,det_unq_dn_i)
           det_ex2_unq_dn_orb_info (det_ex2_unq_dn_nb,1) = orbi_1st!orb_pos_in_det_unq_dn (orbi_1st, det_unq_dn_i)
           det_ex2_unq_dn_orb_info (det_ex2_unq_dn_nb,2) = orbj_1st!orb_pos_in_det_unq_dn (orbj_1st, det_unq_dn_i)
           det_ex2_unq_dn_orb_info (det_ex2_unq_dn_nb,3) = orbi_2nd
@@ -2849,6 +2876,13 @@ module deriv_orb_mod
   call object_alloc ('det_unq_orb_lab_srt_dn', det_unq_orb_lab_srt_dn, ndn, ndetup+det_ex_unq_up_nb+det_ex2_unq_dn_nb)
   call object_alloc ('det_ex2_unq_up_orb_info', det_ex2_unq_up_orb_info, det_ex2_unq_up_nb,4)
   call object_alloc ('det_ex2_unq_dn_orb_info', det_ex2_unq_dn_orb_info, det_ex2_unq_dn_nb,4)
+
+  call release ('det_orb_lab_up', det_orb_lab_up)
+  call release ('det_orb_lab_dn', det_orb_lab_dn)
+  call release ('det_orb_lab_srt_up', det_orb_lab_srt_up)
+  call release ('det_orb_lab_srt_dn', det_orb_lab_srt_dn)
+  call release ('det_ex_to_calc_sgn_up',  det_ex_to_calc_sgn_up)
+  call release ('det_ex_to_calc_sgn_dn',  det_ex_to_calc_sgn_dn)
 
   write(6,'(a,i10)') ' Number of unique spin-up   doubly excited determinants = ',det_ex2_unq_up_nb
   write(6,'(a,i10)') ' Number of unique spin-down doubly excited determinants = ',det_ex2_unq_dn_nb
@@ -2954,7 +2988,6 @@ module deriv_orb_mod
       enddo
       if (done.ne.4) call die('done.ne.4','')
       detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)=(det_pq*det_rs-det_ps*det_rq)/detu(ref)
-      !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
 
     elseif(itest.eq.1) then
       call alloc('p_mat',p_mat,2,nup)
@@ -2977,9 +3010,9 @@ module deriv_orb_mod
         call die('','')
       endif
       detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)=detu(ref)*(work(1,1)*work(2,2)-work(1,2)*work(2,1))
-      !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
 
     endif
+    !write(6,*) '>det_ex_unq_up',detu(ndetup+det_ex_unq_up_nb+det_ex2_unq_up_i)
 
   enddo ! det_ex_unq_up_i
   call object_modified('detu')
@@ -3015,7 +3048,6 @@ module deriv_orb_mod
       enddo
       if (done.ne.4) call die('done.ne.4','')
       detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)=(det_pq*det_rs-det_ps*det_rq)/detd(ref)
-      !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
 
     elseif(itest.eq.1) then
       call alloc('p_mat',p_mat,2,ndn)
@@ -3025,8 +3057,8 @@ module deriv_orb_mod
       call alloc('q_mat',q_mat,ndn,2)
       q_mat=0
       do i=1,ndn
-        q_mat(i,1)=orb(i,q)
-        q_mat(i,2)=orb(i,s)
+        q_mat(i,1)=orb(nup+i,q)
+        q_mat(i,2)=orb(nup+i,s)
       enddo
       call alloc('work' ,work ,2,2)
       work=0
@@ -3038,9 +3070,9 @@ module deriv_orb_mod
         call die('','')
       endif
       detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)=detd(ref)*(work(1,1)*work(2,2)-work(1,2)*work(2,1))
-      !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
 
     endif
+    !write(6,*) '>det_ex_unq_dn',detd(ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_i)
 
   enddo ! det_ex_unq_dn_i
   call object_modified('detd')
