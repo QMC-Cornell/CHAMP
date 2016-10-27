@@ -911,6 +911,8 @@ module linearresponse_mod
   use all_modules_mod
   implicit none
 
+  integer :: i,j
+
 ! begin
   if (header_exe) then
     call object_create('super_ovlp_psii_psij_av')
@@ -925,6 +927,16 @@ module linearresponse_mod
 
   super_ovlp_psii_psij_av(1,1)=1.d0
   super_ovlp_psii_psij_av(2:,2:)=ovlp_psii_psij_av
+
+  if (run_done.or.l_print_every_block) then
+  if (l_print) then
+  do i=1,param_nb+1
+  do j=1,param_nb+1
+    write(6,*) '/print_too_much/super_ovlp',i,j,super_ovlp_psii_psij_av(i,j)
+  enddo
+  enddo
+  endif
+  endif
 
   end subroutine super_ovlp_psii_psij_av_bld
 
