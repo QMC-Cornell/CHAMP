@@ -1949,10 +1949,11 @@ module deriv_orb_mod
 
        enddo ! dim_i
 
-       grd_psid_ex_over_psid (dim_i,:,:) = grd_psid_ex_over_psid (:,:,dorb_i)/psid_ex (dorb_i)
+
      enddo ! det_in_csf_i
    enddo ! csf_i
 
+   grd_psid_ex_over_psid (:,:,dorb_i) = grd_psid_ex_over_psid (:,:,dorb_i)/psid_ex (dorb_i)
 
    !write(6,*) '>grd_psid_ex_over_psid',grd_psid_ex_over_psid(:,:,dorb_i)
  enddo ! dorb_i
