@@ -1305,11 +1305,10 @@ module linearresponse_mod
 
 ! local
   integer                         :: i,j,k,nunique,i_eigval,j_eigval,i_pos,jorb
-  integer                         :: maj1pos,maj2pos,maj3pos,maj4pos
   integer,  allocatable           :: position_in_array(:)
   integer,  allocatable           :: degeneracy(:)
   real(dp), allocatable           :: zero_array(:)
-  real(dp)                        :: maj1,maj2,maj3,maj4,contrib_max
+  real(dp)                        :: contrib_max
   real(dp), allocatable           :: contrib(:,:)
   logical, allocatable            :: went_through(:)
   character(len=7)                :: formt1
@@ -1416,43 +1415,7 @@ module linearresponse_mod
 !       This is "formt1"
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
 
-  if (l_print_eigenvec) then
-    ! parameter type
-    call alloc('formt3',formt3,n)
-    if (n.eq.param_nb) then
-      jorb=0
-      do j=1,n
-        if (is_param_type_orb(j)) then
-          jorb=jorb+1
-          write(formt3(j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
-        else
-          formt3(j)='('//trim(param_type(j))//')'
-        endif
-      enddo
-    elseif (n.eq.2*param_nb) then
-      jorb=0
-      do j=1,n/2
-        if (is_param_type_orb(j)) then
-          jorb=jorb+1
-          write(formt3(j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
-        else
-          formt3(j)='('//trim(param_type(j))//')'
-        endif
-      enddo
-      jorb=0
-      do j=1,n/2
-        if (is_param_type_orb(j)) then
-          jorb=jorb+1
-          write(formt3(n/2+j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                                   & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
-        else
-          formt3(n/2+j)='('//trim(param_type(j))//')'
-        endif
-      enddo
-    endif
-  endif
+  call get_formt3(formt3,n)
 
   do i = 1, nunique
     write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
@@ -1460,105 +1423,53 @@ module linearresponse_mod
       & eigval_i(position_in_array(i)),'(+/-',err_i(position_in_array(i)),') i (',&
       & degeneracy(i),')'
 
+    call get_formt1(i,formt1,n,eigvec,sorting,position_in_array)
+    call get_formt2(i,formt2,n,eigvec,sorting,position_in_array)
+
+    ! write all out
     if (l_print_eigenvec) then
-      ! information on X=Y, etc...
-      if (n.eq.param_nb) then
-        formt1='       '
-      elseif (n.eq.2*param_nb) then
-        call alloc('zero_array',zero_array,n/2)
-        if     (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
-                       & eigvec(n/2+1:n,sorting(position_in_array(i))),1.0d-2).eq.0) then
-         formt1='(EQU)  '
-        elseif (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
-                      & -eigvec(n/2+1:n,sorting(position_in_array(i))),1.0d-2).eq.0) then
-         formt1='(OPP)  '
-        elseif (is_equal(eigvec(n/2+1:n,sorting(position_in_array(i))),&
-                      &  zero_array,1.0d-2).eq.0) then
-         formt1='(TDAX) '
-        elseif (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
-                      &  zero_array,1.0d-2).eq.0) then
-         formt1='(TDAY) '
-        else
-         formt1='(UNK)  '
-        endif
-      endif
-      ! 3 major components
-      call alloc('formt2',formt2,n)
-      maj1=0
-      do j=1,n
-        if    (abs(eigvec(j, sorting(position_in_array(i)))).ge.maj1) then
-          maj1=abs(eigvec(j, sorting(position_in_array(i))))
-          maj1pos=j
-        endif
-      enddo
-      maj2=0
-      do j=1,n
-        if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj2).and.&
-             &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj1)) then
-          maj2=abs(eigvec(j, sorting(position_in_array(i))))
-          maj2pos=j
-        endif
-      enddo
-      maj3=0
-      do j=1,n
-        if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj3).and.&
-             &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj2)) then
-          maj3=abs(eigvec(j, sorting(position_in_array(i))))
-          maj3pos=j
-        endif
-      enddo
-      maj4=0
-      do j=1,n
-        if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj4).and.&
-             &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj3)) then
-          maj4=abs(eigvec(j, sorting(position_in_array(i))))
-          maj4pos=j
-        endif
-      enddo
-      do j=1,n
-        if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos).or.(j.eq.maj4pos)) then
-          formt2(j)=' [major] '
-        else
-          formt2(j)='         '
-        endif
-      enddo
-      ! write all out
       if (n.eq.param_nb) then
         do j=1,n
           if (abs(eigval_i(position_in_array(i))).eq.0.d0) then
-             write(6,'(a,a,i5,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j, sorting(position_in_array(i))),&
-                                         & formt2(j),formt3(j)
+             write(6,'(a,a,i5,a,f11.3,a,a)') &
+               & 'eigenvec',formt1,i,': ',&
+               &  eigvec(j, sorting(position_in_array(i))),&
+               &  formt2(j),formt3(j)
           elseif (eigval_i(position_in_array(i)).gt.0.d0) then
-            write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j ,sorting(position_in_array(i))),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
-                                         & formt2(j),formt3(j)
+            write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') &
+               & 'eigenvec',formt1,i,': ',&
+               &  eigvec(j ,sorting(position_in_array(i)))  ,' + ',eigvec(j,sorting(position_in_array(i))+1),&
+               &  formt2(j),formt3(j)
           elseif (eigval_i(position_in_array(i)).lt.0.d0) then
-            write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j ,sorting(position_in_array(i))-1),' + ',eigvec(j    ,sorting(position_in_array(i))),&
-                                         & formt2(j),formt3(j)
+            write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') &
+               & 'eigenvec',formt1,i,': ',&
+               &  eigvec(j ,sorting(position_in_array(i))-1),' + ',eigvec(j,sorting(position_in_array(i))  ),&
+               &  formt2(j),formt3(j)
           endif
         enddo
       elseif (n.eq.2*param_nb) then
         do j=1,n/2
           if (abs(eigval_i(position_in_array(i))).eq.0.d0) then
-            write(6,'(a,a,i5,a,2(f11.3,a,a))') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j     ,sorting(position_in_array(i))),&
-                                         & formt2(j)    ,formt3(j), &
-                                         & eigvec(j+n/2 ,sorting(position_in_array(i))),&
-                                         & formt2(j+n/2),formt3(j+n/2)
+            write(6,'(a,a,i5,a,2(f11.3,a,a))') &
+               & 'eigenvec',formt1,i,': ',&
+               &  eigvec(j     ,sorting(position_in_array(i))),&
+               &  formt2(j)    ,formt3(j), &
+               &  eigvec(j+n/2 ,sorting(position_in_array(i))),&
+               &  formt2(j+n/2),formt3(j+n/2)
           elseif (eigval_i(position_in_array(i)).gt.0.d0) then
-            write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j     ,sorting(position_in_array(i))),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
-                                         & formt2(j)    ,formt3(j), &
-                                         & eigvec(j+n/2 ,sorting(position_in_array(i))),' + ',eigvec(j+n/2,sorting(position_in_array(i))+1),&
-                                         & formt2(j+n/2),formt3(j+n/2)
+            write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') &
+               & 'eigenvec',formt1,i,': ',&
+               &  eigvec(j     ,sorting(position_in_array(i))  ),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
+               &  formt2(j)    ,formt3(j), &
+               &  eigvec(j+n/2 ,sorting(position_in_array(i))  ),' + ',eigvec(j+n/2,sorting(position_in_array(i))+1),&
+               &  formt2(j+n/2),formt3(j+n/2)
           elseif (eigval_i(position_in_array(i)).lt.0.d0) then
-            write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') 'eigenvec',formt1,i,': ',&
-                                         & eigvec(j     ,sorting(position_in_array(i))-1),' + ',eigvec(j    ,sorting(position_in_array(i))),&
-                                         & formt2(j)    ,formt3(j), &                   
-                                         & eigvec(j+n/2 ,sorting(position_in_array(i))-1),' + ',eigvec(j+n/2,sorting(position_in_array(i))),&
-                                         & formt2(j+n/2),formt3(j+n/2)
+            write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') &
+               & 'eigenvec',formt1,i,': ',&
+               &  eigvec(j     ,sorting(position_in_array(i))-1),' + ',eigvec(j    ,sorting(position_in_array(i))  ),&
+               &  formt2(j)    ,formt3(j), &                   
+               &  eigvec(j+n/2 ,sorting(position_in_array(i))-1),' + ',eigvec(j+n/2,sorting(position_in_array(i))  ),&
+               &  formt2(j+n/2),formt3(j+n/2)
           endif
         enddo
       endif
@@ -1602,40 +1513,46 @@ module linearresponse_mod
   do j=1,nunique
   if (abs(eigval_i(position_in_array(j))).eq.0.d0) then
     if (is_equal(contrib(sorting(position_in_array(j)),:),zero_array,0.2d0).ne.0) then
-      write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
-        & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
-        & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
-        & degeneracy(j),')'
+      write(6,'(a,i8,a,4(f12.6,a),i5,a)') &
+        & 'eigenvalue #',j,': ',&
+        &  eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
+        &  eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
+        &  degeneracy(j),')'
       do jorb=1,param_orb_nb
-        write(*,'(a,i2,a,i2,a,f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                           & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
-                                       contrib(sorting(position_in_array(j)),jorb)
+        write(*,'(a,i2,a,i2,a,f11.3)') &
+          & '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+          & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
+          & contrib(sorting(position_in_array(j)),jorb)
       enddo
     endif
   elseif (eigval_i(position_in_array(j)).gt.0.d0) then
     if((is_equal(contrib(sorting(position_in_array(j))  ,:),zero_array,0.2d0).ne.0).or.&
       &(is_equal(contrib(sorting(position_in_array(j))+1,:),zero_array,0.2d0).ne.0)) then
-      write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
-        & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
-        & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
-        & degeneracy(j),')'
+      write(6,'(a,i8,a,4(f12.6,a),i5,a)') &
+        & 'eigenvalue #',j,': ',&
+        &  eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
+        &  eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
+        &  degeneracy(j),')'
       do jorb=1,param_orb_nb
-        write(*,'(a,i2,a,i2,a,2f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                            & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
-                                         contrib(sorting(position_in_array(j)),jorb),contrib(sorting(position_in_array(j))+1,jorb)
+        write(*,'(a,i2,a,i2,a,2f11.3)') &
+          & '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+          & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
+          & contrib(sorting(position_in_array(j)),jorb),contrib(sorting(position_in_array(j))+1,jorb)
       enddo
     endif
   elseif (eigval_i(position_in_array(j)).lt.0.d0) then
     if((is_equal(contrib(sorting(position_in_array(j))-1,:),zero_array,0.2d0).ne.0).or.&
       &(is_equal(contrib(sorting(position_in_array(j))  ,:),zero_array,0.2d0).ne.0)) then
-      write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
+      write(6,'(a,i8,a,4(f12.6,a),i5,a)') &
+        & 'eigenvalue #',j,': ',&
         & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
         & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
         & degeneracy(j),')'
       do jorb=1,param_orb_nb
-        write(*,'(a,i2,a,i2,a,2f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
-                                            & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
-                                         contrib(sorting(position_in_array(j))-1,jorb),contrib(sorting(position_in_array(j)),jorb)
+        write(*,'(a,i2,a,i2,a,2f11.3)') &
+          & '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+          & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
+          & contrib(sorting(position_in_array(j))-1,jorb),contrib(sorting(position_in_array(j)),jorb)
       enddo
     endif
   endif
@@ -1648,6 +1565,180 @@ module linearresponse_mod
   endif
 
   end subroutine analysis_eigval_eigvec
+
+!===========================================================================
+  subroutine get_formt1(i,formt1,n,eigvec,sorting,position_in_array)
+!---------------------------------------------------------------------------
+! Description :
+! Description : 
+!
+! Created     : B. Mussard, October 2016
+! Modified    :
+!---------------------------------------------------------------------------
+  use all_modules_mod
+  implicit none
+
+! input/output
+  character(len=7), intent(out)              :: formt1
+  integer, intent(in)                        :: i,n
+  real(dp), allocatable,intent(in)           :: eigvec(:,:)
+  integer,  allocatable,intent(in)           :: sorting(:)
+  integer,  allocatable,intent(in)           :: position_in_array(:)
+
+! local
+  real(dp), allocatable           :: zero_array(:)
+
+  if (l_print_eigenvec) then
+    ! information on X=Y, etc...
+    if (n.eq.param_nb) then
+      formt1='       '
+    elseif (n.eq.2*param_nb) then
+      call alloc('zero_array',zero_array,n/2)
+      if     (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
+                     & eigvec(n/2+1:n,sorting(position_in_array(i))),1.0d-2).eq.0) then
+       formt1='(EQU)  '
+      elseif (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
+                    & -eigvec(n/2+1:n,sorting(position_in_array(i))),1.0d-2).eq.0) then
+       formt1='(OPP)  '
+      elseif (is_equal(eigvec(n/2+1:n,sorting(position_in_array(i))),&
+                    &  zero_array,1.0d-2).eq.0) then
+       formt1='(TDAX) '
+      elseif (is_equal(eigvec(:n/2   ,sorting(position_in_array(i))),&
+                    &  zero_array,1.0d-2).eq.0) then
+       formt1='(TDAY) '
+      else
+       formt1='(UNK)  '
+      endif
+    endif
+  endif
+
+  end subroutine get_formt1
+
+!===========================================================================
+  subroutine get_formt2(i,formt2,n,eigvec,sorting,position_in_array)
+!---------------------------------------------------------------------------
+! Description :
+! Description : 
+!
+! Created     : B. Mussard, October 2016
+! Modified    :
+!---------------------------------------------------------------------------
+  use all_modules_mod
+  implicit none
+
+! input/output
+  character(len=9), allocatable, intent(out) :: formt2(:)
+  integer, intent(in)                        :: i,n
+  real(dp), allocatable,intent(in)           :: eigvec(:,:)
+  integer,  allocatable,intent(in)           :: sorting(:)
+  integer,  allocatable,intent(in)           :: position_in_array(:)
+
+! local
+  integer                         :: j,maj1pos,maj2pos,maj3pos,maj4pos
+  real(dp)                        :: maj1,maj2,maj3,maj4
+
+  if (l_print_eigenvec) then
+    call alloc('formt2',formt2,n)
+    maj1=0
+    do j=1,n
+      if    (abs(eigvec(j, sorting(position_in_array(i)))).ge.maj1) then
+        maj1=abs(eigvec(j, sorting(position_in_array(i))))
+        maj1pos=j
+      endif
+    enddo
+    maj2=0
+    do j=1,n
+      if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj2).and.&
+           &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj1)) then
+        maj2=abs(eigvec(j, sorting(position_in_array(i))))
+        maj2pos=j
+      endif
+    enddo
+    maj3=0
+    do j=1,n
+      if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj3).and.&
+           &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj2)) then
+        maj3=abs(eigvec(j, sorting(position_in_array(i))))
+        maj3pos=j
+      endif
+    enddo
+    maj4=0
+    do j=1,n
+      if   ((abs(eigvec(j, sorting(position_in_array(i)))).ge.maj4).and.&
+           &(abs(eigvec(j, sorting(position_in_array(i)))).lt.maj3)) then
+        maj4=abs(eigvec(j, sorting(position_in_array(i))))
+        maj4pos=j
+      endif
+    enddo
+    do j=1,n
+      if ((j.eq.maj1pos).or.(j.eq.maj2pos).or.(j.eq.maj3pos).or.(j.eq.maj4pos)) then
+        formt2(j)=' [major] '
+      else
+        formt2(j)='         '
+      endif
+    enddo
+  endif
+
+  end subroutine get_formt2
+
+!===========================================================================
+  subroutine get_formt3(formt3,n)
+!---------------------------------------------------------------------------
+! Description :
+! Description : 
+!
+! Created     : B. Mussard, October 2016
+! Modified    :
+!---------------------------------------------------------------------------
+  use all_modules_mod
+  implicit none
+
+! input/output
+  character(len=15), allocatable,intent(out) :: formt3(:)
+  integer, intent(in)                        :: n
+
+! local
+  integer :: j,jorb
+
+  if (l_print_eigenvec) then
+    ! parameter type
+    call alloc('formt3',formt3,n)
+    if (n.eq.param_nb) then
+      jorb=0
+      do j=1,n
+        if (is_param_type_orb(j)) then
+          jorb=jorb+1
+          write(formt3(j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+    elseif (n.eq.2*param_nb) then
+      jorb=0
+      do j=1,n/2
+        if (is_param_type_orb(j)) then
+          jorb=jorb+1
+          write(formt3(j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                               & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+      jorb=0
+      do j=1,n/2
+        if (is_param_type_orb(j)) then
+          jorb=jorb+1
+          write(formt3(n/2+j),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                                   & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(n/2+j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+    endif
+  endif
+
+  end subroutine get_formt3
 
 !===========================================================================
   subroutine get_nparmj
