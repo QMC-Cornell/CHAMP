@@ -59,14 +59,16 @@ module deriv_orb_mod
   real(dp), allocatable                  :: slater_mat_ex_trans_inv_dn_2 (:,:,:)
 
 ! grd
-  logical                                :: grd_det_ex_unq_bld_done =  .false.
+  real(dp), allocatable                  :: grd_det_ex_unq_up (:,:,:)
+  real(dp), allocatable                  :: grd_det_ex_unq_dn (:,:,:)
   real(dp), allocatable                  :: grd_det_ex_dn (:,:,:,:)
   real(dp), allocatable                  :: grd_det_ex_up (:,:,:,:)
   real(dp), allocatable                  :: grd_psid_ex_over_psid (:,:,:)
   real(dp), allocatable                  :: grd_psi_ex_over_psi (:,:,:)
 
 ! lap
-  logical                                :: lap_det_ex_unq_bld_done =  .false.
+  real(dp), allocatable                  :: lap_det_ex_unq_up (:,:)
+  real(dp), allocatable                  :: lap_det_ex_unq_dn (:,:)
   real(dp), allocatable                  :: lap_det_ex_dn (:,:,:)
   real(dp), allocatable                  :: lap_det_ex_up (:,:,:)
   real(dp), allocatable                  :: lap_psid_ex_over_psid (:,:)
@@ -1533,7 +1535,8 @@ module deriv_orb_mod
 ! header
   if (header_exe) then
 
-   call object_create ('grd_det_ex_unq_bld_done')
+   call object_create ('grd_det_ex_unq_up')
+   call object_create ('grd_det_ex_unq_dn')
 
    call object_needed ('ndim')
    call object_needed ('nup')
@@ -1551,8 +1554,6 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_dn')
    call object_needed ('detu')
    call object_needed ('detd')
-   call object_needed ('grd_det_unq_up')
-   call object_needed ('grd_det_unq_dn')
 
    return
 
@@ -1561,42 +1562,40 @@ module deriv_orb_mod
 ! begin
 
 ! allocations
-  call object_alloc ('grd_det_unq_up', grd_det_unq_up, ndim, nup, ndetup+det_ex_unq_up_nb)
-  call object_alloc ('grd_det_unq_dn', grd_det_unq_dn, ndim, ndn, ndetdn+det_ex_unq_dn_nb)
+  call object_alloc ('grd_det_ex_unq_up', grd_det_ex_unq_up, ndim, nup, det_ex_unq_up_nb)
+  call object_alloc ('grd_det_ex_unq_dn', grd_det_ex_unq_dn, ndim, ndn, det_ex_unq_dn_nb)
+
+  grd_det_ex_unq_up = 0.d0
+  grd_det_ex_unq_dn = 0.d0
 
 ! spin up determinants
   do det_i = 1, det_ex_unq_up_nb
     do dim_i = 1, ndim
       do i = 1, nup
         do j = 1, nup
-          grd_det_unq_up (dim_i, i, ndetup+det_i) = grd_det_unq_up (dim_i, i, ndetup+det_i)  +  &
+          grd_det_ex_unq_up (dim_i, i, det_i) = grd_det_ex_unq_up (dim_i, i, det_i)  +  &
            slater_mat_ex_trans_inv_up (i, j, det_i) * dorb (dim_i, i, det_ex_unq_orb_lab_up (j, det_i))
         enddo
-        grd_det_unq_up (dim_i, i, ndetup+det_i) = grd_det_unq_up (dim_i, i, ndetup+det_i) * det_ex_unq_up(det_i)
-        !write(6,*) '>grd_det_unq_ex_up',grd_det_unq_up(dim_i, i, ndetup+det_i)
+        grd_det_ex_unq_up (dim_i, i, det_i) = grd_det_ex_unq_up (dim_i, i, det_i) * det_ex_unq_up(det_i)
+        !write(6,*) '>grd_det_ex_unq_ex_up',grd_det_ex_unq_up(dim_i, i, det_i)
 
       enddo
     enddo ! dim_i
   enddo ! det_i
-  call object_modified('grd_det_unq_up')
 
 ! spin down determinants
   do det_i = 1, det_ex_unq_dn_nb
     do dim_i = 1, ndim
       do i = 1, ndn
         do j = 1, ndn
-          grd_det_unq_dn (dim_i, i, ndetdn+det_i) = grd_det_unq_dn (dim_i, i, ndetdn+det_i)  +  &
+          grd_det_ex_unq_dn (dim_i, i, det_i) = grd_det_ex_unq_dn (dim_i, i, det_i)  +  &
            slater_mat_ex_trans_inv_dn (i, j, det_i) * dorb (dim_i, nup + i, det_ex_unq_orb_lab_dn (j, det_i))
         enddo
-        grd_det_unq_dn (dim_i, i, ndetdn+det_i) = grd_det_unq_dn (dim_i, i, ndetdn+det_i) * det_ex_unq_dn(det_i)
-        !write(6,*) '>grd_det_unq_ex_dn',grd_det_unq_dn(dim_i, i, ndetdn+det_i)
+        grd_det_ex_unq_dn (dim_i, i, det_i) = grd_det_ex_unq_dn (dim_i, i, det_i) * det_ex_unq_dn(det_i)
+        !write(6,*) '>grd_det_ex_unq_ex_dn',grd_det_ex_unq_dn(dim_i, i, det_i)
       enddo
     enddo ! dim_i
   enddo ! det_i
-  call object_modified('grd_det_unq_dn')
-
-  grd_det_ex_unq_bld_done=.true.
-  call object_modified('grd_det_ex_unq_bld_done')
 
   end subroutine grd_det_ex_unq_bld
 
@@ -1616,7 +1615,8 @@ module deriv_orb_mod
 ! header
   if (header_exe) then
 
-   call object_create ('lap_det_ex_unq_bld_done')
+   call object_create ('lap_det_ex_unq_up')
+   call object_create ('lap_det_ex_unq_dn')
 
    call object_needed ('nup')
    call object_needed ('ndn')
@@ -1627,14 +1627,8 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_orb_lab_up')
    call object_needed ('det_ex_unq_orb_lab_dn')
    call object_needed ('ddorb')
-   call object_needed ('ndetup')
-   call object_needed ('ndetdn')
    call object_needed ('det_ex_unq_up')
    call object_needed ('det_ex_unq_dn')
-   call object_needed ('detu')
-   call object_needed ('detd')
-   call object_needed ('lap_det_unq_up')
-   call object_needed ('lap_det_unq_dn')
 
    return
 
@@ -1643,37 +1637,35 @@ module deriv_orb_mod
 ! begin
 
 ! allocations
-  call object_alloc ('lap_det_unq_up', lap_det_unq_up, nup, ndetup+det_ex_unq_up_nb)
-  call object_alloc ('lap_det_unq_dn', lap_det_unq_dn, ndn, ndetdn+det_ex_unq_dn_nb)
+  call object_alloc ('lap_det_ex_unq_up', lap_det_ex_unq_up, nup, det_ex_unq_up_nb)
+  call object_alloc ('lap_det_ex_unq_dn', lap_det_ex_unq_dn, ndn, det_ex_unq_dn_nb)
+
+  lap_det_ex_unq_up = 0.d0
+  lap_det_ex_unq_dn = 0.d0
 
 ! spin up determinants
   do det_i = 1, det_ex_unq_up_nb
     do i = 1, nup
       do j = 1, nup
-        lap_det_unq_up (i, ndetup+det_i) = lap_det_unq_up (i, ndetup+det_i)  +  &
+        lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i)  +  &
          slater_mat_ex_trans_inv_up (i, j, det_i) * ddorb (i, det_ex_unq_orb_lab_up (j, det_i))
       enddo
-      lap_det_unq_up (i, ndetup+det_i) = lap_det_unq_up (i, ndetup+det_i) * det_ex_unq_up(det_i)
-      !write(6,*) '>lap_det_ex_unq_up',lap_det_unq_up(i,ndetup+det_i)
+      lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i) * det_ex_unq_up(det_i)
+      !write(6,*) '>lap_det_ex_unq_up',lap_det_ex_unq_up(i,det_i)
     enddo
   enddo  ! det_i
-  call object_modified('lap_det_unq_up')
 
 ! spin down determinants
   do det_i = 1, det_ex_unq_dn_nb
     do i = 1, ndn
       do j = 1, ndn
-        lap_det_unq_dn (i, ndetdn+det_i) = lap_det_unq_dn (i, ndetdn+det_i)  +  &
+        lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  +  &
          slater_mat_ex_trans_inv_dn (i, j, det_i) * ddorb (nup + i, det_ex_unq_orb_lab_dn (j, det_i))
       enddo
-      lap_det_unq_dn (i, ndetdn+det_i) = lap_det_unq_dn (i, ndetdn+det_i)  * det_ex_unq_dn(det_i)
-      !write(6,*) '>lap_det_ex_unq_dn',lap_det_unq_dn(i,ndetdn+det_i)
+      lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  * det_ex_unq_dn(det_i)
+      !write(6,*) '>lap_det_ex_unq_dn',lap_det_ex_unq_dn(i,det_i)
     enddo
   enddo ! det_i
-  call object_modified('lap_det_unq_dn')
-
-  lap_det_ex_unq_bld_done=.true.
-  call object_modified('lap_det_ex_unq_bld_done')
 
   end subroutine lap_det_ex_unq_bld
 
@@ -1717,7 +1709,8 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_sgn_dn')
    call object_needed ('grd_det_unq_up')
    call object_needed ('grd_det_unq_dn')
-   call object_needed ('grd_det_ex_unq_bld_done')
+   call object_needed ('grd_det_ex_unq_up')
+   call object_needed ('grd_det_ex_unq_dn')
 
    return
 
@@ -1742,12 +1735,20 @@ module deriv_orb_mod
 !       spin-up excited determinants:
         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
         sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
-        if (iwdet.ne.0) grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_unq_up (:,:,iwdet)
+        if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
+          grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_unq_up (:,:,iwdet)
+        else
+          grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_ex_unq_up (:,:,iwdet-ndetup)
+        endif
 
 !       spin-down excited determinants:
         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
         sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
-        if (iwdet.ne.0) grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_unq_dn (:,:,iwdet)
+        if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
+          grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_unq_dn (:,:,iwdet)
+        else
+          grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_ex_unq_dn (:,:,iwdet-ndetdn)
+        endif
 
      enddo ! det_in_csf_i
    enddo ! csf_i
@@ -1796,7 +1797,8 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_sgn_dn')
    call object_needed ('lap_det_unq_up')
    call object_needed ('lap_det_unq_dn')
-   call object_needed ('lap_det_ex_unq_bld_done')
+   call object_needed ('lap_det_ex_unq_up')
+   call object_needed ('lap_det_ex_unq_dn')
 
    return
 
@@ -1821,12 +1823,20 @@ module deriv_orb_mod
 !       spin-up excited determinants:
         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
         sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
-        if (iwdet.ne.0) lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_unq_up (:,iwdet)
+        if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
+          lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_unq_up (:,iwdet)
+        else
+          lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_ex_unq_up (:,iwdet-ndetup)
+        endif
 
 !       spin-down excited determinants:
         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
         sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
-        if (iwdet.ne.0) lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_unq_dn (:,iwdet)
+        if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
+          lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_unq_dn (:,iwdet)
+        else
+          lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_ex_unq_dn (:,iwdet-ndetdn)
+        endif
 
      enddo ! det_in_csf_i
    enddo ! csf_i
