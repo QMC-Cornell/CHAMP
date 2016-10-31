@@ -1525,30 +1525,39 @@ module linearresponse_mod
       ! write all out
       if (n.eq.param_nb) then
         do j=1,n
-          if (abs(eigval_i(position_in_array(i))).le.0.001) then
+          if (abs(eigval_i(position_in_array(i))).eq.0.d0) then
              write(6,'(a,a,i5,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
                                          & eigvec(j, sorting(position_in_array(i))),&
                                          & formt2(j),formt3(j)
-          else
+          elseif (eigval_i(position_in_array(i)).gt.0.d0) then
             write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
                                          & eigvec(j ,sorting(position_in_array(i))),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
+                                         & formt2(j),formt3(j)
+          elseif (eigval_i(position_in_array(i)).lt.0.d0) then
+            write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j ,sorting(position_in_array(i))-1),' + ',eigvec(j    ,sorting(position_in_array(i))),&
                                          & formt2(j),formt3(j)
           endif
         enddo
       elseif (n.eq.2*param_nb) then
-        flush(6)
         do j=1,n/2
-          if (abs(eigval_i(position_in_array(i))).le.0.001) then
+          if (abs(eigval_i(position_in_array(i))).eq.0.d0) then
             write(6,'(a,a,i5,a,2(f11.3,a,a))') 'eigenvec',formt1,i,': ',&
                                          & eigvec(j     ,sorting(position_in_array(i))),&
                                          & formt2(j)    ,formt3(j), &
                                          & eigvec(j+n/2 ,sorting(position_in_array(i))),&
                                          & formt2(j+n/2),formt3(j+n/2)
-          else
+          elseif (eigval_i(position_in_array(i)).gt.0.d0) then
             write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') 'eigenvec',formt1,i,': ',&
                                          & eigvec(j     ,sorting(position_in_array(i))),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
                                          & formt2(j)    ,formt3(j), &
                                          & eigvec(j+n/2 ,sorting(position_in_array(i))),' + ',eigvec(j+n/2,sorting(position_in_array(i))+1),&
+                                         & formt2(j+n/2),formt3(j+n/2)
+          elseif (eigval_i(position_in_array(i)).lt.0.d0) then
+            write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') 'eigenvec',formt1,i,': ',&
+                                         & eigvec(j     ,sorting(position_in_array(i))-1),' + ',eigvec(j    ,sorting(position_in_array(i))),&
+                                         & formt2(j)    ,formt3(j), &                   
+                                         & eigvec(j+n/2 ,sorting(position_in_array(i))-1),' + ',eigvec(j+n/2,sorting(position_in_array(i))),&
                                          & formt2(j+n/2),formt3(j+n/2)
           endif
         enddo
@@ -1577,10 +1586,10 @@ module linearresponse_mod
           do k=1,n
             contrib(i,jorb)=contrib(i,jorb)+eigvec(k,i)  *dpsi_dpsi_av(param_pairs(j,k))
           enddo
-        else
+        elseif (n.eq.2*param_nb) then
           do k=1,n/2
-            contrib(i,jorb)=contrib(i,jorb)+eigvec(k,i)  *dpsi_dpsi_av(param_pairs(j,k))
-            contrib(i,jorb)=contrib(i,jorb)+eigvec(k+n,i)*dpsi_dpsi_av(param_pairs(j,k))
+            contrib(i,jorb)=contrib(i,jorb)+eigvec(k,i)    *dpsi_dpsi_av(param_pairs(j,k))
+            contrib(i,jorb)=contrib(i,jorb)+eigvec(k+n/2,i)*dpsi_dpsi_av(param_pairs(j,k))
           enddo
         endif
         if (abs(contrib(i,jorb)).ge.contrib_max) contrib_max=abs(contrib(i,jorb))
@@ -1591,7 +1600,7 @@ module linearresponse_mod
 
   call alloc('zero_array',zero_array,param_orb_nb)
   do j=1,nunique
-  if ((eigval_i(position_in_array(j))).le.0.001) then
+  if (abs(eigval_i(position_in_array(j))).eq.0.d0) then
     if (is_equal(contrib(sorting(position_in_array(j)),:),zero_array,0.2d0).ne.0) then
       write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
         & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
@@ -1603,9 +1612,9 @@ module linearresponse_mod
                                        contrib(sorting(position_in_array(j)),jorb)
       enddo
     endif
-  else
+  elseif (eigval_i(position_in_array(j)).gt.0.d0) then
     if((is_equal(contrib(sorting(position_in_array(j))  ,:),zero_array,0.2d0).ne.0).or.&
-      &(is_equal(contrib(sorting(position_in_array(j)+1),:),zero_array,0.2d0).ne.0)) then
+      &(is_equal(contrib(sorting(position_in_array(j))+1,:),zero_array,0.2d0).ne.0)) then
       write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
         & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
         & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
@@ -1613,7 +1622,20 @@ module linearresponse_mod
       do jorb=1,param_orb_nb
         write(*,'(a,i2,a,i2,a,2f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
                                             & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
-                                         contrib(sorting(position_in_array(j)),jorb),contrib(sorting(position_in_array(j)+1),jorb)
+                                         contrib(sorting(position_in_array(j)),jorb),contrib(sorting(position_in_array(j))+1,jorb)
+      enddo
+    endif
+  elseif (eigval_i(position_in_array(j)).lt.0.d0) then
+    if((is_equal(contrib(sorting(position_in_array(j))-1,:),zero_array,0.2d0).ne.0).or.&
+      &(is_equal(contrib(sorting(position_in_array(j))  ,:),zero_array,0.2d0).ne.0)) then
+      write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',j,': ',&
+        & eigval_r(position_in_array(j)),'(+/-',err_r(position_in_array(j)),') +',&
+        & eigval_i(position_in_array(j)),'(+/-',err_i(position_in_array(j)),') i (',&
+        & degeneracy(j),')'
+      do jorb=1,param_orb_nb
+        write(*,'(a,i2,a,i2,a,2f11.3)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                            & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')',&
+                                         contrib(sorting(position_in_array(j))-1,jorb),contrib(sorting(position_in_array(j)),jorb)
       enddo
     endif
   endif
