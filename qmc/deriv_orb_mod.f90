@@ -86,7 +86,6 @@ module deriv_orb_mod
 
 ! psid_ex_in_x_bld
   real(dp), allocatable                  :: psid_ex_in_x (:)
-  !needed
   integer                                :: electron
 
 ! deloc_orb_bld
@@ -947,10 +946,6 @@ module deriv_orb_mod
    call object_create ('det_ex_unq_up')
    call object_create ('det_ex_unq_dn')
 
-   call object_needed ('detu')
-   call object_needed ('detd')
-   call object_needed ('ndetup')
-   call object_needed ('ndetdn')
    call object_needed ('det_ex_unq_up_nb')
    call object_needed ('det_ex_unq_dn_nb')
    call object_needed ('det_ex_unq_up_orb_1st_pos')
@@ -964,6 +959,8 @@ module deriv_orb_mod
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('orb')
+   call object_needed ('detu')
+   call object_needed ('detd')
 
    return
 
@@ -1044,6 +1041,8 @@ module deriv_orb_mod
    call object_needed ('iwdet_ex_dn')
    call object_needed ('det_ex_unq_sgn_up')
    call object_needed ('det_ex_unq_sgn_dn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
    call object_needed ('detu')
    call object_needed ('detd')
    call object_needed ('det_ex_unq_up')
@@ -1147,9 +1146,9 @@ module deriv_orb_mod
 ! begin
 
 ! allocations
-  call object_alloc ('psid_ex', psid_ex, param_orb_nb)
   call object_alloc ('dpsi_orb', dpsi_orb, param_orb_nb)
   call object_alloc ('dcsf_orb', dcsf_orb, ncsf, param_orb_nb)
+  call object_alloc ('psid_ex', psid_ex, param_orb_nb)
 
   psid_ex = 0.d0
   dcsf_orb =  0.d0
@@ -1254,22 +1253,20 @@ module deriv_orb_mod
    call object_needed ('ndn')
    call object_needed ('det_ex_unq_up_nb')
    call object_needed ('det_ex_unq_dn_nb')
-   call object_needed ('iwdet_ex_ref_up')
-   call object_needed ('iwdet_ex_ref_dn')
    call object_needed ('det_ex_unq_up_orb_1st_pos')
    call object_needed ('det_ex_unq_dn_orb_1st_pos')
    call object_needed ('det_ex_unq_up_orb_2nd_lab')
    call object_needed ('det_ex_unq_dn_orb_2nd_lab')
+   call object_needed ('iwdet_ex_ref_up')
+   call object_needed ('iwdet_ex_ref_dn')
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('orb')
-   call object_needed ('det_ex_unq_up')
-   call object_needed ('det_ex_unq_dn')
 
    call object_needed ('det_ex_unq_orb_lab_up')
    call object_needed ('det_ex_unq_orb_lab_dn')
-   call object_needed ('ndetup')
-   call object_needed ('ndetdn')
+   call object_needed ('det_ex_unq_up')
+   call object_needed ('det_ex_unq_dn')
    call object_needed ('detu')
    call object_needed ('detd')
 
@@ -1419,12 +1416,12 @@ module deriv_orb_mod
    call object_needed ('ndn')
    call object_needed ('det_ex_unq_up_nb')
    call object_needed ('det_ex_unq_dn_nb')
-   call object_needed ('iwdet_ex_ref_up')
-   call object_needed ('iwdet_ex_ref_dn')
    call object_needed ('det_ex_unq_up_orb_1st_pos')
    call object_needed ('det_ex_unq_dn_orb_1st_pos')
    call object_needed ('det_ex_unq_up_orb_2nd_lab')
    call object_needed ('det_ex_unq_dn_orb_2nd_lab')
+   call object_needed ('iwdet_ex_ref_up')
+   call object_needed ('iwdet_ex_ref_dn')
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('orb')
@@ -1545,15 +1542,11 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_dn_nb')
    call object_needed ('slater_mat_ex_trans_inv_up')
    call object_needed ('slater_mat_ex_trans_inv_dn')
+   call object_needed ('dorb')
    call object_needed ('det_ex_unq_orb_lab_up')
    call object_needed ('det_ex_unq_orb_lab_dn')
-   call object_needed ('dorb')
-   call object_needed ('ndetup')
-   call object_needed ('ndetdn')
    call object_needed ('det_ex_unq_up')
    call object_needed ('det_ex_unq_dn')
-   call object_needed ('detu')
-   call object_needed ('detd')
 
    return
 
@@ -1624,9 +1617,9 @@ module deriv_orb_mod
    call object_needed ('det_ex_unq_dn_nb')
    call object_needed ('slater_mat_ex_trans_inv_up')
    call object_needed ('slater_mat_ex_trans_inv_dn')
+   call object_needed ('ddorb')
    call object_needed ('det_ex_unq_orb_lab_up')
    call object_needed ('det_ex_unq_orb_lab_dn')
-   call object_needed ('ddorb')
    call object_needed ('det_ex_unq_up')
    call object_needed ('det_ex_unq_dn')
 
@@ -1711,6 +1704,8 @@ module deriv_orb_mod
    call object_needed ('grd_det_unq_dn')
    call object_needed ('grd_det_ex_unq_up')
    call object_needed ('grd_det_ex_unq_dn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
 
    return
 
@@ -1799,6 +1794,8 @@ module deriv_orb_mod
    call object_needed ('lap_det_unq_dn')
    call object_needed ('lap_det_ex_unq_up')
    call object_needed ('lap_det_ex_unq_dn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
 
    return
 
@@ -2106,8 +2103,8 @@ module deriv_orb_mod
    call object_create ('lap_lnpsid_ex')
 
    call object_needed ('nelec')
-   call object_needed ('ndim')
    call object_needed ('param_orb_nb')
+   call object_needed ('ndim')
    call object_needed ('lap_psid_ex_over_psid')
    call object_needed ('grd_psid_ex_over_psid')
 
@@ -2193,9 +2190,9 @@ module deriv_orb_mod
 
    call object_create ('grd_psi_ex_over_psi')
 
-   call object_needed ('param_orb_nb')
-   call object_needed ('nelec')
    call object_needed ('ndim')
+   call object_needed ('nelec')
+   call object_needed ('param_orb_nb')
    call object_needed ('grd_psid_ex_over_psid')
    call object_needed ('vj')
 
@@ -2270,8 +2267,8 @@ module deriv_orb_mod
    call object_needed ('param_orb_nb')
    call object_needed ('ndim')
    call object_needed ('nelec')
-   call object_needed ('sum_lap_lnpsi_ex')
    call object_needed ('grd_psi_ex_over_psi')
+   call object_needed ('sum_lap_lnpsi_ex')
 
    return
 
@@ -2662,9 +2659,9 @@ module deriv_orb_mod
    call object_create ('delta_eps')
 
    call object_needed ('param_orb_nb')
-   call object_needed ('orb_energies')
    call object_needed ('ex_orb_1st_lab')
    call object_needed ('ex_orb_2nd_lab')
+   call object_needed ('orb_energies')
    call object_needed ('ndet')
 
    return
@@ -2956,13 +2953,13 @@ module deriv_orb_mod
    call object_create ('det_ex2_unq_up')
    call object_create ('det_ex2_unq_dn')
 
-   call object_needed ('single_ex_nb')
    call object_needed ('det_ex2_unq_up_nb')
    call object_needed ('det_ex2_unq_dn_nb')
    call object_needed ('det_ex2_unq_up_orb_info')
    call object_needed ('det_ex2_unq_dn_orb_info')
    call object_needed ('iwdet_ex_ref_up')
    call object_needed ('iwdet_ex_ref_dn')
+   call object_needed ('single_ex_nb')
    call object_needed ('ex_orb_1st_lab')
    call object_needed ('ex_orb_2nd_lab')
    call object_needed ('det_ex_up')
@@ -2970,6 +2967,11 @@ module deriv_orb_mod
    call object_needed ('detu')
    call object_needed ('detd')
 
+   call object_needed ('nup')
+   call object_needed ('ndn')
+   call object_needed ('orb')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
    call object_needed ('slater_mat_trans_inv_up')
    call object_needed ('slater_mat_trans_inv_dn')
    call object_needed ('slater_mat_ex_trans_inv_up')
@@ -3127,23 +3129,30 @@ module deriv_orb_mod
    call object_create ('det_ex2_up')
    call object_create ('det_ex2_dn')
 
-   call object_needed ('single_ex_nb')
    call object_needed ('double_ex_nb')
-   call object_needed ('ncsf')
    call object_needed ('ndet')
+   call object_needed ('single_ex_nb')
+   call object_needed ('ncsf')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
+   call object_needed ('det_to_det_unq_up')
+   call object_needed ('det_to_det_unq_dn')
    call object_needed ('iwdet_ex_up')
    call object_needed ('iwdet_ex_dn')
+   call object_needed ('det_ex_unq_sgn_up')
+   call object_needed ('det_ex_unq_sgn_dn')
+   call object_needed ('ndetup')
+   call object_needed ('ndetdn')
+   call object_needed ('det_ex_unq_up_nb')
+   call object_needed ('det_ex_unq_dn_nb')
    call object_needed ('detu')
    call object_needed ('detd')
    call object_needed ('det_ex_unq_up')
    call object_needed ('det_ex_unq_dn')
    call object_needed ('det_ex2_unq_up')
    call object_needed ('det_ex2_unq_dn')
-   call object_needed ('det_to_det_unq_up')
-   call object_needed ('det_to_det_unq_dn')
+   call object_needed ('det_ex_up')
+   call object_needed ('det_ex_dn')
 
    return
 
@@ -3182,17 +3191,17 @@ module deriv_orb_mod
           iwdet = iwdet_ex_dn (single_ex_nb+ex_ij, det_unq_dn_i)
           sgn = det_ex_unq_sgn_dn (single_ex_nb+ex_ij, det_unq_dn_i)
           if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
-            det_ex2_dn (ex_ij, det_i) = sgn * detu (iwdet)
+            det_ex2_dn (ex_ij, det_i) = sgn * detd (iwdet)
           elseif (iwdet.le.ndetdn+det_ex_unq_dn_nb) then
             det_ex2_dn (ex_ij, det_i) = sgn * det_ex_unq_dn (iwdet-ndetdn)
           elseif (iwdet.le.ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) then
             det_ex2_dn (ex_ij, det_i) = sgn * det_ex2_unq_dn (iwdet-ndetdn-det_ex_unq_dn_nb)
           endif
 
-          det_ex2(ex_ij, det_i) = det_ex2_up (ex_ij, det_i) * det_to_det_unq_dn (det_i) &
+          det_ex2(ex_ij, det_i) = det_ex2_up (ex_ij, det_i) * detd (det_unq_dn_i) &
                                 + det_ex_up (ex_i, det_i)   * det_ex_dn (ex_j, det_i)   &
                                 + det_ex_up (ex_j, det_i)   * det_ex_dn (ex_i, det_i)   &
-                                + det_to_det_unq_up (det_i) * det_ex2_dn (ex_ij, det_i)
+                                + detu(det_unq_up_i)        * det_ex2_dn (ex_ij, det_i)
         enddo ! det_in_csf_i
       enddo ! csf_i
     enddo ! ex_j
@@ -3228,12 +3237,16 @@ module deriv_orb_mod
    call object_create ('d2csf_orb')
 
    call object_needed ('deriv_orb_pairs_nb')
+   call object_needed ('param_orb_nb')
+   call object_needed ('ex_orb_ind')
+   call object_needed ('ex_orb_ind_rev')
+   call object_needed ('single_ex_nb')
    call object_needed ('ncsf')
-   call object_needed ('ndet')
    call object_needed ('ndet_in_csf')
    call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
    call object_needed ('det_ex2')
+   call object_needed ('cdet_in_csf')
+   call object_needed ('csf_coef')
    call object_needed ('psi_det')
 
    return

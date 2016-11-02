@@ -16,6 +16,12 @@ module linearresponse_mod
 
 ! Declaration of global variables and default values
 
+! prints and debug
+  logical                         :: l_print            =.false.
+  logical                         :: l_print_eigenvec   =.false.
+  logical                         :: l_print_every_block=.false.
+  logical                         :: l_compare_to_tda   =.false.
+  logical                         :: l_symm_amat        =.false.
 ! TDA
   logical                         :: l_tda_only         =.false.
   real(dp), allocatable           :: tda_av_eigenval_r(:)
@@ -26,12 +32,6 @@ module linearresponse_mod
   real(dp), allocatable           :: tda_av_eigenval_via_super_i(:)
   real(dp), allocatable           :: tda_av_eigenval_via_super_r_err(:)
   real(dp), allocatable           :: tda_av_eigenval_via_super_i_err(:)
-! prints and debug
-  logical                         :: l_print            =.false.
-  logical                         :: l_print_eigenvec   =.false.
-  logical                         :: l_print_every_block=.false.
-  logical                         :: l_compare_to_tda   =.false.
-  logical                         :: l_symm_amat        =.false.
 ! hessian
   logical                         :: l_hessian          =.false.
   real(dp), allocatable           :: hessian_av_eigenval_r(:)
@@ -45,6 +45,11 @@ module linearresponse_mod
   real(dp), allocatable           :: real_hessian_av_eigenval_r_err(:)
   real(dp), allocatable           :: real_hessian_av_eigenval_i_err(:)
 ! "normal" linresp
+  real(dp), allocatable           :: linresp_av_eigenval_r(:)
+  real(dp), allocatable           :: linresp_av_eigenval_i(:)
+  real(dp), allocatable           :: linresp_av_eigenval_r_err(:)
+  real(dp), allocatable           :: linresp_av_eigenval_i_err(:)
+! basic matrices
   real(dp), allocatable           :: amat_av(:,:)
   real(dp), allocatable           :: super_amat_av(:,:)
   real(dp), allocatable           :: bmat_av(:,:)
@@ -52,10 +57,6 @@ module linearresponse_mod
   real(dp), allocatable           :: super_ovlp_psii_psij_av(:,:)
   real(dp), allocatable           :: linresp_mat(:,:)
   real(dp), allocatable           :: ovlp_mat(:,:)
-  real(dp), allocatable           :: linresp_av_eigenval_r(:)
-  real(dp), allocatable           :: linresp_av_eigenval_i(:)
-  real(dp), allocatable           :: linresp_av_eigenval_r_err(:)
-  real(dp), allocatable           :: linresp_av_eigenval_i_err(:)
 
   contains
 
@@ -186,7 +187,9 @@ module linearresponse_mod
     call object_provide ('orb_opt_last_lab')
     norb = orb_opt_last_lab
     write(6,'(a,i8)') ' Number of computed orbitals will be ', norb
-    if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda_only)) then
+    if ((.not.l_compare_linresp_and_optlin).and.&
+      & (.not.l_compare_to_tda).and.&
+      & (.not.l_tda_only)) then
       call object_provide ('double_ex_nb')
     endif
   else
@@ -277,7 +280,9 @@ module linearresponse_mod
   call object_average_request('dpsi_dpsi_eloc_av')
   call object_average_request('deloc_av')
   call object_average_request('dpsi_deloc_av')
-  if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda).and.(.not.l_tda_only)) then
+  if ((.not.l_compare_linresp_and_optlin).and.&
+    & (.not.l_compare_to_tda).and.&
+    & (.not.l_tda_only)) then
     call object_average_request('d2psi_av')
     call object_average_request('d2psi_eloc_av')
   endif
@@ -966,7 +971,8 @@ module linearresponse_mod
   linresp_mat=0.d0
   linresp_mat(1:param_nb,1:param_nb)=amat_av
   linresp_mat(param_nb+1:2*param_nb,param_nb+1:2*param_nb)=amat_av
-  if ((.not.l_compare_linresp_and_optlin).and.(.not.l_compare_to_tda)) then
+  if ((.not.l_compare_linresp_and_optlin).and.&
+    & (.not.l_compare_to_tda)) then
     call object_provide('bmat_av')
     linresp_mat(param_nb+1:2*param_nb,1:param_nb)=bmat_av
     linresp_mat(1:param_nb,param_nb+1:2*param_nb)=bmat_av
@@ -1133,6 +1139,10 @@ module linearresponse_mod
     call object_needed('dpsi_eloc_covar')
     call object_needed('deloc_av')
     call object_needed('amat_av')
+    call object_needed('dpsi_dpsi_eloc_av')
+    call object_needed('dpsi_av')
+    call object_needed('dpsi_eloc_av')
+    call object_needed('dpsi_deloc_covar')
 
     return
   endif
@@ -1317,14 +1327,6 @@ module linearresponse_mod
   character(len=15), allocatable  :: formt3(:)
 
 ! begin
-  if (header_exe) then
-    call object_needed('param_pairs')
-    call object_needed('dpsi_av')
-    call object_needed('dpsi_dpsi_av')
-    
-    return
-  endif
-
   if (run_done.or.l_print_every_block) then
 
 ! Gather information on unique eigenvalues (real and im part)
@@ -1487,6 +1489,10 @@ module linearresponse_mod
   write(6,*) " where \Psi^n is the wavefunction constructed by the n'th eigenvector \Delta p^n_i"
   write(6,*) "Here are only shown the dominant contributions, scaled to the largest component"
   write(6,*) ""
+
+  call object_provide('param_pairs')
+  call object_provide('dpsi_av')
+  call object_provide('dpsi_dpsi_av')
 
   call alloc('contrib',contrib,n,param_orb_nb)
   contrib_max=0.d0
