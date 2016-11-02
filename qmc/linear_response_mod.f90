@@ -646,8 +646,8 @@ module linearresponse_mod
 
 ! the sorted eigenvalues are "linresp_av_eigenval"
   do i = 1, param_nb+1
-   tda_av_eigenval_via_super_r (i) = eigval_r(backward_sort(i))-eigval_r(backward_sort(1))
-   tda_av_eigenval_via_super_i (i) = eigval_i(backward_sort(i))-eigval_i(backward_sort(1))
+   tda_av_eigenval_via_super_r (i) = eigval_r(backward_sort(i))
+   tda_av_eigenval_via_super_i (i) = eigval_i(backward_sort(i))
   enddo
 
 ! output analysis
@@ -1311,13 +1311,15 @@ module linearresponse_mod
   real(dp)                        :: contrib_max
   real(dp), allocatable           :: contrib(:,:)
   logical, allocatable            :: went_through(:)
+  character(len=9), allocatable   :: formt0(:)
   character(len=7)                :: formt1
   character(len=9), allocatable   :: formt2(:)
   character(len=15), allocatable  :: formt3(:)
 
 ! begin
   if (header_exe) then
-    call object_needed ('param_pairs')
+    call object_needed('param_pairs')
+    call object_needed('dpsi_av')
     call object_needed('dpsi_dpsi_av')
     
     return
@@ -1415,10 +1417,11 @@ module linearresponse_mod
 !       This is "formt1"
   write(6,'(a,i5)') 'Sorted (complex) (unique) eigenvalues:',nunique
 
+  call get_formt0(formt0,n,eigval_r,eigvec,sorting,position_in_array)
   call get_formt3(formt3,n)
 
   do i = 1, nunique
-    write(6,'(a,i8,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',&
+    write(6,'(a,i8,a,a,4(f12.6,a),i5,a)') 'eigenvalue #',i,': ',formt0(position_in_array(i)),&
       & eigval_r(position_in_array(i)),'(+/-',err_r(position_in_array(i)),') +',&
       & eigval_i(position_in_array(i)),'(+/-',err_i(position_in_array(i)),') i (',&
       & degeneracy(i),')'
@@ -1428,21 +1431,21 @@ module linearresponse_mod
 
     ! write all out
     if (l_print_eigenvec) then
-      if (n.eq.param_nb) then
+      if ((n.eq.param_nb).or.(n.eq.param_nb+1)) then
         do j=1,n
           if (abs(eigval_i(position_in_array(i))).eq.0.d0) then
              write(6,'(a,a,i5,a,f11.3,a,a)') &
-               & 'eigenvec',formt1,i,': ',&
+               & 'eigenvec',formt1,i,':          ',&
                &  eigvec(j, sorting(position_in_array(i))),&
                &  formt2(j),formt3(j)
           elseif (eigval_i(position_in_array(i)).gt.0.d0) then
             write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') &
-               & 'eigenvec',formt1,i,': ',&
+               & 'eigenvec',formt1,i,':          ',&
                &  eigvec(j ,sorting(position_in_array(i)))  ,' + ',eigvec(j,sorting(position_in_array(i))+1),&
                &  formt2(j),formt3(j)
           elseif (eigval_i(position_in_array(i)).lt.0.d0) then
             write(6,'(a,a,i5,a,f11.3,a,f11.3,a,a)') &
-               & 'eigenvec',formt1,i,': ',&
+               & 'eigenvec',formt1,i,':          ',&
                &  eigvec(j ,sorting(position_in_array(i))-1),' + ',eigvec(j,sorting(position_in_array(i))  ),&
                &  formt2(j),formt3(j)
           endif
@@ -1451,21 +1454,21 @@ module linearresponse_mod
         do j=1,n/2
           if (abs(eigval_i(position_in_array(i))).eq.0.d0) then
             write(6,'(a,a,i5,a,2(f11.3,a,a))') &
-               & 'eigenvec',formt1,i,': ',&
+               & 'eigenvec',formt1,i,':          ',&
                &  eigvec(j     ,sorting(position_in_array(i))),&
                &  formt2(j)    ,formt3(j), &
                &  eigvec(j+n/2 ,sorting(position_in_array(i))),&
                &  formt2(j+n/2),formt3(j+n/2)
           elseif (eigval_i(position_in_array(i)).gt.0.d0) then
             write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') &
-               & 'eigenvec',formt1,i,': ',&
+               & 'eigenvec',formt1,i,':          ',&
                &  eigvec(j     ,sorting(position_in_array(i))  ),' + ',eigvec(j    ,sorting(position_in_array(i))+1),&
                &  formt2(j)    ,formt3(j), &
                &  eigvec(j+n/2 ,sorting(position_in_array(i))  ),' + ',eigvec(j+n/2,sorting(position_in_array(i))+1),&
                &  formt2(j+n/2),formt3(j+n/2)
           elseif (eigval_i(position_in_array(i)).lt.0.d0) then
             write(6,'(a,a,i5,a,2(f11.3,a,f11.3,a,a))') &
-               & 'eigenvec',formt1,i,': ',&
+               & 'eigenvec',formt1,i,':          ',&
                &  eigvec(j     ,sorting(position_in_array(i))-1),' + ',eigvec(j    ,sorting(position_in_array(i))  ),&
                &  formt2(j)    ,formt3(j), &                   
                &  eigvec(j+n/2 ,sorting(position_in_array(i))-1),' + ',eigvec(j+n/2,sorting(position_in_array(i))  ),&
@@ -1496,6 +1499,11 @@ module linearresponse_mod
         if (n.eq.param_nb) then
           do k=1,n
             contrib(i,jorb)=contrib(i,jorb)+eigvec(k,i)  *dpsi_dpsi_av(param_pairs(j,k))
+          enddo
+        elseif (n.eq.param_nb+1) then
+          contrib(i,jorb)=eigvec(1,i)
+          do k=1,n-1
+            contrib(i,jorb)=contrib(i,jorb)+eigvec(k+1,i)  *dpsi_av(k)
           enddo
         elseif (n.eq.2*param_nb) then
           do k=1,n/2
@@ -1590,7 +1598,7 @@ module linearresponse_mod
 
   if (l_print_eigenvec) then
     ! information on X=Y, etc...
-    if (n.eq.param_nb) then
+    if ((n.eq.param_nb).or.(n.eq.param_nb+1)) then
       formt1='       '
     elseif (n.eq.2*param_nb) then
       call alloc('zero_array',zero_array,n/2)
@@ -1701,7 +1709,6 @@ module linearresponse_mod
   integer :: j,jorb
 
   if (l_print_eigenvec) then
-    ! parameter type
     call alloc('formt3',formt3,n)
     if (n.eq.param_nb) then
       jorb=0
@@ -1712,6 +1719,18 @@ module linearresponse_mod
                                                & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
         else
           formt3(j)='('//trim(param_type(j))//')'
+        endif
+      enddo
+    elseif (n.eq.param_nb+1) then
+      jorb=0
+      formt3(1)='(gs)'
+      do j=1,n-1
+        if (is_param_type_orb(j+1)) then
+          jorb=jorb+1
+          write(formt3(j+1),'(a,i2,a,i2,a)') '(orbital',ex_orb_1st_lab(ex_orb_ind(jorb)),&
+                                                 & '->',ex_orb_2nd_lab(ex_orb_ind(jorb)),')'
+        else
+          formt3(j+1)='('//trim(param_type(j))//')'
         endif
       enddo
     elseif (n.eq.2*param_nb) then
@@ -1739,6 +1758,65 @@ module linearresponse_mod
   endif
 
   end subroutine get_formt3
+
+!===========================================================================
+  subroutine get_formt0(formt0,n,eigval_r,eigvec,sorting,position_in_array)
+!---------------------------------------------------------------------------
+! Description :
+! Description : 
+!
+! Created     : B. Mussard, October 2016
+! Modified    :
+!---------------------------------------------------------------------------
+  use all_modules_mod
+  implicit none
+
+! input/output
+  character(len=9), allocatable,intent(out) :: formt0(:)
+  integer, intent(in)                        :: n
+  real(dp), allocatable,intent(in)           :: eigval_r(:)
+  real(dp), allocatable,intent(in)           :: eigvec(:,:)
+  integer,  allocatable,intent(in)           :: sorting(:)
+  integer,  allocatable,intent(in)           :: position_in_array(:)
+
+! local
+  integer :: closestpos, largestpos, largestprojpos,i,j
+  real(dp):: closest   , largest   , largestproj, contrib
+
+  call alloc('formt0',formt0,n)
+  if (n.eq.param_nb+1) then
+    closest=1000
+    closestpos=0
+    largest=0
+    largestpos=0
+    largestproj=0
+    largestprojpos=0
+    do j=1,n
+      if (abs(eigval_r(j)-etrial).lt.closest) then
+        closest=abs(eigval_r(j)-etrial)
+        closestpos=j
+      endif
+      if (abs(eigvec(1, sorting(position_in_array(j)))).gt.largest) then
+        largest=abs(eigvec(1, sorting(position_in_array(j))))
+        largestpos=j
+      endif
+      contrib=eigvec(1, sorting(position_in_array(j)))
+      do i=1,n-1
+        contrib=contrib+eigvec(i+1, sorting(position_in_array(j)))*dpsi_av(i)
+      enddo
+      if (abs(contrib).gt.largestproj) then
+        largestproj=abs(contrib)
+        largestprojpos=j
+      endif
+    enddo
+    do j=1,n
+      if (j.eq.closestpos)     formt0(j)(1:3)='-->'
+      if (j.eq.largestpos)     formt0(j)(4:6)='-->'
+      if (j.eq.largestprojpos) formt0(j)(7:9)='-->'
+    enddo
+  endif
+
+  end subroutine get_formt0
 
 !===========================================================================
   subroutine get_nparmj
