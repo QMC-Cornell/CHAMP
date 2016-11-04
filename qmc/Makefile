@@ -403,7 +403,7 @@ make:
 	perl makemake.pl 
 
 clean:
-	rm -fr *exe *.dif *.lst *.sav compiler_files
+	rm -fr *.dif *.lst *.sav compiler_files
 
 clean_all_lib:
 	make clean_all
