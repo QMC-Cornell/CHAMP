@@ -150,6 +150,7 @@
        call object_average_request ('eloc_av')
        call object_variance_request ('eloc_av_var')
        call object_average_request ('eloc_sq_av')
+       call object_error_request ('eloc_av_err')
        call object_error_request ('error_sigma')
 
       call print_list_of_averages_and_errors
