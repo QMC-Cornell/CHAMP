@@ -122,7 +122,7 @@ module csfs_mod
 
    call object_modified ('ncsf')
    call object_modified ('csf_coef')
-      call object_modified ('csf_rot_coef') !MJO
+   call object_modified ('csf_rot_coef') !MJO
 
   case ('dets_in_csfs')
    call dets_in_csfs_rd

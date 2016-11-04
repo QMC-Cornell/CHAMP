@@ -162,6 +162,7 @@ module initialization_mod
 !  idbdt=0
   nparml=0
   nparmcsf=0
+  nparmlin=0
   nparmj=0
   nparms=0
   nparmjs=nparmj+nparms

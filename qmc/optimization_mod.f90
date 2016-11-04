@@ -3698,31 +3698,39 @@ module optimization_mod
   endif
 
 ! begin
-  if (l_opt_ovlp_fn_linear) then
-   nparmcsf=ncsf
-   call object_alloc ('iwcsf', iwcsf, nparmcsf)
-   do param_i = 1, nparmcsf
-    iwcsf (param_i) = param_i
-   enddo
-   ! MJO98 I'm not sure about whether this is correct for rotations
-   if (l_opt_csf_rot) then
-      nparmlin = 0
-   else 
-      nparmlin = nparmcsf
-   endif
-   nparmlin = nparmcsf
+  if (.not. l_opt_csf) then
+   nparmcsf=0
+   nparmlin=0
+
   else
-   nparmcsf=ncsf-1
-   call object_alloc ('iwcsf', iwcsf, nparmcsf)
-   do param_i = 1, nparmcsf
-    iwcsf (param_i) = param_i + 1
-   enddo
-   if (l_opt_csf_rot) then
-      nparmlin = 0
-   else 
-      nparmlin = nparmcsf
+
+   if (l_opt_ovlp_fn_linear) then
+    nparmcsf=ncsf
+    call object_alloc ('iwcsf', iwcsf, nparmcsf)
+    do param_i = 1, nparmcsf
+     iwcsf (param_i) = param_i
+    enddo
+    ! MJO98 I'm not sure about whether this is correct for rotations
+    if (l_opt_csf_rot) then
+       nparmlin = 0
+    else 
+       nparmlin = nparmcsf
+    endif
+    nparmlin = nparmcsf
+   else
+    nparmcsf=ncsf-1
+    call object_alloc ('iwcsf', iwcsf, nparmcsf)
+    do param_i = 1, nparmcsf
+     iwcsf (param_i) = param_i + 1
+    enddo
+    if (l_opt_csf_rot) then
+       nparmlin = 0
+    else 
+       nparmlin = nparmcsf
+    endif
+    nparmlin = nparmcsf
    endif
-   nparmlin = nparmcsf
+
   endif
 
   end subroutine iwcsf_bld
