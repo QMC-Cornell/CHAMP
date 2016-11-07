@@ -2341,7 +2341,7 @@ module optimization_mod
        norm = norm + csf_coef(i,iwf)**2
     enddo
     norm = sqrt(norm)
-    print*,"CSF norm: ",norm
+!    print*,"CSF norm: ",norm
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
