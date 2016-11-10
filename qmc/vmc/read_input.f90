@@ -1190,40 +1190,43 @@
       call systemflush(6)
 
       call alloc ('csf_coef', csf_coef, ncsf, nwf)
-      call alloc ('csf_rot_coef', csf_rot_coef, ncsf-1, nwf)
       read(5,*) (csf_coef(icsf,1),icsf=1,ncsf)
       write(6,'(''CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
-      !Normalize CSF parameters and then
-      !calculate initial rotation parameters from csf parameters using
-      !
-      ! exp(-R)|0> = cos(d) - sin(d)/d sum R_k |k>
-      ! d = sqrt(sum(abs(R_k)^2))
-      ! R_0 = cos(d)
-      ! and for k.ne.0
-      ! R_k = -C_k d/sin(d) 
-      ! 
-      csf_norm = 0
-      do icsf=1,ncsf
-         csf_norm = csf_norm + csf_coef(icsf,1)**2
-      enddo
-      csf_norm = sqrt(csf_norm)
-      do icsf=1,ncsf
-         csf_coef(icsf,1) = csf_coef(icsf,1)/csf_norm
-      enddo
 
-      ! Calculate csf_rot_arg (or d, above)
-      csf_rot_arg     = acos(csf_coef(1,1))
-
-      ! Now calculate rotation parameters - only m-1 parameters
-      ! because the normalization fixes the first parameter
-      ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
-      ! by the normalization, so we only have ncsf-1 rotation parameters
-      do i=1,ncsf-1
-         csf_rot_coef(i,1) = -csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
-      enddo
-
-      write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
-      write(6,'(''Initial CSF rotation coefs='',20f10.6)') (csf_rot_coef(icsf,1),icsf=1,ncsf-1)
+      if (l_opt_csf_rot) then
+       call alloc ('csf_rot_coef', csf_rot_coef, ncsf-1, nwf)
+       !Normalize CSF parameters and then
+       !calculate initial rotation parameters from csf parameters using
+       !
+       ! exp(-R)|0> = cos(d) - sin(d)/d sum R_k |k>
+       ! d = sqrt(sum(abs(R_k)^2))
+       ! R_0 = cos(d)
+       ! and for k.ne.0
+       ! R_k = -C_k d/sin(d) 
+       ! 
+       csf_norm = 0
+       do icsf=1,ncsf
+          csf_norm = csf_norm + csf_coef(icsf,1)**2
+       enddo
+       csf_norm = sqrt(csf_norm)
+       do icsf=1,ncsf
+          csf_coef(icsf,1) = csf_coef(icsf,1)/csf_norm
+       enddo
+       
+       ! Calculate csf_rot_arg (or d, above)
+       csf_rot_arg     = acos(csf_coef(1,1))
+       
+       ! Now calculate rotation parameters - only m-1 parameters
+       ! because the normalization fixes the first parameter
+       ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
+       ! by the normalization, so we only have ncsf-1 rotation parameters
+       do i=1,ncsf-1
+          csf_rot_coef(i,1) = -csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
+       enddo
+       
+       write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(icsf,1),icsf=1,ncsf)
+       write(6,'(''Initial CSF rotation coefs='',20f10.6)') (csf_rot_coef(icsf,1),icsf=1,ncsf-1)
+      endif
 
       call alloc ('ndet_in_csf', ndet_in_csf, ncsf)
       read(5,*) (ndet_in_csf(icsf),icsf=1,ncsf)
