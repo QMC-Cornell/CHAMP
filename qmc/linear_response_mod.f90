@@ -581,7 +581,6 @@ module linearresponse_mod
 
   do i = 1, param_nb
      tda_fosc_av(i) = 2.d0/3.d0*tda_av_eigenval_r(i)*sum(tda_fosc_comp_av(i,:))
-     !write(*,*) 'tda',i, tda_fosc_av(i), tda_fosc_av_err(i)
   enddo
 
 ! output analysis
@@ -731,7 +730,6 @@ module linearresponse_mod
 
   do i = 1, param_nb+1
      tda_fosc_av_via_super(i) = 2.d0/3.d0*(tda_av_eigenval_via_super_r(i)-tda_av_eigenval_via_super_r(1))*sum(tda_fosc_comp_av(i,:))
-     !write(*,*) 'super ci', i, tda_fosc_av_via_super(i),tda_fosc_av_via_super_err(i)
   enddo
 
 ! output analysis
