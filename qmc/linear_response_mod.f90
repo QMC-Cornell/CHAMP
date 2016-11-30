@@ -481,8 +481,9 @@ module linearresponse_mod
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
   real(dp), allocatable           :: eigval_denom(:)
-  real(dp), allocatable           :: work(:)
+  real(dp), allocatable           :: work(:), norm(:)
   real(dp), allocatable           :: tda_fosc_comp_av(:,:)
+  real(dp), allocatable           :: seigvec(:,:)
   integer,  allocatable           :: backward_sort(:)
   integer,  allocatable           :: forward_sort(:)
 
@@ -520,8 +521,10 @@ module linearresponse_mod
   call alloc('eigval_r',     eigval_r,     param_nb)
   call alloc('eigval_i',     eigval_i,     param_nb)
   call alloc('eigval_denom', eigval_denom, param_nb)
+  call alloc('norm', norm, param_nb)
   call alloc('tda_fosc_comp_av', tda_fosc_comp_av, param_nb, ndim)
-  
+  call alloc('seigvec', seigvec, param_nb, param_nb) 
+ 
   if (run_done.or.l_print_every_block) then
   write(6,*)
   write(6,'(a,1pd9.1)') 'Solving the TDA eigenvalue equation'
@@ -568,26 +571,41 @@ module linearresponse_mod
    tda_av_eigenval_i (i) = eigval_i(backward_sort(i))
   enddo
 
+! sorted eigenvectors 
+  do i = 1, param_nb
+    seigvec(:,i) = eigvec(:,backward_sort(i))
+  enddo
+
 ! oscillator strengths
   tda_fosc_comp_av(:,:) = 0.d0
+  norm(:) = 0.d0
+  do i = 1, param_nb
+     do j = 1, param_nb
+        norm(i) = norm(i) + seigvec(j,i)**2
+     enddo
+     norm(i) = sqrt(norm(i))
+  enddo
+
   do k = 1, ndim
      do i = 1, param_nb
         do j = 1, param_nb
            tmom = dipole_moment_dpsi_av(k,j) - dpsi_av(j)*dipole_moment_av(k)
-           tda_fosc_comp_av(i,k) = tda_fosc_comp_av(i,k) + (eigvec(j,i)*tmom)**2
+           tda_fosc_comp_av(i,k) = tda_fosc_comp_av(i,k) + seigvec(j,i)*tmom/norm(i)
         enddo
      enddo
   enddo
 
   do i = 1, param_nb
-     tda_fosc_av(i) = 2.d0/3.d0*tda_av_eigenval_r(i)*sum(tda_fosc_comp_av(i,:))
+     tda_fosc_av(i) = 2.d0/3.d0*tda_av_eigenval_r(i)*sum(tda_fosc_comp_av(i,:)**2)
   enddo
+
+! restricted case   
+  tda_fosc_av(:) = 0.5d0*tda_fosc_av(:)
 
 ! output analysis
   call analysis_eigval_eigvec(eigvec,backward_sort, &
     tda_av_eigenval_r,tda_av_eigenval_r_err, &
     tda_av_eigenval_i,tda_av_eigenval_i_err,tda_fosc_av,tda_fosc_av_err,param_nb)
-
 
 ! release statements
   call release ('amat_local', amat_local)
@@ -600,6 +618,8 @@ module linearresponse_mod
   call release ('backward_sort', backward_sort)
   call release ('forward_sort', forward_sort)
   call release ('tda_fosc_comp_av',tda_fosc_comp_av)
+  call release ('norm', norm)
+  call release ('seigvec', seigvec)
 
   end subroutine tda_av_eigenval_bld
 
@@ -625,8 +645,9 @@ module linearresponse_mod
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
   real(dp), allocatable           :: eigval_denom(:)
-  real(dp), allocatable           :: work(:)
+  real(dp), allocatable           :: work(:), norm(:)
   real(dp), allocatable           :: tda_fosc_comp_av(:,:)
+  real(dp), allocatable           :: seigvec(:,:)
   integer,  allocatable           :: backward_sort(:)
   integer,  allocatable           :: forward_sort(:)
 
@@ -665,7 +686,9 @@ module linearresponse_mod
   call alloc('eigval_r',     eigval_r,     param_nb+1)
   call alloc('eigval_i',     eigval_i,     param_nb+1)
   call alloc('eigval_denom', eigval_denom, param_nb+1)
+  call alloc('norm', norm, param_nb+1)
   call alloc('tda_fosc_comp_av', tda_fosc_comp_av, param_nb+1, ndim)
+  call alloc('seigvec', seigvec, param_nb+1, param_nb+1)
 
   if (run_done.or.l_print_every_block) then
   write(6,*)
@@ -677,6 +700,7 @@ module linearresponse_mod
   call alloc('work', work, lwork)
   call alloc('amat_local', amat_local, param_nb+1, param_nb+1)
   call alloc('ovlp_local', ovlp_local, param_nb+1, param_nb+1)
+
   amat_local=super_amat_av
   ovlp_local=super_ovlp_psii_psij_av
   call dggev('N','V', &
@@ -713,8 +737,21 @@ module linearresponse_mod
    tda_av_eigenval_via_super_i (i) = eigval_i(backward_sort(i))
   enddo
 
-! oscillator strengts  tda
+! sorted eigenvectors 
+  do i = 1, param_nb+1
+    seigvec(:,i) = eigvec(:,backward_sort(i))
+  enddo
+
+! oscillator strengths
   tda_fosc_comp_av(:,:) = 0.d0
+  norm(:) = 0.d0
+  do i = 1, param_nb+1
+     do j = 1, param_nb+1
+        norm(i) = norm(i) + seigvec(j,i)**2
+     enddo
+     norm(i) = sqrt(norm(i))
+  enddo
+
   do k = 1, ndim
      do i = 1, param_nb+1
         do j = 1, param_nb+1
@@ -723,14 +760,17 @@ module linearresponse_mod
            else
               tmom = dipole_moment_dpsi_av(k,j-1) - dpsi_av(j-1)*dipole_moment_av(k)
            endif 
-           tda_fosc_comp_av(i,k) = tda_fosc_comp_av(i,k) + (eigvec(j,i)*tmom)**2
+           tda_fosc_comp_av(i,k) = tda_fosc_comp_av(i,k) + seigvec(j,i)*tmom/norm(i)
         enddo
      enddo
   enddo
 
   do i = 1, param_nb+1
-     tda_fosc_av_via_super(i) = 2.d0/3.d0*(tda_av_eigenval_via_super_r(i)-tda_av_eigenval_via_super_r(1))*sum(tda_fosc_comp_av(i,:))
+     tda_fosc_av_via_super(i) = 2.d0/3.d0*(tda_av_eigenval_via_super_r(i)-tda_av_eigenval_via_super_r(1))*sum(tda_fosc_comp_av(i,:)**2)
   enddo
+
+! restricted case
+  tda_fosc_av_via_super(:) = 0.5d0*tda_fosc_av_via_super(:)
 
 ! output analysis
   call analysis_eigval_eigvec(eigvec,backward_sort, &
@@ -749,7 +789,9 @@ module linearresponse_mod
   call release ('eigval_denom', eigval_denom)
   call release ('backward_sort', backward_sort)
   call release ('forward_sort', forward_sort)
-  call release ('tda_fosc_comp_av',tda_fosc_comp_av)
+  call release ('tda_fosc_comp_av', tda_fosc_comp_av)
+  call release ('norm', norm)
+  call release ('seigvec', seigvec)
 
   end subroutine tda_av_eigenval_via_super_bld
 
@@ -1418,8 +1460,7 @@ module linearresponse_mod
   call alloc('went_through',  went_through,  n)
   call alloc('position_in_array', position_in_array, n)
   call alloc('degeneracy', degeneracy, n)
-  !call alloc('fosc', fosc, n)
-  !call alloc('fosc_err', fosc_err, n)
+
   nunique=0
   went_through=.false.
   do i_eigval=1,n
