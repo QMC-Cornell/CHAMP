@@ -63,6 +63,8 @@ module linearresponse_mod
   real(dp), allocatable           :: tda_fosc_av_err(:) 
   real(dp), allocatable           :: tda_fosc_av_via_super(:) 
   real(dp), allocatable           :: tda_fosc_av_via_super_err(:)
+  real(dp), allocatable           :: linresp_fosc_av(:)
+  real(dp), allocatable           :: linresp_fosc_av_err(:)
 
 
   contains
@@ -311,10 +313,12 @@ module linearresponse_mod
   call object_error_request('tda_av_eigenval_i_err')
   call object_error_request('tda_fosc_av_err')
   call object_error_request('tda_fosc_av_via_super_err')
+  
 
   if (.not.l_tda_only) then
     call object_error_request('linresp_av_eigenval_r_err')
     call object_error_request('linresp_av_eigenval_i_err')
+    call object_error_request('linresp_fosc_av_err')
   endif
 
 
@@ -357,14 +361,17 @@ module linearresponse_mod
   
 ! local
   character(len=max_string_len_rout), save :: lhere = 'linresp_av_eigenval_bld'
-  integer                         :: i,info,lwork
+  integer                         :: i,info,lwork,j,k
+  real(dp)                        :: tmom
   real(dp), allocatable           :: linresp_local(:,:)
   real(dp), allocatable           :: ovlp_local(:,:)
   real(dp), allocatable           :: eigvec(:,:)
   real(dp), allocatable           :: eigval_r(:)
   real(dp), allocatable           :: eigval_i(:)
   real(dp), allocatable           :: eigval_denom(:)
-  real(dp), allocatable           :: work(:)
+  real(dp), allocatable           :: work(:), norm(:)
+  real(dp), allocatable           :: linresp_fosc_comp_av(:,:)
+  real(dp), allocatable           :: seigvec(:,:)
   integer,  allocatable           :: backward_sort(:)
   integer,  allocatable           :: forward_sort(:)
 
@@ -372,13 +379,21 @@ module linearresponse_mod
   if (header_exe) then
     call object_create('linresp_av_eigenval_r')
     call object_create('linresp_av_eigenval_i')
+    call object_create('linresp_fosc_av')
     call object_error_define ('linresp_av_eigenval_r','linresp_av_eigenval_r_err')
     call object_error_define ('linresp_av_eigenval_i','linresp_av_eigenval_i_err')
+    call object_error_define ('linresp_fosc_av','linresp_fosc_av_err')  
+
 
     call object_needed('param_nb')
 
     call object_needed('linresp_mat')
     call object_needed('ovlp_mat')
+
+    call object_needed('dpsi_av')
+    call object_needed('dipole_moment_av')
+    call object_needed('dipole_moment_dpsi_av')
+    call object_needed('ndim')
 
     return
   endif
@@ -387,12 +402,19 @@ module linearresponse_mod
   call object_alloc ('linresp_av_eigenval_i',linresp_av_eigenval_i,2*param_nb)
   call object_alloc ('linresp_av_eigenval_r_err',linresp_av_eigenval_r_err,2*param_nb)
   call object_alloc ('linresp_av_eigenval_i_err',linresp_av_eigenval_i_err,2*param_nb)
+  call object_alloc ('linresp_fosc_av',linresp_fosc_av,2*param_nb)
+  call object_alloc ('linresp_fosc_av_err',linresp_fosc_av_err,2*param_nb)
+
 
 ! prepare arrays and output message
   call alloc('eigvec',       eigvec,       2*param_nb, 2*param_nb)
   call alloc('eigval_r',     eigval_r,     2*param_nb)
   call alloc('eigval_i',     eigval_i,     2*param_nb)
   call alloc('eigval_denom', eigval_denom, 2*param_nb)
+  call alloc('norm',         norm,         2*param_nb)
+  call alloc('linresp_fosc_comp_av', linresp_fosc_comp_av, 2*param_nb, ndim)
+  call alloc('seigvec', seigvec, 2*param_nb, 2*param_nb)
+
   if (run_done.or.l_print_every_block) then
   write(6,*)
   write(6,'(a,1pd9.1)') 'Solving the LINRESP generalized eigenvalue equation'
@@ -439,11 +461,42 @@ module linearresponse_mod
    linresp_av_eigenval_i (i) = eigval_i(backward_sort(i))
   enddo
 
+  ! sorted eigenvectors 
+  do i = 1, 2*param_nb
+    seigvec(:,i) = eigvec(:,backward_sort(i))
+  enddo
+
+! oscillator strengths
+  linresp_fosc_comp_av(:,:) = 0.d0
+  norm(:) = 0.d0
+  do i = 1, 2*param_nb
+     do j = 1, 2*param_nb
+        norm(i) = norm(i) + seigvec(j,i)**2
+     enddo
+     norm(i) = sqrt(norm(i))
+  enddo
+
+  do k = 1, ndim
+     do i = 1, 2*param_nb
+        do j = 1, param_nb
+           tmom = dipole_moment_dpsi_av(k,j) - dpsi_av(j)*dipole_moment_av(k)
+           linresp_fosc_comp_av(i,k) = linresp_fosc_comp_av(i,k) + (seigvec(j,i)+seigvec(j+param_nb,i))*tmom/norm(i)
+        enddo
+     enddo
+  enddo
+
+  do i = 1, 2*param_nb
+     linresp_fosc_av(i) = 2.d0/3.d0*linresp_av_eigenval_r(i)*sum(linresp_fosc_comp_av(i,:)**2)
+  enddo
+
+! restricted case   
+  linresp_fosc_av(:) = 0.5d0*linresp_fosc_av(:)
+
 ! output analysis
   call analysis_eigval_eigvec(eigvec,backward_sort, &
     linresp_av_eigenval_r,linresp_av_eigenval_r_err,&
     linresp_av_eigenval_i,linresp_av_eigenval_i_err,&
-    linresp_av_eigenval_i,linresp_av_eigenval_i_err,2*param_nb)
+    linresp_fosc_av,linresp_fosc_av_err,2*param_nb)
 
 ! release statements
   call release ('linresp_local', linresp_local)
@@ -455,6 +508,10 @@ module linearresponse_mod
   call release ('eigval_denom', eigval_denom)
   call release ('backward_sort', backward_sort)
   call release ('forward_sort', forward_sort)
+  call release ('linresp_fosc_comp_av',linresp_fosc_comp_av)
+  call release ('norm', norm)
+  call release ('seigvec', seigvec)
+
 
   end subroutine linresp_av_eigenval_bld
 
@@ -1434,8 +1491,8 @@ module linearresponse_mod
   real(dp), allocatable           :: err_r(:)
   real(dp), allocatable           :: eigval_i(:)
   real(dp), allocatable           :: err_i(:)
-  real(dp), allocatable           :: fosc(:)
-  real(dp), allocatable           :: fosc_err(:)
+  real(dp)                        :: fosc(n)
+  real(dp)                        :: fosc_err(n)
   integer,  allocatable           :: sorting(:)
   integer                         :: n
 
@@ -1702,8 +1759,6 @@ module linearresponse_mod
 
   call release ('position_in_array', position_in_array)
   call release ('degeneracy', degeneracy)
-  !call release ('fosc', fosc)
-  !call release ('fosc_err', fosc_err)
 
   endif
 
