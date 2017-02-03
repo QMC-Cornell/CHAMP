@@ -40,6 +40,7 @@
 ! Another reasonable choice is:
 ! 2 1 0 1 1 1 1 0 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+#ifndef NOEINSPLINE
       use constants_mod
       use atom_mod
       use dets_mod
@@ -774,4 +775,5 @@
       call object_modified_by_index (fprod_index) !JT CU
 
       return
+#endif
       end subroutine dmc_good_ap

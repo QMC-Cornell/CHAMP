@@ -332,6 +332,7 @@ ifeq ($(hostname),clastos.lct.jussieu.fr)
 endif
 
 # MESU in Paris
+#for MPI compilation, one needs to do "module load mpt"
 ifeq ($(hostname),mesu0)
 
   CC=gcc

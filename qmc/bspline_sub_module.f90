@@ -38,6 +38,8 @@
 
     module bspline_sub_module
 
+#ifndef NOEINSPLINE
+
     use,intrinsic :: iso_fortran_env, only: real64
     use,intrinsic :: iso_fortran_env, only: error_unit
     
@@ -45,6 +47,7 @@
     
     private
 
+!    integer,parameter :: real64 = kind(1.0d0) ! JT: added for compilation on MESU
     integer,parameter :: wp = real64  !! Real precision
 
     !main routines:
@@ -2627,6 +2630,8 @@
 
     end subroutine dintrv      
 !*****************************************************************************************
+
+#endif
 
 !*****************************************************************************************
     end module bspline_sub_module

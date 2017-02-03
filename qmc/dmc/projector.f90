@@ -1,5 +1,7 @@
 module projector
 
+#ifndef NOEINSPLINE
+
   use bspline_oo_module
   use, intrinsic :: iso_fortran_env, only: rk => real64
 
@@ -793,5 +795,7 @@ module projector
 !   write (*, '("Results Saved To: ", A)') trim(filename)
 
 ! end subroutine output_proj
+
+#endif
 
 end module projector
