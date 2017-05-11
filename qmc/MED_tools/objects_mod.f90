@@ -2077,7 +2077,7 @@ module objects_mod
 
   objects(object_ind)%type = 'undefined'
   objects(object_ind)%associated = .false.
-  deallocate(objects(object_ind)%dimensions)
+  if (allocated(objects(object_ind)%dimensions)) deallocate(objects(object_ind)%dimensions)
 
   end subroutine object_deassociate
 

@@ -670,9 +670,9 @@ module deriv_orb_mod
         single_ex_added_nb = single_ex_added_nb + 1
         this_ex = single_ex_nb
         wf_unq_nb  (single_ex_nb)   = csf_in_wf_nb
-        wf_unq_csf (single_ex_nb)%row=csf_in_wf(:csf_in_wf_nb)
-        wf_unq_ref (single_ex_nb)%row=csf_in_wf_ref(:csf_in_wf_nb)
-        wf_unq_coef(single_ex_nb)%row=csf_in_wf_coef(:csf_in_wf_nb)
+        call copy_portion(csf_in_wf     , wf_unq_csf (single_ex_nb)%row, csf_in_wf_nb)
+        call copy_portion(csf_in_wf_ref , wf_unq_ref (single_ex_nb)%row, csf_in_wf_nb)
+        call copy_portion(csf_in_wf_coef, wf_unq_coef(single_ex_nb)%row, csf_in_wf_nb)
         ex_orb_ind     (single_ex_nb) = single_ex_nb
         ex_orb_1st_lab (single_ex_nb) = orb_opt_lab_i
         ex_orb_2nd_lab (single_ex_nb) = orb_opt_lab_j
@@ -788,9 +788,9 @@ module deriv_orb_mod
       param_orb_nb = param_orb_nb + 1
       if (param_orb_nb>single_ex_max) call die(lhere,"Recompile with a superior value of 'mamax' in deriv_orb_mod.f90 (L)")
       dpsi_unq_nb  (param_orb_nb)    =csf_in_dpsi_nb
-      dpsi_unq_csf (param_orb_nb)%row=csf_in_dpsi(:csf_in_dpsi_nb)
-      dpsi_unq_ref (param_orb_nb)%row=csf_in_dpsi_ref(:csf_in_dpsi_nb)
-      dpsi_unq_coef(param_orb_nb)%row=csf_in_dpsi_coef(:csf_in_dpsi_nb)
+      call copy_portion(csf_in_dpsi     , dpsi_unq_csf (param_orb_nb)%row, csf_in_dpsi_nb)
+      call copy_portion(csf_in_dpsi_ref , dpsi_unq_ref (param_orb_nb)%row, csf_in_dpsi_nb)
+      call copy_portion(csf_in_dpsi_coef, dpsi_unq_coef(param_orb_nb)%row, csf_in_dpsi_nb)
 
       if (ex_orb_ind_tmp /= 0) then
        ex_orb_ind    (param_orb_nb) = ex_orb_ind_tmp

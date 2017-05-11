@@ -98,6 +98,14 @@ module basic_tools_mod
   end interface copy
 
 !===============================================================
+  interface copy_portion
+!---------------------------------------------------------------
+   module procedure copy_portion_integer_1, &
+                    copy_portion_double_1
+
+  end interface copy_portion
+
+!===============================================================
   interface move
 !---------------------------------------------------------------
    module procedure move_integer_1, &
@@ -2721,6 +2729,56 @@ module basic_tools_mod
   endif
 
   end subroutine copy_double_1
+
+!===========================================================================
+  subroutine copy_portion_integer_1 (array1, array2, dim1)
+!---------------------------------------------------------------------------
+! Description : copy array1 into array2, allocating array2 if necesssary
+!
+! Created     : J. Toulouse, 16 Dec 2006
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  integer, dimension(:), intent(in) :: array1
+  integer, intent(in)               :: dim1
+
+! input/output
+  integer, allocatable, intent(inout) :: array2 (:)
+
+
+! begin
+  if (dim1 /= 0) then
+   call alloc ('array2', array2, dim1)
+   array2 (:) = array1 (:dim1)
+  endif
+
+  end subroutine copy_portion_integer_1
+
+!===========================================================================
+  subroutine copy_portion_double_1 (array1, array2, dim1)
+!---------------------------------------------------------------------------
+! Description : copy array1 into array2, allocating array2 if necesssary
+!
+! Created     : J. Toulouse, 16 Dec 2006
+!---------------------------------------------------------------------------
+  implicit none
+
+! input
+  real(dp), dimension(:), intent(in) :: array1
+  integer, intent(in)                :: dim1
+
+! input/output
+  real(dp), allocatable, intent(inout) :: array2 (:)
+
+
+! begin
+  if (dim1 /= 0) then
+   call alloc ('array2', array2, dim1)
+   array2 (:) = array1 (:dim1)
+  endif
+
+  end subroutine copy_portion_double_1
 
 !===========================================================================
   subroutine move_integer_1 (array1, array2)
