@@ -563,6 +563,8 @@ module linearresponse_mod
     call object_needed('amat_av')
     call object_needed('ovlp_psii_psij_av')
 
+    call object_needed('eloc_av')
+
     call object_needed('dpsi_av')
     call object_needed('dipole_moment_av')
     call object_needed('dipole_moment_dpsi_av')
@@ -657,9 +659,15 @@ module linearresponse_mod
      enddo
   enddo
 
-  do i = 1, param_nb
-     tda_fosc_av(i) = 2.d0/3.d0*tda_av_eigenval_r(i)*sum(tda_fosc_comp_av(i,:)**2)
-  enddo
+  if (l_compare_linresp_and_optlin) then
+     do i = 1, param_nb
+        tda_fosc_av(i) = 2.d0/3.d0*(tda_av_eigenval_r(i)-eloc_av)*sum(tda_fosc_comp_av(i,:)**2)
+     enddo
+  else 
+     do i = 1, param_nb
+        tda_fosc_av(i) = 2.d0/3.d0*tda_av_eigenval_r(i)*sum(tda_fosc_comp_av(i,:)**2)
+     enddo
+  endif
 
 ! restricted case   
   tda_fosc_av(:) = 0.5d0*tda_fosc_av(:)
