@@ -143,7 +143,7 @@ module deriv_orb_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'single_ex_wf_bld_check'
-  integer :: i, j
+  integer :: i, j, ireinit
   integer :: orb_opt_lab_i, orb_opt_lab_j
   integer :: ex_i, ex_j
   integer :: csf_i, det_in_csf_i, det_i, orb_i, dpsi_i
@@ -775,12 +775,22 @@ module deriv_orb_mod
     !if redundant: remove added unique singly-excited wave functions
     if (dpsi_is_redundant) then
       single_ex_nb = single_ex_nb - single_ex_added_nb
-      call object_alloc ('wf_unq_nb',   wf_unq_nb,   single_ex_nb)
-      call object_alloc ('wf_unq_csf',  wf_unq_csf,  single_ex_nb)
-      call object_alloc ('wf_unq_ref',  wf_unq_ref,  single_ex_nb)
-      call object_alloc ('wf_unq_coef', wf_unq_coef, single_ex_nb)
-      call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-      call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
+      !NEW
+      !wf_unq_nb     (single_ex_nb+1:)=0
+      !do ireinit=single_ex_nb+1,wf_unq_max
+      !  wf_unq_csf (ireinit)%row=0
+      !  wf_unq_ref (ireinit)%row=0
+      !  wf_unq_coef(ireinit)%row=0
+      !enddo
+      !ex_orb_1st_lab(single_ex_nb+1:)=0
+      !ex_orb_2nd_lab(single_ex_nb+1:)=0
+      !OLD
+      !call object_alloc ('wf_unq_nb',   wf_unq_nb,   single_ex_nb)
+      !call object_alloc ('wf_unq_csf',  wf_unq_csf,  single_ex_nb)
+      !call object_alloc ('wf_unq_ref',  wf_unq_ref,  single_ex_nb)
+      !call object_alloc ('wf_unq_coef', wf_unq_coef, single_ex_nb)
+      !call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
+      !call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
     endif
 
 !4d\...or unique
