@@ -1917,7 +1917,6 @@
       else 
          nparmlin = nparmcsf
       endif
-      print*,"nparmlin = ",nparmlin
 
 
 !     JT: nparmd to replace MPARMD
@@ -2213,6 +2212,11 @@
       call object_modified ('iwjasc') !JT
       call object_modified ('nparmj') !JT
       call object_modified ('nparmcsf') !JT
+      if (l_opt_csf_rot) then
+         nparmlin = 0
+      else 
+         nparmlin = nparmcsf
+      endif
       call object_modified ('norb_constraints')
       call object_modified ('orb_constraints')
 

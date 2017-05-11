@@ -251,6 +251,11 @@ module linearresponse_mod
   write(6,'(a,i5)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
+  if (l_opt_csf_rot) then
+     nparmlin = 0
+  else 
+     nparmlin = nparmcsf
+  endif
 
   write(6,'(a)') 'End of linearresponse menu -------------------------------------------------------------------------------'
 

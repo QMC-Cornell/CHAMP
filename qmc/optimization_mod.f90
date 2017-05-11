@@ -684,6 +684,11 @@ module optimization_mod
   
   if (ibasis.le.3) nparmd=nparmcsf
   call object_modified ('nparmd')
+  if (l_opt_csf_rot) then
+    nparmlin = 0
+  else 
+    nparmlin = nparmcsf
+  endif
 
 ! check consistency of options
   if (l_opt_ptb) then
@@ -773,6 +778,11 @@ module optimization_mod
   if (use_parser) then
    nparm = nparmj+nparmcsf
    call object_modified ('nparm')
+  endif
+  if (l_opt_csf_rot) then
+     nparmlin = 0
+  else 
+     nparmlin = nparmcsf
   endif
 
   write(6,'(a)') 'End of optimization menu ---------------------------------------------------------------------------------'
