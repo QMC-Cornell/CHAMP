@@ -3010,24 +3010,24 @@ module deriv_orb_mod
       do ex_i=1,single_ex_nb
         if      (ex_orb_1st_lab(ex_i).eq.p &
             .and.ex_orb_2nd_lab(ex_i).eq.q) then
-          det_pq=det_ex_up(ex_i,ref)
+          det_pq=det_ex_up(ex_i,iwdet_ref)
           done=done+1
         elseif  (ex_orb_1st_lab(ex_i).eq.r &
             .and.ex_orb_2nd_lab(ex_i).eq.s) then
-          det_rs=det_ex_up(ex_i,ref)
+          det_rs=det_ex_up(ex_i,iwdet_ref)
           done=done+1
         elseif  (ex_orb_1st_lab(ex_i).eq.p &
             .and.ex_orb_2nd_lab(ex_i).eq.s) then
-          det_ps=det_ex_up(ex_i,ref)
+          det_ps=det_ex_up(ex_i,iwdet_ref)
           done=done+1
         elseif  (ex_orb_1st_lab(ex_i).eq.r &
             .and.ex_orb_2nd_lab(ex_i).eq.q) then
-          det_rq=det_ex_up(ex_i,ref)
+          det_rq=det_ex_up(ex_i,iwdet_ref)
           done=done+1
         endif
       enddo
       if (done.ne.4) call die('done.ne.4','')
-      det_ex2_unq_up(det_ex2_unq_up_i)=(det_pq*det_rs-det_ps*det_rq)/detu(ref)
+      det_ex2_unq_up(det_ex2_unq_up_i)=(det_pq*det_rs-det_ps*det_rq)/detu(iwdet_ref)
 
     elseif(itest.eq.1) then
       call alloc('p_mat',p_mat,2,nup)
@@ -3042,14 +3042,14 @@ module deriv_orb_mod
       enddo
       call alloc('work' ,work ,2,2)
       work=0
-      if (ref.le.ndetup) then
-        work=matmul(matmul(p_mat,transpose(slater_mat_trans_inv_up(:,:,ref))),q_mat)
-      elseif (ref.le.ndetup+det_ex_unq_up_nb) then
-        work=matmul(matmul(p_mat,transpose(slater_mat_ex_trans_inv_up(:,:,ref-ndetup))),q_mat)
-      elseif (ref.le.ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb) then
+      if (iwdet_ref.le.ndetup) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_trans_inv_up(:,:,iwdet_ref))),q_mat)
+      elseif (iwdet_ref.le.ndetup+det_ex_unq_up_nb) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_ex_trans_inv_up(:,:,iwdet_ref-ndetup))),q_mat)
+      elseif (iwdet_ref.le.ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb) then
         call die('','')
       endif
-      det_ex2_unq_up(det_ex2_unq_up_i)=(work(1,1)*work(2,2)-work(1,2)*work(2,1))*detu(ref)
+      det_ex2_unq_up(det_ex2_unq_up_i)=(work(1,1)*work(2,2)-work(1,2)*work(2,1))*detu(iwdet_ref)
 
     endif
     !write(6,'(a,f20.8)') '>det_ex2_unq_up',det_ex2_unq_up(det_ex2_unq_up_i)
@@ -3069,24 +3069,24 @@ module deriv_orb_mod
       do ex_i=1,single_ex_nb
         if      (ex_orb_1st_lab(ex_i).eq.p &
             .and.ex_orb_2nd_lab(ex_i).eq.q) then
-          det_pq=det_ex_dn(ex_i,ref)
+          det_pq=det_ex_dn(ex_i,iwdet_ref)
           done=done+1
         elseif  (ex_orb_1st_lab(ex_i).eq.r &
             .and.ex_orb_2nd_lab(ex_i).eq.s) then
-          det_rs=det_ex_dn(ex_i,ref)
+          det_rs=det_ex_dn(ex_i,iwdet_ref)
           done=done+1
         elseif  (ex_orb_1st_lab(ex_i).eq.p &
             .and.ex_orb_2nd_lab(ex_i).eq.s) then
-          det_ps=det_ex_dn(ex_i,ref)
+          det_ps=det_ex_dn(ex_i,iwdet_ref)
           done=done+1
         elseif  (ex_orb_1st_lab(ex_i).eq.r &
             .and.ex_orb_2nd_lab(ex_i).eq.q) then
-          det_rq=det_ex_dn(ex_i,ref)
+          det_rq=det_ex_dn(ex_i,iwdet_ref)
           done=done+1
         endif
       enddo
       if (done.ne.4) call die('done.ne.4','')
-      det_ex2_unq_dn(det_ex2_unq_dn_i)=(det_pq*det_rs-det_ps*det_rq)/detd(ref)
+      det_ex2_unq_dn(det_ex2_unq_dn_i)=(det_pq*det_rs-det_ps*det_rq)/detd(iwdet_ref)
 
     elseif(itest.eq.1) then
       call alloc('p_mat',p_mat,2,ndn)
@@ -3101,14 +3101,14 @@ module deriv_orb_mod
       enddo
       call alloc('work' ,work ,2,2)
       work=0
-      if (ref.le.ndetdn) then
-        work=matmul(matmul(p_mat,transpose(slater_mat_trans_inv_dn(:,:,ref))),q_mat)
-      elseif (ref.le.ndetdn+det_ex_unq_dn_nb) then
-        work=matmul(matmul(p_mat,transpose(slater_mat_ex_trans_inv_dn(:,:,ref-ndetdn))),q_mat)
-      elseif (ref.le.ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) then
+      if (iwdet_ref.le.ndetdn) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_trans_inv_dn(:,:,iwdet_ref))),q_mat)
+      elseif (iwdet_ref.le.ndetdn+det_ex_unq_dn_nb) then
+        work=matmul(matmul(p_mat,transpose(slater_mat_ex_trans_inv_dn(:,:,iwdet_ref-ndetdn))),q_mat)
+      elseif (iwdet_ref.le.ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) then
         call die('','')
       endif
-      det_ex2_unq_dn(det_ex2_unq_dn_i)=(work(1,1)*work(2,2)-work(1,2)*work(2,1))*detd(ref)
+      det_ex2_unq_dn(det_ex2_unq_dn_i)=(work(1,1)*work(2,2)-work(1,2)*work(2,1))*detd(iwdet_ref)
 
     endif
     !write(6,'(a,f20.8)') '>det_ex2_unq_dn',det_ex2_unq_dn(det_ex2_unq_dn_i)
