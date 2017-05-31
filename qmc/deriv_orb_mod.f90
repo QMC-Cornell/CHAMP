@@ -151,7 +151,7 @@ module deriv_orb_mod
   integer :: this_csf, this_ex
   integer :: det_unq_up_i, det_unq_dn_i
   integer :: det_unq_up_k, det_unq_dn_k
-  integer :: iwdet_up, iwdet_dn
+  integer :: iwdet
   integer :: ex_dir_rev_nonortho, ex_dir_rev_nonortho_nb
   integer :: ex_dir_rev, ex_dir_rev_nb
   integer :: ex_orb_ind_tmp,ex_orb_ind_rev_tmp
@@ -541,21 +541,21 @@ module deriv_orb_mod
         det_i=iwdet_in_csf(det_in_csf_i, csf_i)
         det_unq_up_i = det_to_det_unq_up (det_i)
         det_unq_dn_i = det_to_det_unq_dn (det_i)
-        iwdet_up=iwdet_ex_up(ex_i, det_unq_up_i)
-        iwdet_dn=iwdet_ex_dn(ex_i, det_unq_dn_i)
 
-        if (iwdet_up.ne.0) then
+        iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
+        if (iwdet.ne.0) then
           det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
           if (det_in_csf_nb_tmp>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
-          det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet_up
+          det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet
           det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=det_unq_dn_i
           det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_up(ex_i, det_unq_up_i)
         endif
-        if (iwdet_dn.ne.0) then
+        iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
+        if (iwdet.ne.0) then
           det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
           if (det_in_csf_nb_tmp>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
           det_in_csf_up_tmp  (det_in_csf_nb_tmp)=det_unq_up_i
-          det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet_dn
+          det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet
           det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_dn(ex_i, det_unq_dn_i)
         endif
       enddo ! det_in_csf_i
@@ -944,7 +944,7 @@ module deriv_orb_mod
 
 ! local
   integer det_ex_unq_up_i, det_ex_unq_dn_i
-  integer det_unq_ref_up, det_unq_ref_dn
+  integer iwdet_ref
   integer i
   integer col_up, orb_up
   integer col_dn, orb_dn
@@ -987,14 +987,14 @@ module deriv_orb_mod
 
     col_up  = det_ex_unq_up_orb_1st_pos (det_ex_unq_up_i)
     orb_up  = det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_i)
-    det_unq_ref_up = iwdet_ex_ref_up (det_ex_unq_up_i)
+    iwdet_ref = iwdet_ex_ref_up (det_ex_unq_up_i)
 
     factor_up = 0.d0
     do i = 1, nup
-     factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_unq_ref_up) * orb (i, orb_up)
+     factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, iwdet_ref) * orb (i, orb_up)
     enddo
 
-    det_ex_unq_up(det_ex_unq_up_i) = factor_up * detu (det_unq_ref_up)
+    det_ex_unq_up(det_ex_unq_up_i) = factor_up * detu (iwdet_ref)
 
     !write(6,*) '>det_ex_unq_up',det_ex_unq_up(det_ex_unq_up_i)
   enddo ! det_ex_unq_up_i
@@ -1004,14 +1004,14 @@ module deriv_orb_mod
 
     col_dn  = det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_i)
     orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_i)
-    det_unq_ref_dn = iwdet_ex_ref_dn (det_ex_unq_dn_i)
+    iwdet_ref = iwdet_ex_ref_dn (det_ex_unq_dn_i)
 
     factor_dn = 0.d0
     do i = 1, ndn
-     factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_unq_ref_dn) * orb (nup + i, orb_dn)
+     factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, iwdet_ref) * orb (nup + i, orb_dn)
     enddo
 
-    det_ex_unq_dn(det_ex_unq_dn_i) = factor_dn * detd (det_unq_ref_dn)
+    det_ex_unq_dn(det_ex_unq_dn_i) = factor_dn * detd (iwdet_ref)
 
     !write(6,*) '>det_ex_unq_dn',det_ex_unq_dn(det_ex_unq_dn_i)
   enddo ! det_ex_unq_dn_i
@@ -1085,7 +1085,7 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_up(ex_i,det_unq_up_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
           det_ex_up (ex_i, det_i) = sgn * detu (iwdet)
-        elseif (iwdet.le.ndetup+det_ex_unq_up_nb) then
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb)) then
           det_ex_up (ex_i, det_i) = sgn * det_ex_unq_up (iwdet-ndetup)
         endif
 
@@ -1095,7 +1095,7 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_dn(ex_i,det_unq_dn_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
           det_ex_dn (ex_i, det_i) = sgn * detd (iwdet)
-        elseif (iwdet.le.ndetdn+det_ex_unq_dn_nb) then
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb)) then
           det_ex_dn (ex_i, det_i) = sgn * det_ex_unq_dn (iwdet-ndetdn)
         endif
 
@@ -1240,7 +1240,7 @@ module deriv_orb_mod
 
 ! local
   integer det_up_i, det_dn_i 
-  integer det_ref_up, det_ref_dn
+  integer iwdet_ref
   integer i, j, k, l
   integer col_up, orb_up
   integer col_dn, orb_dn
@@ -1297,12 +1297,12 @@ module deriv_orb_mod
    
        col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
        orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
-       det_ref_up = iwdet_ex_ref_up (det_up_i)
+       iwdet_ref = iwdet_ex_ref_up (det_up_i)
    
        do l = 1, nup
         ratio_up (l) = 0.d0
         do i = 1, nup
-          ratio_up (l) = ratio_up (l) + slater_mat_trans_inv_up (i, l, det_ref_up) * orb (i, orb_up)
+          ratio_up (l) = ratio_up (l) + slater_mat_trans_inv_up (i, l, iwdet_ref) * orb (i, orb_up)
         enddo  ! i
        enddo ! l
    
@@ -1311,8 +1311,8 @@ module deriv_orb_mod
    
        do k = 1, nup
          do j = 1 , nup
-          slater_mat_ex_trans_inv_up (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, det_ref_up) &
-                                  - slater_mat_trans_inv_up (k, col_up, det_ref_up) * ratio_up(j)* factor_up_inv
+          slater_mat_ex_trans_inv_up (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, iwdet_ref) &
+                                  - slater_mat_trans_inv_up (k, col_up, iwdet_ref) * ratio_up(j)* factor_up_inv
          enddo ! j
        enddo ! k
    
@@ -1325,12 +1325,12 @@ module deriv_orb_mod
    
        col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
        orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
-       det_ref_dn = iwdet_ex_ref_dn (det_dn_i)
+       iwdet_ref = iwdet_ex_ref_dn (det_dn_i)
    
        do l = 1, ndn
         ratio_dn (l) = 0.d0
         do i = 1, ndn
-          ratio_dn (l) = ratio_dn (l) + slater_mat_trans_inv_dn (i, l, det_ref_dn) * orb (nup + i, orb_dn)
+          ratio_dn (l) = ratio_dn (l) + slater_mat_trans_inv_dn (i, l, iwdet_ref) * orb (nup + i, orb_dn)
         enddo  ! i
        enddo ! l
    
@@ -1339,8 +1339,8 @@ module deriv_orb_mod
    
        do k = 1, ndn
          do j = 1 , ndn
-          slater_mat_ex_trans_inv_dn (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, det_ref_dn) &
-                                  - slater_mat_trans_inv_dn (k, col_dn, det_ref_dn) * ratio_dn(j)* factor_dn_inv
+          slater_mat_ex_trans_inv_dn (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, iwdet_ref) &
+                                  - slater_mat_trans_inv_dn (k, col_dn, iwdet_ref) * ratio_dn(j)* factor_dn_inv
          enddo ! j
        enddo ! k
    
@@ -1409,7 +1409,7 @@ module deriv_orb_mod
 
 ! local
   integer det_up_i, det_dn_i
-  integer det_ref_up, det_ref_dn
+  integer iwdet_ref
   integer i, j, k, l
   integer col_up, orb_up
   integer col_dn, orb_dn
@@ -1451,11 +1451,11 @@ module deriv_orb_mod
 
       col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
       orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
-      det_ref_up = iwdet_ex_ref_up (det_up_i)
+      iwdet_ref = iwdet_ex_ref_up (det_up_i)
 
       factor_up = 0.d0
       do i = 1, nup
-       factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, det_ref_up) * orb (i, orb_up)
+       factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, iwdet_ref) * orb (i, orb_up)
       enddo
 
       i = col_up
@@ -1465,15 +1465,15 @@ module deriv_orb_mod
 
          sum_up = 0.d0
          do l = 1, nup
-          sum_up = sum_up + slater_mat_trans_inv_up (l, j, det_ref_up) * orb (l, orb_up)
+          sum_up = sum_up + slater_mat_trans_inv_up (l, j, iwdet_ref) * orb (l, orb_up)
          enddo
 
          if (i == j) then
           sum_up = sum_up - 1.d0
          endif
 
-         slater_mat_ex_trans_inv_up_2 (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, det_ref_up) &
-                                 - slater_mat_trans_inv_up (k, i, det_ref_up) * sum_up/factor_up
+         slater_mat_ex_trans_inv_up_2 (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, iwdet_ref) &
+                                 - slater_mat_trans_inv_up (k, i, iwdet_ref) * sum_up/factor_up
 
         enddo ! j
       enddo ! k
@@ -1485,11 +1485,11 @@ module deriv_orb_mod
 
       col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
       orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
-      det_ref_dn = iwdet_ex_ref_dn (det_dn_i)
+      iwdet_ref = iwdet_ex_ref_dn (det_dn_i)
 
       factor_dn = 0.d0
       do i = 1, ndn
-       factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, det_ref_dn) * orb (nup + i, orb_dn)
+       factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, iwdet_ref) * orb (nup + i, orb_dn)
       enddo
 
       i = col_dn
@@ -1499,15 +1499,15 @@ module deriv_orb_mod
 
          sum_dn = 0.d0
          do l = 1, ndn
-          sum_dn = sum_dn + slater_mat_trans_inv_dn (l, j, det_ref_dn) * orb (nup + l, orb_dn)
+          sum_dn = sum_dn + slater_mat_trans_inv_dn (l, j, iwdet_ref) * orb (nup + l, orb_dn)
          enddo
 
          if (i == j) then
           sum_dn = sum_dn - 1.d0
          endif
 
-         slater_mat_ex_trans_inv_dn_2 (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, det_ref_dn) &
-                                 - slater_mat_trans_inv_dn (k, i, det_ref_dn) * sum_dn/factor_dn
+         slater_mat_ex_trans_inv_dn_2 (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, iwdet_ref) &
+                                 - slater_mat_trans_inv_dn (k, i, iwdet_ref) * sum_dn/factor_dn
 
         enddo ! j
       enddo ! k
@@ -1742,7 +1742,7 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
           grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_unq_up (:,:,iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb)) then
           grd_det_ex_up (:, :, ex_i, det_i) = sgn * grd_det_ex_unq_up (:,:,iwdet-ndetup)
         endif
 
@@ -1751,7 +1751,7 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
           grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_unq_dn (:,:,iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb)) then
           grd_det_ex_dn (:, :, ex_i, det_i) = sgn * grd_det_ex_unq_dn (:,:,iwdet-ndetdn)
         endif
 
@@ -1832,7 +1832,7 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
           lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_unq_up (:,iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb)) then
           lap_det_ex_up (:, ex_i, det_i) = sgn * lap_det_ex_unq_up (:,iwdet-ndetup)
         endif
 
@@ -1841,7 +1841,7 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
           lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_unq_dn (:,iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb)) then
           lap_det_ex_dn (:, ex_i, det_i) = sgn * lap_det_ex_unq_dn (:,iwdet-ndetdn)
         endif
 
@@ -2403,11 +2403,11 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
          det_ex_up_in_x = sgn * detn (iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb)) then
 
          factor_up = 0.d0
          do j = 1, nup
-         factor_up = factor_up + slater_mat_ex_trans_inv_up (iel_up, j, iwdet-ndetup) * orbe (det_ex_unq_orb_lab_up (j, iwdet))
+         factor_up = factor_up + slater_mat_ex_trans_inv_up (iel_up, j, iwdet-ndetup) * orbe (det_ex_unq_orb_lab_up (j, iwdet-ndetup))
          enddo
 
          det_ex_up_in_x  = sgn * factor_up * det_ex_unq_up(iwdet-ndetup)
@@ -2424,12 +2424,12 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_up (ex_rev_i, det_unq_up_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
          det_ex_rev_up_in_x = sgn * detn (iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb)) then
 
          factor_up = 0.d0
          do j = 1, nup
          factor_up = factor_up +  &
-          slater_mat_ex_trans_inv_up (iel_up, j, iwdet-ndetup) * orbe (det_ex_unq_orb_lab_up (j, iwdet))
+          slater_mat_ex_trans_inv_up (iel_up, j, iwdet-ndetup) * orbe (det_ex_unq_orb_lab_up (j, iwdet-ndetup))
          enddo
 
          det_ex_rev_up_in_x  = sgn * factor_up * det_ex_unq_up(iwdet-ndetup)
@@ -2451,12 +2451,12 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
          det_ex_dn_in_x = sgn * detn (iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb)) then
 
          factor_dn = 0.d0
          do j = 1, ndn
          factor_dn = factor_dn +  &
-          slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet-ndetdn) * orbe (det_ex_unq_orb_lab_dn (j, iwdet))
+          slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet-ndetdn) * orbe (det_ex_unq_orb_lab_dn (j, iwdet-ndetdn))
          enddo
 
          det_ex_dn_in_x  = sgn * factor_dn * det_ex_unq_dn(iwdet-ndetdn)
@@ -2472,11 +2472,11 @@ module deriv_orb_mod
         sgn = det_ex_unq_sgn_dn (ex_rev_i, det_unq_dn_i)
         if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
          det_ex_rev_dn_in_x = sgn * detn (iwdet)
-        else
+        elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb)) then
 
          factor_dn = 0.d0
          do j = 1, ndn
-         factor_dn = factor_dn + slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet-ndetdn) * orbe (det_ex_unq_orb_lab_dn (j, iwdet))
+         factor_dn = factor_dn + slater_mat_ex_trans_inv_dn (iel_dn, j, iwdet-ndetdn) * orbe (det_ex_unq_orb_lab_dn (j, iwdet-ndetdn))
          enddo
 
          det_ex_rev_dn_in_x  = sgn * factor_dn * det_ex_unq_dn(iwdet-ndetdn)
@@ -2951,7 +2951,7 @@ module deriv_orb_mod
 ! local
   integer det_ex2_unq_up_i, det_ex2_unq_dn_i
   integer p,q,r,s,pq,rs,ps,rq
-  integer ref,ex_i,done
+  integer iwdet_ref,ex_i,done
   real(8) :: det_pq,det_rs,det_ps,det_rq
 
   integer :: i
@@ -3003,7 +3003,7 @@ module deriv_orb_mod
     r=det_ex2_unq_up_orb_info(det_ex2_unq_up_i,2)
     q=det_ex2_unq_up_orb_info(det_ex2_unq_up_i,3)
     s=det_ex2_unq_up_orb_info(det_ex2_unq_up_i,4)
-    ref=iwdet_ex_ref_up(det_ex_unq_up_nb+det_ex2_unq_up_i)
+    iwdet_ref = iwdet_ex_ref_up (det_ex_unq_up_nb+det_ex2_unq_up_i)
 
     if (itest.eq.0) then
       done=0
@@ -3062,7 +3062,7 @@ module deriv_orb_mod
     r=det_ex2_unq_dn_orb_info(det_ex2_unq_dn_i,2)
     q=det_ex2_unq_dn_orb_info(det_ex2_unq_dn_i,3)
     s=det_ex2_unq_dn_orb_info(det_ex2_unq_dn_i,4)
-    ref=iwdet_ex_ref_dn(det_ex_unq_dn_nb+det_ex2_unq_dn_i)
+    iwdet_ref = iwdet_ex_ref_dn (det_ex_unq_dn_nb+det_ex2_unq_dn_i)
 
     if (itest.eq.0) then
       done=0
@@ -3191,9 +3191,9 @@ module deriv_orb_mod
           sgn = det_ex_unq_sgn_up (single_ex_nb+ex_ij, det_unq_up_i)
           if ((iwdet.ne.0).and.(iwdet.le.ndetup)) then
             det_ex2_up (ex_ij, det_i) = sgn * detu (iwdet)
-          elseif (iwdet.le.ndetup+det_ex_unq_up_nb) then
+          elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb)) then
             det_ex2_up (ex_ij, det_i) = sgn * det_ex_unq_up (iwdet-ndetup)
-          elseif (iwdet.le.ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb) then
+          elseif ((iwdet.ne.0).and.(iwdet.le.ndetup+det_ex_unq_up_nb+det_ex2_unq_up_nb)) then
             det_ex2_up (ex_ij, det_i) = sgn * det_ex2_unq_up (iwdet-ndetup-det_ex_unq_up_nb)
           endif
 
@@ -3202,9 +3202,9 @@ module deriv_orb_mod
           sgn = det_ex_unq_sgn_dn (single_ex_nb+ex_ij, det_unq_dn_i)
           if ((iwdet.ne.0).and.(iwdet.le.ndetdn)) then
             det_ex2_dn (ex_ij, det_i) = sgn * detd (iwdet)
-          elseif (iwdet.le.ndetdn+det_ex_unq_dn_nb) then
+          elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb)) then
             det_ex2_dn (ex_ij, det_i) = sgn * det_ex_unq_dn (iwdet-ndetdn)
-          elseif (iwdet.le.ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb) then
+          elseif ((iwdet.ne.0).and.(iwdet.le.ndetdn+det_ex_unq_dn_nb+det_ex2_unq_dn_nb)) then
             det_ex2_dn (ex_ij, det_i) = sgn * det_ex2_unq_dn (iwdet-ndetdn-det_ex_unq_dn_nb)
           endif
 
