@@ -330,13 +330,13 @@
 !         ewtn=eest-(eest   -enew(ifr))*vavvn                                                         ! UNR93
 !         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
 !         ewtn=enew(ifr)                                                                              ! no_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*vavvo**2*(3-2*vavvo)                                         ! new_ene_int
-!         ewtn=eest-(eest-enew(ifr))*vavvn**2*(3-2*vavvn)                                             ! new_ene_int
+          ewto=eest-(eest-eoldw(iw,ifr))*vavvo**2*(3-2*vavvo)                                         ! new_ene_int
+          ewtn=eest-(eest-enew(ifr))*vavvn**2*(3-2*vavvn)                                             ! new_ene_int
 !         ewto=eest-(eest-eoldw(iw,ifr))*vavvo**3*(10-15*vavvo+6*vavvo**2)                            ! new_ene_int2
 !         ewtn=eest-(eest-enew(ifr))*vavvn**3*(10-15*vavvn+6*vavvn**2)                                ! new_ene_int2
-          ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
-          ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
-          ewtn=etrial+min(ecut,max(-ecut,enew(ifr)-eest))                                             ! Alfe
+!         ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+!         ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
+!         ewtn=etrial+min(ecut,max(-ecut,enew(ifr)-eest))                                             ! Alfe
 ! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
 ! so that we keep track of the fluctuating factor and undo the population control
 

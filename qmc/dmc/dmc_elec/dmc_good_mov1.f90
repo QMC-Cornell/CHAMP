@@ -211,6 +211,7 @@
         dr2un=zero
         drifdif=zero
         iaccept=0
+        psum=0
         do 200 i=1,nelec
 ! Find the nearest nucleus & vector from that nucleus to electron
 ! & component of velocity in that direction
@@ -462,6 +463,7 @@
 !         pp=p
           p=dmin1(one,p)
   160     q=one-p
+          psum=psum+p
 
           acc=acc+p
           try_int=try_int+1
@@ -639,18 +641,46 @@
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
+!For many years I have been placing an upper limit on the reweighting factor of 1+10*sigma*tau
+!(but no lower limit).  This is not in our 1993 paper because I started doing that only after
+!we put in the capability to do pseudopotentials, which was after 1993.
+!
+!Alternatively, one could use for S_bar
+!S_bar = min(E_cut,max(-E_cut,E_est-E_L))
+!where E_cut = 10*sigma
+!which limits both the maximum and the minimum reweighting.
+!
+!Both of these create a bias in the tau \to 0 limit, but the bias is negigibly small.
+!If you object to having any bias, then you could use something like
+!E_cut = 3*sigma/sqrt(tau)
+!I am assuming that the largest tau one would want to use is about 0.1, so this would
+!give a bound of about 10*sigma at tau=.1 and a larger bound at smaller tau values.
+!
+!All of these have the problem that at the very beginning of the run, one does
+!not have a good estimate of sigma.  If that bothers you, you could use
+!E_cut = 0.2 sqrt(N_elec/tau)
+!which is what Alfe does.  The downside of this is that it assumes that the adhoc value
+!of 0.2 is reasonable for all systems.
+!
+!Another possibility is to multiply (eest-e) by a function of fratio that is 0 at 0, 1 at 1 and deviates from 1 at 1 as some power, e.g.
+!UNR93:        f(x)=x                     deviates from 1 linearly.
+!new_ene_int:  f(x)=x**2*(3-2*x)          deviates from 1 quadratically.
+!new_ene_int2: f(x)=x**3*(10-15*x+6*x**2) deviates from 1 cubically.
+!no_ene_int:   f(x)=1                     does not deviate from 1     
+!These will give the same energy at tau=0, but progressively lower energies at small finite values of tau
+
 ! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
-!         ewtn=eest-(eest-enew)*fration
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)                                               ! UNR93
+!         ewtn=eest-(eest-enew)*fration                                                               ! UNR93
 !         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
 !         ewtn=enew                                                                                   ! no_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
-!         ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
+          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
+          ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
 !         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
 !         ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
-          ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
-          ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
-          ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
+!         ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+!         ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
+!         ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
 ! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
 ! so that we keep track of the fluctuating factor and undo the population control
 
@@ -658,10 +688,18 @@
             dewto(iparm)=denergy_old_dmc(iparm,iw)*fratio(iw,ifr)
   262       dewtn(iparm)=denergy(iparm)*fration
 
+!Warning: tmp
+!         write(6,'(''dfus2ac,dfus2un,dr2ac,dr2un,dfus2ac/dfus2un,dr2ac/dr2un,tau,tauprim,taunnow'',99f9.4)') dfus2ac,dfus2un,dr2ac,dr2un,dfus2ac/dfus2un,dr2ac/dr2un,tau,tauprim,taunow
+
+          psum=psum/nelec
+          qsum=1-psum
 
           if(idmc.gt.0) then
+! Warning: tmp If instead of reweighting with .5(eold+enew) we use eold we get strong +ve bias at small tau.
             expon=(etrial-half*(ewto+ewtn))*taunow
-!           expon=taunow*min(max((etrial-half*(eoldw(iw,ifr)+enew)),-.2*sqrt(nelec/tau)),.2*sqrt(nelec/tau)) ! Alfe
+!           expon=(etrial-ewto)*taunow
+!           expon=(etrial-ewtn)*taunow
+!           expon=(etrial-((half*psum+qsum)*ewto+half*psum*ewtn))*taunow
 ! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
 ! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm

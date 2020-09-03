@@ -61,22 +61,21 @@ ifeq ($(planck_compiler),ifort)
 endif
 endif
 
-# New dft cluster at Cornell
-ifeq ($(hostname),gauss)
-  FC=ifort
-  FFLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -extend_source 
-  FFLAGS_DEBUG_FLAGS=$(FFLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+# dft cluster at Cornell
+ifeq ($(hostname),dft)
+  FC=gfortran
+  FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -Wall
+  FFLAGS_DEBUG=$(FFLAGS) -g -fbounds-check
 endif
 
 #qmc1 at cornell
-ifeq ($(hostname),qmc1)
+ifeq ($(hostname),qmc3)
   FC=ifort
   FFLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -extend_source                 
   FFLAGS_DEBUG=$(FFLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 endif
 
-#qmc2 at cornell
-ifeq ($(hostname),qmc2)
+ifeq ($(hostname),qmc1)
   FC=gfortran
   FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
   FFLAGS_DEBUG=$(FFLAGS) -g -fbounds-check

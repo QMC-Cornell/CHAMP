@@ -32,7 +32,8 @@ c            = 1  write out used orbs only
       implicit real*8(a-h,o-z)
       character*80 fmt,fmt2,mode
       parameter(MDET=20000,MCSF=8000,MDET_IN_CSF=200,MELEC=200,MORB=200,MBASIS=800,MLABEL=MDET,MACT=100)
-      dimension cdet(MDET),iwdet(MDET),iedet(2,MDET),frac(2,MDET)
+c     dimension cdet(MDET),iwdet(MDET),iedet(2,MDET),frac(2,MDET)
+      dimension cdet(MDET),frac(2,MDET)
      &,iflag_det(MDET),iflag_label_det(MLABEL),iflag_csf(MCSF), csf_coef(MCSF),ndet_in_csf(MCSF)
      &,iwdet_in_csf(MDET_IN_CSF,MCSF),cdet_in_csf(MDET_IN_CSF,MCSF)
      &,iworbd(MELEC,MDET),eigs(MORB),eigs_in_det(MELEC,MDET),label_det(MDET)
@@ -1099,16 +1100,16 @@ c rotations, then that is all we need, but if we do orbital optimization by rota
       ndn=nelec-nup
       do 707 idet=1,ndet
         if(nup-1.ge.1 .and. ndn.ge.1) then
-          write(fmt,'(''(i3,'',i2,''i4,3x,'',i2,''i4,i5,a)'')') nup-1,ndn
+          write(fmt,'(''(i3,'',i2,''i4,3x,'',i2,''i4,i5,i6,a)'')') nup-1,ndn
          elseif(nup-1.ge.1 .and. ndn.eq.0) then
-          write(fmt,'(''(i3,'',i2,''i4,3x,'',i5,a)'')') nup-1
+          write(fmt,'(''(i3,'',i2,'',i4,3x,''i5,i6,a)') nup-1
          elseif(nup-1.eq.0 .and. ndn.ge.1) then
           write(fmt,'(''(i3,3x,'',i2,''i4,i5,a)'')') ndn
         endif
         if(idet.eq.ndet) then
-          write(6,fmt) (iworbd(iel,idet),iel=1,nelec), label_det(idet), ' (iworbd(iel,idet),iel=1,nelec), label_det(idet)'
+          write(6,fmt) (iworbd(iel,idet),iel=1,nelec), label_det(idet), idet, ' (iworbd(iel,idet),iel=1,nelec), label_det(idet)'
          else
-          write(6,fmt) (iworbd(iel,idet),iel=1,nelec), label_det(idet)
+          write(6,fmt) (iworbd(iel,idet),iel=1,nelec), label_det(idet), idet
         endif
   707 continue
 
@@ -1118,7 +1119,7 @@ c     write(fmt,'(''(''i4,''f12.8,\'\' (csf_coef(icsf),icsf=1,ncsf)\'\')'')') nc
       write(6,fmt) (csf_coef(icsf),icsf=1,ncsf),' (csf_coef(icsf),icsf=1,ncsf)'
       write(fmt,'(''(''i4,''i3,a)'')') ncsf
       write(6,fmt) (ndet_in_csf(icsf),icsf=1,ncsf),' (ndet_in_csf(icsf),icsf=1,ncsf)'
-      max_ndet_in_csf=r0
+      max_ndet_in_csf=0
       do icsf=1,ncsf
         max_ndet_in_csf=max(max_ndet_in_csf,ndet_in_csf(icsf))
       enddo

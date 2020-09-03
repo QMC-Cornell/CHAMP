@@ -288,15 +288,16 @@ module deriv_orb_mod
 
 ! allocations
 ! Most arrays will be adjusted at the end of the routine and have the following max sizes:
-  single_ex_max  =orb_tot_nb*orb_tot_nb
+  single_ex_max  =nelec*(orb_tot_nb-nelec)
   det_ex_max     =(ndetup+ndetdn)*single_ex_max
-  csf_ex_unq_max =2*det_ex_max*ndetup
+! csf_ex_unq_max =2*det_ex_max*ndetup
+  csf_ex_unq_max =ncsf*single_ex_max
   det_in_csf_max =50
   csf_in_wf_max  =ncsf
   csf_in_dpsi_max=2*ncsf
   wf_unq_max     =single_ex_max
   dpsi_unq_max   =single_ex_max
-! This suppress the need to resize an array to often.
+! This suppresses the need to resize an array too often.
 
 ! FOR PART 1: UNIQUE DETS
   det_ex_unq_up_nb = 0
@@ -431,7 +432,7 @@ module deriv_orb_mod
     endif
 
     ex_i=ex_i+1
-    if (ex_i>single_ex_max) call die(lhere,"Recompile with a superior value of 'single_ex_max' in deriv_orb_mod.f90 (A)")
+    if (ex_i>single_ex_max) call die(lhere,"Recompile with a larger value of 'single_ex_max' in deriv_orb_mod.f90 (A)")
 
 !1\ ================================================================================= 
 !   Gather information on unique excited determinants
@@ -461,7 +462,7 @@ module deriv_orb_mod
 !     if current excited determinant is a new determinant, add it to the list of unique determinants
       if (iwdet_ex_up (ex_i, det_unq_up_i) == 0) then
         det_ex_unq_up_nb = det_ex_unq_up_nb + 1
-        if (det_ex_unq_up_nb>det_ex_max) call die(lhere,"Recompile with a superior value of 'det_ex_max' in deriv_orb_mod.f90 (B)")
+        if (det_ex_unq_up_nb>det_ex_max) call die(lhere,"Recompile with a larger value of 'det_ex_max' in deriv_orb_mod.f90 (B)")
         iwdet_ex_up (ex_i, det_unq_up_i) = ndetup+det_ex_unq_up_nb
         iwdet_ex_ref_up (det_ex_unq_up_nb) = det_unq_up_i
         det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_orb_lab_up
@@ -499,7 +500,7 @@ module deriv_orb_mod
 !     if current excited determinant is a new determinant, add it to the list of unique determinants
       if (iwdet_ex_dn (ex_i, det_unq_dn_i) == 0) then
         det_ex_unq_dn_nb = det_ex_unq_dn_nb + 1
-        if (det_ex_unq_dn_nb>det_ex_max) call die(lhere,"Recompile with a superior value of 'det_ex_max' in deriv_orb_mod.f90 (C)")
+        if (det_ex_unq_dn_nb>det_ex_max) call die(lhere,"Recompile with a larger value of 'det_ex_max' in deriv_orb_mod.f90 (C)")
         iwdet_ex_dn (ex_i, det_unq_dn_i) = ndetdn+det_ex_unq_dn_nb
         iwdet_ex_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
         det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_orb_lab_dn
@@ -516,7 +517,6 @@ module deriv_orb_mod
   call cpu_time(tB)
   tDet=tDet+tB-tA
   tA=tB
-
 
 !2\ ================================================================================= 
 !   Gather and sort information on the excited CSF
@@ -537,7 +537,7 @@ module deriv_orb_mod
       det_in_csf_up_tmp  =det_in_csf_max+1
       det_in_csf_dn_tmp  =det_in_csf_max+1
       det_in_csf_coef_tmp=det_in_csf_max+1
-      write(6,'(''csf_i. ndet_in_csf (csf_i), det_in_csf_nb_tmp'',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_nb_tmp
+!     write(6,'(''csf_i. ndet_in_csf (csf_i), det_in_csf_nb_tmp'',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_nb_tmp
       do det_in_csf_i = 1, ndet_in_csf (csf_i)
         det_i=iwdet_in_csf(det_in_csf_i, csf_i)
         det_unq_up_i = det_to_det_unq_up (det_i)
@@ -547,9 +547,9 @@ module deriv_orb_mod
         if (iwdet.ne.0) then
           det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
           if (det_in_csf_nb_tmp>det_in_csf_max) then
-             write(6,'(''1csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max 
+!            write(6,'(''1csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max 
              call systemflush(6)
-             call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
+             call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
           endif
           det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet
           det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=det_unq_dn_i
@@ -561,7 +561,7 @@ module deriv_orb_mod
           if (det_in_csf_nb_tmp>det_in_csf_max) then
              write(6,'(''2csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
              call systemflush(6)
-             call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
+             call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
           endif
           det_in_csf_up_tmp  (det_in_csf_nb_tmp)=det_unq_up_i
           det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet
@@ -601,7 +601,7 @@ module deriv_orb_mod
             if (det_in_csf_nb>det_in_csf_max) then
                write(6,'(''3csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
                call systemflush(6) 
-               call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
+               call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
             endif
             det_in_csf_up  (det_in_csf_nb)=det_in_csf_up_tmp(csf_k)
             det_in_csf_dn  (det_in_csf_nb)=det_in_csf_dn_tmp(csf_k)
@@ -627,7 +627,7 @@ module deriv_orb_mod
 !       ... and if this CSF is unknown, add it
         if (this_csf==0) then
           csf_ex_unq_nb=csf_ex_unq_nb+1
-          if (csf_ex_unq_nb>csf_ex_unq_max) call die(lhere,"Recompile with a superior value of 'csf_ex_unq_max' in deriv_orb_mod.f90 (G)")
+          if (csf_ex_unq_nb>csf_ex_unq_max) call die(lhere,"Recompile with a larger value of 'csf_ex_unq_max' in deriv_orb_mod.f90 (G)")
           this_csf=ncsf+csf_ex_unq_nb
           csf_ex_unq_ref(csf_ex_unq_nb) =csf_i
           csf_ex_unq_size(csf_ex_unq_nb)=det_in_csf_nb
@@ -638,7 +638,7 @@ module deriv_orb_mod
 
 !3a\    Gather this CSF into the information on the excited WF
         csf_in_wf_nb=csf_in_wf_nb+1
-        if (csf_in_wf_nb>csf_in_wf_max) call die(lhere,"Recompile with a superior value of 'csf_in_wf_max' in deriv_orb_mod.f90 (H)")
+        if (csf_in_wf_nb>csf_in_wf_max) call die(lhere,"Recompile with a larger value of 'csf_in_wf_max' in deriv_orb_mod.f90 (H)")
         csf_in_wf(csf_in_wf_nb)     =this_csf
         csf_in_wf_ref(csf_in_wf_nb) =csf_i
         csf_in_wf_coef(csf_in_wf_nb)=det_in_csf_coef(1)
@@ -679,7 +679,7 @@ module deriv_orb_mod
 !     ...if this WF is unknown, add it
       if (this_ex == 0) then
         single_ex_nb = single_ex_nb + 1
-        if (single_ex_nb>single_ex_max) call die(lhere,"Recompile with a superior value of 'single_ex_max' in deriv_orb_mod.f90 (I)")
+        if (single_ex_nb>single_ex_max) call die(lhere,"Recompile with a larger value of 'single_ex_max' in deriv_orb_mod.f90 (I)")
         single_ex_added_nb = single_ex_added_nb + 1
         this_ex = single_ex_nb
         wf_unq_nb  (single_ex_nb)   = csf_in_wf_nb
@@ -707,7 +707,7 @@ module deriv_orb_mod
         ex_orb_ind_tmp = 0
         csf_in_wf_coef(:csf_in_wf_nb)=-csf_in_wf_coef(:csf_in_wf_nb)
       endif
-      if (csf_in_dpsi_nb_tmp+csf_in_wf_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a superior value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (J)")
+      if (csf_in_dpsi_nb_tmp+csf_in_wf_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a larger value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (J)")
       csf_in_dpsi_tmp     (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf     (:csf_in_wf_nb)
       csf_in_dpsi_ref_tmp (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_ref (:csf_in_wf_nb)
       csf_in_dpsi_coef_tmp(csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_coef(:csf_in_wf_nb)
@@ -743,7 +743,7 @@ module deriv_orb_mod
         csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef(csf_in_dpsi_nb)+csf_in_dpsi_coef_tmp(dpsi_k)
       elseif (csf_in_dpsi_tmp(dpsi_k).ne.csf_in_dpsi_max+1) then
         csf_in_dpsi_nb=csf_in_dpsi_nb + 1
-        if (csf_in_dpsi_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a superior value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (K)")
+        if (csf_in_dpsi_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a larger value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (K)")
         csf_in_dpsi(csf_in_dpsi_nb)     =csf_in_dpsi_tmp(dpsi_k)
         csf_in_dpsi_ref(csf_in_dpsi_nb) =csf_in_dpsi_ref_tmp(dpsi_k)
         csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef_tmp(dpsi_k)
@@ -809,7 +809,7 @@ module deriv_orb_mod
 !4d\...or unique
     if (.not. dpsi_is_redundant) then
       param_orb_nb = param_orb_nb + 1
-      if (param_orb_nb>single_ex_max) call die(lhere,"Recompile with a superior value of 'mamax' in deriv_orb_mod.f90 (L)")
+      if (param_orb_nb>single_ex_max) call die(lhere,"Recompile with a larger value of 'mamax' in deriv_orb_mod.f90 (L)")
       dpsi_unq_nb  (param_orb_nb)    =csf_in_dpsi_nb
       call copy_portion(csf_in_dpsi     , dpsi_unq_csf (param_orb_nb)%row, csf_in_dpsi_nb)
       call copy_portion(csf_in_dpsi_ref , dpsi_unq_ref (param_orb_nb)%row, csf_in_dpsi_nb)

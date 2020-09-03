@@ -129,7 +129,7 @@
         ffi=one/ffn
         fprod=fprod*ffn/ff(ipmod)
         ff(ipmod)=ffn
-       else
+      else
         ginv=1
         ffn=1
         ffi=1
@@ -157,8 +157,7 @@
               v2old=0
               do 5 k=1,ndim
     5           v2old=v2old+voldw(k,i,iw,ifr)**2
-              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ &
-     &            (adrift*v2old)
+              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one) / (adrift*v2old)
               vavvo=vavvt/(tau*tratio)
               vav2sumo=vav2sumo+vavvo*vavvo*v2old
               v2sumo=v2sumo+v2old
@@ -231,8 +230,7 @@
 !    &  ((xoldw(k,ii,iw,1),k=1,3),ii=1,nelec)
 !      call systemflush(6)
 
-          if(ipr.ge.1) &
-     &    write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
+          if(ipr.ge.1) write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
 ! calculate psi and velocity at new configuration
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
 
@@ -248,8 +246,8 @@
 ! Calculate Green function for the reverse move
 
           v2new=0
-            do 149 k=1,ndim
-  149         v2new=v2new+vnew(k,i)**2
+          do 149 k=1,ndim
+  149       v2new=v2new+vnew(k,i)**2
           vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/(adrift*v2new)
 
 
@@ -391,7 +389,7 @@
                 call walksav_det(iw)
               endif
               call walksav_jas(iw)
-             else
+            else
 ! Secondary configuration
               if(istrech.eq.0) then
                 drifdifr=one
@@ -400,7 +398,7 @@
                   do 210 k=1,ndim
   210               xoldw(k,i,iw,ifr)=xoldw(k,i,iw,1)
                 ajacold(iw,ifr)=one
-               else
+              else
 ! Compute streched electronic positions for all nucleus displacement
                 call strech(xoldw(1,1,iw,1),xstrech,ajacob,ifr,1)
                 drifdifs=zero
@@ -424,7 +422,7 @@
 !    & enew,eest_pri,eest_sec,eest_dif,max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_dif+3*sigma_est,enew))
 !cc             enew=max(eoldw(iw,1)+eest_dif-1/tau,min(eoldw(iw,1)+eest_dif+1/tau,enew))
 !               enew=max(eoldw(iw,1)+eest_dif-3*sigma_est,min(eoldw(iw,1)+eest_dif+3*sigma_est,enew))
-!              else
+!             else
 !               enew=max(eoldw(iw,1)-sigma_est,min(eoldw(iw,1)+sigma_est,enew))
 !             endif
             endif ! ifr.eq.1
@@ -440,14 +438,13 @@
               v2old=0
               do 251 k=1,ndim
   251           v2old=v2old+voldw(k,i,iw,ifr)**2
-              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ &
-     &            (adrift*v2old)
+              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one) / (adrift*v2old)
               vavvn=vavvt/(tau*tratio)
 
               vav2sumn=vav2sumn+vavvn**2*v2old
   260         v2sumn=v2sumn+v2old
             fration=dsqrt(vav2sumn/v2sumn)
-           else
+          else
             drifdifr=one
             fration=fratio(iw,ifr)
             enew=eoldw(iw,ifr)
@@ -472,24 +469,31 @@
 !I am assuming that the largest tau one would want to use is about 0.1, so this would
 !give a bound of about 10*sigma at tau=.1 and a larger bound at smaller tau values.
 !
-!Finally, all of these have the problem that at the very beginning of the run, one does
+!All of these have the problem that at the very beginning of the run, one does
 !not have a good estimate of sigma.  If that bothers you, you could use
 !E_cut = 0.2 sqrt(N_elec/tau)
 !which is what Alfe does.  The downside of this is that it assumes that the adhoc value
 !of 0.2 is reasonable for all systems.
+!
+!Another possibility is to multiply (eest-e) by a function of fratio that is 0 at 0, 1 at 1 and deviates from 1 at 1 as some power, e.g.
+!UNR93:        f(x)=x                     deviates from 1 linearly.
+!new_ene_int:  f(x)=x**2*(3-2*x)          deviates from 1 quadratically.
+!new_ene_int2: f(x)=x**3*(10-15*x+6*x**2) deviates from 1 cubically.
+!no_ene_int:   f(x)=1                     does not deviate from 1     
+!These will give the same energy at tau=0, but progressively lower energies at small finite values of tau
 
 ! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)
-!         ewtn=eest-(eest-enew)*fration
+!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)                                               ! UNR93
+!         ewtn=eest-(eest-enew)*fration                                                               ! UNR93
 !         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
 !         ewtn=enew                                                                                   ! no_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
-!         ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
+          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
+          ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
 !         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
 !         ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
-          ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
-          ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
-          ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
+!         ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+!         ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
+!         ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
 ! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
 ! so that we keep track of the fluctuating factor and undo the population control
 
@@ -502,24 +506,22 @@
   262       dewtn(iparm)=denergy(iparm)*fration
 
           if(idmc.gt.0) then
-! Warning: tmp
             expon=(etrial-half*(ewto+ewtn))*taunow
-!           expon=taunow*min(max((etrial-half*(eoldw(iw,ifr)+enew)),-.2*sqrt(nelec/tau)),.2*sqrt(nelec/tau)) ! Alfe
 ! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
 ! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm
   264         dexponent(iparm)=-half*(dewto(iparm)+dewtn(iparm))*taunow
             if(icut_br.le.0) then
               dwt=dexp(expon)
-             elseif(icut_br.eq.1) then
+            elseif(icut_br.eq.1) then
               if(expon.le.0.d0) then
                 dwt=dexp(expon)
-               else
+              else
 ! Warning: tmp
 !               dwt=1+expon+0.5d0*expon**2
                 dwt=1+expon/(1+expon)
               endif
-             else
+            else
               dwt=0.5d0+1/(1+exp(-4*expon))
             endif
           endif
@@ -544,7 +546,7 @@
                 write(6,'(''Warning: dwt>1+20*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4 &
      &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
                 if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
-               elseif(ipr_sav.eq.4) then
+              elseif(ipr_sav.eq.4) then
                 write(6,'(''Warning: Additional warning msgs. of dwt>1+20*energy_sigma*tau suppressed'')')
               endif
               dwt=1+20*energy_sigma*tau
@@ -569,7 +571,7 @@
             pwt(iw,ifr)=pwt(iw,ifr)*dwt/wthist(iw,iwmod,ifr)
             wthist(iw,iwmod,ifr)=dwt
 
-           elseif(ifr.gt.1) then
+          elseif(ifr.gt.1) then
 
             pwt(iw,ifr)=pwt(iw,ifr)*dwt/wthist(iw,iwmod,ifr)
             wthist(iw,iwmod,ifr)=dwt
@@ -577,8 +579,7 @@
 
           endif
 
-          if(ipr.ge.1)write(6,'(''eoldw,enew,wt'',9f10.5)') &
-     &    eoldw(iw,ifr),enew,wtnow
+          if(ipr.ge.1)write(6,'(''eoldw,enew,wt'',9f10.5)') eoldw(iw,ifr),enew,wtnow
 
           wtg=wtnow*fprod
           current_walker_weight = wt(iw) * fprod !JT
@@ -601,7 +602,7 @@
               if(i.le.nup) then
                 rprobup(itryo(i))=rprobup(itryo(i))+wtgq
                 rprobup(itryn(i))=rprobup(itryn(i))+wtgp
-               else
+              else
                 rprobdn(itryo(i))=rprobdn(itryo(i))+wtgq
                 rprobdn(itryn(i))=rprobdn(itryn(i))+wtgp
               endif
@@ -643,7 +644,7 @@
 ! note that ix can be negative or positive. nint is a better choice.
                     ixo(idim)=nint(delxi(idim)*xoci(idim,i,i))
   265               ixn(idim)=nint(delxi(idim)*xnci(idim,i,i))
-                 else
+                else
 ! same trick adapted to circular coordinates
                     ixo(1)=nint(delradi*(dsqrt(xoci(1,i,i)*xoci(1,i,i)+xoci(2,i,i)*xoci(2,i,i))-rmean))
                     ixn(1)=nint(delradi*(dsqrt(xnci(1,i,i)*xnci(1,i,i)+xnci(2,i,i)*xnci(2,i,i))-rmean))
@@ -697,7 +698,7 @@
             psijow(iw,ifr)=psijn
             fratio(iw,ifr)=fration
             pot_ee_oldw(:,iw,ifr) = pot_ee_new ! array assignment
-           else
+          else
             if(ifr.eq.1) then
               iage(iw)=iage(iw)+1
               ioldest=max(ioldest,iage(iw))
@@ -720,9 +721,8 @@
             call object_modified_by_index (eloc_dmc_index)
 
             call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1))
-           else
-            ro=ajacold(iw,ifr)*psidow(iw,ifr)**2* &
-     &         exp(2*psijow(iw,ifr)-psi2savo)
+          else
+            ro=ajacold(iw,ifr)*psidow(iw,ifr)**2*exp(2*psijow(iw,ifr)-psi2savo)
 ! Warning: Limit weight ratio
 !           write(6,'(''eest_pri,eest_sec,eest_dif,ro='',9f9.5)') eest_pri,eest_sec,eest_dif,ro
 
@@ -762,7 +762,7 @@
         if(idmc.gt.0.or.iacc_rej.eq.0) then
           wgsum1(ifr)=wsum1(ifr)*fprod
           egsum1(ifr)=esum1(ifr)*fprod
-         else
+        else
           wgsum1(ifr)=wsum1(ifr)
           egsum1(ifr)=esum1(ifr)
         endif
