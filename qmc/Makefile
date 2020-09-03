@@ -403,7 +403,7 @@ make:
 	perl makemake.pl 
 
 clean:
-	rm -fr *.dif *.lst *.sav compiler_files
+	rm -fr *exe *.dif *.lst *.sav compiler_files
 
 clean_all_lib:
 	make clean_all
@@ -451,19 +451,19 @@ $(OBJDIR)/%.o:vmc/MPI/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:MED_tools/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/%.o:fit/%.f90
+	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/%.o:fit/MPI/%.f90
+	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/dmc_elec/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/%.o:dmc/dmc_elec/MPI_global_pop_big/%.f90
+	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/dmc_elec/MPI_global_pop/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/dmc_elec/MPI/%.f90
-	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:dmc/dmc_elec/MPI_global_pop_big/%.f90
-	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:fit/%.f90
-	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:fit/MPI/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:commons/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
@@ -650,8 +650,8 @@ $(OBJDIR)/jastrow_mod.o: $(OBJDIR)/all_modules_mod.o \
 $(OBJDIR)/linear_response_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/deriv_mod.o $(OBJDIR)/derivatives_fast_mod.o \
-	$(OBJDIR)/opt_common_mod.o $(OBJDIR)/opt_lin_mod.o \
-	$(OBJDIR)/vmc_mod.o
+	$(OBJDIR)/dipole_moment_mod.o $(OBJDIR)/opt_common_mod.o \
+	$(OBJDIR)/opt_lin_mod.o $(OBJDIR)/vmc_mod.o
 $(OBJDIR)/main_menu_mod.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/backflow_mod.o \
 	$(OBJDIR)/basis_mod.o $(OBJDIR)/commons/contr3_mod.o \
 	$(OBJDIR)/commons/stepv_mod.o $(OBJDIR)/control_mod.o \

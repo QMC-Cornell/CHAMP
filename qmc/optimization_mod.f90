@@ -773,6 +773,7 @@ module optimization_mod
   write(6,'(a,i5)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
+  call systemflush(6)
 
 ! set nparm if new input
   if (use_parser) then
@@ -844,6 +845,7 @@ module optimization_mod
   write(6,*)
   write(6,'(3a)') 'Optimization will be done with the ',trim(opt_method),' method.'
   write(6,*)
+  call systemflush(6)
 
   if (l_opt_ovlp_fn .and. .not. l_opt_ovlp_branching) then
    l_branching = .false.
@@ -2298,7 +2300,7 @@ module optimization_mod
   integer orb_i, cent_i, dim_i, bas_i, bas_cent_i
   integer i, ict, isp
   character(len=80) fmt
-  real norm
+  real(dp) norm
 ! begin
 
 ! print CSFs coefficients

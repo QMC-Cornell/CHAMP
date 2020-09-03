@@ -291,7 +291,7 @@ module deriv_orb_mod
   single_ex_max  =orb_tot_nb*orb_tot_nb
   det_ex_max     =(ndetup+ndetdn)*single_ex_max
   csf_ex_unq_max =2*det_ex_max*ndetup
-  det_in_csf_max =10
+  det_in_csf_max =50
   csf_in_wf_max  =ncsf
   csf_in_dpsi_max=2*ncsf
   wf_unq_max     =single_ex_max
@@ -537,6 +537,7 @@ module deriv_orb_mod
       det_in_csf_up_tmp  =det_in_csf_max+1
       det_in_csf_dn_tmp  =det_in_csf_max+1
       det_in_csf_coef_tmp=det_in_csf_max+1
+      write(6,'(''csf_i. ndet_in_csf (csf_i), det_in_csf_nb_tmp'',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_nb_tmp
       do det_in_csf_i = 1, ndet_in_csf (csf_i)
         det_i=iwdet_in_csf(det_in_csf_i, csf_i)
         det_unq_up_i = det_to_det_unq_up (det_i)
@@ -545,7 +546,11 @@ module deriv_orb_mod
         iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
         if (iwdet.ne.0) then
           det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
-          if (det_in_csf_nb_tmp>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
+          if (det_in_csf_nb_tmp>det_in_csf_max) then
+             write(6,'(''1csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max 
+             call systemflush(6)
+             call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
+          endif
           det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet
           det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=det_unq_dn_i
           det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_up(ex_i, det_unq_up_i)
@@ -553,7 +558,11 @@ module deriv_orb_mod
         iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
         if (iwdet.ne.0) then
           det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
-          if (det_in_csf_nb_tmp>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
+          if (det_in_csf_nb_tmp>det_in_csf_max) then
+             write(6,'(''2csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
+             call systemflush(6)
+             call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
+          endif
           det_in_csf_up_tmp  (det_in_csf_nb_tmp)=det_unq_up_i
           det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet
           det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_dn(ex_i, det_unq_dn_i)
@@ -589,7 +598,11 @@ module deriv_orb_mod
             det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef(det_in_csf_nb)+det_in_csf_coef_tmp(csf_k)
           elseif (det_in_csf_up_tmp(csf_k).ne.det_in_csf_max+1) then
             det_in_csf_nb=det_in_csf_nb+1
-            if (det_in_csf_nb>det_in_csf_max) call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
+            if (det_in_csf_nb>det_in_csf_max) then
+               write(6,'(''3csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
+               call systemflush(6) 
+               call die(lhere,"Recompile with a superior value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
+            endif
             det_in_csf_up  (det_in_csf_nb)=det_in_csf_up_tmp(csf_k)
             det_in_csf_dn  (det_in_csf_nb)=det_in_csf_dn_tmp(csf_k)
             det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef_tmp(csf_k)
