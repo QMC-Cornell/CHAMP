@@ -286,30 +286,31 @@ ifeq ($(hostname),mck-login1)
 endif
 
 # Argonne Blue-Gene
-ifeq ($(hostname),login1)
+#ifeq ($(hostname),login1)
+#
+## for debug front-end
+#  F77 = xlf
+#  FFLAGS = -C -g -qlinedebug -qsigtrap -qfixed=132
+#
+## for nodes
+#  F77 = blrts_xlf
+#  FFLAGS = -O5 -qarch=440 -qtune=440 -WF,-DAIX -qfixed=132
+##  FFLAGS = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+## FFLAGS = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+## FFLAGS = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+## FFLAGS = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+#  LDFLAGS =
+## F77_MPI = mpxlf
+#  F77_MPI = mpif90.ibm
+## F77_MPI = blrts_xlf
+## FFLAGS_MPI = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+#  FFLAGS_MPI = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+## FFLAGS_MPI = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+## FFLAGS_MPI = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
+#  LDFLAGS_MPI =
+#
+#endif
 
-# for debug front-end
-  F77 = xlf
-  FFLAGS = -C -g -qlinedebug -qsigtrap -qfixed=132
-
-# for nodes
-  F77 = blrts_xlf
-  FFLAGS = -O5 -qarch=440 -qtune=440 -WF,-DAIX -qfixed=132
-#  FFLAGS = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-# FFLAGS = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-# FFLAGS = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-# FFLAGS = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-  LDFLAGS =
-# F77_MPI = mpxlf
-  F77_MPI = mpif90.ibm
-# F77_MPI = blrts_xlf
-# FFLAGS_MPI = -O2 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-  FFLAGS_MPI = -g -O -qarch=440 -qtune=440 -qmaxmem=64000 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-# FFLAGS_MPI = -g -O5 -qarch=440 -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-# FFLAGS_MPI = -g -O5 -qarch=440d -qtune=440 -qnosave -qsigtrap -WF,-DAIX -qfixed=132
-  LDFLAGS_MPI =
-
-endif
 URI_CLUSTER = false
 ifeq ($(hostname),mi)
   URI_CLUSTER = true

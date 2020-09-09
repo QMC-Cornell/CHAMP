@@ -32,6 +32,11 @@
 # addition to the csf coefs.  The former can be used to figure out how many        #
 # independent CSFs there really are in those cases where the molecule has a        #
 # higher point group symmetry than d4h symmetry (the highest symmetry in GAMESS).  #
+#                                                                                  #
+# At present det_threshold_det2csf=10*$det_threshold in line 501.  Can be changed  #
+#                                                                                  #
+# If it fails to put dets with close coefs in the same csf, consider increasing    #
+# value from 1.e-8 to say 1.e-7 in lines 1860 and 1863.                            #
 ####################################################################################
 #$Revision: 1.12 $
 
@@ -493,7 +498,7 @@ sub get_options{
       if(exists $options{f}){
 	  $det_threshold_det2csf = $options{f};
       } else {
-	  $det_threshold_det2csf=10*$det_threshold
+ 	  $det_threshold_det2csf=10*$det_threshold
       }
 
 # state for trial wave function
@@ -1566,7 +1571,7 @@ sub transform_back{
     $n=0;
     foreach my $l (@qmc_lcao_lines){
 	@col=split(/\s+/,$l);
-	if($col =~ /\s*/){ shift col;}
+	if($col =~ /\s*/){ shift @col;}
 	@t=();
 # reorder coefficients
 	$j=0;
@@ -1854,10 +1859,10 @@ sub print_csf_cyrus{
     push @{$final_lcao_coef[0]}, "((coef(ibasis,iorb),ibasis=1,nbasis),iorb=1,norb)";
 
     if ($ispher == 1) {
-	printf CSFFILE "%d %d %d %d %d 1.d-8 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$reduced_nbasis;
+	printf CSFFILE "%d %d %d %d %d 1.d-7 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$reduced_nbasis;
     }
     else {
-	printf CSFFILE "%d %d %d %d %d 1.d-8 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$nbasis;
+	printf CSFFILE "%d %d %d %d %d 1.d-7 ndet, nelec, nup, norb, nbasis, eps \n",$selected_det,$nalpha+$nbeta,$nalpha,$porb,$nbasis;
     }
 
     # print determinantal coefficients

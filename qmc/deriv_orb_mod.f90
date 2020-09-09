@@ -9,7 +9,7 @@ module deriv_orb_mod
 
 ! Declaration of global variables and default values
 
-! single_ex_wf_bld_check 
+! single_ex_wf_bld_check
   integer                                :: param_orb_nb = 0
   integer                                :: single_ex_nb = 0
   integer                                :: deriv_orb_pairs_nb = 0
@@ -131,7 +131,7 @@ module deriv_orb_mod
 ! Description   : -  the unique WF is constructed
 ! Description   :    (similarly, an excitation that spawns excited CSF can form an excited WF that is not new)
 ! Description   :
-! Description   : A unique orbital derivative is a derivative that, 
+! Description   : A unique orbital derivative is a derivative that,
 ! Description   : when applied to a CI expansion, yields a unique excited wavefunction.
 ! Description   :
 ! Description   : Information on all unique excited determinants is gathered for use outside of the routine.
@@ -288,7 +288,8 @@ module deriv_orb_mod
 
 ! allocations
 ! Most arrays will be adjusted at the end of the routine and have the following max sizes:
-  single_ex_max  =nelec*(orb_tot_nb-nelec)
+! single_ex_max  =nelec*(orb_tot_nb-nelec)
+  single_ex_max  =nup*(orb_tot_nb-nup)+ndn*(orb_tot_nb-ndn)
   det_ex_max     =(ndetup+ndetdn)*single_ex_max
 ! csf_ex_unq_max =2*det_ex_max*ndetup
   csf_ex_unq_max =ncsf*single_ex_max
@@ -397,464 +398,530 @@ module deriv_orb_mod
 ! loop over all pairs of orbitals
   ex_i=0
   do i=1, orb_tot_nb
-  orb_opt_lab_i=orb_opt_lab(i)
-  do j=i+1, orb_tot_nb
-  orb_opt_lab_j=orb_opt_lab(j)
+    orb_opt_lab_i=orb_opt_lab(i)
+    do j=i+1, orb_tot_nb
+      orb_opt_lab_j=orb_opt_lab(j)
 
-! loop over the direct  excitation i->j
-!       and the reverse excitation j->i
-! (one loop or the other is used depending
-!  whether the orthogonality constraint is imposed or not)
-  do ex_dir_rev_nonortho = 1, ex_dir_rev_nonortho_nb
-  single_ex_added_nb = 0
-  ex_orb_ind_tmp     = 0
-  ex_orb_ind_rev_tmp = 0
-  !DPSI_tmp initialization
-  csf_in_dpsi_nb_tmp     = 0
-  csf_in_dpsi_tmp        = csf_in_dpsi_max+1
-  csf_in_dpsi_ref_tmp    = csf_in_dpsi_max+1
-  csf_in_dpsi_coef_tmp   = csf_in_dpsi_max+1
-  do ex_dir_rev = 1, ex_dir_rev_nb
+!     loop over the direct  excitation i->j
+!           and the reverse excitation j->i
+!     (one loop or the other is used depending whether the orthogonality constraint is imposed or not)
+      do ex_dir_rev_nonortho = 1, ex_dir_rev_nonortho_nb
+        single_ex_added_nb = 0
+        ex_orb_ind_tmp     = 0
+        ex_orb_ind_rev_tmp = 0
+        !DPSI_tmp initialization
+        csf_in_dpsi_nb_tmp     = 0
+        csf_in_dpsi_tmp        = csf_in_dpsi_max+1
+        csf_in_dpsi_ref_tmp    = csf_in_dpsi_max+1
+        csf_in_dpsi_coef_tmp   = csf_in_dpsi_max+1
+        do ex_dir_rev = 1, ex_dir_rev_nb
 
-!   swap orbitals for reverse excitation j- >i
-    if (ex_dir_rev ==  2 .or. ex_dir_rev_nonortho ==  2) call swap (orb_opt_lab_i, orb_opt_lab_j)
+!         swap orbitals for reverse excitation j- >i
+          if (ex_dir_rev ==  2 .or. ex_dir_rev_nonortho ==  2) call swap (orb_opt_lab_i, orb_opt_lab_j)
 
-!   skip for numerous reasons
-    if ((orb_ex_forbidden (orb_opt_lab_i, orb_opt_lab_j)) &
-    .or. (orb_sym_lab (orb_opt_lab_i) /= orb_sym_lab (orb_opt_lab_j)) &
-    .or. (orb_cls_in_wf (orb_opt_lab_i) .and. orb_cls_in_wf (orb_opt_lab_j)) &
-    .or. (orb_vir_in_wf (orb_opt_lab_i) .and. orb_vir_in_wf (orb_opt_lab_j)) &
-    .or. (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) &
-    .or. (l_casscf .and. (orb_act_in_wf (orb_opt_lab_i) .and. orb_act_in_wf (orb_opt_lab_j))) &
-    .or. (.not. orb_occ_in_wf (orb_opt_lab_i)) &
-    .or. (orb_cls_in_wf (orb_opt_lab_j))) then
-      cycle
-    endif
+!         skip for numerous reasons
+          if ((orb_ex_forbidden (orb_opt_lab_i, orb_opt_lab_j)) &
+          .or. (orb_sym_lab (orb_opt_lab_i) /= orb_sym_lab (orb_opt_lab_j)) &
+          .or. (orb_cls_in_wf (orb_opt_lab_i) .and. orb_cls_in_wf (orb_opt_lab_j)) &
+          .or. (orb_vir_in_wf (orb_opt_lab_i) .and. orb_vir_in_wf (orb_opt_lab_j)) &
+          .or. (ndet == 1 .and. (orb_opn_in_wf (orb_opt_lab_i) .and. orb_opn_in_wf (orb_opt_lab_j))) &
+          .or. (l_casscf .and. (orb_act_in_wf (orb_opt_lab_i) .and. orb_act_in_wf (orb_opt_lab_j))) &
+          .or. (.not. orb_occ_in_wf (orb_opt_lab_i)) &
+          .or. (orb_cls_in_wf (orb_opt_lab_j))) then
+            cycle
+          endif
 
-    ex_i=ex_i+1
-    if (ex_i>single_ex_max) call die(lhere,"Recompile with a larger value of 'single_ex_max' in deriv_orb_mod.f90 (A)")
+          ex_i=ex_i+1
+          if (ex_i>single_ex_max) then
+            write(6,'(''ex_i, single_ex_max='',2i8)') ex_i, single_ex_max
+            call die(lhere,"Recompile with a larger value of 'single_ex_max' in deriv_orb_mod.f90 (A)")
+          endif
 
-!1\ ================================================================================= 
-!   Gather information on unique excited determinants
-!   ================================================================================= 
+!1\       =================================================================================
+!         Gather information on unique excited determinants
+!         =================================================================================
 !1a\loop over unique spin-up determinants
-    do det_unq_up_i = 1, ndetup
-    if (orb_occ_in_det_unq_up (orb_opt_lab_i, det_unq_up_i) &
-      .and. .not. orb_occ_in_det_unq_up (orb_opt_lab_j, det_unq_up_i)) then
+          do det_unq_up_i = 1, ndetup
+            if (orb_occ_in_det_unq_up (orb_opt_lab_i, det_unq_up_i) &
+              .and. .not. orb_occ_in_det_unq_up (orb_opt_lab_j, det_unq_up_i)) then
 
-!     build current excited determinant
-      det_orb_lab_up = det_unq_orb_lab_srt_up (:, det_unq_up_i)
-      call replace_elt_in_array (det_orb_lab_up, orb_opt_lab_i, orb_opt_lab_j)
-      det_orb_lab_srt_up = det_orb_lab_up
-      call sort_and_sign (det_orb_lab_srt_up, det_ex_unq_sgn_up (ex_i, det_unq_up_i))
+!             build current excited determinant
+              det_orb_lab_up = det_unq_orb_lab_srt_up (:, det_unq_up_i)
+              call replace_elt_in_array (det_orb_lab_up, orb_opt_lab_i, orb_opt_lab_j)
+              det_orb_lab_srt_up = det_orb_lab_up
+              call sort_and_sign (det_orb_lab_srt_up, det_ex_unq_sgn_up (ex_i, det_unq_up_i))
 
-!     check if current excited determinant is an already known determinant
-      do det_unq_up_k = 1, ndetup+det_ex_unq_up_nb
-       if (arrays_equal (det_orb_lab_srt_up, det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
-         iwdet_ex_up (ex_i, det_unq_up_i) = det_unq_up_k
-         if (det_unq_up_k.gt.ndetup) then
-           det_ex_unq_sgn_up (ex_i, det_unq_up_i)=det_ex_unq_sgn_up (ex_i, det_unq_up_i)*det_ex_to_calc_sgn_up(det_unq_up_k-ndetup)
-         endif
-         exit
-       endif
-      enddo
+!             check if current excited determinant is an already known determinant
+              do det_unq_up_k = 1, ndetup+det_ex_unq_up_nb
+                if (arrays_equal (det_orb_lab_srt_up, det_unq_orb_lab_srt_up (:, det_unq_up_k))) then
+                  iwdet_ex_up (ex_i, det_unq_up_i) = det_unq_up_k
+                  if (det_unq_up_k.gt.ndetup) then
+                    det_ex_unq_sgn_up (ex_i, det_unq_up_i)=det_ex_unq_sgn_up (ex_i, det_unq_up_i)*det_ex_to_calc_sgn_up(det_unq_up_k-ndetup)
+                  endif
+                  exit
+                endif
+              enddo
 
-!     if current excited determinant is a new determinant, add it to the list of unique determinants
-      if (iwdet_ex_up (ex_i, det_unq_up_i) == 0) then
-        det_ex_unq_up_nb = det_ex_unq_up_nb + 1
-        if (det_ex_unq_up_nb>det_ex_max) call die(lhere,"Recompile with a larger value of 'det_ex_max' in deriv_orb_mod.f90 (B)")
-        iwdet_ex_up (ex_i, det_unq_up_i) = ndetup+det_ex_unq_up_nb
-        iwdet_ex_ref_up (det_ex_unq_up_nb) = det_unq_up_i
-        det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_orb_lab_up
-        det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb ) = det_orb_lab_srt_up
-        det_ex_to_calc_sgn_up (det_ex_unq_up_nb) = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
-        det_ex_unq_sgn_up (ex_i, det_unq_up_i)=det_ex_unq_sgn_up (ex_i, det_unq_up_i)*det_ex_to_calc_sgn_up(det_ex_unq_up_nb)
-        det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_opt_lab_i, det_unq_up_i)
-        det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_opt_lab_j
-      endif
-    endif
-    enddo ! det_unq_up_i
+!             if current excited determinant is a new determinant, add it to the list of unique determinants
+              if (iwdet_ex_up (ex_i, det_unq_up_i) == 0) then
+                det_ex_unq_up_nb = det_ex_unq_up_nb + 1
+                if (det_ex_unq_up_nb>det_ex_max) then
+                  write(6,'(''det_ex_unq_up_nb, det_ex_max='',2i8)') det_ex_unq_up_nb, det_ex_max
+                  call die(lhere,"Recompile with a larger value of 'det_ex_max' in deriv_orb_mod.f90 (B)")
+                endif
+                iwdet_ex_up (ex_i, det_unq_up_i) = ndetup+det_ex_unq_up_nb
+                iwdet_ex_ref_up (det_ex_unq_up_nb) = det_unq_up_i
+                det_ex_unq_orb_lab_up (:, det_ex_unq_up_nb ) = det_orb_lab_up
+                det_unq_orb_lab_srt_up (:, ndetup+det_ex_unq_up_nb ) = det_orb_lab_srt_up
+                det_ex_to_calc_sgn_up (det_ex_unq_up_nb) = det_ex_unq_sgn_up (ex_i, det_unq_up_i)
+                det_ex_unq_sgn_up (ex_i, det_unq_up_i)=det_ex_unq_sgn_up (ex_i, det_unq_up_i)*det_ex_to_calc_sgn_up(det_ex_unq_up_nb)
+                det_ex_unq_up_orb_1st_pos (det_ex_unq_up_nb) = orb_pos_in_det_unq_up (orb_opt_lab_i, det_unq_up_i)
+                det_ex_unq_up_orb_2nd_lab (det_ex_unq_up_nb) = orb_opt_lab_j
+              endif
+            endif
+          enddo ! det_unq_up_i
 
 !1b\loop over unique spin-down determinants
-    do det_unq_dn_i = 1, ndetdn
-    if (orb_occ_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i) &
-      .and. .not. orb_occ_in_det_unq_dn (orb_opt_lab_j, det_unq_dn_i)) then
+          do det_unq_dn_i = 1, ndetdn
+            if (orb_occ_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i) &
+              .and. .not. orb_occ_in_det_unq_dn (orb_opt_lab_j, det_unq_dn_i)) then
 
-!     build current excited determinant
-      det_orb_lab_dn = det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
-      call replace_elt_in_array (det_orb_lab_dn, orb_opt_lab_i, orb_opt_lab_j)
-      det_orb_lab_srt_dn = det_orb_lab_dn
-      call sort_and_sign (det_orb_lab_srt_dn, det_ex_unq_sgn_dn (ex_i, det_unq_dn_i))
+!             build current excited determinant
+              det_orb_lab_dn = det_unq_orb_lab_srt_dn (:, det_unq_dn_i)
+              call replace_elt_in_array (det_orb_lab_dn, orb_opt_lab_i, orb_opt_lab_j)
+              det_orb_lab_srt_dn = det_orb_lab_dn
+              call sort_and_sign (det_orb_lab_srt_dn, det_ex_unq_sgn_dn (ex_i, det_unq_dn_i))
 
-!     check if current excited determinant is an already known determinant
-      do det_unq_dn_k = 1, ndetdn+det_ex_unq_dn_nb
-       if (arrays_equal (det_orb_lab_srt_dn, det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
-         iwdet_ex_dn (ex_i, det_unq_dn_i) = det_unq_dn_k
-         if (det_unq_dn_k.gt.ndetdn) then
-           det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)=det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_unq_dn_k-ndetdn)
-         endif
-         exit
-       endif
-      enddo
+!             check if current excited determinant is an already known determinant
+              do det_unq_dn_k = 1, ndetdn+det_ex_unq_dn_nb
+               if (arrays_equal (det_orb_lab_srt_dn, det_unq_orb_lab_srt_dn (:, det_unq_dn_k))) then
+                 iwdet_ex_dn (ex_i, det_unq_dn_i) = det_unq_dn_k
+                 if (det_unq_dn_k.gt.ndetdn) then
+                   det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)=det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_unq_dn_k-ndetdn)
+                 endif
+                 exit
+               endif
+              enddo
 
-!     if current excited determinant is a new determinant, add it to the list of unique determinants
-      if (iwdet_ex_dn (ex_i, det_unq_dn_i) == 0) then
-        det_ex_unq_dn_nb = det_ex_unq_dn_nb + 1
-        if (det_ex_unq_dn_nb>det_ex_max) call die(lhere,"Recompile with a larger value of 'det_ex_max' in deriv_orb_mod.f90 (C)")
-        iwdet_ex_dn (ex_i, det_unq_dn_i) = ndetdn+det_ex_unq_dn_nb
-        iwdet_ex_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
-        det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_orb_lab_dn
-        det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb) = det_orb_lab_srt_dn
-        det_ex_to_calc_sgn_dn (det_ex_unq_dn_nb) = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
-        det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)=det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_ex_unq_dn_nb)
-        det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i)
-        det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_opt_lab_j
-      endif
-      if (l_triplet) det_ex_unq_sgn_dn (ex_i, det_unq_dn_i ) = -det_ex_unq_sgn_dn (ex_i, det_unq_dn_i )
+!             if current excited determinant is a new determinant, add it to the list of unique determinants
+              if (iwdet_ex_dn (ex_i, det_unq_dn_i) == 0) then
+                det_ex_unq_dn_nb = det_ex_unq_dn_nb + 1
+                if (det_ex_unq_dn_nb>det_ex_max) then
+                  write(6,'(''det_ex_unq_dn_nb, det_ex_max='',2i8)') det_ex_unq_dn_nb, det_ex_max
+                  call die(lhere,"Recompile with a larger value of 'det_ex_max' in deriv_orb_mod.f90 (C)")
+                endif
+                iwdet_ex_dn (ex_i, det_unq_dn_i) = ndetdn+det_ex_unq_dn_nb
+                iwdet_ex_ref_dn (det_ex_unq_dn_nb) = det_unq_dn_i
+                det_ex_unq_orb_lab_dn (:, det_ex_unq_dn_nb) = det_orb_lab_dn
+                det_unq_orb_lab_srt_dn (:, ndetdn+det_ex_unq_dn_nb) = det_orb_lab_srt_dn
+                det_ex_to_calc_sgn_dn (det_ex_unq_dn_nb) = det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)
+                det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)=det_ex_unq_sgn_dn (ex_i, det_unq_dn_i)*det_ex_to_calc_sgn_dn(det_ex_unq_dn_nb)
+                det_ex_unq_dn_orb_1st_pos (det_ex_unq_dn_nb) = orb_pos_in_det_unq_dn (orb_opt_lab_i, det_unq_dn_i)
+                det_ex_unq_dn_orb_2nd_lab (det_ex_unq_dn_nb) = orb_opt_lab_j
+              endif
+              if (l_triplet) det_ex_unq_sgn_dn (ex_i, det_unq_dn_i ) = -det_ex_unq_sgn_dn (ex_i, det_unq_dn_i )
 
-    endif
-    enddo ! det_unq_dn_i
-  call cpu_time(tB)
-  tDet=tDet+tB-tA
-  tA=tB
-
-!2\ ================================================================================= 
-!   Gather and sort information on the excited CSF
-!   (in the process: gather information on unique CSF)
-!   ================================================================================= 
-    !CSF_in_WF initialization
-    csf_in_wf_nb  =0
-    csf_in_wf     =csf_in_wf_max+1
-    csf_in_wf_ref =csf_in_wf_max+1
-    csf_in_wf_coef=csf_in_wf_max+1
-
-    do csf_i = 1, ncsf
-
-!2a\  Gather the unsorted information on CSFs
-!     (loop through determinants in the reference CSF)
-      !DET_in_CSF_tmp initialization
-      det_in_csf_nb_tmp  =0
-      det_in_csf_up_tmp  =det_in_csf_max+1
-      det_in_csf_dn_tmp  =det_in_csf_max+1
-      det_in_csf_coef_tmp=det_in_csf_max+1
-!     write(6,'(''csf_i. ndet_in_csf (csf_i), det_in_csf_nb_tmp'',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_nb_tmp
-      do det_in_csf_i = 1, ndet_in_csf (csf_i)
-        det_i=iwdet_in_csf(det_in_csf_i, csf_i)
-        det_unq_up_i = det_to_det_unq_up (det_i)
-        det_unq_dn_i = det_to_det_unq_dn (det_i)
-
-        iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
-        if (iwdet.ne.0) then
-          det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
-          if (det_in_csf_nb_tmp>det_in_csf_max) then
-!            write(6,'(''1csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max 
-             call systemflush(6)
-             call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
-          endif
-          det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet
-          det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=det_unq_dn_i
-          det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_up(ex_i, det_unq_up_i)
-        endif
-        iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
-        if (iwdet.ne.0) then
-          det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
-          if (det_in_csf_nb_tmp>det_in_csf_max) then
-             write(6,'(''2csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
-             call systemflush(6)
-             call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
-          endif
-          det_in_csf_up_tmp  (det_in_csf_nb_tmp)=det_unq_up_i
-          det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet
-          det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_dn(ex_i, det_unq_dn_i)
-        endif
-      enddo ! det_in_csf_i
-
-
-!2b\  Sort the CSF information
-!     and fold repetitions (non unique couple of UP and DOWN determinants) together
-      if (det_in_csf_nb_tmp.ne.0) then
-!       Here we do resize the arrays to make the sort quicker
-        call alloc('det_in_csf_up_tmp',det_in_csf_up_tmp,det_in_csf_nb_tmp)
-        call alloc('det_in_csf_dn_tmp',det_in_csf_dn_tmp,det_in_csf_nb_tmp)
-        call alloc('det_in_csf_coef_tmp',det_in_csf_coef_tmp,det_in_csf_nb_tmp)
-  call cpu_time(tAintermed)
-        call sort(det_in_csf_up_tmp, det_in_csf_dn_tmp, det_in_csf_coef_tmp)
-  call cpu_time(tBintermed)
-  tSort=tSort+tBintermed-tAintermed
-        call alloc('det_in_csf_up_tmp',det_in_csf_up_tmp,det_in_csf_max)
-        call alloc('det_in_csf_dn_tmp',det_in_csf_dn_tmp,det_in_csf_max)
-        call alloc('det_in_csf_coef_tmp',det_in_csf_coef_tmp,det_in_csf_max)
-
-        det_in_csf_nb  =1
-        det_in_csf_up  =0
-        det_in_csf_dn  =0
-        det_in_csf_coef=0 
-        det_in_csf_up(1)  =det_in_csf_up_tmp(1)
-        det_in_csf_dn(1)  =det_in_csf_dn_tmp(1)
-        det_in_csf_coef(1)=det_in_csf_coef_tmp(1)
-        do csf_k=2, det_in_csf_nb_tmp
-          if ((det_in_csf_up_tmp(csf_k)==det_in_csf_up(det_in_csf_nb)).and.&
-              (det_in_csf_dn_tmp(csf_k)==det_in_csf_dn(det_in_csf_nb))) then
-            det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef(det_in_csf_nb)+det_in_csf_coef_tmp(csf_k)
-          elseif (det_in_csf_up_tmp(csf_k).ne.det_in_csf_max+1) then
-            det_in_csf_nb=det_in_csf_nb+1
-            if (det_in_csf_nb>det_in_csf_max) then
-               write(6,'(''3csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
-               call systemflush(6) 
-               call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
             endif
-            det_in_csf_up  (det_in_csf_nb)=det_in_csf_up_tmp(csf_k)
-            det_in_csf_dn  (det_in_csf_nb)=det_in_csf_dn_tmp(csf_k)
-            det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef_tmp(csf_k)
-          endif
-        enddo
-  call cpu_time(tB)
-  tCSFa=tCSFa+tB-tA
-  tA=tB
+          enddo ! det_unq_dn_i
 
-!2c\    Check if this properly sorted data on CSF is an already known CSF...
-        this_csf=0
-        do csf_k=1, ncsf+csf_ex_unq_nb  
-          if (arrays_equal(det_in_csf_up(:det_in_csf_nb) , det_unq_up_in_csf (csf_k)%row (:)).and.&
-              arrays_equal(det_in_csf_dn(:det_in_csf_nb) , det_unq_dn_in_csf (csf_k)%row (:)).and.&
-              arrays_equal(det_in_csf_coef(:det_in_csf_nb),cdet_unq_in_csf   (csf_k)%row (:))) then
-            this_csf=csf_k
-          endif
-        enddo
-  call cpu_time(tB)
-  tCSFb=tCSFb+tB-tA
-  tA=tB
-!       ... and if this CSF is unknown, add it
-        if (this_csf==0) then
-          csf_ex_unq_nb=csf_ex_unq_nb+1
-          if (csf_ex_unq_nb>csf_ex_unq_max) call die(lhere,"Recompile with a larger value of 'csf_ex_unq_max' in deriv_orb_mod.f90 (G)")
-          this_csf=ncsf+csf_ex_unq_nb
-          csf_ex_unq_ref(csf_ex_unq_nb) =csf_i
-          csf_ex_unq_size(csf_ex_unq_nb)=det_in_csf_nb
-          det_unq_up_in_csf(ncsf+csf_ex_unq_nb)%row=det_in_csf_up(:det_in_csf_nb)
-          det_unq_dn_in_csf(ncsf+csf_ex_unq_nb)%row=det_in_csf_dn(:det_in_csf_nb)
-          cdet_unq_in_csf  (ncsf+csf_ex_unq_nb)%row=det_in_csf_coef(:det_in_csf_nb)
-        endif
+          call cpu_time(tB)
+          tDet=tDet+tB-tA
+          tA=tB
 
-!3a\    Gather this CSF into the information on the excited WF
-        csf_in_wf_nb=csf_in_wf_nb+1
-        if (csf_in_wf_nb>csf_in_wf_max) call die(lhere,"Recompile with a larger value of 'csf_in_wf_max' in deriv_orb_mod.f90 (H)")
-        csf_in_wf(csf_in_wf_nb)     =this_csf
-        csf_in_wf_ref(csf_in_wf_nb) =csf_i
-        csf_in_wf_coef(csf_in_wf_nb)=det_in_csf_coef(1)
-  call cpu_time(tB)
-  tCSFc=tCSFc+tB-tA
-  tA=tB
+!2\       =================================================================================
+!         Gather and sort information on the excited CSF
+!         (in the process: gather information on unique CSF)
+!         =================================================================================
+          !CSF_in_WF initialization
+          csf_in_wf_nb  =0
+          csf_in_wf     =csf_in_wf_max+1
+          csf_in_wf_ref =csf_in_wf_max+1
+          csf_in_wf_coef=csf_in_wf_max+1
 
-      endif ! csf_ex != 0
-    enddo ! csf_i
+          do csf_i = 1, ncsf
 
-!3\ ================================================================================= 
-!   Sort information on the excited WF
-!   (in the process: gather information on unique WF)
-!   ================================================================================= 
-    if (csf_in_wf_nb.ne.0) then
-!3b\  Sort the WF information
-!     Here we do resize the arrays to make the sort quicker
-      call alloc('csf_in_wf',csf_in_wf,csf_in_wf_nb)
-      call alloc('csf_in_wf_ref',csf_in_wf_ref,csf_in_wf_nb)
-      call alloc('csf_in_wf_coef',csf_in_wf_coef,csf_in_wf_nb)
-  call cpu_time(tAintermed)
-      call sort(csf_in_wf, csf_in_wf_ref, csf_in_wf_coef)
-  call cpu_time(tBintermed)
-  tSort=tSort+tBintermed-tAintermed
-      call alloc('csf_in_wf',csf_in_wf,csf_in_wf_max)
-      call alloc('csf_in_wf_ref',csf_in_wf_ref,csf_in_wf_max)
-      call alloc('csf_in_wf_coef',csf_in_wf_coef,csf_in_wf_max)
+!2a\        Gather the unsorted information on CSFs
+!           (loop through determinants in the reference CSF)
+            !DET_in_CSF_tmp initialization
+            det_in_csf_nb_tmp  =0
+            det_in_csf_up_tmp  =det_in_csf_max+1
+            det_in_csf_dn_tmp  =det_in_csf_max+1
+            det_in_csf_coef_tmp=det_in_csf_max+1
+!           write(6,'(''csf_i. ndet_in_csf (csf_i), det_in_csf_nb_tmp'',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_nb_tmp
+            do det_in_csf_i = 1, ndet_in_csf (csf_i)
+              det_i=iwdet_in_csf(det_in_csf_i, csf_i)
+              det_unq_up_i = det_to_det_unq_up (det_i)
+              det_unq_dn_i = det_to_det_unq_dn (det_i)
 
-!3c\  Check if this properly sorted data on WF is an already known WF...
-      this_ex=0
-      do ex_j = 1, single_ex_nb
-        if (arrays_equal (csf_in_wf      (:csf_in_wf_nb) , wf_unq_csf (ex_j)%row (:)) .and. &
-            arrays_equal (csf_in_wf_ref  (:csf_in_wf_nb) , wf_unq_ref (ex_j)%row (:)) .and. &
-            arrays_equal (csf_in_wf_coef (:csf_in_wf_nb) , wf_unq_coef(ex_j)%row (:))) then
-          this_ex = ex_j
-        endif
-      enddo
-!     ...if this WF is unknown, add it
-      if (this_ex == 0) then
-        single_ex_nb = single_ex_nb + 1
-        if (single_ex_nb>single_ex_max) call die(lhere,"Recompile with a larger value of 'single_ex_max' in deriv_orb_mod.f90 (I)")
-        single_ex_added_nb = single_ex_added_nb + 1
-        this_ex = single_ex_nb
-        wf_unq_nb  (single_ex_nb)   = csf_in_wf_nb
-        call copy_portion(csf_in_wf     , wf_unq_csf (single_ex_nb)%row, csf_in_wf_nb)
-        call copy_portion(csf_in_wf_ref , wf_unq_ref (single_ex_nb)%row, csf_in_wf_nb)
-        call copy_portion(csf_in_wf_coef, wf_unq_coef(single_ex_nb)%row, csf_in_wf_nb)
-        ex_orb_ind     (single_ex_nb) = single_ex_nb
-        ex_orb_1st_lab (single_ex_nb) = orb_opt_lab_i
-        ex_orb_2nd_lab (single_ex_nb) = orb_opt_lab_j
-      endif
-  call cpu_time(tB)
-  tWF=tWF+tB-tA
-  tA=tB
+              iwdet = iwdet_ex_up (ex_i, det_unq_up_i)
+              if (iwdet.ne.0) then
+                det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
+                if (det_in_csf_nb_tmp>det_in_csf_max) then
+                   write(6,'(''1csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, ndet_in_csf (csf_i), det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
+                   write(6,'(''det_in_csf_nb_tmp, det_in_csf_max='',2i8)') det_in_csf_nb_tmp, det_in_csf_max ; call systemflush(6)
+                   call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (D)")
+                endif
+                det_in_csf_up_tmp  (det_in_csf_nb_tmp)=iwdet
+                det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=det_unq_dn_i
+                det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_up(ex_i, det_unq_up_i)
+              endif
+              iwdet = iwdet_ex_dn (ex_i, det_unq_dn_i)
+              if (iwdet.ne.0) then
+                det_in_csf_nb_tmp=det_in_csf_nb_tmp+1
+                if (det_in_csf_nb_tmp>det_in_csf_max) then
+                   write(6,'(''2csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
+                   write(6,'(''det_in_csf_nb_tmp, det_in_csf_max='',2i8)') det_in_csf_nb_tmp, det_in_csf_max ; call systemflush(6)
+                   call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (E)")
+                endif
+                det_in_csf_up_tmp  (det_in_csf_nb_tmp)=det_unq_up_i
+                det_in_csf_dn_tmp  (det_in_csf_nb_tmp)=iwdet
+                det_in_csf_coef_tmp(det_in_csf_nb_tmp)=cdet_in_csf(det_in_csf_i, csf_i)*det_ex_unq_sgn_dn(ex_i, det_unq_dn_i)
+              endif
+            enddo ! det_in_csf_i
 
-!4\ ================================================================================= 
-!   Gather and sort information on the derivative DPSI
-!   (in the process: gather information on unique versus redundant DPSI)
-!   ================================================================================= 
-!4a\  Gather information
-      if (ex_dir_rev==1) then
-        ex_orb_ind_tmp = this_ex
-        ex_orb_ind_rev_tmp = 0
-      else
-        ex_orb_ind_rev_tmp =  this_ex
-        ex_orb_ind_tmp = 0
-        csf_in_wf_coef(:csf_in_wf_nb)=-csf_in_wf_coef(:csf_in_wf_nb)
-      endif
-      if (csf_in_dpsi_nb_tmp+csf_in_wf_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a larger value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (J)")
-      csf_in_dpsi_tmp     (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf     (:csf_in_wf_nb)
-      csf_in_dpsi_ref_tmp (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_ref (:csf_in_wf_nb)
-      csf_in_dpsi_coef_tmp(csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_coef(:csf_in_wf_nb)
-      csf_in_dpsi_nb_tmp=csf_in_dpsi_nb_tmp+csf_in_wf_nb
 
-    endif ! wf_ex != 0
-  enddo ! ex_dir_rev
+!2b\        Sort the CSF information and fold repetitions (non unique couple of UP and DOWN determinants) together
+            if (det_in_csf_nb_tmp.ne.0) then
+!             Here we resize the arrays to make the sort quicker
+              call alloc('det_in_csf_up_tmp',det_in_csf_up_tmp,det_in_csf_nb_tmp)
+              call alloc('det_in_csf_dn_tmp',det_in_csf_dn_tmp,det_in_csf_nb_tmp)
+              call alloc('det_in_csf_coef_tmp',det_in_csf_coef_tmp,det_in_csf_nb_tmp)
 
-!4b\Sort the information
-!   and fold repetitions (non unique couple of CSF and REF) together
-  if (csf_in_dpsi_nb_tmp.ne.0) then
-    dpsi_is_redundant=.false.
+              call cpu_time(tAintermed)
 
-!   Here we do resize the arrays to make the sort quicker
-    call alloc('csf_in_dpsi_tmp',csf_in_dpsi_tmp,csf_in_dpsi_nb_tmp)
-    call alloc('csf_in_dpsi_ref_tmp',csf_in_dpsi_ref_tmp,csf_in_dpsi_nb_tmp)
-    call alloc('csf_in_dpsi_coef_tmp',csf_in_dpsi_coef_tmp,csf_in_dpsi_nb_tmp)
- call cpu_time(tAintermed)
-    call sort(csf_in_dpsi_tmp,csf_in_dpsi_ref_tmp,csf_in_dpsi_coef_tmp)
- call cpu_time(tBintermed)
- tSort=tSort+tBintermed-tAintermed
-    call alloc('csf_in_dpsi_tmp',csf_in_dpsi_tmp,csf_in_dpsi_max)
-    call alloc('csf_in_dpsi_ref_tmp',csf_in_dpsi_ref_tmp,csf_in_dpsi_max)
-    call alloc('csf_in_dpsi_coef_tmp',csf_in_dpsi_coef_tmp,csf_in_dpsi_max)
+              call sort(det_in_csf_up_tmp, det_in_csf_dn_tmp, det_in_csf_coef_tmp)
 
-    csf_in_dpsi_nb=1
-    csf_in_dpsi(1)     =csf_in_dpsi_tmp(1)
-    csf_in_dpsi_ref(1) =csf_in_dpsi_ref_tmp(1)
-    csf_in_dpsi_coef(1)=csf_in_dpsi_coef_tmp(1)
-    do dpsi_k=2,csf_in_dpsi_nb_tmp
-      if ((csf_in_dpsi_tmp(dpsi_k)    ==csf_in_dpsi(csf_in_dpsi_nb)) .and.  &
-          (csf_in_dpsi_ref_tmp(dpsi_k)==csf_in_dpsi_ref(csf_in_dpsi_nb))) then
-        csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef(csf_in_dpsi_nb)+csf_in_dpsi_coef_tmp(dpsi_k)
-      elseif (csf_in_dpsi_tmp(dpsi_k).ne.csf_in_dpsi_max+1) then
-        csf_in_dpsi_nb=csf_in_dpsi_nb + 1
-        if (csf_in_dpsi_nb>csf_in_dpsi_max) call die(lhere,"Recompile with a larger value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (K)")
-        csf_in_dpsi(csf_in_dpsi_nb)     =csf_in_dpsi_tmp(dpsi_k)
-        csf_in_dpsi_ref(csf_in_dpsi_nb) =csf_in_dpsi_ref_tmp(dpsi_k)
-        csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef_tmp(dpsi_k)
-      endif
-    enddo
+              call cpu_time(tBintermed)
+              tSort=tSort+tBintermed-tAintermed
 
-!4c\Check if this DPSI is redundant...
-    !if all first coefficients are zero
-    dpsi_is_redundant=.true.
-    do dpsi_k=1,csf_in_dpsi_nb
-      if (csf_in_dpsi_coef(dpsi_k).ne.0.d0) then
-        dpsi_is_redundant=.false.
-        exit
-      endif
-    enddo
+              call alloc('det_in_csf_up_tmp',det_in_csf_up_tmp,det_in_csf_max)
+              call alloc('det_in_csf_dn_tmp',det_in_csf_dn_tmp,det_in_csf_max)
+              call alloc('det_in_csf_coef_tmp',det_in_csf_coef_tmp,det_in_csf_max)
 
-    !if all CSF are from the ground-state
-    if ((.not. dpsi_is_redundant).and.(l_opt_csf)) then
-      dpsi_is_redundant=.true.
-      do dpsi_k=1,csf_in_dpsi_nb
-        if (((.not.(elt_in_array(iwcsf, csf_in_dpsi(dpsi_k)))) &
-             .and. (csf_in_dpsi_coef(dpsi_k).ne.0.d0))             &
-           .or. (csf_in_dpsi_nb==1)) then
+              det_in_csf_nb  =1
+              det_in_csf_up  =0
+              det_in_csf_dn  =0
+              det_in_csf_coef=0
+              det_in_csf_up(1)  =det_in_csf_up_tmp(1)
+              det_in_csf_dn(1)  =det_in_csf_dn_tmp(1)
+              det_in_csf_coef(1)=det_in_csf_coef_tmp(1)
+              do csf_k=2, det_in_csf_nb_tmp
+                if ((det_in_csf_up_tmp(csf_k)==det_in_csf_up(det_in_csf_nb)).and.&
+                    (det_in_csf_dn_tmp(csf_k)==det_in_csf_dn(det_in_csf_nb))) then
+                  det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef(det_in_csf_nb)+det_in_csf_coef_tmp(csf_k)
+                elseif (det_in_csf_up_tmp(csf_k).ne.det_in_csf_max+1) then
+                  det_in_csf_nb=det_in_csf_nb+1
+                  if (det_in_csf_nb>det_in_csf_max) then
+                     write(6,'(''3csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max='',9i5)') csf_i, det_in_csf_i, det_in_csf_nb_tmp, det_in_csf_max
+                     write(6,'(''det_in_csf_nb, det_in_csf_max='',2i8)') det_in_csf_nb, det_in_csf_max ; call systemflush(6)
+                     call die(lhere,"Recompile with a larger value of 'det_in_csf_max' in deriv_orb_mod.f90 (F)")
+                  endif
+                  det_in_csf_up  (det_in_csf_nb)=det_in_csf_up_tmp(csf_k)
+                  det_in_csf_dn  (det_in_csf_nb)=det_in_csf_dn_tmp(csf_k)
+                  det_in_csf_coef(det_in_csf_nb)=det_in_csf_coef_tmp(csf_k)
+                endif
+              enddo
+
+              call cpu_time(tB)
+              tCSFa=tCSFa+tB-tA
+              tA=tB
+
+!2c\          Check if this properly sorted data on CSF is an already known CSF...
+              this_csf=0
+              do csf_k=1, ncsf+csf_ex_unq_nb
+                if (arrays_equal(det_in_csf_up(:det_in_csf_nb) , det_unq_up_in_csf (csf_k)%row (:)).and.&
+                    arrays_equal(det_in_csf_dn(:det_in_csf_nb) , det_unq_dn_in_csf (csf_k)%row (:)).and.&
+                    arrays_equal(det_in_csf_coef(:det_in_csf_nb),cdet_unq_in_csf   (csf_k)%row (:))) then
+                  this_csf=csf_k
+                endif
+              enddo
+
+              call cpu_time(tB)
+              tCSFb=tCSFb+tB-tA
+              tA=tB
+
+!             ... and if this CSF is unknown, add it
+              if (this_csf==0) then
+                csf_ex_unq_nb=csf_ex_unq_nb+1
+                if (csf_ex_unq_nb>csf_ex_unq_max) then
+                  write(6,'(''csf_ex_unq_nb, csf_ex_unq_max='',2i8)') csf_ex_unq_nb, csf_ex_unq_max ; call systemflush(6)
+                  call die(lhere,"Recompile with a larger value of 'csf_ex_unq_max' in deriv_orb_mod.f90 (G)")
+                endif
+                this_csf=ncsf+csf_ex_unq_nb
+                csf_ex_unq_ref(csf_ex_unq_nb) =csf_i
+                csf_ex_unq_size(csf_ex_unq_nb)=det_in_csf_nb
+                det_unq_up_in_csf(ncsf+csf_ex_unq_nb)%row=det_in_csf_up(:det_in_csf_nb)
+                det_unq_dn_in_csf(ncsf+csf_ex_unq_nb)%row=det_in_csf_dn(:det_in_csf_nb)
+                cdet_unq_in_csf  (ncsf+csf_ex_unq_nb)%row=det_in_csf_coef(:det_in_csf_nb)
+              endif
+
+!3a\          Gather this CSF into the information on the excited WF
+              csf_in_wf_nb=csf_in_wf_nb+1
+              if (csf_in_wf_nb>csf_in_wf_max) then
+                write(6,'(''csf_in_wf_nb, csf_in_wf_max='',2i8)') csf_in_wf_nb, csf_in_wf_max ; call systemflush(6)
+                call die(lhere,"Recompile with a larger value of 'csf_in_wf_max' in deriv_orb_mod.f90 (H)")
+              endif
+              csf_in_wf(csf_in_wf_nb)     =this_csf
+              csf_in_wf_ref(csf_in_wf_nb) =csf_i
+              csf_in_wf_coef(csf_in_wf_nb)=det_in_csf_coef(1)
+
+              call cpu_time(tB)
+              tCSFc=tCSFc+tB-tA
+              tA=tB
+
+            endif ! csf_ex != 0
+          enddo ! csf_i
+
+!3\       =================================================================================
+!         Sort information on the excited WF
+!         (in the process: gather information on unique WF)
+!         =================================================================================
+          if (csf_in_wf_nb.ne.0) then
+!3b\        Sort the WF information
+!           Here we resize the arrays to make the sort quicker
+            call alloc('csf_in_wf',csf_in_wf,csf_in_wf_nb)
+            call alloc('csf_in_wf_ref',csf_in_wf_ref,csf_in_wf_nb)
+            call alloc('csf_in_wf_coef',csf_in_wf_coef,csf_in_wf_nb)
+
+            call cpu_time(tAintermed)
+
+            call sort(csf_in_wf, csf_in_wf_ref, csf_in_wf_coef)
+
+            call cpu_time(tBintermed)
+            tSort=tSort+tBintermed-tAintermed
+
+            call alloc('csf_in_wf',csf_in_wf,csf_in_wf_max)
+            call alloc('csf_in_wf_ref',csf_in_wf_ref,csf_in_wf_max)
+            call alloc('csf_in_wf_coef',csf_in_wf_coef,csf_in_wf_max)
+
+!3c\        Check if this properly sorted data on WF is an already known WF...
+            this_ex=0
+            do ex_j = 1, single_ex_nb
+              if (arrays_equal (csf_in_wf      (:csf_in_wf_nb) , wf_unq_csf (ex_j)%row (:)) .and. &
+                  arrays_equal (csf_in_wf_ref  (:csf_in_wf_nb) , wf_unq_ref (ex_j)%row (:)) .and. &
+                  arrays_equal (csf_in_wf_coef (:csf_in_wf_nb) , wf_unq_coef(ex_j)%row (:))) then
+                this_ex = ex_j
+              endif
+            enddo
+!           ...if this WF is unknown, add it
+            if (this_ex == 0) then
+              single_ex_nb = single_ex_nb + 1
+              if (single_ex_nb>single_ex_max) then
+                write(6,'(''single_ex_nb, single_ex_max='',2i8)') single_ex_nb, single_ex_max ; call systemflush(6)
+                call die(lhere,"Recompile with a larger value of 'single_ex_max' in deriv_orb_mod.f90 (I)")
+              endif
+              single_ex_added_nb = single_ex_added_nb + 1
+              this_ex = single_ex_nb
+              wf_unq_nb  (single_ex_nb)   = csf_in_wf_nb
+              call copy_portion(csf_in_wf     , wf_unq_csf (single_ex_nb)%row, csf_in_wf_nb)
+              call copy_portion(csf_in_wf_ref , wf_unq_ref (single_ex_nb)%row, csf_in_wf_nb)
+              call copy_portion(csf_in_wf_coef, wf_unq_coef(single_ex_nb)%row, csf_in_wf_nb)
+              ex_orb_ind     (single_ex_nb) = single_ex_nb
+              ex_orb_1st_lab (single_ex_nb) = orb_opt_lab_i
+              ex_orb_2nd_lab (single_ex_nb) = orb_opt_lab_j
+            endif
+
+            call cpu_time(tB)
+            tWF=tWF+tB-tA
+            tA=tB
+
+!4\       =================================================================================
+!         Gather and sort information on the derivative DPSI
+!         (in the process: gather information on unique versus redundant DPSI)
+!         =================================================================================
+!4a\        Gather information
+            if (ex_dir_rev==1) then
+              ex_orb_ind_tmp = this_ex
+!             ex_orb_ind_rev_tmp = 0
+            else
+              ex_orb_ind_rev_tmp =  this_ex
+!             ex_orb_ind_tmp = 0
+              csf_in_wf_coef(:csf_in_wf_nb)=-csf_in_wf_coef(:csf_in_wf_nb)
+            endif
+            if (csf_in_dpsi_nb_tmp+csf_in_wf_nb>csf_in_dpsi_max) then
+              write(6,'(''csf_in_dpsi_nb_tmp+csf_in_wf_nb, csf_in_dpsi_max='',2i8)') csf_in_dpsi_nb_tmp+csf_in_wf_nb, csf_in_dpsi_max ; call systemflush(6)
+              call die(lhere,"Recompile with a larger value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (J)")
+            endif
+            csf_in_dpsi_tmp     (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf     (:csf_in_wf_nb)
+            csf_in_dpsi_ref_tmp (csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_ref (:csf_in_wf_nb)
+            csf_in_dpsi_coef_tmp(csf_in_dpsi_nb_tmp+1:csf_in_dpsi_nb_tmp+csf_in_wf_nb)=csf_in_wf_coef(:csf_in_wf_nb)
+            csf_in_dpsi_nb_tmp=csf_in_dpsi_nb_tmp+csf_in_wf_nb
+
+          endif ! wf_ex != 0
+        enddo ! ex_dir_rev
+
+!4b\Sort       the information and fold repetitions (non unique couple of CSF and REF) together
+        if (csf_in_dpsi_nb_tmp.ne.0) then
           dpsi_is_redundant=.false.
-        endif
-      enddo
-    endif
 
-    !if is it a DPSI already known
-    if (.not. dpsi_is_redundant) then
-     do dpsi_i = 1, param_orb_nb
-      if ((arrays_equal (csf_in_dpsi (:csf_in_dpsi_nb),     dpsi_unq_csf (dpsi_i)%row (:))) &
-       .and.( &
-          (arrays_equal (csf_in_dpsi_ref (:csf_in_dpsi_nb), dpsi_unq_ref (dpsi_i)%row (:)) .and. & 
-           arrays_equal (csf_in_dpsi_coef(:csf_in_dpsi_nb), dpsi_unq_coef(dpsi_i)%row (:))) &
-          .or.(csf_in_dpsi_nb == 1))  ) then
-         dpsi_is_redundant = .true.
-      endif
-     enddo
-    endif
+!         Here we resize the arrays to make the sort quicker
+          call alloc('csf_in_dpsi_tmp',csf_in_dpsi_tmp,csf_in_dpsi_nb_tmp)
+          call alloc('csf_in_dpsi_ref_tmp',csf_in_dpsi_ref_tmp,csf_in_dpsi_nb_tmp)
+          call alloc('csf_in_dpsi_coef_tmp',csf_in_dpsi_coef_tmp,csf_in_dpsi_nb_tmp)
 
-    !if redundant: remove added unique singly-excited wave functions
-    if (dpsi_is_redundant) then
-      single_ex_nb = single_ex_nb - single_ex_added_nb
-      !NEW
-      !wf_unq_nb     (single_ex_nb+1:)=0
-      !do ireinit=single_ex_nb+1,wf_unq_max
-      !  wf_unq_csf (ireinit)%row=0
-      !  wf_unq_ref (ireinit)%row=0
-      !  wf_unq_coef(ireinit)%row=0
-      !enddo
-      !ex_orb_1st_lab(single_ex_nb+1:)=0
-      !ex_orb_2nd_lab(single_ex_nb+1:)=0
-      !OLD
-      !call object_alloc ('wf_unq_nb',   wf_unq_nb,   single_ex_nb)
-      !call object_alloc ('wf_unq_csf',  wf_unq_csf,  single_ex_nb)
-      !call object_alloc ('wf_unq_ref',  wf_unq_ref,  single_ex_nb)
-      !call object_alloc ('wf_unq_coef', wf_unq_coef, single_ex_nb)
-      !call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
-      !call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
-    endif
+          call cpu_time(tAintermed)
 
-!4d\...or unique
-    if (.not. dpsi_is_redundant) then
-      param_orb_nb = param_orb_nb + 1
-      if (param_orb_nb>single_ex_max) call die(lhere,"Recompile with a larger value of 'mamax' in deriv_orb_mod.f90 (L)")
-      dpsi_unq_nb  (param_orb_nb)    =csf_in_dpsi_nb
-      call copy_portion(csf_in_dpsi     , dpsi_unq_csf (param_orb_nb)%row, csf_in_dpsi_nb)
-      call copy_portion(csf_in_dpsi_ref , dpsi_unq_ref (param_orb_nb)%row, csf_in_dpsi_nb)
-      call copy_portion(csf_in_dpsi_coef, dpsi_unq_coef(param_orb_nb)%row, csf_in_dpsi_nb)
+          call sort(csf_in_dpsi_tmp,csf_in_dpsi_ref_tmp,csf_in_dpsi_coef_tmp)
 
-      if (ex_orb_ind_tmp /= 0) then
-       ex_orb_ind    (param_orb_nb) = ex_orb_ind_tmp
-       ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_rev_tmp
-      else
-!      Warning: I did not check this very carefully
-       ex_orb_ind    (param_orb_nb) = ex_orb_ind_rev_tmp
-       ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_tmp
-      endif
-    endif
-  call cpu_time(tB)
-  tDPSI=tDPSI+tB-tA
-  tA=tB
+          call cpu_time(tBintermed)
+          tSort=tSort+tBintermed-tAintermed
 
-  endif ! dpsi_ex != 0
-  enddo ! ex_dir_rev_nonortho
+          call alloc('csf_in_dpsi_tmp',csf_in_dpsi_tmp,csf_in_dpsi_max)
+          call alloc('csf_in_dpsi_ref_tmp',csf_in_dpsi_ref_tmp,csf_in_dpsi_max)
+          call alloc('csf_in_dpsi_coef_tmp',csf_in_dpsi_coef_tmp,csf_in_dpsi_max)
 
-  orb_opt_lab_i = orb_opt_lab_j
-  enddo !orb_opt_lab_i
-  enddo !orb_opt_lab_j
+          csf_in_dpsi_nb=1
+          csf_in_dpsi(1)     =csf_in_dpsi_tmp(1)
+          csf_in_dpsi_ref(1) =csf_in_dpsi_ref_tmp(1)
+          csf_in_dpsi_coef(1)=csf_in_dpsi_coef_tmp(1)
+          do dpsi_k=2,csf_in_dpsi_nb_tmp
+            if ((csf_in_dpsi_tmp(dpsi_k)    ==csf_in_dpsi(csf_in_dpsi_nb)) .and.  &
+                (csf_in_dpsi_ref_tmp(dpsi_k)==csf_in_dpsi_ref(csf_in_dpsi_nb))) then
+              csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef(csf_in_dpsi_nb)+csf_in_dpsi_coef_tmp(dpsi_k)
+            elseif (csf_in_dpsi_tmp(dpsi_k).ne.csf_in_dpsi_max+1) then
+              csf_in_dpsi_nb=csf_in_dpsi_nb + 1
+              if (csf_in_dpsi_nb>csf_in_dpsi_max) then
+                write(6,'(''csf_in_dpsi_nb, csf_in_dpsi_max='',2i8)') csf_in_dpsi_nb, csf_in_dpsi_max ; call systemflush(6)
+                call die(lhere,"Recompile with a larger value of 'csf_in_dpsi_max' in deriv_orb_mod.f90 (K)")
+              endif
+              csf_in_dpsi(csf_in_dpsi_nb)     =csf_in_dpsi_tmp(dpsi_k)
+              csf_in_dpsi_ref(csf_in_dpsi_nb) =csf_in_dpsi_ref_tmp(dpsi_k)
+              csf_in_dpsi_coef(csf_in_dpsi_nb)=csf_in_dpsi_coef_tmp(dpsi_k)
+            endif
+          enddo
+
+!         write(6,'(''1 param_orb_nb, dpsi_is_redundant'',i6,l)') param_orb_nb, dpsi_is_redundant
+!4c\Check if this DPSI is redundant...
+          !if all first coefficients are zero
+          dpsi_is_redundant=.true.
+          do dpsi_k=1,csf_in_dpsi_nb
+            if (csf_in_dpsi_coef(dpsi_k).ne.0.d0) then
+              dpsi_is_redundant=.false.
+              exit
+            endif
+          enddo
+
+!         write(6,'(''2 param_orb_nb, dpsi_is_redundant'',i6,l)') param_orb_nb, dpsi_is_redundant
+          !if all CSF are from the ground-state
+          if ((.not. dpsi_is_redundant).and.(l_opt_csf)) then
+            dpsi_is_redundant=.true.
+            do dpsi_k=1,csf_in_dpsi_nb
+              if (((.not.(elt_in_array(iwcsf, csf_in_dpsi(dpsi_k)))) &
+                   .and. (csf_in_dpsi_coef(dpsi_k).ne.0.d0))         &
+                 .or. (csf_in_dpsi_nb==1)) then
+                dpsi_is_redundant=.false.
+              endif
+            enddo
+          endif
+
+!         write(6,'(''3 param_orb_nb, dpsi_is_redundant'',i6,l)') param_orb_nb, dpsi_is_redundant
+          !if is it a DPSI already known
+          if (.not. dpsi_is_redundant) then
+            do dpsi_i = 1, param_orb_nb
+              if ((arrays_equal (csf_in_dpsi     (:csf_in_dpsi_nb), dpsi_unq_csf (dpsi_i)%row (:))) .and. &
+                 ((arrays_equal (csf_in_dpsi_ref (:csf_in_dpsi_nb), dpsi_unq_ref (dpsi_i)%row (:)) .and. &
+                   arrays_equal (csf_in_dpsi_coef(:csf_in_dpsi_nb), dpsi_unq_coef(dpsi_i)%row (:))) &
+                 .or.(csf_in_dpsi_nb == 1))) then
+                 dpsi_is_redundant = .true.
+              endif
+            enddo
+          endif
+
+!         write(6,'(''4 param_orb_nb, dpsi_is_redundant'',i6,l)') param_orb_nb, dpsi_is_redundant
+          !if redundant: remove added unique singly-excited wave functions
+          if (dpsi_is_redundant) then
+            single_ex_nb = single_ex_nb - single_ex_added_nb
+            !NEW
+            !wf_unq_nb     (single_ex_nb+1:)=0
+            !do ireinit=single_ex_nb+1,wf_unq_max
+            !  wf_unq_csf (ireinit)%row=0
+            !  wf_unq_ref (ireinit)%row=0
+            !  wf_unq_coef(ireinit)%row=0
+            !enddo
+            !ex_orb_1st_lab(single_ex_nb+1:)=0
+            !ex_orb_2nd_lab(single_ex_nb+1:)=0
+            !OLD
+            !call object_alloc ('wf_unq_nb',   wf_unq_nb,   single_ex_nb)
+            !call object_alloc ('wf_unq_csf',  wf_unq_csf,  single_ex_nb)
+            !call object_alloc ('wf_unq_ref',  wf_unq_ref,  single_ex_nb)
+            !call object_alloc ('wf_unq_coef', wf_unq_coef, single_ex_nb)
+            !call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
+            !call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
+          endif
+
+!4d\...or       unique
+          if (.not. dpsi_is_redundant) then
+            param_orb_nb = param_orb_nb + 1
+            if (param_orb_nb>single_ex_max) then
+              write(6,'(''param_orb_nb, single_ex_max='',2i8)') param_orb_nb, single_ex_max ; call systemflush(6)
+              call die(lhere,"Recompile with a larger value of 'mamax' in deriv_orb_mod.f90 (L)")
+            endif
+            dpsi_unq_nb  (param_orb_nb)    =csf_in_dpsi_nb
+            call copy_portion(csf_in_dpsi     , dpsi_unq_csf (param_orb_nb)%row, csf_in_dpsi_nb)
+            call copy_portion(csf_in_dpsi_ref , dpsi_unq_ref (param_orb_nb)%row, csf_in_dpsi_nb)
+            call copy_portion(csf_in_dpsi_coef, dpsi_unq_coef(param_orb_nb)%row, csf_in_dpsi_nb)
+
+!           if (ex_orb_ind_tmp /= 0) then
+!             ex_orb_ind    (param_orb_nb) = ex_orb_ind_tmp
+!             ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_rev_tmp
+!           else
+!!            Warning: I did not check this very carefully
+!!            ex_orb_ind    (param_orb_nb) = ex_orb_ind_rev_tmp
+!!            ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_tmp
+!             ex_orb_ind    (param_orb_nb) = ex_orb_ind_rev_tmp-1
+!             ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_rev_tmp
+!           endif
+
+            if (ex_orb_ind_tmp /= 0 .and. ex_orb_ind_rev_tmp /= 0) then
+              ex_orb_ind    (param_orb_nb) = ex_orb_ind_tmp
+              ex_orb_ind_rev(param_orb_nb) = ex_orb_ind_rev_tmp
+            elseif (ex_orb_ind_tmp /= 0 .and. ex_orb_ind_rev_tmp == 0) then
+              ex_orb_ind    (param_orb_nb) = ex_orb_ind_tmp
+            elseif (ex_orb_ind_tmp == 0 .and. ex_orb_ind_rev_tmp /= 0) then
+              ex_orb_ind    (param_orb_nb) = ex_orb_ind_rev_tmp
+            endif
+
+!           write(6,'(''param_orb_nb, csf_in_dpsi_nb, ex_orb_ind_tmp, ex_orb_ind_rev_tmp'', 9i5)') param_orb_nb, csf_in_dpsi_nb, ex_orb_ind_tmp, ex_orb_ind_rev_tmp ; call systemflush(6)
+          endif
+
+          call cpu_time(tB)
+          tDPSI=tDPSI+tB-tA
+          tA=tB
+
+        endif ! dpsi_ex != 0 i.e. csf_in_dpsi_nb_tmp.ne.0
+      enddo ! ex_dir_rev_nonortho = 1, ex_dir_rev_nonortho_nb
+
+      orb_opt_lab_i = orb_opt_lab_j
+    enddo ! orb_opt_lab_j i.e. j=1, orb_tot_nb
+  enddo ! orb_opt_lab_i i.e. i=1, orb_tot_nb
+
   call cpu_time(tEnd)
-  write(6,'(a)') '   Timing of the different steps:'
-  write(6,'(a,f8.3)')  '     Det:   ',tDet
-  write(6,'(a,f8.3)')  '     CSFa:  ',tCSFa
-  write(6,'(a,f8.3,a)')'     CSFb:  ',tCSFb,'  <- usually the most demanding'
-  write(6,'(a,f8.3)')  '     CSFc:  ',tCSFc
-  write(6,'(a,f8.3)')  '     WF:    ',tWF
-  write(6,'(a,f8.3)')  '     DPSI:  ',tDPSI
-  write(6,'(a,f8.3)')  '     Total: ',tEnd-tBegin
-  write(6,'(a,f8.3)')  '     Sort:  ',tSort
-  write(6,'(a)') '   Max of the array dimensions versus actual dimensions (and ratio):'
-  write(6,'(a,i8,i8,i8)') '     single_ex:  ',single_ex_max  ,single_ex_nb    ,single_ex_max  /single_ex_nb
-  write(6,'(a,i8,i8,i8)') '     det_ex:     ',det_ex_max     ,det_ex_unq_up_nb,det_ex_max     /det_ex_unq_up_nb
-  write(6,'(a,i8,i8,i8)') '     csf_ex_unq: ',csf_ex_unq_max ,csf_ex_unq_nb   ,csf_ex_unq_max /csf_ex_unq_nb
-  write(6,'(a,i8,i8,i8)') '     det_in_csf: ',det_in_csf_max ,det_in_csf_nb   ,det_in_csf_max /det_in_csf_nb
-  write(6,'(a,i8,i8,i8)') '     csf_in_wf:  ',csf_in_wf_max  ,csf_in_wf_nb    ,csf_in_wf_max  /csf_in_wf_nb
-  write(6,'(a,i8,i8,i8)') '     csf_in_dpsi:',csf_in_dpsi_max,csf_in_dpsi_nb  ,csf_in_dpsi_max/csf_in_dpsi_nb
-  write(6,'(a,i8,i8,i8)') '     wf_unq:     ',wf_unq_max     ,wf_unq_nb(1)    ,wf_unq_max     /wf_unq_nb(1)
-  write(6,'(a,i8,i8,i8)') '     dpsi_unq:   ',dpsi_unq_max   ,dpsi_unq_nb(1)  ,dpsi_unq_max   /dpsi_unq_nb(1)
 
-! determine orbitals mixed in orbital optimization 
+! write(6,*)
+! do dpsi_i = 1, param_orb_nb
+!   write(6,'(''dpsi_i, ex_orb_ind(dpsi_i), ex_orb_ind_rev(dpsi_i), ex_orb_1st_lab (ex_orb_ind(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind(dpsi_i)), ex_orb_1st_lab (ex_orb_ind_rev(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind_rev(dpsi_i)),'', 9i5)') dpsi_i, ex_orb_ind(dpsi_i), ex_orb_ind_rev(dpsi_i), ex_orb_1st_lab (ex_orb_ind(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind(dpsi_i)), ex_orb_1st_lab (ex_orb_ind_rev(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind_rev(dpsi_i))
+! enddo
+
+  write(6,'(a)') 'Timing of the different steps:'
+  write(6,'(a,f8.3)')  '  Det:   ',tDet
+  write(6,'(a,f8.3)')  '  CSFa:  ',tCSFa
+  write(6,'(a,f8.3,a)')'  CSFb:  ',tCSFb,'  <- usually the most demanding'
+  write(6,'(a,f8.3)')  '  CSFc:  ',tCSFc
+  write(6,'(a,f8.3)')  '  WF:    ',tWF
+  write(6,'(a,f8.3)')  '  DPSI:  ',tDPSI
+  write(6,'(a,f8.3)')  '  Total: ',tEnd-tBegin
+  write(6,'(a,f8.3)')  '  Sort:  ',tSort
+  write(6,'(a)') 'Max of the array dimensions versus actual dimensions (and ratio):'
+  write(6,'(a,i8,i8,f9.1)') '  single_ex:  ',single_ex_max  ,single_ex_nb    , real(single_ex_max)  /single_ex_nb ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  det_ex:     ',det_ex_max     ,det_ex_unq_up_nb, real(det_ex_max)     /det_ex_unq_up_nb ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  csf_ex_unq: ',csf_ex_unq_max ,csf_ex_unq_nb   , real(csf_ex_unq_max) /csf_ex_unq_nb ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  det_in_csf: ',det_in_csf_max ,det_in_csf_nb   , real(det_in_csf_max) /det_in_csf_nb ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  csf_in_wf:  ',csf_in_wf_max  ,csf_in_wf_nb    , real(csf_in_wf_max)  /csf_in_wf_nb ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  csf_in_dpsi:',csf_in_dpsi_max,csf_in_dpsi_nb  , real(csf_in_dpsi_max)/csf_in_dpsi_nb ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  wf_unq:     ',wf_unq_max     ,wf_unq_nb(1)    , real(wf_unq_max)     /wf_unq_nb(1) ; call systemflush(6)
+  write(6,'(a,i8,i8,f9.1)') '  dpsi_unq:   ',dpsi_unq_max   ,dpsi_unq_nb(1)  , real(dpsi_unq_max)   /dpsi_unq_nb(1) ; call systemflush(6)
+
+! determine orbitals mixed in orbital optimization
   call object_alloc ('orb_mix_lab', orb_mix_lab, orb_tot_nb)
   orb_mix_lab (:) = .false.
   do ex_i = 1, single_ex_nb
@@ -871,11 +938,11 @@ module deriv_orb_mod
 ! excitation pairs number
   deriv_orb_pairs_nb = param_orb_nb * (param_orb_nb + 1) / 2
 
-  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb
-  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb
-  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb
-  write(6,'(a,i10)') ' Number of unique spin-up   excited determinants = ', det_ex_unq_up_nb
-  write(6,'(a,i10)') ' Number of unique spin-down excited determinants = ', det_ex_unq_dn_nb
+  write(6,'(a,i10)') ' Number of single orbital excitations = ', single_ex_nb ; call systemflush(6)
+  write(6,'(a,i10)') ' Number of orbital derivatives        = ', param_orb_nb ; call systemflush(6)
+  write(6,'(a,i10)') ' Number of orbitals involved          = ', orb_mix_lab_nb ; call systemflush(6)
+  write(6,'(a,i10)') ' Number of unique spin-up   excited determinants = ', det_ex_unq_up_nb ; call systemflush(6)
+  write(6,'(a,i10)') ' Number of unique spin-down excited determinants = ', det_ex_unq_dn_nb ; call systemflush(6)
 
 ! adjust the arrays to their real size
   call object_alloc ('iwdet_ex_up',               iwdet_ex_up,                 single_ex_nb, ndetup)
@@ -918,7 +985,7 @@ module deriv_orb_mod
 
   call release('csf_ex_unq_ref',           csf_ex_unq_ref)
   call release('csf_ex_unq_size',          csf_ex_unq_size)
-  
+
   call release('csf_in_wf',      csf_in_wf)
   call release('csf_in_wf_ref',  csf_in_wf_ref)
   call release('csf_in_wf_coef', csf_in_wf_coef)
@@ -939,6 +1006,103 @@ module deriv_orb_mod
   call release('dpsi_unq_csf',         dpsi_unq_csf)
   call release('dpsi_unq_ref',         dpsi_unq_ref)
   call release('dpsi_unq_coef',        dpsi_unq_coef)
+
+! These are the arrays that are in the svn version also:
+! iwdet_ex_up
+! iwdet_ex_dn 
+! 
+! iwdet_ex_ref_up
+! iwdet_ex_ref_dn
+! 
+! det_ex_unq_orb_lab_up
+! det_ex_unq_orb_lab_dn
+! 
+! det_ex_unq_up_orb_1st_pos
+! det_ex_unq_up_orb_2nd_lab
+! det_ex_unq_dn_orb_1st_pos
+! det_ex_unq_dn_orb_2nd_lab
+! 
+! ex_orb_ind
+! ex_orb_ind_rev
+! 
+! ex_orb_1st_lab
+! ex_orb_2nd_lab
+
+  call object_alloc ('iwdet_ex_up',               iwdet_ex_up,                 single_ex_nb, ndetup)
+  call object_alloc ('iwdet_ex_dn',               iwdet_ex_dn,                 single_ex_nb, ndetdn)
+  call object_alloc ('det_ex_unq_sgn_up',         det_ex_unq_sgn_up,           single_ex_nb, ndetup)
+  call object_alloc ('det_ex_unq_sgn_dn',         det_ex_unq_sgn_dn,           single_ex_nb, ndetdn)
+  call object_alloc ('iwdet_ex_ref_up',           iwdet_ex_ref_up,             det_ex_unq_up_nb)
+  call object_alloc ('iwdet_ex_ref_dn',           iwdet_ex_ref_dn,             det_ex_unq_dn_nb)
+  call object_alloc ('det_ex_unq_orb_lab_up',     det_ex_unq_orb_lab_up, nup,  det_ex_unq_up_nb)
+  call object_alloc ('det_ex_unq_orb_lab_dn',     det_ex_unq_orb_lab_dn, ndn,  det_ex_unq_up_nb)
+  call object_alloc ('det_unq_orb_lab_srt_up',    det_unq_orb_lab_srt_up, nup, ndetup+det_ex_unq_up_nb)
+  call object_alloc ('det_unq_orb_lab_srt_dn',    det_unq_orb_lab_srt_dn, ndn, ndetdn+det_ex_unq_dn_nb)
+  call object_alloc ('det_ex_unq_up_orb_1st_pos', det_ex_unq_up_orb_1st_pos,   det_ex_unq_up_nb)
+  call object_alloc ('det_ex_unq_up_orb_2nd_lab', det_ex_unq_up_orb_2nd_lab,   det_ex_unq_up_nb)
+  call object_alloc ('det_ex_unq_dn_orb_1st_pos', det_ex_unq_dn_orb_1st_pos,   det_ex_unq_dn_nb)
+  call object_alloc ('det_ex_unq_dn_orb_2nd_lab', det_ex_unq_dn_orb_2nd_lab,   det_ex_unq_dn_nb)
+
+  call object_alloc('det_unq_up_in_csf', det_unq_up_in_csf, ncsf+csf_ex_unq_nb)
+  call object_alloc('det_unq_dn_in_csf', det_unq_dn_in_csf, ncsf+csf_ex_unq_nb)
+  call object_alloc('cdet_unq_in_csf'  , cdet_unq_in_csf,   ncsf+csf_ex_unq_nb)
+
+  call object_alloc ('ex_orb_ind',     ex_orb_ind,     param_orb_nb)
+  call object_alloc ('ex_orb_ind_rev', ex_orb_ind_rev, param_orb_nb)
+  call object_alloc ('ex_orb_1st_lab', ex_orb_1st_lab, single_ex_nb)
+  call object_alloc ('ex_orb_2nd_lab', ex_orb_2nd_lab, single_ex_nb)
+
+! Warning: tmp debug printout
+! do ex_i=1,single_ex_nb 
+!   do det_unq_up_i=1,ndetup
+!     write(6,'(''ex_i, det_unq_up_i, iwdet_ex_up(ex_i,det_unq_up_i)'',3i5)') ex_i, det_unq_up_i, iwdet_ex_up(ex_i,det_unq_up_i)
+!   enddo
+! enddo
+
+! do ex_i=1,single_ex_nb 
+!   do det_unq_dn_i=1,ndetdn
+!     write(6,'(''ex_i, det_unq_dn_i, iwdet_ex_dn(ex_i,det_unq_dn_i)'',3i5)') ex_i, det_unq_dn_i, iwdet_ex_dn(ex_i,det_unq_dn_i)
+!   enddo
+! enddo
+
+! write(6,'(''det_ex_unq_up_nb='',i5)') det_ex_unq_up_nb
+! write(6,'(''iwdet_ex_ref_up'',10000i5)') iwdet_ex_ref_up
+! write(6,'(''iwdet_ex_ref_dn'',10000i5)') iwdet_ex_ref_dn
+
+! write(6,'(''det_ex_unq_orb_lab_up'',10000i5)') det_ex_unq_orb_lab_up
+! write(6,'(''det_ex_unq_orb_lab_dn'',10000i5)') det_ex_unq_orb_lab_dn
+
+! write(6,'(''det_ex_unq_up_orb_1st_pos'',10000i5)') det_ex_unq_up_orb_1st_pos
+! write(6,'(''det_ex_unq_up_orb_2nd_lab'',10000i5)') det_ex_unq_up_orb_2nd_lab
+! write(6,'(''det_ex_unq_dn_orb_1st_pos'',10000i5)') det_ex_unq_dn_orb_1st_pos
+! write(6,'(''det_ex_unq_dn_orb_2nd_lab'',10000i5)') det_ex_unq_dn_orb_2nd_lab
+
+! write(6,'(''param_orb_nb='',i5)') param_orb_nb
+! write(6,'(''ex_orb_ind'',10000i5)') ex_orb_ind
+! write(6,'(''ex_orb_ind_rev'',10000i5)') ex_orb_ind_rev
+
+! write(6,'(''single_ex_nb='',i5)') single_ex_nb
+! write(6,'(''ex_orb_1st_lab'',10000i5)') ex_orb_1st_lab
+! write(6,'(''ex_orb_2nd_lab'',10000i5)') ex_orb_2nd_lab
+
+
+! write(6,*)
+! do dpsi_i = 1, param_orb_nb
+!   write(6,'(''dpsi_i, ex_orb_ind(dpsi_i), ex_orb_ind_rev(dpsi_i), ex_orb_1st_lab (ex_orb_ind(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind(dpsi_i)), ex_orb_1st_lab (ex_orb_ind_rev(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind_rev(dpsi_i)),'', 9i5)') dpsi_i, ex_orb_ind(dpsi_i), ex_orb_ind_rev(dpsi_i), ex_orb_1st_lab (ex_orb_ind(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind(dpsi_i)), ex_orb_1st_lab (ex_orb_ind_rev(dpsi_i)), ex_orb_2nd_lab (ex_orb_ind_rev(dpsi_i))
+! enddo
+
+! if (l_print_orbital_excitations .and. .not. l_check_redundant_orbital_derivative) then
+  if (l_print_orbital_excitations) then
+   write(6,*)
+   write(6,'(a)') ' Orbital excitations:'
+   do dpsi_i = 1, param_orb_nb
+    write(6,'(a,i4,a,i4,a,i4,a,i4)') ' orbital parameter # ',dpsi_i,' corresponds to single excitation # ',ex_orb_ind (dpsi_i),' : ',ex_orb_1st_lab (ex_orb_ind (dpsi_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind (dpsi_i))
+    if (ex_orb_ind_rev (dpsi_i) /= 0) then
+     write(6,'(a,i4,a,i4,a,i4)') '                             and reverse single excitation # ',ex_orb_ind_rev (dpsi_i),' : ',ex_orb_1st_lab (ex_orb_ind_rev (dpsi_i)),' -> ', ex_orb_2nd_lab (ex_orb_ind_rev (dpsi_i))
+    endif
+   enddo ! dpsi_i
+  write(6,*)
+  endif
 
   !stop
 
@@ -1004,7 +1168,7 @@ module deriv_orb_mod
 
     factor_up = 0.d0
     do i = 1, nup
-     factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, iwdet_ref) * orb (i, orb_up)
+      factor_up = factor_up + slater_mat_trans_inv_up (i, col_up, iwdet_ref) * orb (i, orb_up)
     enddo
 
     det_ex_unq_up(det_ex_unq_up_i) = factor_up * detu (iwdet_ref)
@@ -1021,7 +1185,7 @@ module deriv_orb_mod
 
     factor_dn = 0.d0
     do i = 1, ndn
-     factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, iwdet_ref) * orb (nup + i, orb_dn)
+      factor_dn = factor_dn + slater_mat_trans_inv_dn (i, col_dn, iwdet_ref) * orb (nup + i, orb_dn)
     enddo
 
     det_ex_unq_dn(det_ex_unq_dn_i) = factor_dn * detd (iwdet_ref)
@@ -1114,6 +1278,8 @@ module deriv_orb_mod
 
         det_ex (ex_i, det_i) = det_ex_up (ex_i, det_i) * detd (det_unq_dn_i) + detu (det_unq_up_i) * det_ex_dn (ex_i, det_i)
 
+!       write(6,'(''ex_i, csf_i, det_in_csf_i, det_i, det_unq_up_i, det_unq_dn_i, iwdet, sgn, det_ex_up (ex_i, det_i), det_ex_dn (ex_i, det_i)'',8i5,2es12.4)') ex_i, csf_i, det_in_csf_i, det_i, det_unq_up_i, det_unq_dn_i, iwdet, sgn, det_ex_up (ex_i, det_i), det_ex_dn (ex_i, det_i)
+
      enddo ! det_in_csf_i
    enddo ! csf_i
 
@@ -1185,9 +1351,11 @@ module deriv_orb_mod
         det_i = iwdet_in_csf (det_in_csf_i, csf_i)
 
         detex = det_ex (ex_i, det_i)
+!       write(6,'(''detex='',4i5,es14.6)') dorb_i, csf_i, iwdet_in_csf (det_in_csf_i, csf_i), det_in_csf_i, detex
 !       reverse excitation for non casscf wave function: (Eij-Eji) Det
         if (.not. l_casscf .and. ex_rev_i /= 0) then
           detex = detex - det_ex (ex_rev_i, det_i)
+!         write(6,'(''detex rev='',2i5,es14.6)') ex_rev_i, det_i, det_ex (ex_rev_i, det_i)
         endif
 
         dcsf_orb(csf_i,dorb_i)=dcsf_orb(csf_i,dorb_i) + cdet_in_csf (det_in_csf_i, csf_i) * detex
@@ -1198,7 +1366,7 @@ module deriv_orb_mod
 
     enddo ! csf_i
     dpsi_orb (dorb_i) = psid_ex (dorb_i) / psi_det
-    !write(6,*) '>dpsi_orb',dpsi_orb(dorb_i)
+    write(6,'(''dpsi_orb'',es14.6)') dpsi_orb(dorb_i)
   enddo ! ex_i
 
 
@@ -1252,7 +1420,7 @@ module deriv_orb_mod
   implicit none
 
 ! local
-  integer det_up_i, det_dn_i 
+  integer det_up_i, det_dn_i
   integer iwdet_ref
   integer i, j, k, l
   integer col_up, orb_up
@@ -1307,56 +1475,56 @@ module deriv_orb_mod
 !  spin up
    call alloc ('ratio_up', ratio_up, nup)
    do det_up_i = 1, det_ex_unq_up_nb
-   
+
        col_up  = det_ex_unq_up_orb_1st_pos (det_up_i)
        orb_up  = det_ex_unq_up_orb_2nd_lab (det_up_i)
        iwdet_ref = iwdet_ex_ref_up (det_up_i)
-   
+
        do l = 1, nup
         ratio_up (l) = 0.d0
         do i = 1, nup
           ratio_up (l) = ratio_up (l) + slater_mat_trans_inv_up (i, l, iwdet_ref) * orb (i, orb_up)
         enddo  ! i
        enddo ! l
-   
+
        factor_up_inv = 1.d0/ratio_up (col_up)
        ratio_up (col_up) = ratio_up (col_up) - 1.d0
-   
+
        do k = 1, nup
          do j = 1 , nup
           slater_mat_ex_trans_inv_up (k, j, det_up_i) = slater_mat_trans_inv_up (k, j, iwdet_ref) &
                                   - slater_mat_trans_inv_up (k, col_up, iwdet_ref) * ratio_up(j)* factor_up_inv
          enddo ! j
        enddo ! k
-   
+
     enddo ! det_up_i
     call release ('ratio_up', ratio_up)
-   
+
 !  spin dn
    call alloc ('ratio_dn', ratio_dn, ndn)
    do det_dn_i = 1, det_ex_unq_dn_nb
-   
+
        col_dn  = det_ex_unq_dn_orb_1st_pos (det_dn_i)
        orb_dn  = det_ex_unq_dn_orb_2nd_lab (det_dn_i)
        iwdet_ref = iwdet_ex_ref_dn (det_dn_i)
-   
+
        do l = 1, ndn
         ratio_dn (l) = 0.d0
         do i = 1, ndn
           ratio_dn (l) = ratio_dn (l) + slater_mat_trans_inv_dn (i, l, iwdet_ref) * orb (nup + i, orb_dn)
         enddo  ! i
        enddo ! l
-   
+
        factor_dn_inv = 1.d0/ratio_dn (col_dn)
        ratio_dn (col_dn) = ratio_dn (col_dn) - 1.d0
-   
+
        do k = 1, ndn
          do j = 1 , ndn
           slater_mat_ex_trans_inv_dn (k, j, det_dn_i) = slater_mat_trans_inv_dn (k, j, iwdet_ref) &
                                   - slater_mat_trans_inv_dn (k, col_dn, iwdet_ref) * ratio_dn(j)* factor_dn_inv
          enddo ! j
        enddo ! k
-   
+
     enddo ! det_dn_i
     call release ('ratio_dn', ratio_dn)
 
@@ -1379,7 +1547,7 @@ module deriv_orb_mod
    call release ('slater_mat_ex_trans_up', slater_mat_ex_trans_up)
    call release ('mat_flat_up', mat_flat_up)
    call object_modified_by_index (detu_index)
-   
+
 !  spin-dn
    call alloc ('slater_mat_ex_trans_dn', slater_mat_ex_trans_dn, ndn, ndn)
    call alloc ('mat_flat_dn', mat_flat_dn, ndn*ndn)
@@ -1666,8 +1834,8 @@ module deriv_orb_mod
         lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i)  +  &
          slater_mat_ex_trans_inv_up (i, j, det_i) * ddorb (i, det_ex_unq_orb_lab_up (j, det_i))
       enddo
-      lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i) * det_ex_unq_up(det_i)
-      !write(6,*) '>lap_det_ex_unq_up',lap_det_ex_unq_up(i,det_i)
+      lap_det_ex_unq_up (i, det_i) = lap_det_ex_unq_up (i, det_i) * det_ex_unq_up (det_i)
+      !write(6,*) '>lap_det_ex_unq_up',lap_det_ex_unq_up (i,det_i)
     enddo
   enddo  ! det_i
 
@@ -1678,8 +1846,8 @@ module deriv_orb_mod
         lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  +  &
          slater_mat_ex_trans_inv_dn (i, j, det_i) * ddorb (nup + i, det_ex_unq_orb_lab_dn (j, det_i))
       enddo
-      lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i)  * det_ex_unq_dn(det_i)
-      !write(6,*) '>lap_det_ex_unq_dn',lap_det_ex_unq_dn(i,det_i)
+      lap_det_ex_unq_dn (i, det_i) = lap_det_ex_unq_dn (i, det_i) * det_ex_unq_dn (det_i)
+      !write(6,*) '>lap_det_ex_unq_dn',lap_det_ex_unq_dn (i,det_i)
     enddo
   enddo ! det_i
 
@@ -2730,7 +2898,7 @@ module deriv_orb_mod
 ! ==============================================================================
   subroutine double_ex_det_bld
 ! ------------------------------------------------------------------------------
-! Description   : 
+! Description   :
 !
 ! Created       : B. Mussard, July 2016
 ! ------------------------------------------------------------------------------
@@ -2954,7 +3122,7 @@ module deriv_orb_mod
 ! ==============================================================================
   subroutine det_ex2_unq_bld
 ! ------------------------------------------------------------------------------
-! Description   :  
+! Description   :
 !
 ! Created       : B. Mussard, July 2016
 ! ------------------------------------------------------------------------------
@@ -3235,9 +3403,9 @@ module deriv_orb_mod
   end subroutine det_ex2_bld
 
 !===========================================================================
-  subroutine  d2psi_orb_bld
+  subroutine d2psi_orb_bld
 !---------------------------------------------------------------------------
-! Description : 
+! Description :
 !
 ! Created     : B. Mussard, June 2016
 ! Modified    :
