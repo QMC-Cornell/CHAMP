@@ -12,7 +12,6 @@ machine := $(shell uname -m)
 # Libraries --------------------------------------------------------------
 
 LIBHOME=../lib
-# LIBHOME=/home/cyrus/champ/lib
 
 QUENCH=-L$(LIBHOME)/SimulatedAnnealing/quench_anneal/lib -lquench -lquench_seq
 CYRUSLIB=-L$(LIBHOME)/lib -lcyrus
@@ -28,17 +27,18 @@ BLAS=-L$(LIBHOME)/lib2/blas -lblas
 
 PSPLINE=-L$(LIBHOME)/lib2/pspline/pspline -lpspline
 
-EINSPLINE=-L$(LIBHOME)/lib2/einspline/lib -leinspline
+#EINSPLINE=-L$(LIBHOME)/lib2/einspline/lib -leinspline
+EINSPLINE=
 
 LIBS=$(CYRUSLIB) $(LINPACK) $(LAPACK) $(BLAS) $(QUENCH) $(LINPACK) $(BLAS) $(PSPLINE) $(EINSPLINE) $(QUENCH)
 
-LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/einspline/lib/libeinspline.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 
 # C compilation ------------------------------------------------------------
 
-CC=icc
-CXX=icpc
-CC_MPI=icc
+CC=gcc
+CXX=g++
+CC_MPI=mpicc
 
 CC_FAST_FLAGS=-O3 -DUNDERSCORE
 CC_PROF_FLAGS=-O3 -DUNDERSCORE -pg
@@ -49,21 +49,24 @@ CC_MPI_FLAGS=$(CC_FLAGS)
 
 # Fortran compilation ------------------------------------------------------
 
-# These are defaults using the ifort compiler and are used e.g. on the old AMD cluster dft, and on nanolab
-F95=ifort
-F95_MPI=mpif77
+# These are defaults using the gfortran
+F95=gfortran
+F95_MPI=mpif90
 
 # F95_FAST_FLAGS= -zero -r8 -pad -align all -fpp -ip -O3
-F95_FAST_FLAGS= -zero -r8 -pad -align all -O3 -ax,SSE3,SSE4.2 -ip -diag-disable vec -fpp -shared-intel -DNOEINSPLINE
-F95_PROF_FLAGS= -zero -r8 -pad -align all -fpp -pg -O3
-F95_DEBUG_FLAGS=-zero -r8 -pad -align all -fpp -ip -O0 -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
+#F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
+F95_FAST_FLAGS=-O3 -ffree-line-length-none -x f95-cpp-input -DNOEINSPLINE
+F95_PROF_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE -pg
+F95_DEBUG_FLAGS=-finit-local-zero -O0 -ffree-line-length-none -x f95-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace
 
 # by default, compilation for f77 is the same than for f95
 F77=$(F95)
 F77_MPI=$(F95_MPI)
-F77_FAST_FLAGS=$(F95_FAST_FLAGS) -extend_source
-F77_DEBUG_FLAGS=$(F95_DEBUG_FLAGS) -extend_source
-F77_PROF_FLAGS=$(F95_PROF_FLAGS) -extend_source
+
+#F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+F77_FAST_FLAGS=-O3 -ffixed-line-length-none -x f77-cpp-input  -DNOEINSPLINE
+F77_PROF_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE -pg
+F77_DEBUG_FLAGS=-finit-local-zero -O0 -ffixed-line-length-132 -x f77-cpp-input -Wall -DNOEINSPLINE -g -fbounds-check -fbacktrace
 
 # by default, fast options
 F95_FLAGS=$(F95_FAST_FLAGS)
@@ -85,10 +88,9 @@ MODCMD=-J
 LD=$(F95)
 LD_MPI=$(F95_MPI)
 
-LD_FAST_FLAGS=$(F95_FLAGS)
+LD_FAST_FLAGS=-O3
 LD_PROF_FLAGS=-O3 -pg
-# LD_DEBUG_FLAGS=-align all
-LD_DEBUG_FLAGS=$(LD_FAST_FLAGS)
+LD_DEBUG_FLAGS=
 
 # by default, fast options
 LD_FLAGS=$(LD_FAST_FLAGS)
@@ -108,20 +110,20 @@ PROF_EXE=champ_prof.exe
 export F77 F77_FLAGS LD_FLAGS CC CXX EINSPLINE USE_GCC 
 
 ####################### MACHINES ########################################
-ifeq ($(machine),x86_64)
-ifeq ($(uname),Linux)
-     CC=icc
-     CXX=icpc
-     CC_MPI=mpicc
-     F95=ifort
-     F95_MPI=mpif90
-#    F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xST -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
-     F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ax,SSE3,SSE4.2 -ip -diag-disable vec -fpp -shared-intel -DNOEINSPLINE
-     F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
-     EINSPLINE=
-     LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-endif
-endif
+#ifeq ($(machine),x86_64)
+#ifeq ($(uname),Linux)
+#     CC=icc
+#     CXX=icpc
+#     CC_MPI=mpicc
+#     F95=ifort
+#     F95_MPI=mpif90
+##    F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -xST -ip -diag-disable vec -fpp -DNOEINSPLINE -shared-intel
+#     F95_FAST_FLAGS=-zero -r8 -pad -align all -O3 -ax,SSE3,SSE4.2 -ip -diag-disable vec -fpp -shared-intel -DNOEINSPLINE
+#     F95_DEBUG_FLAGS=-zero -r8 -pad -align all -O0 -fpp -ip -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG -DNOEINSPLINE -shared-intel
+#     EINSPLINE=
+#     LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
+#endif
+#endif
 
 
 # New dft cluster at Cornell
@@ -144,15 +146,13 @@ ifeq ($(hostname),gauss)
   LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
-#Nodes on dft cluster at Cornell
+#new nodes at cornell
 ifeq ($(findstring node,$(hostname)), node)
   CC=gcc
   CXX=g++
   CC_MPI=mpicc
   F95=gfortran
   F95_MPI=mpif90
-# F95_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
-# F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
   F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
   F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
   F95_DEBUG_MPI_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check -fbacktrace -DMPI
@@ -958,21 +958,6 @@ ifeq ($(hostname),condor.internal.phy.duke.edu)
   LD_PROF_FLAGS=-pg
   EINSPLINE=
   LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
-endif
-
-#JT, personnal computer
-ifeq ($(hostname),europa)
-  CC=gcc
-  CXX=g++
-  CC_MPI=mpicc
-  F95=gfortran
-  F95_MPI=mpif90
-  F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -DNOEINSPLINE
-  F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -DNOEINSPLINE
-  LD=gfortran
-  LD_FLAGS=-O3
-  LD_MPI=mpif90
-  EINSPLINE=
 endif
 
 #BM, personnal computer 1
