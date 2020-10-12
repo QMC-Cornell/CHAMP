@@ -1002,7 +1002,7 @@ c:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
             parmarm=parmar0*factor
           endif
         endif
-c       write(6,'(''efo,efn,efo-efn,parmarm='',9d12.4)') efo,efn,efo-efn,parmarm
+c       write(6,'(''efo,efn,efo-efn,parmarm='',9es11.3)') efo,efn,efo-efn,parmarm
       else
         parmarm=parmar0*sqrt(factor)
       endif
@@ -1029,15 +1029,12 @@ c common /quenchsim_pr/ to communicate amount of output
       write(6,'(''temp,istep='',d12.4,i9)') temp,istep
       write(6,'((''pold'',6(1x,g12.6)))') (pold(i),i=1,nparm)
       write(6,'((''pdif'',6(1x,g12.6)))') (-pdifm(i),i=1,nparm)
-      write(6,'(''efo,efn,n_to_o,o_to_n,r'',9d9.2)') efo,
-     &   efn,probn_to_o,probo_to_n,r
-      write(6,'(''acceptance mar.par. accptd '',f10.4,1x,d9.2,i3)')
-     & acceptance,pmarquardt,accepted
+      write(6,'(''efo,efn,n_to_o,o_to_n,r'',9es8.1)') efo,efn,probn_to_o,probo_to_n,r
+      write(6,'(''acceptance mar.par. accptd '',f10.4,1x,d9.2,i3)') acceptance,pmarquardt,accepted
       if(ipr_com.ge.2) then
         cosold=-dotprodo/sqrt(drifto*pdifo)
         cosnew= dotprodn/sqrt(driftn*pdifo)
-        write(6,'(''drifto,pdifo,driftn'',9d12.4)')
-     &    drifto,pdifo,driftn
+        write(6,'(''drifto,pdifo,driftn'',9d12.4)') drifto,pdifo,driftn
         write(6,'(''cosold,cosnew'',9d12.4)') cosold,cosnew
         write(6,'(''changeo,changen'',9d12.4)') changeo,changen
       endif
@@ -1067,11 +1064,11 @@ c common /quenchsim_pr/ to communicate amount of output
       write(6,'((''pdif'',6(1x,g12.6)))') (-pdifm(i),i=1,nparm)
       if(efn.lt.chisqminold) then
         write(6,'((''pnew'',6(1x,g12.6)))') (pold(i)-pdifm(i),i=1,nparm)
-        write(6,'(''efo,efn,efo-efn'',g11.4,9g9.2)') efo,efn,efo-efn
-     &  ,chisqminold-efn
+        write(6,'(''efo,efn,efo-efn'',9es12.3)') efo,efn,efo-efn,chisqminold-efn
        else
-        write(6,'(''efo,efn,efo-efn'',g11.4,9g9.2)') efo,efn,efo-efn
+        write(6,'(''efo,efn,efo-efn'',9es12.3)') efo,efn,efo-efn
       endif
+      call systemflush(6)
       if(ipr_com.ge.0) then
         write(6,'(''mar.par. acceptance av_mov_acc accptd '',
      &  d9.2,2f8.4,i3)') pmarquardt,acceptance,av_mov_acc,accepted

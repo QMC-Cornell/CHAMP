@@ -6,13 +6,17 @@
 # 1) it runs gamess2qmc on the GAMESS out file
 # 2) it runs csf2csf on the .csf file created by gamess2qmc to create a .csfs file.
 # 3) it edits the .inp file created by gamess2qmc using the .csf2 file to create a .inp2 file
-# The instructions in line "Reduce nparm and nparm_csf by .." presently need to be carried out by hand
+# The instructions in line "Reduce nparm and nparm_csf by .." no longer need to be carried out by hand
 
 # The .inp2 file should be ready to run in CHAMP if nctype=1, otherwise the lines with
 # NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr
 # and
 # nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg
 # need editing.
+
+# The number of CSFs is controlled by cutoff_g2q, which is read in as an argument to gamess2qmc.
+# Within gamess2qmc, cutoff_d2c is set to 10*cutoff_g2q.
+# eps is hardwired within cutoff_g2q and is the tolerance for which det. coefs are close enough to probably be in the same CSF.
 
 for file in $*
 do
@@ -23,9 +27,14 @@ do
   vmc_input2=`echo $in | sed -e 's/.out/_vmc.inp2/'`
   echo $in $in_csf2csf $out_csf2csf
 
-  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 $in
-# If you want the excited state of the same symmetry change the above line to:
-# $HOME/champ/tools/gamess2qmc/gamess2qmc -CJF -t initial -d 0.000001 -w 2 $in
+# Omit the S if not using Slater basis
+# If you want the 1st excited state of the same symmetry add "-w 2"
+  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJNFS -t initial -d 0.001 $in
+  $HOME/champ/tools/gamess2qmc/gamess2qmc -CJNF -t initial -d 0.001 $in
+# If using HF GAMESS output
+# $HOME/champ/tools/gamess2qmc/gamess2qmc -CJ -t rhf $in
+# and use vmc.inp rather than vmc.inp2
+
   $HOME/champ/tools/csf2csf/csf2csf < $in_csf2csf > $out_csf2csf
 
 # nctype=`awk '/nctype,ncent/{print $1}' $vmc_input1` #determine number of center types
@@ -55,14 +64,14 @@ _end
     1,1d
     /ndet,nbasis,norb/d
     -1r ndet
-#   /NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/d
-#   -1r nparm
-#   /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/d
-#   -1r nparmcsf
-    /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/
-    .r nparmcsf_reduce
-#   /(iwcsf(iparm),iparm=1,nparmcsf)/d
-#   -1r iwcsf
+    /NDATA,NPARM,icusp,icusp2,NSIG,NCALLS,iopt,ipr/d
+    -1r nparm
+    /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/d
+    -1r nparmcsf
+#   /nparml,nparma,nparmb,nparmc,nparmf,nparmcsf,nparms,nparmg/
+#   .r nparmcsf_reduce
+    /(iwcsf(iparm),iparm=1,nparmcsf)/d
+    -1r iwcsf
     /zex/+1,/Jastrow/-2d
     -1r csfs
     wq

@@ -15,12 +15,14 @@
 
       nnumerical=nparm-nanalytic
       do 130 iparm=nnumerical+1,nparm
-        call mpi_gatherv(ajac(ni,iparm),nscounts,mpi_double_precision &
-     &  ,ajac(1,iparm),ircounts,idispls,mpi_double_precision,0 &
-     &  ,MPI_COMM_WORLD,ierr)
-
-  130   call mpi_bcast(ajac(1,iparm),ndata,mpi_double_precision,0 &
-     &  ,MPI_COMM_WORLD,ierr)
+        if(idtask.eq.0) then
+          call mpi_gatherv(MPI_IN_PLACE,nscounts,mpi_double_precision, &
+           ajac(1,iparm),ircounts,idispls,mpi_double_precision,0, MPI_COMM_WORLD,ierr)
+        else
+          call mpi_gatherv(ajac(ni,iparm),nscounts,mpi_double_precision, &
+           ajac(1,iparm),ircounts,idispls,mpi_double_precision,0, MPI_COMM_WORLD,ierr)
+        endif
+  130   call mpi_bcast(ajac(1,iparm),ndata,mpi_double_precision,0,MPI_COMM_WORLD,ierr)
 # endif
       return
       end

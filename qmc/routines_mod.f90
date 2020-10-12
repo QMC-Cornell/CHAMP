@@ -4,7 +4,7 @@ module routines_mod
   use constants_mod
   use nodes_mod
 
-  type :: routine
+  type type_routine
    character(len=max_string_len) :: name
    logical                       :: debug = .false.
    logical                       :: inside = .false.
@@ -16,10 +16,10 @@ module routines_mod
    integer                       :: recursion_level = 0
    integer                       :: skip = 0
    integer*8                     :: address
-  end type routine
+  end type type_routine
 
   integer                         :: routines_nb = 0
-  type (routine), save            :: routines (max_routines_nb)
+  type (type_routine), save       :: routines (max_routines_nb)
   integer                         :: routine_previous_index = 0
 
   integer, allocatable            :: routines_indexes_sort (:)

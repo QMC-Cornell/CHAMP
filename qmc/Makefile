@@ -96,7 +96,7 @@ SRCS =	accumulation_mod.f90 all_modules_mod.f90 all_tools_mod.f90 \
 	fit/deriv_scale.f90 fit/dummy_newton.f90 fit/equiv_bas.f90 \
 	fit/fit.f90 fit/fockcheck3.f90 fit/fockexact3.f90 fit/func.f90 \
 	fit/jacobian.f90 fit/piksrt.f90 fit/plot_jas.f90 fit/rewght.f90 \
-	fit/strech.f90 vmc/acuest.f90 vmc/basis_fns.f90 vmc/basis_fnse2.f90 \
+	fit/strech.f90 fit/orb_params.f90 vmc/acuest.f90 vmc/basis_fns.f90 vmc/basis_fnse2.f90 \
 	vmc/basis_norm.f90 vmc/basis_norm_dot.f90 vmc/cbasis_fns.f90 \
 	vmc/cdeterminant.f90 vmc/cdeterminante.f90 vmc/cdetsav.f90 \
 	vmc/cjastrow.f90 vmc/cmatinv.f90 vmc/corbitals_loc_ana.f90 \
@@ -279,7 +279,7 @@ OBJS =	$(OBJDIR)/accumulation_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/fit/fockexact3.o $(OBJDIR)/fit/func.o \
 	$(OBJDIR)/fit/jacobian.o $(OBJDIR)/fit/piksrt.o \
 	$(OBJDIR)/fit/plot_jas.o $(OBJDIR)/fit/rewght.o \
-	$(OBJDIR)/fit/strech.o $(OBJDIR)/vmc/acuest.o \
+	$(OBJDIR)/fit/strech.o $(OBJDIR)/fit/orb_params.o $(OBJDIR)/vmc/acuest.o \
 	$(OBJDIR)/vmc/basis_fns.o $(OBJDIR)/vmc/basis_fnse2.o \
 	$(OBJDIR)/vmc/basis_norm.o $(OBJDIR)/vmc/basis_norm_dot.o \
 	$(OBJDIR)/vmc/cbasis_fns.o $(OBJDIR)/vmc/cdeterminant.o \
@@ -397,7 +397,7 @@ define mk_fortran_dir
 endef
 
 revision_and_date.inc: $(SRCS)
-	bash ../tools/revision_and_date.sh
+	bash revision_and_date.sh
 
 make:
 	perl makemake.pl 
@@ -972,6 +972,13 @@ $(OBJDIR)/fit/rewght.o: $(OBJDIR)/commons/confg_mod.o \
 $(OBJDIR)/fit/strech.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/confg_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/dim_mod.o
+$(OBJDIR)/fit/orb_params.o: $(OBJDIR)/all_tools_mod.o \
+        $(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/coefs_mod.o \
+        $(OBJDIR)/commons/optim_mod.o $(OBJDIR)/commons/basis1_mod.o \
+        $(OBJDIR)/commons/numbas_mod.o $(OBJDIR)/commons/basis2_mod.o \
+        $(OBJDIR)/commons/lbas_mod.o $(OBJDIR)/basis_mod.o \
+        $(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dorb_mod.o \
+        $(OBJDIR)/orbitals_mod.o $(OBJDIR)/commons/contrl_opt_mod.o
 $(OBJDIR)/vmc/acuest.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/config_mod.o \
 	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contr2_mod.o \
