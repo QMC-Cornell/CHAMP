@@ -126,7 +126,6 @@ export F77 F77_FLAGS LD_FLAGS CC CXX EINSPLINE USE_GCC
 #endif
 
 
-# New dft cluster at Cornell
 # We used to use -w to suppress warnings because otherwise the compilation of parser_tools fails after priting 10 error msgs. such as
 #  Error: parser_tools_mod.f90, line 581: The dimensions of this array have been defined more than once.   [VALUE_LIST]
 #    character(len=*), allocatable, intent(out) :: value_list (:)
@@ -146,7 +145,7 @@ ifeq ($(hostname),gauss)
   LIBS_MAKE = $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 endif
 
-#new nodes at cornell
+#Nodes on dft cluster at Cornell
 ifeq ($(findstring node,$(hostname)), node)
   CC=gcc
   CXX=g++
@@ -373,7 +372,6 @@ ifeq ($(hostname),master.lct.jussieu.fr)
   LIBS_MAKE= $(LIBHOME)/lib/libcyrus.a $(LIBHOME)/lib2/blas/libblas.a $(LIBHOME)/lib2/lapack/liblapack.a $(LIBHOME)/lib2/linpack/liblinpack.a $(LIBHOME)/lib2/pspline/pspline/libpspline.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench.a $(LIBHOME)/SimulatedAnnealing/quench_anneal/lib/libquench_seq.a
 
 endif
-
 
 # deuterium in Paris
 ifeq ($(hostname),deuterium.lct.jussieu.fr)
