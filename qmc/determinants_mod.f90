@@ -292,67 +292,67 @@ module determinants_mod
 !
 !  end subroutine det_unq_orb_lab_srt_bld
 
-! ==============================================================================
-  subroutine slater_mat_trans_inv_bld
-! ------------------------------------------------------------------------------
-! Description   : Build inverse of transpose spin-up and down slater matrices
-! Description   : in two-dimensional format
+!! ==============================================================================
+!  subroutine slater_mat_trans_inv_bld
+!! ------------------------------------------------------------------------------
+!! Description   : Build inverse of transpose spin-up and down slater matrices
+!! Description   : in two-dimensional format
+!!
+!! Created       : J. Toulouse, 12 Oct 2005
+!! ------------------------------------------------------------------------------
+!  use all_modules_mod
+!  implicit none
 !
-! Created       : J. Toulouse, 12 Oct 2005
-! ------------------------------------------------------------------------------
-  use all_modules_mod
-  implicit none
-
-! local
-  integer det_unq_up_i, det_unq_dn_i, orb_i
-  integer elec_up_i, elec_dn_i, mat_i
-
-! header
-  if (header_exe) then
-
-   call object_create ('slater_mat_trans_inv_up')
-   call object_create ('slater_mat_trans_inv_dn')
-
-   call object_needed ('ndetup')
-   call object_needed ('ndetdn')
-   call object_needed ('nup')
-   call object_needed ('ndn')
-   call object_needed ('slmui')
-   call object_needed ('slmdi')
-
-   return
-
-  endif
-
-! begin
-
-! allocations
-  call object_alloc ('slater_mat_trans_inv_up', slater_mat_trans_inv_up, nup, nup, ndetup)
-  call object_alloc ('slater_mat_trans_inv_dn', slater_mat_trans_inv_dn, ndn, ndn, ndetdn)
-
-! build slater_mat_trans_inv_up
-  do det_unq_up_i = 1, ndetup
-    mat_i = 0
-    do orb_i = 1, nup
-      do elec_up_i = 1, nup
-        mat_i = mat_i + 1
-        slater_mat_trans_inv_up (orb_i, elec_up_i, det_unq_up_i) = slmui (mat_i, det_unq_up_i)
-      enddo
-    enddo
-  enddo
-
-! build slater_mat_trans_inv_dn
-  do det_unq_dn_i = 1, ndetdn
-    mat_i = 0
-    do orb_i = 1, ndn
-      do elec_dn_i = 1, ndn
-        mat_i = mat_i + 1
-        slater_mat_trans_inv_dn (orb_i, elec_dn_i, det_unq_dn_i) = slmdi (mat_i, det_unq_dn_i)
-      enddo
-    enddo
-  enddo
-
-  end subroutine slater_mat_trans_inv_bld
+!! local
+!  integer det_unq_up_i, det_unq_dn_i, orb_i
+!  integer elec_up_i, elec_dn_i, mat_i
+!
+!! header
+!  if (header_exe) then
+!
+!   call object_create ('slater_mat_trans_inv_up')
+!   call object_create ('slater_mat_trans_inv_dn')
+!
+!   call object_needed ('ndetup')
+!   call object_needed ('ndetdn')
+!   call object_needed ('nup')
+!   call object_needed ('ndn')
+!   call object_needed ('slmui')
+!   call object_needed ('slmdi')
+!
+!   return
+!
+!  endif
+!
+!! begin
+!
+!! allocations
+!  call object_alloc ('slater_mat_trans_inv_up', slater_mat_trans_inv_up, nup, nup, ndetup)
+!  call object_alloc ('slater_mat_trans_inv_dn', slater_mat_trans_inv_dn, ndn, ndn, ndetdn)
+!
+!! build slater_mat_trans_inv_up
+!  do det_unq_up_i = 1, ndetup
+!    mat_i = 0
+!    do orb_i = 1, nup
+!      do elec_up_i = 1, nup
+!        mat_i = mat_i + 1
+!        slater_mat_trans_inv_up (orb_i, elec_up_i, det_unq_up_i) = slmui (mat_i, det_unq_up_i)
+!      enddo
+!    enddo
+!  enddo
+!
+!! build slater_mat_trans_inv_dn
+!  do det_unq_dn_i = 1, ndetdn
+!    mat_i = 0
+!    do orb_i = 1, ndn
+!      do elec_dn_i = 1, ndn
+!        mat_i = mat_i + 1
+!        slater_mat_trans_inv_dn (orb_i, elec_dn_i, det_unq_dn_i) = slmdi (mat_i, det_unq_dn_i)
+!      enddo
+!    enddo
+!  enddo
+!
+!  end subroutine slater_mat_trans_inv_bld
 
 ! ==============================================================================
   subroutine orb_occ_in_adet_unq_bld

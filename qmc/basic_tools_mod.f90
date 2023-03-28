@@ -98,14 +98,6 @@ module basic_tools_mod
   end interface copy
 
 !===============================================================
-  interface copy_portion
-!---------------------------------------------------------------
-   module procedure copy_portion_integer_1, &
-                    copy_portion_double_1
-
-  end interface copy_portion
-
-!===============================================================
   interface move
 !---------------------------------------------------------------
    module procedure move_integer_1, &
@@ -182,12 +174,6 @@ module basic_tools_mod
                     is_equal_or_die_double_2, &
                     is_equal_or_die_double_3
   end interface is_equal_or_die
-
-!===============================================================
-  interface is_equal
-!---------------------------------------------------------------
-   module procedure is_equal_double_1
-  end interface is_equal
 
 !===============================================================
   interface array_is_zero
@@ -1290,13 +1276,13 @@ module basic_tools_mod
   integer                             :: dim1
 
 ! output
-  complex*16 , allocatable          :: object (:)
+  complex(dpc) , allocatable          :: object (:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'alloc_complex_1'
   integer all_err
   integer i, object_dim, dim_min
-  complex*16 , allocatable          :: object_temp (:)
+  complex(dpc) , allocatable          :: object_temp (:)
 
 ! begin
 
@@ -1356,14 +1342,14 @@ module basic_tools_mod
   integer                             :: dim1, dim2
 
 ! output
-  complex*16 , allocatable          :: object (:,:)
+  complex(dpc) , allocatable          :: object (:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'alloc_complex_2'
   integer all_err
   integer i, object_dim1, dim_min1
   integer j, object_dim2, dim_min2
-  complex*16 , allocatable          :: object_temp (:,:)
+  complex(dpc) , allocatable          :: object_temp (:,:)
 
 ! begin
 
@@ -1429,7 +1415,7 @@ module basic_tools_mod
   integer                             :: dim1, dim2, dim3
 
 ! output
-  complex*16 , allocatable          :: object (:,:,:)
+  complex(dpc) , allocatable          :: object (:,:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'alloc_complex_3'
@@ -1437,7 +1423,7 @@ module basic_tools_mod
   integer i, object_dim1, dim_min1
   integer j, object_dim2, dim_min2
   integer k, object_dim3, dim_min3
-  complex*16 , allocatable          :: object_temp (:,:,:)
+  complex(dpc) , allocatable          :: object_temp (:,:,:)
 
 ! begin
 
@@ -1509,7 +1495,7 @@ module basic_tools_mod
   integer                             :: dim1, dim2, dim3, dim4
 
 ! output
-  complex*16 , allocatable          :: object (:,:,:,:)
+  complex(dpc) , allocatable          :: object (:,:,:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'alloc_complex_4'
@@ -1518,7 +1504,7 @@ module basic_tools_mod
   integer j, object_dim2, dim_min2
   integer k, object_dim3, dim_min3
   integer l, object_dim4, dim_min4
-  complex*16 , allocatable          :: object_temp (:,:,:,:)
+  complex(dpc) , allocatable          :: object_temp (:,:,:,:)
 
 ! begin
 
@@ -2311,7 +2297,7 @@ module basic_tools_mod
 
 ! input
   character*(*)            :: object_name
-  complex*16, allocatable    :: object(:)
+  complex(dpc), allocatable    :: object(:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'release_complex_1'
@@ -2341,7 +2327,7 @@ module basic_tools_mod
 
 ! input
   character*(*)            :: object_name
-  complex*16, allocatable    :: object(:,:)
+  complex(dpc), allocatable    :: object(:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'release_complex_2'
@@ -2371,7 +2357,7 @@ module basic_tools_mod
 
 ! input
   character*(*)            :: object_name
-  complex*16, allocatable    :: object(:,:,:)
+  complex(dpc), allocatable    :: object(:,:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'release_complex_3'
@@ -2401,7 +2387,7 @@ module basic_tools_mod
 
 ! input
   character*(*)            :: object_name
-  complex*16, allocatable    :: object(:,:,:,:)
+  complex(dpc), allocatable    :: object(:,:,:,:)
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'release_complex_4'
@@ -2729,56 +2715,6 @@ module basic_tools_mod
   endif
 
   end subroutine copy_double_1
-
-!===========================================================================
-  subroutine copy_portion_integer_1 (array1, array2, dim1)
-!---------------------------------------------------------------------------
-! Description : copy array1 into array2, allocating array2 if necesssary
-!
-! Created     : J. Toulouse, 16 Dec 2006
-!---------------------------------------------------------------------------
-  implicit none
-
-! input
-  integer, dimension(:), intent(in) :: array1
-  integer, intent(in)               :: dim1
-
-! input/output
-  integer, allocatable, intent(inout) :: array2 (:)
-
-
-! begin
-  if (dim1 /= 0) then
-   call alloc ('array2', array2, dim1)
-   array2 (:) = array1 (:dim1)
-  endif
-
-  end subroutine copy_portion_integer_1
-
-!===========================================================================
-  subroutine copy_portion_double_1 (array1, array2, dim1)
-!---------------------------------------------------------------------------
-! Description : copy array1 into array2, allocating array2 if necesssary
-!
-! Created     : J. Toulouse, 16 Dec 2006
-!---------------------------------------------------------------------------
-  implicit none
-
-! input
-  real(dp), dimension(:), intent(in) :: array1
-  integer, intent(in)                :: dim1
-
-! input/output
-  real(dp), allocatable, intent(inout) :: array2 (:)
-
-
-! begin
-  if (dim1 /= 0) then
-   call alloc ('array2', array2, dim1)
-   array2 (:) = array1 (:dim1)
-  endif
-
-  end subroutine copy_portion_double_1
 
 !===========================================================================
   subroutine move_integer_1 (array1, array2)
@@ -4038,45 +3974,6 @@ module basic_tools_mod
   enddo
 
   end subroutine is_equal_or_die_double_3
-
-!===========================================================================
-  function is_equal_double_1 (array1, array2, tol) result(result)
-!---------------------------------------------------------------------------
-! Description : test if two arrays are equal within a tolerance
-! Description : and print out without dying
-!
-! Created     : B.Mussard, June 2016 (from "is_equal_or_die")
-!---------------------------------------------------------------------------
-  implicit none
-
-! input
-  real(dp), intent(in)  :: array1(:), array2(:)
-  real(dp), intent(in)  :: tol
-  integer  :: result
-
-! local
-  character(len=max_string_len_rout), save :: lhere = 'is_equal_double_1'
-  integer i, array1_nb, array2_nb
-
-! begin
-  array1_nb = size(array1)
-  array2_nb = size(array2)
-  if (array1_nb /= array2_nb) then
-    result=-1
-    return
-  endif
-
-  result=0
-  do i = 1, array1_nb
-    if (dabs(array1(i)-array2(i)) > tol) then
-      result=i
-      exit
-    endif
-  enddo
-
-  return
-
-  end function is_equal_double_1
 
 !===========================================================================
   subroutine write_array_double_1 (array_name, array)

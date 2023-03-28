@@ -213,7 +213,7 @@ module optimization_mod
 
   case ('p_var')
    call get_next_value (p_var)
-   call object_modified ('p_var')  
+   call object_modified ('p_var')
    call require (lhere, 'p_var >= 0 and p_var =< 1', p_var >= 0.d0 .and. p_var <= 1.d0)
 
   case ('iter_opt_min_nb')
@@ -365,20 +365,6 @@ module optimization_mod
 
   case ('slater_mat_ex_trans_inv_sm')
    call get_next_value (l_slater_mat_ex_trans_inv_sm)
-
-  case ('compare_to_linresp')
-    call get_next_value (l_compare_linresp_and_optlin)
-    if (l_compare_linresp_and_optlin) then
-    opt_method='linear'
-    iter_opt_max_nb=1
-    nopt_iter = iter_opt_max_nb
-    l_last_run=.false.
-    l_stab=.false.
-    diag_stab=0.d0
-    endif
-
-  case ('triplet')
-    call get_next_value (l_triplet)
 
   case ('end')
    exit
@@ -584,7 +570,7 @@ module optimization_mod
       if(ijas.ge.4.and.ijas.le.6) then
 !       call alloc ('iwjasa', iwjasa, nparmj, nctype)
         call alloc ('iwjasa', iwjasa, max(maxval(nparma),1), nctype)
-        do it=1,nctype 
+        do it=1,nctype
         !/BM/here prov
           if (a4(1,it,1).eq.0.d0) then
 !           iwjasa (1:nparma(it),it) = (/ 3, 4, 5, 6/)
@@ -681,14 +667,9 @@ module optimization_mod
     param_geo_nb  = 0
     call object_modified ('param_geo_nb')
   endif
-  
+
   if (ibasis.le.3) nparmd=nparmcsf
   call object_modified ('nparmd')
-  if (l_opt_csf_rot) then
-    nparmlin = 0
-  else 
-    nparmlin = nparmcsf
-  endif
 
 ! check consistency of options
   if (l_opt_ptb) then
@@ -773,17 +754,11 @@ module optimization_mod
   write(6,'(a,i5)') ' Number of geometry parameters:  ', param_geo_nb
   write(6,'(a,i5)') ' Total number of parameters:     ', param_nb
   write(6,*)
-  call systemflush(6)
 
 ! set nparm if new input
   if (use_parser) then
    nparm = nparmj+nparmcsf
    call object_modified ('nparm')
-  endif
-  if (l_opt_csf_rot) then
-     nparmlin = 0
-  else 
-     nparmlin = nparmcsf
   endif
 
   write(6,'(a)') 'End of optimization menu ---------------------------------------------------------------------------------'
@@ -816,12 +791,16 @@ module optimization_mod
   integer :: move_rejected = 0
   real(dp) energy_plus_err, energy_plus_err_best, energy_best, energy_err_best
 
+  integer :: norb_save !TA
+  logical :: l_opt_jas_save !TA
+  logical :: l_opt_exp_save !TA
+
 ! begin
   write(6,*)
-  write(6,'(a)') '*************************************** WAVE FUNCTION OPTIMIZATION ***************************************'
+  write(6,'(a)') '************************* WAVE FUNCTION OPTIMIZATION *************************'
 
 ! Initializations
-  if (l_mode_vmc) then 
+  if (l_mode_vmc) then
     call vmc_init
    elseif (l_mode_dmc) then
     call dmc_init
@@ -845,7 +824,6 @@ module optimization_mod
   write(6,*)
   write(6,'(3a)') 'Optimization will be done with the ',trim(opt_method),' method.'
   write(6,*)
-  call systemflush(6)
 
   if (l_opt_ovlp_fn .and. .not. l_opt_ovlp_branching) then
    l_branching = .false.
@@ -898,12 +876,12 @@ module optimization_mod
 
 !!!!! temporary for testing gradient
    if (l_opt_grad) then
-     call object_average_request ('deloc_av') 
+     call object_average_request ('deloc_av')
 
-     call object_error_request ('deloc_av_err') 
-     call object_error_request ('dpsi_eloc_covar_err') 
+     call object_error_request ('deloc_av_err')
+     call object_error_request ('dpsi_eloc_covar_err')
      call object_error_request ('dpsi_eloc_covar_deloc_av_err')
-     call object_error_request ('dpsi_eloc_covar_err_2') 
+     call object_error_request ('dpsi_eloc_covar_err_2')
      call object_error_request ('dpsi_eloc_covar_deloc_av_err_2')
 
 !    more rigorous estimators of the errors
@@ -1125,7 +1103,6 @@ module optimization_mod
     call object_provide ('deloc_av_abs_max')
     write(6,*)
     write(6,'(a,es15.8,a)') 'Maximum absolute value of local energy derivatives :', deloc_av_abs_max, ' (must be zero in VMC within statistical noise except for geometry optimization)'
-    write(6,*)
    endif
 
 !  calculate and print hessian
@@ -1431,6 +1408,18 @@ module optimization_mod
       call routine_write_final_request ('vb_weights_wrt')
   endif
 
+  !Only calculate occupied orbs in final run - TA
+  norb_save = norb
+  call object_provide ('orb_occ_last_in_wf_lab')
+  norb=orb_occ_last_in_wf_lab
+
+  !Don't calculate any derivatives in final run - TA
+  l_opt_jas_save=l_opt_jas
+  l_opt_exp_save=l_opt_exp
+  l_opt=.false.
+  l_opt_jas=.false.
+  l_opt_exp=.false.
+
   nforce=1
   nwftype=1
   if(l_mode_vmc) then
@@ -1440,6 +1429,12 @@ module optimization_mod
    else
     call die(lhere, 'If doing new optimization then mode must be vmc or dmc.')
   endif
+
+  !Restore old values - TA
+  norb=norb_save
+  l_opt=.true.
+  l_opt_jas=l_opt_jas_save
+  l_opt_exp=l_opt_exp_save
 
   d_eloc_av = energy(1) - eloc_av_previous
   write(6,*)
@@ -1499,7 +1494,7 @@ module optimization_mod
   integer dexp_i, dexp_to_all_bas_i
   real(dp), parameter :: AMAX_NONLIN = 100.d0
   integer exponent_negative_nb
-  real(dp) parm2min,csf_rot_arg,csf_norm
+  real(dp) parm2min
   integer iparmpjase
   integer force_i, cent_i, dim_i
 
@@ -1512,38 +1507,10 @@ module optimization_mod
    call object_provide ('ncsf')
    call object_provide ('iwcsf')
    call object_provide ('delta_csf')
-
-   if (l_opt_csf_rot) then
-      do iparmcsf = 1, nparmcsf
-         csf_rot_coef(iparmcsf,iwf) = csf_rot_coef(iparmcsf,1) + delta_csf(iparmcsf)
-      enddo
-
-      !Convert from rotation parameters to csf_coef using:
-      !
-      ! exp(R)|0> = cos(d) |0> + sin(d)/d sum_k.ne.0 R_k |k>
-      !
-      
-      csf_rot_arg = 0
-      do iparmcsf=1,nparmcsf
-         csf_rot_arg = csf_rot_arg + csf_rot_coef(iparmcsf,iwf)**2
-      enddo
-      csf_rot_arg = sqrt(csf_rot_arg)
-      csf_coef(1,iwf) = cos(csf_rot_arg)
-      
-      do iparmcsf = 1, nparmcsf
-         csf_coef(iparmcsf+1,iwf) = sin(csf_rot_arg)/csf_rot_arg * csf_rot_coef(iparmcsf,iwf)
-      enddo
-      call object_modified ('csf_rot_coef')
-   else
-
-      do iparmcsf = 1, nparmcsf
-         csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
-      enddo
-
-   endif ! l_opt_csf_rot
-
+   do iparmcsf = 1, nparmcsf
+     csf_coef(iwcsf(iparmcsf),iwf)=csf_coef(iwcsf(iparmcsf),1) + delta_csf (iparmcsf)
+   enddo
    call object_modified ('csf_coef')
-
   endif ! l_opt_csf
 
 ! Jastrow parameters
@@ -1731,8 +1698,8 @@ module optimization_mod
    call object_alloc ('cent2', cent2, ndim, ncent, 3)
    cent2 (1:ndim,1:ncent,iwf) = cent (1:ndim,1:ncent)
    do force_i = 1, param_geo_nb
-    cent_i = forces_cent (force_i) 
-    dim_i = forces_direct (force_i) 
+    cent_i = forces_cent (force_i)
+    dim_i = forces_direct (force_i)
     cent2 (dim_i, cent_i, iwf) = cent (dim_i, cent_i) + delta_geo (force_i)
    enddo
    call object_modified ('cent2')
@@ -1744,11 +1711,11 @@ module optimization_mod
 
    if (iwf == 1) then
     cent (1:ndim,1:ncent) = cent2 (1:ndim,1:ncent,1)
-    pecent=pecentn(1) 
+    pecent=pecentn(1)
     call object_modified ('cent')
     call object_modified ('pecent')
    endif ! iwf == 1
-   
+
   endif ! l_opt_geo
 
 ! check if really correct to call after each update
@@ -2272,7 +2239,7 @@ module optimization_mod
       call object_restore ('dpsi_dpsi_covar_inv')
      endif
 !     call object_restore ('delta_e_ptb') !!
-  endif  
+  endif
   if(l_opt_ovlp_fn) then
       call object_restore ('dpsi_av')
       call object_restore ('dpsi_uwav')
@@ -2300,7 +2267,7 @@ module optimization_mod
   integer orb_i, cent_i, dim_i, bas_i, bas_cent_i
   integer i, ict, isp
   character(len=80) fmt
-  real(dp) norm
+
 ! begin
 
 ! print CSFs coefficients
@@ -2310,11 +2277,6 @@ module optimization_mod
     write(6,'(a)') 'CSFs coefficients:'
     write(6,'(a)') 'csfs'
     write(6,'(a)') ' csf_coef'
-    norm = 0
-    do i=1,ncsf
-       norm = norm + csf_coef(i,iwf)**2
-    enddo
-    norm = sqrt(norm)
 # if defined (PATHSCALE)
     write(6,'(1000f15.8)') csf_coef(1:ncsf,iwf) ! for pathscale compiler
 # else
@@ -3175,7 +3137,7 @@ module optimization_mod
     orb_1st = ex_orb_1st_lab (ex_i)
     orb_2nd = ex_orb_2nd_lab (ex_i)
     delta_mat_rot_1st_order (orb_1st, orb_2nd) = delta_coef_ex (dorb_i)
-!   anti-symmetrize elements that are zero (but do not necessarily anti-symmetrize active-active block for which 
+!   anti-symmetrize elements that are zero (but do not necessarily anti-symmetrize active-active block for which
 !   we can have independent kij and kji if orthogonality constraint is not imposed
     if (delta_mat_rot_1st_order (orb_2nd, orb_1st) == 0.d0) then
       delta_mat_rot_1st_order (orb_2nd, orb_1st) = - delta_mat_rot_1st_order (orb_1st, orb_2nd)
@@ -3246,7 +3208,7 @@ module optimization_mod
     orb_1st = ex_orb_1st_lab (ex_i)
     orb_2nd = ex_orb_2nd_lab (ex_i)
     kappa (orb_1st, orb_2nd) = delta_coef_ex (dorb_i)
-!   anti-symmetrize elements that are zero (but do not necessarily anti-symmetrize active-active block for which 
+!   anti-symmetrize elements that are zero (but do not necessarily anti-symmetrize active-active block for which
 !   we can have independent kij and kji if orthogonality constraint is not imposed
     if (kappa (orb_2nd, orb_1st) == 0.d0) then
       kappa (orb_2nd, orb_1st) = - kappa (orb_1st, orb_2nd)
@@ -3663,7 +3625,7 @@ module optimization_mod
 
    call object_create ('nparmcsf')
    call object_create ('iwcsf')
-   call object_create ('nparmlin')
+
    call object_needed ('ncsf')
 
    return
@@ -3677,36 +3639,12 @@ module optimization_mod
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i
    enddo
-   ! 6/16 MJO - Even though we are only varying nparmcsf parameters, we need
-   ! to calculate quantities for all ncsf coefficients to do rotations
-   ! correctly - FIXME - I'm not sure about this option, since
-   ! we already have iwcsf for all csf?
-   ! iwcsf(nparmcsf+1) = nparmcsf+1
-   ! MJO I'm not sure about whether this is correct for rotations
-   if (l_opt_csf_rot) then
-      nparmlin = 0
-   else 
-      nparmlin = nparmcsf
-   endif
-
   else
    nparmcsf=ncsf-1
-   call object_alloc ('iwcsf', iwcsf, nparmcsf+1)
+   call object_alloc ('iwcsf', iwcsf, nparmcsf)
    do param_i = 1, nparmcsf
     iwcsf (param_i) = param_i + 1
    enddo
-   ! 6/16 MJO - Even though we are only varying nparmcsf parameters, we need
-   ! to calculate quantities for all ncsf coefficients to do rotations
-   ! correctly
-   iwcsf(nparmcsf+1) = 1
-   !     MJO: if we are using rotation parameters, then we have no linear parameters
-   !            otherwise, all the csf parameters are linear
-   if (l_opt_csf_rot) then
-      nparmlin = 0
-   else 
-      nparmlin = nparmcsf
-   endif
-
   endif
 
   end subroutine iwcsf_bld

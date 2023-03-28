@@ -8,7 +8,9 @@ module variables_mod
 ! character(len=max_string_len)   :: modes (modes_nb) = (/'fit', 'fit_mpi',         &
 !                                    'vmc', 'vmc_mov1', 'vmc_mpi', 'vmc_mov1_mpi',  &
 !                                    'dmc', 'dmc_mov1', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
-  character(len=max_string_len)   :: modes (modes_nb) = (/'fit          ','fit_mpi      ','vmc          ','vmc_mov1     ','vmc_mpi      ','vmc_mov1_mpi ','dmc          ','dmc_mov1     ','dmc_mov1_mpi1','dmc_mov1_mpi2','dmc_mov1_mpi3'/)
+  character(len=max_string_len)   :: modes (modes_nb) = (/'fit          ', 'fit_mpi      ',              &
+                                     'vmc          ', 'vmc_mov1     ', 'vmc_mpi      ', 'vmc_mov1_mpi ', &
+                                     'dmc          ', 'dmc_mov1     ', 'dmc_mov1_mpi1', 'dmc_mov1_mpi2', 'dmc_mov1_mpi3'/)
   logical                         :: l_mode_mpi            = .false.
   logical                         :: l_mode_fit            = .false.
   logical                         :: l_mode_fit_mpi        = .false.
@@ -30,7 +32,6 @@ module variables_mod
   integer                         :: spin_nb = 2
   logical                         :: debug = .false.
   logical                         :: l_warning = .false.
-  logical                         :: l_fast_determinants = .false.
 
 ! label of last occupied orbital
   integer                         :: orb_occ_last_in_wf_lab
@@ -70,7 +71,6 @@ module variables_mod
 
   logical                         :: l_opt_orb  = .false.
   logical                         :: l_opt_csf  = .false.
-  logical                         :: l_opt_csf_rot  = .false.
   logical                         :: l_opt_jas  = .false.
   logical                         :: l_opt_exp  = .false.
   logical                         :: l_opt_geo  = .false.
@@ -97,10 +97,6 @@ module variables_mod
   real(dp)                        :: eloc_bound_value = 10.d0
 
   real(dp)                        :: lambda = 0.3d0
-
-! linear response
-  logical                         :: l_compare_linresp_and_optlin=.false.
-  logical                         :: l_triplet          =.false.
 
 ! total number of configurations (walkers)
   integer   :: nconf_total = 1
@@ -138,7 +134,5 @@ module variables_mod
   logical                          :: l_equilibration = .false.
 
 !  real(dp)                       :: eloc_av_err ! temporary
-
-  integer :: itest
 
 end module variables_mod

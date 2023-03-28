@@ -5,7 +5,7 @@ module forcepar_mod
  save
 
  double precision, allocatable :: deltot(:)
- integer :: nforce,istrech
- integer :: nwf ! JT: nwf to replace MWF
+ integer nforce,istrech
+ integer nwf ! JT: nwf to replace MWF
 
 end module forcepar_mod

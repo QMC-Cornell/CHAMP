@@ -12,7 +12,7 @@
       implicit real*8(a-h,o-z)
 
 ! New temporary variables defined ************************
-      complex*16 temp_p,temp_n,cph,cdph,ylm
+      complex(dpc) temp_p,temp_n,cph,cdph,ylm
 ! Definition of new temporary variables ends here ********
 
       dimension rvec_en(3,nelec,*),r_en(nelec,*)
@@ -177,7 +177,7 @@
       use cphifun_mod
       implicit real*8(a-h,o-z)
 
-      complex*16 ctemp1,ctemp2
+      complex(dpc) ctemp1,ctemp2
 
 !     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -304,11 +304,11 @@
       use cphifun_mod
       implicit real*8(a-h,o-z)
 
-      complex*16 zj,zk,zjk,djnflux,didjnflux
-      complex*16 djnkj(nbasis+1)
-      complex*16 didjnkj(nbasis+1,nelec)
-      complex*16 df(0:nbasis+1),ddf(0:nbasis+1,nelec)
-      complex*16 ctemp1,ctemp2,zjpowmn1,zjpowmn
+      complex(dpc) zj,zk,zjk,djnflux,didjnflux
+      complex(dpc) djnkj(nbasis+1)
+      complex(dpc) didjnkj(nbasis+1,nelec)
+      complex(dpc) df(0:nbasis+1),ddf(0:nbasis+1,nelec)
+      complex(dpc) ctemp1,ctemp2,zjpowmn1,zjpowmn
 
 !     common /dim/ ndim
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -400,14 +400,14 @@
 
       use coefs_mod
 
-      complex*16 djnflux
+      complex(dpc) djnflux
 
 ! arguments:
       integer in
-      complex*16 dk(nbasis+1)
+      complex(dpc) dk(nbasis+1)
 
 ! locals:
-      complex*16 df
+      complex(dpc) df
 
       if(in.eq.0) then
 
@@ -490,14 +490,14 @@
       use coefs_mod
       use const_mod
 
-      complex*16 didjnflux
+      complex(dpc) didjnflux
 
 ! arguments:
       integer in,ie,je
-      complex*16 dk(nbasis+1),ddk(nbasis+1,nelec)
+      complex(dpc) dk(nbasis+1),ddk(nbasis+1,nelec)
 
 ! locals:
-      complex*16 ddf
+      complex(dpc) ddf
 
 
 

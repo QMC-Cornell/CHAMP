@@ -6,8 +6,10 @@ module control_mod
 ! threshold on statistical error on energy
   character(len=max_string_len)  :: title = 'no title'
   character(len=max_string_len)  :: seed = '1837465927472523'
+  character(len=max_string_len) :: drift_type='unr93', ene_int='no_ene_int', rewt_type='sym', tmoves_type='det_balance1'
 
   real(dp)                :: error_threshold = 1.d30
+  real(dp)                :: limit_rewt_dmc = 10.d0, adrift=0.5d0
 
   logical                 :: l_nstep_all_cpus = .true.
   logical                 :: l_hopping_moves  = .false.
@@ -83,7 +85,13 @@ module control_mod
    write(6,'(a)') ' icut_e = [integer]'
    write(6,'(a)') ' nfprod = [integer] number of products undone for population-control bias correction'
    write(6,'(a)') ' tau = [real] time step for DMC (default: 0.01)'
-   write(6,'(a)') ' tmoves = [logical] do version 1 of size consistent tmoves of Casula, Moroni, Sorella, Fillipi, JCP10'
+   write(6,'(a)') ' adrift = [real] parameter for calculating average velocity over time step for DMC (default: 0.5)'
+   write(6,'(a)') ' drift_type = [string] Either unr93 or quadratic (default: unr93)'
+   write(6,'(a)') ' ene_int = [string] : Type of energy integration (if any) used for local energy over time step tau'
+   write(6,'(a)') ' limit_rewt_dmc = [real] : The reweight factor is not allowed to be larger than 1+limit_rewt_dmc*energy_sigma*tau'
+   write(6,'(a)') ' rewt_type = [string] : Either "sym" or "pq"'
+   write(6,'(a)') ' tmoves = [logical] do version 1 of size consistent tmoves of Casula, Moroni, Sorella, Filippi, JCP10'
+   write(6,'(a)') ' tmoves_type [string] : Either casula1 or det_balance1'
    write(6,'(a)') ' vmc ... end : control menu for vmc'
    write(6,'(a)') ' error_threshold = [real] : montecarlo run until statistical error on energy reaches error_threshold'
    write(6,'(a)') ' nstep_total = [real]: For MPI, total number of steps per block for all CPUs'
@@ -128,7 +136,22 @@ module control_mod
   case ('icut_e');  call get_next_value (icut_e)
   case ('nfprod');  call get_next_value (nfprod); call object_modified ('nfprod')
   case ('tau');     call get_next_value (tau)
+  case ('adrift');     call get_next_value (adrift)
+   call require (lhere, 'adrift > 0', adrift > 0)
+  case ('drift_type');     call get_next_value (drift_type)
+   call require (lhere, 'drift_type=unr93 or quadratic', drift_type=='unr93' .or. drift_type=='quadratic')
+  case ('ene_int') ; call get_next_value (ene_int)
+!  call require (lhere, 'ene_int=unr93 or new_ene_int new_ene_int2 or no_ene_int or alfe', ene_int=='unr93' .or. ene_int=='new_ene_int' .or. ene_int=='new_ene_int2' .or. ene_int=='new_ene_int3' .or. ene_int=='new_ene_int4' .or. ene_int=='new_ene_int5' .or. ene_int=='new_ene_int7' .or. ene_int=='new_ene_int8' .or. ene_int=='new_ene_int9' .or. ene_int=='new_ene_int10' .or. ene_int=='no_ene_int' .or. ene_int=='alfe')
+  case ('limit_rewt_dmc') ; call get_next_value (limit_rewt_dmc)
+   call require (lhere, 'limit_rewt_dmc > 0', limit_rewt_dmc > 0)
+  case ('rewt_type') ; call get_next_value (rewt_type)
+   call require (lhere, 'rewt_type = sym or pq', rewt_type=='sym' .or. rewt_type=='pq')
   case ('tmoves');  call get_next_value (tmoves)
+  case ('tmoves_type') ; call get_next_value (tmoves_type)
+!  write(6,'(''tmoves_type='',a)') trim(tmoves_type) ; call systemflush(6)
+   call require (lhere, 'tmoves_type = casula1 or det_balance1', tmoves_type=='casula1' .or. tmoves_type=='det_balance1')
+  case ('reset_etrial') ; call get_next_value (reset_etrial)
+    call require (lhere, 'reset_etrial = false', .NOT.reset_etrial)
 
   case ('vmc')
    call vmc_menu
@@ -180,6 +203,18 @@ module control_mod
 
   enddo ! end loop over menu lines
 
+! Duplicated these here because there is a "if (use_parser)" before the later print statements
+  if (index(mode,'dmc').ne.0) then
+    write(6,'(/,a)') ' DMC algorithm parameters:'
+    write(6,'(''adrift= '',f6.2)') adrift
+    write(6,'(''drift_type= '',a)') trim(drift_type)
+    write(6,'(''ene_int= '',a)') trim(ene_int)
+    write(6,'(''limit_rewt_dmc='',es9.1)') limit_rewt_dmc
+    write(6,'(''rewt_type='',a,/)') trim(rewt_type)
+    write(6,'(''tmoves='',l)') tmoves
+    write(6,'(''tmoves_type='',a,/)') trim(tmoves_type)
+  endif
+
 ! default value of MWALK
   if (MWALK == -1) then
     MWALK = nconf + 50
@@ -192,9 +227,9 @@ module control_mod
   if (use_parser) then
 
   if (iperiodic > 0) then
-     write(6,'(a)') ' type of system: periodic system' 
+     write(6,'(a)') ' type of system: periodic system'
   else
-     write(6,'(a)') ' type of system: finite system' 
+     write(6,'(a)') ' type of system: finite system'
   endif
 
   write(6,'(a,f12.6)') ' trial energy = ',etrial
@@ -287,7 +322,10 @@ module control_mod
     if (.not. l_population_control) then
       write(6,'(a)') ' Warning: population control turned off in DMC'
     endif
+    write(6,'(''DMC ene_int= '',a)') ene_int
+    write(6,'(''DMC limit_rewt_dmc='',es9.1)') limit_rewt_dmc
     write(6,'(''tmoves='',l)') tmoves
+    write(6,'(''tmoves_type='',a)') tmoves_type
   endif
 
   endif ! if use_parser
@@ -309,8 +347,6 @@ module control_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere= 'vmc_menu'
-
-! begin
 
 ! loop over menu lines
   do

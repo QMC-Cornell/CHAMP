@@ -121,8 +121,13 @@
 ! Check that the 1s basis fns are listed before the 3s basis fns. coming from the 3d fns. etc. in GAMESS if numr<0.
         write(6,'(/,''Log deriv of radial basis fns. as they are read in, before reordering them:'')')
         do 11 irb=1,nrbas_numerical(ict)
-          rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
+          rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! Get approximate L first
           l_bas_num=nint(rl_bas_num)
+          if(l_bas_num.eq.0) then
+            rl_bas_num=log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1)) ! s functions
+          else
+            rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! for non-s first pt. is 0, so use pts 2 and 3
+          endif
           if(abs(rl_bas_num-dfloat(l_bas_num)).gt.1.d-3) then
             write(6,'(''ict,irb,l_bas_num,rl_bas_num='',3i3,2f10.6)') ict,irb,l_bas_num,rl_bas_num,abs(rl_bas_num-dfloat(l_bas_num))
             write(6,'(''The log deriv of radial basis fn.'',i3,'' on centertype'',i3,'' is not close enough to an integer'')') &
@@ -202,8 +207,13 @@
 ! Write out L value for each numerical basis function after compactification
         write(6,'(/,''Log deriv of radial basis fns. that are treated numerically after reordering them:'')')
         do 25 irb=1,nrbas_numerical(ict)
-          rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
+          rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! Get approximate L first
           l_bas_num=nint(rl_bas_num)
+          if(l_bas_num.eq.0) then
+            rl_bas_num=log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1)) ! s functions
+          else
+            rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! for non-s first pt. is 0, so use pts 2 and 3
+          endif
           if(abs(rl_bas_num-dfloat(l_bas_num)).gt.1.d-3) then
             write(6,'(''ict,irb,l_bas_num,rl_bas_num='',3i3,2f10.6)') ict,irb,l_bas_num,rl_bas_num,abs(rl_bas_num-dfloat(l_bas_num))
             write(6,'(''The log deriv of radial basis fn.'',i3,'' on centertype'',i3,'' is not close enough to an integer'')') &
@@ -242,7 +252,12 @@
                 ll=ll+1
    45           dmatr(ll)=x(ii)**jj
 
-            call dgelg(y,dmatr,ncoef-1,1,1.d-8,ier)
+            call dgelg(y,dmatr,ncoef-1,1,1.e-8,ier)
+            if(ier.ne.0) then
+              write(6,'(/,''Warning: ier in dgelg='',i5)') ier ; call systemflush(6)
+              stop 'ier /= 0 in dgelg'
+            endif
+
             ce(1,irb,ict,iwf)=y(1)
             ce(2,irb,ict,iwf)=-znuc(ict)*ce(1,irb,ict,iwf)
             ce(3,irb,ict,iwf)=y(2)
@@ -258,7 +273,12 @@
               do 50 ii=1,ncoef
                 ll=ll+1
    50           dmatr(ll)=x(ii)**(jj-1)
-            call dgelg(y,dmatr,ncoef,1,1.d-8,ier)
+
+            call dgelg(y,dmatr,ncoef,1,1.e-8,ier)
+            if(ier.ne.0) then
+              write(6,'(/,''Warning: ier in dgelg='',i5)') ier ; call systemflush(6)
+              stop 'ier /= 0 in dgelg'
+            endif
 
             do 55 icoef=1,ncoef
    55         ce(icoef,irb,ict,iwf)=y(icoef)

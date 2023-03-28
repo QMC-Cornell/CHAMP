@@ -50,9 +50,9 @@ module csfs_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere = 'csfs_menu'
-  integer elec_i, elec_j, det_i, csf_i, det_in_csf_i,i
+  integer elec_i, elec_j, det_i, csf_i, det_in_csf_i
   real(dp), allocatable :: csf_coef_read (:)
-  real(dp) sum_csf_coef_sq,csf_rot_arg,csf_norm
+  real(dp) sum_csf_coef_sq
 
 ! begin
   write(6,*)
@@ -74,7 +74,6 @@ module csfs_mod
    write(6,'(a)') '  csf_coef 1.0 0.3 ... end : CSF coefficients'
    write(6,'(a)') '  vb_weights = [logical] : calculate VB weights (default=false)'
    write(6,'(a)') '  dets_in_csfs ... end : determinants in CSFs'
-   write(6,'(a)') '  fast_determinants = [logical] : use new way to calculate determinants (default=false)'
    write(6,'(a)') ' end'
    write(6,*)
 
@@ -86,8 +85,6 @@ module csfs_mod
    call object_modified ('nwf')
    call alloc ('csf_coef', csf_coef, ncsf, nwf)
    csf_coef (:,1) = csf_coef_read (:)
-
-
    call object_modified ('ncsf')
    call object_modified ('csf_coef')
 
@@ -96,9 +93,6 @@ module csfs_mod
 
   case ('vb_weights')
    call get_next_value (l_vb_weights)
-
-  case ('fast_determinants')
-   call get_next_value (l_fast_determinants)
 
   case ('end')
    exit
@@ -154,44 +148,6 @@ module csfs_mod
    sum_csf_coef_sq = sum_csf_coef_sq + csf_coef(csf_i,1)**2
   enddo
   write(6,'(a,f10.6)') ' sum of square of CSF coefficients = ',sum_csf_coef_sq
-
-!  FIXME: Put csf_rotation and csf_normalization here - MJO 6/8/2016
-  if (l_opt_csf_rot) then
-  call alloc ('csf_rot_coef', csf_rot_coef, ncsf,nwf)
-    !Normalize CSF parameters and then
-    !calculate initial rotation parameters from csf parameters using
-    !
-    ! exp(-R)|0> = cos(d) - sin(d)/d sum R_k |k>
-    ! d = sqrt(sum(abs(R_k)^2))
-    ! R_0 = cos(d)
-    ! and for k.ne.0
-    ! R_k = -C_k d/sin(d) 
-    ! 
-    csf_norm = 0
-    do i=1,ncsf
-       csf_norm = csf_norm + csf_coef(i,1)**2
-    enddo
-    csf_norm = sqrt(csf_norm)
-    do i=1,ncsf
-       csf_coef(i,1) = csf_coef(i,1)/csf_norm
-    enddo
-
-    ! Calculate csf_rot_arg (or d, above)
-    csf_rot_arg     = acos(csf_coef(1,1))
-
-    ! Now calculate rotation parameters - only m-1 parameters
-    ! because the normalization fixes the first parameter
-    ! We use csf_coef(i+1,1) because we assume that csf_coef(1,1) is defined
-    ! by the normalization, so we only have ncsf-1 rotation parameters
-    do i=1,ncsf-1
-       csf_rot_coef(i,1) = -csf_coef(i+1,1)*csf_rot_arg/sin(csf_rot_arg)
-    enddo
-
-    call object_modified ('csf_rot_coef') !MJO
-
-    write(6,'(''Normalized CSF coefs='',20f10.6)') (csf_coef(i,1),i=1,ncsf)
-    write(6,'(''Initial CSF rotation coefs='',20f10.6)') (csf_rot_coef(i,1),i=1,ncsf-1)
-  endif ! l_opt_csf_rot
 
   call object_provide ('ndet_in_csf')
   call object_provide ('iwdet_in_csf')

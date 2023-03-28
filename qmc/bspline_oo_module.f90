@@ -12,8 +12,6 @@
 
     module bspline_oo_module
 
-#ifndef NOEINSPLINE
-
     use,intrinsic :: iso_fortran_env, only: wp => real64
     use bspline_sub_module
 
@@ -758,8 +756,6 @@
 
     end subroutine evaluate_6d
 !*****************************************************************************************
-
-#endif
 
 !*****************************************************************************************
     end module bspline_oo_module

@@ -23,10 +23,6 @@ module catalog_averages_mod
   call object_average_define ('eloc_kin','eloc_kin_av')
   call object_error_define ('eloc_kin_av','eloc_kin_av_err')
 
-! det_fast
-!  call object_average_define ('lap_det_over_det_fast','lap_det_over_det_fast_av')
-!  call object_error_define ('lap_det_over_det_fast_av','lap_det_over_det_fast_av_err')
-
 ! general derivatives
   call object_average_define ('dpsi_sq', 'dpsi_sq_av')
   call object_error_define ('dpsi_dpsi_av', 'dpsi_dpsi_av_err')

@@ -36,13 +36,13 @@
 ! So, we check in read_input that nup and ndn are each <= MELEC/2.
 
 ! complex argument:
-      complex*16 cddet_det(3,*)
+      complex(dpc) cddet_det(3,*)
 
 ! complex local:
-      complex*16 cd2lndet,cdeterm,cterm,cdetinv
-      complex*16 corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
-      complex*16 cekinen(nelec)
-      complex*16 cauxx(nelec,nelec)
+      complex(dpc) cd2lndet,cdeterm,cterm,cdetinv
+      complex(dpc) corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
+      complex(dpc) cekinen(nelec)
+      complex(dpc) cauxx(nelec,nelec)
 
       common /dojasderiv/ ijasderiv
 
@@ -293,14 +293,14 @@
 ! dimensioned at least max(nup**2,ndn**2)
 
 ! complex argument:
-      complex*16 cddet_det(3,*)
+      complex(dpc) cddet_det(3,*)
 
 ! complex local:
-      complex*16 cd2lndet,cdeterm
-      complex*16 corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
-      complex*16 cekinen(nelec)
-      complex*16 cterm,cdetinv
-      complex*16 cauxx(nelec,nelec)
+      complex(dpc) cd2lndet,cdeterm
+      complex(dpc) corb(nelec,norb),cdorb(3,nelec,nelec,norb),cddorb(nelec,norb)
+      complex(dpc) cekinen(nelec)
+      complex(dpc) cterm,cdetinv
+      complex(dpc) cauxx(nelec,nelec)
 
       common /dojasderiv/ ijasderiv
 

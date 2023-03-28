@@ -134,8 +134,7 @@
      &,ei1cm2,ei2cm2,ei3cm2,r2cm2,ricm2
       write(10) (fgcum(i),i=1,nforce),(fgcm2(i),i=1,nforce)
       write(10) (rprob(i)/nproc,rprobup(i),rprobdn(i),i=1,NRAD)
-      write(10) dfus2ac,dfus2un,dr2ac,dr2un,acc &
-     &,acc_int,try_int,nbrnch,nodecr
+      write(10) dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,nbrnch,nodecr
 
       write(10) ((coef(ib,i,1),ib=1,nbasis),i=1,norb)
       write(10) nbasis
@@ -239,12 +238,13 @@
       call alloc ('rprobup', rprobup, NRAD)
       call alloc ('rprobdn', rprobdn, NRAD)
       read(10) (rprob(i),rprobup(i),rprobdn(i),i=1,NRAD)
-      read(10) dfus2ac,dfus2un,dr2ac,dr2un,acc &
-     &,acc_int,try_int,nbrnch,nodecr
+      read(10) dfus2ac,dfus2un,dr2ac,dr2un,acc,acc_int,try_int,nbrnch,nodecr
       if(idtask.ne.0) then
         acc=0
         acc_int=0
         try_int=0
+        dr2ac=0
+        dr2un=0
         nodecr=0
       endif
 

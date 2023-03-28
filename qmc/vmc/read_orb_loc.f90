@@ -46,13 +46,7 @@
         if((ndim.eq.3).or.((ndim.eq.2).and.(numr.le.0))) then !ACM
 ! Check that irecursion_ylm=1 if l of basis function >=5
           do 20 ibas=1,nbasis
-            if(irecursion_ylm.eq.0) then
-              write(6,'(''ibas,l_bas(ibas)='',9i5)') ibas,l_bas(ibas)
-              if(l_bas(ibas).ge.5) then
-                write(6,'(''if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'')')
-                stop 'if basis functions with l>=5 are used, set irecursion_ylm=1 in read_input'
-              endif
-            endif
+            write(6,'(''ibas,l_bas(ibas)='',9i5)') ibas,l_bas(ibas)
    20     continue
         endif !ACM
       endif
@@ -167,7 +161,7 @@
       allocate(n3s(nctype),n3p(-1:1,nctype),n3d(-2:2,nctype))
       allocate(n4s(nctype),n4p(-1:1,nctype),n4d(-2:2,nctype),n4f(-3:3,nctype))
       allocate(n5s(nctype),n5p(-1:1,nctype),n5d(-2:2,nctype),n5f(-3:3,nctype),n5g(-4:4,nctype))
-      allocate(n6d(-2:2,nctype),n6f(-3:3,nctype),n6g(-4:4,nctype),n6h(-5:5,nctype))
+      allocate(n6s(nctype),n6p(-1:1,nctype),n6d(-2:2,nctype),n6f(-3:3,nctype),n6g(-4:4,nctype),n6h(-5:5,nctype))
 !     allocate(n7g(-4:4,nctype),n7h(-5:5,nctype),n7i(-6:6,nctype))
 !     allocate(n8i(-6:6,nctype),n8j(-7:7,nctype))
 !     allocate(n9k(-8:8,nctype))
@@ -190,7 +184,7 @@
       n3s=0; n3p=0; n3d=0
       n4s=0; n4p=0; n4d=0; n4f=0
       n5s=0; n5p=0; n5d=0; n5f=0; n5g=0
-      n6d=0; n6f=0; n6g=0; n6h=0
+      n6s=0; n6p=0; n6d=0; n6f=0; n6g=0; n6h=0
 !     n7g=0; n7h=0; n7i=0;
 !     n8i=0; n8j=0
 !     n9k=0
@@ -369,6 +363,22 @@
    70     if(maxval(abs(n5f(m,:))).ne.0) write(6,'(''5f('',i2,'')'',t12,(12i3))') m,(n5f(m,i),i=1,nctype)
         do 80 m=-4,4
    80     if(maxval(abs(n5g(m,:))).ne.0) write(6,'(''5g('',i2,'')'',t12,(12i3))') m,(n5g(m,i),i=1,nctype)
+
+        if(maxval(abs(n6s)).ne.0) write(6,'(''4s'',t12,(12i3))') (n6s(i),i=1,nctype)
+        if(maxval(abs(n6p(1,:))).ne.0)  write(6,'(''6px'',t12,(12i3))') (n6p(1,i),i=1,nctype)
+        if(maxval(abs(n6p(-1,:))).ne.0) write(6,'(''6py'',t12,(12i3))') (n6p(-1,i),i=1,nctype)
+        if(maxval(abs(n6p(0,:))).ne.0) write(6,'(''6pz'',t12,(12i3))') (n6p(0,i),i=1,nctype)
+        if(maxval(abs(n6d(0,:))).ne.0) write(6,'(''6dzr'',t12,(12i3))') (n6d(0,i),i=1,nctype)
+        if(maxval(abs(n6d(2,:))).ne.0) write(6,'(''6dx2'',t12,(12i3))') (n6d(2,i),i=1,nctype)
+        if(maxval(abs(n6d(-2,:))).ne.0) write(6,'(''6dxy'',t12,(12i3))') (n6d(-2,i),i=1,nctype)
+        if(maxval(abs(n6d(1,:))).ne.0) write(6,'(''6dxz'',t12,(12i3))') (n6d(1,i),i=1,nctype)
+        if(maxval(abs(n6d(-1,:))).ne.0) write(6,'(''6dyz'',t12,(12i3))') (n6d(-1,i),i=1,nctype)
+        do 82 m=-3,3
+   82     if(maxval(abs(n6f(m,:))).ne.0) write(6,'(''6f('',i2,'')'',t12,(12i3))') m,(n6f(m,i),i=1,nctype)
+        do 84 m=-4,4
+   84     if(maxval(abs(n6g(m,:))).ne.0) write(6,'(''6g('',i2,'')'',t12,(12i3))') m,(n6g(m,i),i=1,nctype)
+        do 86 m=-5,5
+   86     if(maxval(abs(n6h(m,:))).ne.0) write(6,'(''6h('',i2,'')'',t12,(12i3))') m,(n6h(m,i),i=1,nctype)
 
         if(maxval(abs(nsa)).ne.0) write(6,'(''sa'',t12,(12i3))') (nsa(i),i=1,nctype)
         if(maxval(abs(npa(1,:))).ne.0) write(6,'(''pxa'',t12,(12i3))') (npa(1,i),i=1,nctype)

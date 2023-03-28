@@ -4,10 +4,10 @@ module periodic_1d_mod
  implicit none
  save
 
- integer :: ngvecs_1d
+ integer ngvecs_1d
  
  double precision, allocatable :: gvec_1d(:), gamma_gvec(:)
 
- double precision :: alattice, ewald_1d_cutoff
+ double precision alattice, ewald_1d_cutoff
 
 end module periodic_1d_mod

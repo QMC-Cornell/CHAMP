@@ -4,7 +4,7 @@ module jaspar3_mod
  implicit none
  save
 
- integer :: nord
+ integer nord
  double precision, allocatable :: a(:,:),b(:,:,:),c(:,:,:),fck(:,:,:),scalek(:)
  double precision, allocatable :: b_sav(:,:),c_sav(:,:)
  double precision, allocatable :: b_best(:,:),c_best(:,:)

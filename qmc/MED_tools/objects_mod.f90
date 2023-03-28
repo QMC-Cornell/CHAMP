@@ -9,7 +9,7 @@ module objects_mod
   use types_mod
   use strings_tools_mod
 
- type :: type_object
+ type type_object
    character(len=max_string_len_obj) :: name
    logical                           :: associated
    character(len=max_string_len_type):: type
@@ -234,7 +234,7 @@ module objects_mod
   endif
 
 ! loop over object indexes
-  do
+    do
     obj_i = int((obj_1 + obj_2)/2.d0)
 
     if (obj_i == obj_1 .or.  obj_i == obj_2 ) then
@@ -255,7 +255,7 @@ module objects_mod
      obj_1 = obj_i
     endif
 
-  enddo ! end loop
+    enddo ! end loop
 
   return
   end function object_index
@@ -2077,7 +2077,7 @@ module objects_mod
 
   objects(object_ind)%type = 'undefined'
   objects(object_ind)%associated = .false.
-  if (allocated(objects(object_ind)%dimensions)) deallocate(objects(object_ind)%dimensions)
+  deallocate(objects(object_ind)%dimensions)
 
   end subroutine object_deassociate
 

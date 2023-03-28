@@ -17,6 +17,7 @@
       use control_mod
       use allocations_mod
       use atom_mod
+      use orbitals_mod
       use dorb_mod
       use coefs_mod
       use dets_mod
@@ -112,9 +113,6 @@
 ! nparmf   no. of Jastrow fck parameters in complicated Jastrow
 
       call my_second(0,'fit   ')
-
-!     mode='fit         '
-!JT      call read_input
 
       call common_allocations
 
@@ -416,8 +414,14 @@
 ! If necn<0, call orb_params figure out which orbital (LCAO) coefs are varied and which are constrained to be equal
       if(necn < 0 .or. nebase < 0) then
         call orb_params
-        write(6,'(''lin. coefs of orbs (ieorb,iebasi) set equal='',/,5(2(2i3,2x),2x))') ((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
-        write(6,'(''expon. (iebase) set equal='',/,10(2i3,2x))') ((iebase(i,j),i=1,2),j=1,max(0,nebase))
+        write(6,'(/,''After orb_params: nparm, nparml, nparme, nparmcsf, nparmj, nparms='',6i5,/)') nparm, nparml, nparme, nparmcsf, nparmj, nparms
+!       write(6,'(''lin. coefs of orbs (ieorb,iebasi) set equal='',/,5(2(2i3,2x),2x))') ((ieorb(i,j),iebasi(i,j),i=1,2),j=1,necn)
+!       write(6,'(''expon. (iebase) set equal='',/,10(2i3,2x))') ((iebase(i,j),i=1,2),j=1,max(0,nebase))
+      endif
+
+      if(ndata.lt.nparm) then
+        write(6,'(''ndata, nparm='',2i6)') ndata, nparm ; call systemflush(6)
+        stop 'ndata < nparm'
       endif
 
 ! If we are doing analytic derivatives wrt the optimization parameters
@@ -437,23 +441,41 @@
         enddo
       endif
 
-! norbc = number of e-n cusp conditions.  At each nucleus there is one for every s-like occupied orbital.
+! norbc = number of e-n cusp conditions.  At each nucleus there is one for every nonzero occupied orbital.
 ! But some orbitals can have an s component at some nuclei and not others.
+! Note at present norb has been reset to norb_occ, so only occupied orbitals are considered here.
 ! Warning: We are presently incorrectly assuming that an orbital is nonzero at all or none of the nuclei, so number of penalties is ncent*norbc.
 ! We are calling cuspco from func not jacobian, but func is called whether analytic_jacobian is true or not
-      write(6,'(''lo='',1000i2)') lo
+! Now, lo from input is no longer used and can be removed.
+!     write(6,'(''lo='',1000i2)') lo
       norbc=0
-      do iorb=1,norb
-        if(lo(iorb).eq.0 .and. numr.le.0) norbc=norbc+1
-      enddo
-      write(6,'(''norbc='',i5)') norbc
+!     do iorb=1,norb
+!       if(lo(iorb).eq.0 .and. numr.le.0) norbc=norbc+1
+!     enddo
+!     write(6,'(''norbc='',i5)') norbc
+
+!     write(6,'(/,''norb='',i5)') norb
+      if(icusp.ge.0) then
+        do iorb=1,norb
+          do icent=1,ncent
+            ibas=imnbas(icent)
+            if(abs(coef(ibas,iorb,1)).ge.1d-9) then
+              norbc=norbc+1
+              lo(iorb)=0
+              exit
+            endif
+          enddo
+        enddo
+      endif
+      write(6,'(/,''norb='',i5,'', Number of orbs nonzero at any nucleus, norbc='',i5)') norb, norbc
+      write(6,'(''lo='',1000i2)') lo
 
 ! The penalties can come from
 ! a) imposing en cusp on s orbitals,
 ! b) imposing cusp conds. on analyt. een terms in Jastrow (ijas=2,3)
 ! c) imposing cusp conds. on Fock een terms in Jastrow (ijas=3)
 ! d) imposing shape conditions on Jastrow (ijas=2)
-! cent*norbc = number of en cusp conds. on s orbitals
+! ncent*norbc = number of en cusp conds. on orbitals that are nonzero at nuclei (presently assume if nonzero at one nucleus, it is nonzero at all, though this could easily be changed)
 ! ncuspc = number of cusp conditions from Jastrow (actual # of conds. is ncuspc*(nspin2-nspin1+1)) for ijas=2,3
 ! nfockc = number of cusp conditions from Fock terms for ijas=3
 ! ncnstr = number of shape conditions, (actual # of conds. is ncnstr*(nspin2-nspin1+1)) for ijas=2
@@ -524,7 +546,8 @@
 ! have a negative divergence, and using analytical basis functions then compute
 ! the cusp violation for each occupied s-like orbital at each nucleus.
 ! If icusp.ge.0 then impose the cusp condition.  In that case the computed cusp violation must be 0.
-      if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) then
+!     if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) then
+      if(icusp.ge.0) then
 ! Calculate coefs to construct the piece of the orbital that comes
 ! from basis fns that are related by symmetry.  This is needed to
 ! impose cusp conditions when there is more than one atom.
@@ -716,7 +739,8 @@
         endif
       endif
       ishft=ncuspc*(nspin2-nspin1+1)+nfockc
-      if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),1)
+!     if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),1)
+      if(icusp.ge.0) call cuspco(diff(ndata+ishft+1),1)
 
       do i=1,necn
         coef(iebasi(1,i),ieorb(1,i),1)=sign(one,dfloat(ieorb(2,i))) * coef(iebasi(2,i),iabs(ieorb(2,i)),1)
@@ -726,13 +750,18 @@
       enddo
 
 ! If the exponents of the basis functions are optimized, recompute normalizations
-       if(nparme.gt.0) then
-         if(ibasis.eq.3) then
-           call basis_norm_dot(0)
-         else
-           call basis_norm(1,0)
-         endif
-       endif
+      if(nparme.gt.0) then
+        if(ibasis.eq.3) then
+          call basis_norm_dot(0)
+        else
+          call basis_norm(1,0)
+        endif
+      endif
+
+! Reset norb to the total number of orbs rather than the number of orbs in at least one determinant
+      call object_provide ('orb_tot_nb')
+      norb=orb_tot_nb
+      write(6,'(''norb reset to total number of orbs, ,norb='',9i5)') norb
 
       if(inum_orb.eq.0) then
         do ib=1,nbasis
@@ -819,7 +848,7 @@
       write(6,'(/,''Final parameters:'')')
 
       if(iperiodic.eq.0) then
-        if(nbasis.gt.999) stop 'nbasis > 999 in fit: increase i3 below'
+        if(nbasis.gt.9999) stop 'nbasis > 9999 in fit: increase i4 below'
         do iorb=1,norb
           if(iorb.eq.1) then
 !           write(fmt,'(''(''i3,''f14.8,\'\' ((coef(j,i),j=1,nbasis),i=1,norb)\'\')'')') nbasis
@@ -837,8 +866,8 @@
         write(fmt,'(''(''i3,''f14.8,a20)'')') nbasis
         write(6,fmt) (zex(ib,1),ib=1,nbasis),' (zex(i),i=1,nbasis)'
 
-        if(ndet.gt.999) stop 'ndet > 999 in fit: increase i3 below'
-        write(fmt,'(''(''i3,''f12.8,a)'')') ncsf
+        if(ndet.gt.9999) stop 'ndet > 9999 in fit: increase i4 below'
+        write(fmt,'(''(''i4,''f12.8,a)'')') ncsf
         write(6,fmt) (csf_coef(icsf,1),icsf=1,ncsf),' (csf_coef(icsf),icsf=1,ncsf)'
       endif
 

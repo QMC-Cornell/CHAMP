@@ -4,7 +4,7 @@ module wfsec_mod
  implicit none
  save
 
- integer :: iwf,nwftype 
+ integer iwf,nwftype 
  integer, allocatable :: iwftype(:)
 
 end module wfsec_mod             

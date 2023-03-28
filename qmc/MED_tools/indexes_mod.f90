@@ -45,8 +45,6 @@ module indexes_mod
   integer     :: dpsi_csf_index
   integer     :: dpsi_jas_index
   integer     :: dpsi_orb_index
-  integer     :: dcsf_orb_index
-  integer     :: d2psi_orb_index
   integer     :: dpsi_geo_index
   integer     :: dpsi_csf_av_index
   integer     :: dpsi_jas_av_index
@@ -252,5 +250,11 @@ module indexes_mod
   integer     :: walker_weights_sum_index
   integer     :: walker_weights_sq_sum_block_index
   integer     :: walker_weights_sq_sum_index
+
+! Fast derivatives
+  integer :: gup_index, gdn_index
+  integer :: chi_index, deta_up_index, deta_dn_index
+  integer :: psp_nonloc_orb_index
+  integer :: psp_nonloc_pot_index
 
 end module indexes_mod

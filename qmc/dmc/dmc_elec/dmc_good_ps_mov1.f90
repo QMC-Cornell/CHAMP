@@ -83,13 +83,17 @@
       use distance_mod, only: pot_ee, rshift, rvec_en, r_en
       use config_mod, only: pot_ee_new, pot_ee_old
       use zigzag_mod, only: izigzag
-      use qua_mod, only: l_do_tmoves
-      use slaterw_mod, only: slmuiw, slmdiw, detuw, detdw
+      use qua_mod, only: l_do_tmoves, iaccept_tmove
+      use pseudo_mod, only: nloc
+      use dete_mod, only: eval_grad, dete_save                 !TA
+      use jaso_mod, only: fjo                                  !TA
+      use deriv_fast_mod, only: aiup, aidn, tup, tdn, yup, ydn !TA
+      use orb_mod, only: dorb                                  !TA
+      use pseudo_mod, only: nloc
 
       implicit real*8(a-h,o-z)
 
-! Warning: tmp
-      parameter (eps=1.d-10, adrift=0.5d0)
+      parameter (eps=1.d-10)
 
       common /circularmesh/ rmin,rmax,rmean,delradi,delti,nmeshr,nmesht,icoosys
 
@@ -135,14 +139,13 @@
         ffi=1
         fprod=1
         ff(ipmod)=1
-        expon=1
         dwt=1
       endif
 
 ! Undo weights
       iwmod=mod(ipass,nwprod)
 
-! Store (well behaved velocity/velocity)
+! Store fratio(iw,ifr) (well behaved velocity/velocity)
       if(ncall.eq.0.and.irstar.eq.0) then
         do 7 iw=1,nwalk
           do 7 ifr=1,nforce
@@ -157,7 +160,12 @@
               v2old=0
               do 5 k=1,ndim
     5           v2old=v2old+voldw(k,i,iw,ifr)**2
-              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one) / (adrift*v2old)
+
+              if(drift_type=='unr93' .or. adrift <= 1.d0) then
+                vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
+              elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
+                vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old +(adrift-1)*sqrt(2*adrift*v2old*tau*tratio))
+              endif
               vavvo=vavvt/(tau*tratio)
               vav2sumo=vav2sumo+vavvo*vavvo*v2old
               v2sumo=v2sumo+v2old
@@ -195,22 +203,62 @@
         risume=zero
         dfus2ac=zero
         dfus2un=zero
-        dr2ac=zero
-        dr2un=zero
+!       dr2ac=zero
+!       dr2un=zero
         drifdif=zero
         iaccept=0
         l_do_tmoves=.false.
+        psum=0
+
+        ! calculate v2sumo for ifr=1 TA
+        v2sumo=0d0
+        do i=1,nelec
+          do k=1,ndim
+            v2sumo=v2sumo+voldw(k,i,iw,1)**2
+          enddo
+        enddo
+
+        call distances(xoldw(1,1,iw,1),pe,pei)
+
+        do i=1,nelec
+          if(nloc.eq.1) then
+            call getvps_fahy(r_en,i)
+           elseif(nloc.ge.2 .and. nloc.le.5) then
+            call getvps_champ(r_en,i)
+           elseif(nloc.eq.6) then
+            call getvps_gauss(r_en,i)
+           else
+            stop 'nloc < 1 or 6 < nloc'
+          endif
+        enddo
+
+        if(tmoves) then
+          call tmove
+          if(iaccept_tmove.eq.1) iaccept=1
+        endif
+
         do 200 i=1,nelec
 
 ! Save distances (not really needed for locality approx. but is needed for tmoves)
-          call distancese(i,xoldw(1,2,iw,1))
+          call distancese(i,xoldw(1,1,iw,1))
+
+          if (i.le.nup) call eval_grad(i, dorb(:,i,:), aiup, tup, yup, voldw(:,i,iw,1)) !TA
+          if (i.gt.nup) call eval_grad(i, dorb(:,i,:), aidn, tdn, ydn, voldw(:,i,iw,1))
+          voldw(1,i,iw,1) = voldw(1,i,iw,1) + fjo(1,i)
+          voldw(2,i,iw,1) = voldw(2,i,iw,1) + fjo(2,i)
+          voldw(3,i,iw,1) = voldw(3,i,iw,1) + fjo(3,i)
 
 ! Use more accurate formula for the drift
           v2old=0
           do 75 k=1,ndim
    75       v2old=v2old+voldw(k,i,iw,1)**2
 ! Tau primary -> tratio=one
-          vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/(adrift*v2old)
+
+          if(drift_type=='unr93' .or. adrift <= 1.d0) then
+            vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/ (adrift*v2old)
+          elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
+            vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/ (adrift*v2old +(adrift-1)*sqrt(2*adrift*v2old*tau))
+          endif
 
           dr2=zero
           dfus2o=zero
@@ -248,8 +296,12 @@
           v2new=0
           do 149 k=1,ndim
   149       v2new=v2new+vnew(k,i)**2
-          vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/(adrift*v2new)
 
+          if(drift_type=='unr93' .or. adrift <= 1.d0) then
+            vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/ (adrift*v2new)
+          elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
+            vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/ (adrift*v2new +(adrift-1)*sqrt(2*adrift*v2new*tau))
+          endif
 
           dfus2n=zero
           do 150 k=1,ndim
@@ -276,11 +328,12 @@
 ! The following is one reasonable way to cure persistent configurations
 ! Not needed if itau_eff <=0 and in practice we have never needed it even
 ! otherwise
-          if(iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
+          if(idmc > 0 .and. iage(iw).gt.50) p=p*1.1d0**(iage(iw)-50)
 
 !         pp=p
           p=dmin1(one,p)
   160     q=one-p
+          psum=psum+p
 
           acc=acc+p
           try_int=try_int+1
@@ -346,6 +399,7 @@
                 call cdetsav(i)
             else
                 call detsav(i)
+                call dete_save(i) !TA
             endif
 
           else
@@ -365,15 +419,25 @@
   200   continue ! nelec
 
 ! Effective tau for branching
-        tauprim=tau*dfus2ac/dfus2un
+        tauprim=tau*dfus2ac/dfus2un  ! taunow is used in nonloc, called from hpsi.  taunow=tauprim for ifr=1, tauprim*drifdifr for ifr>1
 
         do 280 ifr=1,nforce
+
+          if(ifr.gt.1) then !Calculate v2sumo for ifr != 1 - TA
+            v2sumo=0d0
+            do i=1,nelec
+              do k=1,ndim
+                v2sumo=v2sumo+voldw(k,i,iw,ifr)**2
+              enddo
+            enddo
+          endif
 
           if(iaccept.eq.1) then   ! If any of the 1-electron moves were accepted then
             if(ifr.eq.1) then
 ! Primary configuration
               drifdifr=one
               if(nforce.gt.1) call strech(xoldw(1,1,iw,1),xoldw(1,1,iw,1),ajacob,1,0)
+              taunow=tauprim
               call hpsi(xoldw(1,1,iw,1),psidn,psijn,voldw(1,1,iw,1),div_vow(1,iw),d2n,pen,pein,enew,denergy,1)
 
               psi_det = psidn                             !JT
@@ -389,8 +453,10 @@
                 call walksav_det(iw)
               endif
               call walksav_jas(iw)
-            else
+
+            else                                       ! ifr>1, i.e. secondary walk
 ! Secondary configuration
+
               if(istrech.eq.0) then
                 drifdifr=one
 ! No streched positions for electrons
@@ -409,6 +475,7 @@
                 ajacold(iw,ifr)=ajacob
                 drifdifr=drifdifs/drifdif
               endif
+              taunow=tauprim*drifdifr
               call hpsi(xoldw(1,1,iw,ifr),psidn,psijn,voldw(1,1,iw,ifr),div_vow(1,iw),d2n,pen,pein,enew,denergy,ifr)
 ! Temporary test to see how well correlated sampling works for excited states
 ! Limit outliers such that tau->0 limit is unchanged
@@ -438,76 +505,182 @@
               v2old=0
               do 251 k=1,ndim
   251           v2old=v2old+voldw(k,i,iw,ifr)**2
-              vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one) / (adrift*v2old)
+
+              if(drift_type=='unr93' .or. adrift <= 1.d0) then
+                vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
+              elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
+                vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old +(adrift-1)*sqrt(2*adrift*v2old*tau*tratio))
+              endif
               vavvn=vavvt/(tau*tratio)
 
               vav2sumn=vav2sumn+vavvn**2*v2old
   260         v2sumn=v2sumn+v2old
             fration=dsqrt(vav2sumn/v2sumn)
-          else
+          else  ! none of the 1-electron drift-diffusion moves were accepted
             drifdifr=one
             fration=fratio(iw,ifr)
             enew=eoldw(iw,ifr)
           endif ! accept
 
-          taunow=tauprim*drifdifr
+!         taunow=tauprim*drifdifr
 
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-!For many years I have been placing an upper limit on the reweighting factor of 1+10*sigma*tau
-!(but no lower limit).  This is not in our 1993 paper because I started doing that only after
-!we put in the capability to do pseudopotentials, which was after 1993.
-!
-!Alternatively, one could use for S_bar
-!S_bar = min(E_cut,max(-E_cut,E_est-E_L))
-!where E_cut = 10*sigma
-!which limits both the maximum and the minimum reweighting.
-!
-!Both of these create a bias in the tau \to 0 limit, but the bias is negigibly small.
-!If you object to having any bias, then you could use something like
-!E_cut = 3*sigma/sqrt(tau)
-!I am assuming that the largest tau one would want to use is about 0.1, so this would
-!give a bound of about 10*sigma at tau=.1 and a larger bound at smaller tau values.
-!
-!All of these have the problem that at the very beginning of the run, one does
-!not have a good estimate of sigma.  If that bothers you, you could use
-!E_cut = 0.2 sqrt(N_elec/tau)
-!which is what Alfe does.  The downside of this is that it assumes that the adhoc value
-!of 0.2 is reasonable for all systems.
-!
-!Another possibility is to multiply (eest-e) by a function of fratio that is 0 at 0, 1 at 1 and deviates from 1 at 1 as some power, e.g.
-!UNR93:        f(x)=x                     deviates from 1 linearly.
-!new_ene_int:  f(x)=x**2*(3-2*x)          deviates from 1 quadratically.
-!new_ene_int2: f(x)=x**3*(10-15*x+6*x**2) deviates from 1 cubically.
-!no_ene_int:   f(x)=1                     does not deviate from 1     
-!These will give the same energy at tau=0, but progressively lower energies at small finite values of tau
+!There are 2 kinds of limits we put on the reweight factor.
+!For all-electron calculations the purpose is to reduce the time-step error.
+!For locality-approximation pseudpotential calculations one of both of these are necessary to avoid large negative spikes in the energy.
+!First we use e=eest-(eest-e)*f(fratio) where f is a function of fratio=vel_av/vel that is 0 at 0, 1 at 1 and deviates from 1 at 1 as some power, e.g.
+!UNR93:        f(x)=x                           deviates from 1 and 0 linearly.
+!new_ene_int:  f(x)=x**2*(3-2*x)                deviates from 1 and 0 quadratically.
+!new_ene_int2: f(x)=x**3*(10-15*x+6*x**2)       deviates from 1 and 0 cubically.
+!new_ene_int3: f(x)=1-(1-x)**3 = x*(3-3*x+x**2) deviates from 1 cubically and from 0 linearly.
+!no_ene_int:   f(x)=1                           does not deviate from 1     
+!All these will give the same energy at tau=0, but progressively lower energies, going from UNR93 to no_ene_int, at finite values of tau
+!The second limit is described and imposed about 50 lines down.
 
 ! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)                                               ! UNR93
-!         ewtn=eest-(eest-enew)*fration                                                               ! UNR93
-!         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
-!         ewtn=enew                                                                                   ! no_ene_int
-          ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
-          ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
-!         ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
-!         ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
-!         ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
-!         ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
-! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
-! so that we keep track of the fluctuating factor and undo the population control
-
-! Warning: tmp
-!         write(6,'(''pi,fratio(iw,ifr),fration,0.5d0*(1-cos(pi*fratio(iw,ifr))),0.5d0*(1-cos(pi*fration))'',9es12.4)')
-!    &    pi,fratio(iw,ifr),fration,0.5d0*(1-cos(pi*fratio(iw,ifr))),0.5d0*(1-cos(pi*fration))
+          if(ene_int=='unr93') then
+            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)                                               ! UNR93
+            ewtn=eest-(eest-enew)*fration                                                               ! UNR93
+          elseif(ene_int=='new_ene_int') then
+            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
+            ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
+          elseif(ene_int=='new_ene_int2') then
+            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
+            ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
+          elseif(ene_int=='new_ene_int3') then
+            ewto=eest-(eest-eoldw(iw,ifr))*(1-(1-fratio(iw,ifr))**3)                                    ! new_ene_int3
+            ewtn=eest-(eest-enew)*(1-(1-fration)**3)                                                    ! new_ene_int3
+          elseif(ene_int=='new_ene_int4') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=10*energy_sigma/(1+sqrt(tau))                                                          ! new_ene_int4
+            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                           ! new_ene_int4
+            ewtn=eest+min(ecut,max(-ecut,enew-eest))                                                    ! new_ene_int4
+          elseif(ene_int=='new_ene_int5') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=10*energy_sigma/(1+tau)                                                                ! new_ene_int5
+            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                           ! new_ene_int5
+            ewtn=eest+min(ecut,max(-ecut,enew-eest))                                                    ! new_ene_int5
+          elseif(ene_int=='new_ene_int7') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=10*energy_sigma/(1+v2sumo*tau/nelec)                                                   ! new_ene_int7
+            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                           ! new_ene_int7
+            ecut=10*energy_sigma/(1+v2sumn*tau/nelec)                                                   ! new_ene_int7
+            ewtn=eest+min(ecut,max(-ecut,enew-eest))                                                    ! new_ene_int7
+          elseif(ene_int=='new_ene_int8') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+!           if(ipass.le.10000) write(6,'(''ipass,etrial,eest,energy_sigma'',i7,9f10.4)') ipass,etrial,eest,energy_sigma
+            ecut=min(abs(eest-eoldw(iw,ifr)),10*energy_sigma)                                           ! new_ene_int8
+            ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+(v2sumo*tau/nelec)**2)                           ! new_ene_int8
+            ecut=min(abs(eest-enew),10*energy_sigma)                                                    ! new_ene_int8
+            ewtn=eest-sign(ecut,eest-enew)/(1+(v2sumn*tau/nelec)**2)                                    ! new_ene_int8
+          elseif(ene_int=='new_ene_int9') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=min(abs(eest-eoldw(iw,ifr)),10*energy_sigma)                                           ! new_ene_int9
+            ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+(v2sumo*tau/nelec))                              ! new_ene_int9
+            ecut=min(abs(eest-enew),10*energy_sigma)                                                    ! new_ene_int9
+            ewtn=eest-sign(ecut,eest-enew)/(1+(v2sumn*tau/nelec))                                       ! new_ene_int9
+!           write(6,'(''v2sumo,v2sumn,ewto,ewtn,ecut'',9es12.4)') v2sumo,v2sumn,ewto,ewtn,ecut
+          elseif(ene_int=='new_ene_int10') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=min(abs(eest-eoldw(iw,ifr)),10*energy_sigma)                                           ! new_ene_int10
+           !ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+(v2sumo*tau/(4*nelec)))                          ! new_ene_int10
+            ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+(sqrt(v2sumo)*tau/nelec))                        ! new_ene_int10
+            ecut=min(abs(eest-enew),10*energy_sigma)                                                    ! new_ene_int10
+           !ewtn=eest-sign(ecut,eest-enew)/(1+(v2sumn*tau/(4*nelec)))                                   ! new_ene_int10
+            ewtn=eest-sign(ecut,eest-enew)/(1+(sqrt(v2sumn)*tau/nelec))                                 ! new_ene_int10
+          elseif(ene_int=='new_ene_int11') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=min(abs(eest-eoldw(iw,ifr)),10*energy_sigma)                                           ! new_ene_int11
+           !ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+(v2sumo*tau/(4*nelec)))                          ! new_ene_int11
+            ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+2*(sqrt(v2sumo/nelec)*tau**2))                   ! new_ene_int11
+            ecut=min(abs(eest-enew),10*energy_sigma)                                                    ! new_ene_int11
+           !ewtn=eest-sign(ecut,eest-enew)/(1+(v2sumn*tau/(4*nelec)))                                   ! new_ene_int11
+            ewtn=eest-sign(ecut,eest-enew)/(1+2*(sqrt(v2sumn/nelec)*tau**2))                            ! new_ene_int11
+          elseif(ene_int=='new_ene_int12') then
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=min(abs(eest-eoldw(iw,ifr)),10*energy_sigma)                                           ! new_ene_int12
+           !ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+abs(eest-eoldw(iw,ifr))*tau)                     ! new_ene_int12
+            ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+ecut*tau)                                        ! new_ene_int12
+            ecut=min(abs(eest-enew),10*energy_sigma)                                                    ! new_ene_int12
+           !ewtn=eest-sign(ecut,eest-enew)/(1+abs(eest-enew)*tau)                                       ! new_ene_int12
+            ewtn=eest-sign(ecut,eest-enew)/(1+ecut*tau)                                                 ! new_ene_int12
+          elseif(ene_int=='new_ene_int13') then                                                         ! cut only the low energy side
+            if(ipass .gt. nstep*2*nblkeq + max(2,nint(1.d0/tau))) then
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+              if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+            else
+              energy_sigma=0.2d0*sqrt(real(nelec))
+            endif
+            ecut=min(eest-eoldw(iw,ifr),10*energy_sigma)                                                ! new_ene_int13
+            ewto=eest-sign(ecut,eest-eoldw(iw,ifr))/(1+abs(ecut)*tau)                                   ! new_ene_int13
+            ecut=min(eest-enew,10*energy_sigma)                                                         ! new_ene_int13
+            ewtn=eest-sign(ecut,eest-enew)/(1+abs(ecut)*tau)                                            ! new_ene_int13
+          elseif(ene_int=='no_ene_int') then
+            ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
+            ewtn=enew                                                                                   ! no_ene_int
+          elseif(ene_int=='alfe') then
+            ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
+            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                           ! Alfe
+            ewtn=eest+min(ecut,max(-ecut,enew-eest))                                                    ! Alfe
+          endif
 
           do 262 iparm=1,nparm
             dewto(iparm)=denergy_old_dmc(iparm,iw)*fratio(iw,ifr)
   262       dewtn(iparm)=denergy(iparm)*fration
 
+          psum=psum/nelec
+          qsum=1-psum
+
           if(idmc.gt.0) then
-            expon=(etrial-half*(ewto+ewtn))*taunow
-! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) because
+! rewt_type=='pq' gives a higher energy than rewt_type=='sym' at all tau.
+! So, it gives smaller negative time-step error than the usual rewt_type=='sym' at large tau, but does it give an improvement at small tau?
+            if(rewt_type=='sym') then
+              expon=(etrial-half*(ewto+ewtn))*taunow
+            elseif(rewt_type=='pq') then
+              expon=(etrial-((1-half*psum)*ewto+half*psum*ewtn))*taunow
+            endif
+! Warning we are temporarily ignoring the term that comes from the derivative of (V_av/V) or other modification of reweighting because
 ! it should be small compared to the term that we keep.
             do 264 iparm=1,nparm
   264         dexponent(iparm)=-half*(dewto(iparm)+dewtn(iparm))*taunow
@@ -517,8 +690,6 @@
               if(expon.le.0.d0) then
                 dwt=dexp(expon)
               else
-! Warning: tmp
-!               dwt=1+expon+0.5d0*expon**2
                 dwt=1+expon/(1+expon)
               endif
             else
@@ -527,30 +698,38 @@
           endif
 
 ! Warning: These lines were added to reduce the probability of population explosions.
-! These occur mostly for nonlocal psps., and these are cured by our slightly modified version of Casula et al'
-! size-consistent tmoves version 1.  So, these lines are no longer needed.
-! We truncate wts that come from energies that are too low by more than 10*energy_sigma.
-! This gives a DMC energy that is too high even in the tau->0 limit, but by a really negligible amount.
+! These occur for nonlocal psps. with the locality approx, and are cured by our slightly modified version of Casula et al'
+! size-consistent tmoves version 1 and by our version of tmoves that has an additional accept-reject step.  For tmoves, these lines are no longer needed.
+! If we truncate wts that are larger than 1+limit_rewt_dmc*energy_sigma then there would be no effect as tau->0.
+! If we truncate wts that are larger than 1+limit_rewt_dmc*energy_sigma*sqrt(tau) then also there would be no effect as tau->0.
+! If we truncate wts that are larger than 1+limit_rewt_dmc*energy_sigma*tau then there is a bias, but it is tiny if energy_sigma > 10.
+! However, for reasons I need to understand, when using the locality approx. we get a too low energy as tau->0, if limit_rewt_dmc > 10.
+! (see e.g. /data/cyrus/qmc_runs/atoms_ps/c_dolg_2zeta/csf01/test_timestep_new_ene_int2_20sigma.)
 ! For mpi1 runs a different energy_sigma is calculated on each processor because I did not want to add new MPI calls.
-! For mpi2/3 runs a mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
+! For mpi2/3 runs an mpi_allreduce is done in the acues1 routine so that it is summed over the processors.
 ! So, multiply energy_sigma by sqrt(float(nproc)).
 ! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
-!         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
-! Warning: tmp  Change 10*energy_sigma to 20*energy_sigma
-          if(ipass-nstep*2*nblkeq .gt. 5) then
-            energy_sigma=e_sigma(ecum1,ecm21,wcum1)
+!         if(ipass-nstep*2*nblkeq .gt. 5) then
+          if(ipass .gt. nstep*2*nblkeq + max(10,nint(10.d0/tau))) then
+!           energy_sigma=e_sigma(ecum1,ecm21,wcum1)
+            energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
             if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
-            if(dwt.gt.1+20*energy_sigma*tau) then
-              ipr_sav=ipr_sav+1
-              if(ipr_sav.le.3) then
-                write(6,'(''Warning: dwt>1+20*energy_sigma*tau: nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4 &
-     &          )') nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
-                if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
-              elseif(ipr_sav.eq.4) then
-                write(6,'(''Warning: Additional warning msgs. of dwt>1+20*energy_sigma*tau suppressed'')')
-              endif
-              dwt=1+20*energy_sigma*tau
+          else
+            energy_sigma=0.2d0*sqrt(real(nelec))
+          endif
+!         if(iw==1) write(6,'(''ipass,e_sigma(ecum1,ecm21,wcum1),e_sigma(egcum(1),egcm2(1),wgcum(1)),energy_sigma,dwt,1+limit_rewt_dmc*energy_sigma*tau'',i6,9f10.6)') ipass,e_sigma(ecum1,ecm21,wcum1),e_sigma(egcum1(1),egcm21(1),wgcum1(1)),e_sigma(egcum(1),egcm2(1),wgcum(1)),energy_sigma,dwt,1+limit_rewt_dmc*energy_sigma*tau
+!         if(dwt.gt.1+limit_rewt_dmc*energy_sigma*tau) then
+          if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
+            ipr_sav=ipr_sav+1
+            if(ipr_sav.le.3) then
+              write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+     &        nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
+              if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
+            elseif(ipr_sav.eq.4) then
+              write(6,'(''Warning: Additional warning msgs. of dwt>1+limit_rewt_dmc*energy_sigma*tau suppressed'')')
             endif
+!           dwt=1+limit_rewt_dmc*energy_sigma*tau
+            dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
           endif
 
 ! ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
@@ -737,14 +916,8 @@
   280   continue ! ifr=1,nforce
 ! Call to grad_hess_jas_sum() used to be for optimizing Jastrow for periodic systems.
         call grad_hess_jas_sum(1.d0,0.d0,eoldw(iw,1),eoldw(iw,1),wt(iw)*fprod,wi_w(:,iw))
-
         call compute_averages_step !JT
 
-        if(tmoves) then
-          l_do_tmoves=.true.
-          call nonloc(xoldw(1,1,iw,1),rshift,rvec_en,r_en,detuw(1,iw),detdw(1,iw),slmuiw(1,1,iw),slmdiw(1,1,iw),vpsp)
-          l_do_tmoves=.false.
-        endif
         call systemflush(6)
 
 !       write(6,'(''iw,xoldw(k,i,iw,1)'',i3,99d12.4)') iw,((xoldw(k,i,iw,1),k=1,3),i=1,nelec)

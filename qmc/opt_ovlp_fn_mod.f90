@@ -646,8 +646,8 @@ module opt_ovlp_fn_mod
 ! norm of linear wave function variation for nonlinear parameter
   call object_provide ('nparmcsf')
   psi_lin_var_norm = 0.d0
-  do param_i = nparmlin+1, param_nb
-   do param_j = nparmlin+1, param_nb
+  do param_i = nparmcsf+1, param_nb
+   do param_j = nparmcsf+1, param_nb
      psi_lin_var_norm = psi_lin_var_norm + delta_ovlp_fn (param_i) * delta_ovlp_fn (param_j) * dpsi_dpsi_uwcovar (param_i, param_j)
    enddo
   enddo
@@ -809,8 +809,8 @@ module opt_ovlp_fn_mod
 ! norm of linear wave function variation for nonlinear parameter
   call object_provide ('nparmcsf')
   psi_lin_var_norm = 0.d0
-  do param_i = nparmlin+1, param_nb
-   do param_j = nparmlin+1, param_nb
+  do param_i = nparmcsf+1, param_nb
+   do param_j = nparmcsf+1, param_nb
      psi_lin_var_norm = psi_lin_var_norm + delta_ovlp_fn_nonsemiortho (param_i) * delta_ovlp_fn_nonsemiortho (param_j) * ovlp_fn (param_i+1, param_j+1)
    enddo
   enddo

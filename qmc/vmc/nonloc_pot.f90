@@ -1,4 +1,4 @@
-      subroutine nonloc_pot(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,psid,pe)
+      subroutine nonloc_pot(x,rshift,rvec_en,r_en,vpsp,psid,pe)
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
 ! Calculates the local and nonlocal components of the pseudopotential
 ! pe_en(loc) is computed in distances and pe_en(nonloc) here in nonloc_pot if nloc !=0 and iperiodic!=0.
@@ -12,10 +12,11 @@
       use const_mod
       use pseudo_mod
       use contrl_per_mod
+      use gamma_mod, only: psp_nonloc_pot
       implicit real*8(a-h,o-z)
 
-      dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent) &
-     &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
+      dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)! &
+!     &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
 
 ! Calculate local and nonlocal pseudopotentials for all electrons, nuclei and l-components
 ! and store in vps
@@ -48,11 +49,17 @@
       call object_modified_by_index (eloc_pot_loc_index)  !JT
 
 ! non-local component (division by the Jastrow already in nonloc)
-      call nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp)
-      pe=pe+vpsp/psid
+!      call nonloc(x,rshift,rvec_en,r_en,vpsp)
+      call nonloc(x,rshift,rvec_en,r_en)
+
+
+      call object_provide_by_index(psp_nonloc_pot_index)
+      pe=pe+psp_nonloc_pot
+!      pe=pe+vpsp/psid
+      
       if(ipr.ge.1) write(6,'(''nonloc_pot: vpsp, psid, pe after nonlocal psp'',9f12.5)') vpsp, psid, pe
-      if(ipr.ge.4) write(6,'(''nonloc_pot: pe,vpsp/psid,vpsp,psid,detu(1),detd(1),r_en(1,1)='',2f9.4,9d12.4)') &
-     &pe,vpsp/psid,vpsp,psid,detu(1),detd(1),r_en(1,1)
+      if(ipr.ge.4) write(6,'(''nonloc_pot: pe,vpsp/psid,vpsp,psid,r_en(1,1)='',2f9.4,9d12.4)') &
+     &pe,vpsp/psid,vpsp,psid,r_en(1,1)
 
       return
       end

@@ -56,8 +56,9 @@
         do 10 k=1,ndim
           velocity(k,i)=vj(k,i)+vd(k,i)
 ! Warning: tmp Not needed anymore.  Put this in while debugging tmoves
-!         if(isnan(vj(k,i)).or.isnan(vd(k,i))) then
-!           write (6,'(''hpsie: Warning: i,k,vj(k,i), vd(k,i)'',2i5,9es12.4)') i,k, vj(k,i), vd(k,i)
+! Test for NaN and inf
+!         if(isnan(vj(k,i)).or.isnan(vd(k,i)).or.vj(k,i)-1==vj(k,i).or.vd(k,i)-1==vd(k,i)) then
+!           write(6,'(''hpsie: Warning: k,i,vj(k,i), vd(k,i)'',2i5,9es12.4)') k,i, vj(k,i), vd(k,i)
 !           write(6,'(''r_en1='',9d12.5)') ((r_en(ii,j),ii=1,nelec),j=1,1,ncent)
 !         endif
    10     continue

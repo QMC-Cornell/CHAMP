@@ -9,6 +9,8 @@
 !    Mathematical and Physical Sciences, Vol. C-525,
 !    (Kluwer Academic Publishers, Boston, 1999)
 
+      use dete_mod, only: eval_grad, dete_save !TA
+      use jaso_mod, only: fjo !TA
       use all_tools_mod
       use constants_mod
       use contrl_per_mod, only: iperiodic
@@ -42,7 +44,7 @@
       parameter (eps=1.d-10)
 !     parameter (g3b2=.886226925452758d0)
       parameter (g5b2=1.329340388179137d0)
-! g3b2, g5b2 are gamma(3/2), gamma(5/2)
+! g3b2, g5b2 are gamma3/2), gamma(5/2)
 
 ! The moves are now being made in local r,theta phi coordinates.
 
@@ -93,6 +95,13 @@
 ! Choose lower and upper values of r sampling
         rbot=rmino(i)*deltri
         rtop=rmino(i)*deltar
+
+        if (i.le.nup) call eval_grad(i, dorb(:,i,:), aiup, tup, yup, vold(:,i))
+        if (i.gt.nup) call eval_grad(i, dorb(:,i,:), aidn, tdn, ydn, vold(:,i))
+        vold(1,i) = vold(1,i) + fjo(1,i)
+        vold(2,i) = vold(2,i) + fjo(2,i)
+        vold(3,i) = vold(3,i) + fjo(3,i)
+
 ! Calculate magnitude of the velocity in the radial direction
         voldr=zero
         do 10 k=1,ndim
@@ -526,19 +535,21 @@
         do 240 k=1,ndim
           xold(k,i)=xnew(k,i)
           rvmino(k,i)=rvminn(k,i)
-          do 240 ii=1,nelec
+          do 240 ii=1,nelec !vold recalculated at beginning of run, so not needed. TA
   240       vold(k,ii)=vnew(k,ii)
         psido=psidn
         psijo=psijn
         accsum=accsum+one
         call jassav(i)
         call detsav(i)
+        call dete_save(i)
        else
         idist(i)=itryo
         do 250 k=1,ndim
   250     xnew(k,i)=xold(k,i)
 !       call distancese_restore(i,rvec_en,r_en,rvec_ee,r_ee)
         if(igeometrical.eq.0) call distancese_restore(i)
+        !call dete_restore(i) !TA
       endif
 
   300 continue

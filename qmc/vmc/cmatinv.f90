@@ -7,8 +7,8 @@
       implicit double precision (a-h,o-z)
 
       parameter (nmax=100)
-      complex*16 det,adiag,adiagi,t,cone,czero,atemp
-      complex*16 a(nelec,nelec)
+      complex(dpc) det,adiag,adiagi,t,cone,czero,atemp
+      complex(dpc) a(nelec,nelec)
 
       dimension atemp(nmax),ipvt(nmax)
       cone=dcmplx(1.d0,0.d0)

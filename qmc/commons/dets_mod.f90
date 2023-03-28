@@ -6,10 +6,10 @@ module dets_mod
  integer               :: iantiferromagnetic
  integer               :: nup_square, ndn_square, nupdn_square
  integer               :: ncsf,ndet
- double precision, allocatable :: csf_coef(:,:),cdet_in_csf(:,:),csf_rot_coef(:,:)
+ double precision, allocatable :: csf_coef(:,:),cdet_in_csf(:,:)
  integer,  allocatable :: ndet_in_csf(:),iwdet_in_csf(:,:)
 
- double precision, allocatable :: csf_coef_sav(:),csf_rot_coef_sav(:)
+ double precision, allocatable :: csf_coef_sav(:)
  double precision, allocatable :: csf_coef_best(:)
 
 end module dets_mod

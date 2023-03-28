@@ -1,4 +1,4 @@
-! $Rev$ $Date$
+! $Rev: 734 $ $Date: 2021-06-10 10:31:44 -0400 (Thu, 10 Jun 2021) $
 program champ
 
 ! modules use
@@ -69,21 +69,21 @@ program champ
   endif
 # endif
 
-  write(6,*)
-  write(6,'(a)') '----------------------------------------------------------------------------------------------------------'
-  write(6,'(a)') '                                                  PROGRAM CHAMP' 
-  write(6,'(a)') '                                                 version 3.08.00'
-  write(6,'(a)') '----------------------------------------------------------------------------------------------------------'
-  write(6,*)
+  write(6,'(a)') 'PROGRAM CHAMP version 3.08.3 This version includes T-moves improvements (accept-reject and reweighting) and improvements by Assaraf, Moroni, and Filippi which increase performance when many determinants are used or many derivatives must be calculated.'
   include 'revision_and_date.inc'
   call get_date (date)
   call get_environment_variable ("HOSTNAME", hostname)
   call get_environment_variable ("USER", user)
-  write(6,'(6a)') 'Executed by ',trim(user),' on ',trim(date), ' on master host ',trim(hostname)
+! write(6,'(6a)') 'Executed by ',trim(user),' on ',trim(date), ' on master host ',trim(hostname)
+#ifdef MPI
+  write(6,'(''MPI version executed by '',a,'' on '',a,'' on master host '',a,'' using '',i4,'' processors'')') trim(user), trim(date), trim(hostname), nproc
+#else
+  write(6,'(''Serial version executed by '',a,'' on '',a,'' on master host '',a,'' using 1 processor'')') trim(user), trim(date), trim(hostname)
+#endif
 
-# if defined (MPI)
-  write(6,'(a,i4,a)') 'MPI version running on ', nproc, ' processors.'
-# endif
+!# if defined (MPI)
+!  write(6,'(a,i4,a)') 'MPI version running on ', nproc, ' processors.'
+!# endif
 
   call object_modified ('nproc')
 
@@ -138,8 +138,7 @@ program champ
   enddo ! end loop over arguments
 
 ! check mode
-  write(6,'(3a)') 'Run in mode >',trim(mode),'<'
-  write(6,*)
+  write(6,'(3a)') 'Run in mode: ',trim(mode)
   if (.not. elt_in_array (modes, mode)) then
    write(6,'(3a)') 'This mode is unknown.'
    write(6,'(20a)') 'The available modes are:'
@@ -167,10 +166,10 @@ program champ
 ! Open input file if given by '-i ...'
 !  write(6,*)
   if (trim(input_file_name) /= '') then
-     write(6,'(3a)') 'Opening input file >',trim(input_file_name),'<.'
+     write(6,'(3a)') 'Opening input file: ',trim(input_file_name)
      open(5, file=trim(input_file_name), status='old', iostat=iostat)
      if (iostat /= 0) then
-       call die (lhere, 'error on opening file >'+trim(input_file_name)+'<')
+       call die (lhere, 'error on opening file: '+trim(input_file_name))
      endif
   endif
 
@@ -187,22 +186,32 @@ program champ
 !  write(6,'(2a)') 'Reading input file...'
 !  write(6,*)
 
+! if (use_parser) then
+!   call initialization_before_parser
+!   call main_menu
+! else
+!   call read_input
+!   if (index(mode,'fit') /= 0) then
+!     call fit
+!     run_done = .true.
+!   else
+!     call read_up_to_end ! read upto end of old input, i.e., until it finds end keyword
+
+!!    initialization of some global variables
+!     call initialization
+!     call main_menu
+!   endif
+
+! endif
+
   if (use_parser) then
     call initialization_before_parser
     call main_menu
   else
     call read_input
-    if (index(mode,'fit') /= 0) then
-      call fit
-      run_done = .true.
-    else
-      call read_up_to_end ! read upto end of old input, i.e., until it finds end keyword
-
-!     initialization of some global variables
-      call initialization
-      call main_menu
-    endif
-
+    call read_up_to_end ! read upto end of old input, i.e., until it finds end keyword
+    call initialization ! initialization of some global variables
+    call main_menu
   endif
 
 ! do default run is not already done

@@ -17,18 +17,20 @@
       use all_tools_mod !JT
 ! Warning: If you change lmax, you need to recompile not only basis_fns.f but also basis_fns2e.f because
 ! module real_spherical_harmonics is used in both
-      integer,parameter   :: lmax=4
+      integer,parameter   :: lmax=5
+!     integer,parameter   :: lmax=4
 !     integer,parameter   :: lmax=6
 !MS Jellium sphere
 !     integer,parameter   :: lmax=12
       integer             :: nmax
       integer,allocatable :: large_q(:,:)
 !MS Jellium sphere
-      real(dp),allocatable:: sq_coef_a_num(:),sq_coef_a_denum(:), sq_coef_r_denum(:,:)
-      real(dp)            :: large_p(0:lmax,-lmax:lmax),d_large_p(1:3,0:lmax,-lmax:lmax)
-      real(dp)            :: r_inv_power_minus(0:lmax),x_power_of(0:lmax)
-      real(dp)            :: y_power_of(0:lmax),z_power_of(0:lmax)
-      real(dp)            :: coef_ylm(0:lmax,0:lmax)=1.d0
+      real(dp),allocatable:: sq_coef_a_num(:),sq_coef_a_denum(:), &
+     &                       sq_coef_r_denum(:,:)
+      real(dp)            :: large_p(0:lmax,-lmax:lmax),d_large_p(1:3,0:lmax,-lmax:lmax), &
+     &                       r_inv_power_minus(0:lmax),x_power_of(0:lmax), &
+     &                       y_power_of(0:lmax),z_power_of(0:lmax), &
+     &                       coef_ylm(0:lmax,0:lmax)=1.d0
 
       END MODULE real_spherical_harmonics
 !**EndRM(6)
@@ -2292,7 +2294,8 @@
 
       implicit none
       integer,allocatable :: q(:,:,:)
-      integer,allocatable :: qtemp1(:,:),qtemp2(:,:),qtemp3(:,:),qtemp4(:,:)
+      integer,allocatable :: qtemp1(:,:),qtemp2(:,:),qtemp3(:,:), &
+     &qtemp4(:,:)
       integer :: ialloc,icount1,icount2
       integer :: l,smax
       integer :: l_alreadyset,s_alreadyset,n_alreadyset

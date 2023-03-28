@@ -7,7 +7,7 @@ module optim_mod
  integer, allocatable  :: iwjasf(:,:),iwbase(:),iwbasi(:),iworb(:)
  integer, allocatable  :: iwcsf(:),iebase(:,:),iebasi(:,:),ieorb(:,:)
  integer, allocatable  :: imnbas(:)
- integer               :: nparmlin,nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj
+ integer               :: nparml,nparme,nparmcsf,nparms,nparmg,nparm_read,nparmj
  integer, allocatable  :: nparma(:),nparmb(:),nparmc(:),nparmf(:)
  integer               :: necn,nebase
  integer               :: nparmd !JT add nparmd to replace MPARMD

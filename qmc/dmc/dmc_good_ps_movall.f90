@@ -40,6 +40,7 @@
 ! 21 0 11 0 00 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
 ! Another reasonable choice is:
 ! 21 0 11 1 10 0  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+! tmoves has not been implemented in this all-electron move routine
 !:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
       use constants_mod
       use atom_mod
@@ -64,6 +65,7 @@
       use age_mod
       use pairden_mod
       use fourier_mod
+      use control_mod, only : ene_int
       use pop_control_mod, only : ffn
       use distance_mod, only: pot_ee
       use config_mod, only: pot_ee_new, pot_ee_old
@@ -325,20 +327,41 @@
           endif
           if(ipr.ge.1)write(6,'(''wt'',9f10.5)') wt(iw),etrial,eest
 
-! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems
-!         ewto=eest-(eest-eoldw(iw,ifr))*vavvo                                                        ! UNR93
-!         ewtn=eest-(eest   -enew(ifr))*vavvn                                                         ! UNR93
-!         ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
-!         ewtn=enew(ifr)                                                                              ! no_ene_int
-          ewto=eest-(eest-eoldw(iw,ifr))*vavvo**2*(3-2*vavvo)                                         ! new_ene_int
-          ewtn=eest-(eest-enew(ifr))*vavvn**2*(3-2*vavvn)                                             ! new_ene_int
-!         ewto=eest-(eest-eoldw(iw,ifr))*vavvo**3*(10-15*vavvo+6*vavvo**2)                            ! new_ene_int2
-!         ewtn=eest-(eest-enew(ifr))*vavvn**3*(10-15*vavvn+6*vavvn**2)                                ! new_ene_int2
-!         ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
-!         ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
-!         ewtn=etrial+min(ecut,max(-ecut,enew(ifr)-eest))                                             ! Alfe
-! Note in the 2 lines above we use etrial instead of eest for the first term because we do population control with a fixed etrial
-! so that we keep track of the fluctuating factor and undo the population control
+!There are 2 kinds of limits we put on the reweight factor.
+!For all-electron calculations the purpose is to reduce the time-step error.
+!For locality-approximation pseudpotential calculations one of both of these are necessary to avoid large negative spikes in the energy.
+!First we use e=eest-(eest-e)*f(fratio) where f is a function of fratio=vel_av/vel that is 0 at 0, 1 at 1 and deviates from 1 at 1 as some power, e.g.
+!UNR93:        f(x)=x                           deviates from 1 and 0 linearly.
+!new_ene_int:  f(x)=x**2*(3-2*x)                deviates from 1 and 0 quadratically.
+!new_ene_int2: f(x)=x**3*(10-15*x+6*x**2)       deviates from 1 and 0 cubically.
+!new_ene_int3: f(x)=1-(1-x)**3 = x*(3-3*x+x**2) deviates from 1 cubically and from 0 linearly.
+!no_ene_int:   f(x)=1                           does not deviate from 1     
+!All these will give the same energy at tau=0, but progressively lower energies, going from UNR93 to no_ene_int, at finite values of tau
+!The second limit is described and imposed about 50 lines down.
+
+! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
+          if(ene_int=='unr93') then
+            ewto=eest-(eest-eoldw(iw,ifr))*vavvo                               ! UNR93
+            ewtn=eest-(eest-enew(ifr))*vavvn                                   ! UNR93
+          elseif(ene_int=='new_ene_int') then
+            ewto=eest-(eest-eoldw(iw,ifr))*vavvo**2*(3-2*vavvo)                ! new_ene_int
+            ewtn=eest-(eest-enew(ifr))*vavvn**2*(3-2*vavvn)                    ! new_ene_int
+          elseif(ene_int=='new_ene_int2') then
+            ewto=eest-(eest-eoldw(iw,ifr))*vavvo**3*(10-15*vavvo+6*vavvo**2)   ! new_ene_int2
+            ewtn=eest-(eest-enew(ifr))*vavvn**3*(10-15*vavvn+6*vavvn**2)       ! new_ene_int2
+          elseif(ene_int=='new_ene_int3') then
+            ewto=eest-(eest-eoldw(iw,ifr))*(1-(1-vavvo)**3)                    ! new_ene_int3
+            ewtn=eest-(eest-enew(ifr))*(1-(1-vavvn)**3)                        ! new_ene_int3
+          elseif(ene_int=='no_ene_int') then
+            ewto=eoldw(iw,ifr)                                                 ! no_ene_int
+            ewtn=enew(ifr)                                                     ! no_ene_int
+          elseif(ene_int=='alfe') then
+            ecut=0.2*sqrt(nelec/tau)                                           ! Alfe
+            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                  ! Alfe
+            ewtn=eest+min(ecut,max(-ecut,enew(ifr)-eest))                      ! Alfe
+!           ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                ! Alfe
+!           ewtn=etrial+min(ecut,max(-ecut,enew(ifr)-eest))                    ! Alfe
+          endif
 
           if(idmc.gt.0) then
             expon=(etrial-half*((one+qsav)*ewto+psav*ewtn))*taunow

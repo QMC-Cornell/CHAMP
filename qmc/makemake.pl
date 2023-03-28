@@ -105,7 +105,7 @@ print MAKEFILE "endef\n\n";
 # revision_and_date
 #
 print MAKEFILE "revision_and_date.inc: \$(SRCS)\n";
-print MAKEFILE "\tbash ../tools/revision_and_date.sh\n\n";
+print MAKEFILE "\tbash revision_and_date.sh\n\n";
 #
 # Makefile
 #

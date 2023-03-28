@@ -335,11 +335,6 @@ module opt_lin_mod
   call object_alloc('ovlp_lin_eigval', ovlp_lin_eigval, param_aug_nb)
   call eigensystem(ovlp_lin, ovlp_lin_eigvec, ovlp_lin_eigval, param_aug_nb)
 
-  if (l_compare_linresp_and_optlin) then
-  do i= 1,param_nb
-  write(6,*) '/print_too_much/ovlp',i,(ovlp_lin(i+1,j+1),j=1,param_nb)
-  enddo
-  endif
   write(6,*)
   write(6,'(a)') 'Eigenvalues of overlap matrix of current wave function and its first-order derivatives:'
   do i = 1, param_aug_nb
@@ -455,7 +450,6 @@ module opt_lin_mod
 ! first element
   ham_lin_energy(1,1) = eloc_av
 
-  if (.not. l_compare_linresp_and_optlin) then
 ! first row and first column
   do i = 1, param_nb
 
@@ -482,7 +476,6 @@ module opt_lin_mod
     endif
 
   enddo ! i
-  endif
 
 ! derivative-derivative part
   do j = 1, param_nb
@@ -771,7 +764,7 @@ module opt_lin_mod
   implicit none
 
 ! local
-  integer i,j
+  integer i
 
 ! header
   if(header_exe) then
@@ -820,13 +813,6 @@ module opt_lin_mod
   case default
    call die (here, 'unknown stabilization choice >'+trim(stabilization)+'<.')
   end select
-  if (l_compare_linresp_and_optlin) then
-  do i=1,param_nb
-  do j=1,param_nb
-    write(6,*) '/print_too_much/amat',i,j,ham_lin_renorm_stab(i+1,j+1)
-  enddo
-  enddo
-  endif
 
   end subroutine ham_lin_renorm_stab_bld
 
@@ -999,8 +985,8 @@ module opt_lin_mod
   eigvec_smallest_norm_ind=1
   do i = 1, param_aug_nb
     psi_lin_var_norm = 0
-    do iparm = nparmlin+1, param_nb
-      do jparm = nparmlin+1, param_nb
+    do iparm = nparmcsf+1, param_nb
+      do jparm = nparmcsf+1, param_nb
         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,i)*eigvec(1+jparm,i)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
       enddo
     enddo
@@ -1060,8 +1046,8 @@ module opt_lin_mod
     endif
   enddo
   psi_lin_var_norm = 0
-  do iparm = nparmlin+1, param_nb
-    do jparm = nparmlin+1, param_nb
+  do iparm = nparmcsf+1, param_nb
+    do jparm = nparmcsf+1, param_nb
       psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eigvec_max_1st_compon_ind)*eigvec(1+jparm,eigvec_max_1st_compon_ind)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
     enddo
   enddo
@@ -1091,8 +1077,8 @@ module opt_lin_mod
 ! Find the norm of the change for the eigenvector with the lowest reasonable eigenvalue
   if(eigvec_lowest_eigval_ind /= 0) then
     psi_lin_var_norm = 0
-    do iparm = nparmlin+1, param_nb
-      do jparm = nparmlin+1, param_nb
+    do iparm = nparmcsf+1, param_nb
+      do jparm = nparmcsf+1, param_nb
         psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eigvec_lowest_eigval_ind)*eigvec(1+jparm,eigvec_lowest_eigval_ind)*ovlp_lin(1+iparm,1+jparm)/(renorm_vector(1+iparm)*renorm_vector(1+jparm))
       enddo
     enddo
@@ -1175,8 +1161,8 @@ module opt_lin_mod
       write(6,'(''psi_lin_var_norm, smallest_norm'',9es12.4)') psi_lin_var_norm, smallest_norm
       eig_excited_ind_test = eigval_srt_ind_to_eigval_ind (eigval_ind_to_eigval_srt_ind (eig_ind) + target_state_above_groundstate_or_target_smallest_norm)
       psi_lin_var_norm = 0.d0
-      do iparm = nparmlin+1, param_nb
-        do jparm = nparmlin+1, param_nb
+      do iparm = nparmcsf+1, param_nb
+        do jparm = nparmcsf+1, param_nb
 ! Warning: Shouldn't the next line have /(renorm_vector(1+iparm)*renorm_vector(1+jparm))
           psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_excited_ind_test)*eigvec(1+jparm,eig_excited_ind_test)*ovlp_lin(1+iparm,1+jparm)
         enddo
@@ -1204,6 +1190,9 @@ module opt_lin_mod
 ! warning: only for selected eigenvector
   eigvec(:, eig_ind) = eigvec(:, eig_ind) / renorm_vector(:)
 
+! Warning: tmp
+  write(6,'(/,''eigvec(1, eig_ind)'',9es12.4)') eigvec(1,eig_ind)
+
 ! normalize eigenvector so that first component is 1
   tmp=eigvec(1,eig_ind)
 ! eigvec(:,eig_ind) = eigvec(:,eig_ind)/eigvec(1,eig_ind)
@@ -1211,8 +1200,8 @@ module opt_lin_mod
 
 ! norm of linear wave function variation for nonlinear parameter
   psi_lin_var_norm = 0.d0
-  do iparm = nparmlin+1, param_nb
-   do jparm = nparmlin+1, param_nb
+  do iparm = nparmcsf+1, param_nb
+   do jparm = nparmcsf+1, param_nb
      psi_lin_var_norm = psi_lin_var_norm + eigvec(1+iparm,eig_ind)*eigvec(1+jparm,eig_ind)*ovlp_lin(1+iparm,1+jparm)
    enddo
   enddo
@@ -1249,7 +1238,7 @@ module opt_lin_mod
    case ('semiorthogonal')
 
 !   come back to original derivatives for the CSFs only
-    do iparmcsf = 1, nparmlin
+    do iparmcsf = 1, nparmcsf
       eigvec_first_coef = eigvec_first_coef - eigvec(1+iparmcsf,eig_ind) * dpsi_av(iparmcsf)
     enddo
 
@@ -1378,16 +1367,16 @@ module opt_lin_mod
   call object_alloc('ovlp_lin_av', ovlp_lin_av, param_aug_nb, param_aug_nb)
 
 ! Calculate Hamiltonian matrix:
-! first element: Eq(54a) of JCP 126 084102 (2007)
+! first element
   ham_lin_energy_av(1,1) = eloc_av
 
-! first row and first column: Eq(54b-c) of JCP 126 084102 (2007)
+! first row and first column
   do i = 1, param_nb
      ham_lin_energy_av(1+i,1) = dpsi_eloc_covar(i)
      ham_lin_energy_av(1,1+i) = dpsi_eloc_covar(i) + deloc_av(i)
   enddo ! i
 
-! derivative-derivative part: Eq(54d) of JCP 126 084102 (2007)
+! derivative-derivative part
   do j = 1, param_nb
    do i = 1, param_nb
      pair = param_pairs(i,j)
@@ -1399,16 +1388,16 @@ module opt_lin_mod
   enddo
 
 ! Calculate overlap matrix:
-! first element: Eq(53a) of JCP 126 084102 (2007)
+! first element
   ovlp_lin_av(1,1) = 1.d0
 
-! first row and first column: Eq(53b-c) of JCP 126 084102 (2007)
+! first row and first column
   do i = 1, param_nb
    ovlp_lin_av(1,i+1) = 0.d0
    ovlp_lin_av(i+1,1) = 0.d0
   enddo
 
-! derivative-derivative part: Eq(53d) of JCP 126 084102 (2007)
+! derivative-derivative part
   do i = 1, param_nb
    do j = i, param_nb
      ovlp_lin_av(i+1,j+1) = dpsi_dpsi_covar(i,j)

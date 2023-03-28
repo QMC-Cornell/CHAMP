@@ -9,7 +9,7 @@ module pairden_mod
  double precision, allocatable :: dos(:)
  double precision              :: dos_dele
  double precision              :: delxi(3),xmax,xfix(3)
- integer :: ifixe
+ integer ifixe
  integer, parameter :: NAX = 50
 
 end module pairden_mod

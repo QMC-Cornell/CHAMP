@@ -1,5 +1,6 @@
-      subroutine deriv_nonloc(x,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,dvpsp)
+      subroutine deriv_nonloc(x,rshift,rvec_en,r_en,psid,vpsp,dvpsp)
 ! Written by Claudia Filippi, modified by Cyrus Umrigar
+! Called in all 3 kinds of optimizaton runs.
       use all_tools_mod
       use constants_mod
       use control_mod
@@ -18,14 +19,18 @@
       use qua_mod
       use slatn2_mod
       use contrl_opt_mod
+      use gamma_mod    !TA
+      use orbitals_mod !TA
+      use orbe_mod     !TA
       implicit real*8(a-h,o-z)
 
-      dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent) &
-     &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
+      dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)
+!    &,detu(*),detd(*),slmui(nupdn_square,*),slmdi(nupdn_square,*)
       dimension rr_en(nelec,ncent),rr_en2(nelec,ncent),rr_en_sav(ncent),rr_en2_sav(ncent) &
      &,xsav(3),rshift_sav(3,ncent),rvec_en_sav(3,ncent),r_en_sav(ncent) &
      &,vpot(MPS_L),dvpot(MPS_L,nparm),dvpsp(nparm),gn(nparmjs)
       dimension dk_en(nelec,ncent),dk_en2(nelec,ncent),dk_en_sav(ncent),dk_en2_sav(ncent)
+      dimension ntmove_pts(nelec) !TA
 
       do 10 i=1,nelec
         do 10 ic=1,ncent
@@ -39,12 +44,12 @@
    10 continue
 
 ! JT beg
-      if (l_opt_orb_energy) then
-       call object_provide ('param_orb_nb')
-       call object_alloc ('vpot_ex', vpot_ex, MPS_L, param_orb_nb)
-       call object_alloc ('vpsp_ex', vpsp_ex, param_orb_nb)
-       vpsp_ex = 0.d0
-      endif
+!      if (l_opt_orb_energy) then
+!       call object_provide ('param_orb_nb')
+!       call object_alloc ('vpot_ex', vpot_ex, MPS_L, param_orb_nb)
+!       call object_alloc ('vpsp_ex', vpsp_ex, param_orb_nb)
+!       vpsp_ex = 0.d0
+!      endif
 ! JT end
 
 !fp
@@ -67,10 +72,13 @@
       endif
 ! WAS
 
+      psp_nonloc_orb(:,:) = 0d0 !TA
+
       vpsp=0
       do 11 iparm=1,nparmcsf+nparmj+nparms
    11   dvpsp(iparm)=0
 
+      ntmove_pts(1:nelec)=0 !TA
       do 100 ic=1,ncent
 
         ict=iwctype(ic)
@@ -93,9 +101,9 @@
               endif
    20       continue
 
-            if (l_opt_orb_energy) then  !JT
-               vpot_ex = 0.d0           !JT
-            endif                       !JT
+!            if (l_opt_orb_energy) then  !JT
+!               vpot_ex = 0.d0           !JT
+!            endif                       !JT
 
             if (l_opt_exp) then  !fp
                dvpot_exp = 0.d0           !fp
@@ -121,11 +129,20 @@
                 rshift_sav(k,jc)=rshift(k,i,jc)
    30           rvec_en_sav(k,jc)=rvec_en(k,i,jc)
 
+            if(l_mode_dmc) call rotqua !TA
+
             do 60 iq=1,nquad
+              ntmove_pts(i)=ntmove_pts(i)+1 !TA
               costh=rvec_en_sav(1,ic)*xq(iq) &
      &             +rvec_en_sav(2,ic)*yq(iq) &
      &             +rvec_en_sav(3,ic)*zq(iq)
               costh=costh*ri
+
+              if (l_mode_dmc) then !TA
+                quadx(1,ntmove_pts(i),i,current_walker) = xq(iq)
+                quadx(2,ntmove_pts(i),i,current_walker) = yq(iq)
+                quadx(3,ntmove_pts(i),i,current_walker) = zq(iq)
+              endif
 
               if(iperiodic.eq.0) then
                 x(1,i)=r_en(i,ic)*xq(iq)+cent(1,ic)
@@ -137,6 +154,7 @@
                 x(3,i)=r_en(i,ic)*zq(iq)+cent(3,ic)+rshift(3,i,ic)
               endif
 
+! Since we are rotating on sphere around nucleus ic, that elec-nucl distance does not change but distances to other nuclei do
               do 40 jc=1,ncent
                 do 38 k=1,ndim
    38             rvec_en(k,i,jc)=x(k,i)-cent(k,jc)
@@ -167,38 +185,75 @@
               electron = iel !JT
               call object_modified_by_index (electron_index) !JT
 
-              call nonlocd(iel,x(1,i),rvec_en,r_en,detu,detd,slmui,slmdi,deter)
-!             call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
-! WAS
-              call deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+!              call nonlocd(iel,x(1,i),rvec_en,r_en,deter) !TA
+              if(iperiodic.eq.0) then
+                if(inum_orb.eq.0) then
+                  call orbitals_loc_anae(iel,rvec_en,r_en,orbe)
+                 else
+                  call orbitals_loc_nume(x(1,i),orbe)
+                endif
+               else
+                if(inum_orb.eq.0) then
+                  call orbitals_pwe(iel,x(1,i),orbe)
+                 else
+                  call orbitals_period_nume(x(1,i),orbe)
+                endif
+              endif
+              call object_modified_by_index (orbe_index) !JT
 
-!WAS
-              if (l_opt_pjas) then
+!             call deriv_nonlocj(iel,x,rshift,rr_en,rr_en2,dk_en,dk_en2,value,gn)
+              call deriv_nonlocj(iel,x,rshift,r_en,rr_en,rr_en2,dk_en,dk_en2,value,gn) !WAS
+              if (l_opt_pjas) then !WAS
                  call deriv_nonloc_pjas ( iel, x(:,1:nelec), value )
               endif
 !WAS
 
+!                call nonlocd(iel,x(1,i),rvec_en,r_en,deter)
+              if (iel.le.nup) then !TA
+                call object_provide_by_index(gup_index)
+                psid_ratio = sum(gup(:,i)*orbe(occup))
+              else
+                call object_provide_by_index(gdn_index)
+                psid_ratio = sum(gdn(:,i-nup)*orbe(occdn))
+              endif
+              deter=psid_ratio*psid
+
+              if (l_mode_dmc) then
+                quadr(ntmove_pts(i),i,current_walker) = psid_ratio*exp(value)
+!                quadr(ntmove_pts,i,current_walker) = &
+!                deter*exp(value)/psidow(current_walker,1)
+              endif
+
+              psp_factor = 0d0
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
-                  ppsi_csf=wq(iq)*yl0(l,costh)*exp(value)
+                  psp_factor=psp_factor + wq(iq)*yl0(l,costh)*exp(value)*vps(i,ic,l)
+!                  ppsi_csf=wq(iq)*yl0(l,costh)*exp(value)
                   ppsi_jas=wq(iq)*yl0(l,costh)*deter*exp(value)
                   vpot(l)=vpot(l)+ppsi_jas
-                  do 42 iparm=1,nparmcsf
-                    if(ipr.ge.4) write(6,'(''l,iparm,ppsi_jas,deti_new(iparm)'',2i5,9d12.4)') &
-     &              l,iparm,ppsi_jas,deti_new(iparm)
-   42               dvpot(l,iparm)=dvpot(l,iparm)+ppsi_csf*deti_new(iparm)
+!                  do 42 iparm=1,nparmcsf
+!                    if(ipr.ge.4) write(6,'(''l,iparm,ppsi_jas,deti_new(iparm)'',2i5,9d12.4)') &
+!     &              l,iparm,ppsi_jas,deti_new(iparm)
+!   42               dvpot(l,iparm)=dvpot(l,iparm)+ppsi_csf*deti_new(iparm)
                   do 45 iparm=1,nparmj+nparms
    45               dvpot(l,nparmcsf+iparm)=dvpot(l,nparmcsf+iparm)+ppsi_jas*gn(iparm)
 
+!                  do iorb=1,orb_tot_nb !TA
+!                    psp_nonloc_orb(iel,iorb) = &
+!                    psp_nonloc_orb(iel,iorb) + &
+!                    wq(iq)*yl0(l,costh)*exp(value)*vps(i,ic,l)*orbe(iorb)
+!                  enddo
+!                  call object_modified('psp_nonloc_orb')
+
 ! JT beg
 !             For singly-excited wave functions
-              if (l_opt_orb_energy) then
-                 call object_provide ('psid_ex_in_x')
-                 do iex = 1, param_orb_nb
-                  vpot_ex(l,iex)=vpot_ex(l,iex)+ &
-     &                wq(iq)*yl0(l,costh)*psid_ex_in_x(iex)*exp(value)
-                 enddo
-              endif
+!              if (l_opt_orb_energy) then
+!                 call object_provide ('psid_ex_in_x')
+!                 do iex = 1, param_orb_nb
+!                  vpot_ex(l,iex)=vpot_ex(l,iex)+ &
+!     &                wq(iq)*yl0(l,costh)*psid_ex_in_x(iex)*exp(value)
+!                 enddo
+!              endif
 ! JT end
 
 ! fp beg
@@ -220,6 +275,12 @@
 
                 endif
    50         continue
+
+              do iorb=1,orb_tot_nb !TA
+                psp_nonloc_orb(iel,iorb) = &
+                psp_nonloc_orb(iel,iorb) + psp_factor*orbe(iorb)
+              enddo
+
    60       continue
 
             do 68 k=1,ndim
@@ -250,11 +311,11 @@
 
 ! JT beg
 !             For singly-excited wave functions
-              if (l_opt_orb_energy) then
-                 do iex = 1, param_orb_nb
-                  vpsp_ex(iex)=vpsp_ex(iex)+vps(i,ic,l)*vpot_ex(l,iex)
-                 enddo
-              endif
+!              if (l_opt_orb_energy) then
+!                 do iex = 1, param_orb_nb
+!                  vpsp_ex(iex)=vpsp_ex(iex)+vps(i,ic,l)*vpot_ex(l,iex)
+!                 enddo
+!              endif
 ! JT end
 
 !fp
@@ -280,6 +341,8 @@
           if(ipr.ge.4) write(6,'(''dvpsp(iparm)'',40d12.4)') (dvpsp(iparm),iparm=1,nparmcsf+nparmj)
           endif
   100 continue
+
+      call object_modified_by_index(psp_nonloc_orb_index) !TA
 
       if (l_opt_orb_energy) then
        call object_modified_by_index (vpsp_ex_index) !JT

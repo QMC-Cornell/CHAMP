@@ -220,6 +220,8 @@ module accumulation_mod
       try_int=0
       acc=0
       acc_int=0
+      dr2ac=0
+      dr2un=0
       nodecr=0
 
 ! Zero out estimators for charge density of atom.
@@ -843,9 +845,9 @@ module accumulation_mod
   endif
 
 ! Diffusion analysis
-# if !defined (MPI)
-      write(6,'(a,f10.5)') 'Average of the squares of the accepted step-size = ',dr2ac/try_int
-# endif
+      write(6,'(a,f10.5)') 'Average of the squares drift-dif moves for accepted steps = ',dr2ac/try_int
+      write(6,'(a,f10.5)') 'Average of the squares drift-dif moves for all      steps = ',dr2un/try_int
+
       write(6,'(a,20f7.4)') 'Effective time step of diffusion = ',(taucum(ifr)/wgcum(ifr),ifr=1,nforce)
 
       accav=acc/try_int

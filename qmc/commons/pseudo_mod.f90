@@ -4,7 +4,7 @@ module pseudo_mod
  implicit none
  save
 
- integer :: nloc
+ integer nloc
  double precision, allocatable ::  vps(:,:,:)
  integer, allocatable ::  npotd(:), lpotp1(:)
  integer :: MPS_L=4

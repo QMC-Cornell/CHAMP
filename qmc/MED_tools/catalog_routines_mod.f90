@@ -14,8 +14,6 @@ module catalog_routines_mod
   use montecarlo_mod
   use determinants_mod
   use eloc_mod
-  use derivatives_fast_mod
-  use linearresponse_mod
   use grid_mod
   use deriv_mod
   use deriv_jas_mod
@@ -67,6 +65,25 @@ module catalog_routines_mod
 
 
 ! begin
+
+! fast derivatives
+  call catalog_one_node ('occ_bld', occ_bld)
+  call catalog_one_node ('elocal_orb_bld', elocal_orb_bld)
+  call catalog_one_node ('t_bld', t_bld)
+  call catalog_one_node ('dt_bld', dt_bld)
+  call catalog_one_node ('y_bld', y_bld)
+  call catalog_one_node ('dy_bld', dy_bld)
+  call catalog_one_node ('g_bld', g_bld)
+  call catalog_one_node ('dg_bld', dg_bld)
+  call catalog_one_node ('alpha_bld', alpha_bld)
+  call catalog_one_node ('excit_bld', excit_bld)
+  call catalog_one_node ('elocal_fast_bld', elocal_fast_bld)
+  call catalog_one_node ('psp_nonloc_pot_bld', psp_nonloc_pot_bld)
+!  call catalog_one_node ('dpsi_orb_slow_bld', dpsi_orb_slow_bld)
+!  call catalog_one_node ('deloc_orb_slow_bld', deloc_orb_slow_bld)
+  call catalog_one_node ('alpha_deloc_bld', alpha_deloc_bld)
+  call catalog_one_node ('cdet_in_wf_bld', cdet_in_wf_bld)
+  call catalog_one_node ('csf_derivs_bld', csf_derivs_bld)
 
 ! basic
   call catalog_one_node ('coord_elec_bld', coord_elec_bld, coord_elec_bld_index)
@@ -206,30 +223,6 @@ module catalog_routines_mod
   call catalog_one_node ('hess_tu_bld', hess_tu_bld)
   call catalog_one_node ('hess_lin_bld', hess_lin_bld)
 
-! det fast
-  call catalog_one_node ('ex_info_bld', ex_info_bld)
-  call catalog_one_node ('ainv_atilde_bld', ainv_atilde_bld)
-  call catalog_one_node ('ymat_ainv_and_yKmat_bld', ymat_ainv_and_yKmat_bld)
-  call catalog_one_node ('myphi_from_yKmat_bld', myphi_from_yKmat_bld)
-  call catalog_one_node ('alphaI_det_inv_bld', alphaI_det_inv_bld)
-  call catalog_one_node ('gamma_bld', gamma_bld)
-  call catalog_one_node ('grd_det_over_det_fast_bld', grd_det_over_det_fast_bld)
-  call catalog_one_node ('lap_det_over_det_fast_bld', lap_det_over_det_fast_bld)
-
-! linear response
-  call catalog_one_node ('linresp_av_eigenval_bld', linresp_av_eigenval_bld)
-  call catalog_one_node ('tda_av_eigenval_bld', tda_av_eigenval_bld)
-  call catalog_one_node ('tda_av_eigenval_via_super_bld', tda_av_eigenval_via_super_bld)
-  call catalog_one_node ('hessian_av_eigenval_bld', hessian_av_eigenval_bld)
-  call catalog_one_node ('real_hessian_av_eigenval_bld', real_hessian_av_eigenval_bld)
-  call catalog_one_node ('linresp_mat_bld', linresp_mat_bld)
-  call catalog_one_node ('ovlp_mat_bld', ovlp_mat_bld)
-  call catalog_one_node ('amat_av_bld', amat_av_bld)
-  call catalog_one_node ('super_amat_av_bld', super_amat_av_bld)
-  call catalog_one_node ('bmat_av_bld', bmat_av_bld)
-  call catalog_one_node ('ovlp_psii_psij_av_bld', ovlp_psii_psij_av_bld)
-  call catalog_one_node ('super_ovlp_psii_psij_av_bld', super_ovlp_psii_psij_av_bld)
-
 ! linear optimization method
   call catalog_one_node ('ovlp_lin_bld', ovlp_lin_bld)
   call catalog_one_node ('ovlp_lin_renorm_bld', ovlp_lin_renorm_bld)
@@ -334,19 +327,17 @@ module catalog_routines_mod
 
 ! orbital derivatives
   call catalog_one_node ('single_ex_wf_bld', single_ex_wf_bld)
-  call catalog_one_node ('slater_mat_trans_inv_bld', slater_mat_trans_inv_bld)
-  call catalog_one_node ('double_ex_det_bld', double_ex_det_bld)
-  call catalog_one_node ('det_ex2_unq_bld', det_ex2_unq_bld)
-  call catalog_one_node ('det_ex2_bld', det_ex2_bld)
+  call catalog_one_node ('single_ex_wf_bld_2', single_ex_wf_bld_2)
+  call catalog_one_node ('single_ex_det_bld', single_ex_det_bld)
+!  call catalog_one_node ('slater_mat_trans_inv_bld', slater_mat_trans_inv_bld)
 
 !  call catalog_one_node ('single_ex_det_test_bld', single_ex_det_test_bld)
 !  call catalog_one_node ('det_ij_test_bld', det_ij_test_bld)
 !  call catalog_one_node ('dpsi_orb_test_bld', dpsi_orb_test_bld)
 
-  call catalog_one_node ('det_ex_unq_bld', det_ex_unq_bld)
-  call catalog_one_node ('det_ex_bld', det_ex_bld)
+!  call catalog_one_node ('det_ex_unq_bld', det_ex_unq_bld)
+!  call catalog_one_node ('det_ex_bld', det_ex_bld)
   call catalog_one_node ('dpsi_orb_bld', dpsi_orb_bld)
-  call catalog_one_node ('d2psi_orb_bld', d2psi_orb_bld)
 
 !  call catalog_one_node ('pot_efp_bld', pot_efp_bld)
 
@@ -361,14 +352,14 @@ module catalog_routines_mod
 !  call catalog_one_node ('hess_orb_pefp_stab_inv_bld', hess_orb_pefp_stab_inv_bld)
 !  call catalog_one_node ('hess_orb_pefp_eig_abs_bld', hess_orb_pefp_eig_abs_bld)
 
-  call catalog_one_node ('grd_det_unq_bld', grd_det_unq_bld)
+!  call catalog_one_node ('grd_det_unq_bld', grd_det_unq_bld)
   call catalog_one_node ('grd_psid_over_psid_bld', grd_psid_over_psid_bld)
   call catalog_one_node ('grd_psi_over_psi_wlk_bld', grd_psi_over_psi_wlk_bld, grd_psi_over_psi_wlk_bld_index)
   call catalog_one_node ('div_grd_psi_over_psi_wlk_bld', div_grd_psi_over_psi_wlk_bld, div_grd_psi_over_psi_wlk_bld_index)
   call catalog_one_node ('grd_psi_over_psi_sq_wlk_bld', grd_psi_over_psi_sq_wlk_bld)
   call catalog_one_node ('grd_psi_over_psi_old_bld', grd_psi_over_psi_old_bld)
   call catalog_one_node ('lap_psi_over_psi_wlk_bld', lap_psi_over_psi_wlk_bld)
-  call catalog_one_node ('lap_det_unq_bld', lap_det_unq_bld)
+!  call catalog_one_node ('lap_det_unq_bld', lap_det_unq_bld)
   call catalog_one_node ('lap_psid_over_psid_bld', lap_psid_over_psid_bld)
   call catalog_one_node ('lap_lnpsid_bld', lap_lnpsid_bld)
   call catalog_one_node ('sum_lap_lnpsid_bld', sum_lap_lnpsid_bld)
@@ -376,23 +367,23 @@ module catalog_routines_mod
   call catalog_one_node ('eloc_kin_bld', eloc_kin_bld)
 !  call catalog_one_node ('eloc_bld', eloc_bld)
 
-  call catalog_one_node ('slater_mat_ex_trans_inv_bld', slater_mat_ex_trans_inv_bld)
-  call catalog_one_node ('slater_mat_ex_trans_inv_2_bld', slater_mat_ex_trans_inv_2_bld)
-  call catalog_one_node ('grd_det_ex_unq_bld', grd_det_ex_unq_bld)
-  call catalog_one_node ('grd_det_ex_bld', grd_det_ex_bld)
-  call catalog_one_node ('lap_det_ex_unq_bld', lap_det_ex_unq_bld)
-  call catalog_one_node ('lap_det_ex_bld', lap_det_ex_bld)
-  call catalog_one_node ('grd_psid_ex_over_psid_bld', grd_psid_ex_over_psid_bld)
-  call catalog_one_node ('grd_psi_ex_over_psi_bld', grd_psi_ex_over_psi_bld)
-  call catalog_one_node ('lap_psid_ex_over_psid_bld', lap_psid_ex_over_psid_bld)
-  call catalog_one_node ('lap_lnpsid_ex_bld', lap_lnpsid_ex_bld)
-  call catalog_one_node ('sum_lap_lnpsid_ex_bld', sum_lap_lnpsid_ex_bld)
-  call catalog_one_node ('sum_lap_lnpsi_ex_bld', sum_lap_lnpsi_ex_bld)
-  call catalog_one_node ('eloc_kin_ex_bld', eloc_kin_ex_bld)
-  call catalog_one_node ('eloc_pot_ex_bld', eloc_pot_ex_bld, eloc_pot_ex_bld_index)
-  call catalog_one_node ('eloc_ex_bld', eloc_ex_bld)
-  call catalog_one_node ('psid_ex_in_x_bld', psid_ex_in_x_bld)
-  call catalog_one_node ('eloc_pot_nloc_ex_bld', eloc_pot_nloc_ex_bld)
+!  call catalog_one_node ('slater_mat_ex_trans_inv_bld', slater_mat_ex_trans_inv_bld)
+!  call catalog_one_node ('slater_mat_ex_trans_inv_2_bld', slater_mat_ex_trans_inv_2_bld)
+!  call catalog_one_node ('grd_det_ex_unq_bld', grd_det_ex_unq_bld)
+!  call catalog_one_node ('grd_det_ex_bld', grd_det_ex_bld)
+!  call catalog_one_node ('lap_det_ex_unq_bld', lap_det_ex_unq_bld)
+!  call catalog_one_node ('lap_det_ex_bld', lap_det_ex_bld)
+!  call catalog_one_node ('grd_psid_ex_over_psid_bld', grd_psid_ex_over_psid_bld)
+!  call catalog_one_node ('grd_psi_ex_over_psi_bld', grd_psi_ex_over_psi_bld)
+!  call catalog_one_node ('lap_psid_ex_over_psid_bld', lap_psid_ex_over_psid_bld)
+!  call catalog_one_node ('lap_lnpsid_ex_bld', lap_lnpsid_ex_bld)
+!  call catalog_one_node ('sum_lap_lnpsid_ex_bld', sum_lap_lnpsid_ex_bld)
+!  call catalog_one_node ('sum_lap_lnpsi_ex_bld', sum_lap_lnpsi_ex_bld)
+!  call catalog_one_node ('eloc_kin_ex_bld', eloc_kin_ex_bld)
+!  call catalog_one_node ('eloc_pot_ex_bld', eloc_pot_ex_bld, eloc_pot_ex_bld_index)
+!  call catalog_one_node ('eloc_ex_bld', eloc_ex_bld)
+!  call catalog_one_node ('psid_ex_in_x_bld', psid_ex_in_x_bld)
+!  call catalog_one_node ('eloc_pot_nloc_ex_bld', eloc_pot_nloc_ex_bld)
   call catalog_one_node ('deloc_orb_bld', deloc_orb_bld)
   call catalog_one_node ('delta_mat_rot_1st_order_bld', delta_mat_rot_1st_order_bld)
   call catalog_one_node ('delta_mat_rot_real_bld', delta_mat_rot_real_bld)

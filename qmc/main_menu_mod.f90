@@ -8,7 +8,6 @@ module main_menu_mod
   use psi_mod
   use periodic_jastrow_mod 
   use optimization_mod
-  use linearresponse_mod
   use grid_mod
   use dipole_moment_mod
   use density_mod
@@ -66,7 +65,6 @@ module main_menu_mod
    write(6,'(a)') ' wavefunction ... end: menu related to wave function '
    write(6,'(a)') ' walkers ... end: menu for walkers'
    write(6,'(a)') ' optimization ... end: menu for wave function optimization'
-   write(6,'(a)') ' linearresponse .. end: menu for linear-response calculation'
    write(6,'(a)') ' print ... end: menu for printing objects'
    write(6,'(a)') ' average ... end: menu for calculating MC averages'
    write(6,'(a)') ' grid ... end: menu for settinp up spatial grid'
@@ -101,7 +99,6 @@ module main_menu_mod
   case ('walkers')           ; call walkers_menu
   case ('periodic_jastrow')  ; call periodic_jastrow_menu
   case ('optimization')      ; call optimization_menu
-  case ('linearresponse')    ; call linearresponse_menu
   case ('backflow')          ; call backflow_menu      !fp
   case ('correlated_sampling'); call correlated_sampling_menu
   case ('print')             ; call print_menu

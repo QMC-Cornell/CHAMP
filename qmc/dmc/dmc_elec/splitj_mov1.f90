@@ -17,6 +17,9 @@
       use velratio_mod
       implicit real*8(a-h,o-z)
 
+      integer :: ipr_sav=0
+      save ipr_sav
+
       dimension iwundr(MWALK),wt_sav(MWALK)
 
 !     write(6,'(''nwalk at beg of splitjoin'',9i5)') nwalk
@@ -93,7 +96,16 @@
           n_split_more_than_once=n_split_more_than_once+1
         endif
       enddo
-      if(n_split_more_than_once.gt.0) write(6,'(''Warning: Number of walkers split more than once='',i4)') n_split_more_than_once
+
+      if(n_split_more_than_once.gt.0) then
+        ipr_sav=ipr_sav+1
+        if(ipr_sav.le.50) then
+          write(6,'(''Warning: Number of walkers on master process split more than once (not of concern)='',i4)') n_split_more_than_once
+        elseif(ipr_sav.eq.51) then
+          write(6,'(''Warning: Additional warning msgs. of Number of walkers on master process split more than once suppressed'')')
+        endif
+      endif
+
 ! Adjust what weight walkers can be split without exceeding MWALK
 ! If nwalk_max_dupl<n_split_more_than_once then set wt_split to huge number.
 ! This is not the best choice but it is a conservative choice.

@@ -271,10 +271,14 @@
       call mpi_allreduce(try_int,try_int_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(acc,acc_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(acc_int,acc_int_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(dr2ac,dr2ac_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_allreduce(dr2un,dr2un_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       nodecr=nodecr_collect
       try_int=try_int_collect
       acc=acc_collect
       acc_int=acc_int_collect
+      dr2ac=dr2ac_collect
+      dr2un=dr2un_collect
 
       call grad_hess_jas_mpi
 
@@ -310,7 +314,8 @@
         write(6,'(''age of oldest walker (this generation, any gen)='',3i9)') ioldest,ioldestmx
       endif
 
-      write(6,'(''average of the squares of the accepted step-size='',f10.5)') dr2ac/try_int
+      write(6,'(a,f10.5)') 'average of the squares drift-dif moves for accepted steps = ',dr2ac/try_int
+      write(6,'(a,f10.5)') 'average of the squares drift-dif moves for all      steps = ',dr2un/try_int
 
       write(6,'(''taueff'',20f7.4)') (taucum(ifr)/wgcum(ifr),ifr=1,nforce)
 

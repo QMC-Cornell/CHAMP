@@ -20,9 +20,9 @@
 
 
 ! complex locals:
-      complex*16 cddet_det(3,nelec),cdeterm,cdetinv
-      complex*16 corb(norb)
-      complex*16 cratio(ndet),csum,cterm
+      complex(dpc) cddet_det(3,nelec),cdeterm,cdetinv
+      complex(dpc) corb(norb)
+      complex(dpc) cratio(ndet),csum,cterm
 
       dimension x(3,*),rvec_en(3,nelec,*),r_en(nelec,*),ddet_det(3,*)
 

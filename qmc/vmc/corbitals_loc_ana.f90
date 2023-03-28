@@ -10,7 +10,7 @@
       use cphifun_mod
       implicit real*8(a-h,o-z)
 
-      complex*16 corb,cdorb,cddorb
+      complex(dpc) corb,cdorb,cddorb
 
       common /compferm/ emagv,nv,idot
 

@@ -3,8 +3,21 @@
       use all_tools_mod
       use constants_mod
       use variables_mod
-      use basis_mod, only : which_analytical_basis, l_purely_analytical_basis
       use control_mod
+      use contrl_mod
+      use contr3_mod
+      use contrl_per_mod
+      use contrl_opt_mod
+      use contrl_opt2_mod
+      use contrldmc_mod
+      use contr_names_mod
+      use contr_ylm_mod
+      use const_mod
+      use const2_mod
+      use dim_mod
+      use basis_mod, only : which_analytical_basis, l_purely_analytical_basis
+      use basis1_mod
+      use basis2_mod
       use montecarlo_mod
       use orbitals_mod
       use orbpar_mod
@@ -16,41 +29,28 @@
       use coefs_mod
       use dets_mod
       use optim_mod
-      use basis1_mod
-      use contrl_mod
-      use const_mod
-      use const2_mod
-      use dim_mod
       use numbas_mod
-      use basis2_mod
       use contr2_mod
       use gradhess_mod
-      use contrl_opt2_mod
       use forcepar_mod
       use wfsec_mod
       use doefp_mod
       use pseudo_mod
-      use contrl_per_mod
-      use contrl_opt_mod
       use jaspar_mod
+      use jaspar1_mod
+      use jaspar2_mod
       use jaspar3_mod
       use jaspar4_mod
       use jaspar6_mod
       use bparm_mod
       use jasparread_mod
       use pointer_mod
-      use contr3_mod
       use periodic_mod
       use qua_mod
       use optimo_mod
       use jel_sph2_mod
-      use contr_names_mod
-      use contr_ylm_mod
       use pars_mod
-      use jaspar1_mod
-      use jaspar2_mod
       use ncusp_mod
-      use contrldmc_mod
       use confg_mod
       use rlobxy_mod
       use pairden_mod
@@ -471,6 +471,10 @@
 !                -5,-10 r/{1+(scalek(1)*r)**2}**.5
 
 ! 3) 0 0 0 0 i3body,irewgt,iaver,istrech (rarely used)
+! irewgt      = 0 do not reweight the local energy differences in fit
+!             > 0 reweight by psi_currrent^2/psi_sampled^2, but limit the weights to wtmax=iabs(mod(irewgt,100))
+!               This option allows the nodes of the wavefn. to go from one side of a sampled config to the other.
+!               Without it, the divergence in the local energy at the node blocks it.
 ! 4) 0 0 0 0 0 0 0 0 0 0 ipos,idcds,idcdr,idcdt,id2cds,id2cdr,id2cdt,idbds,idbdr,idbdt (rarely used)
 ! 5) 0 0 0 0 0 1 1 1 1 0 1 1 0 0 1 1 0 1 1 0 1 1 1 1 0 1 1 0 1 1 0 1 1 0 0 0 0 0 1 1 0 1 1 0 0 0 (lo(iorb),iorb=1,norb) (calculated internally if necn < 0)
 
@@ -478,7 +482,7 @@
 ! nparml      Number of LCAO coefs to be optimized
 ! nparma      Number of en  Jastrow coefs to be optimized (one entry for each atom type)
 ! nparmb      Number of ee  Jastrow coefs to be optimized
-! nparmc      Number of een Jastrow coefs to be optimized (one entry for each atom type)
+! nparmc      Number of een Jastrow coefs to be optimized (one entry for each atom type, 3rd-ord 2, 4th-ord 7, 5th-ord 15, 6th-ord 27, 7th-ord 43)
 ! Note: nparma and nparmc are specified for each center type
 !       nparmb are specified for both spin types if nspin2=2
 ! nparmf      Number of Fock Jastrow coefs to be optimized (not yet implemented for Jastrow4)
@@ -515,7 +519,11 @@
 ! which e-e Jastrow parameters are varied
 
 ! 12)     3   5   7 8 9    11    13 14 15 16 17 18    20 21    23 (iwjasc(iparm),iparm=1,nparmc) (one entry for each atom type)
-! which e-e-n Jastrow parameters are varied (the above is for 5th-order, but code can handle any order)
+! which e-e-n Jastrow parameters are varied (the above is for 5th-order, but code can handle any order, see jastrow.tex notes)
+! 6th-order, nparmc=27
+!    3   5   7 8 9    11    13 14 15 16 17 18    20 21    23 24 25 26 27 28 29 30 31    33 34    36 37 (iwjasc(iparm),iparm=1,nparmc)
+! 7th-order, nparmc=43
+!    3   5   7 8 9    11    13 14 15 16 17 18    20 21    23 24 25 26 27 28 29 30 31    33 34    36 37 38 39 40 41 42 43 44 45 46 47 48    50 51 52 54 55 (iwjasc(iparm),iparm=1,nparmc)
 
 ! 13) 165 35    necn,nebase
 ! necn      Number of LCAO coefs set equal.  If it is -1, necn and nparml will be calculated within code
@@ -563,9 +571,11 @@
       iwf = 1
       call object_modified ('iwf')
 
-      write(fmt,'(''(a,a'',i3,'')'')') len_trim(mode)
-      write(6,fmt) 'CHAMP version 3.08.0, mode=', mode
+!     write(fmt,'(''(a,a'',i3,'')'')') len_trim(mode)
+!     write(6,fmt) 'CHAMP version 3.08.0, mode=', mode
+!     write(6,'(''Running in mode: '',a)') trim(mode)
 
+      write(6,*)
       if(mode.eq.'fit') write(6,'(''Wavefn. optimization'')')
       if(mode.eq.'fit_mpi') write(6,'(''Wavefn. optimization mpi'')')
       if(mode.eq.'vmc') write(6,'(''Variational MC'')')
@@ -672,8 +682,10 @@
       endif
       if(mode.eq.'dmc' .or. mode.eq.'dmc_mov1' .or. mode.eq.'dmc_mov1_mpi1') then
         nconf_global=nconf
-       elseif(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+      elseif(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
         nconf_global=nconf*nproc
+      else if (mode.eq.'dmc_mpi1') then !TA
+        nconf_global=nconf
       endif
 
       read(5,*) idump,irstar,isite,ipr
@@ -873,8 +885,19 @@
       call alloc ('iwctype', iwctype, ncent)
       read(5,*) (iwctype(i),i=1,ncent)
       write(6,'(''iwctype ='',t31,20i3,(20i3))') (iwctype(i),i=1,ncent)
-      do 25 ic=1,ncent
-   25   if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
+!      do 25 ic=1,ncent
+!   25   if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
+      do ic=1,ncent
+        if(ic.ge.2 .and. iwctype(ic).lt.iwctype(ic-1)) then
+          write(6,'(''Atoms of the same atomtype must be contiguous'')')
+          stop 'Atoms of the same atomtype must be contiguous'
+        endif
+        if(iwctype(ic).gt.nctype) then
+          write(6,'(''iwctype(ic) > nctype'')')
+          stop 'iwctype(ic) > nctype'
+        endif
+      enddo
+
 
       call object_modified ('iwctype')  !JT
 
@@ -957,6 +980,8 @@
         else
           stop 'nloc >= 7'
         endif
+
+!Set minimum number of nquad points depending on number of pseudopotential components, npotd (e.g. for transition metals, npotd=4)
         do 67 ict=1,nctype
           if(npotd(ict).ge.4 .and. nquad.lt.12) then
             nquad=12
@@ -968,6 +993,7 @@
           endif
           if(npotd(ict).ge.6) write(6,'(''Warning: We are not ensuring the right number of quadrature points for npotd >=6'')')
    67   continue
+
         call alloc ('xq0', xq0, MPS_QUAD)
         call alloc ('yq0', yq0, MPS_QUAD)
         call alloc ('zq0', zq0, MPS_QUAD)
@@ -1083,31 +1109,6 @@
       call alloc ('coef', coef, nbasis, orb_tot_nb, nwf)
       call alloc ('zex', zex, nbasis, nwf)
 
-!---swapped
-! Call setup routines for Ylm's if we are using recursion to generate them
-! irecursion_ylm=0 use Cyrus' and John's spherical harmonics (upto g functions (L=4))
-! irecursion_ylm=1 use Ryo' spherical harmonics (any L)
-! Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
-! Change it to calculate upto largest l actually used.
-      if(ibasis.eq.1) then
-        if(nloc.eq.-3) then ! Je spheres
-          irecursion_ylm=1
-        else
-          irecursion_ylm=0
-!         irecursion_ylm=1
-!         write(6,'(''Warning temporarily set irecursion_ylm=1'')')
-        endif
-        if(irecursion_ylm.eq.0)then
-          write(6,*) 'Not using recursion for Ylm'
-        elseif(irecursion_ylm.eq.1) then ! Ryo Maezono's recursion for high order Ylm
-          write(6,*) 'Using recursion for Ylm'
-          call setup_spherical_harmonics
-          call setup_coefficients_ylm
-        else
-          stop 'irecursion_ylm must be 0 or 1'
-        endif
-      endif
-
 ! Read in analytical or numerical orbitals
       if(ibasis.eq.1) then
         call read_orb_loc
@@ -1128,6 +1129,25 @@
         call object_modified ('m_bas') !JT
         call object_modified ('ictype_basis') !JT
         call object_modified ('zex')   !JT
+      endif
+
+! irecursion_ylm=0 use Cyrus' and John's spherical harmonics (upto g functions (L=4))
+! irecursion_ylm=1 use Ryo' spherical harmonics (any L), which seems to have occasional numerical problems.
+! Call setup routines for Ylm's if we are using recursion to generate them
+! Note that at present the recursive routine calculates upto lmax (set in vmc/basis_fns.f) and so it takes long if lmax is large.
+! It should be changed to calculate upto largest l actually used, but we have not done that yet since it is rarely used and because
+! it has occasional numerical problems.
+      if(ibasis.eq.1) then
+        if(nloc.eq.-3 .or. maxval(l_bas(:)).ge.5) then ! Je spheres or L>=5
+          write(6,'(/,''Using recursion for Ylm because system is Je spheres or basis functions with l>=5 are used'')')
+          write(6,'(/,a,/)') "Warning: Ryo's recursive Ylm routine seems to have occasional numerical problems, manifested as jumps in sigma (see tests on O with Trail-Neeeds psp)"
+          irecursion_ylm=1
+          call setup_spherical_harmonics
+          call setup_coefficients_ylm
+        else
+          write(6,'(/,a,/)') 'Not using recursion for Ylm'
+          irecursion_ylm=0
+        endif
       endif
 
 ! Read in numerical radial basis
@@ -1773,21 +1793,12 @@
         write(6,*) '**Warning irewgt=1 reset to irewgt=10'
         irewgt=irewgt+9
       endif
-!     do 404 i=1,ndata
-! 404   wght(i)=one
-      write(6,'(''i3body,irewgt,iaver,istrch'',9i5)') &
-     &i3body,irewgt,iaver,istrch
+      write(6,'(''i3body,irewgt,iaver,istrch'',9i5)') i3body,irewgt,iaver,istrch
       call systemflush(6)
 
-      read(5,*) ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds, &
-     &idbdu,idbdt
-      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt &
-     &.gt.0.and.(ijas.ne.2)) &
+      read(5,*) ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt
+      if(ipos+idcds+idcdu+idcdt+id2cds+id2cdu+id2cdt+idbds+idbdu+idbdt.gt.0 .and. (ijas.ne.2)) &
      &stop 'ipos+...>0 checkjas2 exists only be used with Jastrow2'
-      if(mod(irewgt,100).eq.1) then
-        write(6,*) '**Warning irewgt=1 reset to irewgt=10'
-        irewgt=irewgt+9
-      endif
 !     do 404 i=1,ndata
 ! 404   wght(i)=one
       write(6,'(''ipos,idcds,idcdu,idcdt,id2cds,id2cdu,id2cdt,idbds,idbdu,idbdt'',10i8)') &

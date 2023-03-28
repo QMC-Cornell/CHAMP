@@ -8,7 +8,7 @@ module nodes_mod
 ! Declaration of global variables and default values
   integer*8, external            :: address
 
-  type :: type_node
+  type type_node
    character(len=max_string_len) :: routine_name
    integer*8                     :: routine_address
    integer, allocatable          :: objects_needed_index(:)

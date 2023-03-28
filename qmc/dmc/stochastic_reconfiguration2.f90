@@ -18,12 +18,12 @@ subroutine stochastic_reconfiguration2
 ! For sparse PsiT when e_den=0, we replace it with -eps*e_num, so that E_loc is a large negative number. (Warning: Check if this is best)
 
 !use types, only : rk
-! use, intrinsic :: iso_fortran_env, only: rk => real64 !JT: commented out for compilation on MESU
+ use, intrinsic :: iso_fortran_env, only: rk => real64 !JT: comment out for compilation on MESU
  use branch_mod, only : nwalk, eoldw, wt
  use const_mod, only : ipr
 
  implicit none
- integer, parameter :: rk = kind(1.0d0) ! JT: added for compilation on MESU
+!integer, parameter :: rk = kind(1.0d0) ! JT: added for compilation on MESU
 
  integer iwalk
  real(rk) wt_ref(nwalk), wt_new(nwalk)

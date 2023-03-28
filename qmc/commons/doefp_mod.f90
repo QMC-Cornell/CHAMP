@@ -3,6 +3,6 @@ module doefp_mod
  implicit none
  save
 
- integer :: nefp 
+ integer nefp 
 
 end module doefp_mod

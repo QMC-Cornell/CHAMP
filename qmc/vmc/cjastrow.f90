@@ -8,7 +8,7 @@
       use distance_mod
       implicit real*8(a-h,o-z)
 
-      complex*16 cv
+      complex(dpc) cv
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
       common /compferm/ emagv,nv,idot

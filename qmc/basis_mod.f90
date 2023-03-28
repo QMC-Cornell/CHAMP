@@ -291,17 +291,17 @@ module basis_mod
 ! irecursion_ylm=1 use Ryo' spherical harmonics (any L)
 ! Note that at present it always calculates upto lmax (set in basis_fns.f) and so it takes long if lmax is large.
 ! Change it to calculate upto largest l actually used.
-        irecursion_ylm=0
-!       irecursion_ylm=1
-!       write(6,'(''Warning temporarily set irecursion_ylm=1'')')
-!        call read_orb_loc
+    irecursion_ylm=0
+!   irecursion_ylm=1
+!   write(6,'(''Warning temporarily set irecursion_ylm=1'')')
+!   call read_orb_loc
     if(irecursion_ylm.eq.0)then
       write(6,'(a)') ' not using recursion for spherical harmonics'
-     elseif(irecursion_ylm.eq.1) then
+    elseif(irecursion_ylm.eq.1) then
       write(6,'(a)') ' using recursion for spherical harmonics'
       call setup_spherical_harmonics
       call setup_coefficients_ylm
-     else
+    else
       stop 'irecursion_ylm must be 0 or 1'
     endif
   endif

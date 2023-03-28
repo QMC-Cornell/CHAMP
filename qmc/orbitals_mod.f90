@@ -702,6 +702,7 @@ module orbitals_mod
 ! begin
   orb_sym_lab_nb  = 0
   call get_next_value_list_object ('orb_sym_lab', orb_sym_lab, orb_sym_lab_nb)
+  write(6,'(''in orb_sym_lab_rd: orb_sym_lab='',1000a8)') orb_sym_lab
 
   call object_provide ('orb_tot_nb')
   if (orb_sym_lab_nb /= orb_tot_nb) then
@@ -2251,7 +2252,7 @@ module orbitals_mod
    enddo
   enddo
 
-!  write(6,*) trim(here),': lo=',lo
+  write(6,*) trim(here),': lo=',lo
 
  end subroutine lo_bld
 

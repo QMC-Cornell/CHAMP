@@ -314,7 +314,10 @@
         wtgen(i)=nconf_global
    70   ff(i)=one
 
+      eest=0d0
       do 80 iw=1,nconf
+        current_walker=iw !TA
+        call object_modified_by_index (current_walker_index) !TA
         wt(iw)=one
 !       if(istrech.eq.0) then
 !         do 71 ifr=2,nforce
@@ -331,10 +334,13 @@
           ajacold(iw,ifr)=ajacob
           call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr),peow(iw,ifr), &
      &    peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
+          if(ifr.eq.1) eest=eest+eoldw(iw,ifr) !TA
           pwt(iw,ifr)=one
           do 72 ip=0,nwprod-1
             wthist(iw,ip,ifr)=one
    72   continue
+        eest=eest/nconf !TA
+
         if(psidow(iw,1).lt.zero) then
           do 76 ifr=1,nforce
             psidow(iw,ifr)=-psidow(iw,ifr)
@@ -368,8 +374,25 @@
         endif
    80 continue
 
+      eigv=dexp((etrial-eest)*tau) !TA - I do this so that the weights do not depend on etrial on the first step
+      fprod=1d0 !TA
+      do i=0,nfprod-1
+        wtgen(i)=nconf_global
+        ff(i)=eigv
+        fprod=fprod*ff(i)
+      enddo
+
       entry zerest_dmc_movall
 ! entry point to zero out all averages etc. after equilibration runs
+
+      if (ipass.ne.0) then
+        dff=dexp((eest-etrial)*taueff(1)) !TA - reset etrial after equilibration runs
+        do i=0,nfprod-1
+          ff(i)=ff(i)*dff
+          fprod=fprod*dff
+        enddo
+        etrial=eest
+      endif
 
       iblk=0
 

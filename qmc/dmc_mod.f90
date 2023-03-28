@@ -8,10 +8,7 @@ module dmc_mod
   use restart_mod
   use allocations_mod
   use walkers_mod
-
-#ifndef NOEINSPLINE
   use projector, only : interface_projector
-#endif
 
 ! Declaration of global variables and default values
 
@@ -120,10 +117,7 @@ module dmc_mod
    call open_files
   endif
 
-
-#ifndef NOEINSPLINE
   if(idmc.eq.3) call interface_projector(nctype, ncent, iwctype, cent, znuc, nelec, nup, tau, etrial)
-#endif
 
   end subroutine dmc_init
 
@@ -191,6 +185,7 @@ module dmc_mod
 ! ------------------------------------------------------------------------------
   use all_modules_mod
   use branch_dmc_opt_mod
+  use gamma_mod, only: noccup, noccdn
   implicit none
 
 ! local
@@ -202,7 +197,7 @@ module dmc_mod
 
 ! initial printing
   write(6,*)
-  write(6,'(a)') '***************************************** START DMC CALCULATION ******************************************'
+  write(6,'(a)') '*********** START DMC CALCULATION  ***********'
 
 ! request average of local energy
   call object_average_request ('eloc_av')
@@ -226,6 +221,8 @@ module dmc_mod
   call object_provide ('nup_square')
   call object_provide ('ndn_square')
   call object_provide ('nparm')
+  call object_provide ('noccup')
+  call object_provide ('noccdn')
 
   call alloc ('iage', iage, MWALK)
   call alloc ('xoldw', xoldw, 3, nelec, MWALK, nforce)
@@ -237,11 +234,17 @@ module dmc_mod
   call alloc ('peiow', peiow, MWALK, nforce)
   call alloc ('d2ow', d2ow, MWALK, nforce)
 
+  call alloc ('quadr', quadr,       nquad*ncent, nelec, MWALK) !TA
+  call alloc ('quadx', quadx, ndim, nquad*ncent, nelec, MWALK) !TA
+
   call alloc ('eoldw', eoldw, MWALK, nforce)
   call alloc ('pwt', pwt, MWALK, nforce)
   call alloc ('wt', wt, MWALK)
 
   call alloc ('div_vow', div_vow, nelec, MWALK)
+
+  call alloc ('quadr', quadr,       nquad*ncent, nelec, MWALK)
+  call alloc ('quadx', quadx, ndim, nquad*ncent, nelec, MWALK)
   
   call alloc ('slmuiw', slmuiw, nup_square, ndetup, MWALK)
   call alloc ('slmdiw', slmdiw, ndn_square, ndetdn, MWALK)
@@ -275,6 +278,23 @@ module dmc_mod
   call alloc ('pot_ee_old', pot_ee_old, nelec)
   call alloc ('pot_ee_new', pot_ee_new, nelec)
   call alloc ('pot_ee_oldw', pot_ee_oldw, nelec, MWALK, nforce)
+
+  !Allocate walker arrays used for fast derivatives TA
+  call alloc('orbw', orbw, nelec, orb_tot_nb, MWALK)
+  call alloc('dorbw', dorbw, ndim, nelec, orb_tot_nb, MWALK)
+  call alloc('aiupw', aiupw, nup, nup, MWALK)
+  call alloc('aidnw', aidnw, ndn, ndn, MWALK)
+  call alloc('deta_upw', deta_upw, MWALK)
+  call alloc('deta_dnw', deta_dnw, MWALK)
+  call alloc('tupw', tupw, nup,orb_tot_nb,MWALK)
+  call alloc('tdnw', tdnw, ndn,orb_tot_nb,MWALK)
+  call alloc('yupw', yupw, noccup,nup,MWALK)
+  call alloc('ydnw', ydnw, noccdn,ndn,MWALK)
+  call alloc('chiw', chiw, MWALK)
+  call alloc('invupw', invupw, nup*nup,ndetup,MWALK)
+  call alloc('invdnw', invdnw, ndn*ndn,ndetdn,MWALK)
+  call alloc('detupw', detupw, ndetup,MWALK)
+  call alloc('detdnw', detdnw, ndetdn,MWALK)
 
 ! initialize sums and averages
   if(irstar /= 1) then

@@ -10,7 +10,7 @@ module basis1_mod
  integer, allocatable  :: n3s(:),n3p(:,:),n3d(:,:)
  integer, allocatable  :: n4s(:),n4p(:,:),n4d(:,:),n4f(:,:)
  integer, allocatable  :: n5s(:),n5p(:,:),n5d(:,:),n5f(:,:),n5g(:,:)
- integer, allocatable  :: n6d(:,:),n6f(:,:),n6g(:,:),n6h(:,:)
+ integer, allocatable  :: n6s(:),n6p(:,:),n6d(:,:),n6f(:,:),n6g(:,:),n6h(:,:)
  integer, allocatable  :: n7g(:,:),n7h(:,:),n7i(:,:)
  integer, allocatable  :: n8i(:,:),n8j(:,:)
  integer, allocatable  :: n9k(:,:)

@@ -10,7 +10,7 @@
 
       dimension fen(ncent),fee(2)
 
-      write(6,'('' r    f_en(1-nctype)    f_ee(1,2)'')')
+      write(6,'('' r    f_en(1-nctype)    f_ee(1,2)'')') ; call systemflush(6)
       np=101
 ! Warning: I should really be plotting f_en to cutjas_en and f_ee to cutjas_ee but
 ! for the moment plot both to larger distance.
@@ -24,7 +24,7 @@
       do 10 i=1,np
         r=r+dr
         call jastrow4ab(r,fen,fee)
-   10   write(6,'(f8.4,9f12.6)') r,(fen(it),it=1,nctype),(fee(isb),isb=1,2)
+   10   write(6,'(f8.4,9f12.6)') r,(fen(it),it=1,nctype),(fee(isb),isb=1,2) ; call systemflush(6)
 
       return
       end

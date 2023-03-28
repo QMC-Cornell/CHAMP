@@ -6,6 +6,6 @@ module dorb_mod
 
  integer, allocatable :: iworbd(:,:),iworbdup(:,:),iworbddn(:,:)
  integer, allocatable :: iwdetup(:),iwdetdn(:)
- integer :: ndetup, ndetdn, ndetupdn
+ integer ndetup, ndetdn, ndetupdn
 
 end module dorb_mod

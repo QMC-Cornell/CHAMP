@@ -75,7 +75,7 @@ module cusp_mod
 
   if (l_check_cusp_en .or. l_impose_cusp_en) then
 
-!   initilization for cusp
+!   initialization for cusp
     call object_provide ('nbasis_ctype')
     call object_provide ('iwctype')
     call object_provide ('ncent')
@@ -124,46 +124,46 @@ module cusp_mod
 ! if((nloc.eq.0. .or. nloc.eq.5) .and. numr.le.0) then
   if((nloc.eq.0. .or. nloc.eq.5) .and. minval(zex(:,1)).ne.0.d0) then
 
-   call coef_orb_on_norm_basis_from_coef(1)
-   call object_provide ('coef_orb_on_norm_basis')
+    call coef_orb_on_norm_basis_from_coef(1)
+    call object_provide ('coef_orb_on_norm_basis')
    
     if (l_check_cusp_en .and. .not. l_impose_cusp_en) then
-     icusp = -1
-     write(6,'(a)') 'checking e-n cusp conditions on orbitals:'
+      icusp = -1
+      write(6,'(a)') 'checking e-n cusp conditions on orbitals:'
     endif
 
     if (l_impose_cusp_en) then
-     write(6,'(a)') '   Orbitals before imposition of e-n cusp conditions:'
-     do orb_i=1,norb
+      write(6,'(a)') '   Orbitals before imposition of e-n cusp conditions:'
+      do orb_i=1,norb
         write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
-     enddo
-     write(6,'(a)') '   ----------------------------------------'   
-     do orb_i=1,norb
+      enddo
+      write(6,'(a)') '   ----------------------------------------'   
+      do orb_i=1,norb
         write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
-     enddo
-     write(6,'(a)') '   ----------------------------------------'
+      enddo
+      write(6,'(a)') '   ----------------------------------------'
 
-     icusp = 1
-     if (l_impose_cusp_en_occ) then
-      write(6,'(a)') 'imposing e-n cusp conditions on occupied orbitals:'
-     else
-      write(6,'(a)') 'imposing e-n cusp conditions on orbitals:'
-     endif
+      icusp = 1
+      if (l_impose_cusp_en_occ) then
+        write(6,'(a)') 'imposing e-n cusp conditions on occupied orbitals:'
+      else
+        write(6,'(a)') 'imposing e-n cusp conditions on orbitals:'
+      endif
     endif
 
     call equiv_bas
     call cuspco(diff,1)
     call object_modified ('coef')
     write(6,'(a)') '   Orbitals after imposition of e-n cusps conditions:'
-      call coef_orb_on_norm_basis_from_coef (1)
-     do orb_i=1,norb
-        write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
-     enddo
-     write(6,'(a)') '   ----------------------------------------'
-     do orb_i=1,norb
-        write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
-     enddo
-     write(6,'(a)') '   ----------------------------------------'
+    call coef_orb_on_norm_basis_from_coef (1)
+    do orb_i=1,norb
+      write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
+    enddo
+    write(6,'(a)') '   ----------------------------------------'
+    do orb_i=1,norb
+      write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
+    enddo
+    write(6,'(a)') '   ----------------------------------------'
   endif
   
   end subroutine cusp_en_orb

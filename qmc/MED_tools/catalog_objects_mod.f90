@@ -62,8 +62,6 @@ module catalog_objects_mod
   call catalog_one_object ('dpsi_csf', dpsi_csf_index)
   call catalog_one_object ('dpsi_jas', dpsi_jas_index)
   call catalog_one_object ('dpsi_orb', dpsi_orb_index)
-  call catalog_one_object ('dcsf_orb', dcsf_orb_index)
-  call catalog_one_object ('d2psi_orb', d2psi_orb_index)
   call catalog_one_object ('dpsi_csf_av', dpsi_csf_av_index)
   call catalog_one_object ('dpsi_jas_av', dpsi_jas_av_index)
   call catalog_one_object ('dpsi_orb_av', dpsi_orb_av_index)
@@ -190,6 +188,15 @@ module catalog_objects_mod
   call catalog_one_object ('walker_weights_sum', walker_weights_sum_index)
   call catalog_one_object ('walker_weights_sq_sum_block', walker_weights_sq_sum_block_index)
   call catalog_one_object ('walker_weights_sq_sum', walker_weights_sq_sum_index)
+
+! Fast derivatives
+  call catalog_one_object('gup', gup_index)
+  call catalog_one_object('gdn', gdn_index)
+  call catalog_one_object('chi', chi_index)
+  call catalog_one_object('deta_up', deta_up_index)
+  call catalog_one_object('deta_dn', deta_dn_index)
+  call catalog_one_object('psp_nonloc_orb', psp_nonloc_orb_index)
+  call catalog_one_object('psp_nonloc_pot', psp_nonloc_pot_index)
 
  end subroutine catalog_objects
 

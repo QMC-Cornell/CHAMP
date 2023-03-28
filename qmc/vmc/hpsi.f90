@@ -28,6 +28,7 @@
 !                                       \deriv_nonlocj
 ! Note there is no deriv_nonlocd because the additional object needed for CSF optimization is calculated in nonlocd.
 
+      use deriv_fast_mod
       use all_tools_mod
       use control_mod
       use fitdet_mod
@@ -49,6 +50,7 @@
       use vd_mod
       use optimo_mod
       use contrl_opt_mod
+      use kinet_mod
       implicit real*8(a-h,o-z)
 
 ! complex local:
@@ -58,6 +60,7 @@
       common /compferm/ emagv,nv,idot
       dimension coord(3,*),velocity(3,nelec)
       dimension div_vj(nelec),div_vk(nelec),div_vd(nelec),div_v(nelec),dpe(nparm),denergy(nparm)
+      real(dp) :: vd2(3,nelec), d2d2, div_vd2(nelec), ekinen2(nelec)
 
       iwf=iwftype(ifr)
 
@@ -275,9 +278,9 @@
         if(nloc.gt.0) then
 !         if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
           if((igradhess.eq.0 .or. ifr.gt.1) .and. .not. l_opt) then
-            call nonloc_pot(coord,rshift,rvec_en,r_en,detu,detd,slmui,slmdi,vpsp,psid,pe)
+            call nonloc_pot(coord,rshift,rvec_en,r_en,vpsp,psid,pe)
           else
-            call deriv_nonloc_pot(coord,rshift,rvec_en,r_en,detu,detd,deti_det,slmui,slmdi,vpsp,psid,pe,dpe,ifr)
+            call deriv_nonloc_pot(coord,rshift,rvec_en,r_en,vpsp,psid,pe,dpe,ifr)
           endif
         endif
 
@@ -285,7 +288,6 @@
 
       eloc_pot = pe
       call object_modified_by_index (eloc_pot_index) !JT
-      call object_modified_by_index (deti_det_index) !JT
 
 ! calculate local energy. for convenience "magnetic energy" is included in pe.
 ! it will be separated while printing out the results...
@@ -301,21 +303,8 @@
      &  ifr,psid,exp(psij),d2psi,energy-pe,pe,energy
 
         if(igradhess.ne.0 .or. l_opt) then
-
-! calculate parameter-derivatives of csf_coefs for optimization
-          do 50 iparm=1,nparmcsf+nparmot
-            if(nloc.le.0) then
-              denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)
-!             write(6,*) 'd2deti_det,deti_det,denergy,iparm=' ,d2deti_det(iparm),deti_det(iparm),denergy(iparm),iparm
-            else
-              if(nparmot.gt.0) stop 'orbital optimization not possible with nonlocal pseudopotentials yet'
-              denergy(iparm)=-hb*(d2deti_det(iparm)-deti_det(iparm)*d2det_det)+dpe(iparm)
-!             write(6,'(''dpe(iparm)='',9d12.5)') dpe(iparm)
-            endif
-            do 50 i=1,nelec
-              do 50 k=1,ndim
-!                write(6,*) '++ ddeti_det,k,i,iparm=',ddeti_det(k,i,iparm),k,i,iparm
-   50           denergy(iparm)=denergy(iparm)-hb*(2*(ddeti_det(k,i,iparm)-deti_det(iparm)*vd(k,i))*vj(k,i))
+          call object_provide_by_index(denergy_index)
+          call object_provide_by_index(deti_det_index)
 
           if(ipr.ge.4) write(6,'(''denergy='',9f10.6)') (denergy(iparm),iparm=1,nparmcsf+nparmot)
 
@@ -331,8 +320,6 @@
             do 55 i=1,nelec
               do 55 k=1,ndim
    55           denergy(nparmcsf+nparmot+iparm)=denergy(nparmcsf+nparmot+iparm)-2*hb*(g(k,i,iparm)*velocity(k,i))
-
-          call object_modified_by_index (denergy_index)
 
         endif
 

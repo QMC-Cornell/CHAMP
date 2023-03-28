@@ -4,6 +4,6 @@ module force_dmc_mod
  save
 
  integer :: nwprod = 0
- integer :: itausec
+ integer itausec
            
 end module force_dmc_mod

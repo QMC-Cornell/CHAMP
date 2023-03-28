@@ -1,8 +1,10 @@
 module cslaterw_mod
 
-  complex*16, allocatable ::  cslmuiw(:,:,:),cslmdiw(:,:,:)
-  complex*16, allocatable ::  cfpuw(:,:,:,:),cfpdw(:,:,:,:)
-  complex*16, allocatable ::  cdetuw(:,:),cdetdw(:,:)
-  complex*16, allocatable ::  cddeti_detiw(:,:,:,:)
+  use types_mod
+
+  complex(dpc), allocatable ::  cslmuiw(:,:,:),cslmdiw(:,:,:)
+  complex(dpc), allocatable ::  cfpuw(:,:,:,:),cfpdw(:,:,:,:)
+  complex(dpc), allocatable ::  cdetuw(:,:),cdetdw(:,:)
+  complex(dpc), allocatable ::  cddeti_detiw(:,:,:,:)
 
 end module cslaterw_mod

@@ -27,7 +27,7 @@ MODULE bwfdet_mod
  INTEGER,DIMENSION(:,:),ALLOCATABLE :: gmap,nband_bwfdet,boccband
  INTEGER,DIMENSION(:,:,:),ALLOCATABLE :: iprom_repl_idx,iadd_idx
  INTEGER,DIMENSION(:,:,:,:),ALLOCATABLE :: isub_idx
- REAL(dp) :: norm,painv(3,3)
+ REAL(dp) norm,painv(3,3)
  REAL(dp),PARAMETER :: one_over_twopi=1.d0/(3.14159265358979324d0*2.d0)
 !numbers less than tolerance considered zero
  REAL(dp),PARAMETER :: tolerance=1.d-5
@@ -48,11 +48,11 @@ MODULE bwfdet_mod
  COMPLEX(dp),ALLOCATABLE :: cavcgrad3(:,:,:,:,:), cavcgrad32(:,:,:,:,:)
  COMPLEX(dp),DIMENSION(:),ALLOCATABLE :: zdum,lzdum,ztemp
  COMPLEX(dp),DIMENSION(:,:),ALLOCATABLE :: gzdum
- LOGICAL :: spin_polarized,pwreal,open_unit(99)
+ LOGICAL spin_polarized,pwreal,open_unit(99)
  LOGICAL,DIMENSION(:),ALLOCATABLE :: lkcalc,lkpair,lkedge
  LOGICAL,DIMENSION(:,:,:),ALLOCATABLE :: use_real_part
  PRIVATE
- PUBLIC :: readbwf,bwfdet_main,bwfdet_setup,bwfdet_wrapper,blip3dgamma_w,blip3dgamma_gl
+ PUBLIC readbwf,bwfdet_main,bwfdet_setup,bwfdet_wrapper,blip3dgamma_w,blip3dgamma_gl
 
 
 CONTAINS
@@ -753,20 +753,21 @@ CONTAINS
  use all_modules_mod
  IMPLICIT NONE
  REAL(dp),INTENT(in) :: orb_norm
- INTEGER, PARAMETER :: mdet_max_mods=15,lsize=500,num_g=lsize+lsize-1
- INTEGER, PARAMETER :: twonum_g=num_g*2,sixnum_g=num_g*6,fournum_gp2=twonum_g+twonum_g+2
- INTEGER ialloc,ik,jk,ig,ispin,eff_nele(2),ix,iy,iz,num_spins,band,k
- INTEGER ngridpoints,i,nstates,ne,i1m,i2m,i3m,i1,i2,i3,j1,j2,j3
- INTEGER jmax,kmax,n,l,m,istart,nep,nseg,ngpri,j,nentry,iband
+ INTEGER, PARAMETER :: mdet_max_mods=15,lsize=500,num_g=lsize+lsize-1, &
+  &twonum_g=num_g*2,sixnum_g=num_g*6,fournum_gp2=twonum_g+twonum_g+2
+ INTEGER ialloc,ik,jk,ig,ispin,eff_nele(2),ix,iy,iz,num_spins,band,k,        &
+  &ngridpoints,i,nstates,ne,                 &
+  &i1m,i2m,i3m,i1,i2,i3,j1,j2,j3,jmax,kmax,n,l,m,istart,&
+  &nep,nseg,ngpri,j,nentry,iband
 
- INTEGER,ALLOCATABLE :: indx(:),kcheck(:),wf_np(:,:),wf_nm(:,:)
- INTEGER,ALLOCATABLE :: istart_array(:),nentry_array(:),temp_i(:),vector_index(:),jm(:)
- REAL(dp) ksum(3),rvec(3),temp1,temp2,temp3,k_s(3),ktemp(1:3)
- REAL(dp) average_real_part,average_imaginary_part,pb1(3),pb2(3),pb3(3)
- REAL(dp) b1(3),b2(3),b3(3)
- REAL(dp) a1_bwfdet(3),a2_bwfdet(3),a3_bwfdet(3)
- REAL(dp) rkvec_shift_latt,glatt_inv_squared(3),r,z,low,high,current
- REAL(dp) low2,current2,mean,glatt_sim_inv_squared(3)
+ INTEGER,ALLOCATABLE :: indx(:),kcheck(:),wf_np(:,:),wf_nm(:,:),&
+  &istart_array(:),nentry_array(:),temp_i(:),vector_index(:),jm(:)
+ REAL(dp) ksum(3),rvec(3),temp1,temp2,temp3,k_s(3),ktemp(1:3),             &
+  &average_real_part,average_imaginary_part,pb1(3),pb2(3),pb3(3),              &
+  &b1(3),b2(3),b3(3),           &
+  &a1_bwfdet(3),a2_bwfdet(3),a3_bwfdet(3),           &
+  &rkvec_shift_latt,glatt_inv_squared(3),r,z,low,high,current,           &
+  &low2,current2,mean,glatt_sim_inv_squared(3)
  REAL(dp),ALLOCATABLE,DIMENSION(:) :: eigtemp,temp_r,low_array,high_array,d
  REAL(dp),ALLOCATABLE,DIMENSION(:,:) :: pr_lattice,sr_lattice
  COMPLEX(dp),ALLOCATABLE :: sum_orbs(:,:)
@@ -1647,11 +1648,12 @@ bloop:do ik=1,num_g
  INTEGER nrbwf(3),ix,iy,iz,ixp,ixpp,ixm,iyp,iypp,iym,izp,izpp,izm,idum,ib,ik
  REAL(dp) r(3),t(3),txm,tx,txp,txpp,tym,ty,typ,typp,tzm,tz,tzp,                &
   &tzpp,bg(3,3),rpsi(nemax),lap(nemax),grad(3,nemax),x,y,z,b(6)
- REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0
- REAL(dp) :: dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0
- REAL(dp) :: d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0
- REAL(dp) :: dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
- COMPLEX(dp) :: avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),d1(16),rdum,ldum,gdum(3)
+ REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0,     &
+  &dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0,   &
+  &d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0,  &
+  &dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
+ COMPLEX(dp) :: avc(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),d1(16),rdum,  &
+  &ldum,gdum(3)
  COMPLEX(dp) :: avclap(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),l1(16)
  COMPLEX(dp) :: avcgrad1(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),g1(16)
  COMPLEX(dp) :: avcgrad2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband,nkvec_bwfdet),g2(16)
@@ -2629,10 +2631,10 @@ bloop:do ik=1,num_g
  REAL(dp) avcgrad1(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband), &
   &avcgrad2(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband),        &
   &avcgrad3(0:nrbwf(1)-1,0:nrbwf(2)-1,0:nrbwf(3)-1,maxband)
- REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0
- REAL(dp) :: dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0
- REAL(dp) :: d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0
- REAL(dp) :: dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
+ REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0,     &
+  &dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0,   &
+  &d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0,  &
+  &dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
 
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))
  iy=int(mod(r(2)+abs(int(r(2)))+1,1.d0)*nrbwf(2))
@@ -3249,11 +3251,12 @@ bloop:do ik=1,num_g
  COMPLEX(dp),INTENT(out) :: rpsi,grad(3),lap
  
  INTEGER :: ix,iy,iz,ixp,ixpp,ixm,iyp,iypp,iym,izp,izpp,izm
- REAL(dp) :: t(3),txm,tx,txp,txpp,tym,ty,typ,typp,tzm,tz,tzp,tzpp,x,y,z,b(6)
- REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0
- REAL(dp) :: dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0
- REAL(dp) :: d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0
- REAL(dp) :: dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
+ REAL(dp) :: t(3),txm,tx,txp,txpp,tym,ty,typ,typp,tzm,tz,tzp,tzpp,  &
+  &x,y,z,b(6)
+ REAL(dp) :: dtxm=0.d0,d2txm=0.d0,dtx=0.d0,d2tx=0.d0,dtxp=0.d0,d2txp=0.d0,     &
+  &dtxpp=0.d0,d2txpp=0.d0,dtym=0.d0,d2tym=0.d0,dty=0.d0,d2ty=0.d0,dtyp=0.d0,   &
+  &d2typ=0.d0,dtypp=0.d0,d2typp=0.d0,dtzm=0.d0,d2tzm=0.d0,dtz=0.d0,d2tz=0.d0,  &
+  &dtzp=0.d0,d2tzp=0.d0,dtzpp=0.d0,d2tzpp=0.d0
  COMPLEX(dp) :: d1(16)
 
  ix=int(mod(r(1)+abs(int(r(1)))+1,1.d0)*nrbwf(1))

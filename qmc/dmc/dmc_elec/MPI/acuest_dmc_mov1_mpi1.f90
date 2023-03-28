@@ -453,23 +453,19 @@
 !     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
-      eigv=one
-      eest=etrial
       nwalk=nconf
       wdsumo=nconf_global
       wgdsumo=nconf_global
-      fprod=one
 
       call object_modified_by_index (nwalk_index)
 
-      do 70 i=0,nfprod
-        wtgen(i)=nconf_global
-   70   ff(i)=one
-
+      eest=0d0
 ! JT: it seems that the code remains stuck around here runs when compiled with ifort 10.1 with optimization option -O3.
 ! It works with optimization option -O2. It also works when a write statement is added in the loop as done below!
 !     write(6,'(/,''These lines are printed out just because otherwise it gets stuck here with ifort 10.1 -O3'')')
       do 80 iw=1,nconf
+        current_walker = iw !TA
+        call object_modified_by_index (current_walker_index) !TA
 !       write(6,'(''iw='',i4)') iw
         wt(iw)=one
         if(istrech.eq.0) then
@@ -491,6 +487,7 @@
           ajacold(iw,ifr)=ajacob
           call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
      &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
+          if(ifr.eq.1) eest=eest+eoldw(iw,ifr) !TA
           if(ifr.eq.1) then
             if(ibasis.eq.3) then                ! complex calculation
               call cwalksav_det(iw)
@@ -503,9 +500,29 @@
           do 72 ip=0,nwprod-1
    72       wthist(iw,ip,ifr)=one
    80 continue
+      eest=eest/nconf !TA
+
+      call object_modified_by_index (nwalk_index)
+
+      eigv=dexp((etrial-eest)*tau) !TA - I do this so that the weights do not depend on etrial on the first step
+      fprod=1d0 !TA
+      do i=0,nfprod-1
+        wtgen(i)=nconf_global
+        ff(i)=eigv
+        fprod=fprod*ff(i)
+      enddo
 
       entry zerest_dmc_mov1_mpi1
 ! entry point to zero out all averages etc. after equilibration runs
+
+      if (ipass.ne.0) then
+        dff=dexp((eest-etrial)*taucum(1)/wgcum(1)) !TA - reset etrial after equilibration runs
+        do i=0,nfprod-1
+          ff(i)=ff(i)*dff
+          fprod=fprod*dff
+        enddo
+        etrial=eest
+      endif
 
       iblk=0
       iblk_proc=0

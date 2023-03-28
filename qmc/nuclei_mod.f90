@@ -185,12 +185,11 @@ module nuclei_mod
     do ict=1,nctype
       if(npotd(ict).ge.4 .and. nquad.lt.12) then
         nquad=12
-        write(6,'(a,i2)') ' number of quadrature points for pseudopotential reset to nquad=12 because npotd=',npotd(ict)
+        write(6,'(''Number of quadrature points for psp, nquad, reset to 12 because npotd='',i2)') npotd(ict)
       endif
       if(npotd(ict).ge.5 .and. nquad.lt.24) then
         nquad=24
-        write(6,'(''Number of quadrature points, nquad, reset to 24 because npotd='',i2)') npotd(ict)
-        write(6,'(a,i2)') ' number of quadrature points for pseudopotential reset to nquad=24 because npotd=',npotd(ict)
+        write(6,'(''Number of quadrature points for psp, nquad, reset to 24 because npotd='',i2)') npotd(ict)
       endif
       if(npotd(ict).ge.6) then
         write(6,'(a)') ' Warning: we are not ensuring the right number of quadrature points for npotd >=6'

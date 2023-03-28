@@ -1,6 +1,8 @@
       subroutine distances(x,pe,pei)
 ! Written by Cyrus Umrigar
-! calculate interparticle distances
+! calculate interparticle distances and potentials, i.e.:
+! rvec_en(k,i,ic), r_en(i,ic), rvec_ee(k,ij), r_ee(ij)
+! pe_en, pe_ee=pei, pe, pot_ee(i)
       use control_mod
       use deriv_orb_mod
       use eloc_mod
@@ -144,7 +146,7 @@
         pe=pe+pe_en+pe_ee !JT
         pei=pe_ee
 
-       elseif(iperiodic.eq.1)then ! periodic in 1d
+      elseif(iperiodic.eq.1)then ! periodic in 1d
          pe_en=0.d0
          do ic=1,ncent
           do i=1,nelec
@@ -167,18 +169,18 @@
          pe = pe+pe_en+pe_ee
          pei = pe_ee
 
-       else
+      else ! periodic in 3d
 
         call pot_en_ewald(x,pe_en)
         call pot_ee_ewald(x,pe_ee)
         pe=pe+pe_en+pe_ee
         pei=pe_ee
 
-!     write(6,*) 'in distances'
-!     write(6,'(''r_en(i,j)'',9f9.5)') ((r_en(i,j),i=1,nelec),j=1,2)
-!     write(6,'(''r_ee(ij)'',9f9.5)') (r_ee(ij),ij=1,nelec*(nelec-1)/2)
-!     write(6,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,ndim),ij=1,nelec*(nelec-1)/2)
-      if(ipr.ge.3) write(6,'(''pe,pe_en(loc),pe_ee'',11f9.5)') pe,pe_en,pe_ee
+!       write(6,*) 'in distances'
+!       write(6,'(''r_en(i,j)'',9f9.5)') ((r_en(i,j),i=1,nelec),j=1,2)
+!       write(6,'(''r_ee(ij)'',9f9.5)') (r_ee(ij),ij=1,nelec*(nelec-1)/2)
+!       write(6,'(''rvec_ee(k,ij)'',9f12.4)') ((rvec_ee(k,ij),k=1,ndim),ij=1,nelec*(nelec-1)/2)
+        if(ipr.ge.3) write(6,'(''pe,pe_en(loc),pe_ee'',11f9.5)') pe,pe_en,pe_ee
 
       endif
 
@@ -194,7 +196,9 @@
 !-----------------------------------------------------------------------
       subroutine distancese(iel,x)
 ! Written by Cyrus Umrigar
-! calculate distances of electron iel to all other particles
+! For electron iel, saves interparticle distances, rvec_en(k,iel,ic), rvec_en(iel,ic), rvec_ee(k,ij)
+! in corresponding "_sav" array and calculates these for current position of electron iel.
+! Does the same for "shift" used for 3d periodic systems.
       use control_mod
       use atom_mod
       use const_mod

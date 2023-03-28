@@ -162,7 +162,6 @@ module initialization_mod
 !  idbdt=0
   nparml=0
   nparmcsf=0
-  nparmlin=0
   nparmj=0
   nparms=0
   nparmjs=nparmj+nparms
@@ -229,6 +228,10 @@ module initialization_mod
   call object_modified ('nwalk')
   write(6,*)
   write(6,'(a,i8)') ' Number of walkers initialized to ', nwalk
+
+  if (index(mode,'dmc') /= 0) then
+    write(6,'(/,''ene_int='',a,/)') ene_int
+  endif
 
 ! maximal number of optimization iterations
   iter_opt_max_nb = nopt_iter

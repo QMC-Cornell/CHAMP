@@ -4,7 +4,7 @@ module numbas_mod
  implicit none
  save
 
- integer :: numr
+ integer numr
  double precision, allocatable :: exp_h_bas(:),r0_bas(:),rwf(:,:,:,:),d2rwf(:,:,:,:)
  integer, allocatable :: nrbas(:),nrbas_analytical(:),nrbas_numerical(:),igrid(:),nr(:)
  integer, allocatable :: iwrwf(:,:)
