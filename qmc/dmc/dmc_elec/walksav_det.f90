@@ -14,6 +14,7 @@
       !TA
       orbw(:,:,iw)    = orb
       dorbw(:,:,:,iw) = dorb
+      ddorbw(:,:,iw) = ddorb
  
       aiupw(:,:,iw) = aiup
       deta_upw(iw)  = deta_up
@@ -75,6 +76,7 @@
       !TA
       orb  = orbw(:,:,iw)
       dorb = dorbw(:,:,:,iw)
+      ddorb = ddorbw(:,:,iw)
  
       aiup     = aiupw(:,:,iw)
       deta_up  = deta_upw(iw)
@@ -136,6 +138,7 @@
       !TA
       orbw(:,:,iw2)    = orbw(:,:,iw)
       dorbw(:,:,:,iw2) = dorbw(:,:,:,iw)
+      ddorbw(:,:,iw2) = ddorbw(:,:,iw)
  
       aiupw(:,:,iw2) = aiupw(:,:,iw)
       deta_upw(iw2)  = deta_upw(iw)

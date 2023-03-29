@@ -37,6 +37,12 @@
 #  installation guide, LAPACK Working Note 41, for instructions.
 #
 #######################################################################
+# Actually, the way I make this is just by making champ.
+#######################################################################
+
+FC = gfortran
+# FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall
  
 ALLAUX = ilaenv.o ieeeck.o lsame.o lsamen.o xerbla.o
 

@@ -282,6 +282,7 @@ module dmc_mod
   !Allocate walker arrays used for fast derivatives TA
   call alloc('orbw', orbw, nelec, orb_tot_nb, MWALK)
   call alloc('dorbw', dorbw, ndim, nelec, orb_tot_nb, MWALK)
+  call alloc('ddorbw', ddorbw, nelec, orb_tot_nb, MWALK)
   call alloc('aiupw', aiupw, nup, nup, MWALK)
   call alloc('aidnw', aidnw, ndn, ndn, MWALK)
   call alloc('deta_upw', deta_upw, MWALK)
@@ -388,13 +389,13 @@ module dmc_mod
 ! in only even multiples of the sim. lattice.
           if(nconf_new.gt.0 .and. (mod(ipass,ngfmc).eq.1 .or. ngfmc.eq.1)) then
             if(ndim*nelec.lt.10) then
-              write(fmt,'(a1,i1,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i1,a22)')'(',ndim*nelec,'f14.8,i3,es12.4,f13.5)'
              elseif(ndim*nelec.lt.100) then
-              write(fmt,'(a1,i2,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i2,a22)')'(',ndim*nelec,'f14.8,i3,es12.4,f13.5)'
              elseif(ndim*nelec.lt.1000) then
-              write(fmt,'(a1,i3,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i3,a22)')'(',ndim*nelec,'f14.8,i3,es12.4,f13.5)'
              elseif(ndim*nelec.lt.10000) then
-              write(fmt,'(a1,i4,a21)')'(',ndim*nelec,'f14.8,i3,d12.4,f12.5)'
+              write(fmt,'(a1,i4,a22)')'(',ndim*nelec,'f14.8,i3,es12.4,f13.5)'
              else
               stop 'fmt not defined for ndim*nelec>10000'
             endif
@@ -468,7 +469,7 @@ module dmc_mod
 
 !     if(igradhess.ge.1) call grad_hess_jas_fin(passes,efin)
       if(igradhess.ge.1) call grad_hess_jas_fin(wgcum,efin)
-      write(6,'(''passes,wgcum='',9d12.4)') passes,(wgcum(i),i=1,nforce)
+      write(6,'(''passes,wgcum='',9es12.4)') passes,(wgcum(i),i=1,nforce)
 
 !     Final writing
       call finwrt_dmc

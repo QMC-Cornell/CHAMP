@@ -4,9 +4,8 @@
 # from the Makefile in lib2 (to set FC and FFLAGS).
 
 ifndef FFLAGS
- FC     = g77
-#FFLAGS = -O2 -malign-double -ffixed-line-length-none -fno-automatic -Wall
- FFLAGS = -O3 -malign-double -ffixed-line-length-none -fno-automatic
+ FC     = gfortran
+ FFLAGS = -finit-local-zero -O3 -ffixed-line-length-132 -Wall
 endif
 
 OBJS = chkder.o  dpmpar.o  fdjac2.o  hybrd1.o   lmder.o   lmdipt.o  objfcn.o  r1mpyq.o  ssqjac.o \

@@ -69,13 +69,14 @@ ifeq ($(hostname),dft)
 endif
 
 #qmc1 at cornell
-ifeq ($(hostname),qmc3)
+ifeq ($(hostname),qmc1)
   FC=ifort
   FFLAGS=-zero -r8 -pad -align all -fpp -ip -O3 -mtune=core2 -march=core2 -xT -extend_source                 
   FFLAGS_DEBUG=$(FFLAGS) -check all -check nooutput_conversion -debug extended -debug-parameters all -g -traceback -error_limit 1 -DDEBUG
 endif
 
-ifeq ($(hostname),qmc1)
+#qmc2 at cornell
+ifeq ($(hostname),qmc2)
   FC=gfortran
   FFLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -Wall
   FFLAGS_DEBUG=$(FFLAGS) -g -fbounds-check

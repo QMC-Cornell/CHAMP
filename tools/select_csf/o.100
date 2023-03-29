@@ -1,0 +1,20 @@
+    1    2    3    4    5    6    7       1    2    3    4    5    6    7       1    1
+    1    2    3    4    5    7    8       1    2    3    4    5    7    8       2    2
+    1    2    3    4    5    7    8       1    2    3    4    5    6    9       3    2
+    1    2    3    4    5    6    8       1    2    3    4    5    6    8       4    2
+    1    2    3    4    5    6    8       1    2    3    4    5    7    9       5    2
+    1    2    3    4    5    7    9       1    2    3    4    5    6    8       6    2
+    1    2    3    4    5    7    9       1    2    3    4    5    7    9       7    2
+    1    2    3    4    5    6    9       1    2    3    4    5    7    8       8    2
+    1    2    3    4    5    6    9       1    2    3    4    5    6    9       9    2
+    3 ncsf
+    1 (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+ -1.00000000 (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+    2    3    4    5    6    7    8    9 (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+ -0.35355339 -0.35355339  0.35355339 -0.35355339 -0.35355339  0.35355339 -0.35355339 -0.35355339 (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+    2    4    7    9 (iwdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+  0.50000000  0.50000000  0.50000000  0.50000000 (cdet_in_csf(idet_in_csf,icsf),idet_in_csf=1,ndet_in_csf(icsf))
+
+  0.93987806  0.11783961  0.11805565 (csf_coef(icsf),icsf=1,ncsf)
+           1           8           4 (ndet_in_csf(icsf),icsf=1,ncsf)
+Move the previous 2 lines after the 1st line

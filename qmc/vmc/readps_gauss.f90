@@ -102,6 +102,8 @@
             endif
    70   r=r-0.01d0
    80   rmax_nloc=r
+
+        close(1)
   100 write(6,'('' center '',i3,'' pseudopot rmax_nloc= '',f6.2)') ict,rmax_nloc
 
 !     call gesqua(nquad,xq0,yq0,zq0,wq)

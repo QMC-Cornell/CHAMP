@@ -3,6 +3,10 @@
 # This Makefile should not be used on its own but should instead be called
 # from the Makefile in lib2 (to set FC and FFLAGS).
 
+FC = gfortran
+# FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall -fbounds-check
+FFLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall
+
 OBJS = dcabs1.o dchdc.o dchdd.o dchex.o dchud.o dgbco.o dgbdi.o dgbfa.o dgbsl.o dgeco.o \
 dgedi.o dgefa.o dgesl.o dgtsl.o dmach.o dpbco.o dpbdi.o dpbfa.o dpbsl.o dpoco.o \
 dpodi.o dpofa.o dposl.o dppco.o dppdi.o dppfa.o dppsl.o dptsl.o dqrdc.o dqrsl.o \

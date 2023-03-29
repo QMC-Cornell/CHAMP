@@ -10,9 +10,9 @@
       implicit real*8(a-h,o-z)
 
       orb(iel,:) = orbe(:) !TA
-      dorb(1,iel,:) = dorbe(1,:) !TA
-      dorb(2,iel,:) = dorbe(2,:) !TA
-      dorb(3,iel,:) = dorbe(3,:) !TA
+      dorb(1,iel,:) = dorbe(1,:)
+      dorb(2,iel,:) = dorbe(2,:)
+      dorb(3,iel,:) = dorbe(3,:)
 
       return
       end

@@ -682,9 +682,9 @@
       endif
       if(mode.eq.'dmc' .or. mode.eq.'dmc_mov1' .or. mode.eq.'dmc_mov1_mpi1') then
         nconf_global=nconf
-      elseif(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
+       elseif(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') then
         nconf_global=nconf*nproc
-      else if (mode.eq.'dmc_mpi1') then !TA
+       elseif (mode.eq.'dmc_mpi1') then !TA
         nconf_global=nconf
       endif
 
@@ -885,19 +885,18 @@
       call alloc ('iwctype', iwctype, ncent)
       read(5,*) (iwctype(i),i=1,ncent)
       write(6,'(''iwctype ='',t31,20i3,(20i3))') (iwctype(i),i=1,ncent)
-!      do 25 ic=1,ncent
-!   25   if(iwctype(ic).gt.nctype) stop 'iwctype(ic) > nctype'
       do ic=1,ncent
-        if(ic.ge.2 .and. iwctype(ic).lt.iwctype(ic-1)) then
-          write(6,'(''Atoms of the same atomtype must be contiguous'')')
-          stop 'Atoms of the same atomtype must be contiguous'
+        if (ic.ge.2) then
+          if (iwctype(ic).lt.iwctype(ic-1)) then
+            write(6,'(''Atoms of the same atomtype must be contiguous'')')
+            stop 'Atoms of the same atomtype must be contiguous'
+          endif
         endif
         if(iwctype(ic).gt.nctype) then
           write(6,'(''iwctype(ic) > nctype'')')
           stop 'iwctype(ic) > nctype'
         endif
       enddo
-
 
       call object_modified ('iwctype')  !JT
 
@@ -1258,8 +1257,14 @@
       endif
 
 ! Check if all the determinants are used in CSFs
-      do 90 idet=1,ndet
-   90   if(iflag(idet).eq.0) write(6,'(''Warning: determinant'',i3,'' is unused'')') idet
+      do idet=1,ndet
+        if(iflag(idet).eq.0) then
+          write(6,'(''Warning: determinant'',i6,'' is unused'')') idet
+        else
+          ndet_used=ndet_used+1
+        endif
+      enddo
+      write(6,'(''Number of dets used='',i6)') ndet_used
 
       call sort_iworbd
 

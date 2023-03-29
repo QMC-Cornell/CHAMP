@@ -240,6 +240,9 @@
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
+        eest=egave !TA
+        eigv=dexp((etrial-eest)*taucum(1)/wgcum(1)) !TA
+
 !        if(ifr.eq.1) then                                !JT
 !         eloc_bav = egnow                                !JT
 !         eloc_av = egave                                 !JT
@@ -312,6 +315,8 @@
            else
             write(6,'(f10.5,4(f10.5,''('',i5,'')''),17x,3i10)') egcollect(ifr)/wgcollect(ifr), &
      &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,nint(wgcollect(ifr)/nproc),ioldest
+!            write(6,'(f13.8,4(f13.8,''('',i8,'')''),17x,3i10)') egcollect(ifr)/wgcollect(ifr), &
+!     &      egave,iegerr,peave,ipeerr,tpbave,itpber,tjfave,itjfer,npass,nint(wgcollect(ifr)/nproc),ioldest
           endif
          else
           if(ndim.eq.2) then
@@ -323,6 +328,20 @@
           endif
         endif
    15 continue
+
+! The reason why having etrial far from e_DMC creates a bias is that in dwt we use taunow, but in
+! removing the choice of etrial from dwt we use taueff.  So, the bias is roughly a function of (eest-etrial)*(taunow-taueff).
+! However, here we use a simpler condition.
+      if (.not.l_reset_etrial .and. iblk>1 .and. iblk<5) then
+        if(abs(eest-etrial).gt.3*egerr) then
+          write(6,'(''Warning: abs(eest-etrial).gt.3*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
+        endif
+      elseif(.not.l_reset_etrial .and. iblk>1 .and. iblk==5) then
+        if(abs(eest-etrial).gt.5*egerr) then
+          write(6,'(''Warning: abs(eest-etrial).gt.5*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
+          call die ('acuest_dmc_mov1_mpi1', 'Warning: abs(eest-etrial).gt.5*egerr. Fix: use better etrial')
+        endif
+      endif
 
 !      moved up
 !      eloc_av = egave                                 !JT
@@ -423,7 +442,8 @@
        else
         eest=(egcum(1)+egsum(1))/(wgcum(1)+wgsum(1))
         eigv=dexp((etrial-eest)*(taucum(1)+tausum(1))/(wgcum(1)+wgsum(1)))
-        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
+!        if(ipr.ge.1) write(6,'(''eigv'',9f14.6)') eigv,eest,egcum(1),egsum(1),wgcum(1),wgsum(1),fprod
+        if(ipr.ge.1) write(6,'(''eest,taueff'',9f14.6)') eest,(taucum(1)+tausum(1))/(wgcum(1)+wgsum(1))
       endif
 
       wdsumo=wsum1(1)
@@ -487,9 +507,9 @@
           ajacold(iw,ifr)=ajacob
           call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
      &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
-          if(ifr.eq.1) eest=eest+eoldw(iw,ifr) !TA
           if(ifr.eq.1) then
-            if(ibasis.eq.3) then                ! complex calculation
+            eest=eest+eoldw(iw,ifr)   !TA
+            if(ibasis.eq.3) then      ! complex calculation
               call cwalksav_det(iw)
              else
               call walksav_det(iw)
@@ -515,13 +535,15 @@
       entry zerest_dmc_mov1_mpi1
 ! entry point to zero out all averages etc. after equilibration runs
 
-      if (ipass.ne.0) then
+      if (l_reset_etrial .and. ipass.ne.0) then
         dff=dexp((eest-etrial)*taucum(1)/wgcum(1)) !TA - reset etrial after equilibration runs
         do i=0,nfprod-1
           ff(i)=ff(i)*dff
           fprod=fprod*dff
         enddo
+        write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
+        eigv=1d0
       endif
 
       iblk=0
@@ -547,6 +569,8 @@
       r3cum=zero
       r4cum=zero
       ricum=zero
+      dr2ac=zero !TA
+      dr2un=zero !TA
       if(izigzag.gt.0) then
        zzcum(:)=zero
       endif

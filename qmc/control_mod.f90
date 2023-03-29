@@ -6,10 +6,12 @@ module control_mod
 ! threshold on statistical error on energy
   character(len=max_string_len)  :: title = 'no title'
   character(len=max_string_len)  :: seed = '1837465927472523'
-  character(len=max_string_len) :: drift_type='unr93', ene_int='no_ene_int', rewt_type='sym', tmoves_type='det_balance1'
+! character(len=max_string_len) :: drift_type='unr93', ene_int='no_ene_int', rewt_type='sym', tmoves_type='det_balance1'
+! character(len=max_string_len) :: drift_type='unr93', ene_int='unr93', rewt_type='sym', tmoves_type='det_balance1'
+  character(len=max_string_len) :: drift_type='unr93', ene_int='ene_int_v9', rewt_type='sym', tmoves_type='det_balance1'
 
   real(dp)                :: error_threshold = 1.d30
-  real(dp)                :: limit_rewt_dmc = 10.d0, adrift=0.5d0
+  real(dp)                :: limit_rewt_dmc=10.d0, c_rewt=3.5d0, p_rewt=1.d0, adrift=0.5d0
 
   logical                 :: l_nstep_all_cpus = .true.
   logical                 :: l_hopping_moves  = .false.
@@ -19,6 +21,7 @@ module control_mod
   logical                 :: l_branching = .true.
   real(dp)                :: wt_lambda = 1.d0
   logical                 :: l_population_control = .true.
+  logical                 :: l_reset_etrial = .true.
 
   contains
 
@@ -77,6 +80,7 @@ module control_mod
    write(6,'(a)') ' population_control = [logical] do population control in DMC? (default=true)'
    write(6,'(a)') ' ipq = [integer]'
    write(6,'(a)') ' itau_eff = [integer]'
+   write(6,'(a)') ' itau_integ = [integer]'
    write(6,'(a)') ' iacc_rej = [integer]'
    write(6,'(a)') ' icross = [integer]'
    write(6,'(a)') ' icuspg = [integer]'
@@ -89,12 +93,16 @@ module control_mod
    write(6,'(a)') ' drift_type = [string] Either unr93 or quadratic (default: unr93)'
    write(6,'(a)') ' ene_int = [string] : Type of energy integration (if any) used for local energy over time step tau'
    write(6,'(a)') ' limit_rewt_dmc = [real] : The reweight factor is not allowed to be larger than 1+limit_rewt_dmc*energy_sigma*tau'
+   write(6,'(a)') ' c_rewt = [real] : The reweight exponent is divided by a factor that depends on c_rewt'
+   write(6,'(a)') ' p_rewt = [real] : The reweight exponent is divided by a factor that depends on p_rewt'
    write(6,'(a)') ' rewt_type = [string] : Either "sym" or "pq"'
    write(6,'(a)') ' tmoves = [logical] do version 1 of size consistent tmoves of Casula, Moroni, Sorella, Filippi, JCP10'
    write(6,'(a)') ' tmoves_type [string] : Either casula1 or det_balance1'
    write(6,'(a)') ' vmc ... end : control menu for vmc'
    write(6,'(a)') ' error_threshold = [real] : montecarlo run until statistical error on energy reaches error_threshold'
    write(6,'(a)') ' nstep_total = [real]: For MPI, total number of steps per block for all CPUs'
+   write(6,'(a)') ' reset_etrial = [logical] reset etrial after each set of equilibration blocks'
+   write(6,'(a)') ' improved_gf = [logical] For all electron calculations, use improved Greens function which approximates the pair Greens function.'
    write(6,'(a)') 'end'
    write(6,*)
 
@@ -126,8 +134,11 @@ module control_mod
   case ('branching'); call get_next_value (l_branching)
   case ('wt_lambda'); call get_next_value (wt_lambda)
   case ('population_control'); call get_next_value (l_population_control)
+  case ('reset_etrial'); call get_next_value (l_reset_etrial)
+  case ('improved_gf'); call get_next_value (l_improved_gf)
   case ('ipq');    call get_next_value (ipq)
   case ('itau_eff');  call get_next_value (itau_eff)
+  case ('itau_integ');  call get_next_value (itau_integ)
   case ('iacc_rej');  call get_next_value (iacc_rej)
   case ('icross');  call get_next_value (icross)
   case ('icuspg');  call get_next_value (icuspg)
@@ -144,14 +155,15 @@ module control_mod
 !  call require (lhere, 'ene_int=unr93 or new_ene_int new_ene_int2 or no_ene_int or alfe', ene_int=='unr93' .or. ene_int=='new_ene_int' .or. ene_int=='new_ene_int2' .or. ene_int=='new_ene_int3' .or. ene_int=='new_ene_int4' .or. ene_int=='new_ene_int5' .or. ene_int=='new_ene_int7' .or. ene_int=='new_ene_int8' .or. ene_int=='new_ene_int9' .or. ene_int=='new_ene_int10' .or. ene_int=='no_ene_int' .or. ene_int=='alfe')
   case ('limit_rewt_dmc') ; call get_next_value (limit_rewt_dmc)
    call require (lhere, 'limit_rewt_dmc > 0', limit_rewt_dmc > 0)
+  case ('c_rewt') ; call get_next_value (c_rewt)
+   call require (lhere, 'c_rewt > 0', c_rewt > 0)
+  case ('p_rewt') ; call get_next_value (p_rewt)
+   call require (lhere, 'p_rewt > 0', p_rewt > 0)
   case ('rewt_type') ; call get_next_value (rewt_type)
    call require (lhere, 'rewt_type = sym or pq', rewt_type=='sym' .or. rewt_type=='pq')
   case ('tmoves');  call get_next_value (tmoves)
   case ('tmoves_type') ; call get_next_value (tmoves_type)
-!  write(6,'(''tmoves_type='',a)') trim(tmoves_type) ; call systemflush(6)
    call require (lhere, 'tmoves_type = casula1 or det_balance1', tmoves_type=='casula1' .or. tmoves_type=='det_balance1')
-  case ('reset_etrial') ; call get_next_value (reset_etrial)
-    call require (lhere, 'reset_etrial = false', .NOT.reset_etrial)
 
   case ('vmc')
    call vmc_menu
@@ -209,6 +221,13 @@ module control_mod
     write(6,'(''adrift= '',f6.2)') adrift
     write(6,'(''drift_type= '',a)') trim(drift_type)
     write(6,'(''ene_int= '',a)') trim(ene_int)
+    if(index(ene_int,'ene_int_v').ne.0 .or. index(ene_int,'ene_int_e').ne.0) then
+      write(6,'(''c_rewt='',f6.3)') c_rewt
+    endif
+    if(ene_int=='ene_int_v' .or. ene_int=='ene_int_e' .or. ene_int=='ene_int_v8' .or. ene_int=='ene_int_e8') then
+      write(6,'(''p_rewt='',f6.3)') p_rewt
+    endif
+    write(6,'(''itau_integ='',i3)') itau_integ
     write(6,'(''limit_rewt_dmc='',es9.1)') limit_rewt_dmc
     write(6,'(''rewt_type='',a,/)') trim(rewt_type)
     write(6,'(''tmoves='',l)') tmoves
@@ -308,6 +327,7 @@ module control_mod
     write(6,*)
     write(6,'(a)')   ' DMC algorithm parameters:'
     write(6,'(a,9i4)') ' idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e =', idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
+    write(6,'(a,9i4)') ' itau_integ =', itau_integ
     if(idmc.lt.0) write(6,'(a)') ' running DMC program in VMC mode'
     if(iabs(idmc).lt.1 .or. iabs(idmc).gt.3) stop 'iabs(idmc) must be 1 or 2 or 2'
     rttau=dsqrt(tau)
@@ -323,9 +343,17 @@ module control_mod
       write(6,'(a)') ' Warning: population control turned off in DMC'
     endif
     write(6,'(''DMC ene_int= '',a)') ene_int
+    if(index(ene_int,'ene_int_v').ne.0 .or. index(ene_int,'ene_int_e').ne.0) then
+      write(6,'(''c_rewt='',f6.3)') c_rewt
+    endif
+    if(ene_int=='ene_int_v' .or. ene_int=='ene_int_e' .or. ene_int=='ene_int_v8' .or. ene_int=='ene_int_e8') then
+      write(6,'(''p_rewt='',f6.3)') p_rewt
+    endif
     write(6,'(''DMC limit_rewt_dmc='',es9.1)') limit_rewt_dmc
     write(6,'(''tmoves='',l)') tmoves
     write(6,'(''tmoves_type='',a)') tmoves_type
+    write(6,'(''reset_etrial='',l)') l_reset_etrial
+    write(6,'(''improved_gf='',l)') l_improved_gf
   endif
 
   endif ! if use_parser

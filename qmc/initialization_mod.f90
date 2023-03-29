@@ -229,9 +229,9 @@ module initialization_mod
   write(6,*)
   write(6,'(a,i8)') ' Number of walkers initialized to ', nwalk
 
-  if (index(mode,'dmc') /= 0) then
-    write(6,'(/,''ene_int='',a,/)') ene_int
-  endif
+! if (index(mode,'dmc') /= 0) then
+!   write(6,'(/,''ene_int='',a,/)') ene_int
+! endif
 
 ! maximal number of optimization iterations
   iter_opt_max_nb = nopt_iter
@@ -249,6 +249,7 @@ module initialization_mod
   call alloc ('iwftype', iwftype, nforce)
   iwftype(1)=1
 
+  l_improved_gf=.FALSE.
 
   write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
 

@@ -1,4 +1,4 @@
-! $Rev: 734 $ $Date: 2021-06-10 10:31:44 -0400 (Thu, 10 Jun 2021) $
+! $Rev: 737 $ $Date: 2023-03-29 12:00:00 (Wed, 29 Mar 2023) $
 program champ
 
 ! modules use
@@ -22,7 +22,7 @@ program champ
   character(len=256) :: command_line_arguments
   character(len=256) :: executable_name
   character(len=256) :: argument
-! character(len=16)  :: filename
+  character(len=16)  :: filename
   character(len=max_string_len_file)       :: input_file_name = ''
   integer iostat, mode_i
 

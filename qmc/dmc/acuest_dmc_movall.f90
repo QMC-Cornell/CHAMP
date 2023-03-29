@@ -145,6 +145,8 @@
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
+        eest=egave
+
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))
           fgcm2(ifr)=fgcm2(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))**2
@@ -223,6 +225,20 @@
           endif
         endif
    15 continue
+
+! The reason why having etrial far from e_DMC creates a bias is that in dwt we use taunow, but in
+! removing the choice of etrial from dwt we use taueff.  So, the bias is roughly a function of (eest-etrial)*(taunow-taueff).
+! However, here we use a simpler condition.
+      if (.not.l_reset_etrial .and. iblk>1 .and. iblk<5) then
+        if(abs(eest-etrial).gt.3*egerr) then
+          write(6,'(''Warning: abs(eest-etrial).gt.3*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
+        endif
+      elseif(.not.l_reset_etrial .and. iblk>1 .and. iblk==5) then
+        if(abs(eest-etrial).gt.5*egerr) then
+          write(6,'(''Warning: abs(eest-etrial).gt.5*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
+          call die ('acuest_dmc_movall', 'Warning: abs(eest-etrial).gt.5*egerr. Fix: use better etrial')
+        endif
+      endif
 
 ! zero out xsum variables
 
@@ -385,13 +401,15 @@
       entry zerest_dmc_movall
 ! entry point to zero out all averages etc. after equilibration runs
 
-      if (ipass.ne.0) then
+      if (l_reset_etrial .and. ipass.ne.0) then
         dff=dexp((eest-etrial)*taueff(1)) !TA - reset etrial after equilibration runs
         do i=0,nfprod-1
           ff(i)=ff(i)*dff
           fprod=fprod*dff
         enddo
+        write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
+        eigv=1d0
       endif
 
       iblk=0
@@ -416,6 +434,8 @@
       r3cum=zero
       r4cum=zero
       ricum=zero
+      dr2un=zero
+      dr2ac=zero
       if(izigzag.gt.0) then
        zzcum(:)=zero
       endif
@@ -658,8 +678,6 @@
         znncorr(:) = 0
         zn2ncorr(:) = 0
       endif
-
-
 
       return
       end

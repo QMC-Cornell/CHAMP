@@ -242,10 +242,19 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
-
+! local
+  integer ierr
 
   write(6,*)
   write(6,'(a)') 'The program died.'
+
+# if defined (MPI)
+   call mpi_finalize (ierr)
+   if (ierr /= 0) then
+    write (6,'(2a)') 'error in mpi_finalize'
+   endif
+# endif
+
   stop 'The program died.'
 
   end subroutine die_basic
@@ -263,19 +272,19 @@ module basic_tools_mod
   character(len=*), intent(in) :: routine_name
 
 ! local
-!  integer ierr
+  integer ierr
 
   write(6,*)
 !  write(6,'(a,i3)') 'idtask=',idtask
   write(6,'(3a)') 'The program died because of a fatal error in routine ',trim(routine_name),'.'
 
 ! MPI beg -------------------------------------------------------------------
-!# if defined (MPI)
-!   call mpi_finalize (ierr)
-!   if (ierr /= 0) then
-!    write (6,'(2a)') trim(lhere),': error in mpi_finalize'
-!   endif
-!# endif
+# if defined (MPI)
+   call mpi_finalize (ierr)
+   if (ierr /= 0) then
+    write (6,'(2a)') trim(routine_name),': error in mpi_finalize'
+   endif
+# endif
 ! MPI end -------------------------------------------------------------------
 
   stop 'The program died.'
@@ -290,6 +299,8 @@ module basic_tools_mod
 ! Created     : J. Toulouse, 15 Oct 2005
 !---------------------------------------------------------------------------
   implicit none
+! local
+  integer ierr
 
 ! input
   character(len=*), intent (in) :: routine_name, message
@@ -297,6 +308,14 @@ module basic_tools_mod
   write(6,*)
   write(6,'(3a)') trim(routine_name),': ', trim(message)
   write(6,'(3a)') 'The program died because of a fatal error in routine ',trim(routine_name),'.'
+
+# if defined (MPI)
+   call mpi_finalize (ierr)
+   if (ierr /= 0) then
+    write (6,'(2a)') trim(routine_name),': error in mpi_finalize'
+   endif
+# endif
+
   stop 'The program died.'
 
   end subroutine die_message

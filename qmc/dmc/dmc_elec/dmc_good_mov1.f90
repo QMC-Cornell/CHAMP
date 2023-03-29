@@ -82,6 +82,7 @@
       use jaso_mod, only: fjo                                  !TA
       use deriv_fast_mod, only: aiup, aidn, tup, tdn, yup, ydn !TA
       use orb_mod, only: dorb                                  !TA
+      use newton_mod
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-10,huge=1.d+100,adrift0=0.1d0)
@@ -91,6 +92,7 @@
       dimension xaxis(3),zaxis(3),xbac(3)
       dimension itryo(nelec),itryn(nelec),unacp(nelec)
       dimension dewto(nparm),dewtn(nparm),dexponent(nparm)
+      dimension voldw_sav(3,nelec)
 
       data ncall,ipr_sav /0,0/
       save ipr_sav
@@ -159,6 +161,13 @@
               rmino=sqrt(rmino)
               zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
 
+!----------------
+!Warning: tmp
+              if (l_improved_gf) then
+                zeta=znuc(iwctype(iwnuc))+(0.34/rttau)*(1+(rmino/rttau)/(1+rmino/rttau))
+              endif
+!----------------
+
               voldr=zero
               do 3 k=1,ndim
     3           voldr=voldr+voldw(k,i,iw,ifr)*rvmino(k)
@@ -217,6 +226,14 @@
         drifdif=zero
         iaccept=0
         psum=0
+        v2sumo=zero
+        voldw_sav=voldw(:,:,iw,1)
+        do i=1,nelec
+          do k=1,ndim !TA
+            v2sumo=v2sumo+voldw(k,i,iw,1)**2
+          enddo
+        enddo
+
         do 200 i=1,nelec
 ! Find the nearest nucleus & vector from that nucleus to electron
 ! & component of velocity in that direction
@@ -230,6 +247,10 @@
               iwnuc=icent
             endif
    10     continue
+
+!          do k=1,ndim !TA
+!            v2sumo=v2sumo+voldw(k,i,iw,1)**2
+!          enddo
 
           if (i.le.nup) call eval_grad(i, dorb(:,i,:), aiup, tup, yup, voldw(:,i,iw,1)) !TA
           if (i.gt.nup) call eval_grad(i, dorb(:,i,:), aidn, tdn, ydn, voldw(:,i,iw,1))
@@ -245,10 +266,18 @@
             rmino=rmino+rvmino(k)**2
             voldr=voldr+voldw(k,i,iw,1)*rvmino(k)
    20       v2old=v2old+voldw(k,i,iw,1)**2
+!          v2sumo=v2sumo+v2old !TA
           rmino=sqrt(rmino)
           voldr=voldr/rmino
           volda=sqrt(v2old)
           zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
+
+!----------------
+!Warning: tmp
+              if (l_improved_gf) then
+                zeta=znuc(iwctype(iwnuc))+(0.34/rttau)*(1+(rmino/rttau)/(1+rmino/rttau))
+              endif
+!----------------
 
 ! Place zaxis along direction from nearest nucleus to electron and
 ! x-axis along direction of angular component of velocity.
@@ -282,6 +311,12 @@
 
           driftr=vavvt*voldr ! driftr can be < 0 because voldr can be < 0
           rtry=rmino+driftr  ! if rtry<0 then electron has drifted past nucleus
+!----------------
+!Warning: tmp
+              if (l_improved_gf) then
+                rtry=rmino-volda*tau
+              endif
+!----------------
 
 ! Prob. of sampling exponential rather than gaussian is
 ! half*derfc(rtry/dsqrt(two*tau)) = half*(two-derfc(-rtry/dsqrt(two*tau)))
@@ -299,7 +334,9 @@
 
 ! Calculate drifted x and y coordinates in local coordinate system centered
 ! on nearest nucleus
-            xprime=vavvt*voldp*rtry/(half*(rmino+rtry))
+! Warning:tmp
+!           xprime=vavvt*voldp*rtry/(half*(rmino+rtry))
+            xprime=vavvt*voldp*min(1.d0,rtry/(half*(rmino+rtry)))
             zprime=rtry
 
 ! Convert back to original coordinate system
@@ -313,6 +350,36 @@
    70         xnew(k)=cent(k,iwnuc)
           endif
           pgaus=one-qgaus
+!-------------------
+!Warning: tmp
+          if (l_improved_gf) then
+            pgaus_sav=pgaus
+            znucc=znuc(iwctype(iwnuc))
+!           divv=-znucc/rmino
+!           aux = (tau - 1d0/divv)*dsqrt(-divv)*erf(1d0/sqrt(-2d0*tau*divv)) + dsqrt(2d0*tau/pi)*dexp(1d0/(2d0*tau*divv))
+!           tau_dfus = 3d0*tau - 1d0/divv - aux**2
+
+            taudif=tau/(1+3*tau**.75*znucc**1.5) ! when rmino=0, taudifr0=taudift0=taudif
+            divvr=0
+            divvt=-znucc/rmino
+            taudifrp=tau
+            taudiftp=3*tau-1/divvt-((tau-1/divvt)*sqrt(-divvt)*erf(1/sqrt(-2*tau*divvt))+sqrt(2*tau/pi)*exp(1/(2*tau*divvt)))**2
+            taudifr0=(exp(-rmino**2/tau)*taudif+(1-exp(-rmino**2/tau))*taudifrp)
+            taudift0=(exp(-rmino**2/tau)*taudif+(1-exp(-rmino**2/tau))*taudiftp)
+            taudifr0=0.5d0*(taudifr0+taudift0) ; taudift0=taudifr0
+!           taudifr0=tau ; taudift0=tau ! Warning: set to tau for now
+!!          pgaus=1./(1+(znuc*pi/(zeta8**3*(zeta8-znuc)))*exp(-(xnuc-drift_tot)**2/(2*taudifr0))/((2*pi*taudifr0)**0.5*(2*pi*taudift0)))
+!           pgaus=1./(1+(znucc*pi/(zeta**3*(zeta-znucc)))*exp(-(max(rtry,0.d0))**2/(2*tau))/((2*pi*taudifr0)**0.5*(2*pi*taudift0)))
+!           qgaus=1-pgaus
+            qgaus=max(0.5*erfc((rmino+driftr)/sqrt(2*tau))*(1-exp(-3*tau**.25)),1.d-6)
+            pgaus=1-qgaus
+            call newton(znucc,zeta,taudifr0,rtry,pgaus)
+!           write(6,'(''zeta,rmino,rtry,pgaus_sav,pgaus='',9f10.6)') zeta,rmino,rtry,pgaus_sav,pgaus
+!           write(6,'(''tau,rtry,zeta,pgaus='',9f10.6)') znucc,zeta,tau,rtry,pgaus
+!           write(6,'(''1znucc,rtry,tau,taudifr0,taudift0,pgaus,zeta='',9f10.6)') znucc,rtry,tau,taudifr0,taudift0,pgaus,zeta
+            write(6,'(''1znucc,rmino,tau,taudifr0,taudift0,pgaus,zeta='',9f10.6)') znucc,rmino,tau,taudifr0,taudift0,pgaus,zeta
+          endif
+!-------------------
 
           if(ipr.ge.1) write(6,'(''xnewdr'',2i4,9f8.5)') iw,i,(xnew(k),k=1,ndim)
 
@@ -326,7 +393,11 @@
             dfus2b=zero
             do 80 k=1,ndim
               drift=xnew(k)-xoldw(k,i,iw,1)
-              dfus=gauss()*rttau
+              if (l_improved_gf) then  
+                dfus=gauss()*sqrt(taudifr0) ! for now taudift0=taudifr0
+              else
+                dfus=gauss()*rttau
+              endif
               dx=drift+dfus
               dr2=dr2+dx**2
               dfus2a=dfus2a+dfus**2
@@ -358,6 +429,9 @@
 ! Pull out the gaussian since it is the same for the forward and backward moves.
 ! So, fnormo is what multiplies the gaussian.
           fnormo = pgaus + qgaus*term*(zeta**3)*dexp(-two*zeta*dfusb+half*dfus2a/tau)
+          if (l_improved_gf) then
+            probo = (pgaus/(2*pi*taudifr0)**1.5d0)*exp(-half*dfus2a/taudifr0) + qgaus*(zeta**3/pi)*exp(-two*zeta*dfusb)
+          endif
 
 ! calculate psi and velocity at new configuration
           call hpsiedmc(i,iw,xnew,psidn,psijn,vnew)
@@ -399,6 +473,13 @@
           vnewa=sqrt(v2new)
           zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
 
+!----------------
+!Warning: tmp
+          if (l_improved_gf) then
+              zeta=znuc(iwctype(iwnuc))+(0.34/rttau)*(1+(rminn/rttau)/(1+rminn/rttau))
+          endif
+!----------------
+
 ! Place zaxis along direction from nearest nucleus to electron and
 ! x-axis along direction of angular component of velocity.
 ! Calculate the velocity in the phi direction
@@ -429,6 +510,12 @@
 
           driftr=vavvt*vnewr
           rtry=rminn+driftr
+!----------------
+!Warning: tmp
+              if (l_improved_gf) then
+                rtry=rminn-vnewa*tau
+              endif
+!----------------
           dfus2a=zero
           dfus2b=zero
           if(rtry.gt.zero) then
@@ -436,7 +523,9 @@
 
 ! Calculate drifted x and y coordinates in local coordinate system centered
 ! on nearest nucleus
-            xprime=vavvt*vnewp*rtry/(half*(rminn+rtry))
+! Warning: tmp
+!           xprime=vavvt*vnewp*rtry/(half*(rminn+rtry))
+            xprime=vavvt*vnewp*min(1.d0,rtry/(half*(rminn+rtry)))
             zprime=rtry
 
 ! Convert back to original coordinate system
@@ -459,22 +548,50 @@
           dfusb=sqrt(dfus2b)
 
           fnormn = pgaus + qgaus*term*(zeta**3)*dexp(-two*zeta*dfusb+half*dfus2a/tau)
+          p=(psidn/psidow(iw,1))**2*exp(2*(psijn-psijow(iw,1)))* exp((dfus2o-dfus2n)/(two*tau))*fnormn/fnormo
+!-------------------
+! Warning: tmp
+          if (l_improved_gf) then
+            pgaus_sav=pgaus
+            znucc=znuc(iwctype(iwnuc))
+
+            taudif=tau/(1+3*tau**.75*znucc**1.5) ! when rminn=0, taudifr0=taudift0=taudif
+            divvr=0
+            divvt=-znucc/rminn
+            taudifrp=tau
+            taudiftp=3*tau-1/divvt-((tau-1/divvt)*sqrt(-divvt)*erf(1/sqrt(-2*tau*divvt))+sqrt(2*tau/pi)*exp(1/(2*tau*divvt)))**2
+            taudifr0=(exp(-rminn**2/tau)*taudif+(1-exp(-rminn**2/tau))*taudifrp)
+            taudift0=(exp(-rminn**2/tau)*taudif+(1-exp(-rminn**2/tau))*taudiftp)
+            taudifr0=0.5d0*(taudifr0+taudift0) ; taudift0=taudifr0
+!           taudifr0=tau ; taudift0=tau ! Warning: set to tau for now
+!           pgaus=1./(1+(znucc*pi/(zeta**3*(zeta-znucc)))*exp(-(max(rtry,0.d0))**2/(2*tau))/((2*pi*taudifr0)**0.5*(2*pi*taudift0)))
+!           qgaus=1-pgaus
+            qgaus=max(0.5*erfc((rminn+driftr)/sqrt(2*tau))*(1-exp(-3*tau**.25)),1.d-6)
+            pgaus=1-qgaus
+            call newton(znucc,zeta,taudifr0,rtry,pgaus)
+!           write(6,'(''zeta,rminn,rtry,pgaus_sav,pgaus='',9f10.6)') zeta,rminn,rtry,pgaus_sav,pgaus
+!           write(6,'(''tau,rtry,zeta,pgaus='',9f10.6)') znucc,zeta,tau,rtry,pgaus
+            write(6,'(''2znucc,rminn,tau,taudifr0,taudift0,pgaus,zeta='',9f10.6)') znucc,rminn,tau,taudifr0,taudift0,pgaus,zeta
+!           write(6,'(''znucc, znucc*pi/(zeta**3*(zeta-znucc)), exp(-(max(rtry,0.d0))**2/(2*taudif0)), (1+(znucc*pi/(zeta**3*(zeta-znucc)))*exp(-(max(rtry,0.d0))**2/(2*taudif0))/((2*pi*taudif0)**1.5))'',9es12.4)') znucc, znucc*pi/(zeta**3*(zeta-znucc)), exp(-(max(rtry,0.d0))**2/(2*taudif0)), (1+(znucc*pi/(zeta**3*(zeta-znucc)))*exp(-(max(rtry,0.d0))**2/(2*taudif0))/((2*pi*taudif0)**1.5))
+!4          write(6,'(''zeta,rminn,rtry,pgaus_sav,pgaus='',9f10.6)') zeta,rminn,rtry,pgaus_sav,pgaus
+            probn = (pgaus/(2*pi*taudifr0)**1.5d0)*exp(-half*dfus2a/taudifr0) + qgaus*(zeta**3/pi)*exp(-two*zeta*dfusb)
+
+            p=(psidn/psidow(iw,1))**2*exp(2*(psijn-psijow(iw,1)))* probn/probo
+!           write(6,'(''pgaus, term, zeta**3, dexp(-two*zeta*dfusb+half*dfus2a/tau), fnormn'',9es12.3)') pgaus, term, zeta**3, dexp(-two*zeta*dfusb+half*dfus2a/tau), fnormn
+!           write(6,'(''fnormn, fnormo, probn, probo, exp((dfus2o-dfus2n)/(two*tau))*fnormn/fnormo, probn/probo'',9es12.4)') fnormn, fnormo, probn, probo, exp((dfus2o-dfus2n)/(two*tau))*fnormn/fnormo, probn/probo
+!           write(6,'(''zeta,rminn,rtry,pgaus_sav,pgaus='',9f10.6)') zeta,rminn,rtry,pgaus_sav,pgaus
+          endif
+!-------------------
 
           if(ipr.ge.1) then
             write(6,'(''xoldw'',9f10.6)')(xoldw(k,i,iw,1),k=1,ndim), &
      &      (xnew(k),k=1,ndim), (xbac(k),k=1,ndim)
             write(6,'(''dfus2o'',9f10.6)')dfus2o,dfus2n, &
      &      psidow(iw,1),psidn,psijow(iw,1),psijn,fnormo,fnormn
+            write(6,'(''p'',11f10.6)') p,(psidn/psidow(iw,1))**2*exp(2*(psijn-psijow(iw,1))), &
+     &      exp((dfus2o-dfus2n)/(two*tau)),psidn,psidow(iw,1), &
+     &      psijn,psijow(iw,1),dfus2o,dfus2n,fnormo,fnormn
           endif
-
-          p=(psidn/psidow(iw,1))**2*exp(2*(psijn-psijow(iw,1)))* &
-     &    exp((dfus2o-dfus2n)/(two*tau))*fnormn/fnormo
-
-          if(ipr.ge.1) write(6,'(''p'',11f10.6)') &
-     &    p,(psidn/psidow(iw,1))**2*exp(2*(psijn-psijow(iw,1))), &
-     &    exp((dfus2o-dfus2n)/(two*tau)),psidn,psidow(iw,1), &
-     &    psijn,psijow(iw,1),dfus2o,dfus2n,fnormo,fnormn
-
 
 ! The following is one reasonable way to cure persistent configurations
 ! Not needed if itau_eff <=0 and in practice we have never needed it even
@@ -630,6 +747,13 @@
               rminn=sqrt(rminn)
               zeta=dsqrt(one/tau+znuc(iwctype(iwnuc))**2)
 
+!----------------
+!Warning: tmp
+            if (l_improved_gf) then
+              zeta=znuc(iwctype(iwnuc))+(0.34/rttau)*(1+(rminn/rttau)/(1+rminn/rttau))
+            endif
+!----------------
+
               voldr=zero
               do 250 k=1,ndim
   250           voldr=voldr+voldw(k,i,iw,ifr)*rvminn(k)
@@ -661,6 +785,7 @@
             drifdifr=one
             fration=fratio(iw,ifr)
             enew=eoldw(iw,ifr)
+            v2sumn=v2sumo
           endif
 
           taunow=tauprim*drifdifr
@@ -679,28 +804,98 @@
 !All these will give the same energy at tau=0, but progressively lower energies, going from UNR93 to no_ene_int, at finite values of tau
 !The second limit is described and imposed about 50 lines down.
 
-! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
-          if(ene_int=='unr93') then
-            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)                                               ! UNR93
-            ewtn=eest-(eest-enew)*fration                                                               ! UNR93
-          elseif(ene_int=='new_ene_int') then
-            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
-            ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
-          elseif(ene_int=='new_ene_int2') then
-            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
-            ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
-          elseif(ene_int=='new_ene_int3') then
-            ewto=eest-(eest-eoldw(iw,ifr))*(1-(1-fratio(iw,ifr))**3)                                    ! new_ene_int3
-            ewtn=eest-(eest-enew)*(1-(1-fration)**3)                                                    ! new_ene_int3
-          elseif(ene_int=='no_ene_int') then
+          if(ipass .gt. nstep*2*nblkeq + max(10,nint(10.d0/tau))) then
+!           energy_sigma=e_sigma(ecum1,ecm21,wcum1)
+            energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+          else
+            energy_sigma=0.2d0*sqrt(dble(nelec))
+          endif
+          edifo=eoldw(iw,ifr)-eest
+          edifn=enew-eest
+          ecuto=max(edifo,-limit_rewt_dmc*energy_sigma)
+          ecutn=max(edifn,-limit_rewt_dmc*energy_sigma)
+
+          if(itau_integ<=0) then
+            tau_integ=tau
+          else
+            tau_integ=taunow
+          endif
+
+          if(index(ene_int,'ene_int_v').ne.0) then
+            factoro=max(sqrt(v2sumo/nelec)*tau_integ*c_rewt,1e-9)                                       ! v
+            factorn=max(sqrt(v2sumn/nelec)*tau_integ*c_rewt,1e-9)                                       ! v
+          elseif(index(ene_int,'ene_int_e').ne.0) then
+            factoro=max(abs(edifo)*tau_integ*c_rewt/energy_sigma,1e-9)                                  ! e
+            factorn=max(abs(edifn)*tau_integ*c_rewt/energy_sigma,1e-9)                                  ! e
+          endif
+
+          if(ene_int=='no_ene_int') then
             ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
             ewtn=enew                                                                                   ! no_ene_int
+          elseif(ene_int=='unr93') then
+            ewto=eest+edifo*fratio(iw,ifr)                                                              ! UNR93
+            ewtn=eest+edifn*fration                                                                     ! UNR93
           elseif(ene_int=='alfe') then
             ecut=0.2*sqrt(nelec/tau)                                                                    ! Alfe
-            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                           ! Alfe
-            ewtn=eest+min(ecut,max(-ecut,enew-eest))                                                    ! Alfe
-!           ewto=etrial+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                         ! Alfe
-!           ewtn=etrial+min(ecut,max(-ecut,enew-eest))                                                  ! Alfe
+            ewto=eest+min(ecut,max(-ecut,edifo))                                                        ! Alfe
+            ewtn=eest+min(ecut,max(-ecut,edifn))                                                        ! Alfe
+          elseif(ene_int=='ene_int_v') then
+            ewto=eest+edifo/(1+factoro**p_rewt)**(1/p_rewt)                                             ! ene_int_v
+            ewtn=eest+edifn/(1+factorn**p_rewt)**(1/p_rewt)                                             ! ene_int_v
+          elseif(ene_int=='ene_int_e') then
+            ewto=eest+edifo/(1+factoro**p_rewt)**(1/p_rewt)                                             ! ene_int_e
+            ewtn=eest+edifn/(1+factorn**p_rewt)**(1/p_rewt)                                             ! ene_int_e
+          elseif(ene_int=='ene_int_v2') then
+            ewto=eest+edifo/(1+factoro**p_rewt+factoro**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_v2
+            ewtn=eest+edifn/(1+factorn**p_rewt+factorn**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_v2
+          elseif(ene_int=='ene_int_e2') then
+            ewto=eest+edifo/(1+factoro**p_rewt+factoro**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_e2
+            ewtn=eest+edifn/(1+factorn**p_rewt+factorn**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_e2
+          elseif(ene_int=='ene_int_v3') then
+            ewto=eest+edifo/(1+factoro**p_rewt+2*factoro**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_v3
+            ewtn=eest+edifn/(1+factorn**p_rewt+2*factorn**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_v3
+          elseif(ene_int=='ene_int_e3') then
+            ewto=eest+edifo/(1+factoro**p_rewt+2*factoro**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_e3
+            ewtn=eest+edifn/(1+factorn**p_rewt+2*factorn**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_e3
+          elseif(ene_int=='ene_int_v4') then
+            ewto=eest+edifo/(1+factoro**p_rewt+(2*factoro)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_v4
+            ewtn=eest+edifn/(1+factorn**p_rewt+(2*factorn)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_v4
+          elseif(ene_int=='ene_int_e4') then
+            ewto=eest+edifo/(1+factoro**p_rewt+(2*factoro)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_e4
+            ewtn=eest+edifn/(1+factorn**p_rewt+(2*factorn)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_e4
+          elseif(ene_int=='ene_int_v6') then
+            ewto=eest+edifo/min(1+factoro,sqrt(1+(2*factoro)**2))                                       ! ene_int_v6
+            ewtn=eest+edifn/min(1+factorn,sqrt(1+(2*factorn)**2))                                       ! ene_int_v6
+          elseif(ene_int=='ene_int_e6') then
+            ewto=eest+edifo/min(1+factoro,sqrt(1+(2*factoro)**2))                                       ! ene_int_e6
+            ewtn=eest+edifn/min(1+factorn,sqrt(1+(2*factorn)**2))                                       ! ene_int_e6
+          elseif(ene_int=='ene_int_v7') then
+            ewto=eest+edifo/min(1+1.2d0*factoro,sqrt(1+(3.d0*factoro)**2))                              ! ene_int_v7
+            ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(3.d0*factorn)**2))                              ! ene_int_v7
+          elseif(ene_int=='ene_int_e7') then
+            ewto=eest+edifo/min(1+1.2d0*factoro,sqrt(1+(3.d0*factoro)**2))                              ! ene_int_e7
+            ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(3.d0*factorn)**2))                              ! ene_int_e7
+          elseif(ene_int=='ene_int_v9') then
+            ewto=eest+edifo*(sqrt(pi)/2)*erf(factoro)/factoro                                           ! ene_int_v9
+            ewtn=eest+edifn*(sqrt(pi)/2)*erf(factorn)/factorn                                           ! ene_int_v9
+          elseif(ene_int=='ene_int_e9') then
+            ewto=eest+edifo*(sqrt(pi)/2)*erf(factoro)/factoro                                           ! ene_int_e9
+            ewtn=eest+edifn*(sqrt(pi)/2)*erf(factorn)/factorn                                           ! ene_int_e9
+          elseif(ene_int=='ene_int_v10') then
+            ewto=eest+edifo/sqrt(1+0.1*factoro+factoro**2)                                              ! ene_int_v10
+            ewtn=eest+edifn/sqrt(1+0.1*factorn+factorn**2)                                              ! ene_int_v10
+          elseif(ene_int=='ene_int_v11') then
+            factoro=0.1d0*sqrt(factoro)+factoro                                                         ! ene_int_v11
+            factorn=0.1d0*sqrt(factorn)+factorn                                                         ! ene_int_v11
+            ewto=eest+edifo*(sqrt(pi)/2)*erf(factoro)/factoro                                           ! ene_int_v11
+            ewtn=eest+edifn*(sqrt(pi)/2)*erf(factorn)/factorn                                           ! ene_int_v11
+          elseif(ene_int=='new_ene_int8') then
+            ewto=eest+ecuto/(1+(v2sumo*tau_integ/nelec)**2)                                             ! new_ene_int8
+            ewtn=eest+ecutn/(1+(v2sumn*tau_integ/nelec)**2)                                             ! new_ene_int8
+          else
+            write(6,'(''ene_int not set correctly in input'')')
+            stop 'ene_int not set correctly in input'
           endif
 
           do 262 iparm=1,nparm
@@ -750,24 +945,26 @@
 ! So, multiply energy_sigma by sqrt(float(nproc)).
 ! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
 !         if(iblk.ge.2. or. (iblk.ge.1 .and. nstep.ge.2)) then
-          if(ipass-nstep*2*nblkeq .gt. 5) then
-            energy_sigma=e_sigma(ecum1,ecm21,wcum1)
-            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+!          if(ipass-nstep*2*nblkeq .gt. 5) then ! TA commented out
+!            energy_sigma=e_sigma(ecum1,ecm21,wcum1) !TA commented out
+!            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
 !           if(dwt.gt.1+limit_rewt_dmc*energy_sigma*tau) then
-            if(dwt.gt.dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
-write(6,'(''dwt,exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)='',9es12.4)') dwt,dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
+!           if(dwt.gt.dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
+            if(dwt.gt.dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)) then
               ipr_sav=ipr_sav+1
               if(ipr_sav.le.3) then
                 write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
      &          nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
+                write(6,'(''dwt,exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)='',9es12.4)') dwt,dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
                 if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
               elseif(ipr_sav.eq.4) then
                 write(6,'(''Warning: Additional warning msgs. of dwt>1+limit_rewt_dmc*energy_sigma*tau suppressed'')')
               endif
 !             dwt=1+limit_rewt_dmc*energy_sigma*tau
-              dwt=dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
+!             dwt=dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
+              dwt=dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)
             endif
-          endif
+!          endif !TA commented out
 
 ! ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.
           dwt=dwt**wt_lambda
@@ -906,3 +1103,72 @@ write(6,'(''dwt,exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)='',9es12.4)')
 
       return
       end
+!------------------------------------------------------------
+!-------------------------------------------------------------------
+module newton_mod
+implicit none
+
+contains
+
+  function g(zeta,tau,rp_rnuc,delta_r,p_gaus)
+! implicit real*8 (a-h,o-z)
+  implicit none
+  real*8 zeta,tau,rp_rnuc,delta_r,p_gaus,g,pi
+  pi=4*datan(1.d0)
+
+  g=p_gaus*exp(-(rp_rnuc+delta_r)**2/(2*tau))/(2*pi*tau)**1.5d0 + (1-p_gaus)*(zeta**3/pi)*exp(-2*zeta*abs(delta_r))
+
+  return
+  end function g
+!-------------------------------------------------------------------
+  function f(znuc,zeta,tau,rp_rnuc,p_gaus)
+! implicit real*8 (a-h,o-z)
+  implicit none
+  real*8 znuc,zeta,tau,rp_rnuc,p_gaus,f,pi
+
+  pi=4*datan(1.d0)
+
+  f=zeta**3*(zeta-znuc)-(p_gaus/(1-p_gaus))*pi*znuc*exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0
+
+  return
+  end function f
+!-------------------------------------------------------------------
+  function df(znuc,zeta)
+! implicit real*8 (a-h,o-z)
+  implicit none
+  real*8 znuc,zeta,df
+
+  df=zeta**2*(4*zeta-3*znuc)
+  return
+  end function df
+!-------------------------------------------------------------------
+  subroutine newton(znuc,zeta,tau,rp_rnuc,p_gaus)
+! implicit real*8 (a-h,o-z)
+  implicit none
+! real*8 znuc,zeta,tau,rp_rnuc,p_gaus,func,dfunc,f,df, pi
+  real*8, intent(in) :: znuc,tau,rp_rnuc,p_gaus
+  real*8, intent(out) :: zeta
+  real*8 func,dfunc,pi
+
+  pi=4*datan(1.d0)
+
+! zeta=znuc+(0.34/sqrt(tau))*(1+(r_rnuc/sqrt(tau))/(1+r_rnuc/sqrt(tau)))
+  zeta=znuc+2
+! write(6,'(''zeta'',9f10.6)') zeta
+  do
+    func=f(znuc,zeta,tau,rp_rnuc,p_gaus)
+    dfunc=df(znuc,zeta)
+!   write(6,'(''zeta,f'',f10.6,9f15.6)') zeta, func, zeta**3*(zeta-znuc), (p_gaus/(1-p_gaus))*pi*znuc*exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0, (p_gaus/(1-p_gaus))*pi*znuc, exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0, rp_rnuc, dfunc
+!   write(6,'(''znuc,zeta,func,dfunc,rp_rnuc,p_gaus='',9f10.6)') znuc,zeta,func,dfunc,rp_rnuc,p_gaus
+!   write(6,'(''znuc,zeta,func,dfunc,rp_rnuc,p_gaus='',2f10.6,9es14.6)') znuc,zeta,func,dfunc,rp_rnuc,p_gaus
+    zeta=zeta-func/dfunc
+    if(abs(func) < 1.d-12*dfunc) then
+!     write(6,'(''znuc,zeta,f='',9f10.6)') znuc,zeta,f(znuc,zeta,tau,rp_rnuc,p_gaus)
+      exit
+    endif
+  enddo
+! write(6,*)
+
+  end subroutine newton
+end module newton_mod
+!-------------------------------------------------------------------

@@ -1,5 +1,5 @@
       subroutine nonloc(x,rshift,rvec_en,r_en)
-! This routine is called by vmc and dmc. l_do_tmoves=true only if doing dmc and tmoves=true in input.
+! This routine is called by vmc and dmc.  The actual tmove is now being done in ../dmc/dmc_elec/tmove.f90
 ! Warning: I may still need to update the new tmove parts for the derivatives put in by Julien
 ! Warning: At present it uses the same points for the reverse T-move to save time, but this may create a tiny bias.
 ! Warning: Assumes for the reverse T-move probability that the nonlocal ranges of the atoms are non overlapping.
@@ -183,15 +183,6 @@
               do 50 l=1,npotd(ict)
                 if(l.ne.lpotp1(ict)) then
                   vpsp_tmove=vpsp_tmove + vps(i,ic,l)*yl0(l,costh)
-!                  if(l_do_tmoves) then
-!                    if(ipr.ge.1) write(6,'(''vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),tau'',9d12.4)') &
-!     &                vps(i,ic,l),wq(iq),yl0(l,costh),deter,psidow(current_walker,1),exp(value),tau
-!!                   gpsp_tmove(ntmove_pts)=gpsp_tmove(ntmove_pts) + vps(i,ic,l)*yl0(l,costh)                  ! linear approx in Casula
-!                    gpsp_tmove(ntmove_pts)=gpsp_tmove(ntmove_pts) + (exp(-tau*vps(i,ic,l))-1)*yl0(l,costh) ! exact
-!                    call systemflush(6)
-!                  endif
-!                  if(ipr.ge.1) write(6,'(''nonloc: l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value)'',i3,9f20.15)') &
-!     &            l,yl0(l,costh),deter,exp(value),yl0(l,costh)*deter*exp(value)
                   if(ipr.ge.1) write(6,'(''nonloc: l,yl0(l,costh),exp(value)'',i3,9f20.15)') &
      &            l,yl0(l,costh),exp(value)
                 endif

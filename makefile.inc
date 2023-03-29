@@ -162,6 +162,7 @@ ifeq ($(findstring node,$(hostname)), node)
   EINSPLINE=
 endif
 
+#login node on dft cluster at Cornell
 ifeq ($(findstring dft,$(hostname)), dft)
   CC=gcc
   CXX=g++
@@ -172,6 +173,10 @@ ifeq ($(findstring dft,$(hostname)), dft)
 # F77_FAST_FLAGS=-finit-local-zero -O3 -fdefault-real-8 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
   F95_FAST_FLAGS=-finit-local-zero -O3 -ffree-line-length-none -x f95-cpp-input -Wall  -DNOEINSPLINE
   F77_FAST_FLAGS=-finit-local-zero -O3 -ffixed-line-length-132 -x f77-cpp-input -Wall  -DNOEINSPLINE
+  F95_DEBUG_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check -fbacktrace
+  F77_DEBUG_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check -fbacktrace
+  F95_MPI_FLAGS=$(F95_FAST_FLAGS) -DMPI
+  F77_MPI_FLAGS=$(F77_FAST_FLAGS) -DMPI
   F95_DEBUG_MPI_FLAGS=$(F95_FAST_FLAGS) -g -fbounds-check -fbacktrace -DMPI
   F77_DEBUG_MPI_FLAGS=$(F77_FAST_FLAGS) -g -fbounds-check -fbacktrace -DMPI
   LD=gfortran

@@ -121,13 +121,12 @@
 ! Check that the 1s basis fns are listed before the 3s basis fns. coming from the 3d fns. etc. in GAMESS if numr<0.
         write(6,'(/,''Log deriv of radial basis fns. as they are read in, before reordering them:'')')
         do 11 irb=1,nrbas_numerical(ict)
-          rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! Get approximate L first
-          l_bas_num=nint(rl_bas_num)
-          if(l_bas_num.eq.0) then
-            rl_bas_num=log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1)) ! s functions
-          else
-            rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! for non-s first pt. is 0, so use pts 2 and 3
+          if(igrid(ict).eq.2) then
+            rl_bas_num=log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1))
+          else     ! first grid point x(1)=0
+            rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
           endif
+          l_bas_num=nint(rl_bas_num)
           if(abs(rl_bas_num-dfloat(l_bas_num)).gt.1.d-3) then
             write(6,'(''ict,irb,l_bas_num,rl_bas_num='',3i3,2f10.6)') ict,irb,l_bas_num,rl_bas_num,abs(rl_bas_num-dfloat(l_bas_num))
             write(6,'(''The log deriv of radial basis fn.'',i3,'' on centertype'',i3,'' is not close enough to an integer'')') &
@@ -207,13 +206,12 @@
 ! Write out L value for each numerical basis function after compactification
         write(6,'(/,''Log deriv of radial basis fns. that are treated numerically after reordering them:'')')
         do 25 irb=1,nrbas_numerical(ict)
-          rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! Get approximate L first
-          l_bas_num=nint(rl_bas_num)
-          if(l_bas_num.eq.0) then
-            rl_bas_num=log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1)) ! s functions
-          else
-            rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2)) ! for non-s first pt. is 0, so use pts 2 and 3
+          if(igrid(ict).eq.2) then
+            rl_bas_num=log(rwf(2,irb,ict,iwf)/rwf(1,irb,ict,iwf))/log(x(2)/x(1))
+          else     ! first grid point x(1)=0
+            rl_bas_num=log(rwf(3,irb,ict,iwf)/rwf(2,irb,ict,iwf))/log(x(3)/x(2))
           endif
+          l_bas_num=nint(rl_bas_num)
           if(abs(rl_bas_num-dfloat(l_bas_num)).gt.1.d-3) then
             write(6,'(''ict,irb,l_bas_num,rl_bas_num='',3i3,2f10.6)') ict,irb,l_bas_num,rl_bas_num,abs(rl_bas_num-dfloat(l_bas_num))
             write(6,'(''The log deriv of radial basis fn.'',i3,'' on centertype'',i3,'' is not close enough to an integer'')') &
@@ -304,7 +302,7 @@
 
           dwf1=0.d0
           do 80 icoef=2,ncoef
-   80     dwf1=dwf1+(icoef-1)*ce(icoef,irb,ict,iwf)*x(1)**(icoef-2)
+   80       dwf1=dwf1+(icoef-1)*ce(icoef,irb,ict,iwf)*x(1)**(icoef-2)
 
 ! large radii wf(r)=a0*exp(-ak*r) for ndim=3
 !         wf(r)=a0*exp(-ak*r^2) for ndim=2, ak should give weff/2
