@@ -282,7 +282,7 @@ module dmc_mod
   !Allocate walker arrays used for fast derivatives TA
   call alloc('orbw', orbw, nelec, orb_tot_nb, MWALK)
   call alloc('dorbw', dorbw, ndim, nelec, orb_tot_nb, MWALK)
-  call alloc('ddorbw', ddorbw, nelec, orb_tot_nb, MWALK)
+! call alloc('ddorbw', ddorbw, nelec, orb_tot_nb, MWALK)
   call alloc('aiupw', aiupw, nup, nup, MWALK)
   call alloc('aidnw', aidnw, ndn, ndn, MWALK)
   call alloc('deta_upw', deta_upw, MWALK)

@@ -1,3 +1,70 @@
+module newton_mod
+implicit none
+
+contains
+
+  function g(zeta,tau,rp_rnuc,delta_r,p_gaus)
+! implicit real*8 (a-h,o-z)
+  implicit none
+  real*8 zeta,tau,rp_rnuc,delta_r,p_gaus,g,pi
+  pi=4*datan(1.d0)
+
+  g=p_gaus*exp(-(rp_rnuc+delta_r)**2/(2*tau))/(2*pi*tau)**1.5d0 + (1-p_gaus)*(zeta**3/pi)*exp(-2*zeta*abs(delta_r))
+
+  return
+  end function g
+!-------------------------------------------------------------------
+  function f(znuc,zeta,tau,rp_rnuc,p_gaus)
+! implicit real*8 (a-h,o-z)
+  implicit none
+  real*8 znuc,zeta,tau,rp_rnuc,p_gaus,f,pi
+
+  pi=4*datan(1.d0)
+
+  f=zeta**3*(zeta-znuc)-(p_gaus/(1-p_gaus))*pi*znuc*exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0
+
+  return
+  end function f
+!-------------------------------------------------------------------
+  function df(znuc,zeta)
+! implicit real*8 (a-h,o-z)
+  implicit none
+  real*8 znuc,zeta,df
+
+  df=zeta**2*(4*zeta-3*znuc)
+  return
+  end function df
+!-------------------------------------------------------------------
+  subroutine newton(znuc,zeta,tau,rp_rnuc,p_gaus)
+! implicit real*8 (a-h,o-z)
+  implicit none
+! real*8 znuc,zeta,tau,rp_rnuc,p_gaus,func,dfunc,f,df, pi
+  real*8, intent(in) :: znuc,tau,rp_rnuc,p_gaus
+  real*8, intent(out) :: zeta
+  real*8 func,dfunc,pi
+
+  pi=4*datan(1.d0)
+
+! zeta=znuc+(0.34/sqrt(tau))*(1+(r_rnuc/sqrt(tau))/(1+r_rnuc/sqrt(tau)))
+  zeta=znuc+2
+! write(6,'(''zeta'',9f10.6)') zeta
+  do
+    func=f(znuc,zeta,tau,rp_rnuc,p_gaus)
+    dfunc=df(znuc,zeta)
+!   write(6,'(''zeta,f'',f10.6,9f15.6)') zeta, func, zeta**3*(zeta-znuc), (p_gaus/(1-p_gaus))*pi*znuc*exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0, (p_gaus/(1-p_gaus))*pi*znuc, exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0, rp_rnuc, dfunc
+!   write(6,'(''znuc,zeta,func,dfunc,rp_rnuc,p_gaus='',9f10.6)') znuc,zeta,func,dfunc,rp_rnuc,p_gaus
+!   write(6,'(''znuc,zeta,func,dfunc,rp_rnuc,p_gaus='',2f10.6,9es14.6)') znuc,zeta,func,dfunc,rp_rnuc,p_gaus
+    zeta=zeta-func/dfunc
+    if(abs(func) < 1.d-12*dfunc) then
+!     write(6,'(''znuc,zeta,f='',9f10.6)') znuc,zeta,f(znuc,zeta,tau,rp_rnuc,p_gaus)
+      exit
+    endif
+  enddo
+! write(6,*)
+
+  end subroutine newton
+end module newton_mod
+!-------------------------------------------------------------------
       subroutine dmc_good_mov1
 ! Written by Cyrus Umrigar and Claudia Filippi
 ! Uses the diffusion Monte Carlo algorithm described in:
@@ -1104,71 +1171,4 @@
       return
       end
 !------------------------------------------------------------
-!-------------------------------------------------------------------
-module newton_mod
-implicit none
-
-contains
-
-  function g(zeta,tau,rp_rnuc,delta_r,p_gaus)
-! implicit real*8 (a-h,o-z)
-  implicit none
-  real*8 zeta,tau,rp_rnuc,delta_r,p_gaus,g,pi
-  pi=4*datan(1.d0)
-
-  g=p_gaus*exp(-(rp_rnuc+delta_r)**2/(2*tau))/(2*pi*tau)**1.5d0 + (1-p_gaus)*(zeta**3/pi)*exp(-2*zeta*abs(delta_r))
-
-  return
-  end function g
-!-------------------------------------------------------------------
-  function f(znuc,zeta,tau,rp_rnuc,p_gaus)
-! implicit real*8 (a-h,o-z)
-  implicit none
-  real*8 znuc,zeta,tau,rp_rnuc,p_gaus,f,pi
-
-  pi=4*datan(1.d0)
-
-  f=zeta**3*(zeta-znuc)-(p_gaus/(1-p_gaus))*pi*znuc*exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0
-
-  return
-  end function f
-!-------------------------------------------------------------------
-  function df(znuc,zeta)
-! implicit real*8 (a-h,o-z)
-  implicit none
-  real*8 znuc,zeta,df
-
-  df=zeta**2*(4*zeta-3*znuc)
-  return
-  end function df
-!-------------------------------------------------------------------
-  subroutine newton(znuc,zeta,tau,rp_rnuc,p_gaus)
-! implicit real*8 (a-h,o-z)
-  implicit none
-! real*8 znuc,zeta,tau,rp_rnuc,p_gaus,func,dfunc,f,df, pi
-  real*8, intent(in) :: znuc,tau,rp_rnuc,p_gaus
-  real*8, intent(out) :: zeta
-  real*8 func,dfunc,pi
-
-  pi=4*datan(1.d0)
-
-! zeta=znuc+(0.34/sqrt(tau))*(1+(r_rnuc/sqrt(tau))/(1+r_rnuc/sqrt(tau)))
-  zeta=znuc+2
-! write(6,'(''zeta'',9f10.6)') zeta
-  do
-    func=f(znuc,zeta,tau,rp_rnuc,p_gaus)
-    dfunc=df(znuc,zeta)
-!   write(6,'(''zeta,f'',f10.6,9f15.6)') zeta, func, zeta**3*(zeta-znuc), (p_gaus/(1-p_gaus))*pi*znuc*exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0, (p_gaus/(1-p_gaus))*pi*znuc, exp(-rp_rnuc**2/(2*tau))/(2*pi*tau)**1.5d0, rp_rnuc, dfunc
-!   write(6,'(''znuc,zeta,func,dfunc,rp_rnuc,p_gaus='',9f10.6)') znuc,zeta,func,dfunc,rp_rnuc,p_gaus
-!   write(6,'(''znuc,zeta,func,dfunc,rp_rnuc,p_gaus='',2f10.6,9es14.6)') znuc,zeta,func,dfunc,rp_rnuc,p_gaus
-    zeta=zeta-func/dfunc
-    if(abs(func) < 1.d-12*dfunc) then
-!     write(6,'(''znuc,zeta,f='',9f10.6)') znuc,zeta,f(znuc,zeta,tau,rp_rnuc,p_gaus)
-      exit
-    endif
-  enddo
-! write(6,*)
-
-  end subroutine newton
-end module newton_mod
 !-------------------------------------------------------------------
