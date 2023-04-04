@@ -733,6 +733,7 @@
         if(iabs(idmc).lt.1 .or. iabs(idmc).gt.3) stop 'iabs(idmc) must be 1 or 2 or 3'
         read(5,*) nfprod,tau
         rttau=dsqrt(tau)
+        rtrttau=dsqrt(rttau)
         write(6,'(''nfprod,tau'',t31,i5,f10.5)') nfprod,tau
       else
         read(5,*)

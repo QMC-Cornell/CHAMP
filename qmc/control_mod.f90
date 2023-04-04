@@ -331,6 +331,7 @@ module control_mod
     if(idmc.lt.0) write(6,'(a)') ' running DMC program in VMC mode'
     if(iabs(idmc).lt.1 .or. iabs(idmc).gt.3) stop 'iabs(idmc) must be 1 or 2 or 2'
     rttau=dsqrt(tau)
+    rtrttau=dsqrt(rttau)
     write(6,'(a,i5)')    ' nfprod = ', nfprod
     write(6,'(a,f10.5)') ' time-step tau = ', tau
     if (.not. l_branching) then

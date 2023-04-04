@@ -713,10 +713,14 @@
 !         if(iw==1) write(6,'(''ipass,e_sigma(ecum1,ecm21,wcum1),e_sigma(egcum(1),egcm2(1),wgcum(1)),energy_sigma,dwt,1+limit_rewt_dmc*energy_sigma*tau'',i6,9f10.6)') ipass,e_sigma(ecum1,ecm21,wcum1),e_sigma(egcum1(1),egcm21(1),wgcum1(1)),e_sigma(egcum(1),egcm2(1),wgcum(1)),energy_sigma,dwt,1+limit_rewt_dmc*energy_sigma*tau
 !         if(dwt.gt.1+limit_rewt_dmc*energy_sigma*tau) then
 !         if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
-          if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)) then
+!         if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)) then
+          if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)) then
             ipr_sav=ipr_sav+1
             if(ipr_sav.le.3) then
-              write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+!             write(6,'(''Warning: dwt>(1+limit_rewt_dmc*energy_sigma*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+!             write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+!             write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+              write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
      &        nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
               if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
             elseif(ipr_sav.eq.4) then
@@ -724,7 +728,8 @@
             endif
 !           dwt=1+limit_rewt_dmc*energy_sigma*tau
 !           dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
-            dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)
+!           dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)
+            dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)
           endif
 
 ! ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.

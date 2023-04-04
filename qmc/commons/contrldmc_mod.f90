@@ -5,7 +5,7 @@ module contrldmc_mod
  save
 
  double precision, allocatable :: taueff(:)
- double precision tau,rttau,tautot
+ double precision tau,rttau,rtrttau,tautot
  double precision taunow ! needed for tmoves
  integer :: nfprod,idmc,ipq,itau_eff,itau_integ=1,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
  logical tmoves
