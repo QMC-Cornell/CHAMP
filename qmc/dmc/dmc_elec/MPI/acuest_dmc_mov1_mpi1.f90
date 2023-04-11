@@ -161,6 +161,8 @@
       call mpi_allreduce(tpb2sum,tpb2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjf2sum,tjf2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
+      call mpi_allreduce(egcm21,egcm21allprocs,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr) !TA
+
       call mpi_allreduce(fsum,fcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(f2sum,f2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
@@ -415,8 +417,10 @@
         wgcm21(ifr)=wgcm21(ifr)+wgsum1(ifr)**2
         if(wgsum1(ifr).ne.0.d0) then
           egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
+          egcm21allprocs(ifr)=egcm21allprocs(ifr)+egsum1(ifr)**2/wgsum1(ifr)
          else
           egcm21(ifr)=0
+          egcm21allprocs(ifr)=0
         endif
    30 continue
       call object_modified('wgcum1') !worry about speed
@@ -470,7 +474,6 @@
 
 ! set quadrature points
 
-!     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
       nwalk=nconf
@@ -521,6 +524,10 @@
    72       wthist(iw,ip,ifr)=one
    80 continue
       eest=eest/nconf !TA
+#if defined(MPI)
+      call MPI_Allreduce(MPI_IN_PLACE,eest,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,IERROR) !TA
+      eest=eest/nproc
+#endif
 
       call object_modified_by_index (nwalk_index)
 
@@ -543,8 +550,9 @@
         enddo
         write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
-        eigv=1d0
+!        eigv=1d0
       endif
+      eigv=dexp((etrial-eest)*tau) !TA 
 
       iblk=0
       iblk_proc=0
@@ -625,6 +633,7 @@
       call alloc ('wgcm21', wgcm21, nforce)
       call alloc ('egcm2', egcm2, nforce)
       call alloc ('egcm21', egcm21, nforce)
+      call alloc ('egcm21allprocs', egcm21allprocs, nforce)
       call alloc ('pecm2', pecm2, nforce)
       call alloc ('tpbcm2', tpbcm2, nforce)
       call alloc ('tjfcm2', tjfcm2, nforce)
@@ -662,6 +671,7 @@
         wgcm21(ifr)=zero
         wgcm2(ifr)=zero
         egcm21(ifr)=zero
+        egcm21allprocs(ifr)=zero
         egcm2(ifr)=zero
         wsum1(ifr)=zero
         wgsum1(ifr)=zero

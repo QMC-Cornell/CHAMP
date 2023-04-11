@@ -445,6 +445,10 @@
    72       wthist(iw,ip,ifr)=one
    80 continue
       eest=eest/nconf
+#if defined(MPI)
+      call MPI_Allreduce(MPI_IN_PLACE,eest,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,IERROR) !TA
+      eest=eest/nproc
+#endif
 
       eigv=dexp((etrial-eest)*tau) !TA - I do this so that the weights do not depend on etrial on the first step
       fprod=1d0 !TA
@@ -465,8 +469,9 @@
         enddo
         write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
-        eigv=1d0
+!        eigv=1d0
       endif
+      eigv=dexp((etrial-eest)*tau) !TA
 
       iblk=0
 

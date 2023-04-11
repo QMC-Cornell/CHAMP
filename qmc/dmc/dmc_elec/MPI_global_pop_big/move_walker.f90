@@ -12,6 +12,10 @@
       use branch_mod
       use stats_mod
       use age_mod
+      use qua_mod, only: quadr, quadx, nquad !TA
+      use contrldmc_mod, only: tmoves !TA
+      use atom_mod, only: ncent !TA
+      use dim_mod, only: ndim !TA
       use velratio_mod
       implicit real*8(a-h,o-z)
 
@@ -68,6 +72,15 @@
         call MPI_Request_free(irequest,ierr)
    15 continue
 
+      if (tmoves) then
+        itag=itag+1
+        call mpi_isend(quadr(1,1,nwalk),nquad*ncent*nelec,mpi_double_precision,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
+        call MPI_Request_free(irequest,ierr)
+        itag=itag+1
+        call mpi_isend(quadx(1,1,1,nwalk),ndim*nquad*ncent*nelec,mpi_double_precision,irecv,itag,MPI_COMM_WORLD,irequest,ierr)
+        call MPI_Request_free(irequest,ierr)
+      endif
+
 !     call send_det(itag,irecv)
 !     call send_jas(itag,irecv)
 
@@ -114,6 +127,13 @@
         call mpi_recv(wthist(nwalk,ip,ifr),1,mpi_double_precision,isend &
      &  ,itag,MPI_COMM_WORLD,istatus,ierr)
    25 continue
+
+      if (tmoves) then
+        itag=itag+1
+        call mpi_recv(quadr(1,1,nwalk),nquad*ncent*nelec,mpi_double_precision,isend,itag,MPI_COMM_WORLD,istatus,ierr)
+        itag=itag+1
+        call mpi_recv(quadx(1,1,1,nwalk),ndim*nquad*ncent*nelec,mpi_double_precision,isend,itag,MPI_COMM_WORLD,istatus,ierr)
+      endif
 
 !     call recv_det(itag,isend)
 !     call recv_jas(itag,isend)

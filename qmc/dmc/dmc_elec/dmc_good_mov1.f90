@@ -873,8 +873,13 @@ end module newton_mod
 
           if(ipass .gt. nstep*2*nblkeq + max(10,nint(10.d0/tau))) then
 !           energy_sigma=e_sigma(ecum1,ecm21,wcum1)
-            energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
-            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
+!            energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+            if(index(mode,'dmc_mov1_mpi').ne.0) then !TA
+              energy_sigma=e_sigma(egcum(1)+egsum(1),egcm21allprocs(1),wgcum(1)+wgsum(1))
+            else
+              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+            endif
+            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(dble(nproc))
           else
             energy_sigma=0.2d0*sqrt(dble(nelec))
           endif
@@ -1017,19 +1022,19 @@ end module newton_mod
 !            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
 !           if(dwt.gt.1+limit_rewt_dmc*energy_sigma*tau) then
 !           if(dwt.gt.dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
-            if(dwt.gt.dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)) then
+            if(dwt.gt.dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)) then
               ipr_sav=ipr_sav+1
               if(ipr_sav.le.3) then
-                write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+                write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
      &          nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
-                write(6,'(''dwt,exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)='',9es12.4)') dwt,dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
+                write(6,'(''dwt,exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)='',9es12.4)') dwt,dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*tau)
                 if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
               elseif(ipr_sav.eq.4) then
-                write(6,'(''Warning: Additional warning msgs. of dwt>1+limit_rewt_dmc*energy_sigma*tau suppressed'')')
+                write(6,'(''Warning: Additional warning msgs. of dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow) suppressed'')')
               endif
 !             dwt=1+limit_rewt_dmc*energy_sigma*tau
 !             dwt=dexp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
-              dwt=dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)
+              dwt=dexp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)
             endif
 !          endif !TA commented out
 
