@@ -1,4 +1,4 @@
-      subroutine sites(x,nelec,nsite)
+      subroutine sites(x,nelec,nsite,nsiteup)
 ! Written by Cyrus Umrigar
       use constants_mod
       use atom_mod
@@ -21,7 +21,17 @@
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
        common /wire/ wire_w,wire_length,wire_length2,wire_radius2, wire_potential_cutoff,wire_prefactor,wire_root1
 
-      dimension x(3,*),nsite(*)
+      dimension x(3,*),nsite(*),nsiteup(*)
+
+      if (nctype.GT.1) then !TA
+        rmax=0d0
+        do i=2,ncent
+          do j=1,i-1
+            rmax=max(rmax,norm2(cent(:,i)-cent(:,j)))
+          enddo
+        enddo
+        if (rmax.GT.5d0) write(6,'(''Warning: sites may produce configurations with incorrectly distributed electron spin if nctype>1.'')')
+      endif
 
 ! Loop over spins and centers. If odd number of electrons on all
 ! atoms then the up-spins have an additional electron.
@@ -63,7 +73,12 @@
             if(znuc(iwctype(i)).eq.0.d0) stop 'znuc should not be 0 in sites for atoms and molecules'
             znucc=znuc(iwctype(i))
           endif
-          ju=(nsite(i)+2-ispin)/2
+!TA          ju=(nsite(i)+2-ispin)/2
+          if (ispin.EQ.1) then
+            ju=nsiteup(i)
+          else
+            ju=nsite(i)-nsiteup(i)
+          endif
           do 10 j=1,ju
             ielec=ielec+1
             if(ielec.gt.nelec) return

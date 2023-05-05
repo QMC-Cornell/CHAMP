@@ -14,10 +14,12 @@
       use const_mod
       use dim_mod
       use pairden_mod
+      use dets_mod, only: nup !TA
       implicit real*8(a-h,o-z)
 
       dimension nsite(ncent)
       dimension istatus(MPI_STATUS_SIZE)
+      dimension nsiteup(ncent)
 
       character*30 filename
 
@@ -59,7 +61,19 @@
             endif
   394       continue
           if(l.lt.nelec) nsite(1)=nsite(1)+(nelec-l)
-          call sites(xold,nelec,nsite)
+          ncount_up=0 !TA
+          do i=1,ncent
+            nsiteup(i)=(nup*nsite(i))/nelec
+            ncount_up=ncount_up+nsiteup(i)
+          enddo
+          i=1
+          do while (ncount_up.LT.nup)
+            nsiteup(i)=nsiteup(i)+1
+            ncount_up=ncount_up+1
+            i=mod(i,ncent)+1
+          enddo
+          call sites(xold,nelec,nsite,nsiteup)
+!TA        call sites(xold,nelec,nsite)
 !JT          write(6,'(/,''initial configuration from sites'')')
   395 continue
 
