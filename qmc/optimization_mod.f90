@@ -789,7 +789,7 @@ module optimization_mod
   logical  l_convergence_reached
   integer convergence_reached_nb
   integer :: move_rejected = 0
-  real(dp) energy_plus_err, energy_plus_err_best, energy_best, energy_err_best
+  real(dp) energy_plus_err, energy_plus_err_best, energy_best, energy_err_best, energy_sigma_best, error_sigma_best 
 
   integer :: norb_save !TA
   logical :: l_opt_jas_save !TA
@@ -1133,6 +1133,8 @@ module optimization_mod
     energy_plus_err_best=energy_plus_err
     energy_best = energy(1)
     energy_err_best = energy_err(1)
+    energy_sigma_best = energy_sigma(1)
+    error_sigma_best = error_sigma
     call wf_best_save
    endif
 
@@ -1453,6 +1455,8 @@ module optimization_mod
     energy_plus_err_best=energy_plus_err
     energy_best = energy(1)
     energy_err_best = energy_err(1)
+    energy_sigma_best = energy_sigma(1)
+    error_sigma_best = error_sigma
     call wf_best_save
   endif
   endif !l_last_run
@@ -1461,7 +1465,7 @@ module optimization_mod
 
 ! Print best wave function
 ! The energy and energy_err printed out are not necessarily for the best energy found, but for the best linear combination of energy and variance.
-  write(6,'(/,a,i3,f13.7,a,f11.7)') 'OPT: the best wave function was found at iteration # ',iter_best, energy_best, ' +-', energy_err_best
+  write(6,'(/,a,i3,a,f13.7,a,f11.7,a,f11.7,a,f11.7)') 'OPT: the best wave function was found at iteration # ',iter_best, ' energy= ', energy_best, ' +-', energy_err_best, ' sigma= ', energy_sigma_best, ' +-', error_sigma_best
   write(6,'(a)') 'Best wave function:'
   call write_wf_best
 
