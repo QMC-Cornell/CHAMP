@@ -124,7 +124,7 @@
           ddet_det(1,i)=ddet_det(1,i)+gup(j,i)*dorb(1,i,jj)
           ddet_det(2,i)=ddet_det(2,i)+gup(j,i)*dorb(2,i,jj)
           ddet_det(3,i)=ddet_det(3,i)+gup(j,i)*dorb(3,i,jj)
-          ekinen(i)=ekinen(i)+gup(j,i)*ddorb(i,jj)
+          ekinen(i)    =    ekinen(i)+gup(j,i)* ddorb(i,jj)
         enddo
       enddo
 
@@ -138,7 +138,7 @@
           ddet_det(1,i)=ddet_det(1,i)+gdn(j,i-nup)*dorb(1,i,jj)
           ddet_det(2,i)=ddet_det(2,i)+gdn(j,i-nup)*dorb(2,i,jj)
           ddet_det(3,i)=ddet_det(3,i)+gdn(j,i-nup)*dorb(3,i,jj)
-          ekinen(i)=ekinen(i)+gdn(j,i-nup)*ddorb(i,jj)
+          ekinen(i)    =    ekinen(i)+gdn(j,i-nup)* ddorb(i,jj)
         enddo
       enddo
 

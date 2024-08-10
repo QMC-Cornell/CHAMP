@@ -13,6 +13,7 @@
       use pseudo_mod
       use contrl_per_mod
       use gamma_mod, only: psp_nonloc_pot
+      use fragments_mod
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent)! &
@@ -40,6 +41,13 @@
         do 30 ic=1,ncent
           do 30 i=1,nelec
             if(ipr.ge.4) write(6,'(''i,ic,vps,pe'',2i3,9f9.5)')i,ic,vps(i,ic,lpotp1(iwctype(ic))),pe+vps(i,ic,lpotp1(iwctype(ic)))
+            if (l_fragments) then
+!              enefrag(iwfragnucl(ic))=enefrag(iwfragnucl(ic))+vps(i,ic,lpotp1(iwctype(ic)))/2
+!              enefrag(iwfragelec(i ))=enefrag(iwfragelec(i ))+vps(i,ic,lpotp1(iwctype(ic)))/2
+!!              efrag(iwfragelec(i))=efrag(iwfragelec(i))+vps(i,ic,lpotp1(iwctype(ic)))
+              iwfrag=merge(iwfragnucl(ic),nfrag+1,iwfragelec(i).EQ.iwfragnucl(ic))
+              enefrag(iwfrag)=enefrag(iwfrag)+vps(i,ic,lpotp1(iwctype(ic)))
+            endif
    30       pe=pe+vps(i,ic,lpotp1(iwctype(ic)))
         if(ipr.ge.4) write(6,'(''nonloc_pot: pe after local psp'',f12.5)') pe
       endif
@@ -52,10 +60,16 @@
 !      call nonloc(x,rshift,rvec_en,r_en,vpsp)
       call nonloc(x,rshift,rvec_en,r_en)
 
-
       call object_provide_by_index(psp_nonloc_pot_index)
       pe=pe+psp_nonloc_pot
 !      pe=pe+vpsp/psid
+
+      if (l_fragments) then
+          pefrag=sum(enefrag(:))
+          if (abs(pefrag-pe).GT.1d-12) then
+              write(6,'(''WARNING: pe,pefrag (psp)='', 2f16.10)') pe,pefrag
+          endif
+      endif
       
       if(ipr.ge.1) write(6,'(''nonloc_pot: vpsp, psid, pe after nonlocal psp'',9f12.5)') vpsp, psid, pe
       if(ipr.ge.4) write(6,'(''nonloc_pot: pe,vpsp/psid,vpsp,psid,r_en(1,1)='',2f9.4,9d12.4)') &

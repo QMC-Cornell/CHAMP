@@ -248,8 +248,12 @@ module initialization_mod
   call object_provide ('nforce')
   call alloc ('iwftype', iwftype, nforce)
   iwftype(1)=1
-
-  l_improved_gf=.FALSE.
+  l_modified_adrift=.FALSE.
+  l_method_of_images=.FALSE.
+  l_tau_diffusion=.FALSE.
+  l_psi_approx=.FALSE.
+  nfrag=0
+  pow_rewt=0.5d0
 
   write(6,'(a)') 'End of global initialization -----------------------------------------------------------------------------'
 

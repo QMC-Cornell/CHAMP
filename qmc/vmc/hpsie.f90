@@ -1,4 +1,4 @@
-      subroutine hpsie(iel,coord,psid,psij,velocity)
+      subroutine hpsie(iel,coord,psid,psij,velocity,lapl)
       use control_mod
 ! Written by Claudia Filippi by modifying hpsi
 ! Calculates wavefunction and velocity contributions for electron iel
@@ -11,9 +11,11 @@
       use jaspar4_mod
       use contr3_mod
       use distance_mod
+      use jasn_mod, only: lapjn
       implicit real*8(a-h,o-z)
 
       dimension coord(3,*),velocity(3,*),vj(3,nelec),vd(3,nelec)
+      real(dp) :: lapl,lapd,div,divj,divd
 
       iwf=iwftype(1)
 
@@ -47,7 +49,7 @@
 ! complex case:
         call cdeterminante(iel,coord,rvec_en,r_en,vd,psid)
       else
-        call determinante(iel,coord,rvec_en,r_en,vd,psid)
+        call determinante(iel,coord,rvec_en,r_en,vd,lapd,psid)
       endif
 
 ! combine to get derivatives of full wavefunction
@@ -62,5 +64,8 @@
 !           write(6,'(''r_en1='',9d12.5)') ((r_en(ii,j),ii=1,nelec),j=1,1,ncent)
 !         endif
    10     continue
+
+      lapl=lapjn(iel)+2*sum(vj(:,iel)*vd(:,iel))+lapd !TA
+
       return
       end

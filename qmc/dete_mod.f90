@@ -4,14 +4,23 @@ module dete_mod
   use orbe_mod
 
   !tmp values for sweep
-  real(dp), target              :: deta_upn, deta_dnn
-  real(dp), allocatable, target :: aiupn(:,:), aidnn(:,:)
-  real(dp), allocatable, target :: tupn(:,:), tdnn(:,:)
-  real(dp), allocatable, target :: yupn(:,:), ydnn(:,:)
-  real(dp), target              :: chin
+!  real(dp), target              :: deta_upn, deta_dnn
+!  real(dp), allocatable, target :: aiupn(:,:), aidnn(:,:)
+!  real(dp), allocatable, target :: tupn(:,:), tdnn(:,:)
+!  real(dp), allocatable, target :: yupn(:,:), ydnn(:,:)
+!  real(dp), target              :: chin
+!
+!  real(dp), allocatable, target :: detupn(:), detdnn(:)
+!  real(dp), allocatable, target :: invupn(:,:), invdnn(:,:)
 
-  real(dp), allocatable, target :: detupn(:), detdnn(:)
-  real(dp), allocatable, target :: invupn(:,:), invdnn(:,:)
+  real(dp), pointer :: deta_upn, deta_dnn
+  real(dp), pointer :: aiupn(:,:), aidnn(:,:)
+  real(dp), pointer :: tupn(:,:), tdnn(:,:)
+  real(dp), pointer :: yupn(:,:), ydnn(:,:)
+  real(dp), pointer :: chin
+
+  real(dp), pointer :: detupn(:), detdnn(:)
+  real(dp), pointer :: invupn(:,:), invdnn(:,:)
 
 contains
 
@@ -22,14 +31,14 @@ contains
 
     integer :: idet, ord, i, j
 
-    if (.not.allocated(aiupn))  allocate(aiupn(nup,nup))
-    if (.not.allocated(tupn))   allocate(tupn(nup,noccup))
-    if (.not.allocated(aidnn))  allocate(aidnn(ndn,ndn))
-    if (.not.allocated(tdnn))   allocate(tdnn(ndn,noccdn))
-    if (.not.allocated(invdnn)) allocate(invdnn(ndn*ndn,ndetdn))
-    if (.not.allocated(invupn)) allocate(invupn(nup*nup,ndetup))
-    if (.not.allocated(detdnn)) allocate(detdnn(ndetdn))
-    if (.not.allocated(detupn)) allocate(detupn(ndetup))
+!    if (.not.allocated(aiupn))  allocate(aiupn(nup,nup))
+!    if (.not.allocated(tupn))   allocate(tupn(nup,noccup))
+!    if (.not.allocated(aidnn))  allocate(aidnn(ndn,ndn))
+!    if (.not.allocated(tdnn))   allocate(tdnn(ndn,noccdn))
+!    if (.not.allocated(invdnn)) allocate(invdnn(ndn*ndn,ndetdn))
+!    if (.not.allocated(invupn)) allocate(invupn(nup*nup,ndetup))
+!    if (.not.allocated(detdnn)) allocate(detdnn(ndetdn))
+!    if (.not.allocated(detupn)) allocate(detupn(ndetup))
 
     if (iel.le.nup) then
       aiupn = aiup
@@ -277,6 +286,47 @@ contains
           do j=1,noccdn
               grad(k) = grad(k) + y(j,i)*ai(i,iel-nup)*v(j)
           enddo
+        enddo
+      enddo
+    endif
+  end subroutine
+
+  subroutine eval_lapl(iel, ddorb, ai, tmat, y, lapl)
+    implicit none
+
+    integer               :: iel
+    real(dp), intent(in)  :: ddorb(:), ai(:,:), tmat(:,:), y(:,:)
+    real(dp), intent(out) :: lapl
+    
+    integer :: i, j
+    real(dp), allocatable :: v(:)
+    
+    if (iel.le.nup) then
+      allocate(v(noccup))
+      lapl = sum(ai(:,iel)*ddorb(ref_orbs_up))
+
+      if (size(tmat,2).eq.orb_tot_nb) then
+        v = ddorb(occup) - matmul(ddorb(ref_orbs_up), tmat(:,occup))
+      else
+        v = ddorb(occup) - matmul(ddorb(ref_orbs_up), tmat)
+      endif
+      do i=1,nup
+        do j=1,noccup
+          lapl = lapl + y(j,i)*ai(i,iel)*v(j)
+        enddo
+      enddo
+    else
+      allocate(v(noccdn))
+      lapl = sum(ai(:,iel-nup)*ddorb(ref_orbs_dn))
+
+      if (size(tmat,2).eq.orb_tot_nb) then
+        v = ddorb(occdn) - matmul(ddorb(ref_orbs_dn), tmat(:,occdn))
+      else
+        v = ddorb(occdn) - matmul(ddorb(ref_orbs_dn), tmat)
+      endif
+      do i=1,ndn
+        do j=1,noccdn
+          lapl = lapl + y(j,i)*ai(i,iel-nup)*v(j)
         enddo
       enddo
     endif

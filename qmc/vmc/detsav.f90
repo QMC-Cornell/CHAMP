@@ -13,6 +13,7 @@
       dorb(1,iel,:) = dorbe(1,:)
       dorb(2,iel,:) = dorbe(2,:)
       dorb(3,iel,:) = dorbe(3,:)
+      ddorb(iel,:) = ddorbe(:)
 
       return
       end

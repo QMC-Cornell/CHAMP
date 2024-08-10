@@ -155,8 +155,6 @@
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
-        eest=egave
-
 !        if(ifr.eq.1) then                                !JT
 !         eloc_bav = egnow                                !JT
 !         eloc_av = egave                                 !JT
@@ -243,20 +241,6 @@
           endif
         endif
    15 continue
-
-! The reason why having etrial far from e_DMC creates a bias is that in dwt we use taunow, but in
-! removing the choice of etrial from dwt we use taueff.  So, the bias is roughly a function of (eest-etrial)*(taunow-taueff).
-! However, here we use a simpler condition.
-      if (.not.l_reset_etrial .and. iblk>1 .and. iblk<5) then
-        if(abs(eest-etrial).gt.3*egerr) then
-          write(6,'(''Warning: abs(eest-etrial).gt.3*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
-        endif
-      elseif(.not.l_reset_etrial .and. iblk>1 .and. iblk==5) then
-        if(abs(eest-etrial).gt.5*egerr) then
-          write(6,'(''Warning: abs(eest-etrial).gt.5*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
-          call die ('acuest_dmc_mov1', 'Warning: abs(eest-etrial).gt.5*egerr. Fix: use better etrial')
-        endif
-      endif
 
 !      moved up
 !      eloc_av = egave                                 !JT
@@ -429,26 +413,22 @@
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
-          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
-     &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
-          if(ifr.eq.1) then
-            eest=eest+eoldw(iw,ifr)   !TA
-            if(ibasis.eq.3) then      ! complex calculation
-              call cwalksav_det(iw)
-             else
-              call walksav_det(iw)
-            endif
-            call walksav_jas(iw)
-          endif
+!          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
+!     &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
+!          if(ifr.eq.1) then
+!            eest=eest+eoldw(iw,ifr)   !TA
+!            if(ibasis.eq.3) then      ! complex calculation
+!              call cwalksav_det(iw)
+!             else
+!              call walksav_det(iw)
+!            endif
+!            call walksav_jas(iw)
+!          endif
           pwt(iw,ifr)=one
           do 72 ip=0,nwprod-1
    72       wthist(iw,ip,ifr)=one
    80 continue
       eest=eest/nconf
-#if defined(MPI)
-      call MPI_Allreduce(MPI_IN_PLACE,eest,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,IERROR) !TA
-      eest=eest/nproc
-#endif
 
       eigv=dexp((etrial-eest)*tau) !TA - I do this so that the weights do not depend on etrial on the first step
       fprod=1d0 !TA
@@ -464,14 +444,12 @@
       if (l_reset_etrial .and. ipass.ne.0) then
         dff=dexp((eest-etrial)*taucum(1)/wgcum(1)) !TA - reset etrial after equilibration runs
         do i=0,nfprod-1
-          ff(i)=ff(i)*dff
-          fprod=fprod*dff
+          ff(i)=ff(i)*dff !TODO: ff(i)=dff?
+          fprod=fprod*dff !TODO: fprod=1; do... fprod=fprod*dff enddo?
         enddo
         write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
-!        eigv=1d0
       endif
-      eigv=dexp((etrial-eest)*tau) !TA
 
       iblk=0
 
@@ -495,8 +473,6 @@
       r3cum=zero
       r4cum=zero
       ricum=zero
-      dr2ac=zero
-      dr2un=zero
       if(izigzag.gt.0) then
        zzcum(:)=zero
       endif

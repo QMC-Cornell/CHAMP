@@ -13,6 +13,7 @@
       use contrl_per_mod
       use distance_mod
       use periodic_1d_mod
+      use fragments_mod
       implicit real*8(a-h,o-z)
 
       common /dot/ w0,we,bext,emag,emaglz,emagsz,glande,p1,p2,p3,p4,rring
@@ -28,6 +29,13 @@
 
 !  pe from nucleus-nucleus repulsion
       pe=pecent
+      if (l_fragments) then
+          enefrag(:)=pecent_frag(:)
+          pefrag=sum(enefrag(:))
+          if (abs(pefrag-pe).GT.1d-12) then
+              write(6,'(''WARNING: pe,pefrag ( nn)='', 2f16.10)') pe,pefrag
+          endif
+      endif
       if(iperiodic.eq.0) then
 
 ! Calculate e-N inter-particle distances
@@ -39,7 +47,17 @@
               rvec_en(k,i,ic)=x(k,i)-cent(k,ic)
    25         r_en(i,ic)=r_en(i,ic)+rvec_en(k,i,ic)**2
             r_en(i,ic)=dsqrt(r_en(i,ic))
-            if(nloc.eq.0) pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
+            if(nloc.eq.0) then
+              pot=-znuc(iwctype(ic))/r_en(i,ic)
+              pe_en=pe_en+pot
+              if (l_fragments) then
+!                enefrag(iwfragnucl(ic))=enefrag(iwfragnucl(ic))+pot/2
+!                enefrag(iwfragelec(i ))=enefrag(iwfragelec(i ))+pot/2
+                iwfrag=merge(iwfragnucl(ic),nfrag+1,iwfragelec(i).EQ.iwfragnucl(ic))
+                enefrag(iwfrag)=enefrag(iwfrag)+pot
+              endif
+!              pe_en=pe_en-znuc(iwctype(ic))/r_en(i,ic)
+            endif
 !           if(nloc.eq.-1) pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
             if((nloc.eq.-1 .or. nloc.eq.-5) .and. ic.eq.1) then
 !             pe_en=pe_en+0.5d0*(w0*r_en(i,ic))**2
@@ -108,6 +126,13 @@
             endif
    26   continue
 
+        if (l_fragments) then
+            pefrag=sum(enefrag(:))
+            if (abs(pefrag-pe-pe_en).GT.1d-12) then
+                write(6,'(''WARNING: pe,pefrag ( en)='', 2f16.10)') pe+pe_en,pefrag
+            endif
+        endif
+
 ! Calculate e-e inter-particle distances
         pe_ee=0.d0
         pot_ee(:) = 0.   ! this is an array assignment
@@ -137,6 +162,12 @@
             else
               reffinv = 1.0/r_ee(ij)
             endif
+            if (l_fragments) then
+!              enefrag(iwfragelec(i))=enefrag(iwfragelec(i)) + reffinv/2
+!              enefrag(iwfragelec(j))=enefrag(iwfragelec(j)) + reffinv/2
+              iwfrag=merge(iwfragelec(i),nfrag+1,iwfragelec(j).EQ.iwfragelec(i))
+              enefrag(iwfrag)=enefrag(iwfrag)+reffinv
+            endif
             pe_ee = pe_ee + reffinv
             pot_ee(i) = pot_ee(i) + reffinv
             pot_ee(j) = pot_ee(j) + reffinv
@@ -145,6 +176,13 @@
 
         pe=pe+pe_en+pe_ee !JT
         pei=pe_ee
+
+        if (l_fragments) then
+            pefrag=sum(enefrag(:))
+            if (abs(pefrag-pe).GT.1d-12) then
+                write(6,'(''WARNING: pe,pefrag ( ee)='', 2f16.10)') pe,pefrag
+            endif
+        endif
 
       elseif(iperiodic.eq.1)then ! periodic in 1d
          pe_en=0.d0

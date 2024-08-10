@@ -25,6 +25,8 @@
       use distance_mod
       use jaso_mod
       use pseudo_mod
+      use contrldmc_mod, only: l_tau_diffusion, l_psi_approx
+      use fragments_mod, only: l_fragments
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-12)
@@ -41,6 +43,7 @@
       ndim1=ndim-1
 
       fsum=0
+      if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) lapjo(1:nelec)=0d0
 
       do 5 i=-2,-1
         uu(i)=0
@@ -65,6 +68,10 @@
 
       fso(i,j)=0
       d2ijo(i,j)=0
+      if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+        lapjijo(i,j)=0d0
+        lapjijo(j,i)=0d0
+      endif
       do 10 k=1,ndim
         fijo(k,i,j)=0
    10   fijo(k,j,i)=0
@@ -107,7 +114,6 @@
       botuu=0
       bot2=bot*bot
 
-
 !      feeu=topu/bot-botu*top/bot2
 !      feeuu=topuu-(botuu*top+2*botu*topu)/bot+2*botu**2*top/bot2
 !      feeuu=feeuu/bot
@@ -140,6 +146,10 @@
       feeu=feeu*dd1/rij
 
       fso(i,j)=fso(i,j)+fee
+      if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+        lapjijo(i,j)=lapjijo(i,j)+feeuu+ndim1*feeu
+        lapjijo(j,i)=lapjijo(j,i)+feeuu+ndim1*feeu
+      endif
       do 21 k=1,ndim
         fijo(k,i,j)= fijo(k,i,j) + feeu*rvec_ee(k,ij)
    21   fijo(k,j,i)= fijo(k,j,i) - feeu*rvec_ee(k,ij)
@@ -307,11 +317,19 @@
 !      The expression for wires, where /psi = /psi(y_1, y_2, r_12) rather than
 !        /psi(r_1, r_2, r_12) follows from the same type of calculation (ACM)
         if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then ! ri = yi
-           d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu &
-     &          + 2.*fuu + fii + fjj + 2.*fui*(ri-rj)/rij + 2.*fuj*(rj-ri)/rij
+          d2ijo(i,j)=d2ijo(i,j) + ndim1*2.*fu &
+     &         + 2.*fuu + fii + fjj + 2.*fui*(ri-rj)/rij + 2.*fuj*(rj-ri)/rij
+          if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+            lapjijo(i,j)=lapjijo(i,j) + ndim1*fu + fuu + fii + 2.*fui*(ri-rj)/rij
+            lapjijo(j,i)=lapjijo(j,i) + ndim1*fu + fuu + fjj + 2.*fuj*(rj-ri)/rij
+          endif
         else  ! Pekeris, Phys Rev 112, 1649 (1958) eqn 5:
-           d2ijo(i,j)=d2ijo(i,j) + ndim1*(2*fu+fi+fj) &
+          d2ijo(i,j)=d2ijo(i,j) + ndim1*(2*fu+fi+fj) &
      &          + 2*fuu + fii +  fjj + fui*u2pst/(ri*rij) + fuj*u2mst/(rj*rij)
+          if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+            lapjijo(i,j)=lapjijo(i,j) + ndim1*(fu+fi) + fuu + fii + fui*u2pst/(ri*rij)
+            lapjijo(j,i)=lapjijo(j,i) + ndim1*(fu+fj) + fuu + fjj + fuj*u2mst/(rj*rij)
+          endif
         endif
 
 
@@ -326,6 +344,10 @@
       v(3,j)=v(3,j)+fijo(3,j,i)
       div_vj(i)=div_vj(i)+d2ijo(i,j)/2
       div_vj(j)=div_vj(j)+d2ijo(i,j)/2
+      if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+        lapjo(i)=lapjo(i)+lapjijo(i,j)
+        lapjo(j)=lapjo(j)+lapjijo(j,i)
+      endif
    60 d2=d2+d2ijo(i,j)
 
 ! e-n terms
@@ -336,6 +358,9 @@
         fijo(2,i,i)=0
         fijo(3,i,i)=0
         d2ijo(i,i)=0
+        if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+          lapjijo(i,i)=0d0
+        endif
 
         do 80 ic=1,ncent
           it=iwctype(ic)
@@ -365,7 +390,6 @@
           endif
           botii=0
           bot2=bot*bot
-
 
 !          feni=topi/bot-boti*top/bot2
 !          fenii=topii-(botii*top+2*boti*topi)/bot+2*boti**2*top/bot2
@@ -400,11 +424,17 @@
           if((iperiodic.eq.1).and.(nloc.eq.-4).and.(ic.eq.1)) then
              fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
              d2ijo(i,i) = d2ijo(i,i) + fenii  ! check this...
+             if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then 
+               lapjijo(i,i) = lapjijo(i,i) + fenii
+             endif
           else
              fijo(1,i,i)=fijo(1,i,i) + feni*rvec_en(1,i,ic)
              fijo(2,i,i)=fijo(2,i,i) + feni*rvec_en(2,i,ic)
              fijo(3,i,i)=fijo(3,i,i) + feni*rvec_en(3,i,ic)
              d2ijo(i,i) = d2ijo(i,i) + fenii + ndim1*feni
+             if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+               lapjijo(i,i) = lapjijo(i,i) + fenii + ndim1*feni
+             endif
           endif
 
 !         write(6,'(''fijo='',9d12.4)') (fijo(k,i,i),k=1,ndim),feni,rvec_en(1,i,ic)
@@ -419,6 +449,9 @@
         v(3,i)=v(3,i)+fijo(3,i,i)
 !       write(6,'(''v='',9d12.4)') (v(k,i),k=1,ndim)
         div_vj(i)=div_vj(i)+d2ijo(i,i)
+        if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+          lapjo(i)=lapjo(i)+lapjijo(i,i)
+        endif
    90   d2=d2+d2ijo(i,i)
 
 ! Warning: c1_jas6 below needs changing now that we have different
@@ -436,6 +469,14 @@
             d2ijo(i,j)=term*d2ijo(i,j)
             do 100 k=1,ndim
   100         fijo(k,i,j)=term*fijo(k,i,j)
+      endif
+
+      if (l_fragments.OR.l_tau_diffusion.OR.l_psi_approx) then
+        do i=1,nelec
+          do k=1,ndim
+            lapjo(i)=lapjo(i)+v(k,i)**2
+          enddo
+        enddo
       endif
 
       fsumo=fsum

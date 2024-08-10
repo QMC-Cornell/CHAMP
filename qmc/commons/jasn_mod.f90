@@ -12,7 +12,11 @@ module jasn_mod
  implicit none
  save
 
- double precision :: fsumn,d2n
- double precision, allocatable :: fsn(:,:),fijn(:,:,:),fjn(:,:),d2ijn(:,:)
+! double precision :: fsumn,d2n
+! double precision, allocatable :: fsn(:,:),fijn(:,:,:),fjn(:,:),d2ijn(:,:)
+! double precision, allocatable :: lapjijn(:,:),lapjn(:)
+ double precision, pointer :: fsumn,d2n
+ double precision, pointer :: fsn(:,:),fijn(:,:,:),fjn(:,:),d2ijn(:,:)
+ double precision, pointer :: lapjijn(:,:),lapjn(:)
 
 end module jasn_mod

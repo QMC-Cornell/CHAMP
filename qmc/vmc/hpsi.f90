@@ -1,5 +1,5 @@
-!     subroutine hpsi(coord,psid,psij,energy,d2psi,pe,velocity,div_v,ifr)
-      subroutine hpsi(coord,psid,psij,velocity,div_v,d2psi,pe,pei,energy,denergy,ifr)
+!     subroutine hpsi(coord,psid,psij,energy,d2lnpsi,pe,velocity,div_v,ifr)
+      subroutine hpsi(coord,psid,psij,velocity,div_v,d2lnpsi,pe,pei,energy,denergy,ifr)
 ! Written by Cyrus Umrigar
 ! adapted to complex wavefunctions by A.D.Guclu, Feb2004.
 ! Calculates determinantal and Jastrow parts of psi, velocity, divergence of V,
@@ -28,6 +28,14 @@
 !                                       \deriv_nonlocj
 ! Note there is no deriv_nonlocd because the additional object needed for CSF optimization is calculated in nonlocd.
 
+!psi     = psid*exp(psij)
+!d2lnpsi = laplacian(ln(psi)) = laplacian(ln(psid)) + laplacian(psij)
+!vd      = grad(psid)/psid
+!vj      = grad(psij)
+!d2lnd   = laplacian(ln(psid)) = laplacian(psid)/psid - |vd|**2 
+!d2j     = laplacian(psij)
+!ekin    = -hb*(d2lnpsi+|vd+vj|**2)
+
       use deriv_fast_mod
       use all_tools_mod
       use control_mod
@@ -51,6 +59,9 @@
       use optimo_mod
       use contrl_opt_mod
       use kinet_mod
+      use jaso_mod, only: lapjo
+      use fragments_mod
+      use assignment_mod
       use deriv_exp_mod, only: dpot_exp_orb, param_exp_nb, dorb_dexp !TA
       use all_tools_mod
       implicit real*8(a-h,o-z)
@@ -62,9 +73,13 @@
       common /compferm/ emagv,nv,idot
       dimension coord(3,*),velocity(3,nelec)
       dimension div_vj(nelec),div_vk(nelec),div_vd(nelec),div_v(nelec),dpe(nparm),denergy(nparm)
-      real(dp) :: vd2(3,nelec), d2d2, div_vd2(nelec), ekinen2(nelec)
+      real(dp) :: vd2(3,nelec), d2lnd2, div_vd2(nelec), ekinen2(nelec), kefrag
 
       iwf=iwftype(ifr)
+
+      !assign_elecs(coord,1) uses heap (O(N!) method)
+      !assign_elecs(coord,2) uses Munkres (O(N^3) method)
+      if (l_fragments) call assign_elecs(coord,2)
 
 ! Distances are needed for Jastrow, determinant(e-n only), and for potential energy.
 ! pe_ee is always computed in distances. (pot_ee is called from distances if iperiodic != 0)
@@ -110,16 +125,16 @@
 
       if(ibasis.eq.3) then
 ! note:
-! d2psi = real(lap(psi)) - dabs(cv)**2 = jackson feenberg kin.en.
+! d2lnpsi = real(lap(psi)) - dabs(cv)**2 = jackson feenberg kin.en.
 ! velocity = real(cv)
 
         if(idodet.eq.1) then    ! this part should go in a subroutine..
           if(idot.eq.0 .or. idot.eq.1) then
-            call cdeterminant(coord,rvec_en,r_en,cvd,d2d,div_vd,psid)
+            call cdeterminant(coord,rvec_en,r_en,cvd,d2lnd,div_vd,psid)
           elseif(idot.eq.3) then
-            call cdeterminant_cf(coord,rvec_en,r_en,cvd,d2d,div_vd,psid)
+            call cdeterminant_cf(coord,rvec_en,r_en,cvd,d2lnd,div_vd,psid)
           else                 ! no determinant for laughlin wfs
-            d2d=0.d0
+            d2lnd=0.d0
             psid=1.d0
             do 3 i=1,nelec
               div_vd(i)=0.d0
@@ -128,7 +143,7 @@
           endif
 ! save only if we are doing fit"
           if(index(mode,'fit').ne.0) then
-            d2d_sav(iconfg)=d2d
+            d2d_sav(iconfg)=d2lnd
             psid_sav(iconfg)=psid
             do 5 i=1,nelec
               div_vd_sav(i,iconfg)=div_vd(i)
@@ -150,7 +165,7 @@
 
          else
 
-          d2d=d2d_sav(iconfg)
+          d2lnd=d2d_sav(iconfg)
           psid=psid_sav(iconfg)
           do 7 i=1,nelec
             div_vd(i)=div_vd_sav(i,iconfg)
@@ -173,19 +188,19 @@
             if(ipr.ge.2) write(6,'(''ifr,cvd,vj'',i2,9d12.5)') ifr,cvd(k,i),vj(k,i)
             cvelocity(k,i)=dcmplx(vj(k,i),0.d0)+cvd(k,i)
    10   continue
-        d2psi=d2d+d2j
+        d2lnpsi=d2lnd+d2j
 
 ! calculate extra pieces due to composite fermion vortices
         if(idot.gt.0) then
           psid=psid*psik
-          d2psi=d2psi+d2k
+          d2lnpsi=d2lnpsi+d2k
           do 13 i=1,nelec
             div_v(i)=div_v(i)+div_vk(i)
             do 13 k=1,ndim
               cvelocity(k,i)=cvelocity(k,i)+cvk(k,i)
 ! complex jastrow factor complicates calculation of jackson feenberg energy
               temp=2*dimag(cvk(k,i))*(dimag(cvk(k,i))+2*dimag(cvd(k,i)))
-              d2psi=d2psi-temp
+              d2lnpsi=d2lnpsi-temp
               div_v(i)=div_v(i)-temp
    13     continue
         endif
@@ -201,15 +216,15 @@
         if(ipr.ge.2) write(6,'(''coord'',9d12.5)') ((coord(k,ielec),k=1,ndim),ielec=1,nelec)
         if(ipr.ge.2) write(6,'(''rvec_en'',9d12.5)') ((rvec_en(k,ie,1),k=1,ndim),ie=1,nelec)
         if(ipr.ge.2) write(6,'(''ifr,psid,psij'',i2,9d12.5)') ifr,psid,psij
-        if(ipr.ge.2) write(6,'(''ifr,d2d,d2j'',i2,9d12.5)') ifr,d2d,d2j
-        if(ipr.ge.2) write(6,'(''pe,velocity2,d2psi,emaglz,emagsz'',9d12.5)') &
-     &                     pe,pei,velocity2,d2psi,emaglz,emagsz
+        if(ipr.ge.2) write(6,'(''ifr,d2lnd,d2j'',i2,9d12.5)') ifr,d2lnd,d2j
+        if(ipr.ge.2) write(6,'(''pe,velocity2,d2lnpsi,emaglz,emagsz'',9d12.5)') &
+     &                     pe,pei,velocity2,d2lnpsi,emaglz,emagsz
 
 ! calculate local energy. for convenience "magnetic energy" is included in pe.
 ! it will be separated while printing out the results...
         pe=pe+emag
 !       pe=pe+emagsz+emagv+emaglz
-        energy=pe-hb*(velocity2+d2psi)
+        energy=pe-hb*(velocity2+d2lnpsi)
 
         if(igradhess.ne.0) then
 
@@ -243,11 +258,11 @@
 
       else
         if(idodet.eq.1) then
-          call determinant(coord,rvec_en,r_en,vd,d2d,div_vd,psid)
+          call determinant(coord,rvec_en,r_en,vd,d2lnd,div_vd,psid)
           call object_modified_by_index (vd_index) !WAS
 
           if(index(mode,'fit').ne.0) then
-            d2d_sav(iconfg)=d2d
+            d2d_sav(iconfg)=d2lnd
             psid_sav(iconfg)=psid
             do 30 i=1,nelec
               div_vd_sav(i,iconfg)=div_vd(i)
@@ -255,7 +270,7 @@
    30           vd_sav(k,i,iconfg)=vd(k,i)
           endif
          else
-          d2d=d2d_sav(iconfg)
+          d2lnd=d2d_sav(iconfg)
           psid=psid_sav(iconfg)
           do 35 i=1,nelec
             div_vd(i)=div_vd_sav(i,iconfg)
@@ -267,11 +282,11 @@
           do 40 k=1,ndim
             if(ipr.ge.2) write(6,'(''ifr,vd,vj'',i2,9d12.5)') ifr,vd(k,i),vj(k,i)
    40       velocity(k,i)=vj(k,i)+vd(k,i)
-        d2psi=d2d+d2j
+        d2lnpsi=d2lnd+d2j
 
         if(ipr.ge.2) write(6,'(''coord'',9d12.5)') ((coord(k,ielec),k=1,ndim),ielec=1,nelec)
         if(ipr.ge.2) write(6,'(''ifr,psid,psij'',i2,9d12.5)') ifr,psid,psij
-        if(ipr.ge.2) write(6,'(''ifr,d2d,d2j'',i2,9d12.5)') ifr,d2d,d2j
+        if(ipr.ge.2) write(6,'(''ifr,d2lnd,d2j'',i2,9d12.5)') ifr,d2lnd,d2j
 
 ! get pseudo-potential contribution
 ! nonloc_pot must be called after determinant because psid is needed in nonloc_pot
@@ -316,13 +331,28 @@
         pe=pe+emag
 
 ! Laplacian(JD)/JD = Laplacian(ln(JD)) + V^2
-        energy=pe-hb*d2psi
+        if (l_fragments) pefrag=sum(enefrag(:)) ! tmp - at this point, only the PE is included in enefrag
+        kefrag=0 !tmp
+        energy=pe-hb*d2lnpsi
         do 45 i=1,nelec
+          if (l_fragments) then
+            ekin1e=-hb*(div_vd(i)+sum(vd(:,i)**2)+2*sum(vd(:,i)*vj(:,i))+lapjo(i))
+            enefrag(iwfragelec(i))=enefrag(iwfragelec(i))+ekin1e
+            kefrag=kefrag+ekin1e !tmp
+          endif
           do 45 k=1,ndim
    45       energy=energy-hb*velocity(k,i)**2
+        if(l_fragments) then
+          tefrag=sum(enefrag(:)) !te = total energy
+          if(abs(tefrag-energy).GT.1d-10) write(6,'(''WARNING: energy,tefrag='',2f16.10)') energy,tefrag
+          ekinet=-hb*(d2lnpsi+sum(velocity**2))
+          if(abs(kefrag-ekinet).GT.1e-10) write(6,'(''WARNING: ekinet,kefrag='',2f16.10)') ekinet,kefrag
+          epoten=pe
+          if(abs(pefrag-epoten).GT.1e-10) write(6,'(''WARNING: epoten,pefrag='',2f16.10)') epoten,pefrag
+        endif
         if(ipr.ge.3) write(6,'(''hpsi: ifr,energy='',i2,9f16.10)') ifr,energy,psid,psij,pe
-        if(ipr.ge.3) write(6,'(''hpsi: ifr,psid,exp(psij),d2psi,energy-pe,pe,energy='',i2,6f16.10,/)') &
-     &  ifr,psid,exp(psij),d2psi,energy-pe,pe,energy
+        if(ipr.ge.3) write(6,'(''hpsi: ifr,psid,exp(psij),d2lnpsi,energy-pe,pe,energy='',i2,6f16.10,/)') &
+     &  ifr,psid,exp(psij),d2lnpsi,energy-pe,pe,energy
 
         if(igradhess.ne.0 .or. l_opt) then
           call object_provide_by_index(denergy_index)

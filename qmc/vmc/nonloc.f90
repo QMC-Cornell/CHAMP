@@ -29,6 +29,7 @@
       use gamma_mod    !TA
       use orbe_mod     !TA
       use orbitals_mod !TA
+      use fragments_mod !TA
 ! Temporary:
       use div_v_dmc_mod
       use delocc_mod
@@ -97,9 +98,9 @@
               costh=costh*ri
 
               if (l_mode_dmc) then !TA
-                quadx(1,ntmove_pts,i,current_walker) = xq(iq)
-                quadx(2,ntmove_pts,i,current_walker) = yq(iq)
-                quadx(3,ntmove_pts,i,current_walker) = zq(iq)
+                quadx(1,ntmove_pts,i) = xq(iq)
+                quadx(2,ntmove_pts,i) = yq(iq)
+                quadx(3,ntmove_pts,i) = zq(iq)
               endif
 
               if(iperiodic.eq.0) then
@@ -169,7 +170,7 @@
                   call object_provide_by_index(gdn_index)
                   psid_ratio = sum(gdn(:,i-nup)*orbe(occdn))
                 endif
-                quadr(ntmove_pts,i,current_walker) = psid_ratio*exp(value)
+                quadr(ntmove_pts,i) = psid_ratio*exp(value)
 !                quadr(ntmove_pts,i,current_walker) = &
 !                deter*exp(value)/psidow(current_walker,1)
               endif
@@ -194,6 +195,25 @@
                 psp_nonloc_orb(iel,iorb) = &
                 psp_nonloc_orb(iel,iorb) + factor*orbe(iorb)*vpsp_tmove
               enddo
+
+              if (l_fragments.AND.l_mode_dmc) then !TA
+                pot=0d0
+                if (iel.LE.nup) then
+                  call object_provide_by_index(gup_index)
+                  do iorb=1,noccup
+                    pot=pot+factor*orbe(occup(iorb))*vpsp_tmove*gup(iorb,iel)
+                  enddo
+                else
+                  call object_provide_by_index(gdn_index)
+                  do iorb=1,noccdn
+                    pot=pot+factor*orbe(occdn(iorb))*vpsp_tmove*gdn(iorb,iel-nup)
+                  enddo
+                endif
+!                enefrag(iwfragelec(iel))=enefrag(iwfragelec(iel))+pot/2
+!                enefrag(iwfragnucl(ic ))=enefrag(iwfragnucl(ic ))+pot/2
+                iwfrag=merge(iwfragnucl(ic),nfrag+1,iwfragelec(iel).EQ.iwfragnucl(ic))
+                enefrag(iwfrag)=enefrag(iwfrag)+pot
+              endif
    60       continue ! nquad
 
 ! Restore electron i and its distances to value it had before doing angular integration
@@ -222,7 +242,6 @@
 !      call object_modified_by_index (vpsp_ex_index) ! JT
 
       call object_modified_by_index (psp_nonloc_orb_index) !TA
-
       return
       end
 !-----------------------------------------------------------------------

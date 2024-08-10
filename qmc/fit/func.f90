@@ -33,10 +33,7 @@ function func(ndata2,nparm,parm,diff,iflag)
   use confg_mod
   use const_mod
   use mpioffset_mod
-  use objects_mod
   implicit real*8(a-h,o-z)
-! Warning: tmp
-  character*80 fmt
 
   common /fcn_calls/icalls
 
@@ -45,7 +42,7 @@ function func(ndata2,nparm,parm,diff,iflag)
 
   dimension velocity(3,nelec),div_v(nelec)
 
-  dimension parm(nparm),diff(*)
+  dimension parm(*),diff(*)
 
   data func_sav/1.d99/
   save func_sav, eavri
@@ -57,7 +54,6 @@ function func(ndata2,nparm,parm,diff,iflag)
     do iparm=1,nparml
       coef(iwbasi(iparm),iworb(iparm),1)=parm(iparm)
     enddo
-    call object_modified ('coef')
     do iparm=1,nparme
       zex(iwbase(iparm),1)=parm(nparml+iparm)
       ict=ictype_basis(iwbase(iparm))
@@ -67,7 +63,6 @@ function func(ndata2,nparm,parm,diff,iflag)
     do iparm=1,nparmcsf
       csf_coef(iwcsf(iparm),1)=parm(nparml+nparme+iparm)
     enddo
-    call object_modified ('csf_coef')
 
 !c Calculate coefs to construct the piece of the orbital that comes
 !c from basis fns that are related by symmetry.  This is needed to
@@ -141,11 +136,6 @@ function func(ndata2,nparm,parm,diff,iflag)
       enddo
       do isp=nspin1,nspin2b
         do iparm=1,nparmb(isp)
-! Warning: tmp
-write(6,'(''iparm,isp,nparm-ntmp+iparm'',9i5)') iparm,isp,nparm-ntmp+iparm
-!write(6,'(''size'',9i5)') size(iwjasb,0),size(iwjasb,1),size(parm) ; call systemflush(6)
-write(6,'(''size'',9i5)') size(iwjasb,1),size(iwjasb,2),size(parm,1) ; call systemflush(6)
-!write(6,'(''size'',9i5)') size(iwjasb,0),size(iwjasb,1),size(iwjasb,2),size(parm) ; call systemflush(6)
           b(iwjasb(iparm,isp),isp,1)=parm(nparm-ntmp+iparm)
         enddo
         ntmp=ntmp-nparmb(isp)
@@ -215,9 +205,7 @@ write(6,'(''size'',9i5)') size(iwjasb,1),size(iwjasb,2),size(parm,1) ; call syst
 ! In any case calculate cusp-violation penalty. Should be 0 if icusp>=0.
     ishft=ncuspc*(nspin2-nspin1+1)+nfockc
 !   if((nloc.eq.0. .or. nloc.eq.6) .and. numr.le.0) call cuspco(diff(ndata+ishft+1),0)
-! Warning tmp:
     if(icusp.ge.0) call cuspco(diff(ndata+ishft+1),0)
-!   if(icusp.ge.0) call cuspco(diff(ndata+ishft+1),1)
 
     do i=1,ncent*norbc
       diff(ndata+ishft+i)=diff(ndata+ishft+i)*cuspwt
@@ -231,15 +219,6 @@ write(6,'(''size'',9i5)') size(iwjasb,1),size(iwjasb,2),size(parm,1) ; call syst
       irb=iwrwf2(iebase(1,i))
       zex2(irb,ict,1)=zex(iebase(2,i),1)
     enddo
-!
-!! If the exponents of the basis functions are optimized, recompute normalizations
-!      if(nparme.gt.0) then
-!        if(ibasis.eq.3) then
-!          call basis_norm_dot(0)
-!        else
-!          call basis_norm(1,0)
-!        endif
-!      endif
 
 !   do 80 i=1,iabs(nedet)
 !     cdet(iedet(1,i),1)=zero
@@ -279,59 +258,6 @@ write(6,'(''size'',9i5)') size(iwjasb,1),size(iwjasb,2),size(parm,1) ; call syst
 
 ! Here we are calculating numerical derivs. wrt. wavefn. params so turn igradhess off before calling hpsi.
     igradhess=0
-
-!Warning tmp:
-    if(ipr.ge.2) then
-      write(6,'(/,''Func parameters:'')')
-
-      if(iperiodic.eq.0) then
-        if(nbasis.gt.9999) stop 'nbasis > 9999 in fit: increase i4 below'
-        do iorb=1,norb
-          if(iorb.eq.1) then
-!           write(fmt,'(''(''i3,''f14.8,\'\' ((coef(j,i),j=1,nbasis),i=1,norb)\'\')'')') nbasis
-            write(fmt,'(''(''i3,''f14.8,a38)'')') nbasis
-            write(6,fmt) (coef(ib,iorb,1),ib=1,nbasis),' ((coef(j,i),j=1,nbasis),i=1,norb)'
-          else
-!           write(fmt,'(a1,i3,a6)') '(',nbasis,'f14.8)'
-            write(fmt,'(''(''i3,''f14.8)'')') nbasis
-            write(6,fmt) (coef(ib,iorb,1),ib=1,nbasis)
-          endif
-        enddo
-
-!       write(fmt,'(''(''i3,''f14.8,\'\' (zex(i),i=1,nbasis)\'\')'')') nbasis
-!       write(6,fmt) (zex(ib,1),ib=1,nbasis)
-        write(fmt,'(''(''i3,''f14.8,a20)'')') nbasis
-        write(6,fmt) (zex(ib,1),ib=1,nbasis),' (zex(i),i=1,nbasis)'
-
-        if(ndet.gt.9999) stop 'ndet > 9999 in fit: increase i4 below'
-        write(fmt,'(''(''i4,''f12.8,a)'')') ncsf
-        write(6,fmt) (csf_coef(icsf,1),icsf=1,ncsf),' (csf_coef(icsf),icsf=1,ncsf)'
-      endif
-
-      nparma_read=2+max(0,norda-1)
-      do it=1,nctype
-        if(nparma_read.gt.0) then
-          write(fmt,'(''(''i2,''f19.11,a28)'')') nparma_read
-         else
-          write(fmt,'(''(a28)'')')
-        endif
-        write(6,fmt) (a4(i,it,1),i=1,nparma_read),' (a(iparmj),iparmj=1,nparma)'
-      enddo
-
-      nparm_read=2+max(0,nordb-1)
-      nparmc_read=nterms4(nordc)
-
-!     nparmb=nparma_read
-!     write(fmt,'(''(a28)'')')
-      isp=1
-      write(6,fmt) (b(i,isp,1),i=1,nparm_read),' (b(iparmj),iparmj=1,nparmb)'
-
-      do it=1,nctype
-        write(fmt,'(''(''i2,''f19.11,a28)'')') nparmc_read
-        write(6,fmt) (c(i,it,1),i=1,nparmc_read),' (c(iparmj),iparmj=1,nparmc)'
-      enddo
-    endif ! ipr.ge.2
-
 
 ! For a serial run this reduces to a "do 123 i=1,ndata"
     do i=idispls(idtask)+1,idispls(idtask+1)

@@ -12,7 +12,7 @@ module deriv_fast_mod
                        !& iwdet_in_csf
   use orb_mod          !orb, dorb, ddorb
   use dorb_mod         !ndetup, ndetdn, iwdorbdn, iwdorbup, iwdetup, iwdetdn
-  use eloc_mod         !pe_ee, pe_en, eloc_pot
+  use eloc_vars_mod    !pe_ee, pe_en, eloc_pot
   use gamma_mod        !gup, gdn, psp_nonloc_pot
   use forcepar_mod     !nwf
   use optim_mod        !iwcsf
@@ -23,17 +23,22 @@ module deriv_fast_mod
   integer, allocatable, target :: ivirup(:), ivirdn(:)
   integer, target              :: ind_refup, ind_refdn !index of ref dets
 
-  real(dp), target              :: deta_up, deta_dn     !det(A)
-  real(dp), allocatable, target :: aiup(:,:), aidn(:,:) !A^-1
+!  real(dp), target              :: deta_up, deta_dn     !det(A)
+!  real(dp), allocatable, target :: aiup(:,:), aidn(:,:) !A^-1
   real(dp), allocatable, target :: atup(:,:), atdn(:,:) !A^tilde
-  real(dp), allocatable, target ::  tup(:,:),  tdn(:,:) !A^-1 A^tilde
+!  real(dp), allocatable, target ::  tup(:,:),  tdn(:,:) !A^-1 A^tilde
   real(dp), allocatable, target :: dtup(:,:), dtdn(:,:) !elocal A^-1 A^tilde
+  real(dp), pointer              :: deta_up, deta_dn     !det(A)
+  real(dp), pointer :: aiup(:,:), aidn(:,:) !A^-1
+  real(dp), pointer ::  tup(:,:),  tdn(:,:) !A^-1 A^tilde
 
-  real(dp)                      :: chi
-  real(dp), allocatable, target :: yup(:,:), ydn(:,:)
+!  real(dp)                      :: chi
+!  real(dp), allocatable, target :: yup(:,:), ydn(:,:)
   real(dp), allocatable, target :: dyup(:,:), dydn(:,:)
   real(dp), allocatable, target :: dgup(:,:), dgdn(:,:)
   real(dp), allocatable, target :: dalpha_up(:,:), dalpha_dn(:,:)
+  real(dp), pointer              :: chi
+  real(dp), pointer :: yup(:,:), ydn(:,:)
 
   real(dp), allocatable :: elocal_orb_up(:,:), elocal_orb_dn(:,:)
   real(dp)              :: elocal_fast
@@ -48,9 +53,11 @@ module deriv_fast_mod
   integer , allocatable, target :: refup(:,:), refdn(:,:)
   integer , allocatable, target :: sgnup(:), sgndn(:)
   integer , allocatable, target :: ordup(:), orddn(:)
-  real(dp), allocatable, target :: detup(:), detdn(:)
-  real(dp), allocatable, target :: invup(:,:), invdn(:,:)
+!  real(dp), allocatable, target :: detup(:), detdn(:)
+!  real(dp), allocatable, target :: invup(:,:), invdn(:,:)
   real(dp), allocatable, target :: deloc_up(:), deloc_dn(:)
+  real(dp), pointer :: detup(:), detdn(:)
+  real(dp), pointer :: invup(:,:), invdn(:,:)
 
   real(dp), allocatable, target :: cdet_in_wf(:,:)
 
@@ -256,7 +263,6 @@ contains
     implicit none
 
     integer :: iup, idn, ne, nswp, ksum
-    !type(AlphaMatrix), pointer :: aup, adn
 
     if (header_exe) then
       call object_create('excitation_info')
@@ -280,24 +286,24 @@ contains
     allocate(ioccup(orb_tot_nb), ioccdn(orb_tot_nb))
 
     !1b observables
-    allocate(aiup(nup,nup), aidn(ndn,ndn))
+!    allocate(aiup(nup,nup), aidn(ndn,ndn))
     allocate(atup(nup,orb_tot_nb), atdn(ndn,orb_tot_nb))
-    allocate( tup(nup,orb_tot_nb),  tdn(ndn,orb_tot_nb))
+!    allocate( tup(nup,orb_tot_nb),  tdn(ndn,orb_tot_nb))
     allocate(dtup(nup,orb_tot_nb), dtdn(ndn,orb_tot_nb))
 
     !wf matrices 
-    allocate(yup(noccup,nup), ydn(noccdn,ndn))
+!    allocate(yup(noccup,nup), ydn(noccdn,ndn))
     allocate(dyup(noccup,nup), dydn(noccdn,ndn))
     allocate(gup(noccup,nup), gdn(noccdn,ndn))
     allocate(dgup(noccup,nup), dgdn(noccdn,ndn))
     allocate(dalpha_up(3,ndetup), dalpha_dn(3,ndetdn))
     allocate(cdet_in_wf(ndet, nwf))
-    allocate(invup(nup*nup,ndetup), invdn(ndn*ndn,ndetdn))
+!    allocate(invup(nup*nup,ndetup), invdn(ndn*ndn,ndetdn))
     allocate(lab_refup(nup,ndetup), lab_refdn(ndn,ndetdn))
     allocate(lab_excup(nup,ndetup), lab_excdn(ndn,ndetdn))
     allocate(excup(nup,ndetup), excdn(ndn,ndetdn))
     allocate(refup(nup,ndetup), refdn(ndn,ndetdn))
-    allocate(detup(ndetup)    , detdn(ndetdn))
+!    allocate(detup(ndetup)    , detdn(ndetdn))
     allocate(sgnup(ndetup)    , sgndn(ndetdn))
     allocate(ordup(ndetup)    , orddn(ndetdn))
     allocate(deloc_up(ndetup), deloc_dn(ndetdn))
@@ -595,8 +601,8 @@ contains
     implicit none
 
     real(dp) :: yaiup(noccup, nup), yaidn(noccdn, ndn)
-
     real(dp) :: tyaiup(nup,nup), tyaidn(ndn,ndn)
+
     integer :: i, ii
 
     if (header_exe) then
@@ -834,6 +840,7 @@ contains
 
   subroutine psp_nonloc_pot_bld
     implicit none
+    integer :: ie,iorb
 
     if (header_exe) then
       call object_create('psp_nonloc_pot')

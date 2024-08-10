@@ -14,7 +14,7 @@
       integer, intent(in) :: iel, iw
       real*8, intent(in) :: coord(3)
       real*8, intent(inout) :: v(3,nelec)
-      real*8  x(3,nelec)
+      real*8  x(3,nelec), lapl
 
       do 10 k=1,ndim
         do 10 i=1,iel-1
@@ -27,7 +27,7 @@
         do 30 i=iel+1,nelec
   30      x(k,i)=xoldw(k,i,iw,1)
 
-      call hpsie(iel,x,psid,psij,v)
+      call hpsie(iel,x,psid,psij,v,lapl)
 
       return
       end

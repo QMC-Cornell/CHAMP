@@ -32,9 +32,11 @@
    95     rnd=rannyu(0)
 ! The next call to savern is not really needed but since Claudia put it in, I am too for consistency
         call savern(irand_seed)
-        do i =1,4
-          irand_seed(i)=mod(irand_seed(i)+int(rannyu(0)*idtask*9999),9999)
-        enddo
+        if (idtask.NE.0) then !TA - This way, serial and mpi versions have same output if the number of processes used in an mpi run is 1.
+          do i =1,4
+            irand_seed(i)=mod(irand_seed(i)+int(rannyu(0)*idtask*9999),9999)
+          enddo
+        endif
         call setrn(irand_seed)
         write(6,'(''irand_seed='',4i5)') irand_seed
       endif

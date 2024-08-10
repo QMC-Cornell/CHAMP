@@ -162,12 +162,7 @@
     5           v2old=v2old+voldw(k,i,iw,ifr)**2
 
               if(drift_type=='unr93' .or. adrift <= 1.d0) then
-                !vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
-                if (adrift.LE.0d0) then
-                  vavvt=tau
-                else
-                  vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
-                endif
+                vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
               elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
                 vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old +(adrift-1)*sqrt(2*adrift*v2old*tau*tratio))
               endif
@@ -259,11 +254,7 @@
 ! Tau primary -> tratio=one
 
           if(drift_type=='unr93' .or. adrift <= 1.d0) then
-            if (adrift.LE.0d0) then
-              vavvt=tau
-            else
-              vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/ (adrift*v2old)
-            endif
+            vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/ (adrift*v2old)
           elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
             vavvt=(dsqrt(one+two*adrift*v2old*tau)-one)/ (adrift*v2old +(adrift-1)*sqrt(2*adrift*v2old*tau))
           endif
@@ -306,12 +297,7 @@
   149       v2new=v2new+vnew(k,i)**2
 
           if(drift_type=='unr93' .or. adrift <= 1.d0) then
-            !vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/ (adrift*v2new)
-            if (adrift.LE.0d0) then
-              vavvt=tau
-            else
-              vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/ (adrift*v2new)
-            endif
+            vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/ (adrift*v2new)
           elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
             vavvt=(dsqrt(one+two*adrift*v2new*tau)-one)/ (adrift*v2new +(adrift-1)*sqrt(2*adrift*v2new*tau))
           endif
@@ -432,11 +418,7 @@
   200   continue ! nelec
 
 ! Effective tau for branching
-        if(itau_eff.ge.1) then
-          tauprim=tau*dfus2ac/dfus2un  ! taunow is used in nonloc, called from hpsi.  taunow=tauprim for ifr=1, tauprim*drifdifr for ifr>1
-        else
-          tauprim=tau
-        endif
+        tauprim=tau*dfus2ac/dfus2un  ! taunow is used in nonloc, called from hpsi.  taunow=tauprim for ifr=1, tauprim*drifdifr for ifr>1
 
         do 280 ifr=1,nforce
 
@@ -524,12 +506,7 @@
   251           v2old=v2old+voldw(k,i,iw,ifr)**2
 
               if(drift_type=='unr93' .or. adrift <= 1.d0) then
-                !vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
-                if (adrift.LE.0d0) then
-                  vavvt=tau
-                else
-                  vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
-                endif
+                vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old)
               elseif(drift_type=='quadratic' .and. adrift > 1.d0) then
                 vavvt=(dsqrt(one+two*adrift*v2old*tau*tratio)-one)/ (adrift*v2old +(adrift-1)*sqrt(2*adrift*v2old*tau*tratio))
               endif
@@ -542,7 +519,6 @@
             drifdifr=one
             fration=fratio(iw,ifr)
             enew=eoldw(iw,ifr)
-            v2sumn=v2sumo
           endif ! accept
 
           taunow=tauprim*drifdifr
@@ -573,101 +549,204 @@
 !         if(ipass-nstep*2*nblkeq .gt. 5) then
           if(ipass .gt. nstep*2*nblkeq + max(10,nint(10.d0/tau))) then
 !           energy_sigma=e_sigma(ecum1,ecm21,wcum1)
-!           energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
-            if(index(mode,'dmc_mov1_mpi').ne.0) then
-              energy_sigma=e_sigma(egcum(1)+egsum(1),egcm21allprocs(1),wgcum(1)+wgsum(1))
-            else
-              energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
-            endif
-            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(dble(nproc))
+            energy_sigma=e_sigma(egcum1(1),egcm21(1),wgcum1(1))
+            if(mode.eq.'dmc_mov1_mpi2' .or. mode.eq.'dmc_mov1_mpi3') energy_sigma=energy_sigma*sqrt(float(nproc))
           else
-            energy_sigma=0.2d0*sqrt(dble(nelec))
+            energy_sigma=0.2d0*sqrt(real(nelec))
           endif
           edifo=eoldw(iw,ifr)-eest
           edifn=enew-eest
-          ecuto=max(edifo,-limit_rewt_dmc*energy_sigma)
-          ecutn=max(edifn,-limit_rewt_dmc*energy_sigma)
+          ecuto=max(eoldw(iw,ifr)-eest,-limit_rewt_dmc*energy_sigma)
+          ecutn=max(enew         -eest,-limit_rewt_dmc*energy_sigma)
 
           if(itau_integ<=0) then
             tau_integ=tau
           else
             tau_integ=taunow
           endif
-
-          if(index(ene_int,'ene_int_v').ne.0) then
-            factoro=max(sqrt(v2sumo/nelec)*tau_integ*c_rewt,1e-9)                                       ! v
-            factorn=max(sqrt(v2sumn/nelec)*tau_integ*c_rewt,1e-9)                                       ! v
-          elseif(index(ene_int,'ene_int_e').ne.0) then
-            factoro=max(abs(edifo)*tau_integ*c_rewt/energy_sigma,1e-9)                                  ! e
-            factorn=max(abs(edifn)*tau_integ*c_rewt/energy_sigma,1e-9)                                  ! e
-          endif
-
-          if(ene_int=='no_ene_int') then
-            ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
-            ewtn=enew                                                                                   ! no_ene_int
-          elseif(ene_int=='unr93') then
-            ewto=eest+edifo*fratio(iw,ifr)                                                              ! UNR93
-            ewtn=eest+edifn*fration                                                                     ! UNR93
-          elseif(ene_int=='alfe') then
-            ecut=0.2d0*sqrt(nelec/tau)                                                                    ! Alfe
-            ewto=eest+min(ecut,max(-ecut,edifo))                                                        ! Alfe
-            ewtn=eest+min(ecut,max(-ecut,edifn))                                                        ! Alfe
+! Warning: Change UNR93 reweighting factor because it gives large time-step error at small tau for pseudo systems as pointed out by Alfe
+          if(ene_int=='unr93') then
+            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)                                               ! UNR93
+            ewtn=eest-(eest-enew)*fration                                                               ! UNR93
           elseif(ene_int=='ene_int_v') then
-            ewto=eest+edifo/(1+factoro**p_rewt)**(1/p_rewt)                                             ! ene_int_v
-            ewtn=eest+edifn/(1+factorn**p_rewt)**(1/p_rewt)                                             ! ene_int_v
+!           ewto=eest+edifo/(1+((sqrt(v2sumo/nelec))*tau_integ*c_rewt)**p_rewt)**(1/p_rewt)                   ! ene_int_v
+!           ewtn=eest+edifn/(1+((sqrt(v2sumn/nelec))*tau_integ*c_rewt)**p_rewt)**(1/p_rewt)                   ! ene_int_v
+            ewto=eest+edifo/(1+(sqrt(v2sumo/nelec)*tau_integ*c_rewt)**p_rewt)**(1/p_rewt)                     ! ene_int_v
+            ewtn=eest+edifn/(1+(sqrt(v2sumn/nelec)*tau_integ*c_rewt)**p_rewt)**(1/p_rewt)                     ! ene_int_v
           elseif(ene_int=='ene_int_e') then
-            ewto=eest+edifo/(1+factoro**p_rewt)**(1/p_rewt)                                             ! ene_int_e
-            ewtn=eest+edifn/(1+factorn**p_rewt)**(1/p_rewt)                                             ! ene_int_e
+            ewto=eest+edifo/(1+(abs(ecuto)*tau_integ*c_rewt/energy_sigma)**p_rewt)**(1/p_rewt)                ! ene_int_e
+            ewtn=eest+edifn/(1+(abs(ecutn)*tau_integ*c_rewt/energy_sigma)**p_rewt)**(1/p_rewt)                ! ene_int_e
           elseif(ene_int=='ene_int_v2') then
+            factoro=sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                       ! ene_int_v2
+            factorn=sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                       ! ene_int_v2
             ewto=eest+edifo/(1+factoro**p_rewt+factoro**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_v2
             ewtn=eest+edifn/(1+factorn**p_rewt+factorn**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_v2
           elseif(ene_int=='ene_int_e2') then
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e2
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e2
             ewto=eest+edifo/(1+factoro**p_rewt+factoro**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_e2
             ewtn=eest+edifn/(1+factorn**p_rewt+factorn**(2*p_rewt))**(1/(2*p_rewt))                     ! ene_int_e2
           elseif(ene_int=='ene_int_v3') then
+            factoro=sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                       ! ene_int_v3
+            factorn=sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                       ! ene_int_v3
             ewto=eest+edifo/(1+factoro**p_rewt+2*factoro**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_v3
             ewtn=eest+edifn/(1+factorn**p_rewt+2*factorn**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_v3
           elseif(ene_int=='ene_int_e3') then
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e3
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e3
             ewto=eest+edifo/(1+factoro**p_rewt+2*factoro**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_e3
             ewtn=eest+edifn/(1+factorn**p_rewt+2*factorn**(2*p_rewt))**(1/(2*p_rewt))                   ! ene_int_e3
           elseif(ene_int=='ene_int_v4') then
+            factoro=sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                       ! ene_int_v4
+            factorn=sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                       ! ene_int_v4
             ewto=eest+edifo/(1+factoro**p_rewt+(2*factoro)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_v4
             ewtn=eest+edifn/(1+factorn**p_rewt+(2*factorn)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_v4
           elseif(ene_int=='ene_int_e4') then
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e4
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e4
             ewto=eest+edifo/(1+factoro**p_rewt+(2*factoro)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_e4
             ewtn=eest+edifn/(1+factorn**p_rewt+(2*factorn)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_e4
+          elseif(ene_int=='ene_int_v5') then
+            factoro=.5d0*sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                  ! ene_int_v5
+            factorn=.5d0*sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                  ! ene_int_v5
+            ewto=eest+edifo/(1+factoro**p_rewt+(4*factoro)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_v5
+            ewtn=eest+edifn/(1+factorn**p_rewt+(4*factorn)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_v5
+          elseif(ene_int=='ene_int_e5') then
+            factoro=.5d0*abs(ecuto)*tau_integ*c_rewt/energy_sigma                                             ! ene_int_e5
+            factorn=.5d0*abs(ecutn)*tau_integ*c_rewt/energy_sigma                                             ! ene_int_e5
+            ewto=eest+edifo/(1+factoro**p_rewt+(4*factoro)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_e5
+            ewtn=eest+edifn/(1+factorn**p_rewt+(4*factorn)**(2*p_rewt))**(1/(2*p_rewt))                 ! ene_int_e5
           elseif(ene_int=='ene_int_v6') then
+            factoro=sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                       ! ene_int_v6
+            factorn=sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                       ! ene_int_v6
             ewto=eest+edifo/min(1+factoro,sqrt(1+(2*factoro)**2))                                       ! ene_int_v6
             ewtn=eest+edifn/min(1+factorn,sqrt(1+(2*factorn)**2))                                       ! ene_int_v6
           elseif(ene_int=='ene_int_e6') then
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e6
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e6
             ewto=eest+edifo/min(1+factoro,sqrt(1+(2*factoro)**2))                                       ! ene_int_e6
             ewtn=eest+edifn/min(1+factorn,sqrt(1+(2*factorn)**2))                                       ! ene_int_e6
           elseif(ene_int=='ene_int_v7') then
+            factoro=sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                       ! ene_int_v7
+            factorn=sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                       ! ene_int_v7
             ewto=eest+edifo/min(1+1.2d0*factoro,sqrt(1+(3.d0*factoro)**2))                              ! ene_int_v7
             ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(3.d0*factorn)**2))                              ! ene_int_v7
           elseif(ene_int=='ene_int_e7') then
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e7
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e7
             ewto=eest+edifo/min(1+1.2d0*factoro,sqrt(1+(3.d0*factoro)**2))                              ! ene_int_e7
             ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(3.d0*factorn)**2))                              ! ene_int_e7
+          elseif(ene_int=='ene_int_v8') then
+            factoro=sqrt(v2sumo/nelec)*tau_integ*c_rewt                                                       ! ene_int_v8
+            factorn=sqrt(v2sumn/nelec)*tau_integ*c_rewt                                                       ! ene_int_v8
+            ewto=eest+edifo/min(1+1.2d0*factoro,sqrt(1+(2.8d0*factoro)**2))                             ! ene_int_v8
+            ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(2.8d0*factorn)**2))                             ! ene_int_v8
+          elseif(ene_int=='ene_int_e8') then
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e8
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e8
+            ewto=eest+edifo/min(1+1.2d0*factoro,sqrt(1+(2.8d0*factoro)**2))                             ! ene_int_e8
+            ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(2.8d0*factorn)**2))                             ! ene_int_e8
+            ewtn=eest+edifn/min(1+1.2d0*factorn,sqrt(1+(2.8d0*factorn)**2))                             ! ene_int_v8
           elseif(ene_int=='ene_int_v9') then
+! If we do not bound it to be nonzero, eest becomes NaN
+            factoro=max(sqrt(v2sumo/nelec)*tau_integ*c_rewt,1e-9)                                             ! ene_int_v9
+            factorn=max(sqrt(v2sumn/nelec)*tau_integ*c_rewt,1e-9)                                             ! ene_int_v9
             ewto=eest+edifo*(sqrt(pi)/2)*erf(factoro)/factoro                                           ! ene_int_v9
             ewtn=eest+edifn*(sqrt(pi)/2)*erf(factorn)/factorn                                           ! ene_int_v9
           elseif(ene_int=='ene_int_e9') then
+!           factor=(1-exp(-c_rewt*tau_integ))/(c_rewt*tau_integ)                                                    ! ene_int_e9
+!           factor=(sqrt(pi)/2)*erf(c_rewt*tau_integ)/(c_rewt*tau_integ)                                            ! ene_int_e9
+!           ewto=eest+edifo*factor                                                                      ! ene_int_e9
+!           ewtn=eest+edifn*factor                                                                      ! ene_int_e9
+            factoro=abs(ecuto)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e9
+            factorn=abs(ecutn)*tau_integ*c_rewt/energy_sigma                                                  ! ene_int_e9
             ewto=eest+edifo*(sqrt(pi)/2)*erf(factoro)/factoro                                           ! ene_int_e9
             ewtn=eest+edifn*(sqrt(pi)/2)*erf(factorn)/factorn                                           ! ene_int_e9
-          elseif(ene_int=='ene_int_v10') then
-            ewto=eest+edifo/sqrt(1+0.1*factoro+factoro**2)                                              ! ene_int_v10
-            ewtn=eest+edifn/sqrt(1+0.1*factorn+factorn**2)                                              ! ene_int_v10
-          elseif(ene_int=='ene_int_v11') then
-            factoro=0.1d0*sqrt(factoro)+factoro                                                         ! ene_int_v11
-            factorn=0.1d0*sqrt(factorn)+factorn                                                         ! ene_int_v11
-            ewto=eest+edifo*(sqrt(pi)/2)*erf(factoro)/factoro                                           ! ene_int_v11
-            ewtn=eest+edifn*(sqrt(pi)/2)*erf(factorn)/factorn                                           ! ene_int_v11
+          elseif(ene_int=='ene_int1') then
+            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**2*(3-2*fratio(iw,ifr))                       ! new_ene_int
+            ewtn=eest-(eest-enew)*fration**2*(3-2*fration)                                              ! new_ene_int
+          elseif(ene_int=='new_ene_int2') then
+            ewto=eest-(eest-eoldw(iw,ifr))*fratio(iw,ifr)**3*(10-15*fratio(iw,ifr)+6*fratio(iw,ifr)**2) ! new_ene_int2
+            ewtn=eest-(eest-enew)*fration**3*(10-15*fration+6*fration**2)                               ! new_ene_int2
+          elseif(ene_int=='new_ene_int3') then
+            ewto=eest-(eest-eoldw(iw,ifr))*(1-(1-fratio(iw,ifr))**3)                                    ! new_ene_int3
+            ewtn=eest-(eest-enew)*(1-(1-fration)**3)                                                    ! new_ene_int3
           elseif(ene_int=='new_ene_int8') then
-            ewto=eest+ecuto/(1+(v2sumo*tau_integ/nelec)**2)                                             ! new_ene_int8
-            ewtn=eest+ecutn/(1+(v2sumn*tau_integ/nelec)**2)                                             ! new_ene_int8
+            ewto=eest+ecuto/(1+(v2sumo*tau_integ/nelec)**2)                                                   ! new_ene_int8
+            ewtn=eest+ecutn/(1+(v2sumn*tau_integ/nelec)**2)                                                   ! new_ene_int8
+          elseif(ene_int=='new_ene_int9') then
+            ewto=eest+ecuto/(1+(v2sumo*tau_integ/nelec))                                                      ! new_ene_int9
+            ewtn=eest+ecutn/(1+(v2sumn*tau_integ/nelec))                                                      ! new_ene_int9
+          elseif(ene_int=='new_ene_int10') then
+!           write(6,'(''energy_sigma='',f9.3)') energy_sigma
+!           if(ecuto.lt.abs(ecuto)) write(6,'(''ecuto'',9f9.3)') ecut, ecuto
+!           if(ecutn.lt.absecutn) write(6,'(''ecutn'',9f9.3)') ecut, eest-enew
+            ewto=eest+ecuto/(1+sqrt(v2sumo/nelec)*tau_integ)                                                  ! new_ene_int10
+            ewtn=eest+ecutn/(1+sqrt(v2sumn/nelec)*tau_integ)                                                  ! new_ene_int10
+          elseif(ene_int=='new_ene_int10a') then
+            ewto=eest+ecuto/(1+1.5*sqrt(v2sumo/nelec)*tau_integ)                                              ! new_ene_int10a
+            ewtn=eest+ecutn/(1+1.5*sqrt(v2sumn/nelec)*tau_integ)                                              ! new_ene_int10a
+          elseif(ene_int=='new_ene_int10b') then
+            ewto=eest+ecuto/(1+2*sqrt(v2sumo/nelec)*tau_integ)                                                ! new_ene_int10b
+            ewtn=eest+ecutn/(1+2*sqrt(v2sumn/nelec)*tau_integ)                                                ! new_ene_int10b
+          elseif(ene_int=='new_ene_int11') then
+            ewto=eest+ecuto/sqrt(1+4*(v2sumo/nelec)*tau_integ**2)                                             ! new_ene_int11
+            ewtn=eest+ecutn/sqrt(1+4*(v2sumn/nelec)*tau_integ**2)                                             ! new_ene_int11
+          elseif(ene_int=='new_ene_int11a') then
+            ewto=eest+ecuto/sqrt(1+(v2sumo/nelec)*tau_integ**2)                                               ! new_ene_int11a
+            ewtn=eest+ecutn/sqrt(1+(v2sumn/nelec)*tau_integ**2)                                               ! new_ene_int11a
+          elseif(ene_int=='new_ene_int11b') then
+            ewto=eest+ecuto/sqrt(1+10*(v2sumo/nelec)*tau_integ**2)                                            ! new_ene_int11b
+            ewtn=eest+ecutn/sqrt(1+10*(v2sumn/nelec)*tau_integ**2)                                            ! new_ene_int11b
+          elseif(ene_int=='new_ene_int12') then
+            ewto=eest+ecuto/(1+abs(ecuto)*tau_integ)                                                          ! new_ene_int13
+            ewtn=eest+ecutn/(1+abs(ecutn)*tau_integ)                                                          ! new_ene_int13
+          elseif(ene_int=='new_ene_int14') then
+            ewto=eest+ecuto/sqrt(1+(ecuto*tau_integ)**2)                                                      ! new_ene_int14
+            ewtn=eest+ecutn/sqrt(1+(ecutn*tau_integ)**2)                                                      ! new_ene_int14
+!         elseif(ene_int=='new_ene_int15') then
+!           ewto=eest-(eest-eoldw(iw,ifr))/(1+(abs(eest-eoldw(iw,ifr))*tau_integ/(energy_sigma)))             ! new_ene_int15
+!           ewtn=eest-(eest-enew)/(1+(abs(eest-enew)*tau_integ/(energy_sigma)))                               ! new_ene_int15
+!         elseif(ene_int=='new_ene_int16') then
+!           ewto=eest-(eest-eoldw(iw,ifr))/sqrt(1+((eest-eoldw(iw,ifr))*tau_integ/(energy_sigma))**2)         ! new_ene_int16
+!           ewtn=eest-(eest-enew)/sqrt(1+((eest-enew)*tau_integ/(energy_sigma))**2)                           ! new_ene_int16
+!         elseif(ene_int=='new_ene_int17') then
+!           ewto=eest-(eest-eoldw(iw,ifr))/sqrt(1+2*((eest-eoldw(iw,ifr))*tau_integ/(energy_sigma))**2)       ! new_ene_int17
+!           ewtn=eest-(eest-enew)/sqrt(1+2*((eest-enew)*tau_integ/(energy_sigma))**2)                         ! new_ene_int17
+!         elseif(ene_int=='new_ene_int17b') then
+!           ewto=eest-(eest-eoldw(iw,ifr))/sqrt(1+20*((eest-eoldw(iw,ifr))*tau_integ/(energy_sigma))**2)      ! new_ene_int17b
+!           ewtn=eest-(eest-enew)/sqrt(1+20*((eest-enew)*tau_integ/(energy_sigma))**2)                        ! new_ene_int17b
+          elseif(ene_int=='new_ene_int15') then
+            ewto=eest+ecuto/(1+(abs(ecuto)*tau_integ/(energy_sigma)))                                         ! new_ene_int15
+            ewtn=eest+ecutn/(1+(abs(ecutn)*tau_integ/(energy_sigma)))                                         ! new_ene_int15
+          elseif(ene_int=='new_ene_int16') then
+            ewto=eest+ecuto/sqrt(1+((ecuto)*tau_integ/(energy_sigma))**2)                                     ! new_ene_int16
+            ewtn=eest+ecutn/sqrt(1+((ecutn)*tau_integ/(energy_sigma))**2)                                     ! new_ene_int16
+          elseif(ene_int=='new_ene_int17') then
+            ewto=eest+ecuto/sqrt(1+2*((ecuto)*tau_integ/(energy_sigma))**2)                                   ! new_ene_int17
+            ewtn=eest+ecutn/sqrt(1+2*((ecutn)*tau_integ/(energy_sigma))**2)                                   ! new_ene_int17
+          elseif(ene_int=='new_ene_int17b') then
+            ewto=eest+ecuto/sqrt(1+20*((ecuto)*tau_integ/(energy_sigma))**2)                                  ! new_ene_int17b
+            ewtn=eest+ecutn/sqrt(1+20*((ecutn)*tau_integ/(energy_sigma))**2)                                  ! new_ene_int17b
+          elseif(ene_int=='new_ene_int18') then
+            ewto=eest+ecuto/(1+((v2sumo/nelec)*tau_integ**2)**.75d0)**(2.d0/3.d0)                             ! new_ene_int18
+            ewtn=eest+ecutn/(1+((v2sumn/nelec)*tau_integ**2)**.75d0)**(2.d0/3.d0)                             ! new_ene_int18
+          elseif(ene_int=='new_ene_int18a') then
+            ewto=eest+ecuto/(1+2*((v2sumo/nelec)*tau_integ**2)**.75d0)**(2.d0/3.d0)                           ! new_ene_int18a
+            ewtn=eest+ecutn/(1+2*((v2sumn/nelec)*tau_integ**2)**.75d0)**(2.d0/3.d0)                           ! new_ene_int18a
+          elseif(ene_int=='new_ene_int18b') then
+            ewto=eest+ecuto/(1+4*((v2sumo/nelec)*tau_integ**2)**.75d0)**(2.d0/3.d0)                           ! new_ene_int18b
+            ewtn=eest+ecutn/(1+4*((v2sumn/nelec)*tau_integ**2)**.75d0)**(2.d0/3.d0)                           ! new_ene_int18b
+          elseif(ene_int=='no_ene_int') then
+            ewto=eoldw(iw,ifr)                                                                          ! no_ene_int
+            ewtn=enew                                                                                   ! no_ene_int
+          elseif(ene_int=='alfe') then
+            ecut=0.2*sqrt(nelec/tau_integ)                                                                    ! Alfe
+            ewto=eest+min(ecut,max(-ecut,eoldw(iw,ifr)-eest))                                           ! Alfe
+            ewtn=eest+min(ecut,max(-ecut,enew-eest))                                                    ! Alfe
           else
-            write(6,'(''ene_int not set correctly in input'')')
-            stop 'ene_int not set correctly in input'
+            write(6,'(''ene_int not set in input'')')
+            stop 'ene_int not set in input'
           endif
 
           do 262 iparm=1,nparm
@@ -717,24 +796,17 @@
 ! It is more stable to use the energy_sigma with the population control bias than the one with the bias removed.
 !         if(iw==1) write(6,'(''ipass,e_sigma(ecum1,ecm21,wcum1),e_sigma(egcum(1),egcm2(1),wgcum(1)),energy_sigma,dwt,1+limit_rewt_dmc*energy_sigma*tau'',i6,9f10.6)') ipass,e_sigma(ecum1,ecm21,wcum1),e_sigma(egcum1(1),egcm21(1),wgcum1(1)),e_sigma(egcum(1),egcm2(1),wgcum(1)),energy_sigma,dwt,1+limit_rewt_dmc*energy_sigma*tau
 !         if(dwt.gt.1+limit_rewt_dmc*energy_sigma*tau) then
-!         if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
-!         if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)) then
-          if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)) then
+          if(dwt.gt.exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)) then
             ipr_sav=ipr_sav+1
             if(ipr_sav.le.3) then
-!             write(6,'(''Warning: dwt>(1+limit_rewt_dmc*energy_sigma*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
-!             write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
-!             write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
-              write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
+              write(6,'(''Warning: dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau): nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration='',i5,9d12.4)') &
      &        nwalk,energy_sigma,dwt,ewto,ewtn,fratio(iw,ifr),fration
               if(ipr_sav.eq.1) write(6,'(''This should add a totally negligible positive bias to the energy'')')
             elseif(ipr_sav.eq.4) then
-              write(6,'(''Warning: Additional warning msgs. of dwt>exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow) suppressed'')')
+              write(6,'(''Warning: Additional warning msgs. of dwt>1+limit_rewt_dmc*energy_sigma*tau suppressed'')')
             endif
 !           dwt=1+limit_rewt_dmc*energy_sigma*tau
-!           dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
-!           dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma/rttau)*taunow)
-            dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma/rtrttau)*taunow)
+            dwt=exp((etrial-eest+limit_rewt_dmc*energy_sigma)*tau)
           endif
 
 ! ffi has already been raised to wt_lambda.  Do the same for dwt.  We do this even for the current move so that wt_lambda can serve to limit size of move.

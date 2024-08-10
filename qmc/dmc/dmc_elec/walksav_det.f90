@@ -8,14 +8,13 @@
       use const_mod
       use deriv_fast_mod
       use gammaw_mod
-      use qua_mod, only: quadx, quadr
       implicit real*8(a-h,o-z)
 
       !TA
       orbw(:,:,iw)    = orb
       dorbw(:,:,:,iw) = dorb
-!     ddorbw(:,:,iw) = ddorb
- 
+      ddorbw(:,:,iw) = ddorb 
+
       aiupw(:,:,iw) = aiup
       deta_upw(iw)  = deta_up
       tupw(:,:,iw)  = tup
@@ -76,7 +75,7 @@
       !TA
       orb  = orbw(:,:,iw)
       dorb = dorbw(:,:,:,iw)
-!     ddorb = ddorbw(:,:,iw)
+      ddorb = ddorbw(:,:,iw)
  
       aiup     = aiupw(:,:,iw)
       deta_up  = deta_upw(iw)
@@ -138,7 +137,7 @@
       !TA
       orbw(:,:,iw2)    = orbw(:,:,iw)
       dorbw(:,:,:,iw2) = dorbw(:,:,:,iw)
-!     ddorbw(:,:,iw2) = ddorbw(:,:,iw)
+      ddorbw(:,:,iw2) = ddorbw(:,:,iw)
  
       aiupw(:,:,iw2) = aiupw(:,:,iw)
       deta_upw(iw2)  = deta_upw(iw)
@@ -169,8 +168,8 @@
       chiw(iw2)     = chiw(iw)
       yupw(:,:,iw2) = yupw(:,:,iw)
       ydnw(:,:,iw2) = ydnw(:,:,iw)
-      quadr(:,:,iw2)=quadr(:,:,iw)
-      quadx(:,:,:,iw2)=quadx(:,:,:,iw)
+!      quadr(:,:,iw2)=quadr(:,:,iw)
+!      quadx(:,:,:,iw2)=quadx(:,:,:,iw)
 
 !      do 125 idet=1,ndetup
 !        detuw(idet,iw2)=detuw(idet,iw)

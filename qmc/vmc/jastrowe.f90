@@ -5,6 +5,7 @@
       use contr2_mod
       use distance_mod
       use pjase_mod
+      use contrldmc_mod, only: l_tau_diffusion, l_psi_approx
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),v(3,*)
@@ -17,7 +18,11 @@
       if(ijas.eq.3) then
         call jastrow3e(iel,x,v,value)
        elseif(ijas.ge.4.and.ijas.le.6) then
-        call jastrow4e(iel,x,v,value)
+        if (l_tau_diffusion.OR.l_psi_approx) then
+          call jastrow4e_lapl(iel,x,v,value)
+        else
+          call jastrow4e(iel,x,v,value)
+        endif
        else
         stop 'single-electron move only for jastrow3 and jastrow4'
       endif

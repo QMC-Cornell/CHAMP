@@ -140,9 +140,9 @@
               costh=costh*ri
 
               if (l_mode_dmc) then !TA
-                quadx(1,ntmove_pts(i),i,current_walker) = xq(iq)
-                quadx(2,ntmove_pts(i),i,current_walker) = yq(iq)
-                quadx(3,ntmove_pts(i),i,current_walker) = zq(iq)
+                quadx(1,ntmove_pts(i),i) = xq(iq)
+                quadx(2,ntmove_pts(i),i) = yq(iq)
+                quadx(3,ntmove_pts(i),i) = zq(iq)
               endif
 
               if(iperiodic.eq.0) then
@@ -220,7 +220,7 @@
               deter=psid_ratio*psid
 
               if (l_mode_dmc) then
-                quadr(ntmove_pts(i),i,current_walker) = psid_ratio*exp(value)
+                quadr(ntmove_pts(i),i) = psid_ratio*exp(value)
 !                quadr(ntmove_pts,i,current_walker) = &
 !                deter*exp(value)/psidow(current_walker,1)
               endif

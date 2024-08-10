@@ -293,10 +293,12 @@
             do 60 icoef=2,ncoef
    60       val=val+ce(icoef,irb,ict,iwf)*x(ir)**(icoef-1)
             if(ipr.ge.1) write(6,'(i2,1p3d22.14,1pd8.0)')ir,x(ir),val,rwf(ir,irb,ict,iwf),val-rwf(ir,irb,ict,iwf)
-            if(abs(val-rwf(ir,irb,ict,iwf))/rwf(ir,irb,ict,iwf).gt.1.d-2 .and. rwf(ir,irb,ict,iwf).ne.0.d0) then
-              write(6,'('' irb,ir,val,rwf(ir,irb,ict,iwf)'',2i5,9d12.4)') irb,ir,val,rwf(ir,irb,ict,iwf)
-              write(6,'('' Warning: fit of radial function at small radii not good'')')
-!             stop 'fit of radial function at small radii not good'
+            if (rwf(ir,irb,ict,iwf).ne.0.d0) then
+              if(abs(val-rwf(ir,irb,ict,iwf))/rwf(ir,irb,ict,iwf).gt.1.d-2) then
+                write(6,'('' irb,ir,val,rwf(ir,irb,ict,iwf)'',2i5,9d12.4)') irb,ir,val,rwf(ir,irb,ict,iwf)
+                write(6,'('' Warning: fit of radial function at small radii not good'')')
+!               stop 'fit of radial function at small radii not good'
+              endif
             endif
    70     continue
 

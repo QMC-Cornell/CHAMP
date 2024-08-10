@@ -12,7 +12,11 @@ module jaso_mod
  implicit none
  save
 
- double precision fsumo,d2o
- double precision, allocatable :: fso(:,:),fijo(:,:,:),fjo(:,:),d2ijo(:,:)
+! double precision fsumo,d2o
+! double precision, allocatable :: fso(:,:),fijo(:,:,:),fjo(:,:),d2ijo(:,:)
+! double precision, allocatable :: lapjijo(:,:),lapjo(:)
+ double precision, pointer :: fsumo,d2o
+ double precision, pointer :: fso(:,:),fijo(:,:,:),fjo(:,:),d2ijo(:,:)
+ double precision, pointer :: lapjijo(:,:),lapjo(:)
 
 end module jaso_mod

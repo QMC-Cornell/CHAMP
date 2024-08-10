@@ -1,4 +1,6 @@
-      subroutine redistribute
+module redistribute_mod
+contains
+      subroutine redistribute(walkers)
 ! Figure out who communicates a walker to whom to achieve load balance.
 ! It communicates only 1 walker at a time between processors, but it does
 ! this as many times as needed to achieve load balance.  Most of the time
@@ -17,14 +19,16 @@
       use all_tools_mod
       use mpi_mod
       use control_mod
-      use dmc_mod
+      !use dmc_mod
       use const_mod
       use forcepar_mod
       use contrl_per_mod
       use force_dmc_mod
       use forcest_dmc_mod
       use branch_mod
+      use walker_type_mod, only: walker_t
       implicit real*8(a-h,o-z)
+      type(walker_t), target, intent(inout) :: walkers(:)
 
       dimension nwalk_all(0:nproc),icommunicate_all(0:nproc), &
      &iwalk_stack(nproc)
@@ -100,27 +104,27 @@
       icomm=icommunicate_all(idtask)
       if(icomm.lt.0) nwalk=nwalk+1
 
-      if(icomm.gt.0) call send_walker(icomm-1)
-      if(icomm.lt.0) call recv_walker(-icomm-1)
+      if(icomm.gt.0) call send_walker( icomm-1,walkers(nwalk))
+      if(icomm.lt.0) call recv_walker(-icomm-1,walkers(nwalk))
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      if(ibasis.eq.3) then
-        if(icomm.gt.0) call csend_det(icomm-1)
-        if(icomm.lt.0) call crecv_det(-icomm-1)
-      else
-        if(icomm.gt.0) call send_det(icomm-1)
-        if(icomm.lt.0) call recv_det(-icomm-1)
-      endif
-
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
-
-      if(icomm.gt.0) call send_jas(icomm-1)
-      if(icomm.lt.0) call recv_jas(-icomm-1)
-
+!      if(ibasis.eq.3) then
+!        if(icomm.gt.0) call csend_det(icomm-1)
+!        if(icomm.lt.0) call crecv_det(-icomm-1)
+!      else
+!        if(icomm.gt.0) call send_det(icomm-1)
+!        if(icomm.lt.0) call recv_det(-icomm-1)
+!      endif
+!
+!      call mpi_barrier(MPI_COMM_WORLD,ierr)
+!
+!      if(icomm.gt.0) call send_jas(icomm-1)
+!      if(icomm.lt.0) call recv_jas(-icomm-1)
+!
       if(icomm.gt.0) nwalk=nwalk-1
-
-      call mpi_barrier(MPI_COMM_WORLD,ierr)
+!
+!      call mpi_barrier(MPI_COMM_WORLD,ierr)
 
       ido_again=0
       do 40 i=0,nproc-1
@@ -132,3 +136,4 @@
 #  endif
       return
       end
+end module redistribute_mod

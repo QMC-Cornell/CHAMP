@@ -9,71 +9,75 @@ MODDIR=compiler_files
 INCDIR=.
 
 SRCS =	accumulation_mod.f90 all_modules_mod.f90 all_tools_mod.f90 \
-	allocations_mod.f90 amoeba.f90 amotry.f90 backflow_auxiliary_mod.f90 \
-	backflow_mod.f90 basic_tools_mod.f90 basis_mod.f90 bspline_module.f90 \
-	bspline_oo_module.f90 bspline_sub_module.f90 bsplines_mod.f90 \
-	bwfdet_mod.f90 champ.f90 choldc.f90 cholsl.f90 constants_mod.f90 \
-	control_mod.f90 correlated_sampling_mod.f90 \
-	crystal_symmetries_mod.f90 csfs_mod.f90 cslater_cf_mod.f90 \
-	cslater_mod.f90 cslaterw_mod.f90 cusp_mod.f90 debug_mod.f90 \
-	density_mod.f90 deriv_csf_mod.f90 deriv_exp_mod.f90 \
+	allocations_mod.f90 amoeba.f90 amotry.f90 assignment_mod.f90 \
+	backflow_auxiliary_mod.f90 backflow_mod.f90 basic_tools_mod.f90 \
+	basis_mod.f90 bspline_module.f90 bspline_oo_module.f90 \
+	bspline_sub_module.f90 bsplines_mod.f90 bwfdet_mod.f90 champ.f90 \
+	choldc.f90 cholsl.f90 constants_mod.f90 control_mod.f90 \
+	correlated_sampling_mod.f90 crystal_symmetries_mod.f90 csfs_mod.f90 \
+	cslater_cf_mod.f90 cslater_mod.f90 cslaterw_mod.f90 cusp_mod.f90 \
+	debug_mod.f90 density_mod.f90 deriv_csf_mod.f90 deriv_exp_mod.f90 \
 	deriv_fast_mod.f90 deriv_geo_mod.f90 deriv_jas_mod.f90 deriv_mod.f90 \
 	deriv_orb_mod.f90 dete_mod.f90 determinants_mod.f90 \
 	dipole_moment_mod.f90 dmc_mod.f90 ei.f90 ei2.f90 electrons_mod.f90 \
 	eloc_mod.f90 erf.f90 ewald2_mod.f90 expint.f90 extracule_mod.f90 \
 	f2kcli.f90 files_tools_mod.f90 fitdet_mod.f90 forces_mod.f90 \
-	forces_pulay_mod.f90 grid_mod.f90 hash_funcs.f90 hash_table_mod.f90 \
-	initialization_mod.f90 intracule_mod.f90 jastrow_mod.f90 \
-	main_menu_mod.f90 matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 \
-	nuclei_mod.f90 opt_common_mod.f90 opt_lin_mod.f90 opt_nwt_mod.f90 \
+	forces_pulay_mod.f90 green_functions_mod.f90 grid_mod.f90 \
+	hash_funcs.f90 hash_table_mod.f90 initialization_mod.f90 \
+	intracule_mod.f90 jastrow_mod.f90 main_menu_mod.f90 \
+	matrix_tools_mod.f90 montecarlo_mod.f90 mpi_mod.f90 nuclei_mod.f90 \
+	opt_common_mod.f90 opt_lin_mod.f90 opt_nwt_mod.f90 \
 	opt_ovlp_fn_mod.f90 opt_ptb_mod.f90 optimization_mod.f90 \
 	orbitals_mod.f90 parser_tools_mod.f90 periodic_jastrow_een.f90 \
 	periodic_jastrow_mod.f90 pjas_interface.f90 pjas_setup_mod.f90 \
-	pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 psi_mod.f90 pythag.f90 \
-	restart_mod.f90 routines_mod.f90 strings_tools_mod.f90 svbksb.f90 \
-	svdcmp.f90 testing_mod.f90 tools.f90 types_mod.f90 variables_mod.f90 \
-	vmc_mod.f90 walkers_mod.f90 write_mod.f90 address_tools.c \
-	commons/age_mod.f90 commons/atom_mod.f90 commons/basis1_mod.f90 \
-	commons/basis2_mod.f90 commons/basis3_mod.f90 \
-	commons/basisnorm_mod.f90 commons/bparm_mod.f90 \
-	commons/branch_dmc_opt_mod.f90 commons/branch_mod.f90 \
-	commons/coefs2_mod.f90 commons/coefs_mod.f90 commons/confg_mod.f90 \
-	commons/config_dmc_mod.f90 commons/config_mod.f90 \
-	commons/const2_mod.f90 commons/const_mod.f90 commons/contr2_mod.f90 \
-	commons/contr3_mod.f90 commons/contr_names_mod.f90 \
-	commons/contr_ylm_mod.f90 commons/contrl_mod.f90 \
-	commons/contrl_opt2_mod.f90 commons/contrl_opt_mod.f90 \
-	commons/contrl_per_mod.f90 commons/contrldmc_mod.f90 \
-	commons/cphifun_mod.f90 commons/cslatn_mod.f90 \
-	commons/cuspmat4_mod.f90 commons/cuspmat_mod.f90 \
+	pjasee_mod.f90 pjasen_mod.f90 print_mod.f90 psi_mod.f90 \
+	psi_type_mod.f90 psi_utils_mod.f90 pythag.f90 restart_mod.f90 \
+	routines_mod.f90 rundmc_mod.f90 stats_type_mod.f90 \
+	strings_tools_mod.f90 svbksb.f90 svdcmp.f90 testing_mod.f90 tools.f90 \
+	types_mod.f90 variables_mod.f90 vmc_mod.f90 walker_type_mod.f90 \
+	walkers_mod.f90 write_mod.f90 address_tools.c commons/age_mod.f90 \
+	commons/atom_mod.f90 commons/basis1_mod.f90 commons/basis2_mod.f90 \
+	commons/basis3_mod.f90 commons/basisnorm_mod.f90 \
+	commons/bparm_mod.f90 commons/branch_dmc_opt_mod.f90 \
+	commons/branch_mod.f90 commons/coefs2_mod.f90 commons/coefs_mod.f90 \
+	commons/confg_mod.f90 commons/config_dmc_mod.f90 \
+	commons/config_mod.f90 commons/const2_mod.f90 commons/const_mod.f90 \
+	commons/contr2_mod.f90 commons/contr3_mod.f90 \
+	commons/contr_names_mod.f90 commons/contr_ylm_mod.f90 \
+	commons/contrl_mod.f90 commons/contrl_opt2_mod.f90 \
+	commons/contrl_opt_mod.f90 commons/contrl_per_mod.f90 \
+	commons/contrldmc_mod.f90 commons/cphifun_mod.f90 \
+	commons/cslatn_mod.f90 commons/cuspmat4_mod.f90 \
+	commons/cuspmat_mod.f90 commons/debug_shared_mod.f90 \
 	commons/delocc_mod.f90 commons/denupdn_mod.f90 \
 	commons/deriv_phifun_mod.f90 commons/derivjas_mod.f90 \
 	commons/dets_mod.f90 commons/dim_mod.f90 commons/distance_mod.f90 \
 	commons/distance_sav_mod.f90 commons/div_v_dmc_mod.f90 \
 	commons/div_v_mod.f90 commons/doefp_mod.f90 commons/dorb_mod.f90 \
-	commons/est2cm_mod.f90 commons/estcm2_mod.f90 \
-	commons/estcum_dmc_mod.f90 commons/estcum_mod.f90 \
-	commons/estsig_mod.f90 commons/estsum_dmc_mod.f90 \
-	commons/estsum_mod.f90 commons/ewald_mod.f90 \
-	commons/force_dmc_mod.f90 commons/forcepar_mod.f90 \
-	commons/forcest_dmc_mod.f90 commons/forcest_mod.f90 \
-	commons/forcewt_mod.f90 commons/fourier_mod.f90 commons/gamma_mod.f90 \
-	commons/gammaw_mod.f90 commons/gauss_ecp_mod.f90 \
-	commons/gradhess_mod.f90 commons/gradhess_sav_mod.f90 \
-	commons/gradhessder_mod.f90 commons/gradhessdero_mod.f90 \
-	commons/gradhessj_nonlin_mod.f90 commons/gradjerr_mod.f90 \
-	commons/iterat_mod.f90 commons/jacobsave_mod.f90 commons/jasn_mod.f90 \
-	commons/jaso_mod.f90 commons/jasow_mod.f90 commons/jaspar1_mod.f90 \
-	commons/jaspar2_mod.f90 commons/jaspar3_mod.f90 \
-	commons/jaspar4_mod.f90 commons/jaspar6_mod.f90 \
-	commons/jaspar_mod.f90 commons/jasparread_mod.f90 \
-	commons/jel_sph2_mod.f90 commons/kinet_mod.f90 commons/lbas_mod.f90 \
-	commons/linear_mod.f90 commons/linear_orig_mod.f90 \
-	commons/linear_sav_mod.f90 commons/mpiblk_mod.f90 \
-	commons/mpioffset_mod.f90 commons/ncusp_mod.f90 \
-	commons/numbas_mod.f90 commons/numexp_mod.f90 commons/optim2_mod.f90 \
-	commons/optim_mod.f90 commons/optimo_mod.f90 commons/orb_mod.f90 \
-	commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
+	commons/eloc_vars_mod.f90 commons/est2cm_mod.f90 \
+	commons/estcm2_mod.f90 commons/estcum_dmc_mod.f90 \
+	commons/estcum_mod.f90 commons/estsig_mod.f90 \
+	commons/estsum_dmc_mod.f90 commons/estsum_mod.f90 \
+	commons/ewald_mod.f90 commons/force_dmc_mod.f90 \
+	commons/forcepar_mod.f90 commons/forcest_dmc_mod.f90 \
+	commons/forcest_mod.f90 commons/forcewt_mod.f90 \
+	commons/fourier_mod.f90 commons/fragments_mod.f90 \
+	commons/gamma_mod.f90 commons/gammaw_mod.f90 \
+	commons/gauss_ecp_mod.f90 commons/gradhess_mod.f90 \
+	commons/gradhess_sav_mod.f90 commons/gradhessder_mod.f90 \
+	commons/gradhessdero_mod.f90 commons/gradhessj_nonlin_mod.f90 \
+	commons/gradjerr_mod.f90 commons/iterat_mod.f90 \
+	commons/jacobsave_mod.f90 commons/jasn_mod.f90 commons/jaso_mod.f90 \
+	commons/jasow_mod.f90 commons/jaspar1_mod.f90 commons/jaspar2_mod.f90 \
+	commons/jaspar3_mod.f90 commons/jaspar4_mod.f90 \
+	commons/jaspar6_mod.f90 commons/jaspar_mod.f90 \
+	commons/jasparread_mod.f90 commons/jel_sph2_mod.f90 \
+	commons/kinet_mod.f90 commons/lbas_mod.f90 commons/linear_mod.f90 \
+	commons/linear_orig_mod.f90 commons/linear_sav_mod.f90 \
+	commons/mpiblk_mod.f90 commons/mpioffset_mod.f90 \
+	commons/ncusp_mod.f90 commons/numbas_mod.f90 commons/numexp_mod.f90 \
+	commons/optim2_mod.f90 commons/optim_mod.f90 commons/optimo_mod.f90 \
+	commons/orb_mod.f90 commons/orbe_mod.f90 commons/orbital_grid_mod.f90 \
 	commons/orbital_num_mod.f90 commons/orbpar_mod.f90 \
 	commons/pairden_mod.f90 commons/pars_mod.f90 \
 	commons/periodic2_mod.f90 commons/periodic_1d_mod.f90 \
@@ -81,70 +85,73 @@ SRCS =	accumulation_mod.f90 all_modules_mod.f90 all_tools_mod.f90 \
 	commons/pjase_mod.f90 commons/pointer_mod.f90 \
 	commons/pop_control_mod.f90 commons/pseudo_fahy_mod.f90 \
 	commons/pseudo_mod.f90 commons/pseudo_tm_mod.f90 \
-	commons/pworbital_mod.f90 commons/qua_mod.f90 commons/rlobxy_mod.f90 \
-	commons/slater_mod.f90 commons/slaterw_mod.f90 commons/slatn2_mod.f90 \
-	commons/slatn_mod.f90 commons/stats_mod.f90 commons/stepv_mod.f90 \
-	commons/tempor_test_mod.f90 commons/vardep_mod.f90 commons/vd_mod.f90 \
-	commons/velratio_mod.f90 commons/vj_mod.f90 commons/wfsec_mod.f90 \
-	commons/zigzag_mod.f90 MED_tools/average_mod.f90 \
-	MED_tools/catalog_averages_mod.f90 MED_tools/catalog_objects_mod.f90 \
-	MED_tools/catalog_routines_mod.f90 MED_tools/indexes_mod.f90 \
-	MED_tools/nodes_mod.f90 MED_tools/objects_mod.f90 fit/checkjas2.f90 \
-	fit/cusorb.f90 fit/cusorb_equiv.f90 fit/cuspcheck2.f90 \
-	fit/cuspcheck3.f90 fit/cuspco.f90 fit/cuspexact2.f90 \
-	fit/cuspexact3.f90 fit/cuspexact4.f90 fit/cuspinit3.f90 \
-	fit/cuspinit4.f90 fit/deriv_jastrow.f90 fit/deriv_jastrow3.f90 \
-	fit/deriv_nonloc.f90 fit/deriv_nonloc_pot.f90 fit/deriv_nonlpsi.f90 \
-	fit/deriv_scale.f90 fit/dummy_newton.f90 fit/equiv_bas.f90 \
-	fit/fit.f90 fit/fockcheck3.f90 fit/fockexact3.f90 fit/func.f90 \
-	fit/jacobian.f90 fit/orb_params.f90 fit/piksrt.f90 fit/plot_jas.f90 \
-	fit/rewght.f90 fit/strech.f90 vmc/acuest.f90 vmc/basis_fns.f90 \
-	vmc/basis_fnse2.f90 vmc/basis_norm.f90 vmc/basis_norm_dot.f90 \
-	vmc/cbasis_fns.f90 vmc/cdeterminant.f90 vmc/cdeterminante.f90 \
-	vmc/cdetsav.f90 vmc/cjastrow.f90 vmc/cmatinv.f90 \
-	vmc/corbitals_loc_ana.f90 vmc/corbitals_loc_ana_grade.f90 \
-	vmc/den2dwrt.f90 vmc/deriv_jastrow4.f90 vmc/determinant.f90 \
-	vmc/determinant_up_dn.f90 vmc/determinante.f90 vmc/detsav.f90 \
-	vmc/dgelg.f90 vmc/distances.f90 vmc/dumper.f90 vmc/emagnetic.f90 \
-	vmc/ewald.f90 vmc/find_image.f90 vmc/finwrt.f90 vmc/fock.f90 \
-	vmc/fourier2d.f90 vmc/gammai.f90 vmc/grad_hess_jastrow.f90 \
-	vmc/hpsi.f90 vmc/hpsie.f90 vmc/ie.f90 vmc/interpol_orb.f90 \
-	vmc/jassav.f90 vmc/jastrow.f90 vmc/jastrow1.f90 vmc/jastrow2.f90 \
-	vmc/jastrow3.f90 vmc/jastrow3e.f90 vmc/jastrow4.f90 vmc/jastrow4e.f90 \
-	vmc/jastrow_num.f90 vmc/jastrowe.f90 vmc/matinv.f90 \
-	vmc/mc_configs.f90 vmc/metrop_mov1.f90 vmc/metrop_movall.f90 \
-	vmc/metrop_polar_mov1.f90 vmc/metrop_polar_movall.f90 \
-	vmc/metrop_slat_mov1.f90 vmc/metrop_slat_movall.f90 \
-	vmc/newton_chol.f90 vmc/nonloc.f90 vmc/nonloc_pot.f90 vmc/nonlpsi.f90 \
-	vmc/opt_wf.f90 vmc/orbitals_loc_ana.f90 \
-	vmc/orbitals_loc_ana_grade.f90 vmc/orbitals_loc_num.f90 \
-	vmc/orbitals_loc_num_grade.f90 vmc/orbitals_period_num.f90 \
-	vmc/orbitals_period_num_grade.f90 vmc/orbitals_pw.f90 \
-	vmc/orbitals_pw_grade.f90 vmc/pairden2d.f90 vmc/pot.f90 vmc/psi.f90 \
-	vmc/quad_min.f90 vmc/rannyu.f90 vmc/read_bas_num.f90 \
-	vmc/read_input.f90 vmc/read_orb_dot.f90 vmc/read_orb_loc.f90 \
-	vmc/read_orb_pw.f90 vmc/readps.f90 vmc/readps_champ.f90 \
-	vmc/readps_gauss.f90 vmc/readps_tm.f90 vmc/rotqua.f90 \
-	vmc/scale_dist.f90 vmc/sites.f90 vmc/splfit.f90 vmc/spline.f90 \
-	vmc/spline2.f90 vmc/strech.f90 vmc/systemflush.f90 vmc/vmc.f90 \
-	vmc/wf_secondary.f90 vmc/zigzag2d.f90 dmc/acuest_dmc_movall.f90 \
-	dmc/dmc_brock_movall.f90 dmc/dmc_good_ap.f90 \
-	dmc/dmc_good_inhom_movall.f90 dmc/dmc_good_movall.f90 \
-	dmc/dmc_good_ps_movall.f90 dmc/dumper_dmc_movall.f90 \
-	dmc/finwrt_dmc_movall.f90 dmc/gauss.f90 dmc/maindmc.f90 \
-	dmc/open_files.f90 dmc/opt_wf_dmc.f90 dmc/projector.f90 \
-	dmc/sites_dmc.f90 dmc/sites_per.f90 dmc/splitj_movall.f90 \
-	dmc/stochastic_reconfiguration2.f90 dmc/zeta_cusp.f90 \
-	dmc/dmc_elec/acuest_dmc_mov1.f90 dmc/dmc_elec/cwalksav_det.f90 \
-	dmc/dmc_elec/dmc_brock_mov1.f90 dmc/dmc_elec/dmc_good_inhom_mov1.f90 \
-	dmc/dmc_elec/dmc_good_mov1.f90 dmc/dmc_elec/dmc_good_ps_mov1.f90 \
-	dmc/dmc_elec/dumper_dmc_mov1.f90 dmc/dmc_elec/finwrt_dmc_mov1.f90 \
-	dmc/dmc_elec/hpsiedmc.f90 dmc/dmc_elec/splitj_mov1.f90 \
-	dmc/dmc_elec/tmove.f90 dmc/dmc_elec/walksav_det.f90 \
-	dmc/dmc_elec/walksav_jas.f90 fit/MPI/func_mpi.f90 \
-	fit/MPI/jacobian_mpi.f90 vmc/MPI/acuest_mpi.f90 vmc/MPI/dumper.f90 \
-	vmc/MPI/finwrt_mpi.f90 vmc/MPI/grad_hess_jas_mpi.f90 \
-	vmc/MPI/mc_configs.f90 dmc/dmc_elec/MPI/acuest_dmc_mov1_mpi1.f90 \
+	commons/psi_dummy_mod.f90 commons/pworbital_mod.f90 \
+	commons/qua_mod.f90 commons/rlobxy_mod.f90 commons/slater_mod.f90 \
+	commons/slaterw_mod.f90 commons/slatn2_mod.f90 commons/slatn_mod.f90 \
+	commons/stats_index_mod.f90 commons/stats_mod.f90 \
+	commons/stepv_mod.f90 commons/tempor_test_mod.f90 \
+	commons/vardep_mod.f90 commons/vd_mod.f90 commons/velratio_mod.f90 \
+	commons/vj_mod.f90 commons/wfsec_mod.f90 commons/zigzag_mod.f90 \
+	MED_tools/average_mod.f90 MED_tools/catalog_averages_mod.f90 \
+	MED_tools/catalog_objects_mod.f90 MED_tools/catalog_routines_mod.f90 \
+	MED_tools/indexes_mod.f90 MED_tools/nodes_mod.f90 \
+	MED_tools/objects_mod.f90 fit/checkjas2.f90 fit/cusorb.f90 \
+	fit/cusorb_equiv.f90 fit/cuspcheck2.f90 fit/cuspcheck3.f90 \
+	fit/cuspco.f90 fit/cuspexact2.f90 fit/cuspexact3.f90 \
+	fit/cuspexact4.f90 fit/cuspinit3.f90 fit/cuspinit4.f90 \
+	fit/deriv_jastrow.f90 fit/deriv_jastrow3.f90 fit/deriv_nonloc.f90 \
+	fit/deriv_nonloc_pot.f90 fit/deriv_nonlpsi.f90 fit/deriv_scale.f90 \
+	fit/dummy_newton.f90 fit/equiv_bas.f90 fit/fit.f90 fit/fockcheck3.f90 \
+	fit/fockexact3.f90 fit/func.f90 fit/jacobian.f90 fit/orb_params.f90 \
+	fit/piksrt.f90 fit/plot_jas.f90 fit/rewght.f90 fit/strech.f90 \
+	vmc/acuest.f90 vmc/basis_fns.f90 vmc/basis_fnse2.f90 \
+	vmc/basis_norm.f90 vmc/basis_norm_dot.f90 vmc/cbasis_fns.f90 \
+	vmc/cdeterminant.f90 vmc/cdeterminante.f90 vmc/cdetsav.f90 \
+	vmc/cjastrow.f90 vmc/cmatinv.f90 vmc/corbitals_loc_ana.f90 \
+	vmc/corbitals_loc_ana_grade.f90 vmc/den2dwrt.f90 \
+	vmc/deriv_jastrow4.f90 vmc/determinant.f90 vmc/determinant_up_dn.f90 \
+	vmc/determinante.f90 vmc/detsav.f90 vmc/dgelg.f90 vmc/distances.f90 \
+	vmc/dumper.f90 vmc/emagnetic.f90 vmc/ewald.f90 vmc/find_image.f90 \
+	vmc/finwrt.f90 vmc/fock.f90 vmc/fourier2d.f90 vmc/gammai.f90 \
+	vmc/grad_hess_jastrow.f90 vmc/hpsi.f90 vmc/hpsie.f90 vmc/ie.f90 \
+	vmc/interpol_orb.f90 vmc/jassav.f90 vmc/jastrow.f90 vmc/jastrow1.f90 \
+	vmc/jastrow2.f90 vmc/jastrow3.f90 vmc/jastrow3e.f90 vmc/jastrow4.f90 \
+	vmc/jastrow4e.f90 vmc/jastrow4e_lapl.f90 vmc/jastrow_num.f90 \
+	vmc/jastrowe.f90 vmc/matinv.f90 vmc/mc_configs.f90 \
+	vmc/metrop_mov1.f90 vmc/metrop_movall.f90 vmc/metrop_polar_mov1.f90 \
+	vmc/metrop_polar_movall.f90 vmc/metrop_slat_mov1.f90 \
+	vmc/metrop_slat_movall.f90 vmc/newton_chol.f90 vmc/nonloc.f90 \
+	vmc/nonloc_pot.f90 vmc/nonlpsi.f90 vmc/opt_wf.f90 \
+	vmc/orbitals_loc_ana.f90 vmc/orbitals_loc_ana_grade.f90 \
+	vmc/orbitals_loc_num.f90 vmc/orbitals_loc_num_grade.f90 \
+	vmc/orbitals_period_num.f90 vmc/orbitals_period_num_grade.f90 \
+	vmc/orbitals_pw.f90 vmc/orbitals_pw_grade.f90 vmc/pairden2d.f90 \
+	vmc/pot.f90 vmc/psi.f90 vmc/quad_min.f90 vmc/rannyu.f90 \
+	vmc/read_bas_num.f90 vmc/read_input.f90 vmc/read_orb_dot.f90 \
+	vmc/read_orb_loc.f90 vmc/read_orb_pw.f90 vmc/readps.f90 \
+	vmc/readps_champ.f90 vmc/readps_gauss.f90 vmc/readps_tm.f90 \
+	vmc/rotqua.f90 vmc/scale_dist.f90 vmc/sites.f90 vmc/splfit.f90 \
+	vmc/spline.f90 vmc/spline2.f90 vmc/strech.f90 vmc/systemflush.f90 \
+	vmc/vmc.f90 vmc/wf_secondary.f90 vmc/zigzag2d.f90 \
+	dmc/acuest_dmc_movall.f90 dmc/dmc_brock_movall.f90 \
+	dmc/dmc_good_ap.f90 dmc/dmc_good_inhom_movall.f90 \
+	dmc/dmc_good_movall.f90 dmc/dmc_good_ps_movall.f90 \
+	dmc/dumper_dmc_movall.f90 dmc/finwrt_dmc_movall.f90 dmc/gauss.f90 \
+	dmc/maindmc.f90 dmc/open_files.f90 dmc/opt_wf_dmc.f90 \
+	dmc/projector.f90 dmc/sites_dmc.f90 dmc/sites_per.f90 \
+	dmc/splitj_movall.f90 dmc/stochastic_reconfiguration2.f90 \
+	dmc/zeta_cusp.f90 dmc/dmc_elec/acuest_dmc_mov1.f90 \
+	dmc/dmc_elec/cwalksav_det.f90 dmc/dmc_elec/dmc_brock_mov1.f90 \
+	dmc/dmc_elec/dmc_good_inhom_mov1.f90 dmc/dmc_elec/dmc_good_mov1.f90 \
+	dmc/dmc_elec/dmc_good_ps_mov1.f90 dmc/dmc_elec/dumper_dmc_mov1.f90 \
+	dmc/dmc_elec/finwrt_dmc_mov1.f90 dmc/dmc_elec/hpsiedmc.f90 \
+	dmc/dmc_elec/split_join3.f90 dmc/dmc_elec/split_join_mod.f90 \
+	dmc/dmc_elec/splitj_mov1.f90 dmc/dmc_elec/tmove.f90 \
+	dmc/dmc_elec/walksav_det.f90 dmc/dmc_elec/walksav_jas.f90 \
+	fit/MPI/func_mpi.f90 fit/MPI/jacobian_mpi.f90 vmc/MPI/acuest_mpi.f90 \
+	vmc/MPI/dumper.f90 vmc/MPI/finwrt_mpi.f90 \
+	vmc/MPI/grad_hess_jas_mpi.f90 vmc/MPI/mc_configs.f90 \
+	dmc/dmc_elec/MPI/acuest_dmc_mov1_mpi1.f90 \
 	dmc/dmc_elec/MPI/dumper_dmc_mov1_mpi1.f90 \
 	dmc/dmc_elec/MPI/finwrt_dmc_mov1_mpi1.f90 \
 	dmc/dmc_elec/MPI/maindmc_mov1_mpi.f90 \
@@ -161,7 +168,7 @@ SRCS =	accumulation_mod.f90 all_modules_mod.f90 all_tools_mod.f90 \
 
 OBJS =	$(OBJDIR)/accumulation_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/allocations_mod.o \
-	$(OBJDIR)/amoeba.o $(OBJDIR)/amotry.o \
+	$(OBJDIR)/amoeba.o $(OBJDIR)/amotry.o $(OBJDIR)/assignment_mod.o \
 	$(OBJDIR)/backflow_auxiliary_mod.o $(OBJDIR)/backflow_mod.o \
 	$(OBJDIR)/basic_tools_mod.o $(OBJDIR)/basis_mod.o \
 	$(OBJDIR)/bspline_module.o $(OBJDIR)/bspline_oo_module.o \
@@ -182,52 +189,56 @@ OBJS =	$(OBJDIR)/accumulation_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/ewald2_mod.o $(OBJDIR)/expint.o $(OBJDIR)/extracule_mod.o \
 	$(OBJDIR)/f2kcli.o $(OBJDIR)/files_tools_mod.o $(OBJDIR)/fitdet_mod.o \
 	$(OBJDIR)/forces_mod.o $(OBJDIR)/forces_pulay_mod.o \
-	$(OBJDIR)/grid_mod.o $(OBJDIR)/hash_funcs.o \
-	$(OBJDIR)/hash_table_mod.o $(OBJDIR)/initialization_mod.o \
-	$(OBJDIR)/intracule_mod.o $(OBJDIR)/jastrow_mod.o \
-	$(OBJDIR)/main_menu_mod.o $(OBJDIR)/matrix_tools_mod.o \
-	$(OBJDIR)/montecarlo_mod.o $(OBJDIR)/mpi_mod.o $(OBJDIR)/nuclei_mod.o \
-	$(OBJDIR)/opt_common_mod.o $(OBJDIR)/opt_lin_mod.o \
-	$(OBJDIR)/opt_nwt_mod.o $(OBJDIR)/opt_ovlp_fn_mod.o \
-	$(OBJDIR)/opt_ptb_mod.o $(OBJDIR)/optimization_mod.o \
-	$(OBJDIR)/orbitals_mod.o $(OBJDIR)/parser_tools_mod.o \
-	$(OBJDIR)/periodic_jastrow_een.o $(OBJDIR)/periodic_jastrow_mod.o \
-	$(OBJDIR)/pjas_interface.o $(OBJDIR)/pjas_setup_mod.o \
-	$(OBJDIR)/pjasee_mod.o $(OBJDIR)/pjasen_mod.o $(OBJDIR)/print_mod.o \
-	$(OBJDIR)/psi_mod.o $(OBJDIR)/pythag.o $(OBJDIR)/restart_mod.o \
-	$(OBJDIR)/routines_mod.o $(OBJDIR)/strings_tools_mod.o \
-	$(OBJDIR)/svbksb.o $(OBJDIR)/svdcmp.o $(OBJDIR)/testing_mod.o \
-	$(OBJDIR)/tools.o $(OBJDIR)/types_mod.o $(OBJDIR)/variables_mod.o \
-	$(OBJDIR)/vmc_mod.o $(OBJDIR)/walkers_mod.o $(OBJDIR)/write_mod.o \
-	$(OBJDIR)/address_tools.o $(OBJDIR)/commons/age_mod.o \
-	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/basis1_mod.o \
-	$(OBJDIR)/commons/basis2_mod.o $(OBJDIR)/commons/basis3_mod.o \
-	$(OBJDIR)/commons/basisnorm_mod.o $(OBJDIR)/commons/bparm_mod.o \
-	$(OBJDIR)/commons/branch_dmc_opt_mod.o $(OBJDIR)/commons/branch_mod.o \
-	$(OBJDIR)/commons/coefs2_mod.o $(OBJDIR)/commons/coefs_mod.o \
-	$(OBJDIR)/commons/confg_mod.o $(OBJDIR)/commons/config_dmc_mod.o \
-	$(OBJDIR)/commons/config_mod.o $(OBJDIR)/commons/const2_mod.o \
-	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contr2_mod.o \
-	$(OBJDIR)/commons/contr3_mod.o $(OBJDIR)/commons/contr_names_mod.o \
-	$(OBJDIR)/commons/contr_ylm_mod.o $(OBJDIR)/commons/contrl_mod.o \
-	$(OBJDIR)/commons/contrl_opt2_mod.o \
+	$(OBJDIR)/green_functions_mod.o $(OBJDIR)/grid_mod.o \
+	$(OBJDIR)/hash_funcs.o $(OBJDIR)/hash_table_mod.o \
+	$(OBJDIR)/initialization_mod.o $(OBJDIR)/intracule_mod.o \
+	$(OBJDIR)/jastrow_mod.o $(OBJDIR)/main_menu_mod.o \
+	$(OBJDIR)/matrix_tools_mod.o $(OBJDIR)/montecarlo_mod.o \
+	$(OBJDIR)/mpi_mod.o $(OBJDIR)/nuclei_mod.o $(OBJDIR)/opt_common_mod.o \
+	$(OBJDIR)/opt_lin_mod.o $(OBJDIR)/opt_nwt_mod.o \
+	$(OBJDIR)/opt_ovlp_fn_mod.o $(OBJDIR)/opt_ptb_mod.o \
+	$(OBJDIR)/optimization_mod.o $(OBJDIR)/orbitals_mod.o \
+	$(OBJDIR)/parser_tools_mod.o $(OBJDIR)/periodic_jastrow_een.o \
+	$(OBJDIR)/periodic_jastrow_mod.o $(OBJDIR)/pjas_interface.o \
+	$(OBJDIR)/pjas_setup_mod.o $(OBJDIR)/pjasee_mod.o \
+	$(OBJDIR)/pjasen_mod.o $(OBJDIR)/print_mod.o $(OBJDIR)/psi_mod.o \
+	$(OBJDIR)/psi_type_mod.o $(OBJDIR)/psi_utils_mod.o $(OBJDIR)/pythag.o \
+	$(OBJDIR)/restart_mod.o $(OBJDIR)/routines_mod.o \
+	$(OBJDIR)/rundmc_mod.o $(OBJDIR)/stats_type_mod.o \
+	$(OBJDIR)/strings_tools_mod.o $(OBJDIR)/svbksb.o $(OBJDIR)/svdcmp.o \
+	$(OBJDIR)/testing_mod.o $(OBJDIR)/tools.o $(OBJDIR)/types_mod.o \
+	$(OBJDIR)/variables_mod.o $(OBJDIR)/vmc_mod.o \
+	$(OBJDIR)/walker_type_mod.o $(OBJDIR)/walkers_mod.o \
+	$(OBJDIR)/write_mod.o $(OBJDIR)/address_tools.o \
+	$(OBJDIR)/commons/age_mod.o $(OBJDIR)/commons/atom_mod.o \
+	$(OBJDIR)/commons/basis1_mod.o $(OBJDIR)/commons/basis2_mod.o \
+	$(OBJDIR)/commons/basis3_mod.o $(OBJDIR)/commons/basisnorm_mod.o \
+	$(OBJDIR)/commons/bparm_mod.o $(OBJDIR)/commons/branch_dmc_opt_mod.o \
+	$(OBJDIR)/commons/branch_mod.o $(OBJDIR)/commons/coefs2_mod.o \
+	$(OBJDIR)/commons/coefs_mod.o $(OBJDIR)/commons/confg_mod.o \
+	$(OBJDIR)/commons/config_dmc_mod.o $(OBJDIR)/commons/config_mod.o \
+	$(OBJDIR)/commons/const2_mod.o $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contr3_mod.o \
+	$(OBJDIR)/commons/contr_names_mod.o $(OBJDIR)/commons/contr_ylm_mod.o \
+	$(OBJDIR)/commons/contrl_mod.o $(OBJDIR)/commons/contrl_opt2_mod.o \
 	$(OBJDIR)/commons/contrl_opt_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
 	$(OBJDIR)/commons/contrldmc_mod.o $(OBJDIR)/commons/cphifun_mod.o \
 	$(OBJDIR)/commons/cslatn_mod.o $(OBJDIR)/commons/cuspmat4_mod.o \
-	$(OBJDIR)/commons/cuspmat_mod.o $(OBJDIR)/commons/delocc_mod.o \
-	$(OBJDIR)/commons/denupdn_mod.o $(OBJDIR)/commons/deriv_phifun_mod.o \
-	$(OBJDIR)/commons/derivjas_mod.o $(OBJDIR)/commons/dets_mod.o \
-	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/distance_mod.o \
-	$(OBJDIR)/commons/distance_sav_mod.o \
+	$(OBJDIR)/commons/cuspmat_mod.o $(OBJDIR)/commons/debug_shared_mod.o \
+	$(OBJDIR)/commons/delocc_mod.o $(OBJDIR)/commons/denupdn_mod.o \
+	$(OBJDIR)/commons/deriv_phifun_mod.o $(OBJDIR)/commons/derivjas_mod.o \
+	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
+	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/distance_sav_mod.o \
 	$(OBJDIR)/commons/div_v_dmc_mod.o $(OBJDIR)/commons/div_v_mod.o \
 	$(OBJDIR)/commons/doefp_mod.o $(OBJDIR)/commons/dorb_mod.o \
-	$(OBJDIR)/commons/est2cm_mod.o $(OBJDIR)/commons/estcm2_mod.o \
-	$(OBJDIR)/commons/estcum_dmc_mod.o $(OBJDIR)/commons/estcum_mod.o \
-	$(OBJDIR)/commons/estsig_mod.o $(OBJDIR)/commons/estsum_dmc_mod.o \
-	$(OBJDIR)/commons/estsum_mod.o $(OBJDIR)/commons/ewald_mod.o \
-	$(OBJDIR)/commons/force_dmc_mod.o $(OBJDIR)/commons/forcepar_mod.o \
-	$(OBJDIR)/commons/forcest_dmc_mod.o $(OBJDIR)/commons/forcest_mod.o \
-	$(OBJDIR)/commons/forcewt_mod.o $(OBJDIR)/commons/fourier_mod.o \
+	$(OBJDIR)/commons/eloc_vars_mod.o $(OBJDIR)/commons/est2cm_mod.o \
+	$(OBJDIR)/commons/estcm2_mod.o $(OBJDIR)/commons/estcum_dmc_mod.o \
+	$(OBJDIR)/commons/estcum_mod.o $(OBJDIR)/commons/estsig_mod.o \
+	$(OBJDIR)/commons/estsum_dmc_mod.o $(OBJDIR)/commons/estsum_mod.o \
+	$(OBJDIR)/commons/ewald_mod.o $(OBJDIR)/commons/force_dmc_mod.o \
+	$(OBJDIR)/commons/forcepar_mod.o $(OBJDIR)/commons/forcest_dmc_mod.o \
+	$(OBJDIR)/commons/forcest_mod.o $(OBJDIR)/commons/forcewt_mod.o \
+	$(OBJDIR)/commons/fourier_mod.o $(OBJDIR)/commons/fragments_mod.o \
 	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/gammaw_mod.o \
 	$(OBJDIR)/commons/gauss_ecp_mod.o $(OBJDIR)/commons/gradhess_mod.o \
 	$(OBJDIR)/commons/gradhess_sav_mod.o \
@@ -256,10 +267,11 @@ OBJS =	$(OBJDIR)/accumulation_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/commons/pjas_mod.o $(OBJDIR)/commons/pjase_mod.o \
 	$(OBJDIR)/commons/pointer_mod.o $(OBJDIR)/commons/pop_control_mod.o \
 	$(OBJDIR)/commons/pseudo_fahy_mod.o $(OBJDIR)/commons/pseudo_mod.o \
-	$(OBJDIR)/commons/pseudo_tm_mod.o $(OBJDIR)/commons/pworbital_mod.o \
-	$(OBJDIR)/commons/qua_mod.o $(OBJDIR)/commons/rlobxy_mod.o \
-	$(OBJDIR)/commons/slater_mod.o $(OBJDIR)/commons/slaterw_mod.o \
-	$(OBJDIR)/commons/slatn2_mod.o $(OBJDIR)/commons/slatn_mod.o \
+	$(OBJDIR)/commons/pseudo_tm_mod.o $(OBJDIR)/commons/psi_dummy_mod.o \
+	$(OBJDIR)/commons/pworbital_mod.o $(OBJDIR)/commons/qua_mod.o \
+	$(OBJDIR)/commons/rlobxy_mod.o $(OBJDIR)/commons/slater_mod.o \
+	$(OBJDIR)/commons/slaterw_mod.o $(OBJDIR)/commons/slatn2_mod.o \
+	$(OBJDIR)/commons/slatn_mod.o $(OBJDIR)/commons/stats_index_mod.o \
 	$(OBJDIR)/commons/stats_mod.o $(OBJDIR)/commons/stepv_mod.o \
 	$(OBJDIR)/commons/tempor_test_mod.o $(OBJDIR)/commons/vardep_mod.o \
 	$(OBJDIR)/commons/vd_mod.o $(OBJDIR)/commons/velratio_mod.o \
@@ -304,14 +316,15 @@ OBJS =	$(OBJDIR)/accumulation_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/vmc/jastrow1.o $(OBJDIR)/vmc/jastrow2.o \
 	$(OBJDIR)/vmc/jastrow3.o $(OBJDIR)/vmc/jastrow3e.o \
 	$(OBJDIR)/vmc/jastrow4.o $(OBJDIR)/vmc/jastrow4e.o \
-	$(OBJDIR)/vmc/jastrow_num.o $(OBJDIR)/vmc/jastrowe.o \
-	$(OBJDIR)/vmc/matinv.o $(OBJDIR)/vmc/mc_configs.o \
-	$(OBJDIR)/vmc/metrop_mov1.o $(OBJDIR)/vmc/metrop_movall.o \
-	$(OBJDIR)/vmc/metrop_polar_mov1.o $(OBJDIR)/vmc/metrop_polar_movall.o \
-	$(OBJDIR)/vmc/metrop_slat_mov1.o $(OBJDIR)/vmc/metrop_slat_movall.o \
-	$(OBJDIR)/vmc/newton_chol.o $(OBJDIR)/vmc/nonloc.o \
-	$(OBJDIR)/vmc/nonloc_pot.o $(OBJDIR)/vmc/nonlpsi.o \
-	$(OBJDIR)/vmc/opt_wf.o $(OBJDIR)/vmc/orbitals_loc_ana.o \
+	$(OBJDIR)/vmc/jastrow4e_lapl.o $(OBJDIR)/vmc/jastrow_num.o \
+	$(OBJDIR)/vmc/jastrowe.o $(OBJDIR)/vmc/matinv.o \
+	$(OBJDIR)/vmc/mc_configs.o $(OBJDIR)/vmc/metrop_mov1.o \
+	$(OBJDIR)/vmc/metrop_movall.o $(OBJDIR)/vmc/metrop_polar_mov1.o \
+	$(OBJDIR)/vmc/metrop_polar_movall.o $(OBJDIR)/vmc/metrop_slat_mov1.o \
+	$(OBJDIR)/vmc/metrop_slat_movall.o $(OBJDIR)/vmc/newton_chol.o \
+	$(OBJDIR)/vmc/nonloc.o $(OBJDIR)/vmc/nonloc_pot.o \
+	$(OBJDIR)/vmc/nonlpsi.o $(OBJDIR)/vmc/opt_wf.o \
+	$(OBJDIR)/vmc/orbitals_loc_ana.o \
 	$(OBJDIR)/vmc/orbitals_loc_ana_grade.o \
 	$(OBJDIR)/vmc/orbitals_loc_num.o \
 	$(OBJDIR)/vmc/orbitals_loc_num_grade.o \
@@ -347,6 +360,8 @@ OBJS =	$(OBJDIR)/accumulation_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/dmc/dmc_elec/dumper_dmc_mov1.o \
 	$(OBJDIR)/dmc/dmc_elec/finwrt_dmc_mov1.o \
 	$(OBJDIR)/dmc/dmc_elec/hpsiedmc.o \
+	$(OBJDIR)/dmc/dmc_elec/split_join3.o \
+	$(OBJDIR)/dmc/dmc_elec/split_join_mod.o \
 	$(OBJDIR)/dmc/dmc_elec/splitj_mov1.o $(OBJDIR)/dmc/dmc_elec/tmove.o \
 	$(OBJDIR)/dmc/dmc_elec/walksav_det.o \
 	$(OBJDIR)/dmc/dmc_elec/walksav_jas.o $(OBJDIR)/fit/MPI/func_mpi.o \
@@ -448,15 +463,17 @@ debug_mpi:
 
 $(OBJDIR)/%.o:%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:MED_tools/%.f90
+$(OBJDIR)/%.o:fit/%.f90
+	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/%.o:fit/MPI/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/dmc_elec/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:dmc/dmc_elec/MPI/%.f90
-	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/dmc_elec/MPI_global_pop_big/%.f90
+	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
+$(OBJDIR)/%.o:dmc/dmc_elec/MPI/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:dmc/dmc_elec/MPI_global_pop/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
@@ -466,9 +483,7 @@ $(OBJDIR)/%.o:vmc/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:vmc/MPI/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:fit/%.f90
-	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
-$(OBJDIR)/%.o:fit/MPI/%.f90
+$(OBJDIR)/%.o:MED_tools/%.f90
 	$(F95) $(F95_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
 $(OBJDIR)/%.o:%.c
 	$(CC) $(CC_FLAGS) $(INCCMD)$(INCDIR) $(MODCMD)$(MODDIR) -o $@ -c $<
@@ -499,8 +514,8 @@ $(OBJDIR)/all_modules_mod.o: $(OBJDIR)/commons/age_mod.o \
 	$(OBJDIR)/commons/estcm2_mod.o $(OBJDIR)/commons/estcum_dmc_mod.o \
 	$(OBJDIR)/commons/estsum_dmc_mod.o $(OBJDIR)/commons/force_dmc_mod.o \
 	$(OBJDIR)/commons/forcepar_mod.o $(OBJDIR)/commons/forcest_dmc_mod.o \
-	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/gammaw_mod.o \
-	$(OBJDIR)/commons/gradhess_mod.o \
+	$(OBJDIR)/commons/fragments_mod.o $(OBJDIR)/commons/gamma_mod.o \
+	$(OBJDIR)/commons/gammaw_mod.o $(OBJDIR)/commons/gradhess_mod.o \
 	$(OBJDIR)/commons/gradhessj_nonlin_mod.o \
 	$(OBJDIR)/commons/iterat_mod.o $(OBJDIR)/commons/jacobsave_mod.o \
 	$(OBJDIR)/commons/jasn_mod.o $(OBJDIR)/commons/jaso_mod.o \
@@ -534,7 +549,11 @@ $(OBJDIR)/all_tools_mod.o: $(OBJDIR)/MED_tools/average_mod.o \
 	$(OBJDIR)/strings_tools_mod.o $(OBJDIR)/types_mod.o \
 	$(OBJDIR)/variables_mod.o $(OBJDIR)/write_mod.o
 $(OBJDIR)/allocations_mod.o: $(OBJDIR)/all_modules_mod.o \
-	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/orbitals_mod.o
+	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/commons/psi_dummy_mod.o \
+	$(OBJDIR)/orbitals_mod.o
+$(OBJDIR)/assignment_mod.o: $(OBJDIR)/commons/atom_mod.o \
+	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/types_mod.o
 $(OBJDIR)/backflow_auxiliary_mod.o: $(OBJDIR)/MED_tools/nodes_mod.o \
 	$(OBJDIR)/MED_tools/objects_mod.o $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/basic_tools_mod.o $(OBJDIR)/basis_mod.o \
@@ -592,11 +611,12 @@ $(OBJDIR)/deriv_fast_mod.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/delocc_mod.o $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/dorb_mod.o \
-	$(OBJDIR)/commons/forcepar_mod.o $(OBJDIR)/commons/gamma_mod.o \
-	$(OBJDIR)/commons/optim_mod.o $(OBJDIR)/commons/orb_mod.o \
-	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/slater_mod.o \
-	$(OBJDIR)/commons/vj_mod.o $(OBJDIR)/commons/wfsec_mod.o \
-	$(OBJDIR)/eloc_mod.o $(OBJDIR)/orbitals_mod.o $(OBJDIR)/psi_mod.o
+	$(OBJDIR)/commons/eloc_vars_mod.o $(OBJDIR)/commons/forcepar_mod.o \
+	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/optim_mod.o \
+	$(OBJDIR)/commons/orb_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/commons/slater_mod.o $(OBJDIR)/commons/vj_mod.o \
+	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/orbitals_mod.o \
+	$(OBJDIR)/psi_mod.o
 $(OBJDIR)/deriv_geo_mod.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/forces_pulay_mod.o
 $(OBJDIR)/deriv_jas_mod.o: $(OBJDIR)/all_modules_mod.o \
@@ -623,14 +643,23 @@ $(OBJDIR)/dipole_moment_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/opt_lin_mod.o
 $(OBJDIR)/dmc_mod.o: $(OBJDIR)/MED_tools/average_mod.o \
 	$(OBJDIR)/all_modules_mod.o $(OBJDIR)/all_tools_mod.o \
-	$(OBJDIR)/allocations_mod.o $(OBJDIR)/commons/branch_dmc_opt_mod.o \
-	$(OBJDIR)/control_mod.o $(OBJDIR)/dmc/projector.o \
-	$(OBJDIR)/montecarlo_mod.o $(OBJDIR)/print_mod.o \
-	$(OBJDIR)/restart_mod.o $(OBJDIR)/walkers_mod.o
+	$(OBJDIR)/allocations_mod.o $(OBJDIR)/commons/age_mod.o \
+	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/branch_dmc_opt_mod.o \
+	$(OBJDIR)/commons/branch_mod.o $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/contr3_mod.o $(OBJDIR)/commons/contrl_mod.o \
+	$(OBJDIR)/commons/contrl_per_mod.o $(OBJDIR)/commons/contrldmc_mod.o \
+	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/stats_index_mod.o \
+	$(OBJDIR)/commons/stats_mod.o $(OBJDIR)/control_mod.o \
+	$(OBJDIR)/dmc/projector.o $(OBJDIR)/montecarlo_mod.o \
+	$(OBJDIR)/print_mod.o $(OBJDIR)/restart_mod.o $(OBJDIR)/rundmc_mod.o \
+	$(OBJDIR)/stats_type_mod.o $(OBJDIR)/walker_type_mod.o \
+	$(OBJDIR)/walkers_mod.o
 $(OBJDIR)/electrons_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/walkers_mod.o
 $(OBJDIR)/eloc_mod.o: $(OBJDIR)/all_modules_mod.o $(OBJDIR)/all_tools_mod.o \
-	$(OBJDIR)/electrons_mod.o $(OBJDIR)/psi_mod.o
+	$(OBJDIR)/commons/eloc_vars_mod.o $(OBJDIR)/electrons_mod.o \
+	$(OBJDIR)/psi_mod.o
 $(OBJDIR)/ewald2_mod.o: $(OBJDIR)/MED_tools/objects_mod.o \
 	$(OBJDIR)/basic_tools_mod.o $(OBJDIR)/commons/dim_mod.o
 $(OBJDIR)/extracule_mod.o: $(OBJDIR)/all_modules_mod.o \
@@ -649,6 +678,12 @@ $(OBJDIR)/forces_pulay_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/determinants_mod.o $(OBJDIR)/eloc_mod.o \
 	$(OBJDIR)/jastrow_mod.o $(OBJDIR)/montecarlo_mod.o \
 	$(OBJDIR)/orbitals_mod.o
+$(OBJDIR)/green_functions_mod.o: $(OBJDIR)/commons/atom_mod.o \
+	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contrldmc_mod.o \
+	$(OBJDIR)/commons/debug_shared_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/iterat_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/constants_mod.o $(OBJDIR)/control_mod.o \
+	$(OBJDIR)/psi_utils_mod.o
 $(OBJDIR)/grid_mod.o: $(OBJDIR)/all_modules_mod.o $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/orbitals_mod.o
 $(OBJDIR)/initialization_mod.o: $(OBJDIR)/all_modules_mod.o \
@@ -726,15 +761,55 @@ $(OBJDIR)/print_mod.o: $(OBJDIR)/MED_tools/objects_mod.o \
 $(OBJDIR)/psi_mod.o: $(OBJDIR)/all_modules_mod.o $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/determinants_mod.o \
 	$(OBJDIR)/orbitals_mod.o
+$(OBJDIR)/psi_type_mod.o: $(OBJDIR)/all_tools_mod.o \
+	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
+	$(OBJDIR)/commons/dorb_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/qua_mod.o \
+	$(OBJDIR)/orbitals_mod.o $(OBJDIR)/types_mod.o
+$(OBJDIR)/psi_utils_mod.o: $(OBJDIR)/commons/atom_mod.o \
+	$(OBJDIR)/commons/config_dmc_mod.o $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/contrl_opt_mod.o $(OBJDIR)/commons/contrldmc_mod.o \
+	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
+	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/dorb_mod.o \
+	$(OBJDIR)/commons/fragments_mod.o $(OBJDIR)/commons/gamma_mod.o \
+	$(OBJDIR)/commons/jasn_mod.o $(OBJDIR)/commons/jaso_mod.o \
+	$(OBJDIR)/commons/orb_mod.o $(OBJDIR)/commons/orbe_mod.o \
+	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/psi_dummy_mod.o \
+	$(OBJDIR)/commons/qua_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/deriv_fast_mod.o $(OBJDIR)/dete_mod.o \
+	$(OBJDIR)/psi_type_mod.o
 $(OBJDIR)/restart_mod.o: $(OBJDIR)/all_tools_mod.o
 $(OBJDIR)/routines_mod.o: $(OBJDIR)/MED_tools/nodes_mod.o \
 	$(OBJDIR)/basic_tools_mod.o $(OBJDIR)/constants_mod.o
+$(OBJDIR)/rundmc_mod.o: $(OBJDIR)/basic_tools_mod.o \
+	$(OBJDIR)/commons/age_mod.o $(OBJDIR)/commons/branch_mod.o \
+	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contr3_mod.o \
+	$(OBJDIR)/commons/contrl_mod.o $(OBJDIR)/commons/contrldmc_mod.o \
+	$(OBJDIR)/commons/debug_shared_mod.o $(OBJDIR)/commons/dim_mod.o \
+	$(OBJDIR)/commons/estcum_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/iterat_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/commons/stats_index_mod.o $(OBJDIR)/commons/stats_mod.o \
+	$(OBJDIR)/constants_mod.o $(OBJDIR)/control_mod.o \
+	$(OBJDIR)/dmc/dmc_elec/split_join_mod.o \
+	$(OBJDIR)/green_functions_mod.o $(OBJDIR)/mpi_mod.o \
+	$(OBJDIR)/psi_utils_mod.o $(OBJDIR)/stats_type_mod.o \
+	$(OBJDIR)/walker_type_mod.o \
+	$(OBJDIR)/dmc/dmc_elec/MPI_global_pop_big/redistribute.o
+$(OBJDIR)/stats_type_mod.o: $(OBJDIR)/commons/iterat_mod.o \
+	$(OBJDIR)/commons/stats_index_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/mpi_mod.o
 $(OBJDIR)/strings_tools_mod.o: $(OBJDIR)/basic_tools_mod.o \
 	$(OBJDIR)/constants_mod.o
 $(OBJDIR)/testing_mod.o: $(OBJDIR)/all_tools_mod.o
 $(OBJDIR)/variables_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/vmc_mod.o: $(OBJDIR)/all_modules_mod.o $(OBJDIR)/all_tools_mod.o \
-	$(OBJDIR)/allocations_mod.o
+	$(OBJDIR)/allocations_mod.o $(OBJDIR)/commons/psi_dummy_mod.o \
+	$(OBJDIR)/psi_utils_mod.o
+$(OBJDIR)/walker_type_mod.o: $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/constants_mod.o $(OBJDIR)/psi_utils_mod.o \
+	$(OBJDIR)/variables_mod.o
 $(OBJDIR)/walkers_mod.o: $(OBJDIR)/all_modules_mod.o \
 	$(OBJDIR)/all_tools_mod.o $(OBJDIR)/control_mod.o \
 	$(OBJDIR)/initialization_mod.o $(OBJDIR)/mpi_mod.o \
@@ -762,12 +837,14 @@ $(OBJDIR)/commons/distance_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/div_v_dmc_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/div_v_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/dorb_mod.o: $(OBJDIR)/constants_mod.o
+$(OBJDIR)/commons/eloc_vars_mod.o: $(OBJDIR)/types_mod.o
 $(OBJDIR)/commons/estcm2_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/estcum_dmc_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/estsum_dmc_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/forcepar_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/forcest_dmc_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/forcest_mod.o: $(OBJDIR)/constants_mod.o
+$(OBJDIR)/commons/fragments_mod.o: $(OBJDIR)/types_mod.o
 $(OBJDIR)/commons/gradhess_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/gradhessj_nonlin_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/jacobsave_mod.o: $(OBJDIR)/constants_mod.o
@@ -792,6 +869,7 @@ $(OBJDIR)/commons/pjas_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/pointer_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/pop_control_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/pseudo_mod.o: $(OBJDIR)/constants_mod.o
+$(OBJDIR)/commons/psi_dummy_mod.o: $(OBJDIR)/psi_type_mod.o
 $(OBJDIR)/commons/pworbital_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/qua_mod.o: $(OBJDIR)/constants_mod.o
 $(OBJDIR)/commons/slater_mod.o: $(OBJDIR)/constants_mod.o
@@ -1107,11 +1185,11 @@ $(OBJDIR)/vmc/determinant_up_dn.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dorb_mod.o
 $(OBJDIR)/vmc/determinante.o: $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
-	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dorb_mod.o \
-	$(OBJDIR)/commons/orbe_mod.o $(OBJDIR)/commons/slater_mod.o \
-	$(OBJDIR)/commons/slatn_mod.o $(OBJDIR)/commons/wfsec_mod.o \
-	$(OBJDIR)/constants_mod.o $(OBJDIR)/control_mod.o \
-	$(OBJDIR)/dete_mod.o
+	$(OBJDIR)/commons/contrldmc_mod.o $(OBJDIR)/commons/dets_mod.o \
+	$(OBJDIR)/commons/dorb_mod.o $(OBJDIR)/commons/orbe_mod.o \
+	$(OBJDIR)/commons/slater_mod.o $(OBJDIR)/commons/slatn_mod.o \
+	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/control_mod.o $(OBJDIR)/dete_mod.o
 $(OBJDIR)/vmc/detsav.o: $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/commons/dorb_mod.o $(OBJDIR)/commons/orbe_mod.o \
 	$(OBJDIR)/commons/slater_mod.o $(OBJDIR)/commons/slatn_mod.o \
@@ -1120,9 +1198,10 @@ $(OBJDIR)/vmc/distances.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
 	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/distance_mod.o \
 	$(OBJDIR)/commons/distance_sav_mod.o \
-	$(OBJDIR)/commons/periodic_1d_mod.o $(OBJDIR)/commons/periodic_mod.o \
-	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/control_mod.o \
-	$(OBJDIR)/deriv_orb_mod.o $(OBJDIR)/eloc_mod.o
+	$(OBJDIR)/commons/fragments_mod.o $(OBJDIR)/commons/periodic_1d_mod.o \
+	$(OBJDIR)/commons/periodic_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/control_mod.o $(OBJDIR)/deriv_orb_mod.o \
+	$(OBJDIR)/eloc_mod.o
 $(OBJDIR)/vmc/dumper.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/basis1_mod.o \
 	$(OBJDIR)/commons/coefs_mod.o $(OBJDIR)/commons/config_mod.o \
@@ -1195,7 +1274,8 @@ $(OBJDIR)/vmc/hpsi.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contrl_opt2_mod.o \
 	$(OBJDIR)/commons/contrl_opt_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
 	$(OBJDIR)/commons/derivjas_mod.o $(OBJDIR)/commons/dim_mod.o \
-	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/kinet_mod.o \
+	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/jaso_mod.o $(OBJDIR)/commons/kinet_mod.o \
 	$(OBJDIR)/commons/optim_mod.o $(OBJDIR)/commons/optimo_mod.o \
 	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/slater_mod.o \
 	$(OBJDIR)/commons/vd_mod.o $(OBJDIR)/commons/vj_mod.o \
@@ -1205,8 +1285,9 @@ $(OBJDIR)/vmc/hpsi.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/commons/const_mod.o \
 $(OBJDIR)/vmc/hpsie.o: $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contr3_mod.o \
 	$(OBJDIR)/commons/contrl_per_mod.o $(OBJDIR)/commons/dim_mod.o \
-	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/jaspar4_mod.o \
-	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/control_mod.o
+	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/jasn_mod.o \
+	$(OBJDIR)/commons/jaspar4_mod.o $(OBJDIR)/commons/wfsec_mod.o \
+	$(OBJDIR)/control_mod.o
 $(OBJDIR)/vmc/ie.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/basis_mod.o \
 	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/basis1_mod.o \
 	$(OBJDIR)/commons/basis2_mod.o $(OBJDIR)/commons/coefs_mod.o \
@@ -1248,13 +1329,24 @@ $(OBJDIR)/vmc/jastrow3e.o: $(OBJDIR)/commons/atom_mod.o \
 $(OBJDIR)/vmc/jastrow4.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/bparm_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
-	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
-	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/jaso_mod.o \
-	$(OBJDIR)/commons/jaspar3_mod.o $(OBJDIR)/commons/jaspar4_mod.o \
-	$(OBJDIR)/commons/jaspar6_mod.o $(OBJDIR)/commons/jaspar_mod.o \
-	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/wfsec_mod.o \
-	$(OBJDIR)/constants_mod.o $(OBJDIR)/control_mod.o
+	$(OBJDIR)/commons/contrldmc_mod.o $(OBJDIR)/commons/dets_mod.o \
+	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/distance_mod.o \
+	$(OBJDIR)/commons/jaso_mod.o $(OBJDIR)/commons/jaspar3_mod.o \
+	$(OBJDIR)/commons/jaspar4_mod.o $(OBJDIR)/commons/jaspar6_mod.o \
+	$(OBJDIR)/commons/jaspar_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/control_mod.o
 $(OBJDIR)/vmc/jastrow4e.o: $(OBJDIR)/commons/atom_mod.o \
+	$(OBJDIR)/commons/bparm_mod.o $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
+	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
+	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/jasn_mod.o \
+	$(OBJDIR)/commons/jaso_mod.o $(OBJDIR)/commons/jaspar3_mod.o \
+	$(OBJDIR)/commons/jaspar4_mod.o $(OBJDIR)/commons/jaspar6_mod.o \
+	$(OBJDIR)/commons/jaspar_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/control_mod.o
+$(OBJDIR)/vmc/jastrow4e_lapl.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/bparm_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
 	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
@@ -1272,8 +1364,8 @@ $(OBJDIR)/vmc/jastrow_num.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/jaspar_mod.o $(OBJDIR)/commons/pseudo_mod.o \
 	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/constants_mod.o
 $(OBJDIR)/vmc/jastrowe.o: $(OBJDIR)/commons/const_mod.o \
-	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/distance_mod.o \
-	$(OBJDIR)/commons/pjase_mod.o
+	$(OBJDIR)/commons/contr2_mod.o $(OBJDIR)/commons/contrldmc_mod.o \
+	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/pjase_mod.o
 $(OBJDIR)/vmc/mc_configs.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/config_mod.o \
 	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contr3_mod.o \
@@ -1373,23 +1465,23 @@ $(OBJDIR)/vmc/nonloc.o: $(OBJDIR)/MED_tools/average_mod.o \
 	$(OBJDIR)/commons/contrl_per_mod.o $(OBJDIR)/commons/contrldmc_mod.o \
 	$(OBJDIR)/commons/delocc_mod.o $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/div_v_dmc_mod.o \
-	$(OBJDIR)/commons/dorb_mod.o $(OBJDIR)/commons/gamma_mod.o \
-	$(OBJDIR)/commons/jaso_mod.o $(OBJDIR)/commons/jaspar_mod.o \
-	$(OBJDIR)/commons/optim_mod.o $(OBJDIR)/commons/orbe_mod.o \
-	$(OBJDIR)/commons/periodic_mod.o $(OBJDIR)/commons/phifun_mod.o \
-	$(OBJDIR)/commons/pjase_mod.o $(OBJDIR)/commons/pseudo_mod.o \
-	$(OBJDIR)/commons/qua_mod.o $(OBJDIR)/commons/slatn2_mod.o \
-	$(OBJDIR)/commons/slatn_mod.o $(OBJDIR)/commons/wfsec_mod.o \
-	$(OBJDIR)/constants_mod.o $(OBJDIR)/control_mod.o \
-	$(OBJDIR)/deriv_orb_mod.o $(OBJDIR)/dete_mod.o $(OBJDIR)/eloc_mod.o \
-	$(OBJDIR)/orbitals_mod.o $(OBJDIR)/periodic_jastrow_mod.o \
-	$(OBJDIR)/variables_mod.o
+	$(OBJDIR)/commons/dorb_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/jaso_mod.o \
+	$(OBJDIR)/commons/jaspar_mod.o $(OBJDIR)/commons/optim_mod.o \
+	$(OBJDIR)/commons/orbe_mod.o $(OBJDIR)/commons/periodic_mod.o \
+	$(OBJDIR)/commons/phifun_mod.o $(OBJDIR)/commons/pjase_mod.o \
+	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/qua_mod.o \
+	$(OBJDIR)/commons/slatn2_mod.o $(OBJDIR)/commons/slatn_mod.o \
+	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/control_mod.o $(OBJDIR)/deriv_orb_mod.o \
+	$(OBJDIR)/dete_mod.o $(OBJDIR)/eloc_mod.o $(OBJDIR)/orbitals_mod.o \
+	$(OBJDIR)/periodic_jastrow_mod.o $(OBJDIR)/variables_mod.o
 $(OBJDIR)/vmc/nonloc_pot.o: $(OBJDIR)/commons/atom_mod.o \
 	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
-	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/gamma_mod.o \
-	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/control_mod.o \
-	$(OBJDIR)/deriv_orb_mod.o $(OBJDIR)/eloc_mod.o \
-	$(OBJDIR)/periodic_jastrow_mod.o
+	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/gamma_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/control_mod.o $(OBJDIR)/deriv_orb_mod.o \
+	$(OBJDIR)/eloc_mod.o $(OBJDIR)/periodic_jastrow_mod.o
 $(OBJDIR)/vmc/nonlpsi.o: $(OBJDIR)/commons/contr2_mod.o \
 	$(OBJDIR)/commons/contrl_per_mod.o $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/jaspar1_mod.o \
@@ -1442,8 +1534,8 @@ $(OBJDIR)/vmc/pairden2d.o: $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dim_mod.o \
 	$(OBJDIR)/commons/pairden_mod.o
 $(OBJDIR)/vmc/pot.o: $(OBJDIR)/commons/contrl_per_mod.o \
-	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/pseudo_mod.o \
-	$(OBJDIR)/control_mod.o
+	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/control_mod.o
 $(OBJDIR)/vmc/psi.o: $(OBJDIR)/commons/contr2_mod.o \
 	$(OBJDIR)/commons/contrl_per_mod.o $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/commons/jaspar1_mod.o $(OBJDIR)/commons/jaspar2_mod.o \
@@ -1472,23 +1564,24 @@ $(OBJDIR)/vmc/read_input.o: $(OBJDIR)/all_tools_mod.o $(OBJDIR)/basis_mod.o \
 	$(OBJDIR)/commons/contrldmc_mod.o $(OBJDIR)/commons/dets_mod.o \
 	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/doefp_mod.o \
 	$(OBJDIR)/commons/dorb_mod.o $(OBJDIR)/commons/forcepar_mod.o \
-	$(OBJDIR)/commons/fourier_mod.o $(OBJDIR)/commons/gradhess_mod.o \
-	$(OBJDIR)/commons/jaspar1_mod.o $(OBJDIR)/commons/jaspar2_mod.o \
-	$(OBJDIR)/commons/jaspar3_mod.o $(OBJDIR)/commons/jaspar4_mod.o \
-	$(OBJDIR)/commons/jaspar6_mod.o $(OBJDIR)/commons/jaspar_mod.o \
-	$(OBJDIR)/commons/jasparread_mod.o $(OBJDIR)/commons/jel_sph2_mod.o \
-	$(OBJDIR)/commons/ncusp_mod.o $(OBJDIR)/commons/numbas_mod.o \
-	$(OBJDIR)/commons/optim_mod.o $(OBJDIR)/commons/optimo_mod.o \
-	$(OBJDIR)/commons/orbital_grid_mod.o $(OBJDIR)/commons/orbpar_mod.o \
-	$(OBJDIR)/commons/pairden_mod.o $(OBJDIR)/commons/pars_mod.o \
-	$(OBJDIR)/commons/periodic2_mod.o $(OBJDIR)/commons/periodic_1d_mod.o \
-	$(OBJDIR)/commons/periodic_mod.o $(OBJDIR)/commons/pointer_mod.o \
-	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/qua_mod.o \
-	$(OBJDIR)/commons/rlobxy_mod.o $(OBJDIR)/commons/wfsec_mod.o \
-	$(OBJDIR)/commons/zigzag_mod.o $(OBJDIR)/constants_mod.o \
-	$(OBJDIR)/control_mod.o $(OBJDIR)/fitdet_mod.o \
-	$(OBJDIR)/montecarlo_mod.o $(OBJDIR)/optimization_mod.o \
-	$(OBJDIR)/orbitals_mod.o $(OBJDIR)/variables_mod.o
+	$(OBJDIR)/commons/fourier_mod.o $(OBJDIR)/commons/fragments_mod.o \
+	$(OBJDIR)/commons/gradhess_mod.o $(OBJDIR)/commons/jaspar1_mod.o \
+	$(OBJDIR)/commons/jaspar2_mod.o $(OBJDIR)/commons/jaspar3_mod.o \
+	$(OBJDIR)/commons/jaspar4_mod.o $(OBJDIR)/commons/jaspar6_mod.o \
+	$(OBJDIR)/commons/jaspar_mod.o $(OBJDIR)/commons/jasparread_mod.o \
+	$(OBJDIR)/commons/jel_sph2_mod.o $(OBJDIR)/commons/ncusp_mod.o \
+	$(OBJDIR)/commons/numbas_mod.o $(OBJDIR)/commons/optim_mod.o \
+	$(OBJDIR)/commons/optimo_mod.o $(OBJDIR)/commons/orbital_grid_mod.o \
+	$(OBJDIR)/commons/orbpar_mod.o $(OBJDIR)/commons/pairden_mod.o \
+	$(OBJDIR)/commons/pars_mod.o $(OBJDIR)/commons/periodic2_mod.o \
+	$(OBJDIR)/commons/periodic_1d_mod.o $(OBJDIR)/commons/periodic_mod.o \
+	$(OBJDIR)/commons/pointer_mod.o $(OBJDIR)/commons/pseudo_mod.o \
+	$(OBJDIR)/commons/qua_mod.o $(OBJDIR)/commons/rlobxy_mod.o \
+	$(OBJDIR)/commons/wfsec_mod.o $(OBJDIR)/commons/zigzag_mod.o \
+	$(OBJDIR)/constants_mod.o $(OBJDIR)/control_mod.o \
+	$(OBJDIR)/fitdet_mod.o $(OBJDIR)/montecarlo_mod.o \
+	$(OBJDIR)/optimization_mod.o $(OBJDIR)/orbitals_mod.o \
+	$(OBJDIR)/variables_mod.o
 $(OBJDIR)/vmc/read_orb_dot.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/basis1_mod.o $(OBJDIR)/commons/basis2_mod.o \
 	$(OBJDIR)/commons/basis3_mod.o $(OBJDIR)/commons/coefs_mod.o \
@@ -1853,6 +1946,14 @@ $(OBJDIR)/dmc/dmc_elec/hpsiedmc.o: $(OBJDIR)/commons/config_dmc_mod.o \
 	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/dim_mod.o \
 	$(OBJDIR)/commons/force_dmc_mod.o $(OBJDIR)/commons/forcepar_mod.o \
 	$(OBJDIR)/commons/forcest_dmc_mod.o
+$(OBJDIR)/dmc/dmc_elec/split_join_mod.o: $(OBJDIR)/all_tools_mod.o \
+	$(OBJDIR)/commons/age_mod.o $(OBJDIR)/commons/branch_mod.o \
+	$(OBJDIR)/commons/config_dmc_mod.o $(OBJDIR)/commons/const_mod.o \
+	$(OBJDIR)/commons/contrl_per_mod.o $(OBJDIR)/commons/dim_mod.o \
+	$(OBJDIR)/commons/force_dmc_mod.o $(OBJDIR)/commons/forcepar_mod.o \
+	$(OBJDIR)/commons/jacobsave_mod.o $(OBJDIR)/commons/stats_mod.o \
+	$(OBJDIR)/commons/velratio_mod.o $(OBJDIR)/constants_mod.o \
+	$(OBJDIR)/control_mod.o $(OBJDIR)/walker_type_mod.o
 $(OBJDIR)/dmc/dmc_elec/splitj_mov1.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/age_mod.o $(OBJDIR)/commons/branch_mod.o \
 	$(OBJDIR)/commons/config_dmc_mod.o $(OBJDIR)/commons/const_mod.o \
@@ -1864,17 +1965,16 @@ $(OBJDIR)/dmc/dmc_elec/splitj_mov1.o: $(OBJDIR)/all_tools_mod.o \
 $(OBJDIR)/dmc/dmc_elec/tmove.o: $(OBJDIR)/MED_tools/average_mod.o \
 	$(OBJDIR)/commons/atom_mod.o $(OBJDIR)/commons/config_dmc_mod.o \
 	$(OBJDIR)/commons/const_mod.o $(OBJDIR)/commons/contrl_per_mod.o \
-	$(OBJDIR)/commons/contrldmc_mod.o $(OBJDIR)/commons/dim_mod.o \
-	$(OBJDIR)/commons/distance_mod.o $(OBJDIR)/commons/periodic_mod.o \
-	$(OBJDIR)/commons/pjase_mod.o $(OBJDIR)/commons/pseudo_mod.o \
-	$(OBJDIR)/commons/qua_mod.o $(OBJDIR)/control_mod.o \
-	$(OBJDIR)/dete_mod.o $(OBJDIR)/periodic_jastrow_mod.o \
-	$(OBJDIR)/types_mod.o
+	$(OBJDIR)/commons/contrldmc_mod.o $(OBJDIR)/commons/debug_shared_mod.o \
+	$(OBJDIR)/commons/dim_mod.o $(OBJDIR)/commons/distance_mod.o \
+	$(OBJDIR)/commons/periodic_mod.o $(OBJDIR)/commons/pjase_mod.o \
+	$(OBJDIR)/commons/pseudo_mod.o $(OBJDIR)/commons/qua_mod.o \
+	$(OBJDIR)/control_mod.o $(OBJDIR)/dete_mod.o \
+	$(OBJDIR)/periodic_jastrow_mod.o $(OBJDIR)/types_mod.o
 $(OBJDIR)/dmc/dmc_elec/walksav_det.o: $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/dorb_mod.o \
-	$(OBJDIR)/commons/gammaw_mod.o $(OBJDIR)/commons/qua_mod.o \
-	$(OBJDIR)/commons/slater_mod.o $(OBJDIR)/commons/slaterw_mod.o \
-	$(OBJDIR)/deriv_fast_mod.o
+	$(OBJDIR)/commons/gammaw_mod.o $(OBJDIR)/commons/slater_mod.o \
+	$(OBJDIR)/commons/slaterw_mod.o $(OBJDIR)/deriv_fast_mod.o
 $(OBJDIR)/dmc/dmc_elec/walksav_jas.o: $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/jaso_mod.o $(OBJDIR)/commons/jasow_mod.o
 $(OBJDIR)/fit/MPI/func_mpi.o: $(OBJDIR)/all_tools_mod.o \
@@ -2059,8 +2159,9 @@ $(OBJDIR)/dmc/dmc_elec/MPI_global_pop_big/redistribute.o: $(OBJDIR)/all_tools_mo
 	$(OBJDIR)/control_mod.o $(OBJDIR)/dmc_mod.o $(OBJDIR)/mpi_mod.o
 $(OBJDIR)/dmc/dmc_elec/MPI_global_pop_big/walksav_det_mpi.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/branch_mod.o $(OBJDIR)/commons/const_mod.o \
-	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/slater_mod.o \
-	$(OBJDIR)/commons/slaterw_mod.o
+	$(OBJDIR)/commons/dets_mod.o $(OBJDIR)/commons/gammaw_mod.o \
+	$(OBJDIR)/commons/slater_mod.o $(OBJDIR)/commons/slaterw_mod.o \
+	$(OBJDIR)/deriv_fast_mod.o $(OBJDIR)/types_mod.o
 $(OBJDIR)/dmc/dmc_elec/MPI_global_pop_big/walksav_jas_mpi2.o: $(OBJDIR)/all_tools_mod.o \
 	$(OBJDIR)/commons/branch_mod.o $(OBJDIR)/commons/const_mod.o \
 	$(OBJDIR)/commons/jaso_mod.o $(OBJDIR)/commons/jasow_mod.o

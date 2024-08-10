@@ -10,8 +10,12 @@ module control_mod
 ! character(len=max_string_len) :: drift_type='unr93', ene_int='unr93', rewt_type='sym', tmoves_type='det_balance1'
   character(len=max_string_len) :: drift_type='unr93', ene_int='ene_int_v9', rewt_type='sym', tmoves_type='det_balance1'
 
+  integer                 :: n_drift_param = 2
+
   real(dp)                :: error_threshold = 1.d30
-  real(dp)                :: limit_rewt_dmc=10.d0, c_rewt=3.5d0, p_rewt=1.d0, adrift=0.5d0
+  real(dp)                :: limit_rewt_dmc=10.d0, c_rewt=3.5d0, p_rewt=1.d0, adrift=0.5d0, adrift_default=0.5d0
+!  real(dp)                :: limit_rewt_dmc=10.d0, p_rewt=1.d0, adrift=0.5d0, adrift_default=0.5d0
+  real(dp), allocatable   :: c_rewt_frag(:)
 
   logical                 :: l_nstep_all_cpus = .true.
   logical                 :: l_hopping_moves  = .false.
@@ -22,6 +26,8 @@ module control_mod
   real(dp)                :: wt_lambda = 1.d0
   logical                 :: l_population_control = .true.
   logical                 :: l_reset_etrial = .true.
+
+  logical :: l_print_rewt = .false.
 
   contains
 
@@ -37,7 +43,7 @@ module control_mod
 
 ! local
   character(len=max_string_len_rout), save :: lhere= 'control_menu'
-  integer                        :: irn(4)
+  integer                        :: irn(4), ic, ifrag
 
 ! begin
   write(6,*)
@@ -91,9 +97,10 @@ module control_mod
    write(6,'(a)') ' tau = [real] time step for DMC (default: 0.01)'
    write(6,'(a)') ' adrift = [real] parameter for calculating average velocity over time step for DMC (default: 0.5)'
    write(6,'(a)') ' drift_type = [string] Either unr93 or quadratic (default: unr93)'
+   write(6,'(a)') ' n_drift_param = [integer] Parameter which, when increased, decreases the average drift velocity. (default: 2)'
    write(6,'(a)') ' ene_int = [string] : Type of energy integration (if any) used for local energy over time step tau'
    write(6,'(a)') ' limit_rewt_dmc = [real] : The reweight factor is not allowed to be larger than 1+limit_rewt_dmc*energy_sigma*tau'
-   write(6,'(a)') ' c_rewt = [real] : The reweight exponent is divided by a factor that depends on c_rewt'
+   write(6,'(a)') ' c_rewt = [real(:)] : The reweight exponent is divided by a factor that depends on c_rewt'
    write(6,'(a)') ' p_rewt = [real] : The reweight exponent is divided by a factor that depends on p_rewt'
    write(6,'(a)') ' rewt_type = [string] : Either "sym" or "pq"'
    write(6,'(a)') ' tmoves = [logical] do version 1 of size consistent tmoves of Casula, Moroni, Sorella, Filippi, JCP10'
@@ -102,7 +109,14 @@ module control_mod
    write(6,'(a)') ' error_threshold = [real] : montecarlo run until statistical error on energy reaches error_threshold'
    write(6,'(a)') ' nstep_total = [real]: For MPI, total number of steps per block for all CPUs'
    write(6,'(a)') ' reset_etrial = [logical] reset etrial after each set of equilibration blocks'
-   write(6,'(a)') ' improved_gf = [logical] For all electron calculations, use improved Greens function which approximates the pair Greens function.'
+   write(6,'(a)') ' modified_adrift = [logical] : use a position-dependent adrift to calculate the average velocity'
+   write(6,'(a)') ' tau_diffusion = [logical] : use a position-dependent tau to calculate the diffusion'
+   write(6,'(a)') ' method_of_images = [logical] : use the method of images to calculate the Greens function in dmc'
+   write(6,'(a)') ' psi_approx = [logical] : use psi_approx = (x-a)*exp(-c*(x-a)**2) '
+   write(6,'(a)') ' psi_approx_norm_old = [logical] : use old routine to calculate the norm of the psia Greens Function'
+   write(6,'(a)') ' iwfragnucl = [real(:)] : use fragments in calculating the reweighting factor'
+   write(6,'(a)') ' nfrag = [int] : specifies the number of fragments used in the calculation'
+   write(6,'(a)') ' pow_rewt = [real] : specifies the power of nelec used in the reweighting exponent (default: 0.5)'
    write(6,'(a)') 'end'
    write(6,*)
 
@@ -135,7 +149,6 @@ module control_mod
   case ('wt_lambda'); call get_next_value (wt_lambda)
   case ('population_control'); call get_next_value (l_population_control)
   case ('reset_etrial'); call get_next_value (l_reset_etrial)
-  case ('improved_gf'); call get_next_value (l_improved_gf)
   case ('ipq');    call get_next_value (ipq)
   case ('itau_eff');  call get_next_value (itau_eff)
   case ('itau_integ');  call get_next_value (itau_integ)
@@ -149,14 +162,24 @@ module control_mod
   case ('tau');     call get_next_value (tau)
   case ('adrift');     call get_next_value (adrift)
    call require (lhere, 'adrift > 0', adrift > 0)
+   adrift_default=adrift
   case ('drift_type');     call get_next_value (drift_type)
    call require (lhere, 'drift_type=unr93 or quadratic', drift_type=='unr93' .or. drift_type=='quadratic')
+  case ('n_drift_param'); call get_next_value (n_drift_param)
+   call require (lhere, 'n_drift_param >= 2', n_drift_param.GE.2)
   case ('ene_int') ; call get_next_value (ene_int)
 !  call require (lhere, 'ene_int=unr93 or new_ene_int new_ene_int2 or no_ene_int or alfe', ene_int=='unr93' .or. ene_int=='new_ene_int' .or. ene_int=='new_ene_int2' .or. ene_int=='new_ene_int3' .or. ene_int=='new_ene_int4' .or. ene_int=='new_ene_int5' .or. ene_int=='new_ene_int7' .or. ene_int=='new_ene_int8' .or. ene_int=='new_ene_int9' .or. ene_int=='new_ene_int10' .or. ene_int=='no_ene_int' .or. ene_int=='alfe')
   case ('limit_rewt_dmc') ; call get_next_value (limit_rewt_dmc)
    call require (lhere, 'limit_rewt_dmc > 0', limit_rewt_dmc > 0)
   case ('c_rewt') ; call get_next_value (c_rewt)
-   call require (lhere, 'c_rewt > 0', c_rewt > 0)
+  call require (lhere, 'c_rewt > 0', c_rewt > 0)
+  case ('c_rewt_frag') 
+   call require (lhere, 'nfrag > 0 (must be set before c_rewt_frag)', nfrag > 0)
+   call alloc ('c_rewt_frag', c_rewt_frag, nfrag+1)
+   do ifrag=1,nfrag+1
+     call get_next_value (c_rewt_frag(ifrag))
+   enddo
+   call require (lhere, 'all(c_rewt_frag > 0)', all(c_rewt_frag > 0))
   case ('p_rewt') ; call get_next_value (p_rewt)
    call require (lhere, 'p_rewt > 0', p_rewt > 0)
   case ('rewt_type') ; call get_next_value (rewt_type)
@@ -207,6 +230,43 @@ module control_mod
 !    write(6,'(2a,i)') trim(lhere),': nstep per CPU =', nstep
 !   endif
 
+  case ('modified_adrift'); call get_next_value(l_modified_adrift)
+  case ('tau_diffusion') ; call get_next_value(l_tau_diffusion)
+  case ('psi_approx') ; call get_next_value(l_psi_approx)
+  case ('psi_approx_norm_old') ; call get_next_value(l_psi_approx_norm_old)
+  case ('method_of_images') ; call get_next_value(l_method_of_images)
+  case ('nfrag') 
+    !if (.NOT.l_mode_dmc) call die (lhere, 'warning: fragments only used for DMC')
+    call get_next_value(nfrag)
+    !l_fragments=.TRUE.
+    l_fragments=l_mode_dmc
+  case ('iwfragnucl')
+    call require (lhere, 'nfrag > 0', nfrag > 0)
+    call alloc ('iwfragnucl', iwfragnucl, ncent)
+    call alloc ('iwfragelec', iwfragelec, nelec)
+    call alloc ( 'nelecfrag',  nelecfrag, nfrag)
+    do ic=1,ncent
+      call get_next_value(ifrag)
+      iwfragnucl(ic)=ifrag
+      !TODO: make nelecfrag an input parameter
+      nelecfrag(ifrag)=nelecfrag(ifrag)+znuc(iwctype(ic))
+    enddo
+    call require (lhere, 'maxval(iwfragnucl) = nfrag', maxval(iwfragnucl).EQ.nfrag)
+    call alloc('enefrag', enefrag, nfrag+1)
+    call alloc('pecent_frag', pecent_frag, nfrag+1)
+    !call pot_nn to initialize pecent_frag
+    call pot_nn(cent,znuc,iwctype,ncent,pecent)
+  case ('etrialfrag')
+    call require (lhere, 'nfrag > 0', nfrag > 0)
+    call alloc ('etrialfrag', etrialfrag, nfrag+1)
+    do ifrag=1,nfrag+1
+      call get_next_value(etrialfrag(ifrag))
+    enddo
+    if (etrial.NE.sum(etrialfrag)) then
+      write(6,'(/,''Warning: etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, sum(etrialfrag)
+      etrial=sum(etrialfrag)
+    endif
+  case ('pow_rewt') ; call get_next_value(pow_rewt)
   case ('end')
    exit
   case default
@@ -220,18 +280,28 @@ module control_mod
     write(6,'(/,a)') ' DMC algorithm parameters:'
     write(6,'(''adrift= '',f6.2)') adrift
     write(6,'(''drift_type= '',a)') trim(drift_type)
+    write(6,'(''n_drift_param= '',1I3)') n_drift_param
     write(6,'(''ene_int= '',a)') trim(ene_int)
     if(index(ene_int,'ene_int_v').ne.0 .or. index(ene_int,'ene_int_e').ne.0) then
-      write(6,'(''c_rewt='',f6.3)') c_rewt
+      if (l_fragments) then
+        write(6,'(''c_rewt_frag='',100f6.3)') c_rewt_frag
+      else
+        write(6,'(''c_rewt='',f6.3)') c_rewt
+      endif
     endif
     if(ene_int=='ene_int_v' .or. ene_int=='ene_int_e' .or. ene_int=='ene_int_v8' .or. ene_int=='ene_int_e8') then
       write(6,'(''p_rewt='',f6.3)') p_rewt
     endif
-    write(6,'(''itau_integ='',i3)') itau_integ
     write(6,'(''limit_rewt_dmc='',es9.1)') limit_rewt_dmc
     write(6,'(''rewt_type='',a,/)') trim(rewt_type)
     write(6,'(''tmoves='',l)') tmoves
     write(6,'(''tmoves_type='',a,/)') trim(tmoves_type)
+    write(6,'(''method_of_images='',l)') l_method_of_images
+    write(6,'(''modified_adrift='',l)') l_modified_adrift
+    write(6,'(''tau_diffusion='',l)') l_tau_diffusion
+    write(6,'(''psi_approx='',l)') l_psi_approx
+    write(6,'(''psi_approx_norm_old='',l)') l_psi_approx_norm_old
+    write(6,'(''pow_rewt='',f6.3)') pow_rewt
   endif
 
 ! default value of MWALK
@@ -345,16 +415,26 @@ module control_mod
     endif
     write(6,'(''DMC ene_int= '',a)') ene_int
     if(index(ene_int,'ene_int_v').ne.0 .or. index(ene_int,'ene_int_e').ne.0) then
-      write(6,'(''c_rewt='',f6.3)') c_rewt
+      if (l_fragments) then
+        write(6,'(''c_rewt_frag='',100f6.3)') c_rewt_frag
+      else
+        write(6,'(''c_rewt='',f6.3)') c_rewt
+      endif
     endif
     if(ene_int=='ene_int_v' .or. ene_int=='ene_int_e' .or. ene_int=='ene_int_v8' .or. ene_int=='ene_int_e8') then
       write(6,'(''p_rewt='',f6.3)') p_rewt
     endif
+    write(6,'(''itau_integ='',i3)') itau_integ
     write(6,'(''DMC limit_rewt_dmc='',es9.1)') limit_rewt_dmc
     write(6,'(''tmoves='',l)') tmoves
     write(6,'(''tmoves_type='',a)') tmoves_type
     write(6,'(''reset_etrial='',l)') l_reset_etrial
-    write(6,'(''improved_gf='',l)') l_improved_gf
+    write(6,'(''method_of_images='',l)') l_method_of_images
+    write(6,'(''modified_adrift='',l)') l_modified_adrift
+    write(6,'(''tau_diffusion='',l)') l_tau_diffusion
+    write(6,'(''psi_approx='',l)') l_psi_approx
+    write(6,'(''psi_approx_norm_old='',l)') l_psi_approx_norm_old
+    write(6,'(''pow_rewt='',f6.3)') pow_rewt
   endif
 
   endif ! if use_parser

@@ -14,7 +14,11 @@ module allocations_mod
 ! -----------------------------------------------------------------------------------
   use orbitals_mod, only: orb_tot_nb
   use all_modules_mod
+  use psi_dummy_mod
   implicit none
+
+  call psi_dummy %init
+  call psi_dummy2%init
 
   call object_provide ('nelec')
   call object_provide ('nelec_pair')
@@ -29,12 +33,14 @@ module allocations_mod
   call alloc ('dphin', dphin, 3, nbasis, nelec)
   call alloc ('d2phin', d2phin, nbasis, nelec)
 
-  call alloc ('orb', orb, nelec, orb_tot_nb)
-  call alloc ('dorb', dorb, 3, nelec, orb_tot_nb)
-  call alloc ('ddorb', ddorb, nelec, orb_tot_nb)
-  call alloc ('orbe', orbe, orb_tot_nb)
-  call alloc ('dorbe', dorbe, 3, orb_tot_nb)
-  call alloc ('ddorbe', ddorbe, orb_tot_nb)
+!  call alloc ('orb', orb, nelec, orb_tot_nb) !TA
+!  call alloc ('dorb', dorb, 3, nelec, orb_tot_nb)
+!  call alloc ('ddorb', ddorb, nelec, orb_tot_nb)
+  nullify(orb,dorb,ddorb)
+!  call alloc ('orbe', orbe, orb_tot_nb)
+!  call alloc ('dorbe', dorbe, 3, orb_tot_nb)
+!  call alloc ('ddorbe', ddorbe, orb_tot_nb)
+  nullify(orbe,dorbe,ddorbe)
 
   call object_provide ('nupdn_square')
   call object_provide ('ndetupdn')
@@ -63,10 +69,11 @@ module allocations_mod
   call alloc ('deti_new', deti_new, nparmd)
 
   call alloc ('rshift', rshift, 3, nelec, ncent)
-  call alloc ('rvec_en', rvec_en, 3, nelec, ncent)
-  call alloc ('r_en', r_en, nelec, ncent)
-  call alloc ('rvec_ee', rvec_ee, 3, nelec_pair)
-  call alloc ('r_ee', r_ee, nelec_pair)
+!  call alloc ('rvec_en', rvec_en, 3, nelec, ncent) !TA
+!  call alloc ('r_en', r_en, nelec, ncent)
+!  call alloc ('rvec_ee', rvec_ee, 3, nelec_pair)
+!  call alloc ('r_ee', r_ee, nelec_pair)
+  nullify(rvec_en,r_en,rvec_ee,r_ee)
   call alloc ('pot_ee', pot_ee, nelec)
 
   call alloc ('rshift_sav', rshift_sav, 3, ncent)
@@ -89,14 +96,34 @@ module allocations_mod
   call alloc ('ekinen', ekinen, nelec)
 
 ! jastrow
-  call alloc ('fso', fso, nelec, nelec)
-  call alloc ('fijo', fijo, 3, nelec, nelec)
-  call alloc ('d2ijo', d2ijo, nelec, nelec)
-  call alloc ('fjo', fjo, 3, nelec)
-  call alloc ('fsn', fsn, nelec, nelec)
-  call alloc ('fijn', fijn, 3, nelec, nelec)
-  call alloc ('d2ijn', d2ijn, nelec, nelec)
-  call alloc ('fjn', fjn, 3, nelec)
+!  call alloc ('fso', fso, nelec, nelec) !TA
+!  call alloc ('fijo', fijo, 3, nelec, nelec)
+!  call alloc ('d2ijo', d2ijo, nelec, nelec)
+!  call alloc ('fjo', fjo, 3, nelec)
+!  call alloc ('lapjijo', lapjijo, nelec, nelec)
+!  call alloc ('lapjo', lapjo, nelec)
+  nullify(fsumo)
+  nullify(d2o)
+  nullify(fso)
+  nullify(fijo)
+  nullify(d2ijo)
+  nullify(fjo)
+  nullify(lapjijo)
+  nullify(lapjo)
+!  call alloc ('fsn', fsn, nelec, nelec)
+!  call alloc ('fijn', fijn, 3, nelec, nelec)
+!  call alloc ('d2ijn', d2ijn, nelec, nelec)
+!  call alloc ('fjn', fjn, 3, nelec)
+!  call alloc ('lapjijn', lapjijn, nelec, nelec)
+!  call alloc ('lapjn', lapjn, nelec)
+  nullify(fsumn)
+  nullify(d2n)
+  nullify(fsn)
+  nullify(fijn)
+  nullify(d2ijn)
+  nullify(fjn)
+  nullify(lapjijn)
+  nullify(lapjn)
 
   call alloc ('gvalue', gvalue, nparmjs)
   call alloc ('g', g, 3, nelec, nparmjs)

@@ -85,4 +85,5 @@ module all_modules_mod
   use zigzag_mod
   use gamma_mod
   use gammaw_mod
+  use fragments_mod
 end module all_modules_mod

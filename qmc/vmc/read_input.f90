@@ -59,6 +59,7 @@
       use branch_mod
       use periodic2_mod
       use periodic_1d_mod
+      use fragments_mod !TA
       implicit real*8(a-h,o-z)
 
       parameter (eps=1.d-4)
@@ -726,6 +727,7 @@
 !     if(index(mode,'vmc_one').ne.0 .and. imetro.eq.1) stop 'metrop_mov1 has not been updated'
 
       if(index(mode,'dmc').ne.0) then
+!        read(5,*) idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e,ifragments !TA
         read(5,*) idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
         write(6,'(/,''idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e='',9i4)') &
      &  idmc,ipq,itau_eff,iacc_rej,icross,icuspg,idiv_v,icut_br,icut_e
@@ -887,8 +889,8 @@
       read(5,*) (iwctype(i),i=1,ncent)
       write(6,'(''iwctype ='',t31,20i3,(20i3))') (iwctype(i),i=1,ncent)
       do ic=1,ncent
-        if (ic.ge.2) then
-          if (iwctype(ic).lt.iwctype(ic-1)) then
+        if(ic.ge.2) then
+          if(iwctype(ic).lt.iwctype(ic-1)) then
             write(6,'(''Atoms of the same atomtype must be contiguous'')')
             stop 'Atoms of the same atomtype must be contiguous'
           endif
@@ -964,6 +966,16 @@
       write(6,*)
 
       call object_modified ('cent')
+
+!      if (ifragments) then !TA
+!        call alloc ('iwfragnucl', iwfragnucl, ncent)
+!        call alloc ('iwfragelec', iwfragelec, nelec)
+!        read(5,*) (iwfragnucl(i),i=1,ncent)
+!        write(6,'(''iwfragnucl='',t31,20i3,(20i3))') (iwfragnucl(i),i=1,nctype)
+!        nfrag=max(iwfragnucl)
+!        call alloc('efrag', efrag, nfrag)
+!        call alloc('pecent_frag', pecent_frag, nfrag)
+!      endif
 
       if(nloc.gt.0) then
         write(6,'(/,''pseudopotential calculation'')')
@@ -1719,7 +1731,6 @@
 ! 385     continue
 !       do 386  k=1,ndim
 ! 386     rvmino(k,i)=rvec_en(k,i,nearesto(i))
-
 
 ! Optimization section
       read(5,*) section

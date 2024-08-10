@@ -406,7 +406,7 @@
 
       write(6,'(''nconf*nproc*passes'',t20,''nconf nproc     passes nstep  nblk nblkeq &
           &tau   taueff'',/,f18.0,2i6,f11.0,3i6,2f9.5)') &
-     &nconf*nproc*passes,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
+     &eval*nproc,nconf,nproc,passes,nstep,iblk,nblkeq,tau,taucum(1)/wgcum(1)
 !     write(6,'(''nconf_global*passes'',t19,''passes  nconf_global nstep  nblk nblkeq
 !    & nproc  tau    taueff'',/,2f12.0,2i6,i7,2i5,2f9.5)')
 !    &eval,passes,nconf_global,nstep,iblk,nblkeq,nproc,tau,taucum(1)/wgcum(1)

@@ -62,6 +62,7 @@
       dimension xaxis(3),yaxis(3),zaxis(3),idist(nelec)
 
       dimension xstrech(3,nelec)
+      real *8 lapl
 
 !     area(ri,r1,r2,v)=dabs((one/sqrt(ri))*
 !    &(r2**d3b2*(two*(one-v*ri)/3+.4d0*v*r2)
@@ -339,7 +340,7 @@
 
 ! calculate psi at new configuration
       iel=i
-      call hpsie(iel,xnew,psidn,psijn,vnew)
+      call hpsie(iel,xnew,psidn,psijn,vnew,lapl)
       psi2n(1)=2*(dlog(dabs(psidn))+psijn)
 
 ! calculate probability for reverse transition

@@ -47,6 +47,7 @@
 
       dimension dx(3,nelec),idist(nelec),ixo(3),ixn(3)
       dimension xstrech(3,nelec)
+      real *8 lapl
 
 !     write(6,'(''entering metrop_mov1'')')
 
@@ -84,7 +85,7 @@
           iel=i
 !         call hpsi(xnew,psidn,psijn,vnew,div_vn,d2,pen,enew(1),denergy,1)
 !         write(6,'(''calling hpsie from metrop_mov1'')')
-          call hpsie(iel,xnew,psidn,psijn,vnew)
+          call hpsie(iel,xnew,psidn,psijn,vnew,lapl)
           psi2n(1)=2*(dlog(dabs(psidn))+psijn)
 
 ! save electrostatic potential at new configuration

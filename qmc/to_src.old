@@ -1,42 +1,42 @@
 #!/bin/sh
 # set -xv
-# Note that I used to store all files in src.old12 subdirectories of the corresponding directory
-# except that files in subdirectories of tools were stored in tools/src.old12 in order to avoid
+# Note that I used to store all files in src.old15 subdirectories of the corresponding directory
+# except that files in subdirectories of tools were stored in tools/src.old15 in order to avoid
 # having to change this shell script every time we add a tool.
 # Now I store these in subdirectories too, but it means I have to change this script in 2 places
 # to add subdirectories and copy them each time I add a subdirectory in tools.
 
-mkdir src.old12 MED_tools/src.old12 vmc/src.old12 vmc/MPI/src.old12 fit/src.old12 fit/MPI/src.old12 dmc/src.old12 dmc/dmc_elec/src.old12 dmc/dmc_elec/MPI/src.old12 dmc/dmc_elec/MPI_global_pop_big/src.old12 dmc/dmc_elec/MPI_global_pop/src.old12 \
-../tools/change_basis/src.old12 ../tools/check_lattice/src.old12 ../tools/comp2real_devrim/src.old12 ../tools/comp2real_lang/src.old12 ../tools/comp2real_lang2/src.old12 ../tools/coord_stefan/src.old12 ../tools/ewald/src.old12 ../tools/floating_gauss/src.old12 ../tools/gamess2qmc/src.old12 ../tools/iequal/src.old12 ../tools/partition/src.old12 ../tools/plot_jas_pts/src.old12 ../tools/pseudo_needs_tm/src.old12 ../tools/pw_to_blips/src.old12 ../tools/quad_min/src.old12 ../tools/reduce_champ_output/src.old12 ../tools/slater/src.old12 ../tools/switch_orbs/src.old12 ../tools/test_basis_fns/src.old12 ../tools/test_minimal_image/src.old12 scripts/src.old12
+mkdir src.old15 MED_tools/src.old15 vmc/src.old15 vmc/MPI/src.old15 fit/src.old15 fit/MPI/src.old15 dmc/src.old15 dmc/dmc_elec/src.old15 dmc/dmc_elec/MPI/src.old15 dmc/dmc_elec/MPI_global_pop_big/src.old15 dmc/dmc_elec/MPI_global_pop/src.old15 \
+../tools/change_basis/src.old15 ../tools/check_lattice/src.old15 ../tools/comp2real_devrim/src.old15 ../tools/comp2real_lang/src.old15 ../tools/comp2real_lang2/src.old15 ../tools/coord_stefan/src.old15 ../tools/ewald/src.old15 ../tools/floating_gauss/src.old15 ../tools/gamess2qmc/src.old15 ../tools/iequal/src.old15 ../tools/partition/src.old15 ../tools/plot_jas_pts/src.old15 ../tools/pseudo_needs_tm/src.old15 ../tools/pw_to_blips/src.old15 ../tools/quad_min/src.old15 ../tools/reduce_champ_output/src.old15 ../tools/slater/src.old15 ../tools/switch_orbs/src.old15 ../tools/test_basis_fns/src.old15 ../tools/test_minimal_image/src.old15 scripts/src.old15
 
-cp -ad [01]* Makefile* ../makefile.inc to_* src.old12
-cp -ad revision_and_date.sh src.old12
-cp -ad MED_tools/*.f* MED_tools/src.old12
-cp -ad *.f* *.c src.old12
-cp -ad vmc/*.f* vmc/*.h vmc/[01]* vmc/Makefile* vmc/aa* vmc/src.old12
-cp -ad vmc/MPI/*.f* vmc/MPI/*.h vmc/MPI/[01]* vmc/MPI/Makefile* vmc/MPI/src.old12
-cp -ad fit/*.f* fit/*.h fit/[01]* fit/Makefile* fit/src.old12
-cp -ad fit/MPI/*.f* fit/MPI/*.h fit/MPI/[01]* fit/MPI/Makefile* fit/MPI/src.old12
-cp -ad dmc/*.f* dmc/*.h dmc/[01]* dmc/Makefile* dmc/src.old12
-cp -ad dmc/dmc_elec/*.f* dmc/dmc_elec/*.h dmc/dmc_elec/[01]* dmc/dmc_elec/Makefile* dmc/dmc_elec/src.old12
-cp -ad dmc/dmc_elec/MPI/*.f* dmc/dmc_elec/MPI/*.h dmc/dmc_elec/MPI/[01]* dmc/dmc_elec/MPI/Makefile* dmc/dmc_elec/MPI/src.old12
-cp -ad dmc/dmc_elec/MPI_global_pop_big/*.f* dmc/dmc_elec/MPI_global_pop_big/*.h dmc/dmc_elec/MPI_global_pop_big/[01]* dmc/dmc_elec/MPI_global_pop_big/Makefile* dmc/dmc_elec/MPI_global_pop_big/src.old12
-cp -ad dmc/dmc_elec/MPI_global_pop/*.f* dmc/dmc_elec/MPI_global_pop/*.h dmc/dmc_elec/MPI_global_pop/[01]* dmc/dmc_elec/MPI_global_pop/Makefile*  dmc/dmc_elec/MPI_global_pop/src.old12
-cp -ad ../tools/change_basis/*.f* ../tools/change_basis/*.h ../tools/change_basis/[01]* ../tools/change_basis/Makefile* ../tools/change_basis/src.old12
-cp -ad ../tools/check_lattice/*.f* ../tools/check_lattice/*.h ../tools/check_lattice/[01]* ../tools/check_lattice/Makefile* ../tools/check_lattice/src.old12
-cp -ad ../tools/comp2real_devrim/*.f* ../tools/comp2real_devrim/*.h ../tools/comp2real_devrim/[01]* ../tools/comp2real_devrim/Makefile* ../tools/comp2real_devrim/src.old12
-cp -ad ../tools/comp2real_lang/*.f* ../tools/comp2real_lang/*.h ../tools/comp2real_lang/[01]* ../tools/comp2real_lang/Makefile* ../tools/comp2real_lang/src.old12
-cp -ad ../tools/comp2real_lang2/*.f* ../tools/comp2real_lang2/*.h ../tools/comp2real_lang2/[01]* ../tools/comp2real_lang2/Makefile* ../tools/comp2real_lang2/src.old12
-cp -ad ../tools/coord_stefan/*.f* ../tools/coord_stefan/*.h ../tools/coord_stefan/[01]* ../tools/coord_stefan/Makefile* ../tools/coord_stefan/src.old12
-cp -ad ../tools/ewald/*.f* ../tools/ewald/*.h ../tools/ewald/[01]* ../tools/ewald/Makefile* ../tools/ewald/src.old12
-cp -ad ../tools/gamess2qmc/gamess2qmc ../tools/gamess2qmc/src.old12
-cp -ad ../tools/iequal/*.f* ../tools/iequal/*.h ../tools/iequal/[01]* ../tools/iequal/Makefile* ../tools/iequal/src.old12
-cp -ad ../tools/partition/*.f* ../tools/partition/*.h ../tools/partition/[01]* ../tools/partition/Makefile* ../tools/partition/src.old12
-cp -ad ../tools/plot_jas_pts/*.f* ../tools/plot_jas_pts/*.h ../tools/plot_jas_pts/[01]* ../tools/plot_jas_pts/Makefile* ../tools/plot_jas_pts/src.old12
-cp -ad ../tools/pseudo_needs_tm/*.f* ../tools/pseudo_needs_tm/*.h ../tools/pseudo_needs_tm/[01]* ../tools/pseudo_needs_tm/Makefile* ../tools/pseudo_needs_tm/src.old12
-cp -ad ../tools/pw_to_blips/*.f* ../tools/pw_to_blips/*.h ../tools/pw_to_blips/[01]* ../tools/pw_to_blips/Makefile* ../tools/pw_to_blips/src.old12
-cp -ad ../tools/quad_min/*.f* ../tools/quad_min/*.h ../tools/quad_min/[01]* ../tools/quad_min/Makefile* ../tools/quad_min/src.old12
-cp -ad ../tools/reduce_champ_output/reduce* ../tools/reduce_champ_output/src.old12
-cp -ad ../tools/slater/*.f* ../tools/slater/*.h ../tools/slater/[01]* ../tools/slater/Makefile* ../tools/slater/src.old12
-cp -ad ../tools/test_basis_fns/*.f* ../tools/test_basis_fns/*.h ../tools/test_basis_fns/[01]* ../tools/test_basis_fns/Makefile* ../tools/test_basis_fns/src.old12
-cp -ad ../tools/test_minimal_image/*.f* ../tools/test_minimal_image/*.h ../tools/test_minimal_image/[01]* ../tools/test_minimal_image/Makefile* ../tools/test_minimal_image/src.old12
+cp -ad [01]* Makefile* ../makefile.inc to_* src.old15
+cp -ad revision_and_date.sh src.old15
+cp -ad MED_tools/*.f* MED_tools/src.old15
+cp -ad *.f* *.c src.old15
+cp -ad vmc/*.f* vmc/*.h vmc/[01]* vmc/Makefile* vmc/aa* vmc/src.old15
+cp -ad vmc/MPI/*.f* vmc/MPI/*.h vmc/MPI/[01]* vmc/MPI/Makefile* vmc/MPI/src.old15
+cp -ad fit/*.f* fit/*.h fit/[01]* fit/Makefile* fit/src.old15
+cp -ad fit/MPI/*.f* fit/MPI/*.h fit/MPI/[01]* fit/MPI/Makefile* fit/MPI/src.old15
+cp -ad dmc/*.f* dmc/*.h dmc/[01]* dmc/Makefile* dmc/src.old15
+cp -ad dmc/dmc_elec/*.f* dmc/dmc_elec/*.h dmc/dmc_elec/[01]* dmc/dmc_elec/Makefile* dmc/dmc_elec/src.old15
+cp -ad dmc/dmc_elec/MPI/*.f* dmc/dmc_elec/MPI/*.h dmc/dmc_elec/MPI/[01]* dmc/dmc_elec/MPI/Makefile* dmc/dmc_elec/MPI/src.old15
+cp -ad dmc/dmc_elec/MPI_global_pop_big/*.f* dmc/dmc_elec/MPI_global_pop_big/*.h dmc/dmc_elec/MPI_global_pop_big/[01]* dmc/dmc_elec/MPI_global_pop_big/Makefile* dmc/dmc_elec/MPI_global_pop_big/src.old15
+cp -ad dmc/dmc_elec/MPI_global_pop/*.f* dmc/dmc_elec/MPI_global_pop/*.h dmc/dmc_elec/MPI_global_pop/[01]* dmc/dmc_elec/MPI_global_pop/Makefile*  dmc/dmc_elec/MPI_global_pop/src.old15
+cp -ad ../tools/change_basis/*.f* ../tools/change_basis/*.h ../tools/change_basis/[01]* ../tools/change_basis/Makefile* ../tools/change_basis/src.old15
+cp -ad ../tools/check_lattice/*.f* ../tools/check_lattice/*.h ../tools/check_lattice/[01]* ../tools/check_lattice/Makefile* ../tools/check_lattice/src.old15
+cp -ad ../tools/comp2real_devrim/*.f* ../tools/comp2real_devrim/*.h ../tools/comp2real_devrim/[01]* ../tools/comp2real_devrim/Makefile* ../tools/comp2real_devrim/src.old15
+cp -ad ../tools/comp2real_lang/*.f* ../tools/comp2real_lang/*.h ../tools/comp2real_lang/[01]* ../tools/comp2real_lang/Makefile* ../tools/comp2real_lang/src.old15
+cp -ad ../tools/comp2real_lang2/*.f* ../tools/comp2real_lang2/*.h ../tools/comp2real_lang2/[01]* ../tools/comp2real_lang2/Makefile* ../tools/comp2real_lang2/src.old15
+cp -ad ../tools/coord_stefan/*.f* ../tools/coord_stefan/*.h ../tools/coord_stefan/[01]* ../tools/coord_stefan/Makefile* ../tools/coord_stefan/src.old15
+cp -ad ../tools/ewald/*.f* ../tools/ewald/*.h ../tools/ewald/[01]* ../tools/ewald/Makefile* ../tools/ewald/src.old15
+cp -ad ../tools/gamess2qmc/gamess2qmc ../tools/gamess2qmc/src.old15
+cp -ad ../tools/iequal/*.f* ../tools/iequal/*.h ../tools/iequal/[01]* ../tools/iequal/Makefile* ../tools/iequal/src.old15
+cp -ad ../tools/partition/*.f* ../tools/partition/*.h ../tools/partition/[01]* ../tools/partition/Makefile* ../tools/partition/src.old15
+cp -ad ../tools/plot_jas_pts/*.f* ../tools/plot_jas_pts/*.h ../tools/plot_jas_pts/[01]* ../tools/plot_jas_pts/Makefile* ../tools/plot_jas_pts/src.old15
+cp -ad ../tools/pseudo_needs_tm/*.f* ../tools/pseudo_needs_tm/*.h ../tools/pseudo_needs_tm/[01]* ../tools/pseudo_needs_tm/Makefile* ../tools/pseudo_needs_tm/src.old15
+cp -ad ../tools/pw_to_blips/*.f* ../tools/pw_to_blips/*.h ../tools/pw_to_blips/[01]* ../tools/pw_to_blips/Makefile* ../tools/pw_to_blips/src.old15
+cp -ad ../tools/quad_min/*.f* ../tools/quad_min/*.h ../tools/quad_min/[01]* ../tools/quad_min/Makefile* ../tools/quad_min/src.old15
+cp -ad ../tools/reduce_champ_output/reduce* ../tools/reduce_champ_output/src.old15
+cp -ad ../tools/slater/*.f* ../tools/slater/*.h ../tools/slater/[01]* ../tools/slater/Makefile* ../tools/slater/src.old15
+cp -ad ../tools/test_basis_fns/*.f* ../tools/test_basis_fns/*.h ../tools/test_basis_fns/[01]* ../tools/test_basis_fns/Makefile* ../tools/test_basis_fns/src.old15
+cp -ad ../tools/test_minimal_image/*.f* ../tools/test_minimal_image/*.h ../tools/test_minimal_image/[01]* ../tools/test_minimal_image/Makefile* ../tools/test_minimal_image/src.old15

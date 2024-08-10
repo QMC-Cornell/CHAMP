@@ -161,8 +161,6 @@
       call mpi_allreduce(tpb2sum,tpb2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(tjf2sum,tjf2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
-      call mpi_allreduce(egcm21,egcm21allprocs,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr) !TA
-
       call mpi_allreduce(fsum,fcollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(f2sum,f2collect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
 
@@ -241,9 +239,6 @@
         peiave=peicum(ifr)/wgcum(ifr)
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
-
-        eest=egave !TA
-        eigv=dexp((etrial-eest)*taucum(1)/wgcum(1)) !TA
 
 !        if(ifr.eq.1) then                                !JT
 !         eloc_bav = egnow                                !JT
@@ -331,20 +326,6 @@
         endif
    15 continue
 
-! The reason why having etrial far from e_DMC creates a bias is that in dwt we use taunow, but in
-! removing the choice of etrial from dwt we use taueff.  So, the bias is roughly a function of (eest-etrial)*(taunow-taueff).
-! However, here we use a simpler condition.
-      if (.not.l_reset_etrial .and. iblk>1 .and. iblk<5) then
-        if(abs(eest-etrial).gt.3*egerr) then
-          write(6,'(''Warning: abs(eest-etrial).gt.3*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
-        endif
-      elseif(.not.l_reset_etrial .and. iblk>1 .and. iblk==5) then
-        if(abs(eest-etrial).gt.5*egerr) then
-          write(6,'(''Warning: abs(eest-etrial).gt.5*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
-          call die ('acuest_dmc_mov1_mpi1', 'Warning: abs(eest-etrial).gt.5*egerr. Fix: use better etrial')
-        endif
-      endif
-
 !      moved up
 !      eloc_av = egave                                 !JT
 !      call object_modified_by_index (eloc_av_index)   !JT
@@ -417,10 +398,8 @@
         wgcm21(ifr)=wgcm21(ifr)+wgsum1(ifr)**2
         if(wgsum1(ifr).ne.0.d0) then
           egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
-          egcm21allprocs(ifr)=egcm21allprocs(ifr)+egsum1(ifr)**2/wgsum1(ifr)
          else
           egcm21(ifr)=0
-          egcm21allprocs(ifr)=0
         endif
    30 continue
       call object_modified('wgcum1') !worry about speed
@@ -474,13 +453,21 @@
 
 ! set quadrature points
 
+!     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
+!     eigv=one !TA - I do this so that the weights do not depend on etrial on the first step
+!     eest=etrial !TA
       nwalk=nconf
       wdsumo=nconf_global
       wgdsumo=nconf_global
+!     fprod=one !TA
 
       call object_modified_by_index (nwalk_index)
+
+!     do 70 i=0,nfprod
+!       wtgen(i)=nconf_global
+!  70   ff(i)=one
 
       eest=0d0
 ! JT: it seems that the code remains stuck around here runs when compiled with ifort 10.1 with optimization option -O3.
@@ -508,26 +495,22 @@
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
-          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
-     &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
-          if(ifr.eq.1) then
-            eest=eest+eoldw(iw,ifr)   !TA
-            if(ibasis.eq.3) then      ! complex calculation
-              call cwalksav_det(iw)
-             else
-              call walksav_det(iw)
-            endif
-            call walksav_jas(iw)
-          endif
+!          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
+!     &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
+!          if(ifr.eq.1) then
+!            eest=eest+eoldw(iw,ifr)   !TA
+!            if(ibasis.eq.3) then      ! complex calculation
+!              call cwalksav_det(iw)
+!             else
+!              call walksav_det(iw)
+!            endif
+!            call walksav_jas(iw)
+!          endif
           pwt(iw,ifr)=one
           do 72 ip=0,nwprod-1
    72       wthist(iw,ip,ifr)=one
    80 continue
       eest=eest/nconf !TA
-#if defined(MPI)
-      call MPI_Allreduce(MPI_IN_PLACE,eest,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,IERROR) !TA
-      eest=eest/nproc
-#endif
 
       call object_modified_by_index (nwalk_index)
 
@@ -550,9 +533,7 @@
         enddo
         write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
-!        eigv=1d0
       endif
-      eigv=dexp((etrial-eest)*tau) !TA 
 
       iblk=0
       iblk_proc=0
@@ -577,8 +558,6 @@
       r3cum=zero
       r4cum=zero
       ricum=zero
-      dr2ac=zero !TA
-      dr2un=zero !TA
       if(izigzag.gt.0) then
        zzcum(:)=zero
       endif
@@ -633,7 +612,6 @@
       call alloc ('wgcm21', wgcm21, nforce)
       call alloc ('egcm2', egcm2, nforce)
       call alloc ('egcm21', egcm21, nforce)
-      call alloc ('egcm21allprocs', egcm21allprocs, nforce)
       call alloc ('pecm2', pecm2, nforce)
       call alloc ('tpbcm2', tpbcm2, nforce)
       call alloc ('tjfcm2', tjfcm2, nforce)
@@ -671,7 +649,6 @@
         wgcm21(ifr)=zero
         wgcm2(ifr)=zero
         egcm21(ifr)=zero
-        egcm21allprocs(ifr)=zero
         egcm2(ifr)=zero
         wsum1(ifr)=zero
         wgsum1(ifr)=zero

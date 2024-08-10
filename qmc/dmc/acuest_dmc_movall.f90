@@ -356,10 +356,6 @@
             wthist(iw,ip,ifr)=one
    72   continue
         eest=eest/nconf !TA
-#if defined(MPI)
-      call MPI_Allreduce(MPI_IN_PLACE,eest,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,IERROR) !TA
-      eest=eest/nproc
-#endif
 
         if(psidow(iw,1).lt.zero) then
           do 76 ifr=1,nforce
@@ -413,9 +409,8 @@
         enddo
         write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
-!        eigv=1d0
+        eigv=1d0
       endif
-      eigv=dexp((etrial-eest)*tau) !TA
 
       iblk=0
 

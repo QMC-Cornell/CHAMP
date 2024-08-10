@@ -9,6 +9,7 @@
 
       fsumo=fsumn
       do 10 i=1,nelec
+        lapjo(i)=lapjn(i)
         fjo(1,i)=fjn(1,i)
         fjo(2,i)=fjn(2,i)
   10    fjo(3,i)=fjn(3,i)
@@ -20,6 +21,8 @@
   30    fso(j,iel)=fsn(j,iel)
 
       do 40 j=1,nelec
+        lapjijo(iel,j)=lapjijn(iel,j)
+        lapjijo(j,iel)=lapjijn(j,iel)
         fijo(1,iel,j)=fijn(1,iel,j)
         fijo(2,iel,j)=fijn(2,iel,j)
         fijo(3,iel,j)=fijn(3,iel,j)

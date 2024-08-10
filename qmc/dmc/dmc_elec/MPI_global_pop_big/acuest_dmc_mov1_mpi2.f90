@@ -72,8 +72,7 @@
       call mpi_reduce(peisum,peicollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tpbsum,tpbcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_reduce(tjfsum,tjfcollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-!      call mpi_reduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
-      call mpi_allreduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
+      call mpi_reduce(tausum,taucollect,nforce,mpi_double_precision,mpi_sum,0,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldest,ioldest_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(ioldestmx,ioldestmx_collect,1,mpi_integer,mpi_max,MPI_COMM_WORLD,ierr)
       call mpi_allreduce(r1sum,r1sum_collect,1,mpi_double_precision,mpi_sum,MPI_COMM_WORLD,ierr)
@@ -202,8 +201,6 @@
         tpbave=tpbcum(ifr)/wgcum(ifr)
         tjfave=tjfcum(ifr)/wgcum(ifr)
 
-        eest=egave
-        eigv=dexp((etrial-eest)*taucum(1)/wgcum(1)) !TA
 
         if(ifr.gt.1) then
           fgcum(ifr)=fgcum(ifr)+wgsum(1)*(egnow-egsum(1)/wgsum(1))
@@ -282,20 +279,6 @@
           endif
         endif
    15 continue
-
-! The reason why having etrial far from e_DMC creates a bias is that in dwt we use taunow, but in
-! removing the choice of etrial from dwt we use taueff.  So, the bias is roughly a function of (eest-etrial)*(taunow-taueff).
-! However, here we use a simpler condition.
-      if (.not.l_reset_etrial .and. iblk>1 .and. iblk<5) then
-        if(abs(eest-etrial).gt.3*egerr) then
-          write(6,'(''Warning: abs(eest-etrial).gt.3*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
-        endif
-      elseif(.not.l_reset_etrial .and. iblk>1 .and. iblk==5) then
-        if(abs(eest-etrial).gt.5*egerr) then
-          write(6,'(''Warning: abs(eest-etrial).gt.5*egerr, eest,etrial,egerr='',3es12.4,'' Fix: use better etrial'')') eest,etrial,egerr
-          call die ('acuest_dmc_mov1_mpi2', 'Warning: abs(eest-etrial).gt.5*egerr. Fix: use better etrial')
-        endif
-      endif
 
 ! I have changed the dwt limit in the dmc routines so it does not depend on etrial so  there is no need for these warning msgs.
 ! The dwt limit is there to prevent population explosions with nonlocal psps. but there are
@@ -405,10 +388,8 @@
         wgcm21(ifr)=wgcm21(ifr)+wgsum1(ifr)**2
         if(wgsum1(ifr).ne.0.d0) then
           egcm21(ifr)=egcm21(ifr)+egsum1(ifr)**2/wgsum1(ifr)
-          egcm21allprocs(ifr)=egcm21allprocs(ifr)+egsum1(ifr)**2/wgsum1(ifr)
          else
           egcm21(ifr)=0
-          egcm21allprocs(ifr)=0
         endif
    30 continue
       call object_modified('wgcum1') !worry about speed
@@ -448,7 +429,7 @@
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
-      call redistribute
+      !call redistribute
 
       call mpi_barrier(MPI_COMM_WORLD,ierr)
 
@@ -473,12 +454,21 @@
 
 ! set quadrature points
 
+!     if(nloc.gt.0) call gesqua(nquad,xq,yq,zq,wq)
       if(nloc.gt.0) call rotqua
 
+!     eigv=one !TA - I do this so that the weights do not depend on etrial on the first step
+!     eest=etrial !TA
       write(6,'(''nconf,nconf_global='',9i8)') nconf,nconf_global
       nwalk=nconf
       wdsumo=nconf_global
       wgdsumo=nconf_global
+!     fprod=one !TA
+!     do 70 i=0,nfprod
+!       wtgen(i)=nconf_global
+!  70   ff(i)=one
+
+      call object_modified ('nwalk')
 
       eest=0d0
       do 80 iw=1,nconf
@@ -502,26 +492,22 @@
             ajacob=one
           endif
           ajacold(iw,ifr)=ajacob
-          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
-     &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
-          if(ifr.eq.1) then
-            eest=eest+eoldw(iw,ifr)   !TA
-            if(ibasis.eq.3) then      ! complex calculation
-              call cwalksav_det(iw)
-             else
-              call walksav_det(iw)
-            endif
-            call walksav_jas(iw)
-          endif
+!          call hpsi(xoldw(1,1,iw,ifr),psidow(iw,ifr),psijow(iw,ifr),voldw(1,1,iw,ifr),div_vow(1,iw),d2ow(iw,ifr), &
+!     &    peow(iw,ifr),peiow(iw,ifr),eoldw(iw,ifr),denergy,ifr)
+!          if(ifr.eq.1) then
+!            eest=eest+eoldw(iw,ifr)   !TA
+!            if(ibasis.eq.3) then      ! complex calculation
+!              call cwalksav_det(iw)
+!             else
+!              call walksav_det(iw)
+!            endif
+!            call walksav_jas(iw)
+!          endif
           pwt(iw,ifr)=one
           do 72 ip=0,nwprod-1
    72       wthist(iw,ip,ifr)=one
    80 continue
       eest=eest/nconf !TA
-#if defined(MPI)
-      call MPI_Allreduce(MPI_IN_PLACE,eest,1,MPI_DOUBLE_PRECISION,MPI_SUM,MPI_COMM_WORLD,IERROR) !TA
-      eest=eest/nproc
-#endif
 
       eigv=dexp((etrial-eest)*tau) !TA - I do this so that the weights do not depend on etrial on the first step
       fprod=1d0 !TA
@@ -542,9 +528,7 @@
         enddo
         write(6,'(/,''etrial changed from'',f11.6,'' to'',f11.6,/)') etrial, eest
         etrial=eest
-!        eigv=1d0
       endif
-      eigv=dexp((etrial-eest)*tau) !TA
 
       iblk=0
 
@@ -568,8 +552,6 @@
       r3cum=zero
       r4cum=zero
       ricum=zero
-      dr2un=zero
-      dr2ac=zero
       if(izigzag.gt.0) then
        zzcum(:)=zero
       endif
@@ -624,7 +606,6 @@
       call alloc ('wgcm21', wgcm21, nforce)
       call alloc ('egcm2', egcm2, nforce)
       call alloc ('egcm21', egcm21, nforce)
-      call alloc ('egcm21allprocs', egcm21allprocs, nforce)
       call alloc ('pecm2', pecm2, nforce)
       call alloc ('tpbcm2', tpbcm2, nforce)
       call alloc ('tjfcm2', tjfcm2, nforce)
@@ -662,7 +643,6 @@
         wgcm21(ifr)=zero
         wgcm2(ifr)=zero
         egcm21(ifr)=zero
-        egcm21allprocs(ifr)=zero
         egcm2(ifr)=zero
         wsum1(ifr)=zero
         wgsum1(ifr)=zero

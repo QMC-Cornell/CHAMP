@@ -16,6 +16,9 @@ module vmc_mod
 ! Created       : J. Toulouse, 10 Jan 2006
 ! ------------------------------------------------------------------------------
   use all_modules_mod
+!  use psi_type_mod !TA
+  use psi_utils_mod, only: set_oldvar_pointers, set_newvar_pointers
+  use psi_dummy_mod
   implicit none
 
   call object_provide ('nelec')
@@ -75,6 +78,9 @@ module vmc_mod
   call alloc ('pot_ee_new', pot_ee_new, nelec)
   call alloc ('pot_ee', pot_ee, nelec)
   call common_allocations
+
+  call set_newvar_pointers(1,psi_dummy2)
+  call set_oldvar_pointers(psi_dummy)
 
 ! set current walker and current walker weight to 1 for VMC
   current_walker = 1

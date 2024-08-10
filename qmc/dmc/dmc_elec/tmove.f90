@@ -16,9 +16,11 @@ subroutine tmove
   use contrl_per_mod, only: iperiodic, ibasis
   use control_mod, only: tmoves_type
   use dete_mod, only: dete_save
+  use debug_shared_mod, only: is, iw
   implicit none
 
-  integer  :: iw, i, ic, ict, iq, jq, ntmove_pts, iwhich_tmove, l, ioffset
+!  integer  :: iw, i, ic, ict, iq, jq, ntmove_pts, iwhich_tmove, l, ioffset
+  integer  :: i, ic, ict, iq, jq, ntmove_pts, iwhich_tmove, l, ioffset
   integer  :: iwhich_cent_tmove(nquad*ncent)
   integer  :: discrete_rand
   real(dp) :: psidn, psijn, p, ratio, costh
@@ -39,7 +41,8 @@ subroutine tmove
 
   if (iperiodic.ne.0) stop 'tmove not working on periodic systems.'
 
-  iw=current_walker
+!  iw=current_walker
+  current_walker=iw !needed in quad_psi subroutine
   iaccept_tmove=0
   do i=1,nelec
     !Save old distances in r_en_sav, rvec_en_sav, r_ee_sav, rvec_ee_sav
@@ -63,9 +66,9 @@ subroutine tmove
         ntmove_pts=ntmove_pts+1
 
         if (iaccept_tmove.ne.1) then
-          xq(iq) = quadx(1,ntmove_pts,i,iw)
-          yq(iq) = quadx(2,ntmove_pts,i,iw)
-          zq(iq) = quadx(3,ntmove_pts,i,iw)
+          xq(iq) = quadx(1,ntmove_pts,i)
+          yq(iq) = quadx(2,ntmove_pts,i)
+          zq(iq) = quadx(3,ntmove_pts,i)
         endif
 
         costh=(rvec_en(1,i,ic)*xq(iq) &
@@ -78,7 +81,7 @@ subroutine tmove
         if (iperiodic.ne.0) xtmove(:) = xtmove(:) + rshift(:,i,ic)
 
         if (iaccept_tmove.ne.1) then
-          ratio = quadr(ntmove_pts,i,iw)
+          ratio = quadr(ntmove_pts,i)
         else
           call quad_psi(i, ic, rr_en, rr_en2, xtmove, ratio)
         endif

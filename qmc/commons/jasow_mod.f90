@@ -10,5 +10,6 @@ module jasow_mod
  save
  
  double precision, allocatable :: fsumow(:),fsow(:,:,:),fijow(:,:,:,:),fjow(:,:,:)
+ double precision, allocatable :: lapjijow(:,:,:),lapjow(:,:)
 
 end module jasow_mod
