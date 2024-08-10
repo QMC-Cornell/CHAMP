@@ -9,6 +9,8 @@
       use wfsec_mod
       use phifun_mod
       use const_mod
+      use orbitals_mod, only: orb_tot_nb !TA
+      use cusp_mod, only: l_impose_cusp_en_occ, orb_occ_in_wf !TA
       implicit real*8(a-h,o-z)
 
       parameter(eps=1.d-99)
@@ -45,7 +47,14 @@
 !     write(6,'(''phin='',9f19.15)') (phin(ib,1),ib=1,nbasis)
 
 ! Calculate orbitals, orb, at position of nucleus icent
-      do 10 iorb=1,norb
+!      do 10 iorb=1,norb
+      do 10 iorb=1,orb_tot_nb
+
+        if(l_impose_cusp_en_occ) then ! skip unoccupied orbitals
+          call object_provide ('orb_occ_in_wf')
+          if(.not. orb_occ_in_wf(iorb)) cycle
+        endif
+
         orb(iorb)=0
         do 10 m=1,nbasis
    10     orb(iorb)=orb(iorb)+coef(m,iorb,iwf)*phin(m,1)

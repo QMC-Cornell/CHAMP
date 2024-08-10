@@ -66,12 +66,12 @@ module cusp_mod
 
   enddo ! end loop over menu lines
 
-  if (l_impose_cusp_en_opt) then
-   call die (lhere, 'option impose_cusp_en_opt=true not fully checked yet.')
-  endif
-  if (l_impose_cusp_en_occ) then
-   call die (lhere, 'option impose_cusp_en_occ=true not fully checked yet.')
-  endif
+!  if (l_impose_cusp_en_opt) then
+!   call die (lhere, 'option impose_cusp_en_opt=true not fully checked yet.')
+!  endif
+!  if (l_impose_cusp_en_occ) then
+!   call die (lhere, 'option impose_cusp_en_occ=true not fully checked yet.')
+!  endif
 
   if (l_check_cusp_en .or. l_impose_cusp_en) then
 
@@ -134,11 +134,13 @@ module cusp_mod
 
     if (l_impose_cusp_en) then
       write(6,'(a)') '   Orbitals before imposition of e-n cusp conditions:'
-      do orb_i=1,norb
+!      do orb_i=1,norb
+      do orb_i=1,orb_tot_nb
         write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
       enddo
       write(6,'(a)') '   ----------------------------------------'   
-      do orb_i=1,norb
+!      do orb_i=1,norb
+      do orb_i=1,orb_tot_nb
         write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
       enddo
       write(6,'(a)') '   ----------------------------------------'
@@ -156,11 +158,13 @@ module cusp_mod
     call object_modified ('coef')
     write(6,'(a)') '   Orbitals after imposition of e-n cusps conditions:'
     call coef_orb_on_norm_basis_from_coef (1)
-    do orb_i=1,norb
+!    do orb_i=1,norb
+    do orb_i=1,orb_tot_nb
       write(6,'(100f10.6)') (coef_orb_on_norm_basis(bas_i,orb_i,1),bas_i=1,nbasis)
     enddo
     write(6,'(a)') '   ----------------------------------------'
-    do orb_i=1,norb
+!    do orb_i=1,norb
+    do orb_i=1,orb_tot_nb
       write(6,'(100f10.6)') (coef(bas_i,orb_i,1),bas_i=1,nbasis)
     enddo
     write(6,'(a)') '   ----------------------------------------'

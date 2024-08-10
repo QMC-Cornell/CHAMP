@@ -57,6 +57,7 @@
        call object_provide ('param_exp_nb')
        call object_alloc ('dvpot_exp', dvpot_exp, MPS_L, param_exp_nb)
        call object_alloc ('dvpsp_exp', dvpsp_exp, param_exp_nb)
+       call object_alloc ('dpot_exp_orb', dpot_exp_orb, nelec, orb_tot_nb, param_exp_nb)
        dvpsp_exp = 0.d0
       endif
 !fp
@@ -276,9 +277,18 @@
                 endif
    50         continue
 
+              if (l_opt_exp) then !TA
+                call object_provide('dorb_dexp')
+              endif
               do iorb=1,orb_tot_nb !TA
                 psp_nonloc_orb(iel,iorb) = &
                 psp_nonloc_orb(iel,iorb) + psp_factor*orbe(iorb)
+                if (l_opt_exp) then
+                  do iexp=1,param_exp_nb
+                    dpot_exp_orb(iel,iorb,iexp) = &
+                    dpot_exp_orb(iel,iorb,iexp) + psp_factor*dorb_dexp(iel,iorb,iexp)
+                  enddo
+                endif
               enddo
 
    60       continue

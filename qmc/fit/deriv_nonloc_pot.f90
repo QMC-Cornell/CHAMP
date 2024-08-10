@@ -22,6 +22,8 @@
       use contrl_per_mod
       use derivjas_mod
       use contrl_opt_mod
+      use deriv_exp_mod, only: dpot_exp_orb, param_exp_nb, dorb_dexp !TA
+      use all_tools_mod !TA
       implicit real*8(a-h,o-z)
 
       dimension x(3,*),rshift(3,nelec,ncent),rvec_en(3,nelec,ncent),r_en(nelec,ncent) &
@@ -52,7 +54,7 @@
 
 ! non-local component and its derivative (division by the Jastrow already in nonloc)
       call deriv_nonloc(x,rshift,rvec_en,r_en,psid,vpsp,dvpsp)
-      
+
       do 35 iparm=1,nparmcsf
   35    dpe(iparm)=0d0 !(dvpsp(iparm)-vpsp*deti_det(iparm))/psid
 !      if(ipr.ge.4) write(6,'(''dvpsp2(iparm)'',30d12.4)') (dvpsp(iparm),iparm=1,nparmcsf)

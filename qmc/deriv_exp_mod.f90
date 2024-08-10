@@ -34,6 +34,10 @@ module deriv_exp_mod
   real(dp), allocatable          :: dorb_dexp (:,:,:)
   real(dp), allocatable          :: grd_dorb_dexp (:,:,:,:)
   real(dp), allocatable          :: lap_dorb_dexp (:,:,:)
+  real(dp), allocatable          :: dpot_exp_orb (:,:,:) !TA
+  real(dp), allocatable          :: dkin_exp_orb (:,:,:) !TA
+  real(dp), allocatable          :: deloc_exp_orb_up (:,:,:) !TA
+  real(dp), allocatable          :: deloc_exp_orb_dn (:,:,:) !TA
 
   integer, allocatable                   :: dexp_to_all_bas_nb (:)
   type (type_integer_row), allocatable   :: dexp_to_all_bas (:)
@@ -1614,13 +1618,13 @@ module deriv_exp_mod
 ! ------------------------------------------------------------------------------
 ! Description   : Logarithm derivatives of Psi with respect to basis exponents
 !
-! Created       : J. Toulouse, 25 Jan 2007
+! Created       : T. Anderson, 1 Jan 2024
 ! ------------------------------------------------------------------------------
   use all_modules_mod
   implicit none
 
 ! local
-  integer dexp_i
+  integer dexp_i, i, j
   integer csf_i, det_in_csf_i, det_i
   integer det_unq_up_i, det_unq_dn_i
 
@@ -1628,23 +1632,15 @@ module deriv_exp_mod
   if (header_exe) then
 
    call object_create ('dpsi_exp', dpsi_exp_index)
-   call object_create ('dpsid_exp')
 
+   call object_needed ('gup')
+   call object_needed ('gdn')
    call object_needed ('param_exp_nb')
-   call object_needed ('ncsf')
-   call object_needed ('ndet')
-   call object_needed ('ndet_in_csf')
-   call object_needed ('iwdet_in_csf')
-   call object_needed ('cdet_in_csf')
-   call object_needed ('csf_coef')
-   call object_needed ('det_to_det_unq_up')
-   call object_needed ('det_to_det_unq_dn')
-   call object_needed ('ddet_dexp_unq_up')
-   call object_needed ('ddet_dexp_unq_dn')
-   call object_needed ('detu')
-   call object_needed ('detd')
-   call object_needed ('psi_det')
-
+   call object_needed ('dorb_dexp')
+   call object_needed ('occup')
+   call object_needed ('occdn')
+   call object_needed ('noccup')
+   call object_needed ('noccdn')
    return
 
   endif
@@ -1660,27 +1656,23 @@ module deriv_exp_mod
 ! loop over optimized exponents
   do dexp_i = 1, param_exp_nb
 
-   do csf_i = 1, ncsf
+    dpsi_exp (dexp_i) = 0d0
 
-     do det_in_csf_i = 1, ndet_in_csf (csf_i)
-
-        det_i = iwdet_in_csf (det_in_csf_i, csf_i)
-        det_unq_up_i = det_to_det_unq_up (det_i)
-        det_unq_dn_i = det_to_det_unq_dn (det_i)
-
-        dpsid_exp (dexp_i) = dpsid_exp (dexp_i) + csf_coef (csf_i, 1) * cdet_in_csf (det_in_csf_i, csf_i) *  &
-        (ddet_dexp_unq_up (det_unq_up_i, dexp_i) * detd (det_unq_dn_i) + detu (det_unq_up_i) * ddet_dexp_unq_dn (det_unq_dn_i, dexp_i))
-
-     enddo ! det_in_csf_i
-   enddo ! csf_i
-
-    dpsi_exp (dexp_i) = dpsid_exp (dexp_i) / psi_det
+    do i=1,noccup
+      do j=1,nup
+        dpsi_exp (dexp_i) = dpsi_exp(dexp_i) + gup(i,j)*dorb_dexp(j,occup(i),dexp_i)  
+      enddo
+    enddo
+  
+    do i=1,noccdn
+      do j=1,ndn
+        dpsi_exp (dexp_i) = dpsi_exp(dexp_i) + gdn(i,j)*dorb_dexp(nup+j,occdn(i),dexp_i)  
+      enddo
+    enddo
 
   enddo ! dexp_i
 
-! tests for He
-!  write(6,'(2a,f)') trim(here), ': dpsi_exp =', dpsi_exp (1)
-!  write(6,'(2a,f)') trim(here), ': check dpsi_exp=', dorb_dexp(1,1,1)/orb(1,1) + dorb_dexp(2,1,1)/orb(2,1)
+!  write(6,'(''dpsi_exp= '', 10f13.8)') dpsi_exp
 
   end subroutine dpsi_exp_bld
 
@@ -3098,14 +3090,66 @@ end subroutine eloc_pot_exp_bld
   end subroutine eloc_exp_bld
 
 ! ==============================================================================
+  subroutine deloc_exp_orb_bld
+! ------------------------------------------------------------------------------
+! Description   : derivative of local energy of each orbital wrt basis exponents
+!
+! Created       : T. Anderson, 10 Jan 2024
+! ------------------------------------------------------------------------------
+    implicit none
+    
+    integer     :: i, j, iexp
+    real(dp)    :: ddjas
+    
+    if (header_exe) then
+      call object_create('deloc_exp_orb_up')
+      call object_create('deloc_exp_orb_dn')
+      call object_create('dkin_exp_orb')
+      call object_needed('sum_lap_lnj')
+      call object_needed('dorb_dexp')
+      call object_needed('grd_dorb_dexp')
+      call object_needed('lap_dorb_dexp')
+      call object_needed ('vj')
+      call object_needed ('sum_lap_lnj')
+      call object_needed ('param_exp_nb')
+      call object_needed ('orb_tot_nb')
+      call object_needed ('nelec')
+      call object_needed ('orb_occ_last_in_wf_lab')
+!      call object_needed ('dpot_exp_orb')
+      return
+    endif
+
+    call object_alloc('deloc_exp_orb_up', deloc_exp_orb_up, nup, orb_tot_nb, param_exp_nb)
+    call object_alloc('deloc_exp_orb_dn', deloc_exp_orb_dn, ndn, orb_tot_nb, param_exp_nb)
+    call object_alloc('dkin_exp_orb', dkin_exp_orb, nelec, orb_tot_nb, param_exp_nb)
+
+    ddjas = (sum_lap_lnj + sum(vj*vj))/nelec
+
+    do iexp=1, param_exp_nb
+      do j=1, orb_occ_last_in_wf_lab
+        do i=1, nelec
+          dkin_exp_orb(i,j,iexp) = &
+          -hb*(lap_dorb_dexp(i,j,iexp) + 2*sum(vj(:,i)*grd_dorb_dexp(:,i,j,iexp)) + ddjas*dorb_dexp(i,j,iexp))
+        enddo
+      enddo
+    enddo
+
+    deloc_exp_orb_up = dkin_exp_orb(1:nup      ,:,:) + dpot_exp_orb(1:nup      ,:,:)
+    deloc_exp_orb_dn = dkin_exp_orb(nup+1:nelec,:,:) + dpot_exp_orb(nup+1:nelec,:,:)
+  end subroutine
+
+! ==============================================================================
   subroutine deloc_exp_bld
 ! ------------------------------------------------------------------------------
 ! Description   : derivative of local energy wrt basis exponents
 !
-! Created       : J. Toulouse, 29 Jan 2007
+! Created       : T. Anderson, 10 Jan 2024
 ! ------------------------------------------------------------------------------
   use all_modules_mod
+  use gamma_mod, only: occup, occdn
   implicit none
+
+  integer :: iexp
 
 ! header
   if (header_exe) then
@@ -3113,9 +3157,15 @@ end subroutine eloc_pot_exp_bld
    call object_create ('deloc_exp', deloc_exp_index)
 
    call object_needed ('param_exp_nb')
-   call object_needed ('eloc_exp')
-   call object_needed ('eloc')
-   call object_needed ('dpsi_exp')
+   call object_needed ('gup')
+   call object_needed ('gdn')
+   call object_needed ('dgup')
+   call object_needed ('dgdn')
+   call object_needed ('occup')
+   call object_needed ('occdn')
+   call object_needed ('deloc_exp_orb_up')
+   call object_needed ('deloc_exp_orb_dn')
+   call object_needed ('dorb_dexp')
 
    return
 
@@ -3126,7 +3176,16 @@ end subroutine eloc_pot_exp_bld
 ! allocations
   call object_alloc ('deloc_exp', deloc_exp, param_exp_nb)
 
-  deloc_exp (:) = (eloc_exp (:)- eloc) * dpsi_exp (:)
+!  deloc_exp (:) = (eloc_exp (:)- eloc) * dpsi_exp (:)
+
+  do iexp=1,param_exp_nb
+    deloc_exp (iexp) = sum( gup*transpose(deloc_exp_orb_up(:,occup,iexp))) &
+                     + sum( gdn*transpose(deloc_exp_orb_dn(:,occdn,iexp))) &
+                     + sum(dgup*transpose(dorb_dexp(      1:nup,occup,iexp))) &
+                     + sum(dgdn*transpose(dorb_dexp(nup+1:nelec,occdn,iexp)))
+  enddo
+
+!  write(6,'(''deloc_exp= '', 10f13.8)') deloc_exp
 
   end subroutine deloc_exp_bld
 

@@ -51,6 +51,8 @@
       use optimo_mod
       use contrl_opt_mod
       use kinet_mod
+      use deriv_exp_mod, only: dpot_exp_orb, param_exp_nb, dorb_dexp !TA
+      use all_tools_mod
       implicit real*8(a-h,o-z)
 
 ! complex local:
@@ -275,6 +277,12 @@
 ! nonloc_pot must be called after determinant because psid is needed in nonloc_pot
 ! This call computes the entire pot_en if iperiodic=0 but only the nonlocal contrib. otherwise.
         if(ipr.ge.2) write(6,'(''hpsi: pe before nonloc_pot'',9f12.5)') pe
+        if (l_opt_exp) then !TA
+          call object_provide('param_exp_nb') 
+          call object_alloc ('dpot_exp_orb', dpot_exp_orb, nelec, orb_tot_nb, param_exp_nb)
+          dpot_exp_orb(:,:,:) = 0d0
+        endif
+
         if(nloc.gt.0) then
 !         if((igradhess.eq.0 .and. index(mode,'fit').eq.0) .or. ifr.gt.1) then
           if((igradhess.eq.0 .or. ifr.gt.1) .and. .not. l_opt) then
@@ -283,6 +291,20 @@
             call deriv_nonloc_pot(coord,rshift,rvec_en,r_en,vpsp,psid,pe,dpe,ifr)
           endif
         endif
+
+        if (l_opt_exp) then !TA
+          call object_provide('orb_occ_last_in_wf_lab')
+          call object_provide('dorb_dexp') 
+          do iexp=1,param_exp_nb
+            do iorb=1,orb_occ_last_in_wf_lab
+              do i=1,nelec
+                dpot_exp_orb(i,iorb,iexp) = dpot_exp_orb(i,iorb,iexp) + eloc_pot_loc*dorb_dexp(i,iorb,iexp)/nelec 
+              enddo
+            enddo
+          enddo
+        endif
+
+        call object_modified ('dpot_exp_orb') !TA
 
         if(ipr.ge.3) write(6,'(''hpsi: pe after nonloc_pot'',9f12.5)') pe
 

@@ -423,6 +423,7 @@ module catalog_routines_mod
   call catalog_one_node ('deloc_exp_bld', deloc_exp_bld)
   call catalog_one_node ('deloc_lnexp_bld', deloc_lnexp_bld)
   call catalog_one_node ('slater_mat_exp_trans_inv_bld', slater_mat_exp_trans_inv_bld)
+  call catalog_one_node ('deloc_exp_orb_bld', deloc_exp_orb_bld)
 
 ! geometry derivatives
   call catalog_one_node ('param_geo_nb_bld', param_geo_nb_bld)

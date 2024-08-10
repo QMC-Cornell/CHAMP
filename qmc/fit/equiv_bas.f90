@@ -10,12 +10,15 @@
       use coefs2_mod
       use optim_mod
       use wfsec_mod
+      use orbitals_mod, only: orb_tot_nb !TA
       implicit real*8(a-h,o-z)
 
-      call alloc ('coef2', coef2, nbasis, norb, ncent)
+!      call alloc ('coef2', coef2, nbasis, norb, ncent)
+      call alloc ('coef2', coef2, nbasis, orb_tot_nb, ncent)
 
       do 10 icent=1,ncent
-        do 10 iorb=1,norb
+!        do 10 iorb=1,norb
+        do 10 iorb=1,orb_tot_nb
           do 10 ib=1,nbasis
    10       coef2(ib,iorb,icent)=0
 

@@ -35,7 +35,8 @@
       use jaspar2_mod
       implicit real*8(a-h,o-z)
 
-      dimension diff(*),orb(norb),orb2(norb)
+!      dimension diff(*),orb(norb),orb2(norb)
+      dimension diff(*),orb(orb_tot_nb),orb2(orb_tot_nb)
 
       data d1b4/.25d0/
 
@@ -124,7 +125,8 @@
           call cusorb(icent,orb)
           call cusorb_equiv(icent,orb2)
 
-          do 35 iorb=1,norb
+!          do 35 iorb=1,norb
+          do 35 iorb=1,orb_tot_nb
 
             if(abs(orb(iorb)).le.1e-9) cycle ! Impose en cusp conditions only on orbitals that are non-zero at that nucleus
 
@@ -169,6 +171,7 @@
                 endif
 !               write(6,'(''coef(ibas,iorb,iwf)1'',9f9.5)') coef(ibas,iorb,iwf)
 !               write(6,'(''zex(ibas,iwf),znuc(iwctype(icent)),aa1,term2'',9f9.5)') zex(ibas,iwf),znuc(iwctype(icent)),aa1,term2
+               write(6,'(''iorb,term,aa1,other_atom_ineqv_bas,term2'',1I5,9f9.5)') iorb,term,aa1,other_atom_ineqv_bas,term2
                 coef(ibas,iorb,iwf)=(term+(znuc(iwctype(icent))+aa1)*other_atom_ineqv_bas) / (zex(ibas,iwf)-(znuc(iwctype(icent))+aa1)*(1+term2))
 !               write(6,'(''coef(ibas,iorb,iwf)2'',9f9.5)') coef(ibas,iorb,iwf)
             endif
@@ -193,7 +196,8 @@
         ibas=imnbas(icent)
         call cusorb(icent,orb)
 
-        do 50 iorb=1,norb
+!        do 50 iorb=1,norb
+       do 50 iorb=1,orb_tot_nb
 
           if(abs(orb(iorb)).le.1e-9) cycle ! Impose en cusp conditions only on orbitals that are non-zero at that nucleus
 
